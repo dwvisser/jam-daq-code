@@ -12,7 +12,11 @@ public class SortException extends Exception {
     /**
      * @see Exception#Exception(java.lang.String)
      */
-    public SortException(String msg) {
+    SortException(String msg) {
         super(msg);
+    }
+    
+    SortException(String msg, Throwable thrown){
+        super(msg, thrown);
     }
 }
