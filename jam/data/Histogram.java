@@ -2,6 +2,7 @@ package jam.data;
 import java.util.*;
 import java.io.Serializable;
 import jam.util.StringUtilities;
+import jam.data.func.*;
 import jam.data.peaks.PeakFinder;
 
 /**
