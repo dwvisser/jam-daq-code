@@ -24,6 +24,7 @@ import javax.help.HelpSet;
 import javax.help.CSH;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -172,6 +173,16 @@ class Help {
 			final JButton proxy=new JButton("Proxy");
 			proxy.addActionListener(al);
 			proxy.doClick();
+			final JFrame frame=new JFrame("JamHelp");
+			final JButton exit=new JButton("Exit");
+			frame.getContentPane().add(exit,BorderLayout.CENTER);
+			exit.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					System.exit(0);
+				}
+			});
+			frame.pack();
+			frame.show();
 		} catch (Exception ee) {
 			JOptionPane.showMessageDialog(null,ee.getMessage(),ee.getClass().getName(),
 			JOptionPane.ERROR_MESSAGE);
