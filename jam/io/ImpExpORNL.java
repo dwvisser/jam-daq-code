@@ -1,12 +1,24 @@
 package jam.io;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
-import jam.util.*;
+import jam.util.FileUtilities;
+import jam.util.StringUtilities;
+import jam.util.UtilException;
+
 import java.awt.Frame;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by <code>DAMM</code> and
@@ -140,12 +152,12 @@ public class ImpExpORNL extends ImpExp {
 					getFileName(lastFile),
 					"*.his",
 					FileUtilities.FORCE);
-			/* open .his file random access, read only */	
+			/* open .his file random access, read only */
 			final RandomAccessFile fileHis =
 				new RandomAccessFile(
 					new File(lastFile.getParentFile(), fileNameHis),
 					"r");
-			/* read in his file and load spectra */	    
+			/* read in his file and load spectra */
 			for (int k = 0; k < totalHist; k++) {
 				readHist(fileHis, k);
 			}
@@ -184,16 +196,16 @@ public class ImpExpORNL extends ImpExp {
 					+ "'.");
 		}
 		disDrr.read(totalHistByte); //number of histograms
-		byteOrder=ByteOrder.nativeOrder();//assume file was created locally
-		msgHandler.messageOut(", native byte order: "+byteOrder+", ");
-		if (!isCorrectByteOrder(byteArrayToInt(totalHistByte,0))){
-			if (byteOrder==ByteOrder.BIG_ENDIAN){
+		byteOrder = ByteOrder.nativeOrder(); //assume file was created locally
+		msgHandler.messageOut(", native byte order: " + byteOrder + ", ");
+		if (!isCorrectByteOrder(byteArrayToInt(totalHistByte, 0))) {
+			if (byteOrder == ByteOrder.BIG_ENDIAN) {
 				byteOrder = ByteOrder.LITTLE_ENDIAN;
 			} else {
 				byteOrder = ByteOrder.BIG_ENDIAN;
 			}
 		}
-		msgHandler.messageOut("file byte order: "+byteOrder+", ");
+		msgHandler.messageOut("file byte order: " + byteOrder + ", ");
 		totalHist = byteArrayToInt(totalHistByte, 0); //number of histograms
 		totalHalfWords = readInt(disDrr); //total number of 16 bit words
 		temp = readInt(disDrr); //space nothing defined
@@ -283,16 +295,16 @@ public class ImpExpORNL extends ImpExp {
 		}
 		disDrr.close();
 	}
-	
-	private boolean isCorrectByteOrder(int numHists){
-		return numHists >=0 && numHists <= 8000;
+
+	private boolean isCorrectByteOrder(int numHists) {
+		return numHists >= 0 && numHists <= 8000;
 	}
 
 	/**
 	 * Read in a histogram.
 	 */
 	private void readHist(RandomAccessFile fileHis, int k) throws IOException {
-		Histogram hist;
+		//Histogram hist;
 		int offset; //offset set in byte array
 		int numByteToRead;
 		byte[] inBuffer;
@@ -304,70 +316,68 @@ public class ImpExpORNL extends ImpExp {
 		int wordCh = chSize[k];
 		int sizeX = lenParScal1[k];
 		int sizeY = lenParScal2[k];
-		//String title = titleDrr[k].trim();
-		try {
-			if (type == 2) {//Read in 2D histogram	
-				int [][] counts2d = new int[sizeX][sizeY];
-				fileHis.seek((long) offSet[k] * 2);
-				numByteToRead = sizeX * sizeY * 4;
-				inBuffer = new byte[numByteToRead];
-				fileHis.read(inBuffer); //read in byte array
-				if (wordCh == 2) {//four byte data 
-					offset = 0;
-					for (int j = 0; j < sizeY; j++) {
-						for (int i = 0; i < sizeX; i++) {
-							counts2d[i][j] = byteArrayToInt(inBuffer, offset);
-							offset += 4;
-						}
-					}
-				} else if (wordCh == 1) {//two byte data	
-					offset = 0;
-					for (int j = 0; j < sizeY; j++) {
-						for (int i = 0; i < sizeX; i++) {
-							counts2d[i][j] = byteArrayToShort(inBuffer, offset);
-							offset += 2;
-						}
-					}
-				} else {//not able to handle data	
-					throw new IOException(
-						"File uses " + wordCh+" words/channel, which I don't know how to read.");
-				}
-				hist = new Histogram(name, name, counts2d);
-				hist.setNumber(number);
-				if (msgHandler != null){
-					msgHandler.messageOut(" .");
-				}
-			} else {//Read in 1D Histogram		
-				int [] counts = new int[sizeX];
-				fileHis.seek((long) offSet[k] * 2);
-				numByteToRead = sizeX * 4;
-				inBuffer = new byte[numByteToRead];
-				fileHis.read(inBuffer); //read in byte array
-				if (wordCh == 2) {//four byte data
-					offset = 0;
+		if (type == 2) { //Read in 2D histogram	
+			int[][] counts2d = new int[sizeX][sizeY];
+			fileHis.seek((long) offSet[k] * 2);
+			numByteToRead = sizeX * sizeY * 4;
+			inBuffer = new byte[numByteToRead];
+			fileHis.read(inBuffer); //read in byte array
+			if (wordCh == 2) { //four byte data 
+				offset = 0;
+				for (int j = 0; j < sizeY; j++) {
 					for (int i = 0; i < sizeX; i++) {
-						counts[i] = byteArrayToInt(inBuffer, offset);
+						counts2d[i][j] = byteArrayToInt(inBuffer, offset);
 						offset += 4;
 					}
-				} else if (wordCh == 1) {//two byte data		
-					offset = 0;
+				}
+			} else if (wordCh == 1) { //two byte data	
+				offset = 0;
+				for (int j = 0; j < sizeY; j++) {
 					for (int i = 0; i < sizeX; i++) {
-						counts[i] = byteArrayToShort(inBuffer, offset);
+						counts2d[i][j] = byteArrayToShort(inBuffer, offset);
 						offset += 2;
 					}
-				} else {//unable to handle data type
-					throw new IOException(
-						"File uses " + wordCh+" words/channel, which I don't know how to read.");
 				}
-				hist = new Histogram(name, name, counts);
-				hist.setNumber(number);
-				if (msgHandler != null){
-					msgHandler.messageOut(" .");
-				}
+			} else { //not able to handle data	
+				throw new IOException(
+					"File uses "
+						+ wordCh
+						+ " words/channel, which I don't know how to read.");
 			}
-		} catch (DataException de) {//error creating histogram	    
-			if (msgHandler != null)
-				msgHandler.errorOutln(name + ": " + de.getMessage());
+			final Histogram hist = new Histogram(name, name, counts2d);
+			hist.setNumber(number);
+			if (msgHandler != null) {
+				msgHandler.messageOut(" .");
+			}
+		} else { //Read in 1D Histogram		
+			int[] counts = new int[sizeX];
+			fileHis.seek((long) offSet[k] * 2);
+			numByteToRead = sizeX * 4;
+			inBuffer = new byte[numByteToRead];
+			fileHis.read(inBuffer); //read in byte array
+			if (wordCh == 2) { //four byte data
+				offset = 0;
+				for (int i = 0; i < sizeX; i++) {
+					counts[i] = byteArrayToInt(inBuffer, offset);
+					offset += 4;
+				}
+			} else if (wordCh == 1) { //two byte data		
+				offset = 0;
+				for (int i = 0; i < sizeX; i++) {
+					counts[i] = byteArrayToShort(inBuffer, offset);
+					offset += 2;
+				}
+			} else { //unable to handle data type
+				throw new IOException(
+					"File uses "
+						+ wordCh
+						+ " words/channel, which I don't know how to read.");
+			}
+			final Histogram hist = new Histogram(name, name, counts);
+			hist.setNumber(number);
+			if (msgHandler != null) {
+				msgHandler.messageOut(" .");
+			}
 		}
 	}
 
@@ -384,29 +394,29 @@ public class ImpExpORNL extends ImpExp {
 					getLastFileName(),
 					".his",
 					FileUtilities.FORCE);
-			File parent=lastFile.getParentFile();
-			File fileHis = new File(parent,fileNameHis);
+			File parent = lastFile.getParentFile();
+			File fileHis = new File(parent, fileNameHis);
 			FileOutputStream fosHis = new FileOutputStream(fileHis);
 			BufferedOutputStream buffoutHis = new BufferedOutputStream(fosHis);
 			msgHandler.messageOut("...");
-			writeDrr(buffout);//write out drr file
+			writeDrr(buffout); //write out drr file
 			msgHandler.messageOut(fileHis.getName());
-			writeHis(buffoutHis);//write out his file
-			msgHandler.messageOut(" to "+parent+" ");
+			writeHis(buffoutHis); //write out his file
+			msgHandler.messageOut(" to " + parent + " ");
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		} catch (UtilException je) {
 			throw new ImpExpException(je.toString());
 		}
 	}
-	
+
 	/**
 	 * write out a ORNL drr file
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
 		Histogram hist;
 
-		final StringUtilities su=StringUtilities.instance();
+		final StringUtilities su = StringUtilities.instance();
 		int diskOffSet = 0;
 		DataOutputStream dosDrr = new DataOutputStream(buffout);
 		List allHists = Histogram.getHistogramList();
@@ -431,7 +441,7 @@ public class ImpExpORNL extends ImpExp {
 				throw new IOException("Unrecognized histogram type [ImpExpORNL]");
 			}
 		}
-		/* write header */		
+		/* write header */
 		dosDrr.writeBytes(SIGNATURE); //HHRIF signature, ASCII encoded
 		dosDrr.writeInt(totalHist); //number of histograms
 		dosDrr.writeInt(totalHalfWords); //total number of 16 bit words
@@ -442,8 +452,7 @@ public class ImpExpORNL extends ImpExp {
 		dosDrr.writeInt(0); //time
 		dosDrr.writeInt(0); //time
 		dosDrr.writeInt(0); //time
-		dosDrr.writeBytes(
-			su.makeLength("File Created by Jam", 80));
+		dosDrr.writeBytes(su.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (int i = 0; i < allHists.size(); i++) {
 			hist = ((Histogram) allHists.get(i));
@@ -504,7 +513,7 @@ public class ImpExpORNL extends ImpExp {
 		dosDrr.flush();
 		dosDrr.close();
 	}
-	
+
 	/**
 	 * Write out the .his file.
 	 */
@@ -517,12 +526,12 @@ public class ImpExpORNL extends ImpExp {
 			int sizeY = hist.getSizeY();
 			/* write as determined by type */
 			if (hist.getType() == Histogram.ONE_DIM_INT) {
-				int [] countsInt = (int[]) hist.getCounts();
+				int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt(countsInt[i]);
 				}
 			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-				double [] countsDbl = (double[]) hist.getCounts();
+				double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt((int) (countsDbl[i] + 0.5));
 				}
@@ -541,14 +550,15 @@ public class ImpExpORNL extends ImpExp {
 					}
 				}
 			} else {
-				msgHandler.errorOutln("Unrecognized histogram type [ImpExpORNL]");
+				msgHandler.errorOutln(
+					"Unrecognized histogram type [ImpExpORNL]");
 			}
 		}
-		msgHandler.messageOut(" ("+dosHis.size()+" bytes)");
+		msgHandler.messageOut(" (" + dosHis.size() + " bytes)");
 		dosHis.flush();
 		dosHis.close();
 	}
-	
+
 	/**
 	 * Get a int from an array of byes
 	 */
@@ -603,12 +613,12 @@ public class ImpExpORNL extends ImpExp {
 		di.readFully(tempShort);
 		return byteArrayToShort(tempShort, 0);
 	}
-	
-	public boolean canExport(){
+
+	public boolean canExport() {
 		return true;
 	}
-	
-	boolean batchExportAllowed(){
+
+	boolean batchExportAllowed() {
 		return false;
 	}
 }
