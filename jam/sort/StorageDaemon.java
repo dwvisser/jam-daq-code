@@ -39,13 +39,10 @@ public abstract class StorageDaemon extends GoodThread {
 	 */
 	public static final int OFFLINE = 2;
 
-	static final int RECORD_SIZE = 8 * 1024;
-
 	protected int mode;
 	protected Controller controller;
 	protected MessageHandler msgHandler;
 
-	protected byte buffer[];
 	protected RingBuffer ringBuffer;
 
 	protected File inputFile;
