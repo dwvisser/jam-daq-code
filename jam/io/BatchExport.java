@@ -209,7 +209,7 @@ public class BatchExport extends JDialog implements ActionListener {
 	}
 
 	private void addHist(){
-		Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+		Histogram hist=Histogram.getHistogram(JamStatus.instance().getCurrentHistogramName());
 		HashSet goodHists = new HashSet();
 		goodHists.add(hist);
 		//now combine this with stuff already in list
