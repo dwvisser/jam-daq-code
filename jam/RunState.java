@@ -67,7 +67,7 @@ public class RunState {
 		return color;
 	}
 	
-	public boolean isAcquireOn(){
+	public boolean isAcqOn(){
 		return acquireOn;
 	}
 	
