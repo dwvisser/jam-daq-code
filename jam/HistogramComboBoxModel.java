@@ -1,8 +1,11 @@
 package jam;
 import jam.data.Histogram;
+
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
 /**
  * This class takes care of properly displaying the histogram chooser
@@ -47,12 +50,13 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 		Object rval = NO_HISTS; //default value if no histograms
 		final int size = getSize();
 		if (index < 0 || index >= size) {
-			System.err.println(
+			JOptionPane.showMessageDialog(null,
 				"WARNING: "
 					+ getClass().getName()
 					+ ".getElementAt("
 					+ index
-					+ "): index out of range.");
+					+ "): index out of range.",getClass().getName(),
+					JOptionPane.WARNING_MESSAGE);
 		} else if (size > 0) {
 			final int numhists=numHists();
 			if (size>1 || (size==1 && numhists==1)){
