@@ -89,7 +89,7 @@ public class MultipleFileChooser extends JPanel {
 		
 		//Commands Panel
 		pCommands = new JPanel(new GridLayout(0, 1, 5, 2));
-		pCommands.setBorder(new EmptyBorder(0, 10, 0, 0));
+		pCommands.setBorder(new EmptyBorder(0, 5, 0, 0));
 		this.add(pCommands, BorderLayout.WEST);
 	
 		JButton bAddfile = new JButton("Add File");

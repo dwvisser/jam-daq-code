@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -106,7 +107,7 @@ public class OpenMultipleFiles {
 		frame = f;
 		msgHandler = m;
 		broadcaster= Broadcaster.getSingletonInstance();
-		dialog = new JDialog(f, "Open Multiple Files", false);
+		dialog = new JDialog(frame, "Open Multiple Files");
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		
@@ -214,9 +215,13 @@ public class OpenMultipleFiles {
 		JScrollPane listScrollPane = new JScrollPane(histList);
 		listScrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
 		panel.add(listScrollPane, BorderLayout.CENTER);
-				
+		
+		JPanel pOption = new JPanel(new GridLayout(1,1,5,5));
+		JCheckBox chkAllHists = new JCheckBox("All");
+		pOption.add(chkAllHists);		
 		JButton bRefresh = new JButton("Refresh");
-		panel.add(bRefresh, BorderLayout.WEST);
+		pOption.add(bRefresh);
+		panel.add(pOption, BorderLayout.SOUTH);
 		return panel;
 		
 	}
