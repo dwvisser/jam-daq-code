@@ -381,11 +381,20 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		if (gatePoints != null) {
 			final int numberPoints = gatePoints.npoints;
 			graph.clipPlot();
-			for (int i = 0; i < numberPoints - 1; i++) {
+			final int lastI=numberPoints-1;
+			for (int i = 0; i < lastI; i++) {
 				final int x1 = gatePoints.xpoints[i];
 				final int y1 = gatePoints.ypoints[i];
 				final int x2 = gatePoints.xpoints[i + 1];
 				final int y2 = gatePoints.ypoints[i + 1];
+				graph.drawDataLine(x1, y1, x2, y2);
+			}
+			if (gatePoints.xpoints[0] != 
+			gatePoints.xpoints[lastI]){
+				final int x1 = gatePoints.xpoints[0];
+				final int y1 = gatePoints.ypoints[0];
+				final int x2 = gatePoints.xpoints[lastI];
+				final int y2 = gatePoints.ypoints[lastI];
 				graph.drawDataLine(x1, y1, x2, y2);
 			}
 		}
