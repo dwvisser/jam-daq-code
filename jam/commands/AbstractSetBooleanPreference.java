@@ -52,14 +52,14 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 		changeIcon();
 	}
 	
-	public synchronized boolean getState(){
-		return state;
-	}
-
 	/**
+	 * If there is at least one element, and it is a 
+	 * <code>Boolean</code>, set the state to the same value. 
+	 * Otherwise, toggle the state.
+	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected final void execute(Object[] cmdParams) {
 		synchronized(this){
 			if (cmdParams !=null && cmdParams.length>0 && cmdParams[0] 
 			instanceof Boolean){
@@ -79,9 +79,19 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	}
 
 	/**
+	 * Sees if the first parameter is one of the items in the list. If
+	 * so, sets preference to <code>true</code>, otherwise 
+	 * <code>false</code>. If there are no parameters, the state is
+	 * toggled.
+	 * 
+	 * <ul>
+	 * <li>on</li>
+	 * <li>true</li>
+	 * <li>1</li>
+	 * </ul>
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens)
+	protected final void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 		final Boolean [] pass=new Boolean[1];
 		synchronized(this){
