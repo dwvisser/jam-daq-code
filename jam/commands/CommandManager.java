@@ -80,6 +80,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_BATCH_EXPORT, ShowBatchExport.class);
 		cmdMap.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
 		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
+		cmdMap.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
 	}
 	
 
@@ -189,7 +190,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		getAction(cmd).setEnabled(enable);
 	}
 	
-	public String [] getSimilarCommnands(final String s){
+	public String [] getSimilarCommnands(final String s, boolean onlyEnabled){
 		final SortedSet sim=new TreeSet();
 		final Set keys=cmdMap.keySet();
 		for (int i=s.length(); i>=1; i--){
@@ -197,7 +198,11 @@ public class CommandManager implements CommandListener, CommandNames {
 			for (Iterator it=keys.iterator(); it.hasNext();){
 				final String key=(String)it.next();
 				if (key.startsWith(com)){
-					sim.add(key);
+					final boolean addIt=(!onlyEnabled) || 
+					getAction(key).isEnabled();
+					if (addIt){
+						sim.add(key);
+					}
 				}
 			}
 			if (!sim.isEmpty()){

@@ -143,4 +143,7 @@ public interface CommandNames {
 
 	/** Show the offline sorting setup dialog. */
 	String SHOW_SETUP_OFFLINE="showsetupoffline";
+
+	/** Show the dialog eith event and buffer counts.*/
+	String SHOW_BUFFER_COUNT="showcounters";
 }
