@@ -18,9 +18,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,42 +52,44 @@ import javax.swing.text.StyleConstants;
  */
 public class JamConsole
 	extends JPanel
-	implements MessageHandler, ActionListener{
-
+	implements MessageHandler {
 	
 	private final static int NUMBER_LINES_LOG = 100;
-	
 	private final static int CMD_STACK_SIZE = 50;
+	
 	/**
 	 * End of line character(s).
 	 */
 	private static final String END_LINE = (String) System.getProperty("line.separator");
 
-	private java.util.List listenerList;
-
-	private JTextPane textLog; //output text area
-	private Document doc;
-	private SimpleAttributeSet attr_normal, attr_warning, attr_error;
-	private JTextField textIn; //input text field
+	private final java.util.List listenerList=Collections.synchronizedList(
+	new ArrayList());
+	private final JTextPane textLog = new JTextPane(); //output text area
+	private final Document doc = textLog.getStyledDocument();
+	private final SimpleAttributeSet attr_normal, attr_warning, attr_error;
+	private final JTextField textIn; //input text field
 	private final JScrollPane jsp;
-	private final LinkedList cmdStack;
+	private final LinkedList cmdStack=new LinkedList();
 	private int lastCmdIndex;
 
 	/**
-	 * Private.
+	 * Is the message a new one or a continuation of one?
 	 *
 	 * @serial
 	 */
 	private boolean newMessage;
-	//Is the message a new one or a continuation of one
+	
+	/**
+	 * A lock for message output so messages don't overlap.
+	 */
 	private boolean msgLock;
-	//a lock for message output so message dont overlap
+
 	/**
 	 * Private.
 	 *
 	 * @serial
 	 */
-	private int maxLines;
+	private final int maxLines;
 	private int numberLines; //number of lines in output
 
 	/**
@@ -93,19 +97,15 @@ public class JamConsole
 	 *
 	 * @serial
 	 */
-	private String logFileName; //name of file to which the log is written
-	/**
-	 * Private.
-	 *
-	 * @serial
-	 */
 	private BufferedWriter logFileWriter; //output stream
+	
 	/**
 	 * Private.
 	 *
 	 * @serial
 	 */
 	private boolean logFileOn; //are we logging to a file
+	
 	/**
 	 * Private.
 	 *
@@ -128,15 +128,9 @@ public class JamConsole
 	 */
 	public JamConsole(int linesLog) {
 		maxLines = linesLog;
-		
-		listenerList= new ArrayList();
-		cmdStack = new LinkedList();
-		
 		setLayout(new BorderLayout());
-		textLog = new JTextPane();
 		textLog.setToolTipText(
 		"After setup, this log is (usually) written to a file, too.");
-		doc = textLog.getStyledDocument();
 		attr_normal = new SimpleAttributeSet();
 		attr_warning = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_warning, Color.blue);
@@ -153,9 +147,15 @@ public class JamConsole
 		textIn = new JTextField();
 		textIn.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
-		textIn.addActionListener(this);
-				
-		//Handle up down arrows				
+		textIn.addActionListener(new ActionListener(){
+			/* Processes event when a return is hit in input field */
+			public void actionPerformed(ActionEvent ae) {
+				addCommand(textIn.getText());
+				parseCommand(textIn.getText());
+				textIn.setText(null);
+			}
+		});
+		/* Handle up and down arrows */				
 		textIn.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent evt) {
 				int keyCode = evt.getKeyCode();  
@@ -167,7 +167,6 @@ public class JamConsole
 							
 			}
 		});
-
 		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
@@ -179,14 +178,6 @@ public class JamConsole
 		textLog.setPreferredSize(new Dimension(700,logHeight));
 	}
 
-	/**
-	 * Process event when a return is hit in input field
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		addCommand(textIn.getText());
-		parseCommand(textIn.getText());
-		textIn.setText(null);
-	}
 	/**
 	 * Add a command to the command stack
 	 * 
@@ -383,41 +374,29 @@ public class JamConsole
 	/**
 	 * Parses the command and issues it to the current listener.
 	 */
-	private void parseCommand(String _inString) {		
-		String [] cmdTokens, parameters;
-		String command;
-		int countWrd;
-		
-		cmdTokens=parseExpression(_inString);
+	private void parseCommand(final String _inString) {		
+		final String [] cmdTokens=parseExpression(_inString);
 		final int numberInWords = cmdTokens.length;
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
-		//Remove KBS
-		//final String inString = _inString.trim();
-		//final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
-		//final int numberInWords = inLine.countTokens();	
 		if (cmdTokens.length>0) {//check at least something was entered
-				//if first token is a number
-				if (isNumber(cmdTokens[0])) {
+			final String command;
+			final String [] parameters;
+			final int countWrd;
+			if (isNumber(cmdTokens[0])) {
 				/* first token is a number, command is NUMBER_ONLY 
 				 * and params starts with first token */
 				command = NUMBERS_ONLY;				 
 				parameters=new String[numberInWords];
-				//numParam=numberInWords;
 				countWrd=0;				
 			} else {
 				/* parameter list to hold one less */
 				command = cmdTokens[0];
 				parameters = new String[numberInWords - 1];
-				//numParam=numberInWords - 1;				
 				countWrd = 1;
 			}
 			/* Load parameter tokens */
-			int i=0;
-			while (countWrd<numberInWords) {
-				parameters[i] = cmdTokens[countWrd];
-				countWrd++;
-				i++;
-			}			
+			System.arraycopy(cmdTokens,countWrd,parameters,0,
+			numberInWords-countWrd);	
 			/* perform command */
 			notifyListeners(command, parameters);
 		}
@@ -428,8 +407,8 @@ public class JamConsole
 	 * @param strCmd
 	 * @return a array of the command tokens
 	 */
-	private String [] parseExpression(String strCmd){
-		final ArrayList cmdTokenList = new ArrayList();
+	private String [] parseExpression(final String strCmd){
+		final List cmdTokenList = new ArrayList();
 		/* match anything between quotes or words (not spaces) */
 		final String regex="\"([^\"]*?)\"|(\\S+)\\s*";   
 		final Pattern pattern = Pattern.compile(regex);
@@ -471,7 +450,7 @@ public class JamConsole
 	 *
 	 * @exception   JamException    exceptions that go to the console
 	 */
-	public String setLogFileName(String name) throws JamException {
+	String setLogFileName(String name) throws JamException {
 		String newName = name + ".log";
 		File file = new File(newName);
 		/* create a unique file, append a number if a 
@@ -488,7 +467,6 @@ public class JamConsole
 		} catch (IOException ioe) {
 			throw new JamException("Not able to create log file " + newName);
 		}
-		logFileName = newName;
 		return newName;
 	}
 
@@ -497,7 +475,7 @@ public class JamConsole
 	 *
 	 * @exception   JamException    exceptions that go to the console
 	 */
-	public void closeLogFile() throws JamException {
+	void closeLogFile() throws JamException {
 		try {
 			logFileWriter.flush();
 			logFileWriter.close();
@@ -511,7 +489,7 @@ public class JamConsole
 	 *
 	 * @exception   JamException    exceptions that go to the console
 	 */
-	public void setLogFileOn(boolean state) throws JamException {
+	void setLogFileOn(boolean state) throws JamException {
 		if (logFileWriter != null) {
 			logFileOn = state;
 		} else {
@@ -590,9 +568,9 @@ public class JamConsole
 			}				
 		} catch (CommandListenerException cle){						
 			errorOutln("Performing command "+cmd+"; "+cle.getMessage());					
-		}
-			
+		}	
 	}
+	
 	/**
 	 * On a class destruction close log file
 	 */
