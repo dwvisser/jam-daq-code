@@ -800,7 +800,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				int integer = (int) log10(Math.abs(value));
 				integer = Math.max(integer, 1);
 				int fraction = Math.max(4 - integer, 0);
-				temp = format(value, integer, fraction);
+				temp = format(value, fraction);
 			}
 		} else if (param.isInteger()) {
 			temp = (new Integer(param.getIntValue())).toString().trim();
@@ -817,27 +817,12 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			+ format(param.getDoubleValue(), param.getDoubleError())[1];
 	}
 
-	/**
-	 * Helper method for GridBagConstains 
-	 * S
-	 * @return  <code>void</code> 
-	 * @since Version 0.5
-	 */
-
-	/*private void addComponent(Component component, int gridx, int gridy) {
-	
-		addComponent(component, gridx, gridy, 1, 1);
-	
-	}*/
-
-	private String format(double value, int integer, int fraction) {
+	private String format(double value, int fraction) {
 		NumberFormat fval;
 		fval = NumberFormat.getInstance();
 		fval.setGroupingUsed(false);
 		fval.setMinimumFractionDigits(fraction);
 		fval.setMinimumFractionDigits(fraction);
-		//fval.setMinimumIntegerDigits(integer);
-		//fval.setMaximumIntegerDigits(integer);
 		return fval.format(value);
 	}
 
