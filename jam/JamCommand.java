@@ -1,13 +1,6 @@
 package jam;
 import jam.commands.CommandException;
 import jam.commands.CommandManager;
-import jam.data.control.CalibrationDisplay;
-import jam.data.control.CalibrationFit;
-import jam.data.control.GainShift;
-import jam.data.control.GateSet;
-import jam.data.control.Manipulations;
-import jam.data.control.ParameterControl;
-import jam.data.control.Projections;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -35,34 +28,14 @@ import javax.swing.AbstractButton;
 public class JamCommand
 	implements ActionListener, ItemListener {
 
-	static final int MESSAGE_SCALER = 1; //alert scaler class
-	private final String classname;
-
 	private final Display display;
 	private final JamConsole console;
-
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-
-	/* control classes */
-	private final GateSet gateControl;
-	private final ParameterControl paramControl;
-	private final CalibrationDisplay calibDisplay;
-	private final CalibrationFit calibFit;
-	private final Projections projection;
-	private final Manipulations manipulate;
-	private final GainShift gainshift;
-
 	private final PeakFindDialog peakFindDialog;
-
-	/* classes to set up acquisition and sorting */
 	private final SetupRemote setupRemote;
-
 	private final FrontEndCommunication frontEnd;
-	private final Help help;
-
 	private final JamStatus status;
-
-	private CommandManager jamCmdMgr;
+	private final CommandManager jamCmdMgr;
 	private RemoteAccess remoteAccess = null;
 	private boolean remote = false;
 
@@ -73,7 +46,6 @@ public class JamCommand
 	 */
 	public JamCommand(JamMain jam, Display d, JamConsole jc) {
 		super();
-		classname = getClass().getName() + " - ";
 		display = d;
 		console = jc;
 		status = JamStatus.instance();
@@ -81,32 +53,13 @@ public class JamCommand
 		new RunInfo();
 		/* communication */
 		frontEnd = new VMECommunication(console);
-		/* data bases manipulation */
-		gateControl = new GateSet(console);
-		paramControl = new ParameterControl(jam, console);
-		calibDisplay = new CalibrationDisplay(console);
-		calibFit = new CalibrationFit(console);
-		projection = new Projections(console);
-		manipulate = new Manipulations(console);
-		gainshift = new GainShift(console);
+		broadcaster.addObserver(frontEnd);
 		/* acquisition control */
 		setupRemote = new SetupRemote(jam, console);
-		help = new Help(jam, console); //Help window
 		peakFindDialog = new PeakFindDialog(display, console);
-		addObservers();
 		jamCmdMgr = CommandManager.getInstance();
-		jamCmdMgr.setMessageHandler(console);
 		console.addCommandListener(jamCmdMgr);
 		console.addCommandListener(display);
-	}
-
-	/**
-	 * Add observers to the list of classes to be notified of 
-	 * broadcasted events.
-	 */
-	private final void addObservers() {
-		broadcaster.addObserver(display);
-		broadcaster.addObserver(frontEnd);
 	}
 
 	/**
@@ -119,11 +72,7 @@ public class JamCommand
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String incommand = e.getActionCommand();
-		if ("Black Background".equals(incommand)) {
-			display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
-		} else if ("White Background".equals(incommand)) {
-			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
-		} else if ("remote".equals(incommand)) {
+		if ("remote".equals(incommand)) {
 			setupRemote.showRemote();
 		} else if ("peakfind".equals(incommand)) {
 			peakFindDialog.show();
@@ -159,15 +108,7 @@ public class JamCommand
 		} else {
 			final String text = item.getText();
 			final boolean selected = item.isSelected();
-			if ("Ignore zero channel on autoscale".equals(text)) {
-				display.setPreference(
-					Display.Preferences.AUTO_IGNORE_ZERO,
-					selected);
-			} else if ("Ignore max channel on autoscale".equals(text)) {
-				display.setPreference(
-					Display.Preferences.AUTO_IGNORE_FULL,
-					selected);
-			} else if ("Verbose front end".equals(text)) {
+			if ("Verbose front end".equals(text)) {
 				frontEnd.verbose(selected);
 				JamProperties.setProperty(
 					JamProperties.FRONTEND_VERBOSE,
@@ -179,11 +120,7 @@ public class JamCommand
 					selected);
 			} else if ("Autoscale on Expand/Zoom".equals(text)) {
 				display.setAutoOnExpand(selected);
-			} else if ("Automatic peak find".equals(text)) {
-				display.setPreference(
-					Display.Preferences.AUTO_PEAK_FIND,
-					selected);
-			}
+			} 
 		}
 	}
 
