@@ -188,16 +188,14 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		CommandNames.ADD_HDF));
 		file.add(addhdf);
 		final JMenuItem saveHDF  = new JMenuItem(commands.getAction(CommandNames.SAVE_HDF));
-		saveHDF.setEnabled(false);	//KBS should not have to set
 		saveHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK|KeyEvent.SHIFT_MASK));
 		file.add(saveHDF);		
 		final JMenuItem saveAsHDF  = new JMenuItem(commands.getAction(CommandNames.SAVE_AS_HDF));
 		saveAsHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK));
 		file.add(saveAsHDF);		
 		final JMenuItem special=new JMenu("Special");
-		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram\u2026");
-		openSelectdHist.setActionCommand("openselectedhist");		
-		openSelectdHist.addActionListener(jamCommand);
+		final JMenuItem openSelectdHist =new JMenuItem(commands.getAction(
+		CommandNames.OPEN_SELECTED));
 		special.add(openSelectdHist);
 		final JMenuItem saveGates=new JMenuItem(commands.getAction(CommandNames.SAVE_GATES));
 		special.add(saveGates);
