@@ -210,6 +210,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		bend.setActionCommand("end");
 		bend.setBackground(Color.red);
 		bend.addActionListener(this);
+		bend.setEnabled(false);
 		pb.add(bend);
 
 		pbottom.add(pb);
@@ -220,8 +221,6 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			}
 		});
 		lastFile = new File(defaultEvents); //default directory
-		//call to private version to avoid breaking if subclassed
-		//setDevice(DISK); //initial mode is from disk
 		writeEvents = false; //don't write out events
 		d.pack();
 	}
@@ -253,14 +252,13 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			} else if (command == "loadlist") {
 				Loadlist();
 			} else if (command == "begin") {
-				loadNames();
-				lockFields(true);
 				beginSort();
 			} else if (command == "end") {
 				endSort();
 				msgHandler.warningOutln(
 					"Ended offline sorting before reading all events.");
 				//lockFields(false);
+				bend.setEnabled(false);
 			} else if (command == "bfileout") {
 				textOutFile.setText(getOutFile().getPath());
 			}
@@ -287,7 +285,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	
 	void setWriteEvents(boolean state){
 		textOutFile.setEnabled(state);
-		bbrowse.setEnabled(state);
+		bbrowse.setSelected(state);
 		writeEvents = state;
 	}
 
@@ -324,9 +322,14 @@ class SortControl implements Controller, ActionListener, ItemListener {
 
 	/**
 	 * start sorting offline
+	 * 
+	 * @param lockOnThis passed by script thread, which wants to know when
+	 * sorting is done
 	 */
 	public void beginSort()
-		throws SortException, EventException, GlobalException {
+		throws JamException, SortException, EventException, GlobalException {
+		loadNames();
+		lockFields(true);
 		RunInfo.runNumber = 999;
 		RunInfo.runTitle = "Pre-sorted data";
 		RunInfo.runStartTime = new java.util.Date();
@@ -339,6 +342,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		}
 		msgHandler.messageOutln("Starting sorting from Disk");
 		bbegin.setEnabled(false);
+		bend.setEnabled(true);
 		sortDaemon.setState(GoodThread.RUN);
 		jamMain.setRunState(RunState.ACQ_ON);
 	}
@@ -432,8 +436,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 					"Closed pre-sorted file: " + fileOut.getPath());
 			}
 			bbegin.setEnabled(true);
-			//Toolkit.getDefaultToolkit().beep();
 			lockFields(false);
+			/* let other thread (i.e., jam.Script) know we are finished */
+			bend.setEnabled(false);
 		} catch (SortException se) {
 			msgHandler.errorOutln(
 				"Unable to close event output file [SortControl]");
