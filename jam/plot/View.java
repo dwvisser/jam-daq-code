@@ -29,6 +29,9 @@ public final class View {
 		MAP = new TreeMap();
 	}
 	
+	/**
+	 * Default view--one plot in the window.
+	 */
 	public static final View SINGLE=new View("Single", 1,1) ;
 	
 	private final int NAME_LENGTH = 20;
@@ -41,6 +44,13 @@ public final class View {
 	
 	private final String [] histogramNames;
 	
+	/**
+	 * Constructs a new view.
+	 * 
+	 * @param viewName the name to associate with the view.
+	 * @param rows number of rows of plots
+	 * @param cols number of columns of plots
+	 */
 	public View(String viewName, int rows, int cols){	
 		if (rows < 1) {
 			throw new IllegalArgumentException("Can't have a view with " + rows
@@ -73,14 +83,28 @@ public final class View {
 		NAME_LIST.add(name);
 	}
 	
+	/**
+	 * Gets the list of view names.
+	 * 
+	 * @return list of the names of the existing views
+	 */
 	public static List getNameList(){
 		return Collections.unmodifiableList(NAME_LIST);
 	}
 	
+	/**
+	 * Get the view with the given name.
+	 * @param name of the view
+	 * @return the view
+	 */
 	public static synchronized View getView(String name){
 		return (View)MAP.get(name);
 	}
 	
+	/**
+	 * Remove the view with the given name.
+	 * @param name of view to delete
+	 */
 	public static synchronized void removeView(String name){
 		MAP.remove(name);
 		NAME_LIST.remove(name);
@@ -131,6 +155,10 @@ public final class View {
 		histogramNames[num]=name;
 	}
 	
+	/**
+	 * Gets the name of this view.
+	 * @return the name of this view
+	 */
 	public String getName(){
 		return name;
 	}

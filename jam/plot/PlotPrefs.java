@@ -14,13 +14,51 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface PlotPrefs {
+    
+    /**
+     * Preferences node for the <code>jam.plot</code> package.
+     */
 	Preferences PREFS=Preferences.userNodeForPackage(PlotPrefs.class);
+	
+	/**
+	 * Preference for whether to ignore channel zero when auto-scaling.
+	 */
 	String AUTO_IGNORE_ZERO="AutoIgnoreZero";
+	
+	/**
+	 * Preference for whether to ignore the last channel when auto-scaling.
+	 */
 	String AUTO_IGNORE_FULL="AutoIgnoreFull";
+	
+	/**
+	 * Preference for whether to use a black background for the plots.
+	 */
 	String BLACK_BACKGROUND="BlackBackground";
+	
+	/**
+	 * Preference for whether to automatically find and mark peaks.
+	 */
 	String AUTO_PEAK_FIND = "AutoPeakFind";
+	
+	/**
+	 * Preference for whether to automatically rescale the counts
+	 * axis on a zoom in or zoom out.
+	 */
 	String AUTO_ON_EXPAND="AutoOnExpand";
+	
+	/**
+	 * Preference for whether to highlight gated channels, or simply
+	 * draw the gate shape around them.
+	 */
 	String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
+	
+	/**
+	 * Preference for whether to show scroll bars.
+	 */
 	String ENABLE_SCROLLING="EnableScrolling";
+	
+	/**
+	 * Preference for whether to draw axis labels.
+	 */
 	String DISPLAY_AXIS_LABELS="DisplayAxisLabels";
 }

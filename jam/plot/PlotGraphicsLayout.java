@@ -181,9 +181,15 @@ final class PlotGraphicsLayout {
 		return type==LAYOUT_TYPE_LABELS ? LABELS : NO_LABELS;
 	}
 
-	public static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(
+	/**
+	 * Layout with axis labels.
+	 */
+	static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(
 			LAYOUT_TYPE_LABELS);
 
-	public static final PlotGraphicsLayout NO_LABELS = new PlotGraphicsLayout(
+	/**
+	 * Layout without axis labels.
+	 */
+	private static final PlotGraphicsLayout NO_LABELS = new PlotGraphicsLayout(
 			LAYOUT_TYPE_NO_LABELS);
 }
