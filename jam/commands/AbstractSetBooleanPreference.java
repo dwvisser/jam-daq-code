@@ -1,8 +1,5 @@
 /*
  * Created on Jun 10, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package jam.commands;
 
@@ -13,13 +10,21 @@ import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 
 /**
- * 
+ * Abstract implementation of <code>Commandable</code> which can 
+ * set/unset a given preference.
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 10, 2004
  */
 public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	
+	/**
+	 * Preference node which must be defined in full implementations.
+	 */
 	protected Preferences prefsNode;
+	
+	/**
+	 * Name of the preference must be defined in full implementations.
+	 */
 	protected String key;
 	protected boolean state;
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -29,11 +34,18 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	"jam/clear.png"));
 	
 	/**
-	 * Set differently in subclass constuctor if necessary.
+	 * Set to <code>true</code> here. Set differently in 
+	 * <em>constructor</em> if necessary.
 	 */
 	protected boolean defaultState=true;
 
-	protected void initCommand(){
+	/**
+	 * Subclass initialization must be in initialization blocks or
+	 * constructor. This method may not be overriden.
+	 * 
+	 * @see jam.commands.Commandable#initCommand()
+	 */
+	public final void initCommand(){
 		synchronized(this){
 			state=prefsNode.getBoolean(key,defaultState);
 		}

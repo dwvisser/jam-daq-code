@@ -21,7 +21,7 @@ implements Observer {
 	/**
 	 * Initialize command
 	 */
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Zero\u2026");
 		dialog= new HistogramZero(msghdlr);
 	}

@@ -13,7 +13,7 @@ public class ShowDialogAddFit extends AbstractCommand {
 	
 	private LoadFit loadfit;
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Load Fit\u2026");
 		loadfit = new LoadFit();		
 	}

@@ -20,7 +20,7 @@ implements Observer {
 	/**
 	 * Initialize command
 	 */
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Buffer Counters\u2026");
 		dialog=DisplayCounters.getSingletonInstance();
 	}

@@ -18,7 +18,7 @@ implements Observer {
 	
 	private final List scalerList=Scaler.getScalerList();
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Zero Scalers\u2026");
 		dialog=new ScalerZero();
 	}

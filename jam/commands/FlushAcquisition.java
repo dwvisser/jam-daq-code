@@ -12,7 +12,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * 
+ * Flush the acquisition's currently filling buffer to Jam.
+ *  
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 7, 2004
  */
@@ -20,7 +21,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 
 	private RunControl control;
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "flush");
 		putValue(SHORT_DESCRIPTION, "Flush the current data acquisition buffer.");
 		control=RunControl.getSingletonInstance();

@@ -14,7 +14,7 @@ Observer {
 
 	private final List histogramList=Histogram.getHistogramList();
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "New\u2026");
 		/* Super class member next line */
 		dialog= new GateNew(msghdlr);		

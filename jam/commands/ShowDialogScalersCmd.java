@@ -18,7 +18,7 @@ Observer {
 
 	private final List scalerList=Scaler.getScalerList();
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Display Scalers\u2026");
 		dialog=new ScalerDisplay();
 	}

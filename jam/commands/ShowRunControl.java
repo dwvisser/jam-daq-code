@@ -19,7 +19,7 @@ import java.util.Observer;
  */
 public class ShowRunControl extends AbstractShowDialog implements Observer {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Run\u2026");
 		dialog=RunControl.getSingletonInstance();
 		enable();

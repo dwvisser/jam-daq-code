@@ -8,7 +8,7 @@ import jam.data.control.CalibrationFit;
  */
 public class ShowDialogCalibrationFitCmd extends AbstractShowDialog {
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Enter Coefficients\u2026");
 		dialog=new CalibrationFit(msghdlr);
 	}

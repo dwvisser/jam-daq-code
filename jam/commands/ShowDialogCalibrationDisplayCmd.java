@@ -8,7 +8,7 @@ import jam.data.control.CalibrationDisplay;;
 public class ShowDialogCalibrationDisplayCmd
 	extends AbstractShowDialog {
 
-		protected void initCommand(){
+		public void initCommand(){
 			putValue(NAME,"Fit\u2026");			
 			dialog=new CalibrationDisplay(msghdlr);
 		}

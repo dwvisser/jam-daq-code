@@ -3,14 +3,14 @@ package jam.commands;
 import jam.io.ImpExpXSYS;
 
 /**
- * Export data to file.
+ * Export data to an XSYS file.
  * 
  * @author Dale Visser
  */
 final class ImportXSYS extends AbstractImportFile {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"TUNL's XSYS");
-		importExport=new ImpExpXSYS(status.getFrame(),msghdlr);		
+		importExport=new ImpExpXSYS();		
 	}
 }

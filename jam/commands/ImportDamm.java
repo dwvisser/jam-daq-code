@@ -9,8 +9,8 @@ import jam.io.ImpExpORNL;
  */
 final class ImportDamm extends AbstractImportFile {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Oak Ridge DAMM");		
-		importExport=new ImpExpORNL(status.getFrame(),msghdlr);		
+		importExport=new ImpExpORNL();		
 	}
 }

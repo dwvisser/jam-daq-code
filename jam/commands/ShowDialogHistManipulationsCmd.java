@@ -9,7 +9,7 @@ import jam.data.control.Manipulations;
  */
 public class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
-	protected void initCommand() {
+	public void initCommand() {
 		putValue(NAME, "Combine\u2026");
 		dialog = new Manipulations(msghdlr);
 	}

@@ -15,7 +15,7 @@ import java.util.Observer;
  */
 public class ShowSetupOnline extends AbstractShowDialog implements Observer {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Online sorting\u2026");
 		dialog=SetupSortOn.getSingletonInstance();
 		enable();

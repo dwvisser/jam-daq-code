@@ -9,7 +9,7 @@ import jam.Help;
  */
 public class ShowDialogLicense extends AbstractShowDialog {
 
-	protected void initCommand() {
+	public void initCommand() {
 		putValue(NAME, "License\u2026");
 		dialog = new Help();
 	}

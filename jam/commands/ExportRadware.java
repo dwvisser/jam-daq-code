@@ -8,15 +8,15 @@ import java.util.Observer;
 
 
 /**
- * Export data to file
+ * Export data to a Radware gf3 spectrum file.
  * 
  * @author Dale Visser
  */
 final class ExportRadware extends AbstractExportFile implements Observer{
 		
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Radware gf3");
-		importExport=new ImpExpSPE(status.getFrame(),msghdlr);		
+		importExport=new ImpExpSPE();		
 	}
 	
 	public void update(Observable observe, Object obj){

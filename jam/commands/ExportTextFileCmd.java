@@ -3,15 +3,15 @@ package jam.commands;
 import jam.io.ImpExpASCII;
 
 /**
- * Export data to file.
+ * Export data to an ASCII text file.
  * 
  * @author Ken Swartz
  * @author Dale Visser
  */
 final class ExportTextFileCmd extends AbstractExportFile {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Text File");
-		importExport=new ImpExpASCII(status.getFrame(),msghdlr);		
+		importExport=new ImpExpASCII();		
 	}
 }

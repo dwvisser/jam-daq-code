@@ -7,7 +7,7 @@ import jam.util.ScalerScan;
  */
 public class ShowDialogScalerScan extends AbstractShowDialog {
 
-	protected void initCommand() {
+	public void initCommand() {
 		putValue(NAME, "Scan HDF files for scalers\u2026");
 		dialog = new ScalerScan();
 	}

@@ -19,7 +19,7 @@ Observer {
 
 	private final List monitorList=Monitor.getMonitorList();
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Configure Monitors\u2026");
 		dialog=MonitorControl.getSingletonInstance();
 	}

@@ -23,7 +23,7 @@ implements Observer {
 	/**
 	 * Initialize command
 	 */
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Parameters\u2026");
 		final JFrame frame =status.getFrame();
 		dialog = new ParameterControl(frame, msghdlr);

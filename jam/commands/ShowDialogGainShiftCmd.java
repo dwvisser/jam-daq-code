@@ -8,7 +8,7 @@ import jam.data.control.GainShift;
  */
 public class ShowDialogGainShiftCmd extends AbstractShowDialog {
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Gain Shift\u2026");
 		dialog=new GainShift(msghdlr);
 	}

@@ -18,7 +18,7 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 
 	private RunControl control;
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "stop");
 		putValue(SHORT_DESCRIPTION, "Pause data acquisition.");
 		control=RunControl.getSingletonInstance();

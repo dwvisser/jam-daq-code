@@ -10,21 +10,19 @@ import jam.io.ExtensionFileFilter;
 
 
 /**
- * Open a file with YaleCAEN scalers
+ * Open a file with YaleCAEN scalers.
+ * 
  * @author Ken Swartz
  */
 public class OpenScalersYaleCAEN extends AbstractCommand {
 
 	private YaleCAENgetScalers ycs;
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Display scalers from YaleCAEN event file\u2026");
 		ycs= new YaleCAENgetScalers();						
 	}
 
-	/**
-	 * 
-	 */
 	protected void execute(Object[] cmdParams) {		
 		final File file;
 		if (cmdParams==null) {
@@ -46,7 +44,8 @@ public class OpenScalersYaleCAEN extends AbstractCommand {
 	/**
 	 * Get a *.evn file from a JFileChooser.
 	 *
-	 * @return	a <code>File</code> chosen by the user, null if dialog cancelled
+	 * @return	a <code>File</code> chosen by the user, null if 
+	 * dialog cancelled
 	 */
 	private File getFile() {
 		
@@ -65,5 +64,4 @@ public class OpenScalersYaleCAEN extends AbstractCommand {
 		}
 		return file;
 	}
-
 }

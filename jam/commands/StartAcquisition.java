@@ -18,7 +18,7 @@ final class StartAcquisition extends AbstractCommand implements Observer {
 
 	private RunControl control;
 
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "start");
 		putValue(SHORT_DESCRIPTION, "Start data acquisition.");
 		control=RunControl.getSingletonInstance();

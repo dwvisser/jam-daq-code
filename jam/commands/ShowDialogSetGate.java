@@ -18,7 +18,7 @@ Observer {
 
 	private final List gateList=Gate.getGateList();
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"Set Gate\u2026");
 		dialog=new GateSet();
 	}

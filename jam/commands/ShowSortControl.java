@@ -16,7 +16,7 @@ import java.util.Observer;
  */
 public class ShowSortControl extends AbstractShowDialog implements Observer {
 	
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME, "Sort\u2026");
 		dialog=SortControl.getSingletonInstance();
 		enable();

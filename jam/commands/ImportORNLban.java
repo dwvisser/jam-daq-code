@@ -3,14 +3,14 @@ package jam.commands;
 import jam.io.ImportBanGates;
 
 /**
- * Export data to file.
+ * Import a DAMM banana gate file.
  * 
  * @author Dale Visser
  */
 final class ImportORNLban extends AbstractImportFile {
 		
-	protected void initCommand(){
+	public void initCommand(){
 		putValue(NAME,"ORNL Banana Gates");
-		importExport=new ImportBanGates(status.getFrame(),msghdlr);		
+		importExport=new ImportBanGates();		
 	}
 }
