@@ -27,6 +27,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return filter.accept(file);
 	}
 	
+	private final float FRACTION_TIME_READ_NOT_HISTOGRAM =0.3f;
+	
+	private final float FRACTION_TIME_READ_LAZY_HISTOGRAMS =0.7f;
+	
+	private final float FRACTION_TIME_READ_ALL =1.0f;
+	
+	private final float FRACTION_WRITE_ALL =1.0f;
+	
 	private final AsyncProgressMonitor monitor;
 	
 	private final int stepsToTake;
@@ -166,7 +174,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	private void writeAllObjects() throws HDFException {
 		final List objectList = AbstractHData.getDataObjectList();
 		int countObjct=0;
-		final int numObjSteps = getNumberObjctProgressStep(objectList.size());
+		final int numObjSteps = getNumberObjctProgressStep(objectList.size(), FRACTION_WRITE_ALL);
 		final Iterator temp = objectList.iterator();
 		writeLoop: while (temp.hasNext()) {
 			if (countObjct%numObjSteps==0) {
@@ -205,20 +213,30 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readFile() throws HDFException {
+		
+		int numObjSteps;
+		int countObjct=0;		
 		lazyLoadNum=0;
 		lazyCount=0;	
+		
 		try {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file");
 			}
+			
+			monitor.increment();
+			if (lazyLoadData)
+				numObjSteps=getNumberObjctProgressStep(countHDFOjects(), FRACTION_TIME_READ_NOT_HISTOGRAM);
+			else 
+				numObjSteps=getNumberObjctProgressStep(countHDFOjects(), FRACTION_TIME_READ_ALL);
+			
+			
 			seek(HDF_HEADER_NBYTES);
-			boolean doAgain = true;
-			do {
+			boolean hasNextBlock = true;
+			while (hasNextBlock) {
 				final int numDD = readShort(); //number of DD's
 				final int nextBlock = readInt();
-				//Just one dd block for now
-				final int numObjSteps=getNumberObjctProgressStep(numDD);
-				int countObjct=0;
+
 				for (int i = 1; i <= numDD; i++) {
 					final short tag = readShort();
 					final short ref = readShort();
@@ -248,17 +266,41 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 
 				}
 				if (nextBlock == 0) {
-					doAgain = false;
+					hasNextBlock = false;
 				} else {
 					seek(nextBlock);
 				}
-			} while (doAgain);
+			} 
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem reading HDF file objects. ",e);
 		}
 	}
-	
+	/**
+	 * Count objects in file
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private int countHDFOjects() throws IOException {
+		
+		int numberObjects =0;
+		
+		seek(HDF_HEADER_NBYTES);
+		
+		boolean hasNextBlock = true;
+		while(hasNextBlock) {
+			final int numDD = readShort(); 		//number of DD in block
+			final int nextBlock = readInt();	//Next DD block
+			numberObjects +=numDD;
+			if (nextBlock == 0) {
+				hasNextBlock = false;
+			} else {
+				seek(nextBlock);
+			}
+		} 		
+		return numberObjects;
+	}
 	private byte [] readBytes(int offset, int length) throws IOException {
 		final byte [] rval = new byte[length];
 		mark();
@@ -311,7 +353,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * Lazy load the bytes for an object
 	 */
 	byte [] lazyReadData(AbstractHData dataObject) throws HDFException {
-        final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum);
+        final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum, FRACTION_TIME_READ_LAZY_HISTOGRAMS);
 		final byte [] localBytes = new byte[dataObject.getLength()];	
 		try {
 	        seek(dataObject.getOffset());
@@ -329,12 +371,12 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return localBytes;
 	}
 	
-	private int getNumberObjctProgressStep(int numObjects) {
+	private int getNumberObjctProgressStep(int numObjects, float fractionOfTotalsTime) {
 		int rval;
 		if (stepsToTake>0) {
-			rval =numObjects/stepsToTake;
+			rval =numObjects/(stepsToTake-1);
 			if (lazyLoadData){	//half the steps if lazy load (redo to take care of round off)
-				rval=2*numObjects/stepsToTake;
+				rval=(int)(numObjects/(stepsToTake-1)/fractionOfTotalsTime);					
 			}
 			if (rval <=0) {
 				rval=1;

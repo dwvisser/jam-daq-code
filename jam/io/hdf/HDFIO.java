@@ -67,8 +67,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * Number of steps in progress, 
      * 1 for converting objects, 10 for writing them out
      */    
-    private static final int STEPS_WRITE=10;
-    private static final int STEPS_CONVERT=1;
+    private static final int MONITOR_STEPS_READ_WRITE=11;		//1 Count DD's, 10 read objects
+    private static final int MONITOR_STEPS_OVERHEAD_WRITE=3;	//2 for start of read object
+    private static final int MONITOR_STEPS_OVERHEAD_READ=1;		//
     /**
      * Parent frame.
      */
@@ -347,6 +348,11 @@ public final class HDFIO implements DataIO, JamHDFFields {
 
     	final SwingWorker worker = new SwingWorker() {
             public Object construct() {
+            	//FIXME KBS Test change thread priority to make monitor pop up sooner
+            	Thread.yield();
+            	Thread thisTread =Thread.currentThread();
+            	thisTread.setPriority(thisTread.getPriority()-1);
+            	//End test 
             	try {
             		asyncReadFileGroup(infile, mode, histNames);
             		//asyncReadFile(infile, mode, histNames);
@@ -381,6 +387,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         worker.start();     	
     }
 
+    
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -411,7 +418,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
-        					STEPS_WRITE+STEPS_CONVERT);
+        					MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
         
         convertJamToHDF(groups, wrtdata, wrtsetting);
         
@@ -428,7 +435,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         HDFile out=null;
         try {
 
-            out = new HDFile(file, "rw", asyncMonitor, STEPS_WRITE);
+            out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
             asyncMonitor.setNote("Writing Data Objects");
 
             out.writeFile();
@@ -456,87 +463,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         
     }
     
-    private void convertJamToHDF(List groups, boolean wrtdata, boolean wrtsetting) {
-    	
-        VirtualGroup virtualGroupGroups= addGroupSection();
-        VirtualGroup globalVirtualGroupHistogram= addHistogramSection();
-        VirtualGroup globalVirtualGroupGate = addGateSection();
-        VirtualGroup globalVirtualGroupScaler = addScalerSection();
-        VirtualGroup globalVirtualGroupParameter = addParameterSection();
-        
-        /* Loop for all groups */
-        final Iterator groupsIter = groups.iterator(); 
-        while(groupsIter.hasNext()){
-        	Group group = (Group)groupsIter.next();
-        	VirtualGroup virtualGroupGroup = jamToHDF.convertGroup(group);
-        	virtualGroupGroups.addDataObject(virtualGroupGroup);
-        	
-        	//Histograms 
-        	//VirtualGroup virtualGroupHists= addHistogramSection();
-        	//virtualGroupGroup.addDataObject(virtualGroupHists);
-            //Loop for all histograms
-            final Iterator histsIter = group.getHistogramList().iterator();
-            while (histsIter.hasNext()) {
-                final Histogram hist = (Histogram) histsIter.next();
-                //if (wrtdata) {	//FIXME KBS
-                	final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
-                	virtualGroupGroup.addDataObject(histVGroup);
-                	//backward compatible
-                	globalVirtualGroupHistogram.addDataObject(histVGroup);
-                //}
-                histCount++;
-                
-                //Loop for all gates
-                final Iterator gatesIter = hist.getGates().iterator();
-                while (gatesIter.hasNext()) {
-                    final Gate gate = (Gate) gatesIter.next();
-                    if(gate.isDefined()){
-                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
-                    	histVGroup.addDataObject(gateVGroup);
-                    	//backward compatiable
-                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
-                    	gateCount++;
-                	}
-                } //end loop gates
-                
-            } //end loop histograms
-
-            //Convert all scalers
-            if (wrtdata) {
-	            final List scalerList = group.getScalerList();
-	            if (scalerList.size()>0) {
-		            final VirtualGroup virtualGroupScalers = addScalerSection();
-		            virtualGroupGroup.addDataObject(virtualGroupScalers);                        
-		            final VdataDescription scalerDataDescription =jamToHDF.convertScalers(scalerList);
-		            virtualGroupScalers.addDataObject(scalerDataDescription);
-		            if (group==Group.getSortGroup()) {    
-		            	//backward compatiable
-		            	globalVirtualGroupScaler.addDataObject(scalerDataDescription);	
-		            }
-	            }
-	            scalerCount=scalerList.size();
-            }
-
-            //Convert all parameters
-            if (wrtsetting) {
-            	final List parameterList =DataParameter.getParameterList();
-            	if (parameterList.size()>0) {
-		            final VirtualGroup virtualGroupParameters = addParameterSection();
-		            virtualGroupGroup.addDataObject(virtualGroupParameters); 
-		            if (group==Group.getSortGroup()) {            	 
-		            	final VdataDescription parameterDataDescription =jamToHDF.convertParameters(parameterList);
-		            	virtualGroupParameters.addDataObject(parameterDataDescription);
-		            	//Backward compatiable
-		            	globalVirtualGroupParameter.addDataObject(parameterDataDescription); 
-		                parameterCount=parameterList.size();;
-		            }
-            	}
-            }
-
-            groupCount++;
-        }
-    }
-    
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -553,7 +479,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @param parameters
      *            list of <code>Parameter</code> objects to write
      */
-    private void asyncWriteFile(File file, List hists, List gates, List scalers,
+    synchronized private void asyncWriteFile(File file, List hists, List gates, List scalers,
             List parameters) {
     	
         final StringBuffer message = new StringBuffer();
@@ -562,7 +488,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
-        					STEPS_WRITE+STEPS_CONVERT);
+        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
         message.append("Saved ").append(file.getName()).append(" (");
         if (hasContents(hists)) {
             addHistogramSection();
@@ -608,7 +534,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         HDFile out=null;
         try {
             synchronized (this) {
-                out = new HDFile(file, "rw", asyncMonitor, STEPS_WRITE);
+                out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
                 asyncMonitor.setNote("Writing Data Objects");
             }
             out.writeFile();
@@ -635,7 +561,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         uiMessage =message.toString();
         
     }
-
+    
 
     /**
      * Read in an HDF file
@@ -659,14 +585,14 @@ public final class HDFIO implements DataIO, JamHDFFields {
         parameterCount=0;
         
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
-				STEPS_WRITE+STEPS_CONVERT);
+        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ);
         if (rval) {
             try {
 
                 AbstractHData.clearAll();
                 
                 //Read in objects
-                inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
+                inHDF = new HDFile(infile, "r", asyncMonitor, MONITOR_STEPS_READ_WRITE);
                 inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
                  /* read file into set of AbstractHData's, set their internal variables */
@@ -748,6 +674,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
         uiMessage =message.toString();
         return rval;
     }
+
+
     /**
      * Read in an HDF file
      * 
@@ -774,7 +702,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         final StringBuffer message = new StringBuffer();
         
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
-				STEPS_WRITE+STEPS_CONVERT);
+        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ);
         if (rval) {
             try {
                 if (mode == FileOpenMode.OPEN) {
@@ -794,7 +722,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 AbstractHData.clearAll();
                 
                 //Read in objects
-                inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
+                inHDF = new HDFile(infile, "r", asyncMonitor, MONITOR_STEPS_READ_WRITE);
                 inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
                  /* read file into set of AbstractHData's, set their internal variables */
@@ -871,6 +799,87 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         uiMessage =message.toString();
         return rval;
+    }
+    
+    private void convertJamToHDF(List groups, boolean wrtdata, boolean wrtsetting) {
+    	
+        VirtualGroup virtualGroupGroups= addGroupSection();
+        VirtualGroup globalVirtualGroupHistogram= addHistogramSection();
+        VirtualGroup globalVirtualGroupGate = addGateSection();
+        VirtualGroup globalVirtualGroupScaler = addScalerSection();
+        VirtualGroup globalVirtualGroupParameter = addParameterSection();
+        
+        /* Loop for all groups */
+        final Iterator groupsIter = groups.iterator(); 
+        while(groupsIter.hasNext()){
+        	Group group = (Group)groupsIter.next();
+        	VirtualGroup virtualGroupGroup = jamToHDF.convertGroup(group);
+        	virtualGroupGroups.addDataObject(virtualGroupGroup);
+        	
+        	//Histograms 
+        	//VirtualGroup virtualGroupHists= addHistogramSection();
+        	//virtualGroupGroup.addDataObject(virtualGroupHists);
+            //Loop for all histograms
+            final Iterator histsIter = group.getHistogramList().iterator();
+            while (histsIter.hasNext()) {
+                final Histogram hist = (Histogram) histsIter.next();
+                //if (wrtdata) {	//FIXME KBS
+                	final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
+                	virtualGroupGroup.addDataObject(histVGroup);
+                	//backward compatible
+                	globalVirtualGroupHistogram.addDataObject(histVGroup);
+                //}
+                histCount++;
+                
+                //Loop for all gates
+                final Iterator gatesIter = hist.getGates().iterator();
+                while (gatesIter.hasNext()) {
+                    final Gate gate = (Gate) gatesIter.next();
+                    if(gate.isDefined()){
+                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
+                    	histVGroup.addDataObject(gateVGroup);
+                    	//backward compatiable
+                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
+                    	gateCount++;
+                	}
+                } //end loop gates
+                
+            } //end loop histograms
+
+            //Convert all scalers
+            if (wrtdata) {
+	            final List scalerList = group.getScalerList();
+	            if (scalerList.size()>0) {
+		            final VirtualGroup virtualGroupScalers = addScalerSection();
+		            virtualGroupGroup.addDataObject(virtualGroupScalers);                        
+		            final VdataDescription scalerDataDescription =jamToHDF.convertScalers(scalerList);
+		            virtualGroupScalers.addDataObject(scalerDataDescription);
+		            if (group==Group.getSortGroup()) {    
+		            	//backward compatiable
+		            	globalVirtualGroupScaler.addDataObject(scalerDataDescription);	
+		            }
+	            }
+	            scalerCount=scalerList.size();
+            }
+
+            //Convert all parameters
+            if (wrtsetting) {
+            	final List parameterList =DataParameter.getParameterList();
+            	if (parameterList.size()>0) {
+		            final VirtualGroup virtualGroupParameters = addParameterSection();
+		            virtualGroupGroup.addDataObject(virtualGroupParameters); 
+		            if (group==Group.getSortGroup()) {            	 
+		            	final VdataDescription parameterDataDescription =jamToHDF.convertParameters(parameterList);
+		            	virtualGroupParameters.addDataObject(parameterDataDescription);
+		            	//Backward compatiable
+		            	globalVirtualGroupParameter.addDataObject(parameterDataDescription); 
+		                parameterCount=parameterList.size();;
+		            }
+            	}
+            }
+
+            groupCount++;
+        }
     }
     
     /**
