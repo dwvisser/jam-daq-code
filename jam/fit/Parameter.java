@@ -95,11 +95,6 @@ public class Parameter {
 	//TEXT fields
 	private String valueTxt;
 
-	//private double known;
-
-	private double valueDefaultInt;
-	private double valueDefaultDbl;
-
 	/**
 	 * Whether or not the parameter is currently fixed.
 	 */
