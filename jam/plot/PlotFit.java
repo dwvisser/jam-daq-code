@@ -1,5 +1,8 @@
 package jam.plot;
+
 import jam.fit.MultipleGaussians;
+
+import java.util.Arrays;
 
 /**
  * Class to perform simple fits such as area and centroid
@@ -12,30 +15,29 @@ class PlotFit {
 	 * Get the area for a 1 d histogram
 	 */
 	double getArea(double[] counts, Bin p1, Bin p2) {
-		final int x1=p1.getX();
-		final int x2=p2.getX();
-		final int xmin=Math.min(x1,x2);
-		final int xmax=Math.max(x1,x2);
+		final int x1 = p1.getX();
+		final int x2 = p2.getX();
+		final int xmin = Math.min(x1, x2);
+		final int xmax = Math.max(x1, x2);
 		double area = 0;
-		for (int i = xmin; i <= xmax; i++) {//sum up counts	
+		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			area += counts[i];
 		}
 		return area;
 	}
 
 	/**
-	 * Get the area for a 2 d histogram bounded by the rectangle
-	 * x1, y1, x2, y2
+	 * Get the area for a 2 d histogram bounded by the rectangle x1, y1, x2, y2
 	 */
 	double getArea(double[][] counts, Bin p1, Bin p2) {
-		final int x1=p1.getX();
-		final int x2=p2.getX();
-		final int y1=p1.getY();
-		final int y2=p2.getY();
-		final int xmin=Math.min(x1,x2);
-		final int xmax=Math.max(x1,x2);
-		final int ymin=Math.min(y1,y2);
-		final int ymax=Math.max(y1,y2);
+		final int x1 = p1.getX();
+		final int x2 = p2.getX();
+		final int y1 = p1.getY();
+		final int y2 = p2.getY();
+		final int xmin = Math.min(x1, x2);
+		final int xmax = Math.max(x1, x2);
+		final int ymin = Math.min(y1, y2);
+		final int ymax = Math.max(y1, y2);
 		double area = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			for (int j = ymin; j <= ymax; j++) {
@@ -48,18 +50,15 @@ class PlotFit {
 	/**
 	 * method to calculate the centroid for a histogram given a bounded area
 	 */
-	double getCentroid(
-		double[] counts,
-		Bin p1,
-		Bin p2) {
-		final int x1=p1.getX();
-		final int x2=p2.getX();
-		final int xmin=Math.min(x1,x2);
-		final int xmax=Math.max(x1,x2);
+	double getCentroid(double[] counts, Bin p1, Bin p2) {
+		final int x1 = p1.getX();
+		final int x2 = p2.getX();
+		final int xmin = Math.min(x1, x2);
+		final int xmax = Math.max(x1, x2);
 		double area = 0;
 		double darea;
 		double centroid = 0;
-		for (int i = xmin; i <= xmax; i++) {//sum up counts	
+		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			area += counts[i];
 		}
 		darea = (double) area;
@@ -74,30 +73,28 @@ class PlotFit {
 		return centroid;
 	}
 
-
 	/**
-	 * method to calculate the FWHM for a histogram given a bounded area
-	 * done in such a way the we do not overflow.
-	 * So we cant use SUM =Xi^2-(X^bar)^2
+	 * method to calculate the FWHM for a histogram given a bounded area done in
+	 * such a way the we do not overflow. So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
 	 */
 	double getFWHM(double[] counts, Bin p1, Bin p2) {
-		final int x1=p1.getX();
-		final int x2=p2.getX();
-		final int xmin=Math.min(x1,x2);
-		final int xmax=Math.max(x1,x2);
+		final int x1 = p1.getX();
+		final int x2 = p2.getX();
+		final int xmin = Math.min(x1, x2);
+		final int xmax = Math.max(x1, x2);
 		int area = 0;
 		double distance;
 		double centroid = 0;
 		double sigma = 0;
 		double variance = 0;
-		double fwhm=0.0;//default
-		/* sum up counts */	
+		double fwhm = 0.0;//default
+		/* sum up counts */
 		for (int i = xmin; i <= xmax; i++) {
 			area += counts[i];
 		}
 		double darea = area;
-		// calculate weights and then fwhm must have more than one counts 
+		// calculate weights and then fwhm must have more than one counts
 		if (area > 2) {
 			// calculate centroid
 			for (int i = xmin; i <= xmax; i++) {
@@ -107,41 +104,36 @@ class PlotFit {
 			darea = darea - 1.0; //redo weighting
 			for (int i = xmin; i <= xmax; i++) {
 				distance = i - centroid;
-				variance += (counts[i] / darea)
-					* (distance * distance);
+				variance += (counts[i] / darea) * (distance * distance);
 			}
 			sigma = Math.sqrt(variance);
 			fwhm = SIGMA_TO_FWHM * sigma;
-		} 
+		}
 		return fwhm;
 	}
 
-	void getNetArea(
-		double[] netArea,
-		double[] netAreaError,
-		double[] channelBackground,
-		double[] fwhm,
-		double[] centroid,
-		double[] centroidError,
-		Bin [] clicks,
-		double grossArea,
-		int X,
-		double[] counts) {
+	void getNetArea(double[] netArea, double[] netAreaError,
+			double[] channelBackground, double[] fwhm, double[] centroid,
+			double[] centroidError, Bin[] clicks, double grossArea, int X,
+			double[] counts) {
 		double netBackground = 0;
-		double [] channel = new double[X];
+		double[] channel = new double[X];
 		double countsHigh = 0;
 		double countsLow = 0;
 		double area = 0;
 		double variance = 0;
 		double distance = 0;
-		final int x1 = clicks[0].getX();
-		final int x2 = clicks[1].getX();
-		final int x3 = clicks[2].getX();
-		final int x4 = clicks[3].getX();
-		final int x5temp=clicks[4].getX();
-		final int x6temp=clicks[5].getX();
-		final int rx1=Math.min(x5temp,x6temp);
-		final int rx2=Math.max(x5temp,x6temp);
+		final int[] bgdX1 = { clicks[0].getX(), clicks[1].getX(),
+				clicks[2].getX(), clicks[3].getX() };
+		Arrays.sort(bgdX1);
+		final int x1 = bgdX1[0];
+		final int x2 = bgdX1[1];
+		final int x3 = bgdX1[2];
+		final int x4 = bgdX1[3];
+		final int x5temp = clicks[4].getX();
+		final int x6temp = clicks[5].getX();
+		final int rx1 = Math.min(x5temp, x6temp);
+		final int rx2 = Math.max(x5temp, x6temp);
 		for (int n = x1; n <= x2; n++) {
 			countsLow += counts[n];
 		}
