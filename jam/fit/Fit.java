@@ -1,15 +1,34 @@
 package jam.fit;
-import javax.swing.*;
-import java.awt.*;
-import javax.swing.border.*;
-import java.awt.event.*;
-import java.text.NumberFormat;
-import java.util.*;
-import jam.plot.PlotMouseListener;
+import jam.data.Histogram;
 import jam.global.MessageHandler;
 import jam.plot.Display;
-import jam.data.DataException;
-import jam.data.Histogram;
+import jam.plot.PlotMouseListener;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 
 /**
  * This defines the necessary methods that need to be defined in order for a 
@@ -735,22 +754,18 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	/**
 	 * Gets counts from currently displayed <code>Histogram</code>
 	 */
-	private void getCounts() throws FitException {
-		try {
-			Histogram h = display.getHistogram();
-			if (h.getType() == Histogram.ONE_DIM_INT) {
-				int[] ia = (int[]) h.getCounts();
-				counts = new double[ia.length];
-				for (int j = 0; j < ia.length; j++) {
-					counts[j] = ia[j];
-				}
-			} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
-				counts = (double[]) h.getCounts();
+	private void getCounts() {
+		Histogram h = display.getHistogram();
+		if (h.getType() == Histogram.ONE_DIM_INT) {
+			int[] ia = (int[]) h.getCounts();
+			counts = new double[ia.length];
+			for (int j = 0; j < ia.length; j++) {
+				counts[j] = ia[j];
 			}
-			this.errors = h.getErrors();
-		} catch (DataException de) {
-			throw new FitException(de.getMessage());
+		} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
+			counts = (double[]) h.getCounts();
 		}
+		this.errors = h.getErrors();
 	}
 
 	/**
