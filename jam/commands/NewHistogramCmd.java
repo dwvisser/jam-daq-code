@@ -12,7 +12,6 @@ final class NewHistogramCmd extends AbstractCommand {
 	
 	NewHistogramCmd(){
 		super();
-		/* Default constructor needed */
 	}
 	
 	/**
@@ -26,10 +25,6 @@ final class NewHistogramCmd extends AbstractCommand {
 		int sizeY = ((Integer)cmdParams[4]).intValue();						
 		new Histogram(name, type, sizeX, sizeY, title);		
 	}
-	
-	/*protected void performCommand(int cmdParams) throws CommandException {
-		execute(null);
-	}*/
 	
 	/**
 	 * Execute the command
