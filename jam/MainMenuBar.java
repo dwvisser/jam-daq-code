@@ -70,7 +70,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private MessageHandler console;
 	final private JamCommand jamCommand;
 	
-	final private JMenuItem histogramNew = new JMenuItem("New\u2026");
 	final private JMenuItem zeroHistogram = new JMenuItem("Zero\u2026");
 	final private JMenu calHist = new JMenu("Calibrate");
 	final private JMenuItem projectHistogram = new JMenuItem("Projections\u2026");
@@ -279,12 +278,15 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		mcontrol.add(statusacq);
 		final JMenu histogram = new JMenu("Histogram");
 		add(histogram);
-		histogramNew.setActionCommand("shownewhist");
-		histogramNew.addActionListener(jamCommand);
+		final JMenuItem histogramNew=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_NEW_HIST));
 		histogram.add(histogramNew);
 		zeroHistogram.setActionCommand("zerohist");
 		zeroHistogram.addActionListener(jamCommand);
 		histogram.add(zeroHistogram);
+		histogram.add(commands.getAction(
+		CommandNames.DELETE_HISTOGRAM)).setAccelerator(KeyStroke.getKeyStroke(
+		KeyEvent.VK_D,ctrl_mask));
 		histogram.add(calHist);
 		final JMenuItem calibFit = new JMenuItem("Fit\u2026");
 		calibFit.setActionCommand("calfitlin");
@@ -446,17 +448,10 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		helpMenu.add(about);
 		about.setActionCommand("about");
 		about.addActionListener(jamCommand);
-		
-		/*
-		final JMenuItem userG =new JMenuItem(
-					commands.getAction(CommandNames.USER_GUIDE));
-		helpMenu.add(userG);
-		*/					
 		final JMenuItem userG = new JMenuItem("User Guide\u2026");
 		helpMenu.add(userG);
 		userG.setActionCommand("userguide");
 		userG.addActionListener(getUserGuideListener());
-
 		final JMenuItem license = new JMenuItem("License\u2026");
 		helpMenu.add(license);
 		license.setActionCommand("license");
