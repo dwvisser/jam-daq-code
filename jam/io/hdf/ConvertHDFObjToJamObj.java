@@ -236,53 +236,63 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             numGates = gates.getObjects().size();
             final Iterator temp = gates.getObjects().iterator();
             boolean errorOccured=false;
-            final Polygon shape = new Polygon();
+
             gateLoop: while (temp.hasNext()) {
-                final VirtualGroup currVG = (VirtualGroup) (temp.next());
+                final VirtualGroup currVG = (VirtualGroup) (temp.next());                
                 final VdataDescription vdd = (VdataDescription) (AbstractHData
                         .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
                         .get(0));
                 if (vdd == null) {
                     errorOccured=true;
                     break gateLoop;
-                }
-                final Vdata data = (Vdata) (AbstractHData.getObject(
-                        AbstractHData.DFTAG_VS, vdd.getRef()));
-                //corresponding VS
-                final int numRows = vdd.getNumRows();
-                final String gname = currVG.getName();
+                }                
                 final String hname = DataIDAnnotation.withTagRef(annotations,
                         currVG.getTag(), currVG.getRef()).getNote();
-                final Gate gate;
-                if (mode.isOpenMode()) {
-                    final String groupName = Group.getCurrentGroup().getName();
-                    final String histFullName = groupName + "/"
-                            + util.makeLength(hname, Histogram.NAME_LENGTH);
-                    final Histogram hist = Histogram.getHistogram(histFullName);
-                    gate = makeGate(hist, gname);
-                } else { //reload
-                    gate = Gate.getGate(util
-                            .makeLength(gname, Gate.NAME_LENGTH));
-                }
-                if (gate != null) {
-                    if (gate.getDimensionality() == 1) { //1-d gate
-                        gate.setLimits(data.getInteger(0, 0).intValue(), data
-                                .getInteger(0, 1).intValue());
-                    } else { //2-d gate
-                        shape.reset();
-                        for (int i = 0; i < numRows; i++) {
-                            shape.addPoint(data.getInteger(i, 0).intValue(),
-                                    data.getInteger(i, 1).intValue());
-                        }
-                        gate.setLimits(shape);
-                    }
-                }
+                final String groupName = Group.getCurrentGroup().getName();
+                final String histFullName = groupName + "/"
+                        + STRING_UTIL.makeLength(hname, Histogram.NAME_LENGTH);
+                final Histogram hist = Histogram.getHistogram(histFullName);
+
+                final String gname = currVG.getName();                
+                convertGate(hist, vdd, gname, mode);
             }
             if (errorOccured){
                 throw new IllegalStateException("Problem processing a VH for a gate.");
             }
         }
         return numGates;
+    }
+    
+    Gate convertGate(Histogram hist, VdataDescription vdd, String gateName, FileOpenMode mode) throws HDFException {
+        final Gate gate;
+        final Polygon shape = new Polygon();
+        final Vdata data = (Vdata) (AbstractHData.getObject(
+                AbstractHData.DFTAG_VS, vdd.getRef()));
+        //corresponding VS
+        final int numRows = vdd.getNumRows();
+
+        if (mode.isOpenMode()) {
+            
+            gate = makeGate(hist, gateName);
+        } else { //reload
+            gate = Gate.getGate(STRING_UTIL
+                    .makeLength(gateName, Gate.NAME_LENGTH));
+        }
+        if (gate != null) {
+            if (gate.getDimensionality() == 1) { //1-d gate
+                gate.setLimits(data.getInteger(0, 0).intValue(), data
+                        .getInteger(0, 1).intValue());
+            } else { //2-d gate
+                shape.reset();
+                for (int i = 0; i < numRows; i++) {
+                    shape.addPoint(data.getInteger(i, 0).intValue(),
+                            data.getInteger(i, 1).intValue());
+                }
+                gate.setLimits(shape);
+            }
+        }
+    	
+    	return gate;
     }
     
     private Gate makeGate(Histogram hist, String name){
