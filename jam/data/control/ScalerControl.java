@@ -36,7 +36,8 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
     private JButton bzero2;
 
     private boolean sortScalers;	    //have scalers been added by sort
-
+	private JamStatus status;
+	
     /** Creates the dialog box for reading and zeroing scalers.
      * @param frame main window for application that this dialog is attached to
      * @param broadcaster hub of communications for message passin around Jam
@@ -47,6 +48,7 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
+        status = JamStatus.instance();
         sortScalers=false;
         //zeroDisabled=true;
         ddisp=new JDialog(frame,"Scalers",false);// dialog box to display scalers
@@ -117,7 +119,7 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
                     bzero2.setEnabled(false);
                     dzero.dispose();
                 }
-                if (JamStatus.isOnLine()){
+                if (status.isOnLine()){
                     zero();
                 } else {
                     throw new DataException("Can't Zero Scalers not Online");
@@ -226,7 +228,7 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
      * calls Distribute event which will call our update method.
      */
     public void read() throws GlobalException {
-        if (JamStatus.isOnLine()){
+        if (status.isOnLine()){
             broadcaster.broadcast(BroadcastEvent.SCALERS_READ);
         } else {
             displayScalers();

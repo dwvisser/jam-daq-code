@@ -41,6 +41,7 @@ ItemListener, WindowListener {
     private CalibrationFunction calibFunction;
     int numberTerms;
     private NumberFormat numFormat;
+    private JamStatus status;
     
     /**
      * Constructor
@@ -50,6 +51,7 @@ ItemListener, WindowListener {
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.msghdlr=msghdlr;
+        status=JamStatus.instance();
         
         dialogCalib =new JDialog(frame,"Histogram Calibration",false);
         dialogCalib.setForeground(Color.black);
@@ -175,7 +177,7 @@ ItemListener, WindowListener {
      */
     public void actionPerformed(ActionEvent ae){        
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(JamStatus.getCurrentHistogramName());        
+        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());        
         try {            
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
@@ -271,7 +273,7 @@ ItemListener, WindowListener {
      *
      */
     private void cancelCalib(){
-        Histogram currentHist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         currentHist.setCalibration(null);
     }
     
@@ -281,7 +283,7 @@ ItemListener, WindowListener {
      *  has not changed. If it has cancel the gate setting.
      */
     public void windowActivated(WindowEvent e){
-        Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
         //have we changed histograms
         if (hist!=currentHistogram){
             currentHistogram=hist;

@@ -485,7 +485,7 @@ Runnable  {
                     //update the monitor
                     monitor[i].update();
                     //If the audio on and are we taking data
-                    if(audioAlarm&&JamStatus.isAcqOn()){
+                    if(audioAlarm&&JamStatus.instance().isAcqOn()){
                         //is the alarm for this monitor set set
                         if (monitor[i].getAlarm()){
                             //is the value out of bounds

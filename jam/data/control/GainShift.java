@@ -33,6 +33,8 @@ Observer {
     private double chan1i,chan2i,chan1f,chan2f,a1,b1,a2,b2;
 
     private Histogram hfrom;
+    
+    private JamStatus status;
 
     public GainShift(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
         super();
@@ -43,6 +45,7 @@ Observer {
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
+        status=JamStatus.instance();
         dgain=new JDialog(frame,"Gain Shift 1-D Histogram",false);
         dgain.setResizable(false);
         int rows=6;
@@ -188,7 +191,7 @@ Observer {
      *
      */
     public void setup(){
-        String lfrom=JamStatus.getCurrentHistogramName();
+        String lfrom=status.getCurrentHistogramName();
         String lto=(String)cto.getSelectedItem();
         setFromHist(lfrom);
         cto.removeAllItems();
@@ -580,7 +583,7 @@ Observer {
     public void windowActivated(WindowEvent e){
         String name;
 
-        name=JamStatus.getCurrentHistogramName();
+        name=status.getCurrentHistogramName();
         if (!name.equals(tfrom.getText())){
             setFromHist(name);
             //setupChannels();

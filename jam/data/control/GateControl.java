@@ -55,6 +55,8 @@ Observer  {
     private JComboBox cadd;
 
     boolean newGate=false;    //a gate has been choicen
+    
+    private JamStatus status;
 
     /**
      *
@@ -64,6 +66,7 @@ Observer  {
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
+        status = JamStatus.instance();
         dgate=new JDialog(frame,"Gate setting <none>",false);
         dgate.setResizable(false);
         //dgate.setSize(300, 250);
@@ -364,7 +367,7 @@ Observer  {
         cgateModel.changeOccured();
         caddModel.changeOccured();
         //get current state
-        currentHistogram = Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        currentHistogram = Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHistogram == null) {
             System.err.println("GateControl.setup(): currentHistogram is null.");
             type=99;//undefined type
@@ -398,7 +401,7 @@ Observer  {
      * make a new gate
      */
     private void makeGate() throws GlobalException {
-        Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
         new Gate(textNew.getText(),hist);
         broadcaster.broadcast(BroadcastEvent.GATE_ADD);
         messageHandler.messageOutln("New gate "+textNew.getText()+" created for histogram "+hist.getName());
@@ -410,7 +413,7 @@ Observer  {
      */
     private void addGate() throws DataException,GlobalException {
         if(currentGateAdd!=null) {
-            Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+            Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
             hist.addGate(currentGateAdd);
             broadcaster.broadcast(BroadcastEvent.GATE_ADD);
             messageHandler.messageOutln("Added gate '"+currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
@@ -577,7 +580,7 @@ Observer  {
      */
     private void checkHistogram() throws GlobalException {
         //has histogram changed
-        if(currentHistogram != Histogram.getHistogram(JamStatus.getCurrentHistogramName())) {
+        if(currentHistogram != Histogram.getHistogram(status.getCurrentHistogramName())) {
             //setup chooser list
             setup();
             //cancel current gate if was setting

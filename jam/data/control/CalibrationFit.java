@@ -44,6 +44,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     private String fileName;
     private String directoryName;
     private NumberFormat numFormat;
+    private JamStatus status;
     
     /**
      * Constructor
@@ -54,6 +55,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.msghdlr=msghdlr;
+        status=JamStatus.instance();
         // calibration dialog box
         dialogCalib =new JDialog(frame,"Calibration Fit",false);
         dialogCalib.setForeground(Color.black);
@@ -140,7 +142,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
         try {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
@@ -245,7 +247,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         double y[];
         String fitText;
         
-        Histogram currentHist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHist==null){//silently ignore if histogram null
             System.err.println("Error null histogram [Calibrate]");
         }
@@ -293,7 +295,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      *
      */
     private void cancelCalib() throws GlobalException {
-        Histogram currentHist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         currentHist.setCalibration(null);
         broadcaster.broadcast(BroadcastEvent.REFRESH);
     }
@@ -340,7 +342,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      *  has not changed. If it has cancel the gate setting.
      */
     public void windowActivated(WindowEvent e){        
-        Histogram  hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram  hist=Histogram.getHistogram(status.getCurrentHistogramName());
         //have we changed histograms
         if (hist!=currentHistogram){
             currentHistogram=hist;

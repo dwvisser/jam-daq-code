@@ -20,9 +20,11 @@ public class GateControlComboBoxModel2
 	public static final String NO_GATES = "No Gates";
     public static final String CHOOSE_A_GATE="Choose a gate";
 	GateControl gc;
+	private JamStatus status;
 
 	public GateControlComboBoxModel2(GateControl control) {
 		gc = control;
+		status = JamStatus.instance();
 	}
 
 	public Object getElementAt(int index) {
@@ -34,7 +36,7 @@ public class GateControlComboBoxModel2
 				List list =
 					Gate.getGateList(
 					Histogram
-						.getHistogram(JamStatus.getCurrentHistogramName())
+						.getHistogram(status.getCurrentHistogramName())
 						.getDimensionality());
 				rval = ((Gate) (list.get(index-1))).getName();
 			}
@@ -62,7 +64,7 @@ public class GateControlComboBoxModel2
 	private int numGates() {
 		int rval=0;//default return value
 		Histogram h =
-			Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+			Histogram.getHistogram(status.getCurrentHistogramName());
 		if (h != null) {
 			rval = Gate.getGateList(h.getDimensionality()).size();
 		} 

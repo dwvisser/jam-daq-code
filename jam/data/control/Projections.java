@@ -33,12 +33,14 @@ Observer {
     JButton bApply =new JButton("Apply");
 
     private Histogram hfrom;
+    private JamStatus status;
 
     public Projections(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
         super();
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
+        status = JamStatus.instance();
         dproject=new JDialog(frame,"Project 2D Histogram",false);
         dproject.setResizable(false);
         int rows=5;
@@ -197,7 +199,7 @@ Observer {
      *
      */
     public void setup(){
-        setFromHist(JamStatus.getCurrentHistogramName());
+        setFromHist(status.getCurrentHistogramName());
         setUseNewHist(true);	//default use new histogram
         setupToHist(NEW_HIST);//setup "to" histogram
         setupCuts(FULL);//default setup channels
@@ -441,9 +443,7 @@ Observer {
      *  has not changed. If it has cancel the gate setting.
      */
     public void windowActivated(WindowEvent e){
-        String name;
-
-        name=JamStatus.getCurrentHistogramName();
+        String name = status.getCurrentHistogramName();
         if (!name.equals(tfrom.getText())){
             setFromHist(name);
             setupCuts(FULL);

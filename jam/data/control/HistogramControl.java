@@ -211,7 +211,7 @@ public class HistogramControl extends DataControl implements ActionListener {
     public void actionPerformed(ActionEvent ae){
 
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        currentHistogram=Histogram.getHistogram(JamStatus.instance().getCurrentHistogramName());
 
         try {
             //commands for zero histogram

@@ -15,9 +15,11 @@ public class GateControlComboBoxModel extends AbstractListModel implements Combo
     public static final String NO_GATES="No Gates";
     GateControl gc;
     boolean firstTime=true;
+    private JamStatus status;
 
     public GateControlComboBoxModel(GateControl control){
         gc=control;
+        status=JamStatus.instance();
     }
 
     /**
@@ -33,7 +35,7 @@ public class GateControlComboBoxModel extends AbstractListModel implements Combo
             if (index==0) {
                 rval = CHOOSE_A_GATE;
             } else {
-                rval = Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
+                rval = Histogram.getHistogram(status.getCurrentHistogramName()).getGates()[index-1].getName();
             }
         } 
         return rval;
@@ -61,7 +63,7 @@ public class GateControlComboBoxModel extends AbstractListModel implements Combo
 
     private int numGates(){
     	int rval=0;//default return value
-        Histogram h=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram h=Histogram.getHistogram(status.getCurrentHistogramName());
         if (h != null){
             rval = h.getGates().length;
         } 
