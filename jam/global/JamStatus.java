@@ -3,6 +3,7 @@ import jam.FrontEndCommunication;
 import jam.JamPrefs;
 import jam.RunState;
 import jam.VMECommunication;
+import jam.data.Histogram;
 import jam.plot.Display;
 
 import java.io.File;
@@ -206,6 +207,10 @@ public final class JamStatus {
 	 */
 	public synchronized String getCurrentHistogramName() {
 		return currentHistogramName;
+	}
+	
+	public synchronized Histogram getCurrentHistogram(){
+		return Histogram.getHistogram(currentHistogramName);
 	}
 
 	/**
