@@ -53,14 +53,13 @@ public final class ScalerDisplay
 	private boolean sortScalers; //have scalers been added by sort
 	private final JamStatus status = JamStatus.instance();
 
-	/** Creates the dialog box for reading and zeroing scalers.
-	 * @param frame main window for application that this dialog is attached to
-	 * @param messageHandler object to send text output to user to
+	/** 
+	 * Creates the dialog box for reading and zeroing scalers.
 	 */
-	public ScalerDisplay(MessageHandler messageHandler) {
+	public ScalerDisplay() {
 		super("Scalers", false);
 		broadcaster.addObserver(this);
-		this.messageHandler = messageHandler;
+		messageHandler = status.getMessageHandler();
 		sortScalers = false;
 
 		// dialog box to display scalers

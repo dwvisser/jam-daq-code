@@ -5,9 +5,9 @@ import jam.global.CommandListenerException;
 import jam.fit.LoadFit;
 
 /**
- * Command to add fit
+ * Command to add fit.
+ * 
  * @author Ken Swartz
- *
  */
 public class ShowDialogAddFit extends AbstractCommand {
 	
@@ -15,19 +15,13 @@ public class ShowDialogAddFit extends AbstractCommand {
 
 	protected void initCommand(){
 		putValue(NAME, "Load Fit\u2026");
-		loadfit = new LoadFit(msghdlr);		
+		loadfit = new LoadFit();		
 	}
 	
-	/* * 
-	 *  Execute command
-	 */
 	protected void execute(Object[] cmdParams) {				
 		loadfit.showLoad();
 	}
 
-	/* (non-Javadoc)
-	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
-	 */
 	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 		execute(null);

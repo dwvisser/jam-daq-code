@@ -53,17 +53,13 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 
 	/**
 	 * Create the fit routine loading dialog.
-	 *
-	 * @param jm the main window
-	 * @param d the histogram display
-	 * @param mh the place to output text
 	 */
-	public LoadFit(MessageHandler mh) {
+	public LoadFit() {
 		super();
-		msgHandler = mh;
 		broadcaster=Broadcaster.getSingletonInstance();		
 						
 		JamStatus jamStatus = JamStatus.instance(); 
+		msgHandler = jamStatus.getMessageHandler();
 		jamMain = jamStatus.getFrame();
 		display = jamStatus.getDisplay();
 		

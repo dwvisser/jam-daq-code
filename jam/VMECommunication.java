@@ -4,6 +4,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
@@ -57,17 +58,13 @@ FrontEndCommunication {
     private int [] scalerValues;    //scaler values, loaded when a scaler packet is received.
     private int [] counterValues;    //counter values, loaded when a counter packet is received.
 
-    /** Creates the instance of this class for handling IP 
+    /** 
+     * Creates the instance of this class for handling IP 
      * communications with the VME front end computer.
-     * 
-     * @param jamMain main class
-     * @param jamCommand class that handles main window GUI events
-     * @param broadcaster class that distributes Jam-wide messages
-     * @param console class that takes text input from the user
      */
-    public VMECommunication(MessageHandler console) {
+    public VMECommunication() {
         super();
-        this.console=console;
+        console=JamStatus.instance().getMessageHandler();
         active=false;
         setName("Network Messenger");
     }
@@ -143,37 +140,31 @@ FrontEndCommunication {
     }
 
     /**
-     * Method for opening a file for event storage on the VME host? 
+     * Method for opening a file for event storage on the VME host.
      * (not used yet)
      *
      * @param file the filename to open
-     * @throws JamException if there's a problem
      */
      public void openFile(String file) {
 		final String OPENFILE="OPENFILE ";//add filename as an argument
-        this.VMEsend(OPENFILE+file);
+        VMEsend(OPENFILE+file);
     }
     
     /** 
      * Tells the front end to start acquisiton.
-     * @throws JamException if there's a problem while trying to send 
-     * the message
      */
     public void startAcquisition() {
 		final String START="START";
-        this.VMEsend(START);
+        VMEsend(START);
     }
 
     /** 
      * Tells the front end to stop acquisiton, which also flushes out
      * a buffer.
-     * 
-     * @throws JamException if there's a problem while trying to send 
-     * the message
      */
     public void stopAcquisition() {
 		final String STOPACQ="STOP";
-        this.VMEsend(STOPACQ);
+        VMEsend(STOPACQ);
     }
 
     /**
@@ -453,9 +444,6 @@ FrontEndCommunication {
      * Thread method: is a deamon for receiving packets from the VME 
      * crate. The first int of the packet is the status word.
      * It determines how the packet is to be handled.
-     *
-     * @author Ken Swartz
-     * @author Dale Visser
      */
     public void run(){
         int status;          //first int of message tells what type of packet

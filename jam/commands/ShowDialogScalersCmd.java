@@ -20,7 +20,7 @@ Observer {
 	
 	protected void initCommand(){
 		putValue(NAME,"Display Scalers\u2026");
-		dialog=new ScalerDisplay(msghdlr);
+		dialog=new ScalerDisplay();
 	}
 
 	public void update(Observable observe, Object obj){

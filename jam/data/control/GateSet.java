@@ -59,14 +59,10 @@ public class GateSet extends DataControl implements Observer {
 
 	/**
 	 * Creates an instance of the GateControl class.
-	 *
-	 * @param f the frame that GateControl's dialogs are children of
-	 * @param bro ???
-	 * @param mh the console for text output
 	 */
-	public GateSet(MessageHandler mh) {
+	public GateSet() {
 		super("Gate setting <none>", false);
-		messageHandler = mh;
+		messageHandler = status.getMessageHandler();
 		frame = status.getFrame();
 		setResizable(false);
 		final Container contents = getContentPane();

@@ -230,7 +230,7 @@ public final class JamStatus {
 			throw new IllegalStateException("Can't set message handler twice!");
 		}
 		console=mh;
-		frontEnd=new VMECommunication(mh);
+		frontEnd=new VMECommunication();
 		JamPrefs.prefs.addPreferenceChangeListener(frontEnd);
 		broadcaster.addObserver(frontEnd);
 	}
