@@ -1,5 +1,4 @@
 package jam.fit;
-import jam.global.CommandListener;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -31,22 +30,17 @@ import javax.swing.text.StyleConstants;
 public class FitConsole
 	extends JPanel
 	implements MessageHandler {
-
 	
-	private final static int LOG_LINES = 100;
 
 	/**
 	 * End of line character(s).
 	 */
 	private static final String END_LINE = (String) System.getProperty("line.separator");
 
-	private CommandListener currentListener;
-
-	private JTextPane textLog; //output text area
-	private Document doc;
-	private SimpleAttributeSet attr_normal, attr_warning, attr_error;
-	//private JTextField textIn; //input text field
-	private final JScrollPane jsp;
+	private final JTextPane textLog; //output text area
+	private final Document doc;
+	private final SimpleAttributeSet attr_normal, attr_warning, attr_error;
+	final JScrollBar verticalBar;
 
 	/** A lock for message output so message dont overlap. */
 	private boolean msgLock;
@@ -65,13 +59,14 @@ public class FitConsole
 	 * a text field for intput.
 	 */
 	public FitConsole() {
-		this(LOG_LINES);
+		this(100);
 	}
 
 	/**
-	 *Constructor:
-	 * Create a JamConsole which has an text area for output
-	 * a text field for intput
+	 * Constructs a FitConsole which has an text area for output
+	 * a text field for intput.
+	 * 
+	 * @param linesLog number of lines to hold in text area
 	 */
 	public FitConsole(int linesLog) {
 		maxLines = linesLog;
@@ -84,12 +79,13 @@ public class FitConsole
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		jsp =
+		final JScrollPane jsp =
 			new JScrollPane(
 				textLog,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		this.add(jsp, BorderLayout.CENTER);
+		add(jsp, BorderLayout.CENTER);
+		verticalBar=jsp.getVerticalScrollBar();
 		msgLock = false;
 		numberLines = 1;
 	}
@@ -128,14 +124,13 @@ public class FitConsole
 			}
 			trimLog();
 			textLog.setCaretPosition(doc.getLength());
-			final JScrollBar scroll=jsp.getVerticalScrollBar();
-			scroll.setValue(scroll.getMaximum());
+			verticalBar.setValue(verticalBar.getMaximum());
 			/* if file logging on write to file */
-			//unlock text area and notify others they can use it
+			/* unlock text area and notify others they can use it */
 			msgLock = false;
 			notifyAll();
 		} else {
-			throw new IllegalArgumentException("Error not a valid message part [JamConsole]");
+			throw new IllegalArgumentException("Error not a valid message part [FitConsole]");
 		}
 	}
 
@@ -206,15 +201,6 @@ public class FitConsole
 		textLog.setCaretPosition(doc.getLength());
 		/* beep */
 		Toolkit.getDefaultToolkit().beep();
-	}
-
-	/**
-	 * Where to send commands that are input
-	 * need to add types
-	 *
-	 */
-	public void setCommandListener(CommandListener msgCommand) {
-		currentListener = msgCommand;
 	}
 
 	public static final String NUMBERS_ONLY="int";
