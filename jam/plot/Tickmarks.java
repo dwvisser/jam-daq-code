@@ -1,6 +1,3 @@
-/*
- * CopyRight statement
- */
 package jam.plot;
 
 /**
@@ -30,7 +27,7 @@ class Tickmarks {
 	 * lower limit, upper limit, and scale (Log or Linear) and  histogram 
 	 * type either one or 2 d
 	 */
-	public int[] getTicks(
+	int[] getTicks(
 		int lowerLimit,
 		int upperLimit,
 	Limits.ScaleType scale,
@@ -54,14 +51,6 @@ class Tickmarks {
 		return ticks;
 	}
 
-	/** 
-	 * Method for default minor ticks.
-	 */
-	public int[] getTicks(int lowerLimit, int upperLimit, 
-	Limits.ScaleType scale) {
-		return getTicks(lowerLimit, upperLimit, scale, MINOR);
-	}
-	
 	/** 
 	 * Figure out ticks for linear scale.    
 	 */
@@ -247,7 +236,7 @@ class Tickmarks {
 	 *
 	 *  color scale for 2d plots
 	 */
-	public int[] getColorThresholds(
+	int[] getColorThresholds(
 		int lowerLimit,
 		int upperLimit,
 		int numberColors,
