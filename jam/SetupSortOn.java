@@ -63,10 +63,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private String experimentName;
 	private String histDirectory, dataDirectory;
 	private String logDirectory;
-	//private String diskPathData;
-	//private String tapePathData;
 
-	private File sortDirectory, sortClassPath;
+	private File /*sortDirectory,*/ sortClassPath;
 	private Class sortClass;
 	/* 1/fraction of events to sort */
 	private int sortInterval;
@@ -114,8 +112,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		boolean useDefaultPath =
 			(defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
 		if (!useDefaultPath) {
-			sortDirectory = new File(defaultSortPath);
-			sortClassPath = sortDirectory;
+			//sortDirectory = new File(defaultSortPath);
+			sortClassPath = new File(defaultSortPath);
 		}
 		this.jamMain = jamMain;
 		this.runControl = runControl;
@@ -218,26 +216,26 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pChooserLabels.add(
 			new JLabel("Sort Routine", JLabel.RIGHT),
 			BorderLayout.WEST);
-		Vector v = getSortClasses(sortDirectory);
-		sortChoice = new JComboBox(v);
+		//Vector v = getSortClasses(sortClassPath);
+		sortChoice = new JComboBox();
+		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
 		sortChoice.setToolTipText("Select a class to be your sort routine.");
 		sortChoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				sortClass = (Class) sortChoice.getSelectedItem();
 			}
 		});
-		Iterator it = v.iterator();
-		boolean notDone = it.hasNext();
-		while (notDone) {
+		Iterator it = sortClassList.iterator();
+		//boolean notDone = it.hasNext();
+		while (it.hasNext()) {
 			Class c = (Class) it.next();
 			String name = c.getName();
-			boolean match = name.equals(defaultSortRoutine);
-			if (match) {
+			//boolean match = name.equals(defaultSortRoutine);
+			if (name.equals(defaultSortRoutine)) {
 				sortChoice.setSelectedItem(c);
+				break;
 			}
-			notDone = (!match) & it.hasNext();
 		}
-		setChooserDefault(useDefaultPath);
 		pChoosers.add(sortChoice);
 
 		pChooserLabels.add(new JLabel("Event input stream", JLabel.RIGHT));
@@ -250,15 +248,15 @@ class SetupSortOn implements ActionListener, ItemListener {
 		inStreamChooser.setToolTipText(
 			"Select the reader for your event data format.");
 		it = lhs.iterator();
-		notDone = it.hasNext();
-		while (notDone) {
+		//notDone = it.hasNext();
+		while (it.hasNext()) {
 			Class c = (Class) it.next();
 			String name = c.getName();
 			boolean match = name.equals(defaultEventInStream);
 			if (match) {
 				inStreamChooser.setSelectedItem(c);
+				break;
 			}
-			notDone = (!match) & it.hasNext();
 		}
 		pChoosers.add(inStreamChooser);
 
@@ -272,15 +270,16 @@ class SetupSortOn implements ActionListener, ItemListener {
 		outStreamChooser.setToolTipText(
 			"Select the writer for your output event format.");
 		it = lhs.iterator();
-		notDone = it.hasNext();
-		while (notDone) {
+		//notDone = it.hasNext();
+		while (it.hasNext()) {
 			Class c = (Class) it.next();
 			String name = c.getName();
 			boolean match = name.equals(defaultEventOutStream);
 			if (match) {
 				outStreamChooser.setSelectedItem(c);
+				break;
 			}
-			notDone = (!match) & it.hasNext();
+			//notDone = (!match) & it.hasNext();
 		}
 		pChoosers.add(outStreamChooser);
 
@@ -350,27 +349,16 @@ class SetupSortOn implements ActionListener, ItemListener {
 		JLabel lsi = new JLabel("Sort Sample", JLabel.LEFT);
 		pt.add(lsi);
 
-		/*ButtonGroup eventMode = new ButtonGroup();
-		ctape = new JRadioButton("Events to Tape", false);
-		ctape.setToolTipText("Send events to tape, not implemented.");
-		ctape.setEnabled(false);
-		eventMode.add(ctape);
-		ctape.addItemListener(this);
-		pt.add(ctape);*/
-
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
-		//eventMode.add(cdisk);
 		cdisk.addItemListener(this);
 		pt.add(cdisk);
 
 		clog = new JCheckBox("Log Commands", false);
 		clog.addItemListener(this);
 		clog.setSelected(true);
-		/* for the time being, don't bother with this option */
-		//pt.add(clog);
 
-		// panel for buttons
+		/* panel for buttons */
 		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
 		dcp.add(pb, BorderLayout.SOUTH);
 
@@ -405,19 +393,23 @@ class SetupSortOn implements ActionListener, ItemListener {
 		});
 	}
 
-	private void setChooserDefault(boolean isDefault) {
+	private java.util.List setChooserDefault(boolean isDefault) {
+		final Vector v=isDefault ? new Vector() : 
+		(Vector)getSortClasses(sortClassPath);
 		if (isDefault) {
 			Set set = new LinkedHashSet();
 			set.addAll(RTSI.find("help", SortRoutine.class, true));
 			set.addAll(RTSI.find("sort", SortRoutine.class, true));
-			Vector v = new Vector();
+			//Vector v = new Vector();
 			v.addAll(set);
-			sortChoice.setModel(new DefaultComboBoxModel(v));
-		} else {
+			//sortChoice.setModel(new DefaultComboBoxModel(v));
+		} /*else {
 			sortChoice.setModel(
 				new DefaultComboBoxModel(
 					(Vector) getSortClasses(sortClassPath)));
-		}
+		}*/
+		sortChoice.setModel(new DefaultComboBoxModel(v));
+		return v;
 	}
 
 	private Vector getSortClasses(File path) {
@@ -428,15 +420,15 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 * Browses for the sort file.
 	 */
 	private File getSortPath() {
-		JFileChooser fd = new JFileChooser(sortDirectory);
+		JFileChooser fd = new JFileChooser(sortClassPath);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int option = fd.showOpenDialog(jamMain);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
-			sortDirectory = fd.getSelectedFile(); //save current directory
+			sortClassPath = fd.getSelectedFile(); //save current directory
 		}
-		return sortDirectory;
+		return sortClassPath;
 	}
 
 	/**
