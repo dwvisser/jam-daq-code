@@ -316,9 +316,18 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     public void paintHistogram(Graphics g) {
         scale=plotLimits.getScale();
         g.setColor(PlotColorMap.hist);
-        graph.drawHist2d(counts2d, PlotColorMap.getColorScale());
+        if (JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE)){
+        	graph.drawHist2d(counts2d);
+			g.setPaintMode();
+			g.setColor(PlotColorMap.foreground);
+			graph.drawScale2d();
+        }else {
+			graph.drawHist2d(counts2d, PlotColorMap.getColorScale());
+			g.setPaintMode();
+			g.setColor(PlotColorMap.foreground);
+			graph.drawScale2d(PlotColorMap.getColorScale());
+        }
         //draw labels and ticks after histogram so they are on top
-        g.setPaintMode();
         g.setColor(PlotColorMap.foreground);
         graph.drawTitle(title,PlotGraphics.TOP);
         graph.drawTicks(PlotGraphics.BOTTOM);
@@ -337,7 +346,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
         }
         g.setPaintMode();
         g.setColor(PlotColorMap.foreground);
-        graph.drawScale2d(PlotColorMap.getColorScale());
         if (settingGate){
             graph.settingGate2d(pointsGate);
             needErase=false;
