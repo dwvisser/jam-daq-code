@@ -79,8 +79,9 @@ public abstract class ImpExp {
 	 * which is already implemented in <code>ImpExp</code>.
 	 *
 	 * @exception   ImpExpException all ImpExpExceptions go to the msgHandler
+	 * @param in file to open, if null we provide a dialog
 	 */
-	public abstract boolean openFile() throws ImpExpException;
+	public abstract boolean openFile(File in) throws ImpExpException;
 
 	/**
 	  * Saves a histogram or all histograms.  Typically, the implementation calls
@@ -130,12 +131,14 @@ public abstract class ImpExp {
 	 * @return	whether file was successfully read
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
-	protected boolean openFile(String msg) {
-		File inFile=null;
+	protected boolean openFile(File in, String msg) {
+		File inFile=in;
 		boolean rval=false; //default return value
 		try {
 			/* open file dialog */    		
-			inFile = getFileOpen(msg);
+			if (in==null){
+				inFile=getFileOpen(msg);
+			}
 			if (inFile != null) { // if Open file was  not canceled
 				lastFile = inFile;
 				FileInputStream inStream = new FileInputStream(inFile);
