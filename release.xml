@@ -2,7 +2,7 @@
 <project name="Jam Project" default="all">
 
     <property name="base.dir" value="." />
-    <property name="build.dir" value="${base.dir}/build" />
+    <property name="build.dir" value="${user.home}/jambuild" />
     
     <target name="prepare">
         <mkdir dir="${build.dir}" />
