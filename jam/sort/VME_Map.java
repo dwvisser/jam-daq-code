@@ -14,7 +14,7 @@ public class VME_Map {
     private int indexCounter = 0;//counter for array assignments of parameter ID's
     private SortRoutine sortRoutine;
     private int interval=1;//interval in milliseconds for the VME to insert scalers into the event stream
-    private Hashtable V775ranges;
+    private Map V775ranges;
     private int maxParameterNumber = 0;
 
     /**
@@ -98,7 +98,7 @@ public class VME_Map {
         V775ranges.put(ba,FSR);    
     }
     
-    public Hashtable getV775Ranges(){
+    public Map getV775Ranges(){
         return V775ranges;
     }
 }
