@@ -1,21 +1,15 @@
-/*
- * PeakFinder.java
- *
- * Created on May 11, 2001, 3:45 PM
- */
-
 package jam.data.peaks;
+import jam.fit.GaussianConstants;
+
 import java.util.Vector;
 
 /**
  * Given sensitivity and width parameters, finds peaks in a given spectrum.
  * 
  * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 2001-05-11
  */
 public class PeakFinder {
-
-    //static private Multiplet [] multiplets;
-    //public String name;
 
     static private double [] spectrum;
     static private double sensitivity, width;
@@ -25,20 +19,16 @@ public class PeakFinder {
      */
     static final double MAX_SEP=1.3;
 
-    /** When given the standard deviation for a gaussian peak, multiplying by this
-     * gives the full width at half maximum height.
-     */
-    static final double SIGMA2FWHM = 2.354;
-
-    /*     
+    /**     
      * Given a spectrum and search parameters, performs a digital filter peak search as
      * specified in V. Hnatowicz et al in Comp Phys Comm 60 (1990) 111-125.  Setting
      * the sensitivity to a typical value of 3 gives a 3% chance for any peak found
      * to be false.
      * 
-     * @param spectrum spectrum to be searched
-     * @param sensitivity larger numbers (typical=3) require better defined peaks
-     * @param width typical FWHM of peaks in spectrum
+     * @param data spectrum to be searched
+     * @param _sensitivity larger numbers (typical=3) require better defined peaks
+     * @param _width typical FWHM of peaks in spectrum
+     * @return array of centroids
      */
 	static public double [] getCentroids(double [] data, double _sensitivity,
     double _width){
@@ -62,7 +52,7 @@ public class PeakFinder {
         int filterLimit=(int)Math.ceil(1.5*width);//gives filter at limit < 0.005 filter at center
         double [] filter = new double[2*filterLimit+1];
         double [] filter2 = new double[2*filterLimit+1]; //will contain the squares of filter's elements
-        double sigma=width/SIGMA2FWHM;
+        double sigma=width/GaussianConstants.SIG_TO_FWHM;
         // Create the filter and its square.
         for (int i=0; i < filter.length; i++) {
             final int iPrime = i-filterLimit;

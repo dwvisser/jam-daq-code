@@ -1,17 +1,12 @@
-/*
- * Peak.java
- *
- * Created on February 14, 2001, 1:21 PM
- */
-
 package jam.data.peaks;
 
 /** This class represents a gaussian peak, in terms of it's properties.  Fields are
  * also provided for the error bars on these properties.
  * 
  * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 2001-02-14
  */
-public class Peak extends Object implements Comparable {
+final class Peak extends Object implements Comparable {
 
     private double position, area, width;
     private double perr, aerr, werr;
@@ -21,7 +16,7 @@ public class Peak extends Object implements Comparable {
      * @param area total peak area
      * @param width Full width at half max of the peak
      */
-    public Peak(double position, double area, double width) {
+    Peak(double position, double area, double width) {
         this(position, 0.0, area, 0.0, width, 0.0);
     }
 
@@ -33,7 +28,7 @@ public class Peak extends Object implements Comparable {
      * @param w FWHM of peak
      * @param we uncertainty in FWHM
      */
-    public Peak(double p,double pe, double a, double ae,  double w, double we) {
+    private Peak(double p,double pe, double a, double ae,  double w, double we) {
         setPosition(p,pe);
         setArea(a,ae);
         setWidth(w,we);
@@ -42,53 +37,33 @@ public class Peak extends Object implements Comparable {
     /**
      * @return  centroid of peak
      */
-    public double getPosition() {
+    double getPosition() {
         return position;
     }
 
-    public double getArea() {
+    double getArea() {
         return area;
     }
 
-    public double getWidth() {
+    double getWidth() {
         return width;
     }
 
-    public double getPositionError() {
-        return perr;
-    }
-
-    public double getAreaError() {
-        return aerr;
-    }
-
-    public double getWidthError() {
-        return werr;
-    }
-
-    public void setPosition(double p) {
-        setPosition(p,0.0);
-    }
-
-    public final void setPosition(double p, double e){
+    private final void setPosition(double p, double e){
         position=p;
         perr=e;
     }
 
-    public void setArea(double a){
+    void setArea(double a){
         setArea(a,0.0);
     }
 
-    public final void setArea(double a, double e){
+    private final void setArea(double a, double e){
         area=a;
         aerr=e;
     }
 
-    public void setWidth(double w){
-        setWidth(w,0.0);
-    }
-
-    public final void setWidth(double w, double e){
+    private final void setWidth(double w, double e){
         width=w;
         werr=e;
     }
