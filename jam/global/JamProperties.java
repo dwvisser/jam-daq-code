@@ -377,7 +377,7 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		setProperty(NO_FILL_2D,false);
+		setProperty(NO_FILL_2D,isMacOSX());
 	}
 
 	/**
