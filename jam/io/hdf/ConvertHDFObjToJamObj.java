@@ -219,7 +219,6 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	hist=reloadHistogram(group, name, histData);
             } else if  (mode == FileOpenMode.ADD) {
-
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	hist=addHistogram(group, name, histData);
             } else {

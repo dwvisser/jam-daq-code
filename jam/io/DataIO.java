@@ -80,8 +80,8 @@ public interface  DataIO {
      *            to write to
      */
     //FIXME KBS old write remove when new writes tested
-    void writeFile(boolean hist, boolean gate, boolean scaler, boolean params,
-            File file);
+    //void writeFile(boolean hist, boolean gate, boolean scaler, boolean params,
+    //        File file);
     
     
 }    

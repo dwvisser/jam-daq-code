@@ -187,39 +187,39 @@ public final class HDFIO implements DataIO, JamFileFields {
 
     
     //FIXME KBS old write remove when new writes tested
-    public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
-            boolean wrtparams, final File file) {
-        if (overWriteExistsConfirm(file)) {
-            /* Histogram list */
-            final List tempHist = wrthist ? Histogram.getHistogramList()
-                    : EMPTY_LIST;
-            final Iterator iter = tempHist.iterator();
-            final List histList = new ArrayList();
-            while (iter.hasNext()) {
-                final Histogram hist = (Histogram) iter.next();
-                if (hist.getArea() > 0) {
-                    histList.add(hist);
-                }
-            }
-            /* Gate list */
-            final List gateList = new ArrayList();
-            if (wrtgate) {
-                gateList.addAll(Gate.getGateList());
-            }
-            final Iterator gateIterator = gateList.iterator();
-            while (gateIterator.hasNext()) {
-                final Gate gate = (Gate) (gateIterator.next());
-                if (!gate.isDefined()) {
-                    gateIterator.remove();
-                }
-            }
-            final List scaler = wrtscalers ? Scaler.getScalerList()
-                    : EMPTY_LIST;
-            final List parameter = wrtparams ? DataParameter.getParameterList()
-                    : EMPTY_LIST;
-            spawnAsyncWriteFile(file, histList, gateList, scaler, parameter);
-        }
-    }
+//    public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
+//            boolean wrtparams, final File file) {
+//        if (overWriteExistsConfirm(file)) {
+//            /* Histogram list */
+//            final List tempHist = wrthist ? Histogram.getHistogramList()
+//                    : EMPTY_LIST;
+//            final Iterator iter = tempHist.iterator();
+//            final List histList = new ArrayList();
+//            while (iter.hasNext()) {
+//                final Histogram hist = (Histogram) iter.next();
+//                if (hist.getArea() > 0) {
+//                    histList.add(hist);
+//                }
+//            }
+//            /* Gate list */
+//            final List gateList = new ArrayList();
+//            if (wrtgate) {
+//                gateList.addAll(Gate.getGateList());
+//            }
+//            final Iterator gateIterator = gateList.iterator();
+//            while (gateIterator.hasNext()) {
+//                final Gate gate = (Gate) (gateIterator.next());
+//                if (!gate.isDefined()) {
+//                    gateIterator.remove();
+//                }
+//            }
+//            final List scaler = wrtscalers ? Scaler.getScalerList()
+//                    : EMPTY_LIST;
+//            final List parameter = wrtparams ? DataParameter.getParameterList()
+//                    : EMPTY_LIST;
+//            spawnAsyncWriteFile(file, histList, gateList, scaler, parameter);
+//        }
+//    }
     
     /* --------------------- End DataIO Interface Methods ------------------ */
 
@@ -289,49 +289,6 @@ public final class HDFIO implements DataIO, JamFileFields {
         }
     }
     
-    /**
-     * Writes out to a specified file a list of histograms and gates, scalers,
-     * and parameters.
-     * 
-     * @param file
-     *            the to write to
-     * @param histograms
-     *            list of histograms to write
-     */
-    //FIXME KBS remove when new write is tested
-    public void writeFileOld(File file, List histograms) {
-        /* Check to overwrite if file exists. */
-        if (!overWriteExistsConfirm(file)) {
-            return;
-        }
-        /* Histogram list */
-        final List histList = new ArrayList();
-        final Iterator iterHist = histograms.iterator();
-        while (iterHist.hasNext()) {
-            final Histogram hist = (Histogram) iterHist.next();
-            if (hist.getArea() > 0) {
-                histList.add(hist);
-            }
-        }
-        /* Gate list */
-        final List gateList = new ArrayList();
-        final Iterator iter = Gate.getGateList().iterator();	
-        while (iter.hasNext()) {
-            final Gate gate = (Gate) (iter.next());
-            final Histogram histGate = gate.getHistogram();
-            /*
-             * Gate defined and Does the histogram List contain this gate's
-             * histogram
-             */
-            if (gate.isDefined() && histList.contains(histGate)) {
-                gateList.add(Gate.getGateList());
-            }
-        }
-        final List scalerList = Scaler.getScalerList();
-        final List paramList = DataParameter.getParameterList();
-        spawnAsyncWriteFile(file, histList, gateList, scalerList, paramList);
-    }
-
     
     /**
      * Read in an HDF file.
@@ -394,32 +351,76 @@ public final class HDFIO implements DataIO, JamFileFields {
         worker.start();
     }
 
+    /**
+     * Writes out to a specified file a list of histograms and gates, scalers,
+     * and parameters.
+     * 
+     * @param file
+     *            the to write to
+     * @param histograms
+     *            list of histograms to write
+     */
+    //FIXME KBS remove when new write is tested
+//    public void writeFileOld(File file, List histograms) {
+//        /* Check to overwrite if file exists. */
+//        if (!overWriteExistsConfirm(file)) {
+//            return;
+//        }
+//        /* Histogram list */
+//        final List histList = new ArrayList();
+//        final Iterator iterHist = histograms.iterator();
+//        while (iterHist.hasNext()) {
+//            final Histogram hist = (Histogram) iterHist.next();
+//            if (hist.getArea() > 0) {
+//                histList.add(hist);
+//            }
+//        }
+//        /* Gate list */
+//        final List gateList = new ArrayList();
+//        final Iterator iter = Gate.getGateList().iterator();	
+//        while (iter.hasNext()) {
+//            final Gate gate = (Gate) (iter.next());
+//            final Histogram histGate = gate.getHistogram();
+//            /*
+//             * Gate defined and Does the histogram List contain this gate's
+//             * histogram
+//             */
+//            if (gate.isDefined() && histList.contains(histGate)) {
+//                gateList.add(Gate.getGateList());
+//            }
+//        }
+//        final List scalerList = Scaler.getScalerList();
+//        final List paramList = DataParameter.getParameterList();
+//        spawnAsyncWriteFile(file, histList, gateList, scalerList, paramList);
+//    }
+
+    
     /*
      * non-javadoc: Asyncronized write
      */
     //FIXME KBS remove when all new writes work
-    private void spawnAsyncWriteFile(final File file, final List histograms,
-            final List gates, final List scalers, final List parameters) {
-    	uiMessage="";
-    	uiErrorMsg ="";
-    	final SwingWorker worker = new SwingWorker() {
-            public Object construct() {
-            	 asyncWriteFile(file, histograms, gates, scalers, parameters);
-                 System.gc();
-            	return null;
-            }
-
-            //Runs on the event-dispatching thread.
-            public void finished() {
-            	if (uiErrorMsg.equals("")) {
-            		msgHandler.messageOutln(uiMessage);
-            	} else {
-                    msgHandler.errorOutln(uiErrorMsg);
-            	}            	
-            }
-        };
-        worker.start();     	    	
-    }
+//    private void spawnAsyncWriteFile(final File file, final List histograms,
+//            final List gates, final List scalers, final List parameters) {
+//    	uiMessage="";
+//    	uiErrorMsg ="";
+//    	final SwingWorker worker = new SwingWorker() {
+//            public Object construct() {
+//            	 asyncWriteFile(file, histograms, gates, scalers, parameters);
+//                 System.gc();
+//            	return null;
+//            }
+//
+//            //Runs on the event-dispatching thread.
+//            public void finished() {
+//            	if (uiErrorMsg.equals("")) {
+//            		msgHandler.messageOutln(uiMessage);
+//            	} else {
+//                    msgHandler.errorOutln(uiErrorMsg);
+//            	}            	
+//            }
+//        };
+//        worker.start();     	    	
+//    }
     
     /*
      * non-javadoc: Asyncronized read
@@ -442,14 +443,14 @@ public final class HDFIO implements DataIO, JamFileFields {
                 firstLoadedGroup =null;
 
     			try {                
-            	//Loop for all files
-        		for (int i=0;i<inFiles.length;i++) {
+    				//Loop for all files
+    				for (int i=0;i<inFiles.length;i++) {
 	        			infile =inFiles[i];
             			asyncReadFileGroup(infile, mode, groupList, histAttributeList);            
             			displayMessage();
 	        		}
             		}catch (Exception e) {
-            			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
+            			uiErrorMsg ="Unknown Error reading file "+infile.getName()+", "+e;
             			e.printStackTrace();
             			asyncMonitor.close();
             		}
@@ -464,24 +465,6 @@ public final class HDFIO implements DataIO, JamFileFields {
                 synchronized (asListener) {
                     asListener.completedIO(uiMessage, uiErrorMsg);
                 }
-                /*
-                 * //FIXME KBS delete when all async read hist lists cases are
-                 * handled
-                 * 
-                 * JamStatus STATUS=JamStatus.getSingletonInstance();
-                 * Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
-                 * //Set overall status STATUS.setSortMode(infile);
-                 * AbstractControl.setupAll();
-                 * BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-                 * 
-                 * //Set first group as current group
-                 * Group.setCurrentGroup((Group)Group.getGroupList().get(0));
-                 * Histogram firstHist =
-                 * (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
-                 * STATUS.setCurrentHistogram(firstHist);
-                 * BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-                 * firstHist); STATUS.getFrame().repaint();
-                 */
             }
         };
         worker.start();     	
@@ -587,90 +570,91 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param parameters
      *            list of <code>Parameter</code> objects to write
      */
-    synchronized private void asyncWriteFile(File file, List hists, List gates, List scalers,
-            List parameters) {
-    	
-        final StringBuffer message = new StringBuffer();
-        VirtualGroup allHists, allGates;
-
-        AbstractData.clearAll();
-        jamToHDF.addDefaultDataObjects(file.getPath());
-        
-        asyncMonitor.setup("Saving HDF file", "Converting Objects", 
-        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
-        message.append("Saved ").append(file.getName()).append(" (");
-        if (hasContents(hists)) {
-        	allHists=jamToHDF.addHistogramSection();
-            message.append(hists.size()).append(" histograms");
-            final Iterator iter = hists.iterator();
-            while (iter.hasNext()) {
-                final Histogram hist = (Histogram) iter.next();
-                final VirtualGroup histVGroup = jamToHDF.addHistogramGroup(hist);
-                jamToHDF.convertHistogram(histVGroup, hist);
-                allHists.add(histVGroup);
-            }
-        }
-        if (hasContents(gates)) {
-        	allGates=jamToHDF.addGateSection();
-            message.append(", ").append(gates.size()).append(" gates");
-            final Iterator iter = gates.iterator();
-            while (iter.hasNext()) {
-                final Gate gate = (Gate) iter.next();
-                final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
-                allGates.add(gateVGroup);
-                // add Histogram links...
-                final VirtualGroup hist = VirtualGroup.ofName(AbstractData
-                        .ofType(AbstractData.DFTAG_VG), gate.getHistogram().getName());
-                if (hist != null) {
-                    //reference the Gate in the Histogram group
-                    hist.add(gateVGroup);
-                } 
-                
-            }
-        }
-        if (hasContents(scalers)) {
-        	 final VirtualGroup vgScaler = jamToHDF.addScalerSection();
-        	 vgScaler.add(jamToHDF.convertScalers(scalers));            
-            message.append(", ").append(scalers.size()).append(" scalers");            
-        }
-        if (hasContents(parameters)) {
-        	final VirtualGroup vgParams = jamToHDF.addParameterSection();
-            vgParams.add(jamToHDF.convertParameters(parameters));
-            message.append(", ").append(parameters.size()).append(" parameters");
-        }
-        asyncMonitor.increment();
-        message.append(")");
-
-        HDFile out=null;
-        try {
-            synchronized (this) {
-                out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
-                asyncMonitor.setNote("Writing Data Objects");
-            }
-            out.writeFile();
-            asyncMonitor.setNote("Closing File");
-        
-        } catch (FileNotFoundException e) {
-        	uiErrorMsg ="Opening file: " + file.getName();
-        } catch (HDFException e) {
-        	uiErrorMsg = "Exception writing to file '"
-                + file.getName() + "': " + e.toString();       	
-        } finally {
-        	try {
-        		out.close();
-        	}catch (IOException e) {
-            	uiErrorMsg = "Closing file " +file.getName();
-            }
-            asyncMonitor.close();            
-        }
-        synchronized (this) {
-            AbstractData.clearAll();
-            out = null; //allows Garbage collector to free up memory
-        }     
-        setLastValidFile(file);
-        uiMessage =message.toString();
-        
-    }
+    //FIXME KBS remove when all new writes work    
+//    synchronized private void asyncWriteFile(File file, List hists, List gates, List scalers,
+//            List parameters) {
+//    	
+//        final StringBuffer message = new StringBuffer();
+//        VirtualGroup allHists, allGates;
+//
+//        AbstractData.clearAll();
+//        jamToHDF.addDefaultDataObjects(file.getPath());
+//        
+//        asyncMonitor.setup("Saving HDF file", "Converting Objects", 
+//        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
+//        message.append("Saved ").append(file.getName()).append(" (");
+//        if (hasContents(hists)) {
+//        	allHists=jamToHDF.addHistogramSection();
+//            message.append(hists.size()).append(" histograms");
+//            final Iterator iter = hists.iterator();
+//            while (iter.hasNext()) {
+//                final Histogram hist = (Histogram) iter.next();
+//                final VirtualGroup histVGroup = jamToHDF.addHistogramGroup(hist);
+//                jamToHDF.convertHistogram(histVGroup, hist);
+//                allHists.add(histVGroup);
+//            }
+//        }
+//        if (hasContents(gates)) {
+//        	allGates=jamToHDF.addGateSection();
+//            message.append(", ").append(gates.size()).append(" gates");
+//            final Iterator iter = gates.iterator();
+//            while (iter.hasNext()) {
+//                final Gate gate = (Gate) iter.next();
+//                final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
+//                allGates.add(gateVGroup);
+//                // add Histogram links...
+//                final VirtualGroup hist = VirtualGroup.ofName(AbstractData
+//                        .ofType(AbstractData.DFTAG_VG), gate.getHistogram().getName());
+//                if (hist != null) {
+//                    //reference the Gate in the Histogram group
+//                    hist.add(gateVGroup);
+//                } 
+//                
+//            }
+//        }
+//        if (hasContents(scalers)) {
+//        	 final VirtualGroup vgScaler = jamToHDF.addScalerSection();
+//        	 vgScaler.add(jamToHDF.convertScalers(scalers));            
+//            message.append(", ").append(scalers.size()).append(" scalers");            
+//        }
+//        if (hasContents(parameters)) {
+//        	final VirtualGroup vgParams = jamToHDF.addParameterSection();
+//            vgParams.add(jamToHDF.convertParameters(parameters));
+//            message.append(", ").append(parameters.size()).append(" parameters");
+//        }
+//        asyncMonitor.increment();
+//        message.append(")");
+//
+//        HDFile out=null;
+//        try {
+//            synchronized (this) {
+//                out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
+//                asyncMonitor.setNote("Writing Data Objects");
+//            }
+//            out.writeFile();
+//            asyncMonitor.setNote("Closing File");
+//        
+//        } catch (FileNotFoundException e) {
+//        	uiErrorMsg ="Opening file: " + file.getName();
+//        } catch (HDFException e) {
+//        	uiErrorMsg = "Exception writing to file '"
+//                + file.getName() + "': " + e.toString();       	
+//        } finally {
+//        	try {
+//        		out.close();
+//        	}catch (IOException e) {
+//            	uiErrorMsg = "Closing file " +file.getName();
+//            }
+//            asyncMonitor.close();            
+//        }
+//        synchronized (this) {
+//            AbstractData.clearAll();
+//            out = null; //allows Garbage collector to free up memory
+//        }     
+//        setLastValidFile(file);
+//        uiMessage =message.toString();
+//        
+//    }
      
     /**
      * Read in an HDF file
@@ -1023,17 +1007,14 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	final List histList;
 	    	if ( mode==FileOpenMode.OPEN || mode==FileOpenMode.OPEN_MORE ) {
 	    		currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, mode);
-		        //Find histograms
-	    		//histList=hdfToJam.findHistograms(currentVGroup, null);
 	    		
 	    	} else {
 	    		String groupName = hdfToJam.readVirtualGroupName(currentVGroup); 
 	    		if (hdfToJam.containsGroup(groupName, existingGroupList)) {
 	    			currentGroup = Group.getGroup(groupName);
 	    		}
-		        //Find histograms				
-				//histList = currentGroup.getHistogramList(); 
 	    	}
+	    	
 	    	//Keep track of first loaded group
 	    	if (firstLoadedGroup==null)
 	    		firstLoadedGroup =currentGroup;
