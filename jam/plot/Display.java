@@ -431,7 +431,6 @@ public class Display
 					doRepaint = true;
 				}
 				setPlot(plot1d);
-				currentPlot.setMarkingArea(false);
 			} else if (
 				(currentHist.getType() == Histogram.TWO_DIM_INT)
 					|| (currentHist.getType() == Histogram.TWO_DIM_DOUBLE)) {
@@ -442,6 +441,8 @@ public class Display
 				}
 				setPlot(plot2d);
 			}
+			currentPlot.setMarkingArea(false);
+			currentPlot.setMarkingChannels(false);
 		} else { //null histogram lets be in plot1d
 			plotswapLayout.show(plotswap, "OneD");
 			setPlot(plot1d);

@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import jam.data.*;
 import jam.global.JamProperties;
+import java.util.Iterator;
 
 /**
  * Class to plot a 2-dimensional histogram.
@@ -31,22 +32,19 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		super(a);
 	}
 
-	/**
-	 * Mark a channel on the plot.
-	 *
-	 * @param p graphics coordinates on the plot where the channel is
-	 */
-	public void markChannel(Point p) {
-		final Graphics g = getGraphics();
+	
+	void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
-		graph.update(g, viewSize, plotLimits);
-		//so graph has all pertinent imfo
-		graph.markChannel2d(p);
-		g.dispose();
+		final Iterator it=markedChannels.iterator();
+		while (it.hasNext()){
+			final Point p=(Point)it.next();
+			graph.markChannel2d(p);
+		}
 	}
 
-	final Rectangle areaMark = new Rectangle();
-	final Rectangle areaMarkClip = new Rectangle();
+	/* areaMark is a rectangle in channel space */
+	private final Rectangle areaMark = new Rectangle();
+	
 	/**
 	 * Mark a rectangular area on the plot.
 	 *
@@ -62,14 +60,14 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 			final int xul = Math.max(p1.x, p2.x);
 			final int yll = Math.min(p1.y, p2.y);
 			final int yul = Math.max(p1.y, p2.y);
+			final int width=xul-xll+1;
+			final int height=yul-yll+1;
 			synchronized (areaMark) {
-				areaMark.setBounds(graph.get2dAreaMark(xll, xul, yll, yul));
-				areaMarkClip.setBounds(areaMark);
-				areaMarkClip.add(
-					areaMarkClip.getMaxX() + 1,
-					areaMarkClip.getMaxY() + 1);
+				areaMark.setBounds(xll,yll,width,height);
 			}
-			repaint(areaMarkClip);
+			final Rectangle clip=graph.get2dAreaMark(xll,xul,yll,yul);
+			clip.add(clip.getMaxX() + 1,clip.getMaxY() + 1);
+			repaint(clip);
 		}
 	}
 
@@ -78,7 +76,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
 		g.setColor(PlotColorMap.area);
-		graph.markArea2d(areaMark);
+		graph.markArea2d(graph.get2dAreaMark(areaMark));
 	}
 
 	private void setLastPoint(Point lp) {

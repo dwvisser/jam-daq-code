@@ -1092,6 +1092,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	void drawPeakLabels(double[][] peaks) {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
+		setFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
 		g.setColor(Color.blue);
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
@@ -1180,7 +1181,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	public void markArea2d(
 		Rectangle r) {
-		//g.draw(r);
 		g.fill(r);
 	}
 	
@@ -1196,6 +1196,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final int width = x2 - x1 - 1;
 		final int height = y1 - y2 - 1;
 		return new Rectangle(x1, y2 + 1, width, height);		
+	}
+	
+	Rectangle get2dAreaMark(Rectangle channels){
+		final int lowX=(int)channels.getMinX();
+		final int lowY=(int)channels.getMinY();
+		final int highX=(int)channels.getMaxX();
+		final int highY=(int)channels.getMaxY();
+		return get2dAreaMark(lowX,highX,lowY,highY);
 	}
 
 	/**

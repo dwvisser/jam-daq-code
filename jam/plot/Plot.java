@@ -16,6 +16,8 @@ import java.awt.print.PageFormat;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Abstract class for displayed plots.
@@ -110,10 +112,13 @@ public abstract class Plot extends JPanel {
 	protected boolean displayingFit = false;
 	protected boolean displayingOverlay = false;
 	protected boolean markingArea = false;
+	protected boolean markingChannels = false;
 	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
 
 	//configuration for screen plotting
 	protected Dimension viewSize;
+	
+	protected final List markedChannels=new ArrayList();
 
 	// configuration for page plotting are set using printHistogram
 	protected Dimension pageSize;
@@ -321,10 +326,21 @@ public abstract class Plot extends JPanel {
 
 	/**
 	 * Mark a channel on the plot.
-	 * 
-	 * @param p the channel to mark.
+	 *
+	 * @param p graphics coordinates on the plot where the channel is
 	 */
-	public abstract void markChannel(Point p);
+	public final void markChannel(Point p) {
+		markingChannels=true;
+		markedChannels.add(p);
+		repaint();
+	}
+	
+	synchronized void setMarkingChannels(boolean mc){
+		markingChannels=mc;
+		if (!markingChannels){
+			markedChannels.clear();
+		}
+	}
 
 	/**
 	 * Mark an area on the plot.
@@ -502,7 +518,7 @@ public abstract class Plot extends JPanel {
 			scrollbars.update(Scroller.ALL);
 		}
 		copyCounts();
-		this.repaint();
+		repaint();
 	}
 
 	/**
@@ -514,6 +530,7 @@ public abstract class Plot extends JPanel {
 		displayingFit = false;
 		displayingOverlay = false;
 		markingArea = false;
+		setMarkingChannels(false);
 		refresh();
 	}
 
@@ -588,6 +605,9 @@ public abstract class Plot extends JPanel {
 			}
 			if (settingGate){
 				paintSetGate(g);
+			}
+			if (markingChannels){
+				paintMarkedChannels(g);
 			}
 			if (mouseMoved) {
 				paintMouseMoved(g);
@@ -672,6 +692,13 @@ public abstract class Plot extends JPanel {
 	 * @param g the graphics context
 	 */
 	abstract void paintMarkArea(Graphics g);
+	
+	/**
+	 * Method for painting a clicked channel.
+	 * 
+	 * @param g the graphics context
+	 */
+	abstract void paintMarkedChannels(Graphics g);
 
 	/**
 	 * method overriden for 1 and 2 d plots

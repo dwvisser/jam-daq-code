@@ -2,6 +2,7 @@ package jam.plot;
 import java.awt.*;
 import jam.data.*;
 import jam.global.JamProperties;
+import java.util.Iterator;
 
 /**
  * Plots a 1-dimensional histogram.
@@ -131,17 +132,13 @@ class Plot1d extends Plot {
 		repaint();
 	}
 
-	/**
-	 * Mark a channel
-	 * ignores the channelY
-	 */
-	public void markChannel(Point p) {
-		Graphics g = this.getGraphics();
+	void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
-		/* so graph has all pertinent imfo */
-		graph.update(g, viewSize, plotLimits);
-		graph.markChannel1d(p.x, counts[p.x]);
-		g.dispose();
+		final Iterator it=markedChannels.iterator();
+		while (it.hasNext()){
+			final Point p=(Point)it.next();
+			graph.markChannel1d(p.x, counts[p.x]);
+		}
 	}
 
 	/**
