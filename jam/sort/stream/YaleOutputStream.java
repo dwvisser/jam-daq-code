@@ -58,11 +58,11 @@ public class YaleOutputStream extends EventOutputStream implements L002Parameter
         int eventSize=RunInfo.runEventSize;				    //parameters per event
         int dataRecLen=RunInfo.runRecordLength;				    //data record length
         byte [] reserved2=new byte [92];				    //reserved 2
-
         try {
+			final StringUtilities su=StringUtilities.instance();
             dataOutput.writeBytes(HEADER_START);				    //header
-            dataOutput.writeBytes(StringUtilities.makeLength(dateString,16));	    //date				    //date
-            dataOutput.writeBytes(StringUtilities.makeLength(title, TITLE_MAX));    //title
+            dataOutput.writeBytes(su.makeLength(dateString,16));	    //date				    //date
+            dataOutput.writeBytes(su.makeLength(title, TITLE_MAX));    //title
             dataOutput.writeInt(number);					    //header number
             dataOutput.write(reserved1, 0, reserved1.length);			    // reserved space
             dataOutput.writeInt(numSecHead);					    //number secondary headers
