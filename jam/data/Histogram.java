@@ -2,7 +2,6 @@ package jam.data;
 import java.util.*;
 import java.io.Serializable;
 import jam.util.StringUtilities;
-import jam.global.Function;
 import jam.data.peaks.PeakFinder;
 
 /**
@@ -78,7 +77,7 @@ public class Histogram implements Serializable {
 
 	private static Hashtable histogramTable = new Hashtable(37);
 	//should be an prime number
-	private static Vector histogramList = new Vector(37);
+	private static List histogramList = new Vector(37);
 	//private static DefaultComboBoxModel hcbm=new DefaultComboBoxModel();
 	private static int lastNumber = 0;
 	//used for automatically assigning histogram number
@@ -86,7 +85,7 @@ public class Histogram implements Serializable {
 	/**
 	 * gates that belong to this histogram
 	 */
-	Vector gates = new Vector(1);
+	List gates = new Vector(1);
 	//DefaultComboBoxModel gateComboBoxModel=new DefaultComboBoxModel();
 
 	/**
@@ -142,7 +141,7 @@ public class Histogram implements Serializable {
 		throws DataException {
 		String addition;
 		int prime;
-		Enumeration allHistograms;
+		Iterator allHistograms;
 
 		this.number = number;
 		this.type = type;
@@ -173,15 +172,15 @@ public class Histogram implements Serializable {
 					+ addition;
 			prime++;
 		}
-		gates.setSize(0);
+		gates.clear();
 		lastNumber++;
 		//assign number
 		NEWTRY : while (!unique) {
 			//loop for all histograms
-			allHistograms = histogramList.elements();
-			while (allHistograms.hasMoreElements()) {
+			allHistograms = histogramList.iterator();
+			while (allHistograms.hasNext()) {
 				if (lastNumber
-					== ((Histogram) allHistograms.nextElement()).getNumber()) {
+					== ((Histogram) allHistograms.next()).getNumber()) {
 					lastNumber++;
 					continue NEWTRY;
 				}
@@ -231,7 +230,7 @@ public class Histogram implements Serializable {
 		}
 		//add to static lists
 		histogramTable.put(name, this);
-		histogramList.addElement(this);
+		histogramList.add(this);
 	}
 
 	/**
@@ -429,13 +428,13 @@ public class Histogram implements Serializable {
 	 */
 	public static void setHistogramList(List inHistList) {
 		histogramTable.clear(); //clear current lists
-		histogramList.removeAllElements(); //clear current lists
+		histogramList.clear(); //clear current lists
 		Iterator allHistograms = inHistList.iterator();
 		while (allHistograms.hasNext()) { //loop for all histograms
 			Histogram hist = (Histogram) allHistograms.next();
 			String name = hist.getName();
 			histogramTable.put(name, hist);
-			histogramList.addElement(hist);
+			histogramList.add(hist);
 		}
 	}
 
@@ -444,26 +443,16 @@ public class Histogram implements Serializable {
 	 *
 	 * @return all histograms
 	 */
-	public static Vector getHistogramList() {
+	public static List getHistogramList() {
 		return histogramList;
 	}
-
-	/**
-	 * Returns the combo box model containing all current histograms.
-	 *
-	 * @return a combo box model containing all current histograms
-	 */
-	/*public static DefaultComboBoxModel getComboBoxModel(){
-	return hcbm;
-	}*/
 
 	/**
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
 		histogramTable.clear();
-		histogramList.removeAllElements();
-		//hcbm.removeAllElements();
+		histogramList.clear();
 		System.gc();
 	}
 
@@ -473,11 +462,12 @@ public class Histogram implements Serializable {
 	 * @param name name of histogram to retrieve
 	 */
 	public static Histogram getHistogram(String name) {
-		if (name == null || !histogramTable.containsKey(name)) {
-			return null; //histogram for name doesn't exist
-		} else {
-			return ((Histogram) histogramTable.get(name));
+		Histogram rval=null;//default return value
+		if (name != null) {
+			/* get() will return null if key not in table */
+			rval = (Histogram)histogramTable.get(name);
 		}
+		return rval;
 	}
 
 	/* instantized methods */
@@ -683,20 +673,21 @@ public class Histogram implements Serializable {
 	 * @return the list of gates that belong to this histogram
 	 */
 	public Gate[] getGates() {
-
-		Gate[] gatesOut = new Gate[gates.size()];
-		for (int i = 0; i < gates.size(); i++) {
-			gatesOut[i] = (Gate) gates.elementAt(i);
-		}
-		return gatesOut;
+		return (Gate [])(gates.toArray(new Gate[0]));
 	}
 
+	/**
+	 * Returns whether this histogram has the given gate.
+	 */
 	public boolean hasGate(Gate gate) {
+		boolean rval=false;//default return value
 		for (int i = 0; i < gates.size(); i++) {
-			if ((Gate) gates.elementAt(i) == gate)
-				return true;
+			if ((Gate) gates.get(i) == gate){
+				rval = true;
+				break;//drop out of loop
+			}
 		}
-		return false;
+		return rval;
 	}
 
 	/**
@@ -707,14 +698,14 @@ public class Histogram implements Serializable {
 	public void addGate(Gate gate) throws DataException {
 		if (gate.type == Gate.ONE_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 1) {
-				gates.addElement(gate);
+				gates.add(gate);
 				//gateComboBoxModel.addElement(gate);
 			} else {
 				throw new DataException("Can't add 1-d gate to 2-dim histogram.");
 			}
 		} else if (gate.type == Gate.TWO_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 2) {
-				gates.addElement(gate);
+				gates.add(gate);
 				//gateComboBoxModel.addElement(gate);
 			} else {
 				throw new DataException("Can't add 2-d gate to 1-dim histogram.");
