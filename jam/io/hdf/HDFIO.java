@@ -255,7 +255,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
-    	spawnAsyncReadFile(mode, infile, null);
+    	readFile(mode, infile, null);
         return true;
     }
     /**
@@ -268,7 +268,16 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @param histNames list of names of histograms to read in
      * @return <code>true</code> if successful
      */
-    public boolean readFile(FileOpenMode mode, File infile,List histNames) {
+    public boolean readFile(FileOpenMode mode, File infile, List histNames) {
+    	if(!infile.isFile()) {
+    		msgHandler.errorOutln("Cannot find file "+infile+".");
+    		return false;
+    	}
+        if (!HDFile.isHDFFile(infile)) {
+        	msgHandler.errorOutln("File "+ infile + " is not a valid HDF file.");
+            return  false;
+        }
+    	
     	spawnAsyncReadFile(mode, infile, histNames);
         return true;
     }
@@ -628,13 +637,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
      *            names of histograms to read, null if all
      * @return <code>true</code> if successful
      */
-    public boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
+    synchronized private boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
         boolean rval = true;
         final StringBuffer message = new StringBuffer();
-        if (!HDFile.isHDFFile(infile)) {
-			uiErrorMsg=infile + " is not a valid HDF File!";
-            rval = false;
-        }
+        
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
 				STEPS_WRITE+STEPS_CONVERT);
         if (rval) {
@@ -642,6 +648,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 if (mode == FileOpenMode.OPEN) {
                     message.append("Opened ").append(infile.getName()).append(
                             " (");
+                    Group.clearList();
                     DataBase.getInstance().clearAllLists();
                 } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
                     message.append("Opened Additional ").append(
@@ -655,20 +662,21 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 }
 
                 DataObject.clearAll();
+                
                 //Read in objects
-                synchronized (this) {
-                    inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
-                    inHDF.setLazyLoadData(true);
-                }
+                inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
+                inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
                  /* read file into set of DataObject's, set their internal variables */
                 inHDF.readFile();
-                //asyncMonitor.setNote("Parsing objects");
-                asyncMonitor.increment();   
+                
                 DataObject.interpretBytesAll();
+                
+                asyncMonitor.increment();                
+                
                 //Set group
                 if (mode == FileOpenMode.OPEN) {
-                    Group.clearList();
+                    
                     Group.createGroup(infile.getName(), Group.Type.FILE);
                 } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
                     Group.createGroup(infile.getName(), Group.Type.FILE);
