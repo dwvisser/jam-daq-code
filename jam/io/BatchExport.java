@@ -1,5 +1,7 @@
 package jam.io;
 
+import jam.data.AbstractHist1D;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -389,9 +391,9 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		}
 	}
 	
-	private File getFile(File dir, AbstractImpExp impExp, Histogram hist) {
-        return new File(dir, FileUtilities.changeExtension(hist.getFullName()
-                .trim(), impExp.getDefaultExtension(), FileUtilities.APPEND_ONLY));
+	private File createExportFile(String dir, String groupName,  String histName, String extension) {
+		String fullFileName = FileUtilities.changeExtension(histName.trim(), extension,  FileUtilities.APPEND_ONLY);
+        return new File(dir + File.separator + groupName, fullFileName);
     }
 
 	/**
@@ -399,26 +401,22 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
      */
 	private void export() {
 		/* select the format */
-		AbstractImpExp out = null;
-		final Iterator iter = exportMap.keySet().iterator();
-		while (iter.hasNext()) {
-			final AbstractButton button = (AbstractButton) iter.next();
-			if (button.isSelected()) {
-				out = (AbstractImpExp) exportMap.get(button);
-			}
-		}
-		final File dir = new File(txtDirectory.getText().trim());
-		if (dir.exists()) {
-			if (dir.isDirectory()) {
+		AbstractImpExp exportFormat = selectedExportFormat();
+		String exportDir =  txtDirectory.getText().trim();
+		final File exportDirFile = new File(exportDir);
+		if (exportDirFile.exists()) {
+			if (exportDirFile.isDirectory()) {
 				//look for any files that might be overwritten
 				final ListModel model = lstHists.getModel();
 				File[] files = new File[model.getSize()];
 				Histogram[] hist = new Histogram[model.getSize()];
 				boolean already = false;
 				for (int i = 0; i < files.length; i++) {
-					hist[i] = Histogram.getHistogram((String) model
-							.getElementAt(i));
-					files[i] = getFile(dir,out,hist[i]);
+					AbstractHist1D hist1D =(AbstractHist1D) model.getElementAt(i);					
+					String groupName = hist1D.getGroup().getName();
+					String histName =hist1D.getName().trim();
+					hist[i]= hist1D;
+					files[i] = createExportFile(exportDir, groupName, histName, exportFormat.getDefaultExtension());
 					already |= files[i].exists();
 				}
 				if (already) {
@@ -426,7 +424,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 							.errorOutln("At least one file to export already exists. Delete or try a"
 									+ " different directory.");
 				} else { //go ahead and write
-					console.messageOut("Exporting to " + dir.getPath() + ": ",
+					console.messageOut("Exporting to " + exportDir + ": ",
 							MessageHandler.NEW);
 					for (int i = 0; i < files.length; i++) {
 						console.messageOut(files[i].getName(),
@@ -435,7 +433,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 							console.messageOut(", ", MessageHandler.CONTINUE);
 						}
 						try {
-							out.saveFile(files[i], hist[i]);
+							exportFormat.saveFile(files[i], hist[i]);
 						} catch (ImpExpException e) {
 							console
 									.errorOutln("Error while trying to write files: "
@@ -453,6 +451,17 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		}
 	}
 
+	private AbstractImpExp selectedExportFormat() {
+		AbstractImpExp out=null;
+		final Iterator iter = exportMap.keySet().iterator();		
+		while (iter.hasNext()) {
+			final AbstractButton button = (AbstractButton) iter.next();
+			if (button.isSelected()) {
+				out = (AbstractImpExp) exportMap.get(button);
+			}
+		}		
+		return out;
+	}	
 	/**
 	 * add all files in a directory to sort
 	 *  
