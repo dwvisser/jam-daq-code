@@ -174,7 +174,7 @@ public class RTSI {
 					} catch (ClassNotFoundException cnfex) {
 						System.err.println(cnfex);
 					} //how to deal with illegal files?
-				} else if (fname.endsWith(".jar")) {
+				//} else if (fname.endsWith(".jar")) {
 					/* recursively add the results of the jar file? */
 
 				} else {
@@ -182,7 +182,6 @@ public class RTSI {
 					 * recursively*/
 					if (recurse) {
 						if (files[i].isDirectory()) {
-							//System.out.println(files[i]);
 							rval.addAll(
 								findClassNames(
 									pckgname + "." + files[i].getName(),
