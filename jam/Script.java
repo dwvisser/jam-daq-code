@@ -1,6 +1,5 @@
 package jam;
 import jam.data.control.HistogramControl;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.io.hdf.HDFIO;
 
@@ -66,13 +65,7 @@ public final class Script extends GoodThread {
 	}
 	
 	public  void zeroHistograms(){
-		try {
-			histCtrl.zeroAll();
-			System.out.println("Zeroed histograms.");
-		} catch (GlobalException e){
-			System.err.println("Error while zeroing histograms: "+
-			e.getMessage());
-		}
+		histCtrl.zeroAll();
 	}
 	
 	private HistogramControl histCtrl;
