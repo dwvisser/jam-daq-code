@@ -127,9 +127,9 @@ public class Display
 	public Display(MessageHandler mh) {
 		msgHandler = mh; //where to send output messages
 		action = new Action(this, msgHandler);// display event handler
-		final int size=400;
+		final int size=420;
 		setPreferredSize(new Dimension(size,size));
-		final int minsize=400;
+		final int minsize=420;
 		setMinimumSize(new Dimension(minsize,minsize));
 		setLayout(new BorderLayout());
 		/* setup up middle panel containing plots panel to holds 1d and 2d
