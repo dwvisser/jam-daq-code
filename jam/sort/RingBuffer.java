@@ -84,9 +84,8 @@ public final class RingBuffer {
 	}
 
 	/**
-	 * Gives a pointer to the next buffer in the ring.
-	 * 
-	 * @return the next buffer in the ring
+	 * Passes back a copy of the current buffer in the given
+	 * <code>byte</code> array.
 	 */
 	public synchronized void getBuffer(final byte[] out) {
 		while (isEmpty()) {

@@ -239,8 +239,9 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		return getPlot().getHistogram();
 	}
 	/**
-	 * Plot has a valid histogram
-	 * @return
+	 * Returns whether this plot has a valid histogram.
+	 * 
+	 * @return <code>true</code> if this plot contains a histogram
 	 */
 	protected boolean HasHistogram(){
 		return hasHistogram;

@@ -98,8 +98,6 @@ public class DiscreteColorScale implements ColorScale {
 	 *            bottom of scale
 	 * @param upperLimit
 	 *            top of scale
-	 * @param numberColors
-	 *            the total number of colors used
 	 */
 	public synchronized void setRange(int lowerLimit, int upperLimit) {
 		thresholds = scale == Scale.LINEAR ? colorThresholdsLin(lowerLimit,

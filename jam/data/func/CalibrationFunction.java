@@ -133,7 +133,6 @@ public abstract class CalibrationFunction implements Function {
 	 * 
 	 * @param x array of x values
 	 * @param y array of y values
-	 * @return	String that can be printed 
 	 */
 	public abstract void fit(double[] x, double[] y) throws DataException;
 
