@@ -2,7 +2,6 @@ package jam.io.hdf;
 
 import jam.data.Histogram;
 import jam.global.JamProperties;
-import jam.global.MessageHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,11 +32,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  number types automatically thrown into the file
 	 */
 	private NumberType intNT, doubleNT;
-
-	/**
-	 * Size of the file set in setOffsets()
-	 */
-	private int fileSize;
 
 	/**
 	 * List of objects in the file.
@@ -127,9 +121,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			ob.setOffset(counter);
 			counter += ob.getLength();
 		}
-		synchronized (this) {
-			fileSize = counter;
-		}
 	}
 
 	/**
@@ -155,10 +146,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * creates the <code>NumberType</code> object in the file
 	 * that gets referred to repeatedly by the other data elements.
 	 *
-	 * @throws HDFException if the types cannot be created
 	 * @see jam.io.hdf.NumberType
 	 */
-	public void addNumberTypes() throws HDFException {
+	public void addNumberTypes() {
 		synchronized (this){
 			intNT = new NumberType(this, NumberType.INT);
 			doubleNT = new NumberType(this, NumberType.DOUBLE);
@@ -330,14 +320,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Called after all <code>DataObject</code> objects have been 
 	 * created.
 	 *
 	 * @exception HDFException thrown if err occurs during file write
-	 * @param msg output text area
 	 */
-	void writeAllObjects(MessageHandler msg, final ProgressMonitor pm) throws HDFException {
+	void writeAllObjects(final ProgressMonitor pm) throws HDFException {
 		pm.setMaximum(objectList.size());
 		int progress=1;
 		pm.setProgress(progress);
