@@ -1,11 +1,9 @@
-/*
- */
 package jam.global;
-import java.util.Properties;
-import java.io.FileInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This is an class that is used to get and set the properties for Jam.
@@ -61,9 +59,6 @@ public class JamProperties {
 	public final static String EVENT_OUTPATH = "event.outpath";
 	public final static String EVENT_OUTFILE = "event.outfile";
 	public final static String HIST_PATH = "hist.path";
-	public final static String CAMAC_PATH = "camac.path";
-	public final static String BROWSER_PATH = "browser.path";
-	public final static String DOCS_PATH = "docs.path";
 	public final static String TAPE_DEV = "tape.dev";
 	public final static String LOG_PATH = "log.path";
 	public final static String FRONTEND_VERBOSE = "frontend.verbose";
@@ -73,16 +68,9 @@ public class JamProperties {
 	private final static String NO_ERRORS="No error messages.";
 	private final static String NO_WARNINGS="No warning messages.";
 	
-	/**
-	 * Property for determining whether Jam handles writing of event data (JAM), or
-	 * if it communicates with the front end computer to delegate this 
-	 * task (FRONTEND).
-	 * Possible values: JAM or FRONTEND
-	 */
-	public final static String EVENT_WRITER = "event.writer";
-	public final static String STORE_EVENTS_LOCALLY = "JAM";
-	public final static String STORE_EVENTS_FRONTEND = "FRONTEND";
-
+	private final static String TRUE="true";
+	private final static String FALSE="false";
+	
 	String END_LINE = System.getProperty("line.separator");
 	private String fileSep = System.getProperty("file.separator");
 	private String userHome = System.getProperty("user.home");
@@ -118,6 +106,7 @@ public class JamProperties {
 	 */
 	public JamProperties() {
 		jamProperties = new Properties();
+		loadProperties();
 	}
 	
 	public static boolean isMacOSX(){
@@ -157,13 +146,14 @@ public class JamProperties {
 		} else {
 			msgHandler.warningOutln(
 				"Property " + key + " not defined [JamProperties]");
-//			return "undefined";
 		}
 		return rval;
 	}
 
 	/**
 	 * Get an integer property for this Jam process.
+	 *
+	 * @return the integer value of the property
 	 */
 	public static int getPropInt(String key) {
 		int rval=0;//default return value
@@ -173,20 +163,19 @@ public class JamProperties {
 			} else {
 				msgHandler.warningOutln(
 					"Property " + key + " not defined [JamProperties]");
-//				return 0;
 			}
 		} catch (NumberFormatException nfe) {
 			msgHandler.errorOutln(
 				"Property " + key + " not an integer [JamProperties]");
-//			return 0;
 		}
 		return rval;
 	}
 
 	/**
-	 * Load the local specific properties from files, using defaults if necessary.
+	 * Load the local specific properties from files, using defaults if 
+	 * necessary.
 	 */
-	public void loadProperties() {
+	private final void loadProperties() {
 		String fileName = "";
 		FileInputStream fis;
 		configLoadWarning = NO_WARNINGS;
@@ -196,11 +185,11 @@ public class JamProperties {
 			//load default configuration
 			loadDefaultConfig();
 			loadDefaultUser();
-			//read in jam config properties 
-			//for normal use jam.home should be defined by -D parameter in command line
-			//try jam.home
+			/* read in jam config properties 
+			 * for normal use jam.home should be defined by -D parameter in command line
+			 * try jam.home */
 			if (System.getProperty(JAM_HOME) != null) {
-				File configFile = new File(
+				final File configFile = new File(
 					System.getProperty(JAM_HOME),FILE_CONFIG);
 				fileName = configFile.getPath();
 				if (configFile.exists()) {
@@ -217,9 +206,7 @@ public class JamProperties {
 							+ " ";
 					configLoadMessage = "Using default configuration";
 				}
-
-				//try DEFAULT_JAM_HOME no jam.home defined, this case used for developement		
-			} else {
+			} else {//try DEFAULT_JAM_HOME no jam.home defined
 				configFile =
 					new File(DEFAULT_JAM_HOME,FILE_CONFIG);
 				fileName = configFile.getPath();
@@ -270,7 +257,7 @@ public class JamProperties {
 							"Cannot find file "
 								+ FILE_USER
 								+ " file in directory user.home = "
-								+ (String) userHome;
+								+ userHome;
 						userLoadMessage =
 							"Read user properties from file " + userFile.getPath();
 					}
@@ -390,9 +377,6 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		jamProperties.setProperty(DOCS_PATH,(new File(DEFAULT_JAM_HOME,"docs")).getPath());
-		jamProperties.setProperty(EVENT_WRITER,STORE_EVENTS_LOCALLY);
-		jamProperties.setProperty(BROWSER_PATH,"netscape");
 		setProperty(NO_FILL_2D,false);
 	}
 
@@ -400,30 +384,32 @@ public class JamProperties {
 	 * Load default user properties.
 	 */
 	private void loadDefaultUser() {
-		jamProperties.setProperty(CAMAC_PATH,(new File(userHome,"camac")).getPath());
 		jamProperties.setProperty(EXP_NAME,"default_");
 		jamProperties.setProperty(SORT_ROUTINE,"jam.sort.Example");
 		jamProperties.setProperty(SORT_CLASSPATH,DEFAULT_SORT_CLASSPATH);
 		jamProperties.setProperty(HIST_PATH,(new File(userHome,"spectra")).getPath());
-		jamProperties.setProperty(EVENT_INPATH,(new File(userHome,"events")).getPath());
-		jamProperties.setProperty(EVENT_OUTPATH,(new File(userHome,"presort")).getPath());
+		jamProperties.setProperty(EVENT_INPATH,
+		(new File(userHome,"events")).getPath());
+		jamProperties.setProperty(EVENT_OUTPATH,
+		(new File(userHome,"presort")).getPath());
 		jamProperties.setProperty(EVENT_OUTFILE,"sortout.evn");
 		jamProperties.setProperty(TAPE_DEV,"/dev/rmt/0");
 		jamProperties.setProperty(LOG_PATH,(new File(userHome)).getPath());
-		jamProperties.setProperty(EVENT_INSTREAM,"jam.sort.stream.YaleCAEN_InputStream");
+		jamProperties.setProperty(EVENT_INSTREAM,
+		"jam.sort.stream.YaleCAEN_InputStream");
 		jamProperties.setProperty(EVENT_OUTSTREAM,"jam.sort.stream.YaleOutputStream");
-		jamProperties.setProperty(GRADIENT_SCALE,"false");
+		jamProperties.setProperty(GRADIENT_SCALE,FALSE);
 	}
 	
 	static public void setProperty(String key, boolean val){
 		if (val){
-			jamProperties.setProperty(key,"true");
+			jamProperties.setProperty(key,TRUE);
 		} else {
-			jamProperties.setProperty(key,"false");
+			jamProperties.setProperty(key,FALSE);
 		}
 	}
 	
 	static public boolean getBooleanProperty(String key){
-		return jamProperties.getProperty(key).equals("true");
+		return jamProperties.getProperty(key).equals(TRUE);
 	} 
 }
