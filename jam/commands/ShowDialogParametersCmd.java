@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JFrame;
-
 /**
  * Show parameters dialog.
  * 
@@ -25,8 +23,7 @@ implements Observer {
 	 */
 	public void initCommand(){
 		putValue(NAME, "Parameters\u2026");
-		final JFrame frame =status.getFrame();
-		dialog = new ParameterControl(frame, msghdlr);
+		dialog = new ParameterControl(msghdlr);
 	}
 		
 	public void update(Observable observe, Object obj){

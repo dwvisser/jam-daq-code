@@ -5,7 +5,6 @@ import jam.global.MessageHandler;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +28,6 @@ import javax.swing.border.EmptyBorder;
 public final class ParameterControl
 	extends AbstractControl {
 
-	private final Frame frame;
 	private final MessageHandler messageHandler;
 
 	//widgets for each parameter
@@ -41,11 +39,13 @@ public final class ParameterControl
 	private final JPanel pButton;
 
 
+	/**
+	 * Constructs a new parameter dialog.
+	 * @param messageHandler where to print messages
+	 */
 	public ParameterControl(
-		Frame frame,
 		MessageHandler messageHandler) {
 		super("Sort Parameters", false);
-		this.frame = frame;
 		this.messageHandler = messageHandler;
 
 		// dialog box to display Parameters
@@ -124,16 +124,6 @@ public final class ParameterControl
 		pack();
 	}
 
-	/**
-	 * Set the Parameter values called back by
-	 *
-	 */
-	public void setParameters(int[] inParamValue) {
-
-		for (int i = 0; i < inParamValue.length; i++) {
-			textParam[i].setText(String.valueOf(inParamValue[i]));
-		}
-	}
 	/**
 	 * Set the parameter values using the values
 	 * in the text fields
