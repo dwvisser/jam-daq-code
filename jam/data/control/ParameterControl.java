@@ -203,19 +203,13 @@ public final class ParameterControl
 	 *	
 	 */
 	public void read() {
-		DataParameter currentParameter;
-		Iterator enumParameter;
-		int numberParameters;
-		int count;
-
-		// we have some elements in the Parameter list
 		if (DataParameter.getParameterList().size() != 0) {
-			numberParameters = DataParameter.getParameterList().size();
-			enumParameter = DataParameter.getParameterList().iterator();
-
-			count = 0;
+			DataParameter.getParameterList().size();//number of parameters
+			final Iterator enumParameter = 
+			DataParameter.getParameterList().iterator();
+			int count = 0;
 			while (enumParameter.hasNext()) {
-				currentParameter = (DataParameter) enumParameter.next();
+				final DataParameter currentParameter = (DataParameter) enumParameter.next();
 				textParam[count].setText(
 					String.valueOf(currentParameter.getValue()));
 				count++;
