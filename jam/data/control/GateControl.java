@@ -388,7 +388,6 @@ WindowListener,Observer  {
      *
      */
     public void setup(){
-        String typeGate="gate";
         /* get current state */
         synchronized(this){
         	currentHistogram = Histogram.getHistogram(
@@ -404,13 +403,11 @@ WindowListener,Observer  {
             synchronized (this) {
             	type=Gate.ONE_DIMENSION;
             }
-            typeGate="gate 1-D";
         } else if ((currentHistogram.getType()==Histogram.TWO_DIM_INT)||
         (currentHistogram.getType()==Histogram.TWO_DIM_DOUBLE)) {
             synchronized (this) {
             	type=Gate.TWO_DIMENSION;
             }
-            typeGate="gate 2-D";
         } else {
             messageHandler.errorOutln(getClass().getName()+
             ".setup(): undefined histogram type.");
