@@ -138,7 +138,7 @@ public class HistogramIO implements FilenameFilter {
 		this.fileOpen = fileOpen;
 		boolean success;
 		try {
-			DataBase.clearAllLists();
+			DataBase.getInstance().clearAllLists();
 			msgHandler.messageOut(
 				"Open " + fileOpen.getName(),
 				MessageHandler.NEW);

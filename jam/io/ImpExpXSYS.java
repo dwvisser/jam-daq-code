@@ -96,7 +96,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	public void readHist(InputStream buffin) throws ImpExpException {
 		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
-		DataBase.clearAllLists();//clear the data base
+		DataBase.getInstance().clearAllLists();//clear the data base
 		try {
 			//read in data until end of file	
 			while (unPackHeaderXSYS(buffin)) {
