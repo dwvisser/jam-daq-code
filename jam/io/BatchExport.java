@@ -58,7 +58,6 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	private JRadioButton[] exportChoice;
 	private JTextField  txtDirectory;
 	private JComboBox cbHist;	
-	private JTextField txtAddName;
 	private JList lstHists;
 	private JButton bExport;
 	private MessageHandler console;
@@ -77,7 +76,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	 * Construct the GUI
 	 */
 	private void buildGUI() {
-		Container contents = this.getContentPane();
+		Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
 		final int CHOOSER_SIZE=200;
 		
