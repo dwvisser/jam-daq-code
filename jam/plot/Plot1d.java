@@ -25,7 +25,6 @@ class Plot1d extends Plot {
 	private double[][] fitSignals;
 	private int areaMark1, areaMark2;
 	private Histogram [] overlayHists;
-	//overlay histogram stuff
 	private double[][] countsOverlay;
 
 	/**
@@ -38,7 +37,7 @@ class Plot1d extends Plot {
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistogram(Histogram [] hists) {
+	void overlayHistograms(Histogram [] hists) {
 		displayingOverlay = true;
 		overlayHists = hists;
 		final int len=hists.length;
@@ -275,7 +274,7 @@ class Plot1d extends Plot {
 		g2.setColor(PlotColorMap.overlay);
 		final Composite prev=g2.getComposite();
 		g2.setComposite(
-			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
+			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
 		final int len=countsOverlay.length;
 		final ColorScale scale=new GradientColorScale(1,len,Limits.ScaleType.LINEAR);
 		for (int i=0; i<len; i++){
