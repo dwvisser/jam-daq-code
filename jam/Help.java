@@ -1,12 +1,11 @@
 package jam;
 
-import jam.global.MessageHandler;
+import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -38,29 +37,24 @@ import javax.swing.UIManager;
  */
 public class Help extends JDialog {
 	
-
-	private final Frame frame;
-	private final MessageHandler messageHandler;
+	private static final JamStatus status=JamStatus.instance();
 	private final static int posx=20;
 
 	/**
 	 * @param frame the parent frame, i.e. the main Jam Window
 	 * @param mh for outputting error messages
 	 */
-	public Help(Frame frame, MessageHandler mh) {
-		super( frame,
+	public Help() {
+		super(status.getFrame(),
 		"University of Illinois/NCSA Open Source License",
 		true);
-		
-		this.frame = frame;
-		messageHandler=mh;
-
 		layoutLicenseDialog();
 		final String defaultVal="notseen";
 		final String version=Version.getName();
 		final String key="license";
 		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
-		if (!version.equals(helpnode.get(key,defaultVal))){
+		if (status.isShowGUI() && 
+		!version.equals(helpnode.get(key,defaultVal))){
 			show();
 			helpnode.put(key,version);
 		}
@@ -81,7 +75,8 @@ public class Help extends JDialog {
 		try {
 			length = reader.read(textarray);
 		} catch (IOException e) {
-			messageHandler.errorOutln(getClass().getName()+hyphen+e.getMessage());
+			status.getMessageHandler().errorOutln(getClass().getName()+hyphen+
+			e.getMessage());
 		}
 		final String text = new String(textarray, 0, length);
 		center.add(new JScrollPane(new JTextArea(text)));
