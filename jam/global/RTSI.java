@@ -125,6 +125,11 @@ public class RTSI {
 		String pckgname,
 		Class tosubclass,
 		boolean recurse) {
+		final StringBuffer errmessage=new StringBuffer(
+		"Searching in ").append(
+		pckgname).append(
+		"\nYou've probably incorrectly specified a classpath,\n").append(
+		"or moved/renamed an existing .class file.\n");
 		final Iterator it =
 			findClassNames(pckgname, tosubclass, recurse).iterator();
 		final Set rval = new LinkedHashSet(); //preserves order of add()'s
@@ -133,12 +138,12 @@ public class RTSI {
 				rval.add(defaultLoader.loadClass((String) (it.next())));
 			}
 		} catch (ClassNotFoundException e) {
-			JOptionPane.showMessageDialog(null,
-			e.getMessage(),
+			errmessage.append(e.getMessage());
+			JOptionPane.showMessageDialog(null,errmessage.toString(),
 			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		} catch (LinkageError e){
-			JOptionPane.showMessageDialog(null,
-			e.getMessage(),
+			errmessage.append(e.getMessage());
+			JOptionPane.showMessageDialog(null,errmessage.toString(),
 			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
@@ -382,13 +387,17 @@ public class RTSI {
 	private static Set nameSetToClassSet(SortedSet ns, ClassLoader loader) {
 		final Set rval = new LinkedHashSet();
 		final Iterator it = ns.iterator();
+		final StringBuffer errmessage=new StringBuffer(
+		"\nYou've probably incorrectly specified a classpath,\n").append(
+		"or moved/renamed an existing .class file.\n");
 		try {
 			while (it.hasNext()) {
 				rval.add(loader.loadClass((String) it.next()));
 			}
 		} catch (ClassNotFoundException e) {
+			errmessage.append(e.getMessage());
 			JOptionPane.showMessageDialog(null,
-			e.getMessage(),
+			errmessage,
 			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
@@ -413,6 +422,10 @@ public class RTSI {
 		String classpath,
 		File file,
 		ClassLoader loader) {
+			final StringBuffer errmessage=new StringBuffer(
+			"Searching in the classpath: ").append(classpath).append(
+			"\nYou've probably incorrectly specified a classpath,\n").append(
+			"or moved/renamed an existing .class file.\n");
 		final SortedSet rval = new TreeSet();
 		if (file.isDirectory()) {
 			final File[] list = file.listFiles();
@@ -433,12 +446,14 @@ public class RTSI {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
+					errmessage.append(cnfex.getMessage());
 					JOptionPane.showMessageDialog(null,
-					cnfex.getMessage(),
+					errmessage.toString(),
 					"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 				} catch (LinkageError le){
+					errmessage.append(le.getMessage());
 					JOptionPane.showMessageDialog(null,
-					le.getMessage(),
+					errmessage.toString(),
 					"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 				}
 			}
