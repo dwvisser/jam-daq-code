@@ -1,7 +1,6 @@
 package jam.plot;
 
 import jam.JamConsole;
-import jam.commands.CommandManager;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -16,13 +15,10 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
-import javax.swing.JOptionPane;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons and
@@ -106,6 +102,8 @@ class Action implements ActionListener, PlotMouseListener,
 	private final MessageHandler textOut;
 
 	private final Display display;
+	
+	private final ParseCommand parseCommand;
 
 	private Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
@@ -131,8 +129,8 @@ class Action implements ActionListener, PlotMouseListener,
 
 	private final List clicks = new ArrayList();
 
-	private final Map commandMap;
-
+	private final List rangeList = Collections.synchronizedList(new ArrayList());
+	
 	private int countLow, countHigh;
 
 	/**
@@ -146,6 +144,9 @@ class Action implements ActionListener, PlotMouseListener,
 	Action(Display d, JamConsole jc) {
 		display = d;
 		textOut = jc;
+		
+		parseCommand= new ParseCommand(this, jc);
+		
 		cursor = Bin.Factory.create();
 		jc.addCommandListener(this);
 		commandPresent = false;
@@ -158,7 +159,7 @@ class Action implements ActionListener, PlotMouseListener,
 		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		commandMap = createCommandMap();
+
 		PlotPrefs.prefs.addPreferenceChangeListener(this);
 	}
 
@@ -189,104 +190,89 @@ class Action implements ActionListener, PlotMouseListener,
 			done();
 		}
 		inCommand = com;
-		doCommand();
-	}
-
-	final private Map createCommandMap() {
-		final String[] commands = { HELP, EXPAND, ZOOMIN, ZOOMOUT, FULL,
-				LINEAR, LOG, AREA, GOTO, NETAREA, UPDATE, AUTO, OVERLAY,
-				CANCEL, EXPAND, EXPAND, RANGE, DISPLAY, REBIN, SCALE };
-		final String[] abbr = { "help", "ex", "zi", "zo", "f", "li", "lo",
-				"ar", "g", "n", "u", "a", "o", "c", "x", "y", "ra", "d", "re",
-				"s" };
-		if (commands.length != abbr.length) {
-			JOptionPane
-					.showMessageDialog(
-							display,
-							"Make sure commands and abbreviations arrays are equal in length.",
-							"Error in code.", JOptionPane.ERROR_MESSAGE);
-		}
-		final Map rval = new HashMap();
-		for (int i = 0; i < commands.length; i++) {
-			rval.put(abbr[i], commands[i]);
-		}
-		return rval;
-	}
-
-	public boolean performParseCommand(String _command, String[] cmdParams) {
-		boolean accept = false; //is the command accepted
-		boolean handleIt = false;
-		final String command = _command.toLowerCase();
-		/*
-		 * int is a special case meaning no command and just parameters
-		 */
-		if (command.equals(JamConsole.NUMBERS_ONLY)) {
-			final double[] parameters = convertParameters(cmdParams);
-			if (DISPLAY.equals(inCommand)) {
-				display(parameters);
-				accept = true;
-			} else if (OVERLAY.equals(inCommand)) {
-				overlay(parameters);
-				accept = true;
-			} else {
-				integerChannel(parameters);
-				accept = true;
-			}
-			accept = true;
-		} else if (commandMap.containsKey(command)) {
-			inCommand = (String) commandMap.get(command);
-			accept = true;
-			handleIt = true;
-		}
-		if (accept && handleIt) {
-			final double[] parameters = convertParameters(cmdParams);
-			if (DISPLAY.equals(inCommand)) {
-				display(parameters);
-			} else if (OVERLAY.equals(inCommand)) {
-				overlay(parameters);
-			} else {
-				doCommand();
-				integerChannel(parameters);
-			}
-		}
-		return accept;
+		doCommand(inCommand);
 	}
 
 	/**
-	 * Convert the parameters to doubles.
+	 * Routine called back by mouse a mouse clicks on plot
 	 * 
-	 * @param parameters
-	 * @return
+	 * @param pChannel
+	 *            channel of mouse click
 	 */
-	private double[] convertParameters(String[] cmdParams) {
-		final int numberParams = cmdParams.length;
-		double[] parameters = new double[numberParams];
-		/* The parameters must be numbers. */
-		try {
-			int countParam = 0;
-			while (countParam < numberParams) {
-				parameters[countParam] = convertNumber(cmdParams[countParam]);
-				countParam++;
-			}
-		} catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Input parameter not a number.");
+	public synchronized void plotMousePressed(Bin pChannel, Point pPixel) {
+		/* check that a histogram is defined */
+		final Plot currentPlot = display.getPlot();
+		final Histogram hist = status.getCurrentHistogram();
+		if (hist == null) {
+			return;
 		}
-		return parameters;
+		/* cursor position and counts for that channel */
+		cursor.setChannel(pChannel);
+		/* there is a command currently being processed */
+		if (commandPresent) {
+			if (RANGE.equals(inCommand)) {
+				rangeList.add(new Integer((int) cursor.getCounts()));
+			}
+			doCommand(inCommand);
+		} else {
+			/*
+			 * no command being processed check if gate is being set
+			 */
+			if (settingGate) {
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
+						pChannel);
+				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
+						pPixel);
+			} else {
+				/* output counts for the channel */
+				final double count;
+				final String coord;
+				final int xch;
+				synchronized (cursor) {
+					xch = cursor.getX();
+					count = cursor.getCounts();
+					coord = cursor.getCoordString();
+				}
+				currentPlot.markChannel(cursor);
+				if (hist.isCalibrated()) {
+					final Plot plot = (Plot) currentPlot;
+					final double energy = plot.getEnergy(xch);
+					textOut.messageOutln("Bin " + xch + ":  Counts = "
+							+ numFormat.format(count) + "  Energy = "
+							+ numFormat.format(energy));
+				} else {
+					textOut.messageOutln("Bin " + xch + ":  Counts = "
+							+ numFormat.format(count));
+				}
+				done();
+			}
+		}
+	}
+	
+	/**
+	 * perform a command input as a string
+	 */
+	public boolean performParseCommand(String _command, String[] cmdParams) {
 
+		//Foward call to parser class		
+		return parseCommand.performParseCommand(_command, cmdParams);
 	}
 
+	
 	/**
 	 * Sort the input command and do command.
 	 */
-	private synchronized void doCommand() {
+	synchronized void doCommand(String inCommand) {
+		//FIXME KBS copy to member field for now
+		this.inCommand=inCommand;
 		lastCommand = inCommand;
 		/* check that a histogram is defined */
 		if (status.getCurrentHistogram() != null) {
 			if (CANCEL.equals(inCommand)) {
 				textOut.messageOutln();
 				done();
-			} else if (HELP.equals(inCommand)) {
-				help();
+			//} else if (HELP.equals(inCommand)) {
+			//	help();
 			} else if (UPDATE.equals(inCommand)) {
 				update();
 			} else if (EXPAND.equals(inCommand)) {
@@ -328,64 +314,7 @@ class Action implements ActionListener, PlotMouseListener,
 		}
 	}
 
-	/**
-	 * Routine called back by mouse a mouse clicks on plot
-	 * 
-	 * @param pChannel
-	 *            channel of mouse click
-	 */
-	public synchronized void plotMousePressed(Bin pChannel, Point pPixel) {
-		/* check that a histogram is defined */
-		final Plot currentPlot = display.getPlot();
-		final Histogram hist = status.getCurrentHistogram();
-		if (hist == null) {
-			return;
-		}
-		/* cursor position and counts for that channel */
-		cursor.setChannel(pChannel);
-		/* there is a command currently being processed */
-		if (commandPresent) {
-			if (RANGE.equals(inCommand)) {
-				rangeList.add(new Integer((int) cursor.getCounts()));
-			}
-			doCommand();
-		} else {
-			/*
-			 * no command being processed check if gate is being set
-			 */
-			if (settingGate) {
-				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
-						pChannel);
-				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
-						pPixel);
-			} else {
-				/* output counts for the channel */
-				final double count;
-				final String coord;
-				final int xch;
-				synchronized (cursor) {
-					xch = cursor.getX();
-					count = cursor.getCounts();
-					coord = cursor.getCoordString();
-				}
-				currentPlot.markChannel(cursor);
-				if (hist.isCalibrated()) {
-					final Plot plot = (Plot) currentPlot;
-					final double energy = plot.getEnergy(xch);
-					textOut.messageOutln("Bin " + xch + ":  Counts = "
-							+ numFormat.format(count) + "  Energy = "
-							+ numFormat.format(energy));
-				} else {
-					textOut.messageOutln("Bin " + xch + ":  Counts = "
-							+ numFormat.format(count));
-				}
-				done();
-			}
-		}
-	}
 
-	private final List rangeList = Collections
-			.synchronizedList(new ArrayList());
 
 	/**
 	 * Accepts integer input and does a command if one is present.
@@ -393,7 +322,8 @@ class Action implements ActionListener, PlotMouseListener,
 	 * @param parameters
 	 *            the integers
 	 */
-	private void integerChannel(double[] parameters) {
+	//FIXME KBS should be in parse command
+	void integerChannel(double[] parameters) {
 		final int numPar = parameters.length;
 		/*
 		 * FIXME we should be better organized so range and rebin are not
@@ -405,7 +335,7 @@ class Action implements ActionListener, PlotMouseListener,
 					final int len = Math.min(numPar, 2);
 					for (int i = 0; i < len; i++) {
 						rangeList.add(new Integer((int) parameters[i]));
-						doCommand();
+						doCommand(inCommand);
 					}
 				}
 				return;
@@ -428,7 +358,7 @@ class Action implements ActionListener, PlotMouseListener,
 						cursor.setChannel((int) parameters[i], 0);
 						cursor.shiftInsidePlot();
 					}
-					doCommand();
+					doCommand(inCommand);
 				}
 			} else { //no command so get channel
 				if (numPar > 0) {
@@ -452,7 +382,7 @@ class Action implements ActionListener, PlotMouseListener,
 						cursor.setChannel((int) parameters[i - 1],
 								(int) parameters[i]);
 						cursor.shiftInsidePlot();
-						doCommand();
+						doCommand(inCommand);
 					}
 				}
 			} else { //no command so get channel
@@ -517,7 +447,7 @@ class Action implements ActionListener, PlotMouseListener,
 	 *            the first element of which is the number of the hist to
 	 *            display
 	 */
-	private void display(double[] hist) {
+	void display(double[] hist) {
 		if (!commandPresent) {
 			init();
 			textOut
@@ -556,7 +486,7 @@ class Action implements ActionListener, PlotMouseListener,
 		}
 	}
 
-	private void overlay(double[] hist) {
+	void overlay(double[] hist) {
 		if (!commandPresent) {
 			init();
 			textOut.messageOut("Overlay histogram numbers: ",
@@ -1016,33 +946,6 @@ class Action implements ActionListener, PlotMouseListener,
 
 	private synchronized void addClick(Bin c) {
 		clicks.add(Bin.copy(c));
-	}
-
-	/**
-	 * Parse a string go a number
-	 * 
-	 * @param s
-	 * @return
-	 * @throws NumberFormatException
-	 */
-	private double convertNumber(String s) throws NumberFormatException {
-		return (s.indexOf('.') >= 0) ? Double.parseDouble(s) : Integer
-				.parseInt(s);
-	}
-
-	private void help() {
-		final StringBuffer sb = new StringBuffer("Commands:\t");
-		sb
-				.append("li - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\t");
-		sb
-				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
-		sb.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
-		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final String[] commands = CommandManager.getInstance().getAllCommands();
-		for (int i = 0; i < commands.length; i++) {
-			sb.append(commands[i]).append("\t");
-		}
-		textOut.messageOutln(sb.toString());
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
