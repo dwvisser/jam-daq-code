@@ -84,11 +84,9 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
             }
         } catch (EOFException eofe) {// we got to the end of a file or stream
             status=EventInputStatus.END_FILE;
-            console.warningOutln(getClass().getName()+
-            ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
         } catch (Exception e){
             status=EventInputStatus.UNKNOWN_WORD;
-            throw new EventException(getClass().getName()+".readEvent() parameter = "+parameter+" Exception: "+e.toString());
+            throw new EventException(getClass().getName()+".readEvent() parameter = "+parameter,e);
         }
         if (!gotParameter && status == EventInputStatus.EVENT) {
             status = EventInputStatus.IGNORE;
@@ -115,7 +113,7 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
         } else if ((paramWord & EVENT_PARAMETER_MARKER) != 0) {
             int paramNumber = paramWord & EVENT_PARAMETER_MASK;
             if (paramNumber < 2048) {
-                parameter=paramNumber-1;//parameter number used in array
+                parameter=paramNumber;//parameter number used in array
                 parameterSuccess=true;
                 status=EventInputStatus.PARTIAL_EVENT;
             } else {// 2048-4095 assumed
