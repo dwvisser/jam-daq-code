@@ -28,14 +28,14 @@ public class Scaler implements Serializable  {
     /**
      * Creates a new scaler with an assigned name and number.
      *
-     * @param	name	name of the scaler
+     * @param	name	name of the scaler, which must be <=16 characters
      * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
+     * @throws UnsupportedArgumentException if name > <code>NAME_LENGTH</code> characters
      */
-
-    public Scaler(String name, int number) throws DataException{        
+    public Scaler(String name, int number) throws DataException {        
 		final StringUtilities su=StringUtilities.instance();
         if(name.length()>NAME_LENGTH){//give error if name is too long
-            throw new DataException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
+            throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
         name=su.makeLength(name, NAME_LENGTH);
         /* make sure name is unique */
