@@ -1,10 +1,14 @@
 package jam;
 import jam.data.control.HistogramZero;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Class which exposes an API for scripting offline sorting sessions.
@@ -32,7 +36,7 @@ import java.io.File;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Apr 5, 2004
  */
-public final class Script {
+public final class Script implements Observer {
 	
 	private final JamMain jam;
 	private final File base;
@@ -50,6 +54,7 @@ public final class Script {
 	 */
 	public Script(){
 		super();
+		Broadcaster.getSingletonInstance().addObserver(this);
 		jam=new JamMain(this);
 		base=new File(System.getProperty("user.dir"));
 	}
@@ -213,7 +218,7 @@ public final class Script {
 			final Object lock=new Object();
 			synchronized (lock) {
 				final long ms=2500;//wait time in milliseconds
-				while (jam.getRunState() != RunState.ACQ_OFF){
+				while (rs != RunState.ACQ_OFF){
 					lock.wait(ms);
 				}
 			}
@@ -224,6 +229,19 @@ public final class Script {
 			System.err.println("Error while beginning sort: "+e.getMessage());
 		}
 	}
+	
+	private RunState rs=RunState.NO_ACQ;
+	public void update(Observable event, Object param){
+		final BroadcastEvent be=(BroadcastEvent)param;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.RUN_STATE_CHANGED){
+			synchronized(rs){
+				rs=(RunState)param;
+			}
+		}
+	}
+
+
 	
 	/**
 	 * Load the given HDF file into memory. You must have already 
