@@ -60,7 +60,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 		List hists = Histogram.getHistogramList();
 		String[] names = new String[hists.size()];
 		for (int i = 0; i < hists.size(); i++) {
-			names[i] = ((Histogram) hists.get(i)).getName();
+			names[i] = ((Histogram) hists.get(i)).getUniqueFullName();
 		}
 		return names;
 	}

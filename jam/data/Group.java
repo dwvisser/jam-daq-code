@@ -12,7 +12,7 @@ import java.util.TreeMap;
  *
  */
 public class Group {
-
+ 
 	/** List of all groups */
 	private final static List LIST = new ArrayList();
 	/** Map of all groups using name*/	
@@ -20,7 +20,10 @@ public class Group {
 	/** The current active group for creating histograms*/
 	private static Group currentGroup;
 	/** children of group */
-	private final List children = new ArrayList();	
+	private final List histogramList = new ArrayList();
+	/** children of group */
+	private final Map histogramMap = new TreeMap();	 
+	
 	private String name; 
 
 	/** Create a new group */
@@ -55,6 +58,10 @@ public class Group {
 	public static List getGroupList(){
 		return LIST;
 	}
+	public static Map getGroupMap(){
+		return NAME_MAP;
+	}
+
 	/** Clear all groups */
 	public static void clear(){
 		NAME_MAP.clear();
@@ -71,19 +78,26 @@ public class Group {
 		LIST.add(this);
 		NAME_MAP.put(name, this);
 	}
+	/**
+	 * Add a histogram to the group
+	 * @param hist
+	 */
+	public void addHistogram(Histogram hist){
+		histogramList.add(hist);
+		histogramMap.put(hist.getName(),  hist);
+	}
  
 
 	public String getName(){
 		return name;
 	}
-	
-	public List getChildren(){
-		return children;
+	public List getHistogramList(){
+		return histogramList;
+	}
+	public Map getHistogramMap(){
+		return histogramMap;
 	}
 
-	public void add(Object object){
-		children.add(object);
-	}
 	public String toString(){
 		return name;
 	}

@@ -191,11 +191,13 @@ public abstract class Histogram {
 	 * gates that belong to this histogram
 	 */
 	private transient final List gates = new ArrayList();
-
-	private transient String title; // title of histogram
-
-	private transient String name; //abreviation to refer to it by
-
+	/** title of histogram */
+	private transient String title; 
+	/**	abbreviation to refer to histogram */
+	private transient String name; 
+	/**	unique name amongst all histograms */
+	private transient String uniqueFullName; 
+	
 	private int number; //histogram number
 
 	private transient Type type; //one or two dimension
@@ -233,26 +235,28 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {
-		String addition;
-		int prime;
-		final StringUtilities stringUtil = StringUtilities.instance();
-		this.type = type;
+	protected Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {		
+
+		this.type = type;		
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;		
 		this.title = title;
-		this.name = nameIn;
-		//give error if name is to be truncated
-		String name2 = name = stringUtil.makeLength(name, NAME_LENGTH);
-		name = name2;
-		//find a name that does not conflict with exiting names
-		prime = 1;
-		while (NAME_MAP.containsKey(name)) {
-			addition = "[" + prime + "]";
-			name = stringUtil.makeLength(name, NAME_LENGTH - addition.length())
-					+ addition;
-			prime++;
-		}
+
+		Group currentGroup = Group.getCurrentGroup();
+		
+		//Make a unique name in the group 
+		Map groupHistMap =currentGroup.getHistogramMap();		
+		name=makeUniqueName(nameIn, groupHistMap);
+		//Create the full histogram name with group name
+		String groupName=currentGroup.getName();		
+		this.uniqueFullName = groupName+"/"+nameIn;
+		
+		//Add to group
+		currentGroup.addHistogram(this);
+		
 		gates.clear();
 		assignNewNumber();
+		
 		//allow memory for gates and define sizes
 		final boolean oneD = type.getDimensionality() == 1;
 		if (labelX == null) {
@@ -261,13 +265,10 @@ public abstract class Histogram {
 		if (labelY == null) {
 			labelY = oneD ? Y_LABEL_1D : Y_LABEL_2D;
 		}
-		this.sizeX = sizeX;
-		this.sizeY = oneD ? 0 : sizeY;
 		/* add to static lists */
-		NAME_MAP.put(name, this);
+		NAME_MAP.put(uniqueFullName, this);
 		LIST.add(this);
 		DIM_LIST[type.getDimensionality() - 1].add(this);
-		Group.getCurrentGroup().add(this);
 	}
 
 	/**
@@ -348,7 +349,33 @@ public abstract class Histogram {
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
+	/**
+	 * 
+	 * @param name name to make unique
+	 * @param map  Map of all names
+	 * @return
+	 */
+	protected String  makeUniqueName(String name, Map map ) {
 
+		String nameAddition;
+		int prime;
+		
+		final StringUtilities stringUtil = StringUtilities.instance();
+		
+		//FIXME give error if name is to be truncated
+		String nameTemp = stringUtil.makeLength(name, NAME_LENGTH);
+
+		//find a name that does not conflict with exiting names
+		prime = 1;
+		while (map.containsKey(nameTemp)) {
+			nameAddition = "[" + prime + "]";
+			nameTemp = stringUtil.makeLength(nameTemp, NAME_LENGTH - nameAddition.length())
+					+ nameAddition;
+			prime++;
+		}
+		return nameTemp;
+		
+	}
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
@@ -482,7 +509,7 @@ public abstract class Histogram {
 			if (histogram != null) {
 				histogram.clearInfo();
 				LIST.remove(histogram);
-				NAME_MAP.remove(histogram.getName());
+				NAME_MAP.remove(histogram.getUniqueFullName());
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
@@ -544,7 +571,17 @@ public abstract class Histogram {
 	 * @return the name of this histogram
 	 */
 	public String getName() {
-		return name;
+		//FIXME change to name
+		//return name;
+		return uniqueFullName;
+	}
+	/**
+	 * Returns the histogram unique name.
+	 * 
+	 * @return the name of this histogram
+	 */
+	public String getUniqueFullName() {
+		return uniqueFullName;
 	}
 
 	/**
@@ -786,7 +823,7 @@ public abstract class Histogram {
 	 * @return its name
 	 */
 	public String toString() {
-		return name;
+		return uniqueFullName;
 	}
 
 	/**

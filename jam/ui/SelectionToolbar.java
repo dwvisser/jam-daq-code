@@ -210,7 +210,7 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 					display.overlayHistogram(hist.getNumber());
 			} else {
 				synchronized (status) {
-					status.setHistName(hist.getName());					
+					status.setHistName(hist.getUniqueFullName());					
 					gatesChanged();
 					setOverlaySelected(false);
 					setOverlayEnabled(oneD);

@@ -120,7 +120,7 @@ public class SelectionTree extends JPanel implements Observer {
             final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
             		group);
 	        // Loop through histograms and load them		
-	        final Iterator iterHist = group.getChildren().iterator();
+	        final Iterator iterHist = group.getHistogramList().iterator();
 	        while (iterHist.hasNext()) {
 	            final Histogram hist = (Histogram) iterHist.next();
 	            final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
@@ -153,11 +153,11 @@ public class SelectionTree extends JPanel implements Observer {
             if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;
-                STATUS.setHistName(hist.getName());
+                STATUS.setHistName(hist.getUniqueFullName());
                 STATUS.setCurrentGateName(null);                
                 /* Do we have overlays ? */
                 if (paths.length>1) {
-                	if (hist.getDimensionality()==1) {
+                	if (hist.getDimensionality()==1) { 
                 		selectOverlay(paths);
                 	}else{
                 		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2D histogram.");

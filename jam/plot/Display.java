@@ -280,7 +280,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			final Histogram hist =selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
 			if (hist!=null) {
-				status.setHistName(hist.getName());				 
+				status.setHistName(hist.getUniqueFullName());				 
 			}else{
 				status.setHistName(null);		
 			}

@@ -69,7 +69,7 @@ final class Limits {
 			throw new IllegalArgumentException(
 					"Can't have null histogram reference in Limits constructor.");
 		}
-        histName=hist.getName();
+        histName=hist.getUniqueFullName();
         TABLE.put(histName,this);
         sizeX=hist.getSizeX()-1;
         sizeY=hist.getSizeY()-1;
@@ -198,7 +198,7 @@ final class Limits {
 		if (hist == null) {
 			rval = LIMITS_NULL;
 		} else {
-			final Object o = TABLE.get(hist.getName());
+			final Object o = TABLE.get(hist.getUniqueFullName());
 			if (o == null) {
 				final Preferences prefs = PlotPrefs.PREFS;
 				final boolean ignoreZero = prefs.getBoolean(

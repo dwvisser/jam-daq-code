@@ -364,7 +364,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final int num = (int) hist[0];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
-				JamStatus.instance().setHistName(h.getName());
+				JamStatus.instance().setHistName(h.getUniqueFullName());
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				display.removeOverlays();
