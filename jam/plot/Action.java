@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JOptionPane;
 
@@ -37,7 +39,7 @@ import javax.swing.JOptionPane;
  * @version 0.5
  */
 
-class Action implements ActionListener, PlotMouseListener {
+class Action implements ActionListener, PlotMouseListener, PreferenceChangeListener {
 
 	static final String HELP = "help";
 	static final String EXPAND = "expand";
@@ -118,6 +120,7 @@ class Action implements ActionListener, PlotMouseListener {
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
 		commandMap = createCommandMap();
+		PlotPrefs.prefs.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -1058,7 +1061,7 @@ class Action implements ActionListener, PlotMouseListener {
 	 * @param whether <code>true</code> if auto-scale on expand or zoom
 	 * is desired
 	 */
-	synchronized void setAutoOnExpand(boolean whether) {
+	private synchronized void setAutoOnExpand(boolean whether) {
 		autoOnExpand = whether;
 	}
 
@@ -1109,4 +1112,11 @@ class Action implements ActionListener, PlotMouseListener {
 		textOut.messageOutln(sb.toString());
 	}
 	
+	public void preferenceChange(PreferenceChangeEvent pce){
+		final String key=pce.getKey();
+		final String newValue=pce.getNewValue();
+		if (key.equals(PlotPrefs.AUTO_ON_EXPAND)){
+			setAutoOnExpand(Boolean.valueOf(newValue).booleanValue());
+		}
+	}
 }
