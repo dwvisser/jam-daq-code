@@ -1,7 +1,8 @@
 package jam.global;
 import jam.FrontEndCommunication;
-import jam.VMECommunication;
+import jam.JamPrefs;
 import jam.RunState;
+import jam.VMECommunication;
 import jam.plot.Display;
 
 import java.io.File;
@@ -230,6 +231,8 @@ public final class JamStatus {
 		}
 		console=mh;
 		frontEnd=new VMECommunication(mh);
+		JamPrefs.prefs.addPreferenceChangeListener(frontEnd);
+		broadcaster.addObserver(frontEnd);
 	}
 	
 	public synchronized MessageHandler getMessageHandler(){
