@@ -455,7 +455,6 @@ public class Histogram implements Serializable {
 	}
 	
 	/**
-	 * @param any int type indicates sorted by number
 	 * @return list of all histograms sorted by number
 	 */
 	public static List getListSortedByNumber(){
@@ -463,8 +462,7 @@ public class Histogram implements Serializable {
 	}
 
 	/**
-	 * @param any String type indicates sorted by name
-	 * @return list of all histograms sorted by number
+	 * @return list of all histograms sorted by name
 	 */
 	public static List getListSortedByName(){
 		return new ArrayList(sortedNameMap.values());
