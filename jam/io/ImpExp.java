@@ -164,6 +164,7 @@ public abstract class ImpExp {
 				/* implementing class implement following method */
 				readHist(inBuffStream);
 				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
+				inBuffStream.close();
 				rval = true;
 			}
 		} catch (IOException ioe) {
@@ -188,8 +189,7 @@ public abstract class ImpExp {
 	protected void saveFile(String msg, String extension, Histogram hist)
 		throws ImpExpException {
 		File outFile = getFileSave(msg, extension);
-		// open file dialog		       		
-		try {
+		try {// open file dialog		 
 			if (outFile != null) { // if Save file dialog was  not canceled
 				lastFile = outFile;
 				FileOutputStream outStream = new FileOutputStream(outFile);
@@ -274,12 +274,12 @@ public abstract class ImpExp {
 					+ "getFile() called with state = "
 					+ state);
 		}
-		// dont do anything if it was cancel
+		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION) {
 			file = jfile.getSelectedFile();
 		}
-		System.err.println(
-			getClass().getName() + ".getFile() returning " + file);
+		/*System.err.println(
+			getClass().getName() + ".getFile() returning " + file);*/
 		return file;
 	}
 
