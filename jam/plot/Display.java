@@ -329,12 +329,20 @@ Observer {
     /**
      * Draw a fit overlayed on the current histogram Plot.
      */
-    public void displayFit(double [] counts, int lowerLimit, int upperLimit){
+    /*public void displayFit(double [] counts, int lowerLimit, int upperLimit){
         plot1d.displayFit(counts, lowerLimit, upperLimit);
     }
 
     public void displayFit(double [] counts, double [] residual, int lowerLimit, int upperLimit){
         plot1d.displayFit(counts, residual, lowerLimit, upperLimit);
+    }*/
+    
+    public void displayFit(
+	double[][] signals,
+	double[] background,
+	double[] residuals,
+	int ll){
+    	plot1d.displayFit(signals, background,residuals, ll);
     }
 
     /**
