@@ -185,7 +185,6 @@ public final class JamMain extends JFrame implements Observer {
 		} else if (mode == SortMode.FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(status.getOpenFile()).toString());
-			menubar.setSaveEnabled(true);
 		} else if (mode == SortMode.NO_SORT) {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
