@@ -363,10 +363,9 @@ Observer {
             out[k]=0;
         }
         for (int i=0; i < inArray.length; i++) {
-            /*for (int j=ll; j<=ul; j++){
+            for (int j=ll; j<=ul; j++){
                 out[i] += inArray[i][j];
-            }*/
-            System.arraycopy(inArray[i],0,out,0,inArray[i].length);
+            }
         }
         return out;
     }
@@ -379,10 +378,9 @@ Observer {
             out[k]=0;
         }
         for (int i=ll; i <=ul; i++) {
-            /*for (int j=0; j<inArray[0].length; j++){
+            for (int j=0; j<inArray[0].length; j++){
                 out[j] += inArray[i][j];
-            }*/
-            System.arraycopy(inArray[i],0,out,0,inArray[i].length);
+            }
         }
         return out;
     }
