@@ -285,7 +285,6 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.VMEstop();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
-        //netDaemon.setState(GoodThread.SUSPEND);
         jamMain.setRunState(RunState.ACQ_OFF);
         //done to avoid "last buffer in this run becomes first and last buffer in 
         //next run" problem
