@@ -7,12 +7,14 @@
 	<property name="ndoc.dir" value="${build.dir}/ndoclet" />
     <property name="APIbase.dir" value="${build.dir}/APItemp" />
     <property name="API.dir" value="${APIbase.dir}/help/API" />
+	<property name="Webstart.dir" value="${build.dir}/webstart" />
 	<property name = "windows" value = "${build.dir}/windows/jam-daq" />
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="1" />
 	<property name = "MINOR" value="6" />
 	<property name = "RELEASE" value="0" />
+	<property name = "keyPassword" value="s4b14xto" />
     
 	<!-- task definition for windows executable builder -->
 	<taskdef name="jsmoothgen"
@@ -42,6 +44,20 @@
             excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
         />    
     </target>
+	
+	<target name="webstart" depends="jar,helpjar">
+		<copy file="${copy.dir}/classes/jam/nukeicon.png" todir="${Webstart.dir}" />
+		<copy file="${copy.dir}/jam.jnlp" todir="${Webstart.dir}" />
+		<copy file="${build.dir}/Jam.jar" todir="${Webstart.dir}" />
+		<signjar jar="${Webstart.dir}/Jam.jar" alias="dale" 
+			storepass="${keyPassword}" />
+		<copy file="${build.dir}/JamHelp.jar" todir="${Webstart.dir}" />
+		<signjar jar="${Webstart.dir}/JamHelp.jar" alias="dale" 
+			storepass="${keyPassword}" />
+		<copy todir="${Webstart.dir}" file="${copy.dir}/jh.jar"/>
+		<signjar jar="${Webstart.dir}/jh.jar" alias="dale" 
+			storepass="${keyPassword}" />
+	</target>
 
     <target name="srczip" depends="copy">
         <zip zipfile="${build.dir}/JamSrc.zip"
