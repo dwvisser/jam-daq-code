@@ -4,12 +4,11 @@ import junit.framework.TestCase;
 import java.awt.Polygon;
 
 /**
- * @author dwvisser
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * JUnit tests for <code>jam.data.Gate</code>.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @see Gate
+ * @see AllTests
  */
 public class GateTest extends TestCase {
 
@@ -24,6 +23,7 @@ public class GateTest extends TestCase {
 
 	/**
 	 * Constructor for GateTest.
+	 * 
 	 * @param arg0
 	 */
 	public GateTest(String arg0) {
@@ -31,6 +31,8 @@ public class GateTest extends TestCase {
 	}
 
 	/**
+	 * Initialize local variables for the tests.
+	 * 
 	 * @see TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -44,8 +46,10 @@ public class GateTest extends TestCase {
 		g2.setLimits(box);
 	}
 
-	/*
-	 * Test for boolean inGate(int)
+	/**
+	 * Test for boolean inGate(int).
+	 * 
+	 * @see Gate#inGate(int)
 	 */
 	public void testInGateI() {
 		try {
@@ -60,8 +64,10 @@ public class GateTest extends TestCase {
 		}
 	}
 
-	/*
-	 * Test for boolean inGate(int, int)
+	/**
+	 * Test for boolean inGate(int, int).
+	 * 
+	 * @see Gate#inGate(int,int)
 	 */
 	public void testInGateII() {
 		try {

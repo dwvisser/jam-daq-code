@@ -5,7 +5,7 @@ package jam.util;
  *  
  * @author  Dale Visser	
  * @version 0.5
- * @see	    java.lang.String
+ * @see java.lang.String
  */
 public class StringUtilities {
 	
@@ -15,6 +15,11 @@ public class StringUtilities {
 		super();
 	}
 
+	/**
+	 * Get the only instance of this class.
+	 * 
+	 * @return the only instance of this class
+	 */
 	public static final StringUtilities instance(){
 		return SU;
 	}

@@ -1,6 +1,3 @@
-/*
- * Created on Dec 30, 2003
- */
 package jam;
 import jam.fit.LoadFit;
 import jam.global.*;
@@ -17,11 +14,13 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
 /**
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version 1.4
  *
  * Jam's menu bar. Separated from JamMain to reduce its 
  * size and separate responsibilities.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 1.4
+ * @since 30 Dec 2003
  */
 public class MainMenuBar extends JMenuBar {
 

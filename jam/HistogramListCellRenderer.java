@@ -1,9 +1,3 @@
-/*
- * Created on Dec 17, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package jam;
 
 import java.awt.Component;
@@ -14,16 +8,20 @@ import jam.data.Gate;
 import jam.data.Histogram;
 
 /**
- * @author Administrator
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Renders representations for a JComboBox list entry of
+ * a <code>jam.data.Histogram</code> object.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 17 Dec 2003
  */
 public class HistogramListCellRenderer implements ListCellRenderer {
 	
-	final JLabel gateIcon;
-	final JLabel gateNotSetIcon;
+	private final JLabel gateIcon;
+	private final JLabel gateNotSetIcon;
 	
+	/**
+	 * Creates a new <code>HistogramListCellRenderer</code>.
+	 */
 	public HistogramListCellRenderer(){
 		super();
 		final ClassLoader cl=getClass().getClassLoader();
@@ -36,7 +34,18 @@ public class HistogramListCellRenderer implements ListCellRenderer {
 		gateNotSetIcon=new JLabel(ii);
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * <p>Returns a <code>JPanel</code> representing the given object.
+	 * Given a <code>Histogram</code>, returns a 
+	 * <code>JPanel</code> with the following information:</p>
+	 * <ul>
+	 * <li>histogram number, name and dimensionality</li>
+	 * <li>an icon if any gates are associated with it</li>
+	 * <li>an X on the icon if the gates aren't all defined</li>
+	 * </ul> 
+	 * <p>Given a <code>String</code>,
+	 * returns a JPanel with the words centered as a <code>JLabel</code>.</p>
+	 * 
 	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
 	 */
 	public Component getListCellRendererComponent(

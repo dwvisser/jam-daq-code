@@ -20,15 +20,51 @@ public class Display
 	extends JPanel
 	implements Displayer, CommandListener, Observer {
 
+	/**
+	 * Enumeration of the various preference types for displaying
+	 * histograms.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 * @see #AUTO_IGNORE_ZERO
+	 * @see #AUTO_IGNORE_FULL
+	 * @see #WHITE_BACKGROUND
+	 * @see #BLACK_BACKGROUND
+	 * @see #AUTO_PEAK_FIND
+	 * @see #CONTINUOUS_2D_LOG
+	 */
 	static public class Preferences {
 		private int type;
 
+		/**
+		 * If true, ignore channel 0 when autoscaling the plot.
+		 */
 		static public Preferences AUTO_IGNORE_ZERO = new Preferences(0);
+		
+		/**
+		 * If true, ignore the last channel when autoscaling the plot.
+		 */
 		static public Preferences AUTO_IGNORE_FULL = new Preferences(1);
+		
+		/**
+		 * If true, use black-on-white for displaying the plot.
+		 */
 		static public Preferences WHITE_BACKGROUND = new Preferences(2);
+		
+		/**
+		 * If true, use white-on-black for displaying the plot.
+		 */
 		static public Preferences BLACK_BACKGROUND = new Preferences(3);
+		
+		/**
+		 * If true, automatically find peaks and display their centroids.
+		 */
 		static public Preferences AUTO_PEAK_FIND = new Preferences(4);
+		
+		/**
+		 * If true, show a continuous gradient color scale on 2d plots.
+		 */
 		static public Preferences CONTINUOUS_2D_LOG = new Preferences(5);
+		
 		private Preferences(int type) {
 			this.type = type;
 		}
@@ -60,7 +96,6 @@ public class Display
 	public Display(Broadcaster b, MessageHandler mh) {
 		this(mh);
 		this.broadcaster = b;
-		//add broadcaster to action
 		action.setBroadcaster(broadcaster);
 	}
 
@@ -291,14 +326,10 @@ public class Display
 	}
 
 	/**
-	 *Set the display preference,
+	 * Set a display preference.
 	 *
-	 * <ul>
-	 * <li>AUTO_IGNORE_0  ignore channel zero on auto scale
-	 * <li>AUTO_IGNORE_MAX  ignore max channel on auto scale
-	 * </ul>
-	 * @param preference The preference to set see
-	 * @param state   The state of the preference if applicable
+	 * @param preference the preference to set
+	 * @param state the state of the preference, if applicable
 	 */
 	public void setPreference(Preferences preference, boolean state) {
 		if (preference == Preferences.AUTO_IGNORE_ZERO) {

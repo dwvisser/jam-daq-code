@@ -3,12 +3,9 @@ package jam.data.peaks;
 import junit.framework.TestCase;
 
 /**
- * @author Administrator
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * JUnit tests for <code>jam.data.peak.PeakTest</code>.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
 public class PeakTest extends TestCase {
 
@@ -16,6 +13,7 @@ public class PeakTest extends TestCase {
 
 	/**
 	 * Constructor for PeakTest.
+	 * 
 	 * @param arg0
 	 */
 	public PeakTest(String arg0) {
@@ -23,6 +21,8 @@ public class PeakTest extends TestCase {
 	}
 
 	/**
+	 * Initialize local variables for the tests.
+	 * 
 	 * @see TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -33,6 +33,11 @@ public class PeakTest extends TestCase {
 		p3=new Peak(200,10,2);
 	}
 
+	/**
+	 * Test for <code>compareTo(Object)</code>.
+	 *
+	 * @see Peak#compareTo(Object)
+	 */
 	public void testCompareTo() {
 		assertEquals(-1,p1.compareTo(p2a));
 		assertEquals(-1,p1.compareTo(p2b));

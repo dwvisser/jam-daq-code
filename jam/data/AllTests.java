@@ -4,15 +4,17 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * @author dwvisser
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * JUnit test suite for the <code>jam.data</code> package.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @see GateTest
+ * @see HistogramTest
  */
 public class AllTests {
 
+	/**
+	 * @return the test suite
+	 */
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for jam.data");
 		//$JUnit-BEGIN$

@@ -3,12 +3,11 @@ package jam.data;
 import junit.framework.TestCase;
 
 /**
- * @author dwvisser
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * JUnit tests for <code>jam.data.Histogram</data>.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @see Histogram
+ * @see AllTests
  */
 public class HistogramTest extends TestCase {
 
@@ -17,6 +16,7 @@ public class HistogramTest extends TestCase {
 
 	/**
 	 * Constructor for HistogramTest.
+	 * 
 	 * @param arg0
 	 */
 	public HistogramTest(String arg0) {
@@ -24,6 +24,8 @@ public class HistogramTest extends TestCase {
 	}
 
 	/**
+	 * Initialize local variables for the tests.
+	 * 
 	 * @see TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
@@ -34,6 +36,11 @@ public class HistogramTest extends TestCase {
 		g2 = new Gate("g2",h2);
 	}
 
+	/**
+	 * Test for <code>hasGate(Gate)</code>.
+	 *
+	 * @see Histogram#hasGate(Gate)
+	 */
 	public void testHasGate() {
 		assertTrue(h1.hasGate(g1));
 		assertTrue(h2.hasGate(g2));
@@ -41,6 +48,11 @@ public class HistogramTest extends TestCase {
 		assertTrue(!h2.hasGate(g1));
 	}
 	
+	/**
+	 * Test for <code>getHistogram(String)</code>.
+	 * 
+	 * @see Histogram#getHistogram(String)
+	 */
 	public void testGetHistogram() {
 		assertNotNull("h1 nonexistent here", h1);
 		assertNotNull("Couldn't find histogram named \""+h1.getName()+"\"",Histogram.getHistogram(h1.getName()));
@@ -48,6 +60,11 @@ public class HistogramTest extends TestCase {
 		assertNull("Found nonexistent histogram named \"notreal\"",Histogram.getHistogram("notreal"));
 	}
 	
+	/**
+	 * Test for <code>getGates</code>.
+	 *
+	 * @see Histogram#getGates
+	 */
 	public void testGetGates(){
 		Gate [] h1List=h1.getGates();
 		assertEquals(h1List.length,1);
