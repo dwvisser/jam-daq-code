@@ -45,7 +45,7 @@ public class Projections extends AbstractControl implements Observer {
 
 	private static final String BETWEEN = "Between Channels";
 
-	private static final String NEW_HIST = "New Histogram";
+	private static final String NEW_HIST = "NEW: ";
 
 	private final Broadcaster broadcaster;
 
@@ -150,7 +150,7 @@ public class Projections extends AbstractControl implements Observer {
 		cto.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent e){
 				if (cto.getSelectedItem() != null) {
-					setUseNewHist(cto.getSelectedItem().equals(NEW_HIST));
+					setUseHist((String)cto.getSelectedItem());
 				}
 			}
 		});
@@ -158,7 +158,7 @@ public class Projections extends AbstractControl implements Observer {
 		final JComponent lname = new JLabel("Name");
 		ptextto.add(lname);
 		ttextto = new JTextField("projection", 20);
-		setUseNewHist(false);
+		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
 		/* Buttons panel */
@@ -240,7 +240,7 @@ public class Projections extends AbstractControl implements Observer {
 	 */
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
-		setUseNewHist(true); //default use new histogram
+		setUseHist(NEW_HIST); //default use new histogram
 		setupToHist(NEW_HIST);//setup "to" histogram
 		setupCuts(FULL);//default setup channels
 	}
@@ -262,14 +262,28 @@ public class Projections extends AbstractControl implements Observer {
 	 */
 	private void setupToHist(String newSelect) {
 		cto.removeAllItems();
-		cto.addItem(NEW_HIST);
-		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
-			Histogram h = (Histogram) e.next();
-			if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				cto.addItem(h.getFullName());
+		//Add working group new
+		cto.addItem(NEW_HIST+Group.WORKING_NAME+"/.");
+		//Add new histograms
+		for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
+			Group group = (Group)iter.next();
+			if (group.getType() != Group.Type.SORT &&
+				!Group.WORKING_NAME.equals(group.getName())	) {
+				cto.addItem(NEW_HIST+group.getName()+"/.");
 			}
 		}
-		cto.setSelectedItem(newSelect);
+		//Add Existing hisograms
+		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
+			Group group = (Group)grpiter.next();
+			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
+				Histogram hist =(Histogram)histiter.next();
+				if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
+					cto.addItem(hist.getFullName());
+				}
+			}
+		}
+
+		cto.setSelectedIndex(0);
 	}
 
 	/* non-javadoc:
@@ -303,9 +317,15 @@ public class Projections extends AbstractControl implements Observer {
 	/* non-javadoc:
 	 * setup if using a new histogram
 	 */
-	private void setUseNewHist(boolean state) {
-		ttextto.setEnabled(state);
-		ttextto.setEditable(state);
+	private void setUseHist(String name) {
+		if (isNewHistogram(name)){
+			ttextto.setEnabled(true);
+			ttextto.setEditable(true);
+		} else {
+			ttextto.setEnabled(false);
+			ttextto.setEditable(false);
+			
+		}
 	}
 
 	/* non-javadoc:
@@ -346,7 +366,7 @@ public class Projections extends AbstractControl implements Observer {
 			}
 		}
 		final Histogram hto;
-		if (name.equals(NEW_HIST)) {
+		if (isNewHistogram(name)) {
 			name = ttextto.getText().trim();
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
 			/*if (cdown.isSelected()) {//project down
@@ -477,4 +497,9 @@ public class Projections extends AbstractControl implements Observer {
 		}
 		return out;
 	}
+	
+	private boolean isNewHistogram(String name){
+		return name.startsWith(NEW_HIST);
+	}
+	
 }
