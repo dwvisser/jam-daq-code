@@ -99,20 +99,7 @@ public class FitConsole
 		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
-		//final int defaultNumLines = 8;
-		//final int lineHeight = textLog.getFontMetrics(
-		//textLog.getFont()).getHeight();
-		//final int logHeight=lineHeight*defaultNumLines;
-		//textLog.setPreferredSize(new Dimension(700,logHeight));
 	}
-
-	/**
-	 * Process event when a return is hit in input field
-	 */
-	/*public void actionPerformed(ActionEvent ae) {
-		parseCommand(textIn.getText());
-		textIn.setText(null);
-	}*/
 
 	/**
 	 * Outputs the string as a message to the console, which has more than one part,
