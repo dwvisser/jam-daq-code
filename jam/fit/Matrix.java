@@ -836,25 +836,30 @@ public class Matrix {
 		return outPut;
 	}
 
+	/**
+	 * This method returns a string representation of 
+	 * the matrix.
+	 * 
+	 * @param d displayed fractional digits 
+	 */
 	public String toStringUL(int d) {
-		// this method returns a string representation of the matrix
-		// d displayed fractional digits
-		if (this.rows != this.columns)
-			return ("Error: toStringUR() not square!");
-		NumberFormat nf = NumberFormat.getInstance();
-		nf.setMaximumFractionDigits(d);
-		nf.setMinimumFractionDigits(d);
-		String outPut = new String();
-		String num = new String();
-		int i, j;
-		for (i = 0; i < this.rows; i++) {
-			for (j = 0; j <= i; j++) {
-				Double x = new Double(this.element[i][j]);
-				//num = x.toString();
-				num = nf.format(x);
-				outPut = outPut + num + (char) 9;
+		String outPut = new String(); //return value
+		if (this.rows != this.columns) {
+			outPut = "Error: toStringUR() not square!";
+		} else {
+			NumberFormat nf = NumberFormat.getInstance();
+			nf.setMaximumFractionDigits(d);
+			nf.setMinimumFractionDigits(d);
+			String num = new String();
+			int i, j;
+			for (i = 0; i < this.rows; i++) {
+				for (j = 0; j <= i; j++) {
+					Double x = new Double(this.element[i][j]);
+					num = nf.format(x);
+					outPut = outPut + num + (char) 9;
+				}
+				outPut = outPut + "\n";
 			}
-			outPut = outPut + "\n";
 		}
 		return outPut;
 	}
@@ -949,10 +954,10 @@ public class Matrix {
 		if (hi0 > lo0) {
 			mid = a[(lo0 + hi0) / 2];
 			while (lo <= hi) {
-				while ((lo < hi0) && (a[lo] < mid)){
+				while ((lo < hi0) && (a[lo] < mid)) {
 					++lo;
 				}
-				while ((hi > lo0) && (a[hi] > mid)){
+				while ((hi > lo0) && (a[hi] > mid)) {
 					--hi;
 				}
 				if (lo <= hi) {
@@ -975,6 +980,7 @@ public class Matrix {
 		a[i] = a[j];
 		a[j] = T;
 	}
+
 	private void swap(int a[], int i, int j) {
 		int T;
 		T = a[i];
