@@ -103,14 +103,14 @@ public final class JamStatus {
 	public void setSortMode(SortMode mode) {
 		synchronized (sortMode) {
 			if (mode == SortMode.ONLINE_DISK
-				|| mode == SortMode.ONLINE_NO_DISK
+				|| mode == SortMode.ON_NO_DISK
 				|| mode == SortMode.OFFLINE
 				|| mode == SortMode.REMOTE) {
 				if (!canSetup()) {
 					final StringBuffer etext =
 						new StringBuffer("Can't setup, setup is locked for ");
 					if (sortMode == SortMode.ONLINE_DISK
-						|| sortMode == SortMode.ONLINE_NO_DISK) {
+						|| sortMode == SortMode.ON_NO_DISK) {
 						etext.append("online");
 					} else if (sortMode == SortMode.OFFLINE) {
 						etext.append("offline");
@@ -151,7 +151,6 @@ public final class JamStatus {
 			setSortMode(SortMode.FILE);
 		}
 	}
-
 
 	/**
 	 * @return the current sort mode
