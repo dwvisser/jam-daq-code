@@ -1,4 +1,6 @@
 package jam.plot;
+import jam.data.DataException;
+
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,6 +11,8 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.prefs.PreferenceChangeEvent;
+
+import javax.swing.SwingUtilities;
 
 /**
  * Class to plot a 2-dimensional histogram.
@@ -47,7 +51,11 @@ class Plot2d extends Plot {
 		} else {
 			super.preferenceChange(pce);
 		}
-		repaint();
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				repaint();				
+			}
+		});
 	}
 	
 	private synchronized void setSmoothColorScale(boolean bool){
