@@ -117,7 +117,7 @@ public final class Display extends JPanel implements Observer {
 	private final List overlays = Collections.synchronizedList(new ArrayList());
 
 	public void addToOverlay(int num) {
-		final Histogram h=Histogram.getHistogram(num);
+		final Histogram h = Histogram.getHistogram(num);
 		if (h.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
@@ -125,7 +125,11 @@ public final class Display extends JPanel implements Observer {
 		if (Limits.getLimits(h) == null) {
 			makeLimits(h);
 		}
-		overlays.add(new Integer(num));
+		final Integer value = new Integer(num);
+		if (!overlays.contains(value)
+				&& status.getCurrentHistogram().getNumber() != num) {
+			overlays.add(value);
+		}
 		doOverlay();
 	}
 
@@ -262,11 +266,11 @@ public final class Display extends JPanel implements Observer {
 			action.setDefiningGate(false);
 		}
 		if (hist != null) {
-			final int dim=hist.getDimensionality();
-			if (dim==1) {
+			final int dim = hist.getDimensionality();
+			if (dim == 1) {
 				/* Show plot repaint if last plot was also 1d. */
 				setPlot(plot1d);
-			} else if (dim==2) {
+			} else if (dim == 2) {
 				/* Show plot repaint if last plot was also 2d. */
 				setPlot(plot2d);
 			}
