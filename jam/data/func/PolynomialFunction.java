@@ -52,12 +52,13 @@ public class PolynomialFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit(double[] x, double[] y) throws DataException {
+	public void fit(double[] xCoords, double[] yCoords) throws DataException {
 		//does nothing so far
 	}
 	
 	public void updateFormula(){
-		formula = "Polynomial fit not yet implemented";		
+		formula.setLength(0);
+		formula.append("Polynomial fit not yet implemented");		
 	}
 
 }

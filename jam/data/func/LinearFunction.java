@@ -43,11 +43,13 @@ public class LinearFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit(double[] x, double[] y) throws DataException {
-		setCoeff(linearRegression(x, y));
+	public void fit(double[] xCoords, double[] yCoords) throws DataException {
+		setCoeff(linearRegression(xCoords, yCoords));
 	}
 	
 	public void updateFormula(){
-		formula = "E = "+coeff[0]+" + "+coeff[1]+"\u2219ch";		
+		formula.setLength(0);
+		formula.append("E = ").append(coeff[0]).append(" + ").append(coeff[1])
+				.append("\u2219ch");		
 	}
 }

@@ -48,10 +48,8 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	}
 	
 	protected void updateFormula(){
-		formula = "\u221aE = "
-			+ coeff[0]
-			+ " + "
-			+ coeff[1]
-			+ "\u2219ch";
+		formula.setLength(0);
+		formula.append("\u221aE = ").append(coeff[0]).append(" + ").append(
+				coeff[1]).append("\u2219ch");
 	}
 }
