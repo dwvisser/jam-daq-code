@@ -1,5 +1,4 @@
 package jam.plot;
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
@@ -588,11 +587,7 @@ public abstract class Plot extends JPanel {
 			}
 			paintHistogram(g);
 			if (displayingGate) { //are we to display a gate
-				try {
-					paintGate(g);
-				} catch (DataException de) {
-					error("Problem while displaying gate: " + de.getMessage());
-				}
+				paintGate(g);
 			}
 			if (displayingOverlay) {
 				paintOverlay(g);
@@ -707,7 +702,7 @@ public abstract class Plot extends JPanel {
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
-	abstract void paintGate(Graphics g) throws DataException;
+	abstract void paintGate(Graphics g);
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
