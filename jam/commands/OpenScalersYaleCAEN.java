@@ -34,11 +34,7 @@ public class OpenScalersYaleCAEN extends AbstractCommand {
 		}
 			
 		if (file != null) {
-			if (ycs.processEventFile(file)) {
-				ycs.display();				
-			} else {  
-				msghdlr.errorOutln("Reading Yale CAEN Scalers "+ycs.getErrorTxt());
-			}
+			ycs.processEventFile(file);
 		}	
 	}
 
