@@ -9,8 +9,15 @@
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
     
+	<!-- task definition for windows executable builder -->
+	<taskdef name="jsmoothgen"
+    	classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+     	classpath="jsmoothgen-ant.jar"/>
+
     <target name="prepare" depends="clean">
         <mkdir dir="${API.dir}" />
+        <mkdir dir="${winbin}" />
+        <mkdir dir="${winlib}" />
     </target>
     
     <target name="clean">
@@ -30,8 +37,8 @@
         />    
     </target>
 
-    <target name="srcjar" depends="prepare">
-        <jar jarfile="${build.dir}/JamSrc.jar"
+    <target name="srczip" depends="prepare">
+        <zip zipfile="${build.dir}/JamSrc.zip"
             basedir="${base.dir}"
             includes="jam\**\*.java"
         />    
@@ -66,19 +73,19 @@
             	doctitle="Jam - API"/>
     </target>
 
-    <target name="windows" depends="jar,srcjar,apijar"
+    <target name="windows" depends="jar,srczip,apijar"
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="*.jar" />
+    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamAPI.jar, jh.jar, jlfgr-1_0.jar, kunststoff.jar" />
     	</copy>
-    	<copy todir="${windows}" file="jam.ico" />
+    	<copy todir="${windows}" file="${build.dir}/JamSrc.zip" />
     	<copy todir="${windows}" flatten="true">
-    		<fileset dir="${src.dir}/WINpackage" includes="*.jsmooth" />
+    		<fileset dir="${base.dir}/WINpackage" includes="*.*" />
     	</copy>
-    	<jsmoothgen project="${windows}/jam.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.5\\skeletons"/>
-      	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${windows}"
-      	excludes="*.jsmooth,**/*.ico" />
+    	<jsmoothgen project="${windows}/build.jsmooth" 
+      		skeletonroot="C:\\Program Files\\JSmooth 0.9.6\\skeletons"/>
+      	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${build.dir}/windows"
+      	excludes="**/*.jsmooth,**/*.ico" />
     </target>
     
     <target name="all" depends="copy,windows" />

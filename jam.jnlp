@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+  spec="1.0+"
+  codebase="."
+  href="jamwebstart.xml">
+  <information>
+    <title>Jam</title>
+    <vendor>SourceForge under the University of Illinois/NCSA Open Source License</vendor>
+    <homepage href="http://jam-daq.sf.net/"/>
+    <description>Jam</description>
+    <description kind="short">A data acquisition display for nuclear physics experiments.</description>
+    <icon href="jam/nucicon.gif"/>
+    <icon kind="splash" href="jam/nucicon.gif"/>
+    <offline-allowed/>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.4.2+"/>
+    <jar href="lib/Jam.jar"/>
+    <jar href="lib/jlfgr-1_0.jar"/>
+    <jar href="lib/jh.jar" />
+    <jar href="lib/kunststoff.jar" />
+  </resources>
+  <application-desc main-class="jam.JamMain"/>
+</jnlp>
