@@ -91,7 +91,7 @@ public  class JamStatus {
 	/**
 	 * Handle to JamMain to set sort Status
 	 * 
-	 * @param f the frame of the current Jam application
+	 * @param jm the frame of the current Jam application
 	 */
 	public void setJamMain(JamMain jm){
 		jamMain=jm;
