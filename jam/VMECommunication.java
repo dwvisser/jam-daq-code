@@ -417,10 +417,12 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
             if (socketSend != null) {
                 socketSend.send(packetMessage);
             } else {
-                console.errorOutln(getClass().getName()+".VMEsend(): Send socket not set up, need to Setup Camac");
+                console.errorOutln(getClass().getName()+".VMEsend(): "+
+				"Attempted to send a message without a connection. To create a connection, set up online acquisition.");
             }
         } catch (IOException e) {
-            console.errorOutln("Network communication, sending packet [VMECommnunication]");
+            console.errorOutln(getClass().getName()+".VMEsend(): "+
+				"Jam encountered a network communication error attempting to send a packet.");
         }
     }
 
@@ -637,13 +639,6 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @returns true if valid, false if not
      */
     private boolean validStatus(int status) {
-//        if (status==OK) return true;
-//        if (status==ERROR) return true;
-//        if (status==SCALER) return true;
-//        if (status==CNAF) return true;
-//        if (status==COUNTER) return true;
-//        if (status==VME_ADDRESSES) return true;
-//        if (status==SCALER_INTERVAL) return true;
         return (status==OK || status==ERROR || status==SCALER ||
         	status==CNAF || status==COUNTER || status==VME_ADDRESSES ||
         	status==SCALER_INTERVAL);
