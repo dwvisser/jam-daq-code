@@ -24,29 +24,31 @@ public class RingBuffer {
      * Number of buffers in ring.
      */
     protected static final int NUMBER_BUFFERS=0x40;  //64 buffers in ring
+    protected static final int HALF_BUFFERS=NUMBER_BUFFERS/2;
+    
+	protected static final int BIG=Integer.MAX_VALUE/2;
     
     /**
      * Mask that makes counter less than Number buffers
      */
-    protected static final int MASK=0x3F;  //mask of number buffers -1
+    protected static final int MASK=NUMBER_BUFFERS-1;
     
-    private byte [][] ringBuffer;
+    private final byte [][] ringBuffer=new byte [NUMBER_BUFFERS][BUFFER_SIZE];;
     
     /**
      * where we will put the next buffer
      */
-    private int posPut;
+    private int posPut=0;
     
     /**
      * where we will get the next buffer from
      */
-    private int posGet;
+    private int posGet=0;
     
     /**
      * Creates a new ring buffer.
      */
     public RingBuffer()  {        
-        ringBuffer=new byte [NUMBER_BUFFERS][BUFFER_SIZE];        
         posPut=0;
         posGet=0;
     }
@@ -57,7 +59,7 @@ public class RingBuffer {
      * @exception   RingFullException    thrown when the ring is too full to be written to
      */
     public synchronized void putBuffer(byte [] inBuffer) throws RingFullException {
-        if(posPut-posGet+1>ringBuffer.length){
+        if(full()){
         	final StringBuffer message=new StringBuffer();
         	message.append("Lost a buffer in thread \"");
         	message.append(Thread.currentThread().getName());
@@ -104,7 +106,15 @@ public class RingBuffer {
      *
      * @return true if there are no buffers in the ring.
      */
-    public boolean empty(){
+    public synchronized boolean empty(){
         return(posPut==posGet);
+    }
+    
+    public synchronized boolean full(){
+		return posPut-posGet+1 > NUMBER_BUFFERS;
+    }
+    
+    public synchronized boolean halfFull(){
+		return posPut-posGet+1 > HALF_BUFFERS;
     }
 }
