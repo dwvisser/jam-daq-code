@@ -115,7 +115,7 @@ public class VME_Map {
     public void setV775Range(int baseAddress, int range) throws SortException {
         int temp = (baseAddress & 0xF0000000) >>> 28;
         String hexBase = "0x"+Integer.toHexString(baseAddress);
-        if (temp !=3) throw new SortException(hexBase+" not a valid TDC base address.");
+        //if (temp !=3) throw new SortException(hexBase+" not a valid TDC base address.");
         Integer ba=new Integer(baseAddress);
         if (range < 141 || range > 1200) {
             throw new SortException("Requested invalid TDC range: "+range+" ns, must be 141 to 1200 ns.");
