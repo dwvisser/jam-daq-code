@@ -1,5 +1,6 @@
 package jam.global;
 import jam.JamMain;
+import jam.RunState;
 import jam.plot.Display;
 
 import java.io.File;
@@ -112,6 +113,10 @@ public final class JamStatus {
 			sortMode = mode;
 		}
 		broadcaster.broadcast(BroadcastEvent.SORT_MODE_CHANGED);
+	}
+	
+	public void setRunState(RunState rs){
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,rs);
 	}
 	
 	/**

@@ -368,7 +368,7 @@ public class RunControl implements Controller, ActionListener {
         // enable end button, display run number
         bend.setEnabled(true);
         bbegin.setEnabled(false);
-		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.RUN_ON(runNumber));
+		status.setRunState(RunState.RUN_ON(runNumber));
         if(device==DISK){
             console.messageOutln("Began run "+runNumber+", events being written to file: "+dataFileName);
         } else {
@@ -394,7 +394,7 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.end();			    //stop Acq. flush buffer
         vmeComm.readScalers();		    //read scalers
         bend.setEnabled(false);	    		    //toggle button states
-		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED, RunState.ACQ_OFF);
+		status.setRunState(RunState.ACQ_OFF);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
         int numSeconds=0;
         do {//wait for sort to catch up
