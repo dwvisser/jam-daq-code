@@ -13,6 +13,8 @@ import java.util.Arrays;
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
 public final class HistInt1D extends AbstractHist1D {
+	private static final int [] EMPTY_INT=new int[0];
+
 	private int counts[]; // array to hold counts for 1d int
 
 	/**
@@ -120,12 +122,12 @@ public final class HistInt1D extends AbstractHist1D {
 		counts[channel] = (int) Math.round(count);
 	}
 
-	private synchronized void addCounts(int[] countsIn) {
-		final int max = Math.min(countsIn.length, getSizeX()) - 1;
-		for (int i = max; i >= 0; i--) {
-			counts[i] += countsIn[i];
-		}
-	}
+	private synchronized void addCountsArray(int[] countsIn) {
+        final int max = Math.min(countsIn.length, getSizeX()) - 1;
+        for (int i = max; i >= 0; i--) {
+            counts[i] += countsIn[i];
+        }
+    }
 
 
 	/**
@@ -199,11 +201,11 @@ public final class HistInt1D extends AbstractHist1D {
 		if (Type.getArrayType(add)!=getType()){
 			throw new IllegalArgumentException("Expected array for type "+getType());
 		}
-		addCounts((int[]) add);
+		addCountsArray((int[]) add);
 	}
 	
 	synchronized void clearCounts(){
-		counts=null;
+		counts=EMPTY_INT;
 		unsetErrors();
 		setCalibration(null);
 	}
