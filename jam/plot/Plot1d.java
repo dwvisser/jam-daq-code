@@ -1,6 +1,5 @@
 package jam.plot;
 import java.awt.*;
-import java.util.*;
 import jam.data.*;
 
 /**
@@ -84,7 +83,8 @@ class Plot1d extends Plot {
 	 */
 	public void displaySetGate(int mode, Point pChannel, Point pPixel) {
 		if (mode == GATE_NEW) {
-			pointsGate = new Vector(10, 5);
+			//pointsGate = new Vector(10, 5);
+			pointsGate.clear();
 		} else if (mode == GATE_CONTINUE) {
 			pointsGate.add(pChannel);
 			Graphics g = this.getGraphics();
@@ -93,9 +93,11 @@ class Plot1d extends Plot {
 			graph.settingGate1d(pointsGate);
 			g.dispose();
 		} else if (mode == GATE_SAVE) {
-			pointsGate = null;
+			//pointsGate = null;
+			pointsGate.clear();
 		} else if (mode == GATE_CANCEL) {
-			pointsGate = null;
+			//pointsGate = null;
+			pointsGate.clear();
 		}
 	}
 
