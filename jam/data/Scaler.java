@@ -99,13 +99,10 @@ public class Scaler implements Serializable  {
      * @param inValue the list of all the new values for the scalers
      */
     public static void update(int [] inValue){
-        Scaler currentScaler;
-        int numberScalers;
-
-        //check we do not try to update mores scalers than there are
-        numberScalers=Math.min( inValue.length, scalerList.size() );
+        /* check we do not try to update mores scalers than there are */
+        int numberScalers=Math.min( inValue.length, scalerList.size() );
         for (int i=0;i<numberScalers;i++){
-            currentScaler=(Scaler)scalerList.get(i);
+            Scaler currentScaler=(Scaler)scalerList.get(i);
             currentScaler.setValue(inValue[currentScaler.getNumber()]);
         }
     }
