@@ -41,7 +41,7 @@ class SetupSortOff  implements ItemListener {
                     eventOutput.getClass().getName()+"'");
                     if (sortRoutine != null) {
                         setupSort();      //create data areas and daemons
-                        msgHandler.messageOutln("Offline sorting setup");
+                        msgHandler.messageOutln("Daemons and dialogs initialized.");
                     }
                     jamMain.dataChanged();
                     if (bok.equals(ae.getSource())){
