@@ -204,7 +204,7 @@ public class ScalerScan
 		return approved ? chooser.getSelectedFile() : null;
 	}
 
-	public void doIt() {
+	private void doIt() {
 		final char cr = '\n';
 		final StringBuffer outText = new StringBuffer();
 		try {
