@@ -120,10 +120,15 @@ public class JamMain extends JFrame {
 		me.setLayout(new BorderLayout());
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
-		me.add(console, BorderLayout.SOUTH);
+		//me.add(console, BorderLayout.SOUTH);
 		/* histogram displayer (needed by jamCommand) */
 		display = new Display(broadcaster, console);
-		me.add(display, BorderLayout.CENTER);
+		//me.add(display, BorderLayout.CENTER);
+		final JSplitPane splitCenter=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+		true,display,console);
+		/*fraction of resize space that goes to display*/
+		splitCenter.setResizeWeight(0.5);
+		me.add(splitCenter,BorderLayout.CENTER);
 		/* create user command listener */
 		jamCommand = new JamCommand(this, display, broadcaster, 
 		console);
