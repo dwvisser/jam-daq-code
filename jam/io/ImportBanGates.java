@@ -56,7 +56,7 @@ public class ImportBanGates extends ImpExp {
 	}
 
 	/**
-	 * @see jam.io.ImpExp#readHist(java.io.InputStream)
+	 * @see jam.io.ImpExp#readData(java.io.InputStream)
 	 */
 	protected void readData(InputStream inStream) throws ImpExpException {
 		final int[] gates;
