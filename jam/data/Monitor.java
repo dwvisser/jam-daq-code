@@ -210,7 +210,6 @@ public class Monitor implements Serializable {
      * Keeps the most recent value, too, for rate determination.
      */
     public void update(){
-        //System.out.println("Name: "+name+", Type: "+type);
         if(type==SCALER){
             valueNew=scaler.getValue();
             value=(valueNew-valueOld)/interval;
