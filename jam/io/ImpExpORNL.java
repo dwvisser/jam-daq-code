@@ -43,9 +43,13 @@ public class ImpExpORNL extends ImpExp {
 	/**
 	 *
 	 */
-	Vector HistogramRecords;
-	/** input steam for drr file */
+//	List HistogramRecords;
+	
+	/** 
+	 * input steam for drr file 
+	 */
 	private DataInputStream disDrr;
+	
 	/**
 	 *  Stuff read in for every drr file
 	 */
@@ -104,7 +108,7 @@ public class ImpExpORNL extends ImpExp {
 	 */
 	public ImpExpORNL(Frame frame, MessageHandler msgHandler) {
 		super(frame, msgHandler);
-		HistogramRecords = new Vector();
+//		HistogramRecords = new Vector();
 	}
 
 	public ImpExpORNL(){
@@ -634,32 +638,36 @@ public class ImpExpORNL extends ImpExp {
 	 * Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
+		int rval;//return value
 		if (byteOrder == BIG_ENDIAN) {
-			return (
+			rval = (
 				((array[offset] & 0xFF) << 24)
 					+ ((array[offset + 1] & 0xFF) << 16)
 					+ ((array[offset + 2] & 0xFF) << 8)
 					+ ((array[offset + 3] & 0xFF)));
 		} else {
-			return (
+			rval = (
 				((array[offset] & 0xFF) << 0)
 					+ ((array[offset + 1] & 0xFF) << 8)
 					+ ((array[offset + 2] & 0xFF) << 16)
 					+ ((array[offset + 3] & 0xFF) << 24));
 		}
+		return rval;
 	}
 
 	/**
 	 * Get a short from an array of byes
 	 */
 	private short byteArrayToShort(byte[] array, int offset) {
+		short rval;//return value
 		if (byteOrder == BIG_ENDIAN) {
-			return (short)
+			rval = (short)
 				(((array[offset] & 0xFF) << 8) + ((array[offset + 1] & 0xFF)));
 		} else {
-			return (short)
+			rval = (short)
 				(((array[offset] & 0xFF)) + ((array[offset + 1] & 0xFF) << 8));
 		}
+		return rval;
 	}
 
 	private int readInt(DataInput di) throws IOException {
