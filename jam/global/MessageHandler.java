@@ -8,9 +8,20 @@ package jam.global;
  */
 public interface MessageHandler {
 
-    final static int NEW=0;			//new partial message
-    final static int CONTINUE=1;		//continue partical message
-    final static int END=9;			//end partial message
+    /**
+     * new partial message
+     */
+    final static int NEW=0;
+    
+    /**
+     * continue partical message
+     */
+    final static int CONTINUE=1;
+    
+    /**
+     * end partial message
+     */
+    final static int END=9;
 
     /**
      * Output a message of many parts and tell which part.
@@ -22,11 +33,15 @@ public interface MessageHandler {
 
     /**
      * Output the middle part of a message of many parts
+     * 
+     * @param message to print
      */
     public void messageOut(String message);
 
     /**
      * Output a full message.
+     * 
+     * @param message to print
      */
     public void messageOutln(String message);
     
@@ -44,6 +59,8 @@ public interface MessageHandler {
 
     /**
      * Output an error message.
+     * 
+     * @param message to print
      */
     public void errorOutln(String message);
 }
