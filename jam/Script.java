@@ -197,7 +197,7 @@ public final class Script implements Observer {
 	private static final JamStatus STATUS=JamStatus.instance();
 	
 	private void initFields(){
-		sso=SetupSortOff.getSingletonInstance();
+		sso=SetupSortOff.getInstance();
 		sortControl=SortControl.getInstance();
 		hdfio=new HDFIO(STATUS.getFrame(),null);
 	}
