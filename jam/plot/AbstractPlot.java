@@ -463,19 +463,19 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	/**
 	 * Zoom the region viewed.
 	 */
-	void zoom(int inOut) {
+	void zoom(Plot.Zoom inOut) {
 		int xll = plotLimits.getMinimumX();
 		int xul = plotLimits.getMaximumX();
 		int yll = plotLimits.getMinimumY();
 		int yul = plotLimits.getMaximumY();
 		final int diffX = Math.max(1, (xul - xll) / ZOOM_FACTOR);
 		final int diffY = Math.max(1, (yul - yll) / ZOOM_FACTOR);
-		if (inOut == ZOOM_OUT) {//zoom out
+		if (inOut == Plot.Zoom.OUT) {//zoom out
 			xll = xll - diffX;
 			xul = xul + diffX;
 			yll = yll - diffY;
 			yul = yul + diffY;
-		} else if (inOut == ZOOM_IN) {//zoom in
+		} else if (inOut == Plot.Zoom.IN) {//zoom in
 			xll = xll + diffX;
 			xul = xul - diffX;
 			yll = yll + diffY;
