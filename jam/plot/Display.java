@@ -458,9 +458,9 @@ public class Display
 		}
 	}
 
-	private final JButton bnetarea = new JButton(getHTML("<u>N</u>et Area"));
-	private final JButton brebin=new JButton(getHTML("<u>Re</u>bin"));
-	private final JButton bgoto = new JButton(getHTML("<u>G</u>oto"));
+	private  JButton bnetarea;		//FIXME clean up KBS
+	private  JButton brebin; 		// =new JButton(getHTML("<u>Re</u>bin"));
+	private  JButton bgoto; 		//= new JButton(getHTML("<u>G</u>oto"));
 
 	/**
 	 * Adds the tool bar the left hand side of the plot.
@@ -469,12 +469,22 @@ public class Display
 	 */
 	public void addToolbarAction() {
 		final ClassLoader cl = this.getClass().getClassLoader();
-		URL urlZoom = cl.getResource("toolbarButtonGraphics/general/Zoom24.gif");
-		URL urlZoomIn =cl.getResource("toolbarButtonGraphics/general/ZoomIn24.gif");
-		URL urlZoomOut = cl.getResource("toolbarButtonGraphics/general/ZoomOut24.gif");
-		if (urlZoom==null||urlZoomIn==null||urlZoomOut==null) {
-			JOptionPane.showMessageDialog(null, "Can't load resource: (Zoom24|ZoomIn24|ZoomOut24).gif");
-		}
+
+		Icon iUpdate =loadToolbarIcon("jam/plot/Update.png");
+		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
+		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
+		Icon iRange = loadToolbarIcon("jam/plot/Range.png");
+		Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
+
+		Icon iExpand = loadToolbarIcon("toolbarButtonGraphics/general/Zoom24.gif");
+		Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
+		Icon iZoomIn =loadToolbarIcon("toolbarButtonGraphics/general/ZoomIn24.gif");
+		Icon iZoomOut = loadToolbarIcon("toolbarButtonGraphics/general/ZoomOut24.gif");
+		Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
+
+		Icon iArea = loadToolbarIcon("jam/plot/Area.png");
+		Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
+		Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 
 		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
 		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
@@ -486,40 +496,133 @@ public class Display
 		 * buttons without borders, and doesn't enable/disable
 		 * them as expected
 		 */
-		final JPanel tbcontents=new JPanel(new BorderLayout());
-		ptoolbar.add(tbcontents,BorderLayout.CENTER);
-		tbcontents.setLayout(new GridLayout(0,1));
+		final JPanel tbcontents=new JPanel();
+		// FIXME clean up KBS
+		//ptoolbar.add(tbcontents,BorderLayout.CENTER);
+		//BoxLayout bl = new BoxLayout(tbcontents,BoxLayout.Y_AXIS);
+		//tbcontents.setLayout(new GridLayout(0,1));
+		/* FIXME clean up KBS
 		final JPanel view=new JPanel(new BorderLayout());
 		final JPanel scale=new JPanel(new BorderLayout());
 		final JPanel inquire=new JPanel(new BorderLayout());
 		tbcontents.add(scale);
 		tbcontents.add(view);
 		tbcontents.add(inquire);
+		*/
 		try {
-			view.add(new JLabel("View", SwingConstants.CENTER),BorderLayout.NORTH);
-			final JPanel firstPanel=new JPanel(new GridLayout(0,1));
-			final JButton bupdate = new JButton(getHTML("<u>U</u>pdate"));
-			bupdate.setToolTipText(
-				"Click to update display with most current data.");
+			ptoolbar.setRollover(true);
+			//view.add(new JLabel("View", SwingConstants.CENTER),BorderLayout.NORTH);
+
+
+			final JButton bupdate = new JButton(iUpdate);
+			bupdate.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
 			bupdate.setActionCommand(Action.UPDATE);
-			brebin.setToolTipText(
-			"After clicking, enter a bin width in the console.");
-			brebin.setActionCommand(Action.REBIN);
 			bupdate.addActionListener(action);
+			ptoolbar.add(bupdate);
+
+			final JButton blinear = new JButton(iLinLog);
+			blinear.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
+			blinear.setActionCommand(Action.SCALE);
+			blinear.addActionListener(action);
+			ptoolbar.add(blinear);
+
+			final JButton bauto = new JButton(iAutoScale);
+			bauto.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
+			bauto.setActionCommand(Action.AUTO);
+			bauto.addActionListener(action);
+			ptoolbar.add(bauto);
+
+			final JButton brange = new JButton(iRange);
+			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
+			brange.setActionCommand(Action.RANGE);
+			brange.addActionListener(action);
+			ptoolbar.add(brange);
+
+			brebin = new JButton(iRebin);
+			brebin.setToolTipText(getHTML("<u>Re</u>bin, enter a bin width in the console."));
+			brebin.setActionCommand(Action.REBIN);
+			brebin.addActionListener(action);
+			ptoolbar.add(brebin);
+
+			ptoolbar.addSeparator();
+
+			final JButton bexpand = new JButton(iExpand);
+			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
+			bexpand.setActionCommand(Action.EXPAND);
+			bexpand.addActionListener(action);
+			ptoolbar.add(bexpand);
+
+			final JButton bfull = new JButton(iFullScale);
+			bfull.setActionCommand(Action.FULL);
+			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
+			bfull.addActionListener(action);
+			ptoolbar.add(bfull);
+
+			final JButton bzoomin = new JButton(iZoomIn);
+			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
+			bzoomin.setActionCommand(Action.ZOOMIN);
+			bzoomin.addActionListener(action);
+			ptoolbar.add(bzoomin);
+
+			final JButton bzoomout = new JButton(iZoomOut);
+			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
+			bzoomout.setActionCommand(Action.ZOOMOUT);
+			bzoomout.addActionListener(action);
+			ptoolbar.add(bzoomout);
+
+		    bgoto= new JButton(iGoto);
+			bgoto.setActionCommand(Action.GOTO);
+			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
+			bgoto.addActionListener(action);
+			ptoolbar.add(bgoto);
+
+			ptoolbar.addSeparator();
+
+			final JButton barea = new JButton(iArea);
+			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
+			barea.setActionCommand(Action.AREA);
+			barea.addActionListener(action);
+			ptoolbar.add(barea);
+
+		    bnetarea= new JButton(iNetArea);
+			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
+			bnetarea.setActionCommand(Action.NETAREA);
+			bnetarea.addActionListener(action);
+			ptoolbar.add(bnetarea);
+
+			ptoolbar.addSeparator();
+
+			final JButton bcancel = new JButton(iCancel);
+			bcancel.setActionCommand(Action.CANCEL);
+			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
+			bcancel.addActionListener(action);
+			ptoolbar.add(bcancel);
+
+			//tbcontents.add(Box.createVerticalGlue());
+
+			/* FIXME cleanup KBS
+			final JPanel firstPanel=new JPanel(new GridLayout(0,1));
+
+
+			brebin.setToolTipText("After clicking, enter a bin width in the console.");
+			brebin.setActionCommand(Action.REBIN);
+
 			brebin.addActionListener(action);
 			firstPanel.add(bupdate);
 			final JPanel viewCenter=new JPanel(new BorderLayout());
 			view.add(viewCenter,BorderLayout.CENTER);
 			viewCenter.add(firstPanel,BorderLayout.NORTH);
 			final JPanel zoomPanel = new JPanel(new GridLayout(2,2));
-			final Icon i_expand = new ImageIcon(urlZoom);
 
+			final Icon i_expand = new ImageIcon(urlZoom);
 			final JButton bexpand = new JButton(i_expand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand. Set new display limits."));
 			bexpand.setActionCommand(Action.EXPAND);
 			bexpand.addActionListener(action);
 			zoomPanel.add(bexpand);
-			final JButton bfull = new JButton(getHTML("<u>F</u>ull"));
+			final Icon iFullScale =new ImageIcon(urlFullScale);
+			final JButton bfull = new JButton(iFullScale);
+			//final JButton bfull = new JButton(getHTML("<u>F</u>ull"));
 			bfull.setActionCommand(Action.FULL);
 			bfull.setToolTipText(
 				"Set display limits to full histogram extents.");
@@ -547,26 +650,18 @@ public class Display
 			scale.add(new JLabel("Scale", SwingConstants.CENTER),BorderLayout.NORTH);
 			final JPanel scaleCenter=new JPanel(new GridLayout(0,1));
 			scale.add(scaleCenter,BorderLayout.CENTER);
+
 			final JButton blinear = new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g"));
 			blinear.setToolTipText(getHTML("Toggle <u>s</u>cale type."));
 			blinear.setActionCommand(Action.SCALE);
 			blinear.addActionListener(action);
 			scaleCenter.add(blinear);
-			final JButton brange = new JButton(getHTML("<u>Ra</u>nge"));
-			brange.setToolTipText(
-				"Click here then on display to set limits of counts scale.");
-			brange.setActionCommand(Action.RANGE);
-			brange.addActionListener(action);
-			scaleCenter.add(brange);
-			final JButton bauto = new JButton(getHTML("<u>A</u>uto"));
-			bauto.setToolTipText(
-				"Click here to automatically set the counts scale.");
-			bauto.setActionCommand(Action.AUTO);
-			bauto.addActionListener(action);
-			scaleCenter.add(bauto);
+
 			scaleCenter.add(brebin);
 			inquire.add(new JLabel("Inquire", SwingConstants.CENTER),BorderLayout.NORTH);
-			final JButton barea = new JButton(getHTML("<u>Ar</u>ea"));
+			final Icon iArea = new ImageIcon(urlArea);
+			final JButton barea = new JButton(iArea);
+			//final JButton barea = new JButton(getHTML("<u>Ar</u>ea"));
 			barea.setToolTipText(
 				"Click here then on display to get area and summary stats of a region.");
 			barea.setActionCommand(Action.AREA);
@@ -585,9 +680,30 @@ public class Display
 			bcancel.addActionListener(action);
 			inquireCenter.add(new JPanel());//blank grid space before cancel
 			inquireCenter.add(bcancel);
+			*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Load icons for tool bar
+	 */
+	private Icon loadToolbarIcon(String path) {
+
+		URL urlResource;
+		Icon toolbarIcon;
+
+		final ClassLoader cl = this.getClass().getClassLoader();
+		urlResource = cl.getResource(path);
+
+		if (!(urlResource==null)) {
+			toolbarIcon = new ImageIcon(urlResource);
+		} else {
+			JOptionPane.showMessageDialog(null, "Can't load resource: "+path);
+			toolbarIcon=null; //FIXME KBS put in default icon here
+		}
+		return toolbarIcon;
 	}
 
 	private String getHTML(String body){
