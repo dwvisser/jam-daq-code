@@ -11,8 +11,6 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,14 +23,11 @@ import javax.help.HelpSet;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 /**
  * Help shows the program about
@@ -41,11 +36,10 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser
  * @version version 0.5 November 98
  */
-class Help {
+public class Help extends JDialog {
 	
 
 	private final Frame frame;
-	private final JDialog aboutD, licenseD;
 	private final MessageHandler messageHandler;
 	private final static int posx=20;
 	private final static int posy=50;
@@ -54,74 +48,30 @@ class Help {
 	 * @param f the parent frame, i.e. the main Jam Window
 	 * @param mh for outputting error messages
 	 */
-	Help(Frame f, MessageHandler mh) {
-		final String url="http://jam-daq.sourceforge.net/";
-		this.frame = f;
+	public Help(Frame frame, MessageHandler mh) {
+		super( frame,
+		"University of Illinois/NCSA Open Source License",
+		true);
+		
+		this.frame = frame;
 		messageHandler=mh;
 
-		aboutD = new JDialog(frame, "About Jam", false);
-		final Container cad = aboutD.getContentPane();
-		aboutD.setResizable(false);
-		aboutD.setLocation(posx, posy);
-		cad.setLayout(new BorderLayout());
-		final JPanel pcenter = new JPanel(new GridLayout(0, 1));
-		Border border = new EmptyBorder(20,20,20,20);
-		pcenter.setBorder(border);
-		cad.add(pcenter, BorderLayout.CENTER);
-		pcenter.add(
-			new JLabel("Jam v" + Version.getName(), JLabel.CENTER));
-		pcenter.add(new JLabel("by", JLabel.CENTER));
-		pcenter.add(
-			new JLabel(
-				"Ken Swartz, Dale Visser, and John Baris",
-				JLabel.CENTER));
-		pcenter.add(
-			new JLabel(url, JLabel.CENTER));
-		final JPanel pbut = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cad.add(pbut, BorderLayout.SOUTH);
-		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				aboutD.dispose();
-			}
-		});
-		pbut.add(bok);
-		aboutD.pack();
-		/* Receives events for closing the dialog box and closes it. */
-		aboutD.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				aboutD.dispose();
-			}
-		});
-		synchronized (this) {
-			licenseD =
-			new JDialog(
-				frame,
-				"University of Illinois/NCSA Open Source License",
-				true);
-		}
 		layoutLicenseDialog();
 		final String defaultVal="notseen";
 		final String version=Version.getName();
 		final String key="license";
 		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
 		if (!version.equals(helpnode.get(key,defaultVal))){
-			showLicense();
+			show();
 			helpnode.put(key,version);
 		}
 	}
 
-	/**
-	 * Show the "About Jam" dialog box.
-	 */
-	public void showAbout() {
-		aboutD.show();
-	}
 
 	private void layoutLicenseDialog() {
 		final String hyphen = " - ";
-		final Container contents = licenseD.getContentPane();
-		licenseD.setResizable(true);
+		final Container contents = this.getContentPane();
+		this.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
 		final InputStream license_in =
@@ -142,28 +92,16 @@ class Help {
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				licenseD.dispose();
+				dispose();
 			}
 		});
 		south.add(bok);
-		licenseD.pack();
+		this.pack();
 		final Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
-		licenseD.setSize(licenseD.getWidth(),screen.height/2);
-		licenseD.setLocation(posx,screen.height/4);
-		/* Recieves events for closing the dialog box and closes it. */
-		aboutD.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				aboutD.dispose();
-			}
-		});
+		this.setSize(this.getWidth(),screen.height/2);
+		this.setLocation(posx,screen.height/4);
 	}
 
-	/**
-	 * Show Jam's open source license text.
-	 */
-	public final void showLicense() {
-		licenseD.show();
-	}
 	
 	private static void setLookAndFeel(){
 		final String linux = "Linux";
