@@ -58,18 +58,18 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		super();
 	}
 
-	private static final ExtensionFileFilter filter=new ExtensionFileFilter("dat", 
+	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("dat", 
 	"TUNL's XSYS");
 	protected FileFilter getFileFilter() {
-		return filter;
+		return FILTER;
 	}
 
 	protected String getDefaultExtension(){
-		return filter.getExtension(0);
+		return FILTER.getExtension(0);
 	}
 	
 	public String getFormatDescription() {
-		return filter.getDescription();
+		return FILTER.getDescription();
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 				if (areaDataType == XSYS1DI4) {
 					String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					counts = unPackData1d(dis, areaSizeX, areaLengthPage);
-					Histogram hist = new Histogram(areaName, areaTitle, counts);
+					Histogram hist = Histogram.createHistogram(counts, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 
 					//calibrate histogram if flag set
@@ -121,7 +121,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 					String areaTitle = areaNumber + "  " + areaName + " ";
 					counts2d =
 						unPackData2d(dis, areaSizeX, areaSizeY, areaLengthPage);
-					Histogram hist = new Histogram(areaName, areaTitle, counts2d);
+					Histogram hist = Histogram.createHistogram(counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 					if (msgHandler != null) {
 						msgHandler.messageOut(" .");

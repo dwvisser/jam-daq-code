@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.DataParameter;
 import jam.data.Gate;
@@ -43,14 +44,14 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 */
 	private static File lastValidFile;
 
-	private static final Object lvfMonitor = new Object();
+	private static final Object LVF_MONITOR = new Object();
 
-	private static final Preferences prefs = Preferences
+	private static final Preferences PREFS = Preferences
 			.userNodeForPackage(HDFIO.class);
 
 	private static final String LAST_FILE_KEY = "LastValidFile";
 	static {
-		lastValidFile = new File(prefs.get(LAST_FILE_KEY, System
+		lastValidFile = new File(PREFS.get(LAST_FILE_KEY, System
 				.getProperty("user.dir")));
 	}
 
@@ -513,8 +514,9 @@ public class HDFIO implements DataIO, JamHDFFields {
 		temp.addDataObject(sdd); //use new SDD
 		final Histogram.Type type = h.getType();
 		if (type == Histogram.Type.ONE_DIM_INT) {
+			final AbstractHist1D h1=(AbstractHist1D)h;
 			sd = new ScientificData(out, (int[]) h.getCounts());
-			if (h.errorsSet()) {
+			if (h1.errorsSet()) {
 				NumericalDataGroup ndgErr = new NumericalDataGroup(out);
 				new DataIDLabel(ndgErr, ERROR_LABEL);
 				temp.addDataObject(ndgErr);
@@ -523,26 +525,27 @@ public class HDFIO implements DataIO, JamHDFFields {
 				/* explicitly floating point */
 				ndgErr.addDataObject(sddErr);
 				temp.addDataObject(sddErr);
-				ScientificData sdErr = new ScientificData(out, h.getErrors());
+				ScientificData sdErr = new ScientificData(out, h1.getErrors());
 				ndgErr.addDataObject(sdErr);
 				temp.addDataObject(sdErr);
 			}
-		} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+			final AbstractHist1D h1=(AbstractHist1D)h;
 			sd = new ScientificData(out, (double[]) h.getCounts());
-			if (h.errorsSet()) {
+			if (h1.errorsSet()) {
 				NumericalDataGroup ndgErr = new NumericalDataGroup(out);
 				new DataIDLabel(ndgErr, ERROR_LABEL);
 				temp.addDataObject(ndgErr);
 				ScientificDataDimension sddErr = sdd;
 				/* explicitly floating point */
 				ndgErr.addDataObject(sddErr);
-				ScientificData sdErr = new ScientificData(out, h.getErrors());
+				ScientificData sdErr = new ScientificData(out, h1.getErrors());
 				ndgErr.addDataObject(sdErr);
 				temp.addDataObject(sdErr);
 			}
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
 			sd = new ScientificData(out, (int[][]) h.getCounts());
-		} else if (type == Histogram.Type.TWO_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.TWO_D_DOUBLE) {
 			sd = new ScientificData(out, (double[][]) h.getCounts());
 		} else {
 			throw new IllegalArgumentException(
@@ -635,22 +638,22 @@ public class HDFIO implements DataIO, JamHDFFields {
 				if (mode == FileOpenMode.OPEN) {
 					if (histDim == 1) {
 						if (histNumType == NumberType.INT) {
-							histogram = new Histogram(name, title, sd
-									.getData1d(sizeX));
+							histogram = Histogram.createHistogram(sd
+									.getData1d(sizeX), name, title);
 						} else { //DOUBLE
-							histogram = new Histogram(name, title, sd
-									.getData1dD(sizeX));
+							histogram = Histogram.createHistogram(sd
+									.getData1dD(sizeX), name, title);
 						}
 						if (ndgErr != null) {
-							histogram.setErrors(sdErr.getData1dD(sizeX));
+							((AbstractHist1D)histogram).setErrors(sdErr.getData1dD(sizeX));
 						}
 					} else { //2d
 						if (histNumType == NumberType.INT) {
-							histogram = new Histogram(name, title, sd
-									.getData2d(sizeX, sizeY));
+							histogram = Histogram.createHistogram(sd
+									.getData2d(sizeX, sizeY), name, title);
 						} else {
-							histogram = new Histogram(name, title, sd
-									.getData2dD(sizeX, sizeY));
+							histogram = Histogram.createHistogram(sd
+									.getData2dD(sizeX, sizeY), name, title);
 						}
 					}
 					histogram.setNumber(number);
@@ -1010,15 +1013,15 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @return last file successfully read from or written to.
 	 */
 	public static File getLastValidFile() {
-		synchronized (lvfMonitor) {
+		synchronized (LVF_MONITOR) {
 			return lastValidFile;
 		}
 	}
 
 	private static void setLastValidFile(File f) {
-		synchronized (lvfMonitor) {
+		synchronized (LVF_MONITOR) {
 			lastValidFile = f;
-			prefs.put(LAST_FILE_KEY, f.getAbsolutePath());
+			PREFS.put(LAST_FILE_KEY, f.getAbsolutePath());
 		}
 	}
 

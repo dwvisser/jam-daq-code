@@ -1,4 +1,5 @@
 package jam.fit;
+import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -50,7 +51,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	/*
 	 * Displayed name of <code>Fit</code> routine.
 	 */
-	protected String NAME;
+	protected transient String NAME;
 
 	/**
 	 * Controlling frame for this dialog box.
@@ -172,7 +173,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	
 	protected FitConsole textInfo;
 	
-	private static final JamStatus jamStatus=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 	
 
 	/**
@@ -690,7 +691,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Update the name of the displayed histogram in the dialog box.
 	 */
 	private void updateHist() {
-		final Histogram h = jamStatus.getCurrentHistogram();
+		final Histogram h = STATUS.getCurrentHistogram();
 		if (h != null && h.getDimensionality() == 1) {
 			if (h.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int [] ia = (int[]) h.getCounts();
@@ -698,7 +699,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				for (int j = 0; j < ia.length; j++) {
 					counts[j] = ia[j];
 				}
-			} else if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
+			} else if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
 				counts = (double[]) h.getCounts();
 			}
 			textHistName.setText(h.getName());
@@ -744,14 +745,14 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Gets counts from currently displayed <code>Histogram</code>
 	 */
 	private void getCounts() {
-		final Histogram h = jamStatus.getCurrentHistogram();
+		final AbstractHist1D h = (AbstractHist1D)STATUS.getCurrentHistogram();
 		if (h.getType() == Histogram.Type.ONE_DIM_INT) {
 			int[] ia = (int[]) h.getCounts();
 			counts = new double[ia.length];
 			for (int j = 0; j < ia.length; j++) {
 				counts[j] = ia[j];
 			}
-		} else if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
+		} else {
 			counts = (double[]) h.getCounts();
 		}
 		this.errors = h.getErrors();

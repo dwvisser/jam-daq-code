@@ -140,21 +140,21 @@ public class ImpExpORNL extends ImpExp {
 		super();
 	}
 
-	private static final String[] exts = { "his", "drr" };
+	private static final String[] EXTS = { "his", "drr" };
 
-	private static final ExtensionFileFilter filter = new ExtensionFileFilter(
-			exts, "Oak Ridge DAMM");
+	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
+			EXTS, "Oak Ridge DAMM");
 
 	protected FileFilter getFileFilter() {
-		return filter;
+		return FILTER;
 	}
 
 	protected String getDefaultExtension() {
-		return filter.getExtension(0);
+		return FILTER.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return filter.getDescription();
+		return FILTER.getDescription();
 	}
 
 	/**
@@ -363,7 +363,7 @@ public class ImpExpORNL extends ImpExp {
 				throw new IOException("File uses " + wordCh
 						+ " words/channel, which I don't know how to read.");
 			}
-			final Histogram hist = new Histogram(name, name, counts2d);
+			final Histogram hist = Histogram.createHistogram(counts2d, name);
 			hist.setNumber(number);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");
@@ -390,7 +390,7 @@ public class ImpExpORNL extends ImpExp {
 				throw new IOException("File uses " + wordCh
 						+ " words/channel, which I don't know how to read.");
 			}
-			final Histogram hist = new Histogram(name, name, counts);
+			final Histogram hist = Histogram.createHistogram(counts, name);
 			hist.setNumber(number);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");
@@ -550,7 +550,7 @@ public class ImpExpORNL extends ImpExp {
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt(countsInt[i]);
 				}
-			} else if (hist.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
 				double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt((int) (countsDbl[i] + 0.5));
@@ -562,7 +562,7 @@ public class ImpExpORNL extends ImpExp {
 						dosHis.writeInt(counts2dInt[j][i]);
 					}
 				}
-			} else if (hist.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
 				double[][] counts2dDbl = (double[][]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {

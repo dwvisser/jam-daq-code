@@ -48,20 +48,20 @@ public class ImpExpASCII extends ImpExp {
 		super();
 	}
 	
-	private static final String [] exts={"dat","txt"};
-	private static final ExtensionFileFilter filter=new ExtensionFileFilter(exts, 
+	private static final String [] EXTS={"dat","txt"};
+	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter(EXTS, 
 	"Text file");
 	
 	protected FileFilter getFileFilter() {
-		return filter;
+		return FILTER;
 	}
 	
 	protected String getDefaultExtension(){
-		return filter.getExtension(0);
+		return FILTER.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return filter.getDescription();
+		return FILTER.getDescription();
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class ImpExpASCII extends ImpExp {
 			st.nextToken();
 			counts[i] = st.nval;
 		}
-		new Histogram(name, title, counts);
+		Histogram.createHistogram(counts, name, title);
 	}
 
 	private int maxX, maxY;
@@ -217,7 +217,7 @@ public class ImpExpASCII extends ImpExp {
 			st.nextToken();
 			counts[channel] = st.nval;
 		}
-		new Histogram(name, title, counts);
+		Histogram.createHistogram(counts, name, title);
 	}
 
 	private void readHistXYZ(
@@ -241,7 +241,7 @@ public class ImpExpASCII extends ImpExp {
 			st.nextToken();
 			counts[channelX][channelY] = st.nval;
 		}
-		new Histogram(name, title, counts);
+		Histogram.createHistogram(counts, name, title);
 	}
 
 	private void readHistMatrix(
@@ -262,8 +262,9 @@ public class ImpExpASCII extends ImpExp {
 				counts[i][j] = st.nval;
 			}
 		}
-		new Histogram(name, title, counts);
+		Histogram.createHistogram(counts, name, title);
 	}
+	
 	boolean firstLineIsTitle = false;
 	private String getHistTitle() throws IOException {
 		String rval = null;
@@ -335,7 +336,7 @@ public class ImpExpASCII extends ImpExp {
 					pw.print("   ");
 					pw.println(counts[i]);
 				}
-			} else if (hist.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
 				double[] countsD = (double[]) hist.getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					//output a row of data  channel counts
@@ -352,7 +353,7 @@ public class ImpExpASCII extends ImpExp {
 					}
 					pw.println();
 				}
-			} else if (hist.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
 				double[][] counts = (double[][]) hist.getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {
