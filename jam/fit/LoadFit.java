@@ -1,7 +1,7 @@
 package jam.fit;
 import jam.JamException;
 import jam.JamMain;
-import jam.MainMenuBar; 
+import jam.MainMenuBar;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.plot.Display;
@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -20,6 +21,9 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.Border;
+
 
 /**
  * Load a fit routine..
@@ -41,7 +45,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 
 	private final JDialog dl;
 	private final JComboBox chooseFit;
-	
+
 	/**
 	 * Create the fit routine loading dialog.
 	 *
@@ -49,7 +53,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param d the histogram display
 	 * @param mh the place to output text
 	 */
-	public LoadFit(JamMain jm, Display d, MessageHandler mh, 
+	public LoadFit(JamMain jm, Display d, MessageHandler mh,
 	MainMenuBar mb) {
 		super();
 		this.jamMain = jm;
@@ -64,14 +68,23 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		final int posy=50;
 		dl.setLocation(posx, posy);
 		cp.setLayout(new BorderLayout());
-		final JPanel pf = new JPanel();// panel for fit file
-		pf.setLayout(new FlowLayout(FlowLayout.CENTER));
-		final JLabel lf = new JLabel("Pick a Fit class: ", JLabel.RIGHT);
+		// panel for fit file
+		final JPanel pf = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		Border border = new EmptyBorder(20,20,20,20);
+		pf.setBorder(border);
+		final JLabel lf = new JLabel("Fit class: ", JLabel.RIGHT);
 		pf.add(lf);
 		chooseFit = new JComboBox(this.getFitClasses());
+		Dimension dim = chooseFit.getPreferredSize();
+		dim.width=200;
+		chooseFit.setPreferredSize(dim);
 		pf.add(chooseFit);
-		final JPanel pb = new JPanel();// panel for buttons 
-		pb.setLayout(new GridLayout(1,0));
+
+		// panel for buttons
+		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		final JPanel pb = new JPanel();
+		pb.setLayout(new GridLayout(1,0,10,10));
+		pbutton.add(pb);
 		final JButton bok = new JButton(OK);
 		pb.add(bok);
 		bok.setActionCommand(OK);
@@ -88,7 +101,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			}
 		});
 		cp.add(pf,BorderLayout.CENTER);
-		cp.add(pb,BorderLayout.SOUTH);
+		cp.add(pbutton,BorderLayout.SOUTH);
 		dl.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				dl.dispose();
@@ -105,7 +118,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	}
 
 	/**
-	 * Perform an action in the load FitRoutine dialog box. 
+	 * Perform an action in the load FitRoutine dialog box.
 	 * Actions are:
 	 * <ul>
 	 * <li>OK</li>
@@ -113,7 +126,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * <li>Cancel</li>
 	 * </ul>
 	 *
-	 * @param ae notification ok, apply, or cancel 
+	 * @param ae notification ok, apply, or cancel
 	 */
 	public void actionPerformed(ActionEvent ae) {
 		final String command = ae.getActionCommand();
@@ -129,7 +142,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			msgHandler.errorOutln(je.getMessage());
 		}
 	}
-	
+
 	private void makeFit(Class fitClass) throws JamException {
 	 	final String fitName=fitClass.getName();
 		try {
@@ -153,7 +166,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 				"FitException during makeFit(): " + fe.getMessage());
 		}
 	}
-	
+
 	private Object [] getFitClasses() {
 		final String package1="jam.fit";
 		final String package2="fit";
