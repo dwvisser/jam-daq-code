@@ -15,5 +15,6 @@ package jam.global;
 	 * @param command word indecating action to take
 	 * @param parameters list of typed numbers which are parameters to the command
 	 */
-	public void commandPerform(String command, double [] parameters);	
+
+	public boolean performCommand(String command, String [] parameters);	
 }
