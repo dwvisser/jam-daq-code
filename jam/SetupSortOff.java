@@ -466,7 +466,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);
         }
-        sortDaemon.setup(SortDaemon.OFFLINE, eventInput,
+        sortDaemon.setup(SortMode.OFFLINE, eventInput,
         sortRoutine.getEventSize());
         sortDaemon.setSortRoutine(sortRoutine);
         /* eventInputStream to use get event size from sorting routine */
@@ -484,8 +484,6 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         sortControl.setup(sortDaemon, storageDaemon, diskDaemon);
         /* tell status to setup */
         displayCounters.setupOff(sortDaemon, storageDaemon);
-        /* tell sortDaemon to update status */
-        sortDaemon.setObserver(broadcaster);
         /* start sortDaemon which is then suspended by Sort control until files
          * entered */
         sortDaemon.start();
