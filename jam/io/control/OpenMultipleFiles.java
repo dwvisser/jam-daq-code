@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -71,6 +72,7 @@ public class OpenMultipleFiles {
 		
 	private MultipleFileChooser multipleFileChooser;
 	
+	private int [] previousSelectedHistograms=null;
 	/** HDF file reader */
 	private HDFIO hdfio;
 	/** Messages output */
@@ -208,6 +210,8 @@ public class OpenMultipleFiles {
 		listScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		panel.add(listScrollPane, BorderLayout.CENTER);
 		
+		histList.clearSelection();
+		
 		return panel;
 		
 	}	
@@ -258,7 +262,10 @@ public class OpenMultipleFiles {
 	 * Refresh the histogram list
 	 *
 	 */
-	public void refreshHistList() {
+	private void refreshHistList() {
+		
+		//save Selection
+		saveSelectedHistograms();
 		
 		File file =multipleFileChooser.getSelectedFile();
 		histListModel.clear();
@@ -266,8 +273,54 @@ public class OpenMultipleFiles {
 		if (file!=null){
 			txtHistListFile.setText(file.getAbsolutePath());
 			loadHistNames(file);
-		} 		
-	}	
+		}
+		
+		//update Selection
+		updateSelectedHistograms();
+	}
+	
+	private void saveSelectedHistograms(){
+		previousSelectedHistograms = histList.getSelectedIndices();		
+	}
+	
+	private void updateSelectedHistograms() {
+
+		ListModel listModel =histList.getModel();		
+		int [] selectedIndexs;
+		
+		selectedIndexs = histList.getSelectedIndices();
+		
+		//histList.clearSelection();
+				
+		if (previousSelectedHistograms!=null) {
+			selectedIndexs=previousSelectedHistograms;
+		} 
+		
+    	//histList.setSelectedIndices(selectedIndexs);
+    	
+        //Non-selected select all
+        if (selectedIndexs.length==0) {        	
+        	int [] indexs = new int [listModel.getSize()];
+        	for (int i=0; i<listModel.getSize(); i++) {
+        		indexs[i]=i;
+        	}
+        	histList.setSelectedIndices(indexs);
+        } else {
+        //	histList.setSelectedIndices(selectedIndexs);
+        	
+        	/*
+        	for (int i=0;i<selectedIndexs.length;i++) {
+            	int [] indexs = new int [listModel.getSize()];            	
+        		if (selectedIndexs[i]<listModel.getSize()) {
+            		histList.        			
+        		}
+        	}
+        	*/
+        }
+        
+        //histList.clearSelection();
+	}
+	
 	
 	/* non-javadoc:
 	 * Load name of histograms from the selected file
@@ -285,7 +338,6 @@ public class OpenMultipleFiles {
 			histListModel.addElement(histAtt.getName());				
 		}
 		
-		histList.clearSelection();
 	}
 	
 	/**
@@ -340,10 +392,11 @@ public class OpenMultipleFiles {
          }
     }        
     private List createSelectedHistogramNamesList() {
+    	
         final List histogramNamesSelected = new ArrayList();
         
-        final Object[] selected = histList.getSelectedValues();
-        
+        Object[] selected = histList.getSelectedValues();        
+
         /* Put selected histograms into a list */
         for (int i = 0; i < selected.length; i++) {
             histogramNamesSelected.add(selected[i]);
