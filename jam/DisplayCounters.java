@@ -41,7 +41,6 @@ class DisplayCounters implements Observer {
 	private final Frame jamMain;
 	private final Broadcaster broadcaster;
 	private final MessageHandler messageHandler;
-	private static final String hyphen=" - ";
 
 	//text fields
 	private JTextField textFileRead,
@@ -71,8 +70,8 @@ class DisplayCounters implements Observer {
 		final int flowgaph = 10;
 		final int flowgapv = 0;
 		final int maingap = 10;
-		final int hgap=5;
-		final int vgap=10;
+		final int hgap = 5;
+		final int vgap = 10;
 
 		this.jamMain = jm;
 		this.broadcaster = b;
@@ -84,35 +83,42 @@ class DisplayCounters implements Observer {
 		cd.setLayout(new BorderLayout(maingap, maingap));
 
 		//Center Panels
-        pCenter = new JPanel(new GridLayout(0, 1, hgap,vgap));
+		pCenter = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		cd.add(pCenter, BorderLayout.CENTER);
-		pCenter.setBorder(new EmptyBorder(20,10,0,10));
+		pCenter.setBorder(new EmptyBorder(20, 10, 0, 10));
 
-		pBuffSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pBuffSent =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffSent.add(new JLabel("Packets sent", JLabel.RIGHT));
 		textBuffSent = newTextField();
 		pBuffSent.add(textBuffSent);
-		pBuffRecv = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pBuffRecv =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffRecv.add(new JLabel("Packets received", JLabel.RIGHT));
 		textBuffRecv = newTextField();
 		pBuffRecv.add(textBuffRecv);
-		pBuffSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pBuffSort =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffSort.add(new JLabel("Buffers sorted", JLabel.RIGHT));
 		textBuffSort = newTextField();
 		pBuffSort.add(textBuffSort);
-		pBuffWrit = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pBuffWrit =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffWrit.add(new JLabel("Buffers written", JLabel.RIGHT));
 		textBuffWrit = newTextField();
 		pBuffWrit.add(textBuffWrit);
-		pEvntSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pEvntSent =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pEvntSent.add(new JLabel("Events sent", JLabel.RIGHT));
 		textEvntSent = newTextField();
 		pEvntSent.add(textEvntSent);
-		pEvntSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pEvntSort =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pEvntSort.add(new JLabel("Events sorted", JLabel.RIGHT));
 		textEvntSort = newTextField();
 		pEvntSort.add(textEvntSort);
-		pFileRead = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
+		pFileRead =
+			new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pFileRead.add(new JLabel("Files read", JLabel.RIGHT));
 		textFileRead = newTextField();
 		pFileRead.add(textFileRead);
@@ -132,10 +138,10 @@ class DisplayCounters implements Observer {
 		});
 	}
 
-	private JTextField newTextField(){
-		final String emptyString="";
-		final int cols =8;
-		final JTextField rval=new JTextField(emptyString);
+	private JTextField newTextField() {
+		final String emptyString = "";
+		final int cols = 8;
+		final JTextField rval = new JTextField(emptyString);
 		rval.setColumns(cols);
 		rval.setEditable(false);
 		return rval;
@@ -145,28 +151,23 @@ class DisplayCounters implements Observer {
 		final JButton bupdate = new JButton("Update");
 		bupdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				try {
-					if (mode == ONLINE) {
-						broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
-						textEvntSort.setText(
-							String.valueOf(sortDaemon.getEventCount()));
-						textBuffSort.setText(
-							String.valueOf(sortDaemon.getBufferCount()));
-						textBuffRecv.setText(
-							String.valueOf(netDaemon.getPacketCount()));
-						textBuffWrit.setText(
-							String.valueOf(storageDaemon.getBufferCount()));
-					} else { //offline
-						textEvntSort.setText(
-							String.valueOf(sortDaemon.getEventCount()));
-						textBuffSort.setText(
-							String.valueOf(sortDaemon.getBufferCount()));
-						textFileRead.setText(
-							String.valueOf(storageDaemon.getFileCount()));
-					}
-				} catch (GlobalException ge) {
-					messageHandler.errorOutln(
-						getClass().getName() + hyphen + ge);
+				if (mode == ONLINE) {
+					broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
+					textEvntSort.setText(
+						String.valueOf(sortDaemon.getEventCount()));
+					textBuffSort.setText(
+						String.valueOf(sortDaemon.getBufferCount()));
+					textBuffRecv.setText(
+						String.valueOf(netDaemon.getPacketCount()));
+					textBuffWrit.setText(
+						String.valueOf(storageDaemon.getBufferCount()));
+				} else { //offline
+					textEvntSort.setText(
+						String.valueOf(sortDaemon.getEventCount()));
+					textBuffSort.setText(
+						String.valueOf(sortDaemon.getBufferCount()));
+					textFileRead.setText(
+						String.valueOf(storageDaemon.getFileCount()));
 				}
 			}
 		});
@@ -177,49 +178,43 @@ class DisplayCounters implements Observer {
 		final JButton bclear = new JButton("Clear");
 		bclear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				final String space=" ";
-				try {
-					if (mode == ONLINE) {
-						broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
-						textBuffSort.setText(space);
-						sortDaemon.setBufferCount(0);
-						textBuffSort.setText(
-							String.valueOf(sortDaemon.getBufferCount()));
-						textEvntSent.setText(space);
-						sortDaemon.setEventCount(0);
-						textEvntSort.setText(
-							String.valueOf(sortDaemon.getEventCount()));
-						textBuffSent.setText(space); //value update method
-						textEvntSent.setText(space); //value update method
-						textBuffRecv.setText(space);
-						netDaemon.setPacketCount(0);
-						textBuffRecv.setText(
-							String.valueOf(netDaemon.getPacketCount()));
-						textBuffWrit.setText(space);
-						storageDaemon.setBufferCount(0);
-						textBuffWrit.setText(
-							String.valueOf(storageDaemon.getBufferCount()));
-						broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
+				final String space = " ";
+				if (mode == ONLINE) {
+					broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
+					textBuffSort.setText(space);
+					sortDaemon.setBufferCount(0);
+					textBuffSort.setText(
+						String.valueOf(sortDaemon.getBufferCount()));
+					textEvntSent.setText(space);
+					sortDaemon.setEventCount(0);
+					textEvntSort.setText(
+						String.valueOf(sortDaemon.getEventCount()));
+					textBuffSent.setText(space); //value update method
+					textEvntSent.setText(space); //value update method
+					textBuffRecv.setText(space);
+					netDaemon.setPacketCount(0);
+					textBuffRecv.setText(
+						String.valueOf(netDaemon.getPacketCount()));
+					textBuffWrit.setText(space);
+					storageDaemon.setBufferCount(0);
+					textBuffWrit.setText(
+						String.valueOf(storageDaemon.getBufferCount()));
+					broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
 
-					} else { //offline
-						textBuffSort.setText(space);
-						sortDaemon.setBufferCount(0);
-						textBuffSort.setText(
-							String.valueOf(sortDaemon.getBufferCount()));
-						textEvntSent.setText(space);
-						sortDaemon.setEventCount(0);
-						textEvntSort.setText(
-							String.valueOf(sortDaemon.getEventCount()));
-						textFileRead.setText(space);
-						storageDaemon.setFileCount(0);
-						textFileRead.setText(
-							String.valueOf(storageDaemon.getFileCount()));
-					}
-				} catch (GlobalException ge) {
-					messageHandler.errorOutln(
-						getClass().getName() + hyphen + ge);
+				} else { //offline
+					textBuffSort.setText(space);
+					sortDaemon.setBufferCount(0);
+					textBuffSort.setText(
+						String.valueOf(sortDaemon.getBufferCount()));
+					textEvntSent.setText(space);
+					sortDaemon.setEventCount(0);
+					textEvntSort.setText(
+						String.valueOf(sortDaemon.getEventCount()));
+					textFileRead.setText(space);
+					storageDaemon.setFileCount(0);
+					textFileRead.setText(
+						String.valueOf(storageDaemon.getFileCount()));
 				}
-
 			}
 		});
 		return bclear;
