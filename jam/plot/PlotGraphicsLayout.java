@@ -6,171 +6,184 @@ package jam.plot;
  * @version 0.5
  * @author Ken Swartz
  */
-class PlotGraphicsLayout {
+final class PlotGraphicsLayout {
 
 	//LayoutType full plot
 	static final int LAYOUT_TYPE_LABELS = 0;
+
 	//LayoutType tiled plots
 	static final int LAYOUT_TYPE_NO_LABELS = 1;
 
-	int LAYOUT_TYPE;
-	
 	//border outside of plot
-	int BORDER_TOP;
-	int BORDER_LEFT;
-	int BORDER_BOTTOM;
-	int BORDER_RIGHT;
+	final int BORDER_TOP;
+
+	final int BORDER_LEFT;
+
+	final int BORDER_BOTTOM;
+
+	final int BORDER_RIGHT;
 
 	//tickmark stuff
-	int TICK_SIZE;
-	int TICK_MINOR;
-	int TICK_MAJOR;
+	final int TICK_SIZE;
+
+	final int TICK_MINOR;
+
+	final int TICK_MAJOR;
 
 	//title stuff
-	int TITLE_OFFSET;
-	int TITLE_OFFSET_TOP;
-	int TITLE_OFFSET_BOTTOM;
-	int TITLE_OFFSET_LEFT;
-	int TITLE_OFFSET_DATE;
+	final int TITLE_OFFSET;
+
+	final int TITLE_OFFSET_TOP;
+
+	final int TITLE_OFFSET_BOTTOM;
+
+	final int TITLE_OFFSET_LEFT;
+
+	final int TITLE_OFFSET_DATE;
 
 	//tickmarks
-	int LABEL_OFFSET;
-	int LABEL_OFFSET_TOP;
-	int LABEL_OFFSET_BOTTOM;
-	int LABEL_OFFSET_LEFT;
+	final int LABEL_OFFSET;
+
+	final int LABEL_OFFSET_TOP;
+
+	final int LABEL_OFFSET_BOTTOM;
+
+	final int LABEL_OFFSET_LEFT;
 
 	//axis labels
-	int AXIS_LABEL_OFFSET_TOP;
-	int AXIS_LABEL_OFFSET_BOTTOM;
-	int AXIS_LABEL_OFFSET_LEFT;
-	int AXIS_LABEL_OFFSET_RIGHT;
+	final int AXIS_LABEL_OFFSET_TOP;
+
+	final int AXIS_LABEL_OFFSET_BOTTOM;
+
+	final int AXIS_LABEL_OFFSET_LEFT;
+
+	final int AXIS_LABEL_OFFSET_RIGHT;
 
 	//stuff for channel marker
-	int MARK_MIN_LENGTH;
-	int MARK_OFFSET;
+	final int MARK_MIN_LENGTH;
+
+	final int MARK_OFFSET;
 
 	//fonts
-	float SCREEN_FONT_SIZE;
-	float TITLE_SCREEN_SIZE;
+	final float SCREEN_FONT_SIZE;
+
+	final float TITLE_SCREEN_SIZE;
 
 	//stuff for two d color scale
-	int COLOR_SCALE_OFFSET; // distance from right side of plot
-	int COLOR_SCALE_LABEL_OFFSET;
-	int COLOR_SCALE_SIZE; // size of a color swatch
+	final int COLOR_SCALE_OFFSET; // distance from right side of plot
 
-	int PRINT_FONT_SIZE;
-	int TILE_PRINT_SIZE;
-	
-	String FONT_CLASS="Serif";
+	final int COLOR_SCALE_LABEL_OFFSET;
 
-	void setLayoutType(int type) {
+	final int COLOR_SCALE_SIZE; // size of a color swatch
+
+	final int PRINT_FONT_SIZE;
+
+	final int TILE_PRINT_SIZE;
+
+	final String FONT_CLASS = "Serif";
+
+	private PlotGraphicsLayout(int type) {
 		if (type == LAYOUT_TYPE_LABELS) {
-			setLayoutTypeLabels();
-			LAYOUT_TYPE=LAYOUT_TYPE_LABELS;
-		} else if (type == LAYOUT_TYPE_NO_LABELS) {
-			setLayoutTypeNoLabels();
-			LAYOUT_TYPE=LAYOUT_TYPE_NO_LABELS;
+			//border outside of plot
+			BORDER_TOP = 40;
+			BORDER_LEFT = 60;
+			BORDER_BOTTOM = 40;
+			BORDER_RIGHT = 60;
+
+			//tickmark stuff
+			TICK_SIZE = 10;
+			TICK_MINOR = 5;
+			TICK_MAJOR = 10;
+
+			//title stuff
+			TITLE_OFFSET = 10;
+			TITLE_OFFSET_TOP = 10;
+			TITLE_OFFSET_BOTTOM = 25;
+			TITLE_OFFSET_LEFT = 0;
+			TITLE_OFFSET_DATE = 25;
+
+			//tickmarks
+			LABEL_OFFSET = 5;
+			LABEL_OFFSET_TOP = 5;
+			LABEL_OFFSET_BOTTOM = 3;
+			LABEL_OFFSET_LEFT = 3;
+
+			//axis labels
+			AXIS_LABEL_OFFSET_TOP = 20;
+			AXIS_LABEL_OFFSET_BOTTOM = 20;
+			AXIS_LABEL_OFFSET_LEFT = 35;
+			AXIS_LABEL_OFFSET_RIGHT = 20;
+
+			//stuff for channel marker
+			MARK_MIN_LENGTH = 20;
+			MARK_OFFSET = 3;
+			//fonts
+			SCREEN_FONT_SIZE = 12;
+			TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
+
+			//stuff for two d color scale
+			COLOR_SCALE_OFFSET = 10; // distance from right side of plot
+			COLOR_SCALE_LABEL_OFFSET = 5;
+			COLOR_SCALE_SIZE = 15; // size of a color swatch
+
+			PRINT_FONT_SIZE = 12;
+			TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
+		} else {
+
+			//border outside of plot
+			BORDER_TOP = 0;
+			BORDER_LEFT = 0;
+			BORDER_BOTTOM = 0;
+			BORDER_RIGHT = 0;
+
+			//tickmark stuff
+			TICK_SIZE = 10;
+			TICK_MINOR = 5;
+			TICK_MAJOR = 10;
+
+			//title stuff
+			TITLE_OFFSET = 10;
+			TITLE_OFFSET_TOP = -13;
+			TITLE_OFFSET_BOTTOM = 25;
+			TITLE_OFFSET_LEFT = 20;
+			TITLE_OFFSET_DATE = 25;
+
+			//tickmarks
+			LABEL_OFFSET = 5;
+			LABEL_OFFSET_TOP = 5;
+			LABEL_OFFSET_BOTTOM = 3;
+			LABEL_OFFSET_LEFT = 3;
+
+			//axis labels
+			AXIS_LABEL_OFFSET_TOP = 20;
+			AXIS_LABEL_OFFSET_BOTTOM = 20;
+			AXIS_LABEL_OFFSET_LEFT = 35;
+			AXIS_LABEL_OFFSET_RIGHT = 20;
+
+			//stuff for channel marker
+			MARK_MIN_LENGTH = 20;
+			MARK_OFFSET = 3;
+			//fonts
+			SCREEN_FONT_SIZE = 12;
+			TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
+
+			//stuff for two d color scale
+			COLOR_SCALE_OFFSET = 10; // distance from right side of plot
+			COLOR_SCALE_LABEL_OFFSET = 5;
+			COLOR_SCALE_SIZE = 15; // size of a color swatch
+
+			PRINT_FONT_SIZE = 12;
+			TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
 		}
 	}
-	/**
-	 * Full plot with margins 
-	 *
-	 */
-	private void setLayoutTypeLabels() {
-		//border outside of plot
-		BORDER_TOP = 40;
-		BORDER_LEFT = 60;
-		BORDER_BOTTOM = 40;
-		BORDER_RIGHT = 60;
-
-		//tickmark stuff
-		TICK_SIZE = 10;
-		TICK_MINOR = 5;
-		TICK_MAJOR = 10;
-
-		//title stuff
-		TITLE_OFFSET = 10;
-		TITLE_OFFSET_TOP = 10;
-		TITLE_OFFSET_BOTTOM = 25;
-		TITLE_OFFSET_LEFT=0;
-		TITLE_OFFSET_DATE = 25;
-
-		//tickmarks
-		LABEL_OFFSET = 5;
-		LABEL_OFFSET_TOP = 5;
-		LABEL_OFFSET_BOTTOM = 3;
-		LABEL_OFFSET_LEFT = 3;
-
-		//axis labels
-		AXIS_LABEL_OFFSET_TOP = 20;
-		AXIS_LABEL_OFFSET_BOTTOM = 20;
-		AXIS_LABEL_OFFSET_LEFT = 35;
-		AXIS_LABEL_OFFSET_RIGHT = 20;
-
-		//stuff for channel marker
-		MARK_MIN_LENGTH = 20;
-		MARK_OFFSET = 3;
-		//fonts
-		SCREEN_FONT_SIZE = 12;
-		TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
-
-		//stuff for two d color scale
-		COLOR_SCALE_OFFSET = 10; // distance from right side of plot
-		COLOR_SCALE_LABEL_OFFSET = 5;
-		COLOR_SCALE_SIZE = 15; // size of a color swatch
-
-		PRINT_FONT_SIZE = 12;
-		TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
+	
+	static PlotGraphicsLayout getLayout(int type){
+		return type==LAYOUT_TYPE_LABELS ? LABELS : NO_LABELS;
 	}
-	/**
-	 * Tiled plot with no margins  
-	 *
-	 */
-	private void setLayoutTypeNoLabels() {
 
-		//border outside of plot
-		BORDER_TOP = 0;
-		BORDER_LEFT = 0;
-		BORDER_BOTTOM = 0;
-		BORDER_RIGHT = 0;
+	public static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(
+			LAYOUT_TYPE_LABELS);
 
-		//tickmark stuff
-		TICK_SIZE = 10;
-		TICK_MINOR = 5;
-		TICK_MAJOR = 10;
-
-		//title stuff
-		TITLE_OFFSET = 10;
-		TITLE_OFFSET_TOP = -13;
-		TITLE_OFFSET_BOTTOM = 25;
-		TITLE_OFFSET_LEFT=20;
-		TITLE_OFFSET_DATE = 25;
-
-		//tickmarks
-		int LABEL_OFFSET = 5;
-		int LABEL_OFFSET_TOP = 5;
-		int LABEL_OFFSET_BOTTOM = 3;
-		int LABEL_OFFSET_LEFT = 3;
-
-		//axis labels
-		AXIS_LABEL_OFFSET_TOP = 20;
-		AXIS_LABEL_OFFSET_BOTTOM = 20;
-		AXIS_LABEL_OFFSET_LEFT = 35;
-		AXIS_LABEL_OFFSET_RIGHT = 20;
-
-		//stuff for channel marker
-		MARK_MIN_LENGTH = 20;
-		MARK_OFFSET = 3;
-		//fonts
-		SCREEN_FONT_SIZE = 12;
-		TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
-
-		//stuff for two d color scale
-		COLOR_SCALE_OFFSET = 10; // distance from right side of plot
-		COLOR_SCALE_LABEL_OFFSET = 5;
-		COLOR_SCALE_SIZE = 15; // size of a color swatch
-
-		PRINT_FONT_SIZE = 12;
-		TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
-	}
+	public static final PlotGraphicsLayout NO_LABELS = new PlotGraphicsLayout(
+			LAYOUT_TYPE_NO_LABELS);
 }
