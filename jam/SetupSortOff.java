@@ -241,7 +241,7 @@ class SetupSortOff  implements ItemListener {
 		pBrowse.setBorder(new EmptyBorder(0,0,0,10));
 		cp.add(pBrowse, BorderLayout.EAST);
 
-		bbrowsef = new JButton("Browse");
+		bbrowsef = new JButton("Browse...");
 		pBrowse.add(bbrowsef);
 		bbrowsef.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
