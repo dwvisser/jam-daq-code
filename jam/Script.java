@@ -1,5 +1,6 @@
 package jam;
 import jam.data.control.HistogramControl;
+import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
 import java.io.File;
@@ -232,10 +233,29 @@ public final class Script {
 			throw new IllegalStateException(
 			"You may not call loadHDF() before calling setupOffline().");
 		}
-		hdfio.readFile(HDFIO.RELOAD, hdf);
+		hdfio.readFile(FileOpenMode.RELOAD, hdf);
 		System.out.println("Loaded HDF file: "+hdf);
 	}
 	
+	
+	/**
+	 * Add the hisgogram counts in the given HDF file into the 
+	 * histograms in memory. You must have already 
+	 * invoked <code>setupSort()</code>.
+	 * 
+	 * @param hdf an HDF file
+	 * @throws IllegalStateException if <code>setupOffline()</code>
+	 * hasn't been called yet
+	 */
+	public void addHDF(File hdf){
+		if (!isSetup){
+			throw new IllegalStateException(
+			"You may not call loadHDF() before calling setupOffline().");
+		}
+		hdfio.readFile(FileOpenMode.ADD, hdf);
+		System.out.println("Added HDF file: "+hdf);
+	}
+
 	/**
 	 * Load the given HDF file into memory. 
 	 * 
