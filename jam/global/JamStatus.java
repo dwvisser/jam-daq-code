@@ -1,5 +1,6 @@
 package jam.global;
-import jam.JamMain;
+import jam.FrontEndCommunication;
+import jam.VMECommunication;
 import jam.RunState;
 import jam.plot.Display;
 
@@ -22,9 +23,8 @@ public final class JamStatus {
 	private static String overlayHistogramName, currentGateName;
 	private static JFrame frame;
 	private static Display display;
-
-	/** For fowarding class */
-	private static JamMain jamMain;
+	private static MessageHandler console;
+	private static FrontEndCommunication frontEnd;
 
 	/**
 	 * The one instance of JamStatus.
@@ -72,15 +72,6 @@ public final class JamStatus {
 	 */
 	public synchronized JFrame getFrame() {
 		return frame;
-	}
-
-	/**
-	 * Handle to JamMain to set sort Status
-	 * 
-	 * @param jm the frame of the current Jam application
-	 */
-	public synchronized void setJamMain(JamMain jm) {
-		jamMain = jm;
 	}
 
 	/**
@@ -231,5 +222,22 @@ public final class JamStatus {
 		datef.setTimeZone(TimeZone.getDefault()); //set time zone
 		String sdate = datef.format(date); //format date
 		return sdate;
+	}
+	
+	public synchronized void setMessageHandler(MessageHandler mh){
+		if (console != null){
+			throw new IllegalStateException("Can't set message handler twice!");
+		}
+		console=mh;
+		frontEnd=new VMECommunication(mh);
+	}
+	
+	public synchronized MessageHandler getMessageHandler(){
+		return console;
+	}
+	
+	public synchronized FrontEndCommunication getFrontEndCommunication(){
+		return frontEnd;
+		
 	}
 }
