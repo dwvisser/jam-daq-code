@@ -624,7 +624,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             //Create output message
             if (mode == FileOpenMode.OPEN) {
                 message.append("Opened ").append(infile.getName());
-            } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+            } else if (mode == FileOpenMode.OPEN_MORE) {
                 message.append("Opened Additional ").append(infile.getName());
             } else if (mode == FileOpenMode.RELOAD) {
                 message.append("Reloaded ").append(infile.getName());
@@ -699,7 +699,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 if (mode == FileOpenMode.OPEN) {
                     message.append("Opened ").append(infile.getName());
                     DataBase.getInstance().clearAllLists();
-                } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+                } else if (mode == FileOpenMode.OPEN_MORE) {
                     message.append("Opened Additional ").append(
                             infile.getName());
                 } else if (mode == FileOpenMode.RELOAD) {
@@ -725,7 +725,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 //Set group
                 if (mode == FileOpenMode.OPEN) {                   
                     Group.createGroup(infile.getName(), Group.Type.FILE);
-                } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+                } else if (mode == FileOpenMode.OPEN_MORE) {
                     Group.createGroup(infile.getName(), Group.Type.FILE);
                 } else if (mode == FileOpenMode.RELOAD) {
                     final String sortName = JamStatus.getSingletonInstance()
@@ -937,7 +937,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
 	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup);
-	    	if (mode==FileOpenMode.OPEN_ADDITIONAL) {
+	    	if (mode==FileOpenMode.OPEN_MORE) {
 	    		appendFileName(currentGroup, fileName);
 	    	}
 	        //Find histograms
@@ -984,7 +984,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         //Set group
         if (mode == FileOpenMode.OPEN) {                   
         	currentGroup=Group.createGroup(fileName, Group.Type.FILE);
-        } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+        } else if (mode == FileOpenMode.OPEN_MORE) {
         	currentGroup=Group.createGroup(fileName, Group.Type.FILE);
         } else if (mode == FileOpenMode.RELOAD) {
             final String sortName = JamStatus.getSingletonInstance()

@@ -279,7 +279,7 @@ public class OpenMultipleFiles {
             while (iter.hasNext()) {
                 file = (File) iter.next();
 
-                hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file, null, selectNames);
+                hdfio.readFile(FileOpenMode.OPEN_MORE, file, null, selectNames);
                 STATUS.setSortMode(SortMode.FILE, "Multiple");
             }
         }

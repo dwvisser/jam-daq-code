@@ -238,7 +238,7 @@ public final class OpenSelectedHistogram {
 			}
 		}
 		/* Read in histograms */
-		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, fileOpen, null, histogramNamesSelected);
+		hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, null, histogramNamesSelected);
 		return firstHistName;
 	}
 
