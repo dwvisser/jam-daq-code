@@ -21,12 +21,8 @@ import java.util.TreeMap;
  * </p>
  * <ul>
  * <li>name
- * <li>type--the <code>double</code> types are not yet fully implemented
- * <ul>
- * <code><li>ONE_DIM_INT</li><li>TWO_DIM_INT</li><li>ONE_DIM_DOUBLE</li>
- *  <li>TWO_DIM_DOUBLE</li></code>
- * </ul>
- * <li>size
+ * <li>type
+ * <li>size in channels, x and y (sizeY=0 for 1D)
  * <li>title
  * <li>axis labels, x and y
  * <li>data array 1 or 2 dimension
@@ -35,7 +31,7 @@ import java.util.TreeMap;
  * <p>
  * Modified 2/11/99 Dale Visser to have an error array too. By default, the
  * class will assume Poisson error bars and return square root of counts. For
- * <code>Histogram</code> s produced by adding, subtracting, or otherwise
+ * <code>Histogram</code>'s produced by adding, subtracting, or otherwise
  * manipulating other histograms, though, an appropriate error array should be
  * calculated and stored by invoking the <code>setErrors()</code> method.
  * 
@@ -1343,6 +1339,11 @@ public final class Histogram implements Serializable {
 		return rval;
 	}
 
+	/**
+	 * Returns the total number of counts in the histogram.
+	 * 
+	 * @return area under the counts in the histogram
+	 */
 	public double getArea() {
 		double sum = 0.0;
 		if (type == Histogram.Type.ONE_DIM_DOUBLE) {
