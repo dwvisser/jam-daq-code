@@ -41,6 +41,8 @@ class Toolbar extends JToolBar implements ActionListener {
 	private static final Preferences PREFS;
 	
 	final Icon iRebin;
+	/** Is a syncronize event, so don't fire events */
+	private boolean isSyncEvent;
 	
 	static {
 		final String defaultVal = BorderLayout.NORTH;
@@ -63,6 +65,8 @@ class Toolbar extends JToolBar implements ActionListener {
 	Toolbar(Container container, Action action) {
 		super("Actions", ORIENTATION);
 		this.action=action;
+		
+		isSyncEvent=false;
 		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
@@ -239,6 +243,11 @@ class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
+//	private void addButton(){
+//		
+//	}
+	
+	
 	private void fitToolbar() {
 		final boolean vertical = getOrientation() == JToolBar.VERTICAL;
 		if (vertical) {
@@ -290,8 +299,10 @@ class Toolbar extends JToolBar implements ActionListener {
 		bgoto.setEnabled(enable);
 		//brebin.setEnabled(enable);
 		bnetarea.setEnabled(enable);
-		comboBinRatio.setEnabled(enable);
-		comboBinRatio.setSelectedIndex(0);
+		isSyncEvent=true;
+			comboBinRatio.setSelectedIndex(0);
+			comboBinRatio.setEnabled(enable);
+		isSyncEvent=false;			
 	}
 	/**
 	 * Routine called by pressing a button on the action toolbar.
@@ -312,7 +323,8 @@ class Toolbar extends JToolBar implements ActionListener {
 		String ratio =REBIN_RATIOS[index];
 		double [] parameters = new double [1];
 		parameters[0]=Double.parseDouble(ratio);
-		action.doCommand(Action.REBIN, parameters, false);
+		if (!isSyncEvent)
+			action.doCommand(Action.REBIN, parameters, false);
 	}
 	/**
 	 * Class to render rebin selections 

@@ -306,27 +306,34 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final double count;
 		final String coord;
 		final int xch;
-
+		final int ych;
+		String binText;
 		/* check that a histogram is defined */
 		final Histogram hist = STATUS.getCurrentHistogram();
 		final Plot currentPlot = display.getPlot();
 
 		synchronized (cursor) {
 			xch = cursor.getX();
+			ych = cursor.getY();
 			count = cursor.getCounts();
 			coord = cursor.getCoordString();
 		}
 		currentPlot.markChannel(cursor);
-		if (hist.isCalibrated()) {
-			final Plot plot = (Plot) currentPlot;
-			final double energy = plot.getEnergy(xch);
-			textOut.messageOutln("Bin " + xch + ":  Counts = "
-					+ numFormat.format(count) + "  Energy = "
-					+ numFormat.format(energy));
+		//1 Dim Plot
+		if (currentPlot.getDimensionality()==1){
+			binText="Bin " + xch + ":  Counts = "+ numFormat.format(count);
+			if (hist.isCalibrated()) {
+				final double energy = currentPlot.getEnergy(xch);
+				binText=binText+"  Energy = "+ numFormat.format(energy);
+			}
+			
+		//2 Dim plot
 		} else {
-			textOut.messageOutln("Bin " + xch + ":  Counts = "
-					+ numFormat.format(count));
+			
+			binText="Bin " + xch+","+ych+ ":  Counts = "
+					+ numFormat.format(count);
 		}
+		textOut.messageOutln(binText);
 		done();
 
 	}
