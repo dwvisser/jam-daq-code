@@ -58,6 +58,12 @@ public interface CommandNames {
 	String EXPORT_SPE="exportspe";
 			
 	/** Export the displayed histogram as a .his file for DAMM. */
-	String EXPORT_DAMM="exportdamm";		
+	String EXPORT_DAMM="exportdamm";	
+	
+	/** Print the displayed plot */
+	String PRINT="print";
+	
+	/** Setup the printing page layout */
+	String PAGE_SETUP="pageSetup";
 	
 }

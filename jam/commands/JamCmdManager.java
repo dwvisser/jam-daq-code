@@ -44,7 +44,9 @@ public class JamCmdManager implements CommandListener {
 		cmdMap.put(CommandNames.SCALERS, ScalersCmd.class);
 		cmdMap.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);
 		cmdMap.put(CommandNames.EXPORT_DAMM, ExportDamm.class);
-		cmdMap.put(CommandNames.EXPORT_SPE, ExportRadware.class);		
+		cmdMap.put(CommandNames.EXPORT_SPE, ExportRadware.class);	
+		cmdMap.put(CommandNames.PRINT, Print.class);
+		cmdMap.put(CommandNames.PAGE_SETUP, PageSetupCmd.class);	
 	}
 	
 
@@ -54,6 +56,7 @@ public class JamCmdManager implements CommandListener {
 	 */
 	private JamCmdManager() {
 	}
+	
 	/**
 	 * Singleton accessor
 	 * @return
