@@ -1,5 +1,3 @@
-/*
-*/
 package jam.applet;
 import java.applet.Applet;
 import java.net.*;
@@ -82,7 +80,6 @@ public class HistApplet extends Applet implements ActionListener, ItemListener {
 	    textHost=new TextField("rmi:// ");
 	    textHost.setColumns(30);	
 	    textHost.setBackground(Color.white);	
-//	    textHost.setActionCommand("link");
 	    textHost.addActionListener(this);	
 	    pHost.add(textHost);
 
@@ -92,7 +89,7 @@ public class HistApplet extends Applet implements ActionListener, ItemListener {
 	    pHost.add(blink);
 	    
 	//output console at bottome
-        console=new JamConsole(4, 20);
+        console=new JamConsole(20);
         this.add(BorderLayout.SOUTH, console);	
 	
 	//display in middle						
@@ -318,22 +315,7 @@ public class HistApplet extends Applet implements ActionListener, ItemListener {
 	    // jam client
 
 	    setHistogramList(histogramList);
-		
-		
-	    //XXXSystem.out.println("try get string");
-	    //XXXSystem.out.println("string "+remoteData.getString());	
-	    //XXXSystem.out.println("try get histogramlist");	    
-
-	    //copy histogramList
-//XXX	    System.out.println("histogramlist"+histlist);	    	    
-//	    System.out.println("Histogram[1] name"+((Histogram) histogramList.elementAt(1)).getName());
-//	    System.out.println("try get histogram object");	    	    	
-//	    System.out.println("name "+(remoteData.getHistogram()).getName());
-//	    hist=(Histogram)remoteData.getHistogram();
-//	    System.out.println("try get histogram 0 name");	    	    	
-//	    System.out.println("name "+remoteData.getName());
-	    //XXXSystem.out.println("done");		
-	    
+			    
 	} catch (RemoteException re){
 	    System.out.println(re.getMessage());
 	    throw new JamException("Remote getting histogram list [SetupRemote]");	
