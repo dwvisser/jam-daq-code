@@ -15,18 +15,15 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class FileDescription extends DataObject {
+final class FileDescription extends DataObject {
 
 	/**
 	 * Object being labelled.
 	 */
 	DataObject object;
 
-	String label;
-
-	public FileDescription(HDFile hdf, String label) {
+	FileDescription(HDFile hdf, String label) {
 		super(hdf, DFTAG_FD); //sets tag
-		this.label = label;
 		int byteLength = label.length();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -37,10 +34,6 @@ public class FileDescription extends DataObject {
 			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
-	}
-
-	public FileDescription(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
 	}
 
 	/**
@@ -56,18 +49,9 @@ public class FileDescription extends DataObject {
 		try {
 			temp = new byte[bytes.length];
 			dis.read(temp);
-			label = new String(temp);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting FID: " + e.getMessage());
+				"Problem interpreting FID.",e);
 		}
 	}
-
-	/**
-	 * Returns the text contained.
-	 */
-	public String getText() {
-		return label;
-	}
-
 }

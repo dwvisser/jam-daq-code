@@ -15,21 +15,13 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class FileIdentifier extends DataObject {
+final class FileIdentifier extends DataObject {
 
-	/**
-	 * Object being labelled.
-	 */
-	DataObject object;
-
-	String label;
-
-	public FileIdentifier(HDFile hdf, String label) {
+	FileIdentifier(HDFile hdf, String label) {
 		super(hdf, DFTAG_FID); //sets tag
-		this.label = label;
 		int byteLength = label.length();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
-		DataOutputStream dos = new DataOutputStream(baos);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
+		final DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
@@ -37,10 +29,6 @@ public class FileIdentifier extends DataObject {
 			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
-	}
-
-	public FileIdentifier(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
 	}
 
 	/**
@@ -51,22 +39,12 @@ public class FileIdentifier extends DataObject {
 	public void interpretBytes() throws HDFException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bais);
-
 		try {
 			final byte [] temp = new byte[bytes.length];
 			dis.read(temp);
-			label = new String(temp);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting FID: " + e.getMessage());
+				"Problem interpreting FID.",e);
 		}
 	}
-
-	/**
-	 * Returns the text contained.
-	 */
-	public String getLabel() {
-		return label;
-	}
-
 }
