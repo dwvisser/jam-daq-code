@@ -166,24 +166,18 @@ Observer {
         try {
             if (command=="ok"||command=="apply"){
                 manipulate();
-                try {
-                    broadcaster.broadcast(BroadcastEvent.REFRESH);
-                } catch (GlobalException ge) {
-                    messageHandler.errorOutln(getClass().getName()+
-                    ".actionPerformed(): "+ge);
-                }
-                if (command=="ok") cancel();
+                broadcaster.broadcast(BroadcastEvent.REFRESH);
+                if (command=="ok") {
+                	disposeDialog();
+                } 
             } else if(command=="cancel") {
-                cancel();
+                disposeDialog();
             } else  {
                 throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
+        } 
     }
 
     /**
@@ -258,7 +252,7 @@ Observer {
      * disable editting of all fields
      *
      */
-    private void cancel(){
+    private void disposeDialog(){
         dmanip.dispose();
     }
 
@@ -306,7 +300,7 @@ Observer {
     /**
      * Does the work of manipulating histograms
      */
-    private void manipulate() throws DataException,GlobalException {
+    private void manipulate() throws DataException {
         Histogram hfrom1,hfrom2,hto;
         double fac1,fac2;
         String name;
@@ -436,7 +430,7 @@ Observer {
      *  windowClosing only one used.
      */
     public void windowClosing(WindowEvent e){
-        cancel();
+        disposeDialog();
         dmanip.dispose();
     }
 
