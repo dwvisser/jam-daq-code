@@ -29,10 +29,13 @@ final class ExportRadware extends AbstractExportFile implements Observer{
 		final BroadcastEvent be=(BroadcastEvent)obj;
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.HISTOGRAM_SELECT){
-			final Histogram h=Histogram.getHistogram(
-			status.getCurrentHistogramName());
-			setEnabled(h.getDimensionality()==1);
+			enable();
 		}
 	}
-	
+	protected void enable(){
+		final Histogram h=Histogram.getHistogram(
+		status.getCurrentHistogramName());
+		if (h!=null)
+			setEnabled(h.getDimensionality()==1);	
+	}
 }

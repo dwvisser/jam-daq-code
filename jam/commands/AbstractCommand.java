@@ -4,7 +4,6 @@ import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -26,14 +25,13 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 */
 	AbstractCommand(){
 		super();	
+		enable();
 	}
 	
 	/**
 	 * Initializer
 	 * 
-	 * @param status
 	 * @param msghdlr
-	 * @param broadcaster
 	 */
 	public void init(MessageHandler mh) {
 		msghdlr=mh;
@@ -117,5 +115,13 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
-	protected abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;			
+	protected abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;
+	
+	/**
+	 * Enable or disable command depending on JamStatus
+	 * Called from constructor by update of observer if needed
+	 */
+	protected void enable(){
+					
+	}
 }
