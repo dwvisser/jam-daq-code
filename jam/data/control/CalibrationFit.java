@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -91,7 +92,8 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         cdialogCalib.setLayout(new BorderLayout(5, 5));
         
         //Selection panel at the top
-        JPanel pSelection = new JPanel(new GridLayout(0,1,5,5));
+        JPanel pSelection = new JPanel(new GridLayout(0,1,5,0));
+        pSelection.setBorder(new EmptyBorder(10,0,0,0));
         cdialogCalib.add(pSelection, BorderLayout.NORTH);
         
         //Equation chooser
@@ -116,13 +118,14 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         pSelection.add(pChoose);
         
         //Equation 
-        JPanel pEquation = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        JPanel pEquation = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         pSelection.add(lcalibEq);        
         
         //Fit using points or coeffs 
-        final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         final ButtonGroup fitType=new ButtonGroup();
         rbFitPoints = new JRadioButton("Fit Points", true);
+        //rbFitPoints.addActionListener()
         fitType.add(rbFitPoints);        
         pFitType.add(rbFitPoints);
         rbSetCoeffs = new JRadioButton("Set Coefficients", false);
