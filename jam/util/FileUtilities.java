@@ -23,19 +23,19 @@ public class FileUtilities {
 	  * @param	extension   file extension; everything up to any decimal is thrown away
 	  * @param   mode	    FORCE if force a change, APPEND_ONLY if only append and not replace, NO_CHANGE if ignore
 	  * @return		    a filename with the desired extension
+	  * @throws IllegalArgumentException if an unrecognized mode is given
 	  */
 	public static String setExtension(
 		String fileName,
 		String extension,
-		int mode)
-		throws UtilException {
+		int mode) {
 		String extNoPeriod = extension;
 		String rval=fileName;
 
 		if (mode == NO_CHANGE)
 			return fileName;
 		if (mode != FORCE && mode != APPEND_ONLY && mode != NO_CHANGE) {
-			throw new UtilException("Invalid call to setExtension().");
+			throw new IllegalArgumentException("Invalid call to setExtension().");
 		}
 		int index = extension.indexOf('.');
 		if (index >= 0) { //period occurs in extension
