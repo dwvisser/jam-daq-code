@@ -418,11 +418,15 @@ public class CalibrationFit extends AbstractControl {
 				}
 				calibrationFunction.setCoeff(coeff);
 				calibrationFunction.setIsFitPoints(false);
+                currentHistogram.setCalibration(calibrationFunction);
+                BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getFullName().trim()+" with "+
+                		calibrationFunction.getFormula());
+				
 			} catch (NumberFormatException nfe) {
 				msghdlr.errorOutln("Invalid input, coefficient "
 						+ calibrationFunction.getLabels()[i]);
 			}
-			doSetup();
 		} else {
 			msghdlr.errorOutln("Calibration function not defined.");
 		}
