@@ -216,7 +216,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pChooserLabels.add(
 			new JLabel("Sort Routine", JLabel.RIGHT),
 			BorderLayout.WEST);
-		//Vector v = getSortClasses(sortClassPath);
 		sortChoice = new JComboBox();
 		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
 		sortChoice.setToolTipText("Select a class to be your sort routine.");
@@ -226,11 +225,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 			}
 		});
 		Iterator it = sortClassList.iterator();
-		//boolean notDone = it.hasNext();
 		while (it.hasNext()) {
 			Class c = (Class) it.next();
 			String name = c.getName();
-			//boolean match = name.equals(defaultSortRoutine);
 			if (name.equals(defaultSortRoutine)) {
 				sortChoice.setSelectedItem(c);
 				break;
@@ -400,14 +397,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 			Set set = new LinkedHashSet();
 			set.addAll(RTSI.find("help", SortRoutine.class, true));
 			set.addAll(RTSI.find("sort", SortRoutine.class, true));
-			//Vector v = new Vector();
 			v.addAll(set);
-			//sortChoice.setModel(new DefaultComboBoxModel(v));
-		} /*else {
-			sortChoice.setModel(
-				new DefaultComboBoxModel(
-					(Vector) getSortClasses(sortClassPath)));
-		}*/
+		} 
 		sortChoice.setModel(new DefaultComboBoxModel(v));
 		return v;
 	}
@@ -666,7 +657,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 					+ ": can't instantiate EventOutputStream class: "
 					+ outStreamChooser.getSelectedItem());
 		} catch (IllegalAccessException iae) {
-			//            eventOutputStream=null;
 			throw new JamException(
 				getClass().getName()
 					+ ": illegal access to EventOutputStream class: "
@@ -682,11 +672,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
-			/*if (!cdisk.isSelected()) {
-				tapeDaemon = new TapeDaemon(runControl, msgHandler);
-				tapeDaemon.setDevice(dataDirectory);
-				storageDaemon = tapeDaemon;
-			} else {*/
 			diskDaemon = new DiskDaemon(runControl, msgHandler);
 			storageDaemon = diskDaemon;
 			//}
