@@ -159,29 +159,21 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		gatesChanged();
 	}
 
-	void setOverlayEnabled(boolean state) {
+	private void setOverlayEnabled(boolean state) {
 		synchronized (boverLay) {
 			boverLay.setEnabled(state);
+			if (!state){//disabled
+				boverLay.setSelected(false);
+			}
 		}
 	}
 
 	/**
 	 * @return whether histogram overlay mode is enabled
 	 */
-	public boolean overlaySelected() {
+	private boolean overlaySelected() {
 		synchronized (boverLay) {
 			return boverLay.isSelected();
-		}
-	}
-
-	/**
-	 * De-select overlay mode.
-	 */
-	public void deselectOverlay() {
-		synchronized (boverLay) {
-			if (boverLay.isSelected()) {
-				boverLay.doClick();
-			}
 		}
 	}
 
@@ -216,19 +208,18 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			display.displayHistogram();
 			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT, null);
 		} else {
-			if (overlaySelected()) {
-				if (hist.getDimensionality() == 1) {
+			final boolean oneD = hist.getDimensionality() == 1;
+			if (overlaySelected() && oneD) {
 					status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getName(), MessageHandler.END);
-					display.addToOverlay(hist);
-				}
+					display.addToOverlay(hist.getNumber());
 			} else {
 				synchronized (status) {
 					status.setCurrentHistogramName(hist.getName());
 					display.removeOverlays();
 					display.displayHistogram();
 					gatesChanged();
-					setOverlayEnabled(hist.getDimensionality() == 1);
+					setOverlayEnabled(oneD);
 					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT, hist);
 				}
 			}
