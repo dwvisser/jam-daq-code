@@ -105,7 +105,7 @@ public final class JamMain extends JFrame implements Observer {
 		me.add(splitCenter, BorderLayout.CENTER);
 		/* create user command listener */
 		jamCommand = new JamCommand(this, display, console);
-		menubar = new MainMenuBar(this, jamCommand, display, console);
+		menubar = new MainMenuBar(jamCommand, display);
 		this.setJMenuBar(menubar);
 		selectBar = new SelectionToolbar(console, status, display, menubar);
 		me.add(selectBar, BorderLayout.NORTH);
