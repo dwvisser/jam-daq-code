@@ -23,6 +23,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
@@ -310,7 +311,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				while (temp.hasNext()) {
 					addHistogram((Histogram) (temp.next()));
 					progress++;
-					pm.setProgress(progress);
+					setProgress(pm,progress);
 				}
 			}
 			if (hasContents(gates)) {
@@ -320,25 +321,25 @@ public class HDFIO implements DataIO, JamHDFFields {
 				while (temp.hasNext()) {
 					addGate((Gate) (temp.next()));
 					progress++;
-					pm.setProgress(progress);
+					setProgress(pm,progress);
 				}
 			}
 			if (hasContents(scalers)) {
 				addScalerSection(scalers);
 				message.append(scalers.size()).append(" scalers, ");
 				progress += scalers.size();
-				pm.setProgress(progress);
+				setProgress(pm,progress);
 			}
 			if (hasContents(parameters)) {
 				addParameterSection(parameters);
 				message.append(parameters.size()).append(" parameters)");
 				progress += parameters.size();
-				pm.setProgress(progress);
+				setProgress(pm,progress);
 			}
 			out.setOffsets();
 			out.writeDataDescriptorBlock();
 			out.writeAllObjects(msgHandler, pm);
-			pm.setNote("Closing File");
+			setProgressNote(pm,"Closing File");
 			out.close();
 			pm.close();
 		} catch (Exception e) {
@@ -349,9 +350,35 @@ public class HDFIO implements DataIO, JamHDFFields {
 		synchronized (this) {
 			out = null; //allows Garbage collector to free up memory
 		}
-		msgHandler.messageOutln(message.toString());
+		outln(message.toString());
 		setLastValidFile(file);
 		System.gc();
+	}
+	
+	private void setProgressNote(final ProgressMonitor pm, final String note){
+		final Runnable runner=new Runnable(){
+			public void run(){
+				pm.setNote(note);
+			}
+		};
+		SwingUtilities.invokeLater(runner);
+	}
+	
+	private void setProgress(final ProgressMonitor pm, final int value){
+		final Runnable runner=new Runnable(){
+			public void run(){
+				pm.setProgress(value);
+			}
+		};
+		SwingUtilities.invokeLater(runner);
+	}
+	
+	private void outln(final String msg){
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run(){
+				msgHandler.messageOutln(msg);
+			}
+		});
 	}
 
 	/**
