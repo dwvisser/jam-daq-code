@@ -97,7 +97,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		display = d;
 		jamMain=jm;
 		/* load fitting routine */
-		add(getFileMenu(jamCommand));
+		add(getFileMenu());
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
 		final JMenuItem setupOnline = new JMenuItem("Online sorting\u2026");
@@ -139,13 +139,11 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		CommandNames.SHOW_ZERO_SCALERS));
 		scalers.add(clearScalers);
 		scalers.addSeparator();
-		final JMenuItem showMonitors = new JMenuItem("Display Monitors\u2026");
-		showMonitors.setActionCommand("displaymonitors");
-		showMonitors.addActionListener(jamCommand);
+		final JMenuItem showMonitors = new JMenuItem(commands.getAction(
+		CommandNames.DISPLAY_MONITORS));
 		scalers.add(showMonitors);
-		final JMenuItem configMonitors = new JMenuItem("Configure Monitors\u2026");
-		configMonitors.setActionCommand("configmonitors");
-		configMonitors.addActionListener(jamCommand);
+		final JMenuItem configMonitors = new JMenuItem(commands.getAction(
+		CommandNames.DISPLAY_MON_CONFIG));
 		scalers.add(configMonitors);
 		add(getPreferencesMenu(jamCommand));
 		loadfit = new LoadFit(jm, display, console, fitting);
@@ -173,7 +171,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		license.addActionListener(jamCommand);
 	}
 	
-	private JMenu getFileMenu(JamCommand jamCommand){
+	private JMenu getFileMenu(){
 		final JMenu file = new JMenu("File");
 		final JMenuItem newClear = new JMenuItem(commands.getAction(CommandNames.NEW));
 		newClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,CTRL_MASK));		
@@ -232,9 +230,8 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		expHist.add(savespe);
 		final JMenuItem saveornl = new JMenuItem(commands.getAction(CommandNames.EXPORT_DAMM));
 		expHist.add(saveornl);
-		final JMenuItem batchexport = new JMenuItem("Batch Export\u2026");
-		batchexport.setActionCommand("batchexport");
-		batchexport.addActionListener(jamCommand);
+		final JMenuItem batchexport = new JMenuItem(commands.getAction(
+		CommandNames.SHOW_BATCH_EXPORT));
 		expHist.add(batchexport);
 		file.addSeparator();
 		file.add(commands.getAction(CommandNames.PRINT)).setAccelerator(
@@ -243,11 +240,10 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		KeyStroke.getKeyStroke(KeyEvent.VK_P, 
 		CTRL_MASK | Event.SHIFT_MASK));
 		file.addSeparator();
-		final JMenuItem exit = new JMenuItem("Exit\u2026");
+		final JMenuItem exit = new JMenuItem(commands.getAction(
+		CommandNames.EXIT));
 		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,CTRL_MASK));
 		file.add(exit);
-		exit.setActionCommand("exit");
-		exit.addActionListener(jamCommand);
 		return file;
 	}
 	
