@@ -52,15 +52,12 @@ class PlotGraphics  {
 
 	static final int RIGHT = 4;
 
-	static final int ONE_DIMENSION = 1;
-
-	static final int TWO_DIMENSION = 2;
-
 	/* fake zero for Log scale 1/2 a count */
 	static final double LOG_FAKE_ZERO = 0.5;
 
 	PlotGraphicsLayout graphLayout;
-	//  current stuff to draw font, and font metrics and colors
+	
+	/* current stuff to draw font, and font metrics and colors */
 	private Graphics2D g;
 
 	private Font font;
@@ -87,7 +84,7 @@ class PlotGraphics  {
 	private Limits plotLimits;
 
 	/** is the plot 1d or 2d */
-	private int plotType;
+	private int plotDimensions;
 
 	/**
 	 * variable for converting pixels to data and data to pixels
@@ -146,24 +143,22 @@ class PlotGraphics  {
 	 * Full constructor, all contructors eventually call this one. Other
 	 * constructors have defaults
 	 */
-	PlotGraphics(JPanel plot) {
-		
+	PlotGraphics(JPanel plot) {		
 		graphLayout = new PlotGraphicsLayout();
-		
-		//class that draws tick marks and makes color thresholds
+		/* class that draws tick marks and makes color thresholds */
 		tm = new Tickmarks();
-		//margin for printing
+		/* margin for printing */
 		margin = new Insets(0, 0, 0, 0);
-		//maybe should be avaliable in constructor
-		//middle of plot
+		/* maybe should be avaliable in constructor, middle of plot */
 		viewMiddle = new Point();
 		if (plot instanceof Plot1d) {
-			plotType = ONE_DIMENSION;
+			plotDimensions = 1;
 		} else if (plot instanceof Plot2d) {
-			plotType = TWO_DIMENSION;
+			plotDimensions = 2;
 		}
 		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
 	}
+	
 	/**
 	 * Set the layout type
 	 * @param type
@@ -202,6 +197,8 @@ class PlotGraphics  {
 					.getImageableHeight());
 		}
 	}
+	
+	private final Object limitsLock=new Object();
 
 	/**
 	 * updates the current display parameters the most basic update this one
@@ -219,49 +216,50 @@ class PlotGraphics  {
 	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
-	void update(Graphics graph, Dimension newViewSize, Limits plotLimits) {
+	void update(Graphics graph, Dimension newViewSize, Limits limits) {
 		update(graph); //get graphics and copy to local variables
-		this.plotLimits = plotLimits;
-		//retrieve imformation from plotLimits object
-		if (plotLimits != null) {
-			minCount = plotLimits.getMinimumCounts();
-			maxCount = plotLimits.getMaximumCounts();
-			if (plotType == ONE_DIMENSION) {
-				minXch = plotLimits.getMinimumX();
-				maxXch = plotLimits.getMaximumX();
-				minY = plotLimits.getMinimumCounts();
-				maxY = plotLimits.getMaximumCounts();
-			} else if (plotType == TWO_DIMENSION) {
-				minXch = plotLimits.getMinimumX();
-				maxXch = plotLimits.getMaximumX();
-				minY = plotLimits.getMinimumY();
-				maxY = plotLimits.getMaximumY();
+		synchronized (limitsLock) {
+			plotLimits = limits;
+			if (plotLimits != null) {
+				/* retrieve imformation from plotLimits object */
+				minCount = plotLimits.getMinimumCounts();
+				maxCount = plotLimits.getMaximumCounts();
+				if (plotDimensions == 1) {
+					minXch = plotLimits.getMinimumX();
+					maxXch = plotLimits.getMaximumX();
+					minY = plotLimits.getMinimumCounts();
+					maxY = plotLimits.getMaximumCounts();
+				} else if (plotDimensions == 2) {
+					minXch = plotLimits.getMinimumX();
+					maxXch = plotLimits.getMaximumX();
+					minY = plotLimits.getMinimumY();
+					maxY = plotLimits.getMaximumY();
+				}
+				minYLog = takeLog(minY);
+				maxYLog = takeLog(maxY);
+				rangeXch = maxXch - minXch + 1;
+				final int rangeY = maxY - minY + 1;
+				final double rangeYLog = maxYLog - minYLog;
+				if (pageformat == null) {
+					this.viewSize = newViewSize;
+				}
+				/* plot* are the borders and are part of the plot */
+				viewLeft = border.left; //really 0+border.left
+				viewTop = border.top; //really 0+border.top
+				viewRight = viewSize.width - border.right - 1;
+				/* subtract 1 as last pixel size-1 */
+				viewBottom = viewSize.height - border.bottom - 1;
+				/* subtract 1 as last pixel size-1 */
+				viewWidth = viewRight - viewLeft + 1;
+				/* add 1 as border part of plot */
+				viewHeight = viewBottom - viewTop + 1;
+				/* add 1 as border part of plot */
+				conversionX = (double) viewWidth / ((double) rangeXch);
+				/* number of pixels per channel */
+				conversionY = (double) viewHeight / ((double) rangeY);
+				/* number of pixels per channel */
+				conversionYLog = viewHeight / rangeYLog;
 			}
-			minYLog = takeLog(minY);
-			maxYLog = takeLog(maxY);
-			rangeXch = maxXch - minXch + 1;
-			final int rangeY = maxY - minY + 1;
-			final double rangeYLog = maxYLog - minYLog;
-			if (pageformat == null) {
-				this.viewSize = newViewSize;
-			}
-			//plot* are the borders and are part of the plot
-			viewLeft = border.left; //really 0+border.left
-			viewTop = border.top; //really 0+border.top
-			viewRight = viewSize.width - border.right - 1;
-			//subtract 1 as last pixel size-1
-			viewBottom = viewSize.height - border.bottom - 1;
-			//subtract 1 as last pixel size-1
-			viewWidth = viewRight - viewLeft + 1;
-			//add 1 as border part of plot
-			viewHeight = viewBottom - viewTop + 1;
-			//add 1 as border part of plot
-			conversionX = (double) viewWidth / ((double) rangeXch);
-			//number of pixels per channel
-			conversionY = (double) viewHeight / ((double) rangeY);
-			//number of pixels per channel
-			conversionYLog = viewHeight / rangeYLog;
-			//number of pixels per channel
 		}
 	}
 
@@ -378,19 +376,16 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawTicks(int side) {
-		final int ll, ul;
 		Limits.ScaleType scale = Limits.ScaleType.LINEAR;
 		if (side == BOTTOM) {//always linear
-			ll = minXch;
-			ul = maxXch;
-			ticksBottom(ll, ul);
+			ticksBottom(minXch, maxXch);
 		} else { //side==LEFT, if 1d-depends on Limits's scale
-			ll = minY;
-			ul = maxY;
-			if (plotType == ONE_DIMENSION) {
-				scale = plotLimits.getScale();
+			synchronized (limitsLock) {
+				if (plotDimensions == 1 && plotLimits != null) {
+					scale = plotLimits.getScale();
+				}
+				ticksLeft(minY, maxY, scale);
 			}
-			ticksLeft(ll, ul, scale);
 		}
 	}
 
@@ -478,10 +473,12 @@ class PlotGraphics  {
 		if (side == BOTTOM) {
 			labelsBottom(minXch, maxXch);
 		}
-		if (plotType == ONE_DIMENSION && side == LEFT) {
+		synchronized (limitsLock){
+		if (plotDimensions == 1 && side == LEFT && plotLimits != null) {
 			labelsLeft(minY, maxY, plotLimits.getScale());
-		} else if (plotType == TWO_DIMENSION && side == LEFT) {
+		} else if (plotDimensions == 2 && side == LEFT) {
 			labelsLeft(minY, maxY, Limits.ScaleType.LINEAR);
+		}
 		}
 	}
 
@@ -588,8 +585,10 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawHist(double[] counts, double binWidth) {
+		final Limits.ScaleType scale = plotLimits==null ? null :
+			plotLimits.getScale();
 		drawHist(counts, binWidth,
-				plotLimits.getScale() != Limits.ScaleType.LINEAR);
+				scale != Limits.ScaleType.LINEAR);
 	}
 
 	/**
