@@ -180,7 +180,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * saving tape data can significantly save time when you have many 2-d
      * spectra.
      * 
-     * @param wrthis
+     * @param wrthist
      *            if true, Histograms will be written
      * @param wrtgate
      *            if true, Gates will be written
@@ -228,20 +228,18 @@ public class HDFIO implements DataIO, JamHDFFields {
              asyncWriteFile(file, hist, gate, scaler, parameter);
         }
     }
-    /**
+    
+    /* non-javadoc:
      * Asyncronized write 
-     *
      */
     private void asyncWriteFile(final File file, final List histograms, final List gates, final List scalers,
             final List parameters) {
-       
         final Runnable r = new Runnable() {
             public void run() {
                 writeFile(file, histograms, gates, scalers, parameters);
             }
         };
-        
-        //Spawn in another thread
+        /* Spawn in another thread */
         final Thread t = new Thread(r);
         t.start();
 
@@ -344,10 +342,9 @@ public class HDFIO implements DataIO, JamHDFFields {
         setLastValidFile(file);
         System.gc();
     }
-    /**
+    
+    /* non-javadoc:
      * Confirm overwrite if file exits
-     * @param file
-     * @return
      */
     private boolean overWriteExistsConfirm(File file) {
         final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
