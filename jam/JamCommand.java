@@ -237,9 +237,9 @@ public class JamCommand
 				paramControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			} else if ("rewindtape".equals(incommand)) {
+			/*} else if ("rewindtape".equals(incommand)) {
 				console.messageOut("Rewinding tape... ", JamConsole.NEW);
-				console.messageOut(jam.sort.TapeDaemon.rewindTape());
+				console.messageOut(jam.sort.TapeDaemon.rewindTape());*/
 			} else if ("newhist".equals(incommand)) {
 				histogramControl.showNew();
 			} else if ("zerohist".equals(incommand)) {
