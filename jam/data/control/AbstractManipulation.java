@@ -1,14 +1,13 @@
 package jam.data.control;
 
+import jam.data.Group;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+
 import java.awt.FontMetrics;
 import java.util.Iterator;
 
 import javax.swing.JComboBox;
-
-import jam.data.AbstractHist1D;
-import jam.data.Group;
-import jam.data.Histogram;
-import jam.global.BroadcastEvent;
 
 /**
  * Base class for histogram manipulations
@@ -17,11 +16,17 @@ import jam.global.BroadcastEvent;
  * @author Ken Swartz
  *
  */
-public abstract class AbstractManipulation extends AbstractControl {
+abstract class AbstractManipulation extends AbstractControl {
 
-	final int CHOOSER_SIZE = 200;
-	final int CHOOSER_CHAR_LENGTH = 35;
-	final int NEW_NAME_LENGTH=15;
+	/**
+	 * Width of choosers in characters.
+	 */
+    protected static final int CHAR_LENGTH = 35;
+    
+    /**
+     * Width of text fields in characters.
+     */
+	protected static final int TEXT_LENGTH=15;
 	
 	/** String to prepend to new histogram group in combobox */ 
 	final static String NEW_HIST = "NEW: ";
@@ -90,20 +95,29 @@ public abstract class AbstractManipulation extends AbstractControl {
         return groupName;
     }
 	
-	/*
-	 * Create a new histogram given a group, name and size 
-	 */
-	Histogram createNewHistogram(String groupName, String name, String histName, int size) {
-		Group group;
-		Histogram hist;
-		group=Group.getGroup(groupName);
-		if (group==null) { 
-			group= Group.createGroup(groupName, Group.Type.FILE);
-		}
-		hist = (AbstractHist1D)Histogram.createHistogram(group, new double[size],histName);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		return hist;
-	}
+	/**
+     * Create a new 1D double histogram given a group, name and size.
+     * 
+     * @param groupName
+     *            name of group for hist
+     * @param histName
+     *            name of histogram
+     * @param size
+     *            number of channels in histogram
+     * @return a 1D double histogram
+     */
+    protected static final Histogram createNewHistogram(String groupName,
+            String histName, int size) {
+        Group group;
+        Histogram hist;
+        group = Group.getGroup(groupName);
+        if (group == null) {
+            group = Group.createGroup(groupName, Group.Type.FILE);
+        }
+        hist = Histogram.createHistogram(group, new double[size], histName);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        return hist;
+    }
 
 	/**
 	 * Converts int array to double array.
@@ -152,22 +166,20 @@ public abstract class AbstractManipulation extends AbstractControl {
 		}
 		return rval;
 	}
+	
 	/**
-	 * Get the mean character width in pixels
-	 * @param fm
-	 * @return
-	 */
-	int getMeanCharWidth(FontMetrics fm) {
-		
-		final double NUMBER_WIDTHS =256; 
-		double sum =0;
-		int meanWidth;
-		
-		int[] widths =fm.getWidths(); 
-		for (int i=0;i<NUMBER_WIDTHS; i++){
-			sum+=widths[i];		
-		}
-		
-		return meanWidth =(int)Math.round(sum/NUMBER_WIDTHS); 
-	}
+     * Get the mean character width in pixels
+     * 
+     * @param fontMetrics
+     * @return mean width of a character in pixels
+     */
+    int getMeanCharWidth(FontMetrics fontMetrics) {
+        final double numWidths = 256;
+        double sum = 0;
+        final int[] widths = fontMetrics.getWidths();
+        for (int i = 0; i < numWidths; i++) {
+            sum += widths[i];
+        }
+        return (int) Math.round(sum / numWidths);
+    }
 }
