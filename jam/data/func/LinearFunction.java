@@ -42,7 +42,8 @@ public class LinearFunction extends CalibrationFunction {
 	 * do a fit of x y values
 	 */
 	public void fit() throws DataException {
-		setCoeff(linearRegression(ptsChannel, ptsEnergy));
+		double [] coeffLinRegress =linearRegression(ptsChannel, ptsEnergy);		
+		System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length); 
 	}
 	
 	public void updateFormula(){

@@ -6,6 +6,7 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
+import jam.data.func.CalibrationFunction;
 import jam.global.JamProperties;
 import jam.util.StringUtilities;
 
@@ -232,7 +233,65 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
         return ndg;
 
 	}
-	
+
+    /* non-javadoc:
+     * Converts a gate to a Virtual group
+     * @param g
+     *            the gate to convert
+     * @exception HDFException
+     *                thrown if unrecoverable error occurs
+     */	
+    VDataDescription convertCalibration(CalibrationFunction calibrationFunction) {	
+        String calibrationType;
+        String[] columnNames;        
+        int size;
+        final short[] orders;
+
+        final short[] types;
+//        = { VDataDescription.DFNT_DBL64,
+//        		VDataDescription.DFNT_DBL64 };
+        final String calibrationName = calibrationFunction.getName();
+        if (calibrationFunction.isFitPoints()) {   
+        	calibrationType = CALIBRATION_TYPE_POINTS;
+            columnNames = CALIBRATION_COLUMNS_POINTS;
+            size =calibrationFunction.getPtsEnergy().length;
+            types = new short [2];
+			types [0]=VDataDescription.DFNT_DBL64;
+            types [1]=VDataDescription.DFNT_DBL64;
+            orders = new short [2];            
+            orders[0] = 1;
+            orders[1] = 1;
+        } else { //2d
+        	calibrationType = CALIBRATION_TYPE_COEFF;        	
+        	columnNames = CALIBRATION_COLUMNS_COEFF;
+            size = calibrationFunction.getNumberTerms();
+            types = new short [1];
+			types [0]=VDataDescription.DFNT_DBL64;
+            orders = new short [1];
+            orders[0] = 1;
+        }
+        
+        final VDataDescription desc = new VDataDescription(calibrationName, calibrationType,
+                size, columnNames, types, orders);        
+        //HDF Undocumented Vdata has same reference as VdataDescription
+        final VData data = new VData(desc);
+        
+        if (calibrationFunction.isFitPoints()) {
+        	double [] channels =calibrationFunction.getPtsChannel();
+        	double [] energies=calibrationFunction.getPtsEnergy();
+        	for (int i = 0; i < size; i++) {
+        		data.addDouble(0, i, channels[i]);
+        		data.addDouble(1, i, energies[i]);
+        	}
+        } else { //2d
+        	double [] coeffs = calibrationFunction.getCoeff();
+            for (int i = 0; i < size; i++) {
+                data.addDouble(0, i, coeffs[i]);
+            }
+        }
+        return desc;		
+	}
+    
     /* non-javadoc:
      * Converts a gate to a Virtual group
      * @param g

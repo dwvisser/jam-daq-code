@@ -283,10 +283,12 @@ public final class VDataDescription extends AbstractData {
         return rval;
     }
 
-    private String getName() {
+    String getName() {
         return name;
     }
-
+    String getDataTypeName() {
+    	return dataTypeName;
+    }
     /**
      * Returns the <code>VdataDescription</code> with the name specified.
      * Should only be called when the name is expected to be unique.

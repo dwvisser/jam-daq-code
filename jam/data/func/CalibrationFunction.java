@@ -174,6 +174,7 @@ public abstract class CalibrationFunction implements Function {
 	 * @param ptsEnergyIn
 	 */
 	public void setPoints(double [] ptsChannelIn, double [] ptsEnergyIn) {
+		isFitPoints=true;
 		ptsChannel =new double [ptsChannelIn.length];
 		ptsEnergy =new double [ptsEnergyIn.length];
 		System.arraycopy(ptsChannelIn, 0, ptsChannel, 0, ptsChannelIn.length);
@@ -200,6 +201,7 @@ public abstract class CalibrationFunction implements Function {
 	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
 	 */
 	public void setCoeff(double aIn[]) {
+		isFitPoints=false;
 		if (aIn.length <= coeff.length) {
 			//zero array
 			for (int i = 0; i < coeff.length; i++) {

@@ -34,6 +34,23 @@ public interface JamFileFields {
     String HIST_TYPE = "Histogram";
 
     /**
+     * The type name for the calibration with points
+     */
+    String CALIBRATION_TYPE_POINTS = "CalibrationPoints";
+    /**
+     * The type name for the calibration with coefficients
+     */
+    String CALIBRATION_TYPE_COEFF = "CalibrationCoefficients";
+
+    /**
+     * Column names for calibration with points
+     */
+    String[] CALIBRATION_COLUMNS_POINTS = { "Channel", "Energy" };
+    /**
+     * Column names for calibration with coefficients
+     */    
+    String[] CALIBRATION_COLUMNS_COEFF = { "Coefficients"};
+    /**
      * The section name for the gates.
      */
     String GATE_SECTION = "Gates";

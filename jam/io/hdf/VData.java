@@ -92,6 +92,17 @@ public final class VData extends AbstractData {
                     + column + "!");
         }
     }
+    void addDouble(int column, int row, double indata) {
+        Double temp;
+
+        if (description.getType(column) == VDataDescription.DFNT_DBL64) {
+            temp = new Double(indata);
+            setCell(column, row, temp);
+        } else { //uh oh... not right type
+            throw new IllegalStateException("Wrong data type for column "
+                    + column + "!");
+        }
+    }
 
     void addChars(int column, int row, String indata) {
         if (description.getType(column) == VDataDescription.DFNT_CHAR8) {
@@ -366,7 +377,7 @@ public final class VData extends AbstractData {
      * non-javadoc: Get the double in the specified cell. Of course, there'd
      * better actually be a float there!
      */
-    private Double getDouble(int row, int col) throws HDFException {
+    Double getDouble(int row, int col) throws HDFException {
         int location;
         final int length = 8;
         byte[] temp;

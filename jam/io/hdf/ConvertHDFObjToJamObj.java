@@ -1,17 +1,21 @@
 package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
+import jam.data.DataException;
 import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
+import jam.data.AbstractHist1D;
 import jam.data.Scaler;
+import jam.data.func.CalibrationFunction;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
 import java.awt.Polygon;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 
 /**
@@ -233,7 +237,80 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		}
 		return findSubGroups(virtualGroupHistogram, gateType);				
     }
-    
+
+	VDataDescription findCalibration(VirtualGroup virtualGroup){
+        VDataDescription vddCalibration=null; 
+        VDataDescription vddpts = findVData(virtualGroup, CALIBRATION_TYPE_POINTS);
+        if (vddpts!=null) {
+        	vddCalibration =vddpts;
+        } 
+        VDataDescription vddcoef = findVData(virtualGroup, CALIBRATION_TYPE_COEFF);        	
+        if (vddcoef!=null) {
+        	vddCalibration =vddcoef;
+        }
+        return vddCalibration;        		
+	}
+    CalibrationFunction convertCalibration(Histogram hist, VDataDescription vdd) throws HDFException {
+        final CalibrationFunction calibrationFunction;
+        final VData data = (VData) (AbstractData.getObject(
+                AbstractData.DFTAG_VS, vdd.getRef()));
+        
+        final String funcName = vdd.getName();
+        final String dataTypeName =vdd.getDataTypeName();
+        final int numbPts = vdd.getNumRows();
+        
+		
+        calibrationFunction = makeCalibration(hist, funcName);
+		if (calibrationFunction!=null) {
+	        final int numPts = vdd.getNumRows();
+	
+	        if (dataTypeName.equals(CALIBRATION_TYPE_POINTS)) {
+	        	
+				double [] ptsChannel = new double [numbPts];
+				double [] ptsEnergy = new double [numbPts];
+				
+				for (int i=0;i<numPts; i++) {
+					ptsChannel[i] =data.getDouble(i, 0).doubleValue();
+					ptsEnergy[i] =data.getDouble(i, 1).doubleValue();
+				}
+				calibrationFunction.setPoints(ptsChannel, ptsEnergy);
+				try {
+					calibrationFunction.fit();
+				} catch (DataException de) {
+					throw new HDFException("Cannot create fit for calibration function "+funcName);
+				}
+	        } else if ( dataTypeName.equals(CALIBRATION_TYPE_COEFF) ) {
+	        	double [] coeff = new double [numbPts];
+				for (int i=0;i<numPts; i++) {
+					coeff[i] =data.getDouble(i, 0).doubleValue();
+				}
+				calibrationFunction.setCoeff(coeff);				
+	        } else {
+	        	throw new HDFException("Unrecognized calibration type");
+	        }
+		}
+		
+		((AbstractHist1D)hist).setCalibration(calibrationFunction);
+		
+    	return calibrationFunction;
+    }
+	
+    private CalibrationFunction makeCalibration(Histogram hist, String funcName ) throws HDFException {
+    	Class calClass;
+    	Map calMap= CalibrationFunction.getMapFunctions();
+    	CalibrationFunction calibrationFunction=null;    	
+		try {
+	    	if (CalibrationFunction.getMapFunctions().containsKey(funcName)) {
+	    		calClass = (Class)CalibrationFunction.getMapFunctions().get(funcName);
+				calibrationFunction = (CalibrationFunction)calClass.newInstance();	    	 
+	    	}	    		
+		} catch (InstantiationException e) {		
+			throw new HDFException("Cannot create calibration  "+funcName);			
+		} catch (IllegalAccessException e){	
+			throw new HDFException("Cannot create calibration  "+funcName);						
+		}
+		return calibrationFunction;
+    }
     /*
      * non-javadoc: Retrieve the gates from the file.
      * 
@@ -441,6 +518,24 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return param;
     }
 
+	VDataDescription findVData(VirtualGroup virtualGroupGroup, String dataType){
+		VDataDescription vdd=null;
+    	final Iterator iter = virtualGroupGroup.getObjects().iterator();
+   	 	while (iter.hasNext()) {
+   	 		AbstractData hData = (AbstractData)iter.next();
+   	 		//Is a virtual data descriptor
+   	 		if ( hData.getTag() == AbstractData.DFTAG_VH ) {        		
+   	 			//add to list if is a scaler goup
+   	 			final VDataDescription currentVDD = (VDataDescription) hData;
+   	 			if ( currentVDD.getDataTypeName().equals(dataType) ) {
+   	 				vdd=currentVDD;
+   	 				break;
+   	 			} 
+   	 		}
+       	}
+   	    return vdd;   	 		
+   	 }
+    
 	private List findSubGroups(VirtualGroup virtualGroupGroup, String groupType){
     	final List groupSubList = new ArrayList();    	
     	final Iterator iter = virtualGroupGroup.getObjects().iterator();

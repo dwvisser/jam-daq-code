@@ -5,7 +5,9 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
+import jam.data.AbstractHist1D;
 import jam.data.Scaler;
+import jam.data.func.CalibrationFunction;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
@@ -866,10 +868,21 @@ public final class HDFIO implements DataIO, JamFileFields {
                     vgGroup.add(histVGroup);
                     //backward compatible
                     globalHists.add(histVGroup);
+                    
+                    //Add calibrations
+                    if (hist.getDimensionality()==1) { 
+                    	CalibrationFunction calFunc = ((AbstractHist1D)hist).getCalibration();
+                    	if (calFunc!=null) {
+                    		VDataDescription calibDD=jamToHDF.convertCalibration(calFunc);
+                    		histVGroup.add(calibDD);
+                    	}
+                    }
+                    
                     if (writeScalers) {
                         jamToHDF.convertHistogram(histVGroup, hist);
                         histCount++;
-                    }
+                    }                    
+                    
                     /* Loop for all gates */
                     final Iterator gatesIter = hist.getGates().iterator();
                     while (gatesIter.hasNext()) {
@@ -959,6 +972,13 @@ public final class HDFIO implements DataIO, JamFileFields {
        	    	 		hdfToJam.convertGate(hist, gateVGroup, mode);
        	    	 	}                	                	
                 }
+                //Load calibration 
+                VDataDescription vddCalibration = hdfToJam.findCalibration(histVGroup);
+                if (vddCalibration!=null)
+                	hdfToJam.convertCalibration(hist, vddCalibration);
+                	
+                
+                
 	    	 }
 	    	 //Load scalers
 	    	 List scalerList = hdfToJam.findScalers(currentVGroup);

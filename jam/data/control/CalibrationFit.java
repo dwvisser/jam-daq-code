@@ -290,7 +290,7 @@ public class CalibrationFit extends AbstractControl {
 				calibrationFunction=null;
 			}			
 	        
-			updateFields(calibrationFunction);
+			updateFields(calibrationFunction, rbFitPoints.isSelected());
 			
 		//} catch (ClassNotFoundException e) {
 		//	msghdlr.errorOutln("Creating fit function "+getClass().getName()+" "+e.toString());
@@ -306,8 +306,6 @@ public class CalibrationFit extends AbstractControl {
      */
     private void setFitTypePoints(boolean state){
     	
-		if (calibrationFunction!=null)
-			calibrationFunction.setIsFitPoints(state);
 
     	if (state) {
     		tabPane.setSelectedIndex(0);
@@ -315,12 +313,13 @@ public class CalibrationFit extends AbstractControl {
     		tabPane.setSelectedIndex(1);
     	}
     	
-    	updateFields(calibrationFunction);
+    	updateFields(calibrationFunction, state);
     }        
     
     private void updateSelection() {
     	
     	String name=null;   
+    	boolean isCalPts=true;
     	    	
     	calibrationFunction=getCurrentCalibrationFunction();
     			
@@ -329,8 +328,10 @@ public class CalibrationFit extends AbstractControl {
 			name= calibrationFunction.getName();
 			//Set fit type
 			if (calibrationFunction.isFitPoints()) {
+				isCalPts=true;
 				rbFitPoints.setSelected(true);
 			} else {
+				isCalPts=false;
 				rbSetCoeffs.setSelected(true);
 			}			
 		} else {
@@ -341,7 +342,7 @@ public class CalibrationFit extends AbstractControl {
 		isUpdate=true;
     	comboBoxFunction.setSelectedItem(name);    	
 		isUpdate=false;
-    	updateFields(calibrationFunction);
+    	updateFields(calibrationFunction, isCalPts );
     }
 
     public void doSetup(){
@@ -351,9 +352,10 @@ public class CalibrationFit extends AbstractControl {
     	String title=null;
     	
     	//Get histogram status
-    	calibrationFunction=getCurrentCalibrationFunction();
-		
-    	updateFields(calibrationFunction);
+    	calibrationFunction=getCurrentCalibrationFunction();		
+    	boolean isCalPts = calibrationFunction!=null? calibrationFunction.isFitPoints(): true;
+    	
+    	updateFields(calibrationFunction, isCalPts);
     }
     
     private void doApplyCalib(){
@@ -421,8 +423,7 @@ public class CalibrationFit extends AbstractControl {
                     x[i]=channel[i];
                 }
                 calibrationFunction.setPoints(x,y);
-                calibrationFunction.fit();
-                calibrationFunction.setIsFitPoints(true);                
+                calibrationFunction.fit();                
                 fitText=calibrationFunction.getFormula();
                 currentHistogram.setCalibration(calibrationFunction);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
@@ -453,7 +454,6 @@ public class CalibrationFit extends AbstractControl {
 					coeff[i] = (new Double(tcoeff[i].getText())).doubleValue();
 				}
 				calibrationFunction.setCoeff(coeff);
-				calibrationFunction.setIsFitPoints(false);
                 currentHistogram.setCalibration(calibrationFunction);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getFullName().trim()+" with "+
@@ -474,7 +474,7 @@ public class CalibrationFit extends AbstractControl {
 	 * appropricate depending of if there is a calibration
 	 * or what type it is. 
 	 */
-	public void updateFields(CalibrationFunction hcf) {
+	public void updateFields(CalibrationFunction hcf, boolean isCalPts) {
 		
 		boolean hasCalibration;
 		String title;
@@ -498,7 +498,7 @@ public class CalibrationFit extends AbstractControl {
 			double[] coeff = hcf.getCoeff();			
 			
 			//Calibrated with points
-			if (hcf.isFitPoints()) {
+			if (isCalPts) {
 				for (int i=0; i<NUMBER_POINTS; i++){
 					if (ptsChannel!=null && i<ptsChannel.length) {
 						tChannel[i].setText(String.valueOf(ptsChannel[i]));
