@@ -217,6 +217,32 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return rval;
     }
 
+	List findGates(VirtualGroup virtualGroupHistogram, Histogram.Type histType) throws HDFException {
+		String gateType;
+		if (histType.getDimensionality()==Histogram.Type.ONE_D) {
+			gateType=GATE_1D_TYPE;
+		} else if (histType.getDimensionality()==Histogram.Type.TWO_D) {
+			gateType=GATE_2D_TYPE;
+		} else {
+			throw new HDFException("Unkown Histogram type");
+		}
+				
+    	final List histList = new ArrayList();    	
+    	 final Iterator histIter = virtualGroupHistogram.getObjects().iterator();
+    	 while (histIter.hasNext()) {
+    	 	AbstractHData hData = (AbstractHData)histIter.next();
+        	//Is a virtual group
+        	if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+        		//add to list if is a histogram goup
+        		final VirtualGroup currentVGroup = (VirtualGroup) hData;
+        		if ( currentVGroup.getType().equals(gateType) ) {
+        			histList.add(currentVGroup);
+        		} 
+        	}
+    	 }
+    	return histList;
+    }
+    
     /*
      * non-javadoc: Retrieve the gates from the file.
      * 
@@ -238,23 +264,17 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             boolean errorOccured=false;
 
             gateLoop: while (temp.hasNext()) {
-                final VirtualGroup currVG = (VirtualGroup) (temp.next());                
-                final VdataDescription vdd = (VdataDescription) (AbstractHData
-                        .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
-                        .get(0));
-                if (vdd == null) {
-                    errorOccured=true;
-                    break gateLoop;
-                }                
+                final VirtualGroup currVG = (VirtualGroup) (temp.next());
+
                 final String hname = DataIDAnnotation.withTagRef(annotations,
                         currVG.getTag(), currVG.getRef()).getNote();
                 final String groupName = Group.getCurrentGroup().getName();
                 final String histFullName = groupName + "/"
                         + STRING_UTIL.makeLength(hname, Histogram.NAME_LENGTH);
                 final Histogram hist = Histogram.getHistogram(histFullName);
+                
+                convertGate(hist, currVG, mode);
 
-                final String gname = currVG.getName();                
-                convertGate(hist, vdd, gname, mode);
             }
             if (errorOccured){
                 throw new IllegalStateException("Problem processing a VH for a gate.");
@@ -263,6 +283,17 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return numGates;
     }
     
+    Gate convertGate(Histogram hist, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
+        final VdataDescription vdd = (VdataDescription) (AbstractHData
+                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
+                .get(0));
+        final String gname = currVG.getName();     
+        if (vdd == null) {
+        	throw new HDFException("No VdataDescription under gate VirtualGroup");
+        }
+        return convertGate(hist, vdd, gname, mode);
+    	
+    }
     Gate convertGate(Histogram hist, VdataDescription vdd, String gateName, FileOpenMode mode) throws HDFException {
         final Gate gate;
         final Polygon shape = new Polygon();

@@ -709,14 +709,11 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 //final int numScalers = hdfToJam.convertScalers(mode);
                 
                 message.append(groupCount).append(" groups");
-                message.append(", ").append(histCount).append(" histograms");                
+                message.append(", ").append(histCount).append(" histograms");    
+                message.append(", ").append(gateCount).append(" scalers");
                 message.append(", ").append(scalerCount).append(" scalers");
 
                 if (mode != FileOpenMode.ADD) {
-
-                    final int numGates = hdfToJam.convertGates(mode);
-                    /* clear if opening and there are histograms in file */
-                    message.append(", ").append(numGates).append(" gates");
 
                     final int numParams = hdfToJam.convertParameters(mode);
                     message.append(", ").append(numParams)
@@ -767,15 +764,23 @@ public final class HDFIO implements DataIO, JamHDFFields {
 	    		appendFileName(currentGroup, fileName);
 	    	}
 	        //Find histograms
-	    	List histVirtualGroups =hdfToJam.findHistograms(currentVGroup, null);
+	    	List histList =hdfToJam.findHistograms(currentVGroup, null);
+	    	histCount = histList.size();
 	        //Loop over histograms
-	    	Iterator histIter =histVirtualGroups.iterator();
+	    	Iterator histIter =histList.iterator();
 	    	 while (histIter.hasNext()) {
 	    	 	VirtualGroup histVGroup = (VirtualGroup)histIter.next();
 	    	 	Histogram hist =hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
-	    	 	//Load gates
+	    	 	//Load gates if not add
                 if (mode != FileOpenMode.ADD) {
-                	
+                	List gateList = hdfToJam.findGates(histVGroup, hist.getType());
+                	gateCount = gateList.size();
+                	//Loop over gates
+                	Iterator gateIter =gateList.iterator();
+       	    	 	while (gateIter.hasNext()) {
+       	    	 		VirtualGroup gateVGroup = (VirtualGroup)gateIter.next();
+       	    	 		hdfToJam.convertGate(hist, gateVGroup, mode);
+       	    	 	}                	                	
                 }
 	    	 }
 	    }
