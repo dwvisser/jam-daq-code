@@ -13,10 +13,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.print.PageFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.TimeZone;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -49,8 +52,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	private ArrayList plotList;
 	/** Current plot of plotList */
 	private PlotContainer currentPlot;
-	/** The layout of the plots */
-	private PlotGraphicsLayout graphLayout;
 	/** Current  view */
 	private View currentView;
 	/** Is scrolling enabled */ 
@@ -182,7 +183,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	private void createPlots(int numberPlots) {
 		for (int i=plotList.size();i<numberPlots;i++) {
-			final PlotContainer plotTemp= new PlotContainer(graphLayout, this);
+			final PlotContainer plotTemp= new PlotContainer(this);
 			plotList.add(plotTemp);
 		}
 	}
@@ -224,8 +225,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void overlayHistogram(Histogram hist){
 		int num=hist.getNumber();
-		overlayHistogram(num);
-		
+		overlayHistogram(num);	
 	}
 	
 	/**
@@ -246,6 +246,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 		currentPlot.overlayHistograms(num);		
 	}
+	
 	/**
 	 * Remove all overlays.
 	 */
@@ -311,9 +312,19 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public ComponentPrintable getComponentPrintable() {
 		return getPlot().getComponentPrintable(RunInfo.runNumber,
-				JamStatus.instance().getDate());
+				getDate());
 	}
 
+	/* non-javadoc:
+	 * Gets the current date and time as a String.
+	 */
+	private String getDate() {
+		final Date date = new Date(); //getDate and time
+		final DateFormat datef = DateFormat.getDateTimeInstance(); //default format
+		datef.setTimeZone(TimeZone.getDefault()); //set time zone
+		return datef.format(date); //format date
+	}
+	
 	/**
 	 * Implementation of Observable interface to receive broadcast events.
 	 * 
