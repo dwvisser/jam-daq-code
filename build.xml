@@ -88,8 +88,10 @@
     	</copy>
     	<jsmoothgen project="${windows}/build.jsmooth" 
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
+    	<jsmoothgen project="${windows}/help.jsmooth" 
+      		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
       	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${build.dir}/windows"
-      	excludes="**/*.jsmooth,**/*.ico,**/*.db" />
+      	excludes="**/*.jsmooth,**/*.png,**/*.db" />
     </target>
     
     <target name="all" depends="copy,windows" />
