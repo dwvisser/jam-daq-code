@@ -186,8 +186,8 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @param  parameters if true, parameter values will be written
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, boolean wrtparameters, File file) {
-        Vector hist, gate, scaler, parameter;
-        Enumeration enum;
+        java.util.List hist, gate, scaler, parameter;
+//        Enumeration enum;
         Vector temp;
         Gate g;
 
@@ -207,8 +207,8 @@ public class HDFIO implements DataIO,JamHDFFields {
             gate = Gate.getGateList();
             //only save those gates which are defined
             temp = new Vector(gate.size());
-            for (enum = gate.elements() ; enum.hasMoreElements() ;) {
-                g=(Gate)(enum.nextElement());
+            for (Iterator enum = gate.iterator() ; enum.hasNext() ;) {
+                g=(Gate)(enum.next());
                 if (g.isDefined()){
                     temp.addElement(g);
                 }
@@ -242,9 +242,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @param  scalers  specified list of <code>Scaler</code> objects to write
      * @param  parameters specified list of <code>Parameter</code> objects to write
      */
-    private void writeFile(File file, Vector spectra, Vector gates, Vector scalers, Vector parameters) {
-        Enumeration temp; //for cycling through contents of Vectors
-
+    private void writeFile(File file, java.util.List spectra, java.util.List gates, java.util.List scalers, java.util.List parameters) {
         try {
             out = new HDFile(file,"rw");
             msgHandler.messageOut("Save "+file.getName()+": ",MessageHandler.NEW);
@@ -263,16 +261,16 @@ public class HDFIO implements DataIO,JamHDFFields {
             if (hasContents(spectra)){
                 addHistogramSection();
                 msgHandler.messageOut(spectra.size()+" histograms, ",MessageHandler.CONTINUE);
-                for (temp = spectra.elements() ; temp.hasMoreElements() ;) {
-                    addHistogram((Histogram)(temp.nextElement()));
+                for (Iterator temp = spectra.iterator() ; temp.hasNext() ;) {
+                    addHistogram((Histogram)(temp.next()));
                     //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
                 }
             }
             if (hasContents(gates)){
                 addGateSection();
                 msgHandler.messageOut(gates.size()+" gates, ",MessageHandler.CONTINUE);
-                for (temp = gates.elements() ; temp.hasMoreElements() ;) {
-                    addGate((Gate)(temp.nextElement()));
+                for (Iterator temp = gates.iterator() ; temp.hasNext() ;) {
+                    addGate((Gate)(temp.next()));
                     //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
                 }
             }
@@ -722,7 +720,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      *
      * @exception   HDFException      thrown if unrecoverable error occurs
      */
-    protected void addScalerSection(Vector scalers) throws HDFException{
+    protected void addScalerSection(java.util.List scalers) throws HDFException{
         VdataDescription desc;
         Vdata data;
 
@@ -733,7 +731,6 @@ public class HDFIO implements DataIO,JamHDFFields {
         short [] orders = new short[3];
         int dimtest;
         Scaler s;
-        Enumeration enum;
         String name;
 
         size=scalers.size();
@@ -741,8 +738,8 @@ public class HDFIO implements DataIO,JamHDFFields {
         //set orders
         orders[0]=1;//number
         orders[1]=0;//name ... loop below picks longest name for dimension
-        for (enum = scalers.elements() ; enum.hasMoreElements() ;) {
-            dimtest=((Scaler)(enum.nextElement())).getName().length();
+        for (Iterator enum = scalers.iterator() ; enum.hasNext() ;) {
+            dimtest=((Scaler)(enum.next())).getName().length();
             if (dimtest > orders[1]) {
                 orders[1]=(short)dimtest;
             }
@@ -760,7 +757,7 @@ public class HDFIO implements DataIO,JamHDFFields {
         scalerGroup.addDataObject(data); //add vData to gate VG
 
         for (int i=0; i < size ; i++) {
-            s=(Scaler)(scalers.elementAt(i));
+            s=(Scaler)(scalers.get(i));
             //System.out.println("Trying to add row "+i+": "+s.getNumber()+", '"+s.getName()+"', "+s.getValue());
             //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
             data.addInteger(0,i,s.getNumber());
@@ -819,7 +816,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      *
      * @exception   HDFException      thrown if unrecoverable error occurs
      */
-    protected void addParameterSection(Vector parameters) throws HDFException{
+    protected void addParameterSection(java.util.List parameters) throws HDFException{
 
         int size;          //number of parameters
         VdataDescription desc;
@@ -830,15 +827,14 @@ public class HDFIO implements DataIO,JamHDFFields {
         short [] orders = new short[2];
         int lenMax;
         DataParameter p;
-        Enumeration enum;
         String name;
 
         size=parameters.size();
 
         //set order values
         orders[0]=0;//name ... loop below picks longest name for dimension
-        for (enum = parameters.elements() ; enum.hasMoreElements() ;) {
-            lenMax=((DataParameter)(enum.nextElement())).getName().length();
+        for (Iterator enum = parameters.iterator() ; enum.hasNext() ;) {
+            lenMax=((DataParameter)(enum.next())).getName().length();
             if (lenMax > orders[0]) {
                 orders[0]=(short)lenMax;
             }
@@ -856,7 +852,7 @@ public class HDFIO implements DataIO,JamHDFFields {
         parameterGroup.addDataObject(data); //add vData to gate VG
 
         for (int i=0; i < size ; i++) {
-            p=(DataParameter)(parameters.elementAt(i));
+            p=(DataParameter)(parameters.get(i));
             //System.out.println("Trying to add row "+i+": "+p.getNumber()+", '"+p.getName()+"', "+p.getValue());
             //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
             data.addChars(0,i,StringUtilities.makeLength(p.getName(),orders[0]));
@@ -915,7 +911,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      *
      * @param  v   the <code>Vector</code> to check
      */
-    protected boolean hasContents(Vector v){
+    protected boolean hasContents(java.util.List v){
         boolean val;
 
         val=(v!=null)&&(!v.isEmpty());
