@@ -8,14 +8,11 @@ package jam.global;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.util.Enumeration;
+import java.net.*;
+import java.util.Iterator;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This utility class is looking for all the classes implementing or 
@@ -33,16 +30,23 @@ public class RTSI {
 	 * 
 	 * @param tosubclassname the name of the class to inherit from
 	 */
-	public static void find(String tosubclassname) {
+	private static void find(String tosubclassname, boolean recurse) {
 		try {
 			Class tosubclass = Class.forName(tosubclassname);
 			Package[] pcks = Package.getPackages();
 			System.out.println("Packages:");
-			for (int i=0; i<pcks.length; i++){
-				System.out.println("\t"+pcks[i].getName());
+			for (int i = 0; i < pcks.length; i++) {
+				System.out.println("\t" + pcks[i].getName());
 			}
 			for (int i = 0; i < pcks.length; i++) {
-				find(pcks[i].getName(), tosubclass);
+				Collection c = find(pcks[i].getName(), tosubclass, recurse);
+				if (!c.isEmpty()) {
+					Iterator it = c.iterator();
+					while (it.hasNext()) {
+						Class cl = (Class) it.next();
+						System.out.println("Found class: " + cl.getName());
+					}
+				}
 			}
 		} catch (ClassNotFoundException ex) {
 			System.err.println("Class " + tosubclassname + " not found!");
@@ -56,18 +60,48 @@ public class RTSI {
 	 * @param pckgname the fully qualified name of the package
 	 * @param tosubclass the name of the class to inherit from
 	 */
-	public static void find(String pckname, String tosubclassname) {
+	private static void find(
+		String pckname,
+		String tosubclassname,
+		boolean recurse) {
 		try {
 			Class tosubclass = Class.forName(tosubclassname);
-			Iterator result=find(pckname, tosubclass).iterator();
-			System.out.println("Find classes assignable as "+tosubclass.getName()+
-			" in \""+pckname+"\"");
-			while (result.hasNext()){
-				System.out.println("\t"+((Class)result.next()).getName());
+			Iterator result = find(pckname, tosubclass, recurse).iterator();
+			System.out.println(
+				"Find classes assignable as "
+					+ tosubclass.getName()
+					+ " in \""
+					+ pckname
+					+ "\"");
+			while (result.hasNext()) {
+				System.out.println("\t" + ((Class) result.next()).getName());
 			}
 		} catch (ClassNotFoundException ex) {
 			System.err.println("Class " + tosubclassname + " not found!");
 		}
+		System.out.println("done.");
+	}
+
+	public static Set find(
+		String pckgname,
+		Class tosubclass,
+		boolean recurse) {
+		Iterator i = findClasses(pckgname, tosubclass, recurse).iterator();
+		/*Set sortedNameSet = new TreeSet();
+		while (i.hasNext()) {
+			sortedNameSet.add(((Class) i.next()).getName());
+		}
+		i = sortedNameSet.iterator();*/
+		Set rval = new LinkedHashSet(); //preserves order of add()'s
+		ClassLoader loader = ClassLoader.getSystemClassLoader();
+		try {
+			while (i.hasNext()) {
+				rval.add(loader.loadClass((String) (i.next())));
+			}
+		} catch (ClassNotFoundException e) {
+			System.err.println(e.getMessage());
+		}
+		return rval;
 	}
 
 	/**
@@ -77,13 +111,17 @@ public class RTSI {
 	 * 
 	 * @param pckgname the fully qualified name of the package
 	 * @param tosubclass the Class object to inherit from
+	 * @param recurse whether to traverse subpackages recursively
 	 * @return an unordered list of classes assignable as requested
 	 */
-	public static Set find(String pckgname, Class tosubclass) {
+	private static Set findClasses(
+		String pckgname,
+		Class tosubclass,
+		boolean recurse) {
 		/* Code from JWhich
 		 * Translate the package name into an absolute path */
-		Set rval=new HashSet();
-		String name = new String(pckgname);//copy
+		SortedSet rval = new TreeSet();
+		String name = new String(pckgname); //copy
 		if (!name.startsWith("/")) {
 			name = "/" + name;
 		}
@@ -91,7 +129,7 @@ public class RTSI {
 
 		/* Get a File object for the package */
 		URL url = RTSI.class.getResource(name);
-//		System.out.println(name + "->" + url);
+		//		System.out.println(name + "->" + url);
 
 		/* Happens only if the jar file is not well constructed, i.e.
 		 * if the directories do not appear alone in the jar file like here:
@@ -109,30 +147,51 @@ public class RTSI {
 		 */
 		if (url == null)
 			return rval;
-		
+
 		/* next command deals with quirk when there's a space 
 		 * in a folder name */
-		String s_file = url.getFile()/*.replaceAll("%20"," ")*/;//replaceAll only works in JDK1.4
-		s_file=replaceURLspaces(s_file);
+		String s_file = url.getFile() /*.replaceAll("%20"," ")*/;
+		//replaceAll only works in JDK1.4
+		s_file = replaceURLspaces(s_file);
 		File directory = new File(s_file);
+		//System.out.println("Location of package "+pckgname+" is "+directory.getAbsolutePath());
 		if (directory.exists()) {
 			/* Get the list of the files contained 
 			 * in the package */
-			String[] files = directory.list();
+			File[] files = directory.listFiles();
 			for (int i = 0; i < files.length; i++) {
+				String fname = files[i].getName();
 				/* we are only interested in .class files */
-				if (files[i].endsWith(".class")) {
+				if (fname.endsWith(".class")) {
 					/* removes the .class extension */
 					String classname =
-						files[i].substring(0, files[i].length() - 6);
+						pckgname + "." + fname.substring(0, fname.length() - 6);
 					try {
-						// Try to create an instance of the object
-						Class c=Class.forName(pckgname + "." + classname);
+						//System.out.println(classname);
+						Class c =
+							ClassLoader.getSystemClassLoader().loadClass(
+								classname);
 						if (tosubclass.isAssignableFrom(c)) {
-							rval.add(c);
+							rval.add(classname);
 						}
 					} catch (ClassNotFoundException cnfex) {
 						System.err.println(cnfex);
+					} //how to deal with illegal files?
+				} else if (fname.endsWith(".jar")) {
+					/* recursively add the results of the jar file? */
+
+				} else {
+					/*if a folder, assume it's a package and add it's results 
+					 * recursively*/
+					if (recurse) {
+						if (files[i].isDirectory()) {
+							//System.out.println(files[i]);
+							rval.addAll(
+								find(
+									pckgname + "." + files[i].getName(),
+									tosubclass,
+									true));
+						}
 					}
 				}
 			}
@@ -157,13 +216,13 @@ public class RTSI {
 						classname = classname.replace('/', '.');
 						try {
 							// Try to create an instance of the object
-							Class c=Class.forName(classname);
+							Class c = Class.forName(classname);
 							//Object o = Class.forName(classname).newInstance();
 							if (tosubclass.isAssignableFrom(c)) {
 								/*System.out.println(
 									classname.substring(
 										classname.lastIndexOf('.') + 1));*/
-								rval.add(c);
+								rval.add(classname);
 							}
 						} catch (ClassNotFoundException cnfex) {
 							System.err.println(cnfex);
@@ -176,32 +235,158 @@ public class RTSI {
 		}
 		return rval;
 	}
-	
+
 	/**
 	 * Replaces %20 with spaces.  Writing this to avoid
 	 * using regex and maintain compatibility with JDK 1.3
 	 */
-	private static String replaceURLspaces(String in){
+	private static String replaceURLspaces(String in) {
 		int index;
-		String rval=new String(in);
+		String rval = new String(in);
 		do {
-			index=rval.lastIndexOf("%20");
-			if (index > -1){
-				String temp=rval.substring(0,index)+
-				" "+rval.substring(index+3,rval.length());
-				rval=temp;
+			index = rval.lastIndexOf("%20");
+			if (index > -1) {
+				String temp =
+					rval.substring(0, index)
+						+ " "
+						+ rval.substring(index + 3, rval.length());
+				rval = temp;
 			}
 		} while (index > -1);
 		return rval;
 	}
-		
+
+	/**
+	 * Find all the classes inheriting or implementing a given
+	 * class in a given package and any sub-packages.
+	 * WARNING: a jar file as classpath hasn't been implemented.
+	 * 
+	 * @param classpath folder containing the classpath to search
+	 * @param tosubclass the Class object to be assignable to
+	 * @return an alphabetically ordered set of classes assignable as requested
+	 */
+	public static Set find(File classpath, Class tosubclass) {
+		ClassLoader loader = null;
+		URL url = null;
+		/* */
+		if (classpath != null) {
+			try {
+				url = classpath.toURL();
+			} catch (MalformedURLException e) {
+				System.err.println(e.getMessage());
+			}
+			if (url != null) {
+				loader = new URLClassLoader(new URL[] { url });
+			}
+		}
+		if (loader == null) {
+			//use default system loader if creation unsuccessful
+			Object temp = new Object();
+			loader = temp.getClass().getClassLoader();
+		}
+		if (classpath == null) {
+			return new HashSet(); //hack to skip an empty path
+		}
+		SortedSet nameSet =
+			getClassesRecursively(
+				tosubclass,
+				classpath.getAbsolutePath(),
+				classpath,
+				loader);
+		/* create the set of classes, preserving the name order */
+		Iterator it = nameSet.iterator();
+		Set rval = new LinkedHashSet(); //to guarantee order is preserved
+		try {
+			while (it.hasNext()) {
+				rval.add(loader.loadClass((String) it.next()));
+			}
+		} catch (ClassNotFoundException e) {
+			System.err.println(e.getMessage());
+		}
+		return rval;
+	}
+
+	/**
+	 * Creates own <code>ClassLoader</code> using the given classpath in order to find all classes which are 
+	 * assignable as the given class or interface.
+	 * 
+	 * @param tosubclass type we are looking for
+	 * @param classpath string representing the folder at the base of the classpath
+	 * @param file where to start the search
+	 * @param loader the classloader, so we won't keep creating them in recursive calls
+	 * @return an alphabetically ordered set of classes assignable as <code>tosubclass</code>
+	 */
+	private static SortedSet getClassesRecursively(
+		Class tosubclass,
+		String classpath,
+		File file,
+		ClassLoader loader) {
+		SortedSet rval = new TreeSet();
+		if (file.isDirectory()) {
+			File[] list = file.listFiles();
+			for (int i = 0; i < list.length; i++) {
+				rval.addAll(
+					getClassesRecursively(
+						tosubclass,
+						classpath,
+						list[i],
+						loader));
+			}
+		} else { // we are only interested in .class files 
+			if (file.getName().endsWith(".class")) {
+				String fullpath = file.getPath();
+				/* removes the .class extension */
+				String temp = fullpath.substring(0, fullpath.length() - 5);
+				if (temp.startsWith(classpath)) {
+					temp =
+						temp.substring(classpath.length(), temp.length() - 1);
+				}
+				temp = temp.replace(File.separatorChar, '.');
+				if (temp.startsWith(".")) {
+					temp = temp.substring(1);
+				}
+				try {
+					Class c = loader.loadClass(temp);
+					if (tosubclass.isAssignableFrom(c)) {
+						rval.add(temp);
+					}
+				} catch (ClassNotFoundException cnfex) {
+					System.err.println(cnfex);
+				}
+			}
+		}
+		return rval;
+	}
+
+	public static Class loadClass(File path, String className) {
+		Class rval = null;
+		URL url = null;
+		try {
+			if (path != null) {
+				url = path.toURL();
+			}
+		} catch (MalformedURLException e) {
+			System.err.println(e.getMessage());
+		}
+		if (url == null) {
+			rval = null;
+		} else {
+			ClassLoader loader = new URLClassLoader(new URL[] { url });
+			try {
+				rval = loader.loadClass(className);
+			} catch (ClassNotFoundException e) {
+				System.err.println(e);
+			}
+		}
+		return rval;
+	}
 
 	public static void main(String[] args) {
 		if (args.length == 2) {
-			find(args[0], args[1]);
+			find(args[0], args[1], true);
 		} else {
 			if (args.length == 1) {
-				find(args[0]);
+				find(args[0], true);
 			} else {
 				System.out.println("Usage: java RTSI [<package>] <subclass>");
 			}
