@@ -29,13 +29,13 @@ final class GradientColorScale implements ColorScale{
 		logScale = (scale==Limits.ScaleType.LOG);
 	}
 		
-	private void setMaxCounts(double mc){
-		max=mc;
+	private void setMaxCounts(double maxCounts){
+		max=maxCounts;
 		recalculateConstant=true;
 	}
 		
-	private void setMinCounts(double mc){
-		min=Math.max(1.0,mc);
+	private void setMinCounts(double minCounts){
+		min=Math.max(1.0,minCounts);
 		recalculateConstant=true;
 	}
 		
@@ -67,16 +67,16 @@ final class GradientColorScale implements ColorScale{
 		return normValue;
 	}
 		
-	private static final double x0R = 0.8;
-	private static final double x0G = 0.6;
-	private static final double x0B = 0.2;
-	private static final double aR = 0.25;
-	private static final double aG = 0.16;
-	private static final double aB = 0.09;
+	private static final double X0R = 0.8;
+	private static final double X0G = 0.6;
+	private static final double X0B = 0.2;
+	private static final double ARED = 0.25;
+	private static final double AGREEN = 0.16;
+	private static final double ABLUE = 0.09;
 	private Color returnRGB (double x) {
-		int red = (int) (255*Math.exp( -(x-x0R)*(x-x0R)/aR ));
-		int green = (int) (255*Math.exp( -(x-x0G)*(x-x0G)/aG ));
-		int blue = (int) (255*Math.exp( -(x-x0B)*(x-x0B)/aB ));
+		int red = (int) (255*Math.exp( -(x-X0R)*(x-X0R)/ARED ));
+		int green = (int) (255*Math.exp( -(x-X0G)*(x-X0G)/AGREEN ));
+		int blue = (int) (255*Math.exp( -(x-X0B)*(x-X0B)/ABLUE ));
 		return new Color(red,green,blue);   
 	}
 		
