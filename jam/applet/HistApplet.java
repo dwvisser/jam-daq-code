@@ -112,7 +112,7 @@ public class HistApplet
 		addToolbarSelect(ptop);// tool bar for selecting
 		display.addToolbarAction();// tool bar for plot actions
 		/* let display listen for text input commands */	
-		console.setCommandListener((CommandListener) display);
+		console.addCommandListener((CommandListener) display);
 		/* where did we come from, set host url, and 
 		 * setup applet document path */
 		localPath = this.getDocumentBase();
