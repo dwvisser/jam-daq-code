@@ -1,0 +1,17 @@
+Contribute to Jam! 
+------------------
+
+If you would like to contribute to the development of Jam,
+please do get in touch with us. We are always on the lookout for
+people who can contribute to make this application even better.
+
+You can get in touch with:
+
+Dale Visser: dale@visser.name
+Kenneth Swartz: swartzkb@yahoo.com
+John Baris: john@mirage.physics.yale.edu
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+                                  http://jam-daq.sourceforge.net/
+    Copyright (C) 2002, Kenneth Swartz, Dale Visser, & John Baris
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

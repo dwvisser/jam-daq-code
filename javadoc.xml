@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Jam Project" default="javadoc">
+    <target name="javadoc">
+        <javadoc
+            destdir="C:\Documents and Settings\dwvisser\Desktop\dist\docs\API"
+            access="public" use="true" notree="false" nonavbar="false"
+            noindex="false" splitindex="true" author="true"
+            version="true" nodeprecatedlist="false" nodeprecated="false"
+            packagenames="jam.io,jam.io.hdf,jam.util,jam.sort.stream,jam.sort,jam,jam.applet,jam.data.func,jam.global,jam.plot,jam.fit,jam.data.peaks,jam.data,jam.data.control"
+            sourcepath="C:\eclipse\workspace\Jam Project"
+            classpath="C:\eclipse\workspace\Jam Project;C:\eclipse\workspace\Jam Project\jlfgr-1_0.jar" doctitle="API -- Jam Nuclear Physics Data Acquisition"/>
+    </target>
+</project>

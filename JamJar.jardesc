@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="C:/Documents and Settings/dwvisser/Desktop/dist/Jam_1_3_3.jar"/>
+    <options overwrite="false" compress="false" exportErrors="false"
+        exportWarnings="false" saveDescription="true"
+        descriptionLocation="/Jam Project/JamSrcJar.jardesc"
+        useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true"
+        reuseManifest="false" saveManifest="false"
+        generateManifest="true" manifestLocation="">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false">
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.io"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.util"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.io.hdf"/>
+        <file path="/Jam Project/contribute.txt"/>
+        <file path="/Jam Project/license.txt"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.sort.stream"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.sort"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.applet"/>
+        <file path="/Jam Project/notice.txt"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.data.func"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.global"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.plot"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.fit"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.data.peaks"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.data"/>
+        <javaElement handleIdentifier="=Jam Project/&lt;jam.data.control"/>
+    </selectedElements>
+</jardesc>
