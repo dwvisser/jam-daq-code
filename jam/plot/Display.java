@@ -37,7 +37,7 @@ import javax.swing.JOptionPane;
  */
 public class Display
 	extends JPanel
-	implements /*Displayer, */CommandListener, Observer {
+	implements /*Displayer,*/ CommandListener, Observer {
 
 	/**
 	 * Enumeration of the various preference types for displaying
@@ -93,8 +93,8 @@ public class Display
 	private Broadcaster broadcaster; //broadcaster if needed
 	private final Action action; //handles display events
 
-	private Displayable currentData;
-	private Displayable overlayData;
+	//private Displayable currentData;
+	//private Displayable overlayData;
 	private Histogram currentHist;
 	private Histogram overlayHist;
 
@@ -206,7 +206,7 @@ public class Display
 	/**
 	 * Display a <code>Displayable</code> object.
 	 */
-	public void displayData(Displayable data) {
+	/*public void displayData(Displayable data) {
 		currentData = data;
 		if (data != null) {
 			if (Limits.getLimits(data) == null) {
@@ -214,13 +214,13 @@ public class Display
 			}
 			overlayState = false;
 		}
-	}
+	}*/
 
 	/**
 	 * Overlay a displayble data
 	 * only works for 1 d
 	 */
-	public void overlayData(Displayable data) {
+	/*public void overlayData(Displayable data) {
 		if (data != null) {
 			if (Limits.getLimits(data) == null) {
 				newHistogram();
@@ -240,7 +240,7 @@ public class Display
 		} else {
 			msgHandler.errorOutln("Error tried to overlay null.");
 		}
-	}
+	}*/
 
 	/**
 	 * Get the displayed Histogram.
@@ -252,9 +252,9 @@ public class Display
 	/**
 	 * Get the displayed data.
 	 */
-	public Displayable getData() {
+	/*public Displayable getData() {
 		return currentData;
-	}
+	}*/
 
 	/**
 	 * A new histogram not previously displayed is being displayed, so
@@ -301,13 +301,11 @@ public class Display
 	 * @param cmdParams
 	 */
 	public boolean performCommand(String commandIn, String [] cmdParams) {
-		
-		int countParam;
 		final int numberParams = cmdParams.length;
 		double [] parameters = new double [numberParams];
 		//rest of tokens must be numbers
 		try {
-			countParam=0;
+			int countParam=0;
 			while (countParam<numberParams) {
 				parameters[countParam] = getNumber(cmdParams[countParam]);
 				countParam++;
@@ -404,11 +402,11 @@ public class Display
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public Plot getPlot() {
+	/*public Plot getPlot() {
 		return currentPlot;
-	}
+	}*/
 
-	synchronized final void setPlot(Plot p) {
+	private synchronized final void setPlot(Plot p) {
 		currentPlot = p;
 		action.setPlot(p);
 	}
