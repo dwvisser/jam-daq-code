@@ -21,7 +21,7 @@ final class ShowDialogNewHistogramCmd extends AbstractCommand {
 	 * Execute the command
 	 */
 	protected void execute(Object [] cmdParams){
-		histogramControl.showNew();		
+		histogramControl.show();		
 	}
 	
 	/**

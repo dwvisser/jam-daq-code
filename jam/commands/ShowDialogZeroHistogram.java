@@ -15,6 +15,7 @@ public class ShowDialogZeroHistogram extends AbstractShowDataControlCmd {
 		//Super class member
 		dataControl= new HistogramZeroControl(status.getFrame(), msghdlr);		
 	}
+	
 
 }
  
