@@ -38,7 +38,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @version 0.5
  */
-public class ImpExpORNL extends ImpExp {
+public class ImpExpORNL extends AbstractImpExp {
 
 	/**
 	 * sequence of ASCII encoded characters to begin <code>drr</code> file.
@@ -218,7 +218,7 @@ public class ImpExpORNL extends ImpExp {
 		disDrr = new DataInputStream(buffin);
 		//read in header
 		disDrr.read(bsignature); //HHRIF signature
-		signature = new String(bsignature);
+		signature = String.valueOf(bsignature);
 		if (!(signature.equals(SIGNATURE))) {
 			throw new ImpExpException("Incorrect header, expected '"
 					+ SIGNATURE + "', but got '" + signature + "'.");
@@ -244,7 +244,7 @@ public class ImpExpORNL extends ImpExp {
 		temp = readInt(disDrr); //time minutes
 		temp = readInt(disDrr); //time seconds
 		disDrr.read(bChilText); //text from chill file
-		chilText = new String(bChilText);
+		chilText = String.valueOf(bChilText);
 		/* Histogram info in Drr file */
 		dim = new int[totalHist]; // Histogram dimensionality
 		chSize = new int[totalHist]; //half words per channel
@@ -305,15 +305,15 @@ public class ImpExpORNL extends ImpExp {
 			maxCh4[i] = readShort(disDrr); //max channle 4
 			offSet[i] = readInt(disDrr); //offset in 16 bit words
 			disDrr.read(parLabelb); //x param label
-			parLabelX[i] = new String(parLabelb);
+			parLabelX[i] = String.valueOf(parLabelb);
 			disDrr.read(parLabelb); //y param label
-			parLabelY[i] = new String(parLabelb);
+			parLabelY[i] = String.valueOf(parLabelb);
 			cal1[i] = disDrr.readFloat(); //calibaration const
 			cal2[i] = disDrr.readFloat(); //calibaration const
 			cal3[i] = disDrr.readFloat(); //calibaration const
 			cal4[i] = disDrr.readFloat(); //calibaration const
 			disDrr.read(titleb); //sub-Title
-			titleDrr[i] = new String(titleb);
+			titleDrr[i] = String.valueOf(titleb);
 		}
 		/* read in id list */
 		for (int i = 0; i < totalHist; i++) {

@@ -23,7 +23,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public class ImpExpXSYS extends ImpExp implements XsysHeader {
+public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 
 	int[] buffer = new int[L_BUFFER];
 

@@ -17,7 +17,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.5
  * @author Ken Swartz
  */
-public class ImpExpSPE extends ImpExp {
+public final class ImpExpSPE extends AbstractImpExp {
 
 	static final int NAME_LENGTH = 8;
 	static final int MAX_SIZE = 8192;
@@ -27,18 +27,18 @@ public class ImpExpSPE extends ImpExp {
 		super();
 	}
 	
-	private static final ExtensionFileFilter filter=new ExtensionFileFilter("spe", 
+	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("spe", 
 	"Radware gf3");
 	protected FileFilter getFileFilter() {
-		return filter;
+		return FILTER;
 	}
 
 	protected String getDefaultExtension(){
-		return filter.getExtension(0);
+		return FILTER.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return filter.getDescription();
+		return FILTER.getDescription();
 	}
 
 

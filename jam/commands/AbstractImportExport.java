@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.io.ImpExp;
+import jam.io.AbstractImpExp;
 
 /**
  * Export data to file.
@@ -12,7 +12,7 @@ abstract class AbstractImportExport extends AbstractCommand {
 	/**
 	 * Must be assigned a real value by full implementations.
 	 */
-	protected ImpExp importExport;
+	protected AbstractImpExp importExport;
 
 	AbstractImportExport() {
 		super();

@@ -37,7 +37,7 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 1.0
  */
-public class ImpExpASCII extends ImpExp {
+public class ImpExpASCII extends AbstractImpExp {
 
 	/**
 	 * maximum number of channels per histogram

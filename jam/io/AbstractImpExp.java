@@ -27,7 +27,7 @@ import javax.swing.filechooser.FileFilter;
  * @version 0.50
  * @see	    #openFile
  */
-public abstract class ImpExp {
+public abstract class AbstractImpExp {
 
 	/**
 	 * size of read/write buffers
@@ -40,7 +40,7 @@ public abstract class ImpExp {
 	private static final int LOAD = 137;
 	private static final int SAVE = 314;
 	
-	private static final JamStatus status=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 
 	/**
 	 * so the programmer may set display options
@@ -52,23 +52,24 @@ public abstract class ImpExp {
 	 */
 	protected final MessageHandler msgHandler;
 
-	protected static final Object lastFileMonitor=new Object();
+	protected static final Object LASTFILE_MON=new Object();
 	protected static final String LAST_FILE_KEY="LastValidFile";
-	private static final Preferences prefs=Preferences.userNodeForPackage(ImpExp.class);
+	private static final Preferences PREFS=Preferences.userNodeForPackage(AbstractImpExp.class);
+	
 	/**
 	 * the last file accessed, null goes to users home directory
 	 */
-	protected static File lastFile = new File(prefs.get(LAST_FILE_KEY,
+	protected static File lastFile = new File(PREFS.get(LAST_FILE_KEY,
 	System.getProperty("user.dir")));
 
 	/**
 	 * Default constructor so that it may be launched dynamically
 	 * for batch exports.
 	 */
-	public ImpExp(){
+	public AbstractImpExp(){
 		super();
-		frame=status.getFrame();
-		msgHandler=status.getMessageHandler();
+		frame=STATUS.getFrame();
+		msgHandler=STATUS.getMessageHandler();
 	}
 
 	/**
@@ -208,7 +209,7 @@ public abstract class ImpExp {
 	 */
 	protected File getFileOpen(String msg)
 		throws ImpExpException {
-		return getFile(msg, ImpExp.LOAD);
+		return getFile(msg, AbstractImpExp.LOAD);
 	}
 
 	/**
@@ -219,7 +220,7 @@ public abstract class ImpExp {
 	*/
 	protected File getFileSave(String msg)
 		throws ImpExpException {
-		return getFile(msg, ImpExp.SAVE);
+		return getFile(msg, AbstractImpExp.SAVE);
 	}
 
 	/**
@@ -272,15 +273,15 @@ public abstract class ImpExp {
 	}
 
 	public File getLastFile() {
-		synchronized (lastFileMonitor){
+		synchronized (LASTFILE_MON){
 			return lastFile;
 		}
 	}
 	
 	protected void setLastFile(File f) {
-		synchronized (lastFileMonitor){
+		synchronized (LASTFILE_MON){
 			lastFile=f;	
-			prefs.put(LAST_FILE_KEY,f.getAbsolutePath());
+			PREFS.put(LAST_FILE_KEY,f.getAbsolutePath());
 		}
 	}
 	
