@@ -25,15 +25,15 @@ public class RunState {
 	
 	private transient final String name;
 	private String label;
-	private final Color color;
-	private final boolean acquireOn,acquireMode;
+	private transient final Color color;
+	private transient final boolean acquireOn,acquireMode;
 
-	private RunState(int i){
-		name=NAMES[i];
-		label=LABELS[i];
-		color=COLORS[i];
-		acquireOn=ACQUIRE_ON[i];
-		acquireMode=ACQUIRE_MODE[i];
+	private RunState(int index){
+		name=NAMES[index];
+		label=LABELS[index];
+		color=COLORS[index];
+		acquireOn=ACQUIRE_ON[index];
+		acquireMode=ACQUIRE_MODE[index];
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class RunState {
 	 * @return a new state object
 	 */
 	public static final RunState runOnline(int run){
-		RunState rval=new RunState(3);
+		final RunState rval=new RunState(3);
 		rval.setLabel("   Run "+run+"   ");
 		return rval;
 	}
