@@ -239,6 +239,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			cancel();
 		} else if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
+		}else if (OVERLAY.equals(currentCommand)){
+			overlay(parameters);
 		} else if (CURSOR.equals(currentCommand)) {
 			channelDisplay();
 		} else if (UPDATE.equals(currentCommand)) {
@@ -482,7 +484,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				if (h.getDimensionality() != 1) {
 					textOut.errorOutln(h.getName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
-				} else {
+				} else if (display.getPlot().getDimensionality()!=1){
+						textOut.errorOutln(" Current histogram not 1D, so it cannot be overlaid.");
+					
+				}else {
 					display.overlayHistogram(num);
 					textOut.messageOut(Integer.toString(num) + ' ',
 							MessageHandler.CONTINUE);
