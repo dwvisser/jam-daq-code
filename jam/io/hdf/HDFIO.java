@@ -1061,9 +1061,9 @@ public final class HDFIO implements DataIO, JamFileFields {
     	Group currentGroup=null;
         //Set group
         if (mode == FileOpenMode.OPEN) {                   
-        	currentGroup=Group.createGroup(fileName, Group.Type.FILE);
+        	currentGroup=Group.createGroup(null, fileName, Group.Type.FILE);
         } else if (mode == FileOpenMode.OPEN_MORE) {
-        	currentGroup=Group.createGroup(fileName, Group.Type.FILE);
+        	currentGroup=Group.createGroup(null, fileName, Group.Type.FILE);
         } else if (mode == FileOpenMode.RELOAD) {
             final String sortName = JamStatus.getSingletonInstance()
                     .getSortName();

@@ -115,17 +115,19 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		/*  Lower panel with buttons */ 
 		final JPanel pLower = new JPanel(new BorderLayout(5,5));
 		container.add(pLower, BorderLayout.SOUTH);
-		final JPanel pButtons = new JPanel(new GridLayout(1, 0, 5, 5));
-		pLower.add(pButtons, BorderLayout.NORTH);
+		final JPanel pLoad = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,0));
+		pLower.add(pLoad, BorderLayout.NORTH);
+		final JPanel pLoadButtons = new JPanel(new GridLayout(1, 0, 10, 0));		
+		pLoad.add(pLoadButtons, BorderLayout.NORTH);
 		JButton bLoadlist = new JButton("Load List");
-		pButtons.add(bLoadlist);
+		pLoadButtons.add(bLoadlist);
 		bLoadlist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				multiChooser.loadList();
 			}
 		});
 		JButton bSavelist = new JButton("Save List");
-		pButtons.add(bSavelist);		
+		pLoadButtons.add(bSavelist);		
 		bSavelist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				multiChooser.saveList();
@@ -214,16 +216,33 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 			selected=prevSelected;
 		} 
         /* Non-selected select all */
-		selected = histList.getSelectedIndices();
-        if (selected.length==0) {        	
-        	int [] indexs = new int [listModel.getSize()];
-        	for (int i=0; i<listModel.getSize(); i++) {
-        		indexs[i]=i;
-        	}
-        	histList.setSelectedIndices(indexs);
-        } 
+		checkSelectionIsNone();
 	}
-	
+
+	private void checkSelectionIsNone() {
+		final ListModel listModel =histList.getModel();	
+		int size =listModel.getSize();
+		int [] selected = histList.getSelectedIndices();
+		selected = histList.getSelectedIndices();
+	    if (selected.length==0) {        	
+	    	int [] indexs = new int [listModel.getSize()];
+	    	for (int i=0; i<listModel.getSize(); i++) {
+	    		indexs[i]=i;
+	    	}
+	    	histList.setSelectedIndices(indexs);
+	    } 
+	}
+	/**
+	 * Check there are histogram in the histogram list
+	 *
+	 */
+	private void checkHistogramsLoaded() {
+		final ListModel listModel =histList.getModel();	
+		int size =listModel.getSize();
+		if (size ==0) {
+			refreshHistList();
+		}		
+	}
 	
 	/* non-javadoc:
 	 * Load name of histograms from the selected file
@@ -258,6 +277,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
      */
     private void loadFiles() {
         File file;
+        checkHistogramsLoaded();
         final List selectHistAttributes = createSelectedHistogramNamesList();
         if (selectHistAttributes.size() == 0) {//No histograms selected
             msgHandler.errorOutln("No histograms selected");
@@ -293,7 +313,9 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
         }
     }      
     
-    private List createSelectedHistogramNamesList() {    	
+    private List createSelectedHistogramNamesList() {
+    	//Set selection to all if none selected
+    	checkSelectionIsNone();
         //final List selectNames = new ArrayList();
         final Object[] selected = histList.getSelectedValues();
         histAttributesList.clear();

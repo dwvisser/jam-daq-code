@@ -95,7 +95,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 				virtualGroup.getRef());
 		/* Don't use file name for group name for open. */
 		final String fname = mode==FileOpenMode.OPEN ? null : fileName;
-		return Group.createGroup(dataIDLabel.getLabel(), Group.Type.FILE, fname);
+		return Group.createGroup(dataIDLabel.getLabel(), fname, Group.Type.FILE);
 	} 
 	
 	
@@ -221,10 +221,17 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     	Iterator histAttIter =histogramAttributeList.iterator();
     	while(histAttIter.hasNext()) {
     		HistogramAttributes histAttribute =( HistogramAttributes)histAttIter.next();
-    		if( groupName.equals(histAttribute.getGroupName()) &&
-    			histName.equals(histAttribute.getName()) ) {
-    			inList =true;
-    			break;
+    		if (groupName!=null) {
+    			if ( groupName.equals(histAttribute.getGroupName()) &&
+	    	         histName.equals(histAttribute.getName()) ) {
+	    			inList =true;
+	    			break;
+	    		}
+    		}else{
+    			if ( histName.equals(histAttribute.getName()) ) {
+	    			inList =true;
+	    			break;
+	    		}
     		}
     	}
     	

@@ -84,13 +84,12 @@ public class Group {
     /**
      * Set a group as the current group, create the group if it does not already
      * exist
-     * 
      * @param groupName
      *            name of the group
      * @param type
      *            of group
      */
-    public synchronized static Group createGroup(String groupName, Type type, String fileName) {
+    public synchronized static Group createGroup(String groupName, String fileName, Type type) {
 
     	final Group group = new Group(groupName, type, fileName);
         setCurrentGroup(group);
@@ -112,7 +111,7 @@ public class Group {
      *            of group
      */
     public synchronized static Group createGroup(String groupName, Type type) {
-    	return Group.createGroup(groupName, type, null);
+    	return Group.createGroup(groupName, null, type);
     }
     
     /**
