@@ -18,7 +18,6 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private Object selection = null;
 	private int lastSize=0;
-	private Mode mode;
 	
 	/**
 	 * The possible modes for a histogram combo box.
@@ -79,7 +78,6 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public HistogramComboBoxModel(Mode m){
 		super();
-		mode=m;
 		if (Mode.ALL.equals(m)){
 			histograms=Histogram.getListSortedByNumber();
 		} else {
