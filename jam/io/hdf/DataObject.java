@@ -26,6 +26,8 @@ public abstract class DataObject {
 	/** Map of Data Objects in file with tag/ref as key */
 	private static Map tagRefMap=Collections.synchronizedMap(new HashMap());
 	/** Reference count, starts at 1 */
+	
+	
 	static short refCount;	
 
 	/**
@@ -75,7 +77,7 @@ public abstract class DataObject {
 	 *
 	 * @see LibVersion
 	 */
-	public final static short DFTAG_VERSION = 30;
+	public final static short DFTAG_VER = 30;
 
 	/**
 	 * HDF tag for Numerical Data Group
@@ -131,6 +133,39 @@ public abstract class DataObject {
 	 */
 	public final static short DFTAG_VS = 1963;
 	
+	private static final Set ALL_TYPES = new HashSet(); 
+	static {
+	    ALL_TYPES.add(new Short(DFTAG_MT));
+	    ALL_TYPES.add(new Short(DFTAG_DIA));
+	    ALL_TYPES.add(new Short(DFTAG_DIL));
+	    ALL_TYPES.add(new Short(DFTAG_FID));
+	    ALL_TYPES.add(new Short(DFTAG_FD));
+	    ALL_TYPES.add(new Short(DFTAG_NT));
+	    ALL_TYPES.add(new Short(DFTAG_VER));
+	    ALL_TYPES.add(new Short(DFTAG_NDG));
+	    ALL_TYPES.add(new Short(DFTAG_SD));
+	    ALL_TYPES.add(new Short(DFTAG_SDD));
+	    ALL_TYPES.add(new Short(DFTAG_SDL));
+	    ALL_TYPES.add(new Short(DFTAG_SDS));
+	    ALL_TYPES.add(new Short(DFTAG_VG));
+	    ALL_TYPES.add(new Short(DFTAG_VH));
+	    ALL_TYPES.add(new Short(DFTAG_VS));
+	}
+	
+	private static final Map INITABLE = new HashMap();
+	static {
+	    INITABLE.put(new Short(DFTAG_DIA),DataIDAnnotation.class);
+	    INITABLE.put(new Short(DFTAG_DIL),DataIDLabel.class);
+	    INITABLE.put(new Short(DFTAG_VER),LibVersion.class);
+	    INITABLE.put(new Short(DFTAG_NT),NumberType.class);
+	    INITABLE.put(new Short(DFTAG_NDG),NumericalDataGroup.class);
+	    INITABLE.put(new Short(DFTAG_SDD),ScientificDataDimension.class);
+	    INITABLE.put(new Short(DFTAG_SD),ScientificData.class);
+	    INITABLE.put(new Short(DFTAG_SDL),ScientificDataLabel.class);
+	    INITABLE.put(new Short(DFTAG_VG),VirtualGroup.class);
+	    INITABLE.put(new Short(DFTAG_VH),VdataDescription.class);
+	    INITABLE.put(new Short(DFTAG_VS),Vdata.class);
+	}
 	//Instance members
 	
 	/**
@@ -142,48 +177,52 @@ public abstract class DataObject {
 	  * Unique reference number, in case several data elements with the same tag exist. Only makes sense in 
 	  * the context of an HDF file.
 	  */
-	protected short ref;	
+	protected short ref;
+	
 	/**
 	 * Offset from start of file.
 	 */
 	protected int offset;
+	
 	/**
 	 * Before bytes is created, length of bytes.
 	 */
 	protected int length;
+	
 	/**
 	 * Actual bytes stored in HDF file.
 	 */
 	protected byte[] bytes;
+	
+	private static final byte[] CLEARBYTES=new byte[0];
 
 	/**
 	 * Set to false once the ref number is defined.
 	 */
-	protected boolean haveNotSetRef=true;
+	protected boolean refNotSet=true;
 	
 	/**
-	 * Get the list of all data objects
-	 * @return
+	 * Get the list of all data objects.
+	 * 
+	 * @return list of all objects
 	 */
 	static List getDataObjectList() {
-		return objectList;
+		return Collections.unmodifiableList(objectList);
 	}
+	
 	/**
-	 * Clear the lists of all data objects
-	 * @return
+	 * Clear the lists of all data objects.
 	 */	
 	static void clearAll() {
-	
-		for (Iterator it=objectList.iterator(); it.hasNext();){
-			DataObject ob=(DataObject)it.next();
-			ob.bytes=null;
+		for (final Iterator it=objectList.iterator(); it.hasNext();){
+			final DataObject dataObject=(DataObject)it.next();
+			dataObject.bytes=CLEARBYTES;
 		}
-
 		objectList.clear();
 		tagRefMap.clear();
 		refCount =0;
-
 	}
+	
 	/**
 	 * <p>Adds the data object to the list of objects.
 	 * --- FIXME KBS remove --  
@@ -208,12 +247,12 @@ public abstract class DataObject {
 	}
 	/**
 	 * @return object in file with the matching tag and ref
-	 * @param t tag of HDF object
-	 * @param r <em>unique</em> reference number in file
+	 * @param tag tag of HDF object
+	 * @param ref <em>unique</em> reference number in file
 	 */
-	public static DataObject getObject(short t, short r) {
+	public static DataObject getObject(short tag, short ref) {
 		DataObject match = null;
-		final Integer key =calculateKey(t, r);		
+		final Integer key =calculateKey(tag, ref);		
 		if (tagRefMap.containsKey(key)){
 			match=(DataObject)tagRefMap.get(key);
 		}
@@ -223,17 +262,17 @@ public abstract class DataObject {
 	/**
 	 * @return a subset of the given list of <code>DataObject</code>'s of
 	 * the specified type 
-	 * @param in the list to search
+	 * @param collection the list to search
 	 * @param tagType the type to return
 	 */
-	static List ofType(Collection in, short tagType) {
-		
+	static List ofType(Collection collection, short tagType) {
 		final Set ssin=new HashSet();
-		Iterator iter = in.iterator();
+		final Iterator iter = collection.iterator();
 		while(iter.hasNext()){
-			DataObject dataObject=(DataObject)iter.next();
-			if (tagType == dataObject.getTag())
+			final DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag()){
 				ssin.add(dataObject);
+			}
 		}
 		return new ArrayList(ssin);
 	}
@@ -245,15 +284,43 @@ public abstract class DataObject {
 	 */
 	public static List ofType(final short tagType) {
 		final List rval=new ArrayList();
-		List objectList = DataObject.getDataObjectList();
+		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()){
-			DataObject dataObject=(DataObject)iter.next();
-			if (tagType == dataObject.getTag())
+			final DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag()){
 				rval.add(dataObject);
+			}
 		}
 		return rval;
-		
+	}
+	
+	static boolean isValidType(short type){
+	    return ALL_TYPES.contains(new Short(type));
+	}
+	
+	static DataObject create(byte [] bytes, short tag, short ref, int offset, int length)
+	throws HDFException {
+	    DataObject rval = null;
+	    if (isValidType(tag)){
+	        final Short key = new Short(tag);
+	        if (INITABLE.containsKey(key)){
+	            final Class clazz=(Class)INITABLE.get(key);
+	            try {
+	                rval = (DataObject)clazz.newInstance();
+	                if (tag == DFTAG_SD){
+	                    rval.init(offset, length, tag, ref);
+	                } else {
+	                    rval.init(bytes, tag, ref);
+	                }
+	            } catch (Exception iae){
+	                throw new HDFException("Couldn't create "+clazz.getName()+" instance.", iae);
+	            } 
+	        }
+	    } else {
+	        throw new IllegalArgumentException("Invalid tag: "+tag);
+	    }
+	    return rval;
 	}
 	
 	/**
@@ -277,11 +344,12 @@ public abstract class DataObject {
 		return ++refCount;
 	}
 
-	/**
-	 * Create a unique key given then tag an ref numbers
+	/* non-javadoc:
+	 * Create a unique key given then tag an ref numbers.
 	 */
 	static Integer calculateKey(short tag, short ref){
-		int key= (((int)tag)<<16)+(int)ref;		
+	    final int tagInt=tag;
+		final int key= (tagInt<<16)+ref;		
 		return new Integer(key);
 	}
 	
@@ -299,6 +367,13 @@ public abstract class DataObject {
 		addDataObjectToList(this); //ref gets set in this call
 	}
 	
+	/**
+	 * Creates a data object.
+	 *
+	 */
+	protected DataObject(){
+	}
+	
 	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> with the specified byte array as the data which will (or does already) 
 	 * physically
@@ -308,10 +383,13 @@ public abstract class DataObject {
 	 * @param	data	    The byte representation of the data.
 	 * @param	r   The unique value specifying the type of data object.
 	 */
-	DataObject(byte[] data, short t, short r) {
-		setTag(t);
-		setRef(r);
-		this.bytes = data;
+	void init(byte[] data, short tag, short ref) throws HDFException {
+	    if (data == null || data.length==0){
+	        throw new IllegalArgumentException("Can't init DataObject with empty data.");
+	    }
+		setTag(tag);
+		setRef(ref);
+		bytes = data;
 		addDataObjectToList(this);
 	}
 
@@ -323,16 +401,16 @@ public abstract class DataObject {
 	 * @param	offset	    The location in <code>file</code>
 	 * @param	reference   The unique value specifying the type of data object.
 	 */
-	DataObject(int offset, int length, short t, short reference) {
-		this.tag=t;
+	void init(int offset, int length, short tag, short reference) {
+		this.tag=tag;
 		setRef(reference);
 		this.offset = offset;
 		this.length = length;
 		addDataObjectToList(this);
 	}
 	
-	private final void setTag(short t){
-		tag=t;
+	private final void setTag(short newTag){
+		tag=newTag;
 	}
 
 	/* non-javadoc:
@@ -349,22 +427,22 @@ public abstract class DataObject {
 	 * @param newref
 	 */
 	final void setRef(short newref) {
-		if (haveNotSetRef) {
+		if (refNotSet) {
 			ref = newref;
 		} else {
 			if (ref!=newref){
 				//Change key, 
 				//remove and add with new key
-				Integer key = calculateKey(tag, ref);
+				final Integer key = calculateKey(tag, ref);
 				if (tagRefMap.containsKey(key)) {
 					tagRefMap.remove(key);
 					//Add
 					ref = newref;
-					Integer keyNew = calculateKey(tag, ref);
+					final Integer keyNew = calculateKey(tag, ref);
 					tagRefMap.put(keyNew, this);
 				 }
 			}			
-			haveNotSetRef=false;
+			refNotSet=false;
 		}
 	}
 	
@@ -378,6 +456,7 @@ public abstract class DataObject {
 	public final short getRef() {
 		return ref;
 	}
+	
 	/* non-javadoc:
 	 * Called back by <code>HDFile</code> to set the offset information.
 	 */
@@ -388,15 +467,7 @@ public abstract class DataObject {
 	int getOffset() {
 		return offset;
 	}
-	/**
-	 * Returns the length of the byte array in the file for this data element.
-	 * 
-	 * @return he length of the byte array in the file for this data element
-	 */
-	protected int getLength() {
-		return bytes.length;
-	}
-
+	
 	/* non-javadoc:
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 */
@@ -404,7 +475,7 @@ public abstract class DataObject {
 		return bytes;
 	}
 
-	protected Integer getKey(){
+	private final Integer getKey(){
 		return calculateKey(tag, ref);
 	}
 	
