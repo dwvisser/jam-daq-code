@@ -133,7 +133,7 @@ ItemListener, WindowListener {
      */
     public void setup() {
 		final Histogram hist=Histogram.getHistogram(
-		status.getCurrentHistogramName());
+		status.getHistName());
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 
@@ -182,7 +182,7 @@ ItemListener, WindowListener {
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
+        currentHistogram=Histogram.getHistogram(status.getHistName());
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
@@ -253,7 +253,7 @@ ItemListener, WindowListener {
      *
      */
     private void cancelCalib(){
-        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getHistName());
         currentHist.setCalibration(null);
     }
 

@@ -103,7 +103,7 @@ public final class GateAdd extends DataControl {
 	private void addGate() {
 		if (currentGateAdd!=null) {
 			final Histogram hist=Histogram.getHistogram(
-			status.getCurrentHistogramName());
+			status.getHistName());
 			hist.addGate(currentGateAdd);
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
 			messageHandler.messageOutln("Added gate '"+

@@ -262,7 +262,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		
 			//Tell the framework the current hist
 			if (hist!=null) {
-				JamStatus.instance().setCurrentHistogramName(hist.getName());		
+				JamStatus.instance().setHistName(hist.getName());		
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 			}
 		}

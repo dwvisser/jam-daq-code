@@ -5,6 +5,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.Ender;
 import jam.global.GoodThread;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.sort.stream.EventInputStatus;
@@ -47,7 +48,7 @@ public class SortDaemon extends GoodThread {
 	/**
 	 * mode offline or online
 	 */
-	private SortMode mode;
+	//private SortMode mode;
 
 	private static final Broadcaster broadcaster = Broadcaster
 			.getSingletonInstance();
@@ -92,7 +93,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void setup(SortMode mode, EventInputStream eventInputStream,
 			int eventSize) {
-		this.mode = mode;
+		//this.mode = mode;
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);
 		/* Set the event size for the stream. */
@@ -175,7 +176,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void run() {
 		try {
-			if (mode.isOnline()) {//which type of sort to do
+			if (JamStatus.instance().getSortMode().isOnline()) {//which type of sort to do
 				sortOnline();
 			} else {
 				sortOffline();

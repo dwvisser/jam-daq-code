@@ -161,7 +161,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
+        currentHistogram=Histogram.getHistogram(status.getHistName());
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 if(calibFunction==null){
@@ -193,7 +193,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
         double y[];
         String fitText;
 
-        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getHistName());
         if (currentHist==null){//silently ignore if histogram null
             msghdlr.errorOutln("null histogram [Calibrate]");
         }
@@ -239,14 +239,14 @@ public class CalibrationFit extends DataControl implements ActionListener {
      *
      */
     private void cancelCalib() {
-        Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
+        Histogram currentHist=Histogram.getHistogram(status.getHistName());
         currentHist.setCalibration(null);
         broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
     }
 
     public void setup(){
 		final Histogram hist=Histogram.getHistogram(
-		status.getCurrentHistogramName());
+		status.getHistName());
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 

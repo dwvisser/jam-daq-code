@@ -22,7 +22,7 @@ Observer {
 		putValue(NAME, "Verbose front end");
 		putValue(SHORT_DESCRIPTION,
 		"Preference for verbosity from the front end process.");
-		prefsNode=JamPrefs.prefs;
+		prefsNode=JamPrefs.PREFS;
 		key=JamPrefs.VERBOSE;
 		defaultState=false;
 		enable();

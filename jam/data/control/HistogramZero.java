@@ -44,7 +44,7 @@ public class HistogramZero extends DataControl {
 			public void actionPerformed(ActionEvent ae) {
 				final Histogram currentHistogram =
 					Histogram.getHistogram(
-						JamStatus.instance().getCurrentHistogramName());
+						JamStatus.instance().getHistName());
 				currentHistogram.setZero();
 				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				msghdlr.messageOutln(

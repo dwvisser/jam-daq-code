@@ -367,7 +367,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final int num = (int) hist[0];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
-				JamStatus.instance().setCurrentHistogramName(h.getName());
+				JamStatus.instance().setHistName(h.getName());
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				display.removeOverlays();
@@ -710,7 +710,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			final String name = status.getCurrentHistogramName().trim();
+			final String name = status.getHistName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
 		} else if (clicks.size() == 0) {

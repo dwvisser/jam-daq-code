@@ -227,7 +227,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			} else {
 				synchronized (status) {
 					setOverlaySelected(false);
-					status.setCurrentHistogramName(hist.getName());
+					status.setHistName(hist.getName());
 					display.removeOverlays();
 					display.displayHistogram();
 					gatesChanged();
@@ -240,7 +240,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 
 	private void syncHistChooser() {
 		final Histogram hist = Histogram.getHistogram(status
-				.getCurrentHistogramName());
+				.getHistName());
 		if (hist != null) {
 			histogramChooser.setSelectedItem(hist);
 			gatesChanged();
@@ -292,13 +292,13 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			final String lastHistName = status.getCurrentHistogramName();
+			final String lastHistName = status.getHistName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.GATE_ADD) {
-			final String lastHistName = status.getCurrentHistogramName();
+			final String lastHistName = status.getHistName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			gatesChanged();
 		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE

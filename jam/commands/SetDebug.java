@@ -22,7 +22,7 @@ Observer {
 		putValue(NAME, "Debug front end");
 		putValue(SHORT_DESCRIPTION,
 		"Preference for debugging messages from the front end process.");
-		prefsNode=JamPrefs.prefs;
+		prefsNode=JamPrefs.PREFS;
 		key=JamPrefs.DEBUG;
 		defaultState=false;
 		enable();

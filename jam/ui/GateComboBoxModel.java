@@ -99,7 +99,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 				rval = CHOOSE_A_GATE;
 			} else {
 				final Histogram his =
-					Histogram.getHistogram(status.getCurrentHistogramName());
+					Histogram.getHistogram(status.getHistName());
 				final int which = index - 1;
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
 					rval = (Gate) his.getGates().get(which);
@@ -154,7 +154,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	private int numGates() {
 		int numG = 0;
 		final Histogram hist =
-			Histogram.getHistogram(status.getCurrentHistogramName());
+			Histogram.getHistogram(status.getHistName());
 		if (hist != null) {
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
 				numG = hist.getGates().size();

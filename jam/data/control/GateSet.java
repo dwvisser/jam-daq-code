@@ -268,7 +268,7 @@ public class GateSet extends DataControl implements Observer {
 		/* get current state */
 		synchronized (this) {
 			currentHistogram = Histogram.getHistogram(status
-					.getCurrentHistogramName());
+					.getHistName());
 		}
 		if (currentHistogram == null) {
 			/* There are many normal situations with no current histogram. */
@@ -476,7 +476,7 @@ public class GateSet extends DataControl implements Observer {
 	private void checkHistogram() {
 		/* has histogram changed? */
 		if (currentHistogram != Histogram.getHistogram(status
-				.getCurrentHistogramName())) {
+				.getHistName())) {
 			setup(); //setup chooser list
 			cancel(); //cancel current gate if was setting
 		}
