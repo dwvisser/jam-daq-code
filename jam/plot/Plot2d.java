@@ -158,19 +158,15 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             graphicsSetGate.setColor(PlotColorMap.gateDraw);
             graph.update(graphicsSetGate);        //so graph has all pertinent imfo
             graph.settingGate2d(pointsGate);
-
         } else if(mode==GATE_REMOVE){
             //check there is at least one gate point
             if(!pointsGate.isEmpty()){
-
                 //remove current gate lines
                 graphicsSetGate.setPaintMode();
                 graphicsSetGate.setColor(PlotColorMap.background);
                 graph.update(graphicsSetGate);        //so graph has all pertinent imfo
                 graph.settingGate2d(pointsGate);
-
-
-                //remove last point
+                /* remove last point */
                 if((numberPointsSetGate>=1)) {
                     pointsGate.remove(pointsGate.size()-1);
                     numberPointsSetGate--;
@@ -184,15 +180,14 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
                         graphicsSetGate.drawLine(lastGateX, lastGateY, lastMoveX, lastMoveY);
                         needErase=false;
                     }
-                    //update variables
+                    /* update variables */
                     Point tempP=graph.toViewLin((Point)pointsGate.get(pointsGate.size()-1));
                     lastGateX=tempP.x;
                     lastGateY=tempP.y;
                     lastMoveX=lastGateX;
                     lastMoveY=lastGateY;
                 }
-
-                //draw current gate lines
+                /* draw current gate lines */
                 graphicsSetGate.setPaintMode();
                 graphicsSetGate.setColor(PlotColorMap.gateDraw);
                 graph.update(graphicsSetGate);          //so graph has all pertinent imfo
