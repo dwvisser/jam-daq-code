@@ -121,9 +121,7 @@ public class Scaler implements Serializable  {
      */
 
     public String getName(){
-
         return name;
-
     }
 
     /**

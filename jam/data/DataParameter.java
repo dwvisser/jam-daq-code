@@ -120,11 +120,8 @@ public class DataParameter {
 	/**
 	 * Returns the name of this parameter.
 	 */
-
 	public String getName() {
-
 		return name;
-
 	}
 
 	/**
