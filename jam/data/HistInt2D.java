@@ -71,7 +71,8 @@ public final class HistInt2D extends AbstractHist2D {
 	/**
 	 * Returns the number of counts in the given channel.
 	 * 
-	 * @param channel that we are interested in
+	 * @param chX x-channel that we are interested in
+	 * @param chY y-channel that we are interested in
 	 * @return number of counts
 	 */
 	public double getCounts(int chX, int chY) {
@@ -178,16 +179,6 @@ public final class HistInt2D extends AbstractHist2D {
 	}
 
 	private synchronized void addCounts(int[][] countsIn) {
-		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
-		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
-		for (int x = maxX; x >= 0; x--) {
-			for (int y = maxY; y >= 0; y--) {
-				counts2d[x][y] += countsIn[x][y];
-			}
-		}
-	}
-
-	private synchronized void addCounts(double[][] countsIn) {
 		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
 		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {

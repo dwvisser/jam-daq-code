@@ -109,6 +109,16 @@ final class HistDouble2D extends AbstractHist2D {
 		addCounts((double[][]) countsIn);
 	}
 
+	private synchronized void addCounts(double[][] countsIn) {
+		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
+		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
+		for (int x = maxX; x >= 0; x--) {
+			for (int y = maxY; y >= 0; y--) {
+				counts2dD[x][y] += countsIn[x][y];
+			}
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see jam.data.Histogram#getArea()
 	 */
