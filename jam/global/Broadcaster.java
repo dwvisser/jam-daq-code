@@ -1,7 +1,6 @@
-/*
- */
 package jam.global;
 import java.util.*;
+
 /**
  * Part of a client server to handle message between packages
  * Broadcast events to all listeners.
@@ -10,43 +9,31 @@ import java.util.*;
  * 
  * @author Ken Swartz
  */
-public  class Broadcaster extends Observable {
+public class Broadcaster extends Observable {
 
     /** 
-     * Broadcast an event to all registered observers.
+     * Broadcast an event to all registered observers. The necessary
+     * synchronization is already taken care of by 
+     * <code>Observable.notifyObservers(Object)</code>.
      * 
      * @param command an <CODE>int</CODE> from <CODE>BroadcastEvent</CODE>
      * @param param a parameter to be wrapped in the <CODE>BroadcastEvent</CODE>
      * object
      */
-    public synchronized void broadcast(int command, Object param) 
+    public void broadcast(int command, Object param) 
     throws GlobalException {
         Object broadcastEvent=new BroadcastEvent(command, param);
         setChanged();//necessary for next line to work
         notifyObservers(broadcastEvent);//automatically calls clearChanged()
     }
 
-    /** Broad cast an event to all registered observers.
+    /** 
+     * Broadcast an event to all registered observers. Calls
+     * <code>broadcast(int, null)</code>.
+     * 
      * @param command code from <CODE>BroadcastEvent</CODE>, I presume
      */
-    public synchronized void broadcast(int command) throws GlobalException {
-        /*Object broadcastEvent=new BroadcastEvent(command, null);
-        setChanged();
-        notifyObservers(broadcastEvent);*/
+    public void broadcast(int command) throws GlobalException {
         broadcast(command,null);
-    }
-    
-    /**FIXME not used
-     * Refresh observers
-     */
-    /*public synchronized  void refresh(){
-        setChanged();
-        notifyObservers("refresh");
-    }*/
-    
-    /**FIXME not used
-     * Refresh data base
-     */
-    /*public synchronized  void update(){
-    }*/
+    }    
 }
