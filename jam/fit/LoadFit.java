@@ -152,7 +152,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 	final String fitName=fitClass.getName();
 		try {
 			
-			final Fit fit = (Fit) fitClass.newInstance();
+			final AbstractFit fit = (AbstractFit) fitClass.newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			fit.createDialog(jamMain, display, msgHandler);
@@ -178,8 +178,8 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private Object [] getFitClasses() {
 		final String package1="jam.fit";
 		final String package2="fit";
-		final Set set = RTSI.find(package1, Fit.class,false);
-		set.addAll(RTSI.find(package2, Fit.class,false));
+		final Set set = RTSI.find(package1, AbstractFit.class,false);
+		set.addAll(RTSI.find(package2, AbstractFit.class,false));
 		return set.toArray();
 	}
 }

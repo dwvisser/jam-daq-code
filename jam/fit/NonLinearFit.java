@@ -15,12 +15,12 @@ import java.util.Vector;
  *
  * @see      #valueAt
  * @see      #derivative
- * @see      Fit
+ * @see      AbstractFit
  * @see      LevenbergMarquadt
  * @see      GaussianFit
- * @see      Fit#estimate
+ * @see      AbstractFit#estimate
  */
-public abstract class NonLinearFit extends Fit {
+public abstract class NonLinearFit extends AbstractFit {
 
     /**
      * does the actual matrix algebra to find the best fit

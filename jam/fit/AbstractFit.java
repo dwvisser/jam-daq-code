@@ -46,12 +46,12 @@ import javax.swing.border.LineBorder;
  * @see	    NonLinearFit
  * @see	    GaussianFit
  */
-public abstract class Fit implements ItemListener, PlotMouseListener {
+public abstract class AbstractFit implements ItemListener, PlotMouseListener {
 
 	/*
 	 * Displayed name of <code>Fit</code> routine.
 	 */
-	protected transient String NAME;
+	protected transient String name;
 
 	/**
 	 * Controlling frame for this dialog box.
@@ -181,8 +181,8 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 *
 	 * @param	name	name for dialog box and menu item
 	 */
-	public Fit(String name) {
-		this.NAME = name;
+	public AbstractFit(String name) {
+		this.name = name;
 	}
 
 	//-------------------------
@@ -234,7 +234,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		final int parNumber = parameters.size();
 		parameterArray = new Parameter[parNumber];
 		parameters.toArray(parameterArray);
-		dfit = new JDialog(frame, NAME, false);
+		dfit = new JDialog(frame, name, false);
 		Container contents = dfit.getContentPane();
 		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
