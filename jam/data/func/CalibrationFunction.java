@@ -1,4 +1,5 @@
-package jam.data;
+package jam.data.func;
+import jam.data.DataException;
 import jam.global.Function;
 
 /**
@@ -16,9 +17,8 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public final static int MAX_NUMBER_TERMS = 5;
 
-	//protected int numberTerms;
-	protected String title;
 	protected String[] labels;
+	protected String title;
 	protected double[] coeff;
 
 	/**
@@ -27,13 +27,14 @@ public abstract class CalibrationFunction implements Function {
 	 * @param	numberTerms	number of terms in function
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
-	public CalibrationFunction(int numberTerms) throws DataException {
+	public CalibrationFunction(int numberTerms) {
 		if (numberTerms < MAX_NUMBER_TERMS) {
 			//this.numberTerms = numberTerms;
 			coeff=new double[numberTerms];
 			labels=new String[numberTerms];
 		} else {
-			throw new DataException("Number of terms greater than MAX_NUMBER_TERMS [CalibrationFunction]");
+			throw new IllegalArgumentException(getClass().getName()+
+			"--Maximum terms: "+MAX_NUMBER_TERMS+", asked for: "+numberTerms);
 		}
 	}
 	
@@ -46,15 +47,6 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public int getNumberTerms() {
 		return coeff.length;
-	}
-	
-	/**
-	 * Given a type of <code>CalibrationFunction</code>, returns a title.  
-	 *
-	 * @return	a title indicating the form of the calibration function
-	 */
-	public String getTitle() {
-		return title;
 	}
 	
 	/**
@@ -85,6 +77,10 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public double getValue(int x) {
 		return getValue((double) x);
+	}
+	
+	public String getTitle(){
+		return title;
 	}
 	
 	/**
