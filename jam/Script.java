@@ -267,11 +267,12 @@ public final class Script implements Observer {
 	
 	
 	/**
-	 * Add the hisgogram counts in the given HDF file into the 
+	 * Add the hisgogram counts in the given HDF file, or all
+	 * HDF files in the given directory, into the 
 	 * histograms in memory. You must have already 
 	 * invoked <code>setupSort()</code>.
 	 * 
-	 * @param hdf an HDF file
+	 * @param hdf an HDF file or folder containing HDF files
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet
 	 */
