@@ -1,17 +1,20 @@
 package jam.io.hdf;
 
+import jam.data.Histogram;
+import jam.global.JamProperties;
+import jam.global.MessageHandler;
 import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import jam.global.MessageHandler;
-import jam.global.JamProperties;
-import jam.data.Histogram;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Class which represents the HDF file on disk.
@@ -37,8 +40,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	private final List objectList=new ArrayList();
 	private final Map tagMap=new HashMap();
-	//private final Map listMap=new HashMap();
-	//private final Map refMap=new HashMap();
 
 	/**
 	 * The size of the DD block.
@@ -150,8 +151,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * creates the <code>NumberType</code> object in the file
 	 * that gets referred to repeatedly by the other data elements.
 	 *
-	 * @see jam.io.hdf.NumberType
 	 * @throws HDFException if the types cannot be created
+	 * @see jam.io.hdf.NumberType
 	 */
 	public void addNumberTypes() throws HDFException {
 		synchronized (this){
@@ -201,7 +202,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void addDataObject(DataObject data, boolean useFileDefault) {
 		objectList.add(data);
-		Short tag=new Short(data.getTag());
+		final Short tag=data.getTagKey();
 		if (!tagMap.containsKey(tag)){
 			tagMap.put(tag,new HashMap());
 		}
@@ -209,7 +210,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		if (useFileDefault) {
 			data.setRef(getUniqueRef(refMap));
 		}
-		refMap.put(new Short(data.getRef()),data);
+		refMap.put(data.getRefKey(),data);
 	}
 
 	/**
@@ -220,7 +221,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * assigning the index number + 1 from the objectList.
 	 * 
 	 * @return a reference number for the given HDF object
-	 * @param data HDF object needing a unique reference number
+	 * @param refs the map for a given tag type
 	 */
 	private short getUniqueRef(Map refs) {
 		/* a good guess is the size, almost always new */
@@ -231,23 +232,24 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return rval;
 	}
 	
-	void changeRef(DataObject d, short oldref, short newref) {
-		Short tag=new Short(d.getTag());
-		Map refs=(Map)tagMap.get(tag);
-		Short old=new Short(oldref);
+	void changeRefKey(DataObject d, Short old) {
+		final Short tag=d.getTagKey();
+		final Map refs=(Map)tagMap.get(tag);
+		//final Short old=d.getRefKey();
 		if (refs.containsKey(old)){
 			refs.remove(old);
 		}
 		/* if old not there, we were just called as the object was being
 		 * added to the file...no worries */
-		Short ref=new Short(newref);
+		//final Short ref=new Short(newref);
+		final Short ref=d.getRefKey();
 		if (!refs.containsKey(ref)){
 			refs.put(ref,d);
 		} else {
-			System.err.println("Trying to put: "+newref+
+			System.err.println("Trying to put: "+ref+
 			"for tag:"+tag+" when one already exists.");
 		}
-	}
+	} 
 
 	/**
 	 * @return the existing valid SDD type for the histogram, 
@@ -362,7 +364,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public void printDDblock() throws HDFException {
 		try {
 			boolean doAgain = true;
-			seek(4);
+			seek(HDFconstants.HDF_HEADER_NUMBYTES);
 			do {
 				readShort(); //skip number of DD's
 				final int nextBlock = readInt();
@@ -508,8 +510,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param in the list to search
 	 * @param tagType the type to return
 	 */
-	public List ofType(List in, short tagType) {
-		final List output = new ArrayList();
+	public List ofType(Collection in, short tagType) {
+		/*final List output = new ArrayList();
 		final Iterator temp = in.iterator(); 
 		while ( temp.hasNext()) {
 			final DataObject ob = (DataObject) (temp.next());
@@ -517,7 +519,15 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				output.add(ob);
 			}
 		}
-		return output;
+		return output;*/
+		final Set ssin=new HashSet();
+		final Object temp=tagMap.get(new Short(tagType));
+		if (temp !=null){
+			ssin.addAll(in);
+			Map refMap=(Map)temp;
+			ssin.retainAll(refMap.values());
+		}
+		return new ArrayList(ssin);
 	}
 
 	/**
@@ -526,7 +536,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param in example of the type to return 
 	 */
 	public List ofType(DataObject in) {
-		return ofType(objectList, (short) in.getTag());
+		//return ofType(objectList, in.getTag());
+		final List rval=new ArrayList();
+		final Object temp=tagMap.get(in.getTagKey());
+		if (temp != null){
+			final Map refMap=(Map)temp;
+			rval.addAll(refMap.values());
+		}
+		return rval;
 	}
 	
 	/**
@@ -535,7 +552,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param tagType the type to return 
 	 */
 	public List ofType(short tagType) {
-		return ofType(objectList, tagType);
+		//return ofType(objectList, tagType);
+		final List rval=new ArrayList();
+		final Object temp=tagMap.get(new Short(tagType));
+		if (temp != null){//the refmap exists
+			final Map refMap=(Map)temp;
+			rval.addAll(refMap.values());
+		}
+		return rval;		
 	}
 
 	/**
@@ -546,6 +570,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public void addFileID(String ID) {
 		new FileIdentifier(this, ID);
 	}
+	
 
 	/**
 	 * Add a text note to the file, which includes the state of 
@@ -555,22 +580,18 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @see jam.global.JamProperties
 	 */
 	public void addFileNote() throws IOException {
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		JamProperties.getProperties().store(
-			baos,
-			"Jam Properties at time of save:");
-		String notation = new String(baos.toByteArray());
-		notation =
-			"All error bars on histogram counts should be considered Poisson, unless a\n"
-				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
-				+ "of that should be taken as the error bars."
-				+ notation;
-		notation =
+		final String noteAddition=
 			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
 				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
 				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
 				+ "left."
-				+ notation;
+				+ "All error bars on histogram counts should be considered Poisson, unless a\n"
+				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
+				+ "of that should be taken as the error bars.";
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final String header="Jam Properties at time of save:";
+		JamProperties.getProperties().store(baos,header);
+		final String notation = new String(baos.toByteArray())+noteAddition;
 		new FileDescription(this, notation);
 	}
 
