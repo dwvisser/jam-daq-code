@@ -267,6 +267,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			if (lim == null) { //create a new Limits object for this histogram
 				makeLimits(hist);
 			}
+			currentPlot.removeAllPlotMouseListeners();
+			currentPlot.addPlotMouseListener(action);
 			showPlot(hist); //changes local currentPlot
 			toolbar.setHistogramDimension(hist.getDimensionality());
 		} else { //we have a null histogram, but display anyway
