@@ -13,11 +13,13 @@ import java.util.Arrays;
 public final class HistInt2D extends AbstractHist2D {
 
 	private transient int counts2d[][]; // array to hold counts for 2d inc
+	private static final int [][] EMPTY=new int[0][0];
 
 	/**
 	 * Create a new 2-d histogram with counts known and automatically give it a
 	 * number
 	 * 
+	 * @param group for this histogram to belong to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -38,6 +40,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * Create a new 2-d histogram with counts known (must be square histogram)
 	 * and with the axis label given.
 	 * 
+	 * @param group for this histogram to belong to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -98,7 +101,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#clearCounts()
 	 */
 	void clearCounts() {
-		counts2d = null;
+		counts2d = EMPTY;
 	}
 
 	/**
@@ -137,7 +140,7 @@ public final class HistInt2D extends AbstractHist2D {
 			        +" expected array for type "
 					+ expectedType+". Got array for type "+givenType+".");
 		}
-		setCounts((int[][]) countsIn);
+		setCountsArray((int[][]) countsIn);
 	}
 
 	/**
@@ -153,7 +156,7 @@ public final class HistInt2D extends AbstractHist2D {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
-		addCounts((int[][]) countsIn);
+		addCountsArray((int[][]) countsIn);
 	}
 
 	/**
@@ -173,7 +176,7 @@ public final class HistInt2D extends AbstractHist2D {
 		return sum;
 	}
 
-	private synchronized void setCounts(int[][] countsIn) {
+	private synchronized void setCountsArray(int[][] countsIn) {
 		final int loopLen = Math.min(counts2d.length, countsIn.length);
 		for (int i = 0; i < loopLen; i++) {
 			System.arraycopy(countsIn[i], 0, counts2d[i], 0, Math.min(
@@ -181,7 +184,7 @@ public final class HistInt2D extends AbstractHist2D {
 		}
 	}
 
-	private synchronized void addCounts(int[][] countsIn) {
+	private synchronized void addCountsArray(int[][] countsIn) {
 		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
 		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {
