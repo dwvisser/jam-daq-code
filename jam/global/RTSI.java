@@ -130,6 +130,8 @@ public class RTSI {
 			}
 		} catch (ClassNotFoundException e) {
 			System.err.println(e.getMessage());
+		} catch (LinkageError e){
+			System.err.println(e.getMessage());
 		}
 		return rval;
 	}
@@ -416,6 +418,8 @@ public class RTSI {
 					}
 				} catch (ClassNotFoundException cnfex) {
 					System.err.println(cnfex);
+				} catch (LinkageError le){
+					System.err.println(le);
 				}
 			}
 		}
