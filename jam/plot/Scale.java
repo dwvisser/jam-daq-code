@@ -1,12 +1,10 @@
-/*
- * Created on Nov 8, 2004
- */
 package jam.plot;
 
 /**
  * Represents the type of counts plot scale.
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @version 2004-11-08
  */
 public class Scale {
 	/**
@@ -23,5 +21,9 @@ public class Scale {
 
 	private Scale(int t) {
 		type = t;
+	}
+	
+	public boolean equals(Object o){
+	    return o instanceof Scale ? ((Scale)o).type == type : false;
 	}
 }
