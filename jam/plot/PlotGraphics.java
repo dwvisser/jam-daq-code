@@ -1083,32 +1083,77 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * Mark the outline of an area in a 2d plot 
 	 *
 	 */
+	/*
 	public void markArea2dOutline(Rectangle rec){
+		
 		clipPlot();		
 		g.draw(rec);
 	}
-	/*FIXME need to decide what is passed in  	
-	public void markArea2dOutline(Point p1, Point p2){
-
-		
-		int x1=toViewHorzLin(p1.x);
-		int y1=toViewHorzLin(p1.y);
-		int x2=toViewHorzLin(p2.x);
-		int y2=toViewHorzLin(p2.y);
-				
-		final int xll = Math.min(x1, x2);
-		final int xul = Math.max(x1, x2);
-		final int yll = Math.min(y1, y2);
-		final int yul = Math.max(y1, y2);
-		final int width=xul-xll;
-		final int height=yul-yll;
-		
-		//recMarking.setBounds(xll, yll, width, height);
-		
-		clipPlot();		
-		g.draw(new Rectange(xll, yll, width, height));	
-	}
 	*/
+	/**
+	 * Mark the outline of an area in a 2d plot 
+	 *
+	 */
+	public void markArea2dOutline(Point p1, Point p2){
+	
+		int x1=p1.x;
+		int y1=p1.y;
+		int x2=p2.x;
+		int y2=p2.y;
+		int xv1, xv2, yv1, yv2;
+		int x, y;
+		int width, height;
+		
+		//Horizontal
+		if (x1<x2) {
+			xv1 = toViewHorzLin(x1);
+			//pixel before next channel
+			xv2 = toViewHorzLin(x2+1)-1;			
+			x=xv1+1;
+			width=xv2-xv1;
+		}else if (x1>x2){
+			//pixel before next channel
+			xv1 = toViewHorzLin(x1+1)-1;
+			xv2 = toViewHorzLin(x2);			
+			x=xv2+1;
+			width=xv1-xv2;			
+		//so both at the same point shows something	
+		} else{
+			xv1 = toViewHorzLin(x1);
+			//pixel before next channel
+			xv2 = toViewHorzLin(x2+1)-1;			
+			x=xv1;
+			//At least 1 wide
+			width=Math.max(xv2-xv1,1);
+		} 	
+		
+		//Vertical (y veiw starts at top right corner)
+		if (y2<y1) {
+			yv1 = toViewVertLin(y1+1);
+			//pixel before next channel
+			yv2 = toViewVertLin(y2)-1;			
+			y=yv1+1;
+			height=yv2-yv1;
+		}else if (y1<y2){
+			//pixel before next channel
+			yv1 = toViewVertLin(y1)-1;
+			yv2 = toViewVertLin(y2+1);			
+			y=yv2+1;
+			height=yv1-yv2;
+			
+		//so both at the same point shows something	
+		} else{
+			yv1 = toViewVertLin(y1);
+			//pixel before next channel
+			yv2 = toViewVertLin(y2+1);			
+			y=yv2;
+			//At least 1 wide
+			height=Math.max(yv1-yv2,1);
+		} 	
+						
+		clipPlot();				
+		g.drawRect(x,y,width,height);					
+	}
 	/**
 	 * Setting a 2d Gate
 	 *

@@ -65,23 +65,18 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * Paint call while marking an area
 	 */
 	void paintMarkingArea(Graphics gc) {
+		
 		Graphics2D g=(Graphics2D)gc;
 		g.setColor(PlotColorMap.area);		
 		
-		//FIXME KBS some of this should be moved to PlotData.
-		final Point areaPointView=graph.toViewLin(areaStartPoint);
-		if (lastMovePoint.x<0) {
-			lastMovePoint.x=areaPointView.x;
-			lastMovePoint.y=areaPointView.y;
-		}											
-		final int xll = Math.min(lastMovePoint.x, areaPointView.x);
-		final int xul = Math.max(lastMovePoint.x, areaPointView.x);
-		final int yll = Math.min(lastMovePoint.y, areaPointView.y);
-		final int yul = Math.max(lastMovePoint.y, areaPointView.y);
-		final int width=xul-xll;
-		final int height=yul-yll;
-		recMarking.setBounds(xll, yll, width, height);
-		graph.markArea2dOutline(recMarking);
+		//Check we moved otherwise same point
+		final Point move; 		
+		if ((lastMovePoint.x>0)||(lastMovePoint.y)>0) {
+			move=graph.toData(lastMovePoint);
+		} else {
+			move=areaStartPoint;
+		}
+		graph.markArea2dOutline(areaStartPoint, move);
 		setMouseMoved(false);
 		
 	}
