@@ -1278,7 +1278,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         return numParameters;        
     }
 
-	/** FIXME KBS should be move to hdfio
+	/** 
 	 * @return the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.
 	 * @param h that type is needed for
@@ -1291,7 +1291,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		return getSDD(h,type);
 	}
 	
-	/**FIXME KBS should be move to hdfio
+	/**
 	 * Returns the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.  DOUBLE type
 	 * is explicitly requested, for error bars.
