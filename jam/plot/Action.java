@@ -594,7 +594,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 						.messageOut(String.valueOf(binWidth),
 								MessageHandler.END);
 				textOut
-						.warningOutln("Rebin command ignored. Bin value must be \u2264 1.0 and smaller than the histogram.");
+						.warningOutln("Rebin command ignored. Bin value must be \u2265 1.0 and smaller than the histogram.");
 				done();
 			}
 		}
