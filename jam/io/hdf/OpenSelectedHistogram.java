@@ -6,6 +6,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
+import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -74,9 +75,6 @@ public class OpenSelectedHistogram {
 
 	/** Hash to store read histograms before loaded */
 	private Map loadedHistograms;
-
-	/** Append to name to indicate file */
-	private String fileIndicator;
 
 	/** Messages output */
 	private MessageHandler console;
@@ -162,8 +160,10 @@ public class OpenSelectedHistogram {
 	 *  
 	 */
 	private void doApply() {
-		loadHistograms();
+		Histogram firstHist=loadHistograms();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}
 
 	/**
@@ -220,9 +220,10 @@ public class OpenSelectedHistogram {
 	 * Load the histograms in the selected list
 	 *  
 	 */
-	private void loadHistograms() {
+	private Histogram loadHistograms() {
 
 		Object[] selected = histList.getSelectedValues();
+		Histogram firstHist=null;
 		int i;
 
 		//No histograms selected
@@ -234,13 +235,17 @@ public class OpenSelectedHistogram {
 				if (loadedHistograms.containsKey(selected[i])) {
 					HistProp histProp = (HistProp) loadedHistograms
 							.get(selected[i]);
-					createHistogram(histProp);
+					Histogram hist=createHistogram(histProp);
+					if (i==0)
+						firstHist=hist;
 
 				}
 			}
 		} else {
+			firstHist=null;
 			console.errorOutln("No histograms selected");
 		}
+		return firstHist;
 	}
 
 	/**
@@ -386,14 +391,14 @@ public class OpenSelectedHistogram {
 	 * 
 	 * @param histProp
 	 */
-	private void createHistogram(HistProp histProp) {
+	private Histogram createHistogram(HistProp histProp) {
 		String fileName = hdfFile.getFile().getName();
 		int index = fileName.indexOf(".hdf");
 		if (index > 0){
 			fileName = fileName.substring(0, index);
 		}
-		final String name = histProp.name.trim() + fileIndicator;
-		final String title = "File: " + fileName + " - " + histProp.title;
+		final String name = histProp.name.trim();
+		final String title = histProp.title;
 		final Histogram hist=Histogram.createHistogram(histProp.dataArray, name, title);
 		if (histProp.histDim == 1) {
 			final AbstractHist1D hist1d=(AbstractHist1D)hist;
@@ -401,6 +406,7 @@ public class OpenSelectedHistogram {
 				hist1d.setErrors((double[])histProp.errorArray);
 			}
 		}
+		return hist;
 	}
 
 	/**

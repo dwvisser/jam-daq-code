@@ -39,6 +39,8 @@ public class Group {
         static public final Type SORT = new Type(TYPE_SORT);
     }
 
+    /** Working group name */
+    public final static String workingGroupName = "Working";
     /** List of all groups */
     private final static List LIST = new ArrayList();
 
@@ -138,7 +140,7 @@ public class Group {
     }
 
     /** Clear all groups */
-    public static void clear() {
+    public static void clearList() {
         NAME_MAP.clear();
         LIST.clear();
         currentGroup = null;

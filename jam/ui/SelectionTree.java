@@ -309,7 +309,8 @@ public class SelectionTree extends JPanel implements Observer {
                 || command == BroadcastEvent.Command.HISTOGRAM_ADD
                 || command == BroadcastEvent.Command.GATE_ADD
                 || command == BroadcastEvent.Command.RUN_STATE_CHANGED
-                || command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+                || command == BroadcastEvent.Command.SORT_MODE_CHANGED)
+        {
             loadTree();
         }
         setSyncEvent(false);

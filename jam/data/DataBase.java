@@ -32,6 +32,7 @@ public class DataBase {
 	 * @see DataParameter#clearList()
 	 */
 	public void clearAllLists() {
+		Group.clearList();
 		Histogram.clearList();
 		Gate.clearList();
 		Scaler.clearList();

@@ -199,11 +199,12 @@ public final class Display extends JPanel implements  PlotSelectListener,
             currentPlot.addPlotMouseListener(action);
             currentPlot.setMarkArea(false);
             currentPlot.setMarkingChannels(false);
-            currentPlot.displayHistogram(hist);
+            
             toolbar.setHistogramProperties(hist.getDimensionality(),
                     currentPlot.getBinWidth());
         }
         /* Add to view */
+        currentPlot.displayHistogram(hist);
         currentPlot.repaint();
         currentView.setHistogram(getPlot().getNumber(), hist);
     }

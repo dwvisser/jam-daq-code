@@ -1,6 +1,8 @@
 package jam.commands;
 
 import jam.data.control.AbstractControl;
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
@@ -62,6 +64,10 @@ public class OpenAdditionalHDF extends AbstractCommand implements Observer{
 		status.setSortMode(file);
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		//Set the current histogram to the first opened histogram
+		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		status.setCurrentHistogram(firstHist);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 		status.getFrame().repaint();
 	}			
 	

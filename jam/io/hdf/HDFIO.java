@@ -408,7 +408,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             
             //Set group
             if (mode == FileOpenMode.OPEN) {
-            	Group.clear();
+            	Group.clearList();
             	Group.createGroup(infile.getName(), Group.Type.FILE);
             }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
             	Group.createGroup(infile.getName(), Group.Type.FILE);

@@ -208,7 +208,7 @@ abstract class AbstractSetup {
         if (sortClass == null) {
             sortClass = (Class) sortChoice.getSelectedItem();
         }
-        Group.clear();
+        Group.clearList();
         Group.createGroup(sortClass.getName(), Group.Type.SORT);
         try {        	
             if (specify.isSelected()) {
