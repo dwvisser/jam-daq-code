@@ -10,6 +10,7 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
+import jam.global.CommandNames;
 import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
@@ -365,7 +366,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		file.add(newClear);
 		
 		JMenuItem openhdfcmd = new JMenuItem("Open (hdf)...");
-		openhdfcmd.setActionCommand("openhdf");
+		openhdfcmd.setActionCommand(CommandNames.OPEN_HDF);
 		openhdfcmd.addActionListener(jamCommand);
 		openhdfcmd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
 		file.add(openhdfcmd);
