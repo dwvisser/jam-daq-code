@@ -297,7 +297,7 @@ public class JamConsole
 		currentListener = msgCommand;
 	}
 
-	public static final String INTS_ONLY="int";
+	public static final String NUMBERS_ONLY="int";
 	
 	/**
 	 * Parses the command and issues it to the current listener.
@@ -305,30 +305,29 @@ public class JamConsole
 	private void parseCommand(String _inString) {
 		int countParam = 0;
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
-		String inString = _inString.trim();
-		StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
-		int numberInWords = inLine.countTokens();
+		final String inString = _inString.trim();
+		final StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
+		final int numberInWords = inLine.countTokens();
 		if (inLine.hasMoreTokens()) {//check at least something was entered
-			int [] parameters=new int[numberInWords];
+			double [] parameters=new double[numberInWords];
 			String command = inLine.nextToken();
 			try {// try to see if first token is a number
-				parameters[countParam] = Integer.parseInt(command);
-				//if we got this far first token is a int
+				parameters[countParam]=getNumber(command);
+				/* if we got this far, first token is a number */
 				countParam++;
-				command = INTS_ONLY;
+				command = NUMBERS_ONLY;
 			} catch (NumberFormatException nfe) {
 				/* reset parameter list to hold one less */
-				parameters = new int[numberInWords - 1];
+				parameters = new double[numberInWords - 1];
 				countParam = 0;
 			}
 			try {// rest of tokens must be numbers
 				while (inLine.hasMoreTokens()) {
-					parameters[countParam] =
-						Integer.parseInt(inLine.nextToken());
+					parameters[countParam] = getNumber(inLine.nextToken());
 					countParam++;
 				}
 			} catch (NumberFormatException nfe) {
-				errorOutln("Input not a integer");
+				errorOutln("Input not a number");
 			}
 			if (currentListener != null) {//perform command
 				currentListener.commandPerform(command, parameters);
@@ -336,6 +335,11 @@ public class JamConsole
 				warningOutln("No current Listener for commands [JamConsole");
 			}
 		}
+	}
+	
+	private double getNumber(String s) throws NumberFormatException {
+		return (s.indexOf('.')>=0) ? Double.parseDouble(s) : 
+		Integer.parseInt(s);
 	}
 
 	/**
