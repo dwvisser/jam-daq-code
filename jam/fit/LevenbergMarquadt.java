@@ -256,7 +256,7 @@ final class LevenbergMarquadt {
 
 		//Matrix solution using covar and oneda
 		GaussJordanElimination gje = new GaussJordanElimination(covar, oneda);
-		gje.go();
+		gje.doIt();
 		covar = gje.getMatrix();
 		oneda = gje.getVectors();
 
