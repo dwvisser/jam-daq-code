@@ -235,7 +235,7 @@ public class OpenMultipleFiles {
 			final Iterator iter = attrList.iterator(); 
 			while (iter.hasNext()) {
 				final HistogramAttributes histAtt= (HistogramAttributes)iter.next();
-				hListModel.addElement(histAtt.getName());				
+				hListModel.addElement(histAtt.getFullName());				
 			}
 		
 			loadState=true;

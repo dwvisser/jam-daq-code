@@ -140,9 +140,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     }
     
     
-    Object  convertHist(Group group, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    Object  convertHist(Object groupOrName, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
     	
     	Object retValue  =null;
+    	Group group;
     	Histogram hist;
     	HistogramAttributes histAttributes;    	
         final NumericalDataGroup ndg;
@@ -170,6 +171,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             }
         } else {
         	if (mode == FileOpenMode.RELOAD) {
+        		group=(Group)groupOrName;
         		retValue = group.getHistogram(STRING_UTIL.makeLength(name,
                     Histogram.NAME_LENGTH));
         	} else {
@@ -199,6 +201,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         /* Given name list check that that the name is in the list. */
         if (histNames == null || histNames.contains(name)) {
             if (mode.isOpenMode()) {
+            	group=(Group)groupOrName;
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	Object histErrData =null;
                 if (sdErr != null) {
@@ -206,13 +209,17 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
                 }
                 retValue=openHistogram(group, name, title, number, histData, histErrData);
             } else if (mode == FileOpenMode.RELOAD) {
+            	group=(Group)groupOrName;
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	retValue=reloadHistogram(group, name, histData);
+            	group=(Group)groupOrName;
             } else if  (mode == FileOpenMode.RELOAD) {
+            	group=(Group)groupOrName;
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	retValue=addHistogram(group, name, histData);
             } else if (mode==FileOpenMode.ATTRIBUTES) {
-            	retValue=attributesHistogram(group, name, title, number);
+            	String groupName=(String)groupOrName;
+            	retValue=attributesHistogram(groupName, name, title, number);
             }
             	
         }
@@ -547,7 +554,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
    	    return vdd;   	 		
    	 }
     
-	private String readVirtualGroupName(VirtualGroup virtualGroup) {
+	String readVirtualGroupName(VirtualGroup virtualGroup) {
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
 		return dataIDLabel.getLabel();
@@ -620,10 +627,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         }
         return histogram;
     }
-    private HistogramAttributes attributesHistogram(Group group, String name, String title, int number) {
-    	String groupName="";
-    	if (group!=null) 
-    		groupName=group.getName();    		
+    private HistogramAttributes attributesHistogram(String groupName, String name, String title, int number) {
     	return new HistogramAttributes(groupName, name, title, number);
     }
 }
