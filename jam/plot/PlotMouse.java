@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author Ken Swartz.
  */
-public class PlotMouse extends MouseAdapter {
+class PlotMouse extends MouseAdapter {
 	/*	list of listeners for plotmouse */
 	private final List listenersList = new ArrayList();
 	/*	converts screen pixels to data values */

@@ -23,7 +23,7 @@ import javax.swing.JToolBar;
  * 
  * @author Dale Visser
  */
-public class Toolbar extends JToolBar implements ActionListener {
+class Toolbar extends JToolBar implements ActionListener {
 
 	private Action action;
 	
