@@ -41,16 +41,18 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
         if (nodeObject instanceof Histogram) {
             Histogram hist = (Histogram) nodeObject;
             setBackgroundSelectionColor(defaultBackgroundColor);
-            //final StringBuffer tip=new StringBuffer(hist.getSizeX());
+            final StringBuffer tip=new StringBuffer();
+            tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
+            tip.append(" (").append(hist.getSizeX());
             if (hist.getDimensionality() == 1) {
                 setIcon(Icons.HIST1D);
             } else {
                 setIcon(Icons.HIST2D);
-                //tip.append('x').append(hist.getSizeY());
+                tip.append('x').append(hist.getSizeY());
             }
-            //tip.append(" - ").append(hist.getTitle());
+            tip.append(')');
             setText(hist.getName());
-            //setToolTipText(tip.toString());
+            setToolTipText(tip.toString());
         } else if (nodeObject instanceof Gate) {
             Gate gate = (Gate) nodeObject;
             setBackgroundSelectionColor(Color.CYAN);

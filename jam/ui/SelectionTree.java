@@ -18,6 +18,7 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -66,6 +67,7 @@ public class SelectionTree extends JPanel implements Observer {
         tree.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         tree.setCellRenderer(new SelectionTreeCellRender());
+        ToolTipManager.sharedInstance().registerComponent(tree);
         addSelectionListener();
         add(new JScrollPane(tree), BorderLayout.CENTER);
     }
@@ -148,7 +150,7 @@ public class SelectionTree extends JPanel implements Observer {
                 	if (hist.getDimensionality()==1) {
                 		selectOverlay(paths);
                 	}else{
-                		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2 D histograms");
+                		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2D histogram.");
                 	}
                 } else {
                 	STATUS.clearOverlays();
@@ -179,10 +181,12 @@ public class SelectionTree extends JPanel implements Observer {
         Object overlayObject = null;
         Histogram overlayHistogram;
         STATUS.clearOverlays();
+        /* Loop from 2nd element to the end. */
         for (int i = 1; i < paths.length; i++) {
             overlayNode = ((DefaultMutableTreeNode) paths[i]
                     .getLastPathComponent());
             overlayObject = overlayNode.getUserObject();
+            /* Ignore any gates in the selection paths here. */
             if (overlayObject instanceof Histogram) {
                 overlayHistogram = (Histogram) (overlayObject);
                 if (overlayHistogram.getDimensionality() == 1) {
@@ -191,9 +195,7 @@ public class SelectionTree extends JPanel implements Observer {
                     tree.removeSelectionPath(paths[i]);
                     MESSAGE_HANDLER.errorOutln("Cannot overlay 2D histograms.");
                 }
-            } else {
-                //FIXME
-            }
+            } 
         }
     }
     
@@ -255,9 +257,8 @@ public class SelectionTree extends JPanel implements Observer {
                         final TreePath gateTreePath = new TreePath(currentNode
                                 .getPath());
                         tree.addSelectionPath(gateTreePath);
-                        //break;
-                    }//End loop histograms
-                }
+                    }
+                }//End loop histograms
         } //End loop for all nodes
     }
     
