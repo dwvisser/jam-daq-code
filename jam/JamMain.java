@@ -207,7 +207,7 @@ public final class JamMain extends JFrame implements Observer {
 			this.setTitle(title.append("Remote Mode").toString());
 		} else if (mode == SortMode.FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
-			this.setTitle(title.append(status.getOpenFile()).toString());
+			this.setTitle(title.append(status.getSortName()).toString());
 		} else if (mode == SortMode.NO_SORT) {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
