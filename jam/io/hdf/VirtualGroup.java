@@ -153,6 +153,65 @@ final class VirtualGroup extends DataObject {
         return output;
     }
 
+	/**
+	 * @return a list of all <code>DataObject</code> of the
+	 * given type
+	 * @param tagType the type to return 
+	 */
+	static VirtualGroup ofClass(String groupType) throws HDFException {
+		 VirtualGroup output = null;
+		final List objectList = getDataObjectList();
+		final Iterator iter = objectList.iterator();
+		while(iter.hasNext()){
+			final DataObject dataObject=(DataObject)iter.next();
+			if (dataObject.getTag()==DFTAG_VG){
+				final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
+				String type = virtualGroup.getType();
+				if (groupType.equals(type)){
+					//Should only find one node
+					if (output==null) {
+						output =virtualGroup;
+					} else {
+						throw new HDFException("More than one VirtualGroup found with class "+groupType);
+					}
+				}
+			}
+		}
+		return output;
+	}
+
+    /**
+     * Returns a VirtualGroup of <code>VirtualGroup</code>'s with the name
+     * specified. Should only be called when the name is expected to be unique.
+     * 
+     * @param list
+     *            should contain only VirtualGroup objects
+     * @param groupName
+     *            name of the desired group
+     * @return the group with the given name
+     */
+    static VirtualGroup ofName(String groupName) throws HDFException {
+		 VirtualGroup output = null;
+			final List objectList = getDataObjectList();
+			final Iterator iter = objectList.iterator();
+			while(iter.hasNext()){
+				final DataObject dataObject=(DataObject)iter.next();
+				if (dataObject.getTag()==DFTAG_VG){
+					final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
+					String type = virtualGroup.getName();
+					if (groupName.equals(type)){
+						//Should only find one node
+						if (output==null) {
+							output =virtualGroup;
+						} else {
+							throw new HDFException("More than one VirtualGroup found with class "+groupName);
+						}
+					}
+				}
+			}
+			return output;
+    }
+	
     /**
      * Returns a VirtualGroup of <code>VirtualGroup</code>'s with the name
      * specified. Should only be called when the name is expected to be unique.

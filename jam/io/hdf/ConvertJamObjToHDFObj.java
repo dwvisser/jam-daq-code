@@ -32,7 +32,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      */
     VirtualGroup convertGroup(Group group) {
     	VirtualGroup virtualGroup;
-       	virtualGroup = new VirtualGroup(group.getName(), GROUP_SECTION);
+       	virtualGroup = new VirtualGroup(group.getName(), GROUP_TYPE);
         new DataIDLabel(virtualGroup, group.getName());
         return  virtualGroup;
     }
