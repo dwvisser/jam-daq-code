@@ -1,4 +1,3 @@
-
 package jam.sort;
 
 import jam.global.Sorter;
@@ -6,8 +5,8 @@ import jam.sort.stream.EventOutputStream;
 import jam.sort.stream.EventInputStream;
 
 /**
- * Controls the sorting, interface to sroting from 
- * other packages
+ * Controls the sorting, interface to sorting from 
+ * other packages.
  * 
  * @author Ken Swartz
  */
@@ -22,13 +21,13 @@ public class SortControl {
 	private String pathLog;	
 	private int sortSample;
 
-	private NetDaemon netDaemon;
-	private DiskDaemon diskDaemon;
-	
+	/* these private fields aren't in use yet. */
+	//private NetDaemon netDaemon;
+	//private DiskDaemon diskDaemon;
 	
 	public SortControl(){
-		
 	}
+	
 	/**
 	 * Sets the sort class
 	 * @param sorter
@@ -44,6 +43,7 @@ public class SortControl {
 	public void setInputStream(EventInputStream eventInputStream){
 		this.eventInputStream=eventInputStream;
 	}
+	
 	/**
 	 * Sets the event output stream
 	 * @param eventOutputStream
@@ -51,6 +51,7 @@ public class SortControl {
 	public void setOutputStream(EventOutputStream eventOutputStream){
 		this.eventOutputStream=eventOutputStream;
 	}
+	
 	/**
 	 * Sets the event output stream
 	 * @param experimentName
@@ -66,6 +67,7 @@ public class SortControl {
 	public void setPathHistogram(String pathHistogram){
 		this.pathHistogram=pathHistogram;
 	}
+	
 	/**
 	 * Sets the path to save the event files to
 	 * @param pathEvent
@@ -73,6 +75,7 @@ public class SortControl {
 	public void setPathEvent(String pathEvent){
 		this.pathEvent=pathEvent;
 	}
+	
 	/**
 	 * Sets the path to save the log files to
 	 * @param pathLog
@@ -80,18 +83,21 @@ public class SortControl {
 	public void setPathLog(String pathLog){
 		this.pathLog=pathLog;
 	}
+	
 	/**
 	 * Sets the sort sample
 	 * @param sortSample
 	 */
 	public void setSortSample(int sortSample){
 		this.sortSample=sortSample;
-	}	
+	}
+		
 	/**
 	 * Sets up online sorting
 	 */
 	public void setupOnlineSort(){
 	}
+	
 	/**
 	 * Resest, cancels online sorting
 	 */	
@@ -102,23 +108,23 @@ public class SortControl {
 	 * Sets up offline sorting
 	 */
 	public void setupOfflineSort(){
-	}	
+	}
+		
 	/**
 	 * Resest, cancels offline sorting
 	 */
 	public void resetOfflineSort(){
 	}
+	
 	/**
 	 * Begin run
 	 */
-	public void beginRun(){
-		
+	public void beginRun(){	
 	}
+	
 	/**
 	 * End run
 	 */
-	public void endRun(){
-		
+	public void endRun(){	
 	}
-	
 }
