@@ -15,9 +15,12 @@ import java.util.List;
  * @author Ken Swartz.
  */
 public class PlotMouse extends MouseAdapter {
-	private List listenersList; //list of listeners for plotmouse
-	private PlotGraphics pg; //converts screen pixels to data values
-	private final Action action;
+	//	list of listeners for plotmouse
+	private List listenersList;
+	//	converts screen pixels to data values
+	private PlotGraphics pg; 
+	// Called so a change in slelect plot can be made
+	private PlotSelectListener plotSelectListener;
 
 	/**
 	 * Construction, PlotMouseListener belongs to a Plot.
@@ -25,12 +28,17 @@ public class PlotMouse extends MouseAdapter {
 	 * mouse events.
 	 *
 	 */
-	PlotMouse(PlotGraphics plotGraphics, Action a) {
+	PlotMouse(PlotGraphics plotGraphics) {
 		this.pg = plotGraphics;
-		action=a;
+		
 		listenersList = new ArrayList();
 	}
-	
+	/**
+	 * Add listener for plot select  	 
+	 */
+	void addPlotSelectListener(PlotSelectListener plotSelectListener) {
+		this.plotSelectListener=plotSelectListener;
+	}
 	/**
 	 * Add a class, a listener, that will be called if a PlotMouse 
 	 * event occurs. Listener must implement PlotMouseListener
@@ -48,19 +56,37 @@ public class PlotMouse extends MouseAdapter {
 	boolean removeListener(PlotMouseListener listener) {
 		return listenersList.remove(listener);
 	}
+	/**
+	 * Remove all listeners
+	 */
+	void removeAllListeners() {
+		listenersList.clear();
+	}
 	
 	/**
 	 * A mousePressed event has occured, so call all listeners 
 	 * in the listeners list.
 	 */
 	public void mousePressed(MouseEvent e) {
-	    action.setMousePressed(true);
-		final Point pin = e.getPoint();
-		final Bin pout = pg.toData(pin);
-		for (int i = 0; i < listenersList.size(); i++) {
-			((PlotMouseListener) listenersList.get(i)).plotMousePressed(
-				pout,
-				pin);
+
+		AbstractPlot selectedPlot=(AbstractPlot)e.getSource();
+
+	    //First listeners about selected plot firsts
+		plotSelectListener.plotSelected(selectedPlot);
+		
+	    //FIXME KBS remove
+		//action.setMousePressed(true);		
+		//for (int i = 0; i < listenersList.size(); i++) {
+			//((PlotMouseListener) listenersList.get(i)).plotMouseSelected(selectedPlot);
+		//}	   
+
+		//Only fire event if plot has counts 
+		if (selectedPlot.getCounts()!=null) {
+			final Point pin = e.getPoint();
+			final Bin pout = pg.toData(pin);
+			for (int i = 0; i < listenersList.size(); i++) {
+				((PlotMouseListener) listenersList.get(i)).plotMousePressed(pout, pin);
+			}
 		}
 	}
 }

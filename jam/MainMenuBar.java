@@ -18,6 +18,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+//FIXME remove when clean
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 /**
  *
  * Jam's menu bar. Separated from JamMain to reduce its 
@@ -69,6 +72,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		add(getHistogramMenu());
 		add(getGateMenu());				
 		add(getScalerMenu());		
+		add(getViewMenu());
 		add(getPreferencesMenu());										
 		add(getFitMenu());				
 		add(getHelp());	
@@ -166,7 +170,47 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return gate;
 	}
 
-	
+	private JMenu getViewMenu() {
+		final JamStatus status = JamStatus.instance();
+		final JMenu view = new JMenu("View");
+		add(view);
+		JMenuItem view11 = new JMenuItem("View 1-1");
+		view.add(view11);
+		view11.addActionListener(new ActionListener(){
+			public void actionPerformed( ActionEvent event )
+			{
+				status.getDisplay().setView(1,1);
+			}
+		});
+		JMenuItem view12 = new JMenuItem("View 2-1");
+		view.add(view12);
+		view12.addActionListener(new ActionListener(){
+			public void actionPerformed( ActionEvent event )
+			{
+				status.getDisplay().setView(2,1);
+			}
+		});
+		JMenuItem view13 = new JMenuItem("View 3-1");
+		view.add(view13);
+		view13.addActionListener(new ActionListener(){
+			public void actionPerformed( ActionEvent event )
+			{
+				status.getDisplay().setView(3,1);
+			}
+		});
+		JMenuItem view22 = new JMenuItem("View 2-2");
+		view.add(view22);
+		view22.addActionListener(new ActionListener(){
+			public void actionPerformed( ActionEvent event )
+			{
+				status.getDisplay().setView(2,2);
+			}
+		});
+
+		
+		return view;
+
+	}
 	private JMenu getScalerMenu() {
 		final JMenu scalers = new JMenu("Scalers");
 		add(scalers);

@@ -4,5 +4,5 @@
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="lib" path="junit.jar"/>
 	<classpathentry kind="lib" path="jh.jar"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="output" path="classes"/>
 </classpath>

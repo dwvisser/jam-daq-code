@@ -211,7 +211,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	 *            The histogram to be selected and displayed
 	 */
 	private void selectHistogram(Histogram hist) {
-		if (hist == null) {
+		if (hist == null) { 
 			display.displayHistogram();
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		} else {
@@ -219,7 +219,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			if (isOverlaySelected() && oneD) {
 					status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getName(), MessageHandler.END);
-					display.addToOverlay(hist.getNumber());
+					display.overlayHistogram(hist.getNumber());
 			} else {
 				synchronized (status) {
 					status.setCurrentHistogramName(hist.getName());

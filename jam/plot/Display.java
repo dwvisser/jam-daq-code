@@ -11,12 +11,11 @@ import jam.global.MessageHandler;
 import jam.global.RunInfo;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -32,9 +31,7 @@ import javax.swing.JPanel;
  * @see java.awt.Graphics
  * @since JDK1.1
  */
-public final class Display extends JPanel implements Observer {
-
-	private static final JamStatus status = JamStatus.instance();
+public final class Display extends JPanel implements  PlotSelectListener, Observer {
 
 	private static final String KEY1 = "1D Plot";
 
@@ -46,60 +43,129 @@ public final class Display extends JPanel implements Observer {
 
 	private final Object plotLock = new Object();
 
-	private final JPanel plotswap;
-
-	private final CardLayout plotswapLayout;
-
-	private final Plot1d plot1d;
-
-	private final Plot2d plot2d;
-
+	/** Grid panel that contains plots */
+	private JPanel plotGridPanel;
+	/** Layout of grid with plots*/
+	private GridLayout plotGridPanelLayout;
+	/** Array of all avaliable plots */
+	private ArrayList plotList;
+	/** Current plot of plotList */
 	private Plot currentPlot;
-
+	/** The layout of the plots */
+	private PlotGraphicsLayout graphLayout;
+	/** Tool bar with plot controls (zoom...) */
 	private final Toolbar toolbar;
-
+	
+	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	
+	private final JamStatus status =JamStatus.instance();
 	/**
 	 * Constructor called by all constructors
 	 * 
 	 * @param jc
 	 *            the class to call to print out messages
 	 */
-	public Display(JamConsole jc) {
-		Bin.Factory.init(this);
+	public Display(JamConsole jc) {		
 		msgHandler = jc; //where to send output messages
-		action = new Action(this, jc); // display event handler
+		
+		//Set gobal status
+		JamStatus.instance().setDisplay(this);
+		Broadcaster.getSingletonInstance().addObserver(this);
+		
+		Bin.Factory.init(this);
+		//display event handler
+		action = new Action(this, jc); 
+		
+		plotList=new ArrayList();		
+		
+		createGridPanel();
+		
+		toolbar = new Toolbar(this, action);
+		
+		//Initial view only 1 plot
+		setView(1,1);
+					
+	}
+	
+	/**
+	 * Constructor helper
+	 * Create a panel for plots
+	 */
+	private void createGridPanel()
+	{
+		//Create main panel with tool bar 
 		final int size = 420;
 		setPreferredSize(new Dimension(size, size));
 		final int minsize = 400;
 		setMinimumSize(new Dimension(minsize, minsize));
 		setLayout(new BorderLayout());
-		/*
-		 * setup up middle panel containing plots panel to holds 1d and 2d plots
-		 * and swaps them
-		 */
-		plotswap = new JPanel();
-		plotswapLayout = new CardLayout();
-		plotswap.setLayout(plotswapLayout);
-		/* panel 1d plot and its scroll bars */
-		plot1d = new Plot1d(action);
-		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
-		plot1d.addPlotMouseListener(action);
-		final Scroller scroller1d = new Scroller(plot1d);
-		plotswap.add(KEY1, scroller1d);
-		/* panel 2d plot and its scroll bars */
-		plot2d = new Plot2d(action);
-		plot2d.addPlotMouseListener(action);
-		final Scroller scroller2d = new Scroller(plot2d);
-		plotswap.add(KEY2, scroller2d);
-		setPlot(plot1d);
-		add(plotswap, BorderLayout.CENTER);
-		JamStatus.instance().setDisplay(this);
-		Broadcaster.getSingletonInstance().addObserver(this);
-		toolbar = new Toolbar(this, action);
-	}
-
+		
+		//Create imbeded grid panel
+		plotGridPanelLayout = new GridLayout(1,1);
+		plotGridPanel =  new JPanel();
+		plotGridPanel.setLayout(plotGridPanelLayout);
+		add(plotGridPanel, BorderLayout.CENTER);		
+		
+	};
 	/**
-	 * Set the histogram to display
+	 * Set the view, tiled layout of plots
+	 * 
+	 * @param nPlotrows	number of rows
+	 * @param nPlotcolumns
+	 */
+	public void setView(int nPlotRows, int nPlotColumns){
+		
+		Plot plot=null;
+		int numberPlots;
+		int plotLayout;
+		int i;
+
+		plotGridPanelLayout.setRows(nPlotRows);
+		plotGridPanelLayout.setColumns(nPlotColumns);
+		plotGridPanel.setLayout(plotGridPanelLayout);		
+		plotGridPanel.revalidate();
+
+		numberPlots=nPlotRows*nPlotColumns;
+		createPlots(numberPlots);
+
+		//Type of layout
+		if (numberPlots>1)
+			plotLayout=Plot.LAYOUT_TYPE_TILED;
+		else
+			plotLayout=Plot.LAYOUT_TYPE_FULL;
+
+		
+		plotGridPanel.removeAll();
+		for (i=0;i<numberPlots;i++){
+			plot =(Plot)(plotList.get(i));
+			plotGridPanel.add(plot);
+			
+			plot.setLayoutType(plotLayout);
+			
+		}
+
+		setPlot(plot);			
+	}
+	/**
+	 * Create a plots
+	 */
+	private void createPlots(int numberPlots) {
+		
+		Plot plotTemp;
+		int numberExistingPlots;
+		int i;
+		
+		numberExistingPlots=plotList.size();
+		
+		for (i=numberExistingPlots;i<numberPlots;i++) {
+			plotTemp= new Plot(action,  graphLayout, this);
+			plotList.add(plotTemp);
+		}
+
+	}
+	
+	/**
+	 * Display a histogram
 	 */
 	public void displayHistogram() {
 		Histogram hist = status.getCurrentHistogram();
@@ -114,46 +180,66 @@ public final class Display extends JPanel implements Observer {
 			showPlot(hist);
 		}
 	}
-
-	private final List overlays = Collections.synchronizedList(new ArrayList());
-
-	public void addToOverlay(int num) {
+	/**
+	 * Overlay a histogram
+	 * @param num
+	 */
+	public void overlayHistogram(int num) {
 		final Histogram h = Histogram.getHistogram(num);
+		//Check we can overlay
+		if (!(getPlot().getType()==Plot.TYPE_1D)) {
+			throw new UnsupportedOperationException(
+					"Overlay attempted for non-1D histogram.");
+		}
 		if (h.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
+		//Create limits as needed
 		if (Limits.getLimits(h) == null) {
 			makeLimits(h);
 		}
-		final Integer value = new Integer(num);
-		if (!overlays.contains(value)
-				&& status.getCurrentHistogram().getNumber() != num) {
-			overlays.add(value);
-		}
-		doOverlay();
+		currentPlot.overlayHistograms(num);		
 	}
-
 	public void removeOverlays() {
-		overlays.clear();
+		currentPlot.removeOverlays();
 	}
-
-	private void doOverlay() {
-		if (!(getPlot() instanceof Plot1d)) {
-			throw new UnsupportedOperationException(
-					"Overlay attempted for non-1D histogram.");
+	
+	/**
+	 * Handles call back of a plot selected
+	 */
+	public void plotSelected(Object selectedObject){
+		Plot selectedPlot =(Plot)selectedObject;
+		setPlot(selectedPlot);
+		Histogram hist =selectedPlot.getHistogram();
+		
+		//Tell the frame work the current histogram ifits different
+		if (hist!=status.getCurrentHistogram() &&hist!=null) {
+			JamStatus.instance().setCurrentHistogramName(hist.getName());		
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		}
-		plot1d.overlayHistograms();
 	}
 
+	/**
+	 * Update all the plots
+	 *
+	 */
+	void update(){
+		Iterator iter =plotList.iterator();
+		
+		while( iter.hasNext()) {
+			Plot p=(Plot)iter.next();
+			p.update();
+		}
+		
+	}
+	/**
+	 * Create the limits for a histogram
+	 * @param h
+	 */
 	private void makeLimits(Histogram h) {
 		if (h != null) { //else ignore
 			try {
-				if (h.getDimensionality() == 1) {
-					setPlot(plot1d);
-				} else {
-					setPlot(plot2d);
-				}
 				final Plot plot = getPlot();
 				new Limits(h, plot.getIgnoreChZero(), plot.getIgnoreChFull());
 			} catch (IndexOutOfBoundsException e) {
@@ -162,7 +248,7 @@ public final class Display extends JPanel implements Observer {
 						+ h.getName());
 			}
 		}
-	}
+	} 
 
 	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		getPlot().setRenderForPrinting(rfp, pf);
@@ -204,25 +290,47 @@ public final class Display extends JPanel implements Observer {
 
 	public void setPeakFindProperties(double width, double sensitivity,
 			boolean cal) {
-		plot1d.setWidth(width);
-		plot1d.setSensitivity(sensitivity);
-		plot1d.setPeakFindDisplayCal(cal);
+		currentPlot.setWidth(width);
+		currentPlot.setSensitivity(sensitivity);
+		currentPlot.setPeakFindDisplayCal(cal);
 		displayHistogram();
 	}
 
 	public void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
-		plot1d.displayFit(signals, background, residuals, ll);
+		currentPlot.displayFit(signals, background, residuals, ll);
 	}
-
+	/**
+	 * Set a plot as the current plot
+	 * @param p
+	 */
 	private void setPlot(Plot p) {
-		synchronized (plotLock) {
-			final String key = p instanceof Plot1d ? KEY1 : KEY2;
-			plotswapLayout.show(plotswap, key);
-			currentPlot = p;
-			action.setPlotChanged();
+		
+		int i;
+		synchronized (plotLock) {		
+
+			//Only do something if the plot has changed 
+			if (p!=currentPlot) {
+				//Change plot mouse listener source
+				if (currentPlot!=null ) {
+					currentPlot.reset();
+					currentPlot.removeAllPlotMouseListeners();
+				}
+				p.addPlotMouseListener(action);
+				
+				//Change selected plot
+				for (i=0;i<plotList.size();i++) {
+					((Plot)plotList.get(i)).select(false);
+				}
+				p.select(true);
+				
+				//Cancel all current actions
+				action.plotChanged();
+				
+				currentPlot = p;				
+			}			
 		}
-	}
+	} 
 
 	public Plot getPlot() {
 		synchronized (plotLock) {
@@ -260,29 +368,22 @@ public final class Display extends JPanel implements Observer {
 	 *            the histogram to display
 	 */
 	private void showPlot(Histogram hist) {
-		/* Cancel all previous stuff. */
+				
 		Plot plot = getPlot();
-		if (plot != null) {
-			plot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
-			action.setDefiningGate(false);
-		}
+			
+		/// Cancel all previous stuff.
+		plot.setSelectingArea(false);
+		plot.setMarkArea(false);
+		plot.setMarkingChannels(false);
+		
+		plot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+		action.setDefiningGate(false);
+	
 		if (hist != null) {
-			final int dim = hist.getDimensionality();
-			if (dim == 1) {
-				/* Show plot repaint if last plot was also 1d. */
-				setPlot(plot1d);
-			} else if (dim == 2) {
-				/* Show plot repaint if last plot was also 2d. */
-				setPlot(plot2d);
-			}
-			plot.setSelectingArea(false);
-			plot.setMarkArea(false);
-			plot.setMarkingChannels(false);
-		} else { //null histogram lets be in plot1d
-			setPlot(plot1d);
-		}
-		plot = getPlot();
-		plot.displayHistogram(hist);
+			plot.displayHistogram(hist);			
+		} 
+
 		plot.repaint();
+		
 	}
 }

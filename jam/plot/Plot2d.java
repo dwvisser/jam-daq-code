@@ -11,6 +11,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.Iterator;
 import java.util.prefs.PreferenceChangeEvent;
 
@@ -23,7 +24,7 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 
-class Plot2d extends Plot {
+class Plot2d extends AbstractPlot {
 
 	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
@@ -39,8 +40,8 @@ class Plot2d extends Plot {
 	 * @param a
 	 *            the action toolbar
 	 */
-	Plot2d(Action a) {
-		super(a);
+	Plot2d() {
+		super();
 		setSmoothColorScale(prefs.getBoolean(SMOOTH_COLOR_SCALE, true));
 	}
 
@@ -214,16 +215,23 @@ class Plot2d extends Plot {
 	 *            the channel to get counts for
 	 * @return the counts at channel <code>p</code>
 	 */
-	double getCount(Bin p) {
+	protected double getCount(Bin p) {
 		return counts2d[p.getX()][p.getY()];
 	}
 
+	/**
+	 * Caller should have checked 'isCalibrated' first.
+	 */
+	double getEnergy(double channel) {
+		return 0.0;
+	}
+	
 	/**
 	 * Get the counts for the displayed 2d histogram.
 	 * 
 	 * @return the counts for the displayed 2d histogram
 	 */
-	double[][] getCounts() {
+	protected Object getCounts() { 
 		return counts2d;
 	}
 
@@ -309,8 +317,9 @@ class Plot2d extends Plot {
 	 * 
 	 * @param g
 	 *            the graphics context to paint to
-	 */
+	 */ 
 	protected void paintHistogram(Graphics g) {
+		Histogram plotHist=getHistogram();
 		setScale(plotLimits.getScale());
 		g.setColor(PlotColorMap.hist);
 		g.getClipBounds(clipBounds);
@@ -332,20 +341,20 @@ class Plot2d extends Plot {
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
-		final Histogram hist=status.getCurrentHistogram();
-		graph.drawTitle(hist.getTitle(), PlotGraphics.TOP);
-		graph.drawNumber(hist.getNumber(), new int[0]);
+
+		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
+		graph.drawNumber(plotHist.getNumber(), new int[0]);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
-		final String axisLabelX=hist.getLabelX();
+		final String axisLabelX=plotHist.getLabelX();
 		if (axisLabelX != null) {
 			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		} else {
 			graph.drawAxisLabel(X_LABEL_2D, PlotGraphics.BOTTOM);
 		}
-		final String axisLabelY=hist.getLabelY();
+		final String axisLabelY=plotHist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {
@@ -522,6 +531,17 @@ class Plot2d extends Plot {
 			p.addPoint(p2.getX(), p2.getY());
 			return getClipBounds(p, true);
 		}
+	}
+
+	void displayFit(double[][] signals, double[] background,
+			double[] residuals, int ll){
+		//NOP
+	} 
+	void overlayHistograms(List overlayHists){ 
+		//NOP
+	}
+	int getChannel(double energy){
+		return 0;
 	}
 
 }

@@ -42,7 +42,7 @@ import javax.swing.JPanel;
  * @see java.awt.Graphics
  * @since JDK1.1
  */
-class PlotGraphics implements PlotGraphicsLayout {
+class PlotGraphics  {
 
 	static final int BOTTOM = 1;
 
@@ -59,6 +59,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/* fake zero for Log scale 1/2 a count */
 	static final double LOG_FAKE_ZERO = 0.5;
 
+	PlotGraphicsLayout graphLayout;
 	//  current stuff to draw font, and font metrics and colors
 	private Graphics2D g;
 
@@ -137,13 +138,18 @@ class PlotGraphics implements PlotGraphicsLayout {
 
 	private Point viewMiddle; //middle of plot area
 
+	private Font screenFont;	//Screen Font
+	
+	private Font printFont;		//Printing Font
+	
 	/**
 	 * Full constructor, all contructors eventually call this one. Other
 	 * constructors have defaults
 	 */
-	PlotGraphics(JPanel plot, Insets border, Font font) {
-		this.border = border;
-		setFont(font);
+	PlotGraphics(JPanel plot) {
+		
+		graphLayout = new PlotGraphicsLayout();
+		
 		//class that draws tick marks and makes color thresholds
 		tm = new Tickmarks();
 		//margin for printing
@@ -156,6 +162,24 @@ class PlotGraphics implements PlotGraphicsLayout {
 		} else if (plot instanceof Plot2d) {
 			plotType = TWO_DIMENSION;
 		}
+		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
+	}
+	/**
+	 * Set the layout type
+	 * @param type
+	 */
+	void setLayout(int type){
+		
+		graphLayout.setLayoutType(type);
+		
+		/* some initial layout stuff */
+		border = new Insets(graphLayout.BORDER_TOP,
+				graphLayout.BORDER_LEFT, graphLayout.BORDER_BOTTOM,
+				graphLayout.BORDER_RIGHT);		
+		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD, (int) graphLayout.SCREEN_FONT_SIZE);
+		printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN, graphLayout.PRINT_FONT_SIZE);
+		
+		setFont(screenFont);
 	}
 
 	/**
@@ -270,17 +294,23 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @param side
 	 *            the side on which to draw the title
 	 * @return <code>void</code>
-	 * @see jam.plot.PlotMouse
 	 * @since Version 0.5
 	 */
 	void drawTitle(String title, int side) {
 		int offset = 1;
+		int xPos;
+		int yPos;
+		offset = fm.stringWidth(title); 
+		if (graphLayout.LAYOUT_TYPE==PlotGraphicsLayout.LAYOUT_TYPE_FULL)
+			xPos=viewMiddle().x - offset / 2;
+		else
+			xPos=viewLeft+graphLayout.TITLE_OFFSET_LEFT;
+		
+		yPos=viewTop - graphLayout.TITLE_OFFSET_TOP;
 		if (side == PlotGraphics.TOP) {
-			setFont(font.deriveFont(PlotGraphicsLayout.TITLE_SCREEN_SIZE));
-			offset = fm.stringWidth(title); //title.length()*CHAR_SIZE;
-			g.drawString(title, viewMiddle().x - offset / 2, viewTop
-					- TITLE_OFFSET_TOP);
-			setFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
+			setFont(font.deriveFont(graphLayout.TITLE_SCREEN_SIZE));
+			g.drawString(title, xPos, yPos);
+			setFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
 		}
 	}
 
@@ -288,8 +318,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final String s = Integer.toString(number);
 		setFont(font);
 		int width = fm.stringWidth(s);
-		int xNext = this.viewLeft - TITLE_OFFSET_TOP - width;
-		final int y = viewTop - TITLE_OFFSET_TOP;
+		int xNext = this.viewLeft -graphLayout. TITLE_OFFSET_TOP - width;
+		final int y = viewTop - graphLayout.TITLE_OFFSET_TOP;
 		final Color c = g.getColor();
 		g.setColor(PlotColorMap.foreground);
 		g.drawString(s, xNext, y);
@@ -311,7 +341,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	void drawDate(String sdate) {
 		final int x = viewRight - fm.stringWidth(sdate); //position of string
-		final int y = viewTop - TITLE_OFFSET_DATE;
+		final int y = viewTop - graphLayout.TITLE_OFFSET_DATE;
 		g.drawString(sdate, x, y);
 	}
 
@@ -324,7 +354,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	void drawRun(int runNumber) {
 		String runLabel = "Run " + runNumber;
 		int x = viewLeft;
-		int y = viewTop - TITLE_OFFSET_DATE;
+		int y = viewTop - graphLayout.TITLE_OFFSET_DATE;
 		g.drawString(runLabel, x, y);
 	}
 
@@ -380,18 +410,18 @@ class PlotGraphics implements PlotGraphicsLayout {
 		for (int i = 0; i < ticks.length; i++) {
 			final int x = toViewHorzLin(ticks[i]);
 			int y = viewBottom;
-			g.drawLine(x, y, x, y - TICK_MINOR);
+			g.drawLine(x, y, x, y - graphLayout.TICK_MINOR);
 			y = viewTop;
-			g.drawLine(x, y, x, y + TICK_MINOR);
+			g.drawLine(x, y, x, y + graphLayout.TICK_MINOR);
 		}
 		final int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			final int x = toViewHorzLin(ticksMajor[i]);
 			int y = viewBottom;
-			g.drawLine(x, y, x, y - TICK_MAJOR);
+			g.drawLine(x, y, x, y - graphLayout.TICK_MAJOR);
 			y = viewTop;
-			g.drawLine(x, y, x, y + TICK_MAJOR);
+			g.drawLine(x, y, x, y + graphLayout.TICK_MAJOR);
 		}
 	}
 
@@ -418,9 +448,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 				y = toViewVertLog(ticks[i]);
 			}
 			x = viewLeft;
-			g.drawLine(x, y, x + TICK_MINOR, y);
+			g.drawLine(x, y, x + graphLayout.TICK_MINOR, y);
 			x = viewRight;
-			g.drawLine(x, y, x - TICK_MINOR, y);
+			g.drawLine(x, y, x - graphLayout.TICK_MINOR, y);
 		}
 
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
@@ -432,9 +462,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 				y = toViewVertLog(ticksMajor[i]);
 			}
 			x = viewLeft;
-			g.drawLine(x, y, x + TICK_MAJOR, y);
+			g.drawLine(x, y, x + graphLayout.TICK_MAJOR, y);
 			x = viewRight;
-			g.drawLine(x, y, x - TICK_MAJOR, y);
+			g.drawLine(x, y, x - graphLayout.TICK_MAJOR, y);
 		}
 	}
 
@@ -471,7 +501,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 			final String label = Integer.toString(ticksMajor[i]);
 			final int offset = fm.stringWidth(label); //length of string
 			final int x = toViewHorzLin(ticksMajor[i]) - offset / 2;
-			final int y = viewBottom + fm.getAscent() + LABEL_OFFSET_BOTTOM;
+			final int y = viewBottom + fm.getAscent() + graphLayout.LABEL_OFFSET_BOTTOM;
 			g.drawString(label, x, y);
 		}
 	}
@@ -496,7 +526,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 			} else {
 				y += toViewVertLog(ticksMajor[i]);
 			}
-			final int x = viewLeft - offset - LABEL_OFFSET_LEFT;
+			final int x = viewLeft - offset - graphLayout.LABEL_OFFSET_LEFT;
 			g.drawString(label, x, y);
 		}
 	}
@@ -527,7 +557,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	private void axisLabelBottom(String label) {
 		final int offset = fm.stringWidth(label);
 		final int x = viewMiddle().x - offset / 2;
-		final int y = viewBottom + fm.getAscent() + AXIS_LABEL_OFFSET_BOTTOM;
+		final int y = viewBottom + fm.getAscent() + graphLayout.AXIS_LABEL_OFFSET_BOTTOM;
 		g.drawString(label, x, y);
 	}
 
@@ -542,7 +572,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final double ninetyDeg = -Math.PI * 0.5;
 		final int offset = fm.stringWidth(label);
 		final int y = viewMiddle().y + offset / 2;
-		final int x = viewLeft - AXIS_LABEL_OFFSET_LEFT;
+		final int x = viewLeft - graphLayout.AXIS_LABEL_OFFSET_LEFT;
 		final AffineTransform original = g.getTransform();
 		g.translate(x, y);
 		g.rotate(ninetyDeg);
@@ -744,20 +774,20 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int textHeight = (fm.getAscent());
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
-		g.drawString(label, viewRight + COLOR_SCALE_OFFSET + COLOR_SCALE_SIZE
-				+ COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
+		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
+				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
 		for (int k = 0; k < numberColors; k++) {
 			label = Integer.toString(colorThresholds[k]);
-			g.drawString(label, viewRight + COLOR_SCALE_OFFSET
-					+ COLOR_SCALE_SIZE + COLOR_SCALE_LABEL_OFFSET, viewBottom
-					- COLOR_SCALE_SIZE - k * COLOR_SCALE_SIZE + textHeight / 2);
+			g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET
+					+ graphLayout.COLOR_SCALE_SIZE + graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
+					- graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
 		}
 		/* draw colors on side */
 		for (int k = 0; k < numberColors; k++) {
 			g.setColor(colors[k]);
-			g.fillRect(viewRight + COLOR_SCALE_OFFSET, //horizontal
-					viewBottom - COLOR_SCALE_SIZE - k * COLOR_SCALE_SIZE, //vertical
-					COLOR_SCALE_SIZE, COLOR_SCALE_SIZE); //size
+			g.fillRect(viewRight + graphLayout.COLOR_SCALE_OFFSET, //horizontal
+					viewBottom - graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE, //vertical
+					graphLayout.COLOR_SCALE_SIZE, graphLayout.COLOR_SCALE_SIZE); //size
 		}
 	}
 
@@ -773,18 +803,18 @@ class PlotGraphics implements PlotGraphicsLayout {
 				numberColors, plotLimits.getScale());
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
-		g.drawString(label, viewRight + COLOR_SCALE_OFFSET + COLOR_SCALE_SIZE
-				+ COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
+		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
+				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
 		for (int k = 0; k < numberColors; k++) {
 			label = Integer.toString(colorThresholds[k]);
-			g.drawString(label, viewRight + COLOR_SCALE_OFFSET
-					+ COLOR_SCALE_SIZE + COLOR_SCALE_LABEL_OFFSET, viewBottom
-					- COLOR_SCALE_SIZE - k * COLOR_SCALE_SIZE + textHeight / 2);
+			g.drawString(label, viewRight +graphLayout. COLOR_SCALE_OFFSET
+					+ graphLayout.COLOR_SCALE_SIZE + graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
+					- graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
 		}
 		/* draw colors on side */
-		int scaleHeight = numberColors * COLOR_SCALE_SIZE;
-		int x1 = viewRight + COLOR_SCALE_OFFSET;
-		int x2 = x1 + COLOR_SCALE_SIZE - 1;
+		int scaleHeight = numberColors * graphLayout.COLOR_SCALE_SIZE;
+		int x1 = viewRight + graphLayout.COLOR_SCALE_OFFSET;
+		int x2 = x1 +graphLayout. COLOR_SCALE_SIZE - 1;
 		double level;
 		double lowEnd = Math.max(1.0, lowerLimit);
 		double highEnd = colorThresholds[numberColors - 1];
@@ -1144,21 +1174,21 @@ class PlotGraphics implements PlotGraphicsLayout {
 			y2 = toViewVertLog(count);
 		}
 		//draw the line at least a mark min length
-		if ((y1 - y2) < MARK_MIN_LENGTH) {
-			y2 = viewBottom - MARK_MIN_LENGTH;
+		if ((y1 - y2) < graphLayout.MARK_MIN_LENGTH) {
+			y2 = viewBottom - graphLayout.MARK_MIN_LENGTH;
 		}
 		//are we inside the plot area
 		if (x1 >= viewLeft && x1 <= viewRight) {
 			g.drawLine(x1, y1, x2, y2);
 			String label = "" + channel;
-			g.drawString(label, x2, y2 - MARK_OFFSET);
+			g.drawString(label, x2, y2 - graphLayout.MARK_OFFSET);
 		}
 	}
 
 	void drawPeakLabels(double[][] peaks) {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
-		setFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
+		setFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
 		g.setColor(PlotColorMap.peakLabel);
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
@@ -1186,7 +1216,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final Rectangle r = getRectangleOutline2d(p, p);
 		final String label = "" + p.getX() + "," + p.getY();
 		g.draw(r);
-		g.drawString(label, (int) r.getMaxX() + MARK_OFFSET, r.y - MARK_OFFSET);
+		g.drawString(label, (int) r.getMaxX() + graphLayout.MARK_OFFSET, r.y - graphLayout.MARK_OFFSET);
 	}
 
 	/**
@@ -1398,5 +1428,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 		} else {
 			return (Math.log(LOG_FAKE_ZERO));
 		}
+	}
+	/**
+	 * The screen font
+	 * @return
+	 */
+	Font printFont() {
+		return screenFont;
 	}
 }

@@ -3,13 +3,11 @@ package jam.plot;
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.*;
+import jam.global.ComponentPrintable;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -66,7 +64,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	static final String Y_LABEL_2D = "Channels"; 
 
 	protected static final String NO_HIST_TITLE = "No Histogram";
-
+	/** Number of Histogram to plot */
+	protected int plotHistNumber;
+	
 	protected Scroller scrollbars;
 
 	protected PlotGraphics graph;
@@ -91,6 +91,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	protected double[] counts;
 
 	protected double[][] counts2d;
+	
+	protected boolean hasCounts;
 
 	/* Gate stuff. */
 
@@ -134,9 +136,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	protected int pagedpi;
 
-	protected Font screenFont;
+	//FIXME don't handle change of fonts yet
+	//protected Font screenFont;
 
-	protected Font printFont;
+	//protected Font printFont;
 
 	/* Color mode for screen, one of PlotColorMap options. */
 	protected int colorMode;
@@ -159,8 +162,6 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	protected boolean ignoreChFull;
 
-	Action action;
-
 	protected boolean printing = false;
 
 	protected final Rectangle selectingAreaClip = new Rectangle();
@@ -182,28 +183,20 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	protected boolean pfcal = true;
 
-	protected final JamStatus status = JamStatus.instance();
-
 	/**
 	 * Constructor
 	 */
-	protected AbstractPlot(Action a) {
-		super(false);
-		final String fontclass = "Serif";
-		action = a;
+	protected AbstractPlot() {
+		super(false);			
+
 		setOpaque(true);
 		this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		/* some initial layout stuff */
-		Insets viewBorder = new Insets(PlotGraphics.BORDER_TOP,
-				PlotGraphics.BORDER_LEFT, PlotGraphics.BORDER_BOTTOM,
-				PlotGraphics.BORDER_RIGHT);
-		screenFont = new Font(fontclass, Font.BOLD,
-				(int) PlotGraphicsLayout.SCREEN_FONT_SIZE);
-		printFont = new Font(fontclass, Font.PLAIN,
-				PlotGraphicsLayout.PRINT_FONT_SIZE);
-		graph = new PlotGraphics(this, viewBorder, screenFont);
-		plotMouse = new PlotMouse(graph, action);
+
+		graph = new PlotGraphics(this);
+		//Create plot mouse
+		plotMouse = new PlotMouse(graph);
 		addMouseListener(plotMouse);
+		//Setup preferences
 		initPrefs();
 		prefs.addPreferenceChangeListener(this);
 	}
@@ -213,8 +206,50 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO, true));
 		setColorMode(prefs.getBoolean(BLACK_BACKGROUND, false));
 		setNoFillMode(!prefs.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
+	} 
+	/**
+	 * Udate layout
+	 *
+	 */
+	void setLayout(int type) {
+		graph.setLayout(type);
 	}
-
+	/**
+	 * Set the histogram to plot. If the plot limits are null, make one save all
+	 * neccessary histogram parameters to local variables. Allows general use of
+	 * data set.
+	 */
+	void displayHistogram(Histogram hist) {
+		plotHistNumber=hist.getNumber();
+		if (hist != null) {
+			plotLimits = Limits.getLimits(hist);
+			if (plotLimits == null) {
+				JOptionPane.showMessageDialog(null,
+						"Tried to plot histogram with null Limits.", getClass()
+								.getName(), JOptionPane.ERROR_MESSAGE);
+			}
+			type = hist.getType();
+			sizeX = hist.getSizeX();
+			sizeY = hist.getSizeY();//0 if 1-d
+			if (type.getDimensionality() == 1) {
+				counts = new double[sizeX];
+			} else {//2-d
+				counts2d = new double[sizeX][sizeY];
+			}
+			copyCounts(hist); //copy hist counts
+			/* Limits contains handle to Models */
+			scrollbars.setLimits(plotLimits);
+		} else { //we have a null histogram so fake it
+			counts = new double[100];
+			type = Histogram.Type.ONE_DIM_INT;
+			sizeX = 100;
+			counts2d = null;
+		}
+		displayingGate = false;
+		displayingOverlay = false;
+		displayingFit = false;
+	}
+	
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
@@ -244,8 +279,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	}
 
 	private synchronized final boolean plotDataExists() {
-		final Histogram currentHist = status.getCurrentHistogram();
-		return currentHist != null && currentHist.getCounts() != null;
+		Histogram plotHist=getHistogram();
+		return plotHist != null && plotHist.getCounts() != null;
 	}
 
 	/**
@@ -267,75 +302,42 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 	}
 
-	/**
-	 * Set the histogram to plot. If the plot limits are null, make one save all
-	 * neccessary histogram parameters to local variables. Allows general use of
-	 * data set.
-	 */
-	void displayHistogram(Histogram hist) {
-		if (hist != null) {
-			plotLimits = Limits.getLimits(hist);
-			if (plotLimits == null) {
-				JOptionPane.showMessageDialog(null,
-						"Tried to plot histogram with null Limits.", getClass()
-								.getName(), JOptionPane.ERROR_MESSAGE);
-			}
-			type = hist.getType();
-			sizeX = hist.getSizeX();
-			sizeY = hist.getSizeY();//0 if 1-d
-			if (type.getDimensionality() == 1) {
-				counts = new double[sizeX];
-			} else {//2-d
-				counts2d = new double[sizeX][sizeY];
-			}
-			copyCounts(); //copy hist counts
-			/* Limits contains handle to Models */
-			scrollbars.setLimits(plotLimits);
-		} else { //we have a null histogram so fake it
-			counts = new double[100];
-			type = Histogram.Type.ONE_DIM_INT;
-			sizeX = 100;
-			counts2d = null;
-		}
-		displayingGate = false;
-		displayingOverlay = false;
-		displayingFit = false;
-	}
 
 	/**
 	 * Show the setting of a gate mode are we starting a new gate or continue or
 	 * saving on
 	 */
 	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
-
+	
+	abstract void overlayHistograms(List overlayHists);
 	/**
 	 * Copies the counts into the local array--needed by scroller.
 	 */
-	final void copyCounts() {
-		final Histogram currentHist = status.getCurrentHistogram();
+	final void copyCounts(Histogram hist) {
+		
 		if (type == Histogram.Type.ONE_DIM_INT) {
-			int[] temp = (int[]) currentHist.getCounts();
+			int[] temp = (int[]) hist.getCounts();
 			/*
-			 * NOT System.arraycopy() because of array type difference
+			 * NOT System.arraycopy() because of array type dissfference
 			 */
 			for (int i = 0; i < temp.length; i++) {
 				counts[i] = temp[i];
 			}
 		} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
-			System.arraycopy((double[]) currentHist.getCounts(), 0, counts, 0,
-					currentHist.getSizeX());
+			System.arraycopy((double[]) hist.getCounts(), 0, counts, 0,
+					hist.getSizeX());
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
-			int[][] counts2dInt = (int[][]) currentHist.getCounts();
-			for (int i = 0; i < currentHist.getSizeX(); i++) {
-				for (int j = 0; j < currentHist.getSizeY(); j++) {
+			int[][] counts2dInt = (int[][]) hist.getCounts();
+			for (int i = 0; i < hist.getSizeX(); i++) {
+				for (int j = 0; j < hist.getSizeY(); j++) {
 					counts2d[i][j] = counts2dInt[i][j];
 				}
 			}
 		} else if (type == Histogram.Type.TWO_DIM_DOUBLE) {
-			double[][] counts2dDble = (double[][]) currentHist.getCounts();
-			for (int i = 0; i < currentHist.getSizeX(); i++) {
+			double[][] counts2dDble = (double[][]) hist.getCounts();
+			for (int i = 0; i < hist.getSizeX(); i++) {
 				System.arraycopy(counts2dDble[i], 0, counts2d[i], 0,
-						currentHist.getSizeY());
+						hist.getSizeY());
 			}
 		}
 	}
@@ -539,7 +541,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * counts before refreshing.
 	 */
 	final void autoCounts() {
-		copyCounts();
+		//FIXME KBS copyCounts();
 		plotLimits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
 			plotLimits.setMaximumCounts(110 * findMaximumCounts() / 100);
@@ -574,7 +576,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			/* scroll bars do not always reset on their own */
 			scrollbars.update(Scroller.ALL);
 		}
-		copyCounts();
+		Histogram plotHist=getHistogram();
+		copyCounts(plotHist);
 		repaint();
 	}
 
@@ -583,15 +586,21 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * longer shown.
 	 */
 	void update() {
+		reset();
+		refresh();
+	}
+	/**
+	 * Reset state 
+	 *
+	 */
+	void reset() {
 		displayingGate = false;
 		displayingFit = false;
 		displayingOverlay = false;
 		selectingArea = false;
 		markArea = false;
-		setMarkingChannels(false);
-		refresh();
+		setMarkingChannels(false);		
 	}
-
 	void setDisplayingGate(boolean dg) {
 		synchronized (this) {
 			displayingGate = dg;
@@ -633,11 +642,12 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (printing) { //output to printer
-			graph.setFont(printFont);
+			//FIXME KBS font not set
+			//graph.setFont(printFont);
 			PlotColorMap.setColorMap(PlotColorMap.PRINT);
 			graph.setView(pageformat);
 		} else { //output to screen
-			graph.setFont(screenFont);
+			//graph.setFont(screenFont);
 			PlotColorMap.setColorMap(colorMode);
 			graph.setView(null);
 		}
@@ -650,10 +660,11 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		 * give graph all pertinent info, draw outline, tickmarks, labels, and
 		 * title
 		 */
-		Histogram currentHist = status.getCurrentHistogram();
-		if (currentHist != null) {
+
+		Histogram plotHist=getHistogram();
+		if (plotHist != null) {
 			paintHeader(g);
-			if (binWidth > currentHist.getSizeX()) {
+			if (binWidth > plotHist.getSizeX()) {
 				binWidth = 1.0;
 				warning("Bin width > hist size, so setting bin width back to 1.");
 			}
@@ -715,13 +726,14 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 *             <code>Gate</code>
 	 */
 	synchronized void displayGate(Gate gate) {
-		Histogram currentHist = status.getCurrentHistogram();
-		if (currentHist != null && currentHist.hasGate(gate)) {
+
+		Histogram plotHist=getHistogram();
+		if (plotHist != null && plotHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
 			repaint();
 		} else {
-			error("Can't display '" + gate + "' on histogram '" + currentHist
+			error("Can't display '" + gate + "' on histogram '" + plotHist
 					+ "'.");
 		}
 	}
@@ -866,7 +878,13 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 		setBackground(PlotColorMap.background);
 	}
-
+	//Plot mouse methods
+	/**
+	 * Add plot select listener
+	 */
+	void addPlotSelectListener(PlotSelectListener plotSelectListener) {
+		plotMouse.addPlotSelectListener(plotSelectListener);
+	}
 	/**
 	 * Add a mouse listener.
 	 */
@@ -880,7 +898,14 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	void removePlotMouseListener(PlotMouseListener listener) {
 		plotMouse.removeListener(listener);
 	}
-
+	/**
+	 * Remove all plot mouse listeners
+	 *
+	 */
+	void removeAllPlotMouseListeners() {
+		plotMouse.removeAllListeners();
+	}
+	//End Plot mouse methods	
 	/**
 	 * Get the plot graphics for this plot need for plot mouse
 	 */
@@ -962,6 +987,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		return sizeY;
 	}
 
+	Histogram getHistogram(){
+		return Histogram.getHistogram(plotHistNumber);
+	}
+		
 	/**
 	 * Not used.
 	 * 

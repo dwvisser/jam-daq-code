@@ -39,7 +39,7 @@ class Scroller
 	static final double CHANGE_LIN = 0.01; //change  1% for 1
 	static final double CHANGE_QUAD = 0.000; //change  x10 for 100 units
 
-	private final Plot plot;
+	private final AbstractPlot plot;
 	private final boolean isPlot2d;
 
 	private final JScrollBar scrollHorz, scrollVert, scrollCount;
@@ -67,12 +67,12 @@ class Scroller
 	 * 
 	 * @param plot the plot that uses this scroller
 	 */
-	Scroller(Plot plot) {
+	Scroller(AbstractPlot plot) {
 		this.plot = plot;
-		if (plot instanceof Plot2d) {
-			isPlot2d = true;
-		} else {
+		if (plot instanceof Plot1d) {
 			isPlot2d = false;
+		} else {
+			isPlot2d = true;
 		}
 		this.setLayout(new BorderLayout());
 		//add scroll bars to plot
@@ -148,7 +148,7 @@ class Scroller
 		}
 		//update the plot can't use refresh as it resets count scroller
 		if (updatePlot) {
-			plot.copyCounts();
+			//FIXME KBS plot.copyCounts();
 			plot.repaint();
 		}
 	}

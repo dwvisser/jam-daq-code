@@ -26,7 +26,7 @@ import javax.swing.SwingUtilities;
  * @see jam.plot.Plot
  * @author Ken Swartz
  */
-class Plot1d extends Plot {
+class Plot1d extends AbstractPlot {
 
 	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
 
@@ -38,14 +38,14 @@ class Plot1d extends Plot {
 
 	private Map countsOverlay = Collections.synchronizedMap(new HashMap());
 
-	/**
+	/**ss
 	 * Constructor.
 	 * 
 	 * @param a
 	 *            the
 	 */
-	Plot1d(Action a) {
-		super(a);
+	Plot1d() {
+		super();
 		setPeakFind(prefs.getBoolean(AUTO_PEAK_FIND, true));
 	}
 	
@@ -56,7 +56,7 @@ class Plot1d extends Plot {
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms() {
+	void overlayHistograms(List overlayHists) {
 		displayingOverlay = true;
 		/* retain any items in list in the map */
 		countsOverlay.keySet().retainAll(overlayHists);
@@ -215,7 +215,7 @@ class Plot1d extends Plot {
 	 * @param p2
 	 *            the other limit
 	 */
-	void markArea(Bin p1, Bin p2) {
+	public void markArea(Bin p1, Bin p2){
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 			if (markArea) {
@@ -244,36 +244,36 @@ class Plot1d extends Plot {
 	 * labels and last but not least update the scrollbars
 	 */
 	protected void paintHistogram(Graphics g) {
-		final Histogram hist = status.getCurrentHistogram();
-		if (hist.getDimensionality() != 1) {
+		Histogram plotHist=getHistogram();
+		if (plotHist.getDimensionality() != 1) {
 			return;//not sure how this happens, but need to check
 		}
 		g.setColor(PlotColorMap.hist);
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
-			graph.drawPeakLabels(hist.findPeaks(sensitivity, width, pfcal));
+			graph.drawPeakLabels(plotHist.findPeaks(sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
-		graph.drawTitle(hist.getTitle(), PlotGraphics.TOP);
+		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
 		final int len = displayingOverlay ? overlayHists.size() : 0;
 		final int[] overlays = new int[len];
 		for (int i = 0; i < len; i++) {
 			overlays[i] = ((Integer) overlayHists.get(i)).intValue();
 		}
-		graph.drawNumber(hist.getNumber(), overlays);
+		graph.drawNumber(plotHist.getNumber(), overlays);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
-		final String axisLabelX = hist.getLabelX();
+		final String axisLabelX = plotHist.getLabelX();
 		if (axisLabelX != null) {
 			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		} else {
 			graph.drawAxisLabel(X_LABEL_1D, PlotGraphics.BOTTOM);
 		}
-		final String axisLabelY = hist.getLabelY();
+		final String axisLabelY = plotHist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {
@@ -287,23 +287,6 @@ class Plot1d extends Plot {
 		autoPeakFind = which;
 	}
 
-	private double sensitivity = 3;
-
-	void setSensitivity(double val) {
-		sensitivity = val;
-	}
-
-	private double width = 12;
-
-	void setWidth(double val) {
-		width = val;
-	}
-
-	private boolean pfcal = true;
-
-	void setPeakFindDisplayCal(boolean which) {
-		pfcal = which;
-	}
 
 	/**
 	 * Draw a overlay of another data set
@@ -370,14 +353,14 @@ class Plot1d extends Plot {
 	/**
 	 * Get the counts in a X channel, Y channel ignored.
 	 */
-	double getCount(Bin p) {
+	protected double getCount(Bin p) {
 		return counts[p.getX()];
 	}
 
 	/**
 	 * Get the array of counts for the current histogram
 	 */
-	double[] getCounts() {
+	protected Object getCounts() {
 		return counts;
 	}
 
@@ -426,16 +409,17 @@ class Plot1d extends Plot {
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
-	double getEnergy(double channel) {
-		return status.getCurrentHistogram().getCalibration()
-				.getCalculatedEnergy(channel);
+	public double getEnergy(double channel) {
+		Histogram plotHist=getHistogram();
+		return plotHist.getCalibration().getCalculatedEnergy(channel);
 	}
 
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	int getChannel(double energy) {
-		return (int) Math.round(status.getCurrentHistogram().getCalibration()
+		Histogram plotHist=getHistogram();
+		return (int) Math.round(plotHist.getCalibration()
 				.getChannel(energy));
 	}
 

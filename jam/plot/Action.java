@@ -165,11 +165,16 @@ class Action implements ActionListener, PlotMouseListener,
 	 * Set the current plot, i.e., the one we will do actions on. Reset the
 	 * current state.
 	 */
-	synchronized void setPlotChanged() {
+	synchronized void plotChanged() {
 		settingGate = false;
 		overlayState = false;
+		commandPresent = false;
+		mousePressed = false;
+		inCommand = null;
+		clicks.clear();
+		rangeList.clear();		
 	}
-
+	
 	/**
 	 * Routine called by pressing a button on the action toolbar.
 	 * 
@@ -362,10 +367,10 @@ class Action implements ActionListener, PlotMouseListener,
 					coord = cursor.getCoordString();
 				}
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				//if (currentPlot instanceof Plot1d) {
 					if (hist.isCalibrated()) {
-						final Plot1d plot1d = (Plot1d) currentPlot;
-						final double energy = plot1d.getEnergy(xch);
+						final Plot plot = (Plot) currentPlot;
+						final double energy = plot.getEnergy(xch);
 						textOut.messageOutln("Bin " + xch + ":  Counts = "
 								+ numFormat.format(count) + "  Energy = "
 								+ numFormat.format(energy));
@@ -373,10 +378,10 @@ class Action implements ActionListener, PlotMouseListener,
 						textOut.messageOutln("Bin " + xch + ":  Counts = "
 								+ numFormat.format(count));
 					}
-				} else {
-					textOut.messageOutln("Bin " + coord + ":  Counts = "
-							+ numFormat.format(count));
-				}
+				//} else {
+				//	textOut.messageOutln("Bin " + coord + ":  Counts = "
+				//			+ numFormat.format(count));
+				//} 
 				done();
 			}
 		}
@@ -416,7 +421,7 @@ class Action implements ActionListener, PlotMouseListener,
 		}
 		/* we have a 1 d plot */
 		final Plot currentPlot = display.getPlot();
-		if (currentPlot instanceof Plot1d) {
+		if (currentPlot.getType()==Plot.TYPE_1D) {
 			if (commandPresent) {
 				final int loopMax = Math.min(numPar, 2);
 				for (int i = 0; i < loopMax; i++) {
@@ -474,7 +479,7 @@ class Action implements ActionListener, PlotMouseListener,
 	 */
 	private void update() {
 		broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
-		display.getPlot().update();
+		display.update();
 		done();
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
@@ -568,7 +573,7 @@ class Action implements ActionListener, PlotMouseListener,
 					textOut.errorOutln(h.getName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
 				} else {
-					display.addToOverlay(num);
+					display.overlayHistogram(num);
 					textOut.messageOut(Integer.toString(num) + ' ',
 							MessageHandler.CONTINUE);
 				}
@@ -653,15 +658,13 @@ class Action implements ActionListener, PlotMouseListener,
 		} else {
 			currentPlot.setSelectingArea(false);
 			final Bin lim1 = getClick(0);
-			if (currentPlot instanceof Plot1d) {
+			if (currentPlot.getType()==Plot.TYPE_1D) {
 				synchronized (cursor) {
 					textOut.messageOut(String.valueOf(cursor.getX()));
-					final double area = inquire.getArea(((Plot1d) currentPlot)
-							.getCounts(), lim1, cursor);
-					final double centroid = inquire.getCentroid(
-							((Plot1d) currentPlot).getCounts(), lim1, cursor);
-					final double fwhm = inquire.getFWHM(((Plot1d) currentPlot)
-							.getCounts(), lim1, cursor);
+					double [] counts =(double [])currentPlot.getCounts();
+					final double area = inquire.getArea(counts, lim1, cursor);
+					final double centroid = inquire.getCentroid(counts, lim1, cursor);
+					final double fwhm = inquire.getFWHM(counts, lim1, cursor);
 					currentPlot.markChannel(cursor);
 					currentPlot.markArea(lim1, cursor);
 					textOut.messageOut(":  Area = " + numFormat.format(area)
@@ -672,8 +675,8 @@ class Action implements ActionListener, PlotMouseListener,
 			} else {//2D histogram
 				synchronized (cursor) {
 					textOut.messageOut(cursor.getCoordString());
-					final double area = inquire.getArea(((Plot2d) currentPlot)
-							.getCounts(), lim1, cursor);
+					double [][] counts =(double [][])currentPlot.getCounts();
+					final double area = inquire.getArea(counts, lim1, cursor);
 					currentPlot.markChannel(cursor);
 					currentPlot.markArea(lim1, cursor);
 					textOut.messageOut(":  Area = " + numFormat.format(area),
@@ -713,7 +716,7 @@ class Action implements ActionListener, PlotMouseListener,
 			synchronized (cursor) {
 				addClick(cursor);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					textOut.messageOut(
 							crt + "Background " + cursor.getX() + " to ",
 							MessageHandler.CONTINUE);
@@ -729,7 +732,7 @@ class Action implements ActionListener, PlotMouseListener,
 				addClick(cursor);
 				final Bin p1 = getClick(0);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					currentPlot.markArea(p1, cursor);
 					textOut.messageOut(Integer.toString(cursor.getX()));
 				} else {
@@ -743,7 +746,7 @@ class Action implements ActionListener, PlotMouseListener,
 			synchronized (cursor) {
 				addClick(cursor);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					textOut.messageOut(" and " + cursor.getX() + " to ");
 
 				} else {
@@ -758,7 +761,7 @@ class Action implements ActionListener, PlotMouseListener,
 				addClick(cursor);
 				final Bin p1 = getClick(2);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					currentPlot.markArea(p1, cursor);
 					textOut.messageOut(String.valueOf(cursor.getX()),
 							MessageHandler.CONTINUE);
@@ -774,7 +777,7 @@ class Action implements ActionListener, PlotMouseListener,
 				currentPlot.initializeSelectingArea(cursor);
 				addClick(cursor);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					textOut.messageOut("." + crt + "Peak " + cursor.getX()
 							+ " to ", MessageHandler.CONTINUE);
 				} else {
@@ -792,7 +795,7 @@ class Action implements ActionListener, PlotMouseListener,
 				addClick(cursor);
 				p4 = getClick(4);
 				currentPlot.markChannel(cursor);
-				if (currentPlot instanceof Plot1d) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
 					currentPlot.markArea(p4, cursor);
 					textOut.messageOut(cursor.getX() + ". ",
 							MessageHandler.CONTINUE);
@@ -801,21 +804,20 @@ class Action implements ActionListener, PlotMouseListener,
 							MessageHandler.CONTINUE);
 				}
 			}
-			final double grossArea = inquire.getArea(((Plot1d) currentPlot)
-					.getCounts(), p4, cursor);
+			double [] counts = (double [])currentPlot.getCounts();
+			final double grossArea = inquire.getArea(counts, p4, cursor);
 			final Bin[] passClicks = new Bin[clicks.size()];
 			clicks.toArray(passClicks);
 			/* results of next call are passed back in the parameters */
 			inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
 					centroid, centroidError, passClicks, grossArea, currentPlot
-							.getSizeX(), ((Plot1d) currentPlot).getCounts());
+							.getSizeX(), counts);
 			if (hist.isCalibrated()) {
-				final Plot1d plot1d = (Plot1d) currentPlot;
-				centroid[0] = plot1d.getEnergy(centroid[0]);
-				fwhm[0] = plot1d.getEnergy(fwhm[0]);
-				fwhm[1] = plot1d.getEnergy(0.0);
-				centroidError[0] = plot1d.getEnergy(centroidError[0]);
-				centroidError[1] = plot1d.getEnergy(0.0);
+				centroid[0] = currentPlot.getEnergy(centroid[0]);
+				fwhm[0] = currentPlot.getEnergy(fwhm[0]);
+				fwhm[1] = currentPlot.getEnergy(0.0);
+				centroidError[0] = currentPlot.getEnergy(centroidError[0]);
+				centroidError[1] = currentPlot.getEnergy(0.0);
 				fwhm[0] = fwhm[0] - fwhm[1];
 				centroidError[0] = centroidError[0] - centroidError[1];
 			}
@@ -854,7 +856,7 @@ class Action implements ActionListener, PlotMouseListener,
 	}
 
 	/**
-	 * Zoom out on the histogram.
+	 * Zoom out on the histogram. 
 	 */
 	private void zoomout() {
 		final Plot currentPlot = display.getPlot();
@@ -917,7 +919,7 @@ class Action implements ActionListener, PlotMouseListener,
 		final Histogram hist=status.getCurrentHistogram();
 		if (!commandPresent) {
 			init();
-			if (currentPlot instanceof Plot1d && hist.isCalibrated()) {
+			if (currentPlot.getType()==Plot.TYPE_1D&& hist.isCalibrated()) {
 				final String mess = new StringBuffer(intro).append(cal).append(
 						sp).append(en).append(lp).append(sp).toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
@@ -934,20 +936,18 @@ class Action implements ActionListener, PlotMouseListener,
 				if (!hist.isCalibrated()) {
 					output.append(ch).append(eq).append(x);
 				} else {
-					if (currentPlot instanceof Plot1d) {
-						final Plot1d plot1d = (Plot1d) currentPlot;
+					if (currentPlot.getType()==Plot.TYPE_1D) {
 						output.append(en).append(eq)
-								.append(plot1d.getEnergy(x)).append(sep)
+								.append(currentPlot.getEnergy(x)).append(sep)
 								.append(ch).append(eq).append(x);
 					}
 				}
-				if (currentPlot instanceof Plot1d) {
-					final Plot1d plot1d = (Plot1d) currentPlot;
-					if (!mousePressed) {
+				if (currentPlot.getType()==Plot.TYPE_1D) {
+					if (!mousePressed) {	//FIXME KBS
 						if (hist.isCalibrated()) {
 							output = new StringBuffer(en).append(eq).append(x);
 							synchronized (this) {
-								x = plot1d.getChannel(x);
+								x = currentPlot.getChannel(x);
 								if (x > currentPlot.getSizeX()) {
 									x = currentPlot.getSizeX() - 1;
 								}
@@ -990,11 +990,12 @@ class Action implements ActionListener, PlotMouseListener,
 			commandPresent = false;
 			mousePressed = false;
 			inCommand = null;
-			display.getPlot().setSelectingArea(false);
 			clicks.clear();
 			rangeList.clear();
+			display.getPlot().setSelectingArea(false);			
 		}
 	}
+	
 
 	/**
 	 * Sets whether expand/zoom also causes an auto-scale.
