@@ -75,7 +75,7 @@ package jam.fit;
      * @exception   FitException	    thrown if something goes wrong in the fit
      */
     public String doFit() throws FitException{
-    	double s,sx,sxx,sy,sxy,syy;
+    	double s,sx,sy,syy;
     	double var;//variance for current channel
     	double peakArea,totalArea,bkgdArea;
     	int lc=getParameter("Low Channel").getIntValue();
@@ -89,7 +89,7 @@ package jam.fit;
 		LowPeak.setValue(lp);
 		HighPeak.setValue(hp);
 		HighChannel.setValue(hc);		
-    	s=0.0;sx=0.0;sxx=0.0;sy=0.0;sxy=0.0;syy=0.0;
+    	s=0.0;sx=0.0;sy=0.0;syy=0.0;
     	if (B.isFixed()){//flat background
     		for (int i=lc;i<=hc; i++) {
     			sy += counts[i];
@@ -109,17 +109,10 @@ package jam.fit;
     			var = counts[i]>0 ? counts[i] : 1.0;
     			s += 1.0/var;
     			sx += i/var;
-    			//sxx += i*i/var;
     			sy += counts[i] / var;
-    			//sxy += counts[i]*i/var;
     			if (i==lp-1) i = hp;
     		}
     		double xbar = sx/s;
-    		/*double del = s*sxx-sx*sx;
-    		double a = (sxx*sy-sx*sxy)/del;
-    		double b = (s*sxy-sx*sy)/del;
-    		double da = sxx/del;
-    		double db = s/del;*/
     		double st2=0.0; double b=0.0;
     		for (int i=lc;i<=hc; i++) {
     			double sigma = counts[i]>0 ? Math.sqrt(counts[i]) : 1.0;
