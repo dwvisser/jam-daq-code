@@ -275,7 +275,7 @@ public final class SpectrographExample extends SortRoutine {
 		/*
 		 * unpack data into convenient names
 		 */
-		int eCthd = dataEvent[idCthd];
+		final int eCthd = dataEvent[idCthd];
 		final int SCINTR = dataEvent[idScintR];
 		final int SCINTL = dataEvent[idScintL];
 		final int FPOS = dataEvent[idFrntPsn];

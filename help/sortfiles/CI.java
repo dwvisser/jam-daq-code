@@ -122,11 +122,11 @@ public class CI extends SortRoutine {
 	 */
 	public void sort(int[] data) {
 		/** * EXTRACT DATA FROM ARRAY ** */
-		int eGe = data[idGe];
-		int eNaI = data[idNaI];
-		int eTAC = data[idTAC];
-		int ecGe = eGe >> TWO_D_FACTOR;//bit-shifts are faster than division
-		int ecNaI = eNaI >> TWO_D_FACTOR;
+		final int eGe = data[idGe];
+		final int eNaI = data[idNaI];
+		final int eTAC = data[idTAC];
+		final int ecGe = eGe >> TWO_D_FACTOR;//bit-shifts are faster than division
+		final int ecNaI = eNaI >> TWO_D_FACTOR;
 
 		/** * INCREMENT UNGATED SPECTRA ** */
 		hGe.inc(eGe);
