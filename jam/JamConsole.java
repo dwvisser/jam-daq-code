@@ -124,7 +124,7 @@ public class JamConsole
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
-		final int defaultNumLines = 5;
+		final int defaultNumLines = 8;
 		final int lineHeight = textLog.getFontMetrics(
 		textLog.getFont()).getHeight();
 		final int logHeight=lineHeight*defaultNumLines;
