@@ -154,10 +154,9 @@ public final class MultipleFileChooser extends JPanel {
 	 * @param extension file extension
 	 * @param extensionName label for file type
 	 */
-	public void setFileFilter(String extensionName, String extension) {
-		final String [] extensions = {extension};
-		fileFilter =new ExtensionFileFilter(extensions ,
-						extensionName+"(*."+extension+")");
+	public void setFileFilter(String extensionName, String extension) {	
+		fileFilter =new ExtensionFileFilter(extension ,
+						extensionName);
 	}
 
 	/**
@@ -289,16 +288,17 @@ public final class MultipleFileChooser extends JPanel {
 	 */
 	private void selectFile(boolean selectFileOnly) {
 		int chooserMode;
-		
+
+		final JFileChooser fd = new JFileChooser(lastFile);		
 		if (selectFileOnly) {
-			chooserMode=JFileChooser.FILES_ONLY;			
+			chooserMode=JFileChooser.FILES_ONLY;
+			fd.setMultiSelectionEnabled(true);			
 		} else {
 			chooserMode=JFileChooser.DIRECTORIES_ONLY;
-		}
-		
-		final JFileChooser fd = new JFileChooser(lastFile);
+			fd.setMultiSelectionEnabled(false);			
+		}		
 		fd.setFileSelectionMode(chooserMode);
-		//fd.setMultiSelectionEnabled(true);
+
 		//fd.setFileFilter(fileFilter));
 		if (selectFileOnly){
 		    fd.setFileFilter(fileFilter);
@@ -308,16 +308,21 @@ public final class MultipleFileChooser extends JPanel {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
 		    if (selectFileOnly){				
-				File [] files =fd.getSelectedFiles();
-		    	for (int i=0; i<files.length;i++ ) {
-		    		listFilesModel.addElement(files[i]);
-		       }
-		     addFile(fd.getSelectedFile());
+		    	if (fd.isMultiSelectionEnabled()) {
+		    		File [] files =fd.getSelectedFiles();
+		    		for (int i=0; i<files.length;i++ ) {
+		    			listFilesModel.addElement(files[i]);
+		    		}
+		    	}else {
+		    		addFile(fd.getSelectedFile());
+		    	}
 		    } else {
 				lastFile = fd.getSelectedFile(); //save current directory
 				addDirFiles(lastFile);
 		    }
+		    listFiles.setSelectedIndex(0);
 		}
+		
 	}
 	
 	/**
