@@ -100,6 +100,7 @@ public final class JamStatus {
 	 * here
 	 *  
 	 * @param mode sort mode
+	 * @param sortName the name of the current sort (?)
 	 * @throws UnsupportedOperationException if we can't change mode
 	 */
 	public void setSortMode(SortMode mode, String sortName) {
@@ -128,6 +129,11 @@ public final class JamStatus {
 		broadcaster.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
 	
+	/**
+	 * Set the current run state.
+	 * 
+	 * @param rs new run state
+	 */
 	public void setRunState(RunState rs){
 		broadcaster.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,rs);
 	}
@@ -192,13 +198,19 @@ public final class JamStatus {
 
 	/**
 	 * Returns whether online acquisition is set up.
+	 * 
+	 * @return whether online acquisition is set up
 	 */
-	public boolean isOnLine() {
-		return acqStatus.isOnLine();
+	public boolean isOnline() {
+	    synchronized (sortMode){
+	        return sortMode.isOnline();
+	    }
 	}
 
 	/**
 	 * Returns whether data is currently being taken.
+	 * 
+	 * @return whether data is currently being taken
 	 */
 	public boolean isAcqOn() {
 		return acqStatus.isAcqOn();
@@ -254,11 +266,10 @@ public final class JamStatus {
 	 * Gets the current date and time as a String.
 	 */
 	public String getDate() {
-		Date date = new Date(); //getDate and time
-		DateFormat datef = DateFormat.getDateTimeInstance(); //default format
+		final Date date = new Date(); //getDate and time
+		final DateFormat datef = DateFormat.getDateTimeInstance(); //default format
 		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		String sdate = datef.format(date); //format date
-		return sdate;
+		return datef.format(date); //format date
 	}
 	
 	public synchronized void setMessageHandler(MessageHandler mh){
@@ -277,6 +288,5 @@ public final class JamStatus {
 	
 	public synchronized FrontEndCommunication getFrontEndCommunication(){
 		return frontEnd;
-		
 	}
 }

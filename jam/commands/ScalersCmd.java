@@ -46,7 +46,7 @@ final class ScalersCmd extends AbstractCommand {
 	 * Does the scaler reading.
 	 */
 	private void readScalers() {
-		if (status.isOnLine()){
+		if (status.isOnline()){
 			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} 		
 	}

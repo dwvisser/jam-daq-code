@@ -71,7 +71,7 @@ public class ScalerZero extends AbstractControl {
 	 * the class that will zero the camac crate scalers.
 	 */
 	static void zero() {
-		if (!STATUS.isOnLine()) {
+		if (!STATUS.isOnline()) {
 			throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
