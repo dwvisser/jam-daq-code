@@ -22,14 +22,18 @@ import jam.data.Histogram;
 public class HistogramListCellRenderer implements ListCellRenderer {
 	
 	final JLabel gateIcon;
+	final JLabel gateNotSetIcon;
 	
 	public HistogramListCellRenderer(){
 		super();
 		final ClassLoader cl=getClass().getClassLoader();
-		final ImageIcon ii=new 
+		ImageIcon ii=new 
 		ImageIcon(cl.getResource("jam/gate.png"));
 		ii.setDescription("[contains gate(s)]");
 		gateIcon=new JLabel(ii);
+		ii=new ImageIcon(cl.getResource("jam/gatenotset.png"));
+		ii.setDescription("[at least one gate is not set]");
+		gateNotSetIcon=new JLabel(ii);
 	}
 
 	/* (non-Javadoc)
@@ -66,16 +70,15 @@ public class HistogramListCellRenderer implements ListCellRenderer {
 			} else {//display a gate icon too
 				final JPanel east=new JPanel();
 				east.setLayout(new BoxLayout(east,BoxLayout.X_AXIS));
-				east.add(gateIcon);
-				east.add(ltype);
-				/*String tooltip="";
-				final int max=g.length-1;
-				for (int i=0; i<max; i++){
-					final String comma=", ";
-					tooltip += g[i].getName()+comma;
+				Component icon=gateIcon;
+				for (int i=0; i<g.length; i++){
+					if (!g[i].isDefined()){
+						icon=gateNotSetIcon;
+						break;
+					}
 				}
-				tooltip += g[max].getName();
-				east.setToolTipText(tooltip);*/
+				east.add(icon);
+				east.add(ltype);
 				rval.add(east,BorderLayout.EAST);
 			}
 		}
