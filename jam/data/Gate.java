@@ -162,11 +162,11 @@ public final class Gate implements Serializable {
 	}
 
 	/**
-	 * Returns the type of <code>Gate</code>.
+	 * Returns the dimensionality  of this <code>Gate</code>, which
+	 * is the same as its associated <code>Histogram</code>.
 	 *
-	 * @return either <code>ONE_DIMENSION</code> or <code>TWO_DIMENSION</code>
-	 * @see #ONE_DIMENSION
-	 * @see #TWO_DIMENSION
+	 * @return either 1 or 2
+	 * @see Histogram#getDimensionality()
 	 */
 	public int getDimensionality() {
 		return dimensions;
