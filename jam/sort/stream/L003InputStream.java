@@ -1,7 +1,8 @@
 package jam.sort.stream;
-import java.io.*;
-import java.util.*;
 import jam.global.MessageHandler;
+
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  * This class knows how to handle Oak Ridge tape format (with special headers as
@@ -117,13 +118,11 @@ public class L003InputStream
 			}
 			// we got to the end of a file
 		} catch (EOFException eof) {
-			System.out.println("EOFException " + eof.getMessage());
+			showErrorMessage(eof);
 			parameterSuccess = false;
 			status = EventInputStatus.END_FILE;
-
-			//catch error which hopefully a ascii scaler dump try to read it in	    
 		} catch (IOException ioe) {
-			System.out.println("IOException " + ioe.getMessage());
+			showErrorMessage(ioe);
 			parameterSuccess = scalerRead();
 			if (parameterSuccess) {
 				status = EventInputStatus.END_BUFFER;
@@ -134,13 +133,12 @@ public class L003InputStream
 		}
 		return parameterSuccess;
 	}
+	
 	/**
 	 * read in a scaler dump
 	 * this is a 32000 byte ascii record
 	 */
-	public boolean scalerRead() throws IOException {
-		//XXXSystem.out.println("Read scaler dump");
-
+	private boolean scalerRead() throws IOException {
 		boolean readStatus = true;
 		byte[] scalerDump = new byte[SCALER_BUFFER_SIZE];
 		String scalers = null;
@@ -160,7 +158,7 @@ public class L003InputStream
 			}
 
 			if (bytesRead != SCALER_BUFFER_SIZE) {
-				System.out.println(
+				showWarningMessage(
 					"scaler Not a full read, only read in "
 						+ bytesRead
 						+ " bytes");
@@ -173,7 +171,6 @@ public class L003InputStream
 			if (scalerByteCounter < SCALER_BUFFER_SIZE + 1) {
 				scalers = new String(scalerDump);
 			}
-
 		}
 
 		System.out.println("scaler dump total bytes read " + scalerByteCounter);
@@ -202,7 +199,6 @@ public class L003InputStream
 		int size = 0;
 
 		try {
-			System.out.println("    read header start");
 			dataInput.readFully(headerStart);
 			dataInput.readFully(date);
 			dataInput.readFully(title);
@@ -224,28 +220,13 @@ public class L003InputStream
 			headerDate = new String(date);
 
 			loadRunInfo();
-
-			//dump header to sys.out for debugging
-			dumpHeader();
-
 			return (headerKey.equals(HEADER_START));
 		} catch (IOException ioe) {
 			throw new EventException(
 				"Reading event header -" + ioe.getMessage());
 		}
 	}
-	/**
-	 * dump out the header for debugging
-	 */
-	private void dumpHeader() {
 
-		System.out.println("    header");
-		System.out.println("       Key " + headerKey);
-		System.out.println("       Date: " + headerDate);
-		System.out.println("       Header Run Number: " + headerRunNumber);
-		System.out.println("       Event Size: " + headerEventSize);
-		System.out.println("LOO3 header done");
-	}
 	/**
 	 * Implementation of an <code>EventInputStream</code> abstract method.
 	 */
@@ -257,31 +238,27 @@ public class L003InputStream
 	 * reads a little endian integer (4 bytes)
 	 */
 	int readVaxInt() throws IOException {
-
-		int ch1 = dataInput.read();
-		int ch2 = dataInput.read();
-		int ch3 = dataInput.read();
-		int ch4 = dataInput.read();
-
+		final int ch1 = dataInput.read();
+		final int ch2 = dataInput.read();
+		final int ch3 = dataInput.read();
+		final int ch4 = dataInput.read();
 		return (ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0);
 	}
+	
 	/** 
 	 * reads a little endian short (2 bytes)
 	 * but return a 4 byte integer
 	 */
 	short readVaxShort() throws IOException {
-
 		int ch1 = dataInput.read();
 		int ch2 = dataInput.read();
-
 		if ((ch1 | ch2) < 0) {
 			return -1;
 		}
 		return (short) ((ch2 << 8) + (ch1 << 0));
-
 	}
 
-	public void setScalerTable(Hashtable table) {
-	}
+//	public void setScalerTable(Hashtable table) {
+//	}
 
 }
