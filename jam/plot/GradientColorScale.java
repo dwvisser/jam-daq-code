@@ -1,10 +1,9 @@
 package jam.plot;
 import java.awt.Color;
 /**
- * @author Administrator
+ * @author Dale Visser
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Smoothly varying rainbow color scale.
  */
 final class GradientColorScale implements ColorScale{
 		
@@ -12,7 +11,14 @@ final class GradientColorScale implements ColorScale{
 	private boolean recalculateConstant=true;
 	private boolean logScale;//linear if false, log if true
 		
-	public GradientColorScale(double min, double max, Limits.ScaleType scale){
+	/**
+	 * Create a gradient color scale.
+	 *  
+	 * @param min minimum counts for scale
+	 * @param max maximum counts for scale
+	 * @param scale whether linear or logarithmic
+	 */
+	GradientColorScale(double min, double max, Limits.ScaleType scale){
 		if (min > max) {
 			setMaxCounts(min);
 			setMinCounts(max);
@@ -23,12 +29,12 @@ final class GradientColorScale implements ColorScale{
 		logScale = (scale==Limits.ScaleType.LOG);
 	}
 		
-	public void setMaxCounts(double mc){
+	private void setMaxCounts(double mc){
 		max=mc;
 		recalculateConstant=true;
 	}
 		
-	public void setMinCounts(double mc){
+	private void setMinCounts(double mc){
 		min=Math.max(1.0,mc);
 		recalculateConstant=true;
 	}
