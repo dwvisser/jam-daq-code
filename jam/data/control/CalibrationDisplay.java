@@ -3,12 +3,10 @@ import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
-import jam.data.func.LinearFunction;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -41,24 +39,29 @@ ItemListener, WindowListener {
     private final static String BLANK_TITLE=" Histogram not calibrated ";
     private final static String BLANK_LABEL="    --     ";
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler msghdlr;
+    private final Frame frame;
+    private final Broadcaster broadcaster;
+    private final MessageHandler msghdlr;
 
-    private JDialog dialogCalib;
-    private JComboBox cFunc;
-    private JLabel lcalibEq;
-    private JPanel pcoeff [];
-    private JLabel lcoeff [];
-    private JTextField tcoeff[];
+    private final JDialog dialogCalib;
+    private final JComboBox cFunc = new JComboBox(new CalibrationComboBoxModel());
+
+    private final JLabel lcalibEq;
+    private final JPanel pcoeff [];
+    private final JLabel lcoeff [];
+    private final JTextField tcoeff[];
 
     private Histogram currentHistogram;
 
     //calibrate histogram
-    private CalibrationFunction calibFunction;
+    //private CalibrationFunction calibFunction;
     int numberTerms;
-    private NumberFormat numFormat;
-    private JamStatus status;
+    private final NumberFormat numFormat;
+    private final JamStatus status;
+	JButton bokCal =  new JButton("OK");
+	JButton bapplyCal = new JButton("Apply");
+	JButton bcancelCal =new JButton("Cancel");
+	JButton bRecal =  new JButton("Recall");
 
     /**
      * Constructor
@@ -71,8 +74,6 @@ ItemListener, WindowListener {
         status=JamStatus.instance();
 
         dialogCalib =new JDialog(frame,"Histogram Calibration",false);
-        dialogCalib.setForeground(Color.black);
-        dialogCalib.setBackground(Color.lightGray);
         dialogCalib.setResizable(false);
         dialogCalib.setLocation(30,30);
         Container cdialogCalib = dialogCalib.getContentPane();
@@ -82,15 +83,14 @@ ItemListener, WindowListener {
         //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
         pChoose.add(new JLabel("Function: "));
-        cFunc = new JComboBox(new CalibrationComboBoxModel());
         cFunc.setRenderer(new CalibrationListCellRenderer());
         cFunc.setSelectedIndex(0);
         pChoose.add(cFunc);
         cFunc.addItemListener(this);
         cdialogCalib.add(pChoose);
 
-        calibFunction=new LinearFunction();
-        lcalibEq=new JLabel(calibFunction.getTitle(), JLabel.CENTER);
+        //calibFunction=new LinearFunction();
+        lcalibEq=new JLabel(BLANK_TITLE, JLabel.CENTER);
         cdialogCalib.add(lcalibEq);
 
         pcoeff=new JPanel[MAX_NUMBER_TERMS];
@@ -104,9 +104,6 @@ ItemListener, WindowListener {
             pcoeff[i].add(lcoeff[i]);
             tcoeff[i] =new JTextField(" ");
             tcoeff[i].setColumns(10);
-            tcoeff[i].setForeground(Color.black);
-            tcoeff[i].setBackground(Color.lightGray);
-            tcoeff[i].setEditable(false);
             pcoeff[i].add(tcoeff[i]);
         }
 
@@ -116,22 +113,18 @@ ItemListener, WindowListener {
         pbutton.add(pbCal);
 
 
-        JButton bRecal =  new JButton("Recall");
         bRecal.setActionCommand("recalcalib");
         bRecal.addActionListener(this);
         pbCal.add(bRecal);
 
-        JButton bokCal =  new JButton("OK");
         bokCal.setActionCommand("okcalib");
         bokCal.addActionListener(this);
         pbCal.add(bokCal);
 
-        JButton bapplyCal = new JButton("Apply");
         bapplyCal.setActionCommand("applycalib");
         bapplyCal.addActionListener(this);
         pbCal.add(bapplyCal);
 
-        JButton bcancelCal =new JButton("Cancel");
         bcancelCal.setActionCommand("cancelcalib");
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
@@ -149,30 +142,46 @@ ItemListener, WindowListener {
      * setups up the dialog box
      */
     public void setup() {
-        if (calibFunction!=null) {
-            numberTerms=calibFunction.getNumberTerms();
-            lcalibEq.setText(calibFunction.getTitle());
-            String [] labels = calibFunction.getLabels();
-            double [] coeff = calibFunction.getCoeff();
+		final Histogram hist=Histogram.getHistogram(
+		status.getCurrentHistogramName());
+		if (hist!=currentHistogram){
+			currentHistogram=hist;
+		} 
+		final boolean hist1d = currentHistogram!=null && 
+		currentHistogram.getDimensionality()==1;
+		CalibrationFunction hcf=null;
+		if(hist1d) {
+			hcf=currentHistogram.getCalibration();
+			final String name= hcf==null ? null : hcf.getClass().getName();
+			cFunc.setSelectedItem(name);
+		}	 
+		final boolean exists=hist1d && hcf!=null;
+		cFunc.setEnabled(exists);
+		bokCal.setEnabled(exists);
+		bapplyCal.setEnabled(exists);
+		bcancelCal.setEnabled(exists);	
+		bRecal.setEnabled(exists);	
+        if (exists) {
+            numberTerms=hcf.getNumberTerms();
+            lcalibEq.setText(hcf.getTitle());
+            String [] labels = hcf.getLabels();
+            double [] coeff = hcf.getCoeff();
             for ( int i=0; i<numberTerms; i++ ){
                 lcoeff[i].setText(labels[i]);
-                tcoeff[i].setText(Double.toString(coeff[i]));
-                tcoeff[i].setBackground(Color.white);
-                tcoeff[i].setEditable(true);
+                tcoeff[i].setText(String.valueOf(coeff[i]));
+                tcoeff[i].setEnabled(true);
             }
-            for ( int i=numberTerms; i<MAX_NUMBER_TERMS; i++ ){
-                lcoeff[i].setText(BLANK_LABEL);
-                tcoeff[i].setText(" ");
-                tcoeff[i].setBackground(Color.lightGray);
-                tcoeff[i].setEditable(false);
-            }
+            for (int i=numberTerms; i<MAX_NUMBER_TERMS; i++ ){
+				lcoeff[i].setText(BLANK_LABEL);
+				tcoeff[i].setText("");
+				tcoeff[i].setEnabled(false);
+			}
         } else {// histogram not calibrated
             lcalibEq.setText(BLANK_TITLE);
             for ( int i=0; i<MAX_NUMBER_TERMS; i++ ){
                 lcoeff[i].setText(BLANK_LABEL);
-                tcoeff[i].setText(" ");
-                tcoeff[i].setBackground(Color.lightGray);
-                tcoeff[i].setEditable(false);
+                tcoeff[i].setText("");
+                tcoeff[i].setEnabled(false);
             }
         }
     }
@@ -194,12 +203,13 @@ ItemListener, WindowListener {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" ");
+                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+
+				" with "+currentHistogram.getCalibration().getFormula());
                 if (command=="okcalib") {
                     dialogCalib.dispose();
                 }
             } else if (command=="recalcalib") {
-                getCalibration();
+                setup();
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
@@ -215,9 +225,10 @@ ItemListener, WindowListener {
      *
      */
     public void itemStateChanged(ItemEvent ie){
-        if (ie.getSource()==cFunc) {
-            final Class calClass = (Class)cFunc.getSelectedItem();
+		CalibrationFunction calibFunction=null;      
+		if (ie.getSource()==cFunc) {
             try {
+				final Class calClass = Class.forName((String)cFunc.getSelectedItem());
 				calibFunction = (CalibrationFunction)calClass.newInstance();
             } catch (Exception e) {
 				msghdlr.errorOutln(getClass().getName()+
@@ -248,26 +259,9 @@ ItemListener, WindowListener {
                 msghdlr.errorOutln("Invalid input, coefficient "+
                 calibFunction.getLabels()[i]);
             }
-            getCalibration();
+            setup();
         } else {
             msghdlr.errorOutln("Calibration function not defined [CalibrationDisplay]");
-        }
-    }
-
-    /**
-     *
-     */
-    private void getCalibration() {
-        double coeff [];
-
-        setup();
-        if (calibFunction!=null) {
-            coeff=calibFunction.getCoeff();
-            for(int i=0;i<numberTerms;i++){
-                tcoeff[i].setText(numFormat.format(coeff[i]));
-            }
-        } else {
-            msghdlr.errorOutln("Calibration not set [HistogramControl]");
         }
     }
 
@@ -286,21 +280,7 @@ ItemListener, WindowListener {
      *  has not changed. If it has cancel the gate setting.
      */
     public void windowActivated(WindowEvent e){
-        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
-        //have we changed histograms
-        if (hist != currentHistogram){
-            currentHistogram=hist;
-            calibFunction = currentHistogram==null ? null :
-            currentHistogram.getCalibration();
-            /*if (currentHistogram != null){
-				calibFunction=currentHistogram.getCalibration();
-            }*/
-            setup();
-            //has calib function changed
-        } else if (calibFunction!=currentHistogram.getCalibration()) {
-            calibFunction=currentHistogram.getCalibration();
-            setup();
-        }
+        setup();
     }
 
     /**

@@ -16,7 +16,7 @@ public class PolynomialFunction extends CalibrationFunction {
 	 */
 	public PolynomialFunction(int numberTerms) {
 		super(numberTerms);
-		title = "E = a0+a1*ch+a2*(ch)^2+ ...";
+		title = "E = a0 + a1\u2219ch + a2\u2219(ch)\u00b2 + ...";
 		coeff = new double[numberTerms];
 		labels = new String[numberTerms];
 		for (int i = 0; i < numberTerms; i++) {
@@ -53,9 +53,12 @@ public class PolynomialFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public String fit(double[] x, double[] y) throws DataException {
-
-		return "Polynomial Function fit not yet implemented";
+	public void fit(double[] x, double[] y) throws DataException {
+		//does nothing so far
+	}
+	
+	public void updateFormula(){
+		formula = "Polynomial fit not yet implemented";		
 	}
 
 }

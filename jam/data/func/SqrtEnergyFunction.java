@@ -16,7 +16,7 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	 */
 	public SqrtEnergyFunction() {
 		super(NUMBER_TERMS);
-		title = "sqrt(E) = a0+a1*ch";
+		title = "\u221aE = a0 + a1\u2219ch";
 		labels[0] = "a(0)";
 		labels[1] = "a(1)";
 	}
@@ -32,26 +32,26 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 			* (coeff[0] + coeff[1] * channel);
 	}
 
-	// To be implemented later when this function works
 	public double getChannel(double energy) {
-		return ((energy - coeff[0]) / coeff[1]);
+		return ((Math.sqrt(energy) - coeff[0]) / coeff[1]);
 	}
 
 	/**
 	 * do a fit of x y values
 	 */
-	public String fit(double[] chan, double[] ene) throws DataException {
-		double[] sqrtE;
-		sqrtE = new double[ene.length];
+	public void fit(double[] chan, double[] ene) throws DataException {
+		final double[] sqrtE = new double[ene.length];
 		for (int i = 0; i < ene.length; i++) {
 			sqrtE[i] = Math.sqrt(ene[i]);
 		}
-		coeff = linearRegression(chan, sqrtE);
-		return "Sqrt Energy Function"
-			+ "sqrt(E) = "
+		setCoeff(linearRegression(chan, sqrtE));
+	}
+	
+	protected void updateFormula(){
+		formula = "\u221aE = "
 			+ coeff[0]
 			+ " + "
 			+ coeff[1]
-			+ " x (ch)";
+			+ "\u2219ch";
 	}
 }

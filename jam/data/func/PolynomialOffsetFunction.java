@@ -57,9 +57,12 @@ public class PolynomialOffsetFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public String fit(double[] x, double[] y) throws DataException {
-
-		return "Polynomial Offset Function fit not yet implemented";
+	public void fit(double[] x, double[] y) throws DataException {
+		//does nothing so far
+	}
+	
+	protected void updateFormula(){
+		formula = "Polynomial Offset fit not yet implemented";
 	}
 
 }

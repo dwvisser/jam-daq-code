@@ -9,10 +9,8 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.util.FileUtilities;
 
 import java.awt.Container;
-import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -22,7 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.text.NumberFormat;
 
 import javax.swing.JButton;
@@ -41,44 +38,42 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  * @version 0.5
  */
-public class CalibrationFit extends DataControl implements ActionListener, ItemListener{
+public class CalibrationFit extends DataControl implements ActionListener {
 
     private static final int NUMBER_POINTS=5;
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler msghdlr;
+    private final Frame frame;
+    private final Broadcaster broadcaster;
+    private final MessageHandler msghdlr;
 
     //calibrate histogram
     private Histogram currentHistogram;
     // calibration function
-    private CalibrationFunction calibFunction;
+    private CalibrationFunction calibFunction=new LinearFunction();
 
     //GUI stuff
-    private JDialog dialogCalib;
-    private JComboBox cFunc;
-    private JLabel lcalibEq;
-    private JPanel pPoint [];
-    private JTextField [] tEnergy, tChannel;
-    private JCheckBox cUse[];
+    private final JDialog dialogCalib;
+    private final JComboBox cFunc;
+    private final JLabel lcalibEq=new JLabel("Select a function.", JLabel.CENTER);
+    private final JPanel pPoint [];
+    private final JTextField [] tEnergy, tChannel;
+    private final JCheckBox cUse[];
 
-    private String fileName;
-    private String directoryName;
-    private NumberFormat numFormat;
-    private JamStatus status;
-	private JButton bokCal =  new JButton("OK");
-	private JButton bapplyCal = new JButton("Apply");
-	private JButton bcancelCal =new JButton("Cancel");
+    private final NumberFormat numFormat;
+    private final JamStatus status;
+	private final JButton bokCal =  new JButton("OK");
+	private final JButton bapplyCal = new JButton("Apply");
+	private final JButton bcancelCal =new JButton("Cancel");
 
     /**
      * Constructor
      */
-    public CalibrationFit(Frame frame, Broadcaster broadcaster,
-    MessageHandler msghdlr) {
+    public CalibrationFit(Frame fr, Broadcaster bc,
+    MessageHandler mh) {
         super();
-        this.frame=frame;
-        this.broadcaster=broadcaster;
-        this.msghdlr=msghdlr;
+        frame=fr;
+        broadcaster=bc;
+        msghdlr=mh;
         status=JamStatus.instance();
         // calibration dialog box
         dialogCalib =new JDialog(frame,"Calibration Fit",false);
@@ -86,20 +81,25 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         dialogCalib.setLocation(30,30);
         Container cdialogCalib=dialogCalib.getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
-        //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
         pChoose.add(new JLabel("Function: "));
         cFunc = new JComboBox(new CalibrationComboBoxModel());
         cFunc.setRenderer(new CalibrationListCellRenderer());
-        cFunc.setSelectedIndex(0);
+		cFunc.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent ie){
+				final String calClass = (String)cFunc.getSelectedItem();
+				try {
+					calibFunction = (CalibrationFunction)Class.forName(calClass).newInstance();
+				} catch (Exception e) {
+					msghdlr.errorOutln(getClass().getName()+
+					".setFunctionType(): "+e.toString());            	
+				} 
+				lcalibEq.setText(calibFunction.getTitle());
+			}
+		});
+		cFunc.setSelectedItem(LinearFunction.class.getName());
         pChoose.add(cFunc);
-//        cFunc.addItem("Linear");
-//        cFunc.addItem("Polynomial");
-//        cFunc.addItem("Sqrt(E)");
-        cFunc.addItemListener(this);
         cdialogCalib.add(pChoose);
-        calibFunction=new LinearFunction();
-        lcalibEq=new JLabel(calibFunction.getTitle(), JLabel.CENTER);
         cdialogCalib.add(lcalibEq);
         pPoint=new JPanel[NUMBER_POINTS];
         tEnergy =new JTextField[NUMBER_POINTS];
@@ -119,7 +119,21 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             cUse[i] =new JCheckBox("use");
             cUse[i].setSelected(true);
             pPoint[i].add(cUse[i]);
-            cUse[i].addItemListener(this);
+            //cUse[i].addItemListener(this);
+            final int index=i;//silly, but necessary for anonymous class
+            cUse[i].addItemListener(new ItemListener(){
+				public void itemStateChanged(ItemEvent ie){
+					setFieldActive(index, cUse[index].isSelected());
+				}
+				
+				/**
+				 *sets fields to be active
+				 */
+				private void setFieldActive(int number, boolean state){
+					tChannel[number].setEnabled(state);
+					tEnergy[number].setEnabled(state);
+				}
+            });
         }
         JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel pbCal= new JPanel();
@@ -137,7 +151,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
         dialogCalib.pack();
-
         dialogCalib.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
                 dialogCalib.dispose();
@@ -146,7 +159,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
 				setup();
 			}
         });
-
         //formating enery output
         numFormat=NumberFormat.getInstance();
         numFormat.setGroupingUsed(false);
@@ -171,12 +183,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                         dialogCalib.dispose();
                     }
                 }
-            } else if (command=="load") {
-                try{
-                    loadCalib();
-                } catch (Exception e) {
-                    msghdlr.errorOutln("Error loading calibration: "+e);
-                }
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
@@ -185,41 +191,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                 //just so at least a exception is thrown for now
                 throw new UnsupportedOperationException("Unregonized command: "+command);
             }
-    }
-
-    /**
-     * A item state change indicates that a gate has been choicen
-     *
-     */
-    public void itemStateChanged(ItemEvent ie){
-        if (ie.getSource()==cFunc) {
-            setFunctionType();//choose the function
-        } else {
-            for(int i=0;i<NUMBER_POINTS;i++){
-                if(ie.getSource()==cUse[i]){
-                    setFieldActive(i, cUse[i].isSelected());
-                }
-            }
-        }
-    }
-
-    private void setFunctionType() {
-		final Class calClass = (Class)cFunc.getSelectedItem();
-		try {
-			calibFunction = (CalibrationFunction)calClass.newInstance();
-		} catch (Exception e) {
-			msghdlr.errorOutln(getClass().getName()+
-			".setFunctionType(): "+e.toString());            	
-		} 
-        lcalibEq.setText(calibFunction.getTitle());
-    }
-
-    /**
-     *sets fields to be active
-     */
-    private void setFieldActive(int number, boolean state){
-		tChannel[number].setEnabled(state);
-		tEnergy[number].setEnabled(state);
     }
 
     /**
@@ -257,7 +228,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                 }
             }
             if(numberPoints>=2){
-                setFunctionType();//ensures a fresh CalibrationFit instance is created
+                //setFunctionType();//ensures a fresh CalibrationFit instance is created
                 x=new double [numberPoints];
                 y=new double [numberPoints];
                 //put valid energy and channel into arrays
@@ -265,7 +236,8 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                     y[i]=energy[i];
                     x[i]=channel[i];
                 }
-                fitText=calibFunction.fit(x,y);
+                calibFunction.fit(x,y);
+                fitText=calibFunction.getFormula();
                 currentHist.setCalibration(calibFunction);
                 broadcaster.broadcast(BroadcastEvent.REFRESH);
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" with "+
@@ -289,66 +261,31 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         currentHist.setCalibration(null);
         broadcaster.broadcast(BroadcastEvent.REFRESH);
     }
-    /**
-     * Load a list of energies from a file
-     */
-    private void loadCalib() throws Exception {
-        openFile("Load Calibration Energies", FileDialog.LOAD);
-    }
-
-    /**
-     * Open a file to read
-     */
-    private File openFile(String msg, int state) throws Exception {
-        File fileIn=null;//default return value
-        FileDialog fd =new FileDialog(frame, msg, state);
-        String extension=".cal";
-        if ( (fileName)!=null){//use previous file and directory as default
-            fd.setFile(fileName);
-        } else {
-            fd.setFile(extension);
-        }
-        if (directoryName!=null){
-            fd.setDirectory(directoryName);
-        }
-        fd.show();//show file dialoge box to get file
-        directoryName=fd.getDirectory();//save current directory
-        fileName=fd.getFile();
-        fd.dispose();
-        if(fileName!=null) {
-            fileName=FileUtilities.setExtension(fileName,extension,FileUtilities.FORCE);
-            fileIn = new File(directoryName ,fileName);
-        } //else leave it null
-        return fileIn;
-    }
-    
 
     public void setup(){
 		final Histogram hist=Histogram.getHistogram(
 		status.getCurrentHistogramName());
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
-			calibFunction = currentHistogram==null ? null :
-			currentHistogram.getCalibration();
 		} 
-		final boolean histExists = currentHistogram!=null;
-		if(histExists && 
-		calibFunction!=currentHistogram.getCalibration()){
-			calibFunction=currentHistogram.getCalibration();
-			if (calibFunction == null){
-				setFunctionType();
-			}
+		final boolean hist1d = currentHistogram!=null && 
+		currentHistogram.getDimensionality()==1;
+		if(hist1d) {
+			final CalibrationFunction hcf=currentHistogram.getCalibration();
+			final String name= hcf==null ? null : hcf.getClass().getName();
+			cFunc.setSelectedItem(name);
 		}	 
-		cFunc.setEnabled(histExists);
-		bokCal.setEnabled(histExists);
-		bapplyCal.setEnabled(histExists);
-		bcancelCal.setEnabled(histExists);		
+		cFunc.setEnabled(hist1d);
+		bokCal.setEnabled(hist1d);
+		bapplyCal.setEnabled(hist1d);
+		bcancelCal.setEnabled(hist1d);		
 		for (int i=0; i<NUMBER_POINTS; i++){
-			final boolean enable=histExists && cUse[i].isSelected();
+			final boolean enable=hist1d && cUse[i].isSelected();
 			tEnergy[i].setEnabled(enable);
 			tChannel[i].setEnabled(enable);
-			cUse[i].setEnabled(histExists);
+			cUse[i].setEnabled(hist1d);
 		}
     }
+    
     
 }

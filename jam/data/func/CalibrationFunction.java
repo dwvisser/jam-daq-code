@@ -20,6 +20,7 @@ public abstract class CalibrationFunction implements Function {
 	protected String[] labels;
 	protected String title;
 	protected double[] coeff;
+	protected String formula=new String();
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
@@ -29,7 +30,6 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public CalibrationFunction(int numberTerms) {
 		if (numberTerms < MAX_NUMBER_TERMS) {
-			//this.numberTerms = numberTerms;
 			coeff=new double[numberTerms];
 			labels=new String[numberTerms];
 		} else {
@@ -83,6 +83,12 @@ public abstract class CalibrationFunction implements Function {
 		return title;
 	}
 	
+	public String getFormula(){
+		return formula;
+	}
+	
+	protected abstract void updateFormula(); 
+	
 	/**
 	 * Added to provide energy calibration for goto button
 	 */
@@ -107,6 +113,7 @@ public abstract class CalibrationFunction implements Function {
 				coeff[i] = 0.0;
 			}
 			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
+			updateFormula();
 		} else {
 			throw new IndexOutOfBoundsException(getClass().getName()+".setCoeff(double ["+aIn.length+"]): too many terms.");
 		}
@@ -129,7 +136,9 @@ public abstract class CalibrationFunction implements Function {
 	 * @param y array of y values
 	 * @return	String that can be printed 
 	 */
-	public abstract String fit(double[] x, double[] y) throws DataException;
+	public abstract void fit(double[] x, double[] y) throws DataException;
+
+
 
 	/**
 	 * do a linear regression of data points y=a+bx 
@@ -169,7 +178,7 @@ public abstract class CalibrationFunction implements Function {
 		} else {
 			func[0] = 0.0;
 			func[1] = 0.0;
-			throw new DataException("Linear regression failed [CalibrationFucntion]");
+			throw new DataException("Linear regression failed [CalibrationFunction]");
 		}
 		return func;
 	}

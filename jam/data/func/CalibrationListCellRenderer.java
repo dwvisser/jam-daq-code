@@ -68,13 +68,16 @@ public class CalibrationListCellRenderer
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
-		if (value.equals(LinearFunction.class)){
+		if (value==null){
+			setText(null);
+			setIcon(null);	
+		} else if (value.equals(LinearFunction.class.getName())){
 			setIcon(lineIcon);
 			setText("Linear");
-		} else if (value.equals(PolynomialFunction.class)){
+		} else if (value.equals(PolynomialFunction.class.getName())){
 			setIcon(polyIcon);
 			setText("Polynomial");
-		} else if (value.equals(SqrtEnergyFunction.class)){
+		} else if (value.equals(SqrtEnergyFunction.class.getName())){
 			setIcon(sqrtIcon);
 			setText("Linear in Square Root");
 		}

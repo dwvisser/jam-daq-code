@@ -1,6 +1,7 @@
 package jam.data.func;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -10,16 +11,16 @@ import javax.swing.DefaultComboBoxModel;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
-public class CalibrationComboBoxModel extends DefaultComboBoxModel {
-
-	private Object selection = null;
+public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		
 	public static final List list=new ArrayList();
 	static {
-		list.add(LinearFunction.class);
-		list.add(PolynomialFunction.class);
-		list.add(SqrtEnergyFunction.class);
+		list.add(LinearFunction.class.getName());
+		list.add(SqrtEnergyFunction.class.getName());
 	}
+	
+	private Object selection;
+	private final Object selectionSync=new Object();
 
 	/**
 	 * Create the default model that shows gates for the currently
@@ -45,19 +46,39 @@ public class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	/**
+	 * Can be called with an instance of the desired class or
+	 * a reference to the class itself.
+	 * 
 	 * @param anItem the item to set the selection to
+	 * @throws IllegalArgumentException if not a String or null
 	 */
 	public void setSelectedItem(Object anItem) {
-		synchronized (this) {
-			selection = anItem;
-		}
+			final Object name;
+			if (anItem==null){
+				name=list.get(0);
+			} else if (anItem instanceof String){
+				name=anItem;
+			} else {
+				throw new IllegalArgumentException(getClass().getName()+
+				": only Strings or null please");
+			}
+			for (Iterator it=list.iterator(); it.hasNext(); ){
+				final Object cl=it.next();
+				if (name.equals(cl)){
+					synchronized (selectionSync) {
+						selection = cl;
+					}					
+				}
+			}
 	}
 
 	/**
 	 * @return the currently selected item
 	 */
 	public Object getSelectedItem() {
-		return selection;
+		synchronized (selectionSync){
+			return selection;
+		}
 	}
 
 }

@@ -16,7 +16,7 @@ public class LinearFunction extends CalibrationFunction {
 	 */
 	public LinearFunction() {
 		super(NUMBER_TERMS);
-		title = "E = a0+a1*ch";
+		title = "E = a0 + a1\u2219ch";
 		labels[0] = "a(0)";
 		labels[1] = "a(1)";
 	}
@@ -44,9 +44,11 @@ public class LinearFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public String fit(double[] x, double[] y) throws DataException {
-		coeff = linearRegression(x, y);
-		return "Linear fit";
-		//FIXME		    "E = "+numFormat.format(a)+" + "+numFormat.format(b)+" x ch");	    				    	
+	public void fit(double[] x, double[] y) throws DataException {
+		setCoeff(linearRegression(x, y));
+	}
+	
+	public void updateFormula(){
+		formula = "E = "+coeff[0]+" + "+coeff[1]+"\u2219ch";		
 	}
 }
