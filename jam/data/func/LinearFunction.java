@@ -38,7 +38,7 @@ public class LinearFunction extends CalibrationFunction {
 		return ((energy - coeff[0]) / coeff[1]);
 	}
 	
-	/**
+	/** 
 	 * do a fit of x y values
 	 */
 	public void fit() throws DataException {
