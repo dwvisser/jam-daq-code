@@ -128,7 +128,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	protected int pagedpi;
 
-	//FIXME don't handle change of fonts yet
+	//TODO don't handle change of fonts yet
 	//protected Font screenFont;
 
 	//protected Font printFont;
