@@ -101,9 +101,9 @@ public class YaleCAENgetScalers {
 			counter += dis.skipBytes(256);
 			int blockNum = 0;
 			while (true) {
-				int read_val = dis.readInt();
+				int readVal = dis.readInt();
 				counter+=4;
-				if (read_val == SCALER_HEADER) {
+				if (readVal == SCALER_HEADER) {
 					blockNum++;
 					int numScalers = dis.readInt();
 					counter+=4;

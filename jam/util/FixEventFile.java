@@ -64,16 +64,16 @@ public class FixEventFile {
 			st.slashStarComments(true);
 			st.quoteChar('\"');
 			st.nextToken();
-			String _dir = st.sval;
-			System.out.println("Directory containing input event files: "+_dir);
-			directory = getDir(_dir);
+			String dir = st.sval;
+			System.out.println("Directory containing input event files: "+dir);
+			directory = getDir(dir);
 			st.nextToken();
 			expName = st.sval;
 			System.out.println("Experiment name: "+expName);
 			st.nextToken();
-			_dir = st.sval;
-			System.out.println("Directory containing output event files: "+_dir);
-			outDir = getDir(_dir);
+			dir = st.sval;
+			System.out.println("Directory containing output event files: "+dir);
+			outDir = getDir(dir);
 			runNumberSet = new TreeSet();
 			System.out.print("Run numbers to move 1st buffer from: ");
 			do {

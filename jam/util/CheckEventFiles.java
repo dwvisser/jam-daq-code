@@ -69,12 +69,12 @@ public class CheckEventFiles {
 					(((long) bytesToSkip) == instream.skip(bytesToSkip));
 				if (skipSuccess) {
 					int word = instream.readInt();
-					String s_word = "0x" + Integer.toHexString(word);
+					String sWord = "0x" + Integer.toHexString(word);
 					if (word == 0x01EEEEEE) { //end-of-run word
 						System.out.println(
-							"...[" + s_word + "]...needs fixing");
+							"...[" + sWord + "]...needs fixing");
 					} else {
-						System.out.println("...[" + s_word + "]...OK");
+						System.out.println("...[" + sWord + "]...OK");
 					}
 				} else {
 					System.out.println(
@@ -114,8 +114,8 @@ public class CheckEventFiles {
 				int [] lastVal=new int[16];
 				int [] val=new int[16];
 				while (true) {
-					int read_val = fromStream.readInt();
-					if (read_val == SCALER_HEADER) {
+					int readVal = fromStream.readInt();
+					if (readVal == SCALER_HEADER) {
 						blockNum++;
 						int numScalers = fromStream.readInt();
 						if (blockNum==1) {
