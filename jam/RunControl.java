@@ -437,24 +437,24 @@ public class RunControl implements Controller, ActionListener {
     /**
      * Method called back from sort package when we are done
      * writing out the event data and have closed the event file.
+     * 
+     * @throws IllegalStateException if the device is not an expected value
      */
     public void atWriteEnd()  {
         try {
-            //
-            if (device != FRONT_END) netDaemon.setWriter(false);
-            //we are writting to tape
+            if (device != FRONT_END) {
+            	netDaemon.setWriter(false);
+            } 
             if (device==DISK){
                 diskDaemon.closeEventOutputFile();
                 console.messageOutln("Event file closed "+dataFile.getPath());
-            /*} else if(device==TAPE) {
-                tapeDaemon.closeEventOutputFile();
-                console.messageOutln(" Tape record ended");*/
             } else  if (device ==FRONT_END) {
-            	System.out.println(getClass().getName()+".atWriteEnd()"+
+            	console.errorOutln(getClass().getName()+".atWriteEnd()"+
             	" device=FRONT_END not implemented");
                 // **** send message to indicate end of run file? ****
             } else {
-                System.err.println("Error Should not be [RunControl]");
+                throw new IllegalStateException(
+				"Expect device to be DISK or FRONT_END.");
             }
         } catch (SortException je){
             console.errorOutln(je.getMessage());
