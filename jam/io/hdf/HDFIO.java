@@ -159,10 +159,11 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	writeFile(file, null, null, wrtdata, wrtsettings);    	
     }
     
-    /* non-javadoc:
-     * Center call for all public writes
+    /** 
+     * Create list of groups and histograms to write out.
+     * Use selected groups to create list of histograms or
+     * use selected histograms to create list of gates 
      */
-    //TODO remove this unused private method?
     private void writeFile(final File file, List groups, List histograms,
             boolean wrtdata, boolean wrtsettings) {
         /* Groups specified determines histograms */
@@ -924,30 +925,27 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 //Histogram is in histogram list
                 if (histogramList.contains(hist)) {
 	                final VirtualGroup histVGroup =jamToHDF.addHistogramGroup(hist);
-	               	if (wrtdata) {
-	               		jamToHDF.convertHistogram(histVGroup, hist);
 	            	virtualGroupGroup.addDataObject(histVGroup);
 	            	//backward compatible
-	            	globalVirtualGroupHistogram.addDataObject(histVGroup);
-	 
+	            	globalVirtualGroupHistogram.addDataObject(histVGroup);	            	
+	               	if (wrtdata) {
+	               		jamToHDF.convertHistogram(histVGroup, hist);
 	               		histCount++;
 	               	}
 
                 
 	                //Loop for all gates
-	                if (wrtsetting) {
-		                final Iterator gatesIter = hist.getGates().iterator();
-		                while (gatesIter.hasNext()) {
-		                    final Gate gate = (Gate) gatesIter.next();
-		                    if(gate.isDefined()){
-		                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
-		                    	histVGroup.addDataObject(gateVGroup);
-		                    	//backward compatiable
-		                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
-		                    	gateCount++;
-		                	}
-		                } //end loop gates
-	                }
+	                final Iterator gatesIter = hist.getGates().iterator();
+	                while (gatesIter.hasNext()) {
+	                    final Gate gate = (Gate) gatesIter.next();
+	                    if(wrtsetting && gate.isDefined()){
+	                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
+	                    	histVGroup.addDataObject(gateVGroup);
+	                    	//backward compatiable
+	                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
+	                    	gateCount++;
+	                	}
+	                } //end loop gates
                 }                
             } //end loop histograms
 
