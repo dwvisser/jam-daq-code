@@ -14,7 +14,7 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface PlotPrefs {
-	final Preferences prefs=Preferences.systemNodeForPackage(PlotPrefs.class);
+	final Preferences prefs=Preferences.userNodeForPackage(PlotPrefs.class);
 	final String AUTO_IGNORE_ZERO="AutoIgnoreZero";
 	final String AUTO_IGNORE_FULL="AutoIgnoreFull";
 	final String BLACK_BACKGROUND="BlackBackground";
