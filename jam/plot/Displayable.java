@@ -2,59 +2,62 @@ package jam.plot;
 
 /**
  * Interface for a object that can be 
- * displayed  
+ * displayed by <code>Display</code>.
+ * 
+ * @author Ken Swartz
+ * @version 1.0
+ * @see Display
  */
 public interface  Displayable   {
 
     //FIXME in more then one place
-    public static final int ONE_DIMENSION=1;       
-
-    public static final int TWO_DIMENSION=2;   
+    int ONE_DIMENSION=1;
+    int TWO_DIMENSION=2;   
     
     /**
-     *	Name of displayable object
+     *	@return name of displayable object
      */
-    public String getName();
+    String getName();
 
     /**
-     *	Displable title
+     * @return title of displayable object
      */ 			        
-    public String getTitle();
+    String getTitle();
     
     /**
-     * get X axis label
+     * @return X axis label
      */    
-    public String getLabelX();
+    String getLabelX();
     
     /**
-     * get Y axis label
+     * @return Y axis label
      */    
-    public String getLabelY();
+    String getLabelY();
     
     /**
-     *	type of data 1 d or 2 d
+     * @return dimensionality of data, <code>1</code> or 
+     * <code>2</code>
      */ 			        
-    public int getType();
+    int getType();
     
     /**
-     *	size in X
+     * @return size in X
      */ 			            
-
-    public int getSizeX(); 
+    int getSizeX(); 
 
     /**
-     *	size in Y
+     * @return size in Y
      */ 			            
-    public int getSizeY();
+    int getSizeY();
 
     /**
-     *	counts if 1d
+     *	@return counts if 1d
      */ 			        
-    public int [] getCounts();
+    int [] getCounts();
     
     /**
-     *	counts if 2d
+     * @return counts if 2d
      */ 			        
-    public int [][] getCounts2d();	
+    int [][] getCounts2d();	
 }    
 
