@@ -10,6 +10,7 @@ import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -23,7 +24,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -55,6 +67,13 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	private final JTextField txtDirectory = new JTextField(System.getProperty("user.home"), 40);
 
 	private final JComboBox cbHist = new JComboBox();
+	
+	private final ActionListener cbHistListen = new ActionListener(){
+	    public void actionPerformed(ActionEvent actionEvent){
+			addSelectedHist();
+			setExportEnable();
+	    }
+	};
 
 	private final JList lstHists = new JList(new DefaultListModel());
 
@@ -75,7 +94,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
 		buildGUI();
-		setup();
+		setupHistChooser();
 	}
 
 	/**
@@ -93,40 +112,13 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 				10, 10));
 		pTop.add(pChooser);
 		pChooser.add(new JLabel("Add Histogram"));
-		cbHist.setActionCommand("select");
+		//cbHist.setActionCommand("select");
 		final Dimension dim = cbHist.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cbHist.setPreferredSize(dim);
 		pChooser.add(cbHist);
-		/* Button panel on left */
-		final JPanel pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
-		pButtons.setBorder(new EmptyBorder(10, 10, 10, 10));
-		contents.add(pButtons, BorderLayout.WEST);
-		final JButton bAddAllHist = new JButton("Add All");
-		bAddAllHist.setToolTipText("Adds all 1 dimension histograms.");
-		bAddAllHist.setActionCommand("addall");
-		bAddAllHist.addActionListener(this);
-		pButtons.add(bAddAllHist);
-		final JButton bRemoveName = new JButton("Remove Selected");
-		bRemoveName.setToolTipText("Removes selected histograms");
-		bRemoveName.setActionCommand("removeselect");
-		bRemoveName.addActionListener(this);
-		pButtons.add(bRemoveName);
-		final JButton bRemoveAll = new JButton("Remove All");
-		bRemoveAll.setToolTipText("Remove all histograms.");
-		bRemoveAll.setActionCommand("removeall");
-		bRemoveAll.addActionListener(this);
-		pButtons.add(bRemoveAll);
-		final JButton bLoadList = new JButton("Load List");
-		bLoadList.setToolTipText("Load list of histograms from file.");
-		bLoadList.setActionCommand("loadlist");
-		bLoadList.addActionListener(this);
-		pButtons.add(bLoadList);
-		final JButton bSaveList = new JButton("Save List");
-		bSaveList.setToolTipText("Save list of histograms to file.");
-		bSaveList.setActionCommand("savelist");
-		bSaveList.addActionListener(this);
-		pButtons.add(bSaveList);
+		/* Button panel on left ("west"). */
+		contents.add(getButtonPanel(), BorderLayout.WEST);
 		/* List of histograms */
 		final JPanel pList = new JPanel(new GridLayout(1, 1));
 		pList.setBorder(new EmptyBorder(10, 0, 10, 10));
@@ -147,11 +139,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		final Iterator iter=getClasses().iterator();
 		while (iter.hasNext()) {
 			final AbstractImpExp impExp = (AbstractImpExp) iter.next();
-			final String desc = impExp.getFormatDescription();
-			final JRadioButton exportChoice = new JRadioButton(desc);
-			exportChoice.setToolTipText("Select to export in " + desc
-					+ " format.");
-			exportChoice.addActionListener(this);
+			final AbstractButton exportChoice = getButton(impExp);
 			options.add(exportChoice);
 			pBtnOpn.add(exportChoice);
 			exportMap.put(exportChoice, impExp);
@@ -181,12 +169,52 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		pButton.add(bCancel);
 		pBottom.add(pButton);
 		addWindowListener(new WindowAdapter() {
-			public void windowActivated(WindowEvent e) {
-				setup();
+			public void windowActivated(WindowEvent windowEvent) {
+				setupHistChooser();
 			}
 		});
 		pack();
 		setResizable(false);
+	}
+	
+	private Component getButtonPanel(){
+		final JPanel pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
+		pButtons.setBorder(new EmptyBorder(10, 10, 10, 10));
+		final JButton bAddAllHist = new JButton("Add All");
+		bAddAllHist.setToolTipText("Adds all 1 dimension histograms.");
+		bAddAllHist.setActionCommand("addall");
+		bAddAllHist.addActionListener(this);
+		pButtons.add(bAddAllHist);
+		final JButton bRemoveName = new JButton("Remove Selected");
+		bRemoveName.setToolTipText("Removes selected histograms");
+		bRemoveName.setActionCommand("removeselect");
+		bRemoveName.addActionListener(this);
+		pButtons.add(bRemoveName);
+		final JButton bRemoveAll = new JButton("Remove All");
+		bRemoveAll.setToolTipText("Remove all histograms.");
+		bRemoveAll.setActionCommand("removeall");
+		bRemoveAll.addActionListener(this);
+		pButtons.add(bRemoveAll);
+		final JButton bLoadList = new JButton("Load List");
+		bLoadList.setToolTipText("Load list of histograms from file.");
+		bLoadList.setActionCommand("loadlist");
+		bLoadList.addActionListener(this);
+		pButtons.add(bLoadList);
+		final JButton bSaveList = new JButton("Save List");
+		bSaveList.setToolTipText("Save list of histograms to file.");
+		bSaveList.setActionCommand("savelist");
+		bSaveList.addActionListener(this);
+		pButtons.add(bSaveList);
+		return pButtons;
+	}
+	
+	private AbstractButton getButton(AbstractImpExp impExp){
+		final String desc = impExp.getFormatDescription();
+		final AbstractButton rval = new JRadioButton(desc);
+		rval.setToolTipText("Select to export in " + desc
+				+ " format.");
+		rval.addActionListener(this);
+		return rval;
 	}
 
 	private List getClasses() {
@@ -212,9 +240,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	
 	public void actionPerformed(ActionEvent actionEvent) {
 		final String command = actionEvent.getActionCommand();
-		if (command.equals("select")) {
-			addSelectedHist();
-		} else if (command.equals("addall")) {
+		if (command.equals("addall")) {
 			addAllHists();
 		} else if (command.equals("removeselect")) {
 			removeSelectedHist();
@@ -362,10 +388,15 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 			console.errorOutln(ioe.getMessage());
 		}
 	}
+	
+	private File getFile(File dir, AbstractImpExp impExp, Histogram hist) {
+        return new File(dir, FileUtilities.setExtension(hist.getFullName()
+                .trim(), impExp.getDefaultExtension(), FileUtilities.APPEND_ONLY));
+    }
 
 	/**
-	 * Export the histograms
-	 */
+     * Export the histograms
+     */
 	private void export() {
 		/* select the format */
 		AbstractImpExp out = null;
@@ -387,9 +418,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 				for (int i = 0; i < files.length; i++) {
 					hist[i] = Histogram.getHistogram((String) model
 							.getElementAt(i));
-					files[i] = new File(dir, FileUtilities.setExtension(hist[i]
-							.getFullName().trim(), out.getDefaultExtension(),
-							FileUtilities.APPEND_ONLY));
+					files[i] = getFile(dir,out,hist[i]);
 					already |= files[i].exists();
 				}
 				if (already) {
@@ -443,8 +472,8 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	/**
 	 * Setup histogram chooser.
 	 */
-	private void setup() {
-		cbHist.removeActionListener(this);
+	private void setupHistChooser() {
+		cbHist.removeActionListener(cbHistListen);
 		cbHist.removeAllItems();
 		final Iterator iterator = Histogram.getHistogramList().iterator();
 		while (iterator.hasNext()) {
@@ -453,7 +482,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 				cbHist.addItem(hist.getFullName());
 			}
 		}
-		cbHist.addActionListener(this);
+		cbHist.addActionListener(cbHistListen);
 	}
 
 	/**
@@ -465,7 +494,8 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| command == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			setup();
+			setupHistChooser();
 		}
 	}
 }
+
