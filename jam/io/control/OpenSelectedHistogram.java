@@ -1,6 +1,8 @@
 package jam.io.control;
 
+import jam.data.Group;
 import jam.data.Histogram;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -40,7 +42,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken
  *  
  */
-public final class OpenSelectedHistogram {
+public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 
 	private final JDialog dialog;
 
@@ -59,10 +61,12 @@ public final class OpenSelectedHistogram {
 	private final HDFIO hdfio;
 	/** Messages output */
 	private final MessageHandler msgHandler;
-	/** Broadcaster */
-	private final Broadcaster broadcaster;
 	
 	private final Frame frame;
+
+	private Broadcaster broadcaster=Broadcaster.getSingletonInstance();;
+
+	private JamStatus status =JamStatus.getSingletonInstance();;
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out of an
@@ -75,7 +79,7 @@ public final class OpenSelectedHistogram {
 	    this.frame=frame;
 		this.msgHandler = msgHandler;
 		hdfio = new HDFIO(frame, msgHandler);
-		broadcaster= Broadcaster.getSingletonInstance();
+
 		dialog = new JDialog(frame, "Open Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50, frame.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
@@ -112,13 +116,6 @@ public final class OpenSelectedHistogram {
              */
             public void apply() {
                 String histName0 = loadHistograms();
-                broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-                Histogram hist = Histogram.getHistogram(histName0);
-                if (hist != null) {
-                    JamStatus.getSingletonInstance().setCurrentHistogram(hist);
-                    broadcaster.broadcast(
-                            BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
-                }
             }
 
             /**
@@ -158,6 +155,7 @@ public final class OpenSelectedHistogram {
 	 */
 	private boolean loadHistNames(File fileSelect) {	
 		boolean loadState;
+		HistogramAttributes.clear();
 		/* Read in histogram names attributes */	
 		try {
 			final List histAttr= hdfio.readHistogramAttributes(fileSelect);
@@ -192,12 +190,15 @@ public final class OpenSelectedHistogram {
             final List selectNames = new ArrayList();
             String histName0 = null;
             for (int i = 0; i < selected.length; i++) {
-                selectNames.add(selected[i]);
+            	String histogramFullName = (String)selected[i];
+            	String histName = HistogramAttributes.getHistogramAttribute(histogramFullName).getName();
+                selectNames.add(histName);
                 if (i == 0) {
                     histName0 = (String) selected[i];
                 }
             }
             /* Read in histograms */
+            hdfio.setListener(this);
             hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, null, selectNames);
             rval = histName0;
         }
@@ -226,5 +227,29 @@ public final class OpenSelectedHistogram {
 		}
 		return openF;
 	}
+
+	private void notifyApp() {
+		//Update app status		
+		AbstractControl.setupAll();
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		
+		//FIXME KBS need a way to get first addtional readin histogram
+		//Set the current histogram to the first opened histogram
+		final Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		if (firstHist!=null) {
+			status.setCurrentHistogram(firstHist);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		}
+		
+	}			
+	
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void completedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		notifyApp();		
+	}
+	
 }
 

@@ -6,20 +6,54 @@
  */
 package jam.io.hdf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Class to hold histogram properties while we decide if we should load
  * them.
  */
 public class HistogramAttributes {
+	
+	static Map mapFullNames = new HashMap();
 
+	public static void clear() {
+		mapFullNames.clear();		
+	}
+	
+	public static HistogramAttributes getHistogramAttribute(String fullName){
+		return (HistogramAttributes)mapFullNames.get(fullName);
+	}
+	
+    private String groupName;
+    
+    private String name;
+
+    private String fullName;
+    
+    private String title;
+
+    private int number;
+
+    private int sizeX;
+
+    private int sizeY;
+
+    private int histDim;
+
+    private byte histNumType;
+ 	
     HistogramAttributes(String groupName, String name, String title, int number) {        	
         super();
+
         this.groupName=groupName;
         this.name=name;
         this.title=title;
         this.number=number;
+        fullName=createFullName(groupName, name);
         
+        mapFullNames.put(fullName, this);        
     }
 	
     HistogramAttributes() {
@@ -41,43 +75,34 @@ public class HistogramAttributes {
     }
 
     /**
+     * @return the full name of the group/histogram
+     */
+    public String getFullName() {
+        return fullName;
+    }
+    /**
+     * Title of histogram
+     */
+    String getTitle() {
+    	return name;        	
+    }
+
+    /**
      * Full name is <groupName>/<histName.
      * @return the full name of the histogram
      * 
      */
-    public String getFullName() {
-    	String fullName;
+    public String createFullName(String groupNameIn, String nameIn) {
+    	String tempFullName;
     	
-    	if ( !groupName.equals("") )
-			fullName=groupName+"/"+name;
+    	if (groupName!=null ||  !groupName.equals("") )
+    		tempFullName=groupNameIn+"/"+nameIn;
     	else
-    		fullName=name;
+    		tempFullName=nameIn;
     	
-        return fullName;
+        return tempFullName;
     }
     
-    String getTitle() {
-    	return name;        	
-    }
     
-    String groupName;
-    
-    String name;
-
-    String title;
-
-    int number;
-
-    int sizeX;
-
-    int sizeY;
-
-    int histDim;
-
-    byte histNumType;
-
-    Object dataArray; //generic data array
-
-    Object errorArray;        
-            
+           
 }
