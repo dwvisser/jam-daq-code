@@ -79,36 +79,29 @@ public  class NetDaemon extends GoodThread {
     public NetDaemon( RingBuffer sortingRing, RingBuffer storageRing, MessageHandler msgHandler,
     String host, int port)
     throws SortException {
-        
         this.sortingRing=sortingRing;
         this.storageRing=storageRing;
         this.msgHandler=msgHandler;
-        this.iNetAddressData=host;
-        
-        //ceate a port listener
-        try {
+        this.iNetAddressData=host;        
+        try {//ceate a port listener
             dataAddress =InetAddress.getByName(iNetAddressData);
             dataPort=port;
-            dataSocket=new DatagramSocket(dataPort,dataAddress);
-            
+            dataSocket=new DatagramSocket(dataPort,dataAddress);            
             packetBuffer=new byte[BUFFER_SIZE];
             dataIn = new DatagramPacket(packetBuffer, packetBuffer.length);
         } catch (UnknownHostException e) {
-            throw new SortException("Unkown host "+dataAddress+" [NetDaemon]");
+            throw new SortException(getClass().getName()+": The host, "+iNetAddressData+", is unknown.");
         } catch(BindException be){
-            throw new SortException(" Could not bind to data socket [NetDaemon]");
+            throw new SortException(getClass().getName()+": Could not bind to data socket.");
         } catch (IOException e) {
-            throw new SortException(" Could not create data socket [NetDaemon]");
+            throw new SortException(getClass().getName()+": Could not create data socket.");
         }
         notSortCount=0;
         notStorCount=0;
         writerOn=false;
         sorterOn=true;
-        //sort every buffer
-        sortInterval=1;
-        
-        //high priority, normal 5
-        this.setPriority(9);
+        sortInterval=1;//sort every buffer
+        this.setPriority(9);//high priority, normal=5
         this.setDaemon(true);
     }
     
