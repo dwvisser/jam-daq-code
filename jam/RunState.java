@@ -39,12 +39,38 @@ public class RunState {
 		acquireMode=ACQUIRE_MODE[i];
 	}
 	
+	/**
+	 * Acquisition is not set up.
+	 */
 	public static final RunState NO_ACQ=new RunState(0);
+	
+	/**
+	 * Online acquisition is set up.
+	 */
 	public static final RunState ACQ_ON=new RunState(1);
+	
+	/**
+	 * Offline acquisition is set up.
+	 */
 	public static final RunState ACQ_OFF=new RunState(2);
+	
+	/**
+	 * Offline acquisition is set up and running.
+	 */
 	public static final RunState RUN_OFF=new RunState(3);
+	
+	/**
+	 * Getting our display data from a remote session.
+	 */
 	public static final RunState REMOTE=new RunState(5);
 	
+	/**
+	 * Online acquisition is set up, running and storing events to 
+	 * disk.
+	 * 
+	 * @param run run number
+	 * @return a new state object
+	 */
 	public static final RunState RUN_ON(int run){
 		RunState rval=new RunState(4);
 		rval.setLabel("   Run "+run+"   ");

@@ -20,6 +20,8 @@ import javax.swing.border.*;
  * @version 1.1
  */
 class SetupSortOff  implements ItemListener {
+	
+	private final JamStatus status=JamStatus.instance();
 
     class ApplyActionListener implements ActionListener{
 
@@ -35,7 +37,7 @@ class SetupSortOff  implements ItemListener {
 
     private void doApply(boolean dispose){
 		try{
-			if (jamMain.canSetSortMode()) {
+			if (status.canSetup()) {
 				resetSort();//clear current data areas and kill daemons
 				loadSorter();
 				msgHandler.messageOutln("Loaded sort class '"+
@@ -527,10 +529,10 @@ class SetupSortOff  implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            jamMain.setSortMode(SortMode.OFFLINE);
+            status.setSortMode(SortMode.OFFLINE);
             bbrowsef.setEnabled(false);
         } else{
-            jamMain.setSortMode(SortMode.NO_SORT);
+            status.setSortMode(SortMode.NO_SORT);
             bbrowsef.setEnabled(specify.isSelected());
         }
     }

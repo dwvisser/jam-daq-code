@@ -4,6 +4,7 @@ package jam;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
 
@@ -57,6 +58,8 @@ public class SetupRemote implements ActionListener, ItemListener {
 	private Button bok;
 	private Button bapply;
 	private Checkbox checkLock;
+	
+	private final JamStatus status=JamStatus.instance();
 
 	private int mode; //mode server, snap or link
 	RemoteData remoteData;
@@ -266,7 +269,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 
 		try {
 			if (jamMain != null) {// jam client
-				if (jamMain.canSetSortMode()) {
+				if (status.canSetup()) {
 					remoteData = (RemoteData) Naming.lookup(stringURL);
 					msgHandler.messageOutln("Remote lookup OK!");
 				} else {
@@ -326,11 +329,11 @@ public class SetupRemote implements ActionListener, ItemListener {
 
 		if (active) {
 			if ((mode != SERVER) && (!inApplet)) {
-				jamMain.setSortMode(SortMode.REMOTE);
+				status.setSortMode(SortMode.REMOTE);
 			}
 		} else {
 			if ((mode != SERVER) && (!inApplet)) {
-				jamMain.setSortMode(SortMode.NO_SORT);
+				status.setSortMode(SortMode.NO_SORT);
 			}
 		}
 	}

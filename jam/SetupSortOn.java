@@ -5,6 +5,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.SortMode;
@@ -94,6 +95,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		textPathData;
 	private final JTextField textPathLog;
 	private final JSpinner sortIntervalSpinner;
+	private final JamStatus status=JamStatus.instance();
 
 	/* strings of data entered */
 	private String experimentName;
@@ -474,7 +476,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 				textPathData.setText(dataDirectory);
 			} else if (command == "ok" || command == "apply") {
 				//lock setup so fields cant be edited
-				if (jamMain.canSetSortMode()) {
+				if (status.canSetup()) {
 					loadNames();
 					if (clog.isSelected()) { //if needed start logging to file
 						final String logFile =
@@ -864,7 +866,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		bbrowsed.setEnabled(notlock);
 		specify.setEnabled(notlock);
 		defaultPath.setEnabled(notlock);
-		jamMain.setSortMode(notlock ? SortMode.NO_SORT : 
+		status.setSortMode(notlock ? SortMode.NO_SORT : 
 			(cdisk.isSelected() ? SortMode.ONLINE_DISK : SortMode.ONLINE_NO_DISK));
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
