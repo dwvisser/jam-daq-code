@@ -48,29 +48,24 @@ public class Toolbar extends JToolBar {
 	 */
 	Toolbar(Container container, Action action) {
 		super("Actions", orientation);
-		Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
-		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
-		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
-		Icon iRange = loadToolbarIcon("jam/plot/Range.png");
-		Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
-
-		Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
-		Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
-		Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
-		Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
-		Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
-
-		Icon iArea = loadToolbarIcon("jam/plot/Area.png");
-		Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
-		Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
-
+		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
+		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
+		final Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
+		final Icon iRange = loadToolbarIcon("jam/plot/Range.png");
+		final Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
+		final Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
+		final Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
+		final Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
+		final Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
+		final Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
+		final Icon iArea = loadToolbarIcon("jam/plot/Area.png");
+		final Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
+		final Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 		setToolTipText(
 			"Underlined letters are shortcuts for the console.");
 		container.add(this, location);
-
 		try {
 			setRollover(true);
-
 			final JButton bupdate = iUpdate == null ? 
 					new JButton(getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
 			bupdate.setToolTipText(
@@ -78,7 +73,6 @@ public class Toolbar extends JToolBar {
 			bupdate.setActionCommand(Action.UPDATE);
 			bupdate.addActionListener(action);
 			add(bupdate);
-
 			final JButton blinear = iLinLog==null ?
 					new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
 			blinear.setToolTipText(
@@ -86,7 +80,6 @@ public class Toolbar extends JToolBar {
 			blinear.setActionCommand(Action.SCALE);
 			blinear.addActionListener(action);
 			add(blinear);
-
 			final JButton bauto = iAutoScale == null ?
 					new JButton(getHTML("<u>A</u>utoscale")) : new JButton(iAutoScale);
 			bauto.setToolTipText(
@@ -94,14 +87,12 @@ public class Toolbar extends JToolBar {
 			bauto.setActionCommand(Action.AUTO);
 			bauto.addActionListener(action);
 			add(bauto);
-
 			final JButton brange = iRange == null ? 
 					new JButton(getHTML("<u>Ra</u>nge")) : new JButton(iRange);
 			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
 			brange.setActionCommand(Action.RANGE);
 			brange.addActionListener(action);
 			add(brange);
-
 			brebin = iRebin == null ? 
 					new JButton(getHTML("<u>Re</u>bin")) : new JButton(iRebin);
 			brebin.setToolTipText(
@@ -109,69 +100,57 @@ public class Toolbar extends JToolBar {
 			brebin.setActionCommand(Action.REBIN);
 			brebin.addActionListener(action);
 			add(brebin);
-
 			addSeparator();
-
 			final JButton bexpand = iExpand==null ? 
 					new JButton(getHTML("<u>E</u>xpand")) : new JButton(iExpand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
 			bexpand.setActionCommand(Action.EXPAND);
 			bexpand.addActionListener(action);
 			add(bexpand);
-
 			final JButton bfull = iFullScale==null ? 
 				new JButton(getHTML("<u>F</u>ull")) : new JButton(iFullScale);
 			bfull.setActionCommand(Action.FULL);
 			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
 			bfull.addActionListener(action);
 			add(bfull);
-
 			final JButton bzoomin = iZoomIn==null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>i</u>n")) : new JButton(iZoomIn);
 			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
 			bzoomin.setActionCommand(Action.ZOOMIN);
 			bzoomin.addActionListener(action);
 			add(bzoomin);
-
 			final JButton bzoomout = iZoomOut == null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>o</u>ut")) : new JButton(iZoomOut);
 			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
 			bzoomout.setActionCommand(Action.ZOOMOUT);
 			bzoomout.addActionListener(action);
 			add(bzoomout);
-
 			bgoto = iGoto==null ? 
 					new JButton(getHTML("<u>G</u>oto")) : new JButton(iGoto);
 			bgoto.setActionCommand(Action.GOTO);
 			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
 			bgoto.addActionListener(action);
 			add(bgoto);
-
 			addSeparator();
-
 			final JButton barea = iArea==null ? 
 					new JButton(getHTML("<u>Ar</u>ea")) : new JButton(iArea);
 			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
 			barea.setActionCommand(Action.AREA);
 			barea.addActionListener(action);
 			add(barea);
-
 			bnetarea = iNetArea==null ?
 					new JButton(getHTML("<u>N</u>et Area")) : new JButton(iNetArea);
 			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
 			bnetarea.setActionCommand(Action.NETAREA);
 			bnetarea.addActionListener(action);
 			add(bnetarea);
-
 			addSeparator();
-
 			final JButton bcancel = iCancel==null ?
 					new JButton(getHTML("<u>C</u>ancel")) : new JButton(iCancel);
 			bcancel.setActionCommand(Action.CANCEL);
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
 			bcancel.addActionListener(action);
 			add(bcancel);
-
 			/* Listen for changes in orientation */
 			addPropertyChangeListener(
 					"orientation",
