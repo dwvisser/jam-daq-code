@@ -25,7 +25,7 @@ public class Kmax6InputStream extends EventInputStream {
     int blockNumEvnt;
     int blockEventType;
     private int countEvent=0;
-    private int countWord=0;
+//    private int countWord=0;
     private boolean newBlock=true;
     short[] eventsze=new short[32];		//event size array
 
@@ -69,7 +69,7 @@ public class Kmax6InputStream extends EventInputStream {
                 }
                 newBlock=false;
                 countEvent=0;
-                countWord=0;
+//                countWord=0;
                 //check if we are done with this block
             } else if(countEvent>blockNumEvnt){
                 //are we done with this block

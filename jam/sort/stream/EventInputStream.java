@@ -5,7 +5,6 @@ import jam.global.RunInfo;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 
@@ -84,9 +83,10 @@ public abstract class EventInputStream {
      */
     protected int headerRecordLength=0;
     
+    /**
+     * The place to print messages.
+     */
     protected MessageHandler console;
-    
-    protected Hashtable scalerTable;
     
     /**
      * Make sure to issue a setConsole() after using this constructor
@@ -100,6 +100,8 @@ public abstract class EventInputStream {
     
     /**
      * Default constructor.
+     * 
+     * @param console where to print messages
      */
     public EventInputStream(MessageHandler console){
         this();
@@ -163,7 +165,7 @@ public abstract class EventInputStream {
     }
     
     /**
-     *
+     * @return the size of the header block
      */
     public int getHeaderSize(){
         return headerSize;
@@ -241,10 +243,13 @@ public abstract class EventInputStream {
      *
      * @param word  to be checked whether it is an end-of-run marker
      * @return	<code>true</code> if yes, <code>false</code> if no
-     * @exception EventException thrown if an error condition cannot be handled
      */
     abstract public boolean isEndRun(short word);
     
+    /**
+     * Pops up an error dialog.
+     * @param e the cause of the error
+     */
     protected final void showErrorMessage(Exception e){
     	final String cname=getClass().getName();
     	if (console==null){
@@ -255,6 +260,10 @@ public abstract class EventInputStream {
     	}
     }
     
+    /**
+     * Pops up a warning dialog.
+     * @param s the warning message
+     */
 	protected final void showWarningMessage(String s){
 		final String cname=getClass().getName();
 		if (console==null){
@@ -265,9 +274,15 @@ public abstract class EventInputStream {
 		}
 	}
 	
+	/**
+	 * Prints a message to the console.
+	 * @param s message
+	 */
 	protected final void showMessage(String s){
 		if (console!=null){
 			console.messageOutln(s);
+		} else {
+		    System.out.println(s);
 		}
 	}
     

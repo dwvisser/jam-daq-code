@@ -17,8 +17,9 @@ public abstract class AbstractL002HeaderReader extends EventInputStream implemen
 	 * Creates the input stream given an event size.
 	 *
 	 * @param eventSize number of parameters per event.
+	 * @param console where to print messages
 	 */
-	public AbstractL002HeaderReader(MessageHandler console, int eventSize) {
+	AbstractL002HeaderReader(MessageHandler console, int eventSize) {
 		super(console, eventSize);
 	}
 
@@ -29,6 +30,9 @@ public abstract class AbstractL002HeaderReader extends EventInputStream implemen
 		super(console);
 	}
 	
+	/**
+	 * @see EventInputStream#EventInputStream()
+	 */
 	public AbstractL002HeaderReader(){
 		super();
 	}

@@ -36,12 +36,25 @@ public class BufferStatus {
      * it's remaining contents to the sort routine.
      */
     static public final BufferStatus FIFO_FLUSH = new BufferStatus(2);
+    
+    /**
+     * Indicates the state where flushing of the remaining contents of the
+     * buffer is occuring.
+     */
     static public final BufferStatus FIFO_ENDRUN_FLUSH = new BufferStatus(3);
     
+    /**
+     * Indicates the state where a scaler block is being read.
+     */
     static public final BufferStatus SCALER = new BufferStatus(4);
+    
+    /**
+     * Indicates the state where we're reading through end-of-buffer
+     * padding characters.
+     */
     static public final BufferStatus PADDING = new BufferStatus(5);
 
-    /** Creates new BufferStatus */
+    /*non-javadoc: Creates new BufferStatus */
     private BufferStatus(int code) {
         this.code=code;
     }

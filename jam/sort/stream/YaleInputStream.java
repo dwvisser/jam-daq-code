@@ -2,7 +2,6 @@ package jam.sort.stream;
 import jam.global.MessageHandler;
 
 import java.io.EOFException;
-import java.io.IOException;
 
 /**
  * This class knows how to handle Oak Ridge tape format.
@@ -19,21 +18,22 @@ public class YaleInputStream extends AbstractL002HeaderReader implements L002Par
 
     //make sure to issue a setConsole() after using this constructor
     //It is here to satisfy the requirements of Class.newInstance()
+    /**
+     * @see EventInputStream#EventInputStream()
+     */
     public YaleInputStream(){
         super();
     }
 
     /**
-     * Default constructor.
+     * @see EventInputStream#EventInputStream(MessageHandler)
      */
     public YaleInputStream(MessageHandler console) {
         super(console);
     }
 
     /**
-     * Creates the input stream given an event size.
-     *
-     * @param eventSize number of parameters per event.
+     * @see EventInputStream#EventInputStream(MessageHandler, int)
      */
     public YaleInputStream(MessageHandler console,int eventSize) {
         super(console, eventSize);
@@ -70,10 +70,10 @@ public class YaleInputStream extends AbstractL002HeaderReader implements L002Par
         return status ;
     }
 
-    /**
+    /* non-javadoc:
      * Read an event parameter.
      */
-    private boolean isParameter(short paramWord) throws IOException {
+    private boolean isParameter(short paramWord) {
         boolean parameterSuccess;
         if (paramWord==EVENT_END_MARKER){
             parameterSuccess=false;
@@ -88,7 +88,7 @@ public class YaleInputStream extends AbstractL002HeaderReader implements L002Par
 			/* extract parameter id, too */
             int paramNumber = paramWord & EVENT_PARAMETER_MASK;
             if (paramNumber < 2048) {
-                parameter=(int)paramNumber;//parameter index used in array
+                parameter=paramNumber;//parameter index used in array
                 parameterSuccess=true;
                 status=EventInputStatus.PARTIAL_EVENT;
             } else {// 2048-4095 assumed

@@ -15,7 +15,7 @@ import java.io.IOException;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class L003InputStream
+public final class L003InputStream
 	extends EventInputStream
 	implements L003Parameters {
 
@@ -35,16 +35,14 @@ public class L003InputStream
 	}
 
 	/**
-	 * Constructor for offline sorting.
+	 * @see EventInputStream#EventInputStream(MessageHandler)
 	 */
 	public L003InputStream(MessageHandler console) {
 		super(console);
 	}
 
 	/** 
-	 * Constuctor passed the number of parameters to an event.
-	 *
-	 * @param eventSize number of parameters per event
+	 * @see EventInputStream#EventInputStream(MessageHandler, int)
 	 */
 	public L003InputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
@@ -59,7 +57,6 @@ public class L003InputStream
 	 */
 	public synchronized EventInputStatus readEvent(int[] input)
 		throws EventException {
-
 		try {
 			while (readParameter()) {
 				input[parameter] = eventValue;
@@ -76,35 +73,32 @@ public class L003InputStream
 		return status; //if event read return ok 
 	}
 
-	/**
+    /* non-javadoc:
 	 * Read a event parameter
 	 */
 	private boolean readParameter() throws EventException, IOException {
-
 		boolean parameterSuccess;
 		int paramWord;
-
 		try {
 			paramWord = readVaxShort(); //read parameter word
 			//check special types parameter	
-			if (paramWord == EVENT_END_MARKER) {
+			if (paramWord == L002Parameters.EVENT_END_MARKER) {
 				//need another read as marker is 2 shorts
 				paramWord = readVaxShort();
 				numberEvents++;
 				parameterSuccess = false;
 				status = EventInputStatus.EVENT;
-			} else if (paramWord == BUFFER_END_MARKER) {
+			} else if (paramWord == L002Parameters.BUFFER_END_MARKER) {
 				parameterSuccess = false;
 				status = EventInputStatus.END_BUFFER;
-			} else if (paramWord == RUN_END_MARKER) {
+			} else if (paramWord == L002Parameters.RUN_END_MARKER) {
 				parameterSuccess = false;
 				status = EventInputStatus.END_RUN;
-
 				//get parameter value if not special type
-			} else if (0 != (paramWord & EVENT_PARAMETER_MARKER)) {
-				parameter = (int) ((paramWord & EVENT_PARAMETER_MASK) - 1);
+			} else if (0 != (paramWord & L002Parameters.EVENT_PARAMETER_MARKER)) {
+				parameter = (paramWord & EVENT_PARAMETER_MASK) - 1;
 				//parameter number	
-				eventValue = (int) readVaxShort();
+				eventValue = readVaxShort();
 				//read event word			
 				parameterSuccess = true;
 				status = EventInputStatus.PARTIAL_EVENT;
@@ -134,7 +128,7 @@ public class L003InputStream
 		return parameterSuccess;
 	}
 	
-	/**
+    /* non-javadoc:
 	 * read in a scaler dump
 	 * this is a 32000 byte ascii record
 	 */
@@ -231,13 +225,13 @@ public class L003InputStream
 	 * Implementation of an <code>EventInputStream</code> abstract method.
 	 */
 	public synchronized boolean isEndRun(short dataWord) {
-		return (dataWord == RUN_END_MARKER);
+		return (dataWord == L002Parameters.RUN_END_MARKER);
 	}
 
-	/** 
+    /* non-javadoc:
 	 * reads a little endian integer (4 bytes)
 	 */
-	int readVaxInt() throws IOException {
+	private int readVaxInt() throws IOException {
 		final int ch1 = dataInput.read();
 		final int ch2 = dataInput.read();
 		final int ch3 = dataInput.read();
@@ -245,11 +239,11 @@ public class L003InputStream
 		return (ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0);
 	}
 	
-	/** 
+    /* non-javadoc:
 	 * reads a little endian short (2 bytes)
 	 * but return a 4 byte integer
 	 */
-	short readVaxShort() throws IOException {
+	private short readVaxShort() throws IOException {
 		int ch1 = dataInput.read();
 		int ch2 = dataInput.read();
 		if ((ch1 | ch2) < 0) {
@@ -257,8 +251,4 @@ public class L003InputStream
 		}
 		return (short) ((ch2 << 8) + (ch1 << 0));
 	}
-
-//	public void setScalerTable(Hashtable table) {
-//	}
-
 }

@@ -39,15 +39,20 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	 */
 	static public final int ERROR = 10;
 
-	protected int eventSize, bufferSize, headerSize;
-
+	/**
+	 * The number of parameters per event.
+	 */
+	protected int eventSize;
+	
+	/**
+	 * The number of bytes per event buffer.
+	 */
+	private int bufferSize;
+	
+	/**
+	 * Where to write the data.
+	 */
 	protected DataOutputStream dataOutput;
-
-	//header information
-	String headerKey;
-	String headerTitle;
-	public int headerNumber;
-	int headerEventSize;
 
 	/** 
 	 * Creates a new event output stream.
@@ -62,7 +67,7 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	 * @param eventSize the number of values per event
 	 */
 	protected EventOutputStream(int eventSize) {
-		this.eventSize = eventSize;
+		setEventSize(eventSize);
 	}
 
 	/**
@@ -70,7 +75,7 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	 * @param size the number of values per event
 	 */
 	public void setEventSize(int size) {
-		this.eventSize = size;
+		eventSize = size;
 	}
 
 	/**
@@ -99,13 +104,7 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	public int getBufferSize() {
 		return bufferSize;
 	}
-	/**
-	 *
-	 */
-	public int getHeaderSize() {
-		return headerSize;
-	}
-
+	
 	/**
 	 * Sets the output stream where events and headers will be written.
 	 *
@@ -117,6 +116,8 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 
 	/**
 	 * Implemented for <code>OutputStream</code> requirement.
+	 * @param word to write the output stream
+	 * @throws IOException if there's a problem writing
 	 */
 	public void write(int word) throws IOException {
 		dataOutput.write(word);
@@ -149,11 +150,15 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 
 	/**
 	 * Writes the end of run information, if any.
+	 * @throws EventException if there's a problem while writing the end-of-run stuff
 	 */
 	abstract public void writeEndRun() throws EventException;
 
 	/**
 	 * Checks whether the given <code>short</code> indicates the end-of-run.
+	 * 
+	 * @param event datum from the event stream
+	 * @return <code>true</code> if the datum indicates we're at the end of the run
 	 */
 	abstract public boolean isEndRun(short event);
 }

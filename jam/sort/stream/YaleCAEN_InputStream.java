@@ -70,7 +70,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
     
     /**
-     * Default constructor.
+     * @see EventInputStream#EventInputStream(MessageHandler)
      */
     public YaleCAEN_InputStream(MessageHandler console) {
         super(console);
@@ -115,9 +115,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
         
     /**
-     * Creates the input stream given an event size.
-     *
-     * @param eventSize number of parameters per event.
+     * @see EventInputStream#EventInputStream(MessageHandler, int)
      */
     public YaleCAEN_InputStream(MessageHandler console, int eventSize) {
         super(console, eventSize);
@@ -254,7 +252,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     
 	static private final int TYPE_MASK   = 0x7000000;
 	static private final int PARAM_COMPARE=0x0000000;
-    /**
+	
+    /* non-javadoc
      * Checks whether the word type is for an event data word 
      */
     private boolean isParameter(int data){
@@ -262,7 +261,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
     
 	static private final int HEADER_COMPARE = 0x2000000;
-    /**
+	
+    /* non-javadoc
      * Checks whether the word type is for an event header.
      */
     private boolean isHeader(int data){
@@ -270,7 +270,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
     
 	static private final int END_COMPARE = 0x4000000;
-    /**
+	
+    /* non-javadoc
      * Checks whether the word type is for an event end-of-block 
      */
     private boolean isEndBlock(int data){

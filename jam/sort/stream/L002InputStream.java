@@ -2,7 +2,6 @@ package jam.sort.stream;
 import jam.global.MessageHandler;
 
 import java.io.EOFException;
-import java.io.IOException;
 
 /**
  * This class knows how to handle Oak Ridge tape format.  It extends
@@ -19,14 +18,16 @@ public class L002InputStream extends AbstractL002HeaderReader implements L002Par
     private EventInputStatus status;
     private int parameter;
 
-    //make sure to issue a setConsole() after using this constructor
-    //It is here to satisfy the requirements of Class.newInstance()
+    /**
+     * Make sure to issue a setConsole() after using this constructor. It is
+     * here to satisfy the requirements of Class.newInstance()
+     */
     public L002InputStream(){
         super();
     }
 
     /**
-     * Default constructor.
+     * @see EventInputStream#EventInputStream(MessageHandler)
      */
     public L002InputStream(MessageHandler console) {
         super(console);
@@ -35,7 +36,8 @@ public class L002InputStream extends AbstractL002HeaderReader implements L002Par
     /**
      * Creates the input stream given an event size.
      *
-     * @param eventSize number of parameters per event.
+     * @param eventSize number of parameters per event
+     * @param console the place to write messages
      */
     public L002InputStream(MessageHandler console, int eventSize) {
         super(console, eventSize);
@@ -55,7 +57,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements L002Par
                     if (parameter >= eventSize) {//skip, since array index would be too great for event array
                         dataInput.readShort();
                     } else {//read into array
-                        input[parameter]=(int)dataInput.readShort();	//read event word
+                        input[parameter]=dataInput.readShort();	//read event word
                     }
                 } else if (status == EventInputStatus.SCALER_VALUE) {
                     dataInput.readInt();//throw away scaler value
@@ -72,10 +74,10 @@ public class L002InputStream extends AbstractL002HeaderReader implements L002Par
         return status ;
     }
 
-    /**
+    /* non-javadoc:
      * Read an event parameter.
      */
-    private boolean isParameter(short paramWord) throws IOException {
+    private boolean isParameter(short paramWord) {
         boolean parameterSuccess;
         /* check if it's a special type of parameter */
         if (paramWord==EVENT_END_MARKER){
@@ -91,7 +93,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements L002Par
         } else if ((paramWord & EVENT_PARAMETER_MARKER) != 0) {
             int paramNumber = paramWord & EVENT_PARAMETER_MASK;
             if (paramNumber < 2048) {
-                parameter=(int)(paramNumber-1);//parameter number used in array
+                parameter=paramNumber-1;//parameter number used in array
                 parameterSuccess=true;
                 status=EventInputStatus.PARTIAL_EVENT;
             } else {// 2048-4095 assumed

@@ -16,19 +16,18 @@ import java.util.TimeZone;
  * @see         EventOutputStream
  * @since       JDK1.1
  */
-public class L002OutputStream extends EventOutputStream implements L002Parameters {
-    int status;
-    int parameter;
-    public int value;
-    SimpleDateFormat formatter;
+public final class L002OutputStream extends EventOutputStream implements L002Parameters {
+    
+    private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
+    {
+        formatter.setTimeZone(TimeZone.getDefault());        
+    }
 
     /**
      * Default constructor.
      */
     public L002OutputStream(){
         super();
-        formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
-        formatter.setTimeZone(TimeZone.getDefault());
     }
 
     /**
@@ -38,9 +37,8 @@ public class L002OutputStream extends EventOutputStream implements L002Parameter
      */
     public L002OutputStream(int eventSize){
         super(eventSize);
-        formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
-        formatter.setTimeZone(TimeZone.getDefault());
     }
+    
     /**
      * Writes the header block.
      *
@@ -115,7 +113,7 @@ public class L002OutputStream extends EventOutputStream implements L002Parameter
         }
     }
 
-    /**
+    /* non-javadoc:
      * NOT CURRENTLY IMPLEMENTED. Writes a single parameter.
      *  would be called by writeEvent
      * @exception   EventException    thrown for errors in the event stream
@@ -152,17 +150,17 @@ public class L002OutputStream extends EventOutputStream implements L002Parameter
         }
     }
 
-    /**
+    /* non-javadoc:
      * Checks whether a valid parameter number (should be 1 to 512 according to ORNL documentation).
      */
-    protected boolean isValidParameterNumber(short number){
+    private boolean isValidParameterNumber(short number){
         return ((number>=1 )&& (number <= 512));
     }
 
-    /**
+    /* non-javadoc:
      * Converts a short to a valid parameter marker for the stream.
      */
-    protected short parameterMarker(short number) {
+    private  short parameterMarker(short number) {
         return (short)((EVENT_PARAMETER_MARKER | number)&0xFFFF);
     }
 }

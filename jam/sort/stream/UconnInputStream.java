@@ -3,8 +3,6 @@ import jam.data.Scaler;
 import jam.global.MessageHandler;
 
 import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -17,7 +15,7 @@ import java.io.IOException;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class UconnInputStream extends EventInputStream {
+public final class UconnInputStream extends EventInputStream {
 
 	static private final int HEAD_SIZE = 5; //size of header in 2 byte words
 
@@ -53,34 +51,21 @@ public class UconnInputStream extends EventInputStream {
 	private short eventNumWord;
 
 	private int countEvent = 0;
-	private int countWord = 0;
 
 	private boolean newBlock = true;
 
+	/**
+	 * @see EventInputStream#EventInputStream(MessageHandler)
+	 */
 	public UconnInputStream(MessageHandler console) {
 		super(console);
 	}
 
+	/**
+	 * @see EventInputStream#EventInputStream(MessageHandler, int)
+	 */
 	public UconnInputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
-	}
-
-	/**
-	 * Constructor for testing
-	 */
-	public UconnInputStream(MessageHandler console, String fileName) {
-		super(console);
-		try {
-			File file = new File(fileName);
-			if (!file.exists()) {
-				System.out.println("file  does not exit");
-			}
-			System.out.println("Constructor file " + fileName);
-			FileInputStream fis = new FileInputStream(file);
-			setInputStream(fis);
-		} catch (Exception e) {
-			System.out.println("Error Test Constructor " + e.getMessage());
-		}
 	}
 
 	/**
@@ -104,7 +89,6 @@ public class UconnInputStream extends EventInputStream {
 				}
 				newBlock = false;
 				countEvent = 0;
-				countWord = 0;
 				//check if we are done with this buffer 		
 			} else if (countEvent == blockNumEvnt) {
 				//are we done with this block
@@ -146,9 +130,10 @@ public class UconnInputStream extends EventInputStream {
 	 * Expects the stream to be at the beginning of a block
 	 * It is up to user to ensure this
 	 *
+	 * @return <code>true</code> if successful
 	 * @exception EventException thrown for errors in event stream
 	 */
-	public boolean readBlockHeader() throws EventException {
+	private boolean readBlockHeader() throws EventException {
 		try {
 
 			blockFullSize = dataInput.readInt();
@@ -183,7 +168,7 @@ public class UconnInputStream extends EventInputStream {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * read a event header
 	 */
 	private void readEventHeader() throws EventException {
@@ -209,7 +194,8 @@ public class UconnInputStream extends EventInputStream {
 					+ " [UconnnInputStream]");
 		}
 	}
-	/**
+	
+	/*non-javadoc:
 	 * we are at an event so unpack it
 	 */
 	private void unpackData(int[] input) throws IOException, EventException {
@@ -281,30 +267,4 @@ public class UconnInputStream extends EventInputStream {
 		/* no end run marker */
 		return false;
 	}
-
-	/**
-	 * Main method that is run to start up full Jam process
-	 */
-	public static void main(String args[]) {
-		try {
-			System.out.println("Test Uconn Input Stream");
-			System.out.println("Input file " + args[0]);
-			//UconnInputStream ucis =new UconnInputStream(args[0]);
-			//		ucis.readEvent(event);
-			//		ucis.buffdump();	    
-
-			for (int i = 0; i < 100; i++) {
-				//ucis.readEvent(event);
-				//block header
-				// ucis.buffdumpNum();
-
-			}
-		} catch (Exception e) {
-			System.out.println("Error main " + e.getMessage());
-		}
-
-	}
-//	public void setScalerTable(Hashtable table) {
-//	}
-
 }

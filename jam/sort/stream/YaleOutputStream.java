@@ -16,30 +16,24 @@ import java.util.TimeZone;
  * @see         EventOutputStream
  * @since       JDK1.1
  */
-public class YaleOutputStream extends EventOutputStream implements L002Parameters {
-    int status;
-    int parameter;
-    public int value;
-    SimpleDateFormat formatter;
+public final class YaleOutputStream extends EventOutputStream implements L002Parameters {
+    private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
+    {
+        formatter.setTimeZone(TimeZone.getDefault());        
+    }
 
     /**
      * Default constructor.
      */
     public YaleOutputStream(){
         super();
-        formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
-        formatter.setTimeZone(TimeZone.getDefault());
     }
 
     /**
-     * Creates the output stream with the given event size.
-     *
-     * @param eventSize the number of parameters per event
+     * @see EventOutputStream#EventOutputStream(int)
      */
     public YaleOutputStream(int eventSize){
         super(eventSize);
-        formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
-        formatter.setTimeZone(TimeZone.getDefault());
     }
     
     /**
@@ -112,7 +106,7 @@ public class YaleOutputStream extends EventOutputStream implements L002Parameter
         }
     }
 
-    /**
+    /* non-javadoc:
      * NOT CURRENTLY IMPLEMENTED. Writes a single parameter.
      *  would be called by writeEvent
      * @exception   EventException    thrown for errors in the event stream
@@ -149,17 +143,17 @@ public class YaleOutputStream extends EventOutputStream implements L002Parameter
         }
     }
 
-    /**
+    /* non-javadoc:
      * Checks whether a valid parameter number (should be 1 to 512 according to ORNL documentation).
      */
-    protected boolean isValidParameterNumber(short number){
+    private boolean isValidParameterNumber(short number){
         return ((number>=0 )&& (number < 2048));
     }
 
-    /**
+    /* non-javadoc:
      * Converts a short to a valid parameter marker for the stream.
      */
-    protected short parameterMarker(short number) {
+    private short parameterMarker(short number) {
         return (short)((EVENT_PARAMETER_MARKER | number)&0xFFFF);
     }
 }

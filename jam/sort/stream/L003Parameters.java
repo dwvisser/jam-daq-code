@@ -9,34 +9,32 @@ package jam.sort.stream;
  */
 public interface L003Parameters {
 
-    //stream markers
-    final short EVENT_END_MARKER=(short)0xFFFF;    
-    final short BUFFER_END_MARKER=(short)0xFFF0;
-    final short RUN_END_MARKER=(short)0xFF03;    
-    final short EVENT_PARAMETER_MARKER=(short)0x8000;    
-    final short EVENT_PARAMETER_MASK  =(short)0x07FF;
+    /**
+     * Any word for a parameter number value bitwise 'and'ed with this gives the event 
+     * parameter number.
+     */
+    short EVENT_PARAMETER_MASK  =(short)0x07FF;
 
     
-    //header stuff
-    static public final int HEADER_SIZE=256;	
-    static public final int TITLE_SIZE=80;    
-    public final String HEADER_START="HHIRF   L003    LIST DATA       ";    
+    /**
+     * All header blocks must begin with an ASCII version of this.
+     */
+    String HEADER_START="HHIRF   L003    LIST DATA       ";    
     
-    //event data word parameter limits		    	    	    
-    final short PARAMETER_MIN=(short)1;
-    final short PARAMETER_MAX=(short)512;
     
+    /**
+     * Length of a event data record in bytes.
+     */
     int EVENT_RECORD_SIZE=8192;
     
+    /**
+     * Size of scaler records in bytes. (?)
+     */
     int SCALER_RECORD_SIZE=32000;
+    
+    /**
+     * Size of scaler buffers in bytes. (?) 
+     */
     int SCALER_BUFFER_SIZE=256;
-    
-    //tape stuff
-//    static public final int DATA_RECORD_LENGTH=0x10000; //64 kbytes	 //must be an even number
-//    static public final int PARAM_ERROR=20;    
-//    static public final int IMAGE_RECORD_LENGTH=1600; //20 lines of 8-bit chars
-    
-    
-        
 }
     

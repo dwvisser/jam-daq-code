@@ -20,18 +20,25 @@ public class XsysInputStream extends EventInputStream {
 	int bufferMarker;
 	int bufferNumber;
 	
+	/**
+	 * @see EventInputStream#EventInputStream()
+	 *
+	 */
 	public XsysInputStream(){
 		super();
 	}
 
 	/**
-	 * Constructor for input stream
+	 * @see EventInputStream#EventInputStream(MessageHandler)
 	 */
 	public XsysInputStream(MessageHandler console) {
 		super(console);
 		bufferNumber = 0;
 	}
 
+	/**
+	 * @see EventInputStream#EventInputStream(MessageHandler, int)
+	 */
 	public XsysInputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
 	}
@@ -54,9 +61,8 @@ public class XsysInputStream extends EventInputStream {
 					if (input[i] < 0) {
 						status = EventInputStatus.END_FILE;
 						break; //jumps out of for-loop
-					} else {
-						status = EventInputStatus.EVENT;
-					}
+					} 
+					status = EventInputStatus.EVENT;
 				}
 			} else {
 				if ((bufferMarker = dataInput.read()) != END_REC) {
@@ -97,21 +103,15 @@ public class XsysInputStream extends EventInputStream {
 		return false;
 	}
 
-	/** 
+	/* non-javadoc:
 	 * reads a little endian short, 2 bytes
 	 */
 	private int readVaxShort() throws IOException {
-
 		int ch1 = dataInput.read();
 		int ch2 = dataInput.read();
 		if ((ch1 | ch2) < 0) {
 			return -1;
 		}
 		return (ch2 << 8) + (ch1 << 0);
-
 	}
-
-//	public void setScalerTable(Hashtable table) {
-//	}
-
 }
