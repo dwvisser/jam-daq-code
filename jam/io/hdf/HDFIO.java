@@ -1042,18 +1042,23 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    groupCount =groupVirtualGroups.size();
 	    //Loop over groups
 	    final Iterator groupIter =groupVirtualGroups.iterator();
-	    while (groupIter.hasNext()) {
+	    GROUPLIST:while (groupIter.hasNext()) {
 	    	final VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
 	    	Group currentGroup=null;
 	    	final List histList;
 	    	//Get the current group for the rest of the operation
 	    	if ( mode==FileOpenMode.OPEN || mode==FileOpenMode.OPEN_MORE ) {
-	    		currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, mode);
+	    		currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, histAttributeList, mode);
 	    	} else {
 	    		String groupName = hdfToJam.readVirtualGroupName(currentVGroup); 
 	    		if (hdfToJam.containsGroup(groupName, existingGroupList)) {
 	    			currentGroup = Group.getGroup(groupName);
 	    		}
+	    	}
+	    	
+	    	//No histograms in group
+	    	if (currentGroup ==null) {
+	    		continue GROUPLIST;
 	    	}
 	    	
 	    	//Keep track of first loaded group
@@ -1177,7 +1182,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	final Iterator histIter =histList.iterator();
 	    	 while (histIter.hasNext()) {
 	    	 	final VirtualGroup histVGroup = (VirtualGroup)histIter.next();
-	    	 	final HistogramAttributes histAttributes =hdfToJam.convertHistogamAttributes(groupName, histVGroup,  null, mode);
+	    	 	final HistogramAttributes histAttributes =hdfToJam.convertHistogamAttributes(groupName, histVGroup,  mode);
 	    	 	lstHistAtt.add(histAttributes);
 	    	 }
 	    }
@@ -1201,7 +1206,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             while (iter.hasNext()) {
                 final VirtualGroup currHistGrp = (VirtualGroup) (iter.next());
                 final HistogramAttributes histAttributes = hdfToJam.convertHistogamAttributes(
-                					Group.DEFAULT_NAME, currHistGrp, null, FileOpenMode.ATTRIBUTES);
+                					Group.DEFAULT_NAME, currHistGrp, FileOpenMode.ATTRIBUTES);
                 lstHistAtt.add(histAttributes);
             }
             //after loop

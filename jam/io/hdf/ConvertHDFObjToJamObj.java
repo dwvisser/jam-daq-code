@@ -104,16 +104,52 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     /* non-javadoc:
      * Convert a virtual group to a jam data group
      */
-	Group convertGroup(VirtualGroup virtualGroup, String fileName, FileOpenMode mode){
+	Group convertGroup(VirtualGroup virtualGroup, String fileName, List histAttributeList, FileOpenMode mode) {
+		
+		Group group;
+	
+		
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
-		/* Don't use file name for group name for open. */
-		final String fname = mode==FileOpenMode.OPEN ? null : fileName;
-		return Group.createGroup(dataIDLabel.getLabel(), fname, Group.Type.FILE);
+				
+		if (hasHistogramsInList(virtualGroup,  histAttributeList)) {
+			
+			/* Don't use file name for group name for open. */
+			final String fname = mode==FileOpenMode.OPEN ? null : fileName;
+			group = Group.createGroup(dataIDLabel.getLabel(), fname, Group.Type.FILE);
+			
+		} else {
+			group =null;
+		}
+ 		return group;
 	} 
 	
+	boolean hasHistogramsInList(VirtualGroup virtualGroup, List histAttributeList) {
+		
+		boolean rtnVal=true;
+		
+		List nameList =new ArrayList();
+		
+		//Check group has histograms
+		if (histAttributeList!=null) {
+			Iterator iterHistAtt = histAttributeList.iterator();
+			while(iterHistAtt.hasNext()) {
+				String name = ((HistogramAttributes)iterHistAtt.next()).getName();
+				nameList.add(name);
+			}
+		
+			List histList = findHistograms(virtualGroup, nameList);	
+			int size = histList.size();
+			if (size>0)
+				rtnVal=true;
+			else
+				rtnVal=false;				
+		} 		
+		return rtnVal;
+	}
 	
-	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) throws HDFException {
+	
+	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) {
 		return findSubGroups(virtualGroupGroup, HIST_TYPE, histogramNames);
     }
     
@@ -251,7 +287,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     	return inList;
     }
     				
-    HistogramAttributes convertHistogamAttributes(String groupName, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    HistogramAttributes convertHistogamAttributes(String groupName, VirtualGroup histGroup, FileOpenMode mode) throws HDFException {
     	
     	Group group;
 
@@ -280,10 +316,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
                 ndgErr = dataGroups[1];
             }
         } else {
-        	histAttributes=null;
-        	//FIXME KBS rem no longer the case
-        	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
-            //        + ") in VirtualGroup.");
+        	throw new HDFException( "Invalid number of data groups (" + dataGroups.length
+                    + ") in VirtualGroup.");
         }
         final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
         final int number = Integer.parseInt(numLabel.getLabel());            
@@ -296,27 +330,14 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         final int histDim = sdd.getRank();
         final int sizeX = sdd.getSizeX();
         final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
-        
-
-        /*FIXME KBS not needed for attributes
-        final ScientificData sciData = (ScientificData) (AbstractData
-                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
-        //sciData.setNumberType(histNumType);        
-        //sciData.setRank(histDim);
                 
-        final ScientificData sdErr = produceErrorData(ndgErr, histDim);
-        */        
-        
-        /* Given name list check that that the name is in the list. */
-        if (histNames == null || histNames.contains(name)) {            	
-            if (mode==FileOpenMode.ATTRIBUTES) {
-            	histAttributes=attributesHistogram(groupName, name, title, number);
-            } else {
-            	histAttributes=null;
-            }
-            	
+        /* Given name list check that that the name is in the list. */            	
+        if (mode==FileOpenMode.ATTRIBUTES) {
+        	histAttributes=attributesHistogram(groupName, name, title, number);
+        } else {
+        	histAttributes=null;
         }
-        
+            	        
         return histAttributes;
     }
     

@@ -117,7 +117,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
              *  
              */
             public void apply() {
-                //FIXME does nothing String histName0 = loadHistograms();
+               loadHistograms();
             }
 
             /**
@@ -179,34 +179,28 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 	/* non-javadoc:
 	 * Load the histograms in the selected list.
 	 */
-	private String loadHistograms() {
-        final String rval;
+	private void loadHistograms() {
+
         final Object[] selected = histList.getSelectedValues();
         histAttrList.clear();
         //No histograms selected
         if (selected.length == 0) {
             msgHandler.errorOutln("No histograms selected");
-            rval = "";
         } else {
             /* Put selected histograms into a list */
             final List selectNames = new ArrayList();
-            String histName0 = null;
+
             for (int i = 0; i < selected.length; i++) {
             	final String histFullName = (String)selected[i];
             	final HistogramAttributes histAttrib = HistogramAttributes.getHistogramAttribute(histFullName);
             	histAttrList.add(histAttrib);          	
             	final String histName = histAttrib.getName();
                 selectNames.add(histName);
-                if (i == 0) {
-                    histName0 = (String) selected[i];
-                }
             }
             /* Read in histograms */
             hdfio.setListener(this);
             hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, histAttrList);
-            rval = histName0;
         }
-        return rval;
     }
 
 	/**
