@@ -5,7 +5,6 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.global.CommandListener;
-import jam.global.MessageHandler;
 import jam.plot.Display;
 
 import java.applet.Applet;
@@ -107,7 +106,7 @@ public class HistApplet
 		console = new JamConsole(20);
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */						
-		display = new Display((MessageHandler) console);
+		display = new Display(console);
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
 		display.addToolbarAction();// tool bar for plot actions
