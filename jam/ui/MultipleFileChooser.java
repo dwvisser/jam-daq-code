@@ -94,7 +94,7 @@ public final class MultipleFileChooser extends JPanel {
 		pButtons.add(bAddfile);
 		bAddfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				addFile(JFileChooser.FILES_ONLY);
+				selectFile(true);
 			}
 		});
 	
@@ -102,7 +102,7 @@ public final class MultipleFileChooser extends JPanel {
 		pButtons.add(bAddDir);
 		bAddDir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				addFile(JFileChooser.DIRECTORIES_ONLY);
+				selectFile(false);
 			}
 		});
 	
@@ -270,18 +270,24 @@ public final class MultipleFileChooser extends JPanel {
 		return numFiles;
 	}
 	
-	/* non-javadoc:
-	 * browse for data files
+	/**
+	 * Select a file, browse for data files
+	 * @param selectDir
+	 * 		   
 	 */
-	private void addFile(int mode) {
-		final JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(mode);
-		final boolean fileMode = mode == JFileChooser.FILES_ONLY;
-		if (!fileMode && mode != JFileChooser.DIRECTORIES_ONLY){
-		    throw new IllegalArgumentException("Use one of JFileChooser.FILES_ONLY or "+
-            "JFileChooser.DIRECTORIES_ONLY");		    
+	private void selectFile(boolean selectFileOnly) {
+		int chooserMode;
+		
+		if (selectFileOnly) {
+			chooserMode=JFileChooser.FILES_ONLY;			
+		} else {
+			chooserMode=JFileChooser.DIRECTORIES_ONLY;
 		}
-		if (fileMode){
+		
+		final JFileChooser fd = new JFileChooser(lastFile);
+		fd.setFileSelectionMode(chooserMode);
+		//fd.setMultiSelectionEnabled(true);
+		if (selectFileOnly){
 		    fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
 				"Data Files (*."+fileExtension+")"));
 		}
@@ -289,8 +295,15 @@ public final class MultipleFileChooser extends JPanel {
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
-		    if (fileMode){
-		        addFile(fd.getSelectedFile());
+
+		    if (selectFileOnly){
+				/*
+				File [] files =fd.getSelectedFiles();
+		    	for (int i=0; i<files.length;i++ ) {
+		    		listFilesModel.addElement(files[i]);
+		       }
+		       */
+		     addFile(fd.getSelectedFile());
 		    } else {
 				lastFile = fd.getSelectedFile(); //save current directory
 				addDirFiles(lastFile);
