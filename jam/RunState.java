@@ -48,7 +48,7 @@ public class RunState {
 	 * Actively sorting online or offline data, but not within the 
 	 * context of a run.
 	 * 
-	 * @see #RUN_ON(int)
+	 * @see #runOnline(int)
 	 */
 	public static final RunState ACQ_ON=new RunState(1);
 	
@@ -70,7 +70,7 @@ public class RunState {
 	 * @param run run number
 	 * @return a new state object
 	 */
-	public static final RunState RUN_ON(int run){
+	public static final RunState runOnline(int run){
 		RunState rval=new RunState(3);
 		rval.setLabel("   Run "+run+"   ");
 		return rval;
@@ -97,7 +97,7 @@ public class RunState {
 	 * @return <code>true</code> if this mode represents a state of
 	 * actively sorting data
 	 * @see #ACQ_ON
-	 * @see #RUN_ON(int)
+	 * @see #runOnline(int)
 	 */
 	public boolean isAcqOn(){
 		return acquireOn;
@@ -109,7 +109,7 @@ public class RunState {
 	 * offline sorting mode, regardless of whether data is actively
 	 * being sorted at the moment
 	 * @see #ACQ_ON
-	 * @see #RUN_ON(int)
+	 * @see #runOnline(int)
 	 * @see #ACQ_OFF
 	 */
 	public boolean isAcquireMode(){
