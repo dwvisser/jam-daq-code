@@ -378,6 +378,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
+	 * Reads file into set of DataObject's and sets their internal
+	 * variables.
+	 * 
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readObjects() throws HDFException {

@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -48,10 +49,14 @@ public abstract class ImpExp {
 	 */
 	protected final MessageHandler msgHandler;
 
+	protected static final Object lastFileMonitor=new Object();
+	protected static final String LAST_FILE_KEY="LastValidFile";
+	private static final Preferences prefs=Preferences.userNodeForPackage(ImpExp.class);
 	/**
 	 * the last file accessed, null goes to users home directory
 	 */
-	protected File lastFile = null;
+	protected static File lastFile = new File(prefs.get(LAST_FILE_KEY,
+	System.getProperty("user.dir")));
 
 	/**
 	 * Class constructor.
@@ -140,7 +145,7 @@ public abstract class ImpExp {
 				inFile=getFileOpen(msg);
 			}
 			if (inFile != null) { // if Open file was  not canceled
-				lastFile = inFile;
+				setLastFile(inFile);
 				FileInputStream inStream = new FileInputStream(inFile);
 				BufferedInputStream inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
 				if (msgHandler != null) msgHandler.messageOut(
@@ -176,7 +181,7 @@ public abstract class ImpExp {
 		File outFile = getFileSave(msg);
 		try {// open file dialog		 
 			if (outFile != null) { // if Save file dialog was  not canceled
-				lastFile = outFile;
+				setLastFile(outFile);
 				FileOutputStream outStream = new FileOutputStream(outFile);
 				BufferedOutputStream outBuffStream =
 					new BufferedOutputStream(outStream, BUFFER_SIZE);
@@ -246,7 +251,7 @@ public abstract class ImpExp {
 		throws ImpExpException {
 		File file = null;
 		int option;
-		JFileChooser jfile = new JFileChooser(lastFile);
+		JFileChooser jfile = new JFileChooser(getLastFile());
 		jfile.setDialogTitle(msg);
 		jfile.setFileFilter(getFileFilter());
 		if (state == LOAD) {
@@ -283,7 +288,16 @@ public abstract class ImpExp {
 	}
 
 	public File getLastFile() {
-		return lastFile;
+		synchronized (lastFileMonitor){
+			return lastFile;
+		}
+	}
+	
+	protected void setLastFile(File f) {
+		synchronized (lastFileMonitor){
+			lastFile=f;	
+			prefs.put(LAST_FILE_KEY,f.getAbsolutePath());
+		}
 	}
 	
 	/**

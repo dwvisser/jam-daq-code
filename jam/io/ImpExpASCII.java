@@ -120,7 +120,7 @@ public class ImpExpASCII extends ImpExp {
 		try {
 			String titleHist = this.getHistTitle();
 			//also determines whether 1st line is title
-			String nameHist = getFileName(lastFile);
+			String nameHist = getFileName(getLastFile());
 			nameHist = nameHist.substring(0, nameHist.indexOf('.'));
 			int rows = getNumberOfRows();
 			int cols = getNumberOfColumns();
@@ -174,7 +174,7 @@ public class ImpExpASCII extends ImpExp {
 	private void getMaxChannelsXY(int rows) throws IOException {
 		maxX = 0;
 		LineNumberReader lnr =
-			new LineNumberReader(new FileReader(this.lastFile));
+			new LineNumberReader(new FileReader(getLastFile()));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
 		}
@@ -193,7 +193,7 @@ public class ImpExpASCII extends ImpExp {
 		maxX = 0;
 		maxY = 0;
 		LineNumberReader lnr =
-			new LineNumberReader(new FileReader(this.lastFile));
+			new LineNumberReader(new FileReader(getLastFile()));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
 		}
@@ -282,7 +282,7 @@ public class ImpExpASCII extends ImpExp {
 	private String getHistTitle() throws IOException {
 		String rval = null;
 		InputStreamReader isr =
-			new InputStreamReader(new FileInputStream(lastFile));
+			new InputStreamReader(new FileInputStream(getLastFile()));
 		StreamTokenizer st = new StreamTokenizer(isr);
 		//make a tokenizer for input stream
 		st.eolIsSignificant(true); //Grab end of line markers
@@ -291,7 +291,7 @@ public class ImpExpASCII extends ImpExp {
 			rval = st.sval;
 			firstLineIsTitle = true;
 		} else {
-			rval = getFileName(lastFile);
+			rval = getFileName(getLastFile());
 			rval = rval.substring(0, rval.indexOf("."));
 		}
 		isr.close();
@@ -300,7 +300,7 @@ public class ImpExpASCII extends ImpExp {
 
 	private int getNumberOfRows() throws IOException {
 		int rval = 0;
-		LineNumberReader lnr = new LineNumberReader(new FileReader(lastFile));
+		LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
 		//read in header lines, header are lines that start with a non-number token
 		if (firstLineIsTitle) {
 			lnr.readLine();
@@ -314,7 +314,7 @@ public class ImpExpASCII extends ImpExp {
 
 	private int getNumberOfColumns() throws IOException {
 		int rval = 0;
-		LineNumberReader lnr = new LineNumberReader(new FileReader(lastFile));
+		LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
 		//read in header lines, header are lines that start with a non-number token
 		if (this.firstLineIsTitle) {
 			lnr.readLine();

@@ -13,8 +13,8 @@ import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
+import java.util.prefs.*;
 
 import javax.swing.JFileChooser;
 
@@ -36,6 +36,11 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 */
 	private static File lastValidFile;
 	private static final Object lvfMonitor = new Object();
+	private static final Preferences prefs=Preferences.userNodeForPackage(HDFIO.class);
+	private static final String LAST_FILE_KEY="LastValidFile";
+	static{
+		lastValidFile=new File(prefs.get(LAST_FILE_KEY,System.getProperty("user.dir")));
+	}
 
 	/**
 	 * Parent frame.
@@ -72,7 +77,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 		in = new HDFile(file, "r");
 		in.seek(0);
 		in.readObjects();
-		//reads file into set of DataObject's, sets their internal variables
 	}
 
 	/**
@@ -1020,6 +1024,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	private static void setLastValidFile(File f){
 		synchronized (lvfMonitor){
 			lastValidFile=f;
+			prefs.put(LAST_FILE_KEY,f.getAbsolutePath());
 		}
 	}
 
