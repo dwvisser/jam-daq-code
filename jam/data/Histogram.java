@@ -226,6 +226,102 @@ public abstract class Histogram {
 	private transient boolean labelYset = false;
 
 	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name,
+			String title, String labelX, String labelY) {
+		
+		final Histogram rval;
+		final Type hType = Type.getArrayType(array);
+		if (hType == Type.ONE_DIM_INT) {
+			rval = new HistInt1D(group, name, title, labelX, labelY, (int[]) array);
+		} else if (hType == Type.ONE_D_DOUBLE) {
+			rval = new HistDouble1D(group, name, title, labelX, labelY,
+					(double[]) array);
+		} else if (hType == Type.TWO_DIM_INT) {
+			rval = new HistInt2D(group, name, title, labelX, labelY, (int[][]) array);
+		} else {//TWO_D_DOUBLE
+			rval = new HistDouble2D(group, name, title, labelX, labelY,
+					(double[][]) array);
+		}
+		return rval;
+	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Object array, String name,
+			String title, String labelX, String labelY) {
+		return createHistogram(null, array, name, title, labelX, labelY);
+	}
+		
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name,
+			String title) {
+		return createHistogram(group, array, name, title, null, null);
+	}
+	
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Object array, String name,
+			String title) {
+		return createHistogram(null, array, name, title, null, null);
+	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name) {
+		return createHistogram(group, array, name, name, null, null);
+	}
+	
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Object array, String name) {
+		return createHistogram(null, array, name, name, null, null);
+	}
+
+	
+	/**
 	 * Master constructor invoked by all other constructors.
 	 * 
 	 * @param nameIn
@@ -251,15 +347,18 @@ public abstract class Histogram {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;		
 		this.title = title;
-		final Group currentGroup = Group.getCurrentGroup();
+		if (group==null) {
+			group = Group.getCurrentGroup();
+		}
 		/* Make a unique name in the group */ 
-		final Map groupHistMap =currentGroup.getHistogramMap();		
+		final Map groupHistMap =group.getHistogramMap();		
 		name=makeUniqueName(nameIn, groupHistMap.keySet());
 		/* Create the full histogram name with group name */
-		groupName=currentGroup.getName();		
+		
+		groupName=group.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
 		/* Add to group */
-		currentGroup.addHistogram(this);
+		group.addHistogram(this);
 		gates.clear();
 		assignNewNumber();
 		/* allow memory for gates and define sizes */
@@ -383,101 +482,6 @@ public abstract class Histogram {
 		return nameTemp;
 	}
 	
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group group to create histogram in
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Group group, Object array, String name,
-			String title, String labelX, String labelY) {
-		
-		final Histogram rval;
-		final Type hType = Type.getArrayType(array);
-		if (hType == Type.ONE_DIM_INT) {
-			rval = new HistInt1D(group, name, title, labelX, labelY, (int[]) array);
-		} else if (hType == Type.ONE_D_DOUBLE) {
-			rval = new HistDouble1D(group, name, title, labelX, labelY,
-					(double[]) array);
-		} else if (hType == Type.TWO_DIM_INT) {
-			rval = new HistInt2D(group, name, title, labelX, labelY, (int[][]) array);
-		} else {//TWO_D_DOUBLE
-			rval = new HistDouble2D(group, name, title, labelX, labelY,
-					(double[][]) array);
-		}
-		return rval;
-	}
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Object array, String name,
-			String title, String labelX, String labelY) {
-		return createHistogram(null, array, name, title, labelX, labelY);
-	}
-		
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group group to create histogram in
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Group group, Object array, String name,
-			String title) {
-		return createHistogram(group, array, name, title, null, null);
-	}
-	
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Object array, String name,
-			String title) {
-		return createHistogram(null, array, name, title, null, null);
-	}
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param group group to create histogram in
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Group group, Object array, String name) {
-		return createHistogram(group, array, name, name, null, null);
-	}
-	
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Object array, String name) {
-		return createHistogram(null, array, name, name, null, null);
-	}
 
 	//end of constructors
 
