@@ -4,7 +4,6 @@
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
    <TITLE>Online Sorting</TITLE>
    <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
-<meta name="Microsoft Border" content="none, default">
 </HEAD>
 <BODY>
 <a name="top">
@@ -39,25 +38,28 @@ or to store data to disk, <a href="#beginrun">begin</a> a run.
 <A NAME="sorting"><H3>Setup Online Sorting</H3></A>
 
 <p>Open the <a href="../menus/setup.html#online">Setup|Online</a> 
-dialog box to set up online sorting. There are seven text fields you need to fill in. The three .class fields
-are entered as Java class references.</p>
+dialog box to set up online sorting.</p>
 <dl>
 	<dt>Experiment Name</dt><dd> used to name the data files. 
 The event data and histogram files are named with the name of the experiment with the run number 
 appended, e.g. <code>AlphaTest100.hdf</code> and <code>AlphaTest100.evn</code>. Make 
 the name of the experiment descriptive.</dd>
-	<dt>Sort File (.class)</dt><dd> a sort routine that was written by the experimenter.</dd>
-	<dt>Event input stream (.class)</dt><dd> the class for interpreting the event data format.</dd>
-	<dt>Event output stream (.class)</dt><dd> not really used. (?)</dd>
-	<dt>Path for Histograms</dt><dd> the path for storing hdf files</dd>
-	<dt>Path for Events</dt><dd> the path for storing events files</dd>
-	<dt>Path for Log Files</span> is the path for console log files</dd>
+    <dt>Sort classpath</dt><dd>Choose "help.* and sort.* under defaults" if you launched Jam with your sort rotine's <a href="#classpath">classpath</a> included in the application's classpath <em>and</em> your sort routine is under a package named 'sort'. Preferably, don't include you sort routines' <a href="#classpath">classpath</a> in the launch classpath, and select "Select classpath". <em>If you use this option, you may load updated sort classes without exiting Jam.</em></dd>
+    <dt>Selected sort classpath</dt><dd>Only active if "Select classpath" is selected. Click "Browse..." to select the appropriate <a href="#classpath">classpath</a> containing your sort routines. 
+	<dt>Sort Routine</dt><dd> a sort routine that was written by the experimenter.</dd>
+	<dt>Event input stream</dt><dd> the class for interpreting the event data format.</dd>
+	<dt>Event output stream</dt><dd> not really used. (?)</dd>
+	<dt>HDF Path</dt><dd> the path for storing hdf files</dd>
+	<dt>Event Path</dt><dd> the path for storing events files</dd>
+	<dt>Log file Path</span> is the path for console log files</dd>
+    <dt>Sort sample fraction</dt><dd>1 in this number of events actually gets sorted to a histogram during acquisition. All events still get saved to the disk, if requested.</dd>
+    <dt>Events to Disk</dt><dd>Whether Jam should write events out to disk when performing runs. Usually this is what you want. There are some cases where you might not, though. In some environments, the front end acquisition process already stores the events for you. Sometimes, it is desireable to take a series of histograms into HDF files, but the event storage is unnecessary, such as when calibrating detectors.</dd>
 </dl>
 
 <A NAME="acquisition"><H3>Starting and stopping the acquistion system</H3>
 <p>To start and stop the data acquisition without saving the events, 
 use the menu items <a href="../menus/control.html#start">Control|start</a> and <a href="../menus/control.html#stop">Control|stop</a>. 
-If the data rate is slow, clicking <a href=../menus/control.html#flush">Control|flush</a> instructs the front
+If the data rate is slow, clicking <a href="../menus/control.html#flush">Control|flush</a> instructs the front
 end computer to send all data currently stored.</p>
 
 <a name="beginrun"></a><H3>Running: taking event data</H3>
@@ -68,6 +70,10 @@ The event file will be create in the directory specified in the <a href="../menu
 <em>End</em> will stop acquisition, close the event file, 
 and write out a HDF file containing the histograms, gates, and scalers.
 </p>
-
+<a name="classpath"><h3>Specifying the classpath</h3></a>
+<ul>
+<li>For .class files in an unnamed package, the class path ends with the directory that contains the .class files.</li>
+<li>For .class files in a named package, the class path ends with the directory that contains the "root" package (the first package in the full package name).</li>
+</ul>
 </BODY>
 </HTML>
