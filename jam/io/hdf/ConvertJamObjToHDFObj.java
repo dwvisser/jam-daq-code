@@ -15,23 +15,26 @@ import java.util.List;
  *  Convert a Jam data objects to a hdf data objects 
  *  
  * @author Ken Swartz
- *
  */
-public class ConvertJamObjToHDFObj implements JamHDFFields{
+final class ConvertJamObjToHDFObj implements JamHDFFields{
 
-	public ConvertJamObjToHDFObj() {
-		
+    /**
+     * Constructs a Jam-to-HDF object converter.
+     */
+	ConvertJamObjToHDFObj() {
+		super();
 	}
-	/**
+	
+	/* non-javadoc:
 	 * Convert a histogram into a hdf Virtual group
 	 * @param hist
 	 * @return VirtualGroup for the histogram
 	 * @throws HDFException
 	 */
-	VirtualGroup convertHistogram(Histogram hist) throws HDFException {
+	VirtualGroup convertHistogram(Histogram hist) {
         ScientificData sciData;
         final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
-                HIST_TYPE_NAME);
+                HIST_TYPE);
         //FIXME KBS remove
         //histGroup.addDataObject(temp); //add to Histogram section vGroup
         new DataIDLabel(histVGroup, hist.getName());
@@ -52,29 +55,29 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
             final AbstractHist1D hist1d = (AbstractHist1D) hist;
             sciData = new ScientificData((int[]) hist.getCounts());
             if (hist1d.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup();
+                final NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 histVGroup.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = getSDD(hist,
+                final ScientificDataDimension sddErr = getSDD(hist,
                         NumberType.DOUBLE);
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
                 histVGroup.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(hist1d.getErrors());
+                final ScientificData sdErr = new ScientificData(hist1d.getErrors());
                 ndgErr.addDataObject(sdErr);
                 histVGroup.addDataObject(sdErr);
             }
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
-            final AbstractHist1D h1 = (AbstractHist1D) hist;
+            final AbstractHist1D hist1d = (AbstractHist1D) hist;
             sciData = new ScientificData((double[]) hist.getCounts());
-            if (h1.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup();
+            if (hist1d.errorsSet()) {
+                final NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 histVGroup.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = sdd;
+                final ScientificDataDimension sddErr = sdd;
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(h1.getErrors());
+                final ScientificData sdErr = new ScientificData(hist1d.getErrors());
                 ndgErr.addDataObject(sdErr);
                 histVGroup.addDataObject(sdErr);
             }
@@ -92,34 +95,34 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 
 	}
 	
-    /**
+    /* non-javadoc:
      * Converts a gate to a Virtual group
      * @param g
      *            the gate to convert
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */	
-	VirtualGroup convertGate(Gate gate) throws HDFException {	
+	VirtualGroup convertGate(Gate gate) {	
         String gateType;
         String[] columnNames;        
         int size = 1;
 
-        int[] x = new int[0];
-        int[] y = new int[0];
+        int[] xcoord = new int[0];
+        int[] ycoord = new int[0];
         final short[] types = { VdataDescription.DFNT_INT32,
                 VdataDescription.DFNT_INT32 };
         final short[] orders = { 1, 1 };
         final String gateName = gate.getName();
         if (gate.getDimensionality() == 1) {
-        	gateType = GATE_1D_TYPE_NAME;
-            columnNames = GATE_1D_NAMES;
+        	gateType = GATE_1D_TYPE;
+            columnNames = GATE_1D;
             size =1;            
         } else { //2d
-            gateType = GATE_2D_TYPE_NAME;        	
-        	columnNames = GATE_2D_NAMES;
+            gateType = GATE_2D_TYPE;        	
+        	columnNames = GATE_2D;
             size = gate.getBananaGate().npoints;
-            x = gate.getBananaGate().xpoints;
-            y = gate.getBananaGate().ypoints;
+            xcoord = gate.getBananaGate().xpoints;
+            ycoord = gate.getBananaGate().ypoints;
         }
         /* get the VG for the current gate */
         final VirtualGroup vggate = new VirtualGroup(gateName, gateType);
@@ -135,8 +138,8 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
             data.addInteger(1, 0, gate.getLimits1d()[1]);
         } else { //2d
             for (int i = 0; i < size; i++) {
-                data.addInteger(0, i, x[i]);
-                data.addInteger(1, i, y[i]);
+                data.addInteger(0, i, xcoord[i]);
+                data.addInteger(1, i, ycoord[i]);
             }
         }
         /* add Histogram links... */
@@ -151,15 +154,15 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
         return vggate;		
 	}
 
-    /**
+    /* non-javadoc:
      * Converts a scaler to a Virtual group
      * @param list
      *            the list to convert
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VirtualGroup convertScalers(List scalers) throws HDFException {
-        final StringUtilities su = StringUtilities.instance();
+	VirtualGroup convertScalers(List scalers)  {
+        final StringUtilities util = StringUtilities.instance();
         final short[] types = { VdataDescription.DFNT_INT32,
                 VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };
         final short[] orders = new short[3];
@@ -175,11 +178,11 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
         }
         orders[2] = 1; //value
         final VirtualGroup scalerGroup = new VirtualGroup(
-                SCALER_SECTION_NAME, FILE_SECTION_NAME);
-        new DataIDLabel(scalerGroup, SCALER_SECTION_NAME);
-        final String name = SCALER_SECTION_NAME;
-        final String scalerType = SCALER_TYPE_NAME;
-        final String[] names = SCALER_COLUMN_NAMES;
+                SCALER_SECT, FILE_SECTION);
+        new DataIDLabel(scalerGroup, SCALER_SECT);
+        final String name = SCALER_SECT;
+        final String scalerType = SCALER_TYPE;
+        final String[] names = SCALER_COLS;
         final VdataDescription desc = new VdataDescription(name,
                 scalerType, size, names, types, orders);
         final Vdata data = new Vdata(desc);
@@ -187,16 +190,17 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
         scalerGroup.addDataObject(data); //add vData to gate VG
 
         for (int i = 0; i < size; i++) {
-            final Scaler s = (Scaler) (scalers.get(i));
-            data.addInteger(0, i, s.getNumber());
-            data.addChars(1, i, su.makeLength(s.getName(), orders[1]));
-            data.addInteger(2, i, s.getValue());
+            final Scaler scaler = (Scaler) (scalers.get(i));
+            data.addInteger(0, i, scaler.getNumber());
+            data.addChars(1, i, util.makeLength(scaler.getName(), orders[1]));
+            data.addInteger(2, i, scaler.getValue());
         }
 
         
         return scalerGroup;
 
 	}
+	
 	/* FIXME KBS
 	Vdata convertScaler(Scaler scaler) {
 		
@@ -204,14 +208,15 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 		return data;
 	}
 	*/
-    /**
+	
+    /* non-javadoc:
      * Converts a parameters to a Virtual group
      * @param list
      *            the list to convert
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VirtualGroup convertParameters(List parameters) throws HDFException {	
+	VirtualGroup convertParameters(List parameters) {	
 	    final short[] types = { VdataDescription.DFNT_CHAR8,
 	            VdataDescription.DFNT_FLT32 };
 	    final short[] orders = new short[2];
@@ -227,40 +232,38 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 	        }
 	    }
 	    orders[1] = 1; //value
-	    final VirtualGroup parameterGroup = new VirtualGroup(
-	            PARAMETER_SECTION_NAME, FILE_SECTION_NAME);
-	    new DataIDLabel(parameterGroup, PARAMETER_SECTION_NAME);
-	    final String name = PARAMETER_SECTION_NAME;
-	    final String parameterType = PARAMETER_TYPE_NAME;
-	    final String[] names = PARAMETER_COLUMN_NAMES;
-	    final VdataDescription desc = new VdataDescription(name,
-	            parameterType, size, names, types, orders);
+	    final VirtualGroup paramGroup = new VirtualGroup(
+	            PARAMETERS, FILE_SECTION);
+	    new DataIDLabel(paramGroup, PARAMETERS);
+	    final VdataDescription desc = new VdataDescription(PARAMETERS,
+	            PAR_TYPE, size, PARAM_COLS, types, orders);
 	    final Vdata data = new Vdata(desc);
-	    parameterGroup.addDataObject(desc); //add vData description to gate VG
-	    parameterGroup.addDataObject(data); //add vData to gate VG
+	    paramGroup.addDataObject(desc); //add vData description to gate VG
+	    paramGroup.addDataObject(data); //add vData to gate VG
 	    for (int i = 0; i < size; i++) {
-	        final StringUtilities su = StringUtilities.instance();
-	        final DataParameter p = (DataParameter) (parameters.get(i));
-	        data.addChars(0, i, su.makeLength(p.getName(), orders[0]));
-	        data.addFloat(1, i, (float) p.getValue());
+	        final StringUtilities util = StringUtilities.instance();
+	        final DataParameter param = (DataParameter) (parameters.get(i));
+	        data.addChars(0, i, util.makeLength(param.getName(), orders[0]));
+	        data.addFloat(1, i, (float) param.getValue());
 	    }
 
-	    return parameterGroup;
+	    return paramGroup;
 	}
-	/** 
+	
+	/* non-javadoc:
 	 * @return the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.
 	 * @param h that type is needed for
 	 */
-	ScientificDataDimension getSDD(Histogram h) throws HDFException {
+	private ScientificDataDimension getSDD(Histogram hist) {
 		byte type=NumberType.DOUBLE;
-		if (h.getType().isInteger()) {
+		if (hist.getType().isInteger()) {
 			type = NumberType.INT;
 		}
-		return getSDD(h,type);
+		return getSDD(hist,type);
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Returns the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.  DOUBLE type
 	 * is explicitly requested, for error bars.
@@ -270,15 +273,14 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 	 * @return the SDD object representing the histogram size and number 
 	 * type
 	 */
-	ScientificDataDimension getSDD(Histogram h, byte numberType) throws HDFException {
-		ScientificDataDimension rval=null;//return value
-		final short rank = (short)h.getDimensionality();
-		final int sizeX = h.getSizeX();
+	private ScientificDataDimension getSDD(Histogram hist, byte numberType) {
+		final short rank = (short)hist.getDimensionality();
+		final int sizeX = hist.getSizeX();
 		int sizeY=0;
 		if (rank == 2) {//otherwise rank == 1
-			sizeY = h.getSizeY();
+			sizeY = hist.getSizeY();
 		} 
-		return ScientificDataDimension.getSDD(rank, sizeX, sizeY, numberType);
+		return ScientificDataDimension.create(rank, sizeX, sizeY, numberType);
 	}
 	
 }

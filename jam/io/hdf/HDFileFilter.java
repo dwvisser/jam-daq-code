@@ -19,22 +19,22 @@ java.io.FileFilter {
     /**
      * Constructs a filter for HDF files. It checks the first 4 bytes of the file.
      * 
-     * @param showDirectories whether to show directories as well
+     * @param showDir whether to show directories as well
      * @see HDFconstants#HDF_HEADER
      */
-    public HDFileFilter(boolean showDirectories){
+    public HDFileFilter(boolean showDir){
     	super();
-		option=showDirectories;
+		option=showDir;
     }
     
-    public boolean accept(File f){
+    public boolean accept(File file){
     	boolean rval=false;//default return value
-		if (f.isDirectory()) {
+		if (file.isDirectory()) {
 			rval = option;
 		} else {
 			try {
-	    		RandomAccessFile raf=new RandomAccessFile(f,"r");
-	    		int temp=raf.readInt();
+	    		final RandomAccessFile raf=new RandomAccessFile(file,"r");
+	    		final int temp=raf.readInt();
 	    		raf.close();
 	   	 		rval = (temp == HDF_HEADER);
 			} catch (IOException e) {
