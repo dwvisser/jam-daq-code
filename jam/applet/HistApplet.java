@@ -271,13 +271,12 @@ public class HistApplet
 	 *
 	 */
 	public void readfile(String fileName) {
-		try {
-			FileInputStream fis = new FileInputStream(fileName);
+//		try {
+//			FileInputStream fis = new FileInputStream(fileName);
 			// FIXME	    histIO.readSpeFile(fis);
-
-		} catch (FileNotFoundException e) {
-			System.out.println("file not found");
-		}
+//		} catch (FileNotFoundException e) {
+//			System.out.println("file not found");
+//		}
 	}
 	
 	public void setMode(int mode) {
