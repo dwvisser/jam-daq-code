@@ -1,5 +1,5 @@
 package jam;
-import jam.data.control.HistogramControl;
+import jam.data.control.HistogramZero;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
@@ -35,7 +35,6 @@ public final class Script {
 	
 	private final JamMain jam;
 	private final File base;
-	private HistogramControl histCtrl;
 	private SetupSortOff sso;
 	private SortControl sc;
 	private HDFIO hdfio;
@@ -182,12 +181,11 @@ public final class Script {
 	/**
 	 * Zero all histograms in memory.
 	 */
-	public  void zeroHistograms(){
-		histCtrl.zeroAll();
+	public void zeroHistograms(){
+		(new HistogramZero(null)).zeroAll();
 	}
 		
 	void setJamCommand(JamCommand jc){
-		histCtrl=jc.getHistogramControl();
 		sso=jc.getSetupSortOff();
 		sc=jc.getSortControl();
 		hdfio=jc.getHDFIO();

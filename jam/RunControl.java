@@ -1,6 +1,6 @@
 package jam;
 
-import jam.data.control.HistogramControl;
+import jam.data.control.HistogramZero;
 import jam.global.GoodThread;
 import jam.global.RunInfo;
 import jam.io.DataIO;
@@ -67,7 +67,6 @@ public class RunControl implements Controller, ActionListener {
      */
     
     private final JamMain		jamMain;
-    private final HistogramControl	histogramControl;
     private final DataIO		dataio;
     private final VMECommunication	vmeComm;
     private final JamConsole		console;
@@ -126,10 +125,8 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    RunControl(JamMain jamMain, HistogramControl histogramControl,
-    VMECommunication vmeComm, DataIO dataio, JamConsole console){
+    RunControl(JamMain jamMain, VMECommunication vmeComm, DataIO dataio, JamConsole console){
         this.jamMain=jamMain;
-        this.histogramControl=histogramControl;
         this.vmeComm=vmeComm;
         this.dataio=dataio;
         this.console=console;
@@ -353,7 +350,7 @@ public class RunControl implements Controller, ActionListener {
             diskDaemon.writeHeader();
         }
         if (checkHistogramZero.isSelected()) {// should we zero histograms
-            histogramControl.zeroAll();
+            (new HistogramZero(console)).zeroAll();
         }
         if (zeroScalers.isSelected()) {//should we zero scalers
             vmeComm.clearScalers();
