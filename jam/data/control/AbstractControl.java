@@ -17,6 +17,7 @@ import javax.swing.JDialog;
  * @author Ken Swartz
  */
 public abstract class AbstractControl extends JDialog implements Observer {
+	
 	private static List controllers = Collections.synchronizedList(new ArrayList());
 	
 	/**

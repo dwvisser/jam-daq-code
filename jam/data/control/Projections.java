@@ -2,7 +2,6 @@ package jam.data.control;
 
 import jam.data.DataException;
 import jam.data.Gate;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -39,15 +38,11 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Projections extends AbstractControl implements Observer {
+public class Projections extends AbstractManipulation implements Observer {
 
 	private static final String FULL = "Full Histogram";
 
 	private static final String BETWEEN = "Between Channels";
-
-	private final String NEW_HIST = "NEW: ";
-	
-	private final String HIST_WILD_CARD="/.";
 
 	private final Broadcaster broadcaster;
 
@@ -74,6 +69,7 @@ public class Projections extends AbstractControl implements Observer {
 		super("Project 2D Histogram", false);
 		messageHandler = mh;
 		broadcaster = Broadcaster.getSingletonInstance();
+		
 		setResizable(false);
 		final int CHOOSER_SIZE = 200;
 		Dimension dim;
@@ -221,7 +217,7 @@ public class Projections extends AbstractControl implements Observer {
 				com == BroadcastEvent.Command.GATE_ADD ||
 				com == BroadcastEvent.Command.GATE_SET_OFF ||
 				com == BroadcastEvent.Command.GATE_SET_SAVE) {
-			setupAdd();
+			doSetup();
 		} 
 	}
 
@@ -234,49 +230,11 @@ public class Projections extends AbstractControl implements Observer {
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
 		setUseHist(NEW_HIST); //default use new histogram
-		setupToHist();//setup "to" histogram
-		setupCuts(FULL);//default setup channels
-	}
-
-	/**
-	 * a new histogram or gate has been added to the database
-	 */
-	private void setupAdd() {
+		loadAllHists(cto, true, Histogram.Type.ONE_D);//setup "to" histogram
 		final String lastCut = (String) cchan.getSelectedItem();
-		/* setup to histogram */
-		setupToHist();
-		/* setup channels */
-		setupCuts(lastCut);
+		setupCuts(lastCut);//default setup channels
 	}
-
-	/* non-javadoc:
-	 * Adds a list of histograms to a choose
-	 */
-	private void setupToHist() {
-		cto.removeAllItems();
-		/* Add working group new */
-		cto.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
-		//Add new histograms
-		for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-			Group group = (Group)iter.next();
-			if (group.getType() != Group.Type.SORT &&
-				!Group.WORKING_NAME.equals(group.getName())	) {
-				cto.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
-			}
-		}
-		/* Add Existing hisograms */
-		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			Group group = (Group)grpiter.next();
-			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				Histogram hist =(Histogram)histiter.next();
-				if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-					cto.addItem(hist.getFullName());
-				}
-			}
-		}
-
-		cto.setSelectedIndex(0);
-	}
+	
 
 	/* non-javadoc:
 	 * Setups up the channel and gate selector.
@@ -362,8 +320,12 @@ public class Projections extends AbstractControl implements Observer {
 
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
+			String groupName = parseGroupName(name);
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
-			createNewHistogram(name, histName, size);
+			hto = createNewHistogram(name, histName, size);
+			messageHandler
+			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
+
 		} else {
 			hto = Histogram.getHistogram(name);
 
@@ -481,30 +443,5 @@ public class Projections extends AbstractControl implements Observer {
 		}
 		return out;
 	}
-	
-	private boolean isNewHistogram(String name){
-		return name.startsWith(NEW_HIST);
-	}
-	private String parseGroupName(String name){
 		
-		StringBuffer sb = new StringBuffer(name);
-		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
-		return groupName;
-
-	}
-	
-	private void createNewHistogram(String name, String histName, int size) {
-
-	
-		String groupName = parseGroupName(name);
-		if (groupName.equals(Group.WORKING_NAME))
-		{
-			Group.createGroup(groupName, Group.Type.FILE);
-		}
-		hto = Histogram.createHistogram(new double[size],histName);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		messageHandler
-				.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
-	}
-	
 }

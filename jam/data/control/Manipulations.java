@@ -3,7 +3,6 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
@@ -16,9 +15,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -35,8 +31,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Manipulations extends AbstractControl implements WindowListener,
-        Observer {
+public class Manipulations extends AbstractManipulation implements Observer {
 
 	private final String NEW_HIST = "NEW: ";
 	
@@ -51,6 +46,10 @@ public class Manipulations extends AbstractControl implements WindowListener,
 	private JLabel lname, lWith;
 	
 	private AbstractHist1D hto;
+	
+	private double fac1;
+	
+	private double fac2;
 	
 	private final MessageHandler messageHandler;	
 	
@@ -70,7 +69,6 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		final Container cdmanip = getContentPane();
 		cdmanip.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
-		addWindowListener(this);
 
 		//Labels panel
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
@@ -195,11 +193,7 @@ public class Manipulations extends AbstractControl implements WindowListener,
 
                     public void apply() {
                         try {
-                            manipulate();
-                            /*FIXME KBS
-                    		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
-                    				+ " to " + hto.getFullName() + " " + typeProj);
-                            */
+                            combine();
                             BROADCASTER
                                     .broadcast(BroadcastEvent.Command.REFRESH);
                             STATUS.setCurrentHistogram(hto);
@@ -245,18 +239,19 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		lto = (String) cto.getSelectedItem();
 
 		cfrom1.removeAllItems();
-		addChooserHists(cfrom1, false, Histogram.Type.ONE_D);
+		loadAllHists(cfrom1, false, Histogram.Type.ONE_D);
 		cfrom1.setSelectedItem(lfrom1);
 		cfrom2.removeAllItems();
-		addChooserHists(cfrom2, false, Histogram.Type.ONE_D);
+		loadAllHists(cfrom2, false, Histogram.Type.ONE_D);
 
 		cfrom2.setSelectedItem(lfrom2);
 		cto.removeAllItems();
 		cto.addItem(NEW_HIST);
-		addChooserHists(cto, true, Histogram.Type.ONE_D);
+		loadAllHists(cto, true, Histogram.Type.ONE_D);
 		cto.setSelectedItem(lto);
 		setUseHist((String)cto.getSelectedItem());
 
+		enableInputWith(!cnorm.isSelected());
 	}
 
 	/* non-javadoc:
@@ -266,37 +261,6 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		cfrom2.setEnabled(state);
 		ttimes2.setEnabled(state);
 		lWith.setEnabled(state);
-	}
-
-	/* non-javadoc:
-	 * add histograms of type type1 and type2 to chooser
-	 */
-	private void addChooserHists(JComboBox comboBox, boolean addNew, int histDim) {
-		comboBox.removeAllItems();
-		//Add working group new
-		if(addNew) {
-			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
-			//Add new histograms
-			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-				Group group = (Group)iter.next();
-				if (group.getType() != Group.Type.SORT &&
-					!Group.WORKING_NAME.equals(group.getName())) {
-					comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
-				}
-			}
-		}
-		/* Add Existing hisograms */
-		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			Group group = (Group)grpiter.next();
-			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				Histogram hist =(Histogram)histiter.next();
-				if (hist.getType().getDimensionality() == histDim) {
-					comboBox.addItem(hist.getFullName());
-				}
-			}
-		}
-
-		//FIXME comboBox.setSelectedIndex(0);
 	}
 
 	/* non-javadoc:
@@ -313,43 +277,28 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		}		
 	}
 	
-
 	/* non-javadoc:
 	 * Does the work of manipulating histograms
 	 */
-	private void manipulate() throws DataException {
-		final double fac1;
-		try {//read information for first histogram
-			fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
-		} catch (NumberFormatException nfe) {
-			throw new DataException(
-					"First factor is not a valid number [Manipulations]");
-		}
+	private void combine() throws DataException {
+
+		final double[] in1, err1;
+		final double[] in2, err2;
+		String operation="";
+		
+		validateFactors();
+		
 		final AbstractHist1D hfrom1 = (AbstractHist1D)Histogram.getHistogram((String) cfrom1
 				.getSelectedItem());
-		final double[] in1;
-		if (hfrom1.getType() == Histogram.Type.ONE_DIM_INT) {
-			in1 = toDoubleArray((int[]) hfrom1.getCounts());
-		} else {
-			in1 = (double[]) hfrom1.getCounts();
-		}
-		final double[] err1 = hfrom1.getErrors();
-		final double fac2;
-		try {//read in information for second histogram
-			fac2 = Double.valueOf(ttimes2.getText().trim()).doubleValue();
-		} catch (NumberFormatException nfe) {
-			throw new DataException(
-					"Second factor is not a valid number [Manipulations]");
-		}
-		final double[] in2, err2;
+		AbstractHist1D hfrom2 =null;
+
+		in1 =doubleCountsArray(hfrom1);
+		err1 = hfrom1.getErrors();
+		
 		if (cfrom2.isEnabled()) {
-			final AbstractHist1D hfrom2 = (AbstractHist1D)Histogram.getHistogram((String) cfrom2
+			hfrom2 = (AbstractHist1D)Histogram.getHistogram((String) cfrom2
 					.getSelectedItem());
-			if (hfrom2.getType() == Histogram.Type.ONE_DIM_INT) {
-				in2 = toDoubleArray((int[]) hfrom2.getCounts());
-			} else {
-				in2 = (double[]) hfrom2.getCounts();
-			}
+			in2=doubleCountsArray(hfrom2);
 			err2 = hfrom2.getErrors();
 		} else {
 			in2 = null;
@@ -360,40 +309,46 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		String name = (String) cto.getSelectedItem();
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
-			createNewHistogram(name, histName, hfrom1.getSizeX());
-			
+			String groupName = parseGroupName(name);
+			hto =(AbstractHist1D)createNewHistogram(name, histName, hfrom1.getSizeX());
+			messageHandler.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");			
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
 		hto.setZero();
-		final double[] out = (hto.getType() == Histogram.Type.ONE_DIM_INT) ? toDoubleArray((int[]) hto
-				.getCounts())
-				: (double[]) hto.getCounts();
+
+		final double[] out = doubleCountsArray(hto); 
+		
 		double[] errOut = hto.getErrors();
 
+		//Do calculation
 		if (cnorm.isSelected()) {
 			for (int i = 0; i < out.length; i++) {
 				out[i] = fac1 * in1[i];
-				errOut[i] = fac1 * err1[i];
+				errOut[i] = fac1 * err1[i];				
 			}
+			operation =" Normalized ";
 		} else if (cplus.isSelected()) {
 			for (int i = 0; i < out.length; i++) {
 				out[i] = fac1 * in1[i] + fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
 						* fac2 * err2[i] * err2[i]);
 			}
+			operation =" Added with ";			
 		} else if (cminus.isSelected()) {
 			for (int i = 0; i < out.length; i++) {
 				out[i] = fac1 * in1[i] - fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
 						* fac2 * err2[i] * err2[i]);
 			}
+			operation =" Subtracted from ";
 		} else if (ctimes.isSelected()) {
 			for (int i = 0; i < out.length; i++) {
 				out[i] = fac1 * in1[i] * fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1
 						* fac1 * err2[i] * err2[i]);
 			}
+			operation =" Multiplied with ";
 		} else if (cdiv.isSelected()) {
 			for (int i = 0; i < out.length; i++) {
 				out[i] = fac1 * in1[i] / (fac2 * in2[i]);
@@ -402,8 +357,10 @@ public class Manipulations extends AbstractControl implements WindowListener,
 						* Math.sqrt(fac1 * fac1 / (err1[i] * err1[i]) + fac2
 								* fac2 / (err2[i] * err2[i]));
 			}
+			operation =" Divided by ";
 		}
 		hto.setErrors(errOut);
+		
 		/* cast to int array if needed */
 		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
 			hto.setCounts(toIntArray(out));
@@ -411,8 +368,26 @@ public class Manipulations extends AbstractControl implements WindowListener,
 			hto.setCounts(out);
 		}
 		
+		if (hfrom2!=null) {
+			messageHandler.messageOutln("Combine " + hfrom1.getFullName().trim()+operation+ hfrom2.getFullName().trim()+
+				 " to "+hto.getFullName());
+		} else {
+			messageHandler.messageOutln("Normalize " + hfrom1.getFullName().trim()+
+					 " to "+hto.getFullName());
+			
+		}
+		
 	}
 
+	private double [] doubleCountsArray(Histogram hist) {
+		double [] dCounts;
+		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
+			dCounts = toDoubleArray((int[]) hist.getCounts());
+		} else {
+			dCounts = (double[]) hist.getCounts();
+		}
+		return dCounts;
+	}
 	/* non-javadoc:
 	 * Converts int array to double array
 	 */
@@ -435,82 +410,20 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		return out;
 	}
 
-	private boolean isNewHistogram(String name){
-		return name.startsWith(NEW_HIST);
-	}
-	
-	private String parseGroupName(String name){
-		
-		StringBuffer sb = new StringBuffer(name);
-		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
-		return groupName;
-
-	}
-	
-	private void createNewHistogram(String name, String histName, int size) {
-
-		
-			String groupName = parseGroupName(name);
-			if (groupName.equals(Group.WORKING_NAME))
-			{
-				Group.createGroup(groupName, Group.Type.FILE);
-			}
-			hto = (AbstractHist1D)Histogram.createHistogram(
-					new double[size],histName);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-			messageHandler
-					.messageOutln("New Histogram of type double created: '" + groupName+"/"+histName + "'");
-
+	boolean validateFactors() throws DataException {
+		try {//read information for first histogram
+			fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
+		} catch (NumberFormatException nfe) {
+			throw new DataException(
+					"First factor is not a valid number [Manipulations]");
 		}
-	
-	/**
-	 * Process window events If the window is active check that the histogram
-	 * been displayed has not changed. If it has cancel the gate setting.
-	 */
-	public void windowActivated(WindowEvent e) {
-		//no action
-	}
-
-	/**
-	 * Window Events windowClosing only one used.
-	 */
-	public void windowClosing(WindowEvent e) {
-		dispose();
-	}
-
-	/**
-	 * Does nothing only windowClosing used.
-	 */
-	public void windowClosed(WindowEvent e) {
-		/* does nothing for now */
-	}
-
-	/**
-	 * Does nothing only windowClosing used.
-	 */
-	public void windowDeactivated(WindowEvent e) {
-		/* does nothing for now */
-	}
-
-	/**
-	 * Does nothing only windowClosing used.
-	 */
-	public void windowDeiconified(WindowEvent e) {
-		/* does nothing for now */
-	}
-
-	/**
-	 * Does nothing only windowClosing used.
-	 */
-	public void windowIconified(WindowEvent e) {
-		/* does nothing for now */
-	}
-
-	/**
-	 * removes list of gates when closed only windowClosing used.
-	 */
-	public void windowOpened(WindowEvent e) {
-		doSetup();
+		try {//read in information for second histogram
+			fac2 = Double.valueOf(ttimes2.getText().trim()).doubleValue();
+		} catch (NumberFormatException nfe) {
+			throw new DataException(
+					"Second factor is not a valid number [Manipulations]");
+		}
+		return true;
 	}
 
 }

@@ -121,7 +121,7 @@ public final class Script implements Observer {
 	 * @param fileOrDir <code>.evn</code> file or folder containing
 	 * such files
 	 * @throws IllegalStateException if <code>setupOffline()</code>
-	 * hasn't been called yet
+	 * hasn't been called yet 
 	 */
 	public void addEventFile(File fileOrDir){
 		if (!isSetup){

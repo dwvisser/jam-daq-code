@@ -2,7 +2,6 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
@@ -21,7 +20,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,7 +37,7 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser
  * @version JDK 1.1
  */
-public class GainShift extends AbstractControl implements ItemListener, Observer {
+public class GainShift extends AbstractManipulation implements ItemListener, Observer {
 	
 	private final String NEW_HIST = "NEW: ";
 	
@@ -184,10 +182,6 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
                     public void apply() {
                         try {
                         	doGainShift();
-                            /*FIXME KBS
-                    		messageHandler.messageOutln("Gain shift " + hfrom.getFullName().trim()
-                    				+ " to " + hto.getFullName() + " " + typeProj);
-                            */
                             BROADCASTER
                                     .broadcast(BroadcastEvent.Command.REFRESH);
                             STATUS.setCurrentHistogram(hto);
@@ -205,40 +199,16 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
                 });
         cdgain.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		pack();
-		
-		//Buttons panel
-		/*
-		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cdgain.add(pButtons, BorderLayout.SOUTH);
-		JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
-		bOK = new JButton("OK");
-		bOK.setActionCommand("ok");
-		bOK.addActionListener(this);
-		pcontrol.add(bOK);
-		bApply = new JButton("Apply");
-		bApply.setActionCommand("apply");
-		bApply.addActionListener(this);
-		pcontrol.add(bApply);
-		JButton bCancel = new JButton("Cancel");
-		bCancel.setActionCommand("cancel");
-		bCancel.addActionListener(this);
-		pcontrol.add(bCancel);
-		pButtons.add(pcontrol);
-		*/
-		
+				
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfrom = null;
 					pButtons.setButtonsEnabled(false, false, true);
-					//bOK.setEnabled(false);
-					//bApply.setEnabled(false);
 				} else {
 					hfrom = (AbstractHist1D) selected;
 					pButtons.setButtonsEnabled(true, true, true);
-					//bOK.setEnabled(true);
-					//bApply.setEnabled(true);
 				}
 			}
 		});
@@ -248,31 +218,6 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	}
 
 
-	/**
-	 * Are we done setting gate and should we save it or has the gate setting
-	 * been canceled.
-	 *  
-	 */
-	/*
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		try {
-			if (OK.equals(command) || APPLY.equals(command)) {
-				doGainShift();
-				if (OK.equals(command)) {
-					dispose();
-				}
-			} else if (CANCEL.equals(command)) {
-				dispose();
-			} else {
-				throw new UnsupportedOperationException(
-						"Not a recognized command: " + command);
-			}
-		} catch (DataException je) {
-			messageHandler.errorOutln(je.getMessage());
-		}
-	}
-	*/
 	/**
 	 * A item state change indicates that a gate has been chosen.
 	 */
@@ -311,7 +256,7 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	public void doSetup() {
 		String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
-		 addChooserHists(cto, true, Histogram.Type.ONE_D);
+		loadAllHists(cto, true, Histogram.Type.ONE_D);
 		cto.setSelectedItem(lto);
 		setUseHist((String)cto.getSelectedItem());
 		cfrom.setSelectedIndex(0);
@@ -355,40 +300,6 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	}
 
 	/* non-javadoc:
-	 * add histograms of type type1 and type2 to chooser
-	 */
-	private void addChooserHists(JComboBox comboBox, boolean addNew, int histDim) {
-		comboBox.removeAllItems();
-		//Add working group new
-		if(addNew) {
-			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
-			//Add new histograms
-			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-				Group group = (Group)iter.next();
-				if (group.getType() != Group.Type.SORT &&
-					!Group.WORKING_NAME.equals(group.getName())) {
-					comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
-				}
-			}
-		}
-		/* Add Existing hisograms */
-		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			Group group = (Group)grpiter.next();
-			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				Histogram hist =(Histogram)histiter.next();
-				if (hist.getType().getDimensionality() == histDim) {
-					comboBox.addItem(hist.getFullName());
-				}
-			}
-		}
-
-		comboBox.setSelectedIndex(0);
-	}
-
-	/* non-javadoc:
-	 * Set dialog box for a new histogram to be written out.
-	 */
-	/* non-javadoc:
 	 * setup if using a new histogram
 	 */
 	private void setUseHist(String name) {
@@ -426,25 +337,16 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 		
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
-			createNewHistogram(name, histName, hfrom.getSizeX());
+			String groupName = parseGroupName(name);
+			hto = (AbstractHist1D)createNewHistogram(name, histName, hfrom.getSizeX());
+			messageHandler
+			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
+			
+
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
 
 		}
-		/*
-		if (isNewHistogram(name)) {
-			name = ttextto.getText().trim();
-			//hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
-			//		.getSizeX(), name);
-			Group.createGroup("Working", Group.Type.FILE);
-			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-			messageHandler
-					.messageOutln("New Histogram created: '" + name + "'");
-		} else {
-			hto = (AbstractHist1D)Histogram.getHistogram(name);
-		}
-		*/
 		hto.setZero();
 		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((int[]) hto
 				.getCounts()).length
@@ -458,8 +360,9 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 			hto.setCounts(out);
 		}
 		hto.setErrors(errOut);
-		messageHandler.messageOutln("Initial gain: " + format(a1) + " + "
-				+ format(b1) + " x ch; Final gain: " + format(a2) + " + "
+		
+		messageHandler.messageOutln("Gain shift " + hfrom.getFullName().trim()+ " with gain: " + format(a1) + " + "
+				+ format(b1) + " x ch; to "+hto.getFullName()+" with gain: " + format(a2) + " + "
 				+ format(b2) + " x ch");
 	}
 
@@ -732,29 +635,6 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	private double log10(double x) {
 		return Math.log(x) / Math.log(10.0);
 	}
-	private boolean isNewHistogram(String name){
-		return name.startsWith(NEW_HIST);
-	}
-	private String parseGroupName(String name){
-		
-		StringBuffer sb = new StringBuffer(name);
-		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
-		return groupName;
-
-	}
 	
-	private void createNewHistogram(String name, String histName, int size) {
-
-	
-		String groupName = parseGroupName(name);
-		if (groupName.equals(Group.WORKING_NAME))
-		{
-			Group.createGroup(groupName, Group.Type.FILE);
-		}
-		hto =(AbstractHist1D) Histogram.createHistogram(new double[size],histName);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		messageHandler
-				.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
-	}
 
 }

@@ -66,7 +66,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
             setToolTipText(tip.toString());
         } else if (nodeObject instanceof Gate) {
             Gate gate = (Gate) nodeObject;
-            setBackgroundSelectionColor(Color.CYAN);
+            //setBackgroundSelectionColor(Color.CYAN);
             setText(gate.getName());
             if (gate.getDimensionality() == 1) {
                 if (gate.isDefined()) {
