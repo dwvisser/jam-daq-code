@@ -99,7 +99,6 @@ public class JamMain extends JFrame {
 		new SplashWindow(this, titleDisplayTime);
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
-		jamProperties.loadProperties(); //load properties from file
 		status = JamStatus.instance(); //class that is statically available
 		status.setAcqisitionStatus(new AcquisitionStatus(){
 			public boolean isAcqOn(){
