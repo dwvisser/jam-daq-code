@@ -5,6 +5,8 @@ import jam.global.JamProperties;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -55,20 +57,29 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException error with hdf file
 	 * @exception IOException error opening file
 	 */
-	public HDFile(File file, String mode) throws HDFException, IOException {
+	public HDFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
 		DataObject.clear();
 		this.file = file;
+        addNumberTypes();
+		/*
 		if ("rw".equals(mode)) { //Saving a file
-			writeHeader();
-			addVersionNumber();
+			//writeMagicWord();
+			//addVersionNumber();
 		} else { //should be "r" ,i.e., opening a file
 			if (!checkMagicWord()){
 				throw new HDFException(file+" is not a valid HDF File!");
 			}
 		}
+		*/
 	}
-
+	
+	boolean isHDFFile() {
+		return checkMagicWord();
+	}
+	void writeHeader()  throws HDFException, IOException {
+		writeMagicWord();		
+	}
 	/**
 	 * @return the file on disk being accessed
 	 */
@@ -89,7 +100,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @throws HDFException error with writing hdf file
 	 */
-	private void writeHeader() throws HDFException {
+	private void writeMagicWord() throws HDFException {
 		try {
 			seek(0);
 			writeInt(HDF_HEADER);
@@ -149,7 +160,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @see jam.io.hdf.NumberType
 	 */
-	void addNumberTypes() {
+	private void addNumberTypes() {
 		synchronized (this){
 			intNT = new NumberType(this, NumberType.INT);
 			doubleNT = new NumberType(this, NumberType.DOUBLE);

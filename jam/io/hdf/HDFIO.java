@@ -11,6 +11,7 @@ import jam.global.MessageHandler;
 import jam.global.JamStatus;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
+import java.io.FileNotFoundException;
 import jam.util.StringUtilities;
 
 import java.awt.Frame;
@@ -272,6 +273,15 @@ public class HDFIO implements DataIO, JamHDFFields {
              */
             file.delete();
         } 
+        try {
+            synchronized (this) {
+            	out = new HDFile(file, "rw");
+            }
+        } catch (FileNotFoundException e) {
+        	msgHandler.errorOutln("Opening file: "
+                        + file.getName());
+        } 
+        
         final int progressRange = hists.size() + gates.size()
                 + scalers.size() + parameters.size();
 
@@ -279,22 +289,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 "Saving HDF file", "Building file buffer", progress,
                 progressRange);
 
-        try {
-            synchronized (this) {
-                out = new HDFile(file, "rw");
-            }
-            message.append("Saved ").append(file.getName()).append(" (");
-            out.addFileID(file.getPath());
-            out.addFileNote();
-            out.addMachineType();
-            out.addNumberTypes();
-        } catch (HDFException e) {
-            msgHandler.errorOutln("Exception when opening file '"
-                    + file.getName() + "': " + e.toString());
-        } catch (IOException e) {
-            msgHandler.errorOutln("Exception when opening file '"
-                    + file.getName() + "': " + e.toString());
-        }
+        message.append("Saved ").append(file.getName()).append(" (");        
         try {
             if (hasContents(hists)) {
                 addHistogramSection();
@@ -328,19 +323,37 @@ public class HDFIO implements DataIO, JamHDFFields {
                 progress += parameters.size();
                 setProgress(pm, progress);
             }
-            message.append(")");            
+            message.append(")");         
+        } catch (HDFException e) {
+        	msgHandler.errorOutln("Error "
+                + file.getName() + "': " + e.toString());
+        }   
+        msgHandler.messageOut("", MessageHandler.END);
+        
+        try {                
+        	out.writeHeader();
+        	out.addVersionNumber();
+        	out.addFileID(file.getPath());        	
+            out.addFileNote();
+            out.addMachineType();
             out.setOffsets();
             out.writeDataDescriptorBlock();
             out.writeAllObjects(pm);
             setProgressNote(pm, "Closing File");
             out.close();
-            pm.close();
-        } catch (Exception e) {
-            msgHandler.messageOut("", MessageHandler.END);
+        } catch (HDFException e) {
+            msgHandler.errorOutln("Exception writing to file '"
+                    + file.getName() + "': " + e.toString());
+        } catch (IOException e) {
             msgHandler.errorOutln("Exception writing to file '"
                     + file.getName() + "': " + e.toString());
         }
+            
+        
+        pm.close();
+
         synchronized (this) {
+        	DataObject.clear();
             out = null; //allows Garbage collector to free up memory
         }
         outln(message.toString());
@@ -443,6 +456,11 @@ public class HDFIO implements DataIO, JamHDFFields {
             synchronized (this) {
                 in = new HDFile(infile, "r");
             }
+            if (!in.isHDFFile()){
+            	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
+            	 return false;
+            }
+            
             in.seek(0);
             /* read file into set of DataObject's, set their internal variables */
             pm.setNote("Parsing objects");
@@ -507,6 +525,11 @@ public class HDFIO implements DataIO, JamHDFFields {
     	try {
 			/* Read in histogram names */
 	    	in = new HDFile(infile, "r");
+            if (!in.isHDFFile()){
+           	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
+           	 return histAttributes;
+           }
+
 	    	in.readObjects();
 	    	histAttributes.addAll(loadHistogramAttributes());
 			in.close();
