@@ -275,8 +275,8 @@ public abstract class GaussianFit3 extends NonLinearFit {
 		double rangeOffset;
 		//channel diff +/- from centroid to sum over for area
 
-		int i, minCH, maxCH, peakHigh, imin, imax;
-		double area, width, centroid, distance, variance, backLevel, intWidth;
+		int i, minCH, maxCH, imin, imax;
+		double backLevel;
 
 		// First, sort clickable mouse entries.
 		orderParameters();
