@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
@@ -52,11 +51,15 @@ public class HDFIO implements DataIO, JamHDFFields {
             .userNodeForPackage(HDFIO.class);
 
     private static final String LAST_FILE_KEY = "LastValidFile";
+
+    static private final List EMPTY_LIST = Collections
+    .unmodifiableList(new ArrayList());
+    
     static {
         lastValidFile = new File(PREFS.get(LAST_FILE_KEY, System
                 .getProperty("user.dir")));
     }
-
+    
     /**
      * Parent frame.
      */
@@ -121,45 +124,6 @@ public class HDFIO implements DataIO, JamHDFFields {
     public void writeFile(File file) {
         writeFile(true, true, true, true, file);
     }
-
-    /**
-     * Writes out the currently held spectra, gates, and scalers.
-     */
-    public int writeFile() {
-        return writeFile(true, true, true, true);
-    }
-
-    /**
-     * Writes out the currently held spectra, gates, and scalers, subject to the
-     * options given .
-     * 
-     * @param wrthis
-     *            if true, Histograms will be written
-     * @param wrtgate
-     *            if true, Gates will be written
-     * @param wrtscalers
-     *            if true, scaler values will be written
-     * @param wrtparameters
-     *            if true, parameter values will be written
-     * @return <code>JFileChooser.APPROVE_OPTION</code> or
-     *         <code>JFileChooser.CANCEL_OPTION</code>
-     */
-    public int writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers,
-            boolean wrtparameters) {
-        final JFileChooser jfile = new JFileChooser(getLastValidFile());
-        jfile.setFileFilter(new HDFileFilter(true));
-        int option = jfile.showSaveDialog(frame);
-        /* don't do anything if it was cancel */
-        if (option == JFileChooser.APPROVE_OPTION
-                && jfile.getSelectedFile() != null) {
-            final File f = jfile.getSelectedFile();
-            writeFile(wrthis, wrtgate, wrtscalers, wrtparameters, f);
-        }
-        return option;
-    }
-
-    static private final List EMPTY_LIST = Collections
-            .unmodifiableList(new ArrayList());
 
     /**
      * Writes out (to a specific file) the currently held spectra, gates, and
@@ -348,25 +312,6 @@ public class HDFIO implements DataIO, JamHDFFields {
         });
     }
 
-    /**
-     * Read in an unspecified file by opening up a dialog box.
-     * 
-     * @param mode
-     *            whether to open or reload
-     * @return <code>true</code> if successful
-     */
-    public boolean readFile(FileOpenMode mode) {
-        boolean outF = false; //default if not set to true later
-        final JFileChooser jfile = new JFileChooser(getLastValidFile());
-        jfile.setFileFilter(new HDFileFilter(true));
-        final int option = jfile.showOpenDialog(frame);
-        // dont do anything if it was cancel
-        if (option == JFileChooser.APPROVE_OPTION
-                && jfile.getSelectedFile() != null) {
-            outF = readFile(mode, jfile.getSelectedFile());
-        }
-        return outF;
-    }
 
     /**
      * Read in an HDF file.
@@ -1005,12 +950,6 @@ public class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
-    /**
-     * @return the file data is to be read from
-     */
-    public File getInputFile() {
-        return in.getFile();
-    }
 
     /**
      * @param spectrumName

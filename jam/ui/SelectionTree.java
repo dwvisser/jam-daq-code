@@ -149,9 +149,13 @@ public class SelectionTree extends JPanel implements Observer {
             final TreePath prime = paths[0];
             final Object firstNode = ((DefaultMutableTreeNode) prime
                     .getLastPathComponent()).getUserObject();
-            if (firstNode instanceof Histogram) {
+            if (firstNode instanceof Group) {
+            	final Group group = (Group)firstNode;
+            	 STATUS.setCurrentGroup(group);
+            }else if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;
+                STATUS.setCurrentGroup(null);         
                 STATUS.setCurrentHistogram(hist);
                 STATUS.setCurrentGateName(null);                
                 /* Do we have overlays ? */
@@ -170,6 +174,7 @@ public class SelectionTree extends JPanel implements Observer {
                 final Gate gate = (Gate) firstNode;
                 final Histogram hist = getAssociatedHist(prime);
                 tree.addSelectionPath(pathForDataObject(hist));
+                STATUS.setCurrentGroup(null);    
                 STATUS.setCurrentHistogram(hist);
                 STATUS.clearOverlays();
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,

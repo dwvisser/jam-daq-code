@@ -101,11 +101,15 @@ public final class MenuBar implements Observer, CommandNames {
 		file.add(getMenuItem(SAVE_AS_HDF));
 
 		final JMenuItem saveSpecial = new JMenu("Save Special");
+		saveSpecial.add(getMenuItem(SAVE_SORT));
+		saveSpecial.add(getMenuItem(SAVE_GROUP));
+		saveSpecial.add(getMenuItem(SAVE_HISTOGRAMS));
 		saveSpecial.add(getMenuItem(SAVE_GATES));
+		
 		file.add(saveSpecial);
 		file.addSeparator();
 
-		final JMenuItem utilities = new JMenu("Utilities");
+		final JMenuItem utilities = new JMenu("Scaler Utilities");
 		file.add(utilities);
 		utilities.add(getMenuItem(OPEN_SCALERS_YALE_CAEN));
 		utilities.add(getMenuItem(SHOW_SCALER_SCAN));

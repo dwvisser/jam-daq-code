@@ -2,8 +2,12 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 
+import java.awt.Frame;
 import java.io.File;
+
+import javax.swing.JFileChooser;
 
 /** 
  * Save gates and scalers 
@@ -27,9 +31,20 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	 * @see java.io.File
 	 */
 	protected void execute(Object[] cmdParams) {
-		final HDFIO hdfio = new HDFIO(status.getFrame(), msghdlr);
+		Frame frame= status.getFrame();
+		final HDFIO hdfio = new HDFIO(frame, msghdlr);
+		
 		if (cmdParams == null || cmdParams.length==0) { //No file given		
-			hdfio.writeFile(false, true, true, true);
+	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
+	        jfile.setFileFilter(new HDFileFilter(true));
+	        int option = jfile.showSaveDialog(frame);
+	        /* don't do anything if it was cancel */
+	        if (option == JFileChooser.APPROVE_OPTION
+	                && jfile.getSelectedFile() != null) {
+	            final File file = jfile.getSelectedFile();
+	            hdfio.writeFile(false,  true, true, true, file);
+	        }
+		
 		} else { //File name given	
 			hdfio.writeFile(false, true, true, true, (File) cmdParams[0]);
 		}

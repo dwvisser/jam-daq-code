@@ -29,6 +29,15 @@ public interface CommandNames {
 
 	/** Save gates and scalers to a hdf */ 
 	String SAVE_GATES = "savegates";	
+
+	/** Save a group of histogram*/ 
+	String SAVE_GROUP = "savegroup";	
+
+	/** Save sort hdf histograms */ 
+	String SAVE_SORT = "savesort";	
+
+	/** Save selected histograms*/ 
+	String SAVE_HISTOGRAMS = "savehistograms";	
 	
 	/** Open selected histograms in hdf */ 
 	String OPEN_SELECTED = "opensel";	

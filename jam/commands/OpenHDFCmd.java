@@ -7,12 +7,15 @@ import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
 /**
@@ -32,24 +35,54 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
+		//Run in another thread
 		final Runnable r=new Runnable(){
 			public void run(){
-				final boolean isFileRead; 
-				final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);		
-				if (cmdParams==null) {//No file given									
-					isFileRead=hdfio.readFile(FileOpenMode.OPEN);//opens file dialog
-				} else {
-					isFileRead=hdfio.readFile(FileOpenMode.OPEN, (File)cmdParams[0]);
-				}	
-				if (isFileRead){//File was read in	
-					notifyApp(HDFIO.getLastValidFile());
-				}						
+				readHDFFile(cmdParams);
 			}
 		};
 		final Thread t=new Thread(r);
 		t.run();
 	}
-
+	/**
+	 * Read in a HDF file
+	 * @param cmdParams
+	 */ 
+	private void readHDFFile(Object[] cmdParams) {
+		
+		Frame frame= status.getFrame();
+		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
+		File file=null;
+		final boolean isFileRead;
+		
+		if (cmdParams!=null) {
+			file =(File)cmdParams[0];
+		} 
+	
+		if (file==null) {//No file given				
+	        boolean outF = false; //default if not set to true later
+	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
+	        jfile.setFileFilter(new HDFileFilter(true));
+	        final int option = jfile.showOpenDialog(frame);
+	        // dont do anything if it was cancel
+	        if (option == JFileChooser.APPROVE_OPTION
+	                && jfile.getSelectedFile() != null) {
+	        	file = jfile.getSelectedFile();
+				isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);	        	
+	        } else {
+	        	isFileRead=false;
+	        }
+	        	
+			
+		} else {
+			isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);
+		}
+		
+		if (isFileRead){//File was read in	
+			notifyApp(HDFIO.getLastValidFile());
+		}								
+	}
+	
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */

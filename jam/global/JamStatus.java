@@ -1,8 +1,10 @@
 package jam.global;
+
 import jam.FrontEndCommunication;
 import jam.JamPrefs;
 import jam.RunState;
 import jam.VMECommunication;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.plot.Display;
 
@@ -21,6 +23,7 @@ import javax.swing.JFrame;
 public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
+	private static Group currentGroup;	
 	private static Histogram currentHistogram;
 	private static Set overlayNames=new HashSet();	
 	private static String gateName;
@@ -145,6 +148,26 @@ public final class JamStatus {
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
+	/**
+	 * Sets <code>FILE</code> sort mode, and stores the given file as
+	 * the last file accessed.
+	 *  
+	 * @param file the file just loaded or saved
+	 */
+	public void setSortMode(File file) {
+		synchronized (sortMode) {
+			openFile = file;
+			setSortMode(SortMode.FILE, file.getName());
+		}
+	}
+	/**
+	 * @return the current sort mode
+	 */
+	public SortMode getSortMode() {
+		synchronized (sortMode) {
+			return sortMode;
+		}
+	}
 	
 	/**
 	 * Set the current run state.
@@ -165,27 +188,6 @@ public final class JamStatus {
 		}
 	}
 
-	/**
-	 * Sets <code>FILE</code> sort mode, and stores the given file as
-	 * the last file accessed.
-	 *  
-	 * @param file the file just loaded or saved
-	 */
-	public void setSortMode(File file) {
-		synchronized (sortMode) {
-			openFile = file;
-			setSortMode(SortMode.FILE, file.getName());
-		}
-	}
-
-	/**
-	 * @return the current sort mode
-	 */
-	public SortMode getSortMode() {
-		synchronized (sortMode) {
-			return sortMode;
-		}
-	}
 	/**
 	 * Returns name of the sort or file.
 	 * 
@@ -233,6 +235,27 @@ public final class JamStatus {
 		return acqStatus.isAcqOn();
 	}
 
+	/**
+	 * Sets the current <code>Histogram</code>.
+	 * 
+	 * @param hist the current histogram 
+	 */
+	public synchronized void setCurrentGroup(Group group) {
+		currentGroup=group;
+	}
+	
+	/**
+	 * Gets the current histogram.
+	 * 
+	 * @return the current histogram
+	 */
+	public synchronized Group getCurrentGroup(){
+		if (!Group.isValid(currentGroup)){
+			currentGroup=null;
+		}
+		return currentGroup;
+	}
+	
 	/**
 	 * Sets the current <code>Histogram</code>.
 	 * 

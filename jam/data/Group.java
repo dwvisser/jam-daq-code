@@ -146,6 +146,15 @@ public class Group {
         currentGroup = null;
     }
 
+	/**
+	 *  Test if Group is a valid Group
+	 * @param hist
+	 * @return <code>true</code> if this group remains in the name mapping
+	 */
+	public static boolean isValid(Group group){
+		return NAME_MAP.containsValue(group);
+	}
+    
     /**
      * Constructor
      * 

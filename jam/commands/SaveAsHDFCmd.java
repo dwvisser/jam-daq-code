@@ -1,11 +1,14 @@
 package jam.commands;
 
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
+import java.awt.Frame;
 
 /**
  * Save data to an hdf file.
@@ -31,11 +34,22 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	 * @see java.io.File
 	 */
 	protected void execute(Object[] cmdParams) {
+		
+		Frame frame= status.getFrame();
 		final HDFIO hdfio = new HDFIO(status.getFrame(), msghdlr);
+		
 		if (cmdParams == null || cmdParams.length==0) { //No file given		
-			hdfio.writeFile();
+	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
+	        jfile.setFileFilter(new HDFileFilter(true));
+	        int option = jfile.showSaveDialog(frame);
+	        /* don't do anything if it was cancel */
+	        if (option == JFileChooser.APPROVE_OPTION
+	                && jfile.getSelectedFile() != null) {
+	            final File file = jfile.getSelectedFile();
+	            hdfio.writeFile(true, true, true, true, file);
+	        }
 		} else { //File name given	
-			hdfio.writeFile((File) cmdParams[0]);
+			hdfio.writeFile(true, true, true, true, (File) cmdParams[0]);
 		}
 	}
 

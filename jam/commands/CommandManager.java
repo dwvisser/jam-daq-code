@@ -43,6 +43,10 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(SAVE_HDF, SaveHDFCmd.class);
 		CMD_MAP.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
 		CMD_MAP.put(SAVE_GATES, SaveGatesCmd.class);
+		CMD_MAP.put(SAVE_GROUP, SaveGroupHDFCmd.class);
+		CMD_MAP.put(SAVE_SORT, SaveSortGroupHDFCmd.class);
+		CMD_MAP.put(SAVE_HISTOGRAMS, SaveSelectHistogramsHDFCmd.class);
+
 		CMD_MAP.put(ADD_HDF, AddHDFCmd.class);
 		CMD_MAP.put(RELOAD_HDF, ReloadHDFCmd.class);
 		/* Histogram Menu */
