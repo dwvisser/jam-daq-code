@@ -35,18 +35,17 @@ public class RunControl implements Controller, ActionListener {
 
     /** Indicates running to or from disk.
      */
-    public static final int DISK=0;
-    /** Indicates running to or from tape.
-     */
-    public static final int TAPE=1;
+    private static final int DISK=0;
+
     /**
      * Indicates events being stored by front end.
      */
-    public static final int FRONT_END=2;
+    private static final int FRONT_END=2;
 
     final static String EVENT_FILE_EXTENSION=".evn";
+    
     /**
-     *device we are writing to DISK or TAPE
+     * The device writing events: DISK or FRONT_END
      */
     private int device;
 
@@ -60,7 +59,7 @@ public class RunControl implements Controller, ActionListener {
 
     // daemon threads
     private NetDaemon		netDaemon;
-    private StorageDaemon	storageDaemon;
+    //private StorageDaemon	storageDaemon;
     private DiskDaemon		diskDaemon;
     private SortDaemon		sortDaemon;
 
@@ -240,22 +239,18 @@ public class RunControl implements Controller, ActionListener {
      *
      */
     public void setupOn(String experimentName, String dataPath, String histFilePath,
-    SortDaemon sortDaemon, NetDaemon netDaemon, StorageDaemon storageDaemon) {
+    SortDaemon sortDaemon, NetDaemon netDaemon, DiskDaemon dd) {
         this.experimentName=experimentName;
         this.dataPath=dataPath;
         this.histFilePath=histFilePath;
         this.sortDaemon=sortDaemon;
         this.netDaemon=netDaemon;
-        this.storageDaemon=storageDaemon;
         textExptName.setText(experimentName);
-        if (storageDaemon instanceof DiskDaemon) {
-            diskDaemon=(DiskDaemon)storageDaemon;
-            device=DISK;
-        } else if (storageDaemon == null) {//case if front end is taking care of storing events
+        if (dd == null) {//case if front end is taking care of storing events
             device=FRONT_END;
         } else {
-           throw new IllegalArgumentException("Unknown storageDaemon type "+
-           storageDaemon.getClass().getName());
+			diskDaemon=dd;
+			device=DISK;
         }
         bbegin.setEnabled(true);
     }
@@ -356,8 +351,6 @@ public class RunControl implements Controller, ActionListener {
         jamMain.setRunState(RunState.RUN_ON(runNumber));
         if(device==DISK){
             console.messageOutln("Began run "+runNumber+", events being written to file: "+dataFileName);
-        } else if (device==TAPE) {
-            console.messageOutln("Began run, events written to Tape ");
         } else {
             console.messageOutln("Began run, events being written out be front end.");
         }
@@ -390,7 +383,7 @@ public class RunControl implements Controller, ActionListener {
                 console.errorOutln(getClass().getName()+".endRun(), Error: Interrupted while"
                 +" waiting for sort to finish.");
             }
-        } while(!sortDaemon.caughtUp());
+        } while(!sortDaemon.caughtUp() && !storageCaughtUp());
         netDaemon.setState(GoodThread.SUSPEND);
         // histogram file name constructed using run name and number
         histFileName=histFilePath+experimentName+runNumber+".hdf";
@@ -402,6 +395,12 @@ public class RunControl implements Controller, ActionListener {
         textRunNumber.setText(Integer.toString(runNumber));
         runOn=false;
         bbegin.setEnabled(true);//set begin button state for next run
+    }
+    
+    private boolean storageCaughtUp(){
+    	final boolean rval = device==FRONT_END ? true :
+    	diskDaemon.caughtUpOnline();
+    	return rval;
     }
 
     /**
@@ -442,10 +441,10 @@ public class RunControl implements Controller, ActionListener {
      * @throws IllegalStateException if the device is not an expected value
      */
     public void atWriteEnd()  {
+		if (device != FRONT_END) {
+			netDaemon.setWriter(false);
+		} 
         try {
-            if (device != FRONT_END) {
-            	netDaemon.setWriter(false);
-            } 
             if (device==DISK){
                 diskDaemon.closeEventOutputFile();
                 console.messageOutln("Event file closed "+dataFile.getPath());
