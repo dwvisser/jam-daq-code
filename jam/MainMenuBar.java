@@ -275,12 +275,11 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final boolean oneDops = hExists && h.getDimensionality() == 1;
 		calHist.setEnabled(oneDops);
 	}
+	
 	private void updateViews(){
-		view.removeAll();
-		
+		view.removeAll();	
 		view.add(getMenuItem(SHOW_VIEW_NEW));
 		view.addSeparator();		
-
 		Iterator viewNames =View.getNameIterator(); 
 		while(viewNames.hasNext()){
 			final String name=(String)viewNames.next();
