@@ -27,7 +27,7 @@ public interface  DataIO {
      *	write out to a file, prompted for file
      *  name all options true
      */ 			            
-    public void writeFile(boolean hist, boolean gate, boolean scaler) ;    
+    public int writeFile(boolean hist, boolean gate, boolean scaler) ;    
     /**
      *	write out to a given file all options true
      */ 			        
@@ -37,7 +37,7 @@ public interface  DataIO {
      *	write out to a file, prompted for file
      *  name all options true
      */ 			            
-    public void writeFile() ;
+    public int writeFile() ;
     
     /**
      *	write out to a given file

@@ -92,7 +92,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 	public HDFIO(Frame f, MessageHandler mh) {
 		this.frame = f;
 		this.msgHandler = mh;
-		//fu=new FileUtilities(frame,defaultPath);
 	}
 
 	/**
@@ -108,8 +107,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 	/**
 	 * Writes out the currently held spectra, gates, and scalers.
 	 */
-	public void writeFile() {
-		writeFile(true, true, true, true);
+	public int writeFile() {
+		return writeFile(true, true, true, true);
 	}
 
 	/**
@@ -121,11 +120,11 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @param  wrtgate  if true, Gates will be written
 	 * @param  wrtscalers  if true, scaler values will be written
 	 */
-	public void writeFile(
+	public int writeFile(
 		boolean wrthis,
 		boolean wrtgate,
 		boolean wrtscalers) {
-		writeFile(wrthis, wrtgate, wrtscalers, true);
+		return writeFile(wrthis, wrtgate, wrtscalers, true);
 	}
 
 	/**
@@ -137,7 +136,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @param  wrtscalers  if true, scaler values will be written
 	 * @param  wrtparameters if true, parameter values will be written
 	 */
-	public void writeFile(
+	public int writeFile(
 		boolean wrthis,
 		boolean wrtgate,
 		boolean wrtscalers,
@@ -153,6 +152,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 			}
 			writeFile(wrthis, wrtgate, wrtscalers, wrtparameters, fileSave);
 		}
+		return option;
 	}
 
 	/**
