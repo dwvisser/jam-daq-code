@@ -87,7 +87,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	DiskDaemon diskDaemon;
 	TapeDaemon tapeDaemon;
 	StorageDaemon storageDaemon;
-	SortRoutine sortRoutine;
+	private SortRoutine sortRoutine;
 
 	//ring buffers
 	RingBuffer sortingRing;
@@ -506,7 +506,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 							+ experimentName);
 					loadSorter(); //load sorting routine
 					if (sortRoutine != null) {
-						resetAcq();
+						resetAcq(false);
 						//Kill all existing Daemons and clear data areas
 						setupAcq(); //create daemons
 						jamConsole.messageOutln(
@@ -560,7 +560,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			if (ie.getItemSelectable() == checkLock) {
 				if (!checkLock.isSelected()) {
 					//kill daemons, clear data areas
-					resetAcq();
+					resetAcq(true);
 					//unlock sort mode
 					lockMode(false);
 					jamConsole.closeLogFile();
@@ -692,7 +692,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			eventInputStream,
 			sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
-		sortDaemon.load(sortRoutine);
+		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
 		if (storeEventsLocally) { // don't create storage daemon otherwise
 			if (tapeMode) {
@@ -727,8 +727,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//tell status
 		displayCounters.setupOn(netDaemon, sortDaemon, storageDaemon);
 		//startup daemons
-		if (storeEventsLocally)
+		if (storeEventsLocally){
 			storageDaemon.start();
+		}
 		sortDaemon.start();
 		netDaemon.start();
 	}
@@ -756,12 +757,12 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 *      clear all data areas
 	 *      Histograms, Gates, Scalers, Monitors, Parameters
 	 */
-	private void resetAcq() throws GlobalException {
+	private void resetAcq(boolean killSort) throws GlobalException {
 		if (diskDaemon != null) {
 			diskDaemon.setState(GoodThread.STOP);
 		}
 		if (sortDaemon != null) {
-			sortDaemon.load(null);
+			sortDaemon.setSortRoutine(null);
 			//make sure sorter Daemon does not have a handle to sortClass
 			sortDaemon.setState(GoodThread.STOP);
 			//this line should be sufficient but above line is needed
@@ -773,7 +774,11 @@ class SetupSortOn implements ActionListener, ItemListener {
 		if (tapeDaemon != null) {
 			tapeDaemon.setState(GoodThread.STOP);
 		}
-		DataBase.clearAllLists();
+		if (killSort){
+			sortRoutine=null;
+		}
+		DataBase.getInstance().clearAllLists();
+		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
 
 	/**
