@@ -221,8 +221,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		parameters.toArray(parameterArray);
 		dfit = new JDialog(frame, NAME, false);
 		Container cp = dfit.getContentPane();
-		dfit.setForeground(Color.black);
-		dfit.setBackground(Color.lightGray);
 		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
 		cp.setLayout(new BorderLayout());
@@ -354,11 +352,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				west.add(new JPanel());
 			}
 			/* Take care of options. */
-			/*if (parameter.isKnown()) {
-				textKnown[i] = new JTextField("0.0", 8);
-				textKnown[i].setEnabled(true);
-				middle.add(textKnown[i]);
-			}*/
 			JPanel right = new JPanel(new GridLayout(1, 0));
 			east.add(right);
 			if (parameter.hasErrorBar()) {
@@ -390,7 +383,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			}
 		});
 		dfit.pack();
-		//reset();
 	}
 
 	/** 
@@ -510,23 +502,11 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 									textError[i].getText().substring(1).trim())
 								.doubleValue());
 					}
-					/*if (parameter.isKnown()) {
-						parameter.setKnown(
-							Double
-								.valueOf(textKnown[i].getText().trim())
-								.doubleValue());
-					}*/
 				} else if (parameter.isInteger()) {
 					parameter.setValue(
 						Integer
 							.valueOf(textData[i].getText().trim())
 							.intValue());
-					/*if (parameter.isKnown()) {
-						parameter.setKnown(
-							Integer
-								.valueOf(textKnown[i].getText().trim())
-								.intValue());
-					}*/
 				} else if (parameter.isBoolean()) {
 					parameter.setValue(cOption[i].isSelected());
 				}
@@ -559,9 +539,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 						textError[i].setBackground(Color.yellow);
 					}
 				}
-				/*if (parameter.isKnown()) {
-					textKnown[i].setBackground(Color.lightGray);
-				}*/
 			}
 		}
 	}
@@ -613,9 +590,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 						}
 					}
 				}
-				/*if (parameter.isKnown()) {
-					textKnown[i].setBackground(Color.white);
-				}*/
 				if (parameter.isFixed()) {
 					setFixed(parameter, i);
 				}
