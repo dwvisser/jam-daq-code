@@ -1,16 +1,30 @@
 package jam.commands;
 
+import jam.data.Histogram;
 import jam.data.control.CalibrationFit;
+
+import java.util.Observable;
+import java.util.Observer;
 /**
- * @author Ken Swartz
+ * Show histgoram Calibration fit dialog.
  * 
- * Show histgrom Calibartion fit dialgo
+ * @author Ken Swartz
  */
-final class ShowDialogCalibrationFitCmd extends AbstractShowDialog {
+final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements 
+Observer {
 
 	public void initCommand(){
-		putValue(NAME,"Enter Coefficients\u2026");
+		putValue(NAME,"Fit\u2026");
 		dialog=new CalibrationFit(msghdlr);
+		enable();
 	}
 
+	protected final void enable() {
+		final Histogram h=Histogram.getHistogram(status.getCurrentHistogramName());
+		setEnabled(h !=null && h.getDimensionality()==1);
+	}
+
+	public void update(Observable observe, Object obj){
+		enable();
+	}
 }
