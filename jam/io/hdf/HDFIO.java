@@ -759,6 +759,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      *            names of histograms to read, null if all
      * @return <code>true</code> if successful
      */
+    //FIXME KBS can be remove after checking functionallity of new asynReadFile for old format
     synchronized private boolean asyncReadFile( File infile, FileOpenMode mode, List histNames) {
         boolean rval = true;
         Group currentGroup;
