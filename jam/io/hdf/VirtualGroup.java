@@ -42,7 +42,6 @@ final class VirtualGroup extends DataObject {
         super(DFTAG_VG); //sets tag
         this.name = name;
         this.type = type;
-        refreshBytes();
     }
 
     VirtualGroup() {
@@ -114,7 +113,6 @@ final class VirtualGroup extends DataObject {
             throw new IllegalArgumentException("Can't add null to vGroup.");
         }
         elements.add(data);
-        refreshBytes();
     }
 
     /**

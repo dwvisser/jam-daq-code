@@ -23,13 +23,13 @@ final class NumericalDataGroup extends DataObject {
     NumericalDataGroup() {
         super(DFTAG_NDG); //sets tag
         elements = Collections.synchronizedList(new ArrayList());
-        refreshBytes();
     }
 
     /**
      * Should be called whenever a change is made to the contents of the NDG.
      */
     protected void refreshBytes() {
+
         final int numBytes = 4 * elements.size();
         /* see DFTAG_NDG specification for HDF 4.1r2 */
         bytes = ByteBuffer.allocate(numBytes);
@@ -64,7 +64,6 @@ final class NumericalDataGroup extends DataObject {
      */
     void addDataObject(DataObject data) {
         elements.add(data);
-//        refreshBytes();
     }
 
     /*

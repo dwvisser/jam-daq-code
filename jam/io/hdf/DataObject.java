@@ -471,6 +471,14 @@ public abstract class DataObject {
 		return offset;
 	}
 	
+	/**
+	 * Refreshes the byte array for each object,
+	 * Should be called before find size or writing out.
+	 * Override when an update of is needed.
+	 */
+	void refreshBytes() {
+		
+	}
 	/* non-javadoc:
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 */

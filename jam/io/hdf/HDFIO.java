@@ -990,7 +990,6 @@ public class HDFIO implements DataIO, JamHDFFields {
             data.addChars(1, i, su.makeLength(s.getName(), orders[1]));
             data.addInteger(2, i, s.getValue());
         }
-        data.refreshBytes();
     }
 
     /*
@@ -1072,7 +1071,6 @@ public class HDFIO implements DataIO, JamHDFFields {
             data.addChars(0, i, su.makeLength(p.getName(), orders[0]));
             data.addFloat(1, i, (float) p.getValue());
         }
-        data.refreshBytes();
     }
 
     /*

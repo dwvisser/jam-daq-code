@@ -52,7 +52,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @throws HDFException
 	 */
 	void writeFile(final ProgressMonitor monitor) throws HDFException {
-        setOffsets();            
+		updateBytesOffsets();            
         writeMagicWord();	      
         writeDataDescriptorBlock();
         writeAllObjects(monitor);
@@ -63,13 +63,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * fields of the <code>DataObject</code>'s. To be run when all data
 	 * elements have been defined.
 	 */
-	private synchronized void setOffsets() {
+	private synchronized void updateBytesOffsets() {
 		//final int DDblockSize = 2 + 4 + 12 * objectList.size();
 		final int initOffset = sizeDataDescriptorBlock() + 4; //add in HDF file header
 		int counter = initOffset;
 		final Iterator temp = DataObject.getDataObjectList().iterator();
 		while (temp.hasNext()) {
 			final DataObject dataObject = (DataObject) (temp.next());
+			dataObject.refreshBytes();
 			dataObject.setOffset(counter);
 			counter += dataObject.getBytes().capacity();
 		}

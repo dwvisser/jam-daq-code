@@ -142,7 +142,6 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
                 data.addInteger(1, i, y[i]);
             }
         }
-        data.refreshBytes();
         /* add Histogram links... */
         final VirtualGroup hist = VirtualGroup.ofName(DataObject
                 .ofType(DataObject.DFTAG_VG), gate.getHistogram().getName());
@@ -196,7 +195,7 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
             data.addChars(1, i, su.makeLength(s.getName(), orders[1]));
             data.addInteger(2, i, s.getValue());
         }
-        data.refreshBytes();
+
         
         return scalerGroup;
 
@@ -248,7 +247,7 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 	        data.addChars(0, i, su.makeLength(p.getName(), orders[0]));
 	        data.addFloat(1, i, (float) p.getValue());
 	    }
-	    data.refreshBytes();
+
 	    return parameterGroup;
 	}
 	/** 
