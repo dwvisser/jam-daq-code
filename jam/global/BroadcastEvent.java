@@ -16,7 +16,11 @@ public class BroadcastEvent {
     public static final int SCALERS_READ=20;//scalers have been read
     public static final int SCALERS_CLEAR=21;
     public static final int SCALERS_UPDATE=22;
-
+    
+	public static final int MONITORS_ENABLED=25;	//Monitors enabled
+	public static final int MONITORS_DISABLED=26;	//Monitors disable
+	public static final int MONITORS_UPDATE=27;		//Update the monitors
+	
     public static final int GATE_SELECT=30;		//a gate has been select to be displayed
     public static final int GATE_ADD=31;		//a gate has been added
     public static final int GATE_SET_ON=32;
@@ -30,14 +34,16 @@ public class BroadcastEvent {
     public static final int COUNTERS_READ=41;
     public static final int COUNTERS_ZERO=42;
     
-    public static final int SORT_MODE_CHANGED=50;
+    public static final int SORT_MODE_CHANGED=50; 
     public static final int RUN_STATE_CHANGED=51;
     
     public static final int FIT_NEW=60;
 
     private static final int[] POSSIBLE_CODES = {REFRESH, HISTOGRAM_NEW,
-        HISTOGRAM_ADD,HISTOGRAM_SELECT,SCALERS_READ,SCALERS_CLEAR,
-        SCALERS_UPDATE,GATE_SELECT,GATE_ADD,GATE_SET_ON,GATE_SET_OFF,
+        HISTOGRAM_ADD,HISTOGRAM_SELECT,
+        SCALERS_READ,SCALERS_CLEAR, SCALERS_UPDATE , 
+        MONITORS_ENABLED, MONITORS_DISABLED,MONITORS_UPDATE,
+        GATE_SELECT,GATE_ADD,GATE_SET_ON,GATE_SET_OFF,
         GATE_SET_SAVE,GATE_SET_POINT,GATE_SET_ADD,GATE_SET_REMOVE,
         COUNTERS_UPDATE,COUNTERS_READ,COUNTERS_ZERO,SORT_MODE_CHANGED,
         RUN_STATE_CHANGED, FIT_NEW};
