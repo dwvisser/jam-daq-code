@@ -13,7 +13,7 @@ public class PolynomialFunction extends CalibrationFunction {
 	 * @param numberTerms terms in the polynomial (including a constant term)
 	 */
 	public PolynomialFunction(int numberTerms) {
-		super(numberTerms);
+		super(PolynomialFunction.class, "Polynomial",numberTerms);
 		title = "E = a0 + a1\u2219ch + a2\u2219(ch)\u00b2 + ...";
 		coeff = new double[numberTerms];
 		labels = new String[numberTerms];

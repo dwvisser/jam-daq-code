@@ -18,7 +18,7 @@ public class PolynomialOffsetFunction extends CalibrationFunction {
 	 *             thrown if invalid <code>type</code> passed to constructor
 	 */
 	public PolynomialOffsetFunction(int numberTerms) {
-		super(numberTerms);
+		super(PolynomialOffsetFunction.class, "Polynomial Offset", numberTerms);
 		if (numberTerms < MAX_NUMBER_TERMS) {
 			title = "E = a0+a1*(ch-x0)+a2*(ch-x0)^2+ ...";
 			coeff = new double[numberTerms];

@@ -1,5 +1,9 @@
 package jam.data.func;
 import jam.data.DataException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A function that can be use to calibrate a histogram.  
@@ -11,6 +15,9 @@ import jam.data.DataException;
  */
 public abstract class CalibrationFunction implements Function {
 
+	private static final Map  mapFunctions =new HashMap();	
+	private static final List names =new ArrayList();	
+
 	/**
 	 * Maximum number of terms assigned by default to <code>POLYNOMIAL</code> type.
 	 */
@@ -20,6 +27,11 @@ public abstract class CalibrationFunction implements Function {
 	 * Term labels.
 	 */
 	protected transient String[] labels;
+
+	/**
+	 * Name of calibration function.
+	 */	
+	protected transient String name;
 	
 	/**
 	 * Title of calibration function.
@@ -36,12 +48,33 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	protected transient StringBuffer formula=new StringBuffer();
 
+	public static List getListNames() {
+		return names;
+	}
+	public static Map getMapFunctions() {
+		return mapFunctions;
+	}	
+	public static void clearAll(){
+		mapFunctions.clear();
+		names.clear();
+	}
+	public static void addFunction(String name, Class funcClass) {
+		//Only add once
+		if (!mapFunctions.containsKey(name)){
+			mapFunctions.put(name, funcClass);
+			names.add(name);
+		}		
+	}
+		
+
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
 	 *
 	 * @param	numberTerms	number of terms in function
 	 */
-	public CalibrationFunction(int numberTerms) {
+	public CalibrationFunction(Class inClass, String name, int numberTerms) {
+		this.name=name;
+		addFunction(name, inClass);
 		if (numberTerms < MAX_NUMBER_TERMS) {
 			coeff=new double[numberTerms];
 			labels=new String[numberTerms];
@@ -74,6 +107,14 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public double[] getCoeff() {
 		return coeff;
+	}
+
+	/**
+	 * 
+	 * @return name of the calibration function
+	 */
+	public String getName(){
+		return name;
 	}
 	
 	/**

@@ -12,7 +12,7 @@ public class LinearFunction extends CalibrationFunction {
 	 * Creates a new <code>LinearFunction</code> object of the specified type.  
 	 */
 	public LinearFunction() {
-		super(NUMBER_TERMS);
+		super(LinearFunction.class, "Linear", NUMBER_TERMS);
 		title = "E = a0 + a1\u2219ch";
 		labels[0] = "a(0)";
 		labels[1] = "a(1)";

@@ -1,5 +1,6 @@
 package jam.data.func;
 
+import jam.data.control.CalibrationFit;
 import java.awt.Component;
 import java.net.URL;
 
@@ -59,19 +60,29 @@ public class CalibrationListCellRenderer
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
-		if (value==null){
-			setText(null);
-			setIcon(null);	
-		} else if (value.equals(LinearFunction.class.getName())){
+		
+		setText(value.toString());
+		/* FIXME KBS
+ 		if (value==null){
+			setText("null");
+			setIcon(null);
+		} else if (value.equals(CalibrationFit.NOT_CALIBRATED)){
+			setText("Not Calibrated");
+			setIcon(null);				
+		} else if (value.equals(LinearFunction.getName())){
 			setIcon(LINE_ICON);
 			setText("Linear");
-		} else if (value.equals(PolynomialFunction.class.getName())){
+		} else if (value.equals(PolynomialFunction.getName())){
 			setIcon(POLY_ICON);
 			setText("Polynomial");
-		} else if (value.equals(SqrtEnergyFunction.class.getName())){
+		} else if (value.equals(SqrtEnergyFunction.getName())){
 			setIcon(SQRT_ICON);
 			setText("Linear in Square Root");
+		} else {
+			setIcon(null);
+			setText("Can't find name");
 		}
+		*/
 		setBorder(
 			(cellHasFocus)
 				? UIManager.getBorder("List.focusCellHighlightBorder")

@@ -14,7 +14,7 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	 * Creates a new <code>SqrtEnergyFunction </code> object of the specified type.  
 	 */
 	public SqrtEnergyFunction() {
-		super(NUMBER_TERMS);
+		super(SqrtEnergyFunction.class, "Linear in Square Root" ,NUMBER_TERMS);
 		title = "\u221aE = a0 + a1\u2219ch";
 		labels[0] = "a(0)";
 		labels[1] = "a(1)";

@@ -1,4 +1,6 @@
 package jam.data.func;
+
+import jam.data.control.CalibrationFit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +16,14 @@ import javax.swing.DefaultComboBoxModel;
  */
 public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		
-	private static final List LIST=new ArrayList();
+	//private List LIST=CalibrationFunction.getNames();
+	/*
 	static {
-		LIST.add(LinearFunction.class.getName());
-		LIST.add(SqrtEnergyFunction.class.getName());
+		LIST.add(CalibrationFit.NOT_CALIBRATED);
+		LIST.add(LinearFunction.getName());
+		LIST.add(SqrtEnergyFunction.getName());
 	}
-	
+	*/
 	private transient Object selection;
 	private transient final Object selectSync=new Object();
 
@@ -28,14 +32,15 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
-		return LIST.get(index);
+		return CalibrationFunction.getListNames().get(index);
 	}
 
 	/**
 	 * @return number of list elements in chooser.
 	 */
 	public int getSize() {
-		return LIST.size();
+		int size=CalibrationFunction.getListNames().size();
+		return size;
 	}
 
 	/**
@@ -46,23 +51,29 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @throws IllegalArgumentException if not a String or null
 	 */
 	public void setSelectedItem(Object anItem) {
-			final Object name;
+			Object name=null;
 			if (anItem==null){
-				name=LIST.get(0);
+				selection=CalibrationFunction.getListNames().get(0);
 			} else if (anItem instanceof String){
-				name=anItem;
+				name=anItem;				
 			} else {
 				throw new IllegalArgumentException(getClass().getName()+
-				": only Strings or null please");
+				": only CalibrationFunction Strings or null please");
 			}
-			for (Iterator it=LIST.iterator(); it.hasNext(); ){
-				final Object clazz=it.next();
-				if (name.equals(clazz)){
-					synchronized (selectSync) {
-						selection = clazz;
-					}					
+			selection=name;
+			//FIXME KBS
+			/*
+			if (name!=null) {
+				for (Iterator it=CalibrationFunction.getListNames().iterator(); it.hasNext(); ){
+					final Object clazz=it.next();
+					if (name.equals(clazz)){
+						synchronized (selectSync) {
+							selection = clazz;
+						}					
+					}
 				}
 			}
+			*/
 	}
 
 	/**
