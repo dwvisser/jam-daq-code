@@ -37,7 +37,7 @@ import javax.swing.JOptionPane;
  */
 public class Display
 	extends JPanel
-	implements Displayer, CommandListener, Observer {
+	implements /*Displayer, */CommandListener, Observer {
 
 	/**
 	 * Enumeration of the various preference types for displaying
@@ -476,10 +476,8 @@ public class Display
 			setPlot(plot1d);
 			doRepaint = true;
 		}
-		//plot current histogram
 		currentPlot.displayHistogram(currentHist);
-		//        action.setPlot(currentPlot);
-		//only repaint if we did not do a card swap
+		/* only repaint if we did not do a card swap */
 		if (doRepaint) {
 			currentPlot.repaint();
 		}
