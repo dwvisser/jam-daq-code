@@ -10,9 +10,9 @@ import jam.global.*;
  */
 public class JamCmdManager implements CommandListener {
 	
-	private JamStatus status;
-	private Broadcaster broadcaster;
-	private MessageHandler msghdlr;
+	private final JamStatus status=JamStatus.instance();
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	private final MessageHandler msghdlr;
 
 	private Map cmdMap = new HashMap();
 	private final String COMMAND_PATH="jam.commands.";
@@ -26,10 +26,8 @@ public class JamCmdManager implements CommandListener {
 	 * @param msghdlr
 	 * @param broadcaster
 	 */
-	public JamCmdManager(JamStatus status, MessageHandler msghdlr, Broadcaster broadcaster) {
-		this.status=status;
+	public JamCmdManager(MessageHandler msghdlr) {
 		this.msghdlr=msghdlr;
-		this.broadcaster=broadcaster;
 			
 		//Commands to add to manager 
 		//could be read from a file
@@ -41,7 +39,6 @@ public class JamCmdManager implements CommandListener {
 		cmdMap.put("displayscalers", "ShowDialogScalersCmd");
 		cmdMap.put("showzeroscalers", "ShowDialogZeroScalersCmd");
 		cmdMap.put("scalers", "ScalersCmd");
-		
 	}
 	
 	/**
