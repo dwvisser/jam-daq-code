@@ -633,7 +633,9 @@ public class HDFIO implements DataIO,JamHDFFields {
             out.ofType(DataObject.DFTAG_VG),g.getHistogram().getName());
             /* add name as note to vg */
             new DataIDAnnotation(vg,g.getHistogram().getName());
-            hist.addDataObject(vg);//reference the Histogram in the gate group
+            if (hist !=null){
+				hist.addDataObject(vg);//reference the Histogram in the gate group
+            }
         } catch (DataException e) {
             throw new HDFException ("Problem adding Gate: "+e.getMessage());
         }
@@ -765,9 +767,6 @@ public class HDFIO implements DataIO,JamHDFFields {
         /* only the "scalers" VH (only one element) in the file */
         try {
             if (VH != null) {
-                /*if (mode==OPEN) {
-                	Scaler.clearList();
-                }*/
                 /* get the VS corresponding to the given VH */
                 final Vdata VS=(Vdata)(in.getObject(DataObject.DFTAG_VS,
                 VH.getRef()));
