@@ -107,8 +107,8 @@ public final class Monitor implements Serializable {
     /**
      * Constructor which gives type <code>GATE</code>.
      *
-     * @param name name of the monitor for display in dialog
-     * @param gate the gate whose area is monitored
+     * @param n name of the monitor for display in dialog
+     * @param g the gate whose area is monitored
      * @see #GATE
      */
     public Monitor(String n, Gate g)  {

@@ -309,10 +309,7 @@ public final class SortControl extends JDialog implements Controller{
 	}
 
 	/**
-	 * start sorting offline
-	 *
-	 * @param lockOnThis passed by script thread, which wants to know when
-	 * sorting is done
+	 * Start sorting offline.
 	 */
 	public void beginSort() {
 		loadNames();

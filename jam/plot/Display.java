@@ -112,7 +112,7 @@ public class Display extends JPanel implements CommandListener, Observer {
 	/**
 	 * Constructor called by all constructors
 	 *
-	 * @param   mh  the class to call to print out messages
+	 * @param jc the class to call to print out messages
 	 */
 	public Display(JamConsole jc) {
 		jc.addCommandListener(this);

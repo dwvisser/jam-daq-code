@@ -39,7 +39,7 @@ public final class PlotBar extends JPanel implements PlotBarLayout {
 	/**
 	 * Sets the monitor object which is observed by this PlotBar.
 	 *
-	 * @param monitor to be observed
+	 * @param m monitor object to observe
 	 */
 	public synchronized void setMonitor(Monitor m) {
 		monitor = m;

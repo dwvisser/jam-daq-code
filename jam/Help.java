@@ -44,7 +44,7 @@ public class Help extends JDialog {
 	private final static int posx=20;
 
 	/**
-	 * @param f the parent frame, i.e. the main Jam Window
+	 * @param frame the parent frame, i.e. the main Jam Window
 	 * @param mh for outputting error messages
 	 */
 	public Help(Frame frame, MessageHandler mh) {
