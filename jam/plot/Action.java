@@ -8,8 +8,6 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
