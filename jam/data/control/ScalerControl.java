@@ -19,40 +19,38 @@ import javax.swing.border.Border;
 
 public final class ScalerControl extends DataControl implements ActionListener, ItemListener, Observer {
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+    private final Frame frame;
+    private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+    private final MessageHandler messageHandler;
 
     //scaler display dialog box
-    private JDialog ddisp;
+    private final JDialog ddisp;
     private JPanel [] ps;
     private JLabel [] labelScaler;
     private JTextField [] textScaler;
-    private JPanel plower;
-    private JPanel pScalers;
-    private JCheckBox checkDisabled;
-    private JButton bzero;
+    private final JPanel plower;
+    private final JPanel pScalers;
+    private final JCheckBox checkDisabled;
+    private final JButton bzero;
 
 
     //scaler zero dialog box
-    private JDialog dzero;
-    private JCheckBox checkDisabled2;
-    private JButton bzero2;
+    private final JDialog dzero;
+    private final JCheckBox checkDisabled2;
+    private final JButton bzero2;
 
     private boolean sortScalers;	    //have scalers been added by sort
-	private JamStatus status;
+	private final JamStatus status= JamStatus.instance();
 
     /** Creates the dialog box for reading and zeroing scalers.
      * @param frame main window for application that this dialog is attached to
      * @param broadcaster hub of communications for message passin around Jam
      * @param messageHandler object to send text output to user to
      */
-    public ScalerControl(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
+    public ScalerControl(Frame frame, MessageHandler messageHandler){
         super();
         this.frame=frame;
-        this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
-        status = JamStatus.instance();
         sortScalers=false;
         //zeroDisabled=true;
 

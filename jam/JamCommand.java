@@ -114,11 +114,11 @@ public class JamCommand
 		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
-		histogramControl = new HistogramControl(frame, broadcaster, console);
+		histogramControl = new HistogramControl(frame, console);
 		gateControl = new GateControl(jamMain, broadcaster, console);
-		scalerControl = new ScalerControl(jamMain, broadcaster, console);
+		scalerControl = new ScalerControl(jamMain, console);
 		monitorControl = new MonitorControl(jamMain, broadcaster, console);
-		paramControl = new ParameterControl(jamMain, broadcaster, console);
+		paramControl = new ParameterControl(jamMain, console);
 		calibDisplay = new CalibrationDisplay(jamMain, broadcaster, console);
 		calibFit = new CalibrationFit(jamMain, broadcaster, console);
 		projection = new Projections(jamMain, broadcaster, console);

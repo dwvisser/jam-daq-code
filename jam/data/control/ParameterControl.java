@@ -1,11 +1,24 @@
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import jam.data.DataParameter;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Iterator;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 /**
  * Sets and displays the Parameters (data.Parameters.class)
  * used for sorting
@@ -18,7 +31,6 @@ public final class ParameterControl
 	extends DataControl {
 
 	private final Frame frame;
-	private final Broadcaster broadcaster;
 	private final MessageHandler messageHandler;
 
 	//dialog box
@@ -35,11 +47,9 @@ public final class ParameterControl
 
 	public ParameterControl(
 		Frame frame,
-		Broadcaster broadcaster,
 		MessageHandler messageHandler) {
 		super();
 		this.frame = frame;
-		this.broadcaster = broadcaster;
 		this.messageHandler = messageHandler;
 
 		// dialog box to display Parameters

@@ -18,23 +18,21 @@ import javax.swing.border.*;
  */
 public class HistogramControl extends DataControl implements ActionListener {
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler msghdlr;
+    private final Frame frame;
+    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+    private final MessageHandler msghdlr;
 
-    private Dialog dialogCalib;
-    private JDialog dialogZero, dialogNew;
+    private final JDialog dialogZero, dialogNew;
     Histogram currentHistogram;
 
-    //new Histogram
-    private JTextField textName;
-    private JTextField textTitle;
-    private JComboBox comboSize;
-    private JCheckBox coneInt,coneDbl,ctwoInt,ctwoDbl;
+    private final JTextField textName;
+    private final JTextField textTitle;
+    private final JComboBox comboSize;
+    private final JCheckBox coneInt,coneDbl,ctwoInt,ctwoDbl;
 
     private String histogramName,histogramTitle;
     private int histogramType,histogramSize;
-	private final String[] DEFAULT_SIZES= {
+	private final static String[] DEFAULT_SIZES= {
 										"64",
 							        	"128",
 		         						"256",
@@ -48,11 +46,9 @@ public class HistogramControl extends DataControl implements ActionListener {
     /**
      * Constructor
      */
-    public HistogramControl(Frame frame, Broadcaster broadcaster, MessageHandler msghdlr){
+    public HistogramControl(Frame frame, MessageHandler msghdlr){
         super();
-        this.frame=frame;
-        
-        this.broadcaster=broadcaster;
+        this.frame=frame;        
         this.msghdlr=msghdlr;
         //zero histogram dialog box
         dialogZero=new JDialog(frame,"Zero Histograms",false);
@@ -197,12 +193,6 @@ public class HistogramControl extends DataControl implements ActionListener {
         dialogNew.show();
     }
 
-    /**
-     * Show histogram calibration dialog box
-     */
-    public void showCalib(){
-        dialogCalib.show();
-    }
     /**
      * Receive actions from Dialog Boxes
      *
