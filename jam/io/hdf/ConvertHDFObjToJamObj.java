@@ -155,7 +155,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     Histogram  convertHistogram(Group group, VirtualGroup histGroup,  List histAttributes, FileOpenMode mode) throws HDFException {
     	
     	Histogram hist=null;    	
-        final NumericalDataGroup ndg;
+        NumericalDataGroup ndg;
         NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
         
         final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
@@ -166,7 +166,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         /* only the "histograms" VG (only one element) */
         final List tempVec = AbstractData.ofType(histGroup.getObjects(),
                 AbstractData.DFTAG_NDG);
-        final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
+        final NumericalDataGroup[] dataGroups = list2ArrayNumericalGroups(tempVec);
         if (dataGroups.length == 1) {
             ndg = dataGroups[0]; //only one NDG -- the data
         } else if (dataGroups.length == 2) {
@@ -179,6 +179,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
                 ndgErr = dataGroups[1];
             }
         } else {
+        	//Can reload without this histogram
         	if (mode == FileOpenMode.RELOAD) {
         		hist = group.getHistogram(STRING_UTIL.makeLength(name,
                     Histogram.NAME_LENGTH));
@@ -186,9 +187,6 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         		hist=null; //no histogram data
         	}
         	return hist; 
-        	//FIXME KBS rem no longer the case
-        	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
-            //        + ") in VirtualGroup.");
         }
         final ScientificData sciData = (ScientificData) (AbstractData
                 .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
@@ -267,7 +265,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         /* only the "histograms" VG (only one element) */
         final List tempVec = AbstractData.ofType(histGroup.getObjects(),
                 AbstractData.DFTAG_NDG);
-        final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
+        final NumericalDataGroup[] dataGroups = list2ArrayNumericalGroups(tempVec);
         if (dataGroups.length == 1) {
             ndg = dataGroups[0]; //only one NDG -- the data
         } else if (dataGroups.length == 2) {
@@ -325,7 +323,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return rval;
     }
 
-    private NumericalDataGroup[] getNumericalGroups(List list) {
+    private NumericalDataGroup[] list2ArrayNumericalGroups(List list) {
         final NumericalDataGroup[] rval = new NumericalDataGroup[list.size()];
         list.toArray(rval);
         return rval;

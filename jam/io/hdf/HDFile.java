@@ -246,7 +246,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					final int length = readInt();
 					
 					//FIXME KBS trial to read in old format data 1_5_0 and 2_0_0
-					//ref=fixRefOldFormat(ref, tag);
+					//fixRefOldFormat(tag, ref, offset, length);
 					
 					//Not an empty tag
 					if (tag !=DFTAG_NULL) {
@@ -286,7 +286,36 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @param ref
 	 * @return
 	 */
-	private short fixRefOldFormat(short ref, short tag) {
+	private void fixRefOldFormat(short tag, short ref, int offset, int length) throws IOException {
+		mark();
+		seek(offset);
+		System.out.println("Tag "+tag+" ref "+ref+" offset "+offset+" length "+length );		
+		if (tag==AbstractData.DFTAG_NDG) {
+
+            final short propTag1 = readShort();
+            final short propRef1 = readShort();
+            final short propTag2 = readShort();
+            final short propRef2 = readShort();
+			System.out.println("   propTag1 "+propTag1+" propRef1 "+propRef1+" propTag2 "+propTag2+" propRef2 "+propRef2 );			
+		} else if (tag==AbstractData.DFTAG_VG) {
+			
+	        final short numItems = readShort();
+	        final short[] tags = new short[numItems];
+	        final short[] refs = new short[numItems];
+	        for (int i = 0; i < numItems; i++) {
+	            tags[i] =readShort();
+	        }
+	        for (int i = 0; i < numItems; i++) {
+	            refs[i] = readShort();
+	        }
+	        for (int i= 0; i<numItems; i++)
+	        	System.out.println("   item "+i+ "tag "+tags[i]+" ref "+refs[i]);
+	        
+		} else {	
+			//System.out.println("tag "+tag+" ref "+ref+" offset "+offset+" length "+length );
+		}
+		reset();		
+		/*
 		short refNew;
 		if (ref==0)
 			if (tag==AbstractData.DFTAG_NDG)	
@@ -295,7 +324,8 @@ public final class HDFile extends RandomAccessFile implements Constants {
 				refNew = ref;
 		else
 			refNew = ref;
-		return refNew;
+		*/
+		//return ref;
 	}
 
 	/* non-javadoc:

@@ -1089,6 +1089,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 
         groupCount=0;
         histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histAttributes);
+        
         final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
         if (vddScalers!=null) {
         	hdfToJam.convertScalers(currentGroup, vddScalers, mode);

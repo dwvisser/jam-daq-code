@@ -62,7 +62,7 @@ interface Constants{
 
 	/**
 	 * HDF tag for number type.
-	 *
+	 *     (106)
 	 * @see NumberType
 	 */
 	public final static short DFTAG_NT = 0x006a;
