@@ -274,30 +274,6 @@ public class RunControl extends JDialog implements Controller {
 	};
 
 	/**
-	 * Handles buttons in RunControl dialog box.
-	 */
-	/*public void actionPerformed(ActionEvent ae) {
-		String command = ae.getActionCommand();
-		try {
-			if (command == "begin") {
-				runTitle = textRunTitle.getText().trim();
-				boolean confirm = (JOptionPane.showConfirmDialog(this,
-						"Is this title OK? :\n" + runTitle,
-						"Run Title Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-				if (confirm) {
-					beginRun();
-				}
-			} else if (command == "end") {
-				endRun();
-			}
-		} catch (JamException je) {
-			console.errorOutln(je.getMessage());
-		} catch (SortException se) {
-			console.errorOutln(se.getMessage());
-		}
-	}*/
-
-	/**
 	 * Setup up called by SetupSort
 	 *  
 	 */
