@@ -30,8 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -70,7 +68,7 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.StorageDaemon
  */
-class SetupSortOn implements ActionListener, ItemListener {
+public final class SetupSortOn extends JDialog implements ActionListener, ItemListener {
 
 	private final Frame frame;
 	private final RunControl runControl;
@@ -79,7 +77,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private final MessageHandler msgHandler;
 	private final FrontEndCommunication frontEnd;
 	private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-	private final JDialog d;
+
 	/* stuff for dialog box */
 	private final JToggleButton cdisk; //save events to disk
 	private final JToggleButton defaultPath, specify;
@@ -96,7 +94,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		textPathData;
 	private final JTextField textPathLog;
 	private final JSpinner sortIntervalSpinner;
-	private final JamStatus status=JamStatus.instance();
+	private static final JamStatus status=JamStatus.instance();
 
 	/* strings of data entered */
 	private String experimentName;
@@ -118,11 +116,28 @@ class SetupSortOn implements ActionListener, ItemListener {
 	/* streams to read and write events */
 	private EventInputStream eventInputStream;
 	private EventOutputStream eventOutputStream;
+	
+	private static SetupSortOn instance=null;
+	public static SetupSortOn getSingletonInstance(){
+		if (instance==null){
+			throw new IllegalStateException("Object not created yet.");
+		}
+		return instance;
+	}
+	
+	public static void createSingletonInstance(JamConsole jc){
+		if (instance == null){
+			instance=new SetupSortOn(status.getFrame(), jc);
+		} else {
+			throw new IllegalStateException("Object already created.");
+		}
+	}
 
 	/**
 	 * Constructor
 	 */
-	public SetupSortOn(DisplayCounters displayCounters, JamConsole jc) {
+	private SetupSortOn(Frame f, JamConsole jc) {
+		super(f, "Setup Online ", false);
 
 		final int fileTextColumns = 25;
 		final String defaultName =
@@ -147,16 +162,15 @@ class SetupSortOn implements ActionListener, ItemListener {
 			sortClassPath = new File(defaultSortPath);
 		}
 		runControl = RunControl.getSingletonInstance();
-		this.displayCounters = displayCounters;
+		displayCounters = DisplayCounters.getSingletonInstance();
 		jamConsole = jc;
-		msgHandler = jamConsole;
+		msgHandler = jc;
 		frontEnd = status.getFrontEndCommunication();
 		frame=status.getFrame();
-		d = new JDialog(frame, "Setup Online ", false);
-		d.setResizable(false);
-		d.setLocation(20, 50);
+		setResizable(false);
+		setLocation(20, 50);
 
-		Container dcp = d.getContentPane();
+		final Container dcp = getContentPane();
 		dcp.setLayout(new BorderLayout(5,5));
 
 		final int gap=5;
@@ -397,16 +411,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		checkLock.addItemListener(this);
 		checkLock.setEnabled(false);
 		pb.add(checkLock);
-
-		d.pack();
-
-		//Recieves events for closing the dialog box and closes it.
-		d.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				d.dispose();
-				d.pack();
-			}
-		});
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		pack();
 	}
 
 	private java.util.List setChooserDefault(boolean isDefault) {
@@ -440,14 +446,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 			sortClassPath = fd.getSelectedFile(); //save current directory
 		}
 		return sortClassPath;
-	}
-
-	/**
-	 * Show online sorting dialog Box.
-	 *
-	 */
-	public void show() {
-		d.show();
 	}
 
 	/**
@@ -513,13 +511,13 @@ class SetupSortOn implements ActionListener, ItemListener {
 							"Setup data network, and Online sort daemons setup");
 					}
 					if (command == "ok") {
-						d.dispose();
+						dispose();
 					}
 				} else {
 					throw new JamException("Can't setup sorting, mode locked ");
 				}
 			} else if (command == "cancel") {
-				d.dispose();
+				dispose();
 			}
 		} catch (SortException je) {
 			msgHandler.errorOutln(je.getMessage());
@@ -552,7 +550,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		} else if (item == cdisk) {
 			boolean store=cdisk.isSelected();
 			if (!store){
-				final boolean oops = JOptionPane.showConfirmDialog(d,
+				final boolean oops = JOptionPane.showConfirmDialog(this,
 				"De-selecting this checkbox means Jam won't store events to disk.\n"+
 				"Is this what you really want?", "Event Storage Disabled",
 				JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE)==
