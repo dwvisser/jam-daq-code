@@ -81,7 +81,10 @@ public abstract class CalibrationFunction implements Function {
         // Added to provide energy calibration for goto button
     public double getEnergy(int y){
    	return getEnergy((double)y);
-    }       
+    }      
+    public double getCalculatedEnergy(double energy){
+   	return getValue((double) energy);
+    }  
     /**
      * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
      * If passed a larger than necessary array, the first elements of the array will be used.

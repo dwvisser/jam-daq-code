@@ -533,6 +533,12 @@ Observer {
             barea.addActionListener(action);
             addComponent(ptoolbar, barea, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
+            JButton bnetarea=new JButton("NETarea");
+            bnetarea.setToolTipText("Click here then on display to get net area and summary stats of a region.");
+            bnetarea.setActionCommand("netarea");
+            bnetarea.addActionListener(action);
+            addComponent(ptoolbar, bnetarea, 0, GridBagConstraints.RELATIVE ,1,1,
+            GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
             JButton bcancel=new JButton("Cancel");
             bcancel.setActionCommand("cancel");
             bcancel.setToolTipText("Click here to cancel a toolbar action in progress.");

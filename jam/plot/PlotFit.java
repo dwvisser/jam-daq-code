@@ -233,4 +233,100 @@ class PlotFit {
 		}
 		return fwhm;
 	}
+
+
+	 	    public double getNetArea( double  [] netArea,
+				      double [] netAreaError,
+				      double [] channelBackground,
+				      double [] fwhm,			       
+				      double [] centroid, 
+				      double [] centroidError,
+				      int [][] xyCursor, 
+				      double grossArea, 
+			      int X, double [] counts) {
+    double darea;
+    double area;
+    double variance;
+    double distance;
+    double gradient, intercept;
+    double netBackground = 0;
+    int x1, x2, x3, x4;
+    int rx1, rx2;
+    double avLow, avHigh, countsLow, countsHigh;
+    double midLow, midHigh;
+    double [] channel;
+    double [] countsdl;
+    channel = new double[X];
+    countsdl = new double[X];
+    countsHigh = 0;
+    countsLow = 0;
+    area = 0;
+    variance = 0;
+    distance = 0;
+
+    x1 = xyCursor[0][0];
+    x2 = xyCursor[1][0];
+    x3 = xyCursor[2][0];
+    x4 = xyCursor[3][0];
+    // Put markers in correct order
+    if( xyCursor[4][0]< xyCursor[5][0] )
+      {
+       rx1 = xyCursor[4][0];
+       rx2 = xyCursor[5][0]; 
+      }
+    else{
+      rx1 = xyCursor[4][0];
+      rx2 = xyCursor[5][0];
+    }
+
+    for (int n = x1; n<=x2 ; n++ ){
+      countsLow = counts[n] + countsLow;
+    }  
+        for (int n = x3; n<=x4 ; n++ ){
+      countsHigh = counts[n] + countsHigh;
+    }  
+	avLow = countsLow/(x2-x1+1);
+	avHigh = countsHigh/(x4-x3+1);
+	midLow = (x2+x1)/2;
+	midHigh = (x4+x3)/2;
+
+      gradient = (avHigh-avLow)/(midHigh-midLow);
+      intercept = avHigh - (gradient*midHigh);
+    
+    // sum counts between region - background at each channel
+    for( int p=rx1 ; p<=rx2; p++){
+	area+=counts[p];
+	channel[p] = p + 0.5;
+	channelBackground[p] = gradient*p + intercept;
+        netArea[0] += counts[p]-channelBackground[p];
+      	netBackground += channelBackground[p];	  
+    }
+        for( int n=x1 ; n<=x4+1; n++){
+      channelBackground[n] = gradient*n + intercept;
+	}
+    netAreaError[0] = Math.pow(grossArea+netBackground,0.5);
+    darea=(double)area;
+		// calculate weight
+    		if (area>0){	    // must have more than zero counts
+    			for (int i=rx1;i<=rx2;i++){
+    				centroid[0]+=(double)(i*counts[i]/darea);
+    			}
+	    	} else {
+			centroid[0]=0;
+			return(0);
+		}
+
+		// Calculation of Variance
+    		for (int i = rx1 ; i <= rx2 ; i++){
+   		  distance = (double)Math.pow((i - centroid[0]),2);
+    		  variance += (double)counts[i]*distance/(darea - 1.0);
+    		  
+    		}
+		//Error in Centroid position
+    		centroidError[0] = Math.sqrt(variance)/Math.sqrt(rx2-rx1+1);
+		fwhm[0] = 2.354*Math.sqrt(variance);
+
+	return (6);
+
+    }
 }

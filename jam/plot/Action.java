@@ -59,6 +59,7 @@ public class Action
 	private double countHigh;
 	private int inputCursorValue; //Used with goto button
 	private int[][] xyCursor = new int[6][6];
+
 	// Array used for markers in SimpleFit.java
 	/**
 	 * Master constructor has no broadcaster
@@ -163,6 +164,9 @@ public class Action
 			} else if (command.substring(0, 2).equals("go")) {
 				inCommand = "goto"; // new goto button
 				accept = true;
+			} else if (command.substring(0, 2).equals("ne")) {
+				inCommand = "netarea"; // new net area button
+				accept = true;
 			}
 		} else if (len == 1) {
 			if (command.substring(0, 1).equals("u")) {
@@ -242,6 +246,8 @@ public class Action
 		} else if (inCommand == "goto") {
 			energyEx = true;
 			gotoChannel();
+		} else if (inCommand == "netarea") {
+			netArea();
 		} else {
 			done();
 			System.err.println(
@@ -599,6 +605,146 @@ public class Action
 		}
 	}
 
+   /**
+     * Background subtracted intensity of 
+     * 1-d plots
+     *
+     */
+
+    public void netArea(){
+    double grossArea;
+    String name;
+	double [] netArea;
+	double [] netAreaError;
+	double [] fwhm;
+	double [] centroid;
+	double [] centroidError;
+	double [] channelBackground;
+	netArea = new double[1];
+	netAreaError = new double[1];
+	fwhm = new double[1];
+	centroidError = new double[1];
+	centroid = new double[1];
+    channelBackground = new double[currentPlot.getSizeX()];
+
+        if (commandPresent==false){
+            init();
+            name=currentPlot.getHistogram().getName();
+            textOut.messageOut("Net Area fit for "+name+"select four background and two region of interest markers\n", MessageHandler.NEW);
+        } else if(numberPoints==0){
+	  //************ First background Marker ***********************************
+            xyCursor[0][0]=cursorX;
+            xyCursor[0][1]=cursorY;
+            numberPoints=1;
+            if (currentPlot instanceof Plot1d){
+	    currentPlot.markChannel(xyCursor[0][0],xyCursor[0][1]);
+            } else {
+		currentPlot.markChannel(xyCursor[0][0],xyCursor[0][1]);
+                textOut.messageOut(xyCursor[0][0]+","+xyCursor[0][1]+" to ");
+            }
+        } else if (numberPoints == 1){
+	  //************ Second Background marker **********************************
+            xyCursor[1][0]=cursorX;
+            xyCursor[1][1]=cursorY;
+            if (currentPlot instanceof Plot1d){
+                currentPlot.markChannel(xyCursor[1][0],xyCursor[1][1]);
+	       	currentPlot.markArea(xyCursor[0][0], xyCursor[1][0], xyCursor[0][0], xyCursor[1][1]);
+            }else {                        
+                currentPlot.markChannel(xyCursor[1][0], xyCursor[1][1]);
+		textOut.messageOut(xyCursor[1][0] + "," + xyCursor[1][1],MessageHandler.END );
+	    } 
+	    numberPoints++; 
+	} else if (numberPoints == 2){
+	  //************ Third Background Marker **********************************
+            xyCursor[2][0]=cursorX;
+            xyCursor[2][1]=cursorY;
+            if (currentPlot instanceof Plot1d){
+               
+		currentPlot.markChannel(xyCursor[2][0], xyCursor[2][1]);
+		textOut.messageOut(" ", MessageHandler.END);
+
+            } else {
+                textOut.messageOut(""+xyCursor[2][0]+","+xyCursor[2][1] +" to ",MessageHandler.END);             
+		currentPlot.markChannel(xyCursor[2][0], xyCursor[2][1]);        
+	    }
+	    numberPoints++;
+	} else if (numberPoints == 3){
+	  //************ Fourth Background Marker *********************************
+            xyCursor[3][0]=cursorX;
+            xyCursor[3][1]=cursorY;
+            if (currentPlot instanceof Plot1d){
+               
+		currentPlot.markChannel(xyCursor[3][0], xyCursor[3][1]);
+		currentPlot.markArea(xyCursor[2][0], xyCursor[3][0],
+				     xyCursor[2][1], xyCursor[3][1]);
+
+            } else {
+
+                textOut.messageOut(""+xyCursor[3][0]+","+xyCursor[3][1],MessageHandler.END);               
+		currentPlot.markChannel(xyCursor[3][0], xyCursor[3][1]);
+	    }
+	    numberPoints++;
+	}
+
+else if (numberPoints == 4){
+	  //************ First Region Marker *********************************
+            xyCursor[4][0]=cursorX;
+            xyCursor[4][1]=cursorY;
+            if (currentPlot instanceof Plot1d){
+
+		currentPlot.markChannel(xyCursor[4][0], xyCursor[4][1]);
+
+            } else {
+
+                textOut.messageOut(""+xyCursor[4][0]+","+xyCursor[4][1]+" to ",MessageHandler.END);
+		currentPlot.markChannel(xyCursor[4][0], xyCursor[4][1]);
+	    }
+	    numberPoints++;	    
+	}
+
+else if (numberPoints == 5){
+	  //************ Second Region Marker *********************************
+            xyCursor[5][0]=cursorX;
+            xyCursor[5][1]=cursorY;
+
+            if (currentPlot instanceof Plot1d){
+
+		currentPlot.markChannel(xyCursor[5][0], xyCursor[5][1]);
+		currentPlot.markArea(xyCursor[4][0], xyCursor[5][0],
+				     xyCursor[4][1], xyCursor[5][1]);
+
+
+            } else {
+                textOut.messageOut(""+xyCursor[5][0]+","+xyCursor[5][1],MessageHandler.END);               
+		currentPlot.markChannel(xyCursor[5][0], xyCursor[5][1]);        
+	    }
+
+	    grossArea=inquire.getArea(((Plot1d)currentPlot).getCounts(),
+				      xyCursor[4][0], xyCursor[5][0]); 
+       	inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm, 
+	    centroid, centroidError, xyCursor, grossArea,
+	    currentPlot.getSizeX(), ((Plot1d)currentPlot).getCounts());
+
+	    	    if (currentPlot.isCalibrated){
+	    	centroid[0]=display.calibrationFunction.getCalculatedEnergy(centroid[0]);
+			fwhm[0]=display.calibrationFunction.getCalculatedEnergy(fwhm[0]);
+			centroidError[0]=display.calibrationFunction.getCalculatedEnergy(centroidError[0]);
+
+	    	    }
+	    textOut.messageOut("GrossArea = " + grossArea +", " + "NetArea = "
+                           + numFormat.format(netArea[0]) + ", " + "Error = " 
+                           + numFormat.format(netAreaError[0])+ ", " + "Centroid = "     
+			   + numFormat.format(centroid[0]) + ", " + "Error = "
+			   + numFormat.format(centroidError[0])+ ", " + "FWHM = "
+			   + numFormat.format(fwhm[0]), MessageHandler.END); 
+	  
+	    //	     Draw Fit on screen by calling DisplayFit in Display.java
+	    this.display.displayFit(channelBackground,null,
+				    xyCursor[0][0], xyCursor[3][0]+1);  
+	    done();  
+      }
+
+}
 	/**
 	 * Zoom in on the histogram
 	 */
