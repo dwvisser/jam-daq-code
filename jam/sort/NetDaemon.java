@@ -93,12 +93,15 @@ public  class NetDaemon extends GoodThread {
      * @see #receiveLoop()
      */
     public void run(){
+    	final StringBuffer message=new StringBuffer(
+   		getClass().getName()).append(
+		"--communication with acquisition halted, because of ");
         try {
             receiveLoop();
-        } catch (IOException ioe){
-            msgHandler.errorOutln("Net Daemon halted "+ioe.getMessage());
-        } catch (SortException je){
-            msgHandler.errorOutln("Net Daemon halted "+je.getMessage());
+        } catch (Exception e){
+        	message.append(e.getClass().getName()).append(':').append(
+        	e.getMessage());
+            msgHandler.warningOutln(message.toString());
         }
     }
     
