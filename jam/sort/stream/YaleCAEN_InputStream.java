@@ -29,6 +29,7 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
     static final int END_OF_BUFFER = 0x01bbbbbb;//at end of normal buffers
     //Scaler blocks are simply 16*4 bytes long, containing the 16 scaler values
     //read from the scaler unit at the time.
+    int nscalerblock=0;	// for counting number of scaler blocks in the file
     
     private int[][] fifo=new int[NUM_EVENTS_TO_STORE][NUM_CHANNELS];
     private final int [] zeros = new int[NUM_CHANNELS];//automatically initialized to all zeros
@@ -137,6 +138,9 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         EventInputStatus rval=EventInputStatus.EVENT;
         int parameter=0;
         int endblock=0;
+        int nscaler = 10;   // defines the number of scaler blocks read before one is written
+        boolean writescaler=false;	// whether or not to write scaler values to console
+        int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
         try {
             //internal_status may also be in a "flush" mode in which case
             //we skip this read loop and go straight to flushing out another
@@ -192,9 +196,33 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     }
                 } else if (header==SCALER_BLOCK) {//read and ignore scaler values
                     int numScalers = dataInput.readInt();
+                    nscalerblock++;
+                    int check = (nscalerblock/nscaler)*nscaler;
+					if (check==nscalerblock) {
+                    	writescaler=true;	
+					}
                     for (int i=0; i<numScalers; i++) {
-                    	dataInput.readInt();
+                    	tval[i]=dataInput.readInt();
                     }
+					if(writescaler){
+						System.out.println("scaler block "+nscalerblock+": "+tval[0]+						","+tval[1]+
+						","+tval[2]+
+						","+tval[3]+
+						","+tval[4]+
+						","+tval[5]+
+						","+tval[6]+
+						","+tval[7]+
+						","+tval[8]+
+						","+tval[9]+
+						","+tval[10]+
+						","+tval[11]+
+						","+tval[12]+
+						","+tval[13]+
+						","+tval[14]+
+						","+tval[15]							
+							);
+					}                   	
+					writescaler=false;
                     rval=EventInputStatus.SCALER_VALUE;
                     internal_status=BufferStatus.SCALER;
                 } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon
@@ -208,6 +236,8 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     internal_status = BufferStatus.FIFO_FLUSH;
                 } else if (header==END_PAD) {
                     internal_status = BufferStatus.FIFO_ENDRUN_FLUSH;
+                    System.out.println("Scaler blocks in file ="+nscalerblock);
+                    nscalerblock=0;
                 } else {
                     //UNKNOWN WORD causes annoying beeps
                     rval = EventInputStatus.IGNORE;
