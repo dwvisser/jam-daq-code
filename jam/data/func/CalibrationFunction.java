@@ -1,6 +1,5 @@
 package jam.data.func;
 import jam.data.DataException;
-import jam.global.Function;
 
 /**
  * A function that can be use to calibrate a histogram.  

@@ -5,6 +5,8 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.global.MessageHandler;
+import jam.global.SortMode;
+
 import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
@@ -324,11 +326,11 @@ public class SetupRemote implements ActionListener, ItemListener {
 
 		if (active) {
 			if ((mode != SERVER) && (!inApplet)) {
-				jamMain.setSortMode(JamMain.REMOTE);
+				jamMain.setSortMode(SortMode.REMOTE);
 			}
 		} else {
 			if ((mode != SERVER) && (!inApplet)) {
-				jamMain.setSortMode(JamMain.NO_SORT);
+				jamMain.setSortMode(SortMode.NO_SORT);
 			}
 		}
 	}

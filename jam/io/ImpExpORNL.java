@@ -383,7 +383,7 @@ public class ImpExpORNL extends ImpExp {
 		try {
 			String fileNameHis =
 				FileUtilities.setExtension(
-					getLastFileName(),
+					getLastFile().getName(),
 					".his",
 					FileUtilities.FORCE);
 			File parent = lastFile.getParentFile();

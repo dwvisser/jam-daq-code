@@ -7,6 +7,7 @@ import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
+import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
@@ -48,9 +49,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -863,8 +864,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		bbrowsed.setEnabled(notlock);
 		specify.setEnabled(notlock);
 		defaultPath.setEnabled(notlock);
-		jamMain.setSortMode(notlock ? JamMain.NO_SORT : 
-			(cdisk.isSelected() ? JamMain.ONLINE_DISK : JamMain.ONLINE_NODISK));
+		jamMain.setSortMode(notlock ? SortMode.NO_SORT : 
+			(cdisk.isSelected() ? SortMode.ONLINE_DISK : SortMode.ONLINE_NO_DISK));
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
 	}

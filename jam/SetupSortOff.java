@@ -527,10 +527,10 @@ class SetupSortOff  implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            jamMain.setSortMode(JamMain.OFFLINE_DISK);
+            jamMain.setSortMode(SortMode.OFFLINE);
             bbrowsef.setEnabled(false);
         } else{
-            jamMain.setSortMode(JamMain.NO_SORT);
+            jamMain.setSortMode(SortMode.NO_SORT);
             bbrowsef.setEnabled(specify.isSelected());
         }
     }

@@ -1,10 +1,11 @@
 package jam.commands;
 
-import javax.swing.JOptionPane;
-import javax.swing.JFrame;
-import jam.global.JamStatus;
-import jam.global.BroadcastEvent;
 import jam.data.DataBase;
+import jam.global.BroadcastEvent;
+import jam.global.SortMode;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *  Command for file menu new also clears
@@ -25,23 +26,23 @@ public class FileNewClearCmd extends AbstractCommand implements Commandable {
 		
 		if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 		"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
-			status.setSortMode(JamStatus.NO_SORT);
+			status.setSortMode(SortMode.NO_SORT);
 			DataBase.getInstance().clearAllLists();
 			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 		}
 		
 	}
 	
-	public void performCommand(int cmdParams) throws CommandException {
+	/*public void performCommand(int cmdParams) throws CommandException {
 		execute(null);
-	}
+	}*/
+	
 	/** 
 	 * Execute command
 	 * @see jam.commands.AbstractCommand#executeStrParam(java.lang.String[])
 	 */
 	public void executeParse(String[] cmdTokens) {
 		execute(null);		
-
 	}
 
 }

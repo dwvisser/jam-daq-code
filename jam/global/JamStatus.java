@@ -1,10 +1,14 @@
 /*
  */
 package jam.global;
-import javax.swing.JFrame;
-import java.text.*;
-import java.util.*;
 import jam.JamMain;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import javax.swing.JFrame;
 /**
  * A global status class so that information is globally available.
  *
@@ -13,36 +17,6 @@ import jam.JamMain;
  */
 public  class JamStatus {
 	
-	/**
-	 * Sort Mode--No sort file loaded.
-	 */
-	static public final int NO_SORT = 0;
-
-	/**
-	 * Sort Mode--Set to sort online data to disk.
-	 */
-	static public final int ONLINE_DISK = 1;
-
-	/**
-	 * Sort Mode--Set to sort online data to tape.
-	 */
-	static public final int ONLINE_NODISK = 2;
-
-	/**
-	 * Sort Mode--Set to sort offline data from disk.
-	 */
-	static public final int OFFLINE_DISK = 3;
-
-	/**
-	 * Sort Mode--Acting as a client to a remote Jam process.
-	 */
-	static public final int REMOTE = 5;
-
-	/**
-	 * Sort Mode--Just read in a data file.
-	 */
-	static public final int FILE = 6; //we have read in a file
-
     private static AcquisitionStatus acquisitionStatus;
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
@@ -102,7 +76,7 @@ public  class JamStatus {
      *  
      * @param mode sort mode
      */
-    public void setSortMode(int mode) {
+    public void setSortMode(SortMode mode) {
     	jamMain.setSortMode(mode); 
     }
 	/**
@@ -111,8 +85,8 @@ public  class JamStatus {
 	 *  
 	 * @param fileName file name
 	 */    
-	public void setSortMode(int mode, String fileName) {
-		jamMain.setSortMode(mode, fileName);
+	public void setSortMode(File file) {
+		jamMain.setSortMode(file);
 	}
     /**
      * Set the acquisition status.

@@ -1,13 +1,13 @@
 package jam.commands;
 
-import javax.swing.JFrame;
+import jam.data.control.DataControl;
+import jam.global.BroadcastEvent;
+import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
+
 import java.io.File;
 
-import jam.io.hdf.HDFIO;
-import jam.data.control.DataControl;
-import jam.io.FileOpenMode;
-import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
+import javax.swing.JFrame;
 
 
 /**
@@ -44,7 +44,7 @@ public class OpenHDFCmd extends AbstractCommand implements Commandable {
 
 		//File was read in
 		if (isFileRead)		
-			notifyApp(hdfio.getFileNameOpen());
+			notifyApp(hdfio.getFileOpen());
 		
 		
 	}
@@ -64,11 +64,11 @@ public class OpenHDFCmd extends AbstractCommand implements Commandable {
 		}
 	}
 
-	private void notifyApp(String fileName) {
+	private void notifyApp(File file) {
 		 
 		JFrame frame = status.getFrame();				
 				
-		status.setSortMode(JamStatus.FILE, fileName);
+		status.setSortMode(file);
 		DataControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 		frame.repaint();

@@ -7,6 +7,7 @@ import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
@@ -142,7 +143,7 @@ public class MainMenuBar extends JMenuBar {
 		
 		public void actionPerformed(ActionEvent ae){
 			if (hdfio.readFile(FileOpenMode.OPEN)) { //true if successful
-				jamMain.setSortMode(JamMain.FILE, hdfio.getFileNameOpen());
+				jamMain.setSortMode(hdfio.getFileOpen());
 				DataControl.setupAll();
 				jamCommand.dataChanged();
 				jamMain.repaint();
@@ -213,7 +214,7 @@ public class MainMenuBar extends JMenuBar {
 		public void actionPerformed(ActionEvent ae){
 			try {
 				if (impexp.openFile()) {
-				 	jamMain.setSortMode(JamMain.FILE, impexp.getLastFileName());
+				 	jamMain.setSortMode(impexp.getLastFile());
 					DataControl.setupAll();
 					jamCommand.dataChanged();
 				}
@@ -673,8 +674,8 @@ public class MainMenuBar extends JMenuBar {
 		fitting.add(new JMenuItem(action));
 	}
 
-	void setSortMode(int mode) {
-		if (mode == JamMain.ONLINE_DISK || mode == JamMain.ONLINE_NODISK) {
+	void setSortMode(SortMode mode) {
+		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			cstartacq.setEnabled(true); //enable control JMenu items
 			cstopacq.setEnabled(true);
 			iflushacq.setEnabled(true);
@@ -688,7 +689,7 @@ public class MainMenuBar extends JMenuBar {
 			reloadhdf.setEnabled(true);
 			addHDF.setEnabled(true);
 		}
-		if (mode == JamMain.OFFLINE_DISK) {
+		if (mode == SortMode.OFFLINE) {
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);
@@ -702,7 +703,7 @@ public class MainMenuBar extends JMenuBar {
 			addHDF.setEnabled(true);
 			newClear.setEnabled(false);
 		}
-		if (mode == JamMain.REMOTE) { //remote display
+		if (mode == SortMode.REMOTE) { //remote display
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);
@@ -716,7 +717,7 @@ public class MainMenuBar extends JMenuBar {
 			addHDF.setEnabled(false);
 			impHist.setEnabled(false);
 		}
-		if (mode == JamMain.FILE) {
+		if (mode == SortMode.FILE) {
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);
@@ -731,7 +732,7 @@ public class MainMenuBar extends JMenuBar {
 			addHDF.setEnabled(true);
 			impHist.setEnabled(true);
 		}
-		if (mode == JamMain.NO_SORT) {
+		if (mode == SortMode.NO_SORT) {
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);

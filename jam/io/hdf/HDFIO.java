@@ -63,11 +63,11 @@ public class HDFIO implements DataIO, JamHDFFields {
 	private HDFile in;
 
 	/**
-	 * File name that was read from.  Gets set when reading.
+	 * File that was read from.  Gets set when reading.
 	 *
 	 * @see getFileNameOpen
 	 */
-	private String fileNameOpen;
+	private File fileOpen;
 
 	/**
 	 * Constructor for file read access outside of any GUI context.
@@ -358,20 +358,20 @@ public class HDFIO implements DataIO, JamHDFFields {
 		boolean outF = true;
 		try {
 			synchronized (this) {
-				fileNameOpen = infile.getName();
+				fileOpen = infile;
 			}
 			if (mode == FileOpenMode.OPEN) {
 				msgHandler.messageOut(
-					"Open " + fileNameOpen + ": ",
+					"Open " + fileOpen.getName() + ": ",
 					MessageHandler.NEW);
 				DataBase.getInstance().clearAllLists();
 			} else if (mode==FileOpenMode.RELOAD) {
 				msgHandler.messageOut(
-					"Reload " + fileNameOpen + ": ",
+					"Reload " + fileOpen.getName() + ": ",
 					MessageHandler.NEW);
 			} else {//ADD
 				msgHandler.messageOut("Adding histogram counts in "+
-				fileNameOpen+": ", MessageHandler.NEW);
+				fileOpen.getName()+": ", MessageHandler.NEW);
 			}
 			synchronized (this) {
 				in = new HDFile(infile, "r");
@@ -1035,8 +1035,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 	/**
 	 * @return the name of the file opened
 	 */
-	public String getFileNameOpen() {
-		return fileNameOpen;
+	public File getFileOpen() {
+		return fileOpen;
 	}
 
 	/**

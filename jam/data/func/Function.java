@@ -1,4 +1,4 @@
-package jam.global;
+package jam.data.func;
 /**
  * This interface defines methods for a real-valued function of one variable.
  */

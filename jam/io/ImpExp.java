@@ -292,8 +292,8 @@ public abstract class ImpExp {
 		return rval;
 	}
 
-	public String getLastFileName() {
-		return getFileName(lastFile);
+	public File getLastFile() {
+		return lastFile;
 	}
 	
 	/**

@@ -4,10 +4,23 @@ import jam.global.AcquisitionStatus;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
+import jam.global.SortMode;
 import jam.plot.Display;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 /**
  * Launcher and main window for Jam.
@@ -17,37 +30,6 @@ import javax.swing.*;
  * @since    JDK1.1
  */
 public final class JamMain extends JFrame {
-
-	/**
-	 * Sort Mode--No sort file loaded.
-	 */
-	static public final int NO_SORT = 0;
-
-	/**
-	 * Sort Mode--Set to sort online data to disk.
-	 */
-	static public final int ONLINE_DISK = 1;
-
-	/**
-	 * Sort Mode--Set to sort online data to tape.
-	 */
-	static public final int ONLINE_NODISK = 2;
-
-	/**
-	 * Sort Mode--Set to sort offline data from disk.
-	 */
-	static public final int OFFLINE_DISK = 3;
-
-	/**
-	 * Sort Mode--Acting as a client to a remote Jam process.
-	 */
-	static public final int REMOTE = 5;
-
-	/**
-	 * Sort Mode--Just read in a data file.
-	 */
-	static public final int FILE = 6; //we have read in a file
-
 	/**
 	 * Configuration information for Jam.
 	 */
@@ -81,7 +63,7 @@ public final class JamMain extends JFrame {
 	private final MainMenuBar menubar;
 	private final SelectionToolbar selectBar;
 
-	private int sortMode;
+	private SortMode sortMode;
 	private final String classname;
 	private RunState runState = RunState.NO_ACQ;
 	private String openFileName;
@@ -106,7 +88,7 @@ public final class JamMain extends JFrame {
 			}
 
 			public boolean isOnLine() {
-				return (sortMode == ONLINE_DISK);
+				return (sortMode == SortMode.ONLINE_DISK);
 			}
 		});
 		/* class to distrute events to all listeners */
@@ -147,7 +129,7 @@ public final class JamMain extends JFrame {
 		});
 		new InitialHistograms();
 		DataControl.setupAll(); //setup jam.data.control dialog boxes
-		setSortMode(NO_SORT);
+		setSortMode(SortMode.NO_SORT);
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
@@ -203,20 +185,20 @@ public final class JamMain extends JFrame {
 	 * @see #NO_SORT
 	 * @param mode the new mode for Jam to be in
 	 */
-	public void setSortMode(int mode) {
+	public void setSortMode(SortMode mode) {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
 		
 		//Check that run state can be changed
-		if (!((mode == NO_SORT) || (mode == FILE))) {
+		if (!((mode == SortMode.NO_SORT) || (mode == SortMode.FILE))) {
 			boolean error = true;
 			final StringBuffer etext =
 				new StringBuffer("Can't setup, setup is locked for ");
-			if (sortMode == ONLINE_DISK) {
+			if (sortMode == SortMode.ONLINE_DISK) {
 				etext.append("online");
-			} else if (sortMode == OFFLINE_DISK) {
+			} else if (sortMode == SortMode.OFFLINE) {
 				etext.append("offline");
-			} else if (sortMode == REMOTE) {
+			} else if (sortMode == SortMode.REMOTE) {
 				etext.append("remote");
 			} else {
 				error = false;
@@ -230,28 +212,28 @@ public final class JamMain extends JFrame {
 			sortMode = mode;
 		}
 		menubar.setSortMode(mode);
-		if (mode == ONLINE_DISK || mode == ONLINE_NODISK) {
+		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting");
-			if (mode == ONLINE_DISK) {
+			if (mode == SortMode.ONLINE_DISK) {
 				title.append(" TO ").append(disk);
 			} 
 			setTitle(title.toString());
-		} else if (mode == OFFLINE_DISK) {
+		} else if (mode == SortMode.OFFLINE) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Offline Sorting");
-			if (mode == OFFLINE_DISK) {
+			if (mode == SortMode.OFFLINE) {
 				title.append(" FROM ").append(disk);
 			}
 			this.setTitle(title.toString());
-		} else if (mode == REMOTE) { //remote display
+		} else if (mode == SortMode.REMOTE) { //remote display
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
-		} else if (mode == FILE) { //just read in a file
+		} else if (mode == SortMode.FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(openFileName).toString());
 			menubar.setSaveEnabled(true);
-		} else if (mode == NO_SORT) {
+		} else if (mode == SortMode.NO_SORT) {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
@@ -267,11 +249,11 @@ public final class JamMain extends JFrame {
 	 * there is a problem
 	 * @param fileName the file to be sorted?
 	 */
-	public void setSortMode(int mode, String fileName) {
+	public void setSortMode(File file) {
 		synchronized (this) {
-			this.openFileName = fileName;
+			this.openFileName=file.getName();
 		}
-		setSortMode(FILE);
+		setSortMode(SortMode.FILE);
 	}
 
 	/**
@@ -280,7 +262,7 @@ public final class JamMain extends JFrame {
 	 * @see #setSortMode(int)
 	 * @see #setSortModeFile(String)
 	 */
-	public int getSortMode() {
+	public SortMode getSortMode() {
 		return sortMode;
 	}
 
@@ -288,7 +270,7 @@ public final class JamMain extends JFrame {
 	 * @return true is the mode can be changed
 	 */
 	public boolean canSetSortMode() {
-		return ((sortMode == NO_SORT) || (sortMode == FILE));
+		return ((sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE));
 	}
 
 	/**

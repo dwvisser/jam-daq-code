@@ -221,12 +221,10 @@ class Action implements ActionListener, PlotMouseListener {
 	 * @param parameters integer parameters from console
 	 */
 	boolean commandPerform(String _command, String [] cmdParams) {
-		
 		boolean accept = false; //is the command accepted
 		//boolean disp = false;
 		final String command = _command.toLowerCase();
-		final int comLen = command.length();
-		double [] parameters;
+		final double [] parameters;
 		/* int is a special case meaning
 		 * no command and just parameters */
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
