@@ -414,24 +414,30 @@ public final class HDFIO implements DataIO, JamFileFields {
 
     	final SwingWorker worker = new SwingWorker() {
             public Object construct() {
+            	File infile=null;
             	//FIXME KBS Test change thread priority to make monitor pop up sooner
             	Thread.yield();
             	Thread thisTread =Thread.currentThread();
             	thisTread.setPriority(thisTread.getPriority()-1);
             	//End test 
-            	//Loop for all files
-        		for (int i=0;i<inFiles.length;i++) {
-        			File infile =inFiles[i];
-            	
-        			try {
-            			asyncReadFileGroup(infile, mode, groupNames, histNames);            
-            			displayMessage();
-            		}catch (Exception e) {
-            			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
-            			e.printStackTrace();
-            			asyncMonitor.close();
-            		}
+            	int numberFiles = inFiles.length;
+                asyncMonitor.setup("Reading HDF file", "Reading Objects", 
+                		(MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ)*numberFiles);
+
+    			try {                
+	            	//Loop for all files
+	        		for (int i=0;i<inFiles.length;i++) {
+	        			infile =inFiles[i];
+	            			asyncReadFileGroup(infile, mode, groupNames, histNames);            
+	            			displayMessage();
+	        		}
+        		}catch (Exception e) {
+        			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
+        			e.printStackTrace();
+        			asyncMonitor.close();
         		}
+        		
+                asyncMonitor.close();
             	return null;
             }
             /* Runs on the event-dispatching thread. */
@@ -670,8 +676,6 @@ public final class HDFIO implements DataIO, JamFileFields {
         scalerCount=0;
         parameterCount=0;
         
-        asyncMonitor.setup("Reading HDF file", "Reading Objects", 
-        		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ);
         try {
 
             AbstractData.clearAll();
@@ -725,7 +729,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         		uiErrorMsg ="Closing file "+infile.getName();
         		rval = false;
         	}    
-            asyncMonitor.close();
+
              /* destroys reference to HDFile (and its AbstractHData's) */
              inHDF = null;
         }
@@ -1026,7 +1030,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	Iterator histIter =histList.iterator();
 	    	 while (histIter.hasNext()) {
 	    	 	VirtualGroup histVGroup = (VirtualGroup)histIter.next();
-	    	 	Histogram hist =(Histogram)hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
+	    	 	Histogram hist =(Histogram)hdfToJam.convertHist(currentGroup, histVGroup,  histNames, mode);
 	    	 	//Load gates and calibration if not add
 	    	 	if (hist!=null && mode != FileOpenMode.ADD) {
                 	List gateList = hdfToJam.findGates(histVGroup, hist.getType());
