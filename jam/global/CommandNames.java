@@ -171,5 +171,6 @@ public interface CommandNames {
 	/** Show dialog to add view */
 	String SHOW_VIEW_NEW="showviewnew";
 	
-	
+	/** Show dialog to change color gradient. */
+	String SHOW_GRADIENT_SETTINGS="showgradient";	
 }
