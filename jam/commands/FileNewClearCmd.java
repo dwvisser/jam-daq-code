@@ -20,7 +20,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	
 	FileNewClearCmd(){
 		super();
-		putValue(NAME,"Clear data");
+		putValue(NAME,"Clear data\u2026");
 		enable();
 	}
 
