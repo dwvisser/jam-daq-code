@@ -24,7 +24,6 @@ final class ScientificDataScales extends DataObject {
 	private int sizeX, sizeY;
 
 	private static final byte TRUE = 1;//FALSE=0
-	private int NTsize;
 
 	ScientificDataScales(ScientificDataDimension sdd) {
 		super(sdd.getFile(), DFTAG_SDS); //sets tag
@@ -32,7 +31,7 @@ final class ScientificDataScales extends DataObject {
 		rank = sdd.getRank();
 		sizeX = sdd.getSizeX();
 		sizeY = sdd.getSizeY();
-		NTsize = NumberType.INT_SIZE;
+		final byte NTsize = NumberType.INT_SIZE;
 		//int byteLength=rank + rank * NTsize * size; // see p. 6-33 HDF 4.1r2 specs
 		int byteLength = rank + NTsize * sizeX;
 		if (rank == 2) {
