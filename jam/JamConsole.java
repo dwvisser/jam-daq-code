@@ -223,12 +223,10 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * @param part one of NEW, CONTINUE, or END
 	 */
 	public synchronized void messageOut(String _message, int part) {
-		//String message = new String(_message);
 		final StringBuffer message=new StringBuffer(_message);
 		if (part == NEW) {
 			msgLock = true;
 			messageFile = getDate() + ">" + message;
-			//message = END_LINE + getTime() + ">" + message;
 			message.insert(0,'>').insert(0,getTime()).insert(0,END_LINE);
 			try {
 				doc.insertString(doc.getLength(), message.toString(), attr_normal);
