@@ -121,7 +121,6 @@ public class Monitor implements Serializable {
      * @param intervalIn interval in seconds
      */
     public static void setInterval(int intervalIn){
-        System.out.println("interval = "+intervalIn+" s.");
         interval=intervalIn;
     }
 

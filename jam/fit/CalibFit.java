@@ -79,14 +79,14 @@ package jam.fit;
      */
     public String doFit() throws FitException{
 	double a, b, c;
-	System.out.println("value of point 0 "+points[0].getDoubleValue());
+	final String rval="value of point 0 "+points[0].getDoubleValue();
 	a=3.0;
 	b=4.0;
 	c=5.0;
 	A.setValue(a);
 	B.setValue(b);	
 	C.setValue(c);		
-	return "hello";
+	return rval;
     }
     
     public double calculate(int x){

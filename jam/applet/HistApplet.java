@@ -68,9 +68,7 @@ public class HistApplet
 	 * called automatically by the system once the applet is created.
 	 */
 	public void init() {
-		System.out.println("HistApplet init");
-		//setup applet size
-		try {
+		try {//setup applet size
 			sizeY = Integer.parseInt(this.getParameter("height"));
 			sizeX = Integer.parseInt(this.getParameter("width"));
 			expname = this.getParameter("expname");
