@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.Group;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
@@ -46,7 +47,10 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	            final File file = jfile.getSelectedFile();
-	            hdfio.writeFile(true, true, true, true, file);
+				//FIXME KBS needs to be deleted
+	           //hdfio.writeFile(true, true, true, true, file);
+	           hdfio.writeFile(file, Group.getGroupList(), true, true);
+
 	        }
 		} else { //File name given	
 			hdfio.writeFile(true, true, true, true, (File) cmdParams[0]);

@@ -3,6 +3,7 @@ package jam.io.hdf;
 import jam.data.AbstractHist1D;
 import jam.data.DataParameter;
 import jam.data.Gate;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.util.StringUtilities;
@@ -18,12 +19,23 @@ import java.util.List;
  */
 final class ConvertJamObjToHDFObj implements JamHDFFields{
 
+	private final StringUtilities STRING_UTIL = StringUtilities.instance();
     /**
      * Constructs a Jam-to-HDF object converter.
      */
 	ConvertJamObjToHDFObj() {
 		super();
 	}
+	
+    /**
+     * Adds data objects for the virtual group of histograms.
+     */
+    VirtualGroup convertGroup(Group group) {
+    	VirtualGroup virtualGroup;
+       	virtualGroup = new VirtualGroup(group.getName(), GROUP_SECTION);
+        new DataIDLabel(virtualGroup, group.getName());
+        return  virtualGroup;
+    }
 	
 	/* non-javadoc:
 	 * Convert a histogram into a hdf Virtual group
@@ -124,15 +136,19 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
             xcoord = gate.getBananaGate().xpoints;
             ycoord = gate.getBananaGate().ypoints;
         }
-        /* get the VG for the current gate */
+        /* create the VG for the current gate */
         final VirtualGroup vggate = new VirtualGroup(gateName, gateType);
-        //FIXME KBS remove
-        //gateGroup.addDataObject(vg); //add to Gate section vGroup
+        /* add name as note to vg */
+        new DataIDAnnotation(vggate, gate.getHistogram().getName());
+        
         final VdataDescription desc = new VdataDescription(gateName, gateType,
                 size, columnNames, types, orders);
+        vggate.addDataObject(desc); //add vData description to gate VG        
+        //HDF Undocumented Vdata has same reference as VdataDescription
         final Vdata data = new Vdata(desc);
-        vggate.addDataObject(desc); //add vData description to gate VG
-        vggate.addDataObject(data); //add vData to gate VG
+        //KBS not needed
+        //vggate.addDataObject(data); //add vData to gate VG
+        
         if (gate.getDimensionality() == 1) {
             data.addInteger(0, 0, gate.getLimits1d()[0]);
             data.addInteger(1, 0, gate.getLimits1d()[1]);
@@ -142,15 +158,15 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
                 data.addInteger(1, i, ycoord[i]);
             }
         }
-        /* add Histogram links... */
+        /* FIXME KBS delete
+        // add Histogram links...
         final VirtualGroup hist = VirtualGroup.ofName(DataObject
                 .ofType(DataObject.DFTAG_VG), gate.getHistogram().getName());
-        /* add name as note to vg */
-        new DataIDAnnotation(vggate, gate.getHistogram().getName());
         if (hist != null) {
             hist.addDataObject(vggate);
             //reference the Histogram in the gate group
-        }        
+        } 
+        */       
         return vggate;		
 	}
 
@@ -161,54 +177,78 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VirtualGroup convertScalers(List scalers)  {
-        final StringUtilities util = StringUtilities.instance();
+	VdataDescription convertScalers(List scalers)  {
+                
+		//FIXME KBS delete
+       // final VirtualGroup scalerGroup = new VirtualGroup(
+       //         SCALER_SECT, FILE_SECTION);
+       // new DataIDLabel(scalerGroup, SCALER_SECT);
+        final int size = scalers.size();        
         final short[] types = { VdataDescription.DFNT_INT32,
                 VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };
         final short[] orders = new short[3];
-        final int size = scalers.size();
         orders[0] = 1; //number
-        orders[1] = 0; //name ... loop below picks longest name for dimension
-        final Iterator iter = scalers.iterator();
-        while (iter.hasNext()) {
-            final int dimtest = ((Scaler) (iter.next())).getName().length();
-            if (dimtest > orders[1]) {
-                orders[1] = (short) dimtest;
-            }
-        }
+        orders[1] = (short)maxNameLengthScaler(scalers); //name ... 
         orders[2] = 1; //value
-        final VirtualGroup scalerGroup = new VirtualGroup(
-                SCALER_SECT, FILE_SECTION);
-        new DataIDLabel(scalerGroup, SCALER_SECT);
         final String name = SCALER_SECT;
         final String scalerType = SCALER_TYPE;
         final String[] names = SCALER_COLS;
+        
         final VdataDescription desc = new VdataDescription(name,
-                scalerType, size, names, types, orders);
+                scalerType, size, names, types, orders);        
+        
         final Vdata data = new Vdata(desc);
-        scalerGroup.addDataObject(desc); //add vData description to gate VG
-        scalerGroup.addDataObject(data); //add vData to gate VG
 
         for (int i = 0; i < size; i++) {
             final Scaler scaler = (Scaler) (scalers.get(i));
             data.addInteger(0, i, scaler.getNumber());
-            data.addChars(1, i, util.makeLength(scaler.getName(), orders[1]));
+            data.addChars(1, i, STRING_UTIL.makeLength(scaler.getName(), orders[1]));
             data.addInteger(2, i, scaler.getValue());
         }
-
         
-        return scalerGroup;
+        //FIXME KBS delete
+        //scalerGroup.addDataObject(desc); //add vData description to gate VG        
+       // scalerGroup.addDataObject(data); //add vData to gate VG
+        
+        return desc;
+	}
+
+    /* non-javadoc:
+     * Converts a scaler to a Virtual group
+     * @param list
+     *            the list to convert
+     * @exception HDFException
+     *                thrown if unrecoverable error occurs
+     */		
+	VdataDescription convertGroupScalers(List scalers)  {
+        
+        final int size = scalers.size();		
+        final short[] types = { VdataDescription.DFNT_INT32,
+                VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };        
+        final short[] orders = new short[3];
+        orders[0] = 1; 										//number
+        orders[1] =  (short)maxNameLengthScaler(scalers); 	//name 
+        orders[2] = 1; 										//value
+        final String name = SCALER_SECT;
+        final String scalerType = SCALER_TYPE;
+        final String[] names = SCALER_COLS;
+        
+        final VdataDescription desc = new VdataDescription(name,
+                scalerType, size, names, types, orders);
+        
+        final Vdata data = new Vdata(desc);
+
+        for (int i = 0; i < size; i++) {
+            final Scaler scaler = (Scaler) (scalers.get(i));
+            data.addInteger(0, i, scaler.getNumber());
+            data.addChars(1, i, STRING_UTIL.makeLength(scaler.getName(), orders[1]));
+            data.addInteger(2, i, scaler.getValue());
+        }
+        
+        return desc;
 
 	}
-	
-	/* FIXME KBS
-	Vdata convertScaler(Scaler scaler) {
 		
-        final Vdata data = new Vdata(desc);
-		return data;
-	}
-	*/
-	
     /* non-javadoc:
      * Converts a parameters to a Virtual group
      * @param list
@@ -216,40 +256,62 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VirtualGroup convertParameters(List parameters) {	
+	VdataDescription convertParameters(List parameters) {
+		
+		//FIXME KBS remove
+		/*
+	    final VirtualGroup paramGroup = new VirtualGroup(
+	            PARAMETERS, FILE_SECTION);
+	    new DataIDLabel(paramGroup, PARAMETERS);
+		*/
 	    final short[] types = { VdataDescription.DFNT_CHAR8,
 	            VdataDescription.DFNT_FLT32 };
 	    final short[] orders = new short[2];
 	    final int size = parameters.size();
 	    /* set order values */
-	    orders[0] = 0; //name ... loop below picks longest name for dimension
-	    final Iterator iter = parameters.iterator();
-	    while (iter.hasNext()) {
-	        final int lenMax = ((DataParameter) (iter.next())).getName()
-	                .length();
-	        if (lenMax > orders[0]) {
-	            orders[0] = (short) lenMax;
-	        }
-	    }
+	    orders[0] = (short)maxNameLengthParam(parameters); //name 
 	    orders[1] = 1; //value
-	    final VirtualGroup paramGroup = new VirtualGroup(
-	            PARAMETERS, FILE_SECTION);
-	    new DataIDLabel(paramGroup, PARAMETERS);
 	    final VdataDescription desc = new VdataDescription(PARAMETERS,
 	            PAR_TYPE, size, PARAM_COLS, types, orders);
 	    final Vdata data = new Vdata(desc);
-	    paramGroup.addDataObject(desc); //add vData description to gate VG
-	    paramGroup.addDataObject(data); //add vData to gate VG
 	    for (int i = 0; i < size; i++) {
 	        final StringUtilities util = StringUtilities.instance();
 	        final DataParameter param = (DataParameter) (parameters.get(i));
 	        data.addChars(0, i, util.makeLength(param.getName(), orders[0]));
 	        data.addFloat(1, i, (float) param.getValue());
 	    }
+	    //FIXME KBS remove
+	    //paramGroup.addDataObject(desc); //add vData description to gate VG
+	    //paramGroup.addDataObject(data); //add vData to gate VG
 
-	    return paramGroup;
+	    return desc;
 	}
 	
+	int maxNameLengthParam(List dataList) {
+		int maxLength =0;
+	    final Iterator iter = dataList.iterator();
+	    while (iter.hasNext()) {
+	    	String name =((DataParameter)iter.next()).getName();
+	        final int len = name.length();
+	        if (len >maxLength) {
+	        	maxLength =len;
+	        }
+	    }
+	    return maxLength;		
+	}
+	int maxNameLengthScaler(List dataList) {
+		int maxLength =0;
+	    final Iterator iter = dataList.iterator();
+	    while (iter.hasNext()) {
+	    	String name =((Scaler)iter.next()).getName();
+	        final int len = name.length();
+	        if (len >maxLength) {
+	        	maxLength =len;
+	        }
+	    }
+	    return maxLength;		
+	}
+
 	/* non-javadoc:
 	 * @return the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.

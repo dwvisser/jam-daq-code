@@ -3,6 +3,7 @@ package help.sortfiles;
 import jam.data.Gate;
 import jam.data.HistInt1D;
 import jam.data.Scaler;
+import jam.data.DataParameter;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
@@ -26,6 +27,8 @@ public final class CamacSortTemplate extends SortRoutine {
 	transient final Gate myGate; //declare gate myGate;
 
 	transient final Scaler myScal; //declare scaler myScal;
+	
+	transient final DataParameter myParam;
 
 	/**
 	 * Constructor, not usually used. 
@@ -40,6 +43,7 @@ public final class CamacSortTemplate extends SortRoutine {
 		myHistGated = createHist1D(hist1d, "detecGated", "my detector gated");
 		myGate = new Gate("detector1", myHist);
 		myScal = new Scaler("scaler1", SCALER_ID);
+		myParam = new DataParameter("ParamAdjust");
 	}
 
 	/**

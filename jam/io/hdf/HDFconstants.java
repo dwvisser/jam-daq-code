@@ -17,6 +17,13 @@ interface HDFconstants{
      * Number of bytes in hdf header word.
      */
     int HDF_HEADER_NBYTES=4;
+
+	/**
+	 * Tag for No Data.  
+	 *
+	 * @see JavaMachineType
+	 */
+	public final static short DFTAG_NULL = 1;
     
 	/**
 	 * Tag for machine type.  

@@ -5,6 +5,8 @@ import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
 import java.awt.Frame;
 import javax.swing.JFileChooser;
@@ -38,8 +40,12 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 		        if (option == JFileChooser.APPROVE_OPTION
 		                && jfile.getSelectedFile() != null) {
 		            final File file = jfile.getSelectedFile();
-
-		            hdfio.writeFile(file, group.getHistogramList());
+		            //List with only one item, the current group
+		            List tempArray =new ArrayList();
+		            tempArray.add(group);
+		            hdfio.writeFile(file, tempArray, true, true);
+		            //FIXME KBS remove
+		            //hdfio.writeFile(file, group.getHistogramList());
 
 		        }
 			}else {

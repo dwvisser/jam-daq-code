@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.Group;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -18,7 +19,7 @@ import javax.swing.JFileChooser;
 final class SaveGatesCmd extends AbstractCommand implements Commandable {
 
 	public void initCommand() {
-		putValue(NAME, "Save gates, scalers & parameters as\u2026");
+		putValue(NAME, "Save gates & parameters as\u2026");
 	}
 
 	/**
@@ -42,7 +43,9 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	            final File file = jfile.getSelectedFile();
-	            hdfio.writeFile(false,  true, true, true, file);
+	            hdfio.writeFile(file, Group.getGroupList(), false, true);
+	            //FIXME KBS remove
+	            //hdfio.writeFile(false,  true, true, true, file);
 	        }
 		
 		} else { //File name given	

@@ -140,7 +140,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	private synchronized void writeDataDescriptorBlock() throws HDFException {
 		final List objectList = DataObject.getDataObjectList();
 		try {
-			seek(4); //skip header
+			seek(HDF_HEADER_NBYTES); //skip header
 			writeShort(objectList.size()); //number of DD's
 			writeInt(0); //no additional descriptor block
 			final Iterator temp = objectList.iterator();
@@ -181,9 +181,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			writeDataObject(dataObject);
 			countObjct++;
 		}
-		if (foundEmpty){
-			throw new HDFException("DataObject with no length encountered, halted writing HDF File.");
-		}
+		//if (foundEmpty){
+		//	throw new HDFException("DataObject with no length encountered, halted writing HDF File.");
+		//}
 	}
 		
 	/**
@@ -230,21 +230,26 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					final int offset = readInt();
 					final int length = readInt();
 					
-					//Load scientific data as last moment needed
-					if ( lazyLoadData &&
-						 tag==DataObject.DFTAG_SD)
-					{
-						DataObject.create(tag,ref,offset,length);
-						lazyLoadNum++;
-					} else {
-						final byte [] bytes = readBytes(offset,length);
-						DataObject.create(bytes,tag,ref);
+					//Not an empty tag
+					if (tag !=DFTAG_NULL) {
+						//Load scientific data as last moment needed
+						if ( lazyLoadData &&
+							 tag==DataObject.DFTAG_SD)
+						{
+							DataObject.create(tag,ref,offset,length);
+							lazyLoadNum++;
+						} else {
+							final byte [] bytes = readBytes(offset,length);
+							DataObject.create(bytes,tag,ref);
+						}
 					}
+					
 					countObjct++;
 					//Update progress bar
 					if (countObjct%numObjSteps==0 && monitor != null) {
 						monitor.increment();
 					}
+
 
 				}
 				if (nextBlock == 0) {

@@ -2,10 +2,12 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
+import jam.data.Group;
 import jam.io.hdf.HDFIO;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -41,7 +43,10 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		final File file = STATUS.getOpenFile();
 		if (file != null) { //Prompt for overwrite
-			hdfio.writeFile(file);
+			//FIXME KBS delete 
+			//hdfio.writeFile(file);
+			hdfio.writeFile(file, Group.getGroupList(), true, true);
+
 		} else { //File null, shouldn't be.	
 			throw new IllegalStateException("Expected a reference for the previously accessed file.");
 		}

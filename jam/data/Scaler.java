@@ -45,6 +45,11 @@ public class Scaler {
             throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
         name=stringUtil.makeLength(name, NAME_LENGTH);
+        
+        final Group currentGroup = Group.getCurrentGroup();
+        currentGroup.addScaler(this);
+        String groupName=currentGroup.getName();
+
         /* make sure name is unique */
         int prime=1;
         String addition;
@@ -54,6 +59,7 @@ public class Scaler {
             prime++;
 
         }
+        
         this.name=name;
         this.number=number;
         /* Add to list of scalers */

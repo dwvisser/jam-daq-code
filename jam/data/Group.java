@@ -60,12 +60,15 @@ public class Group {
     /** The sort group, group with sort histogram */
     private static Group sortGroup;
 
-    /** children of group */
+    /** children histograms of group */
     private final List histList = new ArrayList();
 
     /** children of group */
     private final Map histogramMap = new HashMap();
 
+    /** children scalers of group */
+    private final List scalerList = new ArrayList();
+    
     private String name;
 
     private Type type;
@@ -265,6 +268,14 @@ public class Group {
         return Collections.unmodifiableMap(histogramMap);
     }
 
+    public void addScaler(Scaler scaler) {
+    	 scalerList.add(scaler);    	    	
+    }
+    
+    public List getScalerList() {
+        return Collections.unmodifiableList(scalerList);
+    }
+    
     public String toString() {
         return name;
     }
