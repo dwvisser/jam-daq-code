@@ -1,5 +1,4 @@
 package jam;
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 
@@ -14,11 +13,11 @@ import jam.data.Histogram;
 
 public class InitialHistograms{
 
-    public InitialHistograms() throws DataException{
+    public InitialHistograms() {
         makehists();
     }
 
-    private void makehists() throws DataException{
+    private void makehists() {
         /* histogram with Jam name 2d */
         final Histogram histJam2d=new Histogram("Histogram2D", "Jam Name 2D",
         histNameJam2d());

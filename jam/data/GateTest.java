@@ -40,7 +40,7 @@ public class GateTest extends TestCase {
 		h1 = new Histogram("h1", Histogram.ONE_DIM_INT, 100, "h1");
 		h2 = new Histogram("h2", Histogram.TWO_DIM_INT, 100, "h2");
 		g1 = new Gate("g1", h1);
-		g1.setLimits(10,50);
+		g1.setLimits(10, 50);
 		g2 = new Gate("g2", h2);
 		box = new Polygon(xpoints, ypoints, 4);
 		g2.setLimits(box);
@@ -52,16 +52,12 @@ public class GateTest extends TestCase {
 	 * @see Gate#inGate(int)
 	 */
 	public void testInGateI() {
-		try {
-			boolean assertion1 = g1.inGate(20);
-			boolean assertion2 = !g1.inGate(5);
-			boolean assertion3 = !g1.inGate(60);
-			assertTrue(assertion1);
-			assertTrue(assertion2);
-			assertTrue(assertion3);
-		} catch (DataException de) {
-			System.err.println(de);
-		}
+		boolean assertion1 = g1.inGate(20);
+		boolean assertion2 = !g1.inGate(5);
+		boolean assertion3 = !g1.inGate(60);
+		assertTrue(assertion1);
+		assertTrue(assertion2);
+		assertTrue(assertion3);
 	}
 
 	/**
@@ -70,24 +66,20 @@ public class GateTest extends TestCase {
 	 * @see Gate#inGate(int,int)
 	 */
 	public void testInGateII() {
-		try {
-			boolean assertion1 = g2.inGate(20, 20);
-			boolean assertion2 = !g2.inGate(5, 20);
-			boolean assertion3 = !g2.inGate(60, 20);
-			boolean assertion4 = !g2.inGate(20, 5);
-			boolean assertion5 = !g2.inGate(5, 5);
-			boolean assertion6 = !g2.inGate(60, 60);
-			boolean assertion7 = !g2.inGate(20, 60);
-			assertTrue(assertion1);
-			assertTrue(assertion2);
-			assertTrue(assertion3);
-			assertTrue(assertion4);
-			assertTrue(assertion5);
-			assertTrue(assertion6);
-			assertTrue(assertion7);
-		} catch (DataException de) {
-			System.err.println(de);
-		}
+		boolean assertion1 = g2.inGate(20, 20);
+		boolean assertion2 = !g2.inGate(5, 20);
+		boolean assertion3 = !g2.inGate(60, 20);
+		boolean assertion4 = !g2.inGate(20, 5);
+		boolean assertion5 = !g2.inGate(5, 5);
+		boolean assertion6 = !g2.inGate(60, 60);
+		boolean assertion7 = !g2.inGate(20, 60);
+		assertTrue(assertion1);
+		assertTrue(assertion2);
+		assertTrue(assertion3);
+		assertTrue(assertion4);
+		assertTrue(assertion5);
+		assertTrue(assertion6);
+		assertTrue(assertion7);
 	}
 
 }
