@@ -758,7 +758,6 @@ public class MainMenuBar extends JMenuBar {
 		zeroHistogram.setEnabled(h != null);
 		calHist.setEnabled(oneDops);
 		projectHistogram.setEnabled(twoDops);
-		manipHistogram.setEnabled(oneDops);
 		gainShift.setEnabled(oneDops);
 	}
 
