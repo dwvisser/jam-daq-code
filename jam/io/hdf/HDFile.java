@@ -70,7 +70,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			addVersionNumber();
 		} else { //should be "r" ,i.e., opening a file
 			if (!checkMagicWord()){
-				throw new HDFException("Not a valid HDF File!");
+				throw new HDFException(f+"is not a valid HDF File!");
 			}
 		}
 	}
