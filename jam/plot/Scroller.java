@@ -123,7 +123,7 @@ class Scroller
 	 * Called when any scrollbar has been changed.
 	 */
 	public synchronized void adjustmentValueChanged(AdjustmentEvent ae) {
-		if (plot.HasHistogram()) {
+		if (plot.hasHistogram()) {
 			JScrollBar source = (JScrollBar) ae.getSource();
 			Adjustable adj = ae.getAdjustable();
 			int scrollValue = ae.getValue();
@@ -172,7 +172,7 @@ class Scroller
 	 * used because mouse release is not alwayed call
 	 */
 	private void updateCount() {
-		if (plot.HasHistogram())
+		if (plot.hasHistogram())
 			lastCountMax = plot.getLimits().getMaximumCounts();
 		//reset scrollbar to middle
 		scrollCount.setValue(COUNT_SCROLL_MID);
