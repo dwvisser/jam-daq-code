@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import jam.applet.HistApplet;
 import jam.data.AbstractHist1D;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -39,6 +40,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -53,15 +57,11 @@ public class OpenMultipleFiles {
 	//UI components
 	private JDialog dialog;
 
-	private JTextField txtFile;
-
 	private JList histList;
 
-	private  JList listHDFFiles;
+	private DefaultListModel histListModel;
 	
-	private JList listHistograms;
-	
-	private DefaultListModel hdfFileModel;
+	private JTextField txtHistListFile;
 	
 	private JButton bOK;
 
@@ -84,6 +84,8 @@ public class OpenMultipleFiles {
 	private File fileOpen;
 
 	private HDFile hdfFile;
+	
+	private HDFIO hdfio;
 	
 	MultipleFileChooser multipleFileChooser;
 
@@ -111,6 +113,7 @@ public class OpenMultipleFiles {
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		
+		hdfio = new HDFIO(frame, msgHandler);
 		//container.setLayout(new GridLayout(1, 1));
 
 
@@ -127,6 +130,13 @@ public class OpenMultipleFiles {
 		JPanel histPanel = createHistSelectPanel();
 		tabPane.addTab("Histograms", null, histPanel, "Select Histograms to open");		
 		
+		tabPane.addChangeListener(new ChangeListener() {
+	        // This method is called whenever the selected tab changes
+	        public void stateChanged(ChangeEvent evt) {
+	            JTabbedPane pane = (JTabbedPane)evt.getSource();
+	            changeSelectedTab(pane.getSelectedIndex());
+	        }
+	    });		
 		/*
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);		
@@ -206,8 +216,8 @@ public class OpenMultipleFiles {
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		
-		DefaultListModel listModel = new DefaultListModel();
-		histList = new JList(listModel);
+		histListModel = new DefaultListModel();
+		histList = new JList(histListModel);
 		histList
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
@@ -219,14 +229,20 @@ public class OpenMultipleFiles {
 		JPanel pOption = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
 		JLabel lFile = new JLabel("Histograms list File");
 		pOption.add(lFile);
-		JTextField txtFile = new JTextField();
-		txtFile.setColumns(20);
-		txtFile.setEditable(false);
-		pOption.add(txtFile);		
+		
+		txtHistListFile = new JTextField();
+		txtHistListFile.setColumns(20);
+		txtHistListFile.setEditable(false);
+		pOption.add(txtHistListFile);		
 		JButton bRefresh = new JButton("Refresh");
+		bRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				refreshHistList();
+			}
+		});
 		pOption.add(bRefresh);		
-		JCheckBox chkAllHists = new JCheckBox("All");
-		pOption.add(chkAllHists);		
+		//JCheckBox chkAllHists = new JCheckBox("All");
+		//pOption.add(chkAllHists);		
 		panel.add(pOption, BorderLayout.SOUTH);
 		return panel;
 		
@@ -253,10 +269,10 @@ public class OpenMultipleFiles {
 	 *  
 	 */
 	private void doApply() {
-		Histogram firstHist=loadHistograms();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		//Histogram firstHist=loadHistograms();
+		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		//JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
+		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}
 
 	/**
@@ -274,41 +290,49 @@ public class OpenMultipleFiles {
 	 *  
 	 */
 	public void open() {
-		openLoadNames();
+		//openLoadNames();
 	}
-
+	public void refreshHistList() {
+		File file =multipleFileChooser.getSelectedFile();
+		histListModel.clear();
+		txtHistListFile.setText("");
+		if (file!=null){
+			txtHistListFile.setText(file.getAbsolutePath());
+			loadHistNames(file);
+		} 		
+	}	
+	/**
+	 * 
+	 * @param tabIndex
+	 */
+	public void changeSelectedTab(int tabIndex){
+		if (tabIndex==1) {
+			refreshHistList();
+		}
+			
+	}
 	/**
 	 * 
 	 *  
 	 */
-	private void openLoadNames() {
+	private void loadHistNames(File fileOpen) {
+		List histAttributes;
 		List histNames;
-		try {
-			if (openFile()) {
-				/* Read in histogram names */
-				hdfFile = new HDFile(fileOpen, "r");
-				hdfFile.readObjects();
-				/* Hash to store histograms */
-				loadedHistograms = new HashMap();
-				histNames = readHistograms();
-				hdfFile.close();
-				txtFile.setText(fileOpen.getName());
-				histList.setListData(histNames.toArray());
-				dialog.setVisible(true);
-			}
-		} catch (IOException ioE) {
-			msgHandler.messageOut("", MessageHandler.END);
-			msgHandler.errorOutln("Error opening file: " + fileOpen.toString());
-		} catch (HDFException hdfE) {
-			msgHandler.messageOut("", MessageHandler.END);
-			msgHandler.errorOutln("Error reading histograms " + hdfE.toString());
+		/* Read in histogram names */
+		
+		histAttributes= hdfio.readHistogramAttributes(fileOpen);
+		Iterator iter = histAttributes.iterator(); 
+		while (iter.hasNext()) {
+			HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+			histListModel.addElement(histAtt.name);				
+			/* Hash to store histograms */
 		}
-
 	}
 
 	/* non-javadoc:
 	 * Load the histograms in the selected list.
 	 */
+	/*
 	private Histogram loadHistograms() {
 		Object[] selected = histList.getSelectedValues();
 		Histogram firstHist=null;
@@ -319,9 +343,9 @@ public class OpenMultipleFiles {
 			//Loop for each selected item
 			for (i = 0; i < selected.length; i++) {
 				if (loadedHistograms.containsKey(selected[i])) {
-					HistProp histProp = (HistProp) loadedHistograms
+					HDFIO.HistogramAttributes histProp = (HDFIO.HistogramAttributes) loadedHistograms
 							.get(selected[i]);
-					Histogram hist=createHistogram(histProp);
+					//Histogram hist=createHistogram(histProp);
 					if (i==0)
 						firstHist=hist;
 
@@ -333,148 +357,13 @@ public class OpenMultipleFiles {
 		}
 		return firstHist;
 	}
+	*/
 
-	/**
-	 * Read in an unspecified file by opening up a dialog box.
-	 * 
-	 * @return <code>true</code> if successful
-	 */
-	private boolean openFile() {
-		boolean openF = false;
-		final JFileChooser jfile = new JFileChooser(fileOpen);
-		jfile.setFileFilter(new HDFileFilter(true));
-		final int option = jfile.showOpenDialog(frame);
-		// dont do anything if it was cancel
-		if (option == JFileChooser.APPROVE_OPTION
-				&& jfile.getSelectedFile() != null) {
-			synchronized (this) {
-				fileOpen = jfile.getSelectedFile();
-			}
-			openF = true;
-		} else { //dialog didn't return a file
-			openF = false;
-		}
-		return openF;
-	}
-
-	/* non-javadoc:
-	 * Reads in the histogram and hold them in a tempory array
-	 * 
-	 * @exception HDFException
-	 *                thrown if unrecoverable error occurs
-	 */
-	private List readHistograms() throws HDFException {
-		final ArrayList histNames = new ArrayList();
-		NumericalDataGroup ndg = null;
-		/* I check ndgErr==null to determine if error bars exist */
-		NumericalDataGroup ndgErr = null;
-		/* get list of all VG's in file */
-		final java.util.List groups = hdfFile.ofType(DataObject.DFTAG_VG);
-		final VirtualGroup hists = VirtualGroup.ofName(groups,
-				JamHDFFields.HIST_SECTION_NAME);
-		/* only the "histograms" VG (only one element) */
-		ScientificData sdErr = null;
-		if (hists != null) {
-			/* get list of all DIL's in file */
-			final java.util.List labels = hdfFile.ofType(DataObject.DFTAG_DIL);
-			/* get list of all DIA's in file */
-			final java.util.List annotations = hdfFile
-					.ofType(DataObject.DFTAG_DIA);
-			final Iterator temp = hists.getObjects().iterator();
-			while (temp.hasNext()) {
-				final VirtualGroup current = (VirtualGroup) (temp.next());
-				final java.util.List tempVec = hdfFile.ofType(current
-						.getObjects(), DataObject.DFTAG_NDG);
-				final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
-						.size()];
-				tempVec.toArray(numbers);
-				if (numbers.length == 1) {
-					ndg = numbers[0]; //only one NDG -- the data
-				} else if (numbers.length == 2) {
-					if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
-							numbers[0].getRef()).getLabel().equals(
-							JamHDFFields.ERROR_LABEL)) {
-						ndg = numbers[1];
-						ndgErr = numbers[0];
-					} else {
-						ndg = numbers[0];
-						ndgErr = numbers[1];
-					}
-				} else {
-					throw new HDFException("Invalid number of data groups ("
-							+ numbers.length + ") in NDG.");
-				}
-				final ScientificData sd = (ScientificData) (hdfFile.ofType(ndg
-						.getObjects(), DataObject.DFTAG_SD).get(0));
-				final ScientificDataDimension sdd = (ScientificDataDimension) (hdfFile
-						.ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
-				final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
-						.getTag(), ndg.getRef());
-				final int number = Integer.parseInt(numLabel.getLabel());
-				final byte histNumType = sdd.getType();
-				sd.setNumberType(histNumType);
-				final int histDim = sdd.getRank();
-				sd.setRank(histDim);
-				final int sizeX = sdd.getSizeX();
-				final int sizeY = (histDim == 2) ? sdd.getSizeY() : 0;
-				final DataIDLabel templabel = DataIDLabel.withTagRef(labels,
-						current.getTag(), current.getRef());
-				final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(
-						annotations, current.getTag(), current.getRef());
-				final String name = templabel.getLabel();
-				final String title = tempnote.getNote();
-				if (ndgErr != null) {
-					sdErr = (ScientificData) (hdfFile.ofType(ndgErr
-							.getObjects(), DataObject.DFTAG_SD).get(0));
-					sdErr.setRank(histDim);
-					sdErr.setNumberType(NumberType.DOUBLE);
-					/*
-					 * final ScientificDataDimension sddErr
-					 * =(ScientificDataDimension)(in.ofType(
-					 * ndgErr.getObjects(),DataObject.DFTAG_SDD).get(0));
-					 */
-				}
-				/* read in data */
-				final Object dataArray;
-				if (histDim == 1) {
-					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData1d(sizeX);
-					} else { //DOUBLE
-						dataArray = sd.getData1dD(sizeX);
-					}
-					/*if (ndgErr != null) {
-						histogram.setErrors(sdErr.getData1dD(sizeX));
-					}*/
-				} else { //2d
-					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData2d(sizeX, sizeY);
-					} else {
-						dataArray = sd.getData2dD(sizeX, sizeY);
-					}
-				}
-				/* Add histogram */
-				HistProp histProp = new HistProp();
-				histProp.name = name;
-				histProp.title = title;
-				histProp.number = number;
-				histProp.sizeX = sizeX;
-				histProp.sizeY = sizeY;
-				histProp.histDim = histDim;
-				histProp.histNumType = histNumType;
-				histProp.dataArray = dataArray;
-				if (ndgErr != null){
-					histProp.errorArray=sdErr.getData1dD(sizeX);
-				}
-				loadedHistograms.put(name, histProp);
-				histNames.add(name);
-			}
-		} //hist !=null
-		return histNames;
-	}
 
 	/* non-javadoc: 
 	 * Create a histogram using HistProp
 	 */
+	/*
 	private Histogram createHistogram(HistProp histProp) {
 		String fileName = hdfFile.getFile().getName();
 		int index = fileName.indexOf(".hdf");
@@ -492,29 +381,5 @@ public class OpenMultipleFiles {
 		}
 		return hist;
 	}
-
-	/**
-	 * Class to hold histogram properties while we decide if we should load them.
-	 *  
-	 */
-	private class HistProp {
-
-		String name;
-
-		String title;
-
-		int number;
-
-		int sizeX;
-
-		int sizeY;
-
-		int histDim;
-
-		byte histNumType;
-
-		Object dataArray; //generic data array
-		Object errorArray;
-	}
-	
+	*/
 }

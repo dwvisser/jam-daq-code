@@ -88,7 +88,7 @@ public class MultipleFileChooser extends JPanel {
 		listFilesModel = new DefaultListModel();
 		listFiles = new JList(listFilesModel);
 		//listFiles.setBounds()
-		listFiles.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
 
 		//Commands Panel
@@ -174,6 +174,22 @@ public class MultipleFileChooser extends JPanel {
 			pCommands.remove(bSaveList);
 		}
 	}
+	//public List getList() {
+	//	return listFilesModel.
+	//}
+	
+	public void setSelectionIndex(int index) {
+		listFiles.setSelectedIndex(index); 
+	}
+	public File getSelectedFile() {
+		File file = (File)listFiles.getSelectedValue();
+		if (file ==null && listFilesModel.getSize()>0) {
+			listFiles.setSelectedIndex(0);
+			file = (File)listFiles.getSelectedValue();
+		}
+		return file;
+	}
+	
 	/**
 	 * save list of items to sort
 	 */
