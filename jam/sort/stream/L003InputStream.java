@@ -27,6 +27,13 @@ public class L003InputStream
 	String scalers;
 
 	/**
+	 * Needed to create an instance with newInstance().
+	 */
+	public L003InputStream(){
+		super();
+	}
+
+	/**
 	 * Constructor for offline sorting.
 	 */
 	public L003InputStream(MessageHandler console) {

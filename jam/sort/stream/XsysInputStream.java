@@ -19,6 +19,10 @@ public class XsysInputStream extends EventInputStream {
 
 	int bufferMarker;
 	int bufferNumber;
+	
+	public XsysInputStream(){
+		super();
+	}
 
 	/**
 	 * Constructor for input stream
