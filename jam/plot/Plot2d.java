@@ -110,6 +110,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
 		g.setColor(PlotColorMap.area);
+		graph.clipPlot();
 		graph.markArea2d(graph.get2dAreaMark(areaMark));
 	}
 
