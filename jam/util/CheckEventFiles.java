@@ -43,7 +43,6 @@ import java.io.IOException;
 public class CheckEventFiles {
 
 	private CheckEventFiles(File dir, File outDir) {
-
 		File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
 			System.out.println("Found event files, starting to examine...");
@@ -60,7 +59,7 @@ public class CheckEventFiles {
 			final int bytesToSkip = 256 + 8192 - 4;
 			System.out.print("Checking File " + eventFiles[i]);
 			try {
-				DataInputStream instream =
+				final DataInputStream instream =
 					new DataInputStream(
 						new BufferedInputStream(
 							new FileInputStream(eventFiles[i])));
@@ -68,8 +67,8 @@ public class CheckEventFiles {
 				final boolean skipSuccess =
 					(bytesToSkip == instream.skip(bytesToSkip));
 				if (skipSuccess) {
-					int word = instream.readInt();
-					String sWord = "0x" + Integer.toHexString(word);
+					final int word = instream.readInt();
+					final String sWord = "0x" + Integer.toHexString(word);
 					if (word == 0x01EEEEEE) { //end-of-run word
 						System.out.println(
 							"...[" + sWord + "]...needs fixing");
