@@ -10,6 +10,8 @@ import jam.global.SortMode;
 import jam.sort.stream.EventInputStatus;
 import jam.sort.stream.EventInputStream;
 
+import java.util.Arrays;
+
 /**
  * The daemon (background thread) which sorts data. It takes an
  * <code>EventInputStream</code>, and a <code>Sorter</code> class. It reads
@@ -47,19 +49,16 @@ public class SortDaemon extends GoodThread {
 	 */
 	private SortMode mode;
 
-	private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	private static final Broadcaster broadcaster = Broadcaster
+			.getSingletonInstance();
 
 	/**
 	 * Used for online only, holds data buffers from network.
 	 */
 	private RingBuffer ringBuffer;
-	
-	/* event information */ 
+
+	/* event information */
 	private int eventSize;
-
-	private int[] eventData;
-
-	private int[] eventDataZero;
 
 	private int eventCount;
 
@@ -91,7 +90,8 @@ public class SortDaemon extends GoodThread {
 	 * @param eventSize
 	 *            number of parameters per event
 	 */
-	public void setup(SortMode mode, EventInputStream eventInputStream, int eventSize) {
+	public void setup(SortMode mode, EventInputStream eventInputStream,
+			int eventSize) {
 		this.mode = mode;
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);
@@ -134,6 +134,16 @@ public class SortDaemon extends GoodThread {
 		sortInterval = sample;
 	}
 
+	private boolean callSort = true;
+
+	private synchronized void setCallSort(boolean state) {
+		callSort = state;
+	}
+
+	private synchronized boolean getCallSort() {
+		return callSort;
+	}
+
 	/**
 	 * set the state of the event output
 	 */
@@ -149,9 +159,6 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void setEventSize(int size) {
 		eventSize = size;
-		/* JVM spec--both arrays initialized w/ zeroes. */
-		eventData = new int[eventSize];
-		eventDataZero = new int[eventSize];
 	}
 
 	/**
@@ -178,28 +185,28 @@ public class SortDaemon extends GoodThread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Invokes begin() in the user's sort routine if it
-	 * implements the <code>Beginner</code> interface.
-	 *
+	 * Invokes begin() in the user's sort routine if it implements the
+	 * <code>Beginner</code> interface.
+	 * 
 	 * @see jam.global.Beginner
 	 */
-	public synchronized void userBegin(){
-		if (sortRoutine instanceof Beginner){
-			((Beginner)sortRoutine).begin();
+	public synchronized void userBegin() {
+		if (sortRoutine instanceof Beginner) {
+			((Beginner) sortRoutine).begin();
 		}
 	}
-	
+
 	/**
-	 * Invokes end() in the user's sort routine if it
-	 * implements the <code>Ender</code> interface.
-	 *
+	 * Invokes end() in the user's sort routine if it implements the
+	 * <code>Ender</code> interface.
+	 * 
 	 * @see jam.global.Ender
 	 */
-	public synchronized void userEnd(){
-		if (sortRoutine instanceof Ender){
-			((Ender)sortRoutine).end();
+	public synchronized void userEnd() {
+		if (sortRoutine instanceof Ender) {
+			((Ender) sortRoutine).end();
 		}
 	}
 
@@ -211,33 +218,38 @@ public class SortDaemon extends GoodThread {
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
 	public void sortOnline() throws Exception {
-		final RingInputStream ringInputStream=new RingInputStream();
-		byte[] buffer;
+		final RingInputStream ringInputStream = new RingInputStream();
+		final int[] eventData = new int[eventSize];
+		final byte[] buffer = RingBuffer.freshBuffer();
 		while (true) { //loop while acquisition on
-			//controller.atSortStart(); //does nothing for online
 			/* Get a new buffer and make an input stream out of it. */
-			if (ringBuffer.isHalfFull()) {
+			if (ringBuffer.isCloseToFull()) {
 				increaseSortInterval();
-			} else if (ringBuffer.isEmpty()){
-				decreaseSortInterval();
+				setCallSort(false);
+			} else {
+				setCallSort(true);
+				if (ringBuffer.isEmpty()) {
+					decreaseSortInterval();
+				}
 			}
-			buffer = ringBuffer.getBuffer();
+			ringBuffer.getBuffer(buffer);
 			ringInputStream.setBuffer(buffer);
 			eventInputStream.setInputStream(ringInputStream);
 			/* Zero event array. */
-			System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
+			Arrays.fill(eventData, 0);
 			EventInputStatus status;
 			while ((((status = eventInputStream.readEvent(eventData)) == EventInputStatus.EVENT)
 					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
 				if (status == EventInputStatus.EVENT) {
 					/* Sort only the sortInterval'th events. */
-					if (getEventCount() % getSortInterval() == 0) {
+					if (getCallSort()
+							&& getEventCount() % getSortInterval() == 0) {
 						sortRoutine.sort(eventData);
 						incrementSortedCount();
 					}
 					incrementEventCount();
 					/* Zero event array and get ready for next event. */
-					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
+					Arrays.fill(eventData, 0);
 				} //else SCALER_VALUE, assume sort stream took care and move on
 			}
 			/* We have reached the end of a buffer. */
@@ -295,6 +307,7 @@ public class SortDaemon extends GoodThread {
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
 	public void sortOffline() throws Exception {
+		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
 		boolean atBuffer = false; //are we at a buffer word
 		/*
@@ -311,7 +324,7 @@ public class SortDaemon extends GoodThread {
 				boolean endSort = false;
 				while (!offlineSortingCanceled() && !endSort) {//buffer loop
 					/* Zero the event container. */
-					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
+					Arrays.fill(eventData, 0);
 					/* Loop to read & sort one event at a time. */
 					while (!offlineSortingCanceled()
 							&& (((status = eventInputStream
@@ -326,8 +339,7 @@ public class SortDaemon extends GoodThread {
 								 * Zero event array and get ready for next
 								 * event.
 								 */
-								System.arraycopy(eventDataZero, 0, eventData,
-										0, eventSize);
+								Arrays.fill(eventData, 0);
 								atBuffer = false;
 								if (getEventCount() % COUNT_UPDATE == 0) {
 									updateCounters();
@@ -457,9 +469,9 @@ public class SortDaemon extends GoodThread {
 		msgHandler.warningOutln("Sorting ring buffer half-full."
 				+ " Sort interval increased to " + sortInterval + ".");
 	}
-	
-	private synchronized void decreaseSortInterval(){
-		if (sortInterval>1){
+
+	private synchronized void decreaseSortInterval() {
+		if (sortInterval > 1) {
 			sortInterval--;
 		}
 	}
