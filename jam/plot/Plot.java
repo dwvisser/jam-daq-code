@@ -85,6 +85,8 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	private boolean isSelected;
 	
 	private boolean isScrolling;
+	
+	private boolean hasHistogram;
 
 	private final PlotSelectListener plotSelectListener;
 
@@ -167,10 +169,11 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 *            histogram to display
 	 */
 	void displayHistogram(Histogram hist) {
+		String key;
 		select(true);
 		if (hist!=null){
+			hasHistogram=true;
 			final int dim = hist.getDimensionality();
-			String key;
 			if (dim == 1) {
 				currentSubPlot = plot1d;
 				key = KEY1;
@@ -181,7 +184,9 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 			plotSwapPanelLayout.show(this, key);
 			currentHistNumber = hist.getNumber();					
 		}else {
-			//Histogram is null Null
+			//Histogram is null set to blank 1D
+			currentSubPlot = plot1d;
+			hasHistogram=false;
 			plotSwapPanelLayout.show(this, KEY1);
 			currentHistNumber=-1;
 		}
@@ -221,6 +226,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	Histogram getHistogram() {
 		return getPlot().getHistogram();
 	}
+	/**
+	 * Plot has a valid histogram
+	 * @return
+	 */
+	protected boolean HasHistogram(){
+		return hasHistogram;
+	}
 
 	/**
 	 * Type of plot 1D or 2D
@@ -258,7 +270,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 *
 	 */
 	void update() {
-		if (getPlot().HasHistogram())
+		if (hasHistogram)
 			getPlot().update();
 	}
 

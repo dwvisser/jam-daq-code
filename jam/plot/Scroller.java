@@ -57,8 +57,8 @@ class Scroller
 		/**
 		 * Returns the count scrollbar to the middle.
 		 */
-		public void mouseReleased(MouseEvent me) {
-			update(COUNT);
+		public void mouseReleased(MouseEvent me) {			
+				update(COUNT);
 		}
 	};
 	
@@ -123,33 +123,35 @@ class Scroller
 	 * Called when any scrollbar has been changed.
 	 */
 	public synchronized void adjustmentValueChanged(AdjustmentEvent ae) {
-		JScrollBar source = (JScrollBar) ae.getSource();
-		Adjustable adj = ae.getAdjustable();
-		int scrollValue = ae.getValue();
-		int scrollVisible = adj.getVisibleAmount();
-		boolean updatePlot = false;
-		//scale scroll bar
-		if (source.equals(scrollCount)) {
-			if ((scrollValue != lastScrollValC)
-				|| (scrollVisible != lastScrollVisC)) {
-				countChange(scrollValue);
-				lastScrollValC = scrollValue;
-				lastScrollVisC = scrollVisible;
+		if (plot.HasHistogram()) {
+			JScrollBar source = (JScrollBar) ae.getSource();
+			Adjustable adj = ae.getAdjustable();
+			int scrollValue = ae.getValue();
+			int scrollVisible = adj.getVisibleAmount();
+			boolean updatePlot = false;
+			//scale scroll bar
+			if (source.equals(scrollCount)) {
+				if ((scrollValue != lastScrollValC)
+					|| (scrollVisible != lastScrollVisC)) {
+					countChange(scrollValue);
+					lastScrollValC = scrollValue;
+					lastScrollVisC = scrollVisible;
+					updatePlot = true;
+				}
+				//horizontal scroll bar
+			} else if (source.equals(scrollHorz)) {
+				plotLimits.update();
+				updatePlot = true;
+				//vertical scroll bar
+			} else if (source.equals(scrollVert)) {
+				plotLimits.update();
 				updatePlot = true;
 			}
-			//horizontal scroll bar
-		} else if (source.equals(scrollHorz)) {
-			plotLimits.update();
-			updatePlot = true;
-			//vertical scroll bar
-		} else if (source.equals(scrollVert)) {
-			plotLimits.update();
-			updatePlot = true;
-		}
-		//update the plot can't use refresh as it resets count scroller
-		if (updatePlot) {
-			//FIXME KBS plot.copyCounts();
-			plot.repaint();
+			//update the plot can't use refresh as it resets count scroller
+			if (updatePlot) {
+				//FIXME KBS plot.copyCounts();
+				plot.repaint();
+			}
 		}
 	}
 	
@@ -170,7 +172,8 @@ class Scroller
 	 * used because mouse release is not alwayed call
 	 */
 	private void updateCount() {
-		lastCountMax = plot.getLimits().getMaximumCounts();
+		if (plot.HasHistogram())
+			lastCountMax = plot.getLimits().getMaximumCounts();
 		//reset scrollbar to middle
 		scrollCount.setValue(COUNT_SCROLL_MID);
 		countChange = false;

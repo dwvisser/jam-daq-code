@@ -244,11 +244,13 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			
 		} else { //we have a null histogram so fake it
 			plotLimits=null;
-			hasHistogram=true;
+			hasHistogram=false;
 			counts = new double[100];
+			counts2d = null;			
 			type = Histogram.Type.ONE_DIM_INT;
 			sizeX = 100;
-			counts2d = null;
+			sizeY=0;
+
 		}
 				
 		displayingGate = false;
@@ -1003,7 +1005,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	}
 
 	Histogram getHistogram(){
-		return Histogram.getHistogram(plotHistNumber);
+		if (plotHistNumber<0)
+			return null;
+		else 
+			return Histogram.getHistogram(plotHistNumber);
 	}
 		
 	/**

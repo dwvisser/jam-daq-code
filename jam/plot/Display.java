@@ -419,7 +419,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 					currentPlot.removeAllPlotMouseListeners();
 				}
 				
-				if (p.getHistogram()!=null)
+				if (p.HasHistogram())
 					p.addPlotMouseListener(action);
 				
 				//Change selected plot
