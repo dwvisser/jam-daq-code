@@ -649,7 +649,7 @@ public abstract class Plot extends JPanel {
 	 * @param gate  the gate to be displayed
 	 * @exception DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
 	 */
-	public void displayGate(Gate gate) throws DataException {
+	public void displayGate(Gate gate) {
 		if (currentHist != null && currentHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
