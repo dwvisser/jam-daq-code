@@ -19,7 +19,7 @@ public class AllTests {
 	 * @return the test suite
 	 */
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for jam.data");
+		final TestSuite suite = new TestSuite("Test for jam.data");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(GateTest.class));
 		suite.addTest(new TestSuite(HistogramTest.class));
