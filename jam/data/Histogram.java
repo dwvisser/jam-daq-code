@@ -1,6 +1,5 @@
 package jam.data;
 
-import jam.data.func.CalibrationFunction;
 import jam.util.StringUtilities;
 
 import java.util.ArrayList;
@@ -27,16 +26,10 @@ import java.util.TreeMap;
  * <li>gates
  * </ul>
  * <p>
- * Modified 2/11/99 Dale Visser to have an error array too. By default, the
- * class will assume Poisson error bars and return square root of counts. For
- * <code>Histogram</code>'s produced by adding, subtracting, or otherwise
- * manipulating other histograms, though, an appropriate error array should be
- * calculated and stored by invoking the <code>setErrors()</code> method.
  * 
  * @author Ken Swartz
  * @author Dale Visser
  * @version 0.5, 1.0
- * @see #setErrors(double[])
  * @since JDK 1.1
  */
 public abstract class Histogram {
@@ -184,8 +177,6 @@ public abstract class Histogram {
 	 */
 	private transient final List gates = new ArrayList();
 
-	protected transient CalibrationFunction calibFunc;
-
 	private transient String title; // title of histogram
 
 	private transient String name; //abreviation to refer to it by
@@ -194,13 +185,9 @@ public abstract class Histogram {
 
 	private transient Type type; //one or two dimension
 
-	protected transient final int sizeX; //size of histogram, for 1d size for
+	private transient final int sizeX; //size of histogram, for 1d size for
 
-	// 2d
-
-	// x size
-
-	protected transient final int sizeY; //size used for 2d histograms y size
+	private transient final int sizeY; //size used for 2d histograms y size
 
 	private String labelX; //x axis label
 
@@ -231,7 +218,7 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {
+	protected Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {
 		String addition;
 		int prime;
 		final StringUtilities stringUtil = StringUtilities.instance();
@@ -284,7 +271,7 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	Histogram(String nameIn, Type type, int size, String title) {
+	protected Histogram(String nameIn, Type type, int size, String title) {
 		this(nameIn, type, size, size, title);
 	}
 
@@ -311,7 +298,7 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	Histogram(String name, Type type, int sizeX, int sizeY, String title,
+	protected Histogram(String name, Type type, int sizeX, int sizeY, String title,
 			String axisLabelX, String axisLabelY) {
 		this(name, type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
@@ -339,7 +326,7 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	Histogram(String name, Type type, int size, String title,
+	protected Histogram(String name, Type type, int size, String title,
 			String axisLabelX, String axisLabelY) {
 		this(name, type, size, size, title);
 		setLabelX(axisLabelX);
@@ -439,6 +426,11 @@ public abstract class Histogram {
 		System.gc();
 	}
 
+	/**
+	 * Remove the histogram with the given name from memory.
+	 * 
+	 * @param histName name of histogram to remove
+	 */
 	public static void deleteHistogram(String histName) {
 		if (NAME_MAP.containsKey(histName)) {
 			final Histogram histogram = getHistogram(histName);
@@ -456,7 +448,6 @@ public abstract class Histogram {
 
 	private void clearInfo() {
 		gates.clear();
-		calibFunc = null;
 		labelX = null;
 		labelY = null;
 		title = null;
@@ -605,36 +596,6 @@ public abstract class Histogram {
 		return labelY;
 	}
 
-	/**
-	 * Sets an energy calibration function for this histogram.
-	 * 
-	 * @param calibFunc
-	 *            new energy calibration for this histogram
-	 */
-	public synchronized void setCalibration(CalibrationFunction calibFunc) {
-		this.calibFunc = calibFunc;
-	}
-
-	/**
-	 * Returns the calibration function for this histogram as a
-	 * <code>CalibrationFunction</code> object.
-	 * 
-	 * @return the calibration function for this histogram
-	 */
-	public synchronized CalibrationFunction getCalibration() {
-		return calibFunc;
-	}
-
-	/**
-	 * Returns whether the histogram is calibrated.
-	 * 
-	 * @return <code>true</code> if a calibration function has been defined,
-	 *         <code>false</code> if not
-	 * @see #setCalibration(CalibrationFunction)
-	 */
-	public synchronized boolean isCalibrated() {
-		return (calibFunc != null);
-	}
 
 	/**
 	 * Sets the number of this histogram. May have the side effect of bumping

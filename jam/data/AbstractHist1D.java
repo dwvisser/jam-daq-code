@@ -3,12 +3,15 @@
  */
 package jam.data;
 
+import jam.data.func.CalibrationFunction;
 import jam.data.peaks.PeakFinder;
 
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public abstract class AbstractHist1D extends Histogram {
+	
+	protected transient CalibrationFunction calibFunc;
 	
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -36,13 +39,37 @@ public abstract class AbstractHist1D extends Histogram {
 		unsetErrors();
 	}
 	
+	/**
+	 * Make it so no error bars are <em>explicitly</em> defined
+	 * for this histogram.
+	 */
 	protected synchronized final void unsetErrors(){
 		errors=null;
 		errorsSet=false;
 	}
-		
+	
+	/**
+	 * Returns the number of counts in the given channel.
+	 * 
+	 * @param channel that we are interested in
+	 * @return number of counts
+	 */
 	public abstract double getCounts(int channel);
+	
+	/**
+	 * Sets the counts in the given channel to the specified
+	 * number of counts.
+	 * 
+	 * @param channel to change
+	 * @param counts to be in the channel
+	 */
 	public abstract void setCounts(int channel, double counts);
+	
+	/**
+	 * Returns the array of error bars, possibly estimated.
+	 *  
+	 * @return 1-sigma error bars
+	 */
 	public abstract double[] getErrors();
 	
 	/**
@@ -91,11 +118,23 @@ public abstract class AbstractHist1D extends Histogram {
 		return rval;
 	}
 	
+	/**
+	 * By default, the class will assume Poisson error bars and return square
+	 * root of counts. For <code>AbstractHist1D</code>'s produced by adding,
+	 * subtracting, or otherwise manipulating other histograms, though, an
+	 * appropriate error array should be calculated and stored by invoking the
+	 * <code>setErrors()</code> method.
+	 * 
+	 * @param errs
+	 *            array representing the 1-sigma erro bars for the channel
+	 *            counts
+	 */
 	public synchronized final void setErrors(final double [] errs){
+		final int size=getSizeX();
 		if (!errorsSet()){
-			errors=new double[sizeX];
+			errors=new double[size];
 		}
-		final int max=Math.min(sizeX,errs.length);
+		final int max=Math.min(size,errs.length);
 		System.arraycopy(errs,0,errors,0,max);
 		errorsSet=true;
 	}
@@ -108,5 +147,36 @@ public abstract class AbstractHist1D extends Histogram {
 	 */
 	public synchronized boolean errorsSet() {
 		return errorsSet;
+	}
+	/**
+	 * Sets an energy calibration function for this histogram.
+	 * 
+	 * @param calibFunc
+	 *            new energy calibration for this histogram
+	 */
+	
+	public synchronized void setCalibration(CalibrationFunction calibFunc) {
+		this.calibFunc = calibFunc;
+	}
+
+	/**
+	 * Returns the calibration function for this histogram as a
+	 * <code>CalibrationFunction</code> object.
+	 * 
+	 * @return the calibration function for this histogram
+	 */
+	public synchronized CalibrationFunction getCalibration() {
+		return calibFunc;
+	}
+
+	/**
+	 * Returns whether the histogram is calibrated.
+	 * 
+	 * @return <code>true</code> if a calibration function has been defined,
+	 *         <code>false</code> if not
+	 * @see #setCalibration(CalibrationFunction)
+	 */
+	public synchronized boolean isCalibrated() {
+		return (calibFunc != null);
 	}
 }
