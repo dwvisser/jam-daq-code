@@ -268,12 +268,13 @@ public class RunControl implements Controller, ActionListener {
         // if we are in a run, display run number
         if (runOn) {//runOn is true if the current state is a run
             jamMain.setRunState(JamMain.RUN_ON, runNumber);
+        	//see stopAcq() for reason for this next line.
+        	bend.setEnabled(true);
+        	console.messageOutln("Started Acquisition, continuing Run #"+runNumber);
         } else {
             jamMain.setRunState(JamMain.ACQ_ON);
+        	console.messageOutln("Started Acquisition");
         }
-        //see stopAcq() for reason for this next line.
-        bend.setEnabled(true);
-        console.messageOutln("Started Acquisition");
     }
 
     /**
