@@ -345,22 +345,11 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				d.dispose();
 			}
 		});
-
-		//default directory
-		//directoryName=defaultEvents;    
-		lastFile = new File(defaultEvents);
-
-		//initial mode is from disk
-		setDevice(DISK);
-		//initial state dont write out events    
-		writeEvents = false;
-		/*for (int i=0; i<10 ; i++){
-			eventFileModel.addElement(""+i);
-			tapeRecordModel.addElement(""+i);
-		}*/
+		lastFile = new File(defaultEvents);//default directory
+		//call to private version to avoid breaking if subclassed
+		_setDevice(DISK);//initial mode is from disk
+		writeEvents = false;//don't write out events
 		d.pack();
-		/*eventFileModel.removeAllElements();
-		tapeRecordModel.removeAllElements();*/
 	}
 
 	/**
@@ -697,7 +686,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * 
 	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
 	 */
-	public void setDevice(int device) {
+	private void _setDevice(int device) {
 		this.device = device;
 		if (device == TAPE) {
 			centerCardLayout.show(pcenter, TAPERECORDS);
@@ -718,6 +707,18 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			textFinalRecord.setText("");
 			textDev.setEnabled(true);
 		}
+	}
+	
+	/**
+	 * Sets TAPE or DISK mode.
+	 * 
+	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
+	 */
+	public void setDevice(int device) {
+		/* delegate to private method to allow constructor
+		 * to avoid a call to an overridable method
+		 */
+		_setDevice(device);
 	}
 
 	/**
