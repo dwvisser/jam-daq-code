@@ -1,27 +1,13 @@
 package jam;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.GlobalException;
-import jam.global.MessageHandler;
-import jam.sort.NetDaemon;
-import jam.sort.SortDaemon;
-import jam.sort.StorageDaemon;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import jam.global.*;
+import jam.sort.*;
+
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Displays buffer countesr of sort threads.
@@ -47,6 +33,7 @@ class DisplayCounters implements Observer {
 
 	//stuff for dialog box
 	private JDialog d;
+	private JPanel pCenter;
 	private SortDaemon sortDaemon;
 	private NetDaemon netDaemon;
 	private StorageDaemon storageDaemon;
@@ -81,8 +68,12 @@ class DisplayCounters implements Observer {
 	DisplayCounters(Frame jm, Broadcaster b, MessageHandler mh) {
 		final int xpos = 20;
 		final int ypos = 50;
-		final int flowgap = 5;
+		final int flowgaph = 10;
+		final int flowgapv = 0;
 		final int maingap = 10;
+		final int hgap=5;
+		final int vgap=10;
+
 		this.jamMain = jm;
 		this.broadcaster = b;
 		this.messageHandler = mh;
@@ -90,38 +81,46 @@ class DisplayCounters implements Observer {
 		d.setResizable(false);
 		d.setLocation(xpos, ypos);
 		final Container cd = d.getContentPane();
-		cd.setLayout(new GridLayout(0, 1, maingap, maingap));
-		pBuffSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		cd.setLayout(new BorderLayout(maingap, maingap));
+
+		//Center Panels
+        pCenter = new JPanel(new GridLayout(0, 1, hgap,vgap));
+		cd.add(pCenter, BorderLayout.CENTER);
+		pCenter.setBorder(new EmptyBorder(20,10,0,10));
+
+		pBuffSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffSent.add(new JLabel("Packets sent", JLabel.RIGHT));
 		textBuffSent = newTextField();
 		pBuffSent.add(textBuffSent);
-		pBuffRecv = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffRecv = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffRecv.add(new JLabel("Packets received", JLabel.RIGHT));
 		textBuffRecv = newTextField();
 		pBuffRecv.add(textBuffRecv);
-		pBuffSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffSort.add(new JLabel("Buffers sorted", JLabel.RIGHT));
 		textBuffSort = newTextField();
 		pBuffSort.add(textBuffSort);
-		pBuffWrit = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffWrit = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pBuffWrit.add(new JLabel("Buffers written", JLabel.RIGHT));
 		textBuffWrit = newTextField();
 		pBuffWrit.add(textBuffWrit);
-		pEvntSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pEvntSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pEvntSent.add(new JLabel("Events sent", JLabel.RIGHT));
 		textEvntSent = newTextField();
 		pEvntSent.add(textEvntSent);
-		pEvntSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pEvntSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pEvntSort.add(new JLabel("Events sorted", JLabel.RIGHT));
 		textEvntSort = newTextField();
 		pEvntSort.add(textEvntSort);
-		pFileRead = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pFileRead = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
 		pFileRead.add(new JLabel("Files read", JLabel.RIGHT));
 		textFileRead = newTextField();
 		pFileRead.add(textFileRead);
+
 		/* panel for buttons */
 		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel pb = new JPanel(new GridLayout(1, 0, flowgap, flowgap));
+		cd.add(pButton, BorderLayout.SOUTH);
+		JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButton.add(pb);
 		pb.add(getUpdateButton());
 		pb.add(getClearButton());
@@ -247,17 +246,16 @@ class DisplayCounters implements Observer {
 			this.sortDaemon = sod;
 			this.storageDaemon = std;
 		}
-		/* make dialog box */
-		final Container cd = d.getContentPane();
-		cd.removeAll();
+		/// make dialog box
+		//FIXME remove final Container cd = d.getContentPane();
 		d.setTitle("Online Buffer Count");
-		cd.add(pBuffSent);
-		cd.add(pBuffRecv);
-		cd.add(pBuffSort);
-		cd.add(pBuffWrit);
-		cd.add(pEvntSent);
-		cd.add(pEvntSort);
-		cd.add(pButton);
+		pCenter.removeAll();
+		pCenter.add(pBuffSent);
+		pCenter.add(pBuffRecv);
+		pCenter.add(pBuffSort);
+		pCenter.add(pBuffWrit);
+		pCenter.add(pEvntSent);
+		pCenter.add(pEvntSort);
 		d.pack();
 	}
 
@@ -273,13 +271,12 @@ class DisplayCounters implements Observer {
 			this.sortDaemon = sod;
 			this.storageDaemon = std;
 		}
-		final Container cd = d.getContentPane();
-		cd.removeAll();
+		//FIXME remove final Container cd = d.getContentPane();
 		d.setTitle("Offline Buffer Count");
-		cd.add(pFileRead);
-		cd.add(pBuffSort);
-		cd.add(pEvntSort);
-		cd.add(pButton);
+		pCenter.removeAll();
+		pCenter.add(pFileRead);
+		pCenter.add(pBuffSort);
+		pCenter.add(pEvntSort);
 		d.pack();
 	}
 
