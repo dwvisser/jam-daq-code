@@ -709,7 +709,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 					}
 				}
 				if (currentPlot.getDimensionality() == 1) {
-					if (!mousePressed) { //FIXME KBS
+					if (!mousePressed) {
 						if (isCalibrated(hist)) {
 							output = new StringBuffer(en).append(eq).append(x);
 							synchronized (this) {
