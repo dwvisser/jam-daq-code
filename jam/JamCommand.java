@@ -206,7 +206,7 @@ public class JamCommand
 //				}
 			} else if ("openselectedhist".equals(incommand)) {				
 				openSelectedHist.open();
-				dataChanged();
+				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 				jamMain.repaint();
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
@@ -357,10 +357,6 @@ public class JamCommand
 			remoteAccess = ra;
 			remote = on;
 		}
-	}
-	
-	void dataChanged() {
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
 	
 	HDFIO getHDFIO(){
