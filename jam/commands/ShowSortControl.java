@@ -14,7 +14,7 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowSortControl extends AbstractShowDialog implements Observer {
+final class ShowSortControl extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Sort\u2026");

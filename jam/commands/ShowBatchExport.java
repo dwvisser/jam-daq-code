@@ -11,7 +11,7 @@ package jam.commands;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowBatchExport extends AbstractShowDialog {
+final class ShowBatchExport extends AbstractShowDialog {
 	
 	public void initCommand(){
 		putValue(NAME, "Batch Export\u2026");

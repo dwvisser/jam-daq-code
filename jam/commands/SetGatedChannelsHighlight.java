@@ -10,7 +10,7 @@ import jam.plot.PlotPrefs;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 11, 2004
  */
-public class SetGatedChannelsHighlight extends AbstractSetBooleanPreference {
+final class SetGatedChannelsHighlight extends AbstractSetBooleanPreference {
 
 	SetGatedChannelsHighlight(){
 		super();

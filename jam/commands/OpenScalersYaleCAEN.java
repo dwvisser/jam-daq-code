@@ -14,7 +14,7 @@ import jam.io.ExtensionFileFilter;
  * 
  * @author Ken Swartz
  */
-public class OpenScalersYaleCAEN extends AbstractCommand {
+final class OpenScalersYaleCAEN extends AbstractCommand {
 
 	private YaleCAENgetScalers ycs;
 	

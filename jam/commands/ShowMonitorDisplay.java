@@ -14,7 +14,7 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowMonitorDisplay extends AbstractShowDialog implements 
+final class ShowMonitorDisplay extends AbstractShowDialog implements 
 Observer {
 
 	private final List monitorList=Monitor.getMonitorList();

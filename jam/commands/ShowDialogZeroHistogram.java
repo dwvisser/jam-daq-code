@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author Ken Swartz
  *
  */
-public class ShowDialogZeroHistogram extends AbstractShowDialog 
+final class ShowDialogZeroHistogram extends AbstractShowDialog 
 implements Observer {
 
 	private final List histogramList=Histogram.getHistogramList();

@@ -9,7 +9,7 @@ import java.util.Observer;
 /**
  * Show the new gate dialog
  */
-public class ShowDialogNewGateCmd extends AbstractShowDialog implements
+final class ShowDialogNewGateCmd extends AbstractShowDialog implements
 Observer {
 
 	private final List histogramList=Histogram.getHistogramList();

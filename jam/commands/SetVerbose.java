@@ -14,7 +14,7 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 11, 2004
  */
-public class SetVerbose extends AbstractSetBooleanPreference implements 
+final class SetVerbose extends AbstractSetBooleanPreference implements 
 Observer {
 
 	SetVerbose(){

@@ -17,7 +17,7 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowRunControl extends AbstractShowDialog implements Observer {
+final class ShowRunControl extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Run\u2026");

@@ -7,7 +7,7 @@ import jam.Help;
  * 
  * @author Ken Swartz
  */
-public class ShowDialogLicense extends AbstractShowDialog {
+final class ShowDialogLicense extends AbstractShowDialog {
 
 	public void initCommand() {
 		putValue(NAME, "License\u2026");

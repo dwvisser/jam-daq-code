@@ -10,7 +10,7 @@ import jam.plot.PlotPrefs;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 11, 2004
  */
-public class SetAutoScaleIgnoreZero extends AbstractSetBooleanPreference {
+final class SetAutoScaleIgnoreZero extends AbstractSetBooleanPreference {
 
 	SetAutoScaleIgnoreZero(){
 		super();

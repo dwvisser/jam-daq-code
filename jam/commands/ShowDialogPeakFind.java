@@ -8,7 +8,7 @@ import jam.PeakFindDialog;
  * @author Ken Swartz
  *
  */
-public class ShowDialogPeakFind extends AbstractShowDialog {
+final class ShowDialogPeakFind extends AbstractShowDialog {
 	
 	public void initCommand(){
 		putValue(NAME, "Peak Find Properties\u2026");

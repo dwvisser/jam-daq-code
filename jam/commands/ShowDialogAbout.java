@@ -9,7 +9,7 @@ import jam.global.JamStatus;
  * @author Ken Swartz
  *
  */
-public class ShowDialogAbout extends AbstractShowDialog {
+final class ShowDialogAbout extends AbstractShowDialog {
 
 	public void initCommand() {
 		putValue(NAME, "About\u2026");

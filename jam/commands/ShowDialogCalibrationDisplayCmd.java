@@ -5,7 +5,7 @@ import jam.data.control.CalibrationDisplay;;
  * @author Ken Swartz
  *
  */
-public class ShowDialogCalibrationDisplayCmd
+final class ShowDialogCalibrationDisplayCmd
 	extends AbstractShowDialog {
 
 		public void initCommand(){

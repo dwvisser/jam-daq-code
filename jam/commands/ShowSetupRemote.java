@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowSetupRemote extends AbstractShowDialog implements Observer {
+final class ShowSetupRemote extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Observe Remote\u2026");

@@ -13,13 +13,12 @@ import javax.swing.JOptionPane;
 
 /**
  * @author Ken Swartz
- *
  */
-public class ShowUserGuide extends AbstractCommand {
+final class ShowUserGuide extends AbstractCommand {
 	
 	JButton proxy;
 
-	ShowUserGuide(){
+	public void initCommand(){
 		putValue(NAME,"User Guide\u2026");
 		final String helpsetName = "help/jam.hs";
 		try {

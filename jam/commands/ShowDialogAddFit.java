@@ -9,7 +9,7 @@ import jam.fit.LoadFit;
  * 
  * @author Ken Swartz
  */
-public class ShowDialogAddFit extends AbstractCommand {
+final class ShowDialogAddFit extends AbstractCommand {
 	
 	private LoadFit loadfit;
 
@@ -25,7 +25,5 @@ public class ShowDialogAddFit extends AbstractCommand {
 	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 		execute(null);
-
 	}
-
 }
