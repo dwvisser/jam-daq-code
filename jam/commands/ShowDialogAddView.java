@@ -14,7 +14,7 @@ public class ShowDialogAddView extends AbstractCommand {
 	private ViewNew viewNew;
 	
 	public void initCommand(){
-		putValue(NAME, "New View\u2026");
+		putValue(NAME, "New\u2026");
 		viewNew = new ViewNew();		
 	}
 	
