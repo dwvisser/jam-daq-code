@@ -53,23 +53,23 @@ public class SetupRemote extends JDialog implements ActionListener,
 
     final static int LINK = 2;
 
-    private transient MessageHandler msgHandler;
+    private transient final MessageHandler msgHandler;
 
-    private transient JLabel lname;
+    private transient final JLabel lname;
 
-    private transient JTextField textName;
+    private transient final JTextField textName;
 
-    private transient JCheckBox cserver;
+    private transient final JCheckBox cserver;
 
-    private transient JCheckBox csnap;
+    private transient final JCheckBox csnap;
 
-    private transient JCheckBox clink;
+    private transient final JCheckBox clink;
 
-    private transient JButton bok;
+    private transient final JButton bok;
 
-    private transient JButton bapply;
+    private transient final JButton bapply;
 
-    private transient JCheckBox checkLock;
+    private transient final JCheckBox checkLock;
 
     private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
@@ -79,11 +79,9 @@ public class SetupRemote extends JDialog implements ActionListener,
 
     transient RemoteAccess remoteAccess;
 
-    private transient String[] histNames;
-
     private transient List histList, gateList;
 
-    private transient boolean inApplet; //are we running in a applet
+    private transient final boolean inApplet; //are we running in a applet
 
     private static SetupRemote instance;
 
@@ -163,11 +161,6 @@ public class SetupRemote extends JDialog implements ActionListener,
         inApplet = false;
     }
 
-    /**
-     * Executed at a action, button pressed
-     * 
-     *  
-     */
     public void actionPerformed(ActionEvent event) {
         final String command = event.getActionCommand();
         final String name = textName.getText().trim();
@@ -238,21 +231,18 @@ public class SetupRemote extends JDialog implements ActionListener,
      *                sends a message to the console if there is any problem
      *                setting up
      */
-    public void server(String name) throws JamException {
+    public void server(final String name) throws JamException {
         try {
             remoteAccess = new RemoteAccess();
-            System.out.println("new remoteAccess");
             Naming.rebind(name, remoteAccess);
             lockFields(true);
         } catch (UnknownHostException unhe) {
-            System.out.println(unhe.getMessage());
             throw new JamException(
                     "Creating remote server unknown host, name: " + name
-                            + " [SetupRemote]");
+                            + " [SetupRemote]", unhe);
         } catch (RemoteException re) {
-            System.out.println(re.getMessage());
             throw new JamException("Creating remote server " + re.getMessage()
-                    + " [SetupRemote]");
+                    + " [SetupRemote]", re);
         } catch (java.net.MalformedURLException mue) {
             throw new JamException(
                     "Creating remote Server malformed URL [SetupRemote]");
@@ -268,12 +258,12 @@ public class SetupRemote extends JDialog implements ActionListener,
      *                all exceptions given to <code>JamException</code> go to
      *                the console
      */
-    public void snap(String url) throws JamException {
+    public void snap(final String url) throws JamException {
         try {
             if (STATUS.canSetup()) {
                 remoteData = (RemoteData) Naming.lookup(url);
                 msgHandler.messageOutln("Remote lookup OK!");
-            } else {
+            } else { 
                 throw new JamException(
                         "Can't view remotely, sort mode locked [SetupRemote]");
             }
@@ -285,20 +275,15 @@ public class SetupRemote extends JDialog implements ActionListener,
             throw new JamException("Remote look up could not find name " + url);
         }
         try {
-            System.out.println("get hist names");
-            histNames = remoteData.getHistogramNames();
-            System.out.println("got hist names");
-            System.out.println("names 0 " + histNames[0]);
-            //load histogram list
+             /* load histogram list */
             histList = remoteData.getHistogramList();
             Histogram.setHistogramList(histList);
             //load gate list
             gateList = remoteData.getGateList();
             Gate.setGateList(gateList);
         } catch (RemoteException re) {
-            System.out.println(re.getMessage());
             throw new JamException(
-                    "Remote getting histogram list [SetupRemote]");
+                    "Remote getting histogram list [SetupRemote]", re);
         }
     }
 
