@@ -53,14 +53,12 @@ public class XsysInputStream extends EventInputStream {
 					bufferCount++;
 					if (input[i] < 0) {
 						status = EventInputStatus.END_FILE;
-
-						break; //FIXME
+						break; //jumps out of for-loop
 					} else {
 						status = EventInputStatus.EVENT;
 					}
 				}
 			} else {
-
 				if ((bufferMarker = dataInput.read()) != END_REC) {
 					throw new EventException("Incorrect end of record marker");
 				}
@@ -77,6 +75,7 @@ public class XsysInputStream extends EventInputStream {
 		}
 		return status;
 	}
+	
 	/**
 	 * Read a event stream header.
 	 *
