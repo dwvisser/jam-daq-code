@@ -3,6 +3,8 @@ import jam.JamException;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.JamStatus;
+import jam.global.Broadcaster;
+import jam.global.BroadcastEvent;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
@@ -17,12 +19,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Set;
 
+import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -44,7 +46,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private final Frame jamMain;
 	private final Display display;
 	private final MessageHandler msgHandler;
-	private final JMenu menu;
+	private final Broadcaster broadcaster;	
 
 	private final JDialog dl;
 	private final JComboBox chooseFit;
@@ -56,11 +58,10 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param d the histogram display
 	 * @param mh the place to output text
 	 */
-	public LoadFit(MessageHandler mh,
-	JMenu jmenu) {
+	public LoadFit(MessageHandler mh) {
 		super();
 		msgHandler = mh;
-		menu=jmenu;
+		broadcaster=Broadcaster.getSingletonInstance();		
 						
 		JamStatus jamStatus = JamStatus.instance(); 
 		jamMain = jamStatus.getFrame();
@@ -154,16 +155,20 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private void makeFit(Class fitClass) throws JamException {
 	 	final String fitName=fitClass.getName();
 		try {
+			
 			final Fit fit = (Fit) fitClass.newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			fit.createDialog(jamMain, display, msgHandler);
 			fit.show();
-			menu.add(new AbstractAction(fitNameFront) {
+			//Create action for menu
+			final Action fitAction = new AbstractAction(fitNameFront) {
 				public void actionPerformed(ActionEvent ae) {
 					fit.show();
 				}
-			});
+			}; 
+			broadcaster.broadcast(BroadcastEvent.FIT_NEW, fitAction);
+			
 		} catch (InstantiationException ie) {
 			throw new JamException(" Fit Class cannot instantize: " + fitName);
 		} catch (IllegalAccessException iae) {
