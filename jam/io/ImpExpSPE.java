@@ -53,7 +53,6 @@ public class ImpExpSPE extends ImpExp {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public void saveFile(Histogram hist) throws ImpExpException {
-
 		if (hist.getDimensionality() == 2) {
 			if (msgHandler != null)
 				msgHandler.errorOutln(
