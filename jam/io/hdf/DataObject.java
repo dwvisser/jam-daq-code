@@ -208,7 +208,7 @@ public abstract class DataObject {
 	 *
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
-	public byte[] getBytes() throws HDFException {
+	byte[] getBytes() throws HDFException {
 		return this.bytes;
 	}
 
