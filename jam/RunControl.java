@@ -1,6 +1,7 @@
 package jam;
 
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -469,7 +470,7 @@ public class RunControl extends JDialog implements Controller {
 		histFile = new File(histFilePath, histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
-		dataio.writeFile(histFile);
+		dataio.writeFile(histFile, Group.getSortGroup().getHistogramList());
 		runNumber++;//increment run number
 		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);

@@ -32,24 +32,25 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 		
 		Frame frame =status.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		//Run status has sort group
-		Group sortGroup=null;
 		SortMode mode =status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK ||
 			mode == SortMode.ON_NO_DISK ||
 		  	mode == SortMode.OFFLINE ) {
 
 			//Find sort group
+			Group sortGroup=Group.getSortGroup();
+			
+			/*
 			List groupList=Group.getGroupList();
 			Iterator iter =groupList.iterator();
 			while (iter.hasNext()) {
-				Group group=(Group)iter.next();
+				Group sortGroup=(Group)iter.next();
 				if (group.getType() == Group.Type.SORT) {
 					sortGroup=group;
 					break;
 				}
 			}
-			
+			*/
 			if (sortGroup!=null) {
 				if (cmdParams == null || cmdParams.length==0) { //No file given		
 			        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());

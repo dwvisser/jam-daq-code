@@ -1,5 +1,7 @@
 package jam.io;
+
 import java.io.File;
+import java.util.List;
 
 /**
  * Interface to read in and write out Jam data
@@ -7,6 +9,20 @@ import java.io.File;
  *
  */
 public interface  DataIO {
+    /**
+     *	write out to a given file all options true
+     *
+     * @param file to write to
+     */ 			        
+    void writeFile(File file);
+
+    /**
+     *	write out to a given file all options true
+     *
+     * @param file to write to
+     */ 			        
+    void writeFile(File file, List histogramList);
+    
     /**
      *	write out to a given file
      *
@@ -18,12 +34,6 @@ public interface  DataIO {
      */ 			        
     void writeFile(boolean hist, boolean gate, boolean scaler, boolean params, File file);
         
-    /**
-     *	write out to a given file all options true
-     *
-     * @param file to write to
-     */ 			        
-    void writeFile(File file);
         
     /**
      * Read a file in.

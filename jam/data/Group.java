@@ -49,6 +49,9 @@ public class Group {
 
     /** The current active group for creating histograms */
     private static Group currentGroup;
+    
+    /** The sort group, group with sort histogram */
+    private static Group sortGroup;
 
     /** children of group */
     private final List histogramList = new ArrayList();
@@ -76,6 +79,10 @@ public class Group {
             Group group = new Group(groupName, type);
             currentGroup = group;
         }
+        //Only one sort group
+        if (type.type==Group.Type.TYPE_SORT) {
+        	sortGroup =currentGroup;
+        }
 
     }
 
@@ -100,6 +107,14 @@ public class Group {
      */
     public static Group getGroup(String name) {
         return (Group) (NAME_MAP.get(name));
+    }
+    /**
+     * Returns the group that is the sort group
+     * 
+     * @return the sort group
+     */
+    public static Group getSortGroup() {
+        return sortGroup;
     }
 
     /**
@@ -138,12 +153,22 @@ public class Group {
     public static Map getGroupMap() {
         return Collections.unmodifiableMap(NAME_MAP);
     }
+    /**
+     * Clear a group, removes it
+     * @param group
+     */
+    public static void clearGroup(Group group){
 
+    	NAME_MAP.remove(group);
+    	LIST.remove(group);
+    	group=null;    	
+    }
     /** Clear all groups */
     public static void clearList() {
         NAME_MAP.clear();
         LIST.clear();
         currentGroup = null;
+        sortGroup=null;
     }
 
 	/**
