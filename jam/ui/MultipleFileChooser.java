@@ -3,29 +3,29 @@ package jam.ui;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 
-import java.awt.Frame;
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-import javax.swing.JFileChooser;
-import javax.swing.Box;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 
 
 
@@ -56,6 +56,11 @@ public class MultipleFileChooser extends JPanel {
 	/** Messages output */
 	private MessageHandler msgHandler;
 	
+	/**
+	 * Constructs a multiple file chooser panel.
+	 * @param frame parent frame
+	 * @param msgHandler where to print messages
+	 */
 	public MultipleFileChooser(Frame frame, MessageHandler msgHandler) {
 		this.frame =frame;
 		this.msgHandler=msgHandler;		
@@ -132,9 +137,14 @@ public class MultipleFileChooser extends JPanel {
 		
 	}
 	
+	/**
+	 * Sets the file extension to look for.
+	 * @param extension
+	 */
 	public void setFileExtension(String extension) {
 		fileExtension=extension;
 	}
+	
 	/**
 	 * Activate the save and load list buttons
 	 * @param state
@@ -151,7 +161,7 @@ public class MultipleFileChooser extends JPanel {
 	/**
 	 * Get selected file, no selection set first file
 	 * as selected
-	 * @return
+	 * @return the selected file
 	 */
 	public File getSelectedFile() {
 		File file = (File)listFiles.getSelectedValue();
@@ -162,8 +172,12 @@ public class MultipleFileChooser extends JPanel {
 		return file;
 	}
 	
-	public Enumeration getFileElements() {
-		return listFilesModel.elements();
+	/**
+	 * Returns the list of files in the data model.
+	 * @return the list of files in the data model
+	 */
+	public List getFileList() {
+		return Collections.list(listFilesModel.elements());
 	}	
 	
 	/**
@@ -265,12 +279,13 @@ public class MultipleFileChooser extends JPanel {
 			addDirFiles(lastFile);
 		}
 	}
+	
 	/**
 	 * Adds a directory of files
-	 * @param f
-	 * @return
+	 * @param f the directory to add
+	 * @return number of files
 	 */
-	int addDirFiles(File f) {
+	private int addDirFiles(File f) {
 		int numFiles = 0;
 		if (f != null && f.exists()) {
 			final ExtensionFileFilter ff = new ExtensionFileFilter(

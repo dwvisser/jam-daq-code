@@ -1,6 +1,5 @@
 package jam.io.control;
 
-import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
@@ -17,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,11 +28,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Class to open multiple files at the same time.
@@ -81,7 +78,7 @@ public class OpenMultipleFiles {
 	 * HDF file.
 	 *  
 	 * @param f parent frame
-	 * @param c where to print messages
+	 * @param m where to print messages
 	 */
 	public OpenMultipleFiles(Frame f, MessageHandler m) {		
 		frame = f;
@@ -169,7 +166,7 @@ public class OpenMultipleFiles {
 	
 	/**
 	 * Create the histogram selection Panel
-	 * @return
+	 * @return the histogram selection panel
 	 */
 	private JPanel createHistSelectPanel() {
 		
@@ -260,9 +257,9 @@ public class OpenMultipleFiles {
 			txtHistListFile.setText(file.getAbsolutePath());
 			loadHistNames(file);
 		} 		
-		
 	}	
-	/**
+	
+	/* non-javadoc:
 	 * Load name of histograms from the selected file
 	 *  
 	 */
@@ -282,42 +279,31 @@ public class OpenMultipleFiles {
 	}
 	
 	/**
-	 * Load the histograms in the selected list from the
-	 * selected files
-	 */
-	private void loadFiles() {
-
-		List histogramNamesSelected=null;								
-		Histogram firstHist=null;
-		boolean isFirstFile;
-		int i;
-		
-		Object[] selected = histList.getSelectedValues();
-				
-		//No histograms selected
-		if (selected.length == 0) {
-			msgHandler.errorOutln("No histograms selected");
-			return;
-		}
-		
-		//Put selected histograms into a list
-		histogramNamesSelected =new ArrayList();
-		for (i=0; i<selected.length;i++) {
-			histogramNamesSelected.add((String)selected[i]);
-		}
-		
-		//Loop for all file
-		isFirstFile=true;
-		Enumeration enumFile =multipleFileChooser.getFileElements();
-		while (enumFile.hasMoreElements()) {
-			File file = (File)enumFile.nextElement();
-			if (isFirstFile) {	
-				hdfio.readFile(FileOpenMode.OPEN, file, histogramNamesSelected);
-				isFirstFile=false;
-			}else {
-				hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file, histogramNamesSelected);
-			}
-		}
-
-	}
+     * Load the histograms in the selected list from the selected files
+     */
+    private void loadFiles() {
+        final Object[] selected = histList.getSelectedValues();
+        if (selected.length == 0) {//No histograms selected
+            msgHandler.errorOutln("No histograms selected");
+            return;
+        }
+        /* Put selected histograms into a list */
+        final List histogramNamesSelected = new ArrayList();
+        for (int i = 0; i < selected.length; i++) {
+            histogramNamesSelected.add(selected[i]);
+        }
+        /* Loop for all files */
+        boolean isFirstFile = true;
+        final Iterator iter = multipleFileChooser.getFileList().iterator();
+        while (iter.hasNext()) {
+            final File file = (File) iter.next();
+            if (isFirstFile) {
+                hdfio.readFile(FileOpenMode.OPEN, file, histogramNamesSelected);
+                isFirstFile = false;
+            } else {
+                hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
+                        histogramNamesSelected);
+            }
+        }
+    }
 }
