@@ -3,8 +3,6 @@ import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.Container;
@@ -39,7 +37,6 @@ ItemListener, WindowListener {
     private final static String BLANK_LABEL="    --     ";
 
     private final Frame frame;
-    private final Broadcaster broadcaster;
     private final MessageHandler msghdlr;
 
     private final JComboBox cFunc = new JComboBox(new CalibrationComboBoxModel());
@@ -54,7 +51,6 @@ ItemListener, WindowListener {
     //calibrate histogram
     int numberTerms;
     private final NumberFormat numFormat;
-    private final JamStatus status;
 	JButton bokCal =  new JButton("OK");
 	JButton bapplyCal = new JButton("Apply");
 	JButton bcancelCal =new JButton("Cancel");
@@ -63,12 +59,10 @@ ItemListener, WindowListener {
     /**
      * Constructor
      */
-    public CalibrationDisplay(Frame frame, Broadcaster broadcaster, MessageHandler msghdlr){
+    public CalibrationDisplay(MessageHandler mh){
         super("Histogram Calibration",false);
-        this.frame=frame;
-        this.broadcaster=broadcaster;
-        this.msghdlr=msghdlr;
-        status=JamStatus.instance();
+        frame=status.getFrame();
+        msghdlr=mh;
 
         setResizable(false);
         setLocation(30,30);

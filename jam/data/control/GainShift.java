@@ -3,7 +3,6 @@ import jam.HistogramComboBoxModel;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -41,7 +40,6 @@ import javax.swing.border.EmptyBorder;
 public class GainShift extends DataControl implements ActionListener, 
 ItemListener, Observer {
     private final Frame frame;
-    private final Broadcaster broadcaster;
     private final MessageHandler messageHandler;
 
     private final JComboBox cto;
@@ -56,14 +54,13 @@ ItemListener, Observer {
 
     private Histogram hfrom;
 
-    public GainShift(Frame f, Broadcaster bc, MessageHandler mh){
+    public GainShift(MessageHandler mh){
         super("Gain Shift 1-D Histogram",false);
         chan1i=0.0;
         chan2i=1.0;
         chan1f=0.0;
         chan2f=1.0;
-        frame=f;
-        broadcaster=bc;
+        frame=status.getFrame();
         messageHandler=mh;
 
         final int CHOOSER_SIZE=200;

@@ -1,10 +1,13 @@
 package jam.data.control;
 
+import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JDialog;
 
@@ -13,9 +16,10 @@ import javax.swing.JDialog;
  *
  * @author Ken Swartz
  */
-public abstract class DataControl extends JDialog {
+public abstract class DataControl extends JDialog implements Observer {
 	private static List controllers = Collections.synchronizedList(new ArrayList());
-	protected static JamStatus status=JamStatus.instance();
+	protected static final JamStatus status=JamStatus.instance();
+	protected static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Default constructor for implementation classes.
@@ -23,6 +27,7 @@ public abstract class DataControl extends JDialog {
 	protected DataControl(String title, boolean modal) {
 		super(status.getFrame(), title, modal);
 		controllers.add(this);
+		broadcaster.addObserver(this);
 	}
 	
 	/**
@@ -30,6 +35,7 @@ public abstract class DataControl extends JDialog {
 	 */
 	public void finalize() {
 		controllers.remove(this);
+		broadcaster.deleteObserver(this);
 	}
 	
 	/**
@@ -46,4 +52,9 @@ public abstract class DataControl extends JDialog {
 	 */
 	public abstract void setup();
 
+	public void update(Observable observable, Object o) {
+		/* do-nothing implementation for those subclasses that
+		 * don't care */
+	}
+		 
 }

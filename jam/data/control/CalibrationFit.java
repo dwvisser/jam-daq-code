@@ -6,8 +6,6 @@ import jam.data.func.LinearFunction;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.Container;
@@ -42,7 +40,6 @@ public class CalibrationFit extends DataControl implements ActionListener {
     private static final int NUMBER_POINTS=5;
 
     private final Frame frame;
-    private final Broadcaster broadcaster;
     private final MessageHandler msghdlr;
 
     //calibrate histogram
@@ -58,7 +55,6 @@ public class CalibrationFit extends DataControl implements ActionListener {
     private final JCheckBox cUse[];
 
     private final NumberFormat numFormat;
-    private final JamStatus status;
 	private final JButton bokCal =  new JButton("OK");
 	private final JButton bapplyCal = new JButton("Apply");
 	private final JButton bcancelCal =new JButton("Cancel");
@@ -66,14 +62,10 @@ public class CalibrationFit extends DataControl implements ActionListener {
     /**
      * Constructor
      */
-    public CalibrationFit(Frame fr, Broadcaster bc,
-    MessageHandler mh) {
+    public CalibrationFit(MessageHandler mh) {
         super("Calibration Fit",false);
-        frame=fr;
-        broadcaster=bc;
+        frame=status.getFrame();
         msghdlr=mh;
-        status=JamStatus.instance();
-        // calibration dialog box
         setResizable(false);
         setLocation(30,30);
         final Container cdialogCalib=getContentPane();
