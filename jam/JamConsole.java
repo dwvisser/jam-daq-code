@@ -36,28 +36,13 @@ public class JamConsole
 	/**
 	 * End of line character(s).
 	 */
-	private String END_LINE = (String) System.getProperty("line.separator");
+	private static final String END_LINE = (String) System.getProperty("line.separator");
 
-	/**
-	 * Private.
-	 *
-	 * @serial
-	 */
 	private CommandListener currentListener;
 
-	/**
-	 * Private.
-	 *
-	 * @serial
-	 */
 	private JTextPane textLog; //output text area
 	private Document doc;
 	private SimpleAttributeSet attr_normal, attr_warning, attr_error;
-	/**
-	 * Private.
-	 *
-	 * @serial
-	 */
 	private JTextField textIn; //input text field
 
 	/**
@@ -117,7 +102,7 @@ public class JamConsole
 	 */
 	public JamConsole(int linesLog) {
 		maxLines = linesLog;
-		this.setLayout(new BorderLayout(5, 5));
+		this.setLayout(new BorderLayout());
 		textLog = new JTextPane();
 		doc = textLog.getStyledDocument();
 		attr_normal = new SimpleAttributeSet();
@@ -132,14 +117,13 @@ public class JamConsole
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
-		textIn = new JTextField(" ");
+		textIn = new JTextField();
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(this);
 		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
-		this.setPreferredSize(new Dimension(800, 28+16*NUMBER_LINES_DISPLAY));
 	}
 
 	/**
