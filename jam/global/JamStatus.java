@@ -111,8 +111,8 @@ public  class JamStatus {
 	 *  
 	 * @param fileName file name
 	 */    
-	public void setSortModeFile(String fileName) {
-		jamMain.setSortModeFile(fileName);
+	public void setSortMode(int mode, String fileName) {
+		jamMain.setSortMode(mode, fileName);
 	}
     /**
      * Set the acquisition status.
