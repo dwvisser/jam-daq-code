@@ -132,7 +132,6 @@ public final class ScalerControl extends DataControl implements ActionListener, 
      */
     public void actionPerformed(ActionEvent ae) {
         String command=ae.getActionCommand();
-        try {
             if (command=="scalerread") {
                 read();
             } else if ((command=="scalzero")||(command=="scalzero2")) {
@@ -152,10 +151,6 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             }  else {
                 throw new UnsupportedOperationException("Error Unregonized command: "+command);
             }
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
     }
 
     /** Handles events from checkboxes.
@@ -252,7 +247,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
      * scalers, when VME recieves back the scaler values it
      * calls Distribute event which will call our update method.
      */
-    public void read() throws GlobalException {
+    public void read() {
         if (status.isOnLine()){
             broadcaster.broadcast(BroadcastEvent.SCALERS_READ);
         } else {
@@ -264,7 +259,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
      * zero scalers, call broadcast which will sent it to
      * the class that will zero the camac crate scalers.
      */
-    public void zero() throws GlobalException{
+    public void zero() {
         broadcaster.broadcast(BroadcastEvent.SCALERS_CLEAR);
         broadcaster.broadcast(BroadcastEvent.SCALERS_READ);
     }

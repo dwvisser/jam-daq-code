@@ -238,17 +238,14 @@ public class HistogramControl extends DataControl implements ActionListener {
             }
         } catch (DataException je) {
             msghdlr.errorOutln(je.getMessage());
-        } catch (GlobalException ge) {
-            msghdlr.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
+        } 
     }
 
     /**
      * Zero all the histograms
      * Loops through the histograms zeroing them in turn
      */
-    public void zeroAll() throws GlobalException {
+    public void zeroAll() {
         msghdlr.messageOut("Zero All", MessageHandler.NEW);
         final Iterator allHistograms=Histogram.getHistogramList().iterator();
         while(allHistograms.hasNext()){
@@ -263,7 +260,7 @@ public class HistogramControl extends DataControl implements ActionListener {
     /**
      * Make a new histogram from the field inputs
      */
-    private void makeHistogram() throws DataException, GlobalException {
+    private void makeHistogram() throws DataException {
         try{
             histogramName=textName.getText().trim();
             histogramTitle=textTitle.getText().trim();

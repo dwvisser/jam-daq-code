@@ -7,7 +7,6 @@ import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.util.FileUtilities;
@@ -162,7 +161,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
         currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
-        try {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 if(calibFunction==null){
@@ -187,10 +185,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                 //just so at least a exception is thrown for now
                 throw new UnsupportedOperationException("Unregonized command: "+command);
             }
-        } catch (GlobalException ge) {
-            msghdlr.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
     }
 
     /**
@@ -283,17 +277,14 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             msghdlr.errorOutln("Invalid input, not a number [Calibrate]");
         } catch (DataException de) {
             msghdlr.errorOutln(de.getMessage());
-        } catch (GlobalException ge) {
-            msghdlr.errorOutln(getClass().getName()+
-            ".doCalibration(): "+ge);
-        }
+        } 
     }
 
     /**
      * cancel the histogram calibration
      *
      */
-    private void cancelCalib() throws GlobalException {
+    private void cancelCalib() {
         Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         currentHist.setCalibration(null);
         broadcaster.broadcast(BroadcastEvent.REFRESH);

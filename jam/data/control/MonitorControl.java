@@ -3,7 +3,6 @@ import jam.data.DataException;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -147,10 +146,6 @@ public final class MonitorControl
 		JLabel lUpdate = new JLabel("Update", JLabel.RIGHT);
 		pupdate.add(lUpdate);
 
-		//textUpdate = new JTextField("          ");
-		//textUpdate.setColumns(4);
-		//textUpdate.setEditable(true);
-		//textUpdate.setBackground(Color.white);
 		final Integer one=new Integer(1);
 		spinnerUpdate = new JSpinner(new SpinnerNumberModel(one,one,null,
 		one));
@@ -222,39 +217,32 @@ public final class MonitorControl
 	 * Action events in configuration window
 	 */
 	public void actionPerformed(ActionEvent ae) {
-
 		String command = ae.getActionCommand();
-
 		try {
 			if (command == "recall") {
 				recall();
-
 			} else if ((command == "ok") || (command == "apply")) {
-
 				configure();
 				//lock monitor parameters
 				start();
 				if (command == "ok") {
 					dconfig.dispose();
 				}
-
 			} else if (command == "cancel") {
 				configured = false;
 				//stop monitor thread if running
 				stop();
 				ddisp.setTitle("Monitors Disabled");
-
 			} else if (command == "start") {
 				start();
-
 			} else if (command == "stop") {
 				stop();
 			}
-
 		} catch (DataException je) {
 			msgHandler.errorOutln(je.getMessage());
 		}
 	}
+	
 	/**
 	 * Checks the alarm states and sets them
 	 *
@@ -403,11 +391,9 @@ public final class MonitorControl
 	 * Configure the monitors, i.e. set the values their parameters
 	 * according to the input fields.
 	 *
-	 * @exception   DataException     <code>DataException</code> tried to add gate to wrong type of histogram
+	 * @throws DataException for invalid number input
 	 */
 	void configure() throws DataException {
-		double threshold, maximum;
-
 		try {
 			//set update interval
 			interval = ((Integer)spinnerUpdate.getValue()).intValue();
@@ -415,14 +401,13 @@ public final class MonitorControl
 				throw new IllegalArgumentException("Update interval must be greater than 1");
 			}
 			Monitor.setInterval(interval);
-
 			//set Monitor parameters
 			for (int i = 0; i < numberMonitors; i++) {
-				threshold =Double.parseDouble(
+				final double threshold =Double.parseDouble(
 				textThreshold[i].getText().trim());
 				monitor[i].setThreshold(threshold);
 
-				maximum = Double.parseDouble(textMaximum[i].getText().trim());
+				final double maximum = Double.parseDouble(textMaximum[i].getText().trim());
 				monitor[i].setMaximum(maximum);
 
 				monitor[i].setAlarm(checkAlarm[i].isSelected());
@@ -451,26 +436,24 @@ public final class MonitorControl
 	}
 
 	/**
-	 * Start monitors interval updating loop
+	 * Start monitors interval updating loop.
+	 * 
+	 * @throws IllegalStateException if the monitors aren't configured yet
 	 */
-	private void start() throws DataException {
-
+	private void start() {
 		if (configured) {
 			if (loopThread == null) {
 				loopThread = new GoodThread(this);
 				loopThread.setPriority(2);
-				//lower priority than display and sort
+				/* lower priority than display and sort */
 				loopThread.setDaemon(true);
 				loopThread.start();
-
 			}
 			ddisp.setTitle("Monitors Enabled");
-
 		} else {
-			throw new DataException("Monitors not configured ");
-
+			throw new IllegalStateException(getClass().getName()+".start(): "+
+			"called before the monitors were configured.");
 		}
-
 	}
 
 	/**
@@ -478,8 +461,6 @@ public final class MonitorControl
 	 */
 	private void stop() {
 		if (loopThread != null) {
-			//XXXstop() is deprecated;
-			//loopThread.stop();
 			loopThread = null;
 		}
 		//clear numbers and graphs
@@ -543,8 +524,6 @@ public final class MonitorControl
 			//infinite loop
 		} catch (InterruptedException ie) {
 			msgHandler.errorOutln("Monitor Interupted ");
-		} catch (GlobalException ge) {
-			msgHandler.errorOutln(getClass().getName() + "run(): " + ge);
-		}
+		} 
 	}
 }

@@ -6,7 +6,6 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Display;
@@ -324,14 +323,10 @@ WindowListener,Observer  {
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
+        } 
     }
 
     void selectGate(Gate gate) {
-        try {
             cancel();      //cancel current state
             synchronized(this){
             	currentGate=gate;
@@ -373,10 +368,6 @@ WindowListener,Observer  {
                 save.setEnabled(true);
                 cancel.setEnabled(true);
             }
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".selectGate(): "+ge);
-        }
     }
 
     void selectGateAdd(Gate gate) {
@@ -394,7 +385,6 @@ WindowListener,Observer  {
      */
     public void update(Observable observable, Object o){
         final BroadcastEvent be=(BroadcastEvent)o;
-        try {
             if(be.getCommand()==BroadcastEvent.HISTOGRAM_SELECT){
                 cancel();
             } else if(be.getCommand()==BroadcastEvent.HISTOGRAM_NEW){
@@ -406,10 +396,6 @@ WindowListener,Observer  {
             } else if(be.getCommand()==BroadcastEvent.GATE_SET_POINT){
                 addPoint((Point)be.getContent());
             }
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".update(): "+ge);
-        }
     }
 
     /**
@@ -490,7 +476,7 @@ WindowListener,Observer  {
      *
      * @throws GlobalException if there's a problem
      */
-    private void makeGate() throws GlobalException {
+    private void makeGate() {
         final Histogram hist=Histogram.getHistogram(
         status.getCurrentHistogramName());
         new Gate(textNew.getText(),hist);
@@ -505,7 +491,7 @@ WindowListener,Observer  {
      * @throws DataException if there's a problem
      * @throws GlobalException if there's a problem
      */
-    private void addGate() throws GlobalException {
+    private void addGate() {
         if(currentGateAdd!=null) {
             final Histogram hist=Histogram.getHistogram(
             status.getCurrentHistogramName());
@@ -525,7 +511,7 @@ WindowListener,Observer  {
      * number format
      * @throws GlobalException if there's additional problems
      */
-    private void addPoint() throws DataException,GlobalException {
+    private void addPoint() throws DataException {
         try {
             final int x=Integer.parseInt(textLower.getText().trim());
             final int y=Integer.parseInt(textUpper.getText().trim());
@@ -537,11 +523,9 @@ WindowListener,Observer  {
         }
     }
     /**
-     * remove a point in setting a 2d gate
-     *
-     * @throws GlobalException if there's a problem
+     * Remove a point in setting a 2d gate.
      */
-    private void removePoint() throws GlobalException {
+    private void removePoint() {
         if(!gatePoints.isEmpty()) {
             gatePoints.remove(gatePoints.size()-1);
             broadcaster.broadcast(BroadcastEvent.GATE_SET_REMOVE);
@@ -558,15 +542,10 @@ WindowListener,Observer  {
 
 	private void unset(){
 		currentGate.unsetLimits();
-		try{
-			cgate.repaint();
-			messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
-			cancel();
-			broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
-		} catch (GlobalException ge){
-			messageHandler.errorOutln(getClass().getName()+".unset(): "+
-			ge.getMessage());
-		}
+		cgate.repaint();
+		messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
+		cancel();
+		broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
 	}
 
     /**
@@ -612,7 +591,7 @@ WindowListener,Observer  {
      * @throws DataException if there's a problem
      * @throws GlobalException if there's a problem
      */
-    private void save() throws DataException, GlobalException {
+    private void save() throws DataException {
         final int x1,x2;
         int pointX,pointY;
     	Polygon gatePoly2d;
@@ -675,7 +654,7 @@ WindowListener,Observer  {
      *
      * @throws GlobalException if there's a problem
      */
-    private void cancel() throws GlobalException {
+    private void cancel() {
         checkHistogram();
         broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
         dgate.setTitle("Gate setting <none>");
@@ -705,12 +684,12 @@ WindowListener,Observer  {
      * @author Ken Swartz
      * @throws GlobalException if there's a problem
      */
-    private void checkHistogram() throws GlobalException {
+    private void checkHistogram() {
         /* has histogram changed? */
         if(currentHistogram !=
         Histogram.getHistogram(status.getCurrentHistogramName())) {
-            setup();//setup chooser list
-            cancel();//cancel current gate if was setting
+        setup();//setup chooser list
+        cancel();//cancel current gate if was setting
         }
     }
 
@@ -723,12 +702,7 @@ WindowListener,Observer  {
      * @param e event causing window to be activated
      */
     public void windowActivated(WindowEvent e) {
-        try {
-            checkHistogram();
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".windowActivated(): "+ge);
-        }
+        checkHistogram();
     }
 
     /**
@@ -739,12 +713,7 @@ WindowListener,Observer  {
         if(source.equals(dnew)) {
             dnew.dispose();
         } else if(source.equals(dgate))  {
-            try {
-                cancel();
-            } catch (GlobalException ge) {
-                messageHandler.errorOutln(getClass().getName()+
-                ".windowClosing(): "+ge);
-            }
+            cancel();
             dgate.dispose();
         } else if (source.equals(dadd)) {
             dadd.dispose();

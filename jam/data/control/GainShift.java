@@ -187,14 +187,11 @@ Observer {
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
+        } 
     }
+    
     /**
-     * A item state change indicates that a gate has been choicen
-     *
+     * A item state change indicates that a gate has been chosen.
      */
     public void itemStateChanged(ItemEvent ie){
         if(ie.getSource()==ccoeff||ie.getSource()==cchan){
@@ -284,7 +281,6 @@ Observer {
      *
      */
     private void setUseCoeff(boolean state) throws DataException{
-
         if (state) {
 			setUILabels(state);
             getChannels();
@@ -342,8 +338,7 @@ Observer {
     /**
      * Does the work of manipulating histograms
      */
-    private void doGainShift() throws DataException,GlobalException {
-
+    private void doGainShift() throws DataException {
         Histogram hto;
         String name;
         double [] in,out;
@@ -400,7 +395,7 @@ Observer {
     /**
      * get the coeff. from the text fields
      */
-    private void getCoefficients() throws DataException{
+    private void getCoefficients() throws DataException {
         try {
             a1 = Double.valueOf(text1.getText().trim()).doubleValue();
             b1 = Double.valueOf(text2.getText().trim()).doubleValue();
