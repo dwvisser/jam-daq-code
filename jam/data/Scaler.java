@@ -34,37 +34,42 @@ public class Scaler {
 
     /**
      * Creates a new scaler with an assigned name and number.
-     *
-     * @param	name	name of the scaler, which must be <=16 characters
-     * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
-     * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
+     * 
+     * @param group
+     *            for this scaler to belong to
+     * @param name
+     *            name of the scaler, which must be <=16 characters
+     * @param number
+     *            number of scaler, most often the same as the register number
+     *            in a CAMAC scaler unit
+     * @throws IllegalArgumentException
+     *             if name ><code>NAME_LENGTH</code> characters
      */
-    public Scaler(Group group, String name, int number) {        
-		final StringUtilities stringUtil=StringUtilities.instance();
-        if(name.length()>NAME_LENGTH){//give error if name is too long
-            throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
+    public Scaler(Group group, String name, int number) {
+        final StringUtilities stringUtil = StringUtilities.instance();
+        if (name.length() > NAME_LENGTH) {//give error if name is too long
+            throw new IllegalArgumentException("Scale name '" + name
+                    + "' too long maximum characters " + NAME_LENGTH);
         }
-        name=stringUtil.makeLength(name, NAME_LENGTH);
-        
-        if (group==null) {
-        	//FIXME KBS should not reference Status
-        	//group = STATUS.getCurrentGroup();
-        }
+        name = stringUtil.makeLength(name, NAME_LENGTH);
+        //        if (group==null) {
+        //FIXME KBS should not reference Status
+        //group = STATUS.getCurrentGroup();
+        //        }
         group.addScaler(this);
-        String groupName=group.getName();
-
         /* make sure name is unique */
-        int prime=1;
+        int prime = 1;
         String addition;
-        while(TABLE.containsKey(name)){
-            addition="["+prime+"]";
-            name=stringUtil.makeLength(name,NAME_LENGTH - addition.length())+addition;
+        while (TABLE.containsKey(name)) {
+            addition = "[" + prime + "]";
+            name = stringUtil.makeLength(name, NAME_LENGTH - addition.length())
+                    + addition;
             prime++;
 
         }
-        
-        this.name=name;
-        this.number=number;
+
+        this.name = name;
+        this.number = number;
         /* Add to list of scalers */
         TABLE.put(name, this);
         LIST.add(this);
@@ -80,20 +85,19 @@ public class Scaler {
     }
 
     /**
-     * Sets the list of scalers.
-     * Used for remote setting of scaler values.
-     *
-     * @param inScalerList the new list of all scalers
+     * Sets the list of scalers. Used for remote setting of scaler values.
+     * 
+     * @param inScalerList
+     *            the new list of all scalers
      */
-    public static void setScalerList(List inScalerList){
+    public static void setScalerList(List inScalerList) {
         clearList();
-        Iterator allScalers=inScalerList.iterator();
-        while( allScalers.hasNext()) {//loop for all histograms
-            Scaler scaler=(Scaler)allScalers.next();
+        final Iterator allScalers = inScalerList.iterator();
+        while (allScalers.hasNext()) {//loop for all histograms
+            final Scaler scaler = (Scaler) allScalers.next();
             TABLE.put(scaler.getName(), scaler);
             LIST.add(scaler);
         }
-
     }
 
     /**
