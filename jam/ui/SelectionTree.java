@@ -41,7 +41,7 @@ public class SelectionTree extends JPanel implements Observer {
 
     private static final JamStatus STATUS = JamStatus.getSingletonInstance();
     
-    private final MessageHandler MESSAGE_HANDLER;
+    private final MessageHandler msgHandler;
     
     private static final Broadcaster BROADCASTER = Broadcaster
             .getSingletonInstance();
@@ -56,7 +56,7 @@ public class SelectionTree extends JPanel implements Observer {
      */
     public SelectionTree() {
         super(new BorderLayout());
-        MESSAGE_HANDLER=STATUS.getMessageHandler();
+        msgHandler=STATUS.getMessageHandler();
         BROADCASTER.addObserver(this);
         final Dimension dim = getMinimumSize();
         dim.width = 160;
@@ -99,7 +99,7 @@ public class SelectionTree extends JPanel implements Observer {
         final SortMode sortMode = STATUS.getSortMode();
         final DefaultMutableTreeNode rootNode;
         if (sortMode == SortMode.FILE) {
-        	String fileName =STATUS.getSortName();
+        	final String fileName =STATUS.getSortName();
         	rootNode = new DefaultMutableTreeNode("File: "+fileName);
         } else if (sortMode == SortMode.OFFLINE) {
             rootNode = new DefaultMutableTreeNode("Offline Sort");
@@ -166,7 +166,7 @@ public class SelectionTree extends JPanel implements Observer {
                 	if (hist.getDimensionality()==1) { 
                 		selectOverlay(paths);
                 	}else{
-                		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2D histogram.");
+                		msgHandler.errorOutln("Cannot overlay on a 2D histogram.");
                 	}
                 } else {
                 	STATUS.clearOverlays();
@@ -195,22 +195,22 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private void selectOverlay(TreePath[] paths){
     	DefaultMutableTreeNode overlayNode = null;
-        Object overlayObject = null;
-        Histogram overlayHistogram;
+        Object overlayObj = null;
+        Histogram overlayHist;
         STATUS.clearOverlays();
         /* Loop from 2nd element to the end. */
         for (int i = 1; i < paths.length; i++) {
             overlayNode = ((DefaultMutableTreeNode) paths[i]
                     .getLastPathComponent());
-            overlayObject = overlayNode.getUserObject();
+            overlayObj = overlayNode.getUserObject();
             /* Ignore any gates in the selection paths here. */
-            if (overlayObject instanceof Histogram) {
-                overlayHistogram = (Histogram) (overlayObject);
-                if (overlayHistogram.getDimensionality() == 1) {
-                    STATUS.addOverlayHistogramName(overlayHistogram.getUniqueFullName());
+            if (overlayObj instanceof Histogram) {
+                overlayHist = (Histogram) (overlayObj);
+                if (overlayHist.getDimensionality() == 1) {
+                    STATUS.addOverlayHistogramName(overlayHist.getUniqueFullName());
                 } else {
                     tree.removeSelectionPath(paths[i]);
-                    MESSAGE_HANDLER.errorOutln("Cannot overlay 2D histograms.");
+                    msgHandler.errorOutln("Cannot overlay 2D histograms.");
                 }
             } 
         }
@@ -227,7 +227,6 @@ public class SelectionTree extends JPanel implements Observer {
         tree.setSelectionPath(histTreePath);
         if (gate != null) {        	
             refreshGateSelection(gate, histTreePath);        	
-            /* Set path */
         }
         if (0<overlayHists.length){
         	refreshOverlaySelection(overlayHists);
@@ -245,8 +244,8 @@ public class SelectionTree extends JPanel implements Observer {
         while (nodeEnum.hasMoreElements()) {
             final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
                     .nextElement();
-            final Object currentObject = currentNode.getUserObject();
-            if (currentObject instanceof Gate && currentObject == gate) {
+            final Object currentObj = currentNode.getUserObject();
+            if (currentObj instanceof Gate && currentObj == gate) {
                 final TreePath gateTreePath = new TreePath(currentNode
                         .getPath());
                 tree.addSelectionPath(gateTreePath);
@@ -255,9 +254,6 @@ public class SelectionTree extends JPanel implements Observer {
         } //End loop for all nodes    	
     }
     
-    /*
-     * non-javadoc
-     */
     private void refreshOverlaySelection(Histogram[] overlayHists) {
         final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) tree
                 .getModel().getRoot();
@@ -266,16 +262,17 @@ public class SelectionTree extends JPanel implements Observer {
         while (nodeEnum.hasMoreElements()) {
             final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
                     .nextElement();
-            final Object currentObject = currentNode.getUserObject();
-            if (currentObject instanceof Histogram)
+            final Object currentObj = currentNode.getUserObject();
+            if (currentObj instanceof Histogram) {
                 //Loop over histograms
                 for (int i = 0; i < overlayHists.length; i++) {
-                    if (currentObject == overlayHists[i]) {
+                    if (currentObj == overlayHists[i]) {
                         final TreePath gateTreePath = new TreePath(currentNode
                                 .getPath());
                         tree.addSelectionPath(gateTreePath);
                     }
                 }//End loop histograms
+            }
         } //End loop for all nodes
     }
     
@@ -283,13 +280,13 @@ public class SelectionTree extends JPanel implements Observer {
      * non-javadoc: Helper method to get TreePath for a data object
      */
     private TreePath pathForDataObject(Object dataObject) {
-        DefaultMutableTreeNode loopNode;
         TreePath treePath = null;
         final Enumeration nodeEnum = ((DefaultMutableTreeNode) treeModel
                 .getRoot()).breadthFirstEnumeration();
         while (nodeEnum.hasMoreElements()) {
-            loopNode = (DefaultMutableTreeNode) nodeEnum.nextElement();
-            Object obj = loopNode.getUserObject();
+            final DefaultMutableTreeNode loopNode = (DefaultMutableTreeNode) nodeEnum
+                    .nextElement();
+            final Object obj = loopNode.getUserObject();
             if (dataObject == obj) {
                 treePath = new TreePath(loopNode.getPath());
                 break;
@@ -303,12 +300,12 @@ public class SelectionTree extends JPanel implements Observer {
      * 
      * @param observable
      *            the sender
-     * @param o
+     * @param object
      *            the message
      */
-    public synchronized void update(Observable observable, Object o) {
-        final BroadcastEvent be = (BroadcastEvent) o;
-        final BroadcastEvent.Command command = be.getCommand();
+    public synchronized void update(Observable observable, Object object) {
+        final BroadcastEvent event = (BroadcastEvent) object;
+        final BroadcastEvent.Command command = event.getCommand();
         setSyncEvent(true);
         if (command == BroadcastEvent.Command.HISTOGRAM_SELECT
                 || command == BroadcastEvent.Command.GATE_SELECT) {
@@ -317,8 +314,7 @@ public class SelectionTree extends JPanel implements Observer {
                 || command == BroadcastEvent.Command.HISTOGRAM_ADD
                 || command == BroadcastEvent.Command.GATE_ADD
                 || command == BroadcastEvent.Command.RUN_STATE_CHANGED
-                || command == BroadcastEvent.Command.SORT_MODE_CHANGED)
-        {
+                || command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
             loadTree();
         }
         setSyncEvent(false);
