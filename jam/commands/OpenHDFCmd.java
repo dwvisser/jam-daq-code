@@ -49,18 +49,14 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	 * @param cmdParams
 	 */ 
 	private void readHDFFile(Object[] cmdParams) {
-		
 		Frame frame= status.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
 		File file=null;
 		final boolean isFileRead;
-		
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
-		} 
-	
+		}
 		if (file==null) {//No file given				
-	        boolean outF = false; //default if not set to true later
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
 	        final int option = jfile.showOpenDialog(frame);
@@ -71,13 +67,10 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 				isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);	        	
 	        } else {
 	        	isFileRead=false;
-	        }
-	        	
-			
+	        }	
 		} else {
 			isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
-		
 		if (isFileRead){//File was read in	
 			notifyApp(HDFIO.getLastValidFile());
 		}								

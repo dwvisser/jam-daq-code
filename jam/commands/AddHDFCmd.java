@@ -28,7 +28,7 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 
 	protected void execute(final Object[] cmdParams) {
 		JFrame frame = status.getFrame();				
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);
+		new HDFIO(frame, msghdlr);//FIXME is this line needed?
 		final Runnable r=new Runnable(){
 			public void run(){
 				addHDFFile(cmdParams); 			 	
@@ -42,19 +42,14 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 	 * Read in a HDF file
 	 * @param cmdParams
 	 */ 
-	private void addHDFFile(final Object[] cmdParams) {
-		
+	private void addHDFFile(final Object[] cmdParams) {		
 		Frame frame= status.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
 		File file=null;
-		final boolean isFileRead;
-		
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
-		} 
- 		
+		} 	
 		if (file==null) {//No file given				
-	        boolean outF = false; //default if not set to true later
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
 	        final int option = jfile.showOpenDialog(frame);
@@ -62,13 +57,10 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-				isFileRead=hdfio.readFile(FileOpenMode.ADD, file);	        	
-	        } else {
-	        	isFileRead=false;
-	        }
-	        	
+				hdfio.readFile(FileOpenMode.ADD, file);	        	
+	        } 
 		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.ADD, file);
+			hdfio.readFile(FileOpenMode.ADD, file);
 		}		
 	}
 	

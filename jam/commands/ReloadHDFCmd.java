@@ -50,18 +50,13 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 	 * @param cmdParams
 	 */ 
 	private void addHDFFile(final Object[] cmdParams) {
-		
 		Frame frame= status.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);				
 		File file=null;
-		final boolean isFileRead;
-		
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
-		} 
-	
+		} 	
 		if (file==null) {//No file given				
-	        boolean outF = false; //default if not set to true later
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
 	        final int option = jfile.showOpenDialog(frame);
@@ -69,48 +64,46 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-				isFileRead=hdfio.readFile(FileOpenMode.ADD, file);	        	
-	        } else {
-	        	isFileRead=false;
-	        }
-	        	
-		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.ADD, file);
+				hdfio.readFile(FileOpenMode.ADD, file);	        	
+	        } 
+	    } else {
+			hdfio.readFile(FileOpenMode.ADD, file);
 		}		
 	}
-	/**
-	 * Read in a HDF file
-	 * @param cmdParams
-	 */ 
-	private void reloadHDFFile(final Object[] cmdParams) {
-		
-		Frame frame= status.getFrame();
-		File file=null;
-		
-		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
-		} 
 	
-		final boolean isFileRead; 
-		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);		
-		if (file==null) {//No file given				
-	        boolean outF = false; //default if not set to true later
-	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-	        jfile.setFileFilter(new HDFileFilter(true));
-	        final int option = jfile.showOpenDialog(frame);
-	        // dont do anything if it was cancel
-	        if (option == JFileChooser.APPROVE_OPTION
-	                && jfile.getSelectedFile() != null) {
-	        	file = jfile.getSelectedFile();
-				isFileRead=hdfio.readFile(FileOpenMode.ADD, file);	        	
-	        } else {
-	        	isFileRead=false;
-	        }
-	        	
-		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.ADD, file);
-		}		
-	}
+//	/**
+//	 * Read in a HDF file
+//	 * @param cmdParams
+//	 */ 
+//	private void reloadHDFFile(final Object[] cmdParams) {
+//		
+//		Frame frame= status.getFrame();
+//		File file=null;
+//		
+//		if (cmdParams!=null) {
+//			file =(File)cmdParams[0];
+//		} 
+//	
+//		final boolean isFileRead; 
+//		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);		
+//		if (file==null) {//No file given				
+//	        boolean outF = false; //default if not set to true later
+//	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
+//	        jfile.setFileFilter(new HDFileFilter(true));
+//	        final int option = jfile.showOpenDialog(frame);
+//	        // dont do anything if it was cancel
+//	        if (option == JFileChooser.APPROVE_OPTION
+//	                && jfile.getSelectedFile() != null) {
+//	        	file = jfile.getSelectedFile();
+//				isFileRead=hdfio.readFile(FileOpenMode.ADD, file);	        	
+//	        } else {
+//	        	isFileRead=false;
+//	        }
+//	        	
+//		} else {
+//			isFileRead=hdfio.readFile(FileOpenMode.ADD, file);
+//		}		
+//	}
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
