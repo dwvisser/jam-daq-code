@@ -110,7 +110,6 @@ public abstract class Plot extends JPanel  {
     //overlay histogram stuff
     protected Histogram overlayHist;
     protected double [] countsOverlay;
-    //    protected int [] countsOverlay2d;
     
     //gate stuff
     protected Gate currentGate;
@@ -654,12 +653,10 @@ public abstract class Plot extends JPanel  {
     }
     
     /**
-     * set the color mode, color palette
+     * Set the color mode, color palette
      */
     public void setColorMode(int colorMode){
         this.colorMode=colorMode;
-        //PlotColorMap.setColorMap(colorMode);
-        //this.getParent().setBackground(PlotColorMap.background);
     }
     
     /**
