@@ -48,7 +48,7 @@ Observer {
     private Plot currentPlot;
     boolean overlayState=false;
 
-    CalibrationFunction calibrationFunction;
+//    private CalibrationFunction calibrationFunction;
 
     // plot panels
     public JPanel plotswap;
@@ -121,14 +121,8 @@ Observer {
             }
             overlayState=false;
             showPlot(currentHist);//changes local currentPlot            
-            if(hist.isCalibrated()){//if the data is calibrated
-                calibrationFunction=hist.getCalibration(); 
-            } else {
-                calibrationFunction=null;
-            }            
         } else {//we have a null histogram, but display anyway
             showPlot(currentHist);
-            calibrationFunction=null;
         }
         bgoto.setEnabled(currentHist.getDimensionality()==1);
     }
@@ -172,8 +166,6 @@ Observer {
                 newHistogram();
             }
             overlayState=false;
-            //if the data is not calibrated
-            calibrationFunction=null;
         } 
     }
 
@@ -265,7 +257,7 @@ Observer {
         int runNumber=RunInfo.runNumber;
         if (gpage!=null) {
             currentPlot.print(gpage, pageSize, pagedpi, runNumber,
-            JamStatus.getDate());
+            JamStatus.instance().getDate());
         } else {
             msgHandler.errorOutln("Can't print page, null graphics [Display]");
         }
