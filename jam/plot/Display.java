@@ -1,5 +1,4 @@
 package jam.plot;
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -293,12 +292,7 @@ public class Display
 	 * @param gate The gate to display.
 	 */
 	public void displayGate(Gate gate) {
-		try {
-			currentPlot.displayGate(gate);
-		} catch (DataException de) {
-			msgHandler.errorOutln(
-				"Display.displayGate() DataException: " + de.getMessage());
-		}
+		currentPlot.displayGate(gate);
 	}
 
 	public void setRenderForPrinting(boolean rfp, PageFormat pf){
