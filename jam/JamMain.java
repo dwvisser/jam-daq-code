@@ -85,7 +85,7 @@ public final class JamMain extends JFrame implements Observer {
 		status.setJamMain(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
-				return runState.isAcqOn();
+				return getRunState().isAcqOn();
 			}
 
 			public boolean isOnLine() {
@@ -212,19 +212,17 @@ public final class JamMain extends JFrame implements Observer {
 	 * @param  rs one of the possible run states
 	 * control dialog box
 	 */
-	public void setRunState(RunState rs) {
-		menubar.setRunState(rs);
-		selectBar.setRunState(rs);
-		synchronized (this) {
-			this.runState = rs;
+	private void setRunState(RunState rs) {
+		synchronized (runState) {
+			runState = rs;
 		}
 	}
 
 	/**
 	 * @return the current run state
 	 */
-	public RunState getRunState() {
-		synchronized (this){
+	private RunState getRunState() {
+		synchronized (runState){
 			return runState;
 		}
 	}
@@ -268,6 +266,8 @@ public final class JamMain extends JFrame implements Observer {
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
 			sortModeChanged();
+		} else if (command==BroadcastEvent.RUN_STATE_CHANGED){
+			setRunState((RunState)be.getContent());
 		}
 	}
 
