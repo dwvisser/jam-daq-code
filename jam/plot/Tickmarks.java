@@ -7,14 +7,12 @@ package jam.plot;
 * @version 0.5
 * @author Ken Swartz
 */
-class Tickmarks {
+public class Tickmarks {
 
 	private static final int MIN_NUMBER_TICKS = 10;
-	private static final int MAXIMUM_COUNTS = 1000000000;
+	public static final int MAXIMUM_COUNTS = 1000000000;
 	//dont go on for ever in loop
 
-	static final int LINEAR = 0;
-	static final int LOG = 1;
 	static final int MAJOR = 0;
 	static final int MINOR = 1;
 
@@ -232,115 +230,4 @@ class Tickmarks {
 		return (int)rval;
 	}
 	
-	/**
-	 *
-	 *  color scale for 2d plots
-	 */
-	int[] getColorThresholds(
-		int lowerLimit,
-		int upperLimit,
-		int numberColors,
-	Scale scale) {
-		int [] thresholds=new int[0];
-		if (scale == Scale.LINEAR) {
-			thresholds =
-				colorThresholdsLin(lowerLimit, upperLimit, numberColors);
-		} else if (scale == Scale.LOG) {
-			thresholds =
-				colorThresholdsLog(lowerLimit, upperLimit, numberColors);
-
-		} 
-		return thresholds;
-	}
-	
-	/**
-	 * Threshold for a color in 2d plots
-	 * lowerLimit 
-	 * upperLimit
-	 *
-	 */
-	private int[] colorThresholdsLin(
-		int lowerLimit,
-		int upperLimit,
-		int numberColors) {
-
-		int thresholdStep = thresholdStep(lowerLimit, upperLimit, numberColors);
-		int thresholdMin = thresholdMin(lowerLimit, thresholdStep);
-
-		int[] thresholdTemp = new int[numberColors];
-
-		for (int i = 0; i < numberColors; i++) {
-			thresholdTemp[i] = thresholdMin + (i) * thresholdStep;
-		}
-
-		return (thresholdTemp);
-	}
-	
-	/**
-	 * The step in threshold for colors for 2d plot
-	 */
-	private int thresholdStep(
-		int lowerLimit,
-		int upperLimit,
-		int numberColors) {
-
-		int range = 100 * (upperLimit - lowerLimit) / 120;
-		// make disply range 10% less then range
-		int colorStep = 1;
-
-		for (int i = 1; i < MAXIMUM_COUNTS; i *= 10) {
-			colorStep = i;
-			if ((colorStep * numberColors) >= range)
-				break;
-			colorStep = i * 2;
-			if ((colorStep * numberColors) >= range)
-				break;
-			colorStep = i * 5;
-			if ((colorStep * numberColors) >= range)
-				break;
-		}
-		return colorStep;
-	}
-	
-	/**
-	 * minimum thresold for linear 2d plot
-	 */
-	private int thresholdMin(int lowerLimit, int thresholdStep) {
-		int tempThreshold;
-		if ((lowerLimit % thresholdStep) == 0) { //lower limit is on a step
-			tempThreshold = lowerLimit + thresholdStep;
-		} else { //threshold just above lower limit
-			tempThreshold = (lowerLimit / thresholdStep + 1) * thresholdStep;
-			//round down and add one
-		}
-		return tempThreshold;
-	}
-	
-	/** 
-	 * Color thresholds for a log 2d plot
-	 */
-	private int[] colorThresholdsLog(
-		int lowerLimit,
-		int upperLimit,
-		int numberColors) {
-		int[] threshold = new int[numberColors];
-		int max; //2**NUMBER_COLORS
-		int step; //size of a step in color scale
-		int multiStep; //multiple of step intermediate result
-
-		// Find step that  step^(number colors) is the maximum
-		step = 1; //initial step factor -1	
-		do {
-			step++;
-			max = (int) Math.round(Math.pow(step, numberColors - 1.0));
-		} while (max < upperLimit);
-
-		// set thresholds
-		multiStep = 1;
-		for (int i = 0; i < numberColors; i++) {
-			threshold[i] = multiStep + lowerLimit;
-			multiStep *= step;
-		}
-		return threshold;
-	}
 }
