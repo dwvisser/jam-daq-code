@@ -283,7 +283,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	final SwingWorker worker = new SwingWorker() {
 
             public Object construct() {
-            	asyncReadFile(mode, infile, histNames);
+            	try {
+            		asyncReadFile(mode, infile, histNames);
+            	}catch (Exception e) {
+            		uiErrorMessage ="Unknow error reading file "+infile.getName()+", "+e;
+            		asyncMonitor.close();
+            	}
             	return null;
             }
 
@@ -399,13 +404,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
         	}catch (IOException e) {
             	uiErrorMessage = "Closing file " +file.getName();
             }
-            
+            asyncMonitor.close();            
         }
         synchronized (this) {
             DataObject.clearAll();
             out = null; //allows Garbage collector to free up memory
         }
-        asyncMonitor.close();
         
         setLastValidFile(file);
         uiMessage =message.toString();
@@ -514,13 +518,13 @@ public final class HDFIO implements DataIO, JamHDFFields {
             	} catch (IOException except) {
             		uiErrorMessage ="Closing file "+infile.getName();
             		rval = false;
-            	}    	
+            	}    
+                asyncMonitor.close();
                  /* destroys reference to HDFile (and its DataObject's) */
                  inHDF = null;
             }
 
             DataObject.clearAll();
-            asyncMonitor.close();
             
             setLastValidFile(infile);
         }
