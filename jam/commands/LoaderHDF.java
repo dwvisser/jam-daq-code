@@ -21,6 +21,8 @@ import javax.swing.JFileChooser;
 abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.AsyncListener {
     
 	final HDFIO	hdfio;	
+	Group loadGroup;
+	
     /**
      * Mode under which to do the loading.
      */
@@ -29,24 +31,17 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
     LoaderHDF() {
     	Frame frame= STATUS.getFrame();    	
     	hdfio = new HDFIO(frame, msghdlr);    	
-    }
-    
-	protected final void execute(final Object[] cmdParams) {
-		addHDFFile(cmdParams);
-	}
+    }    
 
 	/**
 	 * Read in an HDF file.
 	 * 
 	 * @param cmdParams a file reference or null
 	 */ 
-	protected final void addHDFFile(final Object[] cmdParams) {		
+	protected final void loadHDFFile(File file, Group loadGroup) {		
 		Frame frame= STATUS.getFrame();	
 		hdfio.setListener(this);
-		File file=null;
-		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
-		} 	
+
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
@@ -55,15 +50,15 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-				hdfio.readFile(fileOpenMode, file);	        	
+				hdfio.readFile(fileOpenMode, file, loadGroup, null);	        	
 	        } 
 		} else {
-			hdfio.readFile(fileOpenMode, file);
+			hdfio.readFile(fileOpenMode, file,  loadGroup, null);
 		}		
 	}
 	
 	protected final void executeParse(String[] cmdTokens) {
-	    execute(null);
+	    //execute(null);	//FIXME KBS has unhandled exception
 	}	
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  

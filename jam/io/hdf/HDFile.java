@@ -93,7 +93,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @throws HDFException
 	 */
 	void writeFile() throws HDFException {
-		updateBytesOffsets();            
+		updateBytesOffsets();     
         writeMagicWord();	      
         writeDataDescriptorBlock();
         writeAllObjects();
@@ -177,7 +177,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		final int numObjSteps = getNumberObjctProgressStep(objectList.size(), FRACTION_WRITE_ALL);
 		final Iterator temp = objectList.iterator();
 		writeLoop: while (temp.hasNext()) {
-			if (countObjct%numObjSteps==0) {
+			if (countObjct%numObjSteps==0 && monitor!=null) {
 				monitor.increment();
 			}
 			final AbstractHData dataObject = (AbstractHData) (temp.next());
@@ -224,7 +224,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				throw new HDFException("Not an hdf file");
 			}
 			
-			monitor.increment();
 			if (lazyLoadData)
 				numObjSteps=getNumberObjctProgressStep(countHDFOjects(), FRACTION_TIME_READ_NOT_HISTOGRAM);
 			else 
@@ -276,6 +275,26 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				"Problem reading HDF file objects. ",e);
 		}
 	}
+	/* non-javadoc:
+	 * Lazy load the bytes for an object
+	 */
+	byte [] lazyReadData(AbstractHData dataObject) throws HDFException {
+        final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum, FRACTION_TIME_READ_LAZY_HISTOGRAMS);
+		final byte [] localBytes = new byte[dataObject.getLength()];	
+		try {
+	        seek(dataObject.getOffset());
+	        read(localBytes);
+			if (lazyCount%numObjSteps==0 && monitor!=null) {
+					monitor.increment();
+			}
+			lazyCount++;
+		} catch (IOException e) {
+			throw new HDFException(
+				"Problem lazy reading data objects. ",e);
+		}		
+		return localBytes;
+	}
+	
 	/**
 	 * Count objects in file
 	 * 
@@ -349,27 +368,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		super.close();
 	}
 
-	/* non-javadoc:
-	 * Lazy load the bytes for an object
-	 */
-	byte [] lazyReadData(AbstractHData dataObject) throws HDFException {
-        final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum, FRACTION_TIME_READ_LAZY_HISTOGRAMS);
-		final byte [] localBytes = new byte[dataObject.getLength()];	
-		try {
-	        seek(dataObject.getOffset());
-	        read(localBytes);
-			if (lazyCount%numObjSteps==0) {
-				if (monitor!=null) {	//FIXME KBS cleanup
-					monitor.increment();
-				}
-			}
-			lazyCount++;
-		} catch (IOException e) {
-			throw new HDFException(
-				"Problem lazy reading data objects. ",e);
-		}		
-		return localBytes;
-	}
 	
 	private int getNumberObjctProgressStep(int numObjects, float fractionOfTotalsTime) {
 		int rval;

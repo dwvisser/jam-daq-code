@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.control.AbstractControl;
@@ -63,6 +64,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
+	        	DataBase.getInstance().clearAllLists();  
 				isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);	        	
 	        } else {
 	        	isFileRead=false;
@@ -131,7 +133,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	 */
 	public void CompletedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		notifyApp(file);		
+		notifyApp(file);
 		file=null;
 	}
 }

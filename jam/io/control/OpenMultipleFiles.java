@@ -247,14 +247,14 @@ public class OpenMultipleFiles {
         if (chkBoxAdd.isSelected()) {
             /* Create blank histograms */
             file = multiChooser.getSelectedFile();
-            hdfio.readFile(FileOpenMode.OPEN, file, selectNames);
+            hdfio.readFile(FileOpenMode.OPEN, file, null, selectNames);
             /* Rename group */
             final Group fileGroup = Group.getGroup(file.getName());
             fileGroup.setName("Sum");
             Histogram.setZeroAll();
             while (iter.hasNext()) {
                 file = (File) iter.next();
-                hdfio.readFile(FileOpenMode.ADD, file, selectNames);
+                hdfio.readFile(FileOpenMode.ADD, file, null, selectNames);
             }
             /* Open multiple groups */
         } else {
@@ -262,7 +262,7 @@ public class OpenMultipleFiles {
             while (iter.hasNext()) {
                 file = (File) iter.next();
 
-                hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file, selectNames);
+                hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file, null, selectNames);
                 STATUS.setSortMode(SortMode.FILE, "Multiple");
             }
         }

@@ -8,6 +8,7 @@ import jam.io.FileOpenMode;
 
 import java.awt.Event;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -30,6 +31,21 @@ final class ReloadHDFCmd extends LoaderHDF implements Observer {
 		KeyEvent.VK_O,
 		CTRL_MASK | Event.SHIFT_MASK));
 		fileOpenMode = FileOpenMode.RELOAD;
+	}
+	
+	protected final void execute(final Object[] cmdParams) {
+		File file=null;
+		Group loadGroup;
+		
+		/*FIXME KBS parse correctly
+		if (cmdParams!=null) {
+			file =(File)cmdParams[0];
+			//loadGroup=(Group)cmdParams[1];
+		} 	
+		*/
+		file=null;
+		loadGroup =Group.getSortGroup();
+		loadHDFFile(file, loadGroup);
 	}
 
 	public void update(Observable observe, Object obj){
