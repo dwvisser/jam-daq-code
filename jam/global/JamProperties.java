@@ -167,18 +167,12 @@ public class JamProperties {
 	 * <code>true</code> if the front end should be verbose with it's messages.
 	 * The exact usage of this is up to the front end implementer.
 	 */
-	public final static String FRONTEND_VERBOSE = "frontend.verbose";
+	//public final static String FRONTEND_VERBOSE = "frontend.verbose";
 	
 	/**
 	 * <code>true</code> if the front end should output debugging messages.
 	 */
-	public final static String FRONTEND_DEBUG = "frontend.debug";
-	
-	/**
-	 * <code>true</code> if Jam should not fill in gates on 2d
-	 * plots when painting them.
-	 */
-	public final static String NO_FILL_GATE = "graph.noFillGate";
+	//public final static String FRONTEND_DEBUG = "frontend.debug";
 	
 	private final static String NO_ERRORS="No error messages.";
 	private final static String NO_WARNINGS="No warning messages.";
@@ -453,7 +447,6 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		setProperty(NO_FILL_GATE,false);
 	}
 
 	/**
