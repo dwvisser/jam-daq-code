@@ -49,6 +49,12 @@ public interface CommandNames {
 	String SCALERS="scalers";
 	
 	/** Export the displayed histogram as a text file. */
-	String EXPORT_TEXT="exporttext";		
+	String EXPORT_TEXT="exporttext";
+			
+	/** Export the displayed 1-d histogram as a Radware file. */
+	String EXPORT_SPE="exportspe";
+			
+	/** Export the displayed histogram as a .his file for DAMM. */
+	String EXPORT_DAMM="exportdamm";		
 	
 }
