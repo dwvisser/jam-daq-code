@@ -402,11 +402,10 @@ public class HistogramIO implements FilenameFilter {
 					msgHandler.messageOut(" .");
 				}
 			}
-
-			//write out scalers	        
-			allScalers = Scaler.scalerList.iterator();
-			numScalers = Scaler.scalerList.size();
-
+			/* write out scalers */	  
+			final java.util.List scalerList = Scaler.getScalerList();     
+			allScalers = scalerList.iterator();
+			numScalers = scalerList.size();
 			if (writeScalers) {
 				dos.writeInt(numScalers);
 				msgHandler.messageOut(" scalers");
@@ -425,7 +424,6 @@ public class HistogramIO implements FilenameFilter {
 				numScalers = 0;
 				dos.writeInt(numScalers);
 			}
-
 			dos.flush();
 			fileStream.close();
 			//reset the default options
