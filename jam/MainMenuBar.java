@@ -142,7 +142,7 @@ public class MainMenuBar extends JMenuBar {
 		
 		public void actionPerformed(ActionEvent ae){
 			if (hdfio.readFile(FileOpenMode.OPEN)) { //true if successful
-				jamMain.setSortModeFile(hdfio.getFileNameOpen());
+				jamMain.setSortMode(JamMain.FILE, hdfio.getFileNameOpen());
 				DataControl.setupAll();
 				jamCommand.dataChanged();
 				jamMain.repaint();
@@ -213,7 +213,7 @@ public class MainMenuBar extends JMenuBar {
 		public void actionPerformed(ActionEvent ae){
 			try {
 				if (impexp.openFile()) {
-					jamMain.setSortModeFile(impexp.getLastFileName());
+				 	jamMain.setSortMode(JamMain.FILE, impexp.getLastFileName());
 					DataControl.setupAll();
 					jamCommand.dataChanged();
 				}
@@ -339,8 +339,7 @@ public class MainMenuBar extends JMenuBar {
 		add(file);
 		synchronized (this) {
 			newClear = new JMenuItem("New");
-			newClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
-			ctrl_mask));
+			
 			openhdf = new OpenHDF();
 			reloadhdf = new ReloadHDF();
 			saveHDF = new SaveHDF();
@@ -351,10 +350,18 @@ public class MainMenuBar extends JMenuBar {
 			statusacq = new JMenuItem("Buffer Count...");
 		}
 		newClear.setActionCommand("newclear");
+		newClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,ctrl_mask));		
 		newClear.addActionListener(jamCommand);
 		file.add(newClear);
-		file.add(openhdf).setAccelerator(
-		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
+		
+		JMenuItem openhdfcmd = new JMenuItem("openhdf");
+		openhdfcmd.addActionListener(jamCommand);
+		openhdfcmd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
+		file.add(openhdfcmd);
+		
+		//Remove KBS
+		//file.add(openhdf).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
+		
 		reloadhdf.setEnabled(false);
 		file.add(reloadhdf).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
