@@ -1,5 +1,7 @@
 package jam.sort.stream;
+import jam.data.Scaler;
 import jam.global.MessageHandler;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -134,7 +136,7 @@ public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parame
         EventInputStatus rval=EventInputStatus.EVENT;
         int parameter=0;
         int endblock=0;
-        int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
+        final int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
         try {
             /* internal_status may also be in a "flush" mode in which case
              * we skip this read loop and go straight to flushing out another event */ 
@@ -188,6 +190,7 @@ public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parame
                     for (int i=0; i<numScalers; i++) {
                     	tval[i]=dataInput.readInt();
                     }
+                	Scaler.update(tval);
                     rval=EventInputStatus.SCALER_VALUE;
                     internal_status=BufferStatus.SCALER;
                 } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon
