@@ -1,36 +1,13 @@
 package jam.data.control;
-import jam.data.DataException;
-import jam.data.Monitor;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.GoodThread;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import jam.data.*;
+import jam.global.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Iterator;
+import javax.swing.*;
+import javax.swing.border.*;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 /**
  * Reads and displays the monitors.
  *
@@ -75,6 +52,7 @@ public final class MonitorControl
 
 	//widgits for display
 	private JDialog ddisp;
+	private JPanel pBars;
 	private JPanel[] pm; //panel for monitors
 	private JLabel[] labelDisp;
 	private JTextField[] textValue;
@@ -183,22 +161,29 @@ public final class MonitorControl
 
 		//>> dialog box to display Monitors
 		ddisp = new JDialog(frame, "Monitors Disabled", false);
-		ddisp.setResizable(false);
+		ddisp.setResizable(true);
 		ddisp.setLocation(20, 50);
 		Container cddisp = ddisp.getContentPane();
-		cddisp.setLayout(new GridLayout(0, 2, 5, 5));
+		cddisp.setLayout(new BorderLayout());
 
-		/* alarm panel for display dialog */
+		//Panel for the bars
+		pBars =new JPanel(new GridLayout(0,2,5,5));
+		pBars.setBorder(new EmptyBorder(10,10,0,10));
+		cddisp.add(pBars, BorderLayout.CENTER);
+
+		// alarm panel for display dialog
 		pal = new JPanel();
+		cddisp.add(pal, BorderLayout.SOUTH);
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		checkAudio = new JCheckBox("Audio Alarm", true);
 		checkAudio.addItemListener(this);
 		pal.add(checkAudio);
 
-		/* variable initialization */
+
+		// variable initialization
 		sortMonitors = false;
 		configured = false;
-		/* window listeners for dispose */
+		// window listeners for dispose
 		ddisp.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				ddisp.dispose();
@@ -209,8 +194,9 @@ public final class MonitorControl
 				dconfig.dispose();
 			}
 		});
-		/* setup monitors */
+		// setup monitors
 		setup();
+
 	}
 
 	/**
@@ -242,7 +228,7 @@ public final class MonitorControl
 			msgHandler.errorOutln(je.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Checks the alarm states and sets them
 	 *
@@ -281,8 +267,9 @@ public final class MonitorControl
 	 *
 	 */
 	private void setupDisplay() {
-		Container cddisp = ddisp.getContentPane();
-		cddisp.removeAll();
+		//Container cddisp = ddisp.getContentPane();
+
+		//pBars.removeAll();
 		/* widgets for dislay page */
 		pm = new JPanel[numberMonitors];
 		labelDisp = new JLabel[numberMonitors];
@@ -292,7 +279,7 @@ public final class MonitorControl
 			for (int i = 0; i < numberMonitors; i++) {
 				pm[i] = new JPanel();
 				pm[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-				cddisp.add(pm[i]);
+				pBars.add(pm[i]);
 				labelDisp[i] = new JLabel("          ", JLabel.RIGHT);
 				labelDisp[i].setText(monitor[i].getName());
 				pm[i].add(labelDisp[i]);
@@ -302,10 +289,9 @@ public final class MonitorControl
 				textValue[i].setText(String.valueOf(0));
 				pm[i].add(textValue[i]);
 				plotBar[i] = new PlotBar(monitor[i]);
-				cddisp.add(plotBar[i]);
+				pBars.add(plotBar[i]);
 			}
 		}
-		cddisp.add(pal);
 		ddisp.pack();
 	}
 
@@ -437,7 +423,7 @@ public final class MonitorControl
 
 	/**
 	 * Start monitors interval updating loop.
-	 * 
+	 *
 	 * @throws IllegalStateException if the monitors aren't configured yet
 	 */
 	private void start() {
@@ -524,6 +510,6 @@ public final class MonitorControl
 			//infinite loop
 		} catch (InterruptedException ie) {
 			msgHandler.errorOutln("Monitor Interupted ");
-		} 
+		}
 	}
 }
