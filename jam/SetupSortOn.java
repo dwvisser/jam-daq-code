@@ -1,7 +1,6 @@
 package jam;
 
 import jam.data.DataBase;
-import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -102,8 +101,6 @@ public final class SetupSortOn extends AbstractSetup {
 	private File dataDirectory;
 
 	private File logDirectory;
-
-	//private File sortClassPath;
 
 	/* sorting classes */
 	private SortDaemon sortDaemon;

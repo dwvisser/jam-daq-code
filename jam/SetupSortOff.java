@@ -1,6 +1,5 @@
 package jam;
 import jam.data.DataBase;
-import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
