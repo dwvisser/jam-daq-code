@@ -7,6 +7,7 @@ import jam.global.CommandListenerException;
 import jam.global.CommandNames;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.io.hdf.HDFPrefs;
 import jam.plot.PlotPrefs;
 import jam.plot.color.ColorPrefs;
 
@@ -115,9 +116,10 @@ public class CommandManager implements CommandListener, CommandNames {
 		SetSmoothColorScale.class);
 		CMD_MAP.put(SHOW_GRADIENT_SETTINGS,ShowGradientSettings.class);
 		CMD_MAP.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
-		CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
+	 	CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
 		CMD_MAP.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
-		CMD_MAP.put(PlotPrefs.DISPLAY_AXIS_LABELS, SetAxisLabels.class);		
+		CMD_MAP.put(PlotPrefs.DISPLAY_AXIS_LABELS, SetAxisLabels.class);
+		CMD_MAP.put(HDFPrefs.SUPPRESS_WRITE_EMPTY, SetHDFSuppressWriteEmpty.class);
 		CMD_MAP.put(JamPrefs.VERBOSE, SetVerbose.class);
 		CMD_MAP.put(JamPrefs.DEBUG, SetDebug.class);
 		CMD_MAP.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);

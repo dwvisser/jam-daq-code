@@ -12,6 +12,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
+import jam.plot.PlotPrefs;
 import jam.util.SwingWorker;
 
 import java.awt.Frame;
@@ -174,14 +175,13 @@ public final class HDFIO implements DataIO, JamFileFields {
      * be included.
      * 
      * @param file to write to
-     * @param writeScalers whether to write scalers
-     * @param writeParams whether to write parameters
+     * @param writeData whether to write histograms and scalers
+     * @param writeSettings whether to write gates and parameters
      */
-    public void writeFile(final File file, boolean writeScalers, boolean writeParams) {
-    	writeFile(file, null, null, writeScalers, writeParams);    	
+    public void writeFile(final File file, boolean writeData, boolean writeSettings) {
+    	writeFile(file, null, null, writeData, writeSettings);    	
     }
     
-    //FIXME private method below is unused
     /** 
      * Create list of groups and histograms to write out.
      * Use selected groups to create list of histograms or
@@ -190,11 +190,11 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param file to write to
      * @param groups if given, groups to write
      * @param histograms to write if groups not given
-     * @param writeScalers whether to write scalers
-     * @param writeParams whether to write parameters
+     * @param writeData whether to write histograms and scalers
+     * @param writeSettings whether to write gates and parameters
      */
     private void writeFile(final File file, List groups, List histograms,
-            boolean writeScalers, boolean writeParams) {
+            boolean writeData, boolean writeSettings) {
         /* Groups specified determines histograms */
         if (groups != null) {
             histograms = new ArrayList();
@@ -224,7 +224,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             }
         }
         if (overWriteExistsConfirm(file)) {
-            spawnAsyncWriteFile(file, groups, histograms, writeScalers, writeParams);
+            spawnAsyncWriteFile(file, groups, histograms, writeData, writeSettings);
         }
     }
     
@@ -312,13 +312,13 @@ public final class HDFIO implements DataIO, JamFileFields {
      * non-javadoc: Asyncronized write
      */
     private void spawnAsyncWriteFile(final File file, final List groups,
-            final List histograms, final boolean writeScalers,
-            final boolean writeParams) {
+            final List histograms, final boolean writeData,
+            final boolean writeSettings) {
         uiMessage = "";
         uiErrorMsg = "";
         final SwingWorker worker = new SwingWorker() {
             public Object construct() {
-                asyncWriteFile(file, groups, histograms, writeScalers, writeParams);
+                asyncWriteFile(file, groups, histograms, writeData, writeSettings);
                 System.gc();
                 return null;
             }
@@ -430,11 +430,11 @@ public final class HDFIO implements DataIO, JamFileFields {
      *            list of <code>Histogram</code> objects to write
      * @param groups
      *            list of <code>Group</code>'s to write
-     * @param writeScalers whether to write out scalers
-     * @param writeParams whether to write out parameters
+     * @param writeScalers whether to write out histograms scalers
+     * @param writeParams whether to write out gates, calibration and parameters
      */
     synchronized private void asyncWriteFile(File file, List groups,
-            List histograms, boolean writeScalers, boolean writeParams) {
+            List histograms, boolean writeData, boolean writeSettings) {
         final StringBuffer message = new StringBuffer();
         /* reset all counters */
         groupCount = 0;
@@ -446,7 +446,10 @@ public final class HDFIO implements DataIO, JamFileFields {
         jamToHDF.addDefaultDataObjects(file.getPath());
         asyncMonitor.setup("Saving HDF file", "Converting Objects",
                 MONITOR_STEPS_READ_WRITE + MONITOR_STEPS_OVERHEAD_WRITE);
-        convertJamToHDF(groups, histograms, writeScalers, writeParams);
+		final Preferences prefs = HDFPrefs.PREFS;
+		final boolean suppressEmpty = prefs.getBoolean(
+				HDFPrefs.SUPPRESS_WRITE_EMPTY, true);        
+        convertJamToHDF(groups, histograms, writeData, writeSettings, suppressEmpty);
         message.append("Saved ").append(file.getName()).append(" (");
         message.append(groupCount).append(" groups");
         message.append(", ").append(histCount).append(" histograms");
@@ -845,7 +848,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     }
     
     private void convertJamToHDF(List groups, List histList,
-            boolean writeScalers, boolean writeParams) {
+            boolean writeData, boolean writeSettings, boolean suppressEmpty) {
         final VirtualGroup globalGroups = jamToHDF.addGroupSection();
         final VirtualGroup globalHists = jamToHDF.addHistogramSection();
         final VirtualGroup globalGates = jamToHDF.addGateSection();
@@ -868,9 +871,14 @@ public final class HDFIO implements DataIO, JamFileFields {
                     vgGroup.add(histVGroup);
                     //backward compatible
                     globalHists.add(histVGroup);
+                    boolean histDefined = hist.getArea() > 0 ||!suppressEmpty;
+                    if (writeData &&histDefined) {
+                        jamToHDF.convertHistogram(histVGroup, hist);
+                        histCount++;
+                    }                    
                     
                     //Add calibrations
-                    if (hist.getDimensionality()==1) { 
+                    if ((writeData||writeSettings) && hist.getDimensionality()==1) { 
                     	CalibrationFunction calFunc = ((AbstractHist1D)hist).getCalibration();
                     	if (calFunc!=null) {
                     		VDataDescription calibDD=jamToHDF.convertCalibration(calFunc);
@@ -878,16 +886,11 @@ public final class HDFIO implements DataIO, JamFileFields {
                     	}
                     }
                     
-                    if (writeScalers) {
-                        jamToHDF.convertHistogram(histVGroup, hist);
-                        histCount++;
-                    }                    
-                    
                     /* Loop for all gates */
                     final Iterator gatesIter = hist.getGates().iterator();
                     while (gatesIter.hasNext()) {
                         final Gate gate = (Gate) gatesIter.next();
-                        if (writeParams && gate.isDefined()) {
+                        if (writeSettings && gate.isDefined()) {
                             final VirtualGroup gateVGroup = jamToHDF
                                     .convertGate(gate);
                             histVGroup.add(gateVGroup);
@@ -899,7 +902,7 @@ public final class HDFIO implements DataIO, JamFileFields {
                 }
             } //end loop histograms
             /* Convert all scalers */
-            if (writeScalers) {
+            if (writeData) {
                 final List scalerList = group.getScalerList();
                 if (scalerList.size() > 0) {
                     final VirtualGroup vgScalers = jamToHDF.addScalerSection();
@@ -915,7 +918,7 @@ public final class HDFIO implements DataIO, JamFileFields {
                 scalerCount = scalerList.size();
             }
             /* Convert all parameters */
-            if (writeParams) {
+            if (writeSettings) {
                 final List paramList = DataParameter.getParameterList();
                 if (paramList.size() > 0) {
                     final VirtualGroup vgParams = jamToHDF
