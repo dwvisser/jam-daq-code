@@ -123,7 +123,6 @@ public class HistApplet
 		Histogram.clearList();
 		try {
 			InitialHistograms inithist = new jam.InitialHistograms();
-			display.displayHistogram(inithist.histStart);
 			setHistogramList(Histogram.getHistogramList());
 			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
 		} catch (Exception e) {
