@@ -1,5 +1,6 @@
 package jam.plot;
 import jam.JamConsole;
+import jam.commands.JamCmdManager;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -1099,14 +1100,16 @@ class Action implements ActionListener, PlotMouseListener {
 	}
 	
 	private void help() {
-		textOut.messageOutln("Plot Commands:");
-		textOut.messageOutln("li - Linear Scale \t\t  lo - Log Scale\t a  - Auto Scale\t ra - Range");		
-		textOut.messageOutln("ex - Expand     \t\t  f  - Full view   \t zi - Zoom In    \t\t zo - Zoom Out");
-		textOut.messageOutln("d  - Display    \t\t  o  - Overlay   \t u  - Update     \t\t g  - GoTo");
-		textOut.messageOutln("ar - Area       \t\t  n  - Net Area  \t re - Rebin \t\t c  - Channel");		
-		//textOut.messageOutln("x  - X                 y  - Y ");		
-		//textOut.messageOutln("s  - Scale" );
-
+		final StringBuffer sb=new StringBuffer("Commands:\t");
+		sb.append("li - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\t");		
+		sb.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
+		sb.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
+		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Channel\t");
+		final String [] commands=JamCmdManager.getInstance().getAllCommands();	
+		for (int i=0; i< commands.length; i++){
+			sb.append(commands[i]).append("\t");
+		}
+		textOut.messageOutln(sb.toString());
 	}
 	
 }
