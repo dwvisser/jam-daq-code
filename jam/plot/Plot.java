@@ -730,18 +730,19 @@ public abstract class Plot extends JPanel  {
     }
     
     /**
-     * method to set maximum Counts scale but constrained for scrolling
+     * Set the maximum counts limit on the scale, but constrained for scrolling.
      */
     void setMaximumCountsConstrained(int maxC){
-        //dont go too far not too small
-        if (maxC<FULL_SCALE_MIN){
-            maxC=FULL_SCALE_MIN;
+    	int temp=maxC;
+        /* Don't go too small. */
+        if (temp<FULL_SCALE_MIN){
+            temp=FULL_SCALE_MIN;
         }
-        //dont go too far not too big
-        if (maxC>FULL_SCALE_MAX) {
-            maxC=FULL_SCALE_MAX;
+        /* Don't go too big. */
+        if (temp>FULL_SCALE_MAX) {
+            temp=FULL_SCALE_MAX;
         }
-        plotLimits.setMaximumCounts(maxC);
+        plotLimits.setMaximumCounts(temp);
     }
     
     /**
