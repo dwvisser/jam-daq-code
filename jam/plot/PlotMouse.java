@@ -1,7 +1,9 @@
 package jam.plot;
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Converts screen pixel to data value for a mouse Click.
@@ -13,7 +15,7 @@ import java.awt.event.*;
  * @author Ken Swartz.
  */
 public class PlotMouse extends MouseAdapter {
-	private java.util.List listenersList; //list of listeners for plotmouse
+	private List listenersList; //list of listeners for plotmouse
 	private PlotGraphics pg; //converts screen pixels to data values
 	private final Action action;
 
@@ -26,7 +28,7 @@ public class PlotMouse extends MouseAdapter {
 	public PlotMouse(PlotGraphics plotGraphics, Action a) {
 		this.pg = plotGraphics;
 		action=a;
-		listenersList = new Vector(2);
+		listenersList = new ArrayList();
 	}
 	
 	/**
@@ -48,14 +50,13 @@ public class PlotMouse extends MouseAdapter {
 	}
 	
 	/**
-	 * A mousePressed event has occured call all listeners 
-	 * in the listeners list
+	 * A mousePressed event has occured, so call all listeners 
+	 * in the listeners list.
 	 */
 	public void mousePressed(MouseEvent e) {
-	/* Set mousePressed =true indicates mouse was used */ 
 	    action.setMousePressed(true);
-		Point pin = e.getPoint();
-		Point pout = pg.toData(pin);
+		final Point pin = e.getPoint();
+		final Point pout = pg.toData(pin);
 		for (int i = 0; i < listenersList.size(); i++) {
 			((PlotMouseListener) listenersList.get(i)).plotMousePressed(
 				pout,
