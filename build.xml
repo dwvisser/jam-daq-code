@@ -63,8 +63,8 @@
     		includes="**/*.java,**/*.html,**/*.txt, **/*.jnlp, **/*.jsmooth, **/*.wxs, **/*.hs, **/*.css, **/*.jhm, **/*.xml, **/*.ini" />
             <filterset>
     			<filter token="MAJOR" value="1" />
-    			<filter token="MINOR" value="5" />
-    			<filter token="SUBMINOR" value="2" />
+    			<filter token="MINOR" value="6" />
+    			<filter token="SUBMINOR" value="0" />
             </filterset>
 		</copy>
 		<copy todir="${copy.dir}">
