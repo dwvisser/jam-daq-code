@@ -27,88 +27,61 @@ import javax.swing.*;
  */
 class SetupSortOn implements ActionListener, ItemListener {
 
-	private JamMain jamMain;
-	private RunControl runControl;
-	private DisplayCounters displayCounters;
-	private JamConsole jamConsole;
-	private MessageHandler msgHandler;
-	private FrontEndCommunication frontEnd;
-	final Broadcaster broadcaster;
-
-	private static final int FILE_TEXT_COLUMNS = 25;
-
-	//stuff for dialog box
-	private JDialog d;
-	File eventDirectory;
-
-	//strings of data entered
-	String experimentName; 
-	File sortDirectory;
-	String histDirectory, dataDirectory;
-	String logDirectory;
-	// 1/fraction of events to sort
-	private int sortInterval;
-	String eventFile;
-
-	//text fields
-	private JTextField textExpName, textSortPath, textPathHist, textPathData;
-	private JTextField textPathLog;
-
 	/**
 	 * Whether to handle event writing or delegate to front end.
 	 * For now, leaving true always. Nobody does otherwise yet.
 	 */
-	private static final boolean STORE_EVENTS_LOCAL=true;
+	//private static final boolean STORE_EVENTS_LOCAL=true;
 
-	//buttons and check boxes
-	private JToggleButton ctape, cdisk; //save events to tape, disk
-	private JToggleButton defaultPath, specify;
-	private JCheckBox clog; //create a log file
-	private JTextField textSortInterval;
-	private JButton bok;
-	private JButton bapply;
-	private JCheckBox checkLock;
-	private JButton bbrowsef,bbrowseh,bbrowsed,bbrowsel;
+	private final JamMain jamMain;
+	private final RunControl runControl;
+	private final DisplayCounters displayCounters;
+	private final JamConsole jamConsole;
+	private final MessageHandler msgHandler;
+	private final FrontEndCommunication frontEnd;
+	private final Broadcaster broadcaster;
+	private final JDialog d;
+	/* stuff for dialog box */
+	private final JToggleButton /*ctape,*/
+	cdisk; //save events to disk
+	private final JToggleButton defaultPath, specify;
+	private final JCheckBox clog; //create a log file
+	private final JTextField textSortInterval;
+	private final JButton bok;
+	private final JButton bapply;
+	private final JCheckBox checkLock;
+	private final JButton bbrowsef, bbrowseh, bbrowsed, bbrowsel;
+	private final JComboBox sortChoice;
+	private final JComboBox inStreamChooser, outStreamChooser;
+	private final JTextField textExpName,
+		textSortPath,
+		textPathHist,
+		textPathData;
+	private final JTextField textPathLog;
 
-	//browse ?
-	private String diskPathData;
-	private String tapePathData;
-	private String logFile;
-	private String separator;
-	private JComboBox sortChoice;
-	private File sortClassPath;
+	/* strings of data entered */
+	private String experimentName;
+	private String histDirectory, dataDirectory;
+	private String logDirectory;
+	//private String diskPathData;
+	//private String tapePathData;
+
+	private File sortDirectory, sortClassPath;
 	private Class sortClass;
+	/* 1/fraction of events to sort */
+	private int sortInterval;
 
-	//streams GUI
-	JComboBox inStreamChooser, outStreamChooser;
-
-	//sorting classes
-	SortDaemon sortDaemon;
-	NetDaemon netDaemon;
-	DiskDaemon diskDaemon;
-	TapeDaemon tapeDaemon;
-	StorageDaemon storageDaemon;
+	/* sorting classes */
+	private SortDaemon sortDaemon;
+	private NetDaemon netDaemon;
+	private DiskDaemon diskDaemon;
+	//private TapeDaemon tapeDaemon;
+	private StorageDaemon storageDaemon;
 	private SortRoutine sortRoutine;
 
-	//ring buffers
-	RingBuffer sortingRing;
-	RingBuffer storageRing;
-	//streams to read and write events
-	EventInputStream eventInputStream;
-	EventOutputStream eventOutputStream;
-
-	//tape or disk
-	private boolean tapeMode = false;
-
-	//default names
-	private String defaultName,
-		defaultSortRoutine,
-		defaultSortPath,
-		defaultEventInStream,
-		defaultEvents,
-		defaultSpectra;
-	private String defaultTape, defaultEventOutStream;
-	private String defaultLog;
+	/* streams to read and write events */
+	private EventInputStream eventInputStream;
+	private EventOutputStream eventOutputStream;
 
 	/**
 	 * Constructor
@@ -120,20 +93,24 @@ class SetupSortOn implements ActionListener, ItemListener {
 		FrontEndCommunication frontEnd,
 		JamConsole jamConsole,
 		Broadcaster b) {
-		defaultName = JamProperties.getPropString(JamProperties.EXP_NAME);
-		defaultSortRoutine =
+		final int fileTextColumns = 25;
+		final String defaultName =
+			JamProperties.getPropString(JamProperties.EXP_NAME);
+		final String defaultSortRoutine =
 			JamProperties.getPropString(JamProperties.SORT_ROUTINE);
-		defaultSortPath =
+		final String defaultSortPath =
 			JamProperties.getPropString(JamProperties.SORT_CLASSPATH);
-		defaultEventInStream =
+		final String defaultEventInStream =
 			JamProperties.getPropString(JamProperties.EVENT_INSTREAM);
-		defaultEventOutStream =
+		final String defaultEventOutStream =
 			JamProperties.getPropString(JamProperties.EVENT_OUTSTREAM);
-		defaultEvents =
+		final String defaultEvents =
 			JamProperties.getPropString(JamProperties.EVENT_OUTPATH);
-		defaultSpectra = JamProperties.getPropString(JamProperties.HIST_PATH);
-		defaultTape = JamProperties.getPropString(JamProperties.TAPE_DEV);
-		defaultLog = JamProperties.getPropString(JamProperties.LOG_PATH);
+		final String defaultSpectra =
+			JamProperties.getPropString(JamProperties.HIST_PATH);
+		//final String defaultTape = JamProperties.getPropString(JamProperties.TAPE_DEV);
+		final String defaultLog =
+			JamProperties.getPropString(JamProperties.LOG_PATH);
 		boolean useDefaultPath =
 			(defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
 		if (!useDefaultPath) {
@@ -146,8 +123,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		this.jamConsole = jamConsole;
 		this.msgHandler = jamConsole;
 		this.frontEnd = frontEnd;
-		broadcaster=b;
-		tapePathData = defaultTape;
+		broadcaster = b;
+		//tapePathData = defaultTape;
 		d = new JDialog(jamMain, "Setup Online ", false);
 		LayoutManager verticalGrid = new GridLayout(0, 1, 5, 5);
 		d.setForeground(Color.black);
@@ -159,16 +136,17 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//panel for experiment name
 		JPanel pn = new JPanel();
 		pn.setLayout(new BorderLayout());
-		dcp.add(pn,BorderLayout.NORTH);
+		dcp.add(pn, BorderLayout.NORTH);
 
 		JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
-		pn.add(ln,BorderLayout.WEST);
+		pn.add(ln, BorderLayout.WEST);
 
 		textExpName = new JTextField(defaultName);
-		textExpName.setToolTipText("Used to name data files. Only the first 20 characters get recorded in event file headers.");
+		textExpName.setToolTipText(
+			"Used to name data files. Only the first 20 characters get recorded in event file headers.");
 		textExpName.setColumns(20);
 		textExpName.setBackground(Color.white);
-		pn.add(textExpName,BorderLayout.CENTER);
+		pn.add(textExpName, BorderLayout.CENTER);
 
 		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		ButtonGroup pathType = new ButtonGroup();
@@ -202,7 +180,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		});
 		pradio.add(defaultPath);
 		pradio.add(specify);
-		pn.add(pradio,BorderLayout.SOUTH);
+		pn.add(pradio, BorderLayout.SOUTH);
 
 		JPanel pCenter = new JPanel(new BorderLayout());
 		dcp.add(pCenter, BorderLayout.CENTER);
@@ -223,7 +201,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				sortClassPath = getSortPath();
-				sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+				sortChoice.setModel(
+					new DefaultComboBoxModel(getSortClasses(sortClassPath)));
 				sortChoice.setSelectedIndex(0);
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
@@ -314,13 +293,14 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pPathArea.add(pPathButtons, BorderLayout.EAST);
 		pCenter.add(pPathArea, BorderLayout.SOUTH);
 
-		JLabel ltemp=new JLabel("HDF path", JLabel.RIGHT);
-		pPathLabels.add(ltemp);		
+		JLabel ltemp = new JLabel("HDF path", JLabel.RIGHT);
+		pPathLabels.add(ltemp);
 
 		textPathHist = new JTextField(defaultSpectra);
-		textPathHist.setColumns(FILE_TEXT_COLUMNS);
+		textPathHist.setColumns(fileTextColumns);
 		textPathHist.setBackground(Color.white);
-		textPathHist.setToolTipText("Path for storing HDF summary (spectra, gates, & scalers) files at the end of each run.");
+		textPathHist.setToolTipText(
+			"Path for storing HDF summary (spectra, gates, & scalers) files at the end of each run.");
 		pPathFields.add(textPathHist);
 
 		bbrowseh = new JButton("Browse");
@@ -328,25 +308,25 @@ class SetupSortOn implements ActionListener, ItemListener {
 		bbrowseh.setActionCommand("bhist");
 		bbrowseh.addActionListener(this);
 
-		ltemp=new JLabel("Event path", JLabel.RIGHT);
+		ltemp = new JLabel("Event path", JLabel.RIGHT);
 		pPathLabels.add(ltemp);
 
 		textPathData = new JTextField(defaultEvents);
-		textPathData.setColumns(FILE_TEXT_COLUMNS);
+		textPathData.setColumns(fileTextColumns);
 		textPathData.setBackground(Color.white);
 		textPathData.setToolTipText("Path to store event data in.");
 		pPathFields.add(textPathData);
-		
+
 		bbrowsed = new JButton("Browse");
 		pPathButtons.add(bbrowsed);
 		bbrowsed.setActionCommand("bdata");
 		bbrowsed.addActionListener(this);
 
-		ltemp=new JLabel("Log file path", JLabel.RIGHT);
+		ltemp = new JLabel("Log file path", JLabel.RIGHT);
 		pPathLabels.add(ltemp);
 
 		textPathLog = new JTextField(defaultLog);
-		textPathLog.setColumns(FILE_TEXT_COLUMNS);
+		textPathLog.setColumns(fileTextColumns);
 		textPathLog.setBackground(Color.white);
 		textPathLog.setToolTipText("Path to store the console log in.");
 		pPathFields.add(textPathLog);
@@ -358,10 +338,11 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 		JPanel pt = new JPanel();
 		pt.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		pPathArea.add(pt,BorderLayout.SOUTH);
+		pPathArea.add(pt, BorderLayout.SOUTH);
 
 		textSortInterval = new JTextField("1");
-		textSortInterval.setToolTipText("Sort every n'th buffer. 1 means sort all events.");
+		textSortInterval.setToolTipText(
+			"Sort every n'th buffer. 1 means sort all events.");
 		textSortInterval.setColumns(3);
 		textSortInterval.setBackground(Color.white);
 		pt.add(textSortInterval);
@@ -369,17 +350,17 @@ class SetupSortOn implements ActionListener, ItemListener {
 		JLabel lsi = new JLabel("Sort Sample", JLabel.LEFT);
 		pt.add(lsi);
 
-		ButtonGroup eventMode = new ButtonGroup();
+		/*ButtonGroup eventMode = new ButtonGroup();
 		ctape = new JRadioButton("Events to Tape", false);
 		ctape.setToolTipText("Send events to tape, not implemented.");
 		ctape.setEnabled(false);
 		eventMode.add(ctape);
 		ctape.addItemListener(this);
-		pt.add(ctape);
+		pt.add(ctape);*/
 
-		cdisk = new JRadioButton("Events to Disk", true);
+		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
-		eventMode.add(cdisk);
+		//eventMode.add(cdisk);
 		cdisk.addItemListener(this);
 		pt.add(cdisk);
 
@@ -390,8 +371,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//pt.add(clog);
 
 		// panel for buttons
-		JPanel pb = new JPanel(new GridLayout(1,4,5,5));
-		dcp.add(pb,BorderLayout.SOUTH);
+		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
+		dcp.add(pb, BorderLayout.SOUTH);
 
 		bok = new JButton("OK");
 		bok.setActionCommand("ok");
@@ -414,9 +395,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pb.add(checkLock);
 
 		d.pack();
-
-		separator = "/"; //default path separator
-		separator = System.getProperty("file.separator", separator);
 
 		//Recieves events for closing the dialog box and closes it.
 		d.addWindowListener(new WindowAdapter() {
@@ -492,11 +470,12 @@ class SetupSortOn implements ActionListener, ItemListener {
 				if (jamMain.canSetSortMode()) {
 					loadNames();
 					if (clog.isSelected()) { //if needed start logging to file
-						logFile =
-							JamProperties.getPropString(JamProperties.LOG_PATH)
-								+ File.separator
-								+ experimentName;
-						logFile = jamConsole.setLogFileName(logFile);
+						final String logFile =
+							jamConsole.setLogFileName(
+								JamProperties.getPropString(
+									JamProperties.LOG_PATH)
+									+ File.separator
+									+ experimentName);
 						jamConsole.messageOutln("Logging to file: " + logFile);
 						jamConsole.setLogFileOn(true);
 					} else {
@@ -557,22 +536,33 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 * @Author Ken Swartz
 	 */
 	public void itemStateChanged(ItemEvent ie) {
-		try {
-			if (ie.getItemSelectable() == checkLock) {
-				if (!checkLock.isSelected()) {
+		final ItemSelectable item = ie.getItemSelectable();
+		if (item == checkLock) {
+			if (!checkLock.isSelected()) {
+				try {
 					//kill daemons, clear data areas
 					resetAcq(true);
 					//unlock sort mode
 					lockMode(false);
 					jamConsole.closeLogFile();
+				} catch (Exception e) {
+					jamConsole.errorOutln(e.getMessage());
 				}
-			} else if (ie.getItemSelectable() == ctape) {
-				setTapeMode(ctape.isSelected());
 			}
-		} catch (JamException je) {
-			jamConsole.errorOutln(je.getMessage());
-		} catch (GlobalException ge) {
-			jamConsole.errorOutln(ge.getMessage());
+		} else if (item == cdisk) {
+			boolean store=cdisk.isSelected();
+			if (!store){
+				final boolean oops = JOptionPane.showConfirmDialog(d,
+				"De-selecting this checkbox means Jam won't store events to disk.\n"+
+				"Is this what you really want?", "Event Storage Disabled",
+				JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE)==
+				JOptionPane.NO_OPTION;
+				if (oops) {
+					cdisk.setSelected(true);
+					store=true;
+				}
+			}
+			setTapeMode(!store);
 		}
 	}
 
@@ -581,12 +571,13 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 * and the event and histogram directories.
 	 */
 	private void loadNames() throws JamException {
+		final String fileSeparator = System.getProperty("file.separator", "/");
 		experimentName = textExpName.getText().trim();
-		histDirectory = textPathHist.getText().trim() + separator;
-		dataDirectory = textPathData.getText().trim() + separator;
-		logDirectory = textPathLog.getText().trim() + separator;
-		if (!tapeMode) {
-			dataDirectory = dataDirectory + separator;
+		histDirectory = textPathHist.getText().trim() + fileSeparator;
+		dataDirectory = textPathData.getText().trim() + fileSeparator;
+		logDirectory = textPathLog.getText().trim() + fileSeparator;
+		if (!cdisk.isSelected()) {
+			dataDirectory = dataDirectory + fileSeparator;
 		}
 		try {
 			sortInterval = Integer.parseInt(textSortInterval.getText().trim());
@@ -642,10 +633,13 @@ class SetupSortOn implements ActionListener, ItemListener {
 					+ "'");
 		}
 		DataControl.setupAll();
-		//interprocess buffering between daemons
-		sortingRing = new RingBuffer();
-		if (STORE_EVENTS_LOCAL)
+		/* interprocess buffering between daemons */
+		final RingBuffer sortingRing = new RingBuffer();
+		final RingBuffer storageRing =
+			cdisk.isSelected() ? new RingBuffer() : null;
+		/*if (STORE_EVENTS_LOCAL) {
 			storageRing = new RingBuffer();
+		}*/
 		//typical setup of event streams
 		try { //create new event input stream class
 			eventInputStream =
@@ -695,15 +689,15 @@ class SetupSortOn implements ActionListener, ItemListener {
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
-		if (STORE_EVENTS_LOCAL) { // don't create storage daemon otherwise
-			if (tapeMode) {
+		if (cdisk.isSelected()) { // don't create storage daemon otherwise
+			/*if (!cdisk.isSelected()) {
 				tapeDaemon = new TapeDaemon(runControl, msgHandler);
 				tapeDaemon.setDevice(dataDirectory);
 				storageDaemon = tapeDaemon;
-			} else {
-				diskDaemon = new DiskDaemon(runControl, msgHandler);
-				storageDaemon = diskDaemon;
-			}
+			} else {*/
+			diskDaemon = new DiskDaemon(runControl, msgHandler);
+			storageDaemon = diskDaemon;
+			//}
 			storageDaemon.setupOn(eventInputStream, eventOutputStream);
 			storageDaemon.setRingBuffer(storageRing);
 		}
@@ -728,7 +722,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//tell status
 		displayCounters.setupOn(netDaemon, sortDaemon, storageDaemon);
 		//startup daemons
-		if (STORE_EVENTS_LOCAL){
+		if (cdisk.isSelected()) {
 			storageDaemon.start();
 		}
 		sortDaemon.start();
@@ -772,11 +766,11 @@ class SetupSortOn implements ActionListener, ItemListener {
 			netDaemon.setState(GoodThread.STOP);
 			netDaemon.closeNet();
 		}
-		if (tapeDaemon != null) {
+		/*if (tapeDaemon != null) {
 			tapeDaemon.setState(GoodThread.STOP);
-		}
-		if (killSort){
-			sortRoutine=null;
+		}*/
+		if (killSort) {
+			sortRoutine = null;
 		}
 		DataBase.getInstance().clearAllLists();
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
@@ -788,14 +782,17 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 * Author Dale Visser
 	 */
 	private void setTapeMode(boolean mode) {
-		tapeMode = mode;
-		if (mode) {
+		//tapeMode = mode;
+		/*if (mode) {
 			diskPathData = textPathData.getText();
-			textPathData.setText(tapePathData);
+			//textPathData.setText(tapePathData);
 		} else {
-			tapePathData = textPathData.getText();
+			//tapePathData = textPathData.getText();
 			textPathData.setText(diskPathData);
-		}
+		}*/
+		
+		textPathData.setEnabled(!mode);
+		this.bbrowsed.setEnabled(!mode);
 	}
 
 	/**
@@ -865,8 +862,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 */
 	private void lockMode(boolean lock) throws JamException {
 		if (lock) {
-			if (tapeMode) {
-				jamMain.setSortMode(JamMain.ONLINE_TAPE);
+			if (!cdisk.isSelected()) {
+				jamMain.setSortMode(JamMain.ONLINE_NODISK);
 			} else {
 				jamMain.setSortMode(JamMain.ONLINE_DISK);
 			}
@@ -895,7 +892,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			inStreamChooser.setEnabled(true);
 			outStreamChooser.setEnabled(true);
 			textPathHist.setEnabled(true);
-			textPathData.setEnabled(true);
+			//textPathData.setEnabled(true);
 			textPathLog.setEnabled(true);
 			specify.setEnabled(true);
 			defaultPath.setEnabled(true);
@@ -904,9 +901,10 @@ class SetupSortOn implements ActionListener, ItemListener {
 			bapply.setEnabled(true);
 			bbrowsef.setEnabled(specify.isSelected());
 			bbrowseh.setEnabled(true);
-			bbrowsed.setEnabled(true);
+			//bbrowsed.setEnabled(true);
 			bbrowsel.setEnabled(true);
 			sortChoice.setEnabled(true);
+			setTapeMode(!cdisk.isSelected());
 		}
 	}
 }
