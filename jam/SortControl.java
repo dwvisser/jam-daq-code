@@ -468,7 +468,8 @@ class SortControl implements Controller{
 		}
 	}
 
-	void addEventFile(File f){
+	int addEventFile(File f){
+		int numFiles=0;
 		if (f != null && f.exists()){
 			final ExtensionFileFilter ff =
 				new ExtensionFileFilter(
@@ -476,15 +477,18 @@ class SortControl implements Controller{
 					"Event Files (*.evn)");
 			if (f.isFile() && ff.accept(f)){
 				eventFileModel.addElement(f);
+				numFiles++;
 			}
 			if (f.isDirectory()){
 				File[] dirArray = f.listFiles();
 				for (int i = 0; i < dirArray.length; i++) {
 					if (ff.accept(dirArray[i]))
 						eventFileModel.addElement(dirArray[i]);
+						numFiles++;
 				}
 			}
 		}
+		return numFiles;
 	}
 
 	/**
@@ -552,7 +556,8 @@ class SortControl implements Controller{
 		}
 	}
 
-	void readList(File f) {
+	int readList(File f) {
+		int numFiles=0;
 		lastFile=f;
 		try {
 			BufferedReader br =
@@ -563,12 +568,14 @@ class SortControl implements Controller{
 				if (listItem != null) {
 					final File fEvn=new File(listItem);
 					eventFileModel.addElement(fEvn);
+					numFiles++;
 				}
 			} while (listItem != null);
 			br.close();
 		} catch (IOException ioe) {
 			msgHandler.errorOutln("Jam|Sort...: Unable to load list from file "+f);
 		}
+		return numFiles;
 	}
 
 	/**
