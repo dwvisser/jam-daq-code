@@ -37,7 +37,7 @@ import javax.swing.JOptionPane;
  */
 public class Display
 	extends JPanel
-	implements /*Displayer,*/ CommandListener, Observer {
+	implements CommandListener, Observer {
 
 	/**
 	 * Enumeration of the various preference types for displaying
@@ -466,7 +466,7 @@ public class Display
 				}
 				setPlot(plot2d);
 			}
-			currentPlot.setMarkingArea(false);
+			currentPlot.setSelectingArea(false);
 			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
 		} else { //null histogram lets be in plot1d
