@@ -7,7 +7,7 @@ import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.global.SortMode;
+import jam.global.Sorter;
 import jam.sort.stream.EventInputStatus;
 import jam.sort.stream.EventInputStream;
 
@@ -41,7 +41,7 @@ public class SortDaemon extends GoodThread {
 
 	private final MessageHandler msgHandler;
 
-	private SortRoutine sortRoutine;
+	private Sorter sorter;
 
 	private EventInputStream eventInputStream;
 
@@ -78,16 +78,12 @@ public class SortDaemon extends GoodThread {
 
 	/**
 	 * setup the sort deamon tell it the mode and stream
-	 * 
-	 * @param mode
-	 *            <code>ONLINE</code> or <code>OFFLINE</code>
 	 * @param eventInputStream
 	 *            the source of event data
 	 * @param eventSize
 	 *            number of parameters per event
 	 */
-	public void setup(SortMode mode, EventInputStream eventInputStream,
-			int eventSize) {
+	public void setup(EventInputStream eventInputStream, int eventSize) {
 		//this.mode = mode;
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);
@@ -101,11 +97,11 @@ public class SortDaemon extends GoodThread {
 	/**
 	 * Load the sorting class.
 	 * 
-	 * @param sortRoutine
+	 * @param newSorter
 	 *            an object capable of sorting event data
 	 */
-	public void setSortRoutine(SortRoutine sortRoutine) {
-		this.sortRoutine = sortRoutine;
+	public void setSorter(Sorter newSorter) {
+		sorter = newSorter;
 	}
 
 	/**
@@ -141,10 +137,12 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * set the state of the event output
+	 * Sets whether to write selected events to disk.
+	 * 
+	 * @param state whether writing of selected events to disk is enabled
 	 */
 	public void setWriteEnabled(boolean state) {
-		sortRoutine.setWriteEnabled(state);
+		sorter.setWriteEnabled(state);
 	}
 
 	/**
@@ -171,7 +169,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void run() {
 		try {
-			if (JamStatus.instance().getSortMode().isOnline()) {//which type of sort to do
+			if (JamStatus.instance().isOnline()) {//which type of sort to do
 				sortOnline();
 			} else {
 				sortOffline();
@@ -189,8 +187,8 @@ public class SortDaemon extends GoodThread {
 	 * @see jam.global.Beginner
 	 */
 	public synchronized void userBegin() {
-		if (sortRoutine instanceof Beginner) {
-			((Beginner) sortRoutine).begin();
+		if (sorter instanceof Beginner) {
+			((Beginner) sorter).begin();
 		}
 	}
 
@@ -201,8 +199,8 @@ public class SortDaemon extends GoodThread {
 	 * @see jam.global.Ender
 	 */
 	public synchronized void userEnd() {
-		if (sortRoutine instanceof Ender) {
-			((Ender) sortRoutine).end();
+		if (sorter instanceof Ender) {
+			((Ender) sorter).end();
 		}
 	}
 
@@ -240,7 +238,7 @@ public class SortDaemon extends GoodThread {
 					/* Sort only the sortInterval'th events. */
 					if (getCallSort()
 							&& getEventCount() % getSortInterval() == 0) {
-						sortRoutine.sort(eventData);
+						sorter.sort(eventData);
 						incrementSortedCount();
 					}
 					incrementEventCount();
@@ -328,7 +326,7 @@ public class SortDaemon extends GoodThread {
 									|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
 						if (!offlineSortingCanceled()) {
 							if (status == EventInputStatus.EVENT) {
-								sortRoutine.sort(eventData);
+								sorter.sort(eventData);
 								incrementEventCount();
 								incrementSortedCount();
 								/*
@@ -386,8 +384,10 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Are we caught up in the ring buffer. That is there are no unsorted
-	 * buffers in the ring buffer.
+	 * Returns whether we are caught up in the ring buffer.
+	 * 
+	 * @return <code>true</code> if there are no unsorted
+	 * buffers in the ring buffer
 	 */
 	public boolean caughtUp() {
 		return ringBuffer.isEmpty();
@@ -409,10 +409,20 @@ public class SortDaemon extends GoodThread {
 		return eventCount;
 	}
 
+	/**
+	 * Returns the number of events actually sorted.
+	 * 
+	 * @return number of events actually sorted
+	 */
 	public synchronized int getSortedCount() {
 		return eventSortedCount;
 	}
 
+	/**
+	 * Set the number of events actually sorted.
+	 * 
+	 * @param count new value
+	 */
 	public synchronized void setSortedCount(int count) {
 		eventSortedCount = count;
 	}
@@ -472,10 +482,6 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 	
-	private synchronized void resetSortInterval(){
-		sortInterval=1;
-	}
-
 	/**
 	 * Returns the sort sample interval.
 	 * 
