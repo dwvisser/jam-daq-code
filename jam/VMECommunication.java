@@ -36,7 +36,7 @@ import java.util.Observable;
  * @author   Ken Swartz and Dale Visser
  * @since       JDK1.1
  */
-class VMECommunication  extends GoodThread implements FrontEndCommunication {
+public class VMECommunication  extends GoodThread implements FrontEndCommunication {
 
     private static final int MAX_PACKET_SIZE=1024;
 	private static final int MAX_MESSAGE_SIZE=80;
@@ -63,7 +63,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param broadcaster class that distributes Jam-wide messages
      * @param console class that takes text input from the user
      */
-    VMECommunication(MessageHandler console) {
+    public VMECommunication(MessageHandler console) {
         super();
         this.console=console;
         active=false;
@@ -156,7 +156,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @throws JamException if there's a problem while trying to send 
      * the message
      */
-    public void VMEstart() {
+    public void startAcquisition() {
 		final String START="START";
         this.VMEsend(START);
     }
@@ -168,7 +168,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @throws JamException if there's a problem while trying to send 
      * the message
      */
-    public void VMEstop() {
+    public void stopAcquisition() {
 		final String STOPACQ="STOP";
         this.VMEsend(STOPACQ);
     }
