@@ -1,11 +1,14 @@
 package jam.io.hdf;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract class to represent a generic HDF data object.
@@ -217,6 +220,41 @@ public abstract class DataObject {
 		return match;
 	}
 	
+	/**
+	 * @return a subset of the given list of <code>DataObject</code>'s of
+	 * the specified type 
+	 * @param in the list to search
+	 * @param tagType the type to return
+	 */
+	static List ofType(Collection in, short tagType) {
+		
+		final Set ssin=new HashSet();
+		Iterator iter = in.iterator();
+		while(iter.hasNext()){
+			DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag())
+				ssin.add(dataObject);
+		}
+		return new ArrayList(ssin);
+	}
+
+	/**
+	 * @return a list of all <code>DataObject</code> of the
+	 * given type
+	 * @param tagType the type to return 
+	 */
+	public static List ofType(final short tagType) {
+		final List rval=new ArrayList();
+		List objectList = DataObject.getDataObjectList();
+		final Iterator iter = objectList.iterator();
+		while(iter.hasNext()){
+			DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag())
+				rval.add(dataObject);
+		}
+		return rval;
+		
+	}
 	
 	/**
 	 * 

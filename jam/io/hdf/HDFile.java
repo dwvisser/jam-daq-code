@@ -1,18 +1,11 @@
 package jam.io.hdf;
 
-import jam.data.Histogram;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
@@ -56,18 +49,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public HDFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
 		this.file = file;
-		//FIXME KBS remove
-		//addNumberTypes();
-		/*
-		if ("rw".equals(mode)) { //Saving a file
-			//writeMagicWord();
-			//addVersionNumber();
-		} else { //should be "r" ,i.e., opening a file
-			if (!checkMagicWord()){
-				throw new HDFException(file+" is not a valid HDF File!");
-			}
-		}
-		*/
 	}
 	
 	/**
@@ -84,13 +65,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
         writeAllObjects(pm);
 
 	}
-	
-
-	/**
-	 * Adds data element giving version of HDF libraries to use (4.1r2).
-	 */
-
-
 	/**
 	 * Looks at the internal index of data elements and sets the offset
 	 * fields of the <code>DataObject</code>'s. To be run when all data
@@ -312,56 +286,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		seek(mark);
 	}
 
-	/**
-	 * @return a subset of the given list of <code>DataObject</code>'s of
-	 * the specified type 
-	 * @param in the list to search
-	 * @param tagType the type to return
-	 */
-	List ofType(Collection in, short tagType) {
-		
-		final Set ssin=new HashSet();
-		Iterator iter = in.iterator();
-		while(iter.hasNext()){
-			DataObject dataObject=(DataObject)iter.next();
-			if (tagType == dataObject.getTag())
-				ssin.add(dataObject);
-		}
-		/* FIXME remove KBS
-		final Object temp=tagRefMap.get(new Short(tagType));
-		if (temp !=null){
-			ssin.addAll(in);
-			Map refMap=(Map)temp;
-			ssin.retainAll(refMap.values());
-		}
-		*/
-		return new ArrayList(ssin);
-	}
-
-	/**
-	 * @return a list of all <code>DataObject</code>s in this file of the
-	 * given type
-	 * @param tagType the type to return 
-	 */
-	public List ofType(final short tagType) {
-		final List rval=new ArrayList();
-		List objectList = DataObject.getDataObjectList();
-		final Iterator iter = objectList.iterator();
-		while(iter.hasNext()){
-			DataObject dataObject=(DataObject)iter.next();
-			if (tagType == dataObject.getTag())
-				rval.add(dataObject);
-		}
-		/*FIMXE KBS remove
-		final Object temp=tagRefMap.get(new Short(tagType));
-		if (temp != null){//the refmap exists
-			final Map refMap=(Map)temp;
-			rval.addAll(refMap.values());
-		}
-		*/
-		return rval;
-		
-	}
 
 	/**
 	 * Checks whether this file contains the HDF magic word 
@@ -383,57 +307,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void close() throws IOException{
 		super.close();
-		DataObject.clearAll();
 	}
 
-	/**
-	 * @return the existing valid SDD type for the histogram, 
-	 * creating a new one if necessary.
-	 * @param h that type is needed for
-	 */
-	ScientificDataDimension getSDD(Histogram h) {
-		byte type=NumberType.DOUBLE;
-		if (h.getType().isInteger()) {
-			type = NumberType.INT;
-		}
-		return getSDD(h,type);
-	}
-	
-	/**
-	 * Returns the existing valid SDD type for the histogram, 
-	 * creating a new one if necessary.  DOUBLE type
-	 * is explicitly requested, for error bars.
-	 *
-	 * @param h which type is needed for
-	 * @param numtype the number HDF uses to indicate the type
-	 * @return the SDD object representing the histogram size and number 
-	 * type
-	 */
-	ScientificDataDimension getSDD(Histogram h, byte numtype) {
-		ScientificDataDimension rval=null;//return value
-		final int rank = h.getDimensionality();
-		final int sizeX = h.getSizeX();
-		int sizeY=0;
-		if (rank == 2) {//otherwise rank == 1
-			sizeY = h.getSizeY();
-		} 
-		final Iterator temp = ofType(DataObject.DFTAG_SDD).iterator();
-		while (temp.hasNext()) {
-			final ScientificDataDimension sdd = (ScientificDataDimension) temp.next();
-			if (sdd.getType() == numtype && sdd.getSizeX() == sizeX) {
-				if ((rank == 1 && rank == sdd.getRank())
-					|| (rank == 2
-						&& rank == sdd.getRank()
-						&& sdd.getSizeY() == sizeY)) {
-					rval = sdd;
-					break;//for quicker execution
-				}
-			}
-		}
-		if (rval==null){
-			rval = new ScientificDataDimension(h);
-		}
-		return rval;
-	}
-	
 }

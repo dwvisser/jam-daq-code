@@ -275,15 +275,6 @@ public class HDFIO implements DataIO, JamHDFFields {
              */
             file.delete();
         } 
-
-        try {
-            synchronized (this) {
-            	out = new HDFile(file, "rw");
-            }
-        } catch (FileNotFoundException e) {
-        	msgHandler.errorOutln("Opening file: "
-                        + file.getName());
-        } 
         
     	DataObject.clearAll();        
     	
@@ -336,13 +327,18 @@ public class HDFIO implements DataIO, JamHDFFields {
                 + file.getName() + "': " + e.toString());
         }   
         msgHandler.messageOut("", MessageHandler.END);
-        
-        try {                
-            
+
+        try {
+            synchronized (this) {
+            	out = new HDFile(file, "rw");
+            }            
         	out.writeFile(pm);
         	            
             setProgressNote(pm, "Closing File");
             out.close();
+        } catch (FileNotFoundException e) {
+        	msgHandler.errorOutln("Opening file: "
+                        + file.getName());             
         } catch (HDFException e) {
             msgHandler.errorOutln("Exception writing to file '"
                     + file.getName() + "': " + e.toString());
@@ -372,6 +368,11 @@ public class HDFIO implements DataIO, JamHDFFields {
                         + file.getName(), "Save " + file.getName(),
                         JOptionPane.YES_NO_OPTION)
                 : true;
+        if (writeConfirm) {
+            /*  we've confirmed overwrite with the user. */
+            file.delete();
+        } 
+
         return writeConfirm;                
     }
 
@@ -521,6 +522,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             msgHandler.errorOutln(except.toString());
             outF = false;
         }
+        DataObject.clearAll();
         System.gc();
         pm.close();
         return outF;
@@ -551,6 +553,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	    } catch (IOException except) {
 	        msgHandler.errorOutln(except.toString());
 	    }		
+	    DataObject.clearAll();
 		return histAttributes;   	
     }
     
@@ -566,21 +569,21 @@ public class HDFIO implements DataIO, JamHDFFields {
 		/* I check ndgErr==null to determine if error bars exist */
 		NumericalDataGroup ndgErr = null;
 		/* get list of all VG's in file */
-		final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
+		final java.util.List groups = DataObject.ofType(DataObject.DFTAG_VG);
 		final VirtualGroup hists = VirtualGroup.ofName(groups,
 				JamHDFFields.HIST_SECTION_NAME);
 		/* only the "histograms" VG (only one element) */
 		ScientificData sdErr = null;
 		if (hists != null) {
 			/* get list of all DIL's in file */
-			final java.util.List labels = in.ofType(DataObject.DFTAG_DIL);
+			final java.util.List labels = DataObject.ofType(DataObject.DFTAG_DIL);
 			/* get list of all DIA's in file */
-			final java.util.List annotations = in
+			final java.util.List annotations = DataObject
 					.ofType(DataObject.DFTAG_DIA);
 			final Iterator temp = hists.getObjects().iterator();
 			while (temp.hasNext()) {
 				final VirtualGroup current = (VirtualGroup) (temp.next());
-				final java.util.List tempVec = in.ofType(current
+				final java.util.List tempVec = DataObject.ofType(current
 						.getObjects(), DataObject.DFTAG_NDG);
 				final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
 						.size()];
@@ -601,10 +604,10 @@ public class HDFIO implements DataIO, JamHDFFields {
 					throw new HDFException("Invalid number of data groups ("
 							+ numbers.length + ") in NDG.");
 				}
-				final ScientificData sd = (ScientificData) (in.ofType(ndg
+				final ScientificData sd = (ScientificData) (DataObject.ofType(ndg
 						.getObjects(), DataObject.DFTAG_SD).get(0));
-				final ScientificDataDimension sdd = (ScientificDataDimension) (in
-						.ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
+				final ScientificDataDimension sdd = (ScientificDataDimension) (
+						DataObject.ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
 				final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
 						.getTag(), ndg.getRef());
 				final int number = Integer.parseInt(numLabel.getLabel());
@@ -621,7 +624,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				final String name = templabel.getLabel();
 				final String title = tempnote.getNote();
 				if (ndgErr != null) {
-					sdErr = (ScientificData) (in.ofType(ndgErr
+					sdErr = (ScientificData) (DataObject.ofType(ndgErr
 							.getObjects(), DataObject.DFTAG_SD).get(0));
 					sdErr.setRank(histDim);
 					sdErr.setNumberType(NumberType.DOUBLE);
@@ -675,7 +678,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * hard-coded into the class <code>NumberType</code>.  This method
 	 * creates the <code>NumberType</code> object in the file
 	 * that gets referred to repeatedly by the other data elements.
-	 *
+	 * LibVersion Adds data element giving version of HDF libraries to use (4.1r2).
 	 * @see jam.io.hdf.NumberType
 	 */
 	
@@ -755,7 +758,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         /* make the NDG label the histogram number */
         temp.addDataObject(ndg);
         /* add to specific histogram vGroup (other info maybe later) */
-        final ScientificDataDimension sdd = out.getSDD(h);
+        final ScientificDataDimension sdd = getSDD(h);
         ndg.addDataObject(sdd); //use new SDD
         temp.addDataObject(sdd); //use new SDD
         final Histogram.Type type = h.getType();
@@ -766,7 +769,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 temp.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = out.getSDD(h,
+                ScientificDataDimension sddErr = getSDD(h,
                         NumberType.DOUBLE);
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
@@ -819,7 +822,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             throws HDFException {
         int numHists=0;
         /* get list of all VG's in file */
-        final List groups = in.ofType(DataObject.DFTAG_VG);
+        final List groups = DataObject.ofType(DataObject.DFTAG_VG);
         final VirtualGroup hists = VirtualGroup.ofName(groups,
                 HIST_SECTION_NAME);
         /* only the "histograms" VG (only one element) */
@@ -828,9 +831,9 @@ public class HDFIO implements DataIO, JamHDFFields {
         	numHists =hists.getObjects().size();
         	
             /* get list of all DIL's in file */
-            final List labels = in.ofType(DataObject.DFTAG_DIL);
+            final List labels = DataObject.ofType(DataObject.DFTAG_DIL);
             /* get list of all DIA's in file */
-            final List annotations = in.ofType(DataObject.DFTAG_DIA);
+            final List annotations = DataObject.ofType(DataObject.DFTAG_DIA);
             //Histogram iterator
             final Iterator temp = hists.getObjects().iterator();            
             while (temp.hasNext()) {
@@ -842,7 +845,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 /* only the "histograms" VG (only one element) */
                 ScientificData sdErr = null;        
             	
-                final List tempVec = in.ofType(current.getObjects(),
+                final List tempVec = DataObject.ofType(current.getObjects(),
                         DataObject.DFTAG_NDG);
                 final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
                         .size()];
@@ -863,10 +866,10 @@ public class HDFIO implements DataIO, JamHDFFields {
                             "Invalid number of data groups (" + numbers.length
                                     + ") in NDG.");
                 }
-                final ScientificData sd = (ScientificData) (in.ofType(ndg
+                final ScientificData sd = (ScientificData) (DataObject.ofType(ndg
                         .getObjects(), DataObject.DFTAG_SD).get(0));
-                final ScientificDataDimension sdd = (ScientificDataDimension) (in
-                        .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
+                final ScientificDataDimension sdd = (ScientificDataDimension) (
+                		DataObject.ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
                 final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
                         .getTag(), ndg.getRef());
                 final int number = Integer.parseInt(numLabel.getLabel());
@@ -886,7 +889,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 final String name = templabel.getLabel();
                 final String title = tempnote.getNote();
                 if (ndgErr != null) {
-                    sdErr = (ScientificData) (in.ofType(ndgErr.getObjects(),
+                    sdErr = (ScientificData) (DataObject.ofType(ndgErr.getObjects(),
                             DataObject.DFTAG_SD).get(0));
                     
                     sdErr.setRank(histDim);
@@ -1052,7 +1055,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         }
         data.refreshBytes();
         /* add Histogram links... */
-        final VirtualGroup hist = VirtualGroup.ofName(out
+        final VirtualGroup hist = VirtualGroup.ofName(DataObject
                 .ofType(DataObject.DFTAG_VG), g.getHistogram().getName());
         /* add name as note to vg */
         new DataIDAnnotation(vg, g.getHistogram().getName());
@@ -1073,17 +1076,17 @@ public class HDFIO implements DataIO, JamHDFFields {
         final StringUtilities su = StringUtilities.instance();
         Gate g = null;
         /* get list of all VG's in file */
-        final List groups = in.ofType(DataObject.DFTAG_VG);
+        final List groups = DataObject.ofType(DataObject.DFTAG_VG);
         /* get only the "gates" VG (only one element) */
         final VirtualGroup gates = VirtualGroup.ofName(groups,
                 GATE_SECTION_NAME);
-        final List annotations = in.ofType(DataObject.DFTAG_DIA);
+        final List annotations = DataObject.ofType(DataObject.DFTAG_DIA);
         if (gates != null) {
         	numGates=gates.getObjects().size();
             final Iterator temp = gates.getObjects().iterator();
             while (temp.hasNext()) {
                 final VirtualGroup currVG = (VirtualGroup) (temp.next());
-                final VdataDescription VH = (VdataDescription) (in.ofType(
+                final VdataDescription VH = (VdataDescription) (DataObject.ofType(
                         currVG.getObjects(), DataObject.DFTAG_VH).get(0));
                 if (VH != null) {
                     final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS,
@@ -1178,7 +1181,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private int getScalers(FileOpenMode mode) {
     	int numScalers =0;
-        final VdataDescription VH = VdataDescription.ofName(in
+        final VdataDescription VH = VdataDescription.ofName(DataObject
                 .ofType(DataObject.DFTAG_VH), SCALER_SECTION_NAME);
         /* only the "scalers" VH (only one element) in the file */
         if (VH != null) {
@@ -1260,7 +1263,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private int  getParameters(FileOpenMode mode) {
     	int numParameters =0;
-        final VdataDescription VH = VdataDescription.ofName(in
+        final VdataDescription VH = VdataDescription.ofName(DataObject
                 .ofType(DataObject.DFTAG_VH), PARAMETER_SECTION_NAME);
         /* only the "parameters" VH (only one element) in the file */
         if (VH != null) {
@@ -1282,6 +1285,56 @@ public class HDFIO implements DataIO, JamHDFFields {
         return numParameters;        
     }
 
+	/** FIXME KBS should be move to hdfio
+	 * @return the existing valid SDD type for the histogram, 
+	 * creating a new one if necessary.
+	 * @param h that type is needed for
+	 */
+	ScientificDataDimension getSDD(Histogram h) {
+		byte type=NumberType.DOUBLE;
+		if (h.getType().isInteger()) {
+			type = NumberType.INT;
+		}
+		return getSDD(h,type);
+	}
+	
+	/**FIXME KBS should be move to hdfio
+	 * Returns the existing valid SDD type for the histogram, 
+	 * creating a new one if necessary.  DOUBLE type
+	 * is explicitly requested, for error bars.
+	 *
+	 * @param h which type is needed for
+	 * @param numtype the number HDF uses to indicate the type
+	 * @return the SDD object representing the histogram size and number 
+	 * type
+	 */
+	ScientificDataDimension getSDD(Histogram h, byte numtype) {
+		ScientificDataDimension rval=null;//return value
+		final int rank = h.getDimensionality();
+		final int sizeX = h.getSizeX();
+		int sizeY=0;
+		if (rank == 2) {//otherwise rank == 1
+			sizeY = h.getSizeY();
+		} 
+		final Iterator temp = DataObject.ofType(DataObject.DFTAG_SDD).iterator();
+		while (temp.hasNext()) {
+			final ScientificDataDimension sdd = (ScientificDataDimension) temp.next();
+			if (sdd.getType() == numtype && sdd.getSizeX() == sizeX) {
+				if ((rank == 1 && rank == sdd.getRank())
+					|| (rank == 2
+						&& rank == sdd.getRank()
+						&& sdd.getSizeY() == sizeY)) {
+					rval = sdd;
+					break;//for quicker execution
+				}
+			}
+		}
+		if (rval==null){
+			rval = new ScientificDataDimension(h);
+		}
+		return rval;
+	}
+    
     /**
      * Determines whether a <code>List</code> passed to it
      * <ol>
