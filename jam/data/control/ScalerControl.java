@@ -35,7 +35,6 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
     private JCheckBox checkDisabled2;
     private JButton bzero2;
 
-    private int numberScalers;
     private boolean sortScalers;	    //have scalers been added by sort
 
     /** Creates the dialog box for reading and zeroing scalers.
