@@ -205,25 +205,23 @@ class SetupSortOff  implements ItemListener {
         pChooserLabels.add(new JLabel("Sort Routine",JLabel.RIGHT),
         BorderLayout.WEST);
         final Vector v=getSortClasses(sortDirectory);
-        sortChoice=new JComboBox(v);
-        sortChoice.setToolTipText("Select a class to be your sort routine.");
-        sortChoice.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				sortClass=(Class)sortChoice.getSelectedItem();
+		sortChoice = new JComboBox();
+		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
+		sortChoice.setToolTipText("Select a class to be your sort routine.");
+		sortChoice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				sortClass = (Class) sortChoice.getSelectedItem();
 			}
-        });
-        Iterator it=v.iterator();
-        boolean notDone=it.hasNext();
-        while (notDone) {
-        	final Class cl=(Class)it.next();
-        	final String name=cl.getName();
-        	final boolean match = name.equals(defaultSortRoutine);
-        	if (match){
-				sortChoice.setSelectedItem(cl);
-        	} 
-        	notDone = (!match) && it.hasNext();
-        }
-		setChooserDefault(useDefaultPath);
+		});
+		Iterator it = sortClassList.iterator();
+		while (it.hasNext()) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			if (name.equals(defaultSortRoutine)) {
+				sortChoice.setSelectedItem(c);
+				break;
+			}
+		}
         pChoosers.add(sortChoice);
         pChooserLabels.add(new JLabel("Event input stream",JLabel.RIGHT));
         Set lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",
@@ -232,15 +230,16 @@ class SetupSortOff  implements ItemListener {
         inStreamChooser=new JComboBox(new Vector(lhs));
         inStreamChooser.setToolTipText("Select your input event data format.");
 		it=lhs.iterator();
-		notDone=it.hasNext();
-		while (notDone) {
+		//notDone=it.hasNext();
+		while (it.hasNext()) {
 			final Class cl=(Class)it.next();
 			final String name=cl.getName();
 			final boolean match = name.equals(defaultEventInStream);
 			if (match){
 				inStreamChooser.setSelectedItem(cl);
+				break;
 			} 
-			notDone = (!match) && it.hasNext();
+			//notDone = (!match) && it.hasNext();
 		}
         pChoosers.add(inStreamChooser);
 
@@ -252,15 +251,16 @@ class SetupSortOff  implements ItemListener {
 		outStreamChooser=new JComboBox(new Vector(lhs));
 		outStreamChooser.setToolTipText("Select your output event format.");
 		it=lhs.iterator();
-		notDone=it.hasNext();
-		while (notDone) {
+		//notDone=it.hasNext();
+		while (it.hasNext()) {
 			final Class cl=(Class)it.next();
 			final String name=cl.getName();
 			final boolean match = name.equals(defaultEventOutStream);
 			if (match){
 				outStreamChooser.setSelectedItem(cl);
+				break;
 			} 
-			notDone = (!match) && it.hasNext();
+			//notDone = (!match) && it.hasNext();
 		}
 		pChoosers.add(outStreamChooser);
         //final JPanel pselect=new JPanel();
@@ -330,7 +330,7 @@ class SetupSortOff  implements ItemListener {
                 d.dispose();
             }
         } );
-		sortControl.setDevice(SortControl.DISK);
+		//sortControl.setDevice(SortControl.DISK);
         d.pack();
     }
 
@@ -363,20 +363,18 @@ class SetupSortOff  implements ItemListener {
         }
     }
     
-    private void setChooserDefault(boolean isDefault){
-    	if (isDefault){
-    		final String package1="help";
-    		final String package2="sort";
-    		final Set set=new LinkedHashSet();
-    		set.addAll(RTSI.find(package1,SortRoutine.class,true));
-    		set.addAll(RTSI.find(package2,SortRoutine.class,true));
-    		final Vector v=new Vector();
-    		v.addAll(set);
-    		sortChoice.setModel(new DefaultComboBoxModel(v));
-    	} else {
-			sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
-    	}
-    }
+	private java.util.List setChooserDefault(boolean isDefault) {
+		final Vector v=isDefault ? new Vector() : 
+		(Vector)getSortClasses(sortClassPath);
+		if (isDefault) {
+			Set set = new LinkedHashSet();
+			set.addAll(RTSI.find("help", SortRoutine.class, true));
+			set.addAll(RTSI.find("sort", SortRoutine.class, true));
+			v.addAll(set);
+		} 
+		sortChoice.setModel(new DefaultComboBoxModel(v));
+		return v;
+	}
 
     /**
      * Loads the names of objects entered in the dialog box into 
@@ -503,7 +501,7 @@ class SetupSortOff  implements ItemListener {
             //storageDaemon=diskDaemon;
         //}
         /* tell run control about all, disk always to device */
-        sortControl.setup(this, sortDaemon, storageDaemon, 
+        sortControl.setup(sortDaemon, storageDaemon, 
         diskDaemon, deviceName);
         /* tell status to setup */
         displayCounters.setupOff(sortDaemon, storageDaemon);
