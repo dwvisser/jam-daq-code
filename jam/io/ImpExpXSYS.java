@@ -226,12 +226,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 							buffer,
 							P_SCALER_TITLES + L_SCALER_TITLES * i,
 							L_SCALER_TITLES);
-					try {
-						new Scaler(scalerTitles[i], i);
-					} catch (DataException de) {
-						throw new ImpExpException(
-							"Creating scalers  Exception " + de.getMessage());
-					}
+					new Scaler(scalerTitles[i], i);
 				}
 			}
 			firstHeader = false;
