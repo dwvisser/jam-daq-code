@@ -203,7 +203,11 @@ public class RTSI {
 					}
 				}
 			} else {
-				rval.addAll(findClassNamesFromJarURL(url, tosubclass));
+				rval.addAll(
+					findClassNamesFromJarURL(
+						url,
+						tosubclass,
+						name.substring(1)));
 			}
 		}
 		return rval;
@@ -234,7 +238,10 @@ public class RTSI {
 		}
 	}
 
-	private static Set findClassNamesFromJarURL(URL url, Class tosubclass) {
+	private static Set findClassNamesFromJarURL(
+		URL url,
+		Class tosubclass,
+		String starts) {
 		JarURLConnection conn = null;
 		JarFile jfile = null;
 		final SortedSet rval = new TreeSet();
@@ -251,18 +258,19 @@ public class RTSI {
 		}
 		if (success) {
 			rval.addAll(
-				findClassNamesFromJarConnection(conn, jfile, tosubclass));
+				findClassNamesFromJarConnection(
+					jfile.entries(),
+					tosubclass,
+					starts));
 		}
 		return rval;
 	}
 
 	private static Set findClassNamesFromJarConnection(
-		JarURLConnection conn,
-		JarFile jfile,
-		Class tosubclass) {
+		Enumeration e,
+		Class tosubclass,
+		String starts) {
 		final SortedSet rval = new TreeSet();
-		final String starts = conn.getEntryName();
-		final Enumeration e = jfile.entries();
 		while (e.hasMoreElements()) {
 			final ZipEntry entry = (ZipEntry) e.nextElement();
 			final String classname = jarEntryToClassname(entry, starts);
@@ -276,14 +284,9 @@ public class RTSI {
 	private static String jarEntryToClassname(ZipEntry entry, String starts) {
 		final String entryname = entry.getName();
 		String classname = null;
-		if (entryname.startsWith(starts)
-			&& (entryname.lastIndexOf('/') <= starts.length())
-			&& entryname.endsWith(classext)) {
+		if (entryname.startsWith(starts) && entryname.endsWith(classext)) {
 			classname =
 				entryname.substring(0, entryname.length() - classext.length());
-			if (classname.startsWith(slash)) {
-				classname = classname.substring(1);
-			}
 			classname = classname.replace('/', '.');
 		}
 		return classname;
