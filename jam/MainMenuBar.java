@@ -187,7 +187,7 @@ final class MainMenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu getScalerMenu() {
-		final JMenu scalers = new JMenu("Scalers");
+		final JMenu scalers = new JMenu("Scaler");
 		menubar.add(scalers);
 		scalers.add(getMenuItem(DISPLAY_SCALERS));
 		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
