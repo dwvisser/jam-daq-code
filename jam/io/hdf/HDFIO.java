@@ -402,26 +402,22 @@ public class HDFIO implements DataIO,JamHDFFields {
                 }
                 break;
                 case Histogram.ONE_DIM_DOUBLE:  sd = new ScientificData(out,(double [])h.getCounts());
-                //sdl = new ScientificDataLabel(out,h.getLabelX()+"\n"+h.getLabelY());
                 if (h.errorsSet()) {
                     ndgErr=new NumericalDataGroup(out);
                     new DataIDLabel(ndgErr,ERROR_LABEL);
                     temp.addDataObject(ndgErr);
                     sddErr=sdd;//explicitly floating point
                     ndgErr.addDataObject(sddErr);
-                    //temp.addDataObject(sddErr); no need to add, already added
                     sdErr = new ScientificData(out,h.getErrors());
                     ndgErr.addDataObject(sdErr);
                     temp.addDataObject(sdErr);
                 }
                 break;
                 case Histogram.TWO_DIM_INT:      sd = new ScientificData(out, (int [][])h.getCounts());
-                //sdl = new ScientificDataLabel(out,h.getLabelX()+"\0"+h.getLabelY());
                 break;
                 case Histogram.TWO_DIM_DOUBLE:  sd = new ScientificData(out, (double [][])h.getCounts());
-                //sdl = new ScientificDataLabel(out,h.getLabelX()+"\0"+h.getLabelY());
                 break;
-                default :          throw new DataException("HDFIO encountered a Histogram of unknown type.");
+                default :          throw new IllegalArgumentException("HDFIO encountered a Histogram of unknown type.");
             }
             ndg.addDataObject(sd);
             temp.addDataObject(sd);
@@ -851,16 +847,10 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @throws HDFException if an error occurs reading the parameters
      */
     private void getParameters(int mode) throws HDFException{
-        DataParameter p;
- 
         final VdataDescription VH=VdataDescription.ofName(
         in.ofType(DataObject.DFTAG_VH), PARAMETER_SECTION_NAME);
         /* only the "parameters" VH (only one element) in the file */
-        try{
             if (VH != null) {
-                /*if (mode==OPEN) {
-                	DataParameter.clearList();
-                }*/
                 /* Get corresponding VS for this VH */
                 final Vdata VS=(Vdata)(in.getObject(
                 DataObject.DFTAG_VS,VH.getRef()));
@@ -869,11 +859,9 @@ public class HDFIO implements DataIO,JamHDFFields {
                 MessageHandler.CONTINUE);
                 for (int i=0;i<numParameters;i++){
                     final String pname = VS.getString(i,0);
-                    if (mode==OPEN) {
-                        p = new DataParameter(pname);
-                    } else {//mode==RELOAD
-                        p = DataParameter.getParameter(pname);
-                    }
+                    /* make if OPEN, retrieve if RELOAD */
+                    final DataParameter p = mode==OPEN ? 
+					new DataParameter(pname) : DataParameter.getParameter(pname);
                     if (p != null){
                         p.setValue(VS.getFloat(i,1).floatValue());
                         msgHandler.messageOut(". ",MessageHandler.CONTINUE);
@@ -884,10 +872,6 @@ public class HDFIO implements DataIO,JamHDFFields {
             } else {
 				msgHandler.messageOut("(no parameters)",MessageHandler.CONTINUE);
             }
-        } catch (DataException e) {
-            throw new HDFException ("Problem creating Parameters: "+
-            e.getMessage());
-        }
     }
 
     /**
