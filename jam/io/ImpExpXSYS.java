@@ -344,21 +344,16 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	/**
 	 * calibrate a historam
 	 */
-	private void calibHist(int[] calibCoef, Histogram hist)
-		throws DataException {
-
-		CalibrationFunction calibFunc;
-		double[] calibDble = new double[3];
-
+	private void calibHist(int[] calibCoef, Histogram hist) {
+		final double[] calibDble = new double[3];
 		calibDble[0] = calibCoef[0] * 0.0001;
 		calibDble[1] = calibCoef[1] * 0.000001;
 		calibDble[2] = calibCoef[2] * 0.00000001;
-
-		calibFunc = new PolynomialFunction(3);
+		final CalibrationFunction calibFunc = new PolynomialFunction(3);
 		calibFunc.setCoeff(calibDble);
 		hist.setCalibration(calibFunc);
-
 	}
+	
 	/**
 	 * Converts an array interger from little endian to big endian
 	 * little endian byte order 4321 big endian byte order 1234
