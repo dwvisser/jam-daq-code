@@ -323,8 +323,13 @@ public class JamMain extends JFrame {
 	 * @param args not used currently
 	 */
 	public static void main(String args[]) {
+		final String linux="Linux";
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			if (linux.equals(System.getProperty("os.name"))){
+				UIManager.setLookAndFeel(new com.incors.plaf.kunststoff.KunststoffLookAndFeel());
+			} else {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
 		} catch (Exception e) {
 			final String title="Jam--error setting GUI appearance";
 			JOptionPane.showMessageDialog(null,e.getMessage(),title,
