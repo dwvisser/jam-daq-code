@@ -1,7 +1,10 @@
 package jam.commands;
 
 import jam.global.CommandListenerException;
+import jam.global.JamProperties;
 import jam.global.MessageHandler;
+
+import java.awt.Event;
 
 import javax.swing.Action;
 
@@ -34,5 +37,9 @@ public interface Commandable extends Action {
 	 * 
 	 * @param cmdParamTokens command string parameters
 	 */
-	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;	
+	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;
+	
+	int CTRL_MASK =
+		JamProperties.isMacOSX() ? Event.META_MASK : Event.CTRL_MASK;
+		
 }

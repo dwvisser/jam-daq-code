@@ -6,8 +6,12 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
+import java.awt.Event;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.KeyStroke;
 /**
  *  Reload data from a hdf file
  * 
@@ -18,6 +22,9 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 	
 	ReloadHDFCmd(){
 		putValue(NAME,"Reload\u2026");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		KeyEvent.VK_O,
+		CTRL_MASK | Event.SHIFT_MASK));
 	}
 
 	/* (non-Javadoc)

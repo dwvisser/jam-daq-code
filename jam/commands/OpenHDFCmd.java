@@ -6,9 +6,12 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.KeyStroke;
 
 /**
  * Open a hdf file
@@ -20,6 +23,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	
 	OpenHDFCmd(){
 		putValue(NAME,"Open\u2026");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_O, CTRL_MASK));
 	}
 
 	/* 

@@ -4,11 +4,13 @@ import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 /**
  *  Command for file menu new also clears
@@ -21,6 +23,8 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	FileNewClearCmd(){
 		super();
 		putValue(NAME,"Clear data\u2026");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_N, 
+		CTRL_MASK));
 		enable();
 	}
 

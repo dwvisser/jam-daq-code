@@ -5,8 +5,11 @@ import jam.global.ComponentPrintable;
 import jam.global.MessageHandler;
 import jam.plot.Display;
 
+import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+
+import javax.swing.KeyStroke;
 
 /**
  * Command for Page Setup 
@@ -21,6 +24,8 @@ final class Print extends AbstractPrintingCommand {
 	Print(){
 		super();
 		putValue(NAME,"Print\u2026");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_P, 
+		CTRL_MASK));
 	}
 
 	/* (non-Javadoc)

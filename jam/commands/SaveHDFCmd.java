@@ -5,12 +5,14 @@ import jam.global.CommandListenerException;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 /**
  * Save to a hdf file
@@ -22,6 +24,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	
 	SaveHDFCmd(){
 		putValue(NAME,"Save");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
+		KeyEvent.VK_S,
+		CTRL_MASK | KeyEvent.SHIFT_MASK));
 		enable();//depending on sort mode
 	}
 

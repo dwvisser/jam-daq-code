@@ -3,7 +3,10 @@ package jam.commands;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
+
+import javax.swing.KeyStroke;
 
 /**
  * Save as hdf
@@ -15,6 +18,7 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	
 	SaveAsHDFCmd(){
 		putValue(NAME,"Save as\u2026");
+		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK));
 	}
 
 	/**

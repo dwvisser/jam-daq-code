@@ -1,6 +1,9 @@
 package jam.commands;
-import javax.swing.JOptionPane;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 /**
  * Show the histogram dialog
  * 
@@ -12,6 +15,8 @@ final class ShowDialogExitCmd extends AbstractCommand{
 	protected ShowDialogExitCmd(){
 		super();
 		putValue(NAME,"Exit\u2026");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, 
+		CTRL_MASK));
 	}		
 	
 	/**
