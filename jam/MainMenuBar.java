@@ -139,6 +139,7 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		}
 	}
 
+/* Remove KBS
 	class OpenHDF extends AbstractAction {	
 		OpenHDF(){
 			super("Open(hdf)...");
@@ -154,7 +155,7 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 			}
 		}
 	}
-
+*/
 	class ReloadHDF extends AbstractAction {	
 		private final ScalerControl scalerControl;
 		
@@ -274,6 +275,8 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 	final private JamMain jamMain;
 	final private MessageHandler console;
 	final private JamCommand jamCommand;
+	
+	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");	
 	final private JMenuItem histogramNew = new JMenuItem("New...");
 	final private JMenuItem zeroHistogram = new JMenuItem("Zero...");
 	final private JMenu calHist = new JMenu("Calibrate");
@@ -281,7 +284,7 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 	final private JMenuItem manipHistogram = new JMenuItem("Combine...");
 	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
 	final private SaveHDF saveHDF;
-	final private OpenHDF openhdf;
+	//Remove KBS final private OpenHDF openhdf;
 	final private ReloadHDF reloadhdf;
 	final private AddHDF addHDF=new AddHDF();
 	final private HDFIO hdfio;
@@ -345,7 +348,6 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		synchronized (this) {
 			newClear = new JMenuItem("New");
 			
-			openhdf = new OpenHDF();
 			reloadhdf = new ReloadHDF();
 			saveHDF = new SaveHDF();
 			impHist = new JMenu("Import");
@@ -359,7 +361,8 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		newClear.addActionListener(jamCommand);
 		file.add(newClear);
 		
-		JMenuItem openhdfcmd = new JMenuItem("openhdf");
+		JMenuItem openhdfcmd = new JMenuItem("Open (hdf)...");
+		openhdfcmd.setActionCommand("openhdf");
 		openhdfcmd.addActionListener(jamCommand);
 		openhdfcmd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
 		file.add(openhdfcmd);
