@@ -204,7 +204,7 @@ class SetupSortOff  implements ItemListener {
 		pCenter.add(pChooserArea);
         pChooserLabels.add(new JLabel("Sort Routine",JLabel.RIGHT),
         BorderLayout.WEST);
-        final Vector v=getSortClasses(sortDirectory);
+        //final Vector v=getSortClasses(sortDirectory);
 		sortChoice = new JComboBox();
 		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
 		sortChoice.setToolTipText("Select a class to be your sort routine.");
