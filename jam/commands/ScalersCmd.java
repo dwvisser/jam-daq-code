@@ -23,7 +23,10 @@ final class ScalersCmd extends AbstractCommand implements Commandable {
 			readScalers();
 		}else if (param==ZERO) {
 			zeroScalers();
-		}		
+		} else {
+			msghdlr.errorOutln(
+			"Incomplete command: need 'scaler zero' or 'scaler read'.");	
+		}
 		
 	}
 
