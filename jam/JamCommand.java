@@ -44,7 +44,6 @@ public class JamCommand
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	/* control classes */
-	private SortControl sortControl;
 	private final GateSet gateControl;
 	private final ParameterControl paramControl;
 	private final CalibrationDisplay calibDisplay;
@@ -56,7 +55,6 @@ public class JamCommand
 	private final PeakFindDialog peakFindDialog;
 
 	/* classes to set up acquisition and sorting */
-	private final SetupSortOff setupSortOff;
 	private final SetupRemote setupRemote;
 
 	private final FrontEndCommunication frontEnd;
@@ -92,9 +90,6 @@ public class JamCommand
 		manipulate = new Manipulations(console);
 		gainshift = new GainShift(console);
 		/* acquisition control */
-		sortControl = new SortControl(console);
-		setupSortOff =
-			new SetupSortOff(sortControl);
 		setupRemote = new SetupRemote(jam, console);
 		help = new Help(jam, console); //Help window
 		peakFindDialog = new PeakFindDialog(display, console);
@@ -128,12 +123,12 @@ public class JamCommand
 			display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
 		} else if ("White Background".equals(incommand)) {
 			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
-		} else if ("offline".equals(incommand)) {
-			setupSortOff.show();
+		//} else if ("offline".equals(incommand)) {
+		//	setupSortOff.show();
 		} else if ("remote".equals(incommand)) {
 			setupRemote.showRemote();
-		} else if ("sort".equals(incommand)) {
-			sortControl.show();
+		//} else if ("sort".equals(incommand)) {
+		//	sortControl.show();
 		} else if ("status".equals(incommand)) {
 			DisplayCounters.getSingletonInstance().show();
 		} else if ("project".equals(incommand)) {
@@ -224,13 +219,5 @@ public class JamCommand
 			remoteAccess = ra;
 			remote = on;
 		}
-	}
-
-	SetupSortOff getSetupSortOff() {
-		return setupSortOff;
-	}
-
-	SortControl getSortControl() {
-		return sortControl;
 	}
 }
