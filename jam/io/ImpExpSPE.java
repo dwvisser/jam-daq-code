@@ -126,8 +126,10 @@ public class ImpExpSPE extends ImpExp {
 		try {
 			DataOutputStream dos = new DataOutputStream(outStream);
 			/* get data from histogram */
-			String name = hist.getName() + "        ";
-			//FIXME 8 spaces to pad out should use NAME_LENGTH		
+			final StringBuffer name = new StringBuffer(hist.getName());
+			while (name.length() < NAME_LENGTH){
+				name.append(' ');
+			}
 			int size = hist.getSizeX();
 			int type = hist.getType();
 			/* put data into a float array */
