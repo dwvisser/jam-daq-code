@@ -43,11 +43,12 @@ class Plot2d extends Plot {
 	}
 	
 	public void preferenceChange(PreferenceChangeEvent pce){
-		super.preferenceChange(pce);
 		final String key=pce.getKey();
 		if (key.equals(SMOOTH_COLOR_SCALE)){
 			setSmoothColorScale(Boolean.valueOf(pce.getNewValue()).booleanValue());
-		} 
+		} else {
+			super.preferenceChange(pce);
+		}
 		repaint();
 	}
 	

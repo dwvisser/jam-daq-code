@@ -218,18 +218,21 @@ PreferenceChangeListener {
 		final String newValue=pce.getNewValue();
 		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)){
 			setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
-			if (currentHist.getCounts() != null){
+			if (plotDataExists()){
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)){
 			setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
-			if (currentHist.getCounts() != null){
+			if (plotDataExists()){
 				autoCounts();
 			}
 		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)){
 			setColorMode(Boolean.valueOf(newValue).booleanValue());
 		}
-		repaint();
+	}
+	
+	private final boolean plotDataExists(){
+		return currentHist != null && currentHist.getCounts() != null;
 	}
 	
 	/**
