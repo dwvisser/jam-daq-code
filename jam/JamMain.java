@@ -1,22 +1,14 @@
-/*
- * Copyright statement
- */
 package jam;
 import jam.data.DataException;
-import jam.data.Histogram;
 import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
-import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.plot.Display;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.*;
-import javax.swing.border.*;
 
 /**
  *
@@ -29,8 +21,7 @@ import javax.swing.border.*;
  * @author   Ken Swartz
  * @since    JDK1.1
  */
-public class JamMain extends JFrame implements AcquisitionStatus, 
-Observer {
+public class JamMain extends JFrame {
 
 	/**
 	 * Sort Mode--No sort file loaded.
@@ -66,32 +57,6 @@ Observer {
 	 * Sort Mode--Just read in a data file.
 	 */
 	static public final int FILE = 6; //we have read in a file
-
-	/**
-	 * Run State--Acquisition not currently allowed.
-	 */
-	public final static int NO_ACQ = 0;
-
-	/**
-	 * Run State--Not currently acuiring data.
-	 */
-	public final static int ACQ_OFF = 1;
-
-	/**
-	 * Run State--Currently acuiring data.
-	 */
-	public final static int ACQ_ON = 2;
-
-	/**
-	 * Run State--Not currently taking run data
-	 */
-	public final static int RUN_OFF = 3;
-
-	/**
-	 * Run State--Currently acuiring run data.
-	 */
-	public final static int RUN_ON = 4;
-
 	
 	/**
 	 * Configuration information for Jam.
@@ -122,28 +87,17 @@ Observer {
 	 * Message output and text input.
 	 */
 	private final JamConsole console;
-
-	private JLabel lrunState; //run state label
-	private JComboBox histogramChooser; //reference needed by command
-	private JToggleButton boverLay; //button for overlay
-	private JComboBox gateChooser; // reference needed by command
-
-
 	private final Container me;
 	private final MainMenuBar menubar;
+	private final SelectionToolbar selectBar;
 
 	/**
 	 * Sort mode
 	 * ONLINE or OFFLINE
 	 */
 	private int sortMode;
-	
 	private final String classname;
-
-	/**
-	 * Run state can be ACQ_ON, ACQ_OFF ....
-	 */
-	private RunState runState;
+	private RunState runState=RunState.NO_ACQ;
 
 	/**
 	 * Name of file if used file|open to read a file
@@ -165,7 +119,15 @@ Observer {
 		jamProperties = new JamProperties(); //class that has properties
 		jamProperties.loadProperties(); //load properties from file
 		status = JamStatus.instance(); //class that is statically available
-		status.setAcqisitionStatus(this);
+		status.setAcqisitionStatus(new AcquisitionStatus(){
+			public boolean isAcqOn(){
+				return runState.isAcqOn();
+			}
+			
+			public boolean isOnLine(){
+				return ((sortMode == ONLINE_TAPE) || (sortMode == ONLINE_DISK));
+			}
+		});
 		/* class to distrute events to all listeners */
 		broadcaster = new Broadcaster();
 		final int posxy=50;
@@ -180,15 +142,16 @@ Observer {
 		display = new Display(broadcaster, console);
 		me.add(display, BorderLayout.CENTER);
 		/* create user command listener */
-		jamCommand = new JamCommand(this, display, broadcaster, console);
+		jamCommand = new JamCommand(this, display, broadcaster, 
+		console);
 		menubar=new MainMenuBar(this, jamCommand, display,console);
 		this.setJMenuBar(menubar);
 		/* add toolbar (needs jamCommand as item, action listener) */
-		final Component pselect=addToolbarSelect();
-		me.add(pselect, BorderLayout.NORTH);
+		selectBar=new SelectionToolbar(console,status,broadcaster,display);
+		broadcaster.addObserver(selectBar);
+		me.add(selectBar, BorderLayout.NORTH);
 		/* tool bar display (on left side) */
 		display.addToolbarAction();
-		/* list of loaded fit routines */
 		/* operations to close window */
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
@@ -204,7 +167,6 @@ Observer {
 		} catch (DataException de) {
 			console.errorOutln(de.getMessage());
 		}
-		gateChooser.setModel(new GateComboBoxModel());
 		/* setup all other dialog boxes.
 		   data control, gate set, histogram manipulate, project */
 		DataControl.setupAll();
@@ -219,7 +181,7 @@ Observer {
 		final Runnable showWindow=new Runnable(){
 			public void run(){ 
 				pack();
-				setChoosersToFirstItems();
+				selectBar.setChoosersToFirstItems();
 				show();
 				/* print out where config files were read from */
 				jamProperties.setMessageHandler(console);
@@ -227,63 +189,6 @@ Observer {
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
-	}
-
-	/**
-	 * Adds the tool bar the at the top of the plot.
-	 *
-	 * @since Version 0.5
-	 * @return the selection toolbar component
-	 */
-	private Component addToolbarSelect() {
-		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
-		noGateComboBoxModel.addElement("NO GATES");
-		/* panel with selection and print etc. */
-		final JToolBar pselect = new JToolBar("Selection",JToolBar.HORIZONTAL);
-		pselect.setLayout(new BorderLayout());
-		pselect.setBackground(Color.lightGray);
-		pselect.setForeground(Color.black);
-		//run status
-		final JPanel pRunState = new JPanel(new GridLayout(1, 1));
-		pRunState.setBorder(
-			BorderFactory.createTitledBorder(
-				new BevelBorder(BevelBorder.LOWERED),
-				"Status",
-				TitledBorder.CENTER,
-				TitledBorder.TOP));
-		lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
-		lrunState.setOpaque(true);
-		lrunState.setForeground(Color.black);
-		pRunState.add(lrunState);
-		//histogram chooser
-		final JPanel pCenter = new JPanel(new GridLayout(1, 0));
-		histogramChooser = new JComboBox(new HistogramComboBoxModel());
-		histogramChooser.setRenderer(new HistogramListCellRenderer());
-		histogramChooser.setMaximumRowCount(30);
-		histogramChooser.setSelectedIndex(0);
-		histogramChooser.setToolTipText(
-			"Choose histogram to display.");
-		histogramChooser.setActionCommand("selecthistogram");
-		histogramChooser.addActionListener(jamCommand);
-		pCenter.add(histogramChooser);
-		//overlay button
-		synchronized (this) {
-			boverLay = new JToggleButton("Overlay");
-		}
-		boverLay.setActionCommand("overlay");
-		boverLay.setToolTipText("Click to overlay next histogram chosen.");
-		boverLay.addActionListener(jamCommand);
-		pCenter.add(boverLay);
-		synchronized (this){
-			gateChooser=new JComboBox(noGateComboBoxModel);
-		}
-		gateChooser.setToolTipText("Click to choose gate to display.");
-		gateChooser.setActionCommand("selectgate");
-		gateChooser.addActionListener(jamCommand);
-		pCenter.add(gateChooser);
-		pselect.add(pRunState, BorderLayout.WEST);
-		pselect.add(pCenter, BorderLayout.CENTER);
-		return pselect;
 	}
 
 	void showExitDialog() {
@@ -298,56 +203,6 @@ Observer {
 		} else {
 			this.setVisible(true);
 		}
-	}
-
-	/**
-	 * Implementation of Observable interface.
-	 * 
-	 * @param observable the sender
-	 * @param o the message
-	 */
-	public void update(Observable observable, Object o) {
-			final BroadcastEvent be = (BroadcastEvent) o;
-			final int command=be.getCommand();
-			if (command==BroadcastEvent.HISTOGRAM_NEW) {
-				final String lastHistName = status.getCurrentHistogramName();
-				jamCommand.selectHistogram(
-					Histogram.getHistogram(lastHistName));
-			}
-			if (command==BroadcastEvent.HISTOGRAM_ADD) {
-				dataChanged();
-			}
-			if (command==BroadcastEvent.GATE_ADD) {
-				final String lastHistName = status.getCurrentHistogramName();
-				jamCommand.selectHistogram(
-					Histogram.getHistogram(lastHistName));
-				gatesChanged();
-			}
-	}
-
-	/**
-	 * Should be called whenever the lists of gates and histograms 
-	 * change. It calls histogramsChanged() and gatesChanged(), 
-	 * each of which add to the event stack, so that histograms will 
-	 * be guaranteed (?) updated before gates get updated.
-	 */
-	void dataChanged() {
-		histogramsChanged();
-		gatesChanged();
-	}
-
-	void histogramsChanged() {
-		histogramChooser.setSelectedIndex(0);
-		histogramChooser.repaint();
-	}
-
-	void gatesChanged() {
-		gateChooser.setSelectedIndex(0);
-		gateChooser.repaint();
-	}
-	
-	void setOverlayEnabled(boolean state){
-		this.boverLay.setEnabled(state);
 	}
 
 	/**
@@ -419,6 +274,8 @@ Observer {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
+		} else {
+			console.errorOutln("Invalid sort mode: "+mode);
 		}
 	}
 
@@ -431,7 +288,7 @@ Observer {
 	 * @param fileName the file to be sorted?
 	 */
 	public void setSortModeFile(String fileName) throws JamException {
-		synchronized (openFileName){
+		synchronized (this){
 			this.openFileName = fileName;
 		}
 		setSortMode(FILE);
@@ -460,13 +317,6 @@ Observer {
 	}
 	
 	/**
-	 * @return true if Jam is in online acquisition mode
-	 */
-	public boolean isOnLine() {
-		return ((sortMode == ONLINE_TAPE) || (sortMode == ONLINE_DISK));
-	}
-
-	/**
 	 *  <p>Sets run state when taking data online.
 	 *  The run state mostly determints the state of control JMenu items.
 	 *  This method uses imformation set by <code>setSortMode()</code>.
@@ -480,57 +330,16 @@ Observer {
 	 *  <li>Updates display status label .</li>
 	 * </ul>
 	 *
-	 * @param  rs    see the options for this just below
-	 * @param  runNumber   serial number assigned the run in the run 
+	 * @param  rs one of the possible run states
 	 * control dialog box
-	 * @see #NO_ACQ
-	 * @see #ACQ_OFF
-	 * @see #ACQ_ON
-	 * @see #RUN_OFF
-	 * @see #RUN_ON
 	 */
 	public void setRunState(RunState rs) {
-//		final String welcome="   Welcome   ";
-//		final String stopped="   Stopped   ";
-//		final String started="   Started   ";
 		menubar.setRunState(rs);
-//		if (rs == NO_ACQ) {
-//			lrunState.setBackground(Color.lightGray);
-//			lrunState.setText(welcome);
-//		} else if (rs == ACQ_OFF) {
-//			lrunState.setBackground(Color.red);
-//			lrunState.setText(stopped);
-//		} else if (rs == ACQ_ON) {
-//			lrunState.setBackground(Color.orange);
-//			lrunState.setText(started);
-//		} else if (rs == RUN_OFF) {
-//			lrunState.setBackground(Color.red);
-//			lrunState.setText(stopped);
-//		} else if (rs == RUN_ON) {
-//			lrunState.setBackground(Color.green);
-//			final String runpre="   Run ";
-//			final String runpost="   ";
-//			lrunState.setText(runpre+runNumber+runpost);
-//		} else {
-//			console.errorOutln("Illegal run state: "+rs);
-//		}
-		lrunState.setBackground(rs.getColor());
-		lrunState.setText(rs.getLabel());
+		selectBar.setRunState(rs);
 		synchronized (this) {
 			this.runState = rs;
 		}
 	}
-
-	/**
-	 * Sets the run state with out the run number specified
-	 * see <code> setRunState(int runState, int runNumber) </code>
-	 *
-	 * @see #getRunState()
-	 * @param rs one of six possible modes
-	 */
-	/*public void setRunState(int rs) {
-		setRunState(rs, 0);
-	}*/
 
 	/**
 	 * Gets the current run state of Jam.
@@ -546,54 +355,6 @@ Observer {
 	public RunState getRunState() {
 		return runState;
 	}
-
-	/**
-	 * @return true if Jam is currently taking data.
-	 * either just acquistion or a run.
-	 */
-	public boolean isAcqOn() {
-		return runState.isAcquireOn();
-	}
-
-	/**
-	 * @return whether histogram overlay mode is enabled
-	 */
-	public boolean overlaySelected() {
-		return boverLay.isSelected();
-	}
-
-	/**
-	 * De-select overlay mode.
-	 */
-	 public void deselectOverlay() {
-		if (boverLay.isSelected()) {
-			boverLay.doClick();
-		}
-	}
-	
-	/**
-	 * @return a string representing the build version of Jam running
-	 */
-	static public String getVersion(){
-		final StringBuffer rval=new StringBuffer(Version.JAM_VERSION);
-		if (Version.VERSION_TYPE.length()>0){
-			final String leftparen=" (";
-			rval.append(leftparen);
-			rval.append(Version.VERSION_TYPE);
-			rval.append(')');
-		}
-		return rval.toString();
-	}
-
-	/**
-	 * Selects first items in histogram and gate choosers.  Default 
-	 * priveleges allows JamCommand to call this as well.
-	 */
-	private void setChoosersToFirstItems() {
-		histogramChooser.setSelectedIndex(0);
-		gateChooser.setSelectedIndex(0);
-	}
-
 	
 	/**
 	 * Main method that is run to start up full Jam process
