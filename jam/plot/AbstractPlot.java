@@ -211,7 +211,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * neccessary histogram parameters to local variables. Allows general use of
 	 * data set.
 	 */
-	void displayHistogram(Histogram hist) {
+	synchronized void displayHistogram(Histogram hist) {
 		plotLimits=Limits.getLimits(hist);
 		if (hist != null) {
 			hasHistogram=true;
@@ -999,11 +999,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		return sizeY;
 	}
 
-	Histogram getHistogram(){
-		if (plotHistNumber<0)
-			return null;
-		else 
-			return Histogram.getHistogram(plotHistNumber);
+	synchronized Histogram getHistogram(){
+		return plotHistNumber<0 ?  null : Histogram.getHistogram(plotHistNumber);
 	}
 		
 	/**
