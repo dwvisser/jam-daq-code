@@ -59,7 +59,7 @@ public class EventInputStatus{
      */
     static public final EventInputStatus IGNORE=new EventInputStatus(9);
 
-    private static final EventInputStatus[] _values = {EVENT,END_BUFFER,END_RUN,END_FILE,
+    private static final EventInputStatus[] VALUES = {EVENT,END_BUFFER,END_RUN,END_FILE,
     END_STREAM,PARTIAL_EVENT,UNKNOWN_WORD,ERROR,SCALER_VALUE,IGNORE};
 
     private final int _code;
@@ -73,7 +73,7 @@ public class EventInputStatus{
     }
 
     public static EventInputStatus code(int arg){
-        return _values[arg];
+        return VALUES[arg];
     }
 
     public String toString(){

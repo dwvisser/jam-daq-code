@@ -45,18 +45,13 @@ public class SortDaemon extends GoodThread {
 
 	private EventInputStream eventInputStream;
 
-	/**
-	 * mode offline or online
-	 */
-	//private SortMode mode;
-
-	private static final Broadcaster broadcaster = Broadcaster
+	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
 	/**
 	 * Used for online only, holds data buffers from network.
 	 */
-	private RingBuffer ringBuffer;
+	private transient RingBuffer ringBuffer;
 
 	/* event information */
 	private int eventSize;
@@ -402,7 +397,7 @@ public class SortDaemon extends GoodThread {
 	 * Update the counters display.
 	 */
 	private void updateCounters() {
-		broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE);
+		BROADCASTER.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE);
 	}
 
 	/**

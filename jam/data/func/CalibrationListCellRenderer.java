@@ -20,32 +20,23 @@ import javax.swing.UIManager;
 public class CalibrationListCellRenderer
 	extends DefaultListCellRenderer {
 
-	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-
-	private static final ImageIcon lineIcon;
-	private static final ImageIcon polyIcon;
-	private static final ImageIcon sqrtIcon;
+	private static final ImageIcon LINE_ICON;
+	private static final ImageIcon POLY_ICON;
+	private static final ImageIcon SQRT_ICON;
 
 	static{
-		URL urlLine=cl.getResource("jam/data/func/line.png");
-		URL urlPoly =cl.getResource("jam/data/func/poly.png");
-		URL urlSqrt =cl.getResource("jam/data/func/sqrt.png");
+		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+		URL urlLine=loader.getResource("jam/data/func/line.png");
+		URL urlPoly =loader.getResource("jam/data/func/poly.png");
+		URL urlSqrt =loader.getResource("jam/data/func/sqrt.png");
 		if (urlLine==null || urlPoly==null || urlSqrt==null) {
 			JOptionPane.showMessageDialog(null, "Can't load resource: jam/(stop|go|clear).png");
-			lineIcon=polyIcon=sqrtIcon=null;
+			LINE_ICON=POLY_ICON=SQRT_ICON=null;
 		} else {
-			lineIcon=new ImageIcon(urlLine);
-			polyIcon=new ImageIcon(urlPoly);
-			sqrtIcon=new ImageIcon(urlSqrt);
+			LINE_ICON=new ImageIcon(urlLine);
+			POLY_ICON=new ImageIcon(urlPoly);
+			SQRT_ICON=new ImageIcon(urlSqrt);
 		}
-	}
-
-	/**
-	 * Creates a new <code>HistogramListCellRenderer</code>.
-	 */
-	public CalibrationListCellRenderer() {
-		super();
-
 	}
 
 	/**
@@ -72,13 +63,13 @@ public class CalibrationListCellRenderer
 			setText(null);
 			setIcon(null);	
 		} else if (value.equals(LinearFunction.class.getName())){
-			setIcon(lineIcon);
+			setIcon(LINE_ICON);
 			setText("Linear");
 		} else if (value.equals(PolynomialFunction.class.getName())){
-			setIcon(polyIcon);
+			setIcon(POLY_ICON);
 			setText("Polynomial");
 		} else if (value.equals(SqrtEnergyFunction.class.getName())){
-			setIcon(sqrtIcon);
+			setIcon(SQRT_ICON);
 			setText("Linear in Square Root");
 		}
 		setBorder(
