@@ -17,7 +17,7 @@ import javax.swing.border.*;
  * @author Ken Swartz
  * @version 05 newest done 9-98
  */
-class DisplayCounters implements Observer {
+public final class DisplayCounters implements Observer {
 
 	/**
 	 * We are sorting online when the internal mode variable equals
@@ -59,12 +59,22 @@ class DisplayCounters implements Observer {
 		pEvntSort,
 		pButton;
 
+	static private DisplayCounters instance=null;
+
+	static public DisplayCounters getSingletonInstance(){
+		if (instance==null){
+			instance=new DisplayCounters(
+			JamStatus.instance().getMessageHandler());
+		}
+		return instance;
+	}
+	
 	/**
 	 * @param jm the main window
 	 * @param b to broadcast counter "read" and "zero" requests
 	 * @param mh where to print console output
 	 */
-	DisplayCounters(MessageHandler mh) {
+	private DisplayCounters(MessageHandler mh) {
 		final int xpos = 20;
 		final int ypos = 50;
 		final int flowgaph = 10;
@@ -75,6 +85,7 @@ class DisplayCounters implements Observer {
 
 		jamMain = JamStatus.instance().getFrame();
 		broadcaster = Broadcaster.getSingletonInstance();
+		broadcaster.addObserver(this);
 		messageHandler = mh;
 		d = new JDialog(jamMain, "Buffer Counters", false);
 		d.setResizable(false);
@@ -237,12 +248,10 @@ class DisplayCounters implements Observer {
 	public void setupOn(NetDaemon nd, SortDaemon sod, StorageDaemon std) {
 		synchronized (this) {
 			mode = ONLINE;
-			this.netDaemon = nd;
-			this.sortDaemon = sod;
-			this.storageDaemon = std;
+			netDaemon = nd;
+			sortDaemon = sod;
+			storageDaemon = std;
 		}
-		/// make dialog box
-		//FIXME remove final Container cd = d.getContentPane();
 		d.setTitle("Online Buffer Count");
 		pCenter.removeAll();
 		pCenter.add(pBuffSent);
@@ -263,10 +272,9 @@ class DisplayCounters implements Observer {
 	public void setupOff(SortDaemon sod, StorageDaemon std) {
 		synchronized (this) {
 			mode = OFFLINE;
-			this.sortDaemon = sod;
-			this.storageDaemon = std;
+			sortDaemon = sod;
+			storageDaemon = std;
 		}
-		//FIXME remove final Container cd = d.getContentPane();
 		d.setTitle("Offline Buffer Count");
 		pCenter.removeAll();
 		pCenter.add(pFileRead);
