@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,6 +34,9 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
+
 /**
  * Class Console displays a output of commands and error messages
  * and allows the input of commands using the keyboard.
@@ -45,11 +49,12 @@ import javax.swing.text.StyleConstants;
  */
 public class JamConsole
 	extends JPanel
-	implements MessageHandler, ActionListener {
+	implements MessageHandler, ActionListener{
 
 	
 	private final static int NUMBER_LINES_LOG = 100;
-
+	
+	private final static int CMD_STACK_SIZE = 50;
 	/**
 	 * End of line character(s).
 	 */
@@ -62,6 +67,8 @@ public class JamConsole
 	private SimpleAttributeSet attr_normal, attr_warning, attr_error;
 	private JTextField textIn; //input text field
 	private final JScrollPane jsp;
+	private final LinkedList cmdStack;
+	private int lastCmdIndex;
 
 	/**
 	 * Private.
@@ -122,6 +129,7 @@ public class JamConsole
 		maxLines = linesLog;
 		
 		listenerList= new ArrayList();
+		cmdStack = new LinkedList();
 		
 		setLayout(new BorderLayout());
 		textLog = new JTextPane();
@@ -140,10 +148,40 @@ public class JamConsole
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
+		
 		textIn = new JTextField();
 		textIn.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(this);
+				
+		//Handle up down arrows				
+		textIn.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent evt) {
+				int keyCode = evt.getKeyCode();  
+				if (keyCode == KeyEvent.VK_UP) {		
+					previousCommand(-1);			 
+				} else if (keyCode == KeyEvent.VK_DOWN){
+					previousCommand(1);					
+				}
+							
+			}
+		});
+
+/* Remove KBS did not work
+ 		String upArrow=KeyEvent.getKeyText(KeyEvent.VK_UP);
+		//String upArrow=KeyEvent.getKeyText(KeyEvent.VK_KP_UP);		
+		//String upArrow=KeyEvent.getKeyText(KeyEvent.VK_DOWN);
+ 		
+		textIn.getInputMap().put(KeyStroke.getKeyStroke("Up"),"previousCommand");				
+				
+		textIn.getActionMap().put("previousCommand", 
+			new AbstractAction() {
+				public void actionPerformed(ActionEvent e) {
+					int i=1;
+					//do nothing
+				}
+			});		
+*/			
 		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
@@ -159,10 +197,57 @@ public class JamConsole
 	 * Process event when a return is hit in input field
 	 */
 	public void actionPerformed(ActionEvent ae) {
+		addCommand(textIn.getText());
 		parseCommand(textIn.getText());
 		textIn.setText(null);
 	}
+	/**
+	 * Add a command to the command stack
+	 * 
+	 * @param cmdStr 
+	 */
+	private void addCommand(String cmdStr) {	
+		cmdStack.add(cmdStr);
+		if (cmdStack.size() >CMD_STACK_SIZE)
+			cmdStack.removeFirst();
+			
+		lastCmdIndex=cmdStack.size();
+	}		
+	/**
+	 * Get a previous command from the command stack
+	 * @param direction >0 forward, <0 backward 
+	 *
+	 */
+	private void previousCommand(int direction) {	
+		
+		if (direction<0) {
+						  
+			if (lastCmdIndex>0)
+				lastCmdIndex=lastCmdIndex-1;					 
+			textIn.setText((String)cmdStack.get(lastCmdIndex));
+					
+		} else {
 
+			if (lastCmdIndex<cmdStack.size()) {				
+				lastCmdIndex=lastCmdIndex+1;
+				if (lastCmdIndex<cmdStack.size())
+					textIn.setText((String)cmdStack.get(lastCmdIndex));				
+				else							
+					textIn.setText("");			
+			}				
+				
+		}					
+	}
+	/**
+	 * Get the last command from the command stack
+	 *
+	 */
+	private void previousCommand() {									 
+		textIn.setText((String)cmdStack.get(lastCmdIndex));
+		if (lastCmdIndex>0)
+			lastCmdIndex=lastCmdIndex-1;
+	}
+	
 	/**
 	 * Outputs the string as a message to the console, which has more than one part,
 	 * so message can continued by a subsequent call.
