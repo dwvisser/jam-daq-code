@@ -1,15 +1,14 @@
 package jam.commands;
 
 
+import jam.data.Group;
 import jam.global.CommandListenerException;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-import jam.data.Group;
 
 import java.awt.Frame;
 import java.io.File;
-import java.util.*;
 
 import javax.swing.JFileChooser;
 
