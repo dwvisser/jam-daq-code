@@ -30,6 +30,8 @@ public final class JamStatus {
 	private boolean showGUI=true;
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
+	private String sortName="";
+	
 
 	/**
 	 * The one instance of JamStatus.
@@ -100,7 +102,8 @@ public final class JamStatus {
 	 * @param mode sort mode
 	 * @throws UnsupportedOperationException if we can't change mode
 	 */
-	public void setSortMode(SortMode mode) {
+	public void setSortMode(SortMode mode, String sortName) {
+		this.sortName=sortName;
 		synchronized (sortMode) {
 			if (mode == SortMode.ONLINE_DISK
 				|| mode == SortMode.ON_NO_DISK
@@ -148,7 +151,7 @@ public final class JamStatus {
 	public void setSortMode(File file) {
 		synchronized (sortMode) {
 			openFile = file;
-			setSortMode(SortMode.FILE);
+			setSortMode(SortMode.FILE, file.getName());
 		}
 	}
 
@@ -160,7 +163,13 @@ public final class JamStatus {
 			return sortMode;
 		}
 	}
-	
+	/**
+	 * The name of the sort or file
+	 * @return
+	 */
+	public String getSortName(){
+		return sortName;		
+	}
 	/**
 	 * @return the most recent file corresponding to the currently
 	 * loaded data

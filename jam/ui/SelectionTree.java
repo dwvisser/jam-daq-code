@@ -22,6 +22,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+//import javax.swing.tree.DefaultTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -50,7 +53,7 @@ public class SelectionTree extends JPanel implements Observer {
 	private final Display display;
 	
 	/** Is sync event so don't */
-	private boolean isSync=false;
+	private boolean isSyncEvent=false;
 	
 	public SelectionTree(){
 
@@ -88,22 +91,24 @@ public class SelectionTree extends JPanel implements Observer {
 		//createHistTree();
  
 	}	
-	
-	
-	private void createHistTree(){
+	/**
+	 * Load the tree for the data objects
+	 *
+	 */	
+	private void loadTree(){
 
 		
-		SortMode sortMode =status.getSortMode();
+		SortMode sortMode =status.getSortMode();		
+		String sortName=status.getSortName();
 		
 		if (sortMode==SortMode.FILE){
-			String fileName=status.getOpenFile().getName();
-			rootNode = new DefaultMutableTreeNode(fileName);
+			rootNode = new DefaultMutableTreeNode(sortName);
 		}else if (sortMode==SortMode.OFFLINE){
-			rootNode = new DefaultMutableTreeNode("Offline Sort ");
+			rootNode = new DefaultMutableTreeNode(sortName);
 		} else if ((sortMode==SortMode.ONLINE_DISK) ||(sortMode==SortMode.ONLINE_DISK)){
-			rootNode = new DefaultMutableTreeNode("Online Sort ");
+			rootNode = new DefaultMutableTreeNode(sortName);
 		} else if (sortMode ==SortMode.NO_SORT) {
-			rootNode = new DefaultMutableTreeNode("Histograms ");
+			rootNode = new DefaultMutableTreeNode(sortName);
 		} else {
 			rootNode = new DefaultMutableTreeNode("No Data ");
 		}
@@ -133,7 +138,7 @@ public class SelectionTree extends JPanel implements Observer {
 	}
 
 	public void reload(){
-		createHistTree();
+		loadTree();
 		repaint();
 		histTree.repaint();
 	}
@@ -143,12 +148,29 @@ public class SelectionTree extends JPanel implements Observer {
 		histTree.repaint();
 	}
 	
+	private void refreshSelection(){
+		Histogram hist = status.getCurrentHistogram();
+		
+		//Loop through nodes and set appropriate node to selected
+		//Object rootNode =treeModel.getRoot();
+		//DefaultMutableTreeModel root =(DefaultMutableTreeModel)treeModel.getRoot();		
+		//TreeSelectionModel tsm =histTree.getSelectionModel();
+		
+		repaint();
+		histTree.repaint();
+	}
+	
 	private void selection(Object nodeObject){
-		if (nodeObject instanceof Histogram) {
-			
+
+		//Syncronize events should not fire events
+		if (isSyncEvent)
+			return;
+		
+		if (nodeObject instanceof Histogram) {			
 			Histogram hist =(Histogram)nodeObject;
-			status.setHistName(hist.getName());
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+
+				status.setHistName(hist.getName());
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		} else if (nodeObject instanceof Gate) {
 			Gate gate =(Gate)nodeObject;			
 			Histogram hist =gate.getHistogram();
@@ -162,7 +184,7 @@ public class SelectionTree extends JPanel implements Observer {
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			
 		}
-	}
+	}	
 	/**
 	 * Implementation of Observable interface.
 	 * 
@@ -175,26 +197,25 @@ public class SelectionTree extends JPanel implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
 		
-		if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			createHistTree();
+		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+			refreshSelection();					
+		}else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
+			loadTree();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			createHistTree();
+			loadTree();
 		} else if (command == BroadcastEvent.Command.GATE_ADD) {
-			createHistTree();
+			loadTree();
 		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
 			refresh();
+		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+			loadTree();
 		}
 		/*
 			final String lastHistName = status.getHistName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			dataChanged();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			dataChanged();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			syncHistChooser();			
-		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			setRunState((RunState) be.getContent());
 		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){
 			setOverlaySelected(false);
 		}

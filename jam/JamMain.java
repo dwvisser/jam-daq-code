@@ -131,7 +131,7 @@ public final class JamMain extends JFrame implements Observer {
 		/* Initial histograms and setup */
 		new InitialHistograms();
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
-		status.setSortMode(SortMode.NO_SORT);
+		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
 		

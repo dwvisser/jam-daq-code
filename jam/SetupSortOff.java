@@ -531,10 +531,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            STATUS.setSortMode(SortMode.OFFLINE);
+            STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass().getName() );
             bbrowsef.setEnabled(false);
         } else{
-            STATUS.setSortMode(SortMode.NO_SORT);
+            STATUS.setSortMode(SortMode.NO_SORT,"No Sort");
             bbrowsef.setEnabled(specify.isSelected());
         }
     }

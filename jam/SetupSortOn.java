@@ -742,9 +742,9 @@ public final class SetupSortOn extends JDialog {
 		bbrowsed.setEnabled(notlock);
 		specify.setEnabled(notlock);
 		defaultPath.setEnabled(notlock);
-		STATUS.setSortMode(notlock ? SortMode.NO_SORT
-				: (cdisk.isSelected() ? SortMode.ONLINE_DISK
-						: SortMode.ON_NO_DISK));
+		SortMode sortMode =notlock ? SortMode.NO_SORT : (
+				           cdisk.isSelected() ? SortMode.ONLINE_DISK: SortMode.ON_NO_DISK);
+		STATUS.setSortMode(sortMode, sortRoutine.getClass().getName() );
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
 	}

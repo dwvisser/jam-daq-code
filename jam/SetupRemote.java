@@ -307,11 +307,11 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 
 		if (active) {
 			if ((mode != SERVER) && (!inApplet)) {
-				STATUS.setSortMode(SortMode.REMOTE);
+				STATUS.setSortMode(SortMode.REMOTE, "Remote");
 			}
 		} else {
 			if ((mode != SERVER) && (!inApplet)) {
-				STATUS.setSortMode(SortMode.NO_SORT);
+				STATUS.setSortMode(SortMode.NO_SORT, "No Sort");
 			}
 		}
 	}
