@@ -142,7 +142,7 @@ public class MainMenuBar extends JMenuBar {
 	}
 
 
-	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
+	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
 	final private JMenu fitting;
 	final private JMenuItem newClear,
@@ -458,13 +458,14 @@ public class MainMenuBar extends JMenuBar {
 		final JCheckBoxMenuItem noFill2d =
 			new JCheckBoxMenuItem(
 				NO_FILL_MENU_TEXT,
-				JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D));
+				JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE));
 		noFill2d.setEnabled(true);
 		noFill2d.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent ie) {
 				JamProperties.setProperty(
-					JamProperties.NO_FILL_2D,
+					JamProperties.NO_FILL_GATE,
 					ie.getStateChange() == ItemEvent.SELECTED);
+					display.repaint();
 			}
 		});
 		mPrefer.add(noFill2d);

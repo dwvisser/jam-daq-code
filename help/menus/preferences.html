@@ -17,8 +17,8 @@
 </dl>
 <hr>
 <dl>
-  <dt>Disable 2d Gate Fill</dt><dd>Some Mac OSX systems are slow to draw filled in 2d gates. This option directs Jam to draw just the outline instead. The default setting is false, i.e., to highlight all the channels inside 2d gates when they're drawn. Inserting the line
-  	<pre>graph.nofill2d=true</pre>
+  <dt>Disable Gate Fill</dt><dd>This option directs Jam to draw just the boundary instead of filling in the gates. The default setting is false, i.e., to highlight all the channels inside gates when they're drawn. Inserting the line
+  	<pre>graph.noFillGate=true</pre>
   	in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file will override the default at startup.</dd>
   <dt>Use gradient color scale</dt><dd>Jam was originally used on systems with limited color availability. Thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, now you may check this option or insert the
   line 

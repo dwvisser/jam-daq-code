@@ -176,7 +176,7 @@ public class JamProperties {
 	 * <code>true</code> if Jam should not fill in gates on 2d
 	 * plots when painting them.
 	 */
-	public final static String NO_FILL_2D = "graph.nofill2d";
+	public final static String NO_FILL_GATE = "graph.noFillGate";
 	
 	/**
 	 * <code>true</code> if Jam should use a continuous gradient
@@ -463,7 +463,7 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		setProperty(NO_FILL_2D,false);
+		setProperty(NO_FILL_GATE,false);
 	}
 
 	/**

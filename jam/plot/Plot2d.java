@@ -333,7 +333,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		0.5f));
 		g.setColor(PlotColorMap.gateShow);
 		final boolean noFillMode =
-			JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D);
+			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
 		if (noFillMode) {
 			paintPolyGate(g);
 		} else {
