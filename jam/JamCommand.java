@@ -10,7 +10,6 @@ import jam.data.control.Manipulations;
 import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
-import jam.data.control.ScalerControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
@@ -65,7 +64,6 @@ public class JamCommand
 	private DisplayCounters displayCounters;
 	private final HistogramControl histogramControl;
 	private final GateControl gateControl;
-	private final ScalerControl scalerControl;
 	private final MonitorControl monitorControl;
 	private final ParameterControl paramControl;
 	private final CalibrationDisplay calibDisplay;
@@ -76,7 +74,7 @@ public class JamCommand
 
 	private final PeakFindDialog peakFindDialog;
 
-	//class to setup acquistion and sorting
+	/* classes to set up acquisition and sorting */
 	private final SetupSortOn setupSortOn;
 	private final SetupSortOff setupSortOff;
 	private final SetupRemote setupRemote;
@@ -114,7 +112,6 @@ public class JamCommand
 		/* data bases manipulation */
 		histogramControl = new HistogramControl(frame, console);
 		gateControl = new GateControl(jamMain, broadcaster, console);
-		scalerControl = new ScalerControl(jamMain, console);
 		monitorControl = new MonitorControl(jamMain, broadcaster, console);
 		paramControl = new ParameterControl(jamMain, console);
 		calibDisplay = new CalibrationDisplay(jamMain, broadcaster, console);
@@ -127,7 +124,6 @@ public class JamCommand
 			new RunControl(
 				jamMain,
 				histogramControl,
-				scalerControl,
 				(VMECommunication) frontEnd,
 				hdfio,
 				console);
@@ -169,7 +165,6 @@ public class JamCommand
 		broadcaster.addObserver(display);
 		broadcaster.addObserver(frontEnd);
 		broadcaster.addObserver(gateControl);
-		broadcaster.addObserver(scalerControl);
 		broadcaster.addObserver(manipulate);
 		broadcaster.addObserver(projection);
 		broadcaster.addObserver(gainshift);
@@ -212,13 +207,8 @@ public class JamCommand
 				runControl.show();
 			} else if ("sort".equals(incommand)) {
 				sortControl.show();
-//KBS remove				
-//			} else if ("parameters".equals(incommand)) {
-//				paramControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			//KBS} else if ("shownewhist".equals(incommand)) {
-			//	histogramControl.showNew();
 			} else if ("zerohist".equals(incommand)) {
 				histogramControl.showZero();
 			} else if ("project".equals(incommand)) {
@@ -237,16 +227,10 @@ public class JamCommand
 				gateControl.showAdd();
 			} else if ("gateset".equals(incommand)) {
 				gateControl.showSet();
-//KBS remove				
-//			} else if ("displayscalers".equals(incommand)) {
-//				scalerControl.showDisplay();
 			} else if ("displaymonitors".equals(incommand)) {
 				monitorControl.showDisplay();
 			} else if ("configmonitors".equals(incommand)) {
 				monitorControl.showConfig();
-//KBS remove				
-//			} else if ("showzeroscalers".equals(incommand)) {
-//				scalerControl.showZero();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
@@ -267,32 +251,22 @@ public class JamCommand
 					console.errorOutln(
 						"Error: stop command given when not in Online mode.");
 				}
-			} else {
-				
-				//See if it a command classs				
+			} else {//See if it a command class
 				try {
-
 					if(!jamCmdMgr.performCommand(incommand, null)) {
-					
 					console.errorOutln(getClass().getName()
 						+ ": Error unrecognized command \""+ incommand+ "\"");
 					}
 				} catch (CommandException ce) {
 					console.errorOutln(getClass().getName()
 							+ ": Error performing command \""+ incommand + "\"");
-				}
-											
+				}						
 			}
 		} catch (JamException exc) {
 			console.errorOutln("JamException: " + exc.getMessage());
 		} 
 	}
 	
-	ScalerControl getScalerControl(){
-		return scalerControl;
-	}
-		
-
 	/** 
 	 * Recieves the inputs from the pull down menus that are selectable 
 	 * checkboxes.
