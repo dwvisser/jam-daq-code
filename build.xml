@@ -105,8 +105,11 @@
             classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
             	doctitle="Jam - API"/>
     </target>
+    
+    <target name="x-platform" depends="jar,srczip,helpjar"
+    description="Compile source into class jar, help jar and source zip" />
 
-    <target name="windows" depends="jar,srczip,helpjar"
+    <target name="windows" depends="x-platform"
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
     	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar" />
