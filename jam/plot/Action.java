@@ -568,7 +568,7 @@ class Action implements ActionListener, PlotMouseListener,
 					textOut.errorOutln(h.getName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
 				} else {
-					display.addToOverlay(h);
+					display.addToOverlay(num);
 					textOut.messageOut(Integer.toString(num) + ' ',
 							MessageHandler.CONTINUE);
 				}
