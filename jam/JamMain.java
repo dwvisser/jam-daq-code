@@ -82,7 +82,6 @@ public final class JamMain extends JFrame implements Observer {
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
 		status.setFrame(this);
-		status.setJamMain(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return getRunState().isAcqOn();
