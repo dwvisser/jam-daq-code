@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>Offline Sorting</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+</HEAD>
+<BODY>
+
+<H2>Offline Sorting</H2>
+
+<p>Setting up Jam to sort event data takes only a few easy steps:</p>
+
+<OL>
+<LI><A HREF="writesort.html">Write</a> a sort routine. 
+A sort routine defines all the histogram and 
+gates, and sorts each event. You will need an editor and Java compiler for this. The best approach, 
+however, is to use an
+  <a href="http://links.javalobby.org/Developer_Tools/index.html">integrated development environment</a>. 
+  The IDE we develop Jam on is <a href="http://www.eclipse.org/">Eclipse</a>.
+</LI>
+<LI>Start up Jam. 
+</LI>
+<LI><A HREF="#setup">Setup</A> offline sorting. This loads
+the sort routine and event streams that will be used.
+</LI>
+<LI><A HREF="#reload">Read</A> in previously defined gates (if needed). Zero histograms (if needed).
+</LI>
+<LI><A HREF="#sorting">Specify</A> which files to sort and
+begin the sort.</LI>
+<LI><A HREF="#save">Save</A> the sorted spectra.
+</LI>
+</OL>
+
+<H3>Setup of the sorting</H3>
+<A NAME="setup">
+Open up <span CLASS=jammenu>Setup|Offline</span>. Enter the sorting
+class to use, and event streams for input and output. Click 
+<span CLASS="jambutton">OK</span>.
+
+<H3>Read in previously defined gates</H3>
+</a>
+<A NAME="reload">
+If needed, read in an hdf file that has previously defined gates in it,
+using <span CLASS=jammenu>File|Reload</span>.
+You might also want to zero all histograms, using
+<span CLASS=jammenu>Histograms|Zero</span>
+ 
+<H3>Specify which files to sort and begin sort</H3>
+</a>
+<A NAME="sorting">
+Open the sort dialog <span CLASS=jammenu>Control|Sort</span> 
+where you specify which files to sort.
+Select the list of files you want to sort using 
+<span CLASS=jammenu>Add file</span>,
+<span CLASS=jammenu>Remove file</span>,
+<span CLASS=jammenu>Remove All</span>.
+If this list is more than a few files long you might
+want to save the list using
+<span CLASS=jammenu>Save list</span>.
+<span CLASS=jammenu>Load list</span> can read the list back in.
+Click on <span class=jambutton>Begin</span> to start the sort.
+Click on <span class=jambutton>End/Cancel</span> to stop the sort.
+This is <em>not</em> a pause. It <em>kills</em> the sort process. 
+After ending a sort, you will have to setup to sort again.</p>
+
+<H3>Saving sorted spectra</H3>
+</a>
+<A NAME="save">
+Save the sorted spectra and gates in an hdf file 
+with <span CLASS=jammenu>File|Save</span>. 
+
+</BODY>
+</HTML>

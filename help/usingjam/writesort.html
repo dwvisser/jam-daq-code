@@ -1,0 +1,149 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Writing a Sort Routine</title>
+<link REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+</head>
+<body>
+
+<h2>Writing a Sort Routine</h2>
+<p>A sort routine for Jam is written as a Java class. The sort routine must extend the <span class=jam>Jam</span> class, <code>jam.sort.SortRoutine</code>. This allows the full flexibility of the Java language, but also requires you follow a certain syntax so that your class is a valid extension.</p>
+<p>A basic sort routine has four sections:
+<ol>
+    <li><i>The declaration section:</i> Here you declare names for the variables representing, among other things, references to your histograms, gates, scalers, monitors and run-time parameters.  Declarations made here are visible throughout the sort routine, i.e., in all subsequent sections.</li>
+    <li><i>The initialization section:</i> Here you create all your data objects andperform any other tasks to initialize the sort routine's state when it is loaded into Jam. Give your Histograms, Gates, and Scalers the properties you want, e.g.. name, size, type, and title, etc.</li>
+    <li><i>The sort section:</i> This part of the sort routine is called by Jam for every event. It the place to test gate conditions and increment histograms.</li>
+    <li><i>The monitor section (optional): </i>This section can be used to calculate the
+return value of certain Monitor objects.</li>
+</ol>
+
+<h3>Syntax</h3>
+
+<p>You must follow a certain format to create
+a sort routine that is a valid subclass of the <code>jam.sort.SortRoutine</code> class.</p>
+
+<ul>
+    <li>
+Your sort routine file name must have the same name as the class name. For
+example, the class <tt>MySort</tt> must reside in a file name MySort.java</li>
+<li>
+Your sort class must extend the Jam class <code>jam.sort.SortRoutine</code>, as
+follows:
+<br> <code>import jam.sort.SortRoutine;</code>
+<br> <code>public class MySort extends SortRoutine {...}</code></li>
+<li>
+You must have an initialize() method, as follows:
+<br><code>public void initialize() throws Exception{...}</code> </li>
+<li>
+You must have a sort() method, as follows:
+<br><code>public void sort(int [] eventData) throws Exception {...}</code> </li>
+<li>For offline sorting
+you may define your event size with <code>setEventSize(size of eventData array)</code></li>
+</ul>
+
+<p>Here is the skeleton of a minimal sort class:</p>
+
+<pre><code>
+import jam.sort.SortRoutine;
+
+public void MySort extends SortRoutine {
+
+    &nbsp;/*variable, histogram and gate delerations go here ... */
+
+   public void initialize() throws Exception {
+    &nbsp;/* initialization code goes here... */
+   }
+
+   public void sort(int[] eventdata) throws Exception {
+    &nbsp;/* sort code goes here... */
+   }
+}</code></pre>
+
+<h3>Variables</h3>
+<p>Variables can either be primitive types (e.g., <code>int</code> or <code>double</code>)
+or a class (for example <code>Histogram</code> or <code>Gate</code>). Whereas a
+intrinsic variable can just be allocated a value (e.g., <code>number=4</code>),
+each new instance of a class, which is called an object, must explicitly
+created using the <code>new</code> keyword followed by a constructor for that
+class. A constructor is the class name given with the parameters needed
+to create it. For example, one constructor for histogram is <code>Histogram(name,
+number, type, size, title)</code>  where you must provide the parameters: <code>name, number
+type, size,</code> and <code>title</code>. For example:<p>
+
+<code>h1 = new Histogram("d1", Histogram.ONE_DIM_INT, 2048, "Detector 1");
+
+<h3>Classes</h3>
+The classes that are available for you in sort class are:
+<h4>Data Classes</h4>
+<dl>
+   
+<dt><a href="../API/jam/data/Histogram.html">Histogram</a></dt>
+<dd>
+A histogram displays data. It can be one or two dimensions,
+and it can be integer or floating point.
+
+<dt><a href="../API/jam/data/Gate.html">Gate</a></dt>
+<dd>
+A gate is a condition on histogram channels, which can be interactively set.
+The condition is lower and upper limits in one dimension 
+or a polygon region in two dimensions.
+
+<dt><a href="../API/jam/data/Scaler.html">Scaler</a></dt>
+<dd>
+A scaler is an object which stores values from an electronic scaler unit in your experiment.
+
+<dt><a href="../API/jam/data/DataParameter.html">DataParameter</a></dt>
+<dd>
+A parameter which can be set at runtime to pass values to the sort routine.
+
+<dt>
+<a href="../API/jam/data/Monitor.html">Monitor</a></dt>
+<dd>
+A monitor is a class that allows rates in an experiment to 
+be monitored.
+
+</dl>
+<h4>Electronics Configuration Classes</h4>
+<dl>
+   
+<dt>Pre-existing instance <code>cnafCommands</code> of class type: <a href="../API/jam/sort/CamacCommands.html">CamacCommands</a></dt>
+<dd>
+This is a class whose methods you call to setup the CAMAC crate. See <a href="camaccommand.html">here</a>
+for more explanation.
+<dt>Pre-existing instance <code>vmeMap</code> of class <a href="../API/jam/sort/VME_Map.html">VME_Map</a></dt>
+
+</dl>
+<h3>Sort Routine Examples</h3>
+<h4>CAMAC-based Acquisition Systems</h4>
+<p><a href="../sortfiles/CamacSortTemplate.java">Here</a> is a template of a sort routine with two histogram and one gate.
+One histogram is incremented for every event while the second histogram
+is only incremented if the event falls in the first histograms gate.
+For <code>cnafCommnands</code> the <code>c,n,a,f</code> would have to be replace by 
+actual values.</p>
+<p>A more complete example of a CAMAC-based sort routine may be found <a href="../sortfiles/EvsDE.java">here</a>.</p>
+<h4>VME-based systems using CAEN V7x5 ADC's and TDC's</h4>
+<p>Here is a version of a sort routine used at LENA, modified here for
+demonstration purposes: <a href="../sortfiles/CI.java">CI.java</a></p>
+
+<h3>Compiling your Sort Routine</h3>
+<p>These instructions are for Unix-based systems, but remain essentially the
+same for Windows systems. Let's assume you have a sort routine called <code>MySort.java</code> in the directory
+<code>/home/daq/sortfiles</code>, and your copy of Jam resides in <code>/home/daq/lib</code>.
+To compile it, you issue the following commands from the shell:
+</p>
+<ol>
+  <li>cd /home/daq/sortfiles</li>
+  <li><tt>javac -classpath /home/daq/lib/Jam.jar:/home/daq Mysort.java</tt><br>
+  </li>
+</ol>
+<p>
+This will create a file <code>MySort.class</code> in <code>/home/daq/sortfiles</code>. Note the
+following requirements for the above to work:</p>
+<ul>
+  <li>The path to <code>javac</code> must be in your <code>PATH</code> variable to be executed.</li>
+  <li>The first line of <code>MySort.java</code> must be <code>package
+    sortfiles;</code></li>
+</ul>
+</body>
+</html>

@@ -5,16 +5,21 @@
 
    <toc version="1.0">
    <tocitem text="Jam Data Acquisition Help">
-      <tocitem text="Configuring Jam" target="configure" /> 
-      <tocitem text="Using Jam" >
+      <tocitem text="Configuration Files" target="configure" > 
+          <tocitem text="System Configuration" target="jamconfig" />
+          <tocitem text="Session Configuration" target="jamuser" />
+      </tocitem>
+      <tocitem text="Using Jam" target="usingjam" >
           <tocitem text="Online Sorting" target="online" />
           <tocitem text="Offline Sorting" target="offline" />
-          <tocitem text="Remote Viewing" target="remote" />
           <tocitem text="Fitting Spectra" target="fitting" />
-          <tocitem text="Menus" target="menus" />
+      	  <tocitem text="Writing Sort Routines" target="writesort" />
       </tocitem>
-      <tocitem text="Writing Sort Routines" target="writesort" />
-      <tocitem text="L002 Event Format" target="l002" />
-      <tocitem text="VME Communication Protocol" target="protocol" />
+      <tocitem text="Menus" target="menus" />
+      <tocitem text="Technical Reference" >
+      	<tocitem text="L002 Event Format" target="l002" />
+      	<tocitem text="VME Communication Protocol" target="protocol" />
+		<tocitem text="API" />
+      </tocitem>
    </tocitem>
    </toc>

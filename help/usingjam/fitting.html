@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>Fitting Spectra in Jam</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+</HEAD>
+<BODY>
+
+<H2>Fitting Spectra</H2>
+
+<p>Spectrum fitting routines are loaded by going to the <span class=jammenu>Fitting</span> menu and 
+selecting the name from the <span class=jammenu>Load Fit...</span> dialog. Once you have loaded
+the fit routine, it will be available from the <span class=jammenu>Fitting</span>
+menu. Fitting routines always attempt to fit the currently displayed histogram.
+Right now there are two fitting routines available in <span
+class=jam>Jam</span>. <code>GaussianFit</code> can fit
+a single Gaussian peak with a quadratic background.  
+<code>PeakIntensity</code> will extract the area minus a linear
+background for any peak shape.</p>
+
+<h3>Fitting a Gaussian peak</h3>
+
+<p>You will be presented with a dialog box which has spaces for the fit
+parameters and their fit errors. There are also checkboxes for some parameters
+for fixing their values, or letting the routine <a href="#estimate">estimate</a> in initial guess.
+Click <span class=jambutton>Get
+Mouse</span> to enter the channels by clicking on the displayed histogram.  Click 
+<span class=jambutton>Do Fit</span> to call methods in
+<a href="../../API/jam/fit/NonLinearFit.html">NonLinearFit</a>
+to find a best fit for the selected peak.   <code>NonLinearFit</code> uses the
+Levenberg-Marquadt
+method to find a minimum chi-square statistic by varying the fit parameters from
+an initial guess.  This method
+requires the parameters to be reasonably well guessed, so that they are already
+near the (hopefully global) minimum.</p>
+
+<p><a name="estimate"></a>An optional
+method called <code>estimate()</code> takes care of some of the work of guessing
+parameters by pre-calculating area, width, and background level.  Clicking <span
+class=jambutton>Draw Fit</span>  will draw a curve for the presently entered
+parameter values in the dialog box. The <span
+class=jambutton>Draw Fit</span> button is useful for manually finding
+good initial guesses. After fitting, the program automatically draws its best fit.</p>
+
+<h3>Using PeakIntensity</h3>
+<P><code>PeakIntensity</code> works in a very similar way. Select the extremes of
+the region to fit with the parameters "Low Channel" and 
+"High Channel". Then select two channels immediately to either side of the peak
+using "Low Peak" and "High Peak". A linear background is fit to the background
+region outside the peak, and the area and centroid are returned for the peak itself. 
+The background is plotted on the histogram.</p>
+
+<h3>Writing your own fit routines</h3>
+
+<p>It is possible to write your own fit routines for <span class=jam>jam</span>.
+Write a class which extends the abstract class <a href="../../API/jam/fit/NonLinearFit.html">NonLinearFit</a>
+by implementing the methods <code>valueAt()</code>, and
+<code>derivative()</code>, and optionally <code>estimate()</code>.  
+Your constructor will define your parameters, which
+are instances of the <a href="../../API/jam/fit/Parameter.html">Parameter</a> 
+class. You <em>must</em> place the fit routine on your classpath in a package named
+"fit".</p> 
+
+</BODY>
+</HTML>
