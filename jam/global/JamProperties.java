@@ -180,14 +180,6 @@ public class JamProperties {
 	 */
 	public final static String NO_FILL_GATE = "graph.noFillGate";
 	
-	/**
-	 * <code>true</code> if Jam should use a continuous gradient
-	 * color scale on 2d plots when painting them.
-	 * 
-	 * @see jam.plot.GradientColorScale
-	 */
-	public final static String GRADIENT_SCALE = "graph.gradientScale";
-	
 	private final static String NO_ERRORS="No error messages.";
 	private final static String NO_WARNINGS="No warning messages.";
 		
@@ -482,7 +474,6 @@ public class JamProperties {
 		jamProperties.setProperty(EVENT_INSTREAM,
 		"jam.sort.stream.YaleCAEN_InputStream");
 		jamProperties.setProperty(EVENT_OUTSTREAM,"jam.sort.stream.YaleOutputStream");
-		setProperty(GRADIENT_SCALE,true);
 	}
 	
 	private static final String TRUE=Boolean.toString(true);
