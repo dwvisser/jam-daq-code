@@ -7,14 +7,12 @@ import java.io.RandomAccessFile;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
-
 /**
  * Class which reads and writes DataObjects to and from
  * HDF files on disk.
  *
- * @author 	Dale Visser, Ken Swartz
+ * @author 	Dale Visser
+ * @author Ken Swartz
  * @since       JDK1.1
  */
 public final class HDFile extends RandomAccessFile implements HDFconstants {
@@ -29,15 +27,17 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return filter.accept(file);
 	}
 	
-	private AsyncProgressMonitor asyncProgressMonitor;
+	private final AsyncProgressMonitor monitor;
 	
-	private int stepsProgress;
+	private final int stepsToTake;
 	
 	private boolean lazyLoadData =true;
 	/** Number of data objects to lazy load */
-	private int lazyLoadNumber;
+	private int lazyLoadNum;
+	
 	/** Count number of data object that have been lazy loaded */
-	private int lazyLoadCount;		
+	private int lazyCount;
+	
 	/**
 	 * variable for marking position in file
 	 */
@@ -49,13 +49,16 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @param file file to be accessed
 	 * @param mode "r" or "rw"
+	 * @param progMon progress monitor
+	 * @param steps to take to completion
 	 * @exception FileNotFoundException if given file not found
 	 */
-	public HDFile(File file, String mode, AsyncProgressMonitor asyncProgressMonitor, int stepsProgress) throws FileNotFoundException {
-		super(file, mode);
-		this.asyncProgressMonitor=asyncProgressMonitor;
-		this.stepsProgress=stepsProgress;
-	}
+	HDFile(File file, String mode, AsyncProgressMonitor progMon,
+            int steps) throws FileNotFoundException {
+        super(file, mode);
+        monitor = progMon;
+        stepsToTake = steps;
+    }
 	
 	/**
 	 * Constructor called with a <code>File</code> object, and an access
@@ -66,12 +69,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception FileNotFoundException if given file not found
 	 */
 	public HDFile(File file, String mode) throws FileNotFoundException {
-		super(file, mode);
-		stepsProgress=0;	//ignores progress
+		this(file, mode, null, 0);//ignores progress
 	}
 	
-	void setLazyLoadData(boolean isLazyLoadData) {
-		lazyLoadData=isLazyLoadData;
+	void setLazyLoadData(boolean lazy) {
+		lazyLoadData=lazy;
 	}
 	
 	boolean isLazyLoadData() {
@@ -163,19 +165,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	private void writeAllObjects() throws HDFException {
 		final List objectList = DataObject.getDataObjectList();
-		
-		int numberObjctProgressStep;
 		int countObjct=0;
-		
-		numberObjctProgressStep=getNumberObjctProgressStep(objectList.size());
-		
+		final int numObjSteps = getNumberObjctProgressStep(objectList.size());
 		final Iterator temp = objectList.iterator();
 		boolean foundEmpty = false;
 		writeLoop: while (temp.hasNext()) {
-			if (countObjct%numberObjctProgressStep==0) {
-				asyncProgressMonitor.increment();
+			if (countObjct%numObjSteps==0) {
+				monitor.increment();
 			}
-			
 			final DataObject dataObject = (DataObject) (temp.next());
 			if (dataObject.getBytes().capacity() == 0){
 			    foundEmpty=true;
@@ -189,15 +186,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 		
-	private void setProgress(final ProgressMonitor monitor, final int value){
-		final Runnable runner=new Runnable(){
-			public void run(){
-				monitor.setProgress(value);					
-			}
-		};
-		SwingUtilities.invokeLater(runner);
-	}
-
 	/**
 	 * Given a data object, writes out the appropriate bytes to the file
 	 * on disk.
@@ -222,25 +210,20 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readFile() throws HDFException {
-		
-		int numberObjctProgressStep;
-		int countObjct=0;
-		lazyLoadNumber=0;
-		lazyLoadCount=0;
-			
+		lazyLoadNum=0;
+		lazyCount=0;	
 		try {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file");
 			}
-			
 			seek(4);
 			boolean doAgain = true;
 			do {
 				final int numDD = readShort(); //number of DD's
 				final int nextBlock = readInt();
 				//Just one dd block for now
-				numberObjctProgressStep=getNumberObjctProgressStep(numDD);
-				
+				final int numObjSteps=getNumberObjctProgressStep(numDD);
+				int countObjct=0;
 				for (int i = 1; i <= numDD; i++) {
 					final short tag = readShort();
 					final short ref = readShort();
@@ -252,18 +235,15 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 						 tag==DataObject.DFTAG_SD)
 					{
 						DataObject.create(tag,ref,offset,length);
-						lazyLoadNumber++;
+						lazyLoadNum++;
 					} else {
 						final byte [] bytes = readBytes(offset,length);
-						DataObject.create(bytes,tag,ref,offset,length);
+						DataObject.create(bytes,tag,ref);
 					}
-
 					countObjct++;
-					
 					//Update progress bar
-					if (countObjct%numberObjctProgressStep==0) {
-						if (asyncProgressMonitor!=null)	//FIXME KBS cleanup
-							asyncProgressMonitor.increment();
+					if (countObjct%numObjSteps==0 && monitor != null) {
+						monitor.increment();
 					}
 
 				}
@@ -273,7 +253,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					seek(nextBlock);
 				}
 			} while (doAgain);
-			
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem reading HDF file objects. ",e);
@@ -328,52 +307,42 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		super.close();
 	}
 
-	/**
+	/* non-javadoc:
 	 * Lazy load the bytes for an object
-	 * @param sd
-	 * @throws HDFException
 	 */
 	byte [] lazyReadData(DataObject dataObject) throws HDFException {
-
-        int numberObjctProgressStep=getNumberObjctProgressStep(lazyLoadNumber);
-        
-		byte [] localBytes = new byte[dataObject.getLength()];
-		
+        final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum);
+		final byte [] localBytes = new byte[dataObject.getLength()];	
 		try {
 	        seek(dataObject.getOffset());
 	        read(localBytes);
-
-			if (lazyLoadCount%numberObjctProgressStep==0) {
-				if (asyncProgressMonitor!=null) {	//FIXME KBS cleanup
-					asyncProgressMonitor.increment();
+			if (lazyCount%numObjSteps==0) {
+				if (monitor!=null) {	//FIXME KBS cleanup
+					monitor.increment();
 				}
 			}
-			lazyLoadCount++;
-	        
+			lazyCount++;
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem lazy reading data objects. ",e);
 		}		
 		return localBytes;
 	}
-	/**
-	 * 
-	 * @param numberObjects
-	 * @return
-	 */
-	private int getNumberObjctProgressStep(int numberObjects) {
-		int numberObjctProgressStep;
-		int countObjct=0;
-		if (stepsProgress>0) {
-			numberObjctProgressStep =numberObjects/stepsProgress;
-			if (lazyLoadData)	//half the steps if lazy load (redo to take care of round off)
-				numberObjctProgressStep=2*numberObjects/stepsProgress;
-			if (numberObjctProgressStep <=0)
-				numberObjctProgressStep=1;
+	
+	private int getNumberObjctProgressStep(int numObjects) {
+		int rval;
+		if (stepsToTake>0) {
+			rval =numObjects/stepsToTake;
+			if (lazyLoadData){	//half the steps if lazy load (redo to take care of round off)
+				rval=2*numObjects/stepsToTake;
+			}
+			if (rval <=0) {
+				rval=1;
+			}
 		} else {
-			numberObjctProgressStep =1;
+			rval =1;
 		}
-		return numberObjctProgressStep;
+		return rval;
 	}
 
 }
