@@ -128,7 +128,7 @@ public class HistApplet
 		try {
 			new jam.InitialHistograms();//load initial histograms
 			setHistogramList(Histogram.getHistogramList());
-			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
+			//display.setPreference(Display.JamPrefs.WHITE_BACKGROUND, true);
 		} catch (Exception e) {
 			System.out.println("Error create histograms ");
 		}
