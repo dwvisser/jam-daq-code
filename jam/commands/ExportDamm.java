@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.MessageHandler;
 import jam.io.ImpExpORNL;
 
 /**
@@ -9,14 +8,9 @@ import jam.io.ImpExpORNL;
  * @author Dale Visser
  */
 final class ExportDamm extends AbstractExportFile {
-	
-	ExportDamm(){
-		super();
+		
+	protected void initCommand(){
 		putValue(NAME,"Oak Ridge DAMM");
-	}
-	
-	public void init(MessageHandler mh){
-		super.init(mh);
 		importExport=new ImpExpORNL(status.getFrame(),msghdlr);		
 	}
 }

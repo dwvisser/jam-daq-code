@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.MessageHandler;
 import jam.io.ImpExpXSYS;
 
 /**
@@ -10,13 +9,8 @@ import jam.io.ImpExpXSYS;
  */
 final class ImportXSYS extends AbstractImportFile {
 	
-	ImportXSYS(){
-		super();
+	protected void initCommand(){
 		putValue(NAME,"TUNL's XSYS");
-	}
-	
-	public void init(MessageHandler mh){
-		super.init(mh);
 		importExport=new ImpExpXSYS(status.getFrame(),msghdlr);		
 	}
 }

@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.MessageHandler;
 import jam.io.ImpExpORNL;
 
 /**
@@ -10,13 +9,8 @@ import jam.io.ImpExpORNL;
  */
 final class ImportDamm extends AbstractImportFile {
 	
-	ImportDamm(){
-		super();
-		putValue(NAME,"Oak Ridge DAMM");
-	}
-	
-	public void init(MessageHandler mh){
-		super.init(mh);
+	protected void initCommand(){
+		putValue(NAME,"Oak Ridge DAMM");		
 		importExport=new ImpExpORNL(status.getFrame(),msghdlr);		
 	}
 }

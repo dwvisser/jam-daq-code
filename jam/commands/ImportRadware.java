@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.MessageHandler;
 import jam.io.ImpExpSPE;
 
 
@@ -10,14 +9,9 @@ import jam.io.ImpExpSPE;
  * @author Dale Visser
  */
 final class ImportRadware extends AbstractImportFile{
-	
-	ImportRadware(){
-		super();
+		
+	protected void initCommand(){
 		putValue(NAME,"Radware gf3");
-	}
-	
-	public void init(MessageHandler mh){
-		super.init(mh);
 		importExport=new ImpExpSPE(status.getFrame(),msghdlr);		
 	}
 	

@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.global.MessageHandler;
 import jam.io.ImpExpASCII;
 
 /**
@@ -10,14 +9,9 @@ import jam.io.ImpExpASCII;
  * @author Dale Visser
  */
 final class ImportTextFile extends AbstractImportFile {
-	
-	ImportTextFile(){
-		super();
-		putValue(NAME,"Text File");
-	}
-	
-	public void init(MessageHandler mh){
-		super.init(mh);
+		
+	protected void initCommand(){
+		putValue(NAME,"Text File");		
 		importExport=new ImpExpASCII(status.getFrame(),msghdlr);		
 	}
 }
