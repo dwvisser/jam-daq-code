@@ -134,6 +134,36 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param histogramList list of histograms to write
      */
     public void writeFile(File file, List histogramList) {
+        if (overWriteExistsConfirm(file)) {
+        	//Histogram list
+            final Iterator iterHist = histogramList.iterator();
+            final List hist = new ArrayList();
+            while (iterHist.hasNext()) {
+                final Histogram h = (Histogram) iterHist.next();
+                if (h.getArea() > 0) {
+                    hist.add(h);
+                }
+            }
+            //Gate list
+            final List gate = new ArrayList();
+            gate.addAll(Gate.getGateList());
+            final Iterator it = gate.iterator();
+            while (it.hasNext()) {
+                final Gate g = (Gate) (it.next());
+                if (!g.isDefined()) {
+                	//FIXME Check gate is in histgram List
+                    it.remove();
+                }
+            }
+            //Scaler list
+            final List scaler = Scaler.getScalerList();
+
+            //Parameter list
+            final List parameter = DataParameter.getParameterList();
+                   
+             //Asyncronized write 
+             asyncWriteFile(file, hist, gate, scaler, parameter);
+        }
     	
     	
     }
