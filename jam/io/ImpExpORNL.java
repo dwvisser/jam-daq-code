@@ -47,52 +47,48 @@ public class ImpExpORNL extends ImpExp {
 	/**
 	 *  Stuff read in for every drr file
 	 */
-	String signature;
-	int totalHist; //number of histograms
-	int totalHalfWords;
-	int temp;
-	int year;
-	int month;
-	int day;
-	int hour;
-	int minute;
-	int second;
-	String chilText;
+	private String signature;
+	private int totalHist; //number of histograms
+	private int totalHalfWords;
+	private int temp;
+	private int year;
+	private int month;
+	private int day;
+	private String chilText;
 
-	//Histogram imfo in Drr file for each histogram
-	//
-	int[] dim; // Histogram dimensionality 
-	int[] chSize; //half words per channel
-	int[] param1; // Histogram parameter
-	int[] param2;
-	int[] param3;
-	int[] param4;
-	int[] lenParRaw1; //Length raw parameters
-	int[] lenParRaw2;
-	int[] lenParRaw3;
-	int[] lenParRaw4;
-	int[] lenParScal1; //Length scaled parameters
-	int[] lenParScal2;
-	int[] lenParScal3;
-	int[] lenParScal4;
-	int[] minCh1; //Min channels
-	int[] minCh2;
-	int[] minCh3;
-	int[] minCh4;
-	int[] maxCh1; //Max channels 
-	int[] maxCh2;
-	int[] maxCh3;
-	int[] maxCh4;
-	int[] offSet;
-	String[] parLabelX; //x-parm label x 12 bytes
-	String[] parLabelY; //y parm label y 12 bytes		
-	float[] cal1; // Calibration constants
-	float[] cal2;
-	float[] cal3;
-	float[] cal4;
-	String[] titleDrr; //title 40 bytes
+	/* Histogram info in Drr file for each histogram */
+	private int[] dim; // Histogram dimensionality 
+	private int[] chSize; //half words per channel
+	private int[] param1; // Histogram parameter
+	private int[] param2;
+	private int[] param3;
+	private int[] param4;
+	private int[] lenParRaw1; //Length raw parameters
+	private int[] lenParRaw2;
+	private int[] lenParRaw3;
+	private int[] lenParRaw4;
+	private int[] lenParScal1; //Length scaled parameters
+	private int[] lenParScal2;
+	private int[] lenParScal3;
+	private int[] lenParScal4;
+	private int[] minCh1; //Min channels
+	private int[] minCh2;
+	private int[] minCh3;
+	private int[] minCh4;
+	private int[] maxCh1; //Max channels 
+	private int[] maxCh2;
+	private int[] maxCh3;
+	private int[] maxCh4;
+	private int[] offSet;
+	private String[] parLabelX; //x-parm label x 12 bytes
+	private String[] parLabelY; //y parm label y 12 bytes		
+	private float[] cal1; // Calibration constants
+	private float[] cal2;
+	private float[] cal3;
+	private float[] cal4;
+	private String[] titleDrr; //title 40 bytes
 
-	int[] iDnumber; //ID list
+	private int[] iDnumber; //ID list
 
 	//private byte[] tempInt = new byte[4];
 	private byte[] tempShort = new byte[2];
@@ -102,7 +98,6 @@ public class ImpExpORNL extends ImpExp {
 	 */
 	public ImpExpORNL(Frame frame, MessageHandler msgHandler) {
 		super(frame, msgHandler);
-		//		HistogramRecords = new Vector();
 	}
 
 	public ImpExpORNL() {
@@ -302,7 +297,6 @@ public class ImpExpORNL extends ImpExp {
 	 * Read in a histogram.
 	 */
 	private void readHist(RandomAccessFile fileHis, int k) throws IOException {
-		//Histogram hist;
 		int offset; //offset set in byte array
 		int numByteToRead;
 		byte[] inBuffer;
