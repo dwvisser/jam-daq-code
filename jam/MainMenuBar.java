@@ -50,7 +50,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 	final private JamStatus status=JamStatus.instance();
 	final private JMenu fitting=new JMenu("Fitting");;
 	final private JMenuItem impHist= new JMenu("Import");
-	final private JMenuItem runacq = new JMenuItem("Run\u2026");
+	//final private JMenuItem runacq = new JMenuItem();
 	final private JMenuItem sortacq = new JMenuItem("Sort\u2026");
 	final private JMenuItem statusacq = new JMenuItem("Buffer Count\u2026");
 	final private JMenuItem iflushacq = new JMenuItem("flush");
@@ -257,9 +257,9 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		iflushacq.addActionListener(jamCommand);
 		mcontrol.add(iflushacq);
 		mcontrol.addSeparator();
-		runacq.setEnabled(false);
-		runacq.setActionCommand("run");
-		runacq.addActionListener(jamCommand);
+		final JMenuItem runacq=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_RUN_CONTROL));
+		//runacq.setEnabled(false);
 		mcontrol.add(runacq);
 		sortacq.setEnabled(false);
 		sortacq.setActionCommand("sort");
@@ -420,7 +420,6 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		cstartacq.setEnabled(online);
 		cstopacq.setEnabled(online);
 		iflushacq.setEnabled(online);
-		runacq.setEnabled(online);
 		sortacq.setEnabled(offline);
 		paramAction.setEnabled(sorting);
 		statusacq.setEnabled(sorting);
