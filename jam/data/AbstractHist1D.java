@@ -45,14 +45,14 @@ public abstract class AbstractHist1D extends Histogram {
 		unsetErrors();
 	}
 	
-	private static final double [] NO_ERRORS=new double[0];
+	private static final double [] EMPTY_DOUBLE=new double[0];
 	
 	/**
 	 * Make it so no error bars are <em>explicitly</em> defined
 	 * for this histogram.
 	 */
 	protected synchronized final void unsetErrors(){
-		errors=NO_ERRORS;
+		errors=EMPTY_DOUBLE;
 		errorsSet=false;
 	}
 	
