@@ -1,20 +1,16 @@
 package jam;
 
 import jam.global.MessageHandler;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-import javax.swing.*;
 import java.io.*;
 import java.util.prefs.Preferences;
+
+import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Help shows the program about
@@ -39,12 +35,15 @@ class Help {
 		final String url="http://jam-daq.sourceforge.net/";
 		this.frame = f;
 		messageHandler=mh;
+
 		aboutD = new JDialog(frame, "About Jam", false);
 		final Container cad = aboutD.getContentPane();
 		aboutD.setResizable(false);
 		aboutD.setLocation(posx, posy);
 		cad.setLayout(new BorderLayout());
 		final JPanel pcenter = new JPanel(new GridLayout(0, 1));
+		Border border = new EmptyBorder(20,20,20,20);
+		pcenter.setBorder(border);
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
 			new JLabel("Jam v" + Version.getName(), JLabel.CENTER));
@@ -55,7 +54,7 @@ class Help {
 				JLabel.CENTER));
 		pcenter.add(
 			new JLabel(url, JLabel.CENTER));
-		final JPanel pbut = new JPanel(new GridLayout(1, 0));
+		final JPanel pbut = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cad.add(pbut, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
