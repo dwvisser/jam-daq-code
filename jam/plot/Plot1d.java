@@ -15,6 +15,7 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,11 @@ final class Plot1d extends AbstractPlot {
 
 	private int areaMark1, areaMark2;
 
-	private List overlayHists;
-
-	private Map countsOverlay = Collections.synchronizedMap(new HashMap());
+	private List overlayNumber = Collections.synchronizedList(new ArrayList());
 	
+	private List overlayCounts = Collections.synchronizedList(new ArrayList());
+	//private Map overlayCounts = Collections.synchronizedMap(new HashMap());
+
 	private final PlotColorMap colorMap=PlotColorMap.getSingletonInstance();
 
 	private static double sensitivity = 3;
@@ -47,44 +49,27 @@ final class Plot1d extends AbstractPlot {
 
 	private static boolean pfcal = true;
 
-	/**ss
+	/**
 	 * Constructor.
 	 * 
-	 * @param a
-	 *            the
 	 */
 	Plot1d() {
 		super();
 		setPeakFind(PREFS.getBoolean(AUTO_PEAK_FIND, true));
 	}
-	
-	void setOverlayList(List list){
-		overlayHists=list;
-	}
-
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms(List overlayHists) {
+	void overlayHistograms(Histogram []  overlayHists) {
 		displayingOverlay = true;
-		/* retain any items in list in the map */
-		countsOverlay.keySet().retainAll(overlayHists);
-		final Iterator iter = overlayHists.iterator();
-		while (iter.hasNext()) {
-			final Integer key = (Integer) iter.next();
-			final int num = key.intValue();
-			final Histogram hOver = Histogram.getHistogram(num);
+		/* retain any items in list in the map Performance improvement */
+		//Set retain =countsOverlay.keySet().retainAll(overlayHists.getName());
+		overlayCounts.clear();
+		overlayNumber.clear();
+		for(int i=0;i<overlayHists.length; i++){
+			final Histogram hOver = overlayHists[i];
 			final int sizex = hOver.getSizeX();
-			final Object value = countsOverlay.get(key);
-			final boolean create = value == null
-					|| ((double[]) value).length != sizex;
-			final double[] ctOver;
-			if (create) {
-				ctOver = new double[sizex];
-			} else {
-				ctOver = (double[]) value;
-			}
-			
+			double []ctOver = new double[sizex];
 			final Histogram.Type hoType = hOver.getType();
 			if (hoType == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hOver.getCounts();
@@ -94,11 +79,17 @@ final class Plot1d extends AbstractPlot {
 			} else if (hoType == Histogram.Type.ONE_D_DOUBLE) {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
-			countsOverlay.put(key, ctOver);			
+
+			overlayCounts.add(ctOver);
+			overlayNumber.add(new Integer(hOver.getNumber())); 			
 		}
 		panel.repaint();
 	}
-
+	void removeOverlays() {
+		overlayCounts.clear();
+		overlayNumber.clear();
+	}
+	
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
@@ -269,12 +260,7 @@ final class Plot1d extends AbstractPlot {
 		/* draw ticks after histogram so they are on top */
 		g.setColor(colorMap.getForeground());
 		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
-		final int len = displayingOverlay ? overlayHists.size() : 0;
-		final int[] overlays = new int[len];
-		for (int i = 0; i < len; i++) {
-			overlays[i] = ((Integer) overlayHists.get(i)).intValue();
-		}
-		graph.drawNumber(plotHist.getNumber(), overlays);
+		
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
@@ -305,17 +291,26 @@ final class Plot1d extends AbstractPlot {
 	 */
 	protected void paintOverlay(Graphics g) {
 		final Graphics2D g2 = (Graphics2D) g;
+		int i = 0;
 		/*
 		 * I had compositing set here, but apparently, it's too many small draws
 		 * using compositing, causing a slight performance issue.
 		 */
-		final Iterator iter = overlayHists.iterator();
-		int i = 0;
-		while (iter.hasNext()) {
-			g2.setColor(colorMap.getOverlay(i));
-			graph.drawHist((double[]) countsOverlay.get(iter.next()), binWidth);
-			i++;
+		final int len = displayingOverlay ? overlayNumber.size() : 0;	
+		if (len>0) {
+			final int[] overlayInts = new int[len];		
+			final Iterator iter = overlayNumber.iterator();
+
+			while (iter.hasNext()) {
+				overlayInts[i] = ((Integer) iter.next()).intValue();
+				g2.setColor(colorMap.getOverlay(i));
+				graph.drawHist((double[]) overlayCounts.get(i), binWidth);				
+				i++;
+			}
+			Histogram plotHist=getHistogram();
+			graph.drawNumber(plotHist.getNumber(), overlayInts);			
 		}
+
 	}
 
 	/**

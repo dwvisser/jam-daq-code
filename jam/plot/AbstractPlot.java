@@ -415,7 +415,9 @@ abstract class AbstractPlot implements PlotPrefs,
 	 */
 	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
 	
-	abstract void overlayHistograms(List overlayHists);
+	abstract void overlayHistograms(Histogram [] overlayHists);
+	
+	abstract void removeOverlays();
 	
 	/*
      * non-javadoc: Copies the counts into the local array--needed by scroller.

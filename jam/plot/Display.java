@@ -222,10 +222,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	private void overlayHistogram(Histogram [] hists){
 		if (hists.length>0) {
-			for (int i=0;i<hists.length; i++) {
-				int num=hists[0].getNumber();		
-				overlayHistogram(num);	
-			}
+			currentPlot.overlayHistograms(hists);
 		}else{
 			removeOverlays();
 		}
@@ -237,17 +234,21 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param num the number of the hist to overlay
 	 */
 	public void overlayHistogram(int num) {
-		final Histogram h = Histogram.getHistogram(num);
+		final Histogram hist = Histogram.getHistogram(num);
 		/* Check we can overlay. */
 		if (!(getPlot().getDimensionality()==1)) {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
-		if (h.getDimensionality() != 1) {
+		if (hist.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
-		currentPlot.overlayHistograms(num);		
+		Histogram [] hists = new Histogram [1];
+		hists[0]=hist;
+		overlayHistogram(hists);
+		
+		//FIXME KBS REMOVE currentPlot.overlayHistograms(num);		
 	}
 	
 	/**

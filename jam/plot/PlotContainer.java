@@ -9,9 +9,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.print.PageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -92,8 +89,6 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 
 	private final PlotSelectListener plotSelectListener;
 
-	private final List overlays = Collections.synchronizedList(new ArrayList());
-
 	private int layoutType, plotNumber;
 
 	private AbstractPlot currentSubPlot;
@@ -112,7 +107,6 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		panel.setLayout(plotSwapPanelLayout);
 		/* panel 1d plot and its scroll bars */
 		plot1d = new Plot1d();
-		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
 		scroller1d = new Scroller(plot1d);
 		panel.add(KEY1, scroller1d);
 		plot1d.setPlotSelectListener(this);
@@ -203,25 +197,15 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param num
 	 *            the number of the histogram
 	 */
-	void overlayHistograms(int num) {
-		final Integer value = new Integer(num);
-		synchronized (plotLock) {
-			/* Don't overlay histogram already displayed. */
-			final Histogram hist=currentSubPlot.getHistogram();
-			if (hist!=null && 
-				hist.getNumber() != num && 
-				!overlays.contains(value)) {
-				overlays.add(value);
-			}
-			currentSubPlot.overlayHistograms(overlays);
-		}
+	void overlayHistograms(Histogram [] hists) {
+		currentSubPlot.overlayHistograms(hists);
 	}
 	
-	/**
+	/** 
 	 * Clear overlays.
 	 */
 	void removeOverlays() {
-		overlays.clear();
+		currentSubPlot.removeOverlays();
 	}
 
 	/**

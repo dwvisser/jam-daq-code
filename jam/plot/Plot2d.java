@@ -15,7 +15,6 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
-import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -531,7 +530,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 			double[] residuals, int ll){
 		//NOP
 	} 
-	void overlayHistograms(List overlayHists){ 
+	void overlayHistograms(Histogram [] overlayHists){ 
+		//NOP
+	}
+	void removeOverlays() {
 		//NOP
 	}
 	int getChannel(double energy){
