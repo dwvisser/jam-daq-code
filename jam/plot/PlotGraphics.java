@@ -1186,18 +1186,15 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 *
 	 */
 	public void markArea1d(int lowChan, int highChan, double[] counts) {
-
-		int minChan = Math.max(minX, lowChan);
-		int maxChan = Math.min(maxX, highChan);
 		int x1, x2, y; //x1 left rect x2 right rect
 		int width, height;
 
+		int minChan = Math.max(minX, lowChan);
+		int maxChan = Math.min(maxX, highChan);
 		//for each channel draw a filled rectangle
 		for (int i = minChan; i <= maxChan; i++) {
-
 			x1 = toViewHorzLin(i);
 			x2 = toViewHorzLin(i + 1);
-
 			if (i != minX) {
 				if (counts[i - 1] < counts[i]) {
 					x1 = x1 + 1;
@@ -1210,31 +1207,25 @@ class PlotGraphics implements PlotGraphicsLayout {
 				if (counts[i] > counts[i + 1]) {
 					x2 = x2 - 1;
 				}
-				//special case at upper end
-			} else {
-				x2 = x2;
-			}
+			} // else x2 remains the same
 			width = x2 - x1 + 1;
-
 			if (scale == LINEAR) {
 				y = toViewVertLinCk(counts[i]) + 1;
 			} else {
 				y = toViewVertLog(counts[i]) + 1;
 			}
 			height = viewBottom - y;
-
 			g.fillRect(x1, y, width, height);
-
 		}
 	}
 
 	/**
-	 * Mark an area in a 2 d plot
+	 * Mark an area in a 2d plot.
+	 * 
 	 * @param lowChanX lower limit in X
 	 * @param highChanX upper limit in X
 	 * @param lowChanY lower limit in Y
 	 * @param highChanY upper limit in Y
-	 *
 	 */
 	public void markArea2d(
 		int lowChanX,
