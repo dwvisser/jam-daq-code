@@ -33,7 +33,7 @@ public class FitConsole
 	implements MessageHandler {
 
 	
-	private final static int NUMBER_LINES_LOG = 100;
+	private final static int LOG_LINES = 100;
 
 	/**
 	 * End of line character(s).
@@ -48,15 +48,9 @@ public class FitConsole
 	//private JTextField textIn; //input text field
 	private final JScrollPane jsp;
 
-	/**
-	 * Private.
-	 *
-	 * @serial
-	 */
-	private boolean newMessage;
-	//Is the message a new one or a continuation of one
+	/** A lock for message output so message dont overlap. */
 	private boolean msgLock;
-	//a lock for message output so message dont overlap
+	
 	/**
 	 * Private.
 	 *
@@ -71,7 +65,7 @@ public class FitConsole
 	 * a text field for intput.
 	 */
 	public FitConsole() {
-		this(NUMBER_LINES_LOG);
+		this(LOG_LINES);
 	}
 
 	/**
@@ -96,7 +90,6 @@ public class FitConsole
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
-		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
 	}
@@ -173,8 +166,6 @@ public class FitConsole
 		//unlock text area and notify others they can use it
 		msgLock = false;
 		notifyAll();
-		//FIXME get rid of
-		newMessage = true;
 	}
 
 	/**
