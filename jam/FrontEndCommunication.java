@@ -1,6 +1,10 @@
  package jam;
- import java.util.*;
- import jam.sort.*;
+ import jam.sort.CamacCommands;
+import jam.sort.VME_Map;
+
+import java.util.Observable;
+import java.util.Observer;
+import java.util.prefs.PreferenceChangeListener;
  
 /**
  * Interface that generalizes to network communicate 
@@ -15,7 +19,7 @@
  * @author   Ken Swartz
  * @since       JDK1.1
  */
-public interface FrontEndCommunication extends Observer{
+public interface FrontEndCommunication extends Observer, PreferenceChangeListener {
 
 	/**
 	 * Standard informational message.
