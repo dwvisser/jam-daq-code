@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 final class AddHDFCmd extends AbstractCommand implements Observer {
 
 	AddHDFCmd(){
-		putValue(NAME,"Add counts...");
+		putValue(NAME,"Add counts\u2026");
 	}
 
 	/* (non-Javadoc)

@@ -2,10 +2,13 @@ package jam.commands;
 
 import jam.data.control.DataControl;
 import jam.global.BroadcastEvent;
+import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Open a hdf file
@@ -13,7 +16,11 @@ import java.io.File;
  * @author Ken Swartz
  *
  */
-final class OpenHDFCmd extends AbstractCommand {
+final class OpenHDFCmd extends AbstractCommand implements Observer {
+	
+	OpenHDFCmd(){
+		putValue(NAME,"Open\u2026");
+	}
 
 	/* 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
@@ -51,5 +58,14 @@ final class OpenHDFCmd extends AbstractCommand {
 		DataControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 		status.getFrame().repaint();
-	}							
+	}			
+	
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			final SortMode mode=status.getSortMode();
+			setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
+		}
+	}
 }

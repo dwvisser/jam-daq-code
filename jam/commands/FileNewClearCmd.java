@@ -4,6 +4,9 @@ import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -13,7 +16,11 @@ import javax.swing.JOptionPane;
  * @author Ken Swartz
  *
  */
-final class FileNewClearCmd extends AbstractCommand {
+final class FileNewClearCmd extends AbstractCommand implements Observer {
+	
+	FileNewClearCmd(){
+		this.putValue(NAME,"Clear data");
+	}
 
 	/**
 	 * Excecute command
@@ -33,16 +40,21 @@ final class FileNewClearCmd extends AbstractCommand {
 		
 	}
 	
-	/*protected void performCommand(int cmdParams) throws CommandException {
-		execute(null);
-	}*/
-	
 	/** 
 	 * Execute command
 	 * @see jam.commands.AbstractCommand#executeStrParam(java.lang.String[])
 	 */
 	protected void executeParse(String[] cmdTokens) {
 		execute(null);		
+	}
+	
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			final SortMode mode=status.getSortMode();
+			setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
+		}
 	}
 
 }

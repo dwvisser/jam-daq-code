@@ -1,15 +1,24 @@
 package jam.commands;
 
+import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
+
+import java.util.Observable;
+import java.util.Observer;
 /**
  *  Reload data from a hdf file
  * 
  * @author Ken Swartz
  *
  */
-final class ReloadHDFCmd extends AbstractCommand {
+final class ReloadHDFCmd extends AbstractCommand implements Observer {
+	
+	ReloadHDFCmd(){
+		putValue(NAME,"Reload\u2026");
+	}
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
@@ -17,10 +26,6 @@ final class ReloadHDFCmd extends AbstractCommand {
 	protected void execute(Object[] cmdParams) {			
 		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);
 		hdfio.readFile(FileOpenMode.RELOAD);		
-		//if (hdfio.readFile(FileOpenMode.RELOAD)) { //true if successful
-			//KBS FIXME Call display Scalers command here
-			//scalerControl.displayScalers();
-		//}
 	}
 
 	/* (non-Javadoc)
@@ -31,4 +36,16 @@ final class ReloadHDFCmd extends AbstractCommand {
 			execute(null);
 	}
 
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			final SortMode mode=status.getSortMode();
+			final boolean online = mode == SortMode.ONLINE_DISK || 
+			mode == SortMode.ONLINE_NO_DISK;
+			final boolean offline = mode == SortMode.OFFLINE;
+			final boolean sorting = online || offline;
+			setEnabled(sorting);
+		}
+	}
 }

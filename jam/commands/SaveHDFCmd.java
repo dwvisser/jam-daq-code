@@ -1,9 +1,14 @@
 package jam.commands;
 
-import jam.io.hdf.HDFIO;
+import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
+import jam.global.SortMode;
+import jam.io.hdf.HDFIO;
 
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -13,7 +18,11 @@ import javax.swing.JOptionPane;
  * @author Ken Swartz
  *
  */
-final class SaveHDFCmd extends AbstractCommand implements Commandable {
+final class SaveHDFCmd extends AbstractCommand implements Observer {
+	
+	SaveHDFCmd(){
+		putValue(NAME,"Save");
+	}
 
 	/**
 	 * Save to a hdf, prompt for overwrite
@@ -69,6 +78,15 @@ final class SaveHDFCmd extends AbstractCommand implements Commandable {
 			throw new CommandListenerException(e.getMessage());
 		}
 
+	}
+	
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			final SortMode mode=status.getSortMode();
+			setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
+		}
 	}
 
 }

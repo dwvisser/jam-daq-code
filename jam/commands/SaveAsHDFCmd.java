@@ -12,6 +12,10 @@ import java.io.File;
  *
  */
 final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
+	
+	SaveAsHDFCmd(){
+		putValue(NAME,"Save as\u2026");
+	}
 
 	/**
 	 * Save to a hdf, prompt for overwrite
