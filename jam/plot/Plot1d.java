@@ -11,10 +11,11 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -35,10 +36,13 @@ class Plot1d extends Plot {
 
 	private List overlayHists;
 
-	private List countsOverlay=Collections.synchronizedList(new ArrayList());
+	private Map countsOverlay = Collections.synchronizedMap(new HashMap());
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
+	 * @param a
+	 *            the
 	 */
 	Plot1d(Action a) {
 		super(a);
@@ -52,26 +56,25 @@ class Plot1d extends Plot {
 		displayingOverlay = true;
 		overlayHists = hists;
 		final int len = hists.size();
-		final int cos = countsOverlay.size();
-		if (cos > len){
-			countsOverlay.subList(len,cos-1).clear();
-		}
-		for (int i = 0; i < len; i++) {
-			final int num=((Integer)hists.get(i)).intValue();
+		/* retain any items in list in the map */
+		countsOverlay.keySet().retainAll(overlayHists);
+		final Iterator iter = overlayHists.iterator();
+		while (iter.hasNext()) {
+			final Integer key = (Integer) iter.next();
+			final int num = key.intValue();
 			final Histogram hOver = Histogram.getHistogram(num);
 			final int sizex = hOver.getSizeX();
-			double [] ctOver;
-			if (i<countsOverlay.size()){
-				ctOver=(double [])countsOverlay.get(i);
-				if (ctOver.length != sizex){
-					ctOver=new double[sizex];
-					countsOverlay.set(i,ctOver);
-				}
+			final Object value = countsOverlay.get(key);
+			final boolean create = value == null
+					|| ((double[]) value).length != sizex;
+			final double[] ctOver;
+			if (create) {
+				ctOver = new double[sizex];
+				countsOverlay.put(key, ctOver);
 			} else {
-				ctOver=new double[sizex];
-				countsOverlay.add(ctOver);
+				ctOver = (double[]) value;
 			}
-			final Histogram.Type hoType=hOver.getType();
+			final Histogram.Type hoType = hOver.getType();
 			if (hoType == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hOver.getCounts();
 				for (int j = 0; j < sizex; j++) {
@@ -205,15 +208,17 @@ class Plot1d extends Plot {
 	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
-	 * @param p1 one limit
-	 * @param p2 the other limit
+	 * @param p1
+	 *            one limit
+	 * @param p2
+	 *            the other limit
 	 */
 	void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 			if (markArea) {
-				final int x1=p1.getX();
-				final int x2=p2.getX();
+				final int x1 = p1.getX();
+				final int x2 = p2.getX();
 				areaMark1 = Math.min(x1, x2);
 				areaMark2 = Math.max(x1, x2);
 			}
@@ -237,15 +242,14 @@ class Plot1d extends Plot {
 	 * labels and last but not least update the scrollbars
 	 */
 	protected void paintHistogram(Graphics g) {
-		final Histogram hist=status.getCurrentHistogram();
-		if (hist.getDimensionality()!=1){
+		final Histogram hist = status.getCurrentHistogram();
+		if (hist.getDimensionality() != 1) {
 			return;//not sure how this happens, but need to check
 		}
 		g.setColor(PlotColorMap.hist);
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
-			graph.drawPeakLabels(hist.findPeaks(sensitivity, width,
-					pfcal));
+			graph.drawPeakLabels(hist.findPeaks(sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
@@ -254,7 +258,7 @@ class Plot1d extends Plot {
 		final int len = displayingOverlay ? overlayHists.size() : 0;
 		final int[] overlays = new int[len];
 		for (int i = 0; i < len; i++) {
-			overlays[i] = ((Integer)overlayHists.get(i)).intValue();
+			overlays[i] = ((Integer) overlayHists.get(i)).intValue();
 		}
 		graph.drawNumber(hist.getNumber(), overlays);
 		graph.drawTicks(PlotGraphics.BOTTOM);
@@ -267,7 +271,7 @@ class Plot1d extends Plot {
 		} else {
 			graph.drawAxisLabel(X_LABEL_1D, PlotGraphics.BOTTOM);
 		}
-		final String axisLabelY=hist.getLabelY();
+		final String axisLabelY = hist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {
@@ -304,19 +308,17 @@ class Plot1d extends Plot {
 	 */
 	protected void paintOverlay(Graphics g) {
 		final Graphics2D g2 = (Graphics2D) g;
-		/* I had compositing set here, but apparently, it's too many
-		 * small draws using compositing, causing a slight performance
-		 * issue. 
+		/*
+		 * I had compositing set here, but apparently, it's too many small draws
+		 * using compositing, causing a slight performance issue.
 		 */
-		/*final Composite prev = g2.getComposite();
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				0.9f));*/
-		final int len = countsOverlay.size();
-		for (int i = 0; i < len; i++) {
+		final Iterator iter = overlayHists.iterator();
+		int i = 0;
+		while (iter.hasNext()) {
 			g2.setColor(PlotColorMap.overlay[i % PlotColorMap.overlay.length]);
-			graph.drawHist((double [])countsOverlay.get(i), binWidth);
+			graph.drawHist((double[]) countsOverlay.get(iter.next()), binWidth);
+			i++;
 		}
-		//g2.setComposite(prev);
 	}
 
 	/**
@@ -423,15 +425,16 @@ class Plot1d extends Plot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	double getEnergy(double channel) {
-		return status.getCurrentHistogram().getCalibration().getCalculatedEnergy(channel);
+		return status.getCurrentHistogram().getCalibration()
+				.getCalculatedEnergy(channel);
 	}
 
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	int getChannel(double energy) {
-		return (int) Math
-				.round(status.getCurrentHistogram().getCalibration().getChannel(energy));
+		return (int) Math.round(status.getCurrentHistogram().getCalibration()
+				.getChannel(energy));
 	}
 
 	/**
@@ -447,7 +450,8 @@ class Plot1d extends Plot {
 				}
 			}
 			setLastMovePoint(graph.toData(me.getPoint()).getPoint());
-			addToSelectClip(selectionStartPoint, Bin.Factory.create(lastMovePoint));
+			addToSelectClip(selectionStartPoint, Bin.Factory
+					.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
 				repaint(getClipBounds(selectingAreaClip, false));
 			}
@@ -463,9 +467,10 @@ class Plot1d extends Plot {
 						addToMouseMoveClip(p1.x, p1.y);
 						if (pointsGate.npoints > 1) {
 							final Point p2 = graph
-									.toViewLin(Bin.Factory.create(
-											pointsGate.xpoints[pointsGate.npoints - 2],
-											pointsGate.ypoints[pointsGate.npoints - 2]));
+									.toViewLin(Bin.Factory
+											.create(
+													pointsGate.xpoints[pointsGate.npoints - 2],
+													pointsGate.ypoints[pointsGate.npoints - 2]));
 							addToMouseMoveClip(p2.x, p2.y);
 						}
 						addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
@@ -493,9 +498,9 @@ class Plot1d extends Plot {
 	}
 
 	/**
-	 * Add to the selection clip region, using the two given
-	 * plot-coordinates points to indicate the corners of a rectangular
-	 * region of channels that needs to be included.
+	 * Add to the selection clip region, using the two given plot-coordinates
+	 * points to indicate the corners of a rectangular region of channels that
+	 * needs to be included.
 	 * 
 	 * @param p1
 	 *            in plot coordinates
@@ -504,7 +509,8 @@ class Plot1d extends Plot {
 	 */
 	private final void addToSelectClip(Bin p1, Bin p2) {
 		synchronized (selectingAreaClip) {
-			selectingAreaClip.add(graph.getRectangleOutline1d(p1.getX(), p2.getX()));
+			selectingAreaClip.add(graph.getRectangleOutline1d(p1.getX(), p2
+					.getX()));
 		}
 	}
 
@@ -536,8 +542,8 @@ class Plot1d extends Plot {
 			 */
 			final Polygon p = new Polygon();
 			final Bin c1 = graph.toData(r.getLocation());
-			final Bin c2 = graph.toData(new Point(r.x + r.width, r.y
-					+ r.height));
+			final Bin c2 = graph
+					.toData(new Point(r.x + r.width, r.y + r.height));
 			p.addPoint(c1.getX(), c1.getY());
 			p.addPoint(c2.getX(), c2.getY());
 			return getClipBounds(p, true);
