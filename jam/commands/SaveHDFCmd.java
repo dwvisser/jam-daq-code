@@ -1,7 +1,6 @@
 package jam.commands;
 
 import jam.global.BroadcastEvent;
-import jam.global.CommandListenerException;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 
@@ -11,7 +10,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -21,67 +19,60 @@ import javax.swing.KeyStroke;
  *
  */
 final class SaveHDFCmd extends AbstractCommand implements Observer {
-	
-	SaveHDFCmd(){
-		putValue(NAME,"Save");
-		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
-		KeyEvent.VK_S,
-		CTRL_MASK | KeyEvent.SHIFT_MASK));
-		enable();//depending on sort mode
+
+	public void initCommand() {
+		putValue(NAME, "Save");
+		putValue(
+			ACCELERATOR_KEY,
+			KeyStroke.getKeyStroke(
+				KeyEvent.VK_S,
+				CTRL_MASK | KeyEvent.SHIFT_MASK));
+		enable(); //depending on sort mode
 	}
 
 	/**
-	 * Save to a hdf, prompt for overwrite
+	 * Save to the last file opened.
+	 * 
+	 * @param cmdParams not used
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) throws CommandException {
-		final JFrame frame = status.getFrame();	
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
-		if ( cmdParams==null) {//No file given			
-			final File file=status.getOpenFile();	
-			if (file!=null) {//Prompt for overwrite
-				if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
-					frame ,"Replace the existing file? \n"+file.getName(),"Save "+file.getName(),
-					JOptionPane.YES_NO_OPTION)){
-						hdfio.writeFile(file);
-					}	
-			} else {//File null	
-				throw new CommandException("Error executing command save");
-			}					
-		} else {//File name given
-			final File file =(File)cmdParams[0];
-			hdfio.writeFile(file);			
-		}			
-	}
-
-	/* 
-	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
-	 */
-	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
-		try {
-			Object [] cmdParams = new Object[1]; 
-			if (cmdTokens.length==0) {
-				execute(null);
-			} else {
-				File file = new File((String)cmdTokens[0]); 
-				cmdParams[0]=(Object)file;
-				execute(cmdParams);
-			}
-		} catch (CommandException e) {
-			throw new CommandListenerException(e.getMessage());
+	protected void execute(Object[] cmdParams) {
+		final JFrame frame = status.getFrame();
+		final HDFIO hdfio = new HDFIO(frame, msghdlr);
+		final File file = status.getOpenFile();
+		if (file != null) { //Prompt for overwrite
+			hdfio.writeFile(file);
+		} else { //File null, shouldn't be.	
+			throw new IllegalStateException("Expected a reference for the previously accessed file.");
 		}
 	}
-	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+
+	/**
+	 * Save to the last file opened.
+	 * 
+	 * @param cmdTokens not used
+	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
+	 */
+	protected void executeParse(String[] cmdTokens) {
+		execute(null);
+	}
+
+	/**
+	 * Listens to bradcaster messages to enable/disable this action.
+	 * 
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	public void update(Observable observe, Object obj) {
+		final BroadcastEvent be = (BroadcastEvent) obj;
+		final int command = be.getCommand();
+		if (command == BroadcastEvent.SORT_MODE_CHANGED) {
 			enable();
 		}
 	}
-	
-	protected void enable(){
-		final SortMode mode=status.getSortMode();
-		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
+
+	protected void enable() {
+		final SortMode mode = status.getSortMode();
+		final boolean file = status.getOpenFile() != null;
+		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));
 	}
 }
