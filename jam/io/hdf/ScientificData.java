@@ -96,7 +96,7 @@ final class ScientificData extends AbstractData {
     }
 
     ScientificData() {
-        super();
+        super(DFTAG_SD);
     }
     
     void init(int offset, int length, short tag, short reference) {

@@ -12,7 +12,7 @@ package jam.io.hdf;
 final class ScientificDataLabel extends AbstractData {
 
     ScientificDataLabel() {
-        super();
+        super(DFTAG_SDL);
     }
 
     /**

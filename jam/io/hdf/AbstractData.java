@@ -144,10 +144,14 @@ public abstract class AbstractData implements Constants {
 	 * @see	#setOffsets()
 	 */
 	static void addDataObjectToList(AbstractData data) {
-		final Integer key =data.getKey();
+		final Integer key = calculateKey(data.getTag(), data.getRef());
 		if (!tagRefMap.containsKey(key)){
 			tagRefMap.put(key, data);
 			objectList.add(data);
+		} else {
+			//FIXME KBS
+			//NOP we should not be here
+			int i=0;
 		}
 	}
 	/**
@@ -232,9 +236,9 @@ public abstract class AbstractData implements Constants {
 	
 	private static AbstractData createDataObject(short tag) throws HDFException {
 		AbstractData rval = null;
-        final Short key = new Short(tag);
-        if (INITABLE.containsKey(key)){
-            final Class dataClass=(Class)INITABLE.get(key);
+        final Short shortTag = new Short(tag);
+        if (INITABLE.containsKey(shortTag)){
+            final Class dataClass=(Class)INITABLE.get(shortTag);
             try {
                 rval = (AbstractData)dataClass.newInstance();
             } catch (InstantiationException ie) {
@@ -268,7 +272,7 @@ public abstract class AbstractData implements Constants {
 	 * @return a reference number for the given HDF object
 	 * @param refs the map for a given tag type
 	 */
-	static short getUniqueRef() {
+	static short createUniqueRef() {
 		//Just add 1, set to 0 every time DataObject.clear is called 
 		return ++refCount;
 	}
@@ -278,7 +282,10 @@ public abstract class AbstractData implements Constants {
 	 */
 	static Integer calculateKey(short tag, short ref){
 	    final int tagInt=tag;
-		final int key= (tagInt<<16)+ref;		
+	    final int refInt = ref;
+		final int key= (tagInt<<16)+refInt;		
+		//FIXME KBS debug
+		System.out.println("  Key tag "+tagInt+" ref "+refInt+" key "+key);
 		return new Integer(key);
 	}
 	
@@ -294,7 +301,7 @@ public abstract class AbstractData implements Constants {
 	 */
 	AbstractData(short tag) {
 		setTag(tag);
-		setRef(getUniqueRef());
+		setRef(createUniqueRef());
 		addDataObjectToList(this); //ref gets set in this call
 	}
 	
@@ -302,8 +309,9 @@ public abstract class AbstractData implements Constants {
 	 * Creates a data object.
 	 *
 	 */
-	protected AbstractData(){
-	}
+	
+	//protected AbstractData(){
+	//}
 	
 	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> with the specified byte array as the data which will (or does already) 
@@ -322,7 +330,8 @@ public abstract class AbstractData implements Constants {
 		setTag(tag);
 		setRef(ref);
 		bytes = ByteBuffer.wrap(data);
-		addDataObjectToList(this);
+		//FIXME KBS remove
+		//addDataObjectToList(this);
 	}
 
 	/* non-javadoc:
@@ -338,7 +347,8 @@ public abstract class AbstractData implements Constants {
 		setRef(reference);
 		this.offset = offset;
 		this.length = length;
-		addDataObjectToList(this);
+		//FIXME KBS remove		
+		//addDataObjectToList(this);
 	}
 	
 	private final void setTag(short newTag){
@@ -359,6 +369,15 @@ public abstract class AbstractData implements Constants {
 	 * @param newref
 	 */
 	final void setRef(short newref) {
+		final Integer key = calculateKey(tag, ref);
+		if (tagRefMap.containsKey(key)) {
+			tagRefMap.remove(key);
+			//Add
+			ref = newref;
+			final Integer keyNew = calculateKey(tag, ref);
+			tagRefMap.put(keyNew, this);
+		 }
+		/*FIXME KBS remove
 		if (refNotSet) {
 			ref = newref;
 		} else {
@@ -376,6 +395,7 @@ public abstract class AbstractData implements Constants {
 			}			
 			refNotSet=false;
 		}
+		*/
 	}
 	
 	/**
@@ -419,9 +439,11 @@ public abstract class AbstractData implements Constants {
 		return bytes;
 	}
 
+	/*FIXME KBS no longer needed
 	private final Integer getKey(){
 		return calculateKey(tag, ref);
 	}
+	*/
 	
 	/**
 	 * Utility method for inserting a String as an ASCII array 

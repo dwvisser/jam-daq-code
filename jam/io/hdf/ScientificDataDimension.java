@@ -83,7 +83,7 @@ final class ScientificDataDimension extends AbstractData {
     }
 
     ScientificDataDimension() {
-        super();
+        super(DFTAG_SDD);
     }
 
     public void interpretBytes() {

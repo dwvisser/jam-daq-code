@@ -63,7 +63,7 @@ final class DataIDLabel extends AbstractData {
     }
 
     DataIDLabel() {
-        super();
+        super(DFTAG_DIL);
     }
 
     /**

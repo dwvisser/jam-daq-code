@@ -207,7 +207,7 @@ public final class VDataDescription extends AbstractData {
     }
 
     VDataDescription() {
-        super();
+        super(DFTAG_VH);
     }
 
     public void interpretBytes() {

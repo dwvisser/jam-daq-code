@@ -45,7 +45,7 @@ final class VirtualGroup extends AbstractData {
     }
 
     VirtualGroup() {
-        super();
+        super(DFTAG_VG);
     }
 
     /**

@@ -89,7 +89,7 @@ final class DataIDAnnotation extends AbstractData {
     }
 	
 	DataIDAnnotation(){
-	    super();
+	    super(DFTAG_DIA);
 	}
 
 	/**

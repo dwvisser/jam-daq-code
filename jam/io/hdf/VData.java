@@ -53,7 +53,7 @@ public final class VData extends AbstractData {
     }
 
     VData() {
-        super();
+        super(DFTAG_VS);
     }
 
     void init(byte[] data, short tag, short reference) {

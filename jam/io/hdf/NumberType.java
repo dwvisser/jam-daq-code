@@ -107,7 +107,7 @@ final class NumberType extends AbstractData {
     }
 
     NumberType() {
-        super();
+        super(DFTAG_NT);
     }
 
     private void createBytes(byte type) {
