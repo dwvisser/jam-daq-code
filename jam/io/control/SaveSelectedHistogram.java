@@ -102,17 +102,18 @@ public final class SaveSelectedHistogram {
 		dialog.pack();
 		
 	}
+	
 	/**
-	 * 
+	 * Show the dialog.
 	 *
 	 */
 	public void show(){
 		loadHistogramList();
-		dialog.show();
+		dialog.setVisible(true);
 	}
+	
 	/**
-	 * Save Button
-	 *  
+	 * Save histogram list to a file.
 	 */
 	private void doSave() {
 		saveHistListToFile();

@@ -211,13 +211,14 @@ public class OpenMultipleFiles {
 		return panel;
 		
 	}	
+	
 	/**
-	 * Show the dialog box
-	 *
+	 * Show the dialog box.
 	 */
 	public void show(){
-		dialog.show();
+		dialog.setVisible(true);
 	}
+	
 	/**
 	 * OK button
 	 *  

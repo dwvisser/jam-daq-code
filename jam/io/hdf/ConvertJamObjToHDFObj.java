@@ -1,15 +1,12 @@
 package jam.io.hdf;
 
-import java.util.Iterator;
-
 import jam.data.AbstractHist1D;
-import jam.data.DataBase;
 import jam.data.DataParameter;
 import jam.data.Gate;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.util.StringUtilities;
+
 import java.util.Iterator;
 import java.util.List;
 

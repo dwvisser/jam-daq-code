@@ -170,9 +170,13 @@ public class HistogramNew extends AbstractControl {
 			}
 		});
 	}
+	
+	/**
+	 * Show the dialog.
+	 */
 	public void show() {
 		doSetup();
-		super.show();
+		setVisible(true);
 	}
 	
 	/**
