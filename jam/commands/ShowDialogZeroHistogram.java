@@ -8,9 +8,9 @@ import jam.data.control.HistogramZeroControl;
  * @author Ken Swartz
  *
  */
-public class ShowDailogZeroHistogramCmd extends AbstractShowDataControlCmd {
+public class ShowDialogZeroHistogram extends AbstractShowDataControlCmd {
 
-	ShowDailogZeroHistogramCmd() {
+	ShowDialogZeroHistogram() {
 		putValue(NAME, "Zero\u2026");
 		//Super class member
 		dataControl= new HistogramZeroControl(status.getFrame(), msghdlr);		
