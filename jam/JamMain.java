@@ -60,23 +60,16 @@ public final class JamMain extends JFrame implements Observer {
 	private final JamConsole console;
 	private final Container me;
 	private final SelectionToolbar selectBar;
-
-	private final String classname;
 	private RunState runState = RunState.NO_ACQ;
 
 	JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
 		setLookAndFeel();
-		if (showGUI){
-			final int titleDisplayTime = 10000; //milliseconds
-			new SplashWindow(this, titleDisplayTime);
-		}
-		final ClassLoader cl = getClass().getClassLoader();
-		setIconImage(
-			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
-		classname = getClass().getName() + "--";
-		me = getContentPane();
+
+		showSplashScreen(showGUI);								
+				
+		//Application initialization 				
 		jamProperties = new JamProperties(); //class that has properties
 		status.setFrame(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
@@ -88,24 +81,31 @@ public final class JamMain extends JFrame implements Observer {
 				return (status.getSortMode() == SortMode.ONLINE_DISK);
 			}
 		});
+		
 		/* class to distrute events to all listeners */
 		broadcaster.addObserver(this);
-		setResizable(true);
+		
+		//Create main window GUI
+		loadIcon();
+		me = getContentPane();
 		me.setLayout(new BorderLayout());
+		//Ouput/Input text console
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
-		/* histogram displayer (needed by jamCommand) */
+		// histogram displayer
 		display = new Display(console);
 		final JSplitPane splitCenter =
 			new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, display, console);
+		splitCenter.setResizeWeight(0.5);			
 		/*fraction of resize space that goes to display*/
 		me.add(splitCenter, BorderLayout.CENTER);
-		/* create user command listener */
+		//Main menu bar
 		final JMenuBar menubar = new MainMenuBar();
 		setJMenuBar(menubar);
+		//Histogram selection menu bar
 		selectBar = new SelectionToolbar();
 		me.add(selectBar, BorderLayout.NORTH);
-		/* operations to close window */
+		// operations to close window
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -115,18 +115,56 @@ public final class JamMain extends JFrame implements Observer {
 				exit();
 			}
 		});
+		
+		//Initial histograms and setup
 		new InitialHistograms();
-		DataControl.setupAll(); //setup jam.data.control dialog boxes
-		status.setSortMode(SortMode.NO_SORT);
+		DataControl.setupAll(); 	//setup jam.data.control dialog boxes
+		status.setSortMode(SortMode.NO_SORT);				
+		selectBar.setChoosersToFirstItems();
+		
+		//Show Main window		
+		showMainWindow(showGUI);
+
+		
+	}
+
+	/**
+	 *  Show the splash screen
+	 * @param showGUI to to show splash screen
+	 */
+	private void showSplashScreen(boolean showGUI) {
+		if (showGUI){
+			final int titleDisplayTime = 10000; //milliseconds
+			new SplashWindow(this, titleDisplayTime);
+		}
+	}
+	/**
+	 * Load the application icon 
+	 */
+	private void loadIcon() {
+		final ClassLoader cl = getClass().getClassLoader();
+		setIconImage(
+			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
+		
+	}
+	
+	/**
+	 * Show the main window
+	 * 
+	 * @param show true to show GUI
+	 */
+	private void showMainWindow(boolean show) {
+		
+		final boolean showGUI = show; 
+		final int posx = 50;
+		final int posy = 0; 
+		setLocation(posx, posy);
+		setResizable(true);
+		
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
 				pack();
-				selectBar.setChoosersToFirstItems();
-				splitCenter.setResizeWeight(0.5);
-				final int posx = 50;
-				final int posy = 0;
-				setLocation(posx, posy);
 				if (showGUI){
 					show();
 				}
@@ -136,8 +174,8 @@ public final class JamMain extends JFrame implements Observer {
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
+		
 	}
-	
 	private void exit(){
 		final JButton temp=new JButton(CommandManager.getInstance().getAction(
 		CommandNames.EXIT));
