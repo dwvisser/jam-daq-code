@@ -116,7 +116,7 @@ abstract class AbstractSetup {
         specify
                 .setToolTipText("Specify a path to load your sort routine from.");
 		specify.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(ItemEvent itemEvent) {
 				if (specify.isSelected()) {
 					bbrowsef.setEnabled(true);
 					setChooserDefault(false);
