@@ -71,7 +71,6 @@ class Plot2d extends Plot {
 			graph.markArea2dOutline(areaStartPoint,lastMovePoint);
 		}
 		setMouseMoved(false);	
-		markingAreaClip.setSize(0,0);	
 	}
 	
 	/**
@@ -101,6 +100,7 @@ class Plot2d extends Plot {
 	}
 
 	protected void paintMarkArea(Graphics g) {
+		markingAreaClip.setSize(0,0);	
 		final Graphics2D g2=(Graphics2D)g;
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
@@ -463,47 +463,46 @@ class Plot2d extends Plot {
 					lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint()));
-				markingAreaClip.add(getClipBounds(graph.getRectangleOutline2d(areaStartPoint,
-				lastMovePoint),false));
+				markingAreaClip.add(graph.getRectangleOutline2d(areaStartPoint,
+				lastMovePoint));
 			}
 			setMouseMoved(true);
-			repaint(/*markingAreaClip*/);			
+			repaint(getClipBounds(markingAreaClip,false));			
 		}
 	}
 	
-	private final Rectangle markingAreaClip=new Rectangle();
-	
 	/**
-	 * Given a shape, return the bounding rectangle + 1 pixel
-	 * more on each side.
+	 * Given a shape, return the bounding rectangle which includes
+	 * all pixels in the rectangle bounding the given shape, plus
+	 * some extra space given by the plot channels just outside the
+	 * edge of this rectangle.
 	 * 
-	 * @param pin the polygon to use
-	 * @param convert if the polygon should first be converted from
-	 * channel coordinates to view coordinates
-	 * @return the bounding rectangle + 1 pixel
-	 * more on each side
+	 * @param clipShape the shape we want to cover with a 
+	 * rectangular clip region
+	 * @param shapeInChannelCoords if <code>true</code>, the given shape
+	 * is assumed given in channel coordinates, otherwise it is assumed
+	 * given in graphics coordinates
+	 * @return a bounding rectangle in the graphics coordinates
 	 */
-	private Rectangle getClipBounds(Shape pin, boolean convert){
-		final Rectangle r=pin.getBounds();
-		if (convert){//r is already in channel coordinates
-			r.add(r.getMaxX() + 1, r.getMaxY() + 1);
-			r.add(r.getX() - 1, r.getY() - 1);
+	private Rectangle getClipBounds(Shape clipShape, boolean shapeInChannelCoords){
+		final Rectangle r=clipShape.getBounds();
+		if (shapeInChannelCoords){//shape is in channel coordinates
+			r.add(r.x+r.width+1, r.y+r.height+1);
+			r.add(r.x-1, r.y - 1);
 			final Point p1=r.getLocation();
 			final Point p2=new Point(p1.x+r.width,p1.y+r.height);
 			/* now do conversion */
 			r.setBounds(graph.getRectangleOutline2d(p1,p2));
 			return r;
-		} else {//r is in view coordinates
-			/* Recursively call back with a polygon in channel
+		} else {//shape is in view coordinates
+			/* Recursively call back with a polygon using channel
 			 * coordinates.
 			 */
 			final Polygon p=new Polygon();
 			final Point p1=graph.toData(r.getLocation());
 			final Point p2=graph.toData(new Point(r.x+r.width,r.y+r.height));
-			final Point p3=graph.toData(new Point(r.x+r.width,r.y));
 			p.addPoint(p1.x,p1.y);
 			p.addPoint(p2.x,p2.y);
-			p.addPoint(p3.x,p3.y);
 			return getClipBounds(p,true);
 		}
 	}
