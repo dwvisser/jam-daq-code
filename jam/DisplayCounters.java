@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 /**
- * Displays buffer countesr of sort threads. Gives the number of buffers and
+ * Displays buffer counters of sort threads. Gives the number of buffers and
  * events received and sorted.
  * 
  * @author Ken Swartz
