@@ -1,13 +1,13 @@
-/*
- */
 package jam.global;
+import javax.swing.JOptionPane;
+
 /**
  * Extends the thread class to allow proper stopping and suspending of threads,
  * by allowing the object itself to decide when it's appropriate to stop after a
  * stop request has been sent to it.  Based on code given in "Java Design" by
  * Peter Coad and Mark Mayfield.
  *
- * @author Dale Visser
+ * @author <a href="dale@visser.name">Dale Visser</a>
  */
 public class GoodThread extends Thread {
 
@@ -38,7 +38,6 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
             throw new GlobalException("GoodThread.setState("+s+"), invalid thread state");
         }
         this.state = s;
-        System.err.println(getClass().getName()+".setState("+modes[s]+")");
         if (this.state != SUSPEND) this.notify();
     }
 
@@ -57,7 +56,10 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
             try {
                 wait();
             } catch (InterruptedException ie) {
-            	System.err.println("GoodThread interrupted while suspended: "+ie);
+            	JOptionPane.showMessageDialog(null,
+				ie.getMessage(),
+				getClass().getName()+" interrupted while suspended",
+				JOptionPane.ERROR_MESSAGE);
             }
         }
         return (this.state == RUN);
