@@ -17,6 +17,10 @@ public class FileOpenMode {
 		value=mode;
 	}
 	
+	public boolean equals(Object o){
+	    return o instanceof FileOpenMode ? value==((FileOpenMode)o).value : false;
+	}
+	
 	/**
 	 * Mode for deleting the data in memory and replacing them with
 	 * the contents of the file.
