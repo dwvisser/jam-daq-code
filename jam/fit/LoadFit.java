@@ -188,8 +188,8 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	
 	private Object [] getFitClassNames() {
 		//Class temp=null;
-		Set set = RTSI.find("jam.fit", Fit.class);
-		set.addAll(RTSI.find("fit", Fit.class));
+		Set set = RTSI.find("jam.fit", Fit.class,false);
+		set.addAll(RTSI.find("fit", Fit.class,false));
 		Set abstractClasses=new HashSet();
 		for (Iterator it=set.iterator(); it.hasNext(); ){
 			Class temp=(Class)it.next();
