@@ -279,7 +279,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
                     throw new JamException("Can't set up sorting, mode locked.");
                 }
             } else if (command=="checkLock") {
-                if(checkLock.isSelected()==false) {
+                if(!checkLock.isSelected()) {
                     resetSort();        //reset the sort, kill daemons, clear data areas
                 } else {
                     System.err.println("Error should not be here [SetupSortOff]");

@@ -431,7 +431,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	public void itemStateChanged(ItemEvent ie) {
 
 		if (ie.getItemSelectable() == cout) {
-			if (cout.isSelected() == true) {
+			if (cout.isSelected()) {
 				textOutFile.setEnabled(true);
 				textOutFile.setBackground(Color.white);
 				bbrowse.setEnabled(true);
