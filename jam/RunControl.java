@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.Date;
 
 import javax.swing.*;
-
+import javax.swing.border.*;
 /**
  * Class for data acquistion and run control.
  * This class
@@ -43,7 +43,7 @@ public class RunControl implements Controller, ActionListener {
      * Indicates events being stored by front end.
      */
     public static final int FRONT_END=2;
-    
+
     final static String EVENT_FILE_EXTENSION=".evn";
     /**
      *device we are writing to DISK or TAPE
@@ -125,68 +125,80 @@ public class RunControl implements Controller, ActionListener {
         d.setLocation(20,50);
         d.setSize(400, 250);
         Container cp=d.getContentPane();
-        cp.setLayout(new GridLayout(0,1,5,5));
-        // panel for sort file
-        /*JPanel pm1= new JPanel();
-        pm1.setForeground(Color.black);
-        pm1.setBackground(Color.lightGray);
-        pm1.setLayout(new FlowLayout(FlowLayout.RIGHT,20,30));	*/
-        JPanel pn= new JPanel();
-        pn.setLayout(new FlowLayout(FlowLayout.LEFT,0,5));
-        JLabel ln=new JLabel("",Label.RIGHT);
-        ln.setText(" Run ");
+        cp.setLayout(new BorderLayout(10,0));
+
+
+		//Labels Panel
+        JPanel pLabels= new JPanel(new GridLayout(0,1,5,5));
+        pLabels.setBorder(new EmptyBorder(10,10,10,0));
+        cp.add(pLabels, BorderLayout.WEST);
+        JLabel len=new JLabel("Experiment Name",JLabel.RIGHT);
+		pLabels.add(len);
+        JLabel lrn=new JLabel("Run",JLabel.RIGHT);
+		pLabels.add(lrn);
+        JLabel lt=new JLabel("Title",JLabel.RIGHT);
+		pLabels.add(lt);
+        JLabel lc=new JLabel("Clear",JLabel.RIGHT);
+		pLabels.add(lc);
+
+        // panel for text fields
+        JPanel pCenter= new JPanel(new GridLayout(0,1,5,5));
+        //Box pCenter= new Box(BoxLayout.Y_AXIS);
+        pCenter.setBorder(new EmptyBorder(10,0,10,10));
+        cp.add(pCenter, BorderLayout.CENTER);
+
+		final JPanel pExptName = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pCenter.add(pExptName);
+        textExptName= new JTextField("");
+        textExptName.setColumns(20);
+        textExptName.setEditable(false);
+        pExptName.add(textExptName);
+
+		final JPanel pRunNumber = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pCenter.add(pRunNumber);
         textRunNumber =new JTextField("");
         textRunNumber.setBackground(Color.white);
         textRunNumber.setColumns(3);
         textRunNumber.setText(Integer.toString(runNumber));
-        JLabel len=new JLabel(" Experiment Name ");
-        textExptName= new JTextField("            ");
-        textExptName.setColumns(20);
-        textExptName.setEditable(false);
-        pn.add(len);
-        pn.add(textExptName);
-        pn.add(ln);
-        pn.add(textRunNumber);
-        // panel histogram path
-        JPanel pt= new JPanel();
-        pt.setLayout(new FlowLayout(FlowLayout.LEFT,0,5));
-        JLabel lt=new JLabel("",Label.RIGHT);
-        lt.setText("Title ");
-        pt.add(lt);
+        pRunNumber.add(textRunNumber);
+
+		final JPanel pRunTitle = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pCenter.add(pRunTitle);
         textRunTitle =new JTextField("");
         textRunTitle.setColumns(40);
         textRunTitle.setBackground(Color.white);
-        pt.add(textRunTitle);
-        JPanel pz= new JPanel();
-        pz.setLayout(new FlowLayout(FlowLayout.RIGHT,10,5));
+        pRunTitle.add(textRunTitle);
+
+		//Zero Panel
+        JPanel pZero= new JPanel(new FlowLayout(FlowLayout.LEFT,0,-2));
         checkHistogramZero =new JCheckBox("Zero Histograms", true );
-        pz.add(checkHistogramZero);
+        pZero.add(checkHistogramZero);
         zeroScalers =new JCheckBox("Zero Scalers", true );
-        pz.add(zeroScalers);
-        JPanel pb= new JPanel();// panel for begin button
-        pb.setLayout(new FlowLayout(FlowLayout.RIGHT,30,10));
-        bbegin	=   new JButton("  Begin  ");
+        pZero.add(zeroScalers);
+        pCenter.add(pZero);
+
+		//Panel for buttons
+        JPanel pButtons =new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cp.add(pButtons, BorderLayout.SOUTH);
+        JPanel pb= new JPanel(new GridLayout(1,0,50,5));
+        pButtons.add(pb);
+        bbegin	=   new JButton("Begin");
         bbegin.setBackground(Color.green);
-        pb.add(bbegin);
         bbegin.setActionCommand("begin");
         bbegin.addActionListener(this);
         bbegin.setEnabled(false);
-        JPanel pe= new JPanel();//panel for end button
-        pe.setLayout(new FlowLayout(FlowLayout.RIGHT,30,10));
-        bend = new JButton("   End   ");
+        pb.add(bbegin);
+
+        bend = new JButton("End");
         bend.setBackground(Color.red);
-        pe.add(bend);
         bend.setActionCommand("end");
         bend.addActionListener(this);
         bend.setEnabled(false);
-        //add all panels to dialog
-        cp.add(pn);
-        cp.add(pt);
-        cp.add(pz);
-        cp.add(pb);
-        cp.add(pe);
+        pb.add(bend);
+
         //pack in
         d.pack();
+
         d.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent e){
                 d.dispose();
@@ -222,7 +234,7 @@ public class RunControl implements Controller, ActionListener {
             console.errorOutln(je.getMessage());
         } catch (SortException se) {
             console.errorOutln(se.getMessage());
-        } 
+        }
     }
 
     /**
@@ -282,7 +294,7 @@ public class RunControl implements Controller, ActionListener {
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
         jamMain.setRunState(RunState.ACQ_OFF);
-        //done to avoid "last buffer in this run becomes first and last buffer in 
+        //done to avoid "last buffer in this run becomes first and last buffer in
         //next run" problem
         bend.setEnabled(false);
         if (!runOn) {//not running to disk
@@ -332,7 +344,7 @@ public class RunControl implements Controller, ActionListener {
             }
             diskDaemon.openEventOutputFile(dataFile);
             diskDaemon.writeHeader();
-        } 
+        }
         if (checkHistogramZero.isSelected()) {// should we zero histograms
             histogramControl.zeroAll();
         }
@@ -406,7 +418,7 @@ public class RunControl implements Controller, ActionListener {
      * Called back by <code>SortDaemon</code>.
      * When sort encounters a end-run-marker, writes out histograms, gates,
      * and scalers if so requested. This method is <i>deprecated</i>.
-     * 
+     *
      * @deprecated
      */
     public void atSortEnd()  {
@@ -415,7 +427,7 @@ public class RunControl implements Controller, ActionListener {
         /*if(runOn){
         }*/
     }
-    
+
     /**
      * Called by sorter for each new file
      * not used for online data taking
