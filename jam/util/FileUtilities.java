@@ -86,7 +86,7 @@ public class FileUtilities {
 	}
 
 	/**
-	  * Takes a file name and extension and makes forces the file name to have the extension.
+	  * Takes a file name and extension and makes the file name to have the extension.
 	  * If the filename has no extension, the extension is appended.  If it does have an
 	  * extension, it is replaced.  By extension, we mean the usual <code>DOX/Unix</code>
 	  * filenaming convention:<P>
