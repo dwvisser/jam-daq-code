@@ -34,7 +34,7 @@ public  class JamStatus {
     }
     
     public void setAcqisitionStatus(AcquisitionStatus as){
-        this.acquisitionStatus=as;
+        acquisitionStatus=as;
     }
         
     /**

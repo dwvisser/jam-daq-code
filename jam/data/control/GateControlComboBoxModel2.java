@@ -8,9 +8,9 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 
 /**
-* Data Model for JcomboBox in Add gate dialog.
+* Data Model for JComboBox in Add gate dialog.
 *
-* @author Dale Visser
+* @author <a href="mailto:dale@visser.name">Dale Visser</a>
 */
 public class GateControlComboBoxModel2
 	extends AbstractListModel
@@ -31,7 +31,7 @@ public class GateControlComboBoxModel2
 		Object rval = NO_GATES; //default return value
 		if (numGates() > 0) {
 			if (index==0) {
-				rval = this.CHOOSE_A_GATE;
+				rval = CHOOSE_A_GATE;
 			} else {
 				List list =
 					Gate.getGateList(
@@ -51,8 +51,8 @@ public class GateControlComboBoxModel2
 
 	public void setSelectedItem(Object anItem) {
 		selection = (String) anItem;
-		if ((!selection.equals(this.CHOOSE_A_GATE)) && 
-		(!selection.equals(this.NO_GATES))){
+		if ((!selection.equals(CHOOSE_A_GATE)) && 
+		(!selection.equals(NO_GATES))){
 			gc.selectGateAdd(selection);
 		}
 	}

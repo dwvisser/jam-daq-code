@@ -510,7 +510,7 @@ AcquisitionStatus, Observer {
         ignoreFull.setEnabled(true);
         ignoreFull.addItemListener(jamCommand);
         mPrefer.add(ignoreFull);
-        JCheckBoxMenuItem noFill2d = new JCheckBoxMenuItem(this.NO_FILL_2D,
+        JCheckBoxMenuItem noFill2d = new JCheckBoxMenuItem(NO_FILL_2D,
         JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D));
         noFill2d.setEnabled(true);
         noFill2d.addItemListener(jamCommand);

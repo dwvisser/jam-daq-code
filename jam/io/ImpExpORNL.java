@@ -24,7 +24,8 @@ import java.util.*;
  *  <li>Directory file--<code><i>filename</i>.drr</code></li>
  * </ul>  Where <code><i>filename</i></code> is the same for both files.
  *
- * @author  Ken Swartz and Dale Visser
+ * @author  Ken Swartz
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 0.5
  */
 public class ImpExpORNL extends ImpExp {
@@ -195,7 +196,7 @@ public class ImpExpORNL extends ImpExp {
 		//read in header
 		disDrr.read(bsignature); //HHRIF signature
 		signature = new String(bsignature);
-		if (!(signature.equals(this.SIGNATURE))) {
+		if (!(signature.equals(SIGNATURE))) {
 			throw new ImpExpException(
 				"Incorrect header, expected '"
 					+ SIGNATURE

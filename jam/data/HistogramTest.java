@@ -35,22 +35,22 @@ public class HistogramTest extends TestCase {
 	}
 
 	public void testHasGate() {
-		this.assertTrue(h1.hasGate(g1));
-		this.assertTrue(h2.hasGate(g2));
-		this.assertTrue(!h1.hasGate(g2));
-		this.assertTrue(!h2.hasGate(g1));
+		assertTrue(h1.hasGate(g1));
+		assertTrue(h2.hasGate(g2));
+		assertTrue(!h1.hasGate(g2));
+		assertTrue(!h2.hasGate(g1));
 	}
 	
 	public void testGetHistogram() {
-		this.assertNotNull("h1 nonexistent here", h1);
-		this.assertNotNull("Couldn't find histogram named \""+h1.getName()+"\"",Histogram.getHistogram(h1.getName()));
-		this.assertNotNull("Couldn't find histogram named \""+h2.getName()+"\"",Histogram.getHistogram(h2.getName()));
-		this.assertNull("Found nonexistent histogram named \"notreal\"",Histogram.getHistogram("notreal"));
+		assertNotNull("h1 nonexistent here", h1);
+		assertNotNull("Couldn't find histogram named \""+h1.getName()+"\"",Histogram.getHistogram(h1.getName()));
+		assertNotNull("Couldn't find histogram named \""+h2.getName()+"\"",Histogram.getHistogram(h2.getName()));
+		assertNull("Found nonexistent histogram named \"notreal\"",Histogram.getHistogram("notreal"));
 	}
 	
 	public void testGetGates(){
 		Gate [] h1List=h1.getGates();
-		this.assertEquals(h1List.length,1);
+		assertEquals(h1List.length,1);
 	}
 
 }

@@ -34,18 +34,18 @@ public class PeakTest extends TestCase {
 	}
 
 	public void testCompareTo() {
-		this.assertEquals(-1,p1.compareTo(p2a));
-		this.assertEquals(-1,p1.compareTo(p2b));
-		this.assertEquals(-1,p1.compareTo(p3));
-		this.assertEquals(-1,p2a.compareTo(p3));
-		this.assertEquals(-1,p2b.compareTo(p3));
-		this.assertEquals(0,p2a.compareTo(p2b));
-		this.assertEquals(0,p2a.compareTo(p2b));
-		this.assertEquals(1,p2a.compareTo(p1));
-		this.assertEquals(1,p2b.compareTo(p1));
-		this.assertEquals(1,p3.compareTo(p1));
-		this.assertEquals(1,p3.compareTo(p2a));
-		this.assertEquals(1,p3.compareTo(p2b));
+		assertEquals(-1,p1.compareTo(p2a));
+		assertEquals(-1,p1.compareTo(p2b));
+		assertEquals(-1,p1.compareTo(p3));
+		assertEquals(-1,p2a.compareTo(p3));
+		assertEquals(-1,p2b.compareTo(p3));
+		assertEquals(0,p2a.compareTo(p2b));
+		assertEquals(0,p2a.compareTo(p2b));
+		assertEquals(1,p2a.compareTo(p1));
+		assertEquals(1,p2b.compareTo(p1));
+		assertEquals(1,p3.compareTo(p1));
+		assertEquals(1,p3.compareTo(p2a));
+		assertEquals(1,p3.compareTo(p2b));
 	}
 
 }

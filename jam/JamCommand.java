@@ -221,7 +221,7 @@ public class JamCommand
 			if (incommand == "overlay") {
 				overlay = jamMain.overlaySelected();
 				if (overlay) {
-					console.messageOut("Overlay Spectrum ", console.NEW);
+					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
 				}
 			} else if (selectEnabled && incommand == "selecthistogram") {
 				Object item = ((JComboBox) e.getSource()).getSelectedItem();
@@ -241,9 +241,9 @@ public class JamCommand
 						selectGate(gate);
 				}
 			} else if (incommand == "Black Background") {
-				display.setPreference(display.BLACK_BACKGROUND, true);
+				display.setPreference(Display.BLACK_BACKGROUND, true);
 			} else if (incommand == "White Background") {
-				display.setPreference(display.WHITE_BACKGROUND, true);
+				display.setPreference(Display.WHITE_BACKGROUND, true);
 			} else if (incommand == "newclear") {
 				jamMain.setSortMode(JamMain.NO_SORT);
 				DataBase.clearAllLists();
@@ -434,9 +434,9 @@ public class JamCommand
 		}
 		String text = ((AbstractButton) item).getText();
 		if (text == "Ignore zero channel on autoscale") {
-			display.setPreference(display.AUTO_IGNORE_ZERO, item.isSelected());
+			display.setPreference(Display.AUTO_IGNORE_ZERO, item.isSelected());
 		} else if (text == "Ignore max channel on autoscale") {
-			display.setPreference(display.AUTO_IGNORE_FULL, item.isSelected());
+			display.setPreference(Display.AUTO_IGNORE_FULL, item.isSelected());
 		} else if (text == "Verbose front end") {
 			frontEnd.verbose(item.isSelected());
 			JamProperties.setProperty(
@@ -498,7 +498,7 @@ public class JamCommand
 				worker.start();
 			} else {
 				status.setOverlayHistogramName(hist.getName());
-				console.messageOut(hist.getName(), console.END);
+				console.messageOut(hist.getName(), MessageHandler.END);
 				display.overlayHistogram(hist);
 				overlay = false;
 				jamMain.deselectOverlay();

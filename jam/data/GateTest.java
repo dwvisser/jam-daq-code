@@ -52,9 +52,9 @@ public class GateTest extends TestCase {
 			boolean assertion1 = g1.inGate(20);
 			boolean assertion2 = !g1.inGate(5);
 			boolean assertion3 = !g1.inGate(60);
-			this.assertTrue(assertion1);
-			this.assertTrue(assertion2);
-			this.assertTrue(assertion3);
+			assertTrue(assertion1);
+			assertTrue(assertion2);
+			assertTrue(assertion3);
 		} catch (DataException de) {
 			System.err.println(de);
 		}
@@ -72,13 +72,13 @@ public class GateTest extends TestCase {
 			boolean assertion5 = !g2.inGate(5, 5);
 			boolean assertion6 = !g2.inGate(60, 60);
 			boolean assertion7 = !g2.inGate(20, 60);
-			this.assertTrue(assertion1);
-			this.assertTrue(assertion2);
-			this.assertTrue(assertion3);
-			this.assertTrue(assertion4);
-			this.assertTrue(assertion5);
-			this.assertTrue(assertion6);
-			this.assertTrue(assertion7);
+			assertTrue(assertion1);
+			assertTrue(assertion2);
+			assertTrue(assertion3);
+			assertTrue(assertion4);
+			assertTrue(assertion5);
+			assertTrue(assertion6);
+			assertTrue(assertion7);
 		} catch (DataException de) {
 			System.err.println(de);
 		}
