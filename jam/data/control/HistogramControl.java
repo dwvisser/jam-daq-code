@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.util.*;
 import jam.global.*;
 import jam.data.*;
-import jam.*;
 import javax.swing.*;
 import javax.swing.border.*;
 /**
@@ -20,7 +19,6 @@ import javax.swing.border.*;
 public class HistogramControl extends DataControl implements ActionListener {
 
     private Frame frame;
-    private JamMain jamMain;
     private Broadcaster broadcaster;
     private MessageHandler msghdlr;
 
@@ -50,10 +48,10 @@ public class HistogramControl extends DataControl implements ActionListener {
     /**
      * Constructor
      */
-    public HistogramControl(JamMain jamMain, Broadcaster broadcaster, MessageHandler msghdlr){
+    public HistogramControl(Frame frame, Broadcaster broadcaster, MessageHandler msghdlr){
         super();
-        this.frame=(Frame)jamMain;
-        this.jamMain=jamMain;
+        this.frame=frame;
+        
         this.broadcaster=broadcaster;
         this.msghdlr=msghdlr;
         //zero histogram dialog box
