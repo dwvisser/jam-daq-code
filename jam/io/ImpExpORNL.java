@@ -3,7 +3,6 @@ import jam.data.Histogram;
 import jam.global.MessageHandler;
 import jam.util.FileUtilities;
 import jam.util.StringUtilities;
-import jam.util.UtilException;
 
 import java.awt.Frame;
 import java.io.BufferedOutputStream;
@@ -163,10 +162,9 @@ public class ImpExpORNL extends ImpExp {
 			}
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
-		} catch (UtilException je) {
-			throw new ImpExpException(je.toString());
-		}
+		} 
 	}
+	
 	/** 
 	 * 
 	 * read in ORNL drr file
@@ -405,9 +403,7 @@ public class ImpExpORNL extends ImpExp {
 			msgHandler.messageOut(" to " + parent + " ");
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
-		} catch (UtilException je) {
-			throw new ImpExpException(je.toString());
-		}
+		} 
 	}
 
 	/**
@@ -563,27 +559,21 @@ public class ImpExpORNL extends ImpExp {
 	 * Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
-		int rval;
-
-		byte a = array[offset];
-		byte b = array[offset + 1];
-		byte c = array[offset + 2];
-		byte d = array[offset + 3];
-		if (byteOrder == ByteOrder.BIG_ENDIAN) {
-			rval =
-				((a & 0xFF) << 24)
-					| ((b & 0xFF) << 16)
-					| ((c & 0xFF) << 8)
-					| (d & 0xFF);
-		} else { //LITTLE_ENDIAN
-			rval =
-				(a & 0xFF)
-					| ((b & 0xFF) << 8)
-					| ((c & 0xFF) << 16)
-					| ((d & 0xFF) << 24);
-		}
-		//System.out.println("a,b,c,d: "+a+","+b+","+c+","+d+": "+rval);
+		final byte a = array[offset];
+		final byte b = array[offset + 1];
+		final byte c = array[offset + 2];
+		final byte d = array[offset + 3];
+		final int rval = byteOrder == ByteOrder.BIG_ENDIAN ?
+		constructInt(a,b,c,d) : constructInt(d,c,b,a);
 		return rval;
+	}
+	
+	private final int constructInt(byte highest, byte high, byte low, 
+	byte lowest){
+		return	((highest & 0xFF) << 24)
+				| ((high & 0xFF) << 16)
+				| ((low & 0xFF) << 8)
+				| (lowest & 0xFF);
 	}
 
 	/**
