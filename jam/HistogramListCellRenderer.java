@@ -101,7 +101,9 @@ public class HistogramListCellRenderer
 			setText((String) value);
 			setIcon(clearIcon);
 		}
-		setEnabled(list.isEnabled());
+		boolean enable=Histogram.getHistogramList().size()>0;
+		list.setEnabled(enable);
+		setEnabled(enable);
 		setBorder(
 			(cellHasFocus)
 				? UIManager.getBorder("List.focusCellHighlightBorder")
