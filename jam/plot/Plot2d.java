@@ -26,9 +26,6 @@ class Plot2d extends Plot {
 	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
 
-	/** last pixel point mouse moved to */
-	private final Point lastMovePoint = new Point();
-
 	/** areaMark is a rectangle in channel space */
 	private final Rectangle areaMark = new Rectangle();
 
@@ -40,7 +37,6 @@ class Plot2d extends Plot {
 	Plot2d(Action a) {
 		super(a);
 	}
-
 	
 	protected void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
@@ -50,63 +46,48 @@ class Plot2d extends Plot {
 			graph.markChannel2d(p);
 		}
 	}
-
-	/**
-	 * Start marking an area.
-	 * 
-	 * @param p1 starting data point
-	 */
-	void markingArea(Point p1) {
-		areaStartPoint.setLocation(p1);
-		setLastMovePoint(p1);
-	} 
 	
 	/**
-	 * Paint call while marking an area
+	 * Paint call while selecting an area.
 	 */
-	protected void paintMarkingArea(Graphics gc) {
+	protected void paintSelectingArea(Graphics gc) {
 		final Graphics2D g=(Graphics2D)gc;
 		g.setColor(PlotColorMap.area);	
 		synchronized (lastMovePoint){	
-			graph.markArea2dOutline(areaStartPoint,lastMovePoint);
+			graph.markArea2dOutline(selectionStartPoint,lastMovePoint);
 		}
 		setMouseMoved(false);	
+		clearSelectingAreaClip();
 	}
 	
 	/**
 	 * Mark a rectangular area on the plot.
 	 *
-	 * @param p1 one corner of the rectangle
-	 * @param p2 another corner of the rectangle
+	 * @param p1 a corner of the rectangle in plot coordinates
+	 * @param p2 a corner of the rectangle in plot coordinates
 	 */
 	void markArea(Point p1, Point p2) {
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 		}
 		if (markArea) {
-			final int xll = Math.min(p1.x, p2.x);
-			final int xul = Math.max(p1.x, p2.x);
-			final int yll = Math.min(p1.y, p2.y);
-			final int yul = Math.max(p1.y, p2.y);
-			final int width=xul-xll;
-			final int height=yul-yll;
-			synchronized (areaMark) {
-				areaMark.setBounds(xll,yll,width,height);
+			synchronized (areaMark){
+				areaMark.setSize(0,0);
+				areaMark.setLocation(p1);
+				areaMark.add(p2);
 			}
-			final Rectangle clip=graph.get2dAreaMark(xll,xul,yll,yul);
-			clip.add(clip.getMaxX() + 1,clip.getMaxY() + 1);
-			repaint(clip);
 		}
 	}
 
 	protected void paintMarkArea(Graphics g) {
-		markingAreaClip.setSize(0,0);	
 		final Graphics2D g2=(Graphics2D)g;
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
 		g.setColor(PlotColorMap.area);
 		graph.clipPlot();
-		graph.markArea2d(graph.get2dAreaMark(areaMark));
+		synchronized(areaMark){
+			graph.markArea2d(graph.getRectangleOutline2d(areaMark));
+		}
 	}
 
 	private void setLastPoint(Point lp) {
@@ -205,11 +186,6 @@ class Plot2d extends Plot {
 		}
 	}
 
-	private void setLastMovePoint(Point p) {
-		synchronized (lastMovePoint) {
-			lastMovePoint.setLocation(p);
-		}
-	}
 
 	/**
 	 * Get the counts for a particular channel.
@@ -306,7 +282,7 @@ class Plot2d extends Plot {
 		}
 	}
 
-	final Rectangle clipBounds = new Rectangle();
+	private final Rectangle clipBounds = new Rectangle();
 	/**
 	 * Called to draw a 2d histogram, including title, border, 
 	 * tickmarks, tickmark labels and last but not least update the 
@@ -456,18 +432,32 @@ class Plot2d extends Plot {
 				setMouseMoved(true);
 				repaint(getClipBounds(mouseMoveClip,false));
 			}
-		} else if (markingArea) {
+		} else if (selectingArea) {
 			synchronized (lastMovePoint){
-				if (markingAreaClip.height==0){	
-					markingAreaClip.add(graph.getRectangleOutline2d(areaStartPoint,
-					lastMovePoint));
+				if (isSelectingAreaClipClear()){	
+					addToSelectClip(selectionStartPoint,lastMovePoint);
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint()));
-				markingAreaClip.add(graph.getRectangleOutline2d(areaStartPoint,
-				lastMovePoint));
+				addToSelectClip(selectionStartPoint,	lastMovePoint);
 			}
 			setMouseMoved(true);
-			repaint(getClipBounds(markingAreaClip,false));			
+			synchronized (selectingAreaClip){
+				repaint(getClipBounds(selectingAreaClip,false));			
+			}
+		}
+	}
+	
+	/**
+	 * Add to the selection clip region, using the two 
+	 * given graphics-coordinates points to indicate the corners
+	 * of a rectangular region of channels that needs to be included.
+	 * 
+	 * @param p1 in graphics coordinates
+	 * @param p2 in graphics coordinates
+	 */
+	private final void addToSelectClip(Point p1, Point p2){
+		synchronized (selectingAreaClip){
+			selectingAreaClip.add(graph.getRectangleOutline2d(p1,p2));
 		}
 	}
 	
@@ -487,6 +477,7 @@ class Plot2d extends Plot {
 	private Rectangle getClipBounds(Shape clipShape, boolean shapeInChannelCoords){
 		final Rectangle r=clipShape.getBounds();
 		if (shapeInChannelCoords){//shape is in channel coordinates
+			/* add one more plot channel around the edges */
 			r.add(r.x+r.width+1, r.y+r.height+1);
 			r.add(r.x-1, r.y - 1);
 			final Point p1=r.getLocation();
@@ -496,8 +487,7 @@ class Plot2d extends Plot {
 			return r;
 		} else {//shape is in view coordinates
 			/* Recursively call back with a polygon using channel
-			 * coordinates.
-			 */
+			 * coordinates. */
 			final Polygon p=new Polygon();
 			final Point p1=graph.toData(r.getLocation());
 			final Point p2=graph.toData(new Point(r.x+r.width,r.y+r.height));
@@ -513,8 +503,8 @@ class Plot2d extends Plot {
 	protected void paintMouseMoved(Graphics gc) {
 		if (settingGate) {
 			paintSettingGate(gc);			
-		} else if (markingArea) {
-			paintMarkingArea(gc);
+		} else if (selectingArea) {
+			paintSelectingArea(gc);
 		}		
 	}
 }
