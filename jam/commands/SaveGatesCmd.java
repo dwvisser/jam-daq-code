@@ -52,11 +52,11 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	           file = jfile.getSelectedFile();
-	            hdfio.writeFile(file, Group.getGroupList(), false, true);
+	            hdfio.writeFile(file, false, true);
 	        }
 		
 		} else { //File name given	
-			hdfio.writeFile(file, Group.getGroupList(), false, true);
+			hdfio.writeFile(file, false, true);
 		}
 
 	}

@@ -43,7 +43,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		final File file = STATUS.getOpenFile();
 		if (file != null) {			
-			hdfio.writeFile(file, Group.getGroupList(), true, true);
+			hdfio.writeFile(file, true, true);
 		} else { //File null, shouldn't be.	
 			throw new IllegalStateException("Expected a reference for the previously accessed file.");
 		}

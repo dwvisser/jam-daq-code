@@ -40,10 +40,10 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 			if (cmdParams.length>0)
 				file =(File)cmdParams[0];			
 		}		
-		openHDFFile(file);
+		saveHDFFile(file);
 	}
 	
-	private void openHDFFile(File file) {
+	private void saveHDFFile(File file) {
 	
 	final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
 	
@@ -55,11 +55,11 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	            file = jfile.getSelectedFile();
-	           hdfio.writeFile(file, Group.getGroupList(), true, true);
+	           hdfio.writeFile(file);
 	
 	        }
 		} else { //File name given	
-			hdfio.writeFile(file, Group.getGroupList(), true, true);
+			hdfio.writeFile(file);
 		}
 	}
 	/**
