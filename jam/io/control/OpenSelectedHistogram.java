@@ -9,6 +9,7 @@ import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFileFilter;
+import jam.io.hdf.HistogramAttributes;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -203,8 +204,8 @@ public final class OpenSelectedHistogram {
 			final List histAttributes= hdfio.readHistogramAttributes(fileSelect);
 			final Iterator iter = histAttributes.iterator(); 
 			while (iter.hasNext()) {
-				final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
-				histListModel.addElement(histAtt.getName());				
+				final HistogramAttributes histAtt= (HistogramAttributes)iter.next();
+				histListModel.addElement(histAtt.getFullName());				
 			}
 			loadState=true;
 		}catch (HDFException hdfe){

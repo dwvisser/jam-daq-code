@@ -12,9 +12,10 @@ public final class FileOpenMode {
 	private final static int OPEN_ADDITIONAL_VALUE=1;	
 	private final static int RELOAD_VALUE = 2;
 	private final static int ADD_VALUE = 3;
+	private final static int ATTRIBUTES_VALUE = 4;
 	
 	private final static String [] NAMES={"Open", "Open Additional",
-	        "Reload", "Add"
+	        "Reload", "Add", "Attributes"
 	};
 
 	private final int value;
@@ -62,4 +63,10 @@ public final class FileOpenMode {
 	 * of the same objects in memory.
 	 */
 	public static final FileOpenMode ADD=new FileOpenMode(ADD_VALUE);
+
+	/**
+	 * Mode for reading histogram attributes but not the data
+	 */
+	public static final FileOpenMode ATTRIBUTES=new FileOpenMode(ATTRIBUTES_VALUE);
+	
 }

@@ -12,6 +12,7 @@ import jam.io.FileOpenMode;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.io.hdf.HistogramAttributes;
 import jam.ui.MultipleFileChooser;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -233,7 +234,7 @@ public class OpenMultipleFiles {
 			final List attrList= hdfio.readHistogramAttributes(fileSelect);
 			final Iterator iter = attrList.iterator(); 
 			while (iter.hasNext()) {
-				final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+				final HistogramAttributes histAtt= (HistogramAttributes)iter.next();
 				hListModel.addElement(histAtt.getName());				
 			}
 		

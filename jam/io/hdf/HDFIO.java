@@ -737,7 +737,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 hdfToJam.setInFile(inHDF);
                 currentGroup=Group.getCurrentGroup();
                 
-                histCount=hdfToJam.convertHistograms(currentGroup, mode, histNames);
+                histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
 
                 final VdataDescription vddScalers= hdfToJam.findScalersOriginal();                
                 int numScalers =0;
@@ -818,8 +818,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
             
             AbstractHData.interpretBytesAll();
             
-            rval.addAll(loadHistogramAttributes());               
-            
+            if (hdfToJam.hasVGroupRootGroup()) {
+            	rval.addAll(loadHistogramAttributesGroup());
+            } else {
+            	rval.addAll(loadHistogramAttributesOriginal());
+            }
+                        
         } catch (FileNotFoundException e) {
         	throw new HDFException("Opening file: " + infile.getPath()+
         			" Cannot find file or file is locked");            	                
@@ -950,7 +954,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
 	    	Iterator histIter =histList.iterator();
 	    	 while (histIter.hasNext()) {
 	    	 	VirtualGroup histVGroup = (VirtualGroup)histIter.next();
-	    	 	Histogram hist =hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
+	    	 	Histogram hist =(Histogram)hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
 	    	 	//Load gates if not add
                 if (mode != FileOpenMode.ADD) {
                 	List gateList = hdfToJam.findGates(histVGroup, hist.getType());
@@ -997,7 +1001,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         } // else mode == FileOpenMode.ADD, so use current group
         groupCount=0;
         
-        histCount=hdfToJam.convertHistograms(currentGroup, mode, histNames);
+        histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
 
         final VdataDescription vddScalers= hdfToJam.findScalersOriginal();                
         int numScalers =0;
@@ -1021,7 +1025,66 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	
     }
     
+    /*
+     * non-javadoc: Reads in the histogram and hold them in a tempory array
+     * 
+     * @exception HDFException thrown if unrecoverable error occurs
+     */
+    private List loadHistogramAttributesGroup() throws HDFException {
+    	
+    	final ArrayList lstHistAtt = new ArrayList();
+	    FileOpenMode mode=FileOpenMode.ATTRIBUTES;
+	    hdfToJam.setInFile(inHDF);
+	    
+	    //Find groups	
+	    List groupVirtualGroups = hdfToJam.findGroups(mode, null);
+	    groupCount =groupVirtualGroups.size();
+	    //Loop over groups
+	    Iterator groupIter =groupVirtualGroups.iterator();
+	    while (groupIter.hasNext()) {
+	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
+	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup);
+	        //Find histograms
+	    	List histList =hdfToJam.findHistograms(currentVGroup, null);
+	    	histCount = histList.size();
+	        //Loop over histograms
+	    	Iterator histIter =histList.iterator();
+	    	 while (histIter.hasNext()) {
+	    	 	VirtualGroup histVGroup = (VirtualGroup)histIter.next();
+	    	 	HistogramAttributes histAttributes =(HistogramAttributes)hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
+	    	 	lstHistAtt.add(histAttributes);
+	    	 }
+	    }
+	    return lstHistAtt;
+    }
     
+    /*
+     * non-javadoc: Reads in the histogram and hold them in a tempory array
+     * 
+     * @exception HDFException thrown if unrecoverable error occurs
+     */
+    private List loadHistogramAttributesOriginal() throws HDFException {
+    	
+    	final ArrayList lstHistAtt = new ArrayList();
+	    FileOpenMode mode=FileOpenMode.ATTRIBUTES;
+	    hdfToJam.setInFile(inHDF);
+        
+        final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
+        /* only the "histograms" VG (only one element) */
+        if (hists != null) {
+            /* Histogram iterator */
+            final Iterator iter = hists.getObjects().iterator();
+            // loop begin
+            while (iter.hasNext()) {
+            	final VirtualGroup currHistGrp = (VirtualGroup) (iter.next());
+            	HistogramAttributes histAttributes =(HistogramAttributes)hdfToJam.convertHist(null, currHistGrp, null, mode);
+            	lstHistAtt.add(histAttributes);
+            }
+            //after loop
+        }
+        return lstHistAtt;
+    }
+
     /*
      * non-javadoc: Confirm overwrite if file exits
      */
@@ -1038,15 +1101,67 @@ public final class HDFIO implements DataIO, JamHDFFields {
 
         return writeConfirm;
     }
+    
+    /**
+     * Determines whether a <code>List</code> passed to it
+     * <ol>
+     * <li>exists, and</li>
+     * <li>
+     * </ol>
+     * has any elements.
+     * 
+     * @param list
+     *            the list to check
+     * @return true if the given list exists and has at least one element
+     */
+    private boolean hasContents(List list) {
+        final boolean val = (list != null) && (!list.isEmpty());
+        return val;
+    }
+    
+    private void appendFileName(Group group, String fileName) {
+    	group.setName(group.getName()+" ("+fileName+")");
+    }
 
+    /**
+     * @return last file successfully read from or written to.
+     */
+    public static File getLastValidFile() {
+        synchronized (LVF_MONITOR) {
+            return lastGoodFile;
+        }
+    }
 
+    private static void setLastValidFile(File file) {
+        synchronized (LVF_MONITOR) {
+            lastGoodFile = file;
+            PREFS.put(LFILE_KEY, file.getAbsolutePath());
+        }
+    }
 
+    public void setListener(AsyncListener listener){
+    	asyncListener=listener;
+    }
+    public void removeListener(){
+    	asyncListener=null;
+   
+    }
+	/**
+	 * Interface to be called when asynchronized IO is completed  
+	 */
+    public interface AsyncListener {
+    	public void CompletedIO(String message, String errorMessage);
+    }
+
+    
     /*
      * non-javadoc: Reads in the histogram and hold them in a tempory array
      * 
      * @exception HDFException thrown if unrecoverable error occurs
      */
-    private List loadHistogramAttributes() throws HDFException {
+    //FIXME KBS remove
+     private List loadHistogramAttributesOld() throws HDFException {
+    	
         final ArrayList lstHistAtt = new ArrayList();
         NumericalDataGroup ndg = null;
         /* I check ndgErr==null to determine if error bars exist */
@@ -1154,99 +1269,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         } //hist !=null
         return lstHistAtt;
-    }
-
-    /**
-     * Determines whether a <code>List</code> passed to it
-     * <ol>
-     * <li>exists, and</li>
-     * <li>
-     * </ol>
-     * has any elements.
-     * 
-     * @param list
-     *            the list to check
-     * @return true if the given list exists and has at least one element
-     */
-    private boolean hasContents(List list) {
-        final boolean val = (list != null) && (!list.isEmpty());
-        return val;
-    }
-    
-    private void appendFileName(Group group, String fileName) {
-    	group.setName(group.getName()+" ("+fileName+")");
-    }
-
-    /**
-     * @return last file successfully read from or written to.
-     */
-    public static File getLastValidFile() {
-        synchronized (LVF_MONITOR) {
-            return lastGoodFile;
-        }
-    }
-
-    private static void setLastValidFile(File file) {
-        synchronized (LVF_MONITOR) {
-            lastGoodFile = file;
-            PREFS.put(LFILE_KEY, file.getAbsolutePath());
-        }
-    }
-
-    public void setListener(AsyncListener listener){
-    	asyncListener=listener;
-    }
-    public void removeListener(){
-    	asyncListener=null;
-   
-    }
-	/**
-	 * Interface to be called when asynchronized IO is completed  
-	 */
-    public interface AsyncListener {
-    	public void CompletedIO(String message, String errorMessage);
-    }
-
-    //static HistogramAttributes create(){
-    //    return new HistogramAttributes();
-   //}
-
-    /**
-     * Class to hold histogram properties while we decide if we should load
-     * them.
-     */
-    public class HistogramAttributes {
-
-        String name;
-
-        String title;
-
-        int number;
-
-        int sizeX;
-
-        int sizeY;
-
-        int histDim;
-
-        byte histNumType;
-
-        Object dataArray; //generic data array
-
-        Object errorArray;
-
-        private HistogramAttributes() {
-            super();
-        }
-        
-        /**
-         * 
-         * @return the name of the histogram
-         */
-        public String getName() {
-            return name;
-        }
-                
     }
     
 }

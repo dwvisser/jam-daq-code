@@ -112,7 +112,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      *             if any histogram apparently has more than 2 dimensions
      * @return number of histograms
      */
-    int convertHistograms(Group group, FileOpenMode mode, List histNames) throws HDFException {
+    int convertHistogramsOriginal(Group group, FileOpenMode mode, List histNames) throws HDFException {
         int numHists = 0;
         final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
         /* only the "histograms" VG (only one element) */
@@ -131,8 +131,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     }
     
     
-    Histogram  convertHist(Group group, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
-    	Histogram hist =null;
+    Object  convertHist(Group group, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    	Object retValue  =null;
+    	Histogram hist;
+    	HistogramAttributes histAttributes;
     	
             final NumericalDataGroup ndg;
             /* I check ndgErr==null to determine if error bars exist */
@@ -176,25 +178,32 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             
             final ScientificData sdErr = produceErrorData(ndgErr, histDim);
             
-    		//FIXME KBS hack for now
-            Group.setCurrentGroup(group);
+    		//FIXME KBS remove
+            //Group.setCurrentGroup(group);
+            
             /* Given name list check that that the name is in the list. */
             if (histNames == null || histNames.contains(name)) {
-            	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
                 if (mode.isOpenMode()) {
+                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
                 	Object histErrData =null;
                     if (sdErr != null) {
                     	histErrData = sdErr.getData1dD(inHDF, sizeX);
                     }
-                	hist=openHistogram(group, name, title, number, histData, histErrData);
+                    retValue=openHistogram(group, name, title, number, histData, histErrData);
                 } else if (mode == FileOpenMode.RELOAD) {
-                	hist=reloadHistogram(group, name, histData);
-                } else if  (mode == FileOpenMode.RELOAD) {                	
-                	hist=addHistogram(group, name, histData);
+                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
+                	retValue=reloadHistogram(group, name, histData);
+                } else if  (mode == FileOpenMode.RELOAD) {
+                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
+                	retValue=addHistogram(group, name, histData);
+                } else if (mode==FileOpenMode.ATTRIBUTES) {
+                	retValue=attributesHistogram(group, name, title, number);
                 }
+                	
             }
-            return hist;
+            return retValue;
     }
+    
     
     private ScientificData produceErrorData(NumericalDataGroup ndgErr, int histDim) {
         final boolean exists = ndgErr != null;
@@ -493,6 +502,12 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             histogram.setCounts(histData);
         }
         return histogram;
-    }        
+    }
+    private HistogramAttributes attributesHistogram(Group group, String name, String title, int number) {
+    	String groupName="";
+    	if (group!=null) 
+    		groupName=group.getName();    		
+    	return new HistogramAttributes(groupName, name, title, number);
+    }
 }
 
