@@ -8,29 +8,38 @@
 <body>
 
 <h2>Writing a Sort Routine</h2>
-<p>A sort routine for Jam is written as a Java class. The sort routine must extend the <span class=jam>Jam</span> class, <code>jam.sort.SortRoutine</code>. This allows the full flexibility of the Java language, but also requires you follow a certain syntax so that your class is a valid extension.</p>
-<p>A basic sort routine has four sections:
+<p>A sort routine for Jam is written as a Java class. The sort 
+routine must extend the <span class=jam>Jam</span> class, 
+<a href="../API/jam/sort/SortRoutine.html"><code>jam.sort.SortRoutine</code></a>. This allows the full flexibility of the Java language, but also requires you follow a certain syntax so that your class is a valid extension.</p>
+<p>A basic sort routine has several sections:
 <ol>
-    <li><i>The declaration section:</i> Here you declare names for the variables representing, among other things, references to your histograms, gates, scalers, monitors and run-time parameters.  Declarations made here are visible throughout the sort routine, i.e., in all subsequent sections.</li>
-    <li><i>The initialization section:</i> Here you create all your data objects andperform any other tasks to initialize the sort routine's state when it is loaded into Jam. Give your Histograms, Gates, and Scalers the properties you want, e.g.. name, size, type, and title, etc.</li>
-    <li><i>The sort section:</i> This part of the sort routine is called by Jam for every event. It the place to test gate conditions and increment histograms.</li>
+    <li><i>The declaration section:</i> Here you declare names for 
+    the variables representing, among other things, references to 
+    your histograms, gates, scalers, monitors and run-time 
+    parameters.  Declarations made here are visible throughout 
+    the sort routine, i.e., in all subsequent sections.</li>
+    <li><i>The initialization section:</i> Here you create all 
+    your data objects and perform any other tasks to initialize 
+    the sort routine's state when it is loaded into Jam. Give your 
+    Histograms, Gates, and Scalers the properties you want, e.g., 
+    name, size, type, and title, etc.</li>
+    <li><i>The sort section:</i> This part of the sort routine is 
+    called by Jam for every event. It the place to test gate 
+    conditions and increment histograms.</li>
     <li><i>The monitor section (optional): </i>This section can be used to calculate the
 return value of certain Monitor objects.</li>
-</ol>
-<p>In addition, there are two methods (i.e., subroutines)
-that some users may wish to include:</p>
-<ol>
-<li><i>begin():</i> If your sort routine is declared to implement the 
-<code>jam.global.Beginner</code> interface, Jam will know
-to call this routine during online acquisition when the user 
+	<li>The "begin run" routine (optional):</i> If you include the 
+	<code>begin()</code> subroutine, Jam calls it 
+	during online acquisition when the user 
 clicks on <a href="online.html#beginrun">Begin</a>. If the 
 <em>Zero Histograms</em> checkbox is selected, 
 the histograms are zeroed <em>after</em> <code>begin()</code> is
 called.</li>
-<li><i>end():</i> If your sort routine is declared to implement the 
-<code>jam.global.Ender</code> interface, Jam will know
-to call this routine during online acquisition when the user 
-clicks on <a href="online.html#endrun">End</a>. <code>end()</code> is only called
+	<li><i>The "end run" routine (optional):</i> If you include the
+	<code>end()</code> subroutine, Jam calls it during online 
+	acquisition when the user 
+clicks on <a href="online.html#endrun">End</a>. 
+<code>end()</code> is only called
 after Jam has had a chance to sort all events from the run.</li>
 <h3>Syntax</h3>
 
