@@ -46,11 +46,11 @@ class Tickmarks {
 	public int[] getTicks(
 		int lowerLimit,
 		int upperLimit,
-		int scale,
+	Limits.ScaleType scale,
 		int type) {
 
 		//linear scale
-		if (scale == LINEAR) {
+		if (scale == Limits.ScaleType.LINEAR) {
 			//for now major and minor are the same
 			if (type == MAJOR) {
 				ticks = ticksLinear(lowerLimit, upperLimit);
@@ -59,7 +59,7 @@ class Tickmarks {
 			}
 
 			// log scale	    
-		} else if (scale == LOG) {
+		} else if (scale == Limits.ScaleType.LOG) {
 
 			if (type == MAJOR) {
 				ticks = ticksLogMajor(lowerLimit, upperLimit);
@@ -78,7 +78,7 @@ class Tickmarks {
 	 * Method for default minor ticks    
 	 *  
 	 */
-	public int[] getTicks(int lowerLimit, int upperLimit, int scale) {
+	public int[] getTicks(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
 
 		return getTicks(lowerLimit, upperLimit, scale, MINOR);
 	}
@@ -283,15 +283,15 @@ class Tickmarks {
 		int lowerLimit,
 		int upperLimit,
 		int numberColors,
-		int scale) {
+	Limits.ScaleType scale) {
 
 		//linear scale
-		if (scale == LINEAR) {
+		if (scale == Limits.ScaleType.LINEAR) {
 			thresholds =
 				colorThresholdsLin(lowerLimit, upperLimit, numberColors);
 
 			//log scale	    
-		} else if (scale == LOG) {
+		} else if (scale == Limits.ScaleType.LOG) {
 			thresholds =
 				colorThresholdsLog(lowerLimit, upperLimit, numberColors);
 

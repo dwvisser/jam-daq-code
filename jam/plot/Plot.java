@@ -102,7 +102,7 @@ public abstract class Plot extends JPanel  {
     protected String title;
     protected String axisLabelX;
     protected String axisLabelY;
-    protected int scale;
+    protected Limits.ScaleType scale;
     protected boolean isCalibrated;
     protected double [] counts;
     protected double [][] counts2d;
@@ -445,7 +445,7 @@ public abstract class Plot extends JPanel  {
      * Set the scale to linear scale
      */
     public void setLinear(){
-        plotLimits.setScale(PlotGraphics.LINEAR);
+        plotLimits.setScale(Limits.ScaleType.LINEAR);
         refresh();
     }
     
@@ -453,7 +453,7 @@ public abstract class Plot extends JPanel  {
      * Set the scale to log scale
      */
     public void setLog(){
-        plotLimits.setScale(PlotGraphics.LOG);
+        plotLimits.setScale(Limits.ScaleType.LOG);
         refresh();
     }
     

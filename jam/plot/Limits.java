@@ -22,7 +22,6 @@ public class Limits {
     /** Lookup table for the display limits for the various histograms.
      */
     public static Hashtable limitsList=new Hashtable(137);//should be an prime number
-    //XXX
     static BoundedRangeModelY brmy;
     static BoundedRangeModelX brmx;
 
@@ -34,13 +33,15 @@ public class Limits {
     private int zeroX, sizeX;		//translate to rangemodel min, max
     private int zeroY, sizeY;		//translate to rangemodel min, max
 
-    private int scale;        // is it in log or linear
+    private Limits.ScaleType scale;        // is it in log or linear
     private Histogram histogram;
 
     private BoundedRangeModel rangeModelX;
     private BoundedRangeModel rangeModelY;
     private BoundedRangeModel rangeModelCount;
-    /** Creates a new set of display limits for the specified histogram.
+    
+    /** 
+     * Creates a new set of display limits for the specified histogram.
      * @param hist Histogram for which this instance provides display limits
      */
     public Limits(Histogram hist){
@@ -69,7 +70,7 @@ public class Limits {
         //update the bounded range models
         updateModelX();
         updateModelY();
-        updateModelCounts();
+        //updateModelCounts();
     }
 
     /**
@@ -86,14 +87,14 @@ public class Limits {
         maximumY=100;
         minimumCounts=0;
         maximumCounts=10;
-        scale=PlotGraphics.LINEAR;
+        scale=Limits.ScaleType.LINEAR;
         rangeModelX=new DefaultBoundedRangeModel();
         rangeModelY=new DefaultBoundedRangeModel();
         rangeModelCount=new DefaultBoundedRangeModel();
         //update the bounded range models
         updateModelX();
         updateModelY();
-        updateModelCounts();
+        //updateModelCounts();
     }
     
     /**
@@ -118,14 +119,14 @@ public class Limits {
             maximumX=hist.getSizeX()-1;  //last channel
             minimumY=0;
             maximumY=100;
-            scale=PlotGraphics.LINEAR;
+            scale=Limits.ScaleType.LINEAR;
         } else if ((hist.getType()==Histogram.TWO_DIM_INT)||
         (hist.getType()==Histogram.TWO_DIM_DOUBLE)) {
             minimumX=0;
             maximumX=hist.getSizeX()-1;      //last channel
             minimumY=0;
             maximumY=hist.getSizeY()-1;      //last channnel
-            scale=PlotGraphics.LOG;
+            scale=Limits.ScaleType.LOG;
         } else {
             System.err.println("Error unreconized histogram type [Limits]");
         }
@@ -280,10 +281,8 @@ public class Limits {
      * Set the minimimum Y limit
      */
     public void setMinimumY(int minY){
-        //System.err.println("minY: "+minY);
         minimumY=minY;
         updateModelY();
-        //XXXKBSif (!delayAction) brmy.setYDisplayLimits();
     }
 
     /**
@@ -300,7 +299,7 @@ public class Limits {
     public void setLimitsCounts(int minCounts, int maxCounts){
         minimumCounts=minCounts;
         maximumCounts=maxCounts;
-        updateModelCounts();
+        //updateModelCounts();
     }
 
     /**
@@ -308,7 +307,7 @@ public class Limits {
      */
     public void setMinimumCounts(int minCounts){
         minimumCounts=minCounts;
-        updateModelCounts();
+        //updateModelCounts();
     }
 
     /**
@@ -316,7 +315,7 @@ public class Limits {
      */
     public void setMaximumCounts(int maxCounts){
         maximumCounts=maxCounts;
-        updateModelCounts();
+        //updateModelCounts();
     }
 
     /**
@@ -324,7 +323,7 @@ public class Limits {
      *  linear  <code> Limits.LINEAR</code>
      *  log  <code> Limits.LOG </code>
      */
-    public void setScale(int s){
+    public void setScale(Limits.ScaleType s){
         scale=s;
     }
     
@@ -364,10 +363,10 @@ public class Limits {
      * update range model x
      * this updates the scroll bars
      */
-    private void updateModelCounts(){
+    //private void updateModelCounts(){
         /*int value=minimumCounts;
         int extent=maximumCounts-minimumCounts;*/
-    }
+    //}
 
     /**
      *
@@ -408,9 +407,9 @@ public class Limits {
     /**
      * Get the scale, linear or Log.
      *
-     * @return <code>Limits.LINEAR</code> or <code>Limits.LOG</code>
+     * @return <code>PlotGraphics.LINEAR</code> or <code>PlotGraphics.LOG</code>
      */
-    public int getScale(){
+    public Limits.ScaleType getScale(){
         return scale;
     }
 
@@ -419,6 +418,17 @@ public class Limits {
         temp="Limits of \""+histogram.getName()+"\": ";
         temp += "MinX: "+getMinimumX()+", MaxX: "+getMaximumX();
         return temp;
+    }
+    
+    static class ScaleType{
+    	private int type;
+    	
+    	private ScaleType(int type){
+    		this.type=type;	
+    	}
+    	
+    	static public ScaleType LINEAR=new ScaleType(0);
+    	static public ScaleType LOG=new ScaleType(1);
     }
 }
 
