@@ -5,7 +5,6 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
-import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -1039,7 +1038,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         hdfToJam.setInFile(inHDF);
 	    //Find groups	
 	    final List groupVirtualGroups = hdfToJam.findGroups(mode, existingGroupList);
-	    groupCount =groupVirtualGroups.size();
+
 	    //Loop over groups
 	    final Iterator groupIter =groupVirtualGroups.iterator();
 	    GROUPLIST:while (groupIter.hasNext()) {
@@ -1049,6 +1048,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	//Get the current group for the rest of the operation
 	    	if ( mode==FileOpenMode.OPEN || mode==FileOpenMode.OPEN_MORE ) {
 	    		currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, histAttributeList, mode);
+	    		if (currentGroup!=null)
+	    			groupCount++;
 	    	} else {
 	    		String groupName = hdfToJam.readVirtualGroupName(currentVGroup); 
 	    		if (hdfToJam.containsGroup(groupName, existingGroupList)) {
@@ -1067,22 +1068,25 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	
 	        //Find histograms
 	    	histList =hdfToJam.findHistograms(currentVGroup, null);
-	    	histCount = histList.size();
 	    	
 	        //Loop over histograms
 	    	final Iterator histIter =histList.iterator();
 	    	 while (histIter.hasNext()) {
 	    	 	final VirtualGroup histVGroup = (VirtualGroup)histIter.next();
 	    	 	final Histogram hist =(Histogram)hdfToJam.convertHistogram(currentGroup, histVGroup,  histAttributeList, mode);
+	    	 	if (hist!=null)
+	    	 		histCount++;
 	    	 	//Load gates and calibration if not add
 	    	 	if (hist!=null && mode != FileOpenMode.ADD) {
                 	final List gateList = hdfToJam.findGates(histVGroup, hist.getType());
-                	gateCount = gateList.size();
+                	
                 	//Loop over gates
                 	final Iterator gateIter =gateList.iterator();
        	    	 	while (gateIter.hasNext()) {
        	    	 		final VirtualGroup gateVGroup = (VirtualGroup)gateIter.next();
-       	    	 		hdfToJam.convertGate(hist, gateVGroup, mode);
+       	    	 		Gate gate = hdfToJam.convertGate(hist, gateVGroup, mode);
+       	    	 		if (gate!=null)
+       	    	 			gateCount++;
        	    	 	}
 	                /* Load calibration. */ 
 	                final VDataDescription vddCalibration = hdfToJam.findCalibration(histVGroup);

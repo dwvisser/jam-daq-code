@@ -174,13 +174,14 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
         /* only the "histograms" VG (only one element) */
         if (hists != null) {
-            numHists = hists.getObjects().size();
             /* Histogram iterator */
             final Iterator histIter = hists.getObjects().iterator();
             // loop begin
             while (histIter.hasNext()) {
             	final VirtualGroup currHistGrp = (VirtualGroup) (histIter.next());
-            	convertHistogram(group, currHistGrp, histAttributes, mode);
+            	Histogram hist = convertHistogram(group, currHistGrp, histAttributes, mode);
+            	if (hist!=null)
+            		numHists++;
             }
             //after loop 
         }
@@ -459,7 +460,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         final VirtualGroup gates = VirtualGroup.ofName(groups, GATE_SECTION);
         final List annotations = AbstractData.ofType(AbstractData.DFTAG_DIA);
         if (gates != null) {
-            numGates = gates.getObjects().size();
+            //numGates = gates.getObjects().size();
             final Iterator temp = gates.getObjects().iterator();
             boolean errorOccured=false;
 
@@ -473,7 +474,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
                         + STRING_UTIL.makeLength(hname, Histogram.NAME_LENGTH);
                 final Histogram hist = Histogram.getHistogram(histFullName);
                 
-                convertGate(hist, currVG, mode);
+                Gate gate = convertGate(hist, currVG, mode);
+                if(gate!=null)
+                	numGates++;
 
             }
             if (errorOccured){
