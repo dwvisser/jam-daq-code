@@ -49,13 +49,8 @@ public final class Script extends GoodThread {
 		}
 	}
 	
-	public  void loadFileList(File list){
-		try {
-			sc.readList(list);
-		} catch (JamException e){
-			System.err.println("Error while loading event file list: "+
-			e.getMessage());
-		}
+	public void loadFileList(File list){
+		sc.readList(list);
 	}
 	
 	public  void setEventOutput(File eventsOut){
