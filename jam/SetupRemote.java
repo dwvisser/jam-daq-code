@@ -9,26 +9,28 @@ import jam.global.MessageHandler;
 import jam.global.SortMode;
 
 import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.CheckboxGroup;
 import java.awt.Color;
-import java.awt.Dialog;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnknownHostException;
 import java.util.List;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 /**
  * Class to make this process into a remote server for Jam or
@@ -36,7 +38,7 @@ import java.util.List;
  *
  * @author Ken Swartz
  */
-public class SetupRemote implements ActionListener, ItemListener {
+public class SetupRemote extends JDialog implements ActionListener, ItemListener {
 
 	static final String DEFAULT_NAME = "jam";
 	static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
@@ -45,21 +47,18 @@ public class SetupRemote implements ActionListener, ItemListener {
 	final static int SNAP = 1;
 	final static int LINK = 2;
 
-	private JamMain jamMain;
-	//XX    private JamApplet jamApplet;
 	private MessageHandler msgHandler;
 
-	private Dialog dl;
-	private Label lname;
-	private TextField textName;
-	private Checkbox cserver;
-	private Checkbox csnap;
-	private Checkbox clink;
-	private Button bok;
-	private Button bapply;
-	private Checkbox checkLock;
+	private JLabel lname;
+	private JTextField textName;
+	private JCheckBox cserver;
+	private JCheckBox csnap;
+	private JCheckBox clink;
+	private JButton bok;
+	private JButton bapply;
+	private JCheckBox checkLock;
 	
-	private final JamStatus status=JamStatus.instance();
+	private static final JamStatus status=JamStatus.instance();
 
 	private int mode; //mode server, snap or link
 	RemoteData remoteData;
@@ -70,55 +69,53 @@ public class SetupRemote implements ActionListener, ItemListener {
 	private boolean inApplet; //are we running in a applet
 
 	private boolean setupLock = false;
+	
+	private static SetupRemote instance;
+	public static SetupRemote getSingletonInstance(){
+		if (instance==null){
+			instance=new SetupRemote();
+		}
+		return instance;
+	}
+		
+		
 
-	/**
-	 * Constructor for Jam Applet no dialog box, so we are in an applet
-	 */
-	/*FIXME
-	    public SetupRemote(JamApplet jamApplet,  MessageHandler msgHandler){
-	
-	  this.jamApplet=jamApplet;        
-	  this.msgHandler=msgHandler;
-	  jamMain=null;
-	  inApplet=true;
-	    }
-	*/
-	
 	/**
 	 * Constructor for Jam Application creates dialog box, we are in an application
 	 */
-	public SetupRemote(JamMain jamMain, MessageHandler msgHandler) {
-		this.jamMain = jamMain;
-		this.msgHandler = msgHandler;
+	public SetupRemote() {
+		super(status.getFrame(),"Remote Hookup ", false);
+		msgHandler = status.getMessageHandler();
 		//create dialog box
-		dl = new Dialog(jamMain, "Remote Hookup ", false);
-		dl.setForeground(Color.black);
-		dl.setBackground(Color.lightGray);
-		dl.setResizable(false);
-		dl.setLocation(20, 50);
-		dl.setSize(400, 250);
+		setResizable(false);
+		setLocation(20, 50);
+		setSize(400, 250);
+		final Container dl=getContentPane();
 		dl.setLayout(new GridLayout(0, 1, 10, 10));
 		// panel for mode     
 		Panel pm = new Panel();
 		pm.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		dl.add(pm);
-		CheckboxGroup cbgmode = new CheckboxGroup();
-		cserver = new Checkbox("Server  ", cbgmode, true);
+		final ButtonGroup cbgmode = new ButtonGroup();
+		cserver = new JCheckBox("Server  ", true);
+		cbgmode.add(cserver);
 		cserver.addItemListener(this);
 		pm.add(cserver);
-		csnap = new Checkbox("SnapShot", cbgmode, false);
+		csnap = new JCheckBox("SnapShot", false);
+		cbgmode.add(csnap);
 		csnap.addItemListener(this);
 		pm.add(csnap);
-		clink = new Checkbox("Link    ", cbgmode, false);
+		clink = new JCheckBox("Link    ", false);
+		cbgmode.add(clink);
 		clink.addItemListener(this);
 		pm.add(clink);
 		// panel for name
 		Panel pn = new Panel();
 		pn.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		dl.add(pn);
-		lname = new Label("Name:", Label.RIGHT);
+		lname = new JLabel("Name:", Label.RIGHT);
 		pn.add(lname);
-		textName = new TextField(DEFAULT_NAME);
+		textName = new JTextField(DEFAULT_NAME);
 		textName.setColumns(35);
 		textName.setBackground(Color.white);
 		pn.add(textName);
@@ -126,11 +123,11 @@ public class SetupRemote implements ActionListener, ItemListener {
 		Panel pb = new Panel();
 		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		dl.add(pb);
-		bok = new Button("   OK   ");
+		bok = new JButton("   OK   ");
 		pb.add(bok);
 		bok.setActionCommand("ok");
 		bok.addActionListener(this);
-		bapply = new Button(" Apply  ");
+		bapply = new JButton(" Apply  ");
 		pb.add(bapply);
 		bapply.setActionCommand("apply");
 		bapply.addActionListener(this);
@@ -138,24 +135,13 @@ public class SetupRemote implements ActionListener, ItemListener {
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
-		checkLock = new Checkbox("Setup Locked", false);
+		checkLock = new JCheckBox("Setup Locked", false);
 		checkLock.setEnabled(false);
 		checkLock.addItemListener(this);
 		pb.add(checkLock);
-		dl.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				dl.dispose();
-			}
-		});
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		mode = SERVER;
 		inApplet = false;
-	}
-
-	/**
-	 *
-	 */
-	public void showRemote() {
-		dl.show();
 	}
 
 	/**
@@ -186,10 +172,10 @@ public class SetupRemote implements ActionListener, ItemListener {
 				lockFields(true);
 
 				if (command == "ok") {
-					dl.dispose();
+					dispose();
 				}
 			} else if (command == "cancel") {
-				dl.dispose();
+				dispose();
 			}
 		} catch (JamException je) {
 			msgHandler.errorOutln(je.getMessage());
@@ -217,12 +203,11 @@ public class SetupRemote implements ActionListener, ItemListener {
 				textName.setText(DEFAULT_URL);
 				//lock up state    
 			} else if (ie.getItemSelectable() == checkLock) {
-				setActive((checkLock.getState()));
-				lockFields((checkLock.getState()));
+				setActive((checkLock.isSelected()));
+				lockFields((checkLock.isSelected()));
 
-				if (!(checkLock.getState())) {
+				if (!(checkLock.isSelected())) {
 					reset();
-					//XXXJamDisp.setSortMode(RunControl.NO_SORT);    
 				}
 
 			}
@@ -268,16 +253,12 @@ public class SetupRemote implements ActionListener, ItemListener {
 	public void snap(String stringURL) throws JamException {
 
 		try {
-			if (jamMain != null) {// jam client
 				if (status.canSetup()) {
 					remoteData = (RemoteData) Naming.lookup(stringURL);
 					msgHandler.messageOutln("Remote lookup OK!");
 				} else {
 					throw new JamException("Can't view remotely, sort mode locked [SetupRemote]");
 				}
-			} else {//applet
-				remoteData = (RemoteData) Naming.lookup(stringURL);
-			}
 		} catch (RemoteException re) {
 			throw new JamException("Remote lookup up failed URL: " + stringURL);
 		} catch (java.net.MalformedURLException mue) {
@@ -347,7 +328,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 	private void lockFields(boolean lock) {
 		if (lock) {
 			setupLock = true;
-			checkLock.setState(true);
+			checkLock.setSelected(true);
 			checkLock.setEnabled(true);
 			textName.setEditable(false);
 			textName.setBackground(Color.lightGray);
@@ -356,7 +337,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 
 		} else {
 			setupLock = false;
-			checkLock.setState(false);
+			checkLock.setSelected(false);
 			checkLock.setEnabled(false);
 			textName.setEditable(true);
 			textName.setBackground(Color.white);
