@@ -136,7 +136,8 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		//Size changed redo layout
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
-				redoLayout();
+			//KBS FIX redoes layout when selection made
+			//redoLayout();
 			}
 		});
 
