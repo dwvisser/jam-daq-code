@@ -190,7 +190,7 @@ public class JamConsole
 				System.err.println(e);
 			}
 			trimLog();
-			textLog.setCaretPosition(textLog.getText().length());
+			textLog.setCaretPosition(doc.getLength());
 			//if file logging on write to file
 			if (logFileOn) {
 				try {
@@ -232,7 +232,7 @@ public class JamConsole
 			System.err.println(e);
 		}
 		trimLog();
-		textLog.setCaretPosition(textLog.getText().length());
+		textLog.setCaretPosition(doc.getLength());
 		//if file logging on write to file
 		if (logFileOn) {
 			try {
@@ -281,7 +281,7 @@ public class JamConsole
 			System.err.println(e);
 		}
 		trimLog();
-		textLog.setCaretPosition(textLog.getText().length());
+		textLog.setCaretPosition(doc.getLength());
 		/* beep */
 		Toolkit.getDefaultToolkit().beep();
 		if (logFileOn) { //if file logging on write to file
@@ -422,19 +422,16 @@ public class JamConsole
 	/**
 	 * Trim the text on screen Log so it does not get too long
 	 */
-	private void trimLog(/*String trimString*/
-	) {
-		int lenText, posRet;
-
+	private void trimLog() {
 		numberLines++;
 		if (numberLines > maxLines) { //get rid of top line
-			String trimString = textLog.getText();
 			numberLines--;
-			posRet = trimString.indexOf(END_LINE);
-			lenText = trimString.length();
-			textLog.setText(trimString.substring(posRet + 1, lenText));
+			try{
+				doc.remove(0,textLog.getText().indexOf(END_LINE)+END_LINE.length());
+			} catch (BadLocationException ble){
+				System.err.println(ble);
+			}
 		}
-		//return  textLog;
 	}
 
 	/**
