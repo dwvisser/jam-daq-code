@@ -10,14 +10,14 @@ import java.awt.print.PageFormat;
  * @author Ken Swartz
  *
  */
-public class PageSetupCmd extends AbstractCommand implements Commandable {
+final class PageSetupCmd extends AbstractCommand {
 
 	
 	
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
+	protected void execute(Object[] cmdParams) {
 		PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();		
 		PrinterJob pj=PrinterJob.getPrinterJob();
 		mPageFormat = pj.pageDialog(mPageFormat);
@@ -27,7 +27,7 @@ public class PageSetupCmd extends AbstractCommand implements Commandable {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
 		execute(null);
 
 	}

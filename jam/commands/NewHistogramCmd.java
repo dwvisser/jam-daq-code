@@ -7,10 +7,10 @@ import jam.data.Histogram;
  * @author Ken Swartz
  *
  */
-public class NewHistogramCmd extends AbstractCommand {
+final class NewHistogramCmd extends AbstractCommand {
 
 	
-	public NewHistogramCmd(){
+	NewHistogramCmd(){
 		super();
 		/* Default constructor needed */
 	}
@@ -18,7 +18,7 @@ public class NewHistogramCmd extends AbstractCommand {
 	/**
 	 * Execute the command
 	 */
-	public void execute(Object [] cmdParams){		
+	protected void execute(Object [] cmdParams){		
 		String name = (String)cmdParams[0];
 		String title = (String)cmdParams[1];
 		int type = ((Integer)cmdParams[2]).intValue();
@@ -27,14 +27,14 @@ public class NewHistogramCmd extends AbstractCommand {
 		new Histogram(name, type, sizeX, sizeY, title);		
 	}
 	
-	/*public void performCommand(int cmdParams) throws CommandException {
+	/*protected void performCommand(int cmdParams) throws CommandException {
 		execute(null);
 	}*/
 	
 	/**
 	 * Execute the command
 	 */
-	public void executeParse(String [] cmdParams){	
+	protected void executeParse(String [] cmdParams){	
 		String name = cmdParams[0];
 		String title = cmdParams[1];
 		int type = Integer.parseInt(cmdParams[2]);	

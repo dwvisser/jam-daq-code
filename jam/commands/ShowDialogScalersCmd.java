@@ -9,27 +9,21 @@ import jam.data.control.ScalerControl;
  * @author Ken Swartz
  *
  */
-public class ShowDialogScalersCmd
-	extends AbstractCommand
-	implements Commandable {
+final class ShowDialogScalersCmd extends AbstractCommand {
 
 	/* *
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
-		JFrame frame =status.getFrame();
-		
-		final ScalerControl scalerControl = new ScalerControl(frame, broadcaster, msghdlr);		
+	protected void execute(Object[] cmdParams) {
+		final JFrame frame =status.getFrame();
+		final ScalerControl scalerControl = new ScalerControl(frame, msghdlr);		
 		scalerControl.showDisplay();	
-
 	}
 
 	/* *
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) {
+	protected void executeParse(String[] cmdTokens) {
 		execute(null);
-
 	}
-
 }

@@ -1,12 +1,9 @@
 package jam.commands;
 
-import jam.io.hdf.HDFIO;
 import jam.global.CommandListenerException;
+import jam.io.hdf.HDFIO;
 
 import java.io.File;
-import javax.swing.JFrame;
-import javax.swing.JFileChooser;
-
 
 /**
  * Save as hdf
@@ -14,47 +11,33 @@ import javax.swing.JFileChooser;
  * @author Ken
  *
  */
-public class SaveAsHDFCmd extends AbstractCommand implements Commandable {
+final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 
 	/**
 	 * Save to a hdf, prompt for overwrite
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) throws CommandException {
-		
-		JFrame frame = status.getFrame();	
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
-		File file;
-				
-		//No file given		
-		if ( cmdParams==null) {		
-			
-			int write = hdfio.writeFile();
-			if (write==JFileChooser.APPROVE_OPTION){
-				
+	protected void execute(Object[] cmdParams) throws CommandException {
+		final HDFIO hdfio = new HDFIO(status.getFrame(), msghdlr);		
+		if ( cmdParams==null) {//No file given		
+			//int write = hdfio.writeFile();
+			hdfio.writeFile();
+			//if (write==JFileChooser.APPROVE_OPTION){
 				//KBS FIXME setSaveEnabled(true);
 				//??Is this the right instead of setSaveEnabled 
 				//status.setSortMode(file);
-			}
-			
-			//throw new CommandException("Error executing command save");
-				
-			
-		//File name given								
-		} else {
-			
-			file =(File)cmdParams[0];
+			//}
+			//throw new CommandException("Error executing command save");				
+		} else {//File name given	
 			//KBS check for valid file if not done in hdfio
-			hdfio.writeFile(file);			
+			hdfio.writeFile((File)cmdParams[0]);			
 		}			
-
-
 	}
 
 	/* 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
 		
 		
 		try {

@@ -10,12 +10,12 @@ import javax.swing.JFrame;
  * 
  * @author Ken Swartz
  */
-public class AddHDFCmd extends AbstractCommand implements Commandable {
+final class AddHDFCmd extends AbstractCommand implements Commandable {
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
+	protected void execute(Object[] cmdParams) {
 		JFrame frame = status.getFrame();				
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);
 		hdfio.readFile(FileOpenMode.ADD);
@@ -25,7 +25,7 @@ public class AddHDFCmd extends AbstractCommand implements Commandable {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens)
+	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 			execute(null);
 

@@ -13,14 +13,14 @@ import javax.swing.JOptionPane;
  * @author Ken Swartz
  *
  */
-public class FileNewClearCmd extends AbstractCommand implements Commandable {
+final class FileNewClearCmd extends AbstractCommand {
 
 	/**
 	 * Excecute command
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
+	protected void execute(Object[] cmdParams) {
 		
 		JFrame frame =status.getFrame();
 		
@@ -33,7 +33,7 @@ public class FileNewClearCmd extends AbstractCommand implements Commandable {
 		
 	}
 	
-	/*public void performCommand(int cmdParams) throws CommandException {
+	/*protected void performCommand(int cmdParams) throws CommandException {
 		execute(null);
 	}*/
 	
@@ -41,7 +41,7 @@ public class FileNewClearCmd extends AbstractCommand implements Commandable {
 	 * Execute command
 	 * @see jam.commands.AbstractCommand#executeStrParam(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) {
+	protected void executeParse(String[] cmdTokens) {
 		execute(null);		
 	}
 

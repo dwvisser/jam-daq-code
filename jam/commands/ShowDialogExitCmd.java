@@ -4,20 +4,19 @@ import javax.swing.JFrame;
 /**
  * Show the histogram dialog
  * 
- * @author Ken
+ * @author Ken Swartz
  *
  */
-public class ShowDialogExitCmd extends AbstractCommand{
+final class ShowDialogExitCmd extends AbstractCommand{
 	
-	//Null constructor needed
-	public ShowDialogExitCmd(){
-		
+	protected ShowDialogExitCmd(){
+		super();
 	}		
 	
 	/**
 	 * Execute the command
 	 */
-	public void execute(Object [] cmdParams){
+	protected void execute(Object [] cmdParams){
 
 		boolean confirm;
 		JFrame frame =status.getFrame();				
@@ -53,7 +52,7 @@ public class ShowDialogExitCmd extends AbstractCommand{
 	/**
 	 * Execute the command
 	 */
-	public void executeParse(String [] cmdParams){
+	protected void executeParse(String [] cmdParams){
 		
 		if (cmdParams.length!=0) {
 			

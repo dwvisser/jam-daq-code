@@ -9,14 +9,14 @@ import jam.global.BroadcastEvent;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ScalersCmd extends AbstractCommand implements Commandable {
+final class ScalersCmd extends AbstractCommand implements Commandable {
 
-	public static int READ =1;
-	public static int ZERO =2;
+	protected static int READ =1;
+	protected static int ZERO =2;
 	/* 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
+	protected void execute(Object[] cmdParams) {
 		int param =((Integer)cmdParams[0]).intValue();
 		
 		if (param==READ) {
@@ -30,7 +30,7 @@ public class ScalersCmd extends AbstractCommand implements Commandable {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) {
+	protected void executeParse(String[] cmdTokens) {
 		
 		Object [] params = new Object[1];
 		
@@ -50,8 +50,9 @@ public class ScalersCmd extends AbstractCommand implements Commandable {
 	 */
 	private void zeroScalers() {
 		broadcaster.broadcast(BroadcastEvent.SCALERS_CLEAR);
-		broadcaster.broadcast(BroadcastEvent.SCALERS_READ);				
+		readScalers();				
 	}
+	
 	/**
 	 * Does the scaler reading
 	 *

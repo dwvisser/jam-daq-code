@@ -1,38 +1,32 @@
 package jam.commands;
 
-import jam.io.hdf.HDFIO;
-import jam.io.FileOpenMode;
 import jam.global.CommandListenerException;
-
-import javax.swing.JFrame;
+import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
 /**
  *  Reload data from a hdf file
  * 
  * @author Ken Swartz
  *
  */
-public class ReloadHDFCmd extends AbstractCommand implements Commandable {
+final class ReloadHDFCmd extends AbstractCommand {
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) {
-		
-		JFrame frame = status.getFrame();				
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);
-		
-		if (hdfio.readFile(FileOpenMode.RELOAD)) { //true if successful
+	protected void execute(Object[] cmdParams) {			
+		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);
+		hdfio.readFile(FileOpenMode.RELOAD);		
+		//if (hdfio.readFile(FileOpenMode.RELOAD)) { //true if successful
 			//KBS FIXME Call display Scalers command here
 			//scalerControl.displayScalers();
-		}
-
-
+		//}
 	}
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens)
+	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 			execute(null);
 	}

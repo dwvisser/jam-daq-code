@@ -13,13 +13,13 @@ import javax.swing.JOptionPane;
  * @author Ken Swartz
  *
  */
-public class SaveHDFCmd extends AbstractCommand implements Commandable {
+final class SaveHDFCmd extends AbstractCommand implements Commandable {
 
 	/**
 	 * Save to a hdf, prompt for overwrite
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(Object[] cmdParams) throws CommandException {
 		
 		JFrame frame = status.getFrame();	
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
@@ -53,7 +53,7 @@ public class SaveHDFCmd extends AbstractCommand implements Commandable {
 	/* 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
 		
 		
 		try {

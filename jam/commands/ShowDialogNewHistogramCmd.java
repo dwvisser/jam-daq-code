@@ -1,36 +1,30 @@
 package jam.commands;
-import jam.data.control.*;
-import java.awt.Frame;
-//import jam.global.Broadcaster;
-//import jam.global.MessageHandler;
-//import jam.global.JamStatus;
+import jam.data.control.HistogramControl;
+
 /**
  * Show the histogram dialog
  * 
  * @author Ken
  *
  */
-public class ShowDialogNewHistogramCmd extends AbstractCommand{
+final class ShowDialogNewHistogramCmd extends AbstractCommand {
 
-	//Null constructor needed
-	public ShowDialogNewHistogramCmd(){
-		
+	ShowDialogNewHistogramCmd(){
+		super();
 	}
 	
 	/**
 	 * Execute the command
 	 */
-	public void execute(Object [] cmdParams){
-		
-		HistogramControl histogramControl= new HistogramControl((Frame)status.getFrame(), broadcaster, msghdlr);
+	protected void execute(Object [] cmdParams){
+		HistogramControl histogramControl= new HistogramControl(status.getFrame(), msghdlr);
 		histogramControl.showNew();		
 	}
 	
 	/**
 	 * Execute the command
 	 */
-	public void executeParse(String [] cmdParams){
+	protected void executeParse(String [] cmdParams){
 		execute(null);
 	}
-	
 }

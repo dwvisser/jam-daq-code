@@ -14,12 +14,12 @@ import jam.global.CommandListenerException;
  * @author Ken Swartz
  *
  */
-public class ExportTextFileCmd extends AbstractCommand implements Commandable {
+final class ExportTextFileCmd extends AbstractCommand {
 
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	public void execute(Object[] cmdParams)throws CommandException {
+	protected void execute(Object[] cmdParams)throws CommandException {
 		if ( cmdParams==null) {//No file given		
 			throw new CommandException("No file given");
 		} else {//File given
@@ -37,7 +37,7 @@ public class ExportTextFileCmd extends AbstractCommand implements Commandable {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	public void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
 		
 		try { 
 			Object [] cmdParams = new Object[1]; 
