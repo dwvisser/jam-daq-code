@@ -35,23 +35,21 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	 */
 	protected void execute(final Object[] cmdParams) {
 		File file =null;
-		
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
+			if (cmdParams.length>0){
 				file =(File)cmdParams[0];
+			}
 		}
-		
 		readAdditionalHDFFile(file);
 	}
 
-	/**
-	 * Read in a HDF file
-	 * @param cmdParams
+	/*
+	 * Read in an HDF file
 	 */ 
-	private void readAdditionalHDFFile(File file) {
-		Frame frame= STATUS.getFrame();		
+	private void readAdditionalHDFFile(final File file) {
+		final Frame frame= STATUS.getFrame();		
 		hdfio.setListener(this);
-		final boolean isFileReading;
+		final boolean isReading;
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
@@ -59,15 +57,15 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	        // dont do anything if it was cancel
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	        	file = jfile.getSelectedFile();
-				isFileReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);	        	
+	        	final File selectedFile = jfile.getSelectedFile();
+				isReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, selectedFile);	        	
 	        } else {
-	        	isFileReading=false;
+	        	isReading=false;
 	        }
 		} else {
-			isFileReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);
+			isReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);
 		}
-		if (!isFileReading){//File was read in so no callback	
+		if (!isReading){//File was read in so no callback	
 			notifyApp();
 		}								
 	}
@@ -80,7 +78,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 		if (cmdTokens.length==0) {
 			execute(null);
 		} else {
-			File file = new File(cmdTokens[0]); 
+			final File file = new File(cmdTokens[0]); 
 			cmdParams[0]=file;
 			execute(cmdParams);
 		}
@@ -94,7 +92,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 		
 		//FIXME KBS need a way to get first addtional readin histogram
 		//Set the current histogram to the first opened histogram
-		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		final Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}			
@@ -102,10 +100,9 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */
-	public void CompletedIO(String message, String errorMessage) {
+	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
 		notifyApp();
 		file=null;		
 	}
-	
 }
