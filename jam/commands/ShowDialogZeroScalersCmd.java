@@ -12,6 +12,6 @@ final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd {
 	
 	ShowDialogZeroScalersCmd(){
 		putValue(NAME,"Zero Scalers\u2026");
-		dataControl=new ScalerZeroControl(status.getFrame());
+		dataControl=new ScalerZeroControl();
 	}
 }

@@ -5,7 +5,6 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
 import java.awt.Container;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +15,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -31,16 +29,14 @@ public class ScalerZeroControl extends DataControl {
 
 	private static final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	private static final JamStatus status = JamStatus.instance();
-	private final JDialog dzero;
 	private final JCheckBox checkDisabled2;
 	private final JButton bzero2;
 
-	public ScalerZeroControl(Frame f) {
-		// dialog to zero scalers
-		dzero = new JDialog(f, "Zero Scalers", true);
-		Container dzc = dzero.getContentPane();
-		dzero.setResizable(false);
-		dzero.setLocation(20, 50);
+	public ScalerZeroControl() {
+		super("Zero Scalers", true);
+		Container dzc = getContentPane();
+		setResizable(false);
+		setLocation(20, 50);
 		final JPanel pZero = new JPanel(new GridLayout(1, 0, 20, 20));
 		Border border = new EmptyBorder(20, 20, 20, 20);
 		pZero.setBorder(border);
@@ -49,7 +45,7 @@ public class ScalerZeroControl extends DataControl {
 			public void actionPerformed(ActionEvent ae){
 				checkDisabled2.setSelected(true);
 				bzero2.setEnabled(false);
-				dzero.dispose();
+				dispose();
 			}
 		});
 		bzero2.setEnabled(false);
@@ -65,13 +61,13 @@ public class ScalerZeroControl extends DataControl {
 			}
 		});
 		pZero.add(checkDisabled2);
-		dzero.addWindowListener(new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				dzero.dispose();
+				dispose();
 			}
 		});
 		dzc.add(pZero);
-		dzero.pack();
+		pack();
 	}
 
 	/**
@@ -91,12 +87,5 @@ public class ScalerZeroControl extends DataControl {
 	 */
 	public void setup() {
 		/* nothing to set up */
-	}
-
-	/**
-	 * @see jam.data.control.DataControl#show()
-	 */
-	public void show() {
-		dzero.show();
 	}
 }
