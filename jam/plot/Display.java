@@ -469,29 +469,14 @@ public class Display
 		final ClassLoader cl = this.getClass().getClassLoader();
 		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
 		add(ptoolbar, BorderLayout.WEST);
-		//final GridBagLayout gb = new GridBagLayout();
-		//final GridBagConstraints gbc = new GridBagConstraints();
-		//gbc.ipady = 5;
 		ptoolbar.setLayout(new GridLayout(0,1));
 		final JPanel view=new JPanel(new BorderLayout());
 		final JPanel scale=new JPanel(new BorderLayout());
 		final JPanel inquire=new JPanel(new BorderLayout());
-		//final Box box=Box.createVerticalBox();
-		//final Insets insetsToolbar = new Insets(5, 5, 5, 5);
-		//gbc.insets = insetsToolbar;
 		ptoolbar.add(scale);
 		ptoolbar.add(view);
 		ptoolbar.add(inquire);
 		try {
-			/*addComponent(
-				ptoolbar,
-				ltoolbar,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			view.add(new JLabel("View", SwingConstants.CENTER),BorderLayout.NORTH);
 			final JPanel firstPanel=new JPanel(new GridLayout(1,2));
 			final JButton bupdate = new JButton("Update");
@@ -505,16 +490,6 @@ public class Display
 			brebin.addActionListener(action);
 			firstPanel.add(bupdate);
 			firstPanel.add(brebin);
-			//refresh because update is a component method
-			/*addComponent(
-				ptoolbar,
-				firstPanel,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			final JPanel viewCenter=new JPanel(new BorderLayout());
 			view.add(viewCenter,BorderLayout.CENTER);
 			viewCenter.add(firstPanel,BorderLayout.NORTH);
@@ -541,8 +516,6 @@ public class Display
 			bzoomin.setToolTipText("ZoomIn the display limits.");
 			bzoomin.setActionCommand(Action.ZOOMIN);
 			bzoomin.addActionListener(action);
-			//box.add(zoomPanel1);
-			//final Box zoomPanel2=Box.createHorizontalBox();
 			zoomPanel.add(bzoomin);
 			final Icon i_zoomout =
 				new ImageIcon(
@@ -553,39 +526,11 @@ public class Display
 			bzoomout.setActionCommand(Action.ZOOMOUT);
 			bzoomout.addActionListener(action);
 			zoomPanel.add(bzoomout);
-			/*addComponent(
-				ptoolbar,
-				zoomPanel,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			viewCenter.add(zoomPanel,BorderLayout.CENTER);
 			bgoto.setActionCommand(Action.GOTO);
 			bgoto.setToolTipText("Zoom in on desired region");
 			bgoto.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				bgoto,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			view.add(bgoto,BorderLayout.SOUTH);
-			//ltoolbar = ;
-			/*addComponent(
-				ptoolbar,
-				ltoolbar,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			scale.add(new JLabel("Scale", SwingConstants.CENTER),BorderLayout.NORTH);
 			final JPanel scaleCenter=new JPanel(new GridLayout(3,1));
 			scale.add(scaleCenter,BorderLayout.CENTER);
@@ -593,71 +538,25 @@ public class Display
 			blinear.setToolTipText("Toggle scale type.");
 			blinear.setActionCommand(Action.SCALE);
 			blinear.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				blinear,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			scaleCenter.add(blinear);
 			final JButton brange = new JButton("Range");
 			brange.setToolTipText(
 				"Click here then on display to set limits of counts scale.");
 			brange.setActionCommand(Action.RANGE);
 			brange.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				brange,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			scaleCenter.add(brange);
 			final JButton bauto = new JButton("Auto");
 			bauto.setToolTipText(
 				"Click here to automatically set the counts scale.");
 			bauto.setActionCommand(Action.AUTO);
 			bauto.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				bauto,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			scaleCenter.add(bauto);
-			//ltoolbar = ;
-			/*addComponent(
-				ptoolbar,
-				ltoolbar,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			inquire.add(new JLabel("Inquire", SwingConstants.CENTER),BorderLayout.NORTH);
 			final JButton barea = new JButton("ARea");
 			barea.setToolTipText(
 				"Click here then on display to get area and summary stats of a region.");
 			barea.setActionCommand(Action.AREA);
 			barea.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				barea,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			final JPanel inquireCenter=new JPanel(new GridLayout(0,1));
 			inquire.add(inquireCenter,BorderLayout.CENTER);
 			inquireCenter.add(barea);
@@ -665,64 +564,14 @@ public class Display
 				"Get net area and summary stats of a region.");
 			bnetarea.setActionCommand(Action.NETAREA);
 			bnetarea.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				bnetarea,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);*/
 			inquireCenter.add(bnetarea);
 			final JButton bcancel = new JButton("Cancel");
 			bcancel.setActionCommand(Action.CANCEL);
 			bcancel.setToolTipText("Cancel an action in progress.");
 			bcancel.addActionListener(action);
-			/*addComponent(
-				ptoolbar,
-				bcancel,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.SOUTH);*/
 			inquireCenter.add(bcancel);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Helper method for GridBagLayout and GridBagConstaints
-	 *
-	 * @since Version 0.5
-	 */
-	private static void addComponent(
-		Container container,
-		Component component,
-		int gridx,
-		int gridy,
-		int gridwidth,
-		int gridheight,
-		int fill,
-		int anchor)
-		throws AWTException {
-		final LayoutManager lm = container.getLayout();
-		if (!(lm instanceof GridBagLayout)) {
-			throw new AWTException("Invaid layout" + lm);
-		} else {
-			final GridBagConstraints gbc = new GridBagConstraints();
-			gbc.ipady = 5;
-			gbc.gridx = gridx;
-			gbc.gridy = gridy;
-			gbc.gridwidth = gridwidth;
-			gbc.gridheight = gridheight;
-			gbc.fill = fill;
-			gbc.anchor = anchor;
-			((GridBagLayout) lm).setConstraints(component, gbc);
-			container.add(component);
 		}
 	}
 
