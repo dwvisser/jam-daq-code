@@ -100,17 +100,14 @@ public class Gate implements Serializable {
      *
      * @param inGateList must contain all histogram objects
      */
-    public static void setGateList(Vector inGateList){
-        Gate gate;
-        String name;
-
-        //clear current lists
+    public static void setGateList(List inGateList){
+        /* clear current lists */
         gateTable.clear();
         gateList.removeAllElements();
-        //loop for all histograms
-        for(Enumeration allGates=inGateList.elements(); allGates.hasMoreElements();) {
-            gate=(Gate)allGates.nextElement();
-            name=gate.getName();
+        /* loop for all histograms */
+        for(Iterator allGates=inGateList.iterator(); allGates.hasNext();) {
+            Gate gate=(Gate)allGates.next();
+            String name=gate.getName();
             gateTable.put(name, gate);
             gateList.addElement(gate);
         }

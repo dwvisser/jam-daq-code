@@ -427,12 +427,12 @@ public class Histogram implements Serializable {
 	 *
 	 * @param inHistList must contain all histogram objects
 	 */
-	public static void setHistogramList(Vector inHistList) {
+	public static void setHistogramList(List inHistList) {
 		histogramTable.clear(); //clear current lists
 		histogramList.removeAllElements(); //clear current lists
-		Enumeration allHistograms = inHistList.elements();
-		while (allHistograms.hasMoreElements()) { //loop for all histograms
-			Histogram hist = (Histogram) allHistograms.nextElement();
+		Iterator allHistograms = inHistList.iterator();
+		while (allHistograms.hasNext()) { //loop for all histograms
+			Histogram hist = (Histogram) allHistograms.next();
 			String name = hist.getName();
 			histogramTable.put(name, hist);
 			histogramList.addElement(hist);
