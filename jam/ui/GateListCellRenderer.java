@@ -3,12 +3,9 @@ package jam.ui;
 import jam.data.Gate;
 
 import java.awt.Component;
-import java.net.URL;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 
@@ -21,14 +18,6 @@ import javax.swing.UIManager;
  */
 public class GateListCellRenderer
 	extends DefaultListCellRenderer {
-
-	/**
-	 * Creates a new <code>HistogramListCellRenderer</code>.
-	 */
-	public GateListCellRenderer() {
-		super();
-
-	}
 
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a red
@@ -51,10 +40,10 @@ public class GateListCellRenderer
 			setForeground(list.getForeground());
 		}
 		if (value instanceof Gate) {
-			final Gate g = (Gate) value;
-			final String name = g.getName();
+			final Gate gate = (Gate) value;
+			final String name = gate.getName();
 			setText(name);
-			if (g.isDefined()) {
+			if (gate.isDefined()) {
 				setIcon(Icons.GO);
 			} else {
 				setIcon(Icons.STOP);

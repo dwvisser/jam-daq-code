@@ -7,7 +7,6 @@ import java.awt.Component;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.UIManager;
 
@@ -20,14 +19,6 @@ import javax.swing.UIManager;
  */
 public class HistogramListCellRenderer
 	extends DefaultListCellRenderer {
-
-	
-	/**
-	 * Creates a new <code>HistogramListCellRenderer</code>.
-	 */
-	public HistogramListCellRenderer() {
-		super();
-	}
 
 	/**
 	 * <p>Returns a <code>JPanel</code> representing the given object.
@@ -58,21 +49,21 @@ public class HistogramListCellRenderer
 			setForeground(list.getForeground());
 		}
 		if (value instanceof Histogram) {
-			final Histogram h = (Histogram) value;
-			final String name = h.getName();
-			final int dimension = h.getDimensionality();
-			List g = h.getGates();
-			final boolean hasGates = g.size() > 0;
+			final Histogram histogram = (Histogram) value;
+			final String name = histogram.getName();
+			final int dimension = histogram.getDimensionality();
+			final List gates = histogram.getGates();
+			final boolean hasGates = gates.size() > 0;
 			boolean allGatesSet = hasGates;//possibly true if has gates
 			boolean anyGatesSet = false;//possibly true if has gates
 			if (hasGates) {
-				for (int i = g.size() - 1; i >= 0; i--) {
-					final boolean defined=((Gate) g.get(i)).isDefined();
+				for (int i = gates.size() - 1; i >= 0; i--) {
+					final boolean defined=((Gate) gates.get(i)).isDefined();
 					allGatesSet &= defined;
 					anyGatesSet |= defined;
 				}
 			}
-			final int number = h.getNumber();
+			final int number = histogram.getNumber();
 			final StringBuffer text = new StringBuffer();
 			text.append(number).append(". ").append(name).append("--");
 			text.append(dimension).append('D');
