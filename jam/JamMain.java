@@ -63,8 +63,6 @@ public final class JamMain extends JFrame implements Observer {
 	private transient final JamConsole console;
 
 
-	private transient final SelectionToolbar selectBar;
-
 	private RunState runState = RunState.NO_ACQ;
 
 	JamMain(final boolean showGUI) {
@@ -78,10 +76,6 @@ public final class JamMain extends JFrame implements Observer {
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return getRunState().isAcqOn();
-			}
-
-			public boolean isOnLine() {
-				return (status.getSortMode() == SortMode.ONLINE_DISK);
 			}
 		});
 		/* class to distrute events to all listeners */
@@ -104,8 +98,8 @@ public final class JamMain extends JFrame implements Observer {
 		final MainMenuBar menus = new MainMenuBar();
 		setJMenuBar(menus.menubar);
 		/* Histogram selection menu bar */
-		selectBar = new SelectionToolbar();
-		contents.add(selectBar, BorderLayout.NORTH);
+		/*final SelectionToolbar selectBar = new SelectionToolbar();
+		contents.add(selectBar, BorderLayout.NORTH); */
 		/* Histogram selection tree */ 
 		SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
@@ -131,7 +125,7 @@ public final class JamMain extends JFrame implements Observer {
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		selectTree.loadTree();
-		selectBar.setChoosersToFirstItems();
+		//selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
 	}
 
