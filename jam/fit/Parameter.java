@@ -1,7 +1,6 @@
 /**
  */
 package jam.fit;
-import java.text.NumberFormat;
 
     /**
      * <p>Parameters used to fit. </p>

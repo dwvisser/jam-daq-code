@@ -2,7 +2,6 @@
  *
  */
 package jam.fit; 
-import java.util.Vector;
 
 /**
  * Takes 4 channels as input...limits of background, and limits of peak.  
