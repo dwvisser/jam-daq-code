@@ -1,13 +1,33 @@
-/*
- */
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
+import jam.data.DataException;
+import jam.data.Histogram;
+import jam.data.func.CalibrationComboBoxModel;
+import jam.data.func.CalibrationFunction;
+import jam.data.func.CalibrationListCellRenderer;
+import jam.data.func.LinearFunction;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.text.NumberFormat;
-import jam.global.*;
-import jam.data.*;
-import jam.data.func.*;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Displays a calibration function.
@@ -56,29 +76,22 @@ ItemListener, WindowListener {
         dialogCalib.setBackground(Color.lightGray);
         dialogCalib.setResizable(false);
         dialogCalib.setLocation(30,30);
-        //dialogCalib.setSize(300, 220+35*MAX_NUMBER_TERMS);
         Container cdialogCalib = dialogCalib.getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
         dialogCalib.addWindowListener(this);
 
         //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
-        pChoose.add(new JLabel("FunctionType"));
-        cFunc = new JComboBox();
+        pChoose.add(new JLabel("Function: "));
+        cFunc = new JComboBox(new CalibrationComboBoxModel());
+        cFunc.setRenderer(new CalibrationListCellRenderer());
+        cFunc.setSelectedIndex(0);
         pChoose.add(cFunc);
-        cFunc.addItem("Linear");
-        cFunc.addItem("Polynomial");
-        cFunc.addItem("Sqrt(E)");
         cFunc.addItemListener(this);
         cdialogCalib.add(pChoose);
 
-        //fuction equation
-        try {
-            calibFunction=new LinearFunction();
-        } catch (DataException de){
-            msghdlr.errorOutln(getClass().getName()+" constructor: "+de.getMessage());
-        }
-        lcalibEq=new JLabel("Function: "+calibFunction.getTitle(), JLabel.CENTER);
+        calibFunction=new LinearFunction();
+        lcalibEq=new JLabel(calibFunction.getTitle(), JLabel.CENTER);
         cdialogCalib.add(lcalibEq);
 
         pcoeff=new JPanel[MAX_NUMBER_TERMS];
@@ -139,7 +152,7 @@ ItemListener, WindowListener {
     public void setup() {
         if (calibFunction!=null) {
             numberTerms=calibFunction.getNumberTerms();
-            lcalibEq.setText("Function: "+calibFunction.getTitle());
+            lcalibEq.setText(calibFunction.getTitle());
             String [] labels = calibFunction.getLabels();
             double [] coeff = calibFunction.getCoeff();
             for ( int i=0; i<numberTerms; i++ ){
@@ -207,22 +220,18 @@ ItemListener, WindowListener {
      *
      */
     public void itemStateChanged(ItemEvent ie){
-        try {
-            if (ie.getSource()==cFunc) {
-                //choose the function
-                if(cFunc.getSelectedItem().equals("Linear")){
-                    calibFunction=new LinearFunction();
-                } else if(cFunc.getSelectedItem().equals("Polynomial")){
-                    calibFunction=new PolynomialFunction(4);
-                } else if(cFunc.getSelectedItem().equals("Sqrt(E)")){
-                    calibFunction=new SqrtEnergyFunction();
-                }
-                lcalibEq.setText("Function: "+calibFunction.getTitle());
-            } else {
-                System.err.println("Error Unknown item for CalibrationDisplay");
-            }
-        } catch (DataException de){
-            msghdlr.errorOutln(de.getMessage());
+        if (ie.getSource()==cFunc) {
+            final Class calClass = (Class)cFunc.getSelectedItem();
+            try {
+				calibFunction = (CalibrationFunction)calClass.newInstance();
+            } catch (Exception e) {
+				msghdlr.errorOutln(getClass().getName()+
+				".itemStateChanged(): "+ie.toString());            	
+            } 
+            lcalibEq.setText(calibFunction.getTitle());
+        } else {
+            msghdlr.errorOutln(getClass().getName()+
+			".itemStateChanged(): unknown source: "+ie.toString());
         }
     }
 
@@ -286,9 +295,13 @@ ItemListener, WindowListener {
     public void windowActivated(WindowEvent e){
         Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
         //have we changed histograms
-        if (hist!=currentHistogram){
+        if (hist != currentHistogram){
             currentHistogram=hist;
-            calibFunction=currentHistogram.getCalibration();
+            calibFunction = currentHistogram==null ? null :
+            currentHistogram.getCalibration();
+            /*if (currentHistogram != null){
+				calibFunction=currentHistogram.getCalibration();
+            }*/
             setup();
             //has calib function changed
         } else if (calibFunction!=currentHistogram.getCalibration()) {
