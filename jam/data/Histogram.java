@@ -34,7 +34,7 @@ import jam.data.peaks.PeakFinder;
  * @see #setErrors(double[])
  * @since JDK 1.1
  */
-public class Histogram implements Serializable {
+public final class Histogram implements Serializable {
 
 	/**
 	 * Value of histogram type for one dimensional <code>int</code> histograms.
@@ -80,6 +80,11 @@ public class Histogram implements Serializable {
 	private final static SortedMap sortedNumberMap=new TreeMap();
 	/* histogramList is ordered by the creation of the histograms */
 	private final static List histogramList = new ArrayList();
+	private final static List [] listByDim=new List[2];
+	static {
+		listByDim[0]=new ArrayList();
+		listByDim[1]=new ArrayList();
+	}
 	/* used for automatically assigning histogram number */
 	private static int lastNumber = 0;
 
@@ -234,6 +239,7 @@ public class Histogram implements Serializable {
 		sortedNameMap.put(name, this);
 		histogramList.add(this);
 		sortedNumberMap.put(new Integer(number),this);
+		listByDim[getDimensionality()-1].add(this);
 	}
 
 	/**
@@ -439,6 +445,14 @@ public class Histogram implements Serializable {
 		return Collections.unmodifiableList(histogramList);
 	}
 	
+	public static List getHistogramList(int dim){
+		if (dim < 1 || dim>2 ){
+			throw new IllegalArgumentException(
+			"Expect 1 or 2, the possible numbers of dimensions.");
+		}
+		return Collections.unmodifiableList(listByDim[dim-1]);
+	}
+	
 	/**
 	 * @return list of all histograms sorted by number
 	 */
@@ -473,6 +487,8 @@ public class Histogram implements Serializable {
 		histogramList.clear();
 		sortedNameMap.clear();
 		sortedNumberMap.clear();
+		listByDim[0].clear();
+		listByDim[1].clear();
 		lastNumber=0;
 		System.gc();
 	}

@@ -18,18 +18,51 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private Object selection = null;
 	private int lastSize=0;
+	private Mode mode;
+	
+	static public class Mode{
+		final int value;
+		
+		private Mode(int i){
+			value=i;
+		}
+		
+		static final public Mode ONE_D = new Mode(1);
+		static final public Mode TWO_D = new Mode(2);
+		static final public Mode ALL = new Mode(0);
+		
+		boolean acceptHistogram(Histogram h){
+			boolean rval= value==0;
+			if (h != null){
+				if (value > 0){
+					rval = h.getDimensionality()==value;
+				}
+			}
+			return rval;
+		}
+	}
 	
 	/**
 	 * Unmodifiable Collection.
 	 */
-	private Collection histograms=Histogram.getListSortedByNumber();
+	private final Collection histograms;
 
 	/**
 	 * Create a data model for any JComboBox wishing to display the available
 	 * histograms.
 	 */
 	public HistogramComboBoxModel() {
+		this(Mode.ALL);
+	}
+	
+	public HistogramComboBoxModel(Mode m){
 		super();
+		mode=m;
+		if (Mode.ALL.equals(m)){
+			histograms=Histogram.getListSortedByNumber();
+		} else {
+			histograms=Histogram.getHistogramList(m.value);
+		}
 	}
 
 	/**
@@ -104,11 +137,10 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 		return histograms.size();
 	}
 	
-	Iterator it;
 	private Object getHistogram(int index){
 		Object rval=null;
 		int n=index;
-		for (it=histograms.iterator(); n>=0 && it.hasNext(); n--){
+		for (Iterator it=histograms.iterator(); n>=0 && it.hasNext(); n--){
 			rval=it.next();
 		}
 		return rval;

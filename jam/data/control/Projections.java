@@ -1,36 +1,63 @@
 package jam.data.control;
 
-import jam.data.*;
-import jam.global.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import jam.HistogramComboBoxModel;
+import jam.data.DataException;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Class for projecting 2-D histograms.
  *
  * @author Dale Visser
  */
-public class Projections extends DataControl implements ActionListener, ItemListener, WindowListener,
-Observer {
+public class Projections extends DataControl implements ActionListener, 
+ItemListener, Observer {
 
     private static final String FULL="Full Histogram";
     private static final String BETWEEN="Between Channels";
     private static final String NEW_HIST="New Histogram";
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+    private final Frame frame;
+    private final Broadcaster broadcaster;
+    private final MessageHandler messageHandler;
 
-    private JDialog dproject;
-    private JComboBox cto, cchan;
-    private JCheckBox cacross,cdown;
-    private JTextField tlim1, tlim2, ttextto,tfrom;
-    private JLabel lname;
-    JButton bOK =new JButton("OK");
-    JButton bApply =new JButton("Apply");
+    private final JDialog dproject;
+    private final JComboBox cfrom, cto, cchan;
+    private final JCheckBox cacross,cdown;
+    private final JTextField tlim1, tlim2, ttextto;
+    private final JLabel lname;
+    private final JButton bOK =new JButton("OK");
+    private final JButton bApply =new JButton("Apply");
 
     private Histogram hfrom;
     private JamStatus status;
@@ -54,7 +81,16 @@ Observer {
         Container cdproject = dproject.getContentPane();
         cdproject.setLayout(new BorderLayout(hgap,vgap));
         dproject.setLocation(20,50);
-        dproject.addWindowListener(this);
+        dproject.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				cancel();
+				dproject.dispose();
+			}
+
+			public void windowOpened(WindowEvent e){
+				setup();
+			}
+        });
 
         JPanel pLabels = new JPanel(new GridLayout(0,1,hgap,vgap));
         pLabels.setBorder(new EmptyBorder(20,10,0,0));
@@ -71,12 +107,14 @@ Observer {
 
 		//From histogram
         JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
-        tfrom = new JTextField("2DHISTOGRAM",20);
-        dim= tfrom.getPreferredSize();
+        //tfrom = new JTextField("2DHISTOGRAM",20);
+        cfrom=new JComboBox(new HistogramComboBoxModel(
+        HistogramComboBoxModel.Mode.TWO_D));
+        dim= cfrom.getPreferredSize();
         dim.width=CHOOSER_SIZE;
-        tfrom.setPreferredSize(dim);
-        tfrom.setEditable(false);
-        phist.add(tfrom);
+        cfrom.setPreferredSize(dim);
+        cfrom.setEditable(false);
+        phist.add(cfrom);
         pEntries.add(phist);
 
 		//Direction panel
@@ -142,6 +180,21 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
+		cfrom.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				Object selected=cfrom.getSelectedItem();
+				if (selected == null || selected instanceof String){
+					hfrom=null;
+					bOK.setEnabled(false);
+					bApply.setEnabled(false);
+				} else {
+					hfrom=(Histogram)selected;
+					bOK.setEnabled(true);
+					bApply.setEnabled(true);
+				}
+			}
+		});
+		cfrom.setSelectedIndex(0);
 
         dproject.pack();
     }
@@ -226,7 +279,7 @@ Observer {
      *
      */
     public void setup(){
-        setFromHist(status.getCurrentHistogramName());
+    	cfrom.setSelectedIndex(0);
         setUseNewHist(true);	//default use new histogram
         setupToHist(NEW_HIST);//setup "to" histogram
         setupCuts(FULL);//default setup channels
@@ -314,7 +367,7 @@ Observer {
     /**
      *
      */
-    private void setFromHist(String name){
+    /*private void setFromHist(String name){
         hfrom = Histogram.getHistogram(name);
         if (hfrom == null || hfrom.getDimensionality()==1){
             tfrom.setText("Need 2D Hist!");
@@ -326,7 +379,7 @@ Observer {
             bOK.setEnabled(true);
             bApply.setEnabled(true);
         }
-    }
+    }*/
 
 
     /**
@@ -478,66 +531,4 @@ Observer {
         }
         return out;
     }
-
-    /**
-     *  Process window events
-     *  If the window is active check that the histogram been displayed
-     *  has not changed. If it has cancel the gate setting.
-     */
-    public void windowActivated(WindowEvent e){
-        String name = status.getCurrentHistogramName();
-        if (!name.equals(tfrom.getText())){
-            setFromHist(name);
-            setupCuts(FULL);
-        }
-    }
-
-    /**
-     * Window Events
-     *  windowClosing only one used.
-     */
-    public void windowClosing(WindowEvent e){
-        cancel();
-        dproject.dispose();
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowClosed(WindowEvent e){
-        /* does nothing for now */
-    }
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowDeactivated(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowDeiconified(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowIconified(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * removes list of gates when closed
-     *  only windowClosing used.
-     */
-    public void windowOpened(WindowEvent e){
-        setup();
-    }
-
 }

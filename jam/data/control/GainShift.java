@@ -1,7 +1,7 @@
 package jam.data.control;
 import jam.global.*;
 import jam.data.*;
-
+import jam.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -15,37 +15,34 @@ import javax.swing.border.*;
  * @author Dale Visser
  * @version JDK 1.1
  */
-public class GainShift extends DataControl implements ActionListener, ItemListener, WindowListener,
-Observer {
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+public class GainShift extends DataControl implements ActionListener, 
+ItemListener, Observer {
+    private final Frame frame;
+    private final Broadcaster broadcaster;
+    private final MessageHandler messageHandler;
 
-    private JDialog dgain;
-    private JComboBox cto;
-    private JTextField tfrom;
-    private JLabel lname;
-    private JCheckBox cchan,ccoeff;
-    private JTextField  text1,text2,text3,text4,ttextto;
-    private JLabel label1,label2,label3,label4;
-    private JButton bOK, bApply;
+    private final JDialog dgain;
+    private final JComboBox cto;
+    private final JComboBox cfrom;
+    private final JLabel lname;
+    private final JCheckBox cchan,ccoeff;
+    private final JTextField  text1,text2,text3,text4,ttextto;
+    private final JLabel label1,label2,label3,label4;
+    private final JButton bOK, bApply;
 
     private double chan1i,chan2i,chan1f,chan2f,a1,b1,a2,b2;
 
     private Histogram hfrom;
 
-    private JamStatus status;
-
-    public GainShift(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
+    public GainShift(Frame f, Broadcaster bc, MessageHandler mh){
         super();
         chan1i=0.0;
         chan2i=1.0;
         chan1f=0.0;
         chan2f=1.0;
-        this.frame=frame;
-        this.broadcaster=broadcaster;
-        this.messageHandler=messageHandler;
-        status=JamStatus.instance();
+        frame=f;
+        broadcaster=bc;
+        messageHandler=mh;
 
         final int CHOOSER_SIZE=200;
         int hgap=5;
@@ -59,7 +56,16 @@ Observer {
         cdgain.setLayout(new BorderLayout(hgap, vgap));
 
         dgain.setLocation(20,50);
-        dgain.addWindowListener(this);
+        dgain.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				cancel();
+				dgain.dispose();
+			}
+
+			public void windowOpened(WindowEvent e){
+				setup();
+			}        	
+        });
 
 		//Labels panel
         JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap,vgap));
@@ -79,12 +85,14 @@ Observer {
         cdgain.add(pEntries, BorderLayout.CENTER);
 
         JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
-        tfrom = new JTextField("1DHISTOGRAM", 20);
-        dim= tfrom.getPreferredSize();
+        //tfrom = new JTextField("1DHISTOGRAM", 20);
+        cfrom=new JComboBox(new HistogramComboBoxModel(
+        HistogramComboBoxModel.Mode.ONE_D));
+        dim= cfrom.getPreferredSize();
         dim.width=CHOOSER_SIZE;
-        tfrom.setPreferredSize(dim);
-        tfrom.setEditable(false);
-        pfrom.add(tfrom);
+        cfrom.setPreferredSize(dim);
+        cfrom.setEditable(false);
+        pfrom.add(cfrom);
         pEntries.add(pfrom);
 
         JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
@@ -149,6 +157,21 @@ Observer {
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
         pButtons.add(pcontrol);
+		cfrom.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				Object selected=cfrom.getSelectedItem();
+				if (selected == null || selected instanceof String){
+					hfrom=null;
+					bOK.setEnabled(false);
+					bApply.setEnabled(false);
+				} else {
+					hfrom=(Histogram)selected;
+					bOK.setEnabled(true);
+					bApply.setEnabled(true);
+				}
+			}
+		});
+		cfrom.setSelectedIndex(0);
 
         dgain.pack();
 
@@ -222,9 +245,7 @@ Observer {
      *
      */
     public void setup(){
-        String lfrom=status.getCurrentHistogramName();
         String lto=(String)cto.getSelectedItem();
-        setFromHist(lfrom);
         cto.removeAllItems();
         cto.addItem("New Histogram");
         addChooserHists(cto,Histogram.ONE_DIM_INT,Histogram.ONE_DIM_DOUBLE);
@@ -234,6 +255,7 @@ Observer {
         } else {
             setUseNewHist(false);
         }
+        cfrom.setSelectedIndex(0);
     }
 
     /**
@@ -309,26 +331,12 @@ Observer {
         ttextto.setEnabled(state);
     }
 
-    private void setFromHist(String name){
-        hfrom = Histogram.getHistogram(name);
-        if (hfrom == null || hfrom.getDimensionality()==2){
-            tfrom.setText("Need 1D Hist!");
-            hfrom=null;
-            bOK.setEnabled(false);
-            bApply.setEnabled(false);
-        } else {
-            tfrom.setText(name);
-            bOK.setEnabled(true);
-            bApply.setEnabled(true);
-        }
-    }
 
     /**
      * Does the work of manipulating histograms
      */
     private void doGainShift() throws DataException {
-        Histogram hto;
-        String name;
+        final Histogram hto;
         double [] in,out;
         double [] errIn,errOut;
 
@@ -349,7 +357,7 @@ Observer {
         errIn = hfrom.getErrors();
 
         //get or create output histogram
-        name = (String)cto.getSelectedItem();
+        String name = (String)cto.getSelectedItem();
         if (name.equals("New Histogram")){
             name  = ttextto.getText().trim();
             hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom.getSizeX(),name);
@@ -611,67 +619,4 @@ Observer {
     private double log10(double x){
         return Math.log(x)/Math.log(10.0);
     }
-    /**
-     *  Process window events
-     *  If the window is active check that the histogram been displayed
-     *  has not changed. If it has cancel the gate setting.
-     */
-    public void windowActivated(WindowEvent e){
-        String name;
-
-        name=status.getCurrentHistogramName();
-        if (!name.equals(tfrom.getText())){
-            setFromHist(name);
-            //setupChannels();
-        }
-    }
-
-    /**
-     * Window Events
-     *  windowClosing only one used.
-     */
-    public void windowClosing(WindowEvent e){
-        cancel();
-        dgain.dispose();
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowClosed(WindowEvent e){
-        /* does nothing for now */
-    }
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowDeactivated(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowDeiconified(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * Does nothing
-     *  only windowClosing used.
-     */
-    public void windowIconified(WindowEvent e){
-        /* does nothing for now */
-    }
-
-    /**
-     * removes list of gates when closed
-     *  only windowClosing used.
-     */
-    public void windowOpened(WindowEvent e){
-        setup();
-    }
-
 }

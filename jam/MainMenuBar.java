@@ -726,21 +726,16 @@ public class MainMenuBar extends JMenuBar {
 	}
 	
 	void adjustHistogramItems(Histogram h){
-		final boolean oneDops, twoDops;
+		final boolean oneDops;
 		if (h==null){
 			oneDops=false;
-			twoDops=false;
 		} else if (h.getDimensionality()==1){
 			oneDops=true;
-			twoDops=false;
 		} else {
 			oneDops=false;
-			twoDops=true;
 		}
 		zeroHistogram.setEnabled(h != null);
 		calHist.setEnabled(oneDops);
-		projectHistogram.setEnabled(twoDops);
-		gainShift.setEnabled(oneDops);
 	}
 
 }
