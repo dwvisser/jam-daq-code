@@ -45,7 +45,10 @@ public class RunState {
 	public static final RunState NO_ACQ=new RunState(0);
 	
 	/**
-	 * Actively sorting offline data.
+	 * Actively sorting online or offline data, but not within the 
+	 * context of a run.
+	 * 
+	 * @see #RUN_ON(int)
 	 */
 	public static final RunState ACQ_ON=new RunState(1);
 	
@@ -93,6 +96,8 @@ public class RunState {
 	 * 
 	 * @return <code>true</code> if this mode represents a state of
 	 * actively sorting data
+	 * @see #ACQ_ON
+	 * @see #RUN_ON(int)
 	 */
 	public boolean isAcqOn(){
 		return acquireOn;
@@ -101,7 +106,11 @@ public class RunState {
 	/**
 	 * 
 	 * @return <code>true</code> if this mode represents an online or 
-	 * offline sorting mode
+	 * offline sorting mode, regardless of whether data is actively
+	 * being sorted at the moment
+	 * @see #ACQ_ON
+	 * @see #RUN_ON(int)
+	 * @see #ACQ_OFF
 	 */
 	public boolean isAcquireMode(){
 		return acquireMode;
