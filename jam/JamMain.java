@@ -98,6 +98,7 @@ public final class JamMain extends JFrame {
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
 		status = JamStatus.instance(); //class that is statically available
+		status.setFrame(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return runState.isAcqOn();
