@@ -126,9 +126,6 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private synchronized void select(TreePath[] paths) {
         /* Syncronize events should not fire events */
-    	DefaultMutableTreeNode overlayNode=null;
-    	Object overlayObject=null;
-    	Histogram overlayHistogram;
         if (!isSyncEvent()) {
             /*
              * Remove so we don't get repeated callbacks while selecting other
@@ -145,21 +142,10 @@ public class SelectionTree extends JPanel implements Observer {
                 
                 //Do we have a overlay
                 if (paths.length>1) {
-                	for (int i=1;i<paths.length;i++) {
-                		overlayNode=((DefaultMutableTreeNode) paths[i].getLastPathComponent());
-                		overlayObject=overlayNode.getUserObject();
-                		if (overlayObject instanceof Histogram) {
-                			overlayHistogram=(Histogram)(overlayObject);
-                			//can only overlay 1 d hists
-                			if (overlayHistogram.getDimensionality()==1){
-                				STATUS.addOverlayHistogramName(overlayHistogram.getName());
-                			}else{                			
-                				tree.removeSelectionPath(paths[i]);
-                				//FIXME KBS error message "Cannot overlay 2 D histograms"
-                			}
-                		} else {
-                			//FIXME
-                		}
+                	if (hist.getDimensionality()==1) {
+                		selectOverlay(paths);
+                	}else{
+                		//FIXME KBS error messge "Cannot overlay on a 2 D histogram"
                 	}
                 } else {
                 	STATUS.clearOverlays();
@@ -180,7 +166,34 @@ public class SelectionTree extends JPanel implements Observer {
             addSelectionListener();
         }
     }
-
+    /**
+     * 
+     * @param paths
+     */
+    private void selectOverlay(TreePath[] paths){
+    	
+    	DefaultMutableTreeNode overlayNode=null;
+    	Object overlayObject=null;
+    	Histogram overlayHistogram;
+    
+		for (int i=1;i<paths.length;i++) {
+			overlayNode=((DefaultMutableTreeNode) paths[i].getLastPathComponent());
+			overlayObject=overlayNode.getUserObject();
+			if (overlayObject instanceof Histogram) {
+				overlayHistogram=(Histogram)(overlayObject);
+				//can only overlay 1 d hists
+			if (overlayHistogram.getDimensionality()==1){
+				STATUS.addOverlayHistogramName(overlayHistogram.getName());
+			}else{                			
+				tree.removeSelectionPath(paths[i]);
+				//FIXME KBS error message "Cannot overlay 2 D histograms"
+			}
+		} else {
+			//FIXME
+		}
+	}
+    	
+    }
     /**
      * Refresh the selected node.
      */
