@@ -1,11 +1,11 @@
-/*
- * Created on Nov 8, 2004
- */
 package jam.plot.color;
 
 /**
+ * Dialog for setting the gradient color scale parameters.
+ * 
  * @author Eric Lingerfelt
- * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @version 2004-11-08
  */
 import java.awt.Container;
 import java.awt.Dimension;

@@ -15,11 +15,13 @@ import java.io.StreamTokenizer;
 import javax.swing.filechooser.FileFilter;
 
 /**
+ * Imports banana gate files used by the ORPHLIB
+ * software at the HRIBF at ORNL.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 13, 2004
  */
-public class ImportBanGates extends ImpExp {
+public final class ImportBanGates extends ImpExp {
 
 	public ImportBanGates(){
 		super();

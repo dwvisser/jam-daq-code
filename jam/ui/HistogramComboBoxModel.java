@@ -20,6 +20,11 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	private int lastSize=0;
 	private Mode mode;
 	
+	/**
+	 * The possible modes for a histogram combo box.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 */
 	static public class Mode{
 		final int value;
 		
@@ -27,8 +32,19 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 			value=i;
 		}
 		
+		/**
+		 * Show 1D histograms only.
+		 */
 		static final public Mode ONE_D = new Mode(1);
+		
+		/**
+		 * Show 2D histograms only.
+		 */
 		static final public Mode TWO_D = new Mode(2);
+		
+		/**
+		 * Show all histograms.
+		 */
 		static final public Mode ALL = new Mode(0);
 		
 		boolean acceptHistogram(Histogram h){
@@ -55,6 +71,12 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 		this(Mode.ALL);
 	}
 	
+	/**
+	 * Constructs a histogram combo box model for the given
+	 * mode.
+	 * 
+	 * @param m which histograms to display
+	 */
 	public HistogramComboBoxModel(Mode m){
 		super();
 		mode=m;

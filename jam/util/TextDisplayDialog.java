@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 
 
 /**
+ * Shows a dialog with the given text.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Apr 2, 2004

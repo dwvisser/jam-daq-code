@@ -1,9 +1,3 @@
-/*
- * Created on Jun 4, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package jam.data.control;
 
 import jam.data.DataException;
@@ -29,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 /**
+ * A dialog for adding existing gates to histograms.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004

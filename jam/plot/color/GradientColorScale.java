@@ -7,9 +7,9 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 /**
- * @author Dale Visser
- * 
  * Smoothly varying rainbow color scale.
+ * 
+ * @author Dale Visser
  */
 public final class GradientColorScale implements ColorScale, ColorPrefs {
 

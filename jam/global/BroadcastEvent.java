@@ -1,5 +1,3 @@
-/*
- */
 package jam.global;
 
 /**
@@ -7,8 +5,12 @@ package jam.global;
  * 
  * @author Ken Swartz
  */
-public class BroadcastEvent {
+public final class BroadcastEvent {
 
+	/**
+	 * The possible commands for <code>BroadcastEvent</code>'s.
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 */
 	public static class Command {
 
 		/** Refresh the display. */

@@ -1,6 +1,3 @@
-/*
- * Created on Nov 9, 2004
- */
 package jam.plot.color;
 
 import jam.plot.Scale;
@@ -9,7 +6,12 @@ import jam.plot.Tickmarks;
 import java.awt.Color;
 
 /**
+ * A color scale where ranges in counts are represented by
+ * individual, discrete colors.
+ * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+ * @version 2004-11-09
+ * @since 1.6.0
  */
 public class DiscreteColorScale implements ColorScale {
 	private static final Color[] colorScaleBonW = { new Color(0, 0, 127), //0
@@ -66,6 +68,12 @@ public class DiscreteColorScale implements ColorScale {
 		return rval;
 	}
 
+	/**
+	 * Used for painting the key.
+	 * 
+	 * @param index which color
+	 * @return color for the given index
+	 */
 	public synchronized Color getColorByIndex(int index) {
 		return colors[index];
 	}
@@ -83,6 +91,13 @@ public class DiscreteColorScale implements ColorScale {
 	private static final DiscreteColorScale LINEAR = new DiscreteColorScale(
 			Scale.LINEAR);
 
+	/**
+	 * Given the type of counts scale, return an appropriate 
+	 * discrete color scale.
+	 * 
+	 * @param s the counts scale
+	 * @return the color scale
+	 */
 	public static DiscreteColorScale getScale(Scale s) {
 		return s == Scale.LINEAR ? LINEAR : LOG;
 	}
@@ -104,6 +119,12 @@ public class DiscreteColorScale implements ColorScale {
 				upperLimit) : colorThresholdsLog(lowerLimit, upperLimit);
 	}
 
+	/**
+	 * Returns the counts thresholds for the various colors.
+	 * Used to paing the key.
+	 * 
+	 * @return array containing the counts thresholds
+	 */
 	public synchronized int[] getColorThresholds() {
 		return thresholds;
 	}

@@ -4,6 +4,12 @@ import javax.swing.JComponent;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
+/**
+ * Set repaint manager to this to check whether Swing and
+ * event threads are being used properly.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ */
 public class ThreadCheckingRepaintManager extends RepaintManager {
     public synchronized void addInvalidComponent(JComponent jComponent) {
         checkThread(jComponent);

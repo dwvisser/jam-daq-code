@@ -51,6 +51,11 @@ import javax.swing.JTextField;
 import javax.swing.ProgressMonitor;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * Scans HDF files for scaler values.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ */
 public class ScalerScan
 	extends JDialog
 	implements JamHDFFields, ActionListener {

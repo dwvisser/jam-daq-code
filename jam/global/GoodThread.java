@@ -12,6 +12,10 @@ import javax.swing.JOptionPane;
  */
 public class GoodThread extends Thread {
 	
+	/**
+	 * The possible thread states for a <code>GoodThread</code>.
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 */
 	public static class State{
 		private final int value;
 		private static final String [] modes = {"RUN","SUSPEND","STOP"};
@@ -24,8 +28,19 @@ public class GoodThread extends Thread {
 			return modes[value];
 		}
 		
+		/**
+		 * Represents a running thread.
+		 */
 		public static final State RUN=new State(0);
+		
+		/**
+		 * Represents a temporarily suspended thread.
+		 */
 		public static final State SUSPEND=new State(1);
+		
+		/**
+		 * Represents a fully stopped thread.
+		 */
 		public static final State STOP=new State(2);
 	}
 

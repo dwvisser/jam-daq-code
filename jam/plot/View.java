@@ -1,7 +1,3 @@
-/*
- * Created on Nov 3, 2004
- *
- */
 package jam.plot;
 
 import jam.data.Histogram;
@@ -16,10 +12,14 @@ import java.util.TreeMap;
 
 
 /**
+ * Represents the number and arrangements of plots to show within
+ * the <code>Display</code>.
+ * 
  * @author Ken Swartz
- *
+ * @version 2004-11-03
+ * @see Display
  */
-public class View {
+public final class View {
 
 	private final int NAME_LENGTH = 20;
 	

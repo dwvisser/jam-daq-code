@@ -18,8 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- * @author Ken
- *
+ * A dialog for defining new gates.
+ * 
+ * @author Ken Swartz
  */
 public class GateNew extends DataControl {
 

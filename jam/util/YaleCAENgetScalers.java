@@ -35,6 +35,11 @@ import java.io.IOException;
 
 import javax.swing.ProgressMonitor;
 
+/**
+ * Scans YaleCAEN event files for scaler blocks.
+ * 
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ */
 public class YaleCAENgetScalers {
 
 	private ProgressMonitor pBstatus;

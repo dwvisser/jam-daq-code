@@ -19,11 +19,24 @@ public final class Bin {
 	private final Point channel=new Point();
 	private static Display display=null;
 	
+	/**
+	 * Class for producing instances of <code>Bin</code>.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 * @see Bin
+	 */
 	public static class Factory{
 		static void init(Display disp){
 			display=disp;
 		}
 		
+		/**
+		 * Constructs a bin with coordinates identical to 
+		 * those of the given <code>Point</code>.
+		 * 
+		 * @param p coordinates
+		 * @return bin at the given coordinates
+		 */
 		public static Bin create(Point p){
 			if (display==null){
 				throw new IllegalStateException("Bin not initialized.");
@@ -31,14 +44,31 @@ public final class Bin {
 			return new Bin(p);
 		}
 		
+		/**
+		 * Constructs a bin at the coordinate (x,y)
+		 * @param x x-coordinate
+		 * @param y y-coordinate
+		 * @return bin at (x,y)
+		 */
 		public static Bin create(int x, int y){
 			return create(new Point(x,y));
 		}
 		
+		/**
+		 * Constructs a bin at the coordinate (x,0).
+		 * 
+		 * @param x x-coordinate
+		 * @return bin at (x,0)
+		 */
 		public static Bin create(int x){
 			return create(x,0);
 		}
 		
+		/**
+		 * Constructs a bin at the coordinate (0,0).
+		 * 
+		 * @return bin at (0,0)
+		 */
 		public static Bin create(){
 			return create(0,0);
 		}

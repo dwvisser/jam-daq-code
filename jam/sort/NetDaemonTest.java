@@ -1,13 +1,13 @@
-/*
- * Created on Oct 27, 2004
- */
 package jam.sort;
 
 import jam.RunControl;
 import junit.framework.TestCase;
 
 /**
+ * JUnit test case for testing NetDaemon behavior.
+ * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @version 2004-10-27
  */
 public class NetDaemonTest extends TestCase {
 
