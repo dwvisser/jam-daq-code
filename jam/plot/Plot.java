@@ -153,6 +153,7 @@ public abstract class Plot extends JPanel  {
      */
     public Plot(Action a){
         super(false);
+        final String fontclass="Serif";
         action=a;
         //setOpaque(true);
         this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -161,9 +162,9 @@ public abstract class Plot extends JPanel  {
         PlotGraphics.BORDER_LEFT,
         PlotGraphics.BORDER_BOTTOM,
         PlotGraphics.BORDER_RIGHT);
-        screenFont=new Font("SansSerif",Font.PLAIN,
-        PlotGraphicsLayout.SCREEN_FONT_SIZE);
-        printFont=new Font("SansSerif",Font.PLAIN,PlotGraphicsLayout.PRINT_FONT_SIZE);
+        screenFont=new Font(fontclass,Font.BOLD,
+        (int)PlotGraphicsLayout.SCREEN_FONT_SIZE);
+        printFont=new Font(fontclass,Font.PLAIN,PlotGraphicsLayout.PRINT_FONT_SIZE);
         graph=new PlotGraphics(this,viewBorder,screenFont);
         this.setColorMode(PlotColorMap.BLACK_ON_WHITE);
         plotMouse=new PlotMouse(graph,action);
