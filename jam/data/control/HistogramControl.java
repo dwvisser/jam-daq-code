@@ -8,7 +8,7 @@ import jam.global.*;
 import jam.data.*;
 import jam.*;
 import javax.swing.*;
-
+import javax.swing.border.*;
 /**
  * Class to control the histograms
  * Allows one to zero the histograms
@@ -29,11 +29,23 @@ public class HistogramControl extends DataControl implements ActionListener {
     Histogram currentHistogram;
 
     //new Histogram
-    private JTextField textName,textSize,textTitle;
+    private JTextField textName;
+    private JTextField textTitle;
+    private JComboBox comboSize;
     private JCheckBox coneInt,coneDbl,ctwoInt,ctwoDbl;
 
     private String histogramName,histogramTitle;
     private int histogramType,histogramSize;
+	private final String[] DEFAULT_SIZES= {
+										"64",
+							        	"128",
+		         						"256",
+		         						"512",
+		         						"1024",
+		         						"2048",
+		         						"4096",
+		         						"8192",
+									};
 
     /**
      * Constructor
@@ -68,49 +80,48 @@ public class HistogramControl extends DataControl implements ActionListener {
 
         //dialog box New Histogram
         dialogNew =new JDialog (frame,"New Histogram ",false);
-        dialogNew.setForeground(Color.black);
-        dialogNew.setBackground(Color.lightGray);
+        //dialogNew.setForeground(Color.black);
+        //dialogNew.setBackground(Color.lightGray);
         dialogNew.setResizable(false);
         dialogNew.setLocation(30,30);
-        //dialogNew.setSize(450, 300);
         Container cdialogNew=dialogNew.getContentPane();
-        cdialogNew.setLayout(new GridLayout(0, 1, 10,10));
-        JPanel pn= new JPanel();
-        pn.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
-        cdialogNew.add(pn);
-        JLabel ln=new JLabel("   ",JLabel.RIGHT);
-        ln.setText("Name");
-        pn.add(ln);
+        cdialogNew.setLayout(new BorderLayout(10,10));
+
+		//Labels on the left
+        JPanel pLabels= new JPanel(new GridLayout(0,1,5,5));
+        pLabels.setBorder(new EmptyBorder(10,10,0,0));
+        cdialogNew.add(pLabels, BorderLayout.WEST);
+        JLabel ln=new JLabel("Name",JLabel.RIGHT);
+        pLabels.add(ln);
+        JLabel lti=new JLabel("Title", JLabel.RIGHT);
+        pLabels.add(lti);
+        JLabel lt=new JLabel("Type", JLabel.RIGHT);
+        pLabels.add(lt);
+        JLabel ls=new JLabel("Size", JLabel.RIGHT);
+        pLabels.add(ls);
+
+		//Entires panel
+        final JPanel pEntires= new JPanel(new GridLayout(0,1,5,5));
+        pEntires.setBorder(new EmptyBorder(10,0,0,10));
+        cdialogNew.add(pEntires, BorderLayout.CENTER);
+
+		final JPanel pName = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pEntires.add(pName);
         textName =new JTextField(" ");
         textName.setColumns(15);
         textName.setForeground(Color.black);
         textName.setBackground(Color.white);
-        pn.add(textName);
+        pName.add(textName);
 
-
-        JPanel pti= new JPanel();
-        pti.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
-        cdialogNew.add(pti);
-
-        JLabel lti=new JLabel("   ", JLabel.RIGHT);
-        lti.setText("Title");
-        pti.add(lti);
-
+		final JPanel pTitle = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pEntires.add(pTitle);
         textTitle =new JTextField(" ");
         textTitle.setColumns(30);
         textTitle.setForeground(Color.black);
         textTitle.setBackground(Color.white);
-        pti.add(textTitle);
+        pTitle.add(textTitle);
 
-        JPanel pt= new JPanel();
-        pt.setLayout(new FlowLayout(FlowLayout.LEFT,3,5));
-        cdialogNew.add(pt);
-
-        JLabel lt=new JLabel("   ", JLabel.RIGHT);
-        lt.setText("Type");
-        pt.add(lt);
-
-        //Panel pradio = new Panel(new FlowLayout(FlowLayout.CENTER));
+        Panel pradio = new Panel(new FlowLayout(FlowLayout.LEFT,0,0));
         ButtonGroup cbg = new ButtonGroup();
         coneInt = new JCheckBox("1-D int",true);
         coneDbl = new JCheckBox("1-D double",false);
@@ -120,38 +131,22 @@ public class HistogramControl extends DataControl implements ActionListener {
         cbg.add(coneDbl);
         cbg.add(ctwoInt);
         cbg.add(ctwoDbl);
+        pradio.add(coneInt);
+        pradio.add(coneDbl);
+        pradio.add(ctwoInt);
+        pradio.add(ctwoDbl);
+        pEntires.add(pradio);
 
-        pt.add(coneInt);
-        pt.add(coneDbl);
-        pt.add(ctwoInt);
-        pt.add(ctwoDbl);
-
-        JPanel ps= new JPanel();
-        ps.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
-        cdialogNew.add(ps);
-
-        JLabel ls=new JLabel("   ", JLabel.LEFT);
-        ls.setText("Size");
-        ps.add(ls);
-
-        textSize =new JTextField(" ");
-        textSize.setColumns(4);
-        textSize.setForeground(Color.black);
-        textSize.setBackground(Color.white);
-        ps.add(textSize);
-
-        //FIXME      textNumber =new TextField(" ");
-        //      textNumber.setColumns(3);
-        //      textNumber.setForeground(Color.black);
-        //      textNumber.setBackground(Color.white);
-        //      pt.add(textNumber);
-
-
+		final JPanel pSize = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+		pEntires.add(pSize);
+		comboSize = new JComboBox(DEFAULT_SIZES);
+		comboSize.setEditable(true);
+		pSize.add(comboSize);
 
         // panel for buttons
         JPanel pbOuter= new JPanel();
         pbOuter.setLayout(new FlowLayout(FlowLayout.CENTER));
-        cdialogNew.add(pbOuter);
+        cdialogNew.add(pbOuter, BorderLayout.SOUTH);
 
         JPanel pb = new JPanel(new GridLayout(1,0,5,5));
         pbOuter.add(pb);
@@ -281,7 +276,8 @@ public class HistogramControl extends DataControl implements ActionListener {
             } else  if (ctwoDbl.isSelected()){
                 histogramType=Histogram.TWO_DIM_DOUBLE;
             }
-            histogramSize=Integer.parseInt(textSize.getText().trim());
+            histogramSize=Integer.parseInt(((String)comboSize.getSelectedItem()).trim());
+            //histogramSize=Integer.parseInt(textSize.getText().trim());
             new Histogram (histogramName, histogramType, histogramSize, histogramTitle);
             broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
             if (coneInt.isSelected()){
