@@ -17,28 +17,40 @@ import jam.global.MessageHandler;
  *
  */
 public class ParseCommand implements CommandListener{
-
 	
 	private Action action;
 	
 	private final MessageHandler textOut;
 	
-	private final Map commandMap;
-	
-	private String inCommand;	
-	
-	private final Bin cursor;
-	
-	private JamStatus status = JamStatus.instance();
+	private final Map commandMap = new HashMap();
+	{	
+		commandMap.put("help", Action.HELP);
+		commandMap.put("ex", Action.EXPAND);
+		commandMap.put("zi", Action.ZOOMIN);
+		commandMap.put("zo", Action.ZOOMOUT);
+		commandMap.put("f", Action.FULL);
+		commandMap.put("li", Action.LINEAR);
+		commandMap.put("lo", Action.LOG);
+		commandMap.put("ar", Action.AREA);
+		commandMap.put("g", Action.GOTO);
+		commandMap.put("n", Action.NETAREA);
+		commandMap.put("u", Action.UPDATE);
+		commandMap.put("a", Action.AUTO);
+		commandMap.put("o", Action.OVERLAY);
+		commandMap.put("c", Action.CANCEL);
+		commandMap.put("x", Action.EXPAND);
+		commandMap.put("y", Action.EXPAND);
+		commandMap.put("ra", Action.RANGE);
+		commandMap.put("d", Action.DISPLAY);
+		commandMap.put("re", Action.REBIN);
+		commandMap.put("s", Action.SCALE);	
+	}
 	
 	ParseCommand(Action action, JamConsole jc){
 		this.action=action;
 		textOut=jc;
-		
-		commandMap = createCommandMap();
-		
-		cursor =  Bin.Factory.create();
 	}
+	
 	/**
 	 * Parse a plot command
 	 */
@@ -59,7 +71,7 @@ public class ParseCommand implements CommandListener{
 			}
 		} else if (commandMap.containsKey(command)) {
 			accept = true;
-			inCommand = (String) commandMap.get(command);
+			final String inCommand = (String) commandMap.get(command);
 			action.doCommand(inCommand);			
 			if (action.getIsCursorCommand()) {				
 				cursorChannel(parameters);				
@@ -102,16 +114,14 @@ public class ParseCommand implements CommandListener{
 	 *            the integers
 	 */
 	private void cursorChannel(double[] parameters) {
-
-		Display display =status.getDisplay();
-		final Plot currentPlot = display.getPlot();
-				
+		final Display display =JamStatus.instance().getDisplay();
+		final Plot currentPlot = display.getPlot();	
 		final int numParam = parameters.length;
-		
 		//Must have at least 1 parameter
-		if (numParam<1)
+		if (numParam<1){
 			return;
-		
+		}
+		final Bin cursor = Bin.Factory.create();
 		// we have a 1 d plot		
 		if (action.getCursorDimension()== 1) {
 			//Only x dimension
@@ -128,8 +138,7 @@ public class ParseCommand implements CommandListener{
 				action.doCommand(Action.CURSOR);				
 			}
 			//Error if only 1 co-ordinate
-			//if i<
-				
+			//if i<	
 		}
 
 		
@@ -232,36 +241,6 @@ public class ParseCommand implements CommandListener{
 			sb.append(commands[i]).append("\t");
 		}
 		textOut.messageOutln(sb.toString());
-	}
-	
-	final private Map createCommandMap() {
-		final Map localMap = new HashMap();
-		
-		localMap.put("help", Action.HELP);
-		localMap.put("ex", Action.EXPAND);
-		localMap.put("zi", Action.ZOOMIN);
-		localMap.put("zo", Action.ZOOMOUT);
-		localMap.put("f", Action.FULL);
-		localMap.put("li", Action.LINEAR);
-		localMap.put("lo", Action.LOG);
-		localMap.put("ar", Action.AREA);
-		localMap.put("g", Action.GOTO);
-		localMap.put("n", Action.NETAREA);
-		localMap.put("u", Action.UPDATE);
-		localMap.put("a", Action.AUTO);
-		localMap.put("o", Action.OVERLAY);
-		localMap.put("c", Action.CANCEL);
-		localMap.put("x", Action.EXPAND);
-		localMap.put("y", Action.EXPAND);
-		localMap.put("ra", Action.RANGE);
-		localMap.put("d", Action.DISPLAY);
-		localMap.put("re", Action.REBIN);
-		localMap.put("s", Action.SCALE);		
-		
-		return localMap;
-	}
-	
-	
-	
+	}	
 }
 
