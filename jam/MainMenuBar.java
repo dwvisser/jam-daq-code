@@ -10,7 +10,6 @@ import jam.global.SortMode;
 import jam.plot.Display;
 import jam.plot.PlotPrefs;
 import jam.util.ScalerScan;
-import jam.util.YaleCAENgetScalers;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -77,43 +76,49 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu getFileMenu() {
+		
 		final JMenu file = new JMenu("File");
+		
 		file.add(getMenuItem(NEW));
 		file.add(getMenuItem(OPEN_HDF));
 		file.add(getMenuItem(RELOAD_HDF));
 		file.add(getMenuItem(ADD_HDF));
 		file.add(getMenuItem(SAVE_HDF));
 		file.add(getMenuItem(SAVE_AS_HDF));
+		
 		final JMenuItem special = new JMenu("Special");
 		special.add(getMenuItem(OPEN_SELECTED));
 		special.add(getMenuItem(SAVE_GATES));
 		file.add(special);
 		file.addSeparator();
+		
 		final JMenuItem utilities = new JMenu("Utilities");
 		file.add(utilities);
-		final YaleCAENgetScalers ycgs =
-			new YaleCAENgetScalers();
-		utilities.add(new JMenuItem(ycgs.getAction()));
+		utilities.add(getMenuItem(OPEN_SCALERS_YALE_CAEN));
 		final ScalerScan ss = new ScalerScan();
 		utilities.add(new JMenuItem(ss.getAction()));
 		file.addSeparator();
+		
 		file.add(impHist);
 		impHist.add(getMenuItem(IMPORT_TEXT));
 		impHist.add(getMenuItem(IMPORT_SPE));
 		impHist.add(getMenuItem(IMPORT_DAMM));
 		impHist.add(getMenuItem(IMPORT_XSYS));
 		impHist.add(getMenuItem(IMPORT_BAN));
+		
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
 		expHist.add(getMenuItem(EXPORT_TEXT));
 		expHist.add(getMenuItem(EXPORT_SPE));
 		expHist.add(getMenuItem(EXPORT_DAMM));
 		expHist.add(getMenuItem(SHOW_BATCH_EXPORT));
+		
 		file.addSeparator();
 		file.add(commands.getAction(PRINT));
 		file.add(commands.getAction(PAGE_SETUP));
 		file.addSeparator();
 		file.add(getMenuItem(EXIT));
+		
 		return file;
 	}
 	
