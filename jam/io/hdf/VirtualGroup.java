@@ -5,9 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -17,33 +18,32 @@ import javax.swing.JOptionPane;
  * @version	0.5 December 98
  * @author 	Dale Visser
  */
-public final class VirtualGroup extends DataObject {
+final class VirtualGroup extends DataObject {
 
 	/**
 	 * List of data elements this vGroup ties together.
 	 */
-	List elements;
+	private final List elements=Collections.synchronizedList(new ArrayList());
 
 	/**
 	 * All Vgroup objects can have a name stored in them.
 	 */
-	String name;
+	private String name;
 
 	/**
 	 * All Vgroup objects can have a class name stored in them, which is arbitrary.
 	 */
-	String type;
+	private String type;
 
 	private final short extag = 0; //purpose?
 	private final short exref = 0; //purpose?
 	private final short version = 3; //version of DFTAG_VG info
 	private final short more = 0; //unused but must add
 
-	public VirtualGroup(HDFile fi, String name, String type) {
+	VirtualGroup(HDFile fi, String name, String type) {
 		super(fi, DFTAG_VG); //sets tag
 		this.name = name;
 		this.type = type;
-		elements = new Vector();
 		try {
 			refreshBytes();
 		} catch (HDFException e) {
@@ -52,7 +52,7 @@ public final class VirtualGroup extends DataObject {
 		}
 	}
 
-	public VirtualGroup(HDFile hdf, byte[] data, short t, short r) {
+	VirtualGroup(HDFile hdf, byte[] data, short t, short r) {
 		super(hdf, data, t, r);
 	}
 
@@ -98,7 +98,7 @@ public final class VirtualGroup extends DataObject {
 	 *
 	 * @exception   HDFException thrown if unrecoverable error occurs
 	 */
-	public void interpretBytes() throws HDFException {
+	protected void interpretBytes() throws HDFException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bais);
 		short numItems;
@@ -111,7 +111,7 @@ public final class VirtualGroup extends DataObject {
 
 		try {
 			numItems = dis.readShort();
-			elements = new Vector(numItems);
+			elements.clear();
 			tags = new short[numItems];
 			refs = new short[numItems];
 			for (i = 0; i < numItems; i++) {
@@ -145,7 +145,7 @@ public final class VirtualGroup extends DataObject {
 	 * @throws   IllegalArgumentException if <code>data==null</code>
 	 * @throws HDFException if the data is unreadable somehow
 	 */
-	public void addDataObject(DataObject data) throws HDFException {
+	void addDataObject(DataObject data) throws HDFException {
 		if (data == null){
 			throw new IllegalArgumentException("Can't add null to vGroup.");
 		}
@@ -153,11 +153,15 @@ public final class VirtualGroup extends DataObject {
 		refreshBytes();
 	}
 
-	public String getName() {
+	/**
+	 * Gets the name of this group.
+	 * @return the name of this group
+	 */
+	String getName() {
 		return name;
 	}
 
-	public List getObjects() {
+	List getObjects() {
 		return elements;
 	}
 
@@ -167,9 +171,10 @@ public final class VirtualGroup extends DataObject {
 	 *
 	 * @param in should contain only VirtualGroup objects
 	 * @param groupType	type string showing what kind of info is contained
+	 * @return list of groups with the given type
 	 */
-	static public List ofType(List in, String groupType) {
-		List output = new Vector();
+	static List ofType(List in, String groupType) {
+		List output = new ArrayList();
 		for (Iterator temp = in.iterator(); temp.hasNext();) {
 			VirtualGroup vg = (VirtualGroup) (temp.next());
 			if (vg.getType() == groupType) {
@@ -186,8 +191,9 @@ public final class VirtualGroup extends DataObject {
 	 *
 	 * @param in should contain only VirtualGroup objects
 	 * @param groupName name of the desired group
+	 * @return the group with the given name
 	 */
-	static public VirtualGroup ofName(List in, String groupName) {
+	static VirtualGroup ofName(List in, String groupName) {
 		VirtualGroup output = null;
 		for (Iterator temp = in.iterator(); temp.hasNext();) {
 			VirtualGroup vg = (VirtualGroup) (temp.next());
@@ -200,8 +206,10 @@ public final class VirtualGroup extends DataObject {
 
 	/**
 	 * Returns string giving group type.
+	 * 
+	 * @return the type of this group
 	 */
-	public String getType() {
+	String getType() {
 		return type;
 	}
 
