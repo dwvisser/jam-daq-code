@@ -47,7 +47,7 @@ public class PolynomialFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit(double[] xCoords, double[] yCoords) throws DataException {
+	public void fit() throws DataException {
 		//does nothing so far
 	}
 	

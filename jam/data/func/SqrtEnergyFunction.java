@@ -38,12 +38,12 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	/**
 	 * do a fit of x y values
 	 */
-	public void fit(double[] chan, double[] ene) throws DataException {
-		final double[] sqrtE = new double[ene.length];
-		for (int i = 0; i < ene.length; i++) {
-			sqrtE[i] = Math.sqrt(ene[i]);
+	public void fit() throws DataException {
+		final double[] sqrtE = new double[ptsEnergy.length];
+		for (int i = 0; i < ptsEnergy.length; i++) {
+			sqrtE[i] = Math.sqrt(ptsEnergy[i]);
 		}
-		setCoeff(linearRegression(chan, sqrtE));
+		setCoeff(linearRegression(ptsChannel, sqrtE));
 	}
 	
 	protected void updateFormula(){

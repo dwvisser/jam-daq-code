@@ -51,6 +51,7 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @throws IllegalArgumentException if not a String or null
 	 */
 	public void setSelectedItem(Object anItem) {
+		synchronized (selectSync){
 			Object name=null;
 			if (anItem==null){
 				selection=CalibrationFunction.getListNames().get(0);
@@ -61,6 +62,7 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 				": only CalibrationFunction Strings or null please");
 			}
 			selection=name;
+		}
 			//FIXME KBS
 			/*
 			if (name!=null) {

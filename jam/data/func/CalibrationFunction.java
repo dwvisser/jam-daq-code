@@ -39,6 +39,19 @@ public abstract class CalibrationFunction implements Function {
 	 * Title of calibration function.
 	 */
 	protected transient String title;
+	/**
+	 * Title of calibration function.
+	 */
+	protected transient boolean isFitPoints=true;
+
+	/**
+	 * Fit channels
+	 */
+	protected double[] ptsChannel;
+	/**
+	 * Fit energy
+	 */
+	protected double[] ptsEnergy;
 	
 	/**
 	 * Coeffiecient values.
@@ -135,6 +148,12 @@ public abstract class CalibrationFunction implements Function {
 		return title;
 	}
 	
+	public boolean isFitPoints() {
+		return isFitPoints;
+	}
+	public void setIsFitPoints(boolean isFitIn) {
+		isFitPoints=isFitIn;
+	}
 	/**
 	 * 
 	 * @return the function formula
@@ -149,7 +168,31 @@ public abstract class CalibrationFunction implements Function {
 	 *
 	 */
 	protected abstract void updateFormula(); 
-		
+	/**
+	 * 
+	 * @param ptsChannelIn
+	 * @param ptsEnergyIn
+	 */
+	public void setPoints(double [] ptsChannelIn, double [] ptsEnergyIn) {
+		ptsChannel =new double [ptsChannelIn.length];
+		ptsEnergy =new double [ptsEnergyIn.length];
+		System.arraycopy(ptsChannelIn, 0, ptsChannel, 0, ptsChannelIn.length);
+		System.arraycopy(ptsEnergyIn, 0, ptsEnergy, 0, ptsEnergyIn.length);
+	}
+
+	/**
+	 * 
+	 */
+	public double [] getPtsChannel() {
+		return ptsChannel;		
+	}
+	/**
+	 * 
+	 */
+	public double [] getPtsEnergy() {
+		return ptsEnergy;		
+	}
+	
 	/**
 	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
 	 * If passed a larger than necessary array, the first elements of the array will be used.
@@ -191,7 +234,7 @@ public abstract class CalibrationFunction implements Function {
 	 * @param y array of y values
 	 * @throws DataException if the fit fails
 	 */
-	public abstract void fit(double[] x, double[] y) throws DataException;
+	public abstract void fit() throws DataException;
 
 	/**
 	 * do a linear regression of data points y=a+bx 
