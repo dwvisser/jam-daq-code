@@ -51,18 +51,17 @@ public class RunControl implements Controller, ActionListener {
     private int device;
 
     // handles to class we need
-    private JamMain		jamMain;
-    private HistogramControl	histogramControl;
-    private ScalerControl	scalerControl;
-    private DataIO		dataio;
-    private VMECommunication	vmeComm;
-    private JamConsole		console;
+    private final JamMain		jamMain;
+    private final HistogramControl	histogramControl;
+    private final ScalerControl	scalerControl;
+    private final DataIO		dataio;
+    private final VMECommunication	vmeComm;
+    private final JamConsole		console;
 
     // daemon threads
     private NetDaemon		netDaemon;
     private StorageDaemon	storageDaemon;
     private DiskDaemon		diskDaemon;
-    //private TapeDaemon		tapeDaemon;
     private SortDaemon		sortDaemon;
 
     /**
@@ -70,7 +69,6 @@ public class RunControl implements Controller, ActionListener {
      */
     private String experimentName;
     private String dataPath;
-    //private String dataFileName;
     private File dataFile;
     /**
      *histogram file information
@@ -95,12 +93,12 @@ public class RunControl implements Controller, ActionListener {
     /**
      *Run dialog box
      */
-    private JDialog d;
-    private JButton bbegin;
-    private JButton bend;
-    private JTextField textRunNumber, textRunTitle, textExptName;
-    private JCheckBox checkHistogramZero;
-    private JCheckBox zeroScalers;
+    private final JDialog d;
+    private final JButton bbegin;
+    private final JButton bend;
+    private final JTextField textRunNumber, textRunTitle, textExptName;
+    private final JCheckBox checkHistogramZero;
+    private final JCheckBox zeroScalers;
 
     /** Creates the run control dialog box.
      * @param jamMain launching point of Jam application
@@ -138,7 +136,7 @@ public class RunControl implements Controller, ActionListener {
 		pLabels.add(lrn);
         JLabel lt=new JLabel("Title",JLabel.RIGHT);
 		pLabels.add(lt);
-        JLabel lc=new JLabel("Clear",JLabel.RIGHT);
+        JLabel lc=new JLabel("Zero on Begin?",JLabel.RIGHT);
 		pLabels.add(lc);
 
         // panel for text fields
@@ -171,9 +169,9 @@ public class RunControl implements Controller, ActionListener {
 
 		//Zero Panel
         JPanel pZero= new JPanel(new FlowLayout(FlowLayout.LEFT,0,-2));
-        checkHistogramZero =new JCheckBox("Zero Histograms", true );
+        checkHistogramZero =new JCheckBox("Histograms", true );
         pZero.add(checkHistogramZero);
-        zeroScalers =new JCheckBox("Zero Scalers", true );
+        zeroScalers =new JCheckBox("Scalers", true );
         pZero.add(zeroScalers);
         pCenter.add(pZero);
 
@@ -253,9 +251,6 @@ public class RunControl implements Controller, ActionListener {
         if (storageDaemon instanceof DiskDaemon) {
             diskDaemon=(DiskDaemon)storageDaemon;
             device=DISK;
-        /*} else if (storageDaemon instanceof TapeDaemon) {
-            tapeDaemon=(TapeDaemon)storageDaemon;
-            device=TAPE;*/
         } else if (storageDaemon == null) {//case if front end is taking care of storing events
             device=FRONT_END;
         } else {
@@ -351,7 +346,9 @@ public class RunControl implements Controller, ActionListener {
         if (zeroScalers.isSelected()) {//should we zero scalers
             vmeComm.clearScalers();
         }
-        if (device != FRONT_END) netDaemon.setWriter(true);//tell net daemon to write events to storage daemon
+        if (device != FRONT_END) {//tell net daemon to write events to storage daemon
+        	netDaemon.setWriter(true);
+        } 
         // enable end button, display run number
         bend.setEnabled(true);
         bbegin.setEnabled(false);
