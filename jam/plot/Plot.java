@@ -554,12 +554,6 @@ public abstract class Plot extends JPanel {
 	 */
 	protected synchronized void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (currentHist == null) {
-			System.err.println(
-				getClass().getName()
-					+ ".paintComponent() called "
-					+ "when currentHist==null.");
-		} else {
 			if (printing) { //output to printer
 				graph.setFont(printFont);
 				PlotColorMap.setColorMap(PlotColorMap.PRINT);
@@ -576,6 +570,7 @@ public abstract class Plot extends JPanel {
 			graph.update(g, viewSize, plotLimits);
 			//give graph all pertinent info
 			//draw outline, tickmarks, labels, and title
+		if (this.currentHist !=null){
 			paintHeader(g);
 			paintHistogram(g);
 			if (displayingGate) {//are we to display a gate
