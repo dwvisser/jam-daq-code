@@ -677,8 +677,9 @@ public class HDFIO implements DataIO,JamHDFFields {
                         final String hname = DataIDAnnotation.withTagRef(annotations,
                         currVG.getTag(),currVG.getRef()).getNote();
                         if (mode==OPEN){
-                            g = new Gate(gname,Histogram.getHistogram(
-                            su.makeLength(hname,Histogram.NAME_LENGTH)));
+                        	final Histogram h=Histogram.getHistogram(
+							su.makeLength(hname,Histogram.NAME_LENGTH));
+                            g = h==null ? null : new Gate(gname,h);
                         } else {//reload
                             g = Gate.getGate(su.makeLength(gname,
                             Gate.NAME_LENGTH));
