@@ -525,7 +525,7 @@ public class MainMenuBar extends JMenuBar {
 		scalers.add(showScalers);
 		final JMenuItem clearScalers = new JMenuItem("Zero Scalers...");
 		scalers.add(clearScalers);
-		clearScalers.setActionCommand("zeroscalers");
+		clearScalers.setActionCommand("showzeroscalers");
 		clearScalers.addActionListener(jamCommand);
 		scalers.addSeparator();
 		final JMenuItem showMonitors = new JMenuItem("Display Monitors...");

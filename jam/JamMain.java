@@ -202,6 +202,7 @@ public final class JamMain extends JFrame {
 	public void setSortMode(int mode) {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
+		
 		//Check that run state can be changed
 		if (!((mode == NO_SORT) || (mode == FILE))) {
 			boolean error = true;
@@ -220,6 +221,7 @@ public final class JamMain extends JFrame {
 				throw new UnsupportedOperationException(etext.toString());
 			}
 		}
+		
 		synchronized (this) {
 			sortMode = mode;
 		}
