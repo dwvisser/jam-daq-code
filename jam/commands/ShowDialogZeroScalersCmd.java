@@ -10,7 +10,7 @@ import jam.data.control.ScalerZero;
  */
 final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd {
 	
-	ShowDialogZeroScalersCmd(){
+	protected void initCommand(){
 		putValue(NAME,"Zero Scalers\u2026");
 		dataControl=new ScalerZero();
 	}

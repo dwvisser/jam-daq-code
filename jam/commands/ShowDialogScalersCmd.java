@@ -10,7 +10,7 @@ import jam.data.control.ScalerDisplay;
  */
 final class ShowDialogScalersCmd extends AbstractShowDataControlCmd {
 	
-	ShowDialogScalersCmd(){
+	protected void initCommand(){
 		putValue(NAME,"Display Scalers\u2026");
 		dataControl=new ScalerDisplay(msghdlr);
 	}

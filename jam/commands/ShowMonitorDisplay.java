@@ -14,7 +14,7 @@ import jam.data.control.*;
  */
 public class ShowMonitorDisplay extends AbstractShowDataControlCmd {
 
-	ShowMonitorDisplay(){
+	protected void initCommand(){
 		putValue(NAME,"Display Monitors\u2026");
 		dataControl=MonitorControl.getSingletonInstance(msghdlr).display;
 	}

@@ -11,9 +11,13 @@ import jam.data.control.ParameterControl;
  */
 final class ShowDialogParametersCmd extends AbstractShowDataControlCmd {
 
-	ShowDialogParametersCmd() {
+	/**
+	 * Initialize command
+	 */
+	protected void initCommand(){
 		putValue(NAME, "Parameters\u2026");
 		final JFrame frame =status.getFrame();
 		dataControl = new ParameterControl(frame, msghdlr);
-	}
+		
+	}	
 }

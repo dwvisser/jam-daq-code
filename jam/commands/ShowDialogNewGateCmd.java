@@ -7,7 +7,7 @@ import jam.data.control.GateNew;
 public class ShowDialogNewGateCmd extends AbstractShowDataControlCmd {
 
 
-	ShowDialogNewGateCmd() {
+	protected void initCommand(){
 		putValue(NAME, "New\u2026");
 		//Super class member
 		dataControl= new GateNew(msghdlr);		
