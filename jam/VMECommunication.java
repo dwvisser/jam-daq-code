@@ -51,59 +51,59 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
     static final byte DISPLAY_FALSE=(byte) 0;
     static final byte STRING_NULL=(byte)0x0;
 
-    //type of messages
-    static final int OK=0;//standard message
-    static final int ERROR=1;//message indicating error condition
-    static final int SCALER=2;//received from VME, contains scaler values
-    static final int CNAF=3;//sent to VME, contains CNAF commands
-    static final int COUNTER=4;//???
-    static final int VME_ADDRESSES=5;//sent to VME, contains VME addressing information
-    static final int SCALER_INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
+    /* type of message */
+    private static final int OK=0;//standard message
+	private static final int ERROR=1;//message indicating error condition
+	private static final int SCALER=2;//received from VME, contains scaler values
+	private static final int CNAF=3;//sent to VME, contains CNAF commands
+	private static final int COUNTER=4;//???
+	private static final int VME_ADDRESSES=5;//sent to VME, contains VME addressing information
+	private static final int SCALER_INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
 
-    //stuff for cnaf packet
-    static final int COMMAND_SIZE=16;
-    static final int CNAF_SIZE=9;
+    /* stuff for cnaf packet */
+	private static final int COMMAND_SIZE=16;
+	private static final int CNAF_SIZE=9;
 
-    //strings of messages we can send
-    
     /**
      * Messages specific to starting, stopping, flushing data, writing out of 
      * data.
      */
-    static final String START="START";
-    static final String STOP="STOP";
-    static final String FLUSH="FLUSH";
-    static final String END="END";
-    static final String OPENFILE="OPENFILE ";//add filename as an argument
+	private static final String START="START";
+	private static final String STOP="STOP";
+	private static final String FLUSH="FLUSH";
+	private static final String END="END";
+	private static final String OPENFILE="OPENFILE ";//add filename as an argument
 
-    static final String SET_PATH="setpath ";
+	/* stuff that isn't currently used, but might be later?
+	 * 
+	private static final String SET_PATH="setpath ";
+	private static final String LOAD_CNAF_INIT=      "loadcnaf init";
+	private static final String LOAD_CNAF_EVENT=    "loadcnaf event";
+	private static final String LOAD_CNAF_SCALER=   "loadcnaf scaler";
+	private static final String LOAD_CNAF_CLEAR=    "loadcnaf clear";
+	private static final String LOAD_CNAF_USER =    "loadcnaf user";
+	 */
+	
+	private static final String RUN_INIT=  "list init";
+	private static final String RUN_EVENT=  "list event";
+	private static final String RUN_SCALER=  "list scaler";
+	private static final String RUN_CLEAR=  "list clear";
+	//future private static final String RUN_USER=  "list user";
 
-    static final String LOAD_CNAF_INIT=      "loadcnaf init";
-    static final String LOAD_CNAF_EVENT=    "loadcnaf event";
-    static final String LOAD_CNAF_SCALER=   "loadcnaf scaler";
-    static final String LOAD_CNAF_CLEAR=    "loadcnaf clear";
-    static final String LOAD_CNAF_USER =    "loadcnaf user";
+	private static final String CNAF_INIT=     "cnaf init";
+	private static final String CNAF_EVENT=    "cnaf event";
+	private static final String CNAF_SCALER=   "cnaf scaler";
+	private static final String CNAF_CLEAR=    "cnaf clear";
+	//future private static final String CNAF_USER =    "cnaf user";
+	
+	private static final String VERBOSE_ON=  "verbose on";
+	private static final String VERBOSE_OFF=  "verbose off";
+	private static final String DEBUG_ON=  "debug on";
+	private static final String DEBUG_OFF=  "debug off";
 
-    static final String RUN_INIT=  "list init";
-    static final String RUN_EVENT=  "list event";
-    static final String RUN_SCALER=  "list scaler";
-    static final String RUN_CLEAR=  "list clear";
-    static final String RUN_USER=  "list user";
-
-    static final String CNAF_INIT=     "cnaf init";
-    static final String CNAF_EVENT=    "cnaf event";
-    static final String CNAF_SCALER=   "cnaf scaler";
-    static final String CNAF_CLEAR=    "cnaf clear";
-    static final String CNAF_USER =    "cnaf user";
-
-    static final String VERBOSE_ON=  "verbose on";
-    static final String VERBOSE_OFF=  "verbose off";
-    static final String DEBUG_ON=  "debug on";
-    static final String DEBUG_OFF=  "debug off";
-
-    static final String COUNT_READ=  "count read";
-    static final String COUNT_ZERO=  "count zero";
-    static final int COUNT_NUMBER=3;
+	private static final String COUNT_READ=  "count read";
+	private static final String COUNT_ZERO=  "count zero";
+	private static final int COUNT_NUMBER=3;
 
     static final String EXCUTE_CNAF=  "cnaf";
 
