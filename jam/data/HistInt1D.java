@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 
 /**
+ * The 1-dimensional histogram class to use for online and offline sorting.
+ * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
 public final class HistInt1D extends AbstractHist1D {
@@ -62,19 +64,42 @@ public final class HistInt1D extends AbstractHist1D {
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);		
 	}
 
+	/**
+	 * Returns the counts in the histogram as an array of the appropriate type.
+	 * It is necessary to cast the returned array with <code>(int [])</code>.
+	 * 
+	 * @return <code>int []</code>
+	 */
 	public synchronized Object getCounts() {
 		return counts;
 	}
 
+	/**
+	 * Returns the number of counts in the given channel.
+	 * 
+	 * @param channel that we are interested in
+	 * @return number of counts
+	 */
 	public synchronized double getCounts(int channel) {
 		return counts[channel];
 	}
 
+	/**
+	 * Zeroes all the counts in this histogram.
+	 */
 	public synchronized void setZero() {
 		Arrays.fill(counts,0);
 		unsetErrors();
 	}
 
+	/**
+	 * Set the counts array using the given <code>int []</code>.
+	 * 
+	 * @param countsIn
+	 *            <code>int []</code>
+	 * @throws IllegalArgumentException
+	 *             if countsIn is the wrong type.
+	 */
 	public synchronized void setCounts(Object countsIn) {
 		if (Type.getArrayType(countsIn)!=getType()){
 			throw new IllegalArgumentException("Expected array for type "+getType());
@@ -83,6 +108,14 @@ public final class HistInt1D extends AbstractHist1D {
 		System.arraycopy(countsIn, 0, counts, 0, Math.min(inLength, getSizeX()));
 	}
 
+	/**
+	 * Sets the counts in the given channel to the specified
+	 * number of counts.
+	 * 
+	 * @param channel to change
+	 * @param counts to be in the channel, rounded to <code>int</code>, if
+	 * necessary
+	 */
 	public synchronized void setCounts(int channel, double count) {
 		counts[channel] = (int) Math.round(count);
 	}
@@ -119,6 +152,11 @@ public final class HistInt1D extends AbstractHist1D {
 		}
 	}
 
+	/**
+	 * Returns the array of error bars, possibly estimated.
+	 *  
+	 * @return 1-sigma error bars
+	 */
 	public synchronized double[] getErrors() {
 		final int length = counts.length;
 		if (errors == null) {
@@ -135,6 +173,11 @@ public final class HistInt1D extends AbstractHist1D {
 		return errors;
 	}
 
+	/**
+	 * Returns the total number of counts in the histogram.
+	 * 
+	 * @return area under the counts in the histogram
+	 */
 	public synchronized double getArea() {
 		final int size=getSizeX();
 		double sum = 0.0;
@@ -144,6 +187,14 @@ public final class HistInt1D extends AbstractHist1D {
 		return sum;
 	}
 	
+	/**
+	 * Adds the given counts to this histogram.
+	 * 
+	 * @param countsIn
+	 *            1d array of <code>int</code>'s
+	 * @throws IllegalArgumentException
+	 *             if the parameter is the wrong type
+	 */
 	public synchronized void addCounts(Object add){
 		if (Type.getArrayType(add)!=getType()){
 			throw new IllegalArgumentException("Expected array for type "+getType());

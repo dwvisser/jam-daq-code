@@ -6,6 +6,8 @@ package jam.data;
 import java.util.Arrays;
 
 /**
+ * The 2-dimensional histogram class to use for online and offline sorting.
+ * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
 public final class HistInt2D extends AbstractHist2D {
@@ -66,19 +68,24 @@ public final class HistInt2D extends AbstractHist2D {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns the number of counts in the given channel.
 	 * 
-	 * @see jam.data.AbstractHist2D#getCounts(int, int)
+	 * @param channel that we are interested in
+	 * @return number of counts
 	 */
 	public double getCounts(int chX, int chY) {
 		return counts2d[chX][chY];
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Sets the counts in the given channel to the specified
+	 * number of counts.
 	 * 
-	 * @see jam.data.AbstractHist2D#setCounts(int, int, double)
+	 * @param chX x-coordinate of the bin
+	 * @param chY y-coordinate of the bin
+	 * @param counts to be in the channel, rounded to <code>int</code>, if
+	 * necessary
 	 */
 	public void setCounts(int chX, int chY, double counts) {
 		counts2d[chX][chY] = (int) Math.round(counts);
@@ -93,19 +100,18 @@ public final class HistInt2D extends AbstractHist2D {
 		counts2d = null;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns the counts in the histogram as an array of the appropriate type.
+	 * It is necessary to cast the returned array with <code>(int [][])</code>.
 	 * 
-	 * @see jam.data.Histogram#getCounts()
+	 * @return <code>int [][]</code>
 	 */
 	public Object getCounts() {
 		return counts2d;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see jam.data.Histogram#setZero()
+	/**
+	 * Zeroes all the counts in this histogram.
 	 */
 	public void setZero() {
 		final int size=getSizeX();
@@ -114,10 +120,13 @@ public final class HistInt2D extends AbstractHist2D {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Set the counts array using the given <code>int [][]</code>.
 	 * 
-	 * @see jam.data.Histogram#setCounts(java.lang.Object)
+	 * @param countsIn
+	 *            <code>int [][]</code>
+	 * @throws IllegalArgumentException
+	 *             if countsIn is the wrong type.
 	 */
 	public void setCounts(Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
@@ -127,10 +136,13 @@ public final class HistInt2D extends AbstractHist2D {
 		setCounts((int[][]) countsIn);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Adds the given counts to this histogram.
 	 * 
-	 * @see jam.data.Histogram#addCounts(java.lang.Object)
+	 * @param countsIn
+	 *            <code>int [][]</code>'s
+	 * @throws IllegalArgumentException
+	 *             if the parameter is the wrong type
 	 */
 	public void addCounts(Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
@@ -140,10 +152,10 @@ public final class HistInt2D extends AbstractHist2D {
 		addCounts((int[][]) countsIn);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Returns the total number of counts in the histogram.
 	 * 
-	 * @see jam.data.Histogram#getArea()
+	 * @return area under the counts in the histogram
 	 */
 	public double getArea(){
 		final int size=getSizeX();

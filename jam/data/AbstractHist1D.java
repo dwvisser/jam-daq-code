@@ -7,10 +7,16 @@ import jam.data.func.CalibrationFunction;
 import jam.data.peaks.PeakFinder;
 
 /**
+ * The superclass of all 1-dimensional histograms.
+ * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public abstract class AbstractHist1D extends Histogram {
 	
+	/**
+	 * The calibration function. Set to <code>null</code> if there
+	 * is none.
+	 */
 	protected transient CalibrationFunction calibFunc;
 	
 	/**
@@ -61,7 +67,8 @@ public abstract class AbstractHist1D extends Histogram {
 	 * number of counts.
 	 * 
 	 * @param channel to change
-	 * @param counts to be in the channel
+	 * @param counts to be in the channel, rounded to <code>int</code>, if
+	 * necessary
 	 */
 	public abstract void setCounts(int channel, double counts);
 	
