@@ -4,6 +4,7 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
+import jam.plot.Bin;
 import jam.ui.GateComboBoxModel;
 import jam.ui.GateListCellRenderer;
 
@@ -15,7 +16,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -236,7 +236,7 @@ public class GateSet extends DataControl implements Observer {
 		} else if (be.getCommand() == BroadcastEvent.GATE_ADD) {
 			setup();
 		} else if (be.getCommand() == BroadcastEvent.GATE_SET_POINT) {
-			addPoint((Point) be.getContent());
+			addPoint((Bin) be.getContent());
 		}
 	}
 	
@@ -297,7 +297,7 @@ public class GateSet extends DataControl implements Observer {
 		try {
 			final int x = Integer.parseInt(textLower.getText().trim());
 			final int y = Integer.parseInt(textUpper.getText().trim());
-			final Point p = new Point(x, y);
+			final Bin p = Bin.Factory.create(x, y); 
 			addPoint(p);
 			broadcaster.broadcast(BroadcastEvent.GATE_SET_ADD, p);
 		} catch (NumberFormatException ne) {
@@ -312,10 +312,10 @@ public class GateSet extends DataControl implements Observer {
 			gatePoints.remove(gatePoints.size() - 1);
 			broadcaster.broadcast(BroadcastEvent.GATE_SET_REMOVE);
 			if (!gatePoints.isEmpty()) {
-				final Point lastPoint =
-					(Point) gatePoints.get(gatePoints.size() - 1);
-				textLower.setText(String.valueOf(lastPoint.x));
-				textUpper.setText(String.valueOf(lastPoint.y));
+				final Bin lastBin =
+					(Bin) gatePoints.get(gatePoints.size() - 1);
+				textLower.setText(String.valueOf(lastBin.getX()));
+				textUpper.setText(String.valueOf(lastBin.getY()));
 			} else {
 				textLower.setText("");
 				textUpper.setText("");
@@ -337,7 +337,7 @@ public class GateSet extends DataControl implements Observer {
 	 *
 	 * @param pChannel the point corresponding to the channel to add
 	 */
-	private void addPoint(Point pChannel) {
+	private void addPoint(Bin pChannel) {
 		if (newGate) { //do nothing if no gate chosen
 			if (type == ONE_DIMENSION) {
 				if (numberPoints == 0) {
@@ -345,13 +345,13 @@ public class GateSet extends DataControl implements Observer {
 						numberPoints = 1;
 					}
 					gatePoints.add(pChannel);
-					textLower.setText(String.valueOf(pChannel.x));
+					textLower.setText(String.valueOf(pChannel.getX()));
 				} else if (numberPoints == 1) {
 					synchronized (this) {
 						numberPoints = 0;
 					}
 					gatePoints.add(pChannel);
-					textUpper.setText(String.valueOf(pChannel.x));
+					textUpper.setText(String.valueOf(pChannel.getX()));
 				} else {
 					messageHandler.errorOutln(
 						getClass().getName()
@@ -359,8 +359,8 @@ public class GateSet extends DataControl implements Observer {
 				}
 			} else if (type == TWO_DIMENSION) {
 				gatePoints.add(pChannel);
-				textLower.setText(String.valueOf(pChannel.x));
-				textUpper.setText(String.valueOf(pChannel.y));
+				textLower.setText(String.valueOf(pChannel.getX()));
+				textUpper.setText(String.valueOf(pChannel.getY()));
 			}
 		} else {
 			messageHandler.errorOutln(
@@ -377,19 +377,12 @@ public class GateSet extends DataControl implements Observer {
 	 * @throws GlobalException if there's a problem
 	 */
 	private void save() {
-		final int x1, x2;
-		int pointX, pointY;
-		Polygon gatePoly2d;
-
-		synchronized (this) {
-			gatePoly2d = new Polygon();
-		}
 		checkHistogram(); //check we have same histogram
 		try { //check fields are numbers
 			if (currentGate != null) {
 				if (type == ONE_DIMENSION) {
-					x1 = Integer.parseInt(textLower.getText());
-					x2 = Integer.parseInt(textUpper.getText());
+					final int x1 = Integer.parseInt(textLower.getText());
+					final int x2 = Integer.parseInt(textUpper.getText());
 					currentGate.setLimits(x1, x2);
 					messageHandler.messageOutln(
 						"Gate Set "
@@ -402,9 +395,10 @@ public class GateSet extends DataControl implements Observer {
 					/* complete gate, adding a last point = first point */
 					gatePoints.add(gatePoints.get(0));
 					/* make a polygon from data points */
+					final Polygon gatePoly2d = new Polygon();
 					for (int i = 0; i < gatePoints.size(); i++) {
-						pointX = ((Point) gatePoints.get(i)).x;
-						pointY = ((Point) gatePoints.get(i)).y;
+						final int pointX = ((Bin) gatePoints.get(i)).getX();
+						final int pointY = ((Bin) gatePoints.get(i)).getY();
 						gatePoly2d.addPoint(pointX, pointY);
 					}
 					currentGate.setLimits(gatePoly2d);
