@@ -40,7 +40,7 @@ public abstract class AbstractImpExp {
 	private static final int LOAD = 137;
 	private static final int SAVE = 314;
 	
-	private static final JamStatus STATUS=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
 
 	/**
 	 * so the programmer may set display options

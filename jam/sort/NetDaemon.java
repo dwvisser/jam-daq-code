@@ -135,7 +135,7 @@ public class NetDaemon extends GoodThread {
 					.append("continue automatically sampling events in order to keep\n");
 			mesg.append("up with the acquisition with no further warnings.\n");
 			final boolean confirmed = JOptionPane.showConfirmDialog(JamStatus
-					.instance().getFrame(), mesg.toString(),
+					.getSingletonInstance().getFrame(), mesg.toString(),
 					"Buffer lost. End run?", JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 			if (confirmed) {

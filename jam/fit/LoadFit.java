@@ -58,7 +58,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		super();
 		broadcaster=Broadcaster.getSingletonInstance();		
 						
-		JamStatus jamStatus = JamStatus.instance(); 
+		JamStatus jamStatus = JamStatus.getSingletonInstance(); 
 		msgHandler = jamStatus.getMessageHandler();
 		jamMain = jamStatus.getFrame();
 		display = jamStatus.getDisplay();

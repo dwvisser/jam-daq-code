@@ -512,7 +512,15 @@ public abstract class Histogram {
 		}
 		System.gc();
 	}
-
+	/**
+	 * Histogram is a valid histogram
+	 * @param hist
+	 * @return
+	 */
+	public static boolean isValid(Histogram hist){
+		return NAME_MAP.containsValue(hist);
+	}
+	
 	private void clearInfo() {
 		gates.clear();
 		labelX = null;

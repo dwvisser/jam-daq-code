@@ -22,6 +22,7 @@ public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
 	private static String histName = "";
+	private static Histogram currentHistogram;
 	private static Set overlayNames=new HashSet();	
 	private static String gateName;
 	private static JFrame frame;
@@ -53,7 +54,7 @@ public final class JamStatus {
 	 * 
 	 * @return the only instance of this class
 	 */
-	static public JamStatus instance() {
+	static public JamStatus getSingletonInstance() {
 		return INSTANCE;
 	}
 	
@@ -238,17 +239,8 @@ public final class JamStatus {
 	 * 
 	 * @param name the current histogram name
 	 */
-	public synchronized void setHistName(String name) {
-		histName = name;
-	}
-
-	/**
-	 * Gets the current <code>Histogram</code> name.
-	 * 
-	 * @return the current histogram name
-	 */
-	public synchronized String getHistName() {
-		return histName;
+	public synchronized void setCurrentHistogram(Histogram hist) {
+		currentHistogram=hist;
 	}
 	
 	/**
@@ -257,7 +249,10 @@ public final class JamStatus {
 	 * @return the current histogram
 	 */
 	public synchronized Histogram getCurrentHistogram(){
-		return Histogram.getHistogram(histName);
+		if (!Histogram.isValid(currentHistogram)){
+			currentHistogram=null;
+		}
+		return currentHistogram;
 	}
 	
 	/**

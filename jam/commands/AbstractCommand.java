@@ -24,7 +24,7 @@ Commandable {
      * Reference to <code>JamStatus</code> singleton available to 
      * all implementing classes.
      */
-	protected static final JamStatus status=JamStatus.instance();
+	protected static final JamStatus status=JamStatus.getSingletonInstance();
 	
     /**
      * Reference to <code>Broadcaster</code> singleton available to 

@@ -33,7 +33,7 @@ import javax.swing.JMenuItem;
  */
 public final class MenuBar implements Observer, CommandNames {
 
-	final transient private JamStatus status = JamStatus.instance();
+	final transient private JamStatus status = JamStatus.getSingletonInstance();
 
 	final transient private JMenuItem impHist = new JMenu("Import");
 

@@ -71,7 +71,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 
     private transient JCheckBox checkLock;
 
-    private static final JamStatus STATUS = JamStatus.instance();
+    private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
     private transient int mode; //mode server, snap or link
 

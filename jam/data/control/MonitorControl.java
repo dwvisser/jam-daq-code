@@ -66,7 +66,7 @@ public final class MonitorControl
 
 	MonitorControl() {
 		super("Monitors Setup", false);
-		msgHandler = JamStatus.instance().getMessageHandler();
+		msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
 		final Container cdconfig = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);

@@ -16,7 +16,7 @@ final class ShowDialogAbout extends AbstractShowDialog {
      */
 	public void initCommand() {
 		putValue(NAME, "About\u2026");
-		dialog = (new AboutDialog(JamStatus.instance().getFrame())).getDialog();
+		dialog = (new AboutDialog(JamStatus.getSingletonInstance().getFrame())).getDialog();
 	}
 
 }

@@ -77,7 +77,7 @@ abstract class AbstractSetup {
      * 
      * @see jam.global.JamStatus
      */
-    protected static final JamStatus STATUS = JamStatus.instance();
+    protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
     /**
      * Press to browse for a classpath.

@@ -170,7 +170,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void run() {
 		try {
-			if (JamStatus.instance().isOnline()) {//which type of sort to do
+			if (JamStatus.getSingletonInstance().isOnline()) {//which type of sort to do
 				sortOnline();
 			} else {
 				sortOffline();

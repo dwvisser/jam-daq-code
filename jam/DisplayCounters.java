@@ -92,7 +92,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 		return instance;
 	}
 
-	private final static JamStatus STATUS = JamStatus.instance();
+	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private DisplayCounters() {
 		super(STATUS.getFrame(), "Buffer Counters", false);

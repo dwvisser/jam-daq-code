@@ -79,7 +79,7 @@ public class RunControl extends JDialog implements Controller {
 
 	private transient final MessageHandler console;
 
-	private static final JamStatus STATUS = JamStatus.instance();
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private transient final Frame jamMain = STATUS.getFrame();
 

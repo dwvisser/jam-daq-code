@@ -89,7 +89,7 @@ public final class SortControl extends JDialog implements Controller {
 	private final JButton addfile, addDir, loadlist, remove, removeAll,
 			savelist;
 
-	private final static JamStatus STATUS = JamStatus.instance();
+	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
 	 * button to get file brower

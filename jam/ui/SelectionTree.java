@@ -39,7 +39,7 @@ public class SelectionTree extends JPanel implements Observer {
 
     private final DefaultTreeModel treeModel;
 
-    private static final JamStatus STATUS = JamStatus.instance();
+    private static final JamStatus STATUS = JamStatus.getSingletonInstance();
     
     private final MessageHandler MESSAGE_HANDLER;
     
@@ -152,7 +152,7 @@ public class SelectionTree extends JPanel implements Observer {
             if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;
-                STATUS.setHistName(hist.getFullName());
+                STATUS.setCurrentHistogram(hist);
                 STATUS.setCurrentGateName(null);                
                 /* Do we have overlays ? */
                 if (paths.length>1) {
@@ -170,7 +170,7 @@ public class SelectionTree extends JPanel implements Observer {
                 final Gate gate = (Gate) firstNode;
                 final Histogram hist = getAssociatedHist(prime);
                 tree.addSelectionPath(pathForDataObject(hist));
-                STATUS.setHistName(hist.getName());
+                STATUS.setCurrentHistogram(hist);
                 STATUS.clearOverlays();
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
                         hist);

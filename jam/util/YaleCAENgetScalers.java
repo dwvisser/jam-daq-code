@@ -54,7 +54,7 @@ public class YaleCAENgetScalers {
 	 * for scaler blocks.
 	 */
 	public YaleCAENgetScalers() {
-		JamStatus js = JamStatus.instance();
+		JamStatus js = JamStatus.getSingletonInstance();
 		frame = js.getFrame();
 		console = js.getMessageHandler();
 	}

@@ -68,7 +68,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public GateComboBoxModel() {
 		super();
-		status = JamStatus.instance();
+		status = JamStatus.getSingletonInstance();
 		mode = Mode.DISPLAYED_HIST;
 	}
 
@@ -80,7 +80,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public GateComboBoxModel(Mode listmode) {
 		super();
-		status = JamStatus.instance();
+		status = JamStatus.getSingletonInstance();
 		mode = listmode;
 	}
 
@@ -105,8 +105,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 			if (index == 0) {
 				rval = CHOOSE_A_GATE;
 			} else {
-				final Histogram his =
-					Histogram.getHistogram(status.getHistName());
+				final Histogram his =status.getCurrentHistogram();
 				final int which = index - 1;
 				if (Mode.DISPLAYED_HIST.equals(mode)) {
 					rval = (Gate) his.getGates().get(which);
@@ -160,8 +159,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 
 	private int numGates() {
 		int numG = 0;
-		final Histogram hist =
-			Histogram.getHistogram(status.getHistName());
+		final Histogram hist =status.getCurrentHistogram();
 		if (hist != null) {
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
 				numG = hist.getGates().size();

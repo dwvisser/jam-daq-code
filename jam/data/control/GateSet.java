@@ -262,7 +262,7 @@ public class GateSet extends AbstractControl implements Observer {
     public void doSetup() {
         /* get current state */
         synchronized (this) {
-            currentHistogram = Histogram.getHistogram(STATUS.getHistName());
+            currentHistogram =STATUS.getCurrentHistogram();
         }
         if (currentHistogram == null) {
             /* There are many normal situations with no current histogram. */
@@ -470,7 +470,7 @@ public class GateSet extends AbstractControl implements Observer {
      */
     private void checkHistogram() {
         /* has histogram changed? */
-        if (currentHistogram != Histogram.getHistogram(STATUS.getHistName())) {
+        if (currentHistogram != STATUS.getCurrentHistogram()) {
             doSetup(); //setup chooser list
             cancel(); //cancel current gate if was setting
         }

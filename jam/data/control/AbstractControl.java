@@ -22,7 +22,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	/**
 	 * Reference to instance of JamStatus.
 	 */
-	protected static final JamStatus STATUS=JamStatus.instance();
+	protected static final JamStatus STATUS=JamStatus.getSingletonInstance();
 	
 	/**
 	 * Reference to instance of Broadcaster.

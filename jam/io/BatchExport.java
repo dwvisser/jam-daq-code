@@ -79,7 +79,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	 * @param mh console to print messages to
 	 */
 	public BatchExport(MessageHandler mh) {
-		super(JamStatus.instance().getFrame(), "Batch Histogram Export");
+		super(JamStatus.getSingletonInstance().getFrame(), "Batch Histogram Export");
 		console = mh;
 		Broadcaster bc = Broadcaster.getSingletonInstance();
 		bc.addObserver(this);

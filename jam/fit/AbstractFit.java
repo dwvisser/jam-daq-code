@@ -173,7 +173,7 @@ public abstract class AbstractFit implements ItemListener, PlotMouseListener {
 	
 	protected FitConsole textInfo;
 	
-	private static final JamStatus STATUS=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
 	
 
 	/**

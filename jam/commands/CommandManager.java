@@ -28,7 +28,7 @@ import javax.swing.Action;
  */
 public class CommandManager implements CommandListener, CommandNames {
 
-	private final JamStatus status=JamStatus.instance();
+	private final JamStatus status=JamStatus.getSingletonInstance();
 	private final MessageHandler msghdlr;
 	private static CommandManager managerInstance=null;
 	private static final Map CMD_MAP = Collections.synchronizedMap(new HashMap());

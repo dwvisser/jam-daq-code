@@ -236,7 +236,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     
 	private AbstractHist1D getCurrentHistogram() {
 		final AbstractHist1D rval;
-		final Histogram hist = Histogram.getHistogram(STATUS.getHistName());
+		final Histogram hist = STATUS.getCurrentHistogram();
 		if (hist != currentHistogram && hist instanceof AbstractHist1D) {
 			rval = (AbstractHist1D) hist;
 		} else {

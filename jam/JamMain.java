@@ -45,7 +45,7 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * Overall status of Jam.
 	 */
-	private transient final JamStatus status = JamStatus.instance();
+	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	/**
 	 * Event distributor.

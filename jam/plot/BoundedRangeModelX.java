@@ -19,7 +19,7 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 
 	private PlotContainer plot;
 	
-	private static final JamStatus STATUS=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
 
 	BoundedRangeModelX(PlotContainer p) {
 		super();

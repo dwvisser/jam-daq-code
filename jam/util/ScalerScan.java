@@ -72,7 +72,7 @@ public class ScalerScan
 	JamProperties.HIST_PATH));
 	private final JTextField txtPath;
 	private final JTextField txtRunName;
-	private final static JamStatus STATUS=JamStatus.instance();
+	private final static JamStatus STATUS=JamStatus.getSingletonInstance();
 
 	/**
 	 * Constructor.

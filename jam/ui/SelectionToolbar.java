@@ -62,7 +62,7 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 		final int chooserWidth = 200;
 
 		//Global objects
-		status = JamStatus.instance();
+		status = JamStatus.getSingletonInstance();
 		broadcaster = Broadcaster.getSingletonInstance();
 		console = status.getMessageHandler();
 		display = status.getDisplay();
@@ -210,7 +210,7 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 					display.overlayHistogram(hist.getNumber());
 			} else {
 				synchronized (status) {
-					status.setHistName(hist.getFullName());					
+					status.setCurrentHistogram(hist);					
 					gatesChanged();
 					setOverlaySelected(false);
 					setOverlayEnabled(oneD);
@@ -222,8 +222,7 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 
 	private void syncHistChooser() {
 		isSync=true;
-		final Histogram hist = Histogram.getHistogram(status
-				.getHistName());
+		final Histogram hist =status.getCurrentHistogram();
 		if (hist != null) {
 			histogramChooser.setSelectedItem(hist);
 			gatesChanged();
@@ -277,16 +276,16 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			final String lastHistName = status.getHistName();
-			selectHistogram(Histogram.getHistogram(lastHistName));
+			Histogram lastHist = status.getCurrentHistogram();
+			selectHistogram(lastHist);
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			syncHistChooser();			
 		} else if (command == BroadcastEvent.Command.GATE_ADD) {
-			final String lastHistName = status.getHistName();
-			selectHistogram(Histogram.getHistogram(lastHistName));
+			Histogram lastHist = status.getCurrentHistogram();
+			selectHistogram(lastHist);
 			gatesChanged();
 		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {

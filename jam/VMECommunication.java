@@ -64,7 +64,7 @@ FrontEndCommunication {
      */
     public VMECommunication() {
         super();
-        console=JamStatus.instance().getMessageHandler();
+        console=JamStatus.getSingletonInstance().getMessageHandler();
         active=false;
         setName("Network Messenger");
     }

@@ -85,8 +85,7 @@ public class GateNew extends AbstractControl {
 	 * @throws GlobalException if there's a problem
 	 */
 	private void makeGate() {
-		final Histogram hist =
-			Histogram.getHistogram(STATUS.getHistName());
+		final Histogram hist=STATUS.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 		messageHandler.messageOutln(

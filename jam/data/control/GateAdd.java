@@ -106,8 +106,7 @@ public final class GateAdd extends AbstractControl {
 	 */
 	private void addGate() {
 		if (currentGateAdd!=null) {
-			final Histogram hist=Histogram.getHistogram(
-			STATUS.getHistName());
+			final Histogram hist=STATUS.getCurrentHistogram();
 			hist.addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			messageHandler.messageOutln("Added gate '"+

@@ -91,7 +91,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private final JTextField textPathLog;
 
-	private static final JamStatus STATUS = JamStatus.instance();
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/* strings of data entered */
 	private String experimentName;

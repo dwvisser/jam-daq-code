@@ -66,7 +66,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	
-	private final JamStatus status =JamStatus.instance();
+	private final JamStatus status =JamStatus.getSingletonInstance();
 	
 	/**
 	 * Constructor called by all constructors
@@ -76,7 +76,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public Display(Console jc) {		
 		/* Set gobal status */
-		JamStatus.instance().setDisplay(this);
+		JamStatus.getSingletonInstance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
 		Bin.Factory.init(this);
 		/* display event handler */
@@ -280,9 +280,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			final Histogram hist =selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
 			if (hist!=null) {
-				status.setHistName(hist.getFullName());				 
+				status.setCurrentHistogram(hist);				 
 			}else{
-				status.setHistName(null);		
+				status.setCurrentHistogram(null);		
 			}
 			status.setCurrentGateName(null);
 			status.clearOverlays();

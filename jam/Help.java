@@ -37,7 +37,7 @@ import javax.swing.UIManager;
  */
 public class Help extends JDialog {
 	
-	private static final JamStatus STATUS=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
 	private final static int POS_X=20;
 
 	/**

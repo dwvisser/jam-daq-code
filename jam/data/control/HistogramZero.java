@@ -41,9 +41,7 @@ public class HistogramZero extends AbstractControl {
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				final Histogram currentHistogram =
-					Histogram.getHistogram(
-						JamStatus.instance().getHistName());
+				final Histogram currentHistogram =JamStatus.getSingletonInstance().getCurrentHistogram();
 				currentHistogram.setZero();
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 				msghdlr.messageOutln(

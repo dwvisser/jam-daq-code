@@ -91,7 +91,7 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 			final Monitor monitor = (Monitor) it.next();		
 			//If the audio on and are we taking data
 			if (checkAudio.isSelected()
-				&& JamStatus.instance().isAcqOn()
+				&& JamStatus.getSingletonInstance().isAcqOn()
 				&& monitor.getAlarm()
 				&& (!monitor.isAcceptable())) {
 				Toolkit.getDefaultToolkit().beep();
