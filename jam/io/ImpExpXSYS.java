@@ -55,10 +55,6 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 	int[][] counts2d;
 	boolean firstHeader;
 
-	public ImpExpXSYS(){
-		super();
-	}
-
 	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("dat", 
 	"TUNL's XSYS");
 	protected FileFilter getFileFilter() {
@@ -154,7 +150,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		/* someday maybe if someone asks */
 	}
 
-	/** 
+	/* non-javadoc:
 	 * Unpacks a Xsys histogram header.
 	 * 
 	 * @return true if it read a header, false if end of file found
@@ -223,7 +219,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		return !endOfFile;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Unpacks a XSYS histogram 1d type INTEGER.
 	 * 
 	 * @param buffin inputdata stream
@@ -250,11 +246,10 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		return counts;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Unpack the data of a XSYS 2d spectum type INTEGER
 	 * We make a square specturm using the 
 	 * larger of the two dimension x and y
-	 *
 	 */
 	private int[][] unPackData2d(
 		DataInputStream buffin,
@@ -287,38 +282,32 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 				i++;
 			}
 		}
-
 		return counts;
-
 	}
-	/**
+	
+	/* non-javadoc:
 	 * Unpack unknown data area
 	 * Just skips over it.
-	 * 
 	 */
 	private void unPackUnknown(InputStream buffin, int areaLengthpage)
 		throws IOException {
-
 		for (int i = 0; i < areaLengthpage * L_BUFFER; i++) {
 			buffin.read();
 		}
-
 	}
-	/**
+	
+	/* non-javadoc:
 	 * Unpack the sort routine used 
 	 * For now just skips over it.
-	 * 
 	 */
 	private void unPackEVAL(InputStream buffin, int areaLengthpage)
 		throws IOException {
-
 		for (int i = 0; i < areaLengthpage * L_BUFFER; i++) {
 			buffin.read();
 		}
-
 	}
 
-	/**
+	/* non-javadoc:
 	 * calibrate a historam
 	 */
 	private void calibHist(int[] calibCoef, AbstractHist1D hist) {
@@ -331,30 +320,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		hist.setCalibration(calibFunc);
 	}
 	
-	/**
-	 * Converts an array interger from little endian to big endian
-	 * little endian byte order 4321 big endian byte order 1234
-	 *
-	 * Author Ken Swartz
-	 */
-	public int toBigEndian(int[] inByte) {
-		int outInt;
-		//for unsigned integers    clear not in loop
-		outInt =
-			(inByte[0] << 0)
-				| (inByte[1] << 8)
-				| (inByte[2] << 16)
-				| (inByte[3] << 24);
-		/*  Note: An alternative way to read in data
-		          =(datain.readUnsignedByte()<<0)
-		           |(datain.readUnsignedByte()<<8)
-		           |(datain.readUnsignedByte()<<16)
-		           |(datain.readUnsignedByte()<<24);
-		*/
-		return (outInt);
-	}
-
-	/**
+	/* non-javadoc:
 	 * Extract an int from a array of bytes in little endian order, 
 	 * 
 	 * little endian byte order 4321 big endian byte order 1234
@@ -362,9 +328,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 	 * @param postition position in array of int to extract 
 	 */
 	private int bufferToBigEndian(byte[] inByte, int position) {
-
 		int outInt;
-
 		//bytes sign extended in converting to in 
 		//so we need to mask the higher order bits
 		outInt =
@@ -375,7 +339,8 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 
 		return outInt;
 	}
-	/**
+	
+	/* non-javadoc:
 	 * Converts a array of integers which represent bytes (values
 	 * up to 256 in little endian order to big endian int
 	 * little endian byte order 4321 big endian byte order 1234
@@ -396,30 +361,8 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		return outInt;
 	}
 	
-	/**
-	 * Take an array of bytes in big endian and turn convert to
-	 * to little endian byte array
-	 *
-	 * inByte must be a multiple of 4 in length
-	 * @param inByte array of big endian bytes
-	 */
-	public byte[] toLittleEndian(byte[] inByte) {
-		byte[] outByte;
-		//bytes sign extended in converting to in 
-		//so we need to mask the higher order bits
-		outByte = new byte[inByte.length];
-		for (int i = 0; i < inByte.length / 4; i++) {
-			outByte[i + 0] = inByte[i + 3];
-			outByte[i + 1] = inByte[i + 2];
-			outByte[i + 2] = inByte[i + 1];
-			outByte[i + 3] = inByte[i + 0];
-		}
-		return outByte;
-	}
-
-	/**
+	/* non-javadoc:
 	 * to turn a byte array into a string
-	 *
 	 */
 	private String bufferToString(
 		int[] inByteArray,
