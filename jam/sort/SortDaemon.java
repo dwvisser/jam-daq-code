@@ -219,7 +219,7 @@ public class SortDaemon extends GoodThread {
             || (status == EventInputStatus.IGNORE))) {
                 if (status == EventInputStatus.EVENT) {
                 	/* Sort only the sortInterval'th events. */
-                    if (eventCount%sortInterval==0){
+                    if (sortInterval==0 || eventCount%sortInterval==0){
                     	sortRoutine.sort(eventData);
                     	eventSortedCount++;
                     }
