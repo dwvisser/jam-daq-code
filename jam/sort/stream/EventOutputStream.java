@@ -74,7 +74,7 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	 * Sets the event size.
 	 * @param size the number of values per event
 	 */
-	public void setEventSize(int size) {
+	public final void setEventSize(int size) {
 		eventSize = size;
 	}
 
