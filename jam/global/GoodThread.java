@@ -63,8 +63,11 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
         return (this.state == RUN);
     }
 
-    public String toString(){
-        if (state >=0 && state < modes.length) return modes[state];
-        return "Invalid state: "+state;
+    public String toString() {
+    	String rval = "Invalid state: "+state;//default
+        if (state >=0 && state < modes.length) {
+        	rval = modes[state];
+        }
+        return rval;
     }
 }
