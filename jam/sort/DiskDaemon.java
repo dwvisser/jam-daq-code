@@ -259,11 +259,16 @@ public class DiskDaemon extends StorageDaemon {
 		if (ringBuffer.empty()){
 			synchronized (rreLock){
 				if (reachedRunEnd){
-					reachedRunEnd=false;
 					rval=true;
 				}
 			}
 		}
 		return rval;
+	}
+	
+	public void resetReachedRunEnd(){
+		synchronized(rreLock){
+			reachedRunEnd=false;
+		}
 	}
 }
