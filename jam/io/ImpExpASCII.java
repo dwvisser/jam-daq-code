@@ -1,5 +1,4 @@
 package jam.io;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
 import java.awt.Frame;
@@ -128,8 +127,6 @@ public class ImpExpASCII extends ImpExp {
 			}
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
-		} catch (DataException de) {
-			throw new ImpExpException(de.toString());
 		}
 	}
 
@@ -138,7 +135,7 @@ public class ImpExpASCII extends ImpExp {
 		String name,
 		String title,
 		double[] counts)
-		throws IOException, DataException {
+		throws IOException {
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
@@ -200,7 +197,7 @@ public class ImpExpASCII extends ImpExp {
 		String title,
 		double[] counts,
 		int rows)
-		throws IOException, DataException {
+		throws IOException {
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
@@ -222,7 +219,7 @@ public class ImpExpASCII extends ImpExp {
 		String title,
 		double[][] counts,
 		int rows)
-		throws IOException, DataException {
+		throws IOException {
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
@@ -245,7 +242,7 @@ public class ImpExpASCII extends ImpExp {
 		String name,
 		String title,
 		double[][] counts)
-		throws IOException, DataException {
+		throws IOException {
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
 		if (this.firstLineIsTitle) {
 			lnr.readLine();
@@ -260,117 +257,6 @@ public class ImpExpASCII extends ImpExp {
 		}
 		new Histogram(name, title, counts);
 	}
-
-	/*		InputStreamReader isr = new InputStreamReader(inStream);
-			StreamTokenizer st = new StreamTokenizer(isr); //make a tokenizer for input stream
-			st.eolIsSignificant(true); //Grab end of line markers
-			//read in header lines, header are lines that start with a non-number token
-			firstLine = true;
-			while (st.nextToken() != StreamTokenizer.TT_EOF
-				&& st.ttype != StreamTokenizer.TT_NUMBER) {
-				//execute loop code only if not number or EOF read
-				if (firstLine) {
-					title = st.sval;
-				}
-				//read in rest of line and ignore
-				while (st.nextToken() != StreamTokenizer.TT_EOL) {
-					if (firstLine) {
-						title = title + " " + st.sval;
-					}
-				}
-				firstLine = false;
-			}
-			//read in first line that starts with a number find if we have one or two number per line
-			tokenLine = 0;
-			temp = (int) st.nval;
-			//check for second token on line            
-			if (st.nextToken() != StreamTokenizer.TT_EOF
-				&& st.ttype == StreamTokenizer.TT_EOL) { //no second number token
-				tokenLine = 1;
-				counts[0] = temp;
-				size = 1;
-				//second number token
-			} else if (st.ttype == StreamTokenizer.TT_NUMBER) {
-				tokenLine = 2;
-				channel = temp;
-				counts[temp] = st.nval;
-				size = 1;
-				if (st.nextToken() != StreamTokenizer.TT_EOF
-					&& st.ttype != StreamTokenizer.TT_EOL) {
-					throw new ImpExpException("Error file, does not have one or two numbers per line after header (1) [ImpExpASCII]");
-				}
-			} else {
-				throw new ImpExpException("Error file, does not have one or two numbers per line after header (2) [ImpExpASCII]");
-			}
-			//one number per line
-			if (tokenLine == 1) {
-				channel = 0;
-				//first token counts
-				while (st.nextToken() != StreamTokenizer.TT_EOF
-					&& st.ttype == StreamTokenizer.TT_NUMBER) {
-					channel++;
-					counts[channel] = st.nval;
-					//second token eol
-					if (st.nextToken() != StreamTokenizer.TT_EOF
-						&& st.ttype != StreamTokenizer.TT_EOL) {
-						throw new ImpExpException(
-							"Data line not ended with EOL Line: "
-								+ channel
-								+ "  [ImpExpASCII]");
-					}
-					size = channel + 1;
-				}
-	
-				//two numbers per line
-			} else if (tokenLine == 2) {
-				//first token channel
-				while (st.nextToken() != StreamTokenizer.TT_EOF
-					&& st.ttype == StreamTokenizer.TT_NUMBER) {
-					channel = (int) st.nval;
-					//second channel counts
-					if (st.nextToken() == StreamTokenizer.TT_NUMBER) {
-						counts[channel] = st.nval;
-					} else {
-						throw new ImpExpException(
-							"Data line does not have two values  Channel: "
-								+ channel
-								+ "  [ImpExpASCII]");
-					}
-					//third token eol
-					if (st.nextToken() != StreamTokenizer.TT_EOF
-						&& st.ttype != StreamTokenizer.TT_EOL) {
-						throw new ImpExpException(
-							"Data line not ended with EOL Channel: "
-								+ channel
-								+ "  [ImpExpASCII]");
-					}
-					if (channel > size) {
-						size = channel + 1;
-					}
-				}
-	
-			}
-	
-			//Create histogram properties
-			//make histogram name, type, title, counts
-			index = getFileName(lastFile).indexOf(".");
-			nameHist = getFileName(lastFile).substring(0, index);
-			typeHist = Histogram.ONE_DIM_DOUBLE;
-			sizeHist = size + 1;
-			countsHistDbl = new double[size];
-			System.arraycopy(counts, 0, countsHistDbl, 0, size);
-			//create histogram
-			new Histogram(nameHist, titleHist, countsHistDbl);
-			if (msgHandler != null)
-				msgHandler.messageOut(" . ");
-	
-		} catch (IOException ioe) {
-			throw new ImpExpException(ioe.toString());
-		} catch (DataException de) {
-			throw new ImpExpException(de.toString());
-		}
-	}*/
-
 	boolean firstLineIsTitle = false;
 	private String getHistTitle() throws IOException {
 		String rval = null;
