@@ -1,4 +1,4 @@
-package jam;
+package jam.ui;
 
 import jam.data.Gate;
 
@@ -29,9 +29,9 @@ public class GateListCellRenderer
 	private static final ImageIcon clearIcon;
 
 	static{
-		URL urlStop=cl.getResource("jam/stop.png");
-		URL urlGo =cl.getResource("jam/go.png");
-		URL urlClear =cl.getResource("jam/clear.png");
+		URL urlStop=cl.getResource("jam/ui/stop.png");
+		URL urlGo =cl.getResource("jam/ui/go.png");
+		URL urlClear =cl.getResource("jam/ui/clear.png");
 		if (urlStop==null || urlGo==null || urlClear==null) {
 			JOptionPane.showMessageDialog(null, "Can't load resource: jam/(stop|go|clear).png");
 			stopIcon=goIcon=clearIcon=null;

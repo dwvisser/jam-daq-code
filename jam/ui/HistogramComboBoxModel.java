@@ -1,4 +1,4 @@
-package jam;
+package jam.ui;
 import jam.data.Histogram;
 
 import java.util.Collection;

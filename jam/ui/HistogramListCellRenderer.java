@@ -1,4 +1,4 @@
-package jam;
+package jam.ui;
 
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -23,13 +23,13 @@ public class HistogramListCellRenderer
 
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
 	private static final ImageIcon stopIcon =
-		new ImageIcon(cl.getResource("jam/stop.png"));
+		new ImageIcon(cl.getResource("jam/ui/stop.png"));
 	private static final ImageIcon goIcon =
-		new ImageIcon(cl.getResource("jam/go.png"));
+		new ImageIcon(cl.getResource("jam/ui/go.png"));
 	private static final ImageIcon cautionIcon =
-		new ImageIcon(cl.getResource("jam/caution.png"));
+		new ImageIcon(cl.getResource("jam/ui/caution.png"));
 	private static final ImageIcon clearIcon = 
-	new ImageIcon(cl.getResource("jam/clear.png"));
+	new ImageIcon(cl.getResource("jam/ui/clear.png"));
 
 	/**
 	 * Creates a new <code>HistogramListCellRenderer</code>.
