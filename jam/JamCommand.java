@@ -4,8 +4,9 @@ import jam.commands.CommandManager;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
 import jam.data.control.GainShift;
-import jam.data.control.GateControl;
-import jam.data.control.HistogramControl;
+import jam.data.control.GateAdd;
+import jam.data.control.GateNew;
+import jam.data.control.GateSet;
 import jam.data.control.Manipulations;
 import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
@@ -59,8 +60,8 @@ public class JamCommand
 	private RunControl runControl;
 	private SortControl sortControl;
 	private DisplayCounters displayCounters;
-	private final HistogramControl histogramControl;
-	private final GateControl gateControl;
+	//private final HistogramControl histogramControl;
+	private final GateSet gateControl;
 	private final MonitorControl monitorControl;
 	private final ParameterControl paramControl;
 	private final CalibrationDisplay calibDisplay;
@@ -106,20 +107,18 @@ public class JamCommand
 		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
-		histogramControl = new HistogramControl(frame, console);
-		gateControl = new GateControl(jamMain, broadcaster, console);
+		gateControl = new GateSet(console);
 		monitorControl = new MonitorControl(jamMain, broadcaster, console);
 		paramControl = new ParameterControl(jamMain, console);
-		calibDisplay = new CalibrationDisplay(jamMain, broadcaster, console);
-		calibFit = new CalibrationFit(jamMain, broadcaster, console);
+		calibDisplay = new CalibrationDisplay(console);
+		calibFit = new CalibrationFit(console);
 		projection = new Projections(jamMain, broadcaster, console);
 		manipulate = new Manipulations(jamMain, broadcaster, console);
-		gainshift = new GainShift(jamMain, broadcaster, console);
+		gainshift = new GainShift(console);
 		/* acquisition control */
 		runControl =
 			new RunControl(
 				jamMain,
-				histogramControl,
 				(VMECommunication) frontEnd,
 				hdfio,
 				console);
@@ -143,8 +142,7 @@ public class JamCommand
 		setupRemote = new SetupRemote(jamMain, console);
 		help = new Help(jamMain, console);//Help window
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
-		addObservers();
-		
+		addObservers();		
 		jamCmdMgr = CommandManager.getInstance();
 		jamCmdMgr.setMessageHandler(console); 
 		console.addCommandListener(jamCmdMgr);
@@ -160,10 +158,6 @@ public class JamCommand
 		broadcaster.addObserver(displayCounters);
 		broadcaster.addObserver(display);
 		broadcaster.addObserver(frontEnd);
-		broadcaster.addObserver(gateControl);
-		broadcaster.addObserver(manipulate);
-		broadcaster.addObserver(projection);
-		broadcaster.addObserver(gainshift);
 	}
 	
 	/**
@@ -201,9 +195,6 @@ public class JamCommand
 				sortControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-//Remove KBS				
-//			} else if ("zerohist".equals(incommand)) {
-//				histogramControl.showZero();
 			} else if ("project".equals(incommand)) {
 				projection.show();
 			} else if ("manipulate".equals(incommand)) {
@@ -215,11 +206,11 @@ public class JamCommand
 			} else if ("calfitlin".equals(incommand)) {
 				calibFit.show();
 			} else if ("gatenew".equals(incommand)) {
-				gateControl.showNew();
+				(new GateNew(console)).show();
 			} else if ("gateadd".equals(incommand)) {
-				gateControl.showAdd();
+				(new GateAdd(console)).show();
 			} else if ("gateset".equals(incommand)) {
-				gateControl.showSet();
+				gateControl.show();
 			} else if ("displaymonitors".equals(incommand)) {
 				monitorControl.showDisplay();
 			} else if ("configmonitors".equals(incommand)) {
@@ -318,10 +309,6 @@ public class JamCommand
 	
 	HDFIO getHDFIO(){
 		return hdfio;
-	}
-	
-	HistogramControl getHistogramControl(){
-		return histogramControl;
 	}
 	
 	SetupSortOff getSetupSortOff(){
