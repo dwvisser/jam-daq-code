@@ -1,6 +1,5 @@
 package jam.plot;
 import jam.data.Histogram;
-import jam.global.JamProperties;
 
 import java.awt.AlphaComposite;
 import java.awt.Composite;
@@ -294,17 +293,16 @@ class Plot1d extends Plot {
 	 */
 	protected void paintGate(Graphics g) {
 		final Graphics2D g2 = (Graphics2D) g;
-		final boolean noFillMode =
-			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
 		Composite prev=g2.getComposite();
-		if (!noFillMode) {
+		final boolean noFill=isNoFillMode();
+		if (!noFill) {
 			g2.setComposite(
 				AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 		}
 		g.setColor(PlotColorMap.gateShow);
 		int ll = currentGate.getLimits1d()[0];
 		int ul = currentGate.getLimits1d()[1];
-		graph.drawGate1d(ll, ul, noFillMode);
+		graph.drawGate1d(ll, ul, noFill);
 		g2.setComposite(prev);
 	}
 
