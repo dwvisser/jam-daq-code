@@ -494,30 +494,27 @@ public class HDFIO implements DataIO, JamHDFFields {
     }
     
     /** 
-     * Read the histograms in 
-     * @param infile
-     * @return
+     * Read the histograms in.
+     * @param infile to read from
+     * @return list of attributes
      */
     public List readHistogramAttributes(File infile){
-        	
-    	List histAttributes = new ArrayList();
-    	
+    	final List histAttributes = new ArrayList();
     	try {
 			/* Read in histogram names */
 	    	in = new HDFile(infile, "r");
 	    	in.readObjects();
-	    	histAttributes = loadHistogramAttributes();
+	    	histAttributes.addAll(loadHistogramAttributes());
 			in.close();
         } catch (HDFException except) {
             msgHandler.errorOutln(except.toString());
-
 	    } catch (IOException except) {
 	        msgHandler.errorOutln(except.toString());
 	    }		
-		return histAttributes;
-    	
+		return histAttributes;   	
     }
-	/**
+    
+	/* non-javadoc:
 	 * Reads in the histogram and hold them in a tempory array
 	 * 
 	 * @exception HDFException
@@ -829,78 +826,8 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
         }
     }
-    /**
-     * Load a histogram from a file
-     * @param in
-     * @param current
-     */
     
-    private void loadHistogram(FileOpenMode mode,  List labels, List annotations, 
-    		VirtualGroup current)   throws HDFException {
-    	
-    	NumericalDataGroup ndg = null;
-        /* I check ndgErr==null to determine if error bars exist */
-        NumericalDataGroup ndgErr = null;
-        /* only the "histograms" VG (only one element) */
-        ScientificData sdErr = null;        
-    	
-        final List tempVec = in.ofType(current.getObjects(),
-                DataObject.DFTAG_NDG);
-        final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
-                .size()];
-        tempVec.toArray(numbers);
-        if (numbers.length == 1) {
-            ndg = numbers[0]; //only one NDG -- the data
-        } else if (numbers.length == 2) {
-            if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
-                    numbers[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-                ndg = numbers[1];
-                ndgErr = numbers[0];
-            } else {
-                ndg = numbers[0];
-                ndgErr = numbers[1];
-            }
-        } else {
-            throw new IllegalStateException(
-                    "Invalid number of data groups (" + numbers.length
-                            + ") in NDG.");
-        }
-        final ScientificData sd = (ScientificData) (in.ofType(ndg
-                .getObjects(), DataObject.DFTAG_SD).get(0));
-        final ScientificDataDimension sdd = (ScientificDataDimension) (in
-                .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
-        final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
-                .getTag(), ndg.getRef());
-        final int number = Integer.parseInt(numLabel.getLabel());
-        final byte histNumType = sdd.getType();
-        sd.setNumberType(histNumType);
-        final int histDim = sdd.getRank();
-        sd.setRank(histDim);
-        final int sizeX = sdd.getSizeX();
-        int sizeY = 0;
-        if (histDim == 2) {
-            sizeY = sdd.getSizeY();
-        }
-        final DataIDLabel templabel = DataIDLabel.withTagRef(labels,
-                current.getTag(), current.getRef());
-        final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(
-                annotations, current.getTag(), current.getRef());
-        final String name = templabel.getLabel();
-        final String title = tempnote.getNote();
-        if (ndgErr != null) {
-            sdErr = (ScientificData) (in.ofType(ndgErr.getObjects(),
-                    DataObject.DFTAG_SD).get(0));
-            
-            sdErr.setRank(histDim);
-            sdErr.setNumberType(NumberType.DOUBLE);
-        } else {
-        	sdErr=null;
-        }
-        	                
-        createHistogram(mode, name, title,  number, histNumType, 
-        		       histDim, sizeX, sizeY, sd, sdErr);
-    }
-    /**
+    /* non-javadoc:
      * Create a histgram given all the attributes and data
      */
     private void createHistogram(FileOpenMode mode, String name, String title, int number,
@@ -1389,6 +1316,10 @@ public class HDFIO implements DataIO, JamHDFFields {
 		
 		Object errorArray;
 		
+		/**
+		 * 
+		 * @return the name of the histogram
+		 */
 		public String getName() {
 			return name;
 		}
