@@ -126,4 +126,15 @@ public interface CommandNames {
 	/** User guide */
 	String USER_GUIDE="userguide";
 	
+	/** Start data acqisition */
+	String START="start";
+	
+	/** Stop data acqisition */
+	String STOP="stop";
+	
+	/** Flush daq current buffer */
+	String FLUSH="flush";
+	
+	/** Show the online sorting setup dialog. */
+	String SHOW_SETUP_ONLINE="showsetuponline";
 }

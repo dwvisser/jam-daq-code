@@ -45,9 +45,9 @@ Commandable {
 	protected void initCommand(){
 		
 	}
+	
 	/**
-	 * Implentation for interface Action
-	 * 
+	 * Implentation for interface Action. 
 	 */
 	public final void actionPerformed(ActionEvent ae){
 		try{
