@@ -615,7 +615,7 @@ public class Action
 			textOut.messageOut(
 				"Net Area fit for "
 					+ name
-					+ ": select four background and two region of interest markers. ",
+					+ ": select four background markers, then two region of interest markers. ",
 				MessageHandler.NEW);
 		} else if (numberPoints == 0) {
 			//************ First background Marker ***********************************
@@ -752,28 +752,30 @@ public class Action
 			textOut.messageOut(
 				"GrossArea = "
 					+ grossArea
-					+ ", "
+					+ "\u00b1"+numFormat.format(Math.sqrt(grossArea))+", "
 					+ "NetArea = "
 					+ numFormat.format(netArea[0])
-					+ ", "
-					+ "Error = "
+					+ "\u00b1"
 					+ numFormat.format(netAreaError[0])
 					+ ", "
 					+ "Centroid = "
 					+ numFormat.format(centroid[0])
-					+ ", "
-					+ "Error = "
+					+ "\u00b1"
 					+ numFormat.format(centroidError[0])
 					+ ", "
 					+ "FWHM = "
 					+ numFormat.format(fwhm[0]),
 				MessageHandler.END);
 			/* Draw Fit on screen by calling DisplayFit in Display.java */
+			int ll=xyCursor[0][0];
+			int ul=xyCursor[3][0] + 1;
+			double [] bkgd=new double[ul-ll+1];
+			System.arraycopy(channelBackground,ll,bkgd,0,bkgd.length);
 			this.display.displayFit(
-				channelBackground,
 				null,
-				xyCursor[0][0],
-				xyCursor[3][0] + 1);
+				bkgd,
+				null,
+				ll);
 			done();
 		}
 
