@@ -11,12 +11,6 @@ import java.text.NumberFormat;
  */
 public class StringUtilities {
 
-	/** 
-	 * Class constructor.
-	 */
-	public StringUtilities() {
-	}
-
 	/**
 	 * Truncates a <code>String</code> or pads the end with spaces to make it a 
 	 * certain length.

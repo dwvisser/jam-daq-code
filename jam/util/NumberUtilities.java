@@ -11,11 +11,6 @@ package jam.util;
  */
 public class NumberUtilities{
      
-    /** 
-     * Class constructor.
-     */
-    public NumberUtilities(){
-    }
     /**
      * short to array of bytes
      */

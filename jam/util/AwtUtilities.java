@@ -8,10 +8,6 @@ import java.awt.*;
  */ 
 public class AwtUtilities  {
 
-        
-    public AwtUtilities(){
-    }
-    
     /**
      * Helper method for GridBagConstains 
      * 
