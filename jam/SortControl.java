@@ -175,7 +175,8 @@ public final class SortControl extends JDialog implements Controller {
 		writeEvents = false; //don't write out events
 		pack();
 	}
-	/** 
+	
+	/* non-javadoc:
 	 * For scripting
 	 */
 	int addEventFile(File f) {
@@ -186,22 +187,21 @@ public final class SortControl extends JDialog implements Controller {
 			if (f.isFile() && ff.accept(f)) {
 				multipleFileChooser.addFile(f);
 				numFiles++;
-			}
-			if (f.isDirectory()) {
-				File[] dirArray = f.listFiles();
+			} else if (f.isDirectory()) {
+				final File[] dirArray = f.listFiles();
 				for (int i = 0; i < dirArray.length; i++) {
-					if (ff.accept(dirArray[i]))
+					if (ff.accept(dirArray[i])) {
 						multipleFileChooser.addFile(dirArray[i]);
+					}
 					numFiles++;
 				}
 			}
 		}
 		return numFiles;
 	}
-	/**
-	 * For scripting 
-	 * @param f
-	 * @return
+	
+	/* non-javadoc:
+	 * For scripting.
 	 */
 	int readList(File f) {
 		int numFiles = 0;
