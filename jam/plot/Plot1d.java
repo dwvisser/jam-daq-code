@@ -220,33 +220,37 @@ class Plot1d extends Plot {
 	 * labels and last but not least update the scrollbars
 	 */
 	protected void paintHistogram(Graphics g) {
+		final Histogram hist=status.getCurrentHistogram();
+		if (hist.getDimensionality()!=1){
+			return;//not sure how this happens, but need to check
+		}
 		g.setColor(PlotColorMap.hist);
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
-			graph.drawPeakLabels(currentHist.findPeaks(sensitivity, width,
+			graph.drawPeakLabels(hist.findPeaks(sensitivity, width,
 					pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
-		graph.drawTitle(title, PlotGraphics.TOP);
-		//final int nOverlay = displayingOverlay ? overlayHists[0].getNumber()
-		// : -1;
+		graph.drawTitle(hist.getTitle(), PlotGraphics.TOP);
 		final int len = displayingOverlay ? overlayHists.length : 0;
 		final int[] overlays = new int[len];
 		for (int i = 0; i < len; i++) {
 			overlays[i] = overlayHists[i].getNumber();
 		}
-		graph.drawNumber(number, overlays);
+		graph.drawNumber(hist.getNumber(), overlays);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
+		final String axisLabelX = hist.getLabelX();
 		if (axisLabelX != null) {
 			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		} else {
 			graph.drawAxisLabel(X_LABEL_1D, PlotGraphics.BOTTOM);
 		}
+		final String axisLabelY=hist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {
@@ -398,7 +402,7 @@ class Plot1d extends Plot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	double getEnergy(double channel) {
-		return currentHist.getCalibration().getCalculatedEnergy(channel);
+		return status.getCurrentHistogram().getCalibration().getCalculatedEnergy(channel);
 	}
 
 	/**
@@ -406,7 +410,7 @@ class Plot1d extends Plot {
 	 */
 	int getChannel(double energy) {
 		return (int) Math
-				.round(currentHist.getCalibration().getChannel(energy));
+				.round(status.getCurrentHistogram().getCalibration().getChannel(energy));
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package jam.plot;
 
 import jam.data.DataException;
+import jam.data.Histogram;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
@@ -121,12 +122,6 @@ class Plot2d extends Plot {
 		}
 	}
 
-	/*private void setLastPoint(Point lp) {
-		synchronized (lastPoint) {
-			lastPoint.setLocation(lp);
-		}
-	}*/
-
 	/**
 	 * Show the setting of a gate.
 	 * 
@@ -146,7 +141,6 @@ class Plot2d extends Plot {
 			addMouseMotionListener(mouseInputAdapter);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.getX(), pChannel.getY());
-			//setLastPoint(pChannel.getPoint()); //save data point
 			/* update variables */
 			final Point tempP = graph.toViewLin(pChannel);
 			setLastGatePoint(tempP);
@@ -165,7 +159,6 @@ class Plot2d extends Plot {
 					final int last = pointsGate.npoints - 1;
 					final Bin lpoint = Bin.Factory.create(pointsGate.xpoints[last],
 							pointsGate.ypoints[last]);
-					//setLastPoint(lpoint);
 					/* update variables */
 					final Point tempP = graph.toViewLin(lpoint);
 					setLastGatePoint(tempP);
@@ -339,17 +332,20 @@ class Plot2d extends Plot {
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
-		graph.drawTitle(title, PlotGraphics.TOP);
-		graph.drawNumber(number, new int[0]);
+		final Histogram hist=status.getCurrentHistogram();
+		graph.drawTitle(hist.getTitle(), PlotGraphics.TOP);
+		graph.drawNumber(hist.getNumber(), new int[0]);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
+		final String axisLabelX=hist.getLabelX();
 		if (axisLabelX != null) {
 			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		} else {
 			graph.drawAxisLabel(X_LABEL_2D, PlotGraphics.BOTTOM);
 		}
+		final String axisLabelY=hist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {

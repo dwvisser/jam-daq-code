@@ -1,8 +1,9 @@
 package jam.plot;
+
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.ComponentPrintable;
+import jam.global.*;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -26,15 +27,15 @@ import javax.swing.event.MouseInputAdapter;
 
 /**
  * Abstract class for displayed plots.
- *
+ * 
  * @version 0.5
  * @see jam.plot.Plot1d
  * @see jam.plot.Plot2d
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class Plot extends JPanel implements PlotPrefs, 
-PreferenceChangeListener {
+abstract class Plot extends JPanel implements PlotPrefs,
+		PreferenceChangeListener {
 
 	/**
 	 * Specifies Zoom direction, zoom out
@@ -47,8 +48,7 @@ PreferenceChangeListener {
 	public final static int ZOOM_IN = 2;
 
 	/**
-	 * Specifies how much to zoom,
-	 * zoom is 1/ZOOM_FACTOR
+	 * Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
 	 */
 	public final static int ZOOM_FACTOR = 10;
 
@@ -56,111 +56,124 @@ PreferenceChangeListener {
 	 * Type of histogram being plotted this is 1 dimensional int array
 	 */
 	public final static int ONE_DIM_INT = 1;
+
 	/**
 	 * Type of histogram being plotted this is 1 dimensional double array
 	 */
 	public final static int ONE_DIM_DOUBLE = 2;
+
 	/**
-	 *Type of histogram being plotted this is 2 dimensional int array
+	 * Type of histogram being plotted this is 2 dimensional int array
 	 */
 	public final static int TWO_DIM_INT = 3;
+
 	/**
 	 * Type of histogram being plotted this is 2 dimensional double array
 	 */
 	public final static int TWO_DIM_DOUBLE = 4;
 
 	static final int FULL_SCALE_MIN = 5; //minumum that Counts can be set to
-	static final int FULL_SCALE_MAX = 1000000;
-	//maximum that counts can be set to
 
-	//constant strings
+	/** Maximum that counts can be set to. */
+	static final int FULL_SCALE_MAX = 1000000;
 
 	static final String X_LABEL_1D = "Channels";
-	static final String Y_LABEL_1D = "Counts";
-	static final String X_LABEL_2D = "Channels";
-	static final String Y_LABEL_2D = "Channels";
 
-	//scroll bars
+	static final String Y_LABEL_1D = "Counts";
+
+	static final String X_LABEL_2D = "Channels";
+
+	static final String Y_LABEL_2D = "Channels";
+	
+	protected static final String NO_HIST_TITLE="No Histogram";
+
 	protected Scroller scrollbars;
-	//graphics class that draws a histogram
+
 	protected PlotGraphics graph;
-	//gives channes of mouse click
+
+	/* Gives channels of mouse click. */
 	protected PlotMouse plotMouse;
-	//limits for plot
+
 	protected Limits plotLimits;
+
 	protected PageFormat pageformat = null;
 
-	// histogram related stuff.
-	protected Histogram currentHist; //the currently displayed histogram
+	/* Histogram related stuff. */
+
 	protected int sizeX;
+
 	protected int sizeY;
+
 	protected int type;
-	protected int number;
-	protected String title;
-	protected String axisLabelX;
-	protected String axisLabelY;
+
 	protected Limits.ScaleType scale;
-	protected boolean isCalibrated;
+
 	protected double[] counts;
+
 	protected double[][] counts2d;
 
-
-	//gate stuff
-	protected Gate currentGate;
+	/* Gate stuff. */
 	
-	/** gate points in plot coordinates (channels) */
+	protected Gate currentGate;
+
+	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
+
 	boolean settingGate = false;
 
 	/** selection start point in plot coordinates */
-	protected Bin selectionStartPoint= Bin.Factory.create();
-	
+	protected Bin selectionStartPoint = Bin.Factory.create();
+
 	/** currently displaying a gate? */
 	protected boolean displayingGate = false;
-	
+
 	/** currently displaying a fit? */
 	protected boolean displayingFit = false;
-	
+
 	/** currently displaying an overlay? */
 	protected boolean displayingOverlay = false;
-	
+
 	/** currently selecting an area? */
 	protected boolean selectingArea = false;
-	
+
 	/** currently have an area already marked? */
-	protected boolean markArea = false;	
-	
+	protected boolean markArea = false;
+
 	/** currently have individual channels already marked? */
 	protected boolean markingChannels = false;
-	
+
 	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
 
 	//configuration for screen plotting
 	protected Dimension viewSize;
-	
-	protected final List markedChannels=new ArrayList();
+
+	protected final List markedChannels = new ArrayList();
 
 	// configuration for page plotting are set using printHistogram
 	protected Dimension pageSize;
+
 	protected int pagedpi;
 
 	protected Font screenFont;
+
 	protected Font printFont;
 
-	//color mode for screen, one of PlotColorMap options
+	/* Color mode for screen, one of PlotColorMap options. */
 	protected int colorMode;
 
 	private int runNumber;
+
 	private String date;
-	
-	protected double binWidth=1.0;
-	
+
+	protected double binWidth = 1.0;
+
 	private boolean noFillMode;
-	
+
 	/**
 	 * Dont use 0 ch for auto scale
 	 */
 	protected boolean ignoreChZero;
+
 	/**
 	 * Dont use full scale ch for auto scale
 	 */
@@ -169,16 +182,21 @@ PreferenceChangeListener {
 	Action action;
 
 	protected boolean printing = false;
-	
-	protected final Rectangle selectingAreaClip=new Rectangle();
 
-	/** last point mouse moved to, uses plot coordinates when selecting
-	 * an area, and uses graphics coordinates when setting a gate (FIX?) */
-	protected final Point lastMovePoint = new Point();	
+	protected final Rectangle selectingAreaClip = new Rectangle();
+
+	/**
+	 * last point mouse moved to, uses plot coordinates when selecting an area,
+	 * and uses graphics coordinates when setting a gate (FIX?)
+	 */
+	protected final Point lastMovePoint = new Point();
 
 	/** clip to use when repainting for mouse movement, in graphics coordinates */
 	protected final Polygon mouseMoveClip = new Polygon();
+
 	protected boolean mouseMoved = false;
+
+	protected final JamStatus status = JamStatus.instance();
 
 	/**
 	 * Constructor
@@ -189,78 +207,66 @@ PreferenceChangeListener {
 		action = a;
 		setOpaque(true);
 		this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-		//some initial layout stuff
-		Insets viewBorder =
-			new Insets(
-				PlotGraphics.BORDER_TOP,
-				PlotGraphics.BORDER_LEFT,
-				PlotGraphics.BORDER_BOTTOM,
+		/* some initial layout stuff */
+		Insets viewBorder = new Insets(PlotGraphics.BORDER_TOP,
+				PlotGraphics.BORDER_LEFT, PlotGraphics.BORDER_BOTTOM,
 				PlotGraphics.BORDER_RIGHT);
-		screenFont =
-			new Font(
-				fontclass,
-				Font.BOLD,
+		screenFont = new Font(fontclass, Font.BOLD,
 				(int) PlotGraphicsLayout.SCREEN_FONT_SIZE);
-		printFont =
-			new Font(fontclass, Font.PLAIN, PlotGraphicsLayout.PRINT_FONT_SIZE);
+		printFont = new Font(fontclass, Font.PLAIN,
+				PlotGraphicsLayout.PRINT_FONT_SIZE);
 		graph = new PlotGraphics(this, viewBorder, screenFont);
 		plotMouse = new PlotMouse(graph, action);
 		addMouseListener(plotMouse);
 		initPrefs();
 		prefs.addPreferenceChangeListener(this);
 	}
-	
-	private final void initPrefs(){
-		setIgnoreChFull(prefs.getBoolean(AUTO_IGNORE_FULL,true));
-		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO,true));
-		setColorMode(prefs.getBoolean(BLACK_BACKGROUND,false));
-		setNoFillMode(!prefs.getBoolean(HIGHLIGHT_GATE_CHANNELS,true));
+
+	private final void initPrefs() {
+		setIgnoreChFull(prefs.getBoolean(AUTO_IGNORE_FULL, true));
+		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO, true));
+		setColorMode(prefs.getBoolean(BLACK_BACKGROUND, false));
+		setNoFillMode(!prefs.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
 	}
 
-	public void preferenceChange(PreferenceChangeEvent pce){
-		final String key=pce.getKey();
-		final String newValue=pce.getNewValue();
-		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)){
+	public void preferenceChange(PreferenceChangeEvent pce) {
+		final String key = pce.getKey();
+		final String newValue = pce.getNewValue();
+		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)) {
 			setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
-			if (plotDataExists()){
+			if (plotDataExists()) {
 				autoCounts();
 			}
-		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)){
+		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)) {
 			setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
-			if (plotDataExists()){
+			if (plotDataExists()) {
 				autoCounts();
 			}
-		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)){
+		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)) {
 			setColorMode(Boolean.valueOf(newValue).booleanValue());
-		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)){
+		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)) {
 			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
 		}
 	}
-	
-	private synchronized void setNoFillMode(boolean bool){
-		noFillMode=bool;
+
+	private synchronized void setNoFillMode(boolean bool) {
+		noFillMode = bool;
 	}
-	
-	protected synchronized boolean isNoFillMode(){
+
+	protected synchronized boolean isNoFillMode() {
 		return noFillMode;
 	}
-	
-	private final boolean plotDataExists(){
+
+	private synchronized final boolean plotDataExists() {
+		final Histogram currentHist = status.getCurrentHistogram();
 		return currentHist != null && currentHist.getCounts() != null;
 	}
-	
+
 	/**
 	 * add scrollbars
 	 */
 	void addScrollBars(Scroller scrollbars) {
 		this.scrollbars = scrollbars;
-	}
-
-	/**
-	 * Set current histogram, doing nothing else--this is a hack to let scroll bars work.
-	 */
-	private synchronized void setHistogram(Histogram hist) {
-		currentHist = hist;
 	}
 
 	protected void setSettingGate(boolean sg) {
@@ -276,23 +282,17 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 * Set the histogram to plot. If the plot limits are null, make one
-	 * save all neccessary histogram parameters to local variables.
-	 * Allows general use of data set.
+	 * Set the histogram to plot. If the plot limits are null, make one save all
+	 * neccessary histogram parameters to local variables. Allows general use of
+	 * data set.
 	 */
 	void displayHistogram(Histogram hist) {
-		setHistogram(hist);
 		if (hist != null) {
 			plotLimits = Limits.getLimits(hist);
-			number = hist.getNumber();
-			title = hist.getTitle();
-			axisLabelX = hist.getLabelX();
-			axisLabelY = hist.getLabelY();
-			isCalibrated = hist.isCalibrated();
 			if (plotLimits == null) {
 				JOptionPane.showMessageDialog(null,
-				"Tried to plot histogram with null Limits.",
-				getClass().getName(),JOptionPane.ERROR_MESSAGE);
+						"Tried to plot histogram with null Limits.", getClass()
+								.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 			if (hist.getType() == Histogram.ONE_DIM_INT) {
 				type = ONE_DIM_INT;
@@ -316,12 +316,11 @@ PreferenceChangeListener {
 				counts2d = new double[hist.getSizeX()][hist.getSizeY()];
 			}
 			copyCounts(); //copy hist counts
+			/* Limits contains handle to Models */
 			scrollbars.setLimits(plotLimits);
-			//Limits contains handle to Models
 		} else { //we have a null histogram so fake it
 			counts = new double[100];
 			type = ONE_DIM_INT;
-			title = "No Histogram";
 			sizeX = 100;
 			counts2d = null;
 		}
@@ -331,59 +330,45 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 * Show the setting of a gate
-	 * mode are we starting a new gate or continue
-	 * or saving on
+	 * Show the setting of a gate mode are we starting a new gate or continue or
+	 * saving on
 	 */
-	abstract void displaySetGate(
-		GateSetMode mode,
-		Bin pChannel,
-		Point pPixel);
+	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
 
 	/**
 	 * Copies the counts into the local array--needed by scroller.
 	 */
 	final void copyCounts() {
+		final Histogram currentHist = status.getCurrentHistogram();
 		if (type == ONE_DIM_INT) {
-			int [] temp=(int [])currentHist.getCounts();
-			/* NOT System.arraycopy() because of array type difference 
+			int[] temp = (int[]) currentHist.getCounts();
+			/*
+			 * NOT System.arraycopy() because of array type difference
 			 */
-			for (int i =0; i<temp.length; i++){
-				counts[i]=temp[i];
+			for (int i = 0; i < temp.length; i++) {
+				counts[i] = temp[i];
 			}
 		} else if (type == ONE_DIM_DOUBLE) {
 			System.arraycopy((double[]) currentHist.getCounts(), 0, counts, 0,
-			currentHist.getSizeX());
+					currentHist.getSizeX());
 		} else if (type == TWO_DIM_INT) {
-			int [][] counts2dInt = (int[][]) currentHist.getCounts();
+			int[][] counts2dInt = (int[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
 				for (int j = 0; j < currentHist.getSizeY(); j++) {
 					counts2d[i][j] = counts2dInt[i][j];
 				}
 			}
 		} else if (type == TWO_DIM_DOUBLE) {
-			double [][] counts2dDble = (double[][]) currentHist.getCounts();
+			double[][] counts2dDble = (double[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
-				System.arraycopy(
-					counts2dDble[i],
-					0,
-					counts2d[i],
-					0,
-					currentHist.getSizeY());
+				System.arraycopy(counts2dDble[i], 0, counts2d[i], 0,
+						currentHist.getSizeY());
 			}
 		}
 	}
 
 	/**
-	 * get the histogram the is ploted
-	 */
-	synchronized Histogram getHistogram() {
-		return currentHist;
-	}
-
-	/**
-	 * get plot Limits method
-	 * limits are how the histogram is to be drawn
+	 * get plot Limits method limits are how the histogram is to be drawn
 	 */
 	Limits getLimits() {
 		return plotLimits;
@@ -391,18 +376,19 @@ PreferenceChangeListener {
 
 	/**
 	 * Mark a channel on the plot.
-	 *
-	 * @param p graphics coordinates on the plot where the channel is
+	 * 
+	 * @param p
+	 *            graphics coordinates on the plot where the channel is
 	 */
 	final void markChannel(Bin p) {
-		markingChannels=true;
+		markingChannels = true;
 		markedChannels.add(Bin.copy(p));
 		repaint();
 	}
-	
-	synchronized void setMarkingChannels(boolean mc){
-		markingChannels=mc;
-		if (!markingChannels){
+
+	synchronized void setMarkingChannels(boolean mc) {
+		markingChannels = mc;
+		if (!markingChannels) {
 			markedChannels.clear();
 		}
 	}
@@ -410,50 +396,53 @@ PreferenceChangeListener {
 	/**
 	 * Start marking an area.
 	 * 
-	 * @param p1 starting point in plot coordinates
+	 * @param p1
+	 *            starting point in plot coordinates
 	 */
 	protected final void initializeSelectingArea(Bin p1) {
 		setSelectingArea(true);
 		selectionStartPoint.setChannel(p1);
 		setLastMovePoint(p1.getPoint());
-	} 
-	
+	}
+
 	protected final void setLastMovePoint(Point p) {
 		synchronized (lastMovePoint) {
 			lastMovePoint.setLocation(p);
 		}
 	}
 
-	synchronized void setSelectingArea(boolean tf){
-		selectingArea=tf;
+	synchronized void setSelectingArea(boolean tf) {
+		selectingArea = tf;
 		if (selectingArea) {
 			addMouseMotionListener(mouseInputAdapter);
 		} else {
 			removeMouseMotionListener(mouseInputAdapter);
 			repaint();
-		}							
+		}
 	}
 
 	/**
 	 * Mark an area on the plot.
 	 * 
-	 * @param p1 a corner of the rectangle in plot coordinates
-	 * @param p2 a corner of the rectangle in plot coordinates
+	 * @param p1
+	 *            a corner of the rectangle in plot coordinates
+	 * @param p2
+	 *            a corner of the rectangle in plot coordinates
 	 */
 	abstract void markArea(Bin p1, Bin p2);
-	
-	synchronized void setMarkArea(boolean tf){
-		markArea=tf;
+
+	synchronized void setMarkArea(boolean tf) {
+		markArea = tf;
 	}
 
 	/**
-	 *Expand the region viewed.
+	 * Expand the region viewed.
 	 */
 	void expand(jam.plot.Bin c1, jam.plot.Bin c2) {
-		final int x1=c1.getX();
-		final int x2=c2.getX();
-		final int y1=c1.getY();
-		final int y2=c2.getY();
+		final int x1 = c1.getX();
+		final int x2 = c2.getX();
+		final int y1 = c1.getY();
+		final int y2 = c2.getY();
 		int xll; // x lower limit
 		int xul; // x upper limit
 		int yll; // y lower limit
@@ -501,8 +490,8 @@ PreferenceChangeListener {
 		int xul = plotLimits.getMaximumX();
 		int yll = plotLimits.getMinimumY();
 		int yul = plotLimits.getMaximumY();
-		final int diffX = Math.max(1,(xul - xll)/ZOOM_FACTOR);
-		final int diffY = Math.max(1,(yul - yll)/ZOOM_FACTOR);
+		final int diffX = Math.max(1, (xul - xll) / ZOOM_FACTOR);
+		final int diffY = Math.max(1, (yul - yll) / ZOOM_FACTOR);
 		if (inOut == ZOOM_OUT) {//zoom out
 			xll = xll - diffX;
 			xul = xul + diffX;
@@ -513,7 +502,7 @@ PreferenceChangeListener {
 			xul = xul - diffX;
 			yll = yll + diffY;
 			yul = yul - diffY;
-		} 
+		}
 		/* check if beyond extremes, if so, set to extremes */
 		if ((xll < 0) || (xll > sizeX - 1)) {
 			xll = 0;
@@ -570,9 +559,9 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 *  Autoscale the counts scale.
-	 *  Set maximum scale to 110 percent of maximum number of counts in view.
-	 *  Can't call refresh because we need to use the counts before refreshing.
+	 * Autoscale the counts scale. Set maximum scale to 110 percent of maximum
+	 * number of counts in view. Can't call refresh because we need to use the
+	 * counts before refreshing.
 	 */
 	final void autoCounts() {
 		copyCounts();
@@ -615,8 +604,8 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 * Updated the display, resetting so that fits, gates and 
-	 * overlays are no longer shown.
+	 * Updated the display, resetting so that fits, gates and overlays are no
+	 * longer shown.
 	 */
 	void update() {
 		displayingGate = false;
@@ -633,32 +622,32 @@ PreferenceChangeListener {
 			displayingGate = dg;
 		}
 	}
-	
-	synchronized void setBinWidth(double x){
-		binWidth=x;
+
+	synchronized void setBinWidth(double x) {
+		binWidth = x;
 	}
 
 	/**
-	 * Get histogram counts at the specified point, which is given
-	 * in channel coordinates.
+	 * Get histogram counts at the specified point, which is given in channel
+	 * coordinates.
 	 */
 	abstract double getCount(jam.plot.Bin p);
-	
+
 	/**
 	 * Find the maximum number of counts in the region of interest
 	 */
 	protected abstract int findMaximumCounts();
-	
+
 	/**
 	 * Find the minimum number of counts in the region of interest
 	 */
 	protected abstract int findMinimumCounts();
 
 	/**
-	 * Routine that draws the histograms.
-	 * Overrides <code>Canvas</code> method.
+	 * Routine that draws the histograms. Overrides <code>Canvas</code>
+	 * method.
 	 */
-	protected synchronized void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (printing) { //output to printer
 			graph.setFont(printFont);
@@ -674,15 +663,16 @@ PreferenceChangeListener {
 		this.setBackground(PlotColorMap.background);
 		viewSize = getSize();
 		graph.update(g, viewSize, plotLimits);
-		/* give graph all pertinent info, draw outline, tickmarks, 
-		 * labels, and title
+		/*
+		 * give graph all pertinent info, draw outline, tickmarks, labels, and
+		 * title
 		 */
-		if (this.currentHist != null) {
+		Histogram currentHist = status.getCurrentHistogram();
+		if (currentHist != null) {
 			paintHeader(g);
-			if (binWidth > currentHist.getSizeX()){
-				binWidth=1.0;
-				warning(
-				"Bin width > hist size, so setting bin width back to 1.");
+			if (binWidth > currentHist.getSizeX()) {
+				binWidth = 1.0;
+				warning("Bin width > hist size, so setting bin width back to 1.");
 			}
 			paintHistogram(g);
 			if (displayingGate) { //are we to display a gate
@@ -697,10 +687,10 @@ PreferenceChangeListener {
 			if (markArea) {
 				paintMarkArea(g);
 			}
-			if (settingGate){
+			if (settingGate) {
 				paintSetGatePoints(g);
 			}
-			if (markingChannels){
+			if (markingChannels) {
 				paintMarkedChannels(g);
 			}
 			if (mouseMoved) {
@@ -711,63 +701,55 @@ PreferenceChangeListener {
 	}
 
 	void error(final String mess) {
-		Runnable task=new Runnable(){
-			public void run(){
+		Runnable task = new Runnable() {
+			public void run() {
 				final String plotErrorTitle = "Plot Error";
-				JOptionPane.showMessageDialog(
-					Plot.this,
-					mess,
-					plotErrorTitle,
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(Plot.this, mess, plotErrorTitle,
+						JOptionPane.ERROR_MESSAGE);
 			}
 		};
 		SwingUtilities.invokeLater(task);
 	}
-	
-	void warning(final String mess){
-		Runnable task=new Runnable(){
-			public void run(){
-		final String plotErrorTitle = "Plot Warning";
-		JOptionPane.showMessageDialog(
-			Plot.this,
-			mess,
-			plotErrorTitle,
-			JOptionPane.WARNING_MESSAGE);
+
+	void warning(final String mess) {
+		Runnable task = new Runnable() {
+			public void run() {
+				final String plotErrorTitle = "Plot Warning";
+				JOptionPane.showMessageDialog(Plot.this, mess, plotErrorTitle,
+						JOptionPane.WARNING_MESSAGE);
 			}
 		};
 		SwingUtilities.invokeLater(task);
 	}
-	
+
 	/**
 	 * Displays a gate on the plot.
-	 *
-	 * @param gate  the gate to be displayed
-	 * @throws DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
+	 * 
+	 * @param gate
+	 *            the gate to be displayed
+	 * @throws DataException
+	 *             thrown if there is an unrecoverable errer accessing the
+	 *             <code>Gate</code>
 	 */
-	void displayGate(Gate gate) {
+	synchronized void displayGate(Gate gate) {
+		Histogram currentHist = status.getCurrentHistogram();
 		if (currentHist != null && currentHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
 			repaint();
 		} else {
-			error(
-				"Can't display '"
-					+ gate
-					+ "' on histogram '"
-					+ currentHist
+			error("Can't display '" + gate + "' on histogram '" + currentHist
 					+ "'.");
 		}
 	}
 
-	private void setCurrentGate(Gate g) {
-		synchronized (this) {
-			currentGate = g;
-		}
-	}	
+	private synchronized void setCurrentGate(Gate g) {
+		currentGate = g;
+	}
 
 	/**
-	 * Paints header for plot to screen and printer.
-	 * Also sets colors and the size in pixels for a plot.
+	 * Paints header for plot to screen and printer. Also sets colors and the
+	 * size in pixels for a plot.
 	 */
 	protected void paintHeader(Graphics g) {
 		g.setColor(PlotColorMap.foreground);
@@ -781,21 +763,24 @@ PreferenceChangeListener {
 	/**
 	 * Method for painting a area while it is being selected.
 	 * 
-	 * @param g the graphics context
+	 * @param g
+	 *            the graphics context
 	 */
 	abstract protected void paintSelectingArea(Graphics g);
 
 	/**
 	 * Method for painting a clicked area.
 	 * 
-	 * @param g the graphics context
+	 * @param g
+	 *            the graphics context
 	 */
 	abstract protected void paintMarkArea(Graphics g);
-	
+
 	/**
 	 * Method for painting a clicked channel.
 	 * 
-	 * @param g the graphics context
+	 * @param g
+	 *            the graphics context
 	 */
 	abstract protected void paintMarkedChannels(Graphics g);
 
@@ -808,12 +793,12 @@ PreferenceChangeListener {
 	 * method overriden for 1 and 2 d for painting fits
 	 */
 	abstract protected void paintGate(Graphics g);
-	
+
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
 	abstract protected void paintOverlay(Graphics g);
-	
+
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
@@ -822,26 +807,28 @@ PreferenceChangeListener {
 	/**
 	 * Method for painting segments while setting a gate.
 	 * 
-	 * @param g the graphics context
+	 * @param g
+	 *            the graphics context
 	 */
 	abstract protected void paintSettingGate(Graphics g);
 
 	/**
 	 * Method for painting segments while setting a gate.
 	 * 
-	 * @param g the graphics context
+	 * @param g
+	 *            the graphics context
 	 */
 	abstract protected void paintSetGatePoints(Graphics g);
-	
+
 	/**
 	 * Paint called if mouse moved is enabled
 	 */
 	protected final void paintMouseMoved(Graphics gc) {
 		if (settingGate) {
-			paintSettingGate(gc);			
+			paintSettingGate(gc);
 		} else if (selectingArea) {
 			paintSelectingArea(gc);
-		}		
+		}
 	}
 
 	synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
@@ -888,8 +875,8 @@ PreferenceChangeListener {
 	 */
 	private final void setColorMode(boolean cm) {
 		synchronized (this) {
-			colorMode = cm ? PlotColorMap.WHITE_ON_BLACK : 
-			PlotColorMap.BLACK_ON_WHITE;
+			colorMode = cm ? PlotColorMap.WHITE_ON_BLACK
+					: PlotColorMap.BLACK_ON_WHITE;
 		}
 		setBackground(PlotColorMap.background);
 	}
@@ -909,8 +896,7 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 * Get the plot graphics for this plot
-	 * need for plot mouse
+	 * Get the plot graphics for this plot need for plot mouse
 	 */
 	PlotGraphics getPlotGraphics() {
 		return graph;
@@ -944,9 +930,11 @@ PreferenceChangeListener {
 
 	/**
 	 * Sets limits of counts scale.
-	 *
-	 * @param limC1 first limit for counts, upper or lower
-	 * @param limC2 second limit for counts
+	 * 
+	 * @param limC1
+	 *            first limit for counts, upper or lower
+	 * @param limC2
+	 *            second limit for counts
 	 */
 	void setLimitsCounts(int limC1, int limC2) {
 		if (limC1 <= limC2) {
@@ -975,16 +963,14 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 * get histogram x size
-	 *  need by scroller
+	 * get histogram x size need by scroller
 	 */
 	int getSizeX() {
 		return sizeX;
 	}
 
 	/**
-	 * get histogram y size
-	 * needed by scroller
+	 * get histogram y size needed by scroller
 	 */
 	int getSizeY() {
 		return sizeY;
@@ -993,35 +979,37 @@ PreferenceChangeListener {
 	/**
 	 * Not used.
 	 * 
-	 * @param me created when the mouse is moved
+	 * @param me
+	 *            created when the mouse is moved
 	 */
 	abstract protected void mouseMoved(MouseEvent me);
-	
-	protected final MouseInputAdapter mouseInputAdapter=new MouseInputAdapter(){
+
+	protected final MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
 		/**
 		 * Undo last temporary line drawn.
 		 * 
-		 * @param e created when mouse exits the plot
-		 */	
+		 * @param e
+		 *            created when mouse exits the plot
+		 */
 		public void mouseExited(MouseEvent e) {
 			setMouseMoved(false);
 			repaint();
 		}
-		
+
 		public void mouseMoved(MouseEvent e) {
 			Plot.this.mouseMoved(e);
 		}
 	};
-	
-	protected final boolean isSelectingAreaClipClear(){
-		synchronized(selectingAreaClip){
-			return selectingAreaClip.height==0;
+
+	protected final boolean isSelectingAreaClipClear() {
+		synchronized (selectingAreaClip) {
+			return selectingAreaClip.height == 0;
 		}
 	}
-	
-	protected final void clearSelectingAreaClip(){
-		synchronized (selectingAreaClip){
-			selectingAreaClip.setSize(0,0);	
+
+	protected final void clearSelectingAreaClip() {
+		synchronized (selectingAreaClip) {
+			selectingAreaClip.setSize(0, 0);
 		}
 	}
 }
