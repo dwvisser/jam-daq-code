@@ -334,6 +334,7 @@ public class HDFIO implements DataIO,JamHDFFields {
             getScalers(mode);
             getGates(mode);
             getParameters(mode);
+            in.close();
             in = null;  // destroys reference to HDFile (and its DataObject's
             //  allowing Garbage Collector to free up memory
             System.gc();
