@@ -250,7 +250,7 @@ public class JamProperties {
 	public static String getPropString(String key) {
 		String rval = "undefined";//default return value
 		if (jamProperties.getProperty(key) != null) {
-			rval = (String) (jamProperties.getProperty(key)).trim();
+			rval = jamProperties.getProperty(key).trim();
 		} else {
 			msgHandler.warningOutln(
 				"Property " + key + " not defined [JamProperties]");
