@@ -4,7 +4,6 @@ package jam;
 import jam.data.DataBase;
 import jam.data.control.DataControl;
 import jam.global.*;
-import jam.io.ExtensionFileFilter;
 import jam.sort.*;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
@@ -41,7 +40,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
     SortRoutine sortRoutine;//the actual sort routine
     File sortClassPath;//path to base of sort routines' classpath
     Class sortClass;
-    String sortClassName; //class name, including packages with '.' separator
+    //String sortClassName; //class name, including packages with '.' separator
     
 
     /** Input stream, how tells how to read an event */
@@ -161,7 +160,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
         sortChoice.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				sortClass=(Class)sortChoice.getSelectedItem();
-				sortClassName=sortClass.getName();
+				//sortClassName=sortClass.getName();
 			}
         });
         Iterator it=v.iterator();
@@ -228,10 +227,13 @@ class SetupSortOff  implements ActionListener, ItemListener {
 
         ButtonGroup eventMode = new ButtonGroup();
         ctape=new JRadioButton("Events from Tape", false);
+        ctape.setEnabled(false);
+        ctape.setToolTipText("Not implemented.");
         eventMode.add(ctape);
         ctape.addItemListener(this);
 
         cdisk=new JRadioButton("Events from Disk", true);
+        cdisk.setToolTipText("The only option until tape input is implemented.");
         eventMode.add(cdisk);
         cdisk.addItemListener(this);
 
@@ -362,7 +364,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
     		v.addAll(set);
     		sortChoice.setModel(new DefaultComboBoxModel(v));
     	} else {
-			sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+			sortChoice.setModel(new DefaultComboBoxModel((Vector)getSortClasses(sortClassPath)));
     	}
     }
 
@@ -380,35 +382,30 @@ class SetupSortOff  implements ActionListener, ItemListener {
     private void loadSorter() throws JamException {
         try {
         	if (specify.isSelected()){
-				sortRoutine= (SortRoutine)RTSI.loadClass(sortClassPath,sortClassName).newInstance();// create sort class
+        		/* we call loadClass() in order to guarantee latest version */
+				sortRoutine= (SortRoutine)RTSI.loadClass(sortClassPath,sortClass.getName()).newInstance();// create sort class
         	} else {//use default loader
         		sortRoutine=(SortRoutine)sortClass.newInstance();
         	}
         } catch (InstantiationException ie) {
-//            sortClass=null;
-            throw new JamException("Cannot instantize sort file: "+sortClassName);
+            throw new JamException("Cannot instantiate sort routine: "+sortClass.getName());
         } catch (IllegalAccessException iae) {
-//            sortClass=null;
-            throw new JamException(" Cannot access sort file: "+sortClassName);
+            throw new JamException(" Cannot access sort routine: "+sortClass.getName());
         }
         try {//create new event input stream class
             eventInput= (EventInputStream) ((Class)inStreamChooser.getSelectedItem()).newInstance();
             eventInput.setConsole(msgHandler);
         } catch (InstantiationException ie) {
-//            eventInput=null;
             ie.printStackTrace();
             throw new JamException("Cannot instantize event input stream: "+inStreamChooser.getSelectedItem());
         } catch (IllegalAccessException iae) {
-//            eventInput=null;
             throw new JamException(" Cannot access event input stream: "+inStreamChooser.getSelectedItem());
         }
         try {//create new event output stream class
             eventOutput = (EventOutputStream) ((Class)outStreamChooser.getSelectedItem()).newInstance();
         } catch (InstantiationException ie) {
-//            eventInput=null;
             throw new JamException("Cannot instantize event output stream: "+eventOutput.getClass().getName());
         } catch (IllegalAccessException iae) {
-//            eventInput=null;
             throw new JamException(" Cannot access event output stream: "+eventOutput.getClass().getName());
         }
     }
@@ -425,24 +422,23 @@ class SetupSortOff  implements ActionListener, ItemListener {
             throw new JamException("Exception in SortRoutine: "+sortRoutine.getClass().getName()
             +".initialize(); Message= '"+e.getClass().getName()+": "+e.getMessage()+"'");
         }
-        //setup scaler, parameter, monitors, gate, dialog boxes
+        /* setup scaler, parameter, monitors, gate, dialog boxes */
         DataControl.setupAll();
-        //setup sorting
+        /* setup sorting */
         sortDaemon=new SortDaemon( sortControl,  msgHandler);
         sortDaemon.setup(SortDaemon.OFFLINE, eventInput, sortRoutine.getEventSize());
         sortDaemon.load(sortRoutine);
-        //eventInputStream to use get event size from sorting routine
+        /* eventInputStream to use get event size from sorting routine */
         eventInput.setEventSize(sortRoutine.getEventSize());
         eventInput.setBufferSize(sortRoutine.BUFFER_SIZE);
-        //give sortroutine output stream
+        /* give sortroutine output stream */
         eventOutput.setEventSize(sortRoutine.getEventSize());
         eventOutput.setBufferSize(sortRoutine.BUFFER_SIZE);
 		sortRoutine.setEventOutputStream(eventOutput);
-        //always setup diskDaemon
+        /* always setup diskDaemon */
         diskDaemon =new DiskDaemon(sortControl,  msgHandler);
-        //FIXMEdiskDaemon.setDevice(null);
         diskDaemon.setupOff(eventInput, eventOutput);
-        //setup source of data tape
+        /* setup source of data tape */
         if(mode==TAPE){
             tapeDaemon = new TapeDaemon(sortControl, msgHandler);
             tapeDaemon.setDevice(tapeDevice);
@@ -453,15 +449,15 @@ class SetupSortOff  implements ActionListener, ItemListener {
             deviceName="Disk";
             storageDaemon=diskDaemon;
         }
-        //tell run control about all, disk always to device
+        /* tell run control about all, disk always to device */
         sortControl.setup(this, sortDaemon, storageDaemon, diskDaemon, deviceName);
-        //tell status to setup
+        /* tell status to setup */
         displayCounters.setupOff(sortDaemon, storageDaemon);
-        //tell sortDaemon to update status
+        /* tell sortDaemon to update status */
         sortDaemon.setObserver(broadcaster);
-        //start sortDaemon which is then suspended by Sort control until files entered
+        /* start sortDaemon which is then suspended by Sort control until files entered */
         sortDaemon.start();
-        //lock setup
+        /* lock setup */
         lockMode(true);
     }
 
@@ -498,10 +494,8 @@ class SetupSortOff  implements ActionListener, ItemListener {
      * Browses for the sort file.
      */
     private File getSortPath(){
-    String [] types = new String [] {"class"};
         JFileChooser fd =new JFileChooser(sortDirectory);
         fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fd.setFileFilter(new ExtensionFileFilter(types,"Java .class files"));
         int option = fd.showOpenDialog(jamMain);
         //save current values
         if (option == JFileChooser.APPROVE_OPTION && fd.getSelectedFile() != null){
@@ -523,16 +517,11 @@ class SetupSortOff  implements ActionListener, ItemListener {
             } else {
                 jamMain.setSortMode(JamMain.OFFLINE_TAPE);
             }
-            checkLock.setSelected(true);
             checkLock.setEnabled(true);
-            //textEventFile.setEditable(false);
-            //textEventFile.setBackground(Color.lightGray);
+            checkLock.setSelected(true);
             inStreamChooser.setEnabled(false);
             outStreamChooser.setEnabled(false);
-            textDev.setEditable(false);
-            textDev.setBackground(Color.lightGray);
             cdisk.setEnabled(false);
-            ctape.setEnabled(false);
             bok.setEnabled(false);
             bapply.setEnabled(false);
             specify.setEnabled(false);
@@ -541,16 +530,10 @@ class SetupSortOff  implements ActionListener, ItemListener {
             sortChoice.setEnabled(false);
         } else{
             jamMain.setSortMode(JamMain.NO_ACQ);
-            checkLock.setSelected(false);
             checkLock.setEnabled(false);
-            //textEventFile.setEditable(true);
-            //textEventFile.setBackground(Color.white);
             inStreamChooser.setEnabled(true);
             outStreamChooser.setEnabled(true);
-            textDev.setEditable(true);
-            textDev.setBackground(Color.white);
             cdisk.setEnabled(true);
-            ctape.setEnabled(true);
             bok.setEnabled(true);
             bapply.setEnabled(true);
             specify.setEnabled(true);
