@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,15 +23,18 @@ public final class GainCalibration {
     final Map gains;
     final Map offsets;
     boolean suppress=false;
+    final ClassLoader loader;
     
-    GainCalibration(){
+    GainCalibration(Object maker){
         gains=new HashMap();
         offsets=new HashMap();
+        loader=maker.getClass().getClassLoader();
     }
 
     /**
      * Reads in a gain file. The expected format is a text file where every line
-     * is lists a parameter id, a gain coefficient and an offset value.
+     * is lists a parameter id, a gain coefficient and an offset value. Alternately,
+     * the offset column may be ommited.
      * 
      * @param name of the gain file in the sort routine's package
      * @param suppress <code>true</code> adjust to zero any value for
@@ -41,10 +45,18 @@ public final class GainCalibration {
     public void gainFile(String name, boolean suppress) throws SortException {
         try {
             this.suppress=suppress;
-            final ClassLoader loader = getClass().getClassLoader();
-            final InputStream input = loader.getResourceAsStream(name);
+            InputStream input = loader.getResourceAsStream(name);
+            if (input==null){
+                throw new SortException("File, \""+name+"\", not found.");
+            }
             final int rows=getNumberOfRows(input);
-            readGains(input,rows);
+            input = loader.getResourceAsStream(name);
+            final int columns=getNumberOfColumns(input);
+            if (columns < 2 || columns > 3){
+                throw new SortException("File, \""+name+"\", must be 2 or 3 columns.");
+            }
+            input = loader.getResourceAsStream(name);
+            readGains(input,rows,columns);
         } catch (IOException ioe) {
             throw new SortException("There was an error while reading the gain file, \""+
                     name+"\".",ioe);
@@ -97,7 +109,7 @@ public final class GainCalibration {
 
 	private void readGains(
 			InputStream in,
-			int rows)
+			int rows, int columns)
 			throws IOException {
 			LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
 			StreamTokenizer st = new StreamTokenizer(lnr);
@@ -107,8 +119,13 @@ public final class GainCalibration {
 				final int parameter = (int) st.nval;
 				st.nextToken();
 				final double gain = st.nval;
-				st.nextToken();
-				final double offset = st.nval;
+				final double offset;
+				if (columns==3){
+				    st.nextToken();
+				    offset = st.nval;
+				} else {
+				    offset = 0.0;
+				}
 				final Integer iParam=new Integer(parameter);
 				gains.put(iParam, new Double(gain));
 				offsets.put(iParam, new Double(offset));
@@ -125,5 +142,19 @@ public final class GainCalibration {
 		lnr.close();
 		return rval;
 	}
+
+    private int getNumberOfColumns(InputStream in) throws IOException {
+    	int rval = 0;
+    	LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
+    	String line = lnr.readLine();
+    	lnr.close();
+    	if (line != null) {
+    		StreamTokenizer st = new StreamTokenizer(new StringReader(line));
+    		while (st.nextToken() == StreamTokenizer.TT_NUMBER) {
+    			rval++;
+    		}
+    	}
+    	return rval;
+    }
 
 }
