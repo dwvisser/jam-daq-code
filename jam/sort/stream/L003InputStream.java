@@ -19,7 +19,7 @@ public class L003InputStream
 	extends EventInputStream
 	implements L003Parameters {
 
-	int recordByteCounter = 0; //FIXME
+	int recordByteCounter = 0;
 	int tapeByteCounter = 0;
 
 	private EventInputStatus status;
