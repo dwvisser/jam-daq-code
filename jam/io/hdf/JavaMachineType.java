@@ -34,10 +34,9 @@ public class JavaMachineType extends DataObject {
 
 	public JavaMachineType(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		// = DFTAG_MT;
 	}
 
-	public void interpretBytes() { //assumed only JAM hdf files read, so don't bother
-		//System.out.println("MT_"+tag+"/"+ref+".interpretbytes()");
+	public void interpretBytes() { 
+		// assumed only JAM hdf files read, so don't bother
 	}
 }
