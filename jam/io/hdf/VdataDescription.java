@@ -210,7 +210,7 @@ public final class VdataDescription extends DataObject {
         super();
     }
 
-    public void interpretBytes() throws HDFException {
+    public void interpretBytes() {
         bytes.rewind();
         interlace = bytes.getShort();
         nvert = bytes.getInt();
