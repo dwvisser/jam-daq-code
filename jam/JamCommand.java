@@ -98,11 +98,9 @@ public class JamCommand
 		gainshift = new GainShift(console);
 		/* acquisition control */
 		runControl =
-			new RunControl(
-				jam,
-				(VMECommunication) frontEnd,
+			new RunControl((VMECommunication) frontEnd,
 				console);
-		sortControl = new SortControl(jam, console);
+		sortControl = new SortControl(console);
 		displayCounters = new DisplayCounters(console);
 		/* setup classes */
 		setupSortOn =

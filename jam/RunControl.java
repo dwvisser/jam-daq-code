@@ -1,7 +1,10 @@
 package jam;
 
 import jam.data.control.HistogramZero;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.GoodThread;
+import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.io.DataIO;
 import jam.io.hdf.HDFIO;
@@ -15,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,10 +71,12 @@ public class RunControl implements Controller, ActionListener {
      * The device writing events: DISK or FRONT_END
      */
     
-    private final JamMain		jamMain;
+    private final Frame		jamMain;
     private final DataIO		dataio;
     private final VMECommunication	vmeComm;
     private final JamConsole		console;
+    private final JamStatus status = JamStatus.instance();
+    private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	private int device;
 
@@ -126,8 +132,8 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    RunControl(JamMain jamMain, VMECommunication vmeComm, JamConsole console){
-        this.jamMain=jamMain;
+    RunControl(VMECommunication vmeComm, JamConsole console){
+        jamMain=status.getFrame();
         this.vmeComm=vmeComm;
 		this.console=console;
         this.dataio=new HDFIO(jamMain,console);
@@ -280,12 +286,12 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.VMEstart();
         // if we are in a run, display run number
         if (runOn) {//runOn is true if the current state is a run
-            jamMain.setRunState(RunState.RUN_ON(runNumber));
+            broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.RUN_ON(runNumber));
         	//see stopAcq() for reason for this next line.
         	bend.setEnabled(true);
         	console.messageOutln("Started Acquisition, continuing Run #"+runNumber);
         } else {//just viewing events, not running to disk
-            jamMain.setRunState(RunState.ACQ_ON);
+			broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_ON);
             this.bbegin.setEnabled(false);//don't want to try to begin run while going
         	console.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
         }
@@ -298,7 +304,7 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.VMEstop();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
-        jamMain.setRunState(RunState.ACQ_OFF);
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_OFF);
         //done to avoid "last buffer in this run becomes first and last buffer in
         //next run" problem
         bend.setEnabled(false);
@@ -362,7 +368,7 @@ public class RunControl implements Controller, ActionListener {
         // enable end button, display run number
         bend.setEnabled(true);
         bbegin.setEnabled(false);
-        jamMain.setRunState(RunState.RUN_ON(runNumber));
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.RUN_ON(runNumber));
         if(device==DISK){
             console.messageOutln("Began run "+runNumber+", events being written to file: "+dataFileName);
         } else {
@@ -388,7 +394,7 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.end();			    //stop Acq. flush buffer
         vmeComm.readScalers();		    //read scalers
         bend.setEnabled(false);	    		    //toggle button states
-        jamMain.setRunState(RunState.ACQ_OFF);
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED, RunState.ACQ_OFF);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
         int numSeconds=0;
         do {//wait for sort to catch up
