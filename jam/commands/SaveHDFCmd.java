@@ -22,6 +22,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	
 	SaveHDFCmd(){
 		putValue(NAME,"Save");
+		enable();//depending on sort mode
 	}
 
 	/**
@@ -29,42 +30,29 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) throws CommandException {
-		
-		JFrame frame = status.getFrame();	
+		final JFrame frame = status.getFrame();	
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
-		File file;
-				
-		//No file given		
-		if ( cmdParams==null) {		
-			file=status.getOpenFile();	
-			if (file!=null) {
-	 			//Prompt for overwrite
+		if ( cmdParams==null) {//No file given			
+			final File file=status.getOpenFile();	
+			if (file!=null) {//Prompt for overwrite
 				if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
 					frame ,"Replace the existing file? \n"+file.getName(),"Save "+file.getName(),
 					JOptionPane.YES_NO_OPTION)){
 						hdfio.writeFile(file);
-					}
-			//File null				
-			} else {
+					}	
+			} else {//File null	
 				throw new CommandException("Error executing command save");
-			}				
-			
-		//File name given								
-		} else {
-			file =(File)cmdParams[0];
-			//KBS check for valid file if not done in hdfio
+			}					
+		} else {//File name given
+			final File file =(File)cmdParams[0];
 			hdfio.writeFile(file);			
 		}			
-
-
 	}
 
 	/* 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
 	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
-		
-		
 		try {
 			Object [] cmdParams = new Object[1]; 
 			if (cmdTokens.length==0) {
@@ -77,7 +65,6 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		} catch (CommandException e) {
 			throw new CommandListenerException(e.getMessage());
 		}
-
 	}
 	
 	public void update(Observable observe, Object obj){
@@ -87,10 +74,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 			enable();
 		}
 	}
+	
 	protected void enable(){
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
-		
 	}
-
 }
