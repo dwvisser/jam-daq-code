@@ -61,7 +61,7 @@
                 includes="*.jar,*.txt,*.html,help/config/*.ini" >
             </fileset>
         </copy>
-    </target>
+    </target> 
     
     <target name="javadoc">
         <javadoc
@@ -79,7 +79,8 @@
     <target name="windows" depends="jar,srczip,helpjar"
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar, jh.jar, jlfgr-1_0.jar" />
+    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar" />
+    	 	<fileset dir="${base.dir}" includes="jh.jar, jlfgr-1_0.jar" />
     	</copy>
     	<copy todir="${windows}" file="${build.dir}/JamSrc.zip" />
     	<copy todir="${windows}" flatten="true">
@@ -88,7 +89,7 @@
     	<jsmoothgen project="${windows}/build.jsmooth" 
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
       	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${build.dir}/windows"
-      	excludes="**/*.jsmooth,**/*.ico" />
+      	excludes="**/*.jsmooth,**/*.ico,**/*.db" />
     </target>
     
     <target name="all" depends="copy,windows" />
