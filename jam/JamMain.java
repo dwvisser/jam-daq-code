@@ -720,7 +720,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Sets the gate chooser to the current model of gates
 	 */
 	private void setGateModel() {
-		gcbm = new GateComboBoxModel(jamCommand);
+		gcbm = new GateComboBoxModel();
 		gateChooser.setModel(gcbm);
 	}
 
