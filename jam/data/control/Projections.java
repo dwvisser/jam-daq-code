@@ -45,7 +45,9 @@ public class Projections extends AbstractControl implements Observer {
 
 	private static final String BETWEEN = "Between Channels";
 
-	private static final String NEW_HIST = "NEW: ";
+	private final String NEW_HIST = "NEW: ";
+	
+	private final String HIST_WILD_CARD="/.";
 
 	private final Broadcaster broadcaster;
 
@@ -58,6 +60,8 @@ public class Projections extends AbstractControl implements Observer {
 	private final JTextField tlim1, tlim2, ttextto;
 
 	private String hfromname;
+	
+	private Histogram hto;
 
 	/**
 	 * Constructs a new projections dialog.
@@ -166,29 +170,23 @@ public class Projections extends AbstractControl implements Observer {
 		cdproject.add(pButtons, BorderLayout.SOUTH);
 		final JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtons.add(pcontrol);
+		
 		final JButton bOK = new JButton("OK");
-		final JButton bApply = new JButton("Apply");
 		bOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					project();
-					dispose();
-				} catch (DataException de) {
-					messageHandler.errorOutln(de.getMessage());
-				}
+				ok();
 			}
 		});
 		pcontrol.add(bOK);
+		
+		final JButton bApply = new JButton("Apply");		
 		bApply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					project();
-				} catch (DataException de) {
-					messageHandler.errorOutln(de.getMessage());
-				}
+				apply();
 			}
 		});
 		pcontrol.add(bApply);
+		
 		JButton bCancel = new JButton("Cancel");
 		bCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -196,6 +194,7 @@ public class Projections extends AbstractControl implements Observer {
 			}
 		});
 		pcontrol.add(bCancel);
+		
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected = cfrom.getSelectedItem();
@@ -213,6 +212,27 @@ public class Projections extends AbstractControl implements Observer {
 		});
 		cfrom.setSelectedIndex(0);
 		pack();
+	}
+	
+	public void ok(){
+		apply();
+		dispose();
+	}
+	
+	public void apply(){
+		try {
+			project();
+			BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+			STATUS.setCurrentHistogram(hto);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
+			
+		} catch (DataException de) {
+			messageHandler.errorOutln(de.getMessage());
+		}
+	}
+	
+	public void cancel(){
+		dispose();
 	}
 
 	/**
@@ -365,9 +385,9 @@ public class Projections extends AbstractControl implements Observer {
 				}
 			}
 		}
-		final Histogram hto;
+
 		if (isNewHistogram(name)) {
-			name = ttextto.getText().trim();
+			String histName = ttextto.getText().trim();
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
 			/*if (cdown.isSelected()) {//project down
 				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
@@ -376,11 +396,16 @@ public class Projections extends AbstractControl implements Observer {
 				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 						.getSizeY(), name);
 			}*/
-			Group.createGroup("Working", Group.Type.FILE);
-			hto = Histogram.createHistogram(new double[size],name);
+
+			String groupName = parseGroupName(name);
+			if (groupName.equals(Group.WORKING_NAME))
+			{
+				Group.createGroup(groupName, Group.Type.FILE);
+			}
+			hto = Histogram.createHistogram(new double[size],histName);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
-					.messageOutln("New Histogram created: '" + name + "'");
+					.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 		} else {
 			hto = Histogram.getHistogram(name);
 
@@ -410,7 +435,7 @@ public class Projections extends AbstractControl implements Observer {
 			}
 		}
 		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
-				+ " to " + name.trim() + " " + typeProj);
+				+ " to " + hto.getFullName() + " " + typeProj);
 	}
 
 	private double[][] intToDouble(int[][] in) {
@@ -500,6 +525,13 @@ public class Projections extends AbstractControl implements Observer {
 	
 	private boolean isNewHistogram(String name){
 		return name.startsWith(NEW_HIST);
+	}
+	private String parseGroupName(String name){
+		
+		StringBuffer sb = new StringBuffer(name);
+		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
+		return groupName;
+
 	}
 	
 }

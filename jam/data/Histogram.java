@@ -72,7 +72,15 @@ public abstract class Histogram {
 		 * @see #getType()
 		 */
 		public static final Type TWO_D_DOUBLE = new Type(3);
-
+		/**
+		 * Histogram dimensionality compare to <code>getDimensionality()</code>
+		 */
+		public final static int  ONE_D =1;
+		/**
+		 * Histogram dimensionality compare to <code>getDimensionality()</code>
+		 */
+		public final static int TWO_D =2;
+		
 		private transient final int type;
 
 		private final static int[] DIM = { 1, 2, 1, 2 };

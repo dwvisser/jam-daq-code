@@ -6,7 +6,9 @@ import jam.data.DataException;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -37,9 +39,11 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Manipulations extends AbstractControl implements ActionListener,
-		ItemListener, WindowListener, Observer {
+public class Manipulations extends AbstractControl implements PanelOKApplyCancelButtons.Listener,
+		WindowListener, Observer {
 
+	private static final String NEW_HIST = "NEW: ";
+	
 	private final MessageHandler messageHandler;
 
 	private JComboBox cfrom1, cfrom2, cto;
@@ -48,8 +52,10 @@ public class Manipulations extends AbstractControl implements ActionListener,
 
 	private JTextField ttextto, ttimes1, ttimes2;
 
-	private JLabel lname;
-
+	private JLabel lname, lWith;
+	
+	private AbstractHist1D hto;
+	
 	/**
 	 * Construct a new "manipilate histograms" dialog.
 	 * @param mh where to print messages
@@ -72,9 +78,10 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdmanip.add(pLabels, BorderLayout.WEST);
+		lWith = new JLabel("With histogram", JLabel.RIGHT);
 		pLabels.add(new JLabel("From  histogram", JLabel.RIGHT));
 		pLabels.add(new JLabel("Operation", JLabel.RIGHT));
-		pLabels.add(new JLabel("With histogram", JLabel.RIGHT));
+		pLabels.add(lWith);
 		pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
 
 		//Entries Panel
@@ -91,7 +98,6 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		cfrom1.setPreferredSize(dim);
 
 		cfrom1.addItem("1DHISTOGRAM1");
-		cfrom1.addItemListener(this);
 		pfrom1.add(cfrom1);
 		pfrom1.add(new JLabel("x"));
 		ttimes1 = new JTextField("1.0", 8);
@@ -101,26 +107,51 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pradio);
 		ButtonGroup cbg = new ButtonGroup();
+		
 		cnorm = new JCheckBox("Renormalize", true);
+		cnorm.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				enableInputWith(false);
+			}
+		});
 		cbg.add(cnorm);
 		pradio.add(cnorm);
-		cnorm.addItemListener(this);
+		
 		cplus = new JCheckBox("Add", false);
-		cbg.add(cplus);
+		cplus.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				enableInputWith(true);
+			}
+		});
+		cbg.add(cplus);		
 		pradio.add(cplus);
-		cplus.addItemListener(this);
+
 		cminus = new JCheckBox("Subtract", false);
-		cbg.add(cminus);
+		cminus.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				enableInputWith(true);
+			}
+		});
+		cbg.add(cminus);		
 		pradio.add(cminus);
-		cminus.addItemListener(this);
+
 		ctimes = new JCheckBox("Multiply", false);
-		cbg.add(ctimes);
+		ctimes.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				enableInputWith(true);
+			}
+		});		
+		cbg.add(ctimes);		
 		pradio.add(ctimes);
-		ctimes.addItemListener(this);
+
 		cdiv = new JCheckBox("Divide", false);
+		cdiv.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				enableInputWith(true);
+			}
+		});				
 		cbg.add(cdiv);
 		pradio.add(cdiv);
-		cdiv.addItemListener(this);
 
 		//With panel
 		JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -130,12 +161,11 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		dim.width = CHOOSER_SIZE;
 		cfrom2.setPreferredSize(dim);
 		cfrom2.addItem("1DHISTOGRAM2");
-		cfrom2.addItemListener(this);
 		ttimes2 = new JTextField("1.0", 8);
 		pfrom2.add(cfrom2);
 		pfrom2.add(new JLabel("x"));
 		pfrom2.add(ttimes2);
-		setInput2(true);
+		enableInputWith(true);
 
 		//To panel
 		JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -144,59 +174,50 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		dim = cto.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cto.setPreferredSize(dim);
-		cto.addItem("New Histogram");
-		cto.addItemListener(this);
-		ttextto = new JTextField("new", 20);
+		cto.addItem(NEW_HIST);
+		cto.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				if (cto.getSelectedItem() != null) {
+					setUseHist((String)cto.getSelectedItem());
+				}
+			}
+		});
+
+
+		ttextto = new JTextField("combine", 20);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
 		pto.add(ttextto);
 
 		//button panel
-		JPanel pFlowControl = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cdmanip.add(pFlowControl, BorderLayout.SOUTH);
-		JPanel pcontrol = new JPanel(new GridLayout(1, 0, hgap, vgap));
-		pFlowControl.add(pcontrol);
-		JButton bOK = new JButton("OK");
-		bOK.setActionCommand("ok");
-		bOK.addActionListener(this);
-		pcontrol.add(bOK);
-		JButton bApply = new JButton("Apply");
-		bApply.setActionCommand("apply");
-		bApply.addActionListener(this);
-		pcontrol.add(bApply);
-		JButton bCancel = new JButton("Cancel");
-		bCancel.setActionCommand("cancel");
-		bCancel.addActionListener(this);
-		pcontrol.add(bCancel);
+		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(this);
+		cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);
+		
 		pack();
 	}
 
-	/**
-	 * Are we done setting gate and should we save it or has the gate setting
-	 * been canceled.
-	 *  
-	 */
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
+	public void ok(){
+		apply();
+		dispose();
+	}
+	
+	public void apply(){
 		try {
-			if (command == "ok" || command == "apply") {
-				manipulate();
-				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				if (command == "ok") {
-					dispose();
-				}
-			} else if (command == "cancel") {
-				dispose();
-			} else {
-				throw new UnsupportedOperationException(
-						"Not a recognized command: " + command);
-			}
+			manipulate();
+			BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+			STATUS.setCurrentHistogram(hto);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
+
 		} catch (DataException je) {
 			messageHandler.errorOutln(je.getMessage());
 		}
 	}
-
+	
+	public void cancel(){
+		dispose();
+	}
+	
 	/**
 	 * An item state change indicates that a gate has been chosen.
 	 */
@@ -204,11 +225,7 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		if (ie.getSource() == cnorm || ie.getSource() == cplus
 				|| ie.getSource() == cminus || ie.getSource() == ctimes
 				|| ie.getSource() == cdiv) {
-			setInput2(cnorm.isSelected());
-		} else if (ie.getSource() == cto) {
-			if (cto.getSelectedItem() != null) {
-				setUseNewHist(cto.getSelectedItem().equals("New Histogram"));
-			}
+			enableInputWith(!cnorm.isSelected()); 
 		}
 	}
 
@@ -240,52 +257,84 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		lto = (String) cto.getSelectedItem();
 
 		cfrom1.removeAllItems();
-		addChooserHists(cfrom1, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_D_DOUBLE);
+		addChooserHists(cfrom1, false, Histogram.Type.ONE_D);
 		cfrom1.setSelectedItem(lfrom1);
 		cfrom2.removeAllItems();
-		addChooserHists(cfrom2, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_D_DOUBLE);
+		addChooserHists(cfrom2, false, Histogram.Type.ONE_D);
+
 		cfrom2.setSelectedItem(lfrom2);
 		cto.removeAllItems();
-		cto.addItem("New Histogram");
-		addChooserHists(cto, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_D_DOUBLE);
+		cto.addItem(NEW_HIST);
+		addChooserHists(cto, true, Histogram.Type.ONE_D);
 		cto.setSelectedItem(lto);
-		if (lto.equals("New Histogram")) {
-			setUseNewHist(true);
-		} else {
-			setUseNewHist(false);
-		}
+		setUseHist((String)cto.getSelectedItem());
+
 	}
 
 	/* non-javadoc:
 	 * A second histogram is needed
 	 */
-	private void setInput2(boolean state) {
-		cfrom2.setEnabled(!state);
-		ttimes2.setEnabled(!state);
+	private void enableInputWith(boolean state) {
+		cfrom2.setEnabled(state);
+		ttimes2.setEnabled(state);
+		lWith.setEnabled(state);
 	}
 
 	/* non-javadoc:
 	 * add histograms of type type1 and type2 to chooser
 	 */
-	private void addChooserHists(JComboBox c, Histogram.Type type1,
-			Histogram.Type type2) {
+	private void addChooserHists(JComboBox comboBox, boolean addNew, int histDim) {
+		comboBox.removeAllItems();
+		//Add working group new
+		if(addNew) {
+			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+"/.");
+			//Add new histograms
+			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
+				Group group = (Group)iter.next();
+				if (group.getType() != Group.Type.SORT &&
+					!Group.WORKING_NAME.equals(group.getName())) {
+					comboBox.addItem(NEW_HIST+group.getName()+"/.");
+				}
+			}
+		}
+		//Add Existing hisograms
+		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
+			Group group = (Group)grpiter.next();
+			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
+				Histogram hist =(Histogram)histiter.next();
+				if (hist.getType().getDimensionality() == histDim) {
+					comboBox.addItem(hist.getFullName());
+				}
+			}
+		}
+
+		comboBox.setSelectedIndex(0);
+		/*
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
 			if ((h.getType() == type1) || (h.getType() == type2)) {
 				c.addItem(h.getFullName());
 			}
 		}
+		*/
 	}
 
 	/* non-javadoc:
 	 * Set dialog box for new histogram to be created
 	 */
-	private void setUseNewHist(boolean state) {
-		lname.setEnabled(state);
-		ttextto.setEnabled(state);
+	private void setUseHist(String name) {
+		if (isNewHistogram(name)){
+			lname.setEnabled(true);
+			ttextto.setEnabled(true);
+		} else {
+			lname.setEnabled(false);
+			ttextto.setEnabled(false);
+			
+		}		
+	}
+	
+	private boolean isNewHistogram(String name){
+		return name.startsWith(NEW_HIST);
 	}
 
 	/* non-javadoc:
@@ -332,8 +381,8 @@ public class Manipulations extends AbstractControl implements ActionListener,
 
 		//read in information for to histogram
 		String name = (String) cto.getSelectedItem();
-		final AbstractHist1D hto;
-		if (name.equals("New Histogram")) {
+		
+		if (isNewHistogram(name)) {
 			name = ttextto.getText().trim();
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom1
 					.getSizeX(), name);*/
@@ -392,6 +441,7 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		} else {
 			hto.setCounts(out);
 		}
+		
 	}
 
 	/* non-javadoc:
