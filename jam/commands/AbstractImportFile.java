@@ -62,7 +62,7 @@ class AbstractImportFile extends AbstractImportExport {
 				execute(cmdParams);
 			}
 		} catch (CommandException ce) {
-			throw new CommandListenerException(ce.getMessage());
+			throw new CommandListenerException(ce.getMessage(),ce);
 		}
 	}
 }
