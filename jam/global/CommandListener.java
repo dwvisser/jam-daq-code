@@ -1,16 +1,19 @@
 /*
  */
 package jam.global; 
+
 /**
- * This is an interface that says a class can be commanded
- * to do something with a text command.
- * <code>JamConsole</code> implements it to do tasks for the user.
+ * Listens to typed commands from the console.
  *
  * @author Ken Swartz
  */
- public interface CommandListener {		 
+ public interface CommandListener {	
+ 		 
 	/**
-	 * Class must implement this command to receive commands
+	 * Class must implement this command to receive commands.
+	 * 
+	 * @param command word indecating action to take
+	 * @param parameters list of typed numbers which are parameters to the command
 	 */
 	public void commandPerform(String command, int[] parameters);	
 }
