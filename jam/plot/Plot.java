@@ -382,7 +382,6 @@ public abstract class Plot extends JPanel {
 	 * Zoom the region viewed.
 	 */
 	public void zoom(int inOut) {
-		int diffX, diffY, temp;
 		int xll = plotLimits.getMinimumX(); // x lower limit
 		int xul = plotLimits.getMaximumX();
 		; // x upper limit
@@ -390,16 +389,16 @@ public abstract class Plot extends JPanel {
 		; // y lower limit
 		int yul = plotLimits.getMaximumY();
 		; // y upper limit
-		diffX = xul - xll;
-		diffX = diffX / ZOOM_FACTOR;
+		final int diffX = Math.max(1,(xul - xll)/ZOOM_FACTOR);
+		/*diffX /= ZOOM_FACTOR;
 		if (diffX == 0) {
 			diffX = 1;
-		}
-		diffY = yul - yll;
-		diffY = diffY / ZOOM_FACTOR;
+		}*/
+		final int diffY = Math.max(1,(yul - yll)/ZOOM_FACTOR);
+		/*diffY /= ZOOM_FACTOR;
 		if (diffY == 0) {
 			diffY = 1;
-		}
+		}*/
 		//zoom in
 		if (inOut == ZOOM_OUT) {
 			xll = xll - diffX;
@@ -423,7 +422,7 @@ public abstract class Plot extends JPanel {
 			xul = sizeX - 1;
 		}
 		if (xll > xul) {
-			temp = xll;
+			int temp = xll;
 			xll = xul - 1;
 			xul = temp + 1;
 		}
@@ -435,7 +434,7 @@ public abstract class Plot extends JPanel {
 			yul = sizeY - 1;
 		}
 		if (yll > yul) {
-			temp = yll;
+			int temp = yll;
 			yll = yul - 1;
 			yul = temp + 1;
 		}
