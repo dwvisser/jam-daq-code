@@ -3,15 +3,12 @@ package jam;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Display;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -53,55 +50,35 @@ public class PeakFindDialog extends JDialog {
 		fields.setBorder(new EmptyBorder(10,10,0,0));
 		fields.add(new JLabel("Width", JLabel.RIGHT));
 		fields.add(new JLabel("Sensitivity", JLabel.RIGHT));
-		fields.add(new JLabel("Display", JLabel.RIGHT));
-
-						
+		fields.add(new JLabel("Display", JLabel.RIGHT));	
 		JPanel center=new JPanel(new GridLayout(0,1,5,5));
 		contents.add(center,BorderLayout.EAST);
 		center.setBorder(new EmptyBorder(10,0,0,10));		
-				
 		width=new JTextField("12");
 		width.setToolTipText("FWHM to search for.");
 		center.add(width);
-
 		sensitivity=new JTextField("3");
 		sensitivity.setToolTipText("Greater values require better defined peaks.\n"+
 		"A value of 3 gives an appr. 3% chance for a found peak to be false.");
 		center.add(sensitivity);
-
 		calibrate = new JCheckBox("Calibrated value",true);
-		center.add(calibrate);
-
-		
-		/* panel for buttons */         
-		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		contents.add(pbutton, BorderLayout.SOUTH);		
-		final JPanel pGrid1by3 = new JPanel();
-		pbutton.add(pGrid1by3);
-		pGrid1by3.setLayout(new GridLayout(1, 3,5,5));
-
-		final JButton bok = new JButton("OK");
-		pGrid1by3.add(bok);
-		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
+		center.add(calibrate);		
+		final PanelOKApplyCancelButtons.Callback callback= new PanelOKApplyCancelButtons.Callback(){
+		    public void ok(){
 				setPeakFindProperties();
 				setVisible(false);
-			}
-		});
-		final JButton bapply = new JButton("Apply");
-		pGrid1by3.add(bapply);
-		bapply.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
-				setPeakFindProperties();
-			}
-		});
-		final JButton bcancel = new JButton(" Cancel ");
-		pGrid1by3.add(bcancel);
-		bcancel.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
+		    }
+		    
+		    public void apply(){
+				setPeakFindProperties();		        
+		    }
+		    
+		    public void cancel(){
 				setVisible(false);
-			}
-		});		
+		    }
+		};
+		final PanelOKApplyCancelButtons pbutton=new PanelOKApplyCancelButtons(callback);
+		contents.add(pbutton.getComponent(), BorderLayout.SOUTH);		
 		setResizable(false);
 		pack();
 	}
