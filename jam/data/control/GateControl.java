@@ -505,7 +505,7 @@ WindowListener,Observer  {
      * @throws DataException if there's a problem
      * @throws GlobalException if there's a problem
      */
-    private void addGate() throws DataException,GlobalException {
+    private void addGate() throws GlobalException {
         if(currentGateAdd!=null) {
             final Histogram hist=Histogram.getHistogram(
             status.getCurrentHistogramName());
