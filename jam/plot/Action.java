@@ -83,34 +83,30 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	
 	static final String CURSOR = "cursor";	
 
+
+
+	private final PlotFit inquire;
+
+	private final NumberFormat numFormat;
 	
 	/**  Variable to indicate mouse was pressed */
 	private boolean mousePressed;
 	/** Accessed by Display. */
 	private boolean settingGate;
-	/** Output text to */
-	private final MessageHandler textOut;
-	/** Plot displayer */
-	private final Display display;
-	/** Class that parses commands */
-	private final ParseCommand parseCommand;
-
-	private final PlotFit inquire;
-
-	private final NumberFormat numFormat;
-
-	/*current command*/
-	private String inCommand;
-	/** The last command */
-	private String lastCommand;
+	/**current command being processed*/
+	private String currentCommand;
 	/** Is there a command present */
 	private boolean commandPresent;
-
+	/** Command requires a cursor input */
+	private boolean isCursorCommand;
+	
 	private boolean overlayState;
-	/**
-	 * Used by the GoTo action to let the code know to check for a calibration.
-	 */
+
+	 /** Used by the GoTo action to check for a calibration. */
 	private boolean energyEx = false;
+	
+	/** Class that parses commands */
+	private final ParseCommand parseCommand;
 
 	private final Bin cursor;
 
@@ -121,9 +117,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private int countLow, countHigh;
 	/*reference auto scale on expand */ 
 	private boolean autoOnExpand = true;
-	
+
+	/** Output text to */
+	private final MessageHandler textOut;
+	/** Plot displayer */
+	private final Display display;
+	/** Jam status to get current histogram */
 	private static final JamStatus status = JamStatus.instance();
-	
+	/**Broadcaster for event and gate change */
 	private Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	
 	/**
@@ -162,15 +163,17 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * current state.
 	 */
 	synchronized void plotChanged() {
+		
+		//Clear command if in middle of a command
+		//Command present at more and 1 or more clicks
+		if (commandPresent && clicks.size()>0) {
+			done();
+
+		}		
 		settingGate = false;
 		overlayState = false;
-		commandPresent = false;
-		mousePressed = false;
-		inCommand = null;
-		clicks.clear();
-		rangeList.clear();
 	}
-
+	
 	/**
 	 * Routine called back by mouse a mouse clicks on plot
 	 * 
@@ -185,7 +188,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		// there is a command currently being processed
 		if (commandPresent) {
 			//Do the command
-			doCommand(inCommand);
+			doCommand(currentCommand);
 			
        //No command being processed check if gate is being set			
 		} else if (settingGate) {
@@ -200,76 +203,76 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			doCommand(CURSOR);
 		}
 	}
-	
+	/**
+	 * Command with no paramters
+	 * @param inCommand
+	 */
 	void doCommand(String inCommand) {
 		doCommand(inCommand, null);
 	}
 		
 	/**
-	 * Sort the input command and do command.
+	 * Does a command with parameters
 	 */
 	synchronized void doCommand(String inCommand, double [] parameters) {
 		
-		//Not a cursor command so its a "real" command
+		//Its a blank command so use last command
 		if (inCommand==null) {
-			inCommand=lastCommand;
+			//NOP currentCommand=currentCommand;
+		//Not a cursor command so its a "real" command			
 		}else if (!inCommand.equals(CURSOR)) {
-			//cancel previous command if command has changed
-			// and its not a cursor command			
-			if (inCommand != lastCommand) {
+			//cancel previous command if command has changed	
+			if (inCommand != currentCommand) {
 				done();
 			}
-			lastCommand = inCommand;	
+			currentCommand = inCommand;	
 			
 		//Cursor command 
 		} else {
-			//use last command if one exists
-			if(lastCommand!=null)
-				inCommand=lastCommand;
+			//use cursor only if current command does not exist
+			if(currentCommand==null)
+				currentCommand=inCommand;
 		}
-					
-		//FIXME KBS copy to member field for now		
-		this.inCommand=inCommand;
- 
+					 
 		// check that a histogram is defined 
 		if (status.getCurrentHistogram() == null) {
 			return;
 		}
 			
-			if (CANCEL.equals(inCommand)) {
+			if (CANCEL.equals(currentCommand)) {
 				cancel();
-			}else if (DISPLAY.equals(inCommand)) {
+			}else if (DISPLAY.equals(currentCommand)) {
 				display(parameters);
-			}else if (CURSOR.equals(inCommand)) {
+			}else if (CURSOR.equals(currentCommand)) {
 				channelDisplay();
-			} else if (UPDATE.equals(inCommand)) {
+			} else if (UPDATE.equals(currentCommand)) {
 				update();
-			} else if (EXPAND.equals(inCommand)) {
+			} else if (EXPAND.equals(currentCommand)) {
 				expand();
-			} else if (ZOOMIN.equals(inCommand)) {
+			} else if (ZOOMIN.equals(currentCommand)) {
 				zoomin();
-			} else if (ZOOMOUT.equals(inCommand)) {
+			} else if (ZOOMOUT.equals(currentCommand)) { 
 				zoomout();
-			} else if (FULL.equals(inCommand)) {
+			} else if (FULL.equals(currentCommand)) {
 				full();
-			} else if (LINEAR.equals(inCommand)) {
+			} else if (LINEAR.equals(currentCommand)) {
 				linear();
-			} else if (LOG.equals(inCommand)) {
+			} else if (LOG.equals(currentCommand)) {
 				log();
-			} else if (SCALE.equals(inCommand)) {
+			} else if (SCALE.equals(currentCommand)) {
 				changeScale();
-			} else if (AUTO.equals(inCommand)) {
+			} else if (AUTO.equals(currentCommand)) {
 				auto();
-			} else if (RANGE.equals(inCommand)) {
+			} else if (RANGE.equals(currentCommand)) {
 				range();
-			} else if (AREA.equals(inCommand)) {
+			} else if (AREA.equals(currentCommand)) {
 				areaCent();
-			} else if (GOTO.equals(inCommand)) {
+			} else if (GOTO.equals(currentCommand)) {
 				energyEx = true;
 				gotoChannel();
-			} else if (NETAREA.equals(inCommand)) {
+			} else if (NETAREA.equals(currentCommand)) {
 				netArea();
-			} else if (REBIN.equals(inCommand)) {
+			} else if (REBIN.equals(currentCommand)) {
 				rebin();
 			//} else if (HELP.equals(inCommand)) {
 			//	help();
@@ -279,7 +282,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			} 
 	}
 
-
+	boolean getCursorCommand(){
+		return isCursorCommand;
+	}
 	void setCursor(Bin cursorIn){
 		cursor.setChannel(cursorIn);
 	}
@@ -290,12 +295,12 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 *            the integers
 	 */
 	//FIXME KBS should be in parse command
+	/*
 	void integerChannel(double[] parameters) {
 		final int numPar = parameters.length;
-		/*
-		 * FIXME we should be better organized so range and rebin are not
-		 * special cases
-		 */
+
+		 //FIXME we should be better organized so range and rebin are not
+		 // special cases
 		if ((commandPresent)) {
 			if (RANGE.equals(inCommand)) {
 				synchronized (cursor) {
@@ -318,7 +323,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		}
-		/* we have a 1 d plot */
+		// we have a 1 d plot 
 		final Plot currentPlot = display.getPlot();
 		if (currentPlot.getDimensionality() == 1) {
 			if (commandPresent) {
@@ -334,7 +339,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			} else { //no command so get channel
 				if (numPar > 0) {
-					/* check for out of bounds */
+					// check for out of bounds 
 					synchronized (cursor) {
 						cursor.setChannel((int) parameters[0], 0);
 						cursor.shiftInsidePlot();
@@ -369,7 +374,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			}
 		}
 	}
-
+*/
 	/**
 	 * Display the counts at cursor
 	 * 
@@ -951,7 +956,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		synchronized (this) {
 			commandPresent = false;
 			mousePressed = false;
-			inCommand = null;
+			currentCommand = null;
 			clicks.clear();
 			rangeList.clear();
 			display.getPlot().setSelectingArea(false);
