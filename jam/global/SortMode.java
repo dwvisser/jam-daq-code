@@ -8,7 +8,7 @@ package jam.global;
  * @since 1.5.1
  * @see jam.global.JamStatus#setSortMode(SortMode)
  */
-public class SortMode {
+public final class SortMode {
 	static private final int noSort = 0;
 	static private final int onlineDisk = 1;
 	static private final int onlineNoDisk = 2;
@@ -20,6 +20,14 @@ public class SortMode {
 	
 	private SortMode(int i){
 		mode=i;
+	}
+	
+	public boolean isOnline(){
+		return mode==onlineDisk || mode==onlineNoDisk;
+	}
+	
+	public boolean isOffline(){
+		return mode==offline;
 	}
 
 	/**
