@@ -331,14 +331,15 @@ public class HDFIO implements DataIO, JamHDFFields {
         msgHandler.messageOut("", MessageHandler.END);
         
         try {                
-        	out.writeHeader();
-        	out.addVersionNumber();
-        	out.addFileID(file.getPath());        	
-            out.addFileNote();
-            out.addMachineType();
+
+        	out.addDefaultDataObjects(file.getPath());
+            
             out.setOffsets();
+            
+        	out.writeHeader();            
             out.writeDataDescriptorBlock();
             out.writeAllObjects(pm);
+            
             setProgressNote(pm, "Closing File");
             out.close();
         } catch (HDFException e) {

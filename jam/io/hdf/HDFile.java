@@ -28,10 +28,11 @@ import javax.swing.SwingUtilities;
  */
 public final class HDFile extends RandomAccessFile implements HDFconstants {
 
+	//FIXME KBS remove
 	/**
 	 *  number types automatically thrown into the file
 	 */
-	private transient NumberType intNT, doubleNT;
+	//private transient NumberType intNT, doubleNT;
 
 	/**
 	 * List of objects in the file.
@@ -90,9 +91,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 * Adds data element giving version of HDF libraries to use (4.1r2).
 	 */
-	protected void addVersionNumber() {
-		new LibVersion(this); //DataObjects add themselves
-	}
 
 	/**
 	 * Writes the unique 4-byte pattern at the head of the file denoting
@@ -152,47 +150,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 
-	/**
-	 * Almost all of Jam's number storage needs are satisfied by the type
-	 * hard-coded into the class <code>NumberType</code>.  This method
-	 * creates the <code>NumberType</code> object in the file
-	 * that gets referred to repeatedly by the other data elements.
-	 *
-	 * @see jam.io.hdf.NumberType
-	 */
-	private void addNumberTypes() {
-		synchronized (this){
-			intNT = new NumberType(this, NumberType.INT);
-			doubleNT = new NumberType(this, NumberType.DOUBLE);
-		}
-	}
-
-	/**
-	 * Add element which tells other hdf software the encoding used in 
-	 * Vdatas, etc.
-	 *
-	 * @see JavaMachineType
-	 */
-	void addMachineType() {
-		new JavaMachineType(this);
-	}
-
-	/**
-	 * @return the double number type.
-	 */
-	NumberType getDoubleType() {
-		return doubleNT;
-	}
-
-	/**
-	 * @return the int number type.
-	 */
-	NumberType getIntType() {
-		return intNT;
-	}
-
-
-	
 
 	/**
 	 * @return the existing valid SDD type for the histogram, 
@@ -452,39 +409,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Add a file identifier based on the given string.
-	 * 
-	 * @param ID file-id is based on this
-	 */
-	void addFileID(String ID) {
-		new FileIdentifier(this, ID);
-	}
-	
-
-	/**
-	 * Add a text note to the file, which includes the state of 
-	 * <code>JamProperties</code>.
-	 *
-	 * @throws IOException if there's a problem writing to the file
-	 * @see jam.global.JamProperties
-	 */
-	void addFileNote() throws IOException {
-		final String noteAddition=
-			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
-				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
-				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
-				+ "left."
-				+ "All error bars on histogram counts should be considered Poisson, unless a\n"
-				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
-				+ "of that should be taken as the error bars.";
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final String header="Jam Properties at time of save:";
-		JamProperties.getProperties().store(baos,header);
-		final String notation = baos.toString()+noteAddition;
-		new FileDescription(this, notation);
-	}
-
-	/**
 	 * Checks whether this file contains the HDF magic word 
 	 * at the beginning.
 	 *
@@ -506,7 +430,73 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public void close() throws IOException{
 		super.close();
 		DataObject.clear();
-		intNT=null;
-		doubleNT=null;
 	}
+	/**
+	 * Add default objects always needed.
+	 * 
+	 * Almost all of Jam's number storage needs are satisfied by the type
+	 * hard-coded into the class <code>NumberType</code>.  This method
+	 * creates the <code>NumberType</code> object in the file
+	 * that gets referred to repeatedly by the other data elements.
+	 *
+	 * @see jam.io.hdf.NumberType
+	 */
+	
+	void addDefaultDataObjects(String fileID) {
+		new LibVersion(this); //DataObjects add themselves
+		
+		//FIXME need to be created earlier
+		//new NumberType(this, NumberType.INT);
+		//new NumberType(this, NumberType.DOUBLE);
+		
+		new JavaMachineType(this);
+		new FileIdentifier(this, fileID);
+		addFileNote();
+		
+	}			
+
+	/**
+	 * Add a text note to the file, which includes the state of 
+	 * <code>JamProperties</code>.
+	 *
+	 * @throws IOException if there's a problem writing to the file
+	 * @see jam.global.JamProperties
+	 */
+	void addFileNote() {
+		final String noteAddition=
+			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
+				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
+				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
+				+ "left."
+				+ "All error bars on histogram counts should be considered Poisson, unless a\n"
+				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
+				+ "of that should be taken as the error bars.";
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final String header="Jam Properties at time of save:";
+		try {
+			JamProperties.getProperties().store(baos,header);			
+		} catch (IOException ioe) {
+			throw new RuntimeException("Unable to serialize properties");
+		}
+
+		final String notation = baos.toString()+noteAddition;
+		new FileDescription(this, notation);
+	}
+
+	
+	/**
+	 * Almost all of Jam's number storage needs are satisfied by the type
+	 * hard-coded into the class <code>NumberType</code>.  This method
+	 * creates the <code>NumberType</code> object in the file
+	 * that gets referred to repeatedly by the other data elements.
+	 *
+	 * @see jam.io.hdf.NumberType
+	 */
+	protected void addNumberTypes() {
+		synchronized (this){
+			new NumberType(this, NumberType.INT);
+			new NumberType(this, NumberType.DOUBLE);
+		}
+	}
+	
 }

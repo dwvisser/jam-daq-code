@@ -56,7 +56,26 @@ final class NumberType extends DataObject {
 	static final byte DOUBLE = 1;
 	
 	static final byte INT_SIZE = 4;
+	
 	static final byte DOUBLE_SIZE = 8;
+	
+	static NumberType intNT;
+	
+	static NumberType doubleNT;
+	
+	/**
+	 * @return the double number type.
+	 */
+	static NumberType getDoubleType() {
+		return doubleNT;
+	}
+
+	/**
+	 * @return the int number type.
+	 */
+	static NumberType getIntType() {
+		return intNT;
+	}
 
 	/**
 	 * @param hdfile HDF file we belong to
@@ -65,6 +84,21 @@ final class NumberType extends DataObject {
 	 */
 	NumberType(HDFile hdfile, byte type) {
 		super(hdfile, DFTAG_NT); //sets tag
+		createBytes(type);
+		setStatics(type);
+	}
+	
+	NumberType(byte type){
+		super(DFTAG_NT);
+		createBytes(type);
+		setStatics(type);
+	}
+
+	NumberType(HDFile hdf, byte[] data, short tag, short reference) {
+		super(hdf, data, tag, reference);
+	}
+	
+	private void createBytes(byte type) {
 		if (type == INT) {
 			bytes = new byte[] { NT_VERSION, DFNT_INT32, INT_WIDTH, DFNT_MBO };
 		} else if (type == DOUBLE) {
@@ -74,11 +108,14 @@ final class NumberType extends DataObject {
 			throw new IllegalArgumentException("Invalid type for NumberType: "+type);
 		}
 	}
-
-	NumberType(HDFile hdf, byte[] data, short tag, short reference) {
-		super(hdf, data, tag,reference);
+	private void setStatics(byte type) {
+		if (type == INT) {
+			intNT =this;
+		} else if (type == DOUBLE) {
+			doubleNT=this;
+		}
+		
 	}
-
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 *

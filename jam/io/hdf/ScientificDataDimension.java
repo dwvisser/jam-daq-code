@@ -50,16 +50,16 @@ final class ScientificDataDimension extends DataObject {
 			//write out data number type
 			if (isDouble) {
 				numberType = NumberType.DOUBLE;
-				dos.writeShort(file.getDoubleType().getTag());
-				dos.writeShort(file.getDoubleType().getRef());
+				dos.writeShort(NumberType.getDoubleType().getTag());
+				dos.writeShort(NumberType.getDoubleType().getRef());
 			} else {
 				numberType = NumberType.INT;
-				dos.writeShort(file.getIntType().getTag());
-				dos.writeShort(file.getIntType().getRef());
+				dos.writeShort(NumberType.getIntType().getTag());
+				dos.writeShort(NumberType.getIntType().getRef());
 			}
 			for (int i = 0; i < rank; i++) { // write out scale number type
-				dos.writeShort(file.getIntType().getTag());
-				dos.writeShort(file.getIntType().getRef());
+				dos.writeShort(NumberType.getIntType().getTag());
+				dos.writeShort(NumberType.getIntType().getRef());
 			}
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(null,ioe.getMessage(),
