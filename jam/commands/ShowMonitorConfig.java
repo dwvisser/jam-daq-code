@@ -21,7 +21,7 @@ Observer {
 
 	protected void initCommand(){
 		putValue(NAME,"Configure Monitors\u2026");
-		dialog=MonitorControl.getSingletonInstance(msghdlr);
+		dialog=MonitorControl.getSingletonInstance();
 	}
 
 	public void update(Observable observe, Object obj){
