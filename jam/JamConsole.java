@@ -1,8 +1,8 @@
 package jam;
+import jam.commands.JamCmdManager;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
-import jam.commands.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,9 +20,9 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,9 +36,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 
 /**
  * Class Console displays a output of commands and error messages
