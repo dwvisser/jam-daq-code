@@ -112,16 +112,26 @@ abstract class Plot extends JPanel {
 	final Polygon mouseMoveClip = new Polygon();
 	protected boolean mouseMoved = false;
 
-	//Area stuff
-	protected Point areaStartPoint= new Point();
+	protected Point selectionStartPoint= new Point();
 	
-	//are we display more than a histogram
+	/** currently displaying a gate? */
 	protected boolean displayingGate = false;
+	
+	/** currently displaying a fit? */
 	protected boolean displayingFit = false;
+	
+	/** currently displaying an overlay? */
 	protected boolean displayingOverlay = false;
-	protected boolean markingArea = false;
+	
+	/** currently selecting an area? */
+	protected boolean selectingArea = false;
+	
+	/** currently have an area already marked? */
 	protected boolean markArea = false;	
+	
+	/** currently have individual channels already marked? */
 	protected boolean markingChannels = false;
+	
 	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
 
 	//configuration for screen plotting
@@ -157,8 +167,10 @@ abstract class Plot extends JPanel {
 
 	protected boolean printing = false;
 	
-	protected final Rectangle markingAreaClip=new Rectangle();
-	
+	protected final Rectangle selectingAreaClip=new Rectangle();
+
+	/** last pixel point mouse moved to */
+	protected final Point lastMovePoint = new Point();	
 
 	/**
 	 * Constructor
@@ -353,15 +365,25 @@ abstract class Plot extends JPanel {
 	}
 
 	/**
-	 * Marking an area on the plot.
+	 * Start marking an area.
 	 * 
-	 * @param p1 starting points (corner for 2d)
+	 * @param p1 starting point in plot coordinates
 	 */
-	abstract void markingArea(Point p1);
+	protected final void initializeSelectingArea(Point p1) {
+		setSelectingArea(true);
+		selectionStartPoint.setLocation(p1);
+		setLastMovePoint(p1);
+	} 
+	
+	protected final void setLastMovePoint(Point p) {
+		synchronized (lastMovePoint) {
+			lastMovePoint.setLocation(p);
+		}
+	}
 
-	synchronized void setMarkingArea(boolean tf){
-		markingArea=tf;
-		if (markingArea) {
+	synchronized void setSelectingArea(boolean tf){
+		selectingArea=tf;
+		if (selectingArea) {
 			addMouseMotionListener(mouseInputAdapter);
 		} else {
 			removeMouseMotionListener(mouseInputAdapter);
@@ -372,8 +394,8 @@ abstract class Plot extends JPanel {
 	/**
 	 * Mark an area on the plot.
 	 * 
-	 * @param p1 first corner of rectangle
-	 * @param p2 second corner of rectangle
+	 * @param p1 a corner of the rectangle in plot coordinates
+	 * @param p2 a corner of the rectangle in plot coordinates
 	 */
 	abstract void markArea(Point p1, Point p2);
 	
@@ -422,7 +444,6 @@ abstract class Plot extends JPanel {
 		plotLimits.setMaximumX(xul);
 		plotLimits.setMinimumY(yll);
 		plotLimits.setMaximumY(yul);
-		markingAreaClip.setSize(0,0);
 		refresh();
 	}
 
@@ -555,7 +576,7 @@ abstract class Plot extends JPanel {
 		displayingGate = false;
 		displayingFit = false;
 		displayingOverlay = false;
-		markingArea = false;
+		selectingArea = false;
 		markArea = false;
 		setMarkingChannels(false);
 		refresh();
@@ -625,8 +646,8 @@ abstract class Plot extends JPanel {
 			if (displayingFit) {
 				paintFit(g);
 			}
-			if (markingArea) {
-				paintMarkingArea(g);
+			if (selectingArea) {
+				paintSelectingArea(g);
 			}			
 			if (markArea) {
 				paintMarkArea(g);
@@ -712,12 +733,11 @@ abstract class Plot extends JPanel {
 	}
 
 	/**
-	 * Method for painting a area while it
-	 * is been marked
+	 * Method for painting a area while it is being selected.
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract protected void paintMarkingArea(Graphics g);
+	abstract protected void paintSelectingArea(Graphics g);
 
 	/**
 	 * Method for painting a clicked area.
@@ -930,5 +950,15 @@ abstract class Plot extends JPanel {
 		}
 	};
 	
+	protected final boolean isSelectingAreaClipClear(){
+		synchronized(selectingAreaClip){
+			return selectingAreaClip.height==0;
+		}
+	}
 	
+	protected final void clearSelectingAreaClip(){
+		synchronized (selectingAreaClip){
+			selectingAreaClip.setSize(0,0);	
+		}
+	}
 }
