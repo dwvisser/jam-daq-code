@@ -301,13 +301,13 @@ public class ImpExpORNL extends ImpExp {
 		byte[] inBuffer;
 
 		/* copy to histogram variables */
-		String name = iDnumber[k] + " " + titleDrr[k].trim();
+		final String name = titleDrr[k].trim();
 		int number = iDnumber[k];
 		int type = dim[k];
 		int wordCh = chSize[k];
 		int sizeX = lenParScal1[k];
 		int sizeY = lenParScal2[k];
-		String title = titleDrr[k].trim();
+		//String title = titleDrr[k].trim();
 		try {
 			if (type == 2) {//Read in 2D histogram	
 				int [][] counts2d = new int[sizeX][sizeY];
@@ -335,7 +335,7 @@ public class ImpExpORNL extends ImpExp {
 					throw new IOException(
 						"File uses " + wordCh+" words/channel, which I don't know how to read.");
 				}
-				hist = new Histogram(name, title, counts2d);
+				hist = new Histogram(name, name, counts2d);
 				hist.setNumber(number);
 				if (msgHandler != null){
 					msgHandler.messageOut(" .");
@@ -362,7 +362,7 @@ public class ImpExpORNL extends ImpExp {
 					throw new IOException(
 						"File uses " + wordCh+" words/channel, which I don't know how to read.");
 				}
-				hist = new Histogram(name, title, counts);
+				hist = new Histogram(name, name, counts);
 				hist.setNumber(number);
 				if (msgHandler != null){
 					msgHandler.messageOut(" .");
