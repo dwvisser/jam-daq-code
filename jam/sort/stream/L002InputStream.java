@@ -12,7 +12,7 @@ import jam.global.*;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class L002InputStream  extends EventInputStream implements L002Parameters {
+public class L002InputStream extends L002HeaderReader implements L002Parameters {
 
     private EventInputStatus status;
     private int parameter;
@@ -102,58 +102,6 @@ public class L002InputStream  extends EventInputStream implements L002Parameters
             status=EventInputStatus.UNKNOWN_WORD;
         }
         return parameterSuccess;
-    }
-
-    /**
-     * Read in the header
-     * Format of ORNL LOO2 data
-     * Implemented <code>EventInputStream</code> abstract method.
-     *
-     * @exception EventException thrown for unrecoverable errors
-     */
-    public boolean readHeader() throws EventException {
-        byte[] headerStart=new byte[32];	//header key
-        byte[] date=new byte[16];		//date mo/da/yr hr:mn
-        byte[] title=new byte[80];		//title
-        int number;				//header number
-        byte[] reserved1=new byte[8];		//reserved set to 0
-        int numSecHead;				//number of secondary header records
-        int recordLen;				//record length
-        int blckLnImgRec;			//Block line image records
-        int recordLen2;				//record length
-        int eventSize;				//event size, parameters per event
-        int dataRecLen;				//data record length
-        byte[] reserved2=new byte[92];		//reserved set to 0
-        byte[] secHead=new byte[256];
-
-        try {
-            dataInput.readFully(headerStart);		//key
-            dataInput.readFully(date);			//date
-            dataInput.readFully(title);			//title
-            number=dataInput.readInt();
-            dataInput.readFully(reserved1);
-            numSecHead=dataInput.readInt();
-            recordLen=dataInput.readInt();			//header record length
-            blckLnImgRec=dataInput.readInt();
-            recordLen2=dataInput.readInt();			//IMAGE_RECORD_LENGTH
-            eventSize=dataInput.readInt();
-            dataRecLen=dataInput.readInt();			//DATA_RECORD_LENGTH
-            dataInput.readFully(reserved2);
-            //save reads to header variables
-            headerKey=new String(headerStart);
-            headerRunNumber=number;
-            headerTitle=new String(title);
-            headerEventSize=eventSize;
-            headerDate=new String(date);
-            loadRunInfo();
-            //read secondary headers
-            for (int i=0; i<numSecHead; i++) {
-                dataInput.readFully(secHead);
-            }
-            return (headerKey.equals(HEADER_START));
-        } catch (IOException ioe) {
-            throw new EventException(getClass().getName()+".readHeader(): IOException "+ioe.getMessage());
-        }
     }
 
     /**
