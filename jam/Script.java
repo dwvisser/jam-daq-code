@@ -20,7 +20,13 @@ import java.io.File;
  *  <li>(Optional) Show the Jam window to observe sort progress.</li>
  *  <li><em>Perform the sort.</em></li>
  *  <li>Save the results in an HDF file.</li>
+ *  <li>
  * </ol>
+ * It is also possible to add the histogram counts in a specified HDF
+ * file to the counts in memory. For example, this may be desirable
+ * in the case where you would like to execute portions of the 
+ * sorting task on different machines at the same time, and combine
+ * their results in a "merge script".
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Apr 5, 2004
