@@ -48,6 +48,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * variable for marking position in file
 	 */
 	private long mark = 0;
+	
+	private short refCount;
 
 	private File file; //File object corresponding to this object
 
@@ -62,6 +64,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public HDFile(File f, String mode) throws HDFException, IOException {
 		super(f, mode);
+		refCount=0;
 		this.file = f;
 		if ("rw".equals(mode)) { //Saving a file
 			writeHeader();
@@ -199,30 +202,36 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		if (!tagMap.containsKey(tag)){
 			tagMap.put(tag,new HashMap());
 		}
-		final Map refMap=(Map)tagMap.get(tag);
 		if (useFileDefault) {
-			data.setRef(getUniqueRef(refMap));
+			data.setRef(getUniqueRef());
 		}
-		refMap.put(data.getRefKey(),data);
 	}
 
 	/**
-	 * The HDF standard
-	 * only requires that for a particular tag type, each instance have a
-	 * unique ref.  Since our files are not expected to contain more than
-	 * several dozen objects, I take the simplest approach of simply
+	 * 
+	 * The HDF standard only requires that for a particular tag type, each instance have a
+	 * unique ref.
+	 * ----------------NO TRUE ANY LONGER-----------------  
+	 * Since our files are not expected to contain more than
+	 * several dozen objects, 
+	 * I take the simplest approach of simply
 	 * assigning the index number + 1 from the objectList.
+	 * ----------------NO TRUE ANY LONGER-----------------
+	 * 
+	 * Just adds one to ref Count
 	 * 
 	 * @return a reference number for the given HDF object
 	 * @param refs the map for a given tag type
 	 */
-	private short getUniqueRef(Map refs) {
-		/* a good guess is the size, almost always new */
-		short rval=(short)refs.size();
+	private short getUniqueRef() {
+		//Just add 1, set to 1 every time class created 
+		return refCount++;
+		/*
 		while (refs.containsKey(new Short(rval))){
 			rval++;
 		}
 		return rval;
+		*/
 	}
 	
 	void changeRefKey(DataObject d, Short old) {
