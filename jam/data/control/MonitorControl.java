@@ -5,7 +5,7 @@ import java.util.*;
 import jam.global.*;
 import jam.data.*;
 import javax.swing.*;
-
+import javax.swing.border.*;
 /**
  * Reads and displays the monitors.
  *
@@ -30,7 +30,15 @@ public final class MonitorControl
 
 	//widgets for configuration
 	private JDialog dconfig;
-	private JPanel plabel;
+	private JPanel pConfig;
+	private JPanel pLower;
+	private JPanel pMonitors;
+
+	private JLabel labelName;
+	private JLabel labelThres;
+	private JLabel labelMax;
+	private JLabel labelAlarm;
+
 	private JPanel[] pc; //panel for configurations
 	private JLabel[] labelConfig;
 	private JTextField[] textThreshold;
@@ -38,7 +46,7 @@ public final class MonitorControl
 	private JCheckBox[] checkAlarm;
 	private JPanel pupdate; //panel with update time
 	private JTextField textUpdate;
-	private JPanel pb; //panel with buttons
+	private JPanel pbutton; //panel with buttons
 	private JButton brecall, bok, bapply, bcancel;
 
 	//widgits for display
@@ -64,37 +72,53 @@ public final class MonitorControl
 	private GoodThread loopThread; //loop to update monitors
 	private boolean configured; //monitors have been configured
 
-	public MonitorControl(
-		Frame frame,
-		Broadcaster broadcaster,
-		MessageHandler msgHandler) {
+	public MonitorControl(Frame frame,
+						  Broadcaster broadcaster,
+						  MessageHandler msgHandler) {
 		super();
 		this.frame = frame;
 		this.broadcaster = broadcaster;
 		this.msgHandler = msgHandler;
-		//dialog panel and widgets for configure Monitors
+
+		//>>dialog to configure Monitors
 		dconfig = new JDialog(frame, " Monitors Setup ", false);
 		Container cdconfig = dconfig.getContentPane();
 		dconfig.setResizable(false);
 		dconfig.setLocation(20, 50);
+
 		int spacing = 5;
 		cdconfig.setLayout(new GridLayout(0, 1, spacing, spacing));
+		pConfig = new JPanel(new BorderLayout());
+		Border border = new EmptyBorder(5,10,0,10);
+		pConfig.setBorder(border);
+		cdconfig.add(pConfig);
 
-		plabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, spacing, spacing));
-		JLabel labelTemp = new JLabel("Name", JLabel.LEFT);
-		plabel.add(labelTemp);
-		labelTemp = new JLabel("Threshold", JLabel.LEFT);
-		plabel.add(labelTemp);
-		labelTemp = new JLabel("Maximum", JLabel.LEFT);
-		plabel.add(labelTemp);
-		labelTemp = new JLabel("Alarm", JLabel.RIGHT);
-		plabel.add(labelTemp);
+		JPanel pUpper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pConfig.add(pUpper, BorderLayout.CENTER);
 
-		/* panel for input fields */
+		//Panel to fill in with monitors
+		pMonitors = new JPanel(new GridLayout(0, 4, 5, 5));
+		pUpper.add(pMonitors);
+
+		labelName = new JLabel("Name", JLabel.CENTER);
+		labelThres = new JLabel("Threshold", JLabel.CENTER);
+		labelMax = new JLabel("Maximum", JLabel.CENTER);
+		labelAlarm = new JLabel("Alarm", JLabel.LEFT);
+		pMonitors.add(labelName);
+		pMonitors.add(labelThres);
+		pMonitors.add(labelMax);
+		pMonitors.add(labelAlarm);
+
+		//Lower panel has widgets that do not change
+		pLower =new JPanel(new GridLayout(0, 1, 0, 0));
+		pConfig.add(pLower, BorderLayout.SOUTH);
+
+		// panel for update time
 		pupdate = new JPanel();
-		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
-		cdconfig.add(pupdate);
+		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		pLower.add(pupdate);
 
+		//panel of update time
 		JLabel lUpdate = new JLabel("Update", JLabel.RIGHT);
 		pupdate.add(lUpdate);
 
@@ -107,9 +131,11 @@ public final class MonitorControl
 		JLabel lunit = new JLabel("sec", JLabel.LEFT);
 		pupdate.add(lunit);
 
-		/* panel for buttons */
-		pb = new JPanel();
-		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
+		/// panel for buttons
+		pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		pLower.add(pbutton);
+		JPanel pb = new JPanel(new GridLayout(1,0,5,5));
+		pbutton.add(pb);
 
 		brecall = new JButton("Recall");
 		brecall.setActionCommand("recall");
@@ -130,20 +156,22 @@ public final class MonitorControl
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
 		pb.add(bcancel);
-		cdconfig.add(pb);
 
-		/* dialog box to display Monitors */
+
+		//>> dialog box to display Monitors
 		ddisp = new JDialog(frame, "Monitors Disabled", false);
 		ddisp.setResizable(false);
 		ddisp.setLocation(20, 50);
 		Container cddisp = ddisp.getContentPane();
 		cddisp.setLayout(new GridLayout(0, 2, 5, 5));
+
 		/* alarm panel for display dialog */
 		pal = new JPanel();
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		checkAudio = new JCheckBox("Audio Alarm", true);
 		checkAudio.addItemListener(this);
 		pal.add(checkAudio);
+
 		/* variable initialization */
 		sortMonitors = false;
 		configured = false;
@@ -265,71 +293,71 @@ public final class MonitorControl
 		cddisp.add(pal);
 		ddisp.pack();
 	}
-	
+
 	/**
 	 * Set up the configuration dialog box.
 	 */
 	private void setupConfig() {
-		Container cdconfig = dconfig.getContentPane();
-		cdconfig.removeAll();
-		cdconfig.add(plabel);
+		//Clear panel
+		pMonitors.removeAll();
+
+		//Add labels of columns
+		pMonitors.add(labelName);
+		pMonitors.add(labelThres);
+		pMonitors.add(labelMax);
+		pMonitors.add(labelAlarm);
+
 		/* widgets for configuration page */
-		pc = new JPanel[numberMonitors];
 		labelConfig = new JLabel[numberMonitors];
 		textThreshold = new JTextField[numberMonitors];
 		textMaximum = new JTextField[numberMonitors];
 		checkAlarm = new JCheckBox[numberMonitors];
-		/* for each monitor make a panel with 
+		/* for each monitor make a panel with
 		 * label, threshold, maximum, and alarm */
 		if (numberMonitors != 0) {
 			for (int i = 0; i < numberMonitors; i++) {
-				pc[i] = new JPanel();
-				pc[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-				cdconfig.add(pc[i]);
 
-				labelConfig[i] = new JLabel("          ", JLabel.RIGHT);
+				labelConfig[i] = new JLabel("          ", JLabel.CENTER);
 				labelConfig[i].setText(monitor[i].getName());
-				pc[i].add(labelConfig[i]);
+				pMonitors.add(labelConfig[i]);
 
 				textThreshold[i] = new JTextField("          ");
 				textThreshold[i].setColumns(6);
 				textThreshold[i].setEditable(true);
 				textThreshold[i].setBackground(Color.white);
 				textThreshold[i].setText("10");
-				pc[i].add(textThreshold[i]);
+				pMonitors.add(textThreshold[i]);
 
 				textMaximum[i] = new JTextField("          ");
 				textMaximum[i].setColumns(6);
 				textMaximum[i].setEditable(true);
 				textMaximum[i].setBackground(Color.white);
 				textMaximum[i].setText("100");
-				pc[i].add(textMaximum[i]);
+				pMonitors.add(textMaximum[i]);
 
-				checkAlarm[i] = new JCheckBox(/*"Alarm"*/
-				);
+				checkAlarm[i] = new JCheckBox(/*"Alarm"*/);
 				checkAlarm[i].setSelected(false);
-				pc[i].add(checkAlarm[i]);
+				pMonitors.add(checkAlarm[i]);
 			}
 		}
-		cdconfig.add(pupdate);
-		cdconfig.add(pb);
+
 		dconfig.pack();
 	}
-	
+
 	/**
 	 * Show the Display dialog box.
 	 */
 	public void showDisplay() {
 		ddisp.show();
 	}
-	
+
 	/**
 	 * Show the configuration dialog box.
 	 */
 	public void showConfig() {
 		dconfig.show();
 	}
-	
+
 	/**
 	 * Recall the monitor's parameters
 	 * and set the input fields.
@@ -345,9 +373,9 @@ public final class MonitorControl
 			plotBar[i].repaint();
 		}
 	}
-	
+
 	/**
-	 * Configure the monitors, i.e. set the values their parameters 
+	 * Configure the monitors, i.e. set the values their parameters
 	 * according to the input fields.
 	 *
 	 * @exception   DataException     <code>DataException</code> tried to add gate to wrong type of histogram
