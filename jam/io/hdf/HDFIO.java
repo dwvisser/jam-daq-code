@@ -12,6 +12,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
+import jam.util.StringUtilities;
 import jam.util.SwingWorker;
 
 import java.awt.Frame;
@@ -77,6 +78,7 @@ public final class HDFIO implements DataIO, JamFileFields {
      */
     private final MessageHandler msgHandler; 
 
+    private StringUtilities stringUtilities;    
     /**
      * <code>HDFile<code> object to read from.
      */
@@ -108,6 +110,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     public HDFIO(Frame parent, MessageHandler console) {
         frame = parent;
         msgHandler = console;
+        stringUtilities = StringUtilities.instance();
         asyncMonitor = new AsyncProgressMonitor(frame);
         jamToHDF = new ConvertJamObjToHDFObj();
         hdfToJam = new ConvertHDFObjToJamObj();
@@ -625,11 +628,12 @@ public final class HDFIO implements DataIO, JamFileFields {
             
             AbstractData.interpretBytesAll();
             
-            asyncMonitor.increment();                
+            asyncMonitor.increment();          
+            String fileName = stringUtilities.removeExtensionFileName(infile.getName());
             if (hdfToJam.hasVGroupRootGroup()) {
-            	convertHDFToJam(mode, existingGroupNames, histNames, infile.getName());
+            	convertHDFToJam(mode, existingGroupNames, histNames, fileName);
             } else {
-            	convertHDFToJamOriginal(mode, infile.getName(), null);
+            	convertHDFToJamOriginal(mode, fileName, histNames);
             }
             
             //Create output message
@@ -1019,7 +1023,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             currentGroup=Group.getCurrentGroup();
         } // else mode == FileOpenMode.ADD, so use current group
         groupCount=0;
-        
+
         histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
 
         final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
