@@ -1,6 +1,4 @@
 package jam.util;
-import java.io.*;
-import java.text.NumberFormat;
 
 /**
  * Contains utilities for manipulating <code>String</code> objects.
@@ -10,6 +8,16 @@ import java.text.NumberFormat;
  * @see	    java.lang.String
  */
 public class StringUtilities {
+	
+	private static final StringUtilities SU=new StringUtilities();
+	
+	private StringUtilities(){
+		super();
+	}
+
+	public static final StringUtilities instance(){
+		return SU;
+	}
 
 	/**
 	 * Truncates a <code>String</code> or pads the end with spaces to make it a 
@@ -19,7 +27,7 @@ public class StringUtilities {
 	 * @param	length	desired number of characters in the <code>String</code>
 	 * @return	<code>String</code> with <code>length</code> characters
 	 */
-	public static String makeLength(String in, int length) {
+	public String makeLength(String in, int length) {
 		String temp = in;
 
 		for (int i = 0; i < length; i++) {
@@ -28,29 +36,4 @@ public class StringUtilities {
 		temp = temp.substring(0, length);
 		return temp;
 	}
-
-	public static byte[] ASCIIarray(String in) {
-		ByteArrayOutputStream bos;
-		DataOutputStream dos;
-		byte[] out;
-
-		bos = new ByteArrayOutputStream(in.length());
-		dos = new DataOutputStream(bos);
-		try {
-			dos.writeBytes(in);
-		} catch (IOException ioe) {
-			System.err.println("StringUtilities.ASCIIarray(): " + ioe);
-		}
-		out = bos.toByteArray();
-		return out;
-	}
-	
-	public static String roundDecimal(double value, int places){
-		NumberFormat fval=NumberFormat.getInstance();
-		fval.setGroupingUsed(false);
-		fval.setMinimumFractionDigits(places);
-		fval.setMaximumFractionDigits(places);
-		return fval.format(value);	
-	}
-
 }
