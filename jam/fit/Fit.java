@@ -1,6 +1,7 @@
 package jam.fit;
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.border.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
 import java.util.*;
@@ -15,14 +16,13 @@ import jam.data.Histogram;
  * fit routine to work with <code>FitControl</code>.  It also contains the dialog box
  * that serves as the user interface.
  *
- * @author  Dale Visser, Ken Swartz
- * @version 0.5, 08/27/98
+ * @author  Dale Visser
+ * @author Ken Swartz
  *
  * @see	    NonLinearFit
  * @see	    GaussianFit
  */
-public abstract class Fit
-	implements ActionListener, ItemListener, PlotMouseListener {
+public abstract class Fit implements ItemListener, PlotMouseListener {
 
 	/*
 	 * Displayed name of <code>Fit</code> routine.
@@ -43,11 +43,6 @@ public abstract class Fit
 	 * Class to send output messages to.
 	 */
 	protected MessageHandler msgHandler;
-
-	/**
-	 * Specification for number output.
-	 */
-	//private NumberFormat numberFormat;      
 
 	/**
 	 * The ordered list of all <code>Parameter</code> objects..
@@ -160,6 +155,8 @@ public abstract class Fit
 	 */
 	private JButton bMouseGet;
 
+	private Parameter[] parameterArray;
+
 	/**
 	 * Class constructor.
 	 *
@@ -207,10 +204,6 @@ public abstract class Fit
 	 */
 	public abstract double calculate(int channel);
 
-	//------------------------
-	//implemented dialog stuff
-	//------------------------
-
 	/**
 	 * Creates user interface dialog box.
 	 *
@@ -225,111 +218,118 @@ public abstract class Fit
 		Display display,
 		MessageHandler msgHandler)
 		throws FitException {
-
-		this.frame = frame;
-		this.display = display;
-		this.msgHandler = msgHandler;
-
-		//set up vector of parameter objects        
 		Parameter parameter;
 		String parName;
 		int parNumber;
 
+		this.frame = frame;
+		this.display = display;
+		this.msgHandler = msgHandler;
 		parameters = getParameters();
 		parNumber = parameters.size();
-		
-		//BorderLayout borderLayout=new BorderLayout();
-
-		// make dialog box
+		parameterArray = new Parameter[parNumber];
+		parameters.toArray(parameterArray);
 		dfit = new JDialog(frame, NAME, false);
 		Container cp = dfit.getContentPane();
 		dfit.setForeground(Color.black);
 		dfit.setBackground(Color.lightGray);
 		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
-		//dfit.setSize(450, (4 + parNumber) * 33);
 		cp.setLayout(new BorderLayout());
-
-		//top panel with histogram name
+		/* top panel with histogram name */
 		JPanel pHistName = new JPanel(new BorderLayout());
-		//pHistName.setLayout(new BorderLayout());
-
-		//JLabel histLabel = ;
-		pHistName.add(new JLabel("Fit Histogram: ",JLabel.RIGHT),BorderLayout.WEST);
+		pHistName.setBorder(LineBorder.createBlackLineBorder());
+		pHistName.add(
+			new JLabel("Fit Histogram: ", JLabel.RIGHT),
+			BorderLayout.WEST);
 		textHistName = new JLabel("     ");
-		//textHistName.setBackground(Color.lightGray);
-		//textHistName.setForeground(Color.black);
-		//textHistName.setEditable(false);
-		//textHistName.setEnabled(false);
-		pHistName.add(textHistName,BorderLayout.CENTER);
+		pHistName.add(textHistName, BorderLayout.CENTER);
 		cp.add(pHistName, BorderLayout.NORTH);
-
-		//bottom panel with status and buttons
+		/* bottom panel with status and buttons */
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(0, 1));
 		cp.add(bottomPanel, BorderLayout.SOUTH);
-
-		//status panel part of bottom panel		
+		/* status panel part of bottom panel */
 		JPanel statusPanel = new JPanel();
-		//int hgap = 10;
-		//int vgap = 5;
 		statusPanel.setLayout(new BorderLayout());
-		statusPanel.add(new JLabel("Status: ",JLabel.RIGHT),BorderLayout.WEST);
+		statusPanel.add(
+			new JLabel("Status: ", JLabel.RIGHT),
+			BorderLayout.WEST);
 		status =
 			new JLabel("OK                                                          ");
-		statusPanel.add(status,BorderLayout.CENTER);
+		statusPanel.add(status, BorderLayout.CENTER);
 		bottomPanel.add(statusPanel);
-
-		//button panel part of bottom panel
+		/* button panel part of bottom panel */
 		JPanel pbut = new JPanel();
-		//vgap = 10;
-		pbut.setLayout(new GridLayout(1,0));
+		pbut.setLayout(new GridLayout(1, 0));
 		bottomPanel.add(pbut);
-
 		bMouseGet = new JButton("Get Mouse");
-		bMouseGet.setActionCommand("get clicks");
-		bMouseGet.addActionListener(this);
+		bMouseGet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initializeMouse();
+				setMouseActive(true);
+			}
+		});
 		pbut.add(bMouseGet);
-
 		JButton bGo = new JButton("Do Fit");
-		bGo.setActionCommand("fitgo");
-		bGo.addActionListener(this);
+		bGo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					setMouseActive(false);
+					setParamValues();
+					getCounts();
+					status.setText("Estimating...");
+					estimate();
+					status.setText("Doing Fit...");
+					status.setText(doFit());
+					updateDisplay();
+					drawFit();
+				} catch (FitException fe) {
+					status.setText(fe.getMessage());
+				}
+			}
+		});
 		pbut.add(bGo);
-
 		JButton bDraw = new JButton("Draw Fit");
-		bDraw.setActionCommand("draw fit");
-		bDraw.addActionListener(this);
+		bDraw.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					drawFit();
+				} catch (FitException fe) {
+					status.setText(fe.getMessage());
+				}
+			}
+		});
 		pbut.add(bDraw);
-
 		JButton bReset = new JButton("Reset");
-		bReset.setActionCommand("reset");
-		bReset.addActionListener(this);
+		bReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					reset();
+				} catch (FitException fe) {
+					status.setText(fe.getMessage());
+				}
+			}
+		});
 		pbut.add(bReset);
-
 		JButton bCancel = new JButton("Cancel");
-		bCancel.setActionCommand("fitcancel");
-		bCancel.addActionListener(this);
+		bCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setMouseActive(false);
+				dfit.dispose();
+			}
+		});
 		pbut.add(bCancel);
 
-		//Layout of parameter widgets 
-		panelParam = new JPanel(new GridLayout(0,1));
-		//gridBag = new GridBagLayout();
-		//panelParam.setLayout(gridBag);
+		/* Layout of parameter widgets */
+		panelParam = new JPanel(new GridLayout(0, 1));
 		cp.add(panelParam, BorderLayout.CENTER);
-		//JPanel paramNames=new JPanel(new GridLayout(0,1));
-		//panelParam.add(paramNames,BorderLayout.WEST);
-		//JPanel paramValues=new JPanel(new GridLayout(0))
-
-		//arrays to hold widgets for each parameter
-		JPanel west=new JPanel(new GridLayout(0,1));
-		JPanel center=new JPanel(new GridLayout(0,1));
-		JPanel east=new JPanel(new GridLayout(0,1));
-		//JPanel [] center=new JPanel[parNumber];
-		//JPanel [] east=new JPanel[parNumber];
-		cp.add(west,BorderLayout.WEST);
-		cp.add(east,BorderLayout.EAST);
-		cp.add(center,BorderLayout.CENTER);
-		
+		JPanel west = new JPanel(new GridLayout(0, 1));
+		JPanel center = new JPanel(new GridLayout(0, 1));
+		JPanel east = new JPanel(new GridLayout(0, 1));
+		cp.add(west, BorderLayout.WEST);
+		cp.add(east, BorderLayout.EAST);
+		cp.add(center, BorderLayout.CENTER);
 		cFixValue = new JCheckBox[parNumber];
 		cEstimate = new JCheckBox[parNumber];
 		cOption = new JCheckBox[parNumber];
@@ -337,85 +337,59 @@ public abstract class Fit
 		textData = new JTextField[parNumber];
 		textError = new JLabel[parNumber];
 		text = new JLabel[parNumber];
-
 		for (int i = 0; i < parameters.size(); i++) {
-			JPanel middle=new JPanel(new GridLayout(1,3));
+			JPanel middle = new JPanel(new GridLayout(1, 3));
 			center.add(middle);
 			parameter = (Parameter) parameters.get(i);
 			parName = parameter.getName();
-			if (parameter.type == Parameter.DOUBLE) {
+			if (parameter.isDouble()) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
-				//textData[i].setBackground(Color.white);
-				//textData[i].setForeground(Color.black);
 				textData[i].setEnabled(true);
-				west.add(new JLabel(parName,JLabel.RIGHT));
+				west.add(new JLabel(parName, JLabel.RIGHT));
 				middle.add(textData[i]);
-			} else if (parameter.type == Parameter.INT) {
+			} else if (parameter.isInteger()) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
-				//textData[i].setBackground(Color.white);
-				//textData[i].setForeground(Color.black);
 				textData[i].setEnabled(true);
-				west.add(new JLabel(parName,JLabel.RIGHT));
+				west.add(new JLabel(parName, JLabel.RIGHT));
 				middle.add(textData[i]);
 
-			} else if (parameter.type == Parameter.TEXT) {
+			} else if (parameter.isText()) {
 				text[i] = new JLabel(formatValue(parameter));
-				//need to chang width more colums
-				//addComponent(text[i], 1, i + 1, 5, 1);
-				west.add(new JLabel(parName,JLabel.RIGHT));
+				west.add(new JLabel(parName, JLabel.RIGHT));
 				middle.add(text[i]);
-			} else if (parameter.type == Parameter.BOOLEAN) {
+			} else if (parameter.isBoolean()) {
 				cOption[i] =
 					new JCheckBox(parName, parameter.getBooleanValue());
 				cOption[i].addItemListener(this);
-				//addComponent(new Label(""), 1, i + 1);
-				//addComponent(cOption[i], 3, i + 1, 3, 1);
 				west.add(cOption[i]);
-
 			}
-			if (parameter.knownOption) {
+			/* Take care of options. */
+			if (parameter.isKnown()) {
 				textKnown[i] = new JTextField("0.0", 8);
-				//textKnown[i].setBackground(Color.white);
-				//textKnown[i].setForeground(Color.black);
 				textKnown[i].setEnabled(true);
-				//addComponent(textKnown[i], 2, i + 1);
 				middle.add(textKnown[i]);
 			}
-			JPanel right=new JPanel(new GridLayout(1,0));
+			JPanel right = new JPanel(new GridLayout(1, 0));
 			east.add(right);
-			// take care of options.
-			if (parameter.errorOption) {
-
+			if (parameter.hasErrorBar()) {
 				textError[i] = new JLabel(formatError(parameter));
-				/*textError[i].setBackground(Color.white);
-				textError[i].setForeground(Color.black);
-				textError[i].setEditable(true);*/
 				textError[i].setEnabled(true);
-				//textError[i].setEditable(false);
-				//middle.add(new Label("\u00b1",JLabel.CENTER));
 				middle.add(textError[i]);
-
 			}
-			if (parameter.fixOption) {
+			if (parameter.canBeFixed()) {
 				cFixValue[i] = new JCheckBox("Fixed", parameter.fix);
 				cFixValue[i].addItemListener(this);
 				right.add(cFixValue[i]);
 			}
-			if (parameter.estimateOption) {
-
+			if (parameter.canBeEstimated()) {
 				cEstimate[i] = new JCheckBox("Estimate", parameter.estimate);
 				cEstimate[i].addItemListener(this);
 				right.add(cEstimate[i]);
 			}
-
-			if (parameter.outputOption) {
-				//textData[i].setBackground(Color.lightGray);
+			if (parameter.isOutputOnly()) {
 				textData[i].setEnabled(false);
-
 			}
-		}
-		//loop for all parameters
-
+		} //loop for all parameters
 		dfit.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				setMouseActive(false);
@@ -449,44 +423,6 @@ public abstract class Fit
 	}
 
 	/**
-	 * Takes action when user initiates one.
-	 *
-	 * @param	ae  action message initiated by user
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		String command = ae.getActionCommand();
-
-		try {
-
-			if (command == "fitcancel") {
-				setMouseActive(false);
-				dfit.dispose();
-			} else if (command == "fitgo") {
-				setMouseActive(false);
-				setParamValues();
-				getCounts();
-				status.setText("Estimating...");
-				estimate();
-				status.setText("Doing Fit...");
-				status.setText(doFit());
-				updateDisplay();
-				drawFit();
-			} else if (command == "draw fit") {
-				drawFit();
-			} else if (command == "updatehist") {
-				updateHist();
-			} else if (command == "reset") {
-				reset();
-			} else if (command == "get clicks") {
-				setInit();
-				setMouseActive(true);
-			}
-		} catch (FitException fe) {
-			status.setText(fe.getMessage());
-		}
-	}
-
-	/**
 	 * Takes action when a checkbox is toggled.
 	 *
 	 * @param	ie  item which changed
@@ -495,22 +431,17 @@ public abstract class Fit
 		try {
 			for (int i = 0; i < parameters.size(); i++) {
 				Parameter par = (Parameter) (parameters.get(i));
-
-				if ((par.options & Parameter.FIX) != 0) {
+				if (par.isFixable()) {
 					if (ie.getItemSelectable() == cFixValue[i]) {
 						setFixed(par, i);
 					}
-
 				}
-
 				if (par.canBeEstimated()) {
 					if (ie.getItemSelectable() == cEstimate[i]) {
 						setEstimate(par, i);
 					}
-
 				}
-
-				if (par.type == Parameter.BOOLEAN) {
+				if (par.isBoolean()) {
 					if (ie.getItemSelectable() == cOption[i]) {
 						par.setValue(cOption[i].isSelected());
 					}
@@ -528,8 +459,8 @@ public abstract class Fit
 		while (parameterEnum.hasNext()) {
 			Parameter parameter = (Parameter) parameterEnum.next();
 			mouseClickCount++;
-			if (parameter.mouseOption && (!parameter.isFix())) {
-				textData[mouseClickCount - 1].setBackground(Color.white);
+			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
+				textData[mouseClickCount - 1].setForeground(Color.BLACK);
 				textData[mouseClickCount - 1].setText("" + p.x);
 				break;
 			}
@@ -542,36 +473,29 @@ public abstract class Fit
 	/**
 	 * Set the state to enter values using mouse
 	 */
-	private void setInit() {
+	private void initializeMouse() {
 		mouseClickCount = 0;
+		ArrayList tempList = new ArrayList();
 		for (int i = 0; i < parameters.size(); i++) {
 			Parameter parameter = (Parameter) parameters.get(i);
-			if (parameter.isNumberField()) {
-				if (parameter.mouseOption && (!parameter.isFix())) {
-					textData[i].setBackground(Color.red);
-					if (parameter.errorOption) {
-						textError[i].setBackground(Color.white);
-					}
-				} else if (parameter.outputOption) {
-					textData[i].setBackground(Color.lightGray);
-					if (parameter.errorOption) {
-						textError[i].setBackground(Color.lightGray);
-					}
-				} else {
-					textData[i].setBackground(Color.white);
-					if (parameter.errorOption) {
-						if (parameter.isFix()) {
-							textError[i].setBackground(Color.lightGray);
-						} else {
-							textError[i].setBackground(Color.white);
-						}
-					}
-				}
-				if (parameter.knownOption) {
-					textKnown[i].setBackground(Color.white);
-				}
+			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
+				textData[i].setForeground(Color.RED);
+				tempList.add(parameter);
 			}
 		}
+		if (tempList.size() > 0) {
+			String temp = "Click spectrum to set: ";
+			temp += ((Parameter) tempList.get(0)).getName();
+			if (tempList.size() > 1) {
+				for (int i = 1; i < (tempList.size() - 1); i++) {
+					temp += ", " + ((Parameter) tempList.get(i)).getName();
+				}
+				temp += " and "
+					+ ((Parameter) tempList.get(tempList.size() - 1)).getName();
+			}
+			status.setText(temp);
+		}
+
 		parameterEnum = parameters.iterator();
 	}
 
@@ -581,47 +505,46 @@ public abstract class Fit
 	 */
 	private void setParamValues() throws FitException {
 		Parameter parameter = null;
-		try {
-			for (int i = 0; i < parameters.size(); i++) {
+		for (int i = 0; i < parameters.size(); i++) {
+			try {
 				parameter = (Parameter) parameters.get(i);
-				if (parameter.type == Parameter.DOUBLE) {
-					((Parameter) (parameters.get(i))).setValue(
+				if (parameter.isDouble()) {
+					parameter.setValue(
 						Double
 							.valueOf(textData[i].getText().trim())
 							.doubleValue());
-					if (parameter.errorOption) {
-						((Parameter) (parameters.get(i))).setError(
+					if (parameter.hasErrorBar()) {
+						parameter.setError(
 							Double
-								.valueOf(textError[i].getText().trim())
+								.valueOf(
+									textError[i].getText().substring(1).trim())
 								.doubleValue());
 					}
-					if (parameter.knownOption) {
-						((Parameter) (parameters.get(i))).setKnown(
+					if (parameter.isKnown()) {
+						parameter.setKnown(
 							Double
 								.valueOf(textKnown[i].getText().trim())
 								.doubleValue());
 					}
-				} else if (parameter.getType() == Parameter.INT) {
-					((Parameter) (parameters.get(i))).setValue(
+				} else if (parameter.isInteger()) {
+					parameter.setValue(
 						Integer
 							.valueOf(textData[i].getText().trim())
 							.intValue());
-					if (parameter.knownOption) {
-						((Parameter) (parameters.get(i))).setKnown(
-							Double
+					if (parameter.isKnown()) {
+						parameter.setKnown(
+							Integer
 								.valueOf(textKnown[i].getText().trim())
-								.doubleValue());
+								.intValue());
 					}
 				} else if (parameter.isBoolean()) {
-					((Parameter) (parameters.get(i))).setValue(
-						cOption[i].isSelected());
+					parameter.setValue(cOption[i].isSelected());
 				}
-
+			} catch (NumberFormatException nfe) {
+				clear();
+				throw new FitException(
+					"Invalid input, parameter: " + parameter.getName());
 			}
-		} catch (NumberFormatException nfe) {
-			clear();
-			throw new FitException(
-				"Invalid input, parameter: " + parameter.getName());
 		}
 	}
 
@@ -629,29 +552,25 @@ public abstract class Fit
 	 * Update all fields in the dialog after performing a fit.
 	 */
 	private void updateDisplay() throws FitException {
-
-		Parameter parameter;
-
 		updateHist();
-
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.get(i);
-			if (parameter.isTextField() && parameter.type != Parameter.TEXT) {
+			Parameter parameter = (Parameter) parameters.get(i);
+			if (parameter.isDouble() || parameter.isInteger()) {
 				textData[i].setText(formatValue(parameter));
-				if (parameter.isFix()) {
+				if (parameter.isFixed()) {
 					textData[i].setBackground(Color.lightGray);
 				} else {
 					textData[i].setBackground(Color.yellow);
 				}
-				if (parameter.errorOption) {
+				if (parameter.hasErrorBar()) {
 					textError[i].setText(formatError(parameter));
-					if (parameter.isFix()) {
+					if (parameter.isFixed()) {
 						textError[i].setBackground(Color.lightGray);
 					} else {
 						textError[i].setBackground(Color.yellow);
 					}
 				}
-				if (parameter.knownOption) {
+				if (parameter.isKnown()) {
 					textKnown[i].setBackground(Color.lightGray);
 				}
 			}
@@ -668,14 +587,14 @@ public abstract class Fit
 
 		for (int i = 0; i < parameters.size(); i++) {
 			parameter = (Parameter) parameters.get(i);
-			if (parameter.type == Parameter.DOUBLE) {
+			if (parameter.isDouble()) {
 				parameter.setValue(0.0);
 				textData[i].setText(formatValue(parameter));
-			} else if (parameter.type == Parameter.INT) {
+			} else if (parameter.isInteger()) {
 				parameter.setValue(0);
 				textData[i].setText(formatValue(parameter));
 			}
-			if (parameter.errorOption) {
+			if (parameter.hasErrorBar()) {
 				parameter.setError(0.0);
 				textError[i].setText(formatError(parameter));
 			}
@@ -688,16 +607,16 @@ public abstract class Fit
 			Parameter parameter = (Parameter) parameters.get(i);
 			if (!parameter.isBoolean()) {
 				// text field backgrounds				    	    		    
-				if (parameter.outputOption) {
+				if (parameter.isOutputOnly()) {
 					textData[i].setBackground(Color.lightGray);
-					if (parameter.errorOption) {
+					if (parameter.hasErrorBar()) {
 						textError[i].setBackground(Color.lightGray);
 					}
 				} else {
-					if (parameter.type != Parameter.TEXT) {
+					if (!parameter.isText()) {
 						textData[i].setBackground(Color.white);
-						if (parameter.errorOption) {
-							if (parameter.isFix()) {
+						if (parameter.hasErrorBar()) {
+							if (parameter.isFixed()) {
 								textError[i].setBackground(Color.lightGray);
 							} else {
 								textError[i].setBackground(Color.white);
@@ -705,13 +624,13 @@ public abstract class Fit
 						}
 					}
 				}
-				if (parameter.knownOption) {
+				if (parameter.isKnown()) {
 					textKnown[i].setBackground(Color.white);
 				}
-				if (parameter.fixOption) {
+				if (parameter.isFixed()) {
 					setFixed(parameter, i);
 				}
-				if (parameter.estimateOption) {
+				if (parameter.canBeEstimated()) {
 					setEstimate(parameter, i);
 				}
 			}
@@ -731,12 +650,12 @@ public abstract class Fit
 		// fixed value
 		if (state) {
 			textData[index].setBackground(Color.white);
-			if (param.estimateOption) {
+			if (param.canBeEstimated()) {
 				cEstimate[index].setSelected(false);
 				param.setEstimate(false);
 				cEstimate[index].setEnabled(false);
 			}
-			if (param.errorOption) {
+			if (param.hasErrorBar()) {
 				param.setError(0.0);
 				textError[index].setText(formatError(param));
 				//textError[index].setBackground(Color.lightGray);
@@ -745,10 +664,10 @@ public abstract class Fit
 			//not a fixed value
 		} else {
 			textData[index].setBackground(Color.white);
-			if (param.estimateOption) {
+			if (param.canBeEstimated()) {
 				cEstimate[index].setEnabled(true);
 			}
-			if (param.errorOption) {
+			if (param.hasErrorBar()) {
 				//textError[index].setBackground(Color.white);
 				textError[index].setEnabled(true);
 			}
@@ -845,15 +764,12 @@ public abstract class Fit
 	 * Gets counts from currently displayed <code>Histogram</code>
 	 */
 	private void getCounts() throws FitException {
-		int[] ia;
-		int j;
-
 		try {
 			Histogram h = display.getHistogram();
 			if (h.getType() == Histogram.ONE_DIM_INT) {
-				ia = (int[]) h.getCounts();
+				int[] ia = (int[]) h.getCounts();
 				counts = new double[ia.length];
-				for (j = 0; j < ia.length; j++) {
+				for (int j = 0; j < ia.length; j++) {
 					counts[j] = ia[j];
 				}
 			} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
@@ -869,11 +785,11 @@ public abstract class Fit
 	 * Formats values in number text fields.
 	 */
 	private String formatValue(Parameter param) throws FitException {
-		String temp = "Invalid Type";//default return value
-		if (param.type == Parameter.DOUBLE) {
-			double value = param.valueDbl;
-			double error = param.errorDbl;
-			if (param.errorOption) {
+		String temp = "Invalid Type"; //default return value
+		if (param.isDouble()) {
+			double value = param.getDoubleValue();
+			double error = param.getDoubleError();
+			if (param.hasErrorBar()) {
 				temp = format(value, error)[0];
 			} else {
 				int integer = (int) log10(Math.abs(value));
@@ -881,18 +797,19 @@ public abstract class Fit
 				int fraction = Math.max(4 - integer, 0);
 				temp = format(value, integer, fraction);
 			}
-		} else if (param.type == Parameter.INT) {
-			temp = (new Integer(param.valueInt)).toString().trim();
-		} else if (param.type == Parameter.TEXT) {
-			temp = param.valueTxt;
+		} else if (param.isInteger()) {
+			temp = (new Integer(param.getIntValue())).toString().trim();
+		} else if (param.isText()) {
+			temp = param.getText();
 		}
 		return temp;
 	}
 
 	private String formatError(Parameter param) throws FitException {
-		if (!param.errorOption)
+		if (!param.hasErrorBar())
 			throw new FitException("No error term for this parameter.  Can't formatError().");
-		return "\u00b1 "+format(param.valueDbl, param.errorDbl)[1];
+		return "\u00b1 "
+			+ format(param.getDoubleValue(), param.getDoubleError())[1];
 	}
 
 	/**
@@ -903,9 +820,9 @@ public abstract class Fit
 	 */
 
 	/*private void addComponent(Component component, int gridx, int gridy) {
-
+	
 		addComponent(component, gridx, gridy, 1, 1);
-
+	
 	}*/
 
 	/**
@@ -920,25 +837,25 @@ public abstract class Fit
 		int gridy,
 		int width,
 		int height) {
-
+	
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = gridx;
-
+	
 		gbc.gridy = gridy;
 		gbc.ipadx = 0;
-
+	
 		gbc.ipady = 0;
-
+	
 		gbc.gridwidth = width;
-
+	
 		gbc.gridheight = height;
-
+	
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-
+	
 		gbc.anchor = GridBagConstraints.EAST;
-
+	
 		gridBag.setConstraints(component, gbc);
-
+	
 		panelParam.add(component);
 	}*/
 
