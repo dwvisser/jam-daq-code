@@ -111,13 +111,9 @@ public final class JamStatus {
 			}
 			sortMode = mode;
 		}
-		/*for (Iterator it = sortModeListeners.iterator(); it.hasNext();) {
-			final SortModeListener sml = (SortModeListener) it.next();
-			sml.sortModeChanged();
-		}*/
 		broadcaster.broadcast(BroadcastEvent.SORT_MODE_CHANGED);
 	}
-
+	
 	/**
 	 * @return true is the mode can be changed
 	 */
