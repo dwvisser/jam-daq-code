@@ -30,20 +30,20 @@ public abstract class StorageDaemon extends GoodThread {
 
 	protected int mode;
 	protected Controller controller;
-	MessageHandler msgHandler;
+	protected MessageHandler msgHandler;
 
 	protected byte buffer[];
 	protected RingBuffer ringBuffer;
 
-	File inputFile;
-	File outputFile;
+	protected File inputFile;
+	protected File outputFile;
 
 	boolean inputFileOpen;
 	boolean outputFileOpen;
 
 	//files to sort in a list
-	List sortFilesList;
-	Iterator sortFiles;
+	protected List sortFilesList;
+	protected Iterator sortFiles;
 
 	protected FileOutputStream fos;
 	protected BufferedOutputStream bos;
@@ -56,9 +56,9 @@ public abstract class StorageDaemon extends GoodThread {
 	protected DataInputStream dis;
 	protected EventInputStream eventInput;
 
-	int bufferCount = 0;
-	int byteCount = 0;
-	int fileCount = 0;
+	protected int bufferCount = 0;
+	protected int byteCount = 0;
+	protected int fileCount = 0;
 
 	/**
 	 * Constructor for online and offline sorting and writing out data.
@@ -68,13 +68,10 @@ public abstract class StorageDaemon extends GoodThread {
 	 * @param msgHandler handle to the console for writing messages to the user
 	 */
 	StorageDaemon(Controller controller, MessageHandler msgHandler) {
-
 		this.controller = controller;
 		this.msgHandler = msgHandler;
-
-		//priority one higher than display		    
-		this.setPriority(7);
-		this.setDaemon(true);
+		setPriority(ThreadPriorities.STORAGE);//normally 7-9 reserved for
+		setDaemon(true);
 		inputFileOpen = false;
 		outputFileOpen = false;
 	}

@@ -83,8 +83,9 @@ public  class NetDaemon extends GoodThread {
         } catch (IOException e) {
             throw new SortException(getClass().getName()+": Could not create data socket.");
         }
-        this.setPriority(9);//high priority, normal=5
-        this.setDaemon(true);
+        setPriority(ThreadPriorities.NET);
+        setDaemon(true);//the user doesn't interact with this thread
+        setName("UDP/IP Data Buffer Receiver");
     }
     
     /**

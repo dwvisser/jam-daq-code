@@ -87,6 +87,7 @@ public class SortDaemon extends GoodThread {
     public SortDaemon(Controller con, MessageHandler mh){
         controller=con;
         msgHandler=mh;
+        setName("Event Sorter");
     }
 
     /**
@@ -109,11 +110,9 @@ public class SortDaemon extends GoodThread {
         }
         if(mode==ONLINE){
             ringInputStream= new RingInputStream();//input stream converts array to stream
-            this.setPriority(3);//one lower than display
-        } else {//two lower than display
-            this.setPriority(2);
         }
-        this.setDaemon(true);
+        setPriority(ThreadPriorities.SORT);
+        setDaemon(true);
     }
 
     /**
@@ -246,7 +245,6 @@ public class SortDaemon extends GoodThread {
 
 	/**
 	 * Call to gracefully interrupt and end the current offline sort.
-	 *
 	 */
 	public void cancelOfflineSorting(){
 		offlineSortingCanceled=true;

@@ -64,6 +64,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         this.broadcaster=broadcaster;
         this.console=console;
         active=false;
+        setName("Network Messenger");
     }
 
     /** Sets up networking.  Two udp sockets are created: one for 
@@ -106,9 +107,9 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
                 throw new JamException(getClass().getName()+": Problem creating receive socket");
             }
             // setup and start receiving deamon
-            this.setDaemon(true);
-            this.setPriority(6);      //one higher than main display
-            this.start();
+            setDaemon(true);
+            setPriority(jam.sort.ThreadPriorities.MESSAGING);
+            start();
             active=true;
             debug(JamProperties.getBooleanProperty(JamProperties.FRONTEND_DEBUG));
             verbose(JamProperties.getBooleanProperty(JamProperties.FRONTEND_VERBOSE));

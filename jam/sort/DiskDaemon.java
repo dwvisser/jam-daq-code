@@ -17,7 +17,9 @@ public class DiskDaemon extends StorageDaemon {
 	 */
 	public DiskDaemon(Controller controller, MessageHandler msgHandler) {
 		super(controller, msgHandler);
+		setName("Disk I/O for Event Data");
 	}
+	
 	/**
 	 * set the path of the tape device 
 	 */
@@ -76,7 +78,6 @@ public class DiskDaemon extends StorageDaemon {
 				if (mode == OFFLINE) {
 					eventOutput.writeEndRun();
 				}
-				//unnecessary, I think eventOutput.flush();
 				bos.flush();
 				fos.close();
 				this.outputFile = null;
@@ -86,7 +87,6 @@ public class DiskDaemon extends StorageDaemon {
 					"Unable to close file EventException:"
 						+ ee.getMessage()
 						+ " [DiskDaemon]");
-
 			} catch (IOException ioe) {
 				throw new SortException("Unable to close file [DiskDaemon]");
 			}
@@ -114,9 +114,9 @@ public class DiskDaemon extends StorageDaemon {
 	 * until you see a end of run marker, then inform controller
 	 */
 	private void writeLoop() throws IOException {
-		/* checkState() waits until state is STOP or RUN 
-		 * to return a value */	
-		while (this.checkState()) {
+		/* checkState() waits until state is STOP (return value=false)
+		 * or RUN (return value=true) */	
+		while (checkState()) {
 			//read from pipe and write file
 			buffer = ringBuffer.getBuffer();
 			final int bytesIn = buffer.length;
@@ -150,11 +150,9 @@ public class DiskDaemon extends StorageDaemon {
 	 */
 	public boolean openEventInputListFile() {
 		boolean goodHeader = false;
-		//String fileName = (String) (sortFiles.next());
 		final File file = (File)sortFiles.next();
-		// local open file method
 		try {
-			openEventInputFile(file);
+			openEventInputFile(file);// local open file method
 			goodHeader = eventInput.readHeader();
 			if (goodHeader) {
 				fileCount++;
@@ -162,9 +160,7 @@ public class DiskDaemon extends StorageDaemon {
 				msgHandler.errorOutln(
 					"File does not have correct header. File: " + file.getAbsolutePath());
 			}
-
 			return goodHeader;
-
 		} catch (EventException ee) {
 			msgHandler.errorOutln(ee.getMessage());
 			return false;
@@ -173,12 +169,12 @@ public class DiskDaemon extends StorageDaemon {
 			return false;
 		}
 	}
+	
 	/**
-	 * close event input file that is from the list
-	 * only close if one from the list is open
+	 * Close event input file that is from the list,
+	 * if one from the list is open.
 	 */
 	public boolean closeEventInputListFile() {
-
 		try {
 			closeEventInputFile();
 			return true;
@@ -187,7 +183,6 @@ public class DiskDaemon extends StorageDaemon {
 				"Unable to close file: " + inputFile.getPath() + "[DiskDaemon]");
 			return false;
 		}
-
 	}
 
 	/**
@@ -214,7 +209,6 @@ public class DiskDaemon extends StorageDaemon {
 	 * @exception SortException thrown for unrecoverable errors
 	 */
 	public void writeHeader() throws SortException {
-
 		try {
 			eventOutput.writeHeader();
 		} catch (EventException ioe) {
@@ -229,21 +223,14 @@ public class DiskDaemon extends StorageDaemon {
 	 * @exception SortException thrown for unrecoverable errors
 	 */
 	public boolean readHeader() throws SortException {
-
-		int headerSize = RECORD_SIZE;
-		boolean goodHeader = false;
-		BufferedInputStream headerInputStream =
-			new BufferedInputStream(fis, headerSize);
-
+		final BufferedInputStream headerInputStream =
+			new BufferedInputStream(fis, RECORD_SIZE);
 		try {
-
 			eventInput.setInputStream(headerInputStream);
-			goodHeader = eventInput.readHeader();
+			boolean goodHeader = eventInput.readHeader();
 			return goodHeader;
-
 		} catch (EventException ioe) {
 			throw new SortException("Could not read Header Record [DiskDaemon]");
-
 		}
 
 	}
