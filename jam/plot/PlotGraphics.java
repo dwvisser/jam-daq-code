@@ -21,7 +21,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.print.PageFormat;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
  * Class of a library of methods to draw things for a graph. First the update
@@ -136,7 +135,7 @@ final class PlotGraphics {
 
 	private Font screenFont; //Screen Font
 
-	private Font printFont; //Printing Font
+	//private Font printFont; //Printing Font
 
 	/**
 	 * Full constructor, all contructors eventually call this one. Other
@@ -171,12 +170,13 @@ final class PlotGraphics {
 				graphLayout.BORDER_BOTTOM, graphLayout.BORDER_RIGHT);
 		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD,
 				(int) graphLayout.SCREEN_FONT_SIZE);
-		printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN,
-				graphLayout.PRINT_FONT_SIZE);
+		//TODO use printFont
+		/*printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN,
+				graphLayout.PRINT_FONT_SIZE);*/
 		setGraphicsFont(screenFont);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Set the font used on the plot.
 	 */
 	final synchronized void setGraphicsFont(Font f) {
@@ -205,7 +205,7 @@ final class PlotGraphics {
 	 * 
 	 * @param graph
 	 *            the Graphics object
-	 * @param viewSize
+	 * @param newViewSize
 	 *            the viewable size of the canvas in pixels
 	 * @param limits
 	 *            the limits of the plot
@@ -289,7 +289,6 @@ final class PlotGraphics {
 	 *            the title
 	 * @param side
 	 *            the side on which to draw the title
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawTitle(String title, int side) {
@@ -329,10 +328,9 @@ final class PlotGraphics {
 		g.setColor(c);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draws the date in the upper right hand corner
 	 * 
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawDate(String sdate) {
@@ -341,10 +339,9 @@ final class PlotGraphics {
 		g.drawString(sdate, x, y);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draws the run number in the upper left hand corner
 	 * 
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawRun(int runNumber) {
@@ -359,7 +356,6 @@ final class PlotGraphics {
 	 * the plot including the borders we have to subtract one from the width and
 	 * height. as drawRect(x,y,dx,dy) draws at x, y and at x+dx, y+dy.
 	 * 
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawBorder() {
@@ -370,7 +366,6 @@ final class PlotGraphics {
 	 * Draws the tickmarks on for a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawTicks(int side) {
@@ -393,7 +388,6 @@ final class PlotGraphics {
 	 * @param lowerLimit
 	 * @param upperLimit
 	 * @param scale
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void ticksBottom(int lowerLimit, int upperLimit) {
@@ -424,7 +418,6 @@ final class PlotGraphics {
 	 * @param lowerLimit
 	 * @param upperLimit
 	 * @param scale
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void ticksLeft(int lowerLimit, int upperLimit, Scale scale) {
@@ -479,14 +472,12 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
-	 * Draws the Labels on for the bottom side of a plot
+	/*
+	 * non-javadoc: Draws the Labels on for the bottom side of a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
-
 	private void labelsBottom(int lowerLimit, int upperLimit) {
 		final Scale scale = Scale.LINEAR;
 		final int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
@@ -501,11 +492,10 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
-	 * Draws the Labels on for the left side of a plot
+	/*
+	 * non-javadoc: Draws the Labels on for the left side of a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void labelsLeft(int lowerLimit, int upperLimit, Scale scale) {
@@ -525,11 +515,10 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draws the axis Labels on for a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawAxisLabel(String label, int side) {
@@ -541,11 +530,10 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draws the axis Labels on for the bottom side of a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void axisLabelBottom(String label) {
@@ -556,11 +544,10 @@ final class PlotGraphics {
 		g.drawString(label, x, y);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draws the axis Labels on for the left side of a plot
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void axisLabelLeft(String label) {
@@ -575,11 +562,10 @@ final class PlotGraphics {
 		g.setTransform(original);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Histogram a plot with double count array
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawHist(double[] counts, double binWidth) {
@@ -587,11 +573,10 @@ final class PlotGraphics {
 		drawHist(counts, binWidth, scale != Scale.LINEAR);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Plot a line graph
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawLine(double[] channel, double[] countsdl) {
@@ -603,13 +588,12 @@ final class PlotGraphics {
 
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draw a histogram for linear scale. Stair step, step up at channel
 	 * beginning.
 	 * 
 	 * @param counts
 	 *            to draw
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	private void drawHist(double[] counts, double binWidth, boolean log) {
@@ -718,7 +702,7 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Plot a line graph, Log scale
 	 * 
 	 * @param side
@@ -756,18 +740,9 @@ final class PlotGraphics {
 	 * 
 	 * @param colors
 	 *            colors to use
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawScale2d(DiscreteColorScale colors) {
-		//int lowerLimit = minCount;
-		//int upperLimit = maxCount;
-		//numberColors = colors.length;
-		//colorThresholds = new int[numberColors];
-		/*
-		 * colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
-		 * numberColors, plotLimits.getScale());
-		 */
 		colors.setRange(minCount, maxCount);
 		final int[] colorThresholds = colors.getColorThresholds();
 		final int numberColors = colorThresholds.length;
@@ -832,7 +807,7 @@ final class PlotGraphics {
 		for (int row = 0; row < scaleHeight; row++) {
 			int y = viewBottom - row;
 			if (plotLimits.getScale() == Scale.LINEAR) {
-				level = lowerLimit + (double) row * (highEnd - lowEnd)
+				level = lowerLimit + row * (highEnd - lowEnd)
 						/ scaleHeight;
 			} else { //log scale
 				level = lowEnd
@@ -845,14 +820,13 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draw a 2d plot.
 	 * 
 	 * @param counts
 	 *            the counts to be displayed
 	 * @param colors
 	 *            the colors to use
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
@@ -902,14 +876,13 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draw a 2d plot.
 	 * 
 	 * @param counts
 	 *            the counts to be displayed
 	 * @param colors
 	 *            the colors to use
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
@@ -936,14 +909,13 @@ final class PlotGraphics {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draw a 1d Gate
 	 * 
 	 * @param ll
 	 *            lower limit
 	 * @param ul
 	 *            upper limit
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawGate1d(int ll, int ul, boolean noFillMode) {
@@ -964,7 +936,6 @@ final class PlotGraphics {
 	 * 
 	 * @param gate
 	 *            the array to be displayed
-	 * @return <code>void</code>
 	 */
 	void drawGate2d(boolean[][] gate) {
 		for (int j = minY; j <= maxY; j++) { // for each point
@@ -988,7 +959,6 @@ final class PlotGraphics {
 	 * 
 	 * @param gatePoints
 	 *            gate points to be drawn (in graphics coordinates)
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void settingGate1d(Polygon gatePoints) {
@@ -1154,7 +1124,6 @@ final class PlotGraphics {
 	 * 
 	 * @param gatePoints
 	 *            the points of the gate to be drawn
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void settingGate2d(Polygon gatePoints) {
@@ -1174,8 +1143,8 @@ final class PlotGraphics {
 		return new Polygon(x, y, n);
 	}
 
-	/**
-	 * Mark a channel for 1d
+	/* non-javadoc:
+	 * Mark a channel for 1d.
 	 */
 	void markChannel1d(int channel, double count) {
 		int y2;
@@ -1224,7 +1193,7 @@ final class PlotGraphics {
 		g.setColor(initColor);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Mark a channel for 2d
 	 */
 	void markChannel2d(Bin p) {
@@ -1235,7 +1204,7 @@ final class PlotGraphics {
 				- graphLayout.MARK_OFFSET);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Mark an area in a 1 d plot
 	 * 
 	 * @lowChan lower channel
@@ -1285,11 +1254,10 @@ final class PlotGraphics {
 		g.fill(r);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Draw a line in data co-ordinates
 	 * 
 	 * @param side
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void drawDataLine(int x1, int y1, int x2, int y2) {
@@ -1297,7 +1265,7 @@ final class PlotGraphics {
 				toViewVertLin(y2));
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert to data corodinates, given a screeen point. These routines do not
 	 * have to be as fast as the to view ones, as it is not very often we want
 	 * to go this way. The ones that return int are faster.
@@ -1307,7 +1275,7 @@ final class PlotGraphics {
 				toDataVert(viewPoint.y));
 	}
 
-	/**
+	/* non-javadoc:
 	 * Give the horizontal plot coordinate for the given graphics horizontal
 	 * coodinate.
 	 */
@@ -1324,7 +1292,7 @@ final class PlotGraphics {
 		return data;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Give the vertical plot coordinate for the given graphics vertical
 	 * coordinate.
 	 */
@@ -1341,16 +1309,16 @@ final class PlotGraphics {
 		return data;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert data point to view point
 	 */
-	public Point toViewLin(Bin dataPoint) {
+	Point toViewLin(Bin dataPoint) {
 		Point viewPoint = new Point(toViewHorzLin(dataPoint.getX()),
 				toViewVertLin(dataPoint.getY()));
 		return (viewPoint);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get the middle point of the plot usefull for drawing title and labels
 	 */
 	private Point viewMiddle() {
@@ -1366,7 +1334,7 @@ final class PlotGraphics {
 		g.clipRect(viewLeft, viewTop, viewWidth + 1, viewHeight + 1);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert horizontal channel coordinate to the graphics coordinate which
 	 * represents the "low" (left) side of the bin.
 	 */
@@ -1375,7 +1343,7 @@ final class PlotGraphics {
 		return view;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert vertical channel coordinate to the graphics coordinate which
 	 * represents the "low" (bottom) side of the bin.
 	 */
@@ -1384,7 +1352,7 @@ final class PlotGraphics {
 		return view;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert vertical data to vertical view (screen) screen vertical linear
 	 * scale.
 	 */
@@ -1401,12 +1369,11 @@ final class PlotGraphics {
 		return view;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert data vertical to view vertical for Log scale
 	 */
 	private int toViewVertLog(double data) {
 		final int view;
-
 		final double dataLog = takeLog(data);
 		if (dataLog > maxYLog) {
 			view = viewTop;
@@ -1418,40 +1385,13 @@ final class PlotGraphics {
 		return view;
 	}
 
-	/**
-	 * Take the log of a data point if valid to otherwise return fake zero
-	 * 
-	 * @param point
-	 *            point to take log of
-	 */
-	private double takeLog(int point) {
-		if (point > 0) {
-			return (Math.log((double) point));
-		} else {
-			return (Math.log(LOG_FAKE_ZERO));
-		}
-	}
-
-	/**
+	/* non-javadoc:
 	 * Take the log of a data point if valid to otherwise return fake zero
 	 * 
 	 * @param point
 	 *            point to take log of
 	 */
 	private double takeLog(double point) {
-		if (point > 0.0) {
-			return (Math.log(point));
-		} else {
-			return (Math.log(LOG_FAKE_ZERO));
-		}
-	}
-
-	/**
-	 * The screen font
-	 * 
-	 * @return
-	 */
-	Font printFont() {
-		return screenFont;
+		return Math.log(point > 0.0 ? point : LOG_FAKE_ZERO);
 	}
 }
