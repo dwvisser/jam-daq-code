@@ -10,6 +10,7 @@ import jam.sort.Controller;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.StorageDaemon;
+import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -20,28 +21,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
-import java.util.Vector;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.FileReader;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -71,7 +66,8 @@ public final class SortControl extends JDialog implements Controller {
 	private File outDirectory; //directory we last output files to.
 
 	private boolean writeEvents;
-
+	
+	private MultipleFileChooser multipleFileChooser;
 	/**
 	 * Text field for output file
 	 */
@@ -80,26 +76,17 @@ public final class SortControl extends JDialog implements Controller {
 	/** check box for writing out events */
 	private final JCheckBox cout;
 
-	private final JPanel pdiskfiles;
-
-	private final JList listEventFiles;
-
-	private final DefaultListModel eventFileModel;
-
-	private final JButton addfile, addDir, loadlist, remove, removeAll,
-			savelist;
-
-	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
-
 	/**
 	 * button to get file brower
 	 */
 	private final JButton bbrowse;
 
-	String defaultEvents;
+	private String defaultEvents;
 
-	String defaultOutputFile;
-
+	private String defaultOutputFile;
+	
+	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
+	
 	private static SortControl instance = null;
 
 	/**
@@ -115,6 +102,7 @@ public final class SortControl extends JDialog implements Controller {
 
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);
+		
 		msgHandler = STATUS.getMessageHandler();
 		jamMain = STATUS.getFrame();
 		defaultEvents = JamProperties
@@ -135,69 +123,15 @@ public final class SortControl extends JDialog implements Controller {
 		ptop.add(new JLabel("Event Files to Sort", JLabel.RIGHT));
 
 		//List Panel
-		pdiskfiles = new JPanel(new BorderLayout(5, 5));
-		pdiskfiles.setBorder(new EmptyBorder(0, 0, 0, 20));
-		cd.add(pdiskfiles, BorderLayout.CENTER);
-
-		eventFileModel = new DefaultListModel();
-		listEventFiles = new JList(eventFileModel);
-		listEventFiles
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		pdiskfiles.add(new JScrollPane(listEventFiles), BorderLayout.CENTER);
-
-		//Commands Panel
-		final JPanel ef = new JPanel(new GridLayout(0, 1, 5, 2));
-		ef.setBorder(new EmptyBorder(0, 10, 0, 0));
-		cd.add(ef, BorderLayout.WEST);
-
-		addfile = new JButton("Add File");
-		addfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				addEventFile();
-			}
-		});
-		ef.add(addfile);
-
-		addDir = new JButton("Add Directory");
-		addDir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				addDirectory();
-			}
-		});
-		ef.add(addDir);
-
-		remove = new JButton("Remove File");
-		remove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				removeItem();
-			}
-		});
-		ef.add(remove);
-
-		removeAll = new JButton("Remove All");
-		removeAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				removeAllItems();
-			}
-		});
-		ef.add(removeAll);
-
-		loadlist = new JButton("Load List");
-		loadlist.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				loadList();
-			}
-		});
-		ef.add(loadlist);
-
-		savelist = new JButton("Save List");
-		savelist.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				saveList();
-			}
-		});
-		ef.add(savelist);
-
+		multipleFileChooser = new MultipleFileChooser(STATUS.getFrame(), msgHandler);
+		multipleFileChooser.showListSaveLoadButtons(true);
+		multipleFileChooser.setFileExtension("evn");
+		//JFileChooser fd = new JFileChooser(lastFile);
+		//fd.setFileFilter(new ExtensionFileFilter(new String[] { "evn" },
+		//"Event Files (*.evn)"));
+		
+		cd.add(multipleFileChooser, BorderLayout.CENTER);
+		
 		//Bottom Panel
 		final JPanel pbottom = new JPanel(new GridLayout(0, 1, 5, 5));
 		pbottom.setBorder(new EmptyBorder(0, 5, 0, 10));
@@ -241,7 +175,56 @@ public final class SortControl extends JDialog implements Controller {
 		writeEvents = false; //don't write out events
 		pack();
 	}
-
+	/** 
+	 * For scripting
+	 */
+	int addEventFile(File f) {
+		int numFiles = 0;
+		if (f != null && f.exists()) {
+			final ExtensionFileFilter ff = new ExtensionFileFilter(
+					new String[] { "evn" }, "Event Files (*.evn)");
+			if (f.isFile() && ff.accept(f)) {
+				multipleFileChooser.addFile(f);
+				numFiles++;
+			}
+			if (f.isDirectory()) {
+				File[] dirArray = f.listFiles();
+				for (int i = 0; i < dirArray.length; i++) {
+					if (ff.accept(dirArray[i]))
+						multipleFileChooser.addFile(dirArray[i]);
+					numFiles++;
+				}
+			}
+		}
+		return numFiles;
+	}
+	/**
+	 * For scripting 
+	 * @param f
+	 * @return
+	 */
+	int readList(File f) {
+		int numFiles = 0;
+		lastFile = f;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(lastFile));
+			String listItem;
+			do {
+				listItem = br.readLine();
+				if (listItem != null) {
+					final File fEvn = new File(listItem);
+					multipleFileChooser.addFile(fEvn);
+					numFiles++;
+				}
+			} while (listItem != null);
+			br.close();
+		} catch (IOException ioe) {
+			msgHandler.errorOutln("Jam|Sort...: Unable to load list from file "
+					+ f);
+		}
+		return numFiles;
+	}
+	
 	private final Action beginAction = new AbstractAction() {
 		{
 			putValue(Action.NAME, "Begin");
@@ -300,9 +283,9 @@ public final class SortControl extends JDialog implements Controller {
 	 * deamon
 	 */
 	private void loadNames() {
-		final List fileList = new Vector(eventFileModel.getSize());
-		for (int count = 0; count < eventFileModel.getSize(); count++) {
-			final File f = (File) eventFileModel.get(count);
+		final List fileList = multipleFileChooser.getFileList();
+		for (int count = 0; count < fileList.size(); count++) {
+			final File f = (File) fileList.get(count);
 			fileList.add(f);
 		}
 		/* tell storage daemon list of files */
@@ -449,145 +432,6 @@ public final class SortControl extends JDialog implements Controller {
 		/* does nothing */
 	}
 
-	/**
-	 * browse for event files
-	 */
-	private void addEventFile() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "evn" },
-				"Event Files (*.evn)"));
-		int option = fd.showOpenDialog(jamMain);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
-			eventFileModel.addElement(fd.getSelectedFile());
-		}
-	}
-
-	/**
-	 * add all files in a directory to sort
-	 *  
-	 */
-	private void addDirectory() {
-		final JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = fd.showOpenDialog(jamMain);
-		/* save current values */
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
-			addEventFile(lastFile);
-		}
-	}
-
-	int addEventFile(File f) {
-		int numFiles = 0;
-		if (f != null && f.exists()) {
-			final ExtensionFileFilter ff = new ExtensionFileFilter(
-					new String[] { "evn" }, "Event Files (*.evn)");
-			if (f.isFile() && ff.accept(f)) {
-				eventFileModel.addElement(f);
-				numFiles++;
-			}
-			if (f.isDirectory()) {
-				File[] dirArray = f.listFiles();
-				for (int i = 0; i < dirArray.length; i++) {
-					if (ff.accept(dirArray[i]))
-						eventFileModel.addElement(dirArray[i]);
-					numFiles++;
-				}
-			}
-		}
-		return numFiles;
-	}
-
-	/**
-	 * remove a item from sort list
-	 */
-	private void removeItem() {
-		Object[] removeList = listEventFiles.getSelectedValues();
-		for (int i = 0; i < removeList.length; i++) {
-			eventFileModel.removeElement(removeList[i]);
-		}
-	}
-
-	/**
-	 * remove all items from sort list
-	 *  
-	 */
-	private void removeAllItems() {
-		eventFileModel.removeAllElements();
-	}
-
-	/**
-	 * save list of items to sort
-	 */
-	private void saveList() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
-		int option = fd.showSaveDialog(jamMain);
-		/* save current values */
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
-			try {
-				FileWriter saveStream = new FileWriter(lastFile);
-				for (int i = 0; i < eventFileModel.size(); i++) {
-					final File f = (File) eventFileModel.elementAt(i);
-					saveStream.write(f.getAbsolutePath());
-					saveStream.write("\n");
-				}
-				saveStream.close();
-			} catch (IOException ioe) {
-				msgHandler
-						.errorOutln("Control|Sort...:Unable to save list to file "
-								+ lastFile.getName());
-			}
-		}
-	}
-
-	/**
-	 * load a list of items to sort from a file
-	 *  
-	 */
-	private void loadList() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
-		int option = fd.showOpenDialog(jamMain);
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			readList(fd.getSelectedFile());
-		}
-	}
-
-	int readList(File f) {
-		int numFiles = 0;
-		lastFile = f;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(lastFile));
-			String listItem;
-			do {
-				listItem = br.readLine();
-				if (listItem != null) {
-					final File fEvn = new File(listItem);
-					eventFileModel.addElement(fEvn);
-					numFiles++;
-				}
-			} while (listItem != null);
-			br.close();
-		} catch (IOException ioe) {
-			msgHandler.errorOutln("Jam|Sort...: Unable to load list from file "
-					+ f);
-		}
-		return numFiles;
-	}
-
 	/* non-javadoc:
 	 * Is the Browse for the output file.
 	 * 
@@ -622,12 +466,7 @@ public final class SortControl extends JDialog implements Controller {
 	 */
 	private void lockFields(boolean lock) {
 		final boolean notLock = !lock;
-		addfile.setEnabled(notLock);
-		addDir.setEnabled(notLock);
-		remove.setEnabled(notLock);
-		loadlist.setEnabled(notLock);
-		savelist.setEnabled(notLock);
-		removeAll.setEnabled(notLock);
+		multipleFileChooser.setLocked(lock);
 		textOutFile.setEditable(notLock);
 		cout.setEnabled(notLock);
 	}

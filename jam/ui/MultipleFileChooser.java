@@ -49,6 +49,8 @@ public class MultipleFileChooser extends JPanel {
 	
 	private JButton bLoadList;
 	
+	private JButton bAddfile, bAddDir, bRemove, bRemoveAll;
+	
 	private String fileExtension="*";
 	
 	/** Main Frame */
@@ -89,7 +91,7 @@ public class MultipleFileChooser extends JPanel {
 		pLeft.add(Box.createVerticalGlue());
 		pLeft.add(Box.createVerticalGlue());		
 		
-		JButton bAddfile = new JButton("Add File");
+		bAddfile = new JButton("Add File");
 		pButtons.add(bAddfile);
 		bAddfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -97,7 +99,7 @@ public class MultipleFileChooser extends JPanel {
 			}
 		});
 	
-		JButton bAddDir = new JButton("Add Directory");
+		bAddDir = new JButton("Add Directory");
 		pButtons.add(bAddDir);
 		bAddDir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -105,7 +107,7 @@ public class MultipleFileChooser extends JPanel {
 			}
 		});
 	
-		JButton bRemove = new JButton("Remove File");
+		bRemove = new JButton("Remove File");
 		pButtons.add(bRemove);
 		bRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -113,7 +115,7 @@ public class MultipleFileChooser extends JPanel {
 			}
 		});
 		
-		JButton bRemoveAll = new JButton("Remove All");
+		bRemoveAll = new JButton("Remove All");
 		pButtons.add(bRemoveAll);		
 		bRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -149,7 +151,7 @@ public class MultipleFileChooser extends JPanel {
 	 * Activate the save and load list buttons
 	 * @param state
 	 */
-	public void activeListSaveLoadButtons(boolean state){
+	public void showListSaveLoadButtons(boolean state){
 		if (state) {
 			pButtons.add(bLoadList);
 			pButtons.add(bSaveList);
@@ -157,6 +159,14 @@ public class MultipleFileChooser extends JPanel {
 			pButtons.remove(bLoadList);
 			pButtons.remove(bSaveList);
 		}
+	}
+	public void setLocked(boolean state){
+		bAddfile.setEnabled(state);
+		bAddDir.setEnabled(state);
+		bRemove.setEnabled(state);
+		bRemoveAll.setEnabled(state);
+		bLoadList.setEnabled(state);
+		bSaveList.setEnabled(state);
 	}
 	/**
 	 * Get selected file, no selection set first file
@@ -180,6 +190,9 @@ public class MultipleFileChooser extends JPanel {
 		return Collections.list(listFilesModel.elements());
 	}	
 	
+	public void addFile(File file){
+		listFilesModel.addElement(file);
+	}
 	/**
 	 * save list of items to sort
 	 */
@@ -253,14 +266,20 @@ public class MultipleFileChooser extends JPanel {
 	private void addFile() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		//fd.setMultiSelectionEnabled(true);
 		fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
 				"Data Files (*."+fileExtension+")"));
 		int option = fd.showOpenDialog(frame);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
 			listFilesModel.addElement(fd.getSelectedFile());
+//			File [] files =fd.getSelectedFiles();
+//			for (int i=0; i<files.length;i++ ) {
+//				listFilesModel.addElement(files[i]);
+//			}
+//			lastFile = files[0]; //save current directory
+			//listFilesModel.clear();
 		}
 	}
 	
