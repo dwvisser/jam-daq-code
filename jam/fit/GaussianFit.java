@@ -4,83 +4,62 @@
 package jam.fit;
 
 /**
- * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian peak with a background..
- * The background is a polynomial up to a quadradic term if desired. (Channel - Centroid) is the term
- * the polynomial is expanded in.
- *
- * @author  Dale Visser
+ * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian
+ * peak with a background.. The background is a polynomial up to a quadradic
+ * term if desired. (Channel - Centroid) is the term the polynomial is expanded
+ * in.
+ * 
+ * @author Dale Visser
  * @version 0.5, 8/31/98
- *
- * @see	    NonLinearFit
+ * 
+ * @see NonLinearFit
  */
-public class GaussianFit extends NonLinearFit {
-	/**
-	 */
+public class GaussianFit extends NonLinearFit implements GaussianConstants {
 
 	/**
-	 * magic number for calculating
-	 */
-	private static final double a = 0.93911;
-
-	/**
-	 * magic number for calculating
-	 */
-	private static final double b = 2.77066;
-
-	/**
-	 * magic number for calculating
-	 */
-	private static final double c = 5.20391;
-
-	/**
-	 * magic number for calculating
-	 */
-	static final double SIGMA_TO_FWHM = 2.354;
-
-	/**
-	 * name of <code>Parameter</code>--centroid of peak
+	 * name of <code>Parameter</code> --centroid of peak
 	 */
 	public static final String CENTROID = "Centroid";
 
 	/**
-	 * name of <code>Parameter</code>--width of peak
+	 * name of <code>Parameter</code> --width of peak
 	 */
 	public static final String WIDTH = "Width";
 
 	/**
-	 * name of <code>Parameter</code>--area of peak
+	 * name of <code>Parameter</code> --area of peak
 	 */
 	public static final String AREA = "Area";
 
 	/**
-	 * function <code>Parameter</code>--area of peak
+	 * function <code>Parameter</code> --area of peak
 	 */
 	private Parameter area;
 
 	/**
-	 * function <code>Parameter</code>--centroid of peak
+	 * function <code>Parameter</code> --centroid of peak
 	 */
 	private Parameter centroid;
 
 	/**
-	 * function <code>Parameter</code>--wodth of peak
+	 * function <code>Parameter</code> --wodth of peak
 	 */
 	private Parameter width;
 
 	/**
-	 * function <code>Parameter</code>--constant background term
+	 * function <code>Parameter</code> --constant background term
 	 */
-	private Parameter A;
+	private Parameter paramA;
 
 	/**
-	 * function <code>Parameter</code>--linear background term
+	 * function <code>Parameter</code> --linear background term
 	 */
-	private Parameter B;
+	private Parameter paramB;
 
 	/**
-	 * function <code>Parameter</code>--quadratic background term
+	 * function <code>Parameter</code> --quadratic background term
 	 */
-	private Parameter C;
+	private Parameter paramC;
 
 	/**
 	 * used for calculations
@@ -98,57 +77,43 @@ public class GaussianFit extends NonLinearFit {
 	public GaussianFit() {
 		super("GaussianFit");
 
-		Parameter background=new Parameter("Background: ",Parameter.TEXT);
+		Parameter background = new Parameter("Background: ", Parameter.TEXT);
 		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
-		Parameter equation=new Parameter("Peak: ",Parameter.TEXT);
-		equation.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
-		area =
-			new Parameter(
-				AREA,
-				Parameter.DOUBLE,
-				Parameter.FIX,
+		Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
+		equation
+				.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
+		area = new Parameter(AREA, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		area.setEstimate(true);
-		centroid =
-			new Parameter(
-				CENTROID,
-				Parameter.DOUBLE,
-				Parameter.FIX,
+		centroid = new Parameter(CENTROID, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.MOUSE);
-		width =
-			new Parameter(
-				WIDTH,
-				Parameter.DOUBLE,
-				Parameter.FIX,
+		width = new Parameter(WIDTH, Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
 		width.setEstimate(true);
-		A =
-			new Parameter(
-				"A",
-				Parameter.DOUBLE,
-				Parameter.FIX,
+		paramA = new Parameter("A", Parameter.DOUBLE, Parameter.FIX,
 				Parameter.ESTIMATE);
-		A.setEstimate(true);
-		B = new Parameter("B", Parameter.FIX);
-		B.setFixed(true);
-		C = new Parameter("C", Parameter.FIX);
-		C.setFixed(true);
+		paramA.setEstimate(true);
+		paramB = new Parameter("B", Parameter.FIX);
+		paramB.setFixed(true);
+		paramC = new Parameter("C", Parameter.FIX);
+		paramC.setFixed(true);
 
 		addParameter(equation);
 		addParameter(background);
 		addParameter(area);
 		addParameter(centroid);
 		addParameter(width);
-		addParameter(A);
-		addParameter(B);
-		addParameter(C);
+		addParameter(paramA);
+		addParameter(paramB);
+		addParameter(paramC);
 
 	}
 
 	/**
 	 * If so requested, estimates A, Area, and Width.
-	 *
-	 * @exception   FitException	    thrown if unrecoverable error occurs during estimation
+	 * 
+	 * @exception FitException
+	 *                thrown if unrecoverable error occurs during estimation
 	 */
 	public void estimate() {
 
@@ -171,7 +136,7 @@ public class GaussianFit extends NonLinearFit {
 			textInfo.messageOutln("Estimated A = " + backLevel);
 		}
 
-		//sum up counts	
+		//sum up counts
 		if (getParameter(AREA).isEstimate()) {
 			area = 0.0;
 			for (i = minCH; i <= (int) maxCH; i++) {
@@ -183,7 +148,7 @@ public class GaussianFit extends NonLinearFit {
 			textInfo.messageOutln("Estimated area = " + area);
 		}
 
-		//find width	    
+		//find width
 		variance = 0.0;
 		if (getParameter(WIDTH).isEstimate()) {
 			for (i = minCH; i <= maxCH; i++) {
@@ -193,17 +158,17 @@ public class GaussianFit extends NonLinearFit {
 
 			}
 			sigma = Math.sqrt(variance);
-			width = SIGMA_TO_FWHM * sigma;
+			width = SIG_TO_FWHM * sigma;
 			getParameter(WIDTH).setValue(width);
 			textInfo.messageOutln("Estimated width = " + width);
 		}
 	}
 
 	/**
-	 * Overrides normal setParameters to make sure channels are in proper order.  This
-	 * Allows the fit limits and centroids to be clicked in any order.
+	 * Overrides normal setParameters to make sure channels are in proper order.
+	 * This Allows the fit limits and centroids to be clicked in any order.
 	 */
-	private void orderParameters()  {
+	private void orderParameters() {
 		final Matrix chVector = new Matrix(3, 1);
 		chVector.element[0][0] = getParameter(FIT_LOW).getIntValue();
 		chVector.element[1][0] = getParameter(CENTROID).getDoubleValue();
@@ -216,79 +181,70 @@ public class GaussianFit extends NonLinearFit {
 
 	/**
 	 * Calculates the gaussian with background at a given x.
-	 *
-	 * @param	x   value to calculate at
-	 * @return	    value of function at x
+	 * 
+	 * @param x
+	 *            value to calculate at
+	 * @return value of function at x
 	 */
 	public double valueAt(double x) {
 		diff = x - p(CENTROID);
-		exp = Math.exp(-b * diff * diff / (p(WIDTH) * p(WIDTH)));
+		exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
 
-		double temp =
-			p("A")
-				+ p("B") * diff
-				+ p("C") * diff * diff
-				+ p(AREA) / p(WIDTH) * a * exp;
+		double temp = p("A") + p("B") * diff + p("C") * diff * diff + p(AREA)
+				/ p(WIDTH) * MAGIC_A * exp;
 		return temp;
 	}
-	
-	int getNumberOfSignals(){
+
+	int getNumberOfSignals() {
 		return 1;
 	}
-	
-	double calculateSignal(int sig, int channel){
-		double rval=0.0;
-		
-		if (sig==0){
+
+	double calculateSignal(int sig, int channel) {
+		double rval = 0.0;
+
+		if (sig == 0) {
 			diff = channel - p(CENTROID);
-			exp = Math.exp(-b * diff * diff / (p(WIDTH) * p(WIDTH)));
-			rval = area.getDoubleValue()/width.getDoubleValue()*a *exp;
+			exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
+			rval = area.getDoubleValue() / width.getDoubleValue() * MAGIC_A
+					* exp;
 		}
 		return rval;
 	}
-	
-	boolean hasBackground(){
+
+	boolean hasBackground() {
 		return true;
 	}
-	
-	double calculateBackground(int channel){
+
+	double calculateBackground(int channel) {
 		diff = channel - p(CENTROID);
-		return p("A")
-		+ p("B") * diff
-		+ p("C") * diff * diff;
+		return p("A") + p("B") * diff + p("C") * diff * diff;
 	}
 
 	/**
-	 * Evaluates derivative with respect to <code>parameterName</code> at <code>x</code>.
-	 *
-	 * @param   parName   the name of the parameter to differentiate with respect to
-	 * @param   x		value to evalueate at
-	 * @return			df(<code>x</code>)/d(<code>parameterName</code>) at x
+	 * Evaluates derivative with respect to <code>parameterName</code> at
+	 * <code>x</code>.
+	 * 
+	 * @param parName
+	 *            the name of the parameter to differentiate with respect to
+	 * @param x
+	 *            value to evalueate at
+	 * @return df( <code>x</code> )/d( <code>parameterName</code>) at x
 	 */
 	public double derivative(double x, String parName) {
 		double temp;
-
 		diff = x - p(CENTROID);
-		exp = Math.exp(-b * diff * diff / (p(WIDTH) * p(WIDTH)));
-
+		exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
 		diff = x - p(CENTROID);
 		if (parName.equals(AREA)) {
-			temp = a / p(WIDTH) * exp;
+			temp = MAGIC_A / p(WIDTH) * exp;
 		} else if (parName.equals(CENTROID)) {
-			temp =
-				c * p(AREA) * exp * diff / (p(WIDTH) * p(WIDTH) * p(WIDTH))
-					- p("B")
-					- 2 * p("C") * diff;
+			temp = MAGIC_2AB * p(AREA) * exp * diff
+					/ (p(WIDTH) * p(WIDTH) * p(WIDTH)) - p("B") - 2 * p("C")
+					* diff;
 		} else if (parName.equals(WIDTH)) {
-			temp = -a * p(AREA) * exp / (p(WIDTH) * p(WIDTH));
-			temp =
-				temp
-					+ c
-						* p(AREA)
-						* exp
-						* diff
-						* diff
-						/ (p(WIDTH) * p(WIDTH) * p(WIDTH) * p(WIDTH));
+			temp = -MAGIC_A * p(AREA) * exp / (p(WIDTH) * p(WIDTH));
+			temp = temp + MAGIC_2AB * p(AREA) * exp * diff * diff
+					/ (p(WIDTH) * p(WIDTH) * p(WIDTH) * p(WIDTH));
 		} else if (parName.equals("A")) {
 			temp = 1.0;
 		} else if (parName.equals("B")) {
@@ -297,7 +253,8 @@ public class GaussianFit extends NonLinearFit {
 			temp = diff * diff;
 		} else { //not valid
 			temp = 0.0;
-			throw new IllegalArgumentException("Invalid derivative argument: " + parName);
+			throw new IllegalArgumentException("Invalid derivative argument: "
+					+ parName);
 		}
 		return temp;
 	}

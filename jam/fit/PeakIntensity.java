@@ -11,32 +11,27 @@ package jam.fit;
  * @author Carrie Rowland
  * @version 28 July 2002
  */
- public class PeakIntensity extends Fit {
+ public class PeakIntensity extends AbstractFit {
  
-    /**
-     * magic number for calculating
-     */
-    static final double SIGMA_TO_FWHM=2.354;
-  
     /**
      * input <code>Parameter</code>
      */
-    private Parameter LowChannel=new Parameter("Low Channel",Parameter.MOUSE,
+    private Parameter lowChannel=new Parameter("Low Channel",Parameter.MOUSE,
     							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
-    private Parameter HighChannel=new Parameter("High Channel",Parameter.MOUSE,
+    private Parameter highChannel=new Parameter("High Channel",Parameter.MOUSE,
     							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
-    private Parameter LowPeak=new Parameter("Low Peak",Parameter.MOUSE,
+    private Parameter lowPeak=new Parameter("Low Peak",Parameter.MOUSE,
     							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
-    private Parameter HighPeak=new Parameter("High Peak",Parameter.MOUSE,
+    private Parameter highPeak=new Parameter("High Peak",Parameter.MOUSE,
     							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
     
   
     /**
      * function <code>Parameter</code>--constant background term
      */
-    private Parameter A,B;
+    private Parameter paramA,paramB;
  
-	private Parameter PeakArea, PeakCentroid; 
+	private Parameter paramPeakArea, paramPeakCentroid; 
 
     /**
      * Class constructor.
@@ -46,19 +41,19 @@ package jam.fit;
 		
 		Parameter comment=new Parameter("Comment", Parameter.TEXT);
 		comment.setValue("Checking \"Fixed\" on Slope fixes the value to 0.");
-		addParameter(LowChannel);
-		addParameter(HighChannel);
-		addParameter(LowPeak);
-		addParameter(HighPeak);
-		A=new Parameter("Constant",Parameter.DOUBLE);
-		addParameter(A);		
-		B=new Parameter("Slope",Parameter.DOUBLE, Parameter.FIX);	
-		addParameter(B);	
+		addParameter(lowChannel);
+		addParameter(highChannel);
+		addParameter(lowPeak);
+		addParameter(highPeak);
+		paramA=new Parameter("Constant",Parameter.DOUBLE);
+		addParameter(paramA);		
+		paramB=new Parameter("Slope",Parameter.DOUBLE, Parameter.FIX);	
+		addParameter(paramB);	
 		addParameter(comment);
-		PeakArea=new Parameter("Peak Area",Parameter.DOUBLE);
-		addParameter(PeakArea);	
-		PeakCentroid=new Parameter("Peak Centroid",Parameter.DOUBLE);
-		addParameter(PeakCentroid);	
+		paramPeakArea=new Parameter("Peak Area",Parameter.DOUBLE);
+		addParameter(paramPeakArea);	
+		paramPeakCentroid=new Parameter("Peak Centroid",Parameter.DOUBLE);
+		addParameter(paramPeakCentroid);	
     }
     
     /**
@@ -85,12 +80,12 @@ package jam.fit;
         int [] before = {lc,lp,hp,hc};
         java.util.Arrays.sort(before);
         lc = before[0]; lp = before[1]; hp = before[2]; hc = before[3];
-		LowChannel.setValue(lc);
-		LowPeak.setValue(lp);
-		HighPeak.setValue(hp);
-		HighChannel.setValue(hc);		
+		lowChannel.setValue(lc);
+		lowPeak.setValue(lp);
+		highPeak.setValue(hp);
+		highChannel.setValue(hc);		
     	s=0.0;sx=0.0;sy=0.0;syy=0.0;
-    	if (B.isFixed()){//flat background
+    	if (paramB.isFixed()){//flat background
     		for (int i=lc;i<=hc; i++) {
     			sy += counts[i];
     			if (i==lp-1) i = hp;
@@ -102,8 +97,8 @@ package jam.fit;
     			if (i==lp-1) i = hp;
     		}
     		syy /= numBackgdChannels*(numBackgdChannels-1);
-    		A.setValue(sy,Math.sqrt(syy));
-    		B.setValue(0.0,0.0);
+    		paramA.setValue(sy,Math.sqrt(syy));
+    		paramB.setValue(0.0,0.0);
     	} else {//fit a regression line
     		for (int i=lc;i<=hc; i++) {
     			var = counts[i]>0 ? counts[i] : 1.0;
@@ -125,8 +120,8 @@ package jam.fit;
     		double db = 1/st2;
     		double da = Math.sqrt((1+sx*sx/(s*st2))/s);
     		double a = (sy-sx*b)/s;
-    		A.setValue(a,da);
-    		B.setValue(b,db);
+    		paramA.setValue(a,da);
+    		paramB.setValue(b,db);
     	}
     	totalArea=0.0; bkgdArea=0.0;
     	for(int i=lp;i<=hp;i++){
@@ -145,8 +140,8 @@ package jam.fit;
     		variance += (counts[i]-calculate(i))/peakArea*distance*distance;
     	}
     	variance /= hp-lp+1.0;
-    	PeakArea.setValue(peakArea,peakError);
-    	PeakCentroid.setValue(centroid,Math.sqrt(variance));
+    	paramPeakArea.setValue(peakArea,peakError);
+    	paramPeakCentroid.setValue(centroid,Math.sqrt(variance));
     	lowerLimit=lc;
     	upperLimit=hc;
     	residualOption=false;
@@ -154,7 +149,7 @@ package jam.fit;
     }
     
     public double calculate(int channel){
-	  return A.getDoubleValue()+B.getDoubleValue()*(channel);
+	  return paramA.getDoubleValue()+paramB.getDoubleValue()*(channel);
     }
     
     double calculateBackground(int channel){
