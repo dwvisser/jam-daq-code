@@ -4,8 +4,6 @@ import jam.commands.CommandManager;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
 import jam.data.control.GainShift;
-import jam.data.control.GateAdd;
-import jam.data.control.GateNew;
 import jam.data.control.GateSet;
 import jam.data.control.Manipulations;
 import jam.data.control.ParameterControl;
@@ -182,12 +180,6 @@ public class JamCommand
 				calibDisplay.show();
 			} else if ("calfitlin".equals(incommand)) {
 				calibFit.show();
-			} else if ("gatenew".equals(incommand)) {
-				(new GateNew(console)).show();
-			} else if ("gateadd".equals(incommand)) {
-				(new GateAdd(console)).show();
-			} else if ("gateset".equals(incommand)) {
-				gateControl.show();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {

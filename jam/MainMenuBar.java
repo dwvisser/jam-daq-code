@@ -122,13 +122,11 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		final JMenuItem gateNew = new JMenuItem(commands.getAction(
 				CommandNames.SHOW_NEW_GATE));
 			gate.add(gateNew);				
-		final JMenuItem gateAdd = new JMenuItem("Add Gate\u2026");
-		gateAdd.setActionCommand("gateadd");
-		gateAdd.addActionListener(jamCommand);
+		final JMenuItem gateAdd = new JMenuItem(commands.getAction(
+		CommandNames.SHOW_ADD_GATE));
 		gate.add(gateAdd);
-		final JMenuItem gateSet = new JMenuItem("Set Gate\u2026");
-		gateSet.setActionCommand("gateset");
-		gateSet.addActionListener(jamCommand);
+		final JMenuItem gateSet = new JMenuItem(commands.getAction(
+		CommandNames.SHOW_SET_GATE));
 		gate.add(gateSet);
 		final JMenu scalers = new JMenu("Scalers");
 		add(scalers);
