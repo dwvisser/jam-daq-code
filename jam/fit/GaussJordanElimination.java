@@ -2,36 +2,31 @@ package jam.fit;
 
 class GaussJordanElimination {
 
-	private Matrix InputMatrix; // n by n
-	private Matrix InputVectors; // n by m
+	private Matrix inputMatrix; // n by n
+	private Matrix inputVectors; // n by m
 
-	private int[] RowIndex;
-	private int[] ColumnIndex;
-	private int[] Pivot;
+	private int[] rowIndex;
+	private int[] columnIndex;
+	private int[] pivot;
 
-	private int n;
-	private int m;
+	private int rows;
+	private int columns;
 
-	private int PivotRow;
-	private int PivotColumn;
+	private int pivotRow;
+	private int pivotColumn;
 
 	GaussJordanElimination(Matrix InputMatrix, Matrix InputVector) {
-
-		this.InputMatrix = new Matrix(InputMatrix);
-		this.InputVectors = new Matrix(InputVector);
-
-		this.n = InputMatrix.rows;
-		this.m = InputVectors.columns;
-
-		if (n != InputVectors.rows) {
+		this.inputMatrix = new Matrix(InputMatrix);
+		this.inputVectors = new Matrix(InputVector);
+		this.rows = InputMatrix.rows;
+		this.columns = inputVectors.columns;
+		if (rows != inputVectors.rows) {
 			throw new IllegalArgumentException(
-				n + " not equal to " + InputVectors.rows + "!!!");
+				rows + " not equal to " + inputVectors.rows + "!!!");
 		}
-
-		RowIndex = new int[n];
-		ColumnIndex = new int[n];
-		Pivot = new int[n];
-
+		rowIndex = new int[rows];
+		columnIndex = new int[rows];
+		pivot = new int[rows];
 	}
 
 	public void go() throws Exception {
@@ -42,8 +37,8 @@ class GaussJordanElimination {
 	private void clearPivot() {
 		int i;
 
-		for (i = 0; i < n; i++) {
-			Pivot[i] = 0;
+		for (i = 0; i < rows; i++) {
+			pivot[i] = 0;
 		}
 	}
 
@@ -54,69 +49,69 @@ class GaussJordanElimination {
 		int l;
 		int i;
 		double big;
-		double PivotInverse;
+		double pivotInverse;
 		double dummy;
 
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < rows; i++) {
 			big = 0.0;
-			for (j = 0; j < n; j++) {
-				if (Pivot[j] != 1) {
-					for (k = 0; k < n; k++) {
-						if (Pivot[k] == 0) {
-							if (Math.abs(InputMatrix.element[j][k]) >= big) {
-								big = Math.abs(InputMatrix.element[j][k]);
-								PivotRow = j;
-								PivotColumn = k;
+			for (j = 0; j < rows; j++) {
+				if (pivot[j] != 1) {
+					for (k = 0; k < rows; k++) {
+						if (pivot[k] == 0) {
+							if (Math.abs(inputMatrix.element[j][k]) >= big) {
+								big = Math.abs(inputMatrix.element[j][k]);
+								pivotRow = j;
+								pivotColumn = k;
 							}
-						} else if (Pivot[k] > 1) {
-							throw new Exception("GJE: Singular Matrix-1");
+						} else if (pivot[k] > 1) {
+							throw new IllegalStateException("GJE: Singular Matrix-1");
 						}
 					}
 				}
 			}
-			Pivot[PivotColumn]++;
-			if (PivotRow != PivotColumn) { //put pivot element on diagonal
-				InputMatrix.permute(PivotRow, PivotColumn, 'r');
-				InputVectors.permute(PivotRow, PivotColumn, 'r');
+			pivot[pivotColumn]++;
+			if (pivotRow != pivotColumn) { //put pivot element on diagonal
+				inputMatrix.permute(pivotRow, pivotColumn, 'r');
+				inputVectors.permute(pivotRow, pivotColumn, 'r');
 			}
-			RowIndex[i] = PivotRow;
-			ColumnIndex[i] = PivotColumn;
-			if (InputMatrix.element[PivotColumn][PivotColumn] == 0.0) {
-				throw new Exception("GJE: Singular Matrix-2");
+			rowIndex[i] = pivotRow;
+			columnIndex[i] = pivotColumn;
+			if (inputMatrix.element[pivotColumn][pivotColumn] == 0.0) {
+				throw new IllegalStateException("GJE: Singular Matrix-2");
 			}
-			PivotInverse = 1.0 / InputMatrix.element[PivotColumn][PivotColumn];
-			InputMatrix.element[PivotColumn][PivotColumn] = 1.0;
-			InputMatrix.rowMultiply(PivotColumn, PivotInverse);
-			InputVectors.rowMultiply(PivotColumn, PivotInverse);
-			for (ll = 0; ll < n; ll++) {
-				if (ll != PivotColumn) {
-					dummy = InputMatrix.element[ll][PivotColumn];
-					InputMatrix.element[ll][PivotColumn] = 0.0;
-					for (l = 0; l < n; l++) {
-						InputMatrix.element[ll][l] =
-							InputMatrix.element[ll][l]
-								- InputMatrix.element[PivotColumn][l] * dummy;
+			pivotInverse = 1.0 / inputMatrix.element[pivotColumn][pivotColumn];
+			inputMatrix.element[pivotColumn][pivotColumn] = 1.0;
+			inputMatrix.rowMultiply(pivotColumn, pivotInverse);
+			inputVectors.rowMultiply(pivotColumn, pivotInverse);
+			for (ll = 0; ll < rows; ll++) {
+				if (ll != pivotColumn) {
+					dummy = inputMatrix.element[ll][pivotColumn];
+					inputMatrix.element[ll][pivotColumn] = 0.0;
+					for (l = 0; l < rows; l++) {
+						inputMatrix.element[ll][l] =
+							inputMatrix.element[ll][l]
+								- inputMatrix.element[pivotColumn][l] * dummy;
 					}
-					for (l = 0; l < m; l++) {
-						InputVectors.element[ll][l] =
-							InputVectors.element[ll][l]
-								- InputVectors.element[PivotColumn][l] * dummy;
+					for (l = 0; l < columns; l++) {
+						inputVectors.element[ll][l] =
+							inputVectors.element[ll][l]
+								- inputVectors.element[pivotColumn][l] * dummy;
 					}
 				}
 			}
 		}
 		//Now unscramble the permuted columns.
-		for (l = n - 1; l >= 0; l--) {
-			if (RowIndex[l] != ColumnIndex[l]) {
-				InputMatrix.permute(RowIndex[l], ColumnIndex[l], 'r');
+		for (l = rows - 1; l >= 0; l--) {
+			if (rowIndex[l] != columnIndex[l]) {
+				inputMatrix.permute(rowIndex[l], columnIndex[l], 'r');
 			}
 		}
 	}
 
 	public Matrix getMatrix() {
-		return InputMatrix;
+		return inputMatrix;
 	}
 	public Matrix getVectors() {
-		return InputVectors;
+		return inputVectors;
 	}
 }
