@@ -15,11 +15,21 @@
           <tocitem text="Fitting Spectra" target="fitting" />
       	  <tocitem text="Writing Sort Routines" target="writesort" />
       </tocitem>
-      <tocitem text="Menus" target="menus" />
+      <tocitem text="Menus" target="menus" >
+      	  <tocitem text="File Menu" target="file" />
+      	  <tocitem text="Setup Menu" target="setup" />
+      	  <tocitem text="Control Menu" target="control" />
+      	  <tocitem text="Histogram Menu" target="histogram" />
+      	  <tocitem text="Gate Menu" target="gate" />
+      	  <tocitem text="Scalers Menu" target="scalers" />
+      	  <tocitem text="Preferences Menu" target="preferences" />
+      	  <tocitem text="Fitting Menu" target="fitting" />
+      	  <tocitem text="Help Menu" target="help" />
+      </tocitem>
       <tocitem text="Technical Reference" >
       	<tocitem text="L002 Event Format" target="l002" />
-      	<tocitem text="VME Communication Protocol" target="protocol" />
-		<tocitem text="API" />
+      	<tocitem text="Front End Communication" target="protocol" />
+		<tocitem text="Jam Javadoc" target="API" />
       </tocitem>
    </tocitem>
    </toc>

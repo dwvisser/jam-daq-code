@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>File Menu</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+<h2>File Menu</h2>
+
+<p>Most commands in this menu access disk files.  All state in the command title what the standard extension to the filename is.</p>
+
+<ul>
+  <li><span class=jammenu>New</span>--Erase histograms, scalers, and gates...start fresh.</li>
+  
+  <li><span class=jammenu>Open(hdf)...</span>--Enabled if no sort file has been loaded.  Reads in histograms and scalers from an <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2-formatted</a> file, replacing any data currently being viewed.</li>
+  
+  <li><span class=jammenu>Reload(hdf)...</span>--Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</li>
+  
+  <li><span class=jammenu>Save(hdf)</span>--Saves all gates, scalers, and histograms in memory to the current HDF file.</li>
+  
+  <li><span class=jammenu>Save as...(hdf)</span>--Same as save, except the user is prompted with a file dialog to name the file.</li>
+  
+  <li><span class=jammenu>Import/Export</span>--import/export spectra from other data formats.</li>
+  <ul>
+    <li><span class=jammenu>ASCII...</span>--The format for 1-d spectra is channel number and counts in pairs separated by white space, e.g. <blockquote><code>0 4<br>1 3<br>2 0<br>...<br></code></blockquote>For 2-d spectra the export format is a matrix with tabs between elements and carriage returns between rows. Jam cannot import 2-d histograms from ASCII files.</li>
+    
+    <li><span class=jammenu>ORNL .drr .his ...</span>--This is a multiple spectrum (1- to multi- dimensional) file format, written by Milner for use at Oak Ridge National Lab.  The files always come in pairs, a <code>filename.drr</code> directory file and a <code>filename.his</code> histogram file.  The <code>filename</code> before the period is the same for both.</li>
+    
+    <li><span class=jammenu>Radware .spe</span>--This is the 1-d histogram format used by the gf2 program.</li>
+    
+    <li><span class=jammenu>XSYS .dat ...</span>--Imports spectra (no export capability) using the <span class=acronym>XSYS</span> format. <span class=acronym>XSYS</span> is a data acquistion program written at Triangle Universities Nuclear Laboratory. It has been used at the University of Washington
+Center for Experimental Nuclear Physics and Astrophysics.</li>
+    <li><span class=jammenu>Batch Export...</span>--A dialog for exporting a list of histograms to a selected folder in one selected format all at once. The filenames are the histgram names plus the default file extension for the selected format.</li>
+        <li><span class=jammenu>JHF Format</span>--A duplicate set of Save, Save as..., Open... and Reload... commands using a previous file format, which is no longer supported. All work gets saved using the <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2</a> format now.
+</ul>
+<li><span class=jammenu>Print Setup...</span>--Sets the options in the print dialog box.</li>
+<li><span class=jammenu>Print...</span>--Brings up the print dialog box, and lets you send the print job.</li>
+<li><span class=jammenu>Exit...</span>--Exits the program after receiving verification in a final dialog box.</li>
+</ul>
+
+<a href="index.html">Back</a> to Menus.
+</body>
+</html>
