@@ -533,7 +533,7 @@ class Action implements ActionListener, PlotMouseListener,
 						MessageHandler.END);
 				display.removeOverlays();
 				broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
-				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,h);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln("There is no histogram numbered " + num
