@@ -78,7 +78,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 
 	private transient final JPanel pEvntRecv = new JPanel();
 
-	private transient JPanel pButton;
+	private transient final JPanel pButton;
 
 	static private DisplayCounters instance = null;
 
