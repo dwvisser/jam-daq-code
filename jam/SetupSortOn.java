@@ -677,7 +677,7 @@ public final class SetupSortOn extends JDialog {
 
 	private void setupVMEmap() throws JamException, SortException {
 		frontEnd.setupAcquisition();
-		VME_Map map = sortRoutine.getVME_Map();
+		VME_Map map = sortRoutine.getVMEmap();
 		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}

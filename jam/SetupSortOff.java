@@ -13,7 +13,6 @@ import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
-import jam.sort.StorageDaemon;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
 
@@ -453,10 +452,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         sortDaemon.setSortRoutine(sortRoutine);
         /* eventInputStream to use get event size from sorting routine */
         eventInput.setEventSize(sortRoutine.getEventSize());
-        eventInput.setBufferSize(sortRoutine.BUFFER_SIZE);
+        eventInput.setBufferSize(sortRoutine.getBufferSize());
         /* give sortroutine output stream */
         eventOutput.setEventSize(sortRoutine.getEventSize());
-        eventOutput.setBufferSize(sortRoutine.BUFFER_SIZE);
+        eventOutput.setBufferSize(sortRoutine.getBufferSize());
 		sortRoutine.setEventOutputStream(eventOutput);
         /* always setup diskDaemon */
         final DiskDaemon diskDaemon =new DiskDaemon(sortControl,  msgHandler);
