@@ -1,6 +1,10 @@
 package jam.fit;
-import java.util.*;
+import jam.global.MessageHandler;
+
 import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This uses the Levenberg-Marquadt prescription for finding the local minimum of chi-squared
@@ -132,6 +136,8 @@ public class LevenbergMarquadt {
 	 * previous chi-squared value
 	 */
 	private double oChiSq;
+	
+	private final MessageHandler messages;
 
 	/**
 	 * Class constructor giving handle to parent.
@@ -139,29 +145,19 @@ public class LevenbergMarquadt {
 	 * @param	nlf the parent <code>NonLinearFit</code> object creating this
 	 */
 	public LevenbergMarquadt(NonLinearFit nlf) {
-		//int j, k;
-		//int type;
-		//boolean done;
-		
-		this.nonLinFit = nlf;
+		nonLinFit = nlf;
+		messages = nlf.getTextInfo();
 		Iterator it = nonLinFit.getParameters().iterator();
 		List temp2 = new Vector();
-		//j = 0;
-		//k = 0;
 		while (it.hasNext()){
-		//do { //eliminate non-double parameters
 			Parameter param=(Parameter)it.next();
-			//type = param.getType();
 			if (param.isDouble()) {
 				boolean variableParameter=!(param.isOutputOnly() || param.isKnown());
 				if (variableParameter) {
 					temp2.add(param);
-					//k++;
 				}
 			}
-			//j++;
-			//done = (j == temp.size());
-		} //while (!done);
+		}
 		parameters = new Parameter[temp2.size()];
 		int i=0;
 		for (it=temp2.iterator(); it.hasNext();) {
@@ -333,11 +329,11 @@ public class LevenbergMarquadt {
 		}
 
 		if (iterationCount == 0) {
-			System.out.print("Iteration ChiSq/dof ");
+			messages.messageOut("Iteration ChiSq/dof ",MessageHandler.NEW);
 			for (i = 0; i < params.length; i++) {
-				System.out.print(params[i].getName() + " ");
+				messages.messageOut(params[i].getName() + " ");
 			}
-			System.out.println();
+			messages.messageOut("",MessageHandler.END);
 		}
 
 		//initialize space and vec (matrix and vector in Numerical Recipes in C 15.5)
@@ -381,10 +377,10 @@ public class LevenbergMarquadt {
 			}
 		}
 		//debug message
-		System.out.print(iterationCount + " ");
-		System.out.print(round(chiSq / dof, 3) + " ");
+		messages.messageOut(iterationCount + " ",MessageHandler.NEW);
+		messages.messageOut(round(chiSq / dof, 3) + " ");
 		for (i = 0; i < params.length; i++) {
-			System.out.print(
+			messages.messageOut(
 				round(
 					nonLinFit
 						.getParameter(params[i].getName())
@@ -392,7 +388,7 @@ public class LevenbergMarquadt {
 					3)
 					+ " ");
 		}
-		System.out.println();
+		messages.messageOut("",MessageHandler.END);
 
 		//fill in the symmetric side
 		for (j = 1; j < nVar; j++) {
@@ -439,7 +435,7 @@ public class LevenbergMarquadt {
 			}
 		}
 		covar = new Matrix(temp);
-		System.out.println("\nCovariance Matrix: \n" + covar.toStringUL(3));
+		messages.messageOutln("\nCovariance Matrix: \n" + covar.toStringUL(3));
 	}
 
 	/**

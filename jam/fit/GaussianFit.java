@@ -168,7 +168,7 @@ public class GaussianFit extends NonLinearFit {
 		if (getParameter("A").isEstimate()) {
 			backLevel = ((double) counts[minCH] + (double) counts[maxCH]) * 0.5;
 			getParameter("A").setValue(backLevel);
-			System.out.println("Estimated A = " + backLevel);
+			textInfo.messageOutln("Estimated A = " + backLevel);
 		}
 
 		//sum up counts	
@@ -180,7 +180,7 @@ public class GaussianFit extends NonLinearFit {
 
 			}
 			getParameter(AREA).setValue(area);
-			System.out.println("Estimated area = " + area);
+			textInfo.messageOutln("Estimated area = " + area);
 		}
 
 		//find width	    
@@ -195,7 +195,7 @@ public class GaussianFit extends NonLinearFit {
 			sigma = Math.sqrt(variance);
 			width = SIGMA_TO_FWHM * sigma;
 			getParameter(WIDTH).setValue(width);
-			System.out.println("Estimated width = " + width);
+			textInfo.messageOutln("Estimated width = " + width);
 		}
 	}
 
@@ -303,7 +303,7 @@ public class GaussianFit extends NonLinearFit {
 			temp = diff * diff;
 		} else { //not valid
 			temp = 0.0;
-			System.err.println("Invalid derivative argument: " + parName);
+			throw new IllegalArgumentException("Invalid derivative argument: " + parName);
 		}
 		return temp;
 	}

@@ -197,14 +197,14 @@ public class MultipleGaussians extends NonLinearFit {
 			backLevel = (counts[_minCH] + counts[_maxCH]) * 0.5;
 		}
 		A.setValue(backLevel);
-		System.out.println("Estimated A = " + backLevel);
+		textInfo.messageOutln("Estimated A = " + backLevel);
 		/* estimate areas */
 		//double sigmaToScan = 3; //3 sigma gets 99.6% of peak
 		for (int i = 0; i < npeak; i++) {
 			if (width[i].isEstimate()){
 				width[i].setValue(widthEstimate.getDoubleValue());
 				d_width[i]=widthEstimate.getDoubleValue();
-				System.out.println("Initial "+s_width[i]+" = "+d_width[i]);
+				textInfo.messageOutln("Initial "+s_width[i]+" = "+d_width[i]);
 			}
 			if (area[i].isEstimate()) {
 				d_area[i] = 0.0;
@@ -219,7 +219,7 @@ public class MultipleGaussians extends NonLinearFit {
 				d_area[i] *= 1.3144;
 				//inverse of area under fwhm standard normal
 				area[i].setValue(d_area[i]);
-				System.out.println(
+				textInfo.messageOutln(
 					"Estimated " + s_area[i] + " = " + d_area[i]);
 			}
 		}

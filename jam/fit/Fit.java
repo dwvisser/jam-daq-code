@@ -27,6 +27,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
@@ -175,6 +176,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	private JButton bMouseGet;
 
 	private Parameter[] parameterArray;
+	
+	protected FitConsole textInfo;
+	
 
 	/**
 	 * Class constructor.
@@ -223,26 +227,28 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * @exception   FitException	    thrown if unrecoverable error occurs during dialog creation
 	 */
 	public void createDialog(
-		Frame frame,
-		Display display,
-		MessageHandler msgHandler)
+		Frame f,
+		Display d,
+		MessageHandler mh)
 		throws FitException {
-		Parameter parameter;
-		String parName;
-		int parNumber;
-
-		this.frame = frame;
-		this.display = display;
-		this.msgHandler = msgHandler;
+		frame = f;
+		display = d;
+		msgHandler = mh;
 		parameters = getParameters();
-		parNumber = parameters.size();
+		final int parNumber = parameters.size();
 		parameterArray = new Parameter[parNumber];
 		parameters.toArray(parameterArray);
 		dfit = new JDialog(frame, NAME, false);
-		Container cp = dfit.getContentPane();
+		Container contents = dfit.getContentPane();
 		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
-		cp.setLayout(new BorderLayout());
+		contents.setLayout(new BorderLayout());
+		final JTabbedPane tabs=new JTabbedPane();
+		contents.add(tabs,BorderLayout.CENTER);
+		final JPanel cp =new JPanel(new BorderLayout());
+		tabs.addTab("Fit",null,cp,"Setup parameters and do fit.");
+		textInfo=new FitConsole(35*parNumber);
+		tabs.addTab("Information",null,textInfo,"Additional information output from the fits.");
 		/* top panel with histogram name */
 		JPanel pHistName = new JPanel(new BorderLayout());
 		pHistName.setBorder(LineBorder.createBlackLineBorder());
@@ -347,8 +353,8 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		for (int i = 0; i < parameters.size(); i++) {
 			JPanel middle = new JPanel(new GridLayout(1, 3));
 			center.add(middle);
-			parameter = (Parameter) parameters.get(i);
-			parName = parameter.getName();
+			final Parameter parameter = (Parameter) parameters.get(i);
+			final String parName = parameter.getName();
 			if (parameter.isDouble()) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
 				textData[i].setEnabled(true);
@@ -410,6 +416,10 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	public void show() {
 		setMouseActive(false);
 		dfit.show();
+	}
+	
+	MessageHandler getTextInfo(){
+		return textInfo;
 	}
 
 	/**

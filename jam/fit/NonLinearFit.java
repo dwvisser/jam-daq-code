@@ -140,7 +140,6 @@ public abstract class NonLinearFit extends Fit {
             returnVal=e.toString();
         }
         chiSq=lm.getChiSq();
-        //System.out.println("Iteration "+numIter);
         do{
             try{
                 lm.iterate(LevenbergMarquadt.NEXT_ITERATION);
@@ -158,7 +157,7 @@ public abstract class NonLinearFit extends Fit {
         try{
             lm.iterate(LevenbergMarquadt.LAST_ITERATION);
             returnVal=(numIter+" iterations, d.o.f. = "+lm.getDegreesOfFreedom());
-            System.out.println(numIter+" iterations, d.o.f. = "+lm.getDegreesOfFreedom());
+            textInfo.messageOutln(numIter+" iterations, d.o.f. = "+lm.getDegreesOfFreedom());
         } catch (Exception e) {
             returnVal=e.toString();
         }
