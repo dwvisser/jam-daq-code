@@ -97,10 +97,8 @@ public class Group {
      * @param group
      */
     public static void clearGroup(Group group){
-
     	NAME_MAP.remove(group);
     	LIST.remove(group);
-    	group=null;    	
     }
 
     /**
