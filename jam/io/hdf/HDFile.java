@@ -367,7 +367,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public void printDDblock() throws HDFException {
 		try {
 			boolean doAgain = true;
-			seek(HDFconstants.HDF_HEADER_NUMBYTES);
+			seek(HDFconstants.HEAD_NBYTES);
 			do {
 				readShort(); //skip number of DD's
 				final int nextBlock = readInt();

@@ -12,5 +12,5 @@ public interface HDFconstants{
      * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
      */
     int HDF_HEADER = 0x0e031301; 
-    int HDF_HEADER_NUMBYTES=4;
+    int HEAD_NBYTES=4;
 }
