@@ -719,9 +719,7 @@ public abstract class Plot extends JPanel {
 	 * FIXME return type
 	 */
 	public void removePlotMouseListener(PlotMouseListener listener) {
-		boolean removed;
-		removed = plotMouse.removeListener(listener);
-		//this is true if mouse listener is remove
+		plotMouse.removeListener(listener);
 	}
 
 	/**
