@@ -150,16 +150,17 @@ public class DiskDaemon extends StorageDaemon {
 	 */
 	public boolean openEventInputListFile() {
 		boolean goodHeader = false;
-		String fileName = (String) (sortFiles.next());
+		//String fileName = (String) (sortFiles.next());
+		final File file = (File)sortFiles.next();
 		// local open file method
 		try {
-			openEventInputFile(new File(fileName));
+			openEventInputFile(file);
 			goodHeader = eventInput.readHeader();
 			if (goodHeader) {
 				fileCount++;
 			} else {
 				msgHandler.errorOutln(
-					"File does not have correct header. File: " + fileName);
+					"File does not have correct header. File: " + file.getAbsolutePath());
 			}
 
 			return goodHeader;
