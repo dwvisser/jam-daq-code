@@ -8,10 +8,14 @@ package jam.io;
  */
 public class FileOpenMode {
 	
-	private final static int OPEN_VALUE = 1;
-	private final static int OPEN_ADDITIONAL_VALUE=2;	
-	private final static int RELOAD_VALUE = 3;
-	private final static int ADD_VALUE = 4;
+	private final static int OPEN_VALUE = 0;
+	private final static int OPEN_ADDITIONAL_VALUE=1;	
+	private final static int RELOAD_VALUE = 2;
+	private final static int ADD_VALUE = 3;
+	
+	private final static String [] names={"Open", "Open Additional",
+	        "Reload", "Add"
+	};
 
 	private final int value;
 
@@ -21,6 +25,10 @@ public class FileOpenMode {
 	
 	public boolean equals(Object o){
 	    return o instanceof FileOpenMode ? value==((FileOpenMode)o).value : false;
+	}
+	
+	public String toString(){
+	    return names[value];
 	}
 	
 	/**
