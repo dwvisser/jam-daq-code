@@ -1,74 +1,48 @@
-/*
- */
 package jam.sort;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * <p>Class for storing and sending CNAF commands to the crate controller (which may in fact be
- * the jam process using GPIB in the future).  In the user's sort file, an instance of
- * <code>CamacCommands</code> is created, and the CNAF command lists defined one by one.</p>
+ * <p>Class for storing and sending CNAF commands to the crate
+ * controller.  In the user's sort file, an instance of
+ * <code>CamacCommands</code> is created, and the CNAF command lists
+ * defined one by one.</p>
+ * 
  * <p>The five command list types are: </p>
+ * 
  * <ul>
- *  <li>event (1 or many types)</li>
+ *  <li>event</li>
  *  <li>init</li>
  *  <li>scaler</li>
  *  <li>user</li>
  *  <li>clear</li>
  * </ul>
+ * 
+ * @see jam.sort.SortRoutine#cnafCommands
  */
 public class CamacCommands {
-    List [] eventCommands;
-    List initCommands, scalerCommands, userCommands, clearCommands;
-    private int eventSize[];
-    private int numberStreams, streamNumber, paramId, scalerId;
-    private SortRoutine sortRoutine;
+    private final List eventCommands=new ArrayList();
+    private final List initCommands=new ArrayList();
+	private final List scalerCommands=new ArrayList();
+	private final List clearCommands=new ArrayList();
+	private final SortRoutine sortRoutine;
+    private int eventSize=0;
+    private int paramId=0;
+    private int scalerId;
 
-    /** <p>This constructor is passed the number of event types.  The most common and useful
-     * examples of multiple event types are events with unique triggers.  For example,
-     * scalers may be inserted into the event stream every 10 seconds by a unique trigger
-     * in the electronics.  Or a beam monitor may send events that are independent of the
-     * primary experimental equipment.</p>
-     * <p>The various lists of CNAF commands are initialized by the constructor and initially
-     * contain no commands.</p>
-     * @param numberStreams number of different event types
+    /** 
+     * <p>The various lists of CNAF commands are initialized by the 
+     * constructor and initially contain no commands.</p>
+     * 
      * @param sr <code>SortRoutine</code> to which this object belongs
-     * @see jam.sort.SortRoutine
-     */
-    public CamacCommands(int numberStreams, SortRoutine sr) {
-        this.numberStreams=numberStreams;
-        sortRoutine = sr;
-        //command lists
-        initCommands=new Vector();
-        eventCommands=new Vector[numberStreams];
-        for (int i=0;i < numberStreams; i++) {
-            eventCommands[i]=new Vector();
-        }
-        scalerCommands=new Vector();
-        userCommands=new Vector();
-        clearCommands=new Vector();
-        eventSize=new int[numberStreams];
-        streamNumber=0;
-        paramId=0;
-        scalerId=0;
-    }
-    
-    /** Defaults contructor creates one event stream
-     * @param sr <CODE>SortRoutine</CODE> to which this object belongs
+     * @see jam.sort.SortRoutine#cnafCommands
      */
     public CamacCommands(SortRoutine sr) {
-        this(1, sr);
-        streamNumber=0;
+        sortRoutine = sr;
     }
-
-    /** ???
-     * @param number ???
-     */
-    public void setStreamNumber(int number){
-        streamNumber=number;
-        paramId=0;
-    }
-
+    
     /** Adds the command specified by the arguments to the next position in the
      * specified event command list.
      * @param crate crate number
@@ -84,8 +58,8 @@ public class CamacCommands {
     int data) throws SortException {
         //paramId+1 since stream has 1 for first element
         paramId++;
-        eventSize[streamNumber]++;
-        eventCommands[streamNumber].add(CNAF(paramId, crate, number, address,
+        eventSize++;
+        eventCommands.add(CNAF(paramId, crate, number, address,
         function,  data));
         sortRoutine.setEventSizeMode(SortRoutine.SET_BY_CNAF);
         return (paramId-1);	    
@@ -114,7 +88,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void eventCommand(int crate, int number, int address, int function){
-        eventCommands[streamNumber].add(CNAF(0, crate, number, address, function,  0));
+        eventCommands.add(CNAF(0, crate, number, address, function,  0));
     }
 
     /** Adds the command specified by the arguments to the next position in the
@@ -196,45 +170,37 @@ public class CamacCommands {
      * @return list of
      */
     public List getInitCommands(){
-        return initCommands;
+        return Collections.unmodifiableList(initCommands);
     }
     
     /** Get the list of event cnafs
      * @return list of event CNAF commands
      */
     public List getEventCommands(){
-        return eventCommands[0];
+        return Collections.unmodifiableList(eventCommands);
     }
     
     /** Get the list of scaler cnafs
      * @return list of scaler read CNAF commands
      */
     public List getScalerCommands(){
-        return scalerCommands;
+        return Collections.unmodifiableList(scalerCommands);
     }
     
     /** Get the list of clear cnafs
      * @return list of "clear" CNAF commands
      */
     public List getClearCommands(){
-        return clearCommands;
+        return Collections.unmodifiableList(clearCommands);
     }
     
     /** Get the event size for the default stream
      * @return the number of parameters per event
      */
     public int getEventSize(){
-        return eventSize[0];
+        return eventSize;
     }
     
-    /** Get the event size for a given stream
-     * @param streamNumber which stream to get number of parameters for
-     * @return number of parameters per event
-     */
-    public int getEventSize(int streamNumber){
-        return eventSize[streamNumber];
-    }
-        
     /**
      * Used internally to package the parts of a command into a byte array.
      */
