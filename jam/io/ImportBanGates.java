@@ -89,7 +89,7 @@ public class ImportBanGates extends ImpExp {
 	}
 
 	private void readGate(StreamTokenizer st)
-		throws IOException, ImpExpException {
+		throws IOException {
 		final String CXY="CXY";
 		final String INP="INP";
 		/* first advance to start of record */
@@ -125,11 +125,7 @@ public class ImportBanGates extends ImpExp {
 			if (g == null || his.getDimensionality() != 2) {
 				g = new Gate(name, his);
 			}
-			try {
-				g.setLimits(p);
-			} catch (jam.data.DataException e) {
-				throw new ImpExpException(e.getMessage());
-			}
+			g.setLimits(p);
 		} else {
 			this.msgHandler.warningOutln(
 				"Couldn't load gate "
