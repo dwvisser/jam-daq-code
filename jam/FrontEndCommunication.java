@@ -140,7 +140,21 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      */
     void setupCamac(CamacCommands commands) throws JamException;
 
+    /**
+     * Send the map of VME parameters to the front end.
+     * 
+     * @param vmeMap which channels to use in the electronics
+     * @throws JamException if there is a problem setting up
+     */
 	void setupVMEmap(VME_Map vmeMap) throws JamException;
+	
+	/**
+	 * Send the number of milliseconds between blocks of scaler
+	 * values in the event stream.
+	 * 
+	 * @param milliseconds 
+	 * @throws JamException if there's a problem sending
+	 */
 	void sendScalerInterval(int milliseconds) throws JamException;
     
     /** 

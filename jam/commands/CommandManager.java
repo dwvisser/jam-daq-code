@@ -135,30 +135,11 @@ public class CommandManager implements CommandListener, CommandNames {
 	}
 	
 	/**
-	 * Perform command with object parameters
-	 *
-	 * @param strCmd	String key indicating the command
-	 * @param cmdParams	Command parameters
-	 */
-	/*private boolean performCommand(String strCmd, Object[] cmdParams)
-		throws CommandException {
-		boolean validCommand=false;
-		if (createCmd(strCmd)) {
-			if (currentCommand.isEnabled()){
-				currentCommand.performCommand(cmdParams);
-			} else {
-				msghdlr.errorOutln("Disabled command \""+strCmd+"\"");
-			}				
-			validCommand= true;
-		}
-		return validCommand;
-	}*/
-
-	/**
 	 * Perform command with string parameters
 	 *
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
+	 * @return <code>true</code> if successful
 	 */
 	public boolean performParseCommand(String strCmd, String[] strCmdParams) {
 		boolean validCommand=false;
@@ -214,14 +195,31 @@ public class CommandManager implements CommandListener, CommandNames {
 		return exists;
 	}
 	
+	/**
+	 * 
+	 * @param strCmd the command to type
+	 * @return the action
+	 */
 	public Action getAction(String strCmd){
 		return createCmd(strCmd) ? currentCommand : null;
 	}
 	
+	/**
+	 * 
+	 * @param cmd the command to type
+	 * @param enable <code>true</code> if enabled
+	 */
 	public void setEnabled(String cmd, boolean enable){
 		getAction(cmd).setEnabled(enable);
 	}
 	
+	/**
+	 * Help the user by getting similar commands.
+	 * 
+	 * @param s what the user typed
+	 * @param onlyEnabled <code>true</code> means only return enabled commands
+	 * @return list of similar commands
+	 */
 	public String [] getSimilarCommnands(final String s, boolean onlyEnabled){
 		final SortedSet sim=new TreeSet();
 		final Set keys=CMD_MAP.keySet();
@@ -242,17 +240,17 @@ public class CommandManager implements CommandListener, CommandNames {
 			}
 		}
 		final String [] rval=new String[sim.size()];
-		int i=0;
-		for (Iterator it=sim.iterator(); it.hasNext(); i++){
-			rval[i]=(String)it.next();
-		}
+		sim.toArray(rval);
 		return rval;
 	}
 	
+	/**
+	 * @return all commands in the map in alphabetical order
+	 */
 	public String [] getAllCommands(){
-		final Object [] c=CMD_MAP.keySet().toArray();
-		final String [] rval=new String[c.length];
-		System.arraycopy(c,0,rval,0,c.length);
+		final SortedSet sorted=new TreeSet(CMD_MAP.keySet());
+		final String [] rval=new String[sorted.size()];
+		sorted.toArray(rval);
 		return rval;
 	}
 }

@@ -1,6 +1,3 @@
-/*
- * Created on Dec 31, 2003
- */
 package jam;
 import java.awt.Color;
 
@@ -8,7 +5,7 @@ import java.awt.Color;
  * represents the possible run states of Jam.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version 1.4
+ * @version 1.4, 2003-12-31
  */
 public class RunState {
 	
@@ -80,14 +77,23 @@ public class RunState {
 		label=string;
 	}
 	
+	/**
+	 * @return text of the label to show for this run state
+	 */
 	public String getLabel(){
 		return label;
 	}
 	
+	/**
+	 * @see Object#toString()
+	 */
 	public String toString(){
 		return name;
 	}
 	
+	/**
+	 * @return background color for the lable to show for this run state
+	 */
 	public Color getColor(){
 		return color;
 	}
