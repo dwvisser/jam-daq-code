@@ -76,7 +76,7 @@ public class DiskDaemon extends StorageDaemon {
 				if (mode == OFFLINE) {
 					eventOutput.writeEndRun();
 				}
-				eventOutput.flush();
+				//unnecessary, I think eventOutput.flush();
 				bos.flush();
 				fos.close();
 				this.outputFile = null;
