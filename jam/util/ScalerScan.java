@@ -72,15 +72,15 @@ public class ScalerScan
 	JamProperties.HIST_PATH));
 	private final JTextField txtPath;
 	private final JTextField txtRunName;
-	private final static JamStatus status=JamStatus.instance();
+	private final static JamStatus STATUS=JamStatus.instance();
 
 	/**
 	 * Constructor.
 	 */
 	public ScalerScan() {
-		super(status.getFrame(), "HDF Scaler Values Scan", false);
-		frame = status.getFrame();
-		console = status.getMessageHandler();
+		super(STATUS.getFrame(), "HDF Scaler Values Scan", false);
+		frame = STATUS.getFrame();
+		console = STATUS.getMessageHandler();
 		final Container container = getContentPane();
 		container.setLayout(new BorderLayout(10,5));
 		
