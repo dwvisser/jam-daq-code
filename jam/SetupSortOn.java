@@ -2,7 +2,6 @@ package jam;
 import jam.data.DataBase;
 import jam.data.control.DataControl;
 import jam.global.*;
-import jam.io.ExtensionFileFilter;
 import jam.sort.*;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
@@ -923,22 +922,5 @@ class SetupSortOn implements ActionListener, ItemListener {
 			bbrowsel.setEnabled(true);
 			sortChoice.setEnabled(true);
 		}
-	}
-
-	/**
-	 * Browses for the event stream.
-	 */
-	private String getEventStream() {
-		String[] types = new String[] { "class" };
-		JFileChooser fd = new JFileChooser(eventDirectory);
-		fd.setFileFilter(new ExtensionFileFilter(types, "Java .class files"));
-		int option = fd.showOpenDialog(jamMain);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-			&& fd.getSelectedFile() != null) {
-			eventDirectory = fd.getSelectedFile(); //save current directory
-			eventFile = fd.getSelectedFile().getName();
-		}
-		return eventFile;
 	}
 }
