@@ -1,11 +1,37 @@
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import jam.data.DataException;
+import jam.data.Monitor;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.GoodThread;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Iterator;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 /**
  * Reads and displays the monitors.
  *
@@ -44,7 +70,7 @@ public final class MonitorControl
 	private JTextField[] textMaximum;
 	private JCheckBox[] checkAlarm;
 	private JPanel pupdate; //panel with update time
-	private JTextField textUpdate;
+	private JSpinner spinnerUpdate;
 	private JPanel pbutton; //panel with buttons
 	private JButton brecall, bok, bapply, bcancel;
 
@@ -121,11 +147,14 @@ public final class MonitorControl
 		JLabel lUpdate = new JLabel("Update", JLabel.RIGHT);
 		pupdate.add(lUpdate);
 
-		textUpdate = new JTextField("          ");
-		textUpdate.setColumns(4);
-		textUpdate.setEditable(true);
-		textUpdate.setBackground(Color.white);
-		pupdate.add(textUpdate);
+		//textUpdate = new JTextField("          ");
+		//textUpdate.setColumns(4);
+		//textUpdate.setEditable(true);
+		//textUpdate.setBackground(Color.white);
+		final Integer one=new Integer(1);
+		spinnerUpdate = new JSpinner(new SpinnerNumberModel(one,one,null,
+		one));
+		pupdate.add(spinnerUpdate);
 
 		JLabel lunit = new JLabel("sec", JLabel.LEFT);
 		pupdate.add(lunit);
@@ -282,7 +311,6 @@ public final class MonitorControl
 				textValue[i] = new JTextField("           ");
 				textValue[i].setColumns(6);
 				textValue[i].setEditable(false);
-				textValue[i].setBackground(Color.white);
 				textValue[i].setText(String.valueOf(0));
 				pm[i].add(textValue[i]);
 				plotBar[i] = new PlotBar(monitor[i]);
@@ -323,18 +351,16 @@ public final class MonitorControl
 				textThreshold[i] = new JTextField("          ");
 				textThreshold[i].setColumns(6);
 				textThreshold[i].setEditable(true);
-				textThreshold[i].setBackground(Color.white);
 				textThreshold[i].setText("10");
 				pMonitors.add(textThreshold[i]);
 
 				textMaximum[i] = new JTextField("          ");
 				textMaximum[i].setColumns(6);
 				textMaximum[i].setEditable(true);
-				textMaximum[i].setBackground(Color.white);
 				textMaximum[i].setText("100");
 				pMonitors.add(textMaximum[i]);
 
-				checkAlarm[i] = new JCheckBox(/*"Alarm"*/);
+				checkAlarm[i] = new JCheckBox();
 				checkAlarm[i].setSelected(false);
 				pMonitors.add(checkAlarm[i]);
 			}
@@ -363,7 +389,7 @@ public final class MonitorControl
 	 */
 	void recall() {
 		/* update interval */
-		textUpdate.setText("" + interval);
+		spinnerUpdate.setValue(new Integer(interval));
 		/*get the Monitor parameters */
 		for (int i = 0; i < numberMonitors; i++) {
 			textThreshold[i].setText("" + monitor[i].getThreshold());
@@ -384,16 +410,16 @@ public final class MonitorControl
 
 		try {
 			//set update interval
-			interval = Integer.parseInt(textUpdate.getText().trim());
+			interval = ((Integer)spinnerUpdate.getValue()).intValue();
 			if (interval < 1) {
-				throw new DataException("Update interval must be greater than 1");
+				throw new IllegalArgumentException("Update interval must be greater than 1");
 			}
 			Monitor.setInterval(interval);
 
 			//set Monitor parameters
 			for (int i = 0; i < numberMonitors; i++) {
-				threshold =
-					Double.parseDouble(textThreshold[i].getText().trim());
+				threshold =Double.parseDouble(
+				textThreshold[i].getText().trim());
 				monitor[i].setThreshold(threshold);
 
 				maximum = Double.parseDouble(textMaximum[i].getText().trim());
