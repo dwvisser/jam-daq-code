@@ -1,7 +1,14 @@
 package jam.io.hdf;
 
-import java.util.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Vdata description</em> data object.
@@ -122,12 +129,10 @@ public class VdataDescription extends DataObject {
 		short[] types,
 		short[] orders) {
 		super(fi, DFTAG_VH); //sets tag
-		//System.out.println("VDD_"+tag+"/"+ref+"(out, '"+name+"', "+size+", names["+names.length+
-		//"], types["+types.length+"], orders["+orders.length+"])");
-		//Double check dimensionality
+		/* Double check dimensionality */
 		if ((names.length != types.length)
 			|| (names.length != orders.length)) {
-			System.err.println(
+			throw new IllegalArgumentException(
 				"VdataDescription(): was not called with all same dimensions!");
 		} else { //OK
 			interlace = FULL_INTERLACE;
@@ -159,7 +164,7 @@ public class VdataDescription extends DataObject {
 						isize[i] = (short) (order[i] * 8);
 						break;
 					default :
-						System.err.println(
+						throw new IllegalArgumentException(
 							"Unknown Vdata field type!, field: "
 								+ i
 								+ ", type: "
@@ -212,7 +217,8 @@ public class VdataDescription extends DataObject {
 			dos.writeShort(0); //unused bytes
 			dos.writeByte(0); //unused additional (undocumented) byte
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}
@@ -270,7 +276,8 @@ public class VdataDescription extends DataObject {
 			dis.readShort(); //should be version(=VH_VERSION)
 			dis.readShort(); //no extension
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

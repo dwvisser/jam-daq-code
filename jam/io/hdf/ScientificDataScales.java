@@ -1,5 +1,9 @@
 package jam.io.hdf;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
@@ -55,7 +59,8 @@ public class ScientificDataScales extends DataObject {
 				}
 			}
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}

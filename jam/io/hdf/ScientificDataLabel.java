@@ -1,5 +1,9 @@
 package jam.io.hdf;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>scientific data label</em> data object.  The label is meant to be a short
@@ -29,7 +33,8 @@ public class ScientificDataLabel extends DataObject {
 		try {
 			bytes = allLabels.getBytes(CHARSET);
 		} catch (UnsupportedEncodingException uee){
-			System.err.println(uee.getMessage());
+			JOptionPane.showMessageDialog(null,uee.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -42,13 +47,13 @@ public class ScientificDataLabel extends DataObject {
 		try {
 			bytes = allLabels.getBytes(CHARSET);
 		} catch (UnsupportedEncodingException uee){
-			System.err.println(uee.getMessage());
+			JOptionPane.showMessageDialog(null,uee.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	public ScientificDataLabel(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_SDL;
 	}
 
 	/**

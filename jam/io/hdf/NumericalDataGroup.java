@@ -1,7 +1,15 @@
 package jam.io.hdf;
 
-import java.util.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Numerical Data Group</em> data object.
@@ -23,13 +31,13 @@ public final class NumericalDataGroup extends DataObject {
 		try {
 			refreshBytes();
 		} catch (HDFException e) {
-			System.err.println(e);
+			JOptionPane.showMessageDialog(null,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	public NumericalDataGroup(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_NDG;
 	}
 
 	/**
@@ -94,7 +102,8 @@ public final class NumericalDataGroup extends DataObject {
 		try {
 			refreshBytes();
 		} catch (HDFException e) {
-			System.err.println(e);
+			JOptionPane.showMessageDialog(null,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

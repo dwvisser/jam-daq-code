@@ -1,8 +1,13 @@
 package jam.io.hdf;
 
-import java.util.*;
-import java.io.*;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.JOptionPane;
 /**
  * Class to represent an HDF <em>Data identifier label</em> data object.  The label is meant to be a short
  * probably one or 2 word <em>label</em>.
@@ -22,7 +27,7 @@ public class DataIDLabel extends DataObject {
 
 	public DataIDLabel(DataObject obj, String label) {
 		super(obj.getFile(), DFTAG_DIL); //sets tag
-		this.object = obj;
+		object = obj;
 		this.label = label;
 		int byteLength = 4 + label.length();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -32,14 +37,14 @@ public class DataIDLabel extends DataObject {
 			dos.writeShort(object.getRef());
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}
 
 	public DataIDLabel(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_DIL;
 	}
 
 	/**

@@ -1,6 +1,12 @@
 package jam.io.hdf;
-import java.io.*;
 import jam.data.Histogram;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
@@ -31,9 +37,9 @@ public class ScientificDataDimension extends DataObject {
 
 	public ScientificDataDimension(HDFile fi, Histogram h) {
 		super(fi, DFTAG_SDD); //sets tag
-		this.rank = h.getDimensionality();
-		this.sizeX = h.getSizeX();
-		this.sizeY = h.getSizeY();
+		rank = h.getDimensionality();
+		sizeX = h.getSizeX();
+		sizeY = h.getSizeY();
 		isDouble =
 			(h.getType() == Histogram.ONE_DIM_DOUBLE
 				|| h.getType() == Histogram.TWO_DIM_DOUBLE);
@@ -61,7 +67,8 @@ public class ScientificDataDimension extends DataObject {
 				dos.writeShort(file.getIntType().getRef());
 			}
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 		sds = new ScientificDataScales(this);
@@ -69,7 +76,6 @@ public class ScientificDataDimension extends DataObject {
 
 	public ScientificDataDimension(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_SDD;
 	}
 
 	public void interpretBytes() {
@@ -87,14 +93,10 @@ public class ScientificDataDimension extends DataObject {
 			numberRef = dis.readShort();
 			numberType =
 				((NumberType) file.getObject(numberTag, numberRef)).getType();
-			//System.out.println("SDD ref "+ref+"NumType "+numberType);
-			//don't bother reading scales
-			for (int i = 0; i < rank; i++) {
-				//dos.writeShort(file.getNumberType().getTag());
-				//dos.writeShort(file.getNumberType().getRef());
-			}
+			/* We don't bother reading the scales */
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

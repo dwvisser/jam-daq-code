@@ -220,8 +220,9 @@ public abstract class Plot extends JPanel {
 			axisLabelY = hist.getLabelY();
 			isCalibrated = hist.isCalibrated();
 			if (plotLimits == null) {
-				System.err.println(
-					"Error: Tried to plot histogram with null Limits [Plot]");
+				JOptionPane.showMessageDialog(null,
+				"Tried to plot histogram with null Limits.",
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			if (hist.getType() == Histogram.ONE_DIM_INT) {
 				type = ONE_DIM_INT;
@@ -417,9 +418,7 @@ public abstract class Plot extends JPanel {
 			xul = xul - diffX;
 			yll = yll + diffY;
 			yul = yul - diffY;
-		} /*else {
-			System.err.println("Error: should not be here [PLOT]");
-		}*/
+		} 
 		/* check if beyond extremes, if so, set to extremes */
 		if ((xll < 0) || (xll > sizeX - 1)) {
 			xll = 0;

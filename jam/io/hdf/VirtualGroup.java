@@ -1,7 +1,15 @@
 package jam.io.hdf;
 
-import java.util.*;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Virtual Group</em> data object.
@@ -26,10 +34,10 @@ public final class VirtualGroup extends DataObject {
 	 */
 	String type;
 
-	short extag = 0; //purpose?
-	short exref = 0; //purpose?
-	short version = 3; //version of DFTAG_VG info
-	short more = 0; //unused but must add
+	private final short extag = 0; //purpose?
+	private final short exref = 0; //purpose?
+	private final short version = 3; //version of DFTAG_VG info
+	private final short more = 0; //unused but must add
 
 	public VirtualGroup(HDFile fi, String name, String type) {
 		super(fi, DFTAG_VG); //sets tag
@@ -39,13 +47,13 @@ public final class VirtualGroup extends DataObject {
 		try {
 			refreshBytes();
 		} catch (HDFException e) {
-			System.err.println(e);
+			JOptionPane.showMessageDialog(null,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	public VirtualGroup(HDFile hdf, byte[] data, short t, short r) {
 		super(hdf, data, t, r);
-		//tag = DFTAG_VG;
 	}
 
 	/**
@@ -121,7 +129,6 @@ public final class VirtualGroup extends DataObject {
 			dis.read(temp);
 			type = new String(temp);
 			for (i = 0; i < numItems; i++) {
-				//System.out.println("VG_"+tag+"/"+ref+".interpretBytes(): Read in tag: "+tags[i]+", ref: "+refs[i]);
 				addDataObject(file.getObject(tags[i], refs[i]));
 			}
 			//rest of element has no useful information

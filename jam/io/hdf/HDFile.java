@@ -234,18 +234,16 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	void changeRefKey(DataObject d, Short old) {
 		final Short tag=d.getTagKey();
 		final Map refs=(Map)tagMap.get(tag);
-		//final Short old=d.getRefKey();
 		if (refs.containsKey(old)){
 			refs.remove(old);
 		}
 		/* if old not there, we were just called as the object was being
 		 * added to the file...no worries */
-		//final Short ref=new Short(newref);
 		final Short ref=d.getRefKey();
 		if (!refs.containsKey(ref)){
 			refs.put(ref,d);
 		} else {
-			System.err.println("Trying to put: "+ref+
+			throw new IllegalStateException("Trying to put: "+ref+
 			"for tag:"+tag+" when one already exists.");
 		}
 	} 
@@ -442,7 +440,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 						case DataObject.DFTAG_SDS :
 							break; //do nothing
 						default :
-							System.err.println("Unrecognized tag: " + tag);
+							throw new HDFException("Unrecognized tag: " + tag);
 					}
 				}
 				if (nextBlock == 0) {

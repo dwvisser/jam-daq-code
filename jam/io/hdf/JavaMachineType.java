@@ -1,5 +1,9 @@
 package jam.io.hdf;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Specifies the format of numbers and chars used by Java.
@@ -27,7 +31,8 @@ public class JavaMachineType extends DataObject {
 		try {
 			dos.writeShort(DFMT_SUN);
 		} catch (IOException ioe) {
-			System.err.println("JavaMachineType(HDFile) IOException: " + ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}

@@ -1,6 +1,13 @@
 package jam.io.hdf;
-import java.io.*;
-import jam.util.*;
+import jam.util.StringUtilities;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent a 32-bit java int HDF <em>Library Version Number</em> data object for
@@ -52,7 +59,8 @@ public class LibVersion extends DataObject {
 			dos.writeInt(release);
 			dos.writeBytes(description);
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}

@@ -1,5 +1,11 @@
 package jam.io.hdf;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Vdata description</em> data object.
@@ -42,7 +48,6 @@ public class Vdata extends DataObject {
 		nfields = description.getNumFields();
 		nvert = description.getNumRows();
 		cells = new Object[nfields][nvert];
-		//System.out.println("Vdata with "+nfields+" columns and "+nvert+" rows created.");
 		ivsize = description.getRowSize();
 		order = description.getDimensions();
 		types = description.getTypes();
@@ -56,7 +61,6 @@ public class Vdata extends DataObject {
 	 */
 	public Vdata(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_VS;
 		description = (VdataDescription) (hdf.getObject(DFTAG_VH, reference));
 		description.interpretBytes();
 		nfields = description.getNumFields();
@@ -75,7 +79,7 @@ public class Vdata extends DataObject {
 			temp = new Integer(indata);
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new UnsupportedOperationException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -90,7 +94,7 @@ public class Vdata extends DataObject {
 			}
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -101,7 +105,7 @@ public class Vdata extends DataObject {
 			temp = new Short(indata);
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -116,7 +120,7 @@ public class Vdata extends DataObject {
 			}
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -127,7 +131,7 @@ public class Vdata extends DataObject {
 			temp = new Float(indata);
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -142,7 +146,7 @@ public class Vdata extends DataObject {
 			}
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 	/**
@@ -154,7 +158,7 @@ public class Vdata extends DataObject {
 			temp = new Double(indata);
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 	/**
@@ -171,7 +175,7 @@ public class Vdata extends DataObject {
 			}
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -179,7 +183,7 @@ public class Vdata extends DataObject {
 		if (description.getType(column) == VdataDescription.DFNT_CHAR8) {
 			addCell(column, row, indata);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -190,7 +194,7 @@ public class Vdata extends DataObject {
 			temp = new Character(indata);
 			addCell(column, row, temp);
 		} else { //uh oh... not right type
-			System.err.println("Wrong data type for column " + column + "!");
+			throw new IllegalStateException("Wrong data type for column " + column + "!");
 		}
 	}
 
@@ -253,7 +257,7 @@ public class Vdata extends DataObject {
 					break;
 
 				default :
-					System.err.println("Unknown data type!");
+				throw new IllegalStateException("Unknown data type!");
 			}
 		}
 	}
@@ -264,22 +268,18 @@ public class Vdata extends DataObject {
 	 * method <code>getBytes(row,col)</code>.
 	 */
 	public void refreshBytes() {
-		int i, j;
-		int numBytes;
-		ByteArrayOutputStream baos;
-		DataOutputStream dos;
-
-		numBytes = nvert * ivsize;
-		baos = new ByteArrayOutputStream(numBytes);
-		dos = new DataOutputStream(baos);
+		final int numBytes = nvert * ivsize;
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
+		final DataOutputStream dos = new DataOutputStream(baos);
 		try {
-			for (i = 0; i < nvert; i++) {
-				for (j = 0; j < nfields; j++) {
+			for (int i = 0; i < nvert; i++) {
+				for (int j = 0; j < nfields; j++) {
 					dos.write(this.getBytes(i, j));
 				}
 			}
 		} catch (IOException ioe) {
-			System.err.println("Vdata.refreshBytes(): " + ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}
@@ -324,7 +324,7 @@ public class Vdata extends DataObject {
 					out = charToBytes(charValue);
 					break;
 				default :
-					System.err.println(
+					throw new IllegalStateException(
 						"Vdata.getBytes("
 							+ row
 							+ ","
@@ -344,8 +344,6 @@ public class Vdata extends DataObject {
 							((Short) (cells[col][row])).shortValue();
 						tempOut = shortToBytes(shortValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
-//						out[bOffset + 0] = tempOut[0];
-//						out[bOffset + 1] = tempOut[1];
 						bOffset += size;
 					}
 					break;
@@ -360,10 +358,6 @@ public class Vdata extends DataObject {
 							((Short) (cells[col][row])).shortValue();
 						tempOut = shortToBytes(shortValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
-//						out[bOffset + 0] = tempOut[0];
-//						out[bOffset + 1] = tempOut[1];
-//						out[bOffset + 2] = tempOut[2];
-//						out[bOffset + 3] = tempOut[3];
 						bOffset += size;
 					}
 					break;
@@ -378,10 +372,6 @@ public class Vdata extends DataObject {
 							((Float) (cells[col][row])).floatValue();
 						tempOut = floatToBytes(floatValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
-//						out[bOffset + 0] = tempOut[0];
-//						out[bOffset + 1] = tempOut[1];
-//						out[bOffset + 2] = tempOut[2];
-//						out[bOffset + 3] = tempOut[3];
 						bOffset += size;
 
 					}
@@ -397,14 +387,6 @@ public class Vdata extends DataObject {
 							((Double) (cells[col][row])).doubleValue();
 						tempOut = doubleToBytes(doubleValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
-//						out[bOffset + 0] = tempOut[0];
-//						out[bOffset + 1] = tempOut[1];
-//						out[bOffset + 2] = tempOut[2];
-//						out[bOffset + 3] = tempOut[3];
-//						out[bOffset + 4] = tempOut[0];
-//						out[bOffset + 5] = tempOut[1];
-//						out[bOffset + 6] = tempOut[2];
-//						out[bOffset + 7] = tempOut[3];
 						bOffset += size;
 					}
 					break;
@@ -422,7 +404,7 @@ public class Vdata extends DataObject {
 					}
 					break;
 				default :
-					System.err.println(
+					throw new IllegalStateException(
 						"Vdata.getBytes("
 							+ row
 							+ ","
@@ -449,7 +431,7 @@ public class Vdata extends DataObject {
 			System.arraycopy(bytes, location, temp, 0, length);
 			out = new String(temp);
 		} else {
-			System.err.println(
+			throw new IllegalStateException(
 				"VS_"
 					+ getTag()
 					+ "/"
@@ -485,11 +467,12 @@ public class Vdata extends DataObject {
 			try {
 				n = dis.readInt();
 			} catch (IOException ioe) {
-				System.err.println("Vdata.getInteger(): " + ioe);
+				JOptionPane.showMessageDialog(null,ioe.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			out = new Integer(n);
 		} else {
-			System.err.println(
+			throw new IllegalStateException(
 				"VS_"
 					+ getTag()
 					+ "/"
@@ -523,11 +506,12 @@ public class Vdata extends DataObject {
 			try {
 				n = dis.readShort();
 			} catch (IOException ioe) {
-				System.err.println("Vdata.getShort(): " + ioe);
+				JOptionPane.showMessageDialog(null,ioe.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			out = new Short(n);
 		} else {
-			System.err.println(
+			throw new IllegalStateException(
 				"VS_"
 					+ getTag()
 					+ "/"
@@ -563,11 +547,12 @@ public class Vdata extends DataObject {
 			try {
 				f = dis.readFloat();
 			} catch (IOException ioe) {
-				System.err.println("Vdata.getFloat(): " + ioe);
+				JOptionPane.showMessageDialog(null,ioe.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			out = new Float(f);
 		} else {
-			System.err.println(
+			throw new IllegalStateException(
 				"VS_"
 					+ getTag()
 					+ "/"
@@ -603,11 +588,12 @@ public class Vdata extends DataObject {
 			try {
 				d = dis.readDouble();
 			} catch (IOException ioe) {
-				System.err.println("Vdata.getDouble(): " + ioe);
+				JOptionPane.showMessageDialog(null,ioe.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			out = new Double(d);
 		} else {
-			System.err.println(
+			throw new IllegalStateException(
 				"VS_"
 					+ getTag()
 					+ "/"

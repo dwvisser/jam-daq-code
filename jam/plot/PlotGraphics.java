@@ -1,5 +1,4 @@
 package jam.plot;
-import java.awt.geom.AffineTransform;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,7 +10,10 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -602,12 +604,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final int dclen=drawCounts.length;
 		final int lastBinAll=dclen-1;
 		final double lastBinAllLo=lastBinAll*binWidth;
-		//final double lastBinAllHi=counts.length;
 		if (counts == null) {
-			System.err.println(
-				getClass().getName()
-					+ ".drawHistLinear() called "
-					+ "with null array.");
+			JOptionPane.showMessageDialog(null,
+			"drawHistLinear() called with null array.",
+			getClass().getName(),JOptionPane.WARNING_MESSAGE);
 		} else {
 			final int upperX = (int)Math.min(maxXch+1,lastBinAllLo);
 			final int firstBin=(int)Math.floor(minXch/binWidth);

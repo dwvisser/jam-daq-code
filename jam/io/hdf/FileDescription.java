@@ -1,5 +1,11 @@
 package jam.io.hdf;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>File Description</em> data object.  The text is meant to be a description of
@@ -27,14 +33,14 @@ public class FileDescription extends DataObject {
 		try {
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
-			System.err.println(ioe);
+			JOptionPane.showMessageDialog(null,ioe.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
 	}
 
 	public FileDescription(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		//tag=DFTAG_FD;
 	}
 
 	/**
