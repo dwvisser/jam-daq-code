@@ -34,9 +34,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	private transient long mark = 0;
 
-
-	private transient File file; //File object corresponding to this object
-
 	/**
 	 * Constructor called with a <code>File</code> object, and an access
 	 * mode.
@@ -48,7 +45,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public HDFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
-		this.file = file;
 	}
 	
 	/**
