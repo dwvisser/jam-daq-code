@@ -14,21 +14,14 @@ import jam.global.Broadcaster;
  * @since JDK1.1
  */
 
-public class InitialHistograms {
+public final class InitialHistograms {
 
-	private Histogram histInitial; 
+	private transient final Histogram histInitial;
+	
     /**
      * Constructs an instance of this class.
      */
 	public InitialHistograms() {
-		makehists(); 
-	}
-
-	public Histogram getInitialHist(){
-		return histInitial;
-	}
-	private void makehists() {
-
 		Group.createGroup("Initial", Group.Type.FILE);
 		/* histogram with Jam name 2d */
 		final Histogram histJam2d = Histogram.createHistogram(histNameJam2d(),
@@ -48,6 +41,10 @@ public class InitialHistograms {
 		histInitial =histJam2d;
 	}
 
+	Histogram getInitialHist(){
+		return histInitial;
+	}
+	
 	/**
 	 * @return counts for a 1d histogram that says JAM.
 	 */
