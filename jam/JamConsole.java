@@ -2,6 +2,7 @@ package jam;
 import jam.commands.CommandManager;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -127,6 +128,7 @@ public class JamConsole
 	 * a text field for intput
 	 */
 	public JamConsole(int linesLog) {
+		JamStatus.instance().setMessageHandler(this);
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
 		textLog.setToolTipText(
