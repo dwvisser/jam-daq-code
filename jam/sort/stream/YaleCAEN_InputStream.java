@@ -256,19 +256,26 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         return rval ;
     }
     
+    private final int typeMask   = 0x7000000;
+    private final int paramCompare=0x0000000;
     /* Checks whether the word type is for an event data word */
     private boolean isParameter(int data){
-        return 0==((data>>>24)&0x7);
+        //return 0==((data>>>24)&0x7);
+        return (data & typeMask) == paramCompare;
     }
     
+    private final int headerCompare = 0x2000000;
     /* Checks whether the word typ is for an event header */
     private boolean isHeader(int data){
-        return 2==((data>>>24)&0x7);
+        //return 2==((data>>>24)&0x7);
+        return (data & typeMask) == headerCompare;
     }
     
+    private final int endCompare = 0x4000000;
     /* Checks whether the word type is for an event end-of-block */
     private boolean isEndBlock(int data){
-        return 4==((data>>>24)&0x7);
+        //return 4==((data>>>24)&0x7);
+        return (data & typeMask) == endCompare;
     }
     
     /**
@@ -323,11 +330,12 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         }
     }
     
+    final short endRun = (short)(END_PAD & 0xffff);
     /**
      * Check for end of run word
      */
     public boolean isEndRun(short dataWord){
-		final short endRun = (short)(END_PAD & 0xffff);
+		//final short endRun = (short)(END_PAD & 0xffff);
 		return (endRun==dataWord);
     }
 }
