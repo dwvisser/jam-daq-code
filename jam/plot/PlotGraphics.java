@@ -558,7 +558,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawHist(double[] counts, double binWidth) {
-		drawHistLinear(counts, binWidth, 
+		drawHist(counts, binWidth, 
 		plotLimits.getScale()!=Limits.ScaleType.LINEAR);
 	}
 
@@ -586,19 +586,20 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void drawHistLinear(double[] counts, double binWidth, boolean log) {
+	private void drawHist(double[] counts, double binWidth, boolean log) {
 		/* x's are in channels, y's are in counts */
 		final double [] drawCounts=getDrawCounts(counts,binWidth);
 		final int dclen=drawCounts.length;
 		final int lastBinAll=dclen-1;
 		final double lastBinAllLo=lastBinAll*binWidth;
+		//final double lastBinAllHi=counts.length;
 		if (counts == null) {
 			System.err.println(
 				getClass().getName()
 					+ ".drawHistLinear() called "
 					+ "with null array.");
 		} else {
-			final int upperX = (int)Math.min(maxXch,lastBinAllLo);
+			final int upperX = (int)Math.min(maxXch+1,lastBinAllLo);
 			final int firstBin=(int)Math.floor(minXch/binWidth);
 			final int lastBin=(int)Math.floor(upperX/binWidth);
 			double binChLo=firstBin*binWidth;
@@ -620,20 +621,17 @@ class PlotGraphics implements PlotGraphicsLayout {
 				/* now horizontal across bin, i.e., y1==y2 */
 				x1=x2; y1=y2; //last point becomes start
 				binChLo += delCh;
-				x2 = toViewHorzLin(binChLo);
+				x2 = Math.min(viewRight,toViewHorzLin(binChLo));
 				g.drawLine(x1,y1,x2,y2);
-				delCh=Math.min(binWidth,maxXch-binChLo);
+				delCh=Math.min(binWidth,maxXch+1-binChLo);
 			}
 			// last vertical line
-			if (x1 >= viewRight) {
-				x1 = viewRight;
-			} else {
+			if (x2 < viewRight) {
 				x1 = x2;
+				int y1 = y2;
+				y2 = viewBottom;
+				g.drawLine(x1, y1, x2, y2);
 			}
-			int y1 = y2;
-			x2 = x1;
-			y2 = viewBottom;
-			g.drawLine(x1, y1, x2, y2);
 		}
 	}
 	
@@ -976,15 +974,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawGate1d(int ll, int ul) {
-
-		int x;
-
 		clipPlot();
-
-		x = toViewHorzLin(ll);
-		g.drawLine(x, viewBottom, x, viewTop);
-		x = toViewHorzLin(ul);
-		g.drawLine(x, viewBottom, x, viewTop);
+		final int x = toViewHorzLin(ll);
+		final int x2=Math.min(toViewHorzLin(ul+1),viewRight);
+		final int width=x2-x;
+		final int height=viewBottom-viewTop;
+		g.fillRect(x,viewTop,width,height);
 	}
 
 	/**
@@ -1130,37 +1125,35 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 *
 	 */
 	public void markArea1d(int lowChan, int highChan, double[] counts) {
-		int x1, x2, y; //x1 left rect x2 right rect
-		int width, height;
-
 		int minChan = Math.max(minXch, lowChan);
 		int maxChan = Math.min(maxXch, highChan);
-		//for each channel draw a filled rectangle
+		final Polygon fill=new Polygon();
+		final boolean log=plotLimits.getScale() != Limits.ScaleType.LINEAR;
+		int xi=toViewHorzLin(minChan);
+		int yi=log ? toViewVertLog(0) : toViewVertLinCk(0);
+		fill.addPoint(xi,yi);
+		int lastx=xi;
+		int lasty=yi;
+		int x=xi;
+		int y=yi;
+		/* vertical traverse, followed by horizontal */
 		for (int i = minChan; i <= maxChan; i++) {
-			x1 = toViewHorzLin(i);
-			x2 = toViewHorzLin(i + 1);
-			if (i != minXch) {
-				if (counts[i - 1] < counts[i]) {
-					x1 = x1 + 1;
-				}
-				//special case at lower end
-			} else {
-				x1 = x1 + 1;
+			y = log ? toViewVertLog(counts[i]) : toViewVertLinCk(counts[i]);
+			if (y != lasty){
+				fill.addPoint(x,y);
+				lasty=y;	
 			}
-			if (i != maxXch) {
-				if (counts[i] > counts[i + 1]) {
-					x2 = x2 - 1;
-				}
-			} // else x2 remains the same
-			width = x2 - x1 + 1;
-			if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
-				y = toViewVertLinCk(counts[i]) + 1;
-			} else {
-				y = toViewVertLog(counts[i]) + 1;
+			x=Math.min(viewRight,toViewHorzLin(i+1));
+			if (!(x == lastx && y==lasty)){
+				fill.addPoint(x,y);
+				lastx=x;
 			}
-			height = viewBottom - y;
-			g.fillRect(x1, y, width, height);
+		}	
+		if (y != yi) {//go back to bottom on last
+			y=yi;
+			fill.addPoint(x,y);
 		}
+		g.fill(fill);
 	}
 
 	/**
@@ -1173,7 +1166,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	public void markArea2d(
 		Rectangle r) {
-		g.draw(r);
+		//g.draw(r);
+		g.fill(r);
 	}
 	
 	Rectangle get2dAreaMark(
