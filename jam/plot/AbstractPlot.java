@@ -92,7 +92,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	protected double[][] counts2d;
 	
-	protected boolean hasCounts;
+	protected boolean hasHistogram;
 
 	/* Gate stuff. */
 
@@ -222,6 +222,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	void displayHistogram(Histogram hist) {
 
 		if (hist != null) {
+			hasHistogram=true;
 			plotHistNumber=hist.getNumber();			
 			plotLimits = Limits.getLimits(hist);
 			if (plotLimits == null) {
@@ -240,12 +241,16 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			copyCounts(hist); //copy hist counts
 			/* Limits contains handle to Models */
 			scrollbars.setLimits(plotLimits);
+			
 		} else { //we have a null histogram so fake it
+			plotLimits=null;
+			hasHistogram=true;
 			counts = new double[100];
 			type = Histogram.Type.ONE_DIM_INT;
 			sizeX = 100;
 			counts2d = null;
 		}
+				
 		displayingGate = false;
 		displayingOverlay = false;
 		displayingFit = false;
@@ -271,7 +276,13 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 			
 	}
-
+	/**
+	 * Plot has a valid histogram
+	 * @return
+	 */
+	protected boolean HasHistogram(){
+		return hasHistogram;
+	}
 	private synchronized void setNoFillMode(boolean bool) {
 		noFillMode = bool;
 	}

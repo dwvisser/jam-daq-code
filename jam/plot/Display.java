@@ -158,6 +158,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		plotGridPanel.removeAll();
 		for (i=0;i<numberPlots;i++){
 			plot =(Plot)(plotList.get(i));
+			plot.removeAllPlotMouseListeners();
 			plot.setNumber(i);
 			plotGridPanel.add(plot);			
 			Histogram hist=currentView.getHistogram(i);
@@ -194,7 +195,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			//	plotLayout=Plot.LAYOUT_TYPE_FULL;
 			//}else {
 			//	plotLayout=Plot.LAYOUT_TYPE_TILED;
-			//s}
+			//}
 			plotLayout=Plot.LAYOUT_TYPE_TILED;
 			scrollTemp=isScrolling;
 		}
@@ -417,7 +418,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 					currentPlot.reset();
 					currentPlot.removeAllPlotMouseListeners();
 				}
-				p.addPlotMouseListener(action);
+				
+				if (p.getHistogram()!=null)
+					p.addPlotMouseListener(action);
 				
 				//Change selected plot
 				for (i=0;i<plotList.size();i++) {

@@ -181,6 +181,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 			plotSwapPanelLayout.show(this, key);
 			currentHistNumber = hist.getNumber();					
 		}else {
+			//Histogram is null Null
 			plotSwapPanelLayout.show(this, KEY1);
 			currentHistNumber=-1;
 		}
@@ -252,8 +253,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		getPlot().markChannel(p);
 	}
 
+	/**
+	 * Only update plot if it has a histogram
+	 *
+	 */
 	void update() {
-		getPlot().update();
+		if (getPlot().HasHistogram())
+			getPlot().update();
 	}
 
 	public AbstractPlot getPlot() {
