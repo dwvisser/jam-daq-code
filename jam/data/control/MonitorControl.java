@@ -1,12 +1,34 @@
 package jam.data.control;
 
-import jam.data.*;
-import jam.global.*;
-import java.awt.*;
-import java.awt.event.*;
+import jam.data.DataException;
+import jam.data.Monitor;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GoodThread;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.sort.ThreadPriorities;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Reads and displays the monitors.
@@ -18,7 +40,7 @@ import javax.swing.border.*;
  */
 public final class MonitorControl
 	extends DataControl
-	implements ActionListener, ItemListener, Runnable {
+	implements ActionListener, Runnable {
 
 	/**
 	 * Master frame
@@ -31,7 +53,7 @@ public final class MonitorControl
 	private MessageHandler msgHandler;
 
 	//widgets for configuration
-	private JDialog dconfig;
+	private JDialog configure;
 	private JPanel pConfig;
 	private JPanel pLower;
 	private JPanel pMonitors;
@@ -51,11 +73,12 @@ public final class MonitorControl
 	private JButton brecall, bok, bapply, bcancel;
 
 	//widgits for display
-	private JDialog ddisp;
+	private JDialog display;
 	private JPanel pBars;
+	private JPanel pTitles;
 	private JPanel[] pm; //panel for monitors
 	private JLabel[] labelDisp;
-	private JTextField[] textValue;
+	//private JTextField[] textValue;
 	private PlotBar[] plotBar;
 
 	//panel with alarm enable
@@ -67,12 +90,11 @@ public final class MonitorControl
 	private int numberMonitors;
 
 	//general variables
-	private boolean sortMonitors; //have Monitors been added by sort
+	private boolean sortMonitors=false; //have Monitors been added by sort
 
 	private int interval; //update interval
-	private boolean audioAlarm; //is the audio alarm on
 	private GoodThread loopThread; //loop to update monitors
-	private boolean configured; //monitors have been configured
+	private boolean configured=false; //monitors have been configured
 
 	public MonitorControl(Frame frame,
 						  Broadcaster broadcaster,
@@ -83,10 +105,10 @@ public final class MonitorControl
 		this.msgHandler = msgHandler;
 
 		//>>dialog to configure Monitors
-		dconfig = new JDialog(frame, " Monitors Setup ", false);
-		Container cdconfig = dconfig.getContentPane();
-		dconfig.setResizable(false);
-		dconfig.setLocation(20, 50);
+		configure = new JDialog(frame, " Monitors Setup ", false);
+		Container cdconfig = configure.getContentPane();
+		configure.setResizable(false);
+		configure.setLocation(20, 50);
 
 		int spacing = 5;
 		cdconfig.setLayout(new GridLayout(0, 1, spacing, spacing));
@@ -125,7 +147,8 @@ public final class MonitorControl
 		pupdate.add(lUpdate);
 
 		final Integer one=new Integer(1);
-		spinnerUpdate = new JSpinner(new SpinnerNumberModel(one,one,null,
+		final Integer init=new Integer(10);
+		spinnerUpdate = new JSpinner(new SpinnerNumberModel(init,one,null,
 		one));
 		pupdate.add(spinnerUpdate);
 
@@ -160,40 +183,30 @@ public final class MonitorControl
 
 
 		//>> dialog box to display Monitors
-		ddisp = new JDialog(frame, "Monitors Disabled", false);
-		ddisp.setResizable(true);
-		ddisp.setLocation(20, 50);
-		Container cddisp = ddisp.getContentPane();
+		display = new JDialog(frame, "Monitors Disabled", false);
+		display.setResizable(true);
+		display.setLocation(20, 50);
+		Container cddisp = display.getContentPane();
 		cddisp.setLayout(new BorderLayout());
 
 		//Panel for the bars
-		pBars =new JPanel(new GridLayout(0,2,5,5));
-		pBars.setBorder(new EmptyBorder(10,10,10,10));
+		pBars =new JPanel(new GridLayout(0,1,5,5));
+		pBars.setBorder(new EmptyBorder(10,0,10,0));
 		cddisp.add(pBars, BorderLayout.CENTER);
+		pTitles=new JPanel(new GridLayout(0,1,5,5));
+		pTitles.setBorder(new EmptyBorder(10,0,10,0));
+		cddisp.add(pTitles, BorderLayout.WEST);
 
 		// alarm panel for display dialog
 		pal = new JPanel();
 		cddisp.add(pal, BorderLayout.SOUTH);
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		checkAudio = new JCheckBox("Audio Alarm", true);
-		checkAudio.addItemListener(this);
 		pal.add(checkAudio);
 
 
-		// variable initialization
-		sortMonitors = false;
-		configured = false;
-		// window listeners for dispose
-		ddisp.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				ddisp.dispose();
-			}
-		});
-		dconfig.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				dconfig.dispose();
-			}
-		});
+		display.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		configure.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		// setup monitors
 		setup();
 
@@ -212,13 +225,13 @@ public final class MonitorControl
 				//lock monitor parameters
 				start();
 				if (command == "ok") {
-					dconfig.dispose();
+					configure.dispose();
 				}
 			} else if (command == "cancel") {
 				configured = false;
 				//stop monitor thread if running
 				stop();
-				ddisp.setTitle("Monitors Disabled");
+				display.setTitle("Monitors Disabled");
 			} else if (command == "start") {
 				start();
 			} else if (command == "stop") {
@@ -226,17 +239,6 @@ public final class MonitorControl
 			}
 		} catch (DataException je) {
 			msgHandler.errorOutln(je.getMessage());
-		}
-	}
-
-	/**
-	 * Checks the alarm states and sets them
-	 *
-	 *
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getItemSelectable() == checkAudio) {
-			audioAlarm = checkAudio.isSelected();
 		}
 	}
 
@@ -267,32 +269,23 @@ public final class MonitorControl
 	 *
 	 */
 	private void setupDisplay() {
-		//Container cddisp = ddisp.getContentPane();
-
-		//pBars.removeAll();
 		/* widgets for dislay page */
 		pm = new JPanel[numberMonitors];
 		labelDisp = new JLabel[numberMonitors];
-		textValue = new JTextField[numberMonitors];
 		plotBar = new PlotBar[numberMonitors];
 		if (numberMonitors != 0) {
 			for (int i = 0; i < numberMonitors; i++) {
 				pm[i] = new JPanel();
 				pm[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-				pBars.add(pm[i]);
+				pTitles.add(pm[i]);
 				labelDisp[i] = new JLabel("          ", JLabel.RIGHT);
 				labelDisp[i].setText(monitor[i].getName());
 				pm[i].add(labelDisp[i]);
-				textValue[i] = new JTextField("           ");
-				textValue[i].setColumns(6);
-				textValue[i].setEditable(false);
-				textValue[i].setText(String.valueOf(0));
-				pm[i].add(textValue[i]);
 				plotBar[i] = new PlotBar(monitor[i]);
 				pBars.add(plotBar[i]);
 			}
 		}
-		ddisp.pack();
+		display.pack();
 	}
 
 	/**
@@ -340,27 +333,20 @@ public final class MonitorControl
 			}
 		}
 
-		dconfig.pack();
-	}
-
-	/**
-	 * Show the Display dialog box.
-	 */
-	public void showDisplay() {
-		ddisp.show();
+		configure.pack();
 	}
 
 	/**
 	 * Show the configuration dialog box.
 	 */
 	public void showConfig() {
-		dconfig.show();
+		configure.show();
 	}
 	/**
 	 * Default show dialog, shows display dialog
 	 */
 	public void show() {
-		ddisp.show();
+		display.show();
 	}
 
 
@@ -406,8 +392,6 @@ public final class MonitorControl
 				monitor[i].setAlarm(checkAlarm[i].isSelected());
 				plotBar[i].repaint();
 			}
-			//set audio alarm
-			audioAlarm = checkAudio.isSelected();
 		} catch (NumberFormatException nfe) {
 			throw new DataException("Invalid number input [MonitorControl]");
 		}
@@ -418,14 +402,9 @@ public final class MonitorControl
 	 * Display monitors
 	 */
 	private void display() {
-		double value;
-
 		for (int i = 0; i < numberMonitors; i++) {
-			value = monitor[i].getValue();
-			textValue[i].setText("" + value);
 			plotBar[i].repaint();
 		}
-
 	}
 
 	/**
@@ -437,12 +416,11 @@ public final class MonitorControl
 		if (configured) {
 			if (loopThread == null) {
 				loopThread = new GoodThread(this);
-				loopThread.setPriority(2);
-				/* lower priority than display and sort */
+				loopThread.setPriority(ThreadPriorities.MESSAGING);
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
-			ddisp.setTitle("Monitors Enabled");
+			display.setTitle("Monitors Enabled");
 		} else {
 			throw new IllegalStateException(getClass().getName()+".start(): "+
 			"called before the monitors were configured.");
@@ -458,25 +436,12 @@ public final class MonitorControl
 		}
 		//clear numbers and graphs
 		for (int i = 0; i < numberMonitors; i++) {
-			textValue[i].setText("");
 			monitor[i].reset();
 			plotBar[i].repaint();
 		}
-		ddisp.setTitle("Monitors Disabled");
+		display.setTitle("Monitors Disabled");
 	}
 
-	/** FIXME
-	 * Set the Monitor values
-	 * This routine can be called back by
-	 *  VME communication
-	 *
-	 */
-	public void setMonitors(int[] scalValue) {
-
-		for (int i = 0; i < scalValue.length; i++) {
-			textValue[i].setText(String.valueOf(scalValue[i]));
-		}
-	}
 	/**
 	 * method to run and update monitors
 	 *
@@ -494,7 +459,7 @@ public final class MonitorControl
 					//update the monitor
 					monitor[i].update();
 					//If the audio on and are we taking data
-					if (audioAlarm && JamStatus.instance().isAcqOn()) {
+					if (checkAudio.isSelected() && JamStatus.instance().isAcqOn()) {
 						//is the alarm for this monitor set set
 						if (monitor[i].getAlarm()) {
 							//is the value out of bounds
