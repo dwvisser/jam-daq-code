@@ -335,8 +335,6 @@ public class TapeDaemon extends StorageDaemon {
 	 * write data to tape
 	 */
 	private void toTapeRun() throws IOException, EventException {
-
-		int numRead;
 		boolean endOfRun;
 		short last2bytes;
 
