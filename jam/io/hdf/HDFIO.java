@@ -635,7 +635,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                     sdErr.setRank(histDim);
                     sdErr.setNumberType(NumberType.DOUBLE);
                 }
-                if (mode == FileOpenMode.OPEN || mode == FileOpenMode.OPEN_ADDITIONAL) {
+                if (mode.isOpenMode()) {
                     if (histDim == 1) {
                         if (histNumType == NumberType.INT) {
                             histogram = Histogram.createHistogram(sd
@@ -803,7 +803,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                     final String hname = DataIDAnnotation.withTagRef(
                             annotations, currVG.getTag(), currVG.getRef())
                             .getNote();
-                    if (mode == FileOpenMode.OPEN) {
+                    if (mode.isOpenMode()) {
                         final Histogram h = Histogram.getHistogram(su
                                 .makeLength(hname, Histogram.NAME_LENGTH));
                         g = h == null ? null : new Gate(gname, h);
@@ -896,7 +896,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             for (int i = 0; i < numScalers; i++) {
                 final Scaler s;
                 final String sname = VS.getString(i, 1);
-                if (mode == FileOpenMode.OPEN) {
+                if (mode.isOpenMode()) {
                     s = new Scaler(sname, VS.getInteger(i, 0).intValue());
                 } else { //mode==RELOAD
                     s = Scaler.getScaler(sname);
@@ -977,7 +977,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             for (int i = 0; i < numParameters; i++) {
                 final String pname = VS.getString(i, 0);
                 /* make if OPEN, retrieve if RELOAD */
-                final DataParameter p = mode == FileOpenMode.OPEN ? new DataParameter(
+                final DataParameter p = mode.isOpenMode() ? new DataParameter(
                         pname)
                         : DataParameter.getParameter(pname);
                 if (p != null) {
