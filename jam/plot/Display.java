@@ -14,7 +14,6 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.print.PageFormat;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -22,12 +21,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 /**
  * This class is a display routine for plots.
