@@ -1,10 +1,14 @@
 package jam.io.control;
 
+import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.Histogram;
+
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
+import jam.global.JamStatus;
+import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -79,6 +83,8 @@ public class OpenMultipleFiles {
 	private MessageHandler msgHandler;
 	/** Broadcaster */
 	private Broadcaster broadcaster;
+	
+	private JamStatus STATUS=JamStatus.getSingletonInstance();
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out of an
@@ -379,17 +385,23 @@ public class OpenMultipleFiles {
     	}else {
     	
     		/* Loop for all files */
-    		boolean isFirstFile = true;
+    		//boolean isFirstFile = true;
+    		
+    		DataBase.getInstance().clearAllLists();
     		while (iter.hasNext()) {
     			file = (File) iter.next();
-    			if (isFirstFile) {
-    				isFirstFile = false;
-                    hdfio.readFile(FileOpenMode.OPEN, file, 
-                    		selectedHistogramNames);            		
-    			} else {
-            		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
-            						selectedHistogramNames);            		            		
-              }
+    			
+        		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
+						selectedHistogramNames);            		            		
+        		STATUS.setSortMode(SortMode.FILE, "Multiple");
+    			//if (isFirstFile) {
+    			//	isFirstFile = false;
+                //    hdfio.readFile(FileOpenMode.OPEN, file, 
+                //    		selectedHistogramNames);            		
+    			//} else {
+            	//	hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
+            	//					selectedHistogramNames);            		            		
+              //}
     		}
          }
     }        
