@@ -333,6 +333,10 @@ public abstract class Plot extends JPanel {
 	 * @param p2 second corner of rectangle
 	 */
 	public abstract void markArea(Point p1, Point p2);
+	
+	synchronized void setMarkingArea(boolean tf){
+		markingArea=tf;
+	}
 
 	/**
 	 *Expand the region viewed.
