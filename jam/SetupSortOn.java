@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class to setup online sorting.
@@ -42,8 +43,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private final Broadcaster broadcaster;
 	private final JDialog d;
 	/* stuff for dialog box */
-	private final JToggleButton /*ctape,*/
-	cdisk; //save events to disk
+	//private final JToggleButton ctape
+	private final JToggleButton cdisk; //save events to disk
 	private final JToggleButton defaultPath, specify;
 	private final JCheckBox clog; //create a log file
 	private final JTextField textSortInterval;
@@ -85,12 +86,13 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 * Constructor
 	 */
 	public SetupSortOn(
-		JamMain jamMain,
-		RunControl runControl,
-		DisplayCounters displayCounters,
-		FrontEndCommunication frontEnd,
-		JamConsole jamConsole,
-		Broadcaster b) {
+						JamMain jamMain,
+						RunControl runControl,
+						DisplayCounters displayCounters,
+						FrontEndCommunication frontEnd,
+						JamConsole jamConsole,
+						Broadcaster b) {
+
 		final int fileTextColumns = 25;
 		final String defaultName =
 			JamProperties.getPropString(JamProperties.EXP_NAME);
@@ -129,12 +131,233 @@ class SetupSortOn implements ActionListener, ItemListener {
 		d.setBackground(Color.lightGray);
 		d.setResizable(false);
 		d.setLocation(20, 50);
+
 		Container dcp = d.getContentPane();
-		dcp.setLayout(new BorderLayout());
+		dcp.setLayout(new BorderLayout(5,5));
+
+		//Labels
+		JPanel pLabels = new JPanel(new GridLayout(0,1,5,5));
+		pLabels.setBorder(new EmptyBorder(10,10,0,0));
+		dcp.add(pLabels, BorderLayout.WEST);
+		JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
+		pLabels.add(ln);
+		JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
+		pLabels.add(lsc);
+		JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
+		pLabels.add(lscs);
+		JLabel ls = new JLabel("Sort Routine", JLabel.RIGHT);
+		pLabels.add(ls);
+		JLabel leos	= new JLabel("Event output stream", JLabel.RIGHT);
+		pLabels.add(leos);
+		JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
+		pLabels.add(leis);
+		JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
+		pLabels.add(lhdfp);
+		JLabel lep = new JLabel("Event path", JLabel.RIGHT);
+		pLabels.add(lep);
+		JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
+		pLabels.add(llfp);
+		JLabel lssf = new JLabel("Sort sample fraction", JLabel.RIGHT);
+		pLabels.add(lssf);
+
+
+		//Entries Panel
+		JPanel pEntries = new JPanel(new GridLayout(0,1,5,5));
+		pEntries.setBorder(new EmptyBorder(10,0,0,0));
+		dcp.add(pEntries, BorderLayout.CENTER);
+		textExpName = new JTextField(defaultName);
+		textExpName.setToolTipText(
+			"Used to name data files. Only 20 characters get written to event files.");
+		textExpName.setColumns(20);
+		textExpName.setBackground(Color.white);
+		pEntries.add(textExpName);
+
+		//Radio buttons for path
+		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		pEntries.add(pradio);
+		ButtonGroup pathType = new ButtonGroup();
+		defaultPath = new JRadioButton( "help.* and sort.* under defaults", useDefaultPath);
+		defaultPath.setToolTipText(
+				  "Don't include your sort routines in the default classpath if "
+				+ "you want to be able to edit, recompile and reload them without first quitting Jam.");
+		pathType.add(defaultPath);
+		pradio.add(defaultPath);
+		defaultPath.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (defaultPath.isSelected()) {
+					bbrowsef.setEnabled(false);
+					setChooserDefault(true);
+				}
+			}
+		});
+		specify = new JRadioButton("Select classpath", !useDefaultPath);
+		specify.setToolTipText("Specify a classpath to dynamically load your sort routine from.");
+		pathType.add(specify);
+		pradio.add(specify);
+		specify.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (specify.isSelected()) {
+					bbrowsef.setEnabled(true);
+					setChooserDefault(false);
+				}
+			}
+		});
+
+		//Class path text
+		textSortPath = new JTextField(defaultSortPath);
+		textSortPath.setToolTipText(
+			"Use Browse button to change. \nMay fail if classes have unresolvable references."
+				+ "\n* use the sort.classpath property in your JamUser.ini file to set this automatically.");
+		textSortPath.setColumns(35);
+		textSortPath.setEnabled(false);
+		pEntries.add(textSortPath);
+
+		//Sort classes choicer
+		sortChoice = new JComboBox();
+		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
+		sortChoice.setToolTipText("Select a class to be your sort routine.");
+		sortChoice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				sortClass = (Class) sortChoice.getSelectedItem();
+			}
+		});
+		Iterator it = sortClassList.iterator();
+		while (it.hasNext()) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			if (name.equals(defaultSortRoutine)) {
+				sortChoice.setSelectedItem(c);
+				break;
+			}
+		}
+		pEntries.add(sortChoice);
+
+		// Input stream classes
+		Set lhs = new LinkedHashSet(
+				RTSI.find("jam.sort.stream", EventInputStream.class, false));
+		lhs.remove(EventInputStream.class);
+		inStreamChooser = new JComboBox(new Vector(lhs));
+		inStreamChooser.setToolTipText(
+			"Select the reader for your event data format.");
+		it = lhs.iterator();
+		//notDone = it.hasNext();
+		while (it.hasNext()) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			boolean match = name.equals(defaultEventInStream);
+			if (match) {
+				inStreamChooser.setSelectedItem(c);
+				break;
+			}
+		}
+		pEntries.add(inStreamChooser);
+
+		//Output stream classes
+		lhs = new LinkedHashSet(
+				RTSI.find("jam.sort.stream", EventOutputStream.class, false));
+		lhs.remove(EventOutputStream.class);
+		outStreamChooser = new JComboBox(new Vector(lhs));
+		outStreamChooser.setToolTipText(
+			"Select the writer for your output event format.");
+		it = lhs.iterator();
+		//notDone = it.hasNext();
+		while (it.hasNext()) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			boolean match = name.equals(defaultEventOutStream);
+			if (match) {
+				outStreamChooser.setSelectedItem(c);
+				break;
+			}
+			//notDone = (!match) & it.hasNext();
+		}
+		pEntries.add(outStreamChooser);
+
+		textPathHist = new JTextField(defaultSpectra);
+		textPathHist.setColumns(fileTextColumns);
+		textPathHist.setBackground(Color.white);
+		textPathHist.setToolTipText(
+			"Path to save HDF summary files at the end of each run.");
+		pEntries.add(textPathHist);
+
+		textPathData = new JTextField(defaultEvents);
+		textPathData.setColumns(fileTextColumns);
+		textPathData.setBackground(Color.white);
+		textPathData.setToolTipText("Path to save event data.");
+		pEntries.add(textPathData);
+
+		textPathLog = new JTextField(defaultLog);
+		textPathLog.setColumns(fileTextColumns);
+		textPathLog.setBackground(Color.white);
+		textPathLog.setToolTipText("Path to save the console log.");
+		pEntries.add(textPathLog);
+
+		//JPanel pSortInterval = new JPanel(new FlowLayout(FlowLayout.LEFT, 20,0));
+		JPanel pSortInterval = new JPanel(new GridLayout(1,2, 40,0));
+		pEntries.add(pSortInterval);
+		textSortInterval = new JTextField("1");
+		textSortInterval.setToolTipText(
+			"Sort every n'th buffer. 1 means sort all events.");
+		textSortInterval.setColumns(3);
+		textSortInterval.setBackground(Color.white);
+		pSortInterval.add(textSortInterval);
+
+		cdisk = new JCheckBox("Events to Disk", true);
+		cdisk.setToolTipText("Send events to disk.");
+		cdisk.addItemListener(this);
+		pSortInterval.add(cdisk);
+		//NOTE note added
+		clog = new JCheckBox("Log Commands", false);
+		clog.addItemListener(this);
+		clog.setSelected(true);
+
+
+		//Browse panel
+		JPanel pBrowse = new JPanel(new GridLayout(0,1,5,5));
+		pBrowse.setBorder(new EmptyBorder(10,0,0,10));
+		dcp.add(pBrowse, BorderLayout.EAST);
+		Dimension dummyDim =new Dimension(10, 10);
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+		bbrowsef = new JButton("Browse...");
+		bbrowsef.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				sortClassPath = getSortPath();
+				sortChoice.setModel(
+					new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+				sortChoice.setSelectedIndex(0);
+				textSortPath.setText(sortClassPath.getAbsolutePath());
+			}
+		});
+		pBrowse.add(bbrowsef);
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+
+		bbrowseh = new JButton("Browse...");
+		bbrowseh.setActionCommand("bhist");
+		bbrowseh.addActionListener(this);
+		pBrowse.add(bbrowseh);
+
+		bbrowsed = new JButton("Browse...");
+		bbrowsed.setActionCommand("bdata");
+		bbrowsed.addActionListener(this);
+		pBrowse.add(bbrowsed);
+
+		bbrowsel = new JButton("Browse...");
+		bbrowsel.setActionCommand("blog");
+		bbrowsel.addActionListener(this);
+		pBrowse.add(bbrowsel);
+
+		pBrowse.add(new Box.Filler(dummyDim, dummyDim,dummyDim ));
+/*
+FIXME remove KBS 04/08/04
+//start dialog layout
 		//panel for experiment name
 		JPanel pn = new JPanel();
 		pn.setLayout(new BorderLayout());
 		dcp.add(pn, BorderLayout.NORTH);
+
 
 		JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
 		pn.add(ln, BorderLayout.WEST);
@@ -237,8 +460,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 		pChooserLabels.add(new JLabel("Event input stream", JLabel.RIGHT));
 
-		Set lhs =
-			new LinkedHashSet(
+		Set lhs = new LinkedHashSet(
 				RTSI.find("jam.sort.stream", EventInputStream.class, false));
 		lhs.remove(EventInputStream.class);
 		inStreamChooser = new JComboBox(new Vector(lhs));
@@ -259,8 +481,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 		pChooserLabels.add(new JLabel("Event output stream", Label.RIGHT));
 
-		lhs =
-			new LinkedHashSet(
+		lhs = new LinkedHashSet(
 				RTSI.find("jam.sort.stream", EventOutputStream.class, false));
 		lhs.remove(EventOutputStream.class);
 		outStreamChooser = new JComboBox(new Vector(lhs));
@@ -354,9 +575,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 		clog = new JCheckBox("Log Commands", false);
 		clog.addItemListener(this);
 		clog.setSelected(true);
-
-		/* panel for buttons */
-		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+*/
+		// panel for buttons
+		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		dcp.add(pbutton, BorderLayout.SOUTH);
 		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
 		pbutton.add(pb);
@@ -382,6 +603,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pb.add(checkLock);
 
 		d.pack();
+
+//dialog end layout
 
 		//Recieves events for closing the dialog box and closes it.
 		d.addWindowListener(new WindowAdapter() {
