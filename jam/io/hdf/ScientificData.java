@@ -38,8 +38,6 @@ final class ScientificData extends AbstractHData {
 
     private static final String REF_MSG = "AbstractHData mode not properly set: Ref# ";
 
-    private static final String TWOD_MSG = "Problem getting 2D data in SD: ";
-
     private int[] counts;
 
     private double[] countsD;
@@ -115,12 +113,9 @@ final class ScientificData extends AbstractHData {
     /**
      * requires associated SDD, NT, NDG records
      */
-    public void interpretBytes() {
-//    	if (inputMode==STORE) {
-//    		
-//    	}
-    }
-    /**
+    public void interpretBytes() { }
+    
+    /* non-javadoc:
      * Late loading of data
      */
     Object getData(HDFile infile, int histDim, byte histNumType, int sizeX, int sizeY) throws HDFException {
@@ -134,7 +129,6 @@ final class ScientificData extends AbstractHData {
         } else if ( (histDim == 2) && (histNumType == NumberType.DOUBLE) ) {    
         	rval =getData2dD(infile, sizeX, sizeY);
         } else { 
-        	rval =null;
         	throw new HDFException("Unknown histogram data type");
         }
         return rval;
@@ -156,7 +150,7 @@ final class ScientificData extends AbstractHData {
         for (int i = 0; i < size; i++) {
             output[i] = buffer.getInt();
         }
-        bytes = null; //so they can be gc'ed
+        bytes = ByteBuffer.allocate(0); //empty it
         return output;
     }
 
@@ -172,7 +166,7 @@ final class ScientificData extends AbstractHData {
             for (int i = 0; i < size; i++) {
             output[i] = buffer.getDouble();
         }
-        bytes = null; //so they can be gc'ed
+        bytes = ByteBuffer.allocate(0); //empty it
         return output;
     }
 
@@ -189,7 +183,7 @@ final class ScientificData extends AbstractHData {
                 output[i][j] = buffer.getInt();
             }
         }
-        bytes = null; //so they can be gc'ed
+        bytes = ByteBuffer.allocate(0); //empty it
         return output;
     }
 
@@ -206,7 +200,7 @@ final class ScientificData extends AbstractHData {
             	 output[i][j]= buffer.getDouble();
             }
         }
-        bytes =null;	//so they can be gc'ed
+        bytes = ByteBuffer.allocate(0); //empty it
         return output;
     }
 
