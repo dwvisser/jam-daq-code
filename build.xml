@@ -12,7 +12,7 @@
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="1" />
 	<property name = "MINOR" value="6" />
-	<property name = "SUBMINOR" value="0" />
+	<property name = "RELEASE" value="0" />
     
 	<!-- task definition for windows executable builder -->
 	<taskdef name="jsmoothgen"
@@ -68,7 +68,7 @@
             <filterset>
     			<filter token="MAJOR" value="${MAJOR}" />
     			<filter token="MINOR" value="${MINOR}" />
-    			<filter token="SUBMINOR" value="${SUBMINOR}" />
+    			<filter token="RELEASE" value="${RELEASE}" />
             </filterset>
 		</copy>
 		<copy todir="${copy.dir}">
@@ -107,12 +107,12 @@
             packagenames="jam.*"
             sourcepath="${copy.dir}"
             classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
-            	doctitle="Jam ${MAJOR}.${MINOR}.${SUBMINOR}: Java-based Data Acquisition Management for Nuclear Physics"
+            	doctitle="Jam ${MAJOR}.${MINOR}.${RELEASE}: Java-based Data Acquisition Management for Nuclear Physics"
         	docletpath="${base.dir}/NDoclet.jar"
         	doclet="ndoclet.NDoclet"
         />
       	<zip 
-      		zipfile="${build.dir}/Jam-${MAJOR}.${MINOR}.${SUBMINOR}-api.zip" 
+      		zipfile="${build.dir}/Jam-${MAJOR}.${MINOR}.${RELEASE}-api.zip" 
       		basedir="${ndoc.dir}"
       	includes="**/*" />
     </target>

@@ -30,14 +30,14 @@ public final class Version {
 	 * Incremented every time a bugfix or patch is performed for
 	 * release back to the users. 
 	 */
-	public static final String SUBMINOR="@SUBMINOR@";
+	public static final String RELEASE="@RELEASE@";
 	
 	public static final String PLATFORM=System.getProperty("os.name");
 		
 	private static final StringBuffer NAME=new StringBuffer();	
 	static {
 		NAME.append(MAJOR).append('.').append(MINOR).append('.').append(
-		SUBMINOR).append('-').append(PLATFORM);
+		RELEASE).append('-').append(PLATFORM);
 	}
 		
 	/**
