@@ -468,50 +468,65 @@ public class ImpExpORNL extends AbstractImpExp {
 		dosDrr.close();
 	}
 
-	/* non-javadoc:
-	 * Write out the .his file.
-	 */
-	private void writeHis(OutputStream outputStream) throws IOException {
-		final DataOutputStream dosHis = new DataOutputStream(outputStream);
-		final Iterator histIterator = Histogram.getHistogramList().iterator();
-		while (histIterator.hasNext()) {
-		    final Histogram hist = ((Histogram) histIterator.next());
-		    final int sizeX = hist.getSizeX();
-		    final int sizeY = hist.getSizeY();
-			/* write as determined by type */
-			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-			    final int[] countsInt = (int[]) hist.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					dosHis.writeInt(countsInt[i]);
-				}
-			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-			    final double[] countsDbl = (double[]) hist.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					dosHis.writeInt((int) (countsDbl[i] + 0.5));
-				}
-			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
-			    final int[][] counts2dInt = (int[][]) hist.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					for (int j = 0; j < sizeY; j++) {
-						dosHis.writeInt(counts2dInt[j][i]);
-					}
-				}
-			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
-			    final double[][] counts2dDbl = (double[][]) hist.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					for (int j = 0; j < sizeY; j++) {
-						dosHis.writeInt((int) (counts2dDbl[j][i] + 0.5));
-					}
-				}
-			} else {
-				msgHandler
-						.errorOutln("Unrecognized histogram type [ImpExpORNL]");
-			}
-		}
-		msgHandler.messageOut(" (" + dosHis.size() + " bytes)");
-		dosHis.flush();
-		dosHis.close();
-	}
+	/*
+     * non-javadoc: Write out the .his file.
+     */
+    private void writeHis(OutputStream outputStream) throws IOException {
+        final DataOutputStream dosHis = new DataOutputStream(outputStream);
+        final Iterator histIterator = Histogram.getHistogramList().iterator();
+        while (histIterator.hasNext()) {
+            final Histogram hist = ((Histogram) histIterator.next());
+            final int sizeX = hist.getSizeX();
+            final int sizeY = hist.getSizeY();
+            /* write as determined by type */
+            if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
+                writeHist1dInt(dosHis, hist, sizeX);
+            } else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
+                writeHist1dDouble(dosHis, hist, sizeX);
+            } else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
+                writeHist2dInt(dosHis, hist, sizeX, sizeY);
+            } else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
+                final double[][] counts2dDbl = (double[][]) hist.getCounts();
+                for (int i = 0; i < sizeX; i++) {
+                    for (int j = 0; j < sizeY; j++) {
+                        dosHis.writeInt((int) (counts2dDbl[j][i] + 0.5));
+                    }
+                }
+            } else {
+                msgHandler
+                        .errorOutln("Unrecognized histogram type [ImpExpORNL]");
+            }
+        }
+        msgHandler.messageOut(" (" + dosHis.size() + " bytes)");
+        dosHis.flush();
+        dosHis.close();
+    }
+
+    private void writeHist1dInt(DataOutputStream dosHis, Histogram hist,
+            int sizeX) throws IOException {
+        final int[] countsInt = (int[]) hist.getCounts();
+        for (int i = 0; i < sizeX; i++) {
+            dosHis.writeInt(countsInt[i]);
+        }
+    }
+
+    private void writeHist1dDouble(DataOutputStream dosHis, Histogram hist,
+            int sizeX) throws IOException {
+        final double[] countsDbl = (double[]) hist.getCounts();
+        for (int i = 0; i < sizeX; i++) {
+            dosHis.writeInt((int) (countsDbl[i] + 0.5));
+        }
+    }
+
+    private void writeHist2dInt(DataOutputStream dosHis, Histogram hist,
+            int sizeX, int sizeY) throws IOException {
+        final int[][] counts2dInt = (int[][]) hist.getCounts();
+        for (int i = 0; i < sizeX; i++) {
+            for (int j = 0; j < sizeY; j++) {
+                dosHis.writeInt(counts2dInt[j][i]);
+            }
+        }
+    }
 
 	/* non-javadoc:
 	 * Get a int from an array of byes
