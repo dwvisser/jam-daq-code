@@ -158,10 +158,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         NumericalDataGroup ndg;
         NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
         
-        final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
-        final String name = templabel.getLabel();            
-        final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
-        final String title = tempnote.getNote();
+        final DataIDLabel dataLabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
+        final String name = dataLabel.getLabel();            
+        final DataIDAnnotation dataNote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
+        final String title = dataNote.getNote();
         
         /* only the "histograms" VG (only one element) */
         final List tempVec = AbstractData.ofType(histGroup.getObjects(),
@@ -188,19 +188,21 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         	}
         	return hist; 
         }
-        final ScientificData sciData = (ScientificData) (AbstractData
-                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
-        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
-                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
-        final byte histNumType = sdd.getType();
-        sciData.setNumberType(histNumType);
-        final int histDim = sdd.getRank();
-        sciData.setRank(histDim);
-        final int sizeX = sdd.getSizeX();
-        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
         
         final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
         final int number = Integer.parseInt(numLabel.getLabel());            
+        
+        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
+        final byte histNumType = sdd.getType();
+        final int histDim = sdd.getRank();
+        final int sizeX = sdd.getSizeX();
+        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;        
+
+        final ScientificData sciData = (ScientificData) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));        
+        sciData.setNumberType(histNumType);        
+        sciData.setRank(histDim);
         
         final ScientificData sdErr = produceErrorData(ndgErr, histDim);
                     
@@ -257,10 +259,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         NumericalDataGroup ndg=null;
         NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
         
-        final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
-        final String name = templabel.getLabel();            
-        final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
-        final String title = tempnote.getNote();
+        final DataIDLabel dataLabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
+        final String name = dataLabel.getLabel();            
+        final DataIDAnnotation dataNote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
+        final String title = dataNote.getNote();
         
         /* only the "histograms" VG (only one element) */
         final List tempVec = AbstractData.ofType(histGroup.getObjects(),
@@ -283,22 +285,28 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
             //        + ") in VirtualGroup.");
         }
-        final ScientificData sciData = (ScientificData) (AbstractData
-                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
-        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
-                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
-        final byte histNumType = sdd.getType();
-        sciData.setNumberType(histNumType);
-        final int histDim = sdd.getRank();
-        sciData.setRank(histDim);
-        final int sizeX = sdd.getSizeX();
-        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
-        
         final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
         final int number = Integer.parseInt(numLabel.getLabel());            
         
+        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
+
+        
+        final byte histNumType = sdd.getType();
+        final int histDim = sdd.getRank();
+        final int sizeX = sdd.getSizeX();
+        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
+        
+
+        /*FIXME KBS not needed for attributes
+        final ScientificData sciData = (ScientificData) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
+        //sciData.setNumberType(histNumType);        
+        //sciData.setRank(histDim);
+                
         final ScientificData sdErr = produceErrorData(ndgErr, histDim);
-                    
+        */        
+        
         /* Given name list check that that the name is in the list. */
         if (histNames == null || histNames.contains(name)) {            	
             if (mode==FileOpenMode.ATTRIBUTES) {
