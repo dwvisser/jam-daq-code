@@ -46,7 +46,7 @@ public class OpenSelectedHistogram {
 	//UI components
 	private JDialog dialog;
 
-	private JTextField txtFileInd;
+	private JTextField txtFile;
 
 	private JList histList;
 
@@ -91,6 +91,7 @@ public class OpenSelectedHistogram {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Panel with file indicator */
+		/*
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		final JLabel runlabel = new JLabel("File Indicator", JLabel.RIGHT);
 		pFileInd.add(runlabel);
@@ -98,7 +99,18 @@ public class OpenSelectedHistogram {
 		txtFileInd
 				.setToolTipText("Text added to histgram name to indicate the file of origin");
 		pFileInd.add(txtFileInd);
+
 		container.add(pFileInd, BorderLayout.NORTH);
+		*/		
+
+		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);		
+		pFileInd.add(filelabel);
+		txtFile = new JTextField(20);
+		txtFile.setEditable(false);
+		pFileInd.add(txtFile);
+		container.add(pFileInd, BorderLayout.NORTH);
+		
 		/* Selection list */
 		DefaultListModel listModel = new DefaultListModel();
 		histList = new JList(listModel);
@@ -156,7 +168,6 @@ public class OpenSelectedHistogram {
 	 *  
 	 */
 	private void doApply() {
-		createFileIndicator();
 		loadHistograms();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
@@ -197,6 +208,7 @@ public class OpenSelectedHistogram {
 				loadedHistograms = new HashMap();
 				histNames = readHistograms();
 				hdfFile.close();
+				txtFile.setText(fileOpen.getName());
 				histList.setListData(histNames.toArray());
 				dialog.setVisible(true);
 			}
@@ -222,7 +234,7 @@ public class OpenSelectedHistogram {
 		//No histograms selected
 		if (selected.length > 0) {
 			
-			Group.setCurrentGroup(fileOpen.getName());
+			Group.createGroup(fileOpen.getName(), Group.TYPE_FILE);
 			//Loop for each selected item
 			for (i = 0; i < selected.length; i++) {
 				if (loadedHistograms.containsKey(selected[i])) {
@@ -408,13 +420,6 @@ public class OpenSelectedHistogram {
 		}
 	}
 
-	/**
-	 * Create file name indicator, appended to file name
-	 *  
-	 */
-	private void createFileIndicator() {
-		fileIndicator = " (" + txtFileInd.getText() + ")";
-	}
 
 	/**
 	 * Class to hold histogram properties while we decide if we should load them
