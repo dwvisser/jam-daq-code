@@ -17,6 +17,8 @@ public class JamCmdManager implements CommandListener {
 	private Map cmdMap = new HashMap();
 	private final String COMMAND_PATH="jam.commands.";
 	
+	private Commandable currentCommand;
+	
 	/**
 	 * Constructor 
 	 * 
@@ -41,15 +43,14 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd	String key indicating the command
 	 * @param cmdParams	Command parameters 
 	 */			
-	public boolean performCommand(String strCmd, Object [] cmdParams) {
+	public boolean performCommand(String strCmd, Object [] cmdParams) throws CommandException {
 		
-		Commandable command =createCmd(strCmd);
-		
-		if(command!=null) {
-			command.performCommand(cmdParams);
+
+		if(createCmd(strCmd)) {
+			currentCommand.performCommand(cmdParams);
 			return true;		
 		} else {
-			return true;
+			return false;
 		}								
 	}
 	
@@ -59,14 +60,19 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
 	 */
-	public boolean performCommand(String strCmd,  String [] strCmdParams) {
+	public boolean performParseCommand(String strCmd,  String [] strCmdParams) throws CommandListenerException {
 		
-		Commandable command =createCmd(strCmd);		
-		if(command!=null) {
-			command.performCommandStrParam(strCmdParams);
-			return true;		
-		} else {
-			return false;
+		try {
+		
+			if (createCmd(strCmd)) {
+				currentCommand.performParseCommand(strCmdParams);
+				return true;							
+			} else {
+				return false;
+			}
+			
+		} catch (CommandException ce) {
+			throw new CommandListenerException(ce);
 		}
 		
 	}
@@ -75,34 +81,37 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd
 	 * @return
 	 */
-	private Commandable createCmd (String strCmd){
-		
-		Commandable command;
-		
-		command=null; 
+	private boolean createCmd (String strCmd) throws CommandException {
+				
+ 
 		String cmdClassName = (String)cmdMap.get(strCmd);
+		
+		//No command with given command name
+		if (cmdClassName==null)
+				return false;
 				
 		//create a command
 		try {
+			currentCommand=null;
 			
 			Class cmdClass =Class.forName(COMMAND_PATH+cmdClassName);
-			command = (Commandable)(cmdClass.newInstance() );
-			command.init(status, msghdlr, broadcaster);
+			currentCommand = (Commandable)(cmdClass.newInstance() );
+			currentCommand.init(status, msghdlr, broadcaster);
+			return true;
 			
 		} catch (ClassNotFoundException cnfe) {
-			command=null; 
 			//could not find class 
+			throw new RuntimeException(cnfe);
+			 
 		} catch (InstantiationException ie) {
-			command=null; 
 			//could not create class
-		} catch (IllegalAccessException iae) {
-			command=null; 			
-			//could not create class
-			//msghdlr.errorOutln("Could not create command "+strCmd);
+			throw new RuntimeException(ie);
 			
+		} catch (IllegalAccessException iae) { 			
+			//could not create class
+			throw new RuntimeException(iae);
 		}
 		
-		return command;
 	}
 	
 	

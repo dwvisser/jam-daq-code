@@ -3,6 +3,7 @@ package jam.commands;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.Broadcaster;
+import jam.global.CommandListenerException;
 /**
  * Interface for a command.
  *  
@@ -25,14 +26,14 @@ public interface Commandable {
 	 * 
 	 * @param cmdParams command parameters
 	 */
-	void performCommand(Object [] cmdParams);	
+	void performCommand(Object [] cmdParams) throws CommandException;	
 	
 	/**
 	 * Execute a command with the given command string tokens
 	 * 
 	 * @param cmdParamTokens command string parameters
 	 */
-	void performCommandStrParam(String [] cmdParamTokens);
+	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;
 	
 	/**
 	 * Undo the command
