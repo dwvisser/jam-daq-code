@@ -14,16 +14,16 @@ import jam.global.MessageHandler;
  * Parse command for plotting
  * 
  * @author Ken Swartz
- *
+ *  
  */
-public class ParseCommand implements CommandListener{
-	
+public class ParseCommand implements CommandListener {
+
 	private Action action;
-	
+
 	private final MessageHandler textOut;
-	
+
 	private final Map commandMap = new HashMap();
-	{	
+	{
 		commandMap.put("help", Action.HELP);
 		commandMap.put("ex", Action.EXPAND);
 		commandMap.put("zi", Action.ZOOMIN);
@@ -43,47 +43,48 @@ public class ParseCommand implements CommandListener{
 		commandMap.put("ra", Action.RANGE);
 		commandMap.put("d", Action.DISPLAY);
 		commandMap.put("re", Action.REBIN);
-		commandMap.put("s", Action.SCALE);	
+		commandMap.put("s", Action.SCALE);
 	}
-	
-	ParseCommand(Action action, JamConsole jc){
-		this.action=action;
-		textOut=jc;
+
+	ParseCommand(Action action, JamConsole jc) {
+		this.action = action;
+		textOut = jc;
 	}
-	
+
 	/**
 	 * Parse a plot command
 	 */
 	public boolean performParseCommand(String _command, String[] cmdParams) {
 		boolean accept = false; //is the command accepted
-		boolean handleIt = false;
 		final String command = _command.toLowerCase();
 		/*
 		 * int is a special case meaning no command and just parameters
 		 */
-		final double[] parameters = convertParameters(cmdParams);		
+		final double[] parameters = convertParameters(cmdParams);
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
 			accept = true;
 			if (action.getIsCursorCommand()) {
-				cursorChannel(parameters);				
-			}else {				
+				boolean vertical = Action.RANGE.equals(action.getCurrentCommand());
+				cursorChannel(parameters,vertical);
+			} else {
 				action.doCommand(null, parameters);
 			}
 		} else if (commandMap.containsKey(command)) {
 			accept = true;
 			final String inCommand = (String) commandMap.get(command);
-			action.doCommand(inCommand);			
-			if (action.getIsCursorCommand()) {				
-				cursorChannel(parameters);				
-			}else {				
-				action.doCommand(null, parameters);				
+			action.doCommand(inCommand);
+			if (action.getIsCursorCommand()) {
+				boolean vertical = Action.RANGE.equals(inCommand);
+				cursorChannel(parameters,vertical);
+			} else {
+				action.doCommand(null, parameters);
 			}
-		} else{
+		} else {
 			accept = false;
 		}
 		return accept;
 	}
-	
+
 	/**
 	 * Convert the parameters to doubles.
 	 * 
@@ -105,110 +106,71 @@ public class ParseCommand implements CommandListener{
 		}
 		return parameters;
 	}
-	
+
 	/**
 	 * Accepts integer input and does a command if one is present.
 	 * 
 	 * @param parameters
 	 *            the integers
 	 */
-	private void cursorChannel(double[] parameters) {
-		final Display display =JamStatus.instance().getDisplay();
-		final Plot currentPlot = display.getPlot();	
-		final int numParam = parameters.length;
-		//Must have at least 1 parameter
-		if (numParam<1){
-			return;
-		}
-		final Bin cursor = Bin.Factory.create();
-		// we have a 1 d plot		
-		if (action.getCursorDimension()== 1) {
-			//Only x dimension
-			for (int i=0; i< numParam; i++ ) {
-				cursor.setChannel((int)parameters[i], 0);
-				action.setCursor(cursor);				
-				action.doCommand(Action.CURSOR);
-			}
-		}else {
-			//x and y dimensions
-			for (int i=0; i< numParam-1; i=i+2 ) {
-				cursor.setChannel((int)parameters[i], (int)parameters[i+1]);
-				action.setCursor(cursor);				
-				action.doCommand(Action.CURSOR);				
-			}
-			//FIXME Error if only 1 co-ordinate is givne	
-		}
-
-		
-		/* FIXME KBS remove
-		if ((commandPresent)) {
-			if (RANGE.equals(inCommand)) {
-				synchronized (cursor) {
-					final int len = Math.min(numPar, 2);
-					for (int i = 0; i < len; i++) {
-						rangeList.add(new Integer((int) parameters[i]));
-						doCommand(inCommand);
-					}
-				}
-				return;
-			} else if (REBIN.equals(inCommand)) {
-				if (numPar > 0) {
-					parameter = new double[numPar];
-					System.arraycopy(parameters, 0, parameter, 0, numPar);
-				}
-			}
-		}
-		// we have a 1 d plot 
+	private void cursorChannel(double[] parameters, boolean vertical) {
+		final Display display = JamStatus.instance().getDisplay();
 		final Plot currentPlot = display.getPlot();
-		if (currentPlot.getDimensionality() == 1) {
-			if (commandPresent) {
-				final int loopMax = Math.min(numPar, 2);
-				for (int i = 0; i < loopMax; i++) {
-					if (GOTO.equals(inCommand)) {
-						cursor.setChannel((int) parameters[i], 0);
+		final int numParam = parameters.length;
+		/* Must have at least 1 parameter */
+		if (numParam > 0) {
+			final Bin cursor = Bin.Factory.create();
+			if (action.getCursorDimension() == 1) {
+				/* we have a 1D plot: only x dimension */
+				for (int i = 0; i < numParam; i++) {
+					if (vertical){
+						cursor.setChannel(0,(int)parameters[i]);
 					} else {
 						cursor.setChannel((int) parameters[i], 0);
-						cursor.shiftInsidePlot();
 					}
-					doCommand(inCommand);
+					action.setCursor(cursor);
+					action.doCommand(Action.CURSOR);
 				}
-			} else { //no command so get channel
-				if (numPar > 0) {
-					// check for out of bounds 
-					synchronized (cursor) {
-						cursor.setChannel((int) parameters[0], 0);
-						cursor.shiftInsidePlot();
-						final double cursorCount = cursor.getCounts();
-						currentPlot.markChannel(cursor);
-						textOut.messageOutln("Bin " + cursor.getX()
-								+ ":  Counts = " + cursorCount);
-					}
-					done();
+			} else {
+				/* 2D: x and y dimensions */
+				for (int i = 0; i < numParam - 1; i = i + 2) {
+					cursor.setChannel((int) parameters[i],
+							(int) parameters[i + 1]);
+					action.setCursor(cursor);
+					action.doCommand(Action.CURSOR);
 				}
-			}
-		} else { //we have a 2d plot
-			if (commandPresent) {
-				final int loopMax = Math.min(numPar, 4);
-				synchronized (this) {
-					for (int i = 1; i < loopMax; i += 2) {
-						cursor.setChannel((int) parameters[i - 1],
-								(int) parameters[i]);
-						cursor.shiftInsidePlot();
-						doCommand(inCommand);
-					}
-				}
-			} else { //no command so get channel
-				if (numPar > 1) {
-					cursor.setChannel((int) parameters[0], (int) parameters[1]);
-					cursor.shiftInsidePlot();
-					currentPlot.markChannel(cursor);
-					textOut.messageOutln("Bin " + cursor.getCoordString()
-							+ ":  Counts = " + cursor.getCounts());
-					done();
-				}
+				//FIXME Error if only 1 co-ordinate is givne
 			}
 		}
-		*/
+		/*
+		 * FIXME KBS remove if ((commandPresent)) { if (RANGE.equals(inCommand)) {
+		 * synchronized (cursor) { final int len = Math.min(numPar, 2); for (int
+		 * i = 0; i < len; i++) { rangeList.add(new Integer((int)
+		 * parameters[i])); doCommand(inCommand); } } return; } else if
+		 * (REBIN.equals(inCommand)) { if (numPar > 0) { parameter = new
+		 * double[numPar]; System.arraycopy(parameters, 0, parameter, 0,
+		 * numPar); } } } // we have a 1 d plot final Plot currentPlot =
+		 * display.getPlot(); if (currentPlot.getDimensionality() == 1) { if
+		 * (commandPresent) { final int loopMax = Math.min(numPar, 2); for (int
+		 * i = 0; i < loopMax; i++) { if (GOTO.equals(inCommand)) {
+		 * cursor.setChannel((int) parameters[i], 0); } else {
+		 * cursor.setChannel((int) parameters[i], 0); cursor.shiftInsidePlot(); }
+		 * doCommand(inCommand); } } else { //no command so get channel if
+		 * (numPar > 0) { // check for out of bounds synchronized (cursor) {
+		 * cursor.setChannel((int) parameters[0], 0); cursor.shiftInsidePlot();
+		 * final double cursorCount = cursor.getCounts();
+		 * currentPlot.markChannel(cursor); textOut.messageOutln("Bin " +
+		 * cursor.getX() + ": Counts = " + cursorCount); } done(); } } } else {
+		 * //we have a 2d plot if (commandPresent) { final int loopMax =
+		 * Math.min(numPar, 4); synchronized (this) { for (int i = 1; i <
+		 * loopMax; i += 2) { cursor.setChannel((int) parameters[i - 1], (int)
+		 * parameters[i]); cursor.shiftInsidePlot(); doCommand(inCommand); } } }
+		 * else { //no command so get channel if (numPar > 1) {
+		 * cursor.setChannel((int) parameters[0], (int) parameters[1]);
+		 * cursor.shiftInsidePlot(); currentPlot.markChannel(cursor);
+		 * textOut.messageOutln("Bin " + cursor.getCoordString() + ": Counts = " +
+		 * cursor.getCounts()); done(); } } }
+		 */
 	}
 
 	/**
@@ -222,7 +184,7 @@ public class ParseCommand implements CommandListener{
 		return (s.indexOf('.') >= 0) ? Double.parseDouble(s) : Integer
 				.parseInt(s);
 	}
-	
+
 	/**
 	 * Display help
 	 */
@@ -239,6 +201,6 @@ public class ParseCommand implements CommandListener{
 			sb.append(commands[i]).append("\t");
 		}
 		textOut.messageOutln(sb.toString());
-	}	
+	}
 }
 
