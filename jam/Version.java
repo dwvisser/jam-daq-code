@@ -8,21 +8,36 @@ package jam;
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public interface Version {
+public final class Version {
 	/**
 	 * Possible pre-release candidate version types.
 	 */
-	char beta='\u03b2';
-	char alpha='\u03b1';
+	static final char beta='\u03b2';
+	static final char alpha='\u03b1';
 	
 	/**
 	 * The main version label.
 	 */
-	String JAM_VERSION = "1.4";
+	static final String JAM_VERSION = "1.4";
 	
 	/**
 	 * Should be empty string if no text for version type is
 	 * desired.
 	 */
-	String VERSION_TYPE = "Release Candidate 4";
+	static final String VERSION_TYPE = "Release Candidate 4";
+	
+	/**
+	 * @return a string representing the build version of Jam running
+	 */
+	static public String getName(){
+		final StringBuffer rval=new StringBuffer(Version.JAM_VERSION);
+		if (Version.VERSION_TYPE.length()>0){
+			final String leftparen=" (";
+			rval.append(leftparen);
+			rval.append(Version.VERSION_TYPE);
+			rval.append(')');
+		}
+		return rval.toString();
+	}
+
 }
