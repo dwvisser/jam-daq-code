@@ -29,4 +29,6 @@
    <mapID target="ack" url="acknowledgements.html" />
    <mapID target="notice" url="notice.html" />
    <mapID target="contrib" url="contribute.html" />
+   <mapID target="scripting" url="usingjam/scripting.html" />
+   <mapID target="compiling" url="usingjam/compiling.html" />
 </map>

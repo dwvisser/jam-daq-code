@@ -125,25 +125,5 @@ actual values.</p>
 <h4>VME-based systems using CAEN V7x5 ADC's and TDC's</h4>
 <p>Here is a version of a sort routine used at LENA, modified here for
 demonstration purposes: <a href="../sortfiles/CI.java">CI.java</a></p>
-
-<h3>Compiling your Sort Routine</h3>
-<p>These instructions are for Unix-based systems, but remain essentially the
-same for Windows systems. Let's assume you have a sort routine called <code>MySort.java</code> in the directory
-<code>/home/daq/sortfiles</code>, and your copy of Jam resides in <code>/home/daq/lib</code>.
-To compile it, you issue the following commands from the shell:
-</p>
-<ol>
-  <li>cd /home/daq/sortfiles</li>
-  <li><tt>javac -classpath /home/daq/lib/Jam.jar:/home/daq Mysort.java</tt><br>
-  </li>
-</ol>
-<p>
-This will create a file <code>MySort.class</code> in <code>/home/daq/sortfiles</code>. Note the
-following requirements for the above to work:</p>
-<ul>
-  <li>The path to <code>javac</code> must be in your <code>PATH</code> variable to be executed.</li>
-  <li>The first line of <code>MySort.java</code> must be <code>package
-    sortfiles;</code></li>
-</ul>
 </body>
 </html>

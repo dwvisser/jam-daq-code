@@ -15,7 +15,9 @@
    <tocitem text="Using Jam" target="usingjam" >
        <tocitem text="Online Sorting" target="online" />
        <tocitem text="Offline Sorting" target="offline" />
-   	  <tocitem text="Writing Sort Routines" target="writesort" />
+   	   <tocitem text="Writing Sort Routines" target="writesort" />
+   	   <tocitem text="Automating Data Analysis with Scripts" target="scripting" />
+       <tocitem text="Compiling Sort Routines and Scripts" target="compiling" />
        <tocitem text="Fitting Spectra" target="dofit" />
    </tocitem>
    <tocitem text="Menus" target="menus" >
