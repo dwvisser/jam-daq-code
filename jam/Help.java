@@ -21,23 +21,10 @@ import java.io.*;
  */
 class Help implements ActionListener {
 
-	private String browser;
-	private String jamHome;
-	private String docsPath;
-
+	private String browser, jamHome, docsPath;
 	private Frame frame;
-	private JDialog aboutD;
-	private JDialog licenseD;
+	private JDialog aboutD, licenseD;
 
-	private final String LOCAL_USERGUIDE_PATH = "docs/jam_manual/index.html";
-	private final String INET_USERGUIDE_URL =
-		"http://jam-daq.sourceforge.net/jam_manual/index.html";
-
-	private final String LOCAL_API_PATH = "docs/API/index.html";
-	private final String INET_API_URL =
-		"http://jam-daq.sourceforge.net/API/index.html";
-
-	private final String LOCAL_ACK_PATH = "acknowledgements.html";
 	/**
 	 * Constructor
 	 */
