@@ -324,4 +324,9 @@ public final class VdataDescription extends DataObject {
         return offset;
     }
 
+    public String toString(){
+        final char c=':';
+        final String rval = _class+c+name+c+order.length+" columns";
+        return rval;
+    }
 }

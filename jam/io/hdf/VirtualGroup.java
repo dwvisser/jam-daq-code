@@ -213,4 +213,7 @@ final class VirtualGroup extends DataObject {
 		return type;
 	}
 
+	public String toString(){
+	    return type+":"+name;
+	}
 }

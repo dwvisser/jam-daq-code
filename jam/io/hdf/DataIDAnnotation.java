@@ -84,6 +84,10 @@ final class DataIDAnnotation extends DataObject {
 	String getNote() {
 		return note;
 	}
+	
+	public String toString(){
+	    return note;
+	}
 
 	private DataObject getObject() {
 		return object;
