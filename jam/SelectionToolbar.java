@@ -86,7 +86,6 @@ final class SelectionToolbar extends JToolBar implements Observer{
 		});
 		pCenter.add(boverLay);
 		gateChooser.setToolTipText("Click to choose gate to display.");
-		//gateChooser.setActionCommand("selectgate");
 		gateChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				final Object item =
