@@ -17,6 +17,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 * Given an array of counts, create a new 1-d <code>Histogram</code> and
 	 * give it a number.
 	 * 
+	 * @param group for this histogram to belong to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -82,6 +83,8 @@ final class HistDouble1D extends AbstractHist1D {
 		}
 		return errors;
 	}
+	
+	private static final double [] EMPTY = new double[0];
 
 	/*
 	 * (non-Javadoc)
@@ -89,7 +92,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 * @see jam.data.Histogram#clearCounts()
 	 */
 	void clearCounts() {
-		countsDouble = null;
+		countsDouble = EMPTY;
 		unsetErrors();
 		setCalibration(null);
 	}
