@@ -24,6 +24,9 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -383,6 +386,9 @@ public class JamConsole
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(String _inString) {
+		
+		//parseExpression(_inString);
+		
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		final String inString = _inString.trim();
 		final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
@@ -416,7 +422,36 @@ public class JamConsole
 			notifyListeners(command, parameters);
 		}
 	}
-	
+	/**
+	 * Parse the input string 
+	 * @param strCmd
+	 * @return a array of the command tokens
+	 */
+	private String [] parseExpression(String strCmd){
+		 
+		String regex;
+		String cmdToken;
+		String cmdTokens [];
+		int count; 
+		 
+		//match anything between quotes or words (not spaces)
+		regex="\"(.*?)\"|(\\S+)\\s*";
+		regex="\"([^\"]*?)\"|(\\S+)\\s*";   
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(strCmd);;
+		
+		cmdTokens = new String[matcher.groupCount()+1];
+	 		
+		count=0;
+		while(matcher.find()) {
+			cmdToken=matcher.group();
+			if (cmdToken.charAt(0)=='\"')
+				cmdToken=cmdToken.substring(1, cmdToken.length()-1);
+			cmdTokens[count]=cmdToken;
+			count++;
+		}
+		return cmdTokens;
+	}
 	private double getNumber(String s) throws NumberFormatException {
 		return (s.indexOf('.')>=0) ? Double.parseDouble(s) : 
 		Integer.parseInt(s);
