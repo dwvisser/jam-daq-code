@@ -62,9 +62,11 @@ final class MainMenuBar extends JMenuBar implements Observer {
 	final private MessageHandler console;
 	final private JMenuItem zeroHistogram = new JMenuItem("Zero\u2026");
 	final private JMenu calHist = new JMenu("Calibrate");
-	final private JMenuItem projectHistogram = new JMenuItem("Projections\u2026");
-	final private JMenuItem manipHistogram = new JMenuItem("Combine\u2026");
-	final private JMenuItem gainShift = new JMenuItem("Gain Shift\u2026");
+//Remove KBS	
+//	final private JMenuItem projectHistogram = new JMenuItem("Projections\u2026");
+//	final private JMenuItem manipHistogram = new JMenuItem("Combine\u2026");
+//	final private JMenuItem gainShift = new JMenuItem("Gain Shift\u2026");
+
 	final private CommandManager commands=CommandManager.getInstance();
 	
 	/**
@@ -291,25 +293,29 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		histogram.add(commands.getAction(
 		CommandNames.DELETE_HISTOGRAM)).setAccelerator(KeyStroke.getKeyStroke(
 		KeyEvent.VK_D,CTRL_MASK));
+		
 		histogram.add(calHist);
 		
-		final JMenuItem calibFit = new JMenuItem("Fit\u2026");
-		calibFit.setActionCommand("calfitlin");
-		calibFit.addActionListener(jamCommand);
-		calHist.add(calibFit);
-		final JMenuItem calibFunc = new JMenuItem("Enter Coefficients\u2026");
-		calibFunc.setActionCommand("caldisp");
-		calibFunc.addActionListener(jamCommand);
-		calHist.add(calibFunc);
-		projectHistogram.setActionCommand("project");
-		projectHistogram.addActionListener(jamCommand);
-		histogram.add(projectHistogram);
-		manipHistogram.setActionCommand("manipulate");
-		manipHistogram.addActionListener(jamCommand);
-		histogram.add(manipHistogram);
-		gainShift.setActionCommand("gainshift");
-		gainShift.addActionListener(jamCommand);
-		histogram.add(gainShift);
+		final JMenuItem calibFit=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_FIT));
+		calHist.add(calibFit);				
+
+		final JMenuItem calibFunc=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_DISPLAY_FIT));
+		calHist.add(calibFunc);				
+
+		final JMenuItem projectHistogram=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_PROJECT));
+		histogram.add(projectHistogram);				
+				
+		final JMenuItem manipHistogram=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_COMBINE));
+		histogram.add(manipHistogram);		
+		
+		final JMenuItem gainShift=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_GAIN_SHIFT));
+		histogram.add(gainShift);		
+		
 		return histogram;
 	}
 	

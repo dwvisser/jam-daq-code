@@ -36,6 +36,21 @@ public interface CommandNames {
 	/** Show dialog for defining a new histogram. */
 	String SHOW_HIST_ZERO="showhistzero";
 
+	/** Show dialog for combining histogram. */
+	String SHOW_HIST_COMBINE="showcombine";
+
+	/** Show dialog for projecting histogram. */
+	String SHOW_HIST_PROJECT="showproject";
+	
+	/** Show dialog for fitting histogram. */
+	String SHOW_HIST_FIT="showfit";
+	
+	/** Show dialog for displaying fit of histogram. */
+	String SHOW_HIST_DISPLAY_FIT="showdisplayfit";
+
+	/** Show dialog for gain shift of histogram. */
+	String SHOW_HIST_GAIN_SHIFT="showgainshift";
+	
 	/** Show dialog for defining a new gate. */
 	String SHOW_NEW_GATE="gateshownew";
 	

@@ -40,7 +40,14 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(ADD_HDF, AddHDFCmd.class);
 		cmdMap.put(RELOAD_HDF, ReloadHDFCmd.class);
 		cmdMap.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
-		cmdMap.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class); 
+		cmdMap.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);
+		
+		cmdMap.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
+		cmdMap.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
+		cmdMap.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
+		cmdMap.put(SHOW_HIST_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
+		cmdMap.put(SHOW_HIST_GAIN_SHIFT, ShowDialogGainShiftCmd.class);				 
+				 
 		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
 		cmdMap.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
 		cmdMap.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
