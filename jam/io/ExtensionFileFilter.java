@@ -48,17 +48,21 @@ public class ExtensionFileFilter extends FileFilter {
     }
     
     public boolean accept(File f){
-    	//we always allow directories, regardless of their extension
-		if (f.isDirectory()) {return true;}
-
-		// ok, it's a regular file so check the extension
+    	boolean rval=false; //default return value
+    	/* we always allow directories, regardless 
+    	 * of their extension */
+		if (f.isDirectory()) {
+			rval = true;
+		}
+		/* ok, it's a regular file so check the extension */
 		String name = f.getName().toLowerCase();
 		for (int i = extensions.length -1; i >= 0; i--){
 			if (name.endsWith(extensions[i])){
-				return true;
+				rval = true;
+				break;
 			}
 		}
-		return false;
+		return rval;
     }
     
     public String getDescription() {
