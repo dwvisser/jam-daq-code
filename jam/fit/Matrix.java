@@ -218,16 +218,16 @@ final class Matrix {
 		}
 	}
 
-	private void swap(double a[], int i, int j) {
-		final double temp = a[i];
-		a[i] = a[j];
-		a[j] = temp;
+	private void swap(double vector[], int slot1, int slot2) {
+		final double temp = vector[slot1];
+		vector[slot1] = vector[slot2];
+		vector[slot2] = temp;
 	}
 
-	private void swap(int a[], int i, int j) {
-		final int temp = a[i];
-		a[i] = a[j];
-		a[j] = temp;
+	private void swap(int vector[], int slot1, int slot2) {
+		final int temp = vector[slot1];
+		vector[slot1] = vector[slot2];
+		vector[slot2] = temp;
 	}
 
 	void rowMultiply(int row, double factor) {
