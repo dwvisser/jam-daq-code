@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -167,8 +168,10 @@ public class HistogramNew extends AbstractControl {
 			array = new double[size][size];
 		}
 		Group.createGroup("Working", Group.Type.FILE);
-		Histogram.createHistogram(array, name, title);
+		Histogram hist= Histogram.createHistogram(array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		JamStatus.getSingletonInstance().setCurrentHistogram(hist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {
