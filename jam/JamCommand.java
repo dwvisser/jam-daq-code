@@ -1,6 +1,5 @@
 package jam;
 import jam.data.DataBase;
-import jam.data.Histogram;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
 import jam.data.control.DataControl;
@@ -14,11 +13,7 @@ import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
 import jam.global.*;
 import jam.io.HistogramIO;
-import jam.io.ImpExpASCII;
 import jam.io.ImpExpException;
-import jam.io.ImpExpORNL;
-import jam.io.ImpExpSPE;
-import jam.io.ImpExpXSYS;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import java.awt.event.ActionEvent;
@@ -47,31 +42,21 @@ public class JamCommand
 	static final int MESSAGE_SCALER = 1; //alert scaler class
 	private final String classname;
 
-	private JamMain jamMain;
-	private Display display;
-	private JamConsole console;
+	private final JamMain jamMain;
+	private final Display display;
+	private final JamConsole console;
 
-	private Broadcaster broadcaster;
+	private final Broadcaster broadcaster;
 
-	//classes for reading and writing histograms
-	private HistogramIO histio;
-	private HDFIO hdfio;
-	private ImpExpASCII impExpASCII;
-	private ImpExpORNL impExpORNL;
-	private ImpExpSPE impExpSPE;
-	private ImpExpXSYS impExpXSYS;
-	private jam.io.BatchExport batchexport;
+	/* classes for reading and writing histograms */
+	private final HistogramIO histio;
+	private final HDFIO hdfio;
+	private final jam.io.BatchExport batchexport;
 
-	//control classes
+	/* control classes */
 	private RunControl runControl;
 	private SortControl sortControl;
 	private DisplayCounters displayCounters;
-	// fix this
-	/** The "load fit" dialog box.
-	 */
-	//private final LoadFit loadFit;
-
-	//control of data objects
 	private final HistogramControl histogramControl;
 	private final GateControl gateControl;
 	private final ScalerControl scalerControl;
@@ -91,13 +76,12 @@ public class JamCommand
 	private final SetupRemote setupRemote;
 
 	private final FrontEndCommunication frontEnd;
-	private RemoteAccess remoteAccess;
 	private final Help help;
 
-	private boolean overlay;
-	private boolean remote;
+	private final JamStatus status;
 
-	private JamStatus status;
+	private RemoteAccess remoteAccess=null;
+	private boolean remote=false;
 
 	/** Constructor for this class.
 	 * @param jm The launch class for the Jam application
@@ -120,14 +104,10 @@ public class JamCommand
 		/* io classes */
 		hdfio = new HDFIO(jamMain, console);
 		histio = new HistogramIO(jamMain, console);
-		impExpASCII = new ImpExpASCII(jamMain, console);
-		impExpSPE = new ImpExpSPE(jamMain, console);
-		impExpXSYS = new ImpExpXSYS(jamMain, console);
-		impExpORNL = new ImpExpORNL(jamMain, console);
 		batchexport = new jam.io.BatchExport(jamMain, console);
-		//communicates with camac crate
+		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
-		//data bases manipulation
+		/* data bases manipulation */
 		histogramControl = new HistogramControl(jamMain, broadcaster, console);
 		gateControl = new GateControl(jamMain, broadcaster, console, display);
 		scalerControl = new ScalerControl(jamMain, broadcaster, console);
@@ -138,7 +118,7 @@ public class JamCommand
 		projection = new Projections(jamMain, broadcaster, console);
 		manipulate = new Manipulations(jamMain, broadcaster, console);
 		gainshift = new GainShift(jamMain, broadcaster, console);
-		//run and/or sort control
+		/* acquisition control */
 		runControl =
 			new RunControl(
 				jamMain,
@@ -149,7 +129,7 @@ public class JamCommand
 				console);
 		sortControl = new SortControl(jamMain, console);
 		displayCounters = new DisplayCounters(jamMain, broadcaster, console);
-		//setup classes
+		/* setup classes */
 		setupSortOn =
 			new SetupSortOn(
 				jamMain,
@@ -165,10 +145,17 @@ public class JamCommand
 				broadcaster,
 				console);
 		setupRemote = new SetupRemote(jamMain, console);
-		//Help window
-		help = new Help(jamMain, console);
+		help = new Help(jamMain, console);//Help window
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
-		//add observers to the list of class to be notified of broadcasted events
+		addObservers();
+		console.setCommandListener(display);
+	}
+	
+	/**
+	 * Add observers to the list of classes to be notified of 
+	 * broadcasted events.
+	 */
+	private final void addObservers(){
 		broadcaster.addObserver(displayCounters);
 		broadcaster.addObserver(display);
 		broadcaster.addObserver(frontEnd);
@@ -177,10 +164,6 @@ public class JamCommand
 		broadcaster.addObserver(manipulate);
 		broadcaster.addObserver(projection);
 		broadcaster.addObserver(gainshift);
-		console.setCommandListener(display);
-		overlay = false;
-		/* remotely display histograms */
-		remote = false;
 	}
 	
 	/**
@@ -236,43 +219,6 @@ public class JamCommand
 				histio.writeJHFFile();
 			} else if ("saveAsHDF".equals(incommand)) {
 				hdfio.writeFile();
-			} else if ("openascii".equals(incommand)) {
-				if (impExpASCII.openFile()) {
-					jamMain.setSortModeFile(impExpASCII.getLastFileName());
-					DataControl.setupAll();
-					dataChanged();
-				}
-			} else if ("openspe".equals(incommand)) {
-				if (impExpSPE.openFile()) {
-					jamMain.setSortModeFile(impExpSPE.getLastFileName());
-					DataControl.setupAll();
-					dataChanged();
-				}
-			} else if ("openornl".equals(incommand)) {
-				if (impExpORNL.openFile()) {
-					jamMain.setSortModeFile(impExpORNL.getLastFileName());
-					DataControl.setupAll();
-					dataChanged();
-				}
-			} else if ("openxsys".equals(incommand)) {
-				if (impExpXSYS.openFile()) {
-					jamMain.setSortModeFile(impExpXSYS.getLastFileName());
-					DataControl.setupAll();
-					dataChanged();
-				}
-			} else if ("saveascii".equals(incommand)) {
-				impExpASCII.saveFile(
-					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if ("savespe".equals(incommand)) {
-				impExpSPE.saveFile(
-					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if ("saveornl".equals(incommand)) {
-				impExpORNL.saveFile(
-					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if ("savexsys".equals(incommand)) { //FIXME not implemented
-				console.errorOutln("Save xsys file NOT implemented");
-				impExpXSYS.saveFile(
-					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
 			} else if ("online".equals(incommand)) {
