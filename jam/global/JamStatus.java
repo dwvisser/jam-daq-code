@@ -4,93 +4,103 @@ package jam.global;
 import java.text.*;
 import java.util.*;
 /**
- * A class with static methods so thatimformation is globally available.
- * It extends Observable so that class can register that the would like
- * to be imformed of a change of state.
+ * A global status class so that information is globally available.
  *
  * @author Ken Swartz
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public  class JamStatus  {
+public  class JamStatus {
     private static AcquisitionStatus acquisitionStatus;
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
-    private static Broadcaster broadcaster;
+    
+    /**
+     * The one instance of JamStatus.
+     */
+    static private JamStatus _instance;
 
-    public JamStatus(AcquisitionStatus acquisitionStatus){
-        this.acquisitionStatus=acquisitionStatus;
-        this.broadcaster= broadcaster;
+	/**
+	 * Never meant to be called by outside world.
+	 */
+    protected JamStatus(){
     }
     
     /**
-     * Are we Online
+     * Return the one instance of this class, creating
+     * it if necessary.
      */
-    public static boolean isOnLine() {
+    static public JamStatus instance() {
+    	return (_instance==null) ? new JamStatus() : _instance;
+    }
+    
+    public void setAcqisitionStatus(AcquisitionStatus as){
+        this.acquisitionStatus=as;
+    }
+        
+    /**
+     * Returns whether online acquisition is set up.
+     */
+    public boolean isOnLine() {
         return acquisitionStatus.isOnLine();
     }
 
     /**
-     * Are we currently taking data
+     * Returns whether data is currently being taken.
      */
-    public static boolean isAcqOn() {
+    public boolean isAcqOn() {
         return acquisitionStatus.isAcqOn();
     }
 
     /**
-     * set the current Histogram name
+     * Sets the current Histogram name.
      */
-    public synchronized  static void setCurrentHistogramName(String histogramName){
-        //System.err.println("JamStatus.setCurrentHistName(\""+histogramName+"\")");
+    public synchronized  void setCurrentHistogramName(String histogramName){
         currentHistogramName=histogramName;
     }
 
     /**
-     * Get the current Histogram name
+     * Gets the current Histogram name.
      */
-    public synchronized static String getCurrentHistogramName(){
-        //ystem.err.println("JamStatus.getCurrentHistogramName() = \""+currentHistogramName+"\"");
+    public synchronized String getCurrentHistogramName(){
         return currentHistogramName;
     }
     
     /**
-     * set the current Histogram name
+     * Sets the overlay Histogram name.
      */
-    public synchronized  static void setOverlayHistogramName(String histogramName){
+    public synchronized  void setOverlayHistogramName(String histogramName){
         overlayHistogramName=histogramName;
     }
 
     /**
-     * Get the current Histogram name
+     * Gets the overlay Histogram name.
      */
-    public synchronized static String getOverlayHistogramName(){
+    public synchronized String getOverlayHistogramName(){
         return overlayHistogramName;
     }
 
     /**
-     * set the current Gate name
+     * Sets the current Gate name.
      */
-    public synchronized  static void setCurrentGateName(String gateName){
+    public synchronized void setCurrentGateName(String gateName){
         currentGateName=gateName;
     }
 
     /**
-     * Get the current Gate name
+     * Gets the current Gate name.
      */
-    public synchronized static String getCurrentGateName(){
+    public synchronized String getCurrentGateName(){
         return currentGateName;
     }
 
     /**
-     * Get the data for printing of histogram
+     * Gets the current date and time as a String.
      */
-    public static String getDate(){
+    public String getDate(){
         Date date=new Date();        //getDate and time
         DateFormat datef=DateFormat.getDateTimeInstance();    //default format
         datef.setTimeZone(TimeZone.getDefault());  //set time zone
         String sdate=datef.format(date);      //format date
         return sdate;
     }
-
-
-
-
 }
