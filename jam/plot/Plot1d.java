@@ -25,7 +25,6 @@ import javax.swing.SwingUtilities;
 /**
  * Plots a 1-dimensional histogram.
  * 
- * @see jam.plot.Plot
  * @author Ken Swartz
  */
 final class Plot1d extends AbstractPlot {
@@ -96,14 +95,14 @@ final class Plot1d extends AbstractPlot {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
 		}
-		repaint();
+		panel.repaint();
 	}
 
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
-			addMouseListener(mouseInputAdapter);
-			addMouseMotionListener(mouseInputAdapter);
+			panel.addMouseListener(mouseInputAdapter);
+			panel.addMouseMotionListener(mouseInputAdapter);
 			setSettingGate(true);
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
@@ -111,15 +110,15 @@ final class Plot1d extends AbstractPlot {
 				setLastMovePoint(pPixel);
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
-				removeMouseListener(mouseInputAdapter);
-				removeMouseMotionListener(mouseInputAdapter);
+				panel.removeMouseListener(mouseInputAdapter);
+				panel.removeMouseMotionListener(mouseInputAdapter);
 			} else if (mode == GateSetMode.GATE_CANCEL) {
 				pointsGate.reset();
 				setSettingGate(false);
-				removeMouseListener(mouseInputAdapter);
-				removeMouseMotionListener(mouseInputAdapter);
+				panel.removeMouseListener(mouseInputAdapter);
+				panel.removeMouseMotionListener(mouseInputAdapter);
 			}
-			repaint();
+			panel.repaint();
 		}
 	}
 
@@ -190,7 +189,7 @@ final class Plot1d extends AbstractPlot {
 			this.fitResiduals = new double[length];
 			System.arraycopy(residuals, 0, fitResiduals, 0, length);
 		}
-		repaint();
+		panel.repaint();
 	}
 
 	protected void paintMarkedChannels(Graphics g) {
@@ -238,7 +237,7 @@ final class Plot1d extends AbstractPlot {
 				areaMark2 = Math.max(x1, x2);
 			}
 		}
-		repaint();
+		panel.repaint();
 	}
 
 	protected void paintMarkArea(Graphics g) {
@@ -418,10 +417,10 @@ final class Plot1d extends AbstractPlot {
 		return minCounts;
 	}
 
-	/**
+	/* non-javadoc: 
 	 * Caller should have checked 'isCalibrated' first.
 	 */
-	public double getEnergy(double channel) {
+	double getEnergy(double channel) {
 		final AbstractHist1D plotHist=(AbstractHist1D)getHistogram();
 		return plotHist.getCalibration().getCalculatedEnergy(channel);
 	}
@@ -451,7 +450,7 @@ final class Plot1d extends AbstractPlot {
 			addToSelectClip(selectionStartPoint, Bin.Factory
 					.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
-				repaint(getClipBounds(selectingAreaClip, false));
+				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}
 		} else if (settingGate) {
 			/* only if we have 1 or more */
@@ -477,7 +476,7 @@ final class Plot1d extends AbstractPlot {
 					addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
 				}
 				synchronized (mouseMoveClip) {
-					repaint(getClipBounds(mouseMoveClip, false));
+					panel.repaint(getClipBounds(mouseMoveClip, false));
 				}
 			}
 		}
@@ -548,6 +547,9 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
+	/**
+	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
+	 */
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		if (key.equals(AUTO_PEAK_FIND)) {
@@ -557,7 +559,7 @@ final class Plot1d extends AbstractPlot {
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				repaint();
+				panel.repaint();
 			}
 		});
 	}

@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 
-class Plot2d extends AbstractPlot implements ColorPrefs{
+final class Plot2d extends AbstractPlot implements ColorPrefs{
 
 	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
@@ -41,9 +41,6 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
-	 * 
-	 * @param a
-	 *            the action toolbar
 	 */
 	Plot2d() {
 		super();
@@ -61,7 +58,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				repaint();
+				panel.repaint();
 			}
 		});
 	}
@@ -144,8 +141,8 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 		if (mode == GateSetMode.GATE_NEW) {
 			setSettingGate(true);
 			pointsGate.reset();
-			addMouseListener(mouseInputAdapter);
-			addMouseMotionListener(mouseInputAdapter);
+			panel.addMouseListener(mouseInputAdapter);
+			panel.addMouseMotionListener(mouseInputAdapter);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.getX(), pChannel.getY());
 			/* update variables */
@@ -156,7 +153,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 			} else {
 				setLastMovePoint(lastGatePoint);
 			}
-			repaint(getClipBounds(pointsGate, true));
+			panel.repaint(getClipBounds(pointsGate, true));
 		} else if (mode == GateSetMode.GATE_REMOVE) {
 			if (pointsGate.npoints > 0) {
 				/* decide clip before removing point */
@@ -171,7 +168,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 					setLastGatePoint(tempP);
 					setLastMovePoint(lastGatePoint);
 				}
-				repaint(clip);
+				panel.repaint(clip);
 			}
 		} else if (mode == GateSetMode.GATE_SAVE
 				|| mode == GateSetMode.GATE_CANCEL) { //draw a saved gate
@@ -179,9 +176,9 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 			final Rectangle clip = getClipBounds(pointsGate, true);
 			setSettingGate(false);
 			pointsGate.reset();
-			removeMouseListener(mouseInputAdapter);
-			removeMouseMotionListener(mouseInputAdapter);
-			repaint(clip);
+			panel.removeMouseListener(mouseInputAdapter);
+			panel.removeMouseMotionListener(mouseInputAdapter);
+			panel.repaint(clip);
 		}
 	}
 
@@ -459,7 +456,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 					mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
 				}
 				setMouseMoved(true);
-				repaint(getClipBounds(mouseMoveClip, false));
+				panel.repaint(getClipBounds(mouseMoveClip, false));
 			}
 		} else if (selectingArea) {
 			synchronized (lastMovePoint) {
@@ -472,7 +469,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 			}
 			setMouseMoved(true);
 			synchronized (selectingAreaClip) {
-				repaint(getClipBounds(selectingAreaClip, false));
+				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}
 		}
 	}

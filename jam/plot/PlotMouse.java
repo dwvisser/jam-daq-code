@@ -67,17 +67,18 @@ class PlotMouse extends MouseAdapter {
 	 * @param e the mouse-pressed event
 	 */
 	public void mousePressed(MouseEvent e) {
-		final AbstractPlot selectedPlot=(AbstractPlot)e.getSource();
-	    /* First listeners about selected plot firsts */
-		plotSelectListener.plotSelected(selectedPlot);
-		/* Only fire event if plot has counts */ 
-		if (selectedPlot.getCounts()!=null) {
-			final Point pin = e.getPoint();
-			final Bin pout = pg.toData(pin);
-			final Iterator iter=listenersList.iterator();
-			while (iter.hasNext()) {
-				((PlotMouseListener) iter.next()).plotMousePressed(pout, pin);
-			}
-		}
+		final AbstractPlot selectedPlot = ((AbstractPlot.PlotPanel) e
+                .getSource()).getPlot();
+        /* First listeners about selected plot firsts */
+        plotSelectListener.plotSelected(selectedPlot);
+        /* Only fire event if plot has counts */
+        if (selectedPlot.getCounts() != null) {
+            final Point pin = e.getPoint();
+            final Bin pout = pg.toData(pin);
+            final Iterator iter = listenersList.iterator();
+            while (iter.hasNext()) {
+                ((PlotMouseListener) iter.next()).plotMousePressed(pout, pin);
+            }
+        }
 	}
 }

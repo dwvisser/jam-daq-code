@@ -6,6 +6,7 @@ import jam.global.ComponentPrintable;
 import jam.plot.color.PlotColorMap;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -33,8 +34,86 @@ import javax.swing.event.MouseInputAdapter;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class AbstractPlot extends JPanel implements PlotPrefs,
+abstract class AbstractPlot implements PlotPrefs,
 		PreferenceChangeListener {
+    
+    final class PlotPanel extends JPanel {
+        
+        PlotPanel(){
+            super(false);
+        }
+        
+    	/**
+    	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+    	 */
+    	protected void paintComponent(Graphics g) {
+    		super.paintComponent(g);
+    		PlotColorMap pcm=PlotColorMap.getSingletonInstance();
+    		if (printing) { //output to printer
+    			//FIXME KBS font not set
+    			//graph.setFont(printFont);
+    			pcm.setColorMap(PlotColorMap.PRINT);
+    			graph.setView(pageformat);
+    		} else { //output to screen
+    			//graph.setFont(screenFont);
+    			pcm.setColorMap(colorMode);
+    			graph.setView(null);
+    		}
+    		final Color foreground=pcm.getForeground();
+    		g.setColor(foreground); //color foreground
+    		this.setForeground(foreground);
+    		this.setBackground(pcm.getBackground());
+    		viewSize = getSize();
+    		graph.update(g, viewSize, plotLimits);
+    		/*
+    		 * give graph all pertinent info, draw outline, tickmarks, labels, and
+    		 * title
+    		 */
+    		final Histogram plotHist=getHistogram();
+    		if (plotHist != null) {
+    			paintHeader(g);
+    			if (binWidth > plotHist.getSizeX()) {
+    				binWidth = 1.0;
+    				warning("Bin width > hist size, so setting bin width back to 1.");
+    			}
+    			paintHistogram(g);
+    			if (displayingGate) { //are we to display a gate
+    				paintGate(g);
+    			}
+    			if (displayingOverlay) {
+    				paintOverlay(g);
+    			}
+    			if (displayingFit) {
+    				paintFit(g);
+    			}
+    			if (markArea) {
+    				paintMarkArea(g);
+    			}
+    			if (settingGate) {
+    				paintSetGatePoints(g);
+    			}
+    			if (markingChannels) {
+    				paintMarkedChannels(g);
+    			}
+    			if (mouseMoved) {
+    				/* we handle selecting area or setting gate here */
+    				paintMouseMoved(g);
+    			}
+    		}
+    	}
+    	
+    	/**
+    	 * @return the container class instance
+    	 */
+    	public AbstractPlot getPlot(){
+    	    return AbstractPlot.this;
+    	}
+    }
+    
+    /**
+     * The actual panel.
+     */
+    protected final PlotPanel panel=new PlotPanel();
 
 	/**
 	 * Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
@@ -198,13 +277,12 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * Constructor
 	 */
 	protected AbstractPlot() {
-		super(false);			
-		setOpaque(true);
-		this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		panel.setOpaque(true);
+		panel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		graph = new PlotGraphics(this);
 		//Create plot mouse
 		plotMouse = new PlotMouse(graph);
-		addMouseListener(plotMouse);
+		panel.addMouseListener(plotMouse);
 		//Setup preferences
 		initPrefs();
 		PREFS.addPreferenceChangeListener(this);
@@ -394,7 +472,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	final void markChannel(Bin p) {
 		markingChannels = true;
 		markedChannels.add(Bin.copy(p));
-		repaint();
+		panel.repaint();
 	}
 
 	abstract int getChannel(double energy);
@@ -431,10 +509,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	synchronized void setSelectingArea(boolean tf) {
 		selectingArea = tf;
 		if (selectingArea) {
-			addMouseMotionListener(mouseInputAdapter);
+			panel.addMouseMotionListener(mouseInputAdapter);
 		} else {
-			removeMouseMotionListener(mouseInputAdapter);
-			repaint();
+			panel.removeMouseMotionListener(mouseInputAdapter);
+			panel.repaint();
 		}
 	}
 
@@ -572,7 +650,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	void setLog() {
 		plotLimits.setScale(Scale.LOG);
-		repaint();
+		panel.repaint();
 	}
 
 	/**
@@ -591,7 +669,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 		/* scroll bars do not always reset on their own */
 		scrollbars.update(Scroller.COUNT);
-		repaint();
+		panel.repaint();
 	}
 
 	/*
@@ -619,7 +697,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 		Histogram plotHist=getHistogram();
 		copyCounts(plotHist);
-		repaint();
+		panel.repaint();
 	}
 
 	/**
@@ -695,70 +773,12 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	protected abstract int findMinimumCounts();
 
-	/**
-	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
-	 */
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		PlotColorMap pcm=PlotColorMap.getSingletonInstance();
-		if (printing) { //output to printer
-			//FIXME KBS font not set
-			//graph.setFont(printFont);
-			pcm.setColorMap(PlotColorMap.PRINT);
-			graph.setView(pageformat);
-		} else { //output to screen
-			//graph.setFont(screenFont);
-			pcm.setColorMap(colorMode);
-			graph.setView(null);
-		}
-		final Color foreground=pcm.getForeground();
-		g.setColor(foreground); //color foreground
-		this.setForeground(foreground);
-		this.setBackground(pcm.getBackground());
-		viewSize = getSize();
-		graph.update(g, viewSize, plotLimits);
-		/*
-		 * give graph all pertinent info, draw outline, tickmarks, labels, and
-		 * title
-		 */
-		final Histogram plotHist=getHistogram();
-		if (plotHist != null) {
-			paintHeader(g);
-			if (binWidth > plotHist.getSizeX()) {
-				binWidth = 1.0;
-				warning("Bin width > hist size, so setting bin width back to 1.");
-			}
-			paintHistogram(g);
-			if (displayingGate) { //are we to display a gate
-				paintGate(g);
-			}
-			if (displayingOverlay) {
-				paintOverlay(g);
-			}
-			if (displayingFit) {
-				paintFit(g);
-			}
-			if (markArea) {
-				paintMarkArea(g);
-			}
-			if (settingGate) {
-				paintSetGatePoints(g);
-			}
-			if (markingChannels) {
-				paintMarkedChannels(g);
-			}
-			if (mouseMoved) {
-				/* we handle selecting area or setting gate here */
-				paintMouseMoved(g);
-			}
-		}
-	}
 
 	void error(final String mess) {
 		Runnable task = new Runnable() {
 			public void run() {
 				final String plotErrorTitle = "Plot Error";
-				JOptionPane.showMessageDialog(AbstractPlot.this, mess,
+				JOptionPane.showMessageDialog(panel, mess,
 						plotErrorTitle, JOptionPane.ERROR_MESSAGE);
 			}
 		};
@@ -769,7 +789,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		Runnable task = new Runnable() {
 			public void run() {
 				final String plotErrorTitle = "Plot Warning";
-				JOptionPane.showMessageDialog(AbstractPlot.this, mess,
+				JOptionPane.showMessageDialog(panel, mess,
 						plotErrorTitle, JOptionPane.WARNING_MESSAGE);
 			}
 		};
@@ -787,7 +807,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		if (plotHist != null && plotHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
-			repaint();
+			panel.repaint();
 		} else {
 			error("Can't display '" + gate + "' on histogram '" + plotHist
 					+ "'.");
@@ -903,7 +923,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	ComponentPrintable getComponentPrintable(int run, String d) {
 		runNumber = run;
 		date = d;
-		return new ComponentPrintable(this);
+		return new ComponentPrintable(panel);
 	}
 
 	/* non-javadoc:
@@ -928,7 +948,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			colorMode = cm ? PlotColorMap.W_ON_B
 					: PlotColorMap.B_ON_W;
 		}
-		setBackground(PlotColorMap.getSingletonInstance().getBackground());
+		panel.setBackground(PlotColorMap.getSingletonInstance().getBackground());
 	}
 	
 	/* Plot mouse methods */
@@ -1022,7 +1042,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		 */
 		public void mouseExited(MouseEvent e) {
 			setMouseMoved(false);
-			repaint();
+			panel.repaint();
 		}
 
 		public void mouseMoved(MouseEvent e) {
@@ -1047,5 +1067,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		synchronized (selectingAreaClip) {
 			selectingAreaClip.setSize(0, 0);
 		}
+	}
+	
+	final Component getComponent(){
+	    return panel;
 	}
 }

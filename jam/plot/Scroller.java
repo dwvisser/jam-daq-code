@@ -78,7 +78,7 @@ class Scroller
 		//add scroll bars to plot
 		plot.addScrollBars(this);
 		//plot in middle panel
-		this.add(plot, BorderLayout.CENTER);
+		add(plot.getComponent(), BorderLayout.CENTER);
 		//scroll bar to move along the x axis
 		scrollHorz = new JScrollBar(JScrollBar.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
@@ -154,7 +154,7 @@ class Scroller
 			//update the plot can't use refresh as it resets count scroller
 			if (updatePlot) {
 				//FIXME KBS plot.copyCounts();
-				plot.repaint();
+				plot.getComponent().repaint();
 			}
 		}
 	}
