@@ -12,9 +12,7 @@ import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
 import jam.global.*;
-import jam.io.HistogramIO;
 import jam.io.hdf.OpenSelectedHistogram;
-import jam.io.ImpExpException;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import java.awt.event.ActionEvent;
@@ -50,7 +48,6 @@ public class JamCommand
 	private final Broadcaster broadcaster;
 
 	/* classes for reading and writing histograms */
-	private final HistogramIO histio;
 	private final HDFIO hdfio;
 	private final OpenSelectedHistogram openSelectedHist;
 	private final jam.io.BatchExport batchexport;
@@ -105,7 +102,6 @@ public class JamCommand
 		new RunInfo();
 		/* io classes */
 		hdfio = new HDFIO(jamMain, console);
-		histio = new HistogramIO(jamMain, console);
 		batchexport = new jam.io.BatchExport(jamMain, console);
 		openSelectedHist = new OpenSelectedHistogram(jamMain, console);
 		/* communication */
@@ -192,13 +188,6 @@ public class JamCommand
 				jamMain.setSortMode(JamMain.NO_SORT);
 				DataBase.getInstance().clearAllLists();
 				dataChanged();
-			} else if ("open".equals(incommand)) {
-				if (histio.readJHFFile()) {
-					jamMain.setSortModeFile(histio.getFileNameOpen());
-					DataControl.setupAll(); //setup all data bases
-					dataChanged();
-					jamMain.repaint();
-				}
 			} else if ("openhdf".equals(incommand)) {
 				if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
 					jamMain.setSortModeFile(hdfio.getFileNameOpen());
@@ -210,21 +199,12 @@ public class JamCommand
 				if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
 					scalerControl.displayScalers();
 				}
-			} else if ("reload".equals(incommand)) {
-				if (histio.reloadJHFFile()) {
-					scalerControl.displayScalers();
-				}
 			} else if ("openselectedhist".equals(incommand)) {				
 				openSelectedHist.open();
 				dataChanged();
 				jamMain.repaint();
-				
-			} else if ("save".equals(incommand)) {
-				histio.writeJHFFile();
 			} else if ("savehdf".equals(incommand)) {
 				hdfio.writeFile(hdfio.lastValidFile());
-			} else if ("saveas".equals(incommand)) {
-				histio.writeJHFFile();
 			} else if ("saveAsHDF".equals(incommand)) {
 				hdfio.writeFile();
 			} else if ("batchexport".equals(incommand)) {
@@ -302,8 +282,6 @@ public class JamCommand
 			}
 		} catch (JamException exc) {
 			console.errorOutln("JamException: " + exc.getMessage());
-		} catch (ImpExpException iee) {
-			console.errorOutln("ImpExpException: " + iee.getMessage());
 		} 
 	}
 

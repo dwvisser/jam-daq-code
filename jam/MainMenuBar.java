@@ -348,24 +348,6 @@ public class MainMenuBar extends JMenuBar {
 		batchexport.addActionListener(jamCommand);
 		expHist.add(batchexport);
 		file.addSeparator();
-		final JMenu oldJHF = new JMenu("JHF Format");
-		file.add(oldJHF);
-		open.setActionCommand("open");
-		open.addActionListener(jamCommand);
-		oldJHF.add(open);
-		reload.setActionCommand("reload");
-		reload.addActionListener(jamCommand);
-		reload.setEnabled(false);
-		oldJHF.add(reload);
-		save.setActionCommand("save");
-		save.addActionListener(jamCommand);
-		save.setEnabled(false);
-		oldJHF.add(save);
-		final JMenuItem saveas = new JMenuItem("Save as(jhf)...");
-		saveas.setActionCommand("saveas");
-		saveas.addActionListener(jamCommand);
-		oldJHF.add(saveas);
-		file.addSeparator();
 		file.add(new FilePrintAction()).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_P, ctrl_mask));
 		file.add(new FilePageSetupAction()).setAccelerator(
