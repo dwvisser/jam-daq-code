@@ -13,7 +13,7 @@ import jam.global.RunInfo;
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  * @see YaleCAEN_InputStream
  */
-public class YaleCAEN_OutputStream extends EventOutputStream implements L002Parameters{
+public abstract class YaleCAEN_OutputStream extends EventOutputStream implements L002Parameters{
 
     SimpleDateFormat formatter;
 
@@ -40,16 +40,16 @@ public class YaleCAEN_OutputStream extends EventOutputStream implements L002Para
 	/**
 	 * @see jam.sort.stream.EventOutputStream#writeEvent(short[])
 	 */
-	public void writeEvent(short[] input) throws EventException {
+	/*public void writeEvent(short[] input) throws EventException {
 		System.err.println(getClass().getName()+": writeEvent() not yet implemented");
-	}
+	}*/
 
 	/**
 	 * @see jam.sort.stream.EventOutputStream#writeEvent(int[])
 	 */
-	public void writeEvent(int[] input) throws EventException {
+	/*public void writeEvent(int[] input) throws EventException {
 		System.err.println(getClass().getName()+": writeEvent() not yet implemented");
-	}
+	}*/
 
 	/**
 	 * @see jam.sort.stream.EventOutputStream#writeHeader()
@@ -89,9 +89,9 @@ public class YaleCAEN_OutputStream extends EventOutputStream implements L002Para
 	/**
 	 * @see jam.sort.stream.EventOutputStream#writeEndRun()
 	 */
-	public void writeEndRun() throws EventException {
+	/*public void writeEndRun() throws EventException {
 		System.err.println(getClass().getName()+": writeEndRun() not yet implemented");
-	}
+	}*/
 
 	/**
 	 * @see jam.sort.stream.EventOutputStream#isEndRun(short)
