@@ -1,101 +1,172 @@
 package jam;
-import javax.swing.*;
-import jam.data.*;
+import jam.data.Gate;
+import jam.data.Histogram;
 import jam.global.JamStatus;
+import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 
 /**
- * Used by 'gateChooser' in class JamMain to display gate options.
+ * Used anywhere a JComboBox is used to select from the available 
+ * gates.
  *
- * @author Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 1.4.2 RC 3
  */
 public class GateComboBoxModel extends DefaultComboBoxModel {
 
-    String selection=null;
-    public static final String NO_GATES="No Gates";
-    public static final String CHOOSE_A_GATE="Choose a gate";
-    JamCommand jc;
-    private JamStatus status;
-    private int lastSize=0;
-    private Object [] lastValue;
+	/**
+	 * Class representing the possible modes of GateComboBoxModel's.
+	 * Only two modes exist now, which are accessible as static
+	 * fields of this class.
+	 *
+	 * @version 1.4.2 (RC3)
+	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 */
+	static public class Mode {
+		private static final int disp = 0;
+		private static final int all = 1;
 
-    public GateComboBoxModel(JamCommand jamCommand){
-        super();
-        jc=jamCommand;
-        status=JamStatus.instance();
-    }
+		/**
+		 * The mode for which only gates belonging to the displayed
+		 * histogram are listed.
+		 */
+		static final public Mode DISPLAYED_HIST = new Mode(disp);
+		
+		/**
+		 * The mode for which all gates of the same dimensionality
+		 * of the displayed histogram.
+		 */
+		static final public Mode ALL = new Mode(all);
+		
+		private final int mode;
 
-    /**
-     * Needs to be called after every action that changes the list of histograms.
-     */
-    private void changeOccured(){
-        fireContentsChanged(this,0,getSize());
-    }
+		private Mode(int i) {
+			mode = i;
+		}
+	}
+
+	private String selection = null;
+	private JamStatus status;
+	private int lastSize = 0;
+	private Object[] lastValue;
+	private final Mode mode;
 
 	/**
-	 * Returns list elements for chooser.
+	 * Create the default model that shows gates for the currently
+	 * displayed histogram.
 	 */
-    public Object getElementAt(int index){
-    	Object rval = NO_GATES;//default value if no gates
-        if (numGates()>0){
-            if (index==0) {
-                rval = CHOOSE_A_GATE;
-            } else {
-                rval = Histogram.getHistogram(status.getCurrentHistogramName()).getGates()[index-1].getName();
-            }
-        } 
-        if (lastValue[index]==null){
-        	lastValue[index]=rval;
-        } else if (!lastValue[index].equals(rval)){
-        	changeOccured();
-        }
-        return rval;
-    }
+	public GateComboBoxModel() {
+		super();
+		status = JamStatus.instance();
+		mode = Mode.DISPLAYED_HIST;
+	}
 
-    /**
-     * Number of list elements in chooser.
-     */
-    public int getSize(){
-    	final int rval=numGates()+1;
-    	if (rval != lastSize){
-			lastSize=rval;
-			lastValue=new Object[rval];
-    		changeOccured();
-    	}
+	/**
+	 * Create a new model for the given mode.
+	 * 
+	 * @param listmode whether just gates for the current histogram or 
+	 * all histograms of the same dimensionality should be shown
+	 */
+	public GateComboBoxModel(Mode listmode) {
+		super();
+		status = JamStatus.instance();
+		mode = listmode;
+	}
+
+	/**
+	 * Needs to be called after every action that changes the list of 
+	 * histograms.
+	 */
+	private void changeOccured() {
+		fireContentsChanged(this, 0, getSize());
+	}
+
+	/**
+	 * @return list element at the specified index
+	 * @param index the index of the desired element
+	 */
+	public Object getElementAt(int index) {
+		final String NO_GATES = "No Gates";
+		final String CHOOSE_A_GATE = "Choose a gate";
+		Object rval = NO_GATES; //default value if no gates
+		if (numGates() > 0) {
+			if (index == 0) {
+				rval = CHOOSE_A_GATE;
+			} else if (Mode.DISPLAYED_HIST.equals(mode)){
+				rval =
+					Histogram
+						.getHistogram(status.getCurrentHistogramName())
+						.getGates()[index
+						- 1].getName();
+			} else {
+				final List list =
+					Gate.getGateList(
+					Histogram
+						.getHistogram(status.getCurrentHistogramName())
+						.getDimensionality());
+				rval = ((Gate) (list.get(index-1))).getName();
+			}
+		}
+		if (lastValue[index] != null) {
+			if (!lastValue[index].equals(rval)) {
+				changeOccured();
+			}			
+		} else {
+			synchronized(this){
+				lastValue[index] = rval;
+			}
+		}
 		return rval;
-    }
+	}
 
-    /**
-     * for ComboBoxModel interface
-     * 
-     * @author <a href="mailto:dale@visser.name">Dale Visser</a>
-     *
-     * To change the template for this generated type comment go to
-     * Window>Preferences>Java>Code Generation>Code and Comments
-     */
-    public void setSelectedItem(Object anItem) {
-        selection = (String) anItem;
-    }
+	/**
+	 * @return number of list elements in chooser.
+	 */
+	public int getSize() {
+		final int rval = numGates() + 1;
+		if (rval != lastSize) {
+			synchronized(this){
+				lastSize = rval;
+				lastValue = new Object[rval];
+			}
+			changeOccured();
+		}
+		return rval;
+	}
 
-    //for ComboBoxModel interface
-    public Object getSelectedItem() {
-        return selection;
-    }
+	/**
+	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 * @param anItem the item to set the selection to
+	 */
+	public void setSelectedItem(Object anItem) {
+		synchronized (this) {
+			selection = (String) anItem;
+		}
+	}
 
-    private int numGates(){
-        int returnValue;
+	/**
+	 * @return the currently selected item
+	 */
+	public Object getSelectedItem() {
+		return selection;
+	}
 
-        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
-        if (hist == null) {
-            returnValue = 0;
-        } else {
-            Gate [] gates=hist.getGates();
-            if (gates == null) {
-                returnValue = 0;
-            } else {
-                returnValue = gates.length;
-            }
-        }
-        return returnValue;
-    }
-
+	private int numGates() {
+		int returnValue=0;
+		final Histogram hist =
+			Histogram.getHistogram(status.getCurrentHistogramName());
+		if (hist == null) {
+			returnValue = 0;
+		} else if (Mode.DISPLAYED_HIST.equals(mode)) {
+				final Gate[] gates = hist.getGates();
+				if (gates == null) {
+					returnValue = 0;
+				} else {
+					returnValue = gates.length;
+				}
+		} else {//ALL
+			returnValue = Gate.getGateList(hist.getDimensionality()).size();
+		}
+		return returnValue;
+	}
 }
