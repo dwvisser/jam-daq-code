@@ -12,6 +12,10 @@ import javax.swing.JFrame;
  */
 final class AddHDFCmd extends AbstractCommand implements Commandable {
 
+	AddHDFCmd(){
+		putValue(NAME,"Add counts...");
+	}
+
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
@@ -28,7 +32,6 @@ final class AddHDFCmd extends AbstractCommand implements Commandable {
 	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 			execute(null);
-
 	}
 
 }
