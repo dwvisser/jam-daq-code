@@ -182,8 +182,7 @@ public class SelectionTree extends JPanel implements Observer {
                 STATUS.clearOverlays();
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
                         hist);
-                STATUS.setCurrentGateName(gate.getName());
-                BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
+                selectGate(gate);
             }
             /* Re-add listener now that we have set selection. */
             addSelectionListener();
@@ -235,7 +234,41 @@ public class SelectionTree extends JPanel implements Observer {
         tree.repaint();
     }
     
-    /* non-javadoc
+	/**
+	 * A gate has been selected. Tell all appropriate classes, like Display and
+	 * JamStatus.
+	 * 
+	 * @param gate
+	 *            to select
+	 * @see jam.data.Gate
+	 */
+	private void selectGate(Gate gate) {
+		final String methodname = "selectGate(): ";
+		try {
+			STATUS.setCurrentGateName(gate.getName());
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
+			final double area = gate.getArea();
+			if (gate.getDimensionality() == 1) {
+				final double centroid = ((int) (gate.getCentroid() * 100.0)) / 100.0;
+				final int lowerLimit = gate.getLimits1d()[0];
+				final int upperLimit = gate.getLimits1d()[1];
+				msgHandler.messageOut("Gate: " + gate.getName() + ", Ch. "
+						+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
+				msgHandler.messageOut("  Area = " + area + ", Centroid = "
+						+ centroid, MessageHandler.END);
+			} else {
+				msgHandler
+						.messageOut("Gate " + gate.getName(),
+								MessageHandler.NEW);
+				msgHandler.messageOut(", Area = " + area, MessageHandler.END);
+			}
+		} catch (Exception de) {
+			String classname = getClass().getName() + "--";
+			msgHandler.errorOutln(classname + methodname + de.getMessage());
+		}
+	}
+
+	/* non-javadoc
      */
     private void refreshGateSelection(Gate gate, TreePath histTreePath){
     	/* Iterate over all nodes below histogram node. */
