@@ -1,5 +1,11 @@
 package jam.io.hdf;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Abstract class to represent a generic HDF data object.
  *
@@ -9,6 +15,14 @@ package jam.io.hdf;
  */
 public abstract class DataObject {
 
+	/**
+	 * List of objects in the file.
+	 */
+	private static List objectList=Collections.synchronizedList(new ArrayList());
+	private static Map tagRefMap=Collections.synchronizedMap(new HashMap());
+	
+	static short refCount;
+	
 	/**
 	 * contains the 2-byte tag for the data type
 	 */
@@ -155,6 +169,108 @@ public abstract class DataObject {
 	 */
 	protected HDFile file;
 
+	static List getDataObjectList() {
+		return objectList;
+	}
+	static void clear() {
+		objectList.clear();
+		tagRefMap.clear();
+		refCount =0;
+
+	}
+	/**
+	 * <p>Adds the data object to the file.  The reference number is 
+	 * implicitly assigned at this time as the index number in the 
+	 * internal <code>Vector objectList</code>.  A typical call should 
+	 * look like:</p>
+	 * <blockquote><code>hdf = new hdfFile(outfile, "rw");<br>
+	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
+	 * <p>Each call causes setOffsets to be called.</p>
+	 *
+	 * @param data data object
+	 * @param useFileDefault	if true, automatically assigns ref number, 
+	 * else lets object assign its own
+	 * @see	#setOffsets()
+	 */
+	static void addDataObject(DataObject data, boolean useFileDefault) {
+		if (useFileDefault) {
+			data.setRef(getUniqueRef());
+		}
+		
+		final Integer key =data.getKey();
+		if (!tagRefMap.containsKey(key)){
+			tagRefMap.put(key, data);
+			objectList.add(data);
+		}
+	}
+	/**
+	 * @return object in file with the matching tag and ref
+	 * @param t tag of HDF object
+	 * @param r <em>unique</em> reference number in file
+	 */
+	public static DataObject getObject(short t, short r) {
+		DataObject match = null;
+		final Integer key =calculateKey(t, r);		
+		if (tagRefMap.containsKey(key)){
+			match=(DataObject)tagRefMap.get(key);
+		}
+		return match;
+	}
+	static void changeRefKey(DataObject d, short refOld) {
+		
+		short tag =d.getTag();
+		short refNew=d.getRef();
+		 Integer key = calculateKey(tag, refOld);
+		 if (tagRefMap.containsKey(key)) {
+		 	tagRefMap.remove(key);
+		 }
+		 Integer keyNew = calculateKey(tag, refNew);
+		tagRefMap.put(key, d);
+		/*
+		final Short tag=d.getTagKey();
+		final Map refs=(Map)tagRefMap.get(tag);
+		if (refs.containsKey(old)){
+			refs.remove(old);
+		}
+		// if old not there, we were just called as the object was being
+		 // added to the file...no worries 
+		final Short ref=d.getRefKey();
+		if (!refs.containsKey(ref)){
+			refs.put(ref,d);
+		} else {
+			throw new IllegalStateException("Trying to put: "+ref+
+			"for tag:"+tag+" when one already exists.");
+		}
+		*/
+	} 
+	
+	/**
+	 * 
+	 * The HDF standard only requires that for a particular tag type, each instance have a
+	 * unique ref.
+	 * ----------------NO TRUE ANY LONGER-----------------  
+	 * Since our files are not expected to contain more than
+	 * several dozen objects, 
+	 * I take the simplest approach of simply
+	 * assigning the index number + 1 from the objectList.
+	 * ----------------NO TRUE ANY LONGER-----------------
+	 * 
+	 * Just adds one to ref Count
+	 * 
+	 * @return a reference number for the given HDF object
+	 * @param refs the map for a given tag type
+	 */
+	static short getUniqueRef() {
+		//Just add 1, set to 1 every time class created 
+		return ++refCount;
+		/*
+		while (refs.containsKey(new Short(rval))){
+			rval++;
+		}
+		return rval;
+		*/
+	}
+	
 	/**
 	 * Creates a new HDF DataObject, belonging to the specified <code>HDFile</code>.  My approach is to have a 
 	 * separate HDFile object for each physical HDF file on disk.  Each <code>HDFile</code> object
@@ -166,7 +282,7 @@ public abstract class DataObject {
 	DataObject(HDFile file, short tag) {
 		this.file = file;
 		setTag(tag);
-		file.addDataObject(this, true); //ref gets set in this call
+		addDataObject(this, true); //ref gets set in this call
 	}
 
 	/* non-javadoc:
@@ -183,7 +299,7 @@ public abstract class DataObject {
 		setTag(t);
 		setRef(r);
 		this.bytes = data;
-		file.addDataObject(this, false);
+		addDataObject(this, false);
 	}
 
 	/* non-javadoc:
@@ -200,7 +316,7 @@ public abstract class DataObject {
 		setRef(reference);
 		this.offset = offset;
 		this.length = length;
-		file.addDataObject(this, false);
+		addDataObject(this, false);
 	}
 	
 	private final void setTag(short t){
@@ -265,7 +381,7 @@ public abstract class DataObject {
 			refKey=new Short(newref);
 			/* only call "change" if this isn't the first time */
 			if (!haveNotSetRef){	
-				file.changeRefKey(this,oldref);
+				changeRefKey(this,oldref);
 			}
 			haveNotSetRef=false;
 		}
@@ -301,6 +417,11 @@ public abstract class DataObject {
 		return key;
 	}
 
+	static Integer calculateKey(short tag, short ref){
+		int key= (((int)tag)<<16)+(int)ref;
+		
+		return new Integer(key);
+	}
 
 	/* non-javadoc:
 	 * Gives the handle to the file holding this object.

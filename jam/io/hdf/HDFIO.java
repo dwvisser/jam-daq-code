@@ -302,7 +302,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                     setProgress(pm, progress);
                 }
             }
-            if (hasContents(gates)) {
+            if (hasContents(gates)) {   
                 addGateSection();
                 message.append(", ").append(gates.size()).append(" gates");
                 final Iterator temp = gates.iterator();
@@ -995,7 +995,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 final VdataDescription VH = (VdataDescription) (in.ofType(
                         currVG.getObjects(), DataObject.DFTAG_VH).get(0));
                 if (VH != null) {
-                    final Vdata VS = (Vdata) (in.getObject(DataObject.DFTAG_VS,
+                    final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS,
                             VH.getRef()));
                     //corresponding VS
                     final int numRows = VH.getNumRows();
@@ -1004,8 +1004,9 @@ public class HDFIO implements DataIO, JamHDFFields {
                             annotations, currVG.getTag(), currVG.getRef())
                             .getNote();
                     if (mode.isOpenMode()) {
-                        final Histogram h = Histogram.getHistogram(su
-                                .makeLength(hname, Histogram.NAME_LENGTH));
+                    	String groupName = Group.getCurrentGroup().getName();
+                    	String histFullName = groupName+"/"+su.makeLength(hname, Histogram.NAME_LENGTH);
+                        final Histogram h = Histogram.getHistogram(histFullName);
                         g = h == null ? null : new Gate(gname, h);
                     } else { //reload
                         g = Gate
@@ -1089,7 +1090,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         /* only the "scalers" VH (only one element) in the file */
         if (VH != null) {
             /* get the VS corresponding to the given VH */
-            final Vdata VS = (Vdata) (in.getObject(DataObject.DFTAG_VS, VH
+            final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH
                     .getRef()));
             final int numScalers = VH.getNumRows();
             sb.append(", ").append(numScalers).append(" scalers");
@@ -1170,7 +1171,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         /* only the "parameters" VH (only one element) in the file */
         if (VH != null) {
             /* Get corresponding VS for this VH */
-            final Vdata VS = (Vdata) (in.getObject(DataObject.DFTAG_VS, VH
+            final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH
                     .getRef()));
             final int numParameters = VH.getNumRows();
             sb.append(", ").append(numParameters).append(" parameters");

@@ -80,7 +80,7 @@ final class NumericalDataGroup extends DataObject {
 			for (i = 0; i < numItems; i++) {
 				t = dis.readShort();
 				r = dis.readShort();
-				addDataObject(file.getObject(t, r));
+				addDataObject(getObject(t, r));
 				//look up tag/ref in file and add object
 			}
 		} catch (IOException e) {

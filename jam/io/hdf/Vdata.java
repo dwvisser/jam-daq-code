@@ -48,7 +48,7 @@ public final class Vdata extends DataObject {
 	
 	Vdata(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
-		description = (VdataDescription) (hdf.getObject(DFTAG_VH, reference));
+		description = (VdataDescription) (getObject(DFTAG_VH, reference));
 		description.interpretBytes();
 		nfields = description.getNumFields();
 		nvert = description.getNumRows();

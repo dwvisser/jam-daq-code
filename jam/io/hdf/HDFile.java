@@ -37,15 +37,15 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 * List of objects in the file.
 	 */
-	private transient List objectList=Collections.synchronizedList(new ArrayList());
-	private transient Map tagRefMap=Collections.synchronizedMap(new HashMap());
+	//private transient List objectList=Collections.synchronizedList(new ArrayList());
+	//private transient Map tagRefMap=Collections.synchronizedMap(new HashMap());
 
 	/**
 	 * variable for marking position in file
 	 */
 	private transient long mark = 0;
 
-	private short refCount;
+
 
 	private transient File file; //File object corresponding to this object
 
@@ -60,7 +60,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public HDFile(File file, String mode) throws HDFException, IOException {
 		super(file, mode);
-		refCount=0;
+		DataObject.clear();
 		this.file = file;
 		if ("rw".equals(mode)) { //Saving a file
 			writeHeader();
@@ -110,6 +110,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		//final int DDblockSize = 2 + 4 + 12 * objectList.size();
 		final int initialOffset = ddBlockSize() + 4; //add in HDF file header
 		int counter = initialOffset;
+		List objectList = DataObject.getDataObjectList();
 		final Iterator temp = objectList.iterator();
 		while (temp.hasNext()) {
 			final DataObject ob = (DataObject) (temp.next());
@@ -122,6 +123,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	    /* The size of the DD block. */
 		/* numDD's + offset to next (always 0 here) + size*12 for
 		 * tag/ref/offset/length info */
+		List objectList = DataObject.getDataObjectList();
 	    return 2 + 4 + 12 * objectList.size();
 	}
 
@@ -181,86 +183,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return intNT;
 	}
 
-	/**
-	 * <p>Adds the data object to the file.  The reference number is 
-	 * implicitly assigned at this time as the index number in the 
-	 * internal <code>Vector objectList</code>.  A typical call should 
-	 * look like:</p>
-	 * <blockquote><code>hdf = new hdfFile(outfile, "rw");<br>
-	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
-	 * <p>Each call causes setOffsets to be called.</p>
-	 *
-	 * @param data data object
-	 * @param useFileDefault	if true, automatically assigns ref number, 
-	 * else lets object assign its own
-	 * @see	#setOffsets()
-	 */
-	void addDataObject(DataObject data, boolean useFileDefault) {
-		if (useFileDefault) {
-			data.setRef(getUniqueRef());
-		}
-		
-		final Integer key =data.getKey();
-		if (!tagRefMap.containsKey(key)){
-			tagRefMap.put(key, data);
-			objectList.add(data);
-		}
-	}
 
-	/**
-	 * 
-	 * The HDF standard only requires that for a particular tag type, each instance have a
-	 * unique ref.
-	 * ----------------NO TRUE ANY LONGER-----------------  
-	 * Since our files are not expected to contain more than
-	 * several dozen objects, 
-	 * I take the simplest approach of simply
-	 * assigning the index number + 1 from the objectList.
-	 * ----------------NO TRUE ANY LONGER-----------------
-	 * 
-	 * Just adds one to ref Count
-	 * 
-	 * @return a reference number for the given HDF object
-	 * @param refs the map for a given tag type
-	 */
-	private short getUniqueRef() {
-		//Just add 1, set to 1 every time class created 
-		return ++refCount;
-		/*
-		while (refs.containsKey(new Short(rval))){
-			rval++;
-		}
-		return rval;
-		*/
-	}
 	
-	void changeRefKey(DataObject d, short refOld) {
-		
-		short tag =d.getTag();
-		short refNew=d.getRef();
-		 Integer key = calculateKey(tag, refOld);
-		 if (tagRefMap.containsKey(key)) {
-		 	tagRefMap.remove(key);
-		 }
-		 Integer keyNew = calculateKey(tag, refNew);
-		tagRefMap.put(key, d);
-		/*
-		final Short tag=d.getTagKey();
-		final Map refs=(Map)tagRefMap.get(tag);
-		if (refs.containsKey(old)){
-			refs.remove(old);
-		}
-		// if old not there, we were just called as the object was being
-		 // added to the file...no worries 
-		final Short ref=d.getRefKey();
-		if (!refs.containsKey(ref)){
-			refs.put(ref,d);
-		} else {
-			throw new IllegalStateException("Trying to put: "+ref+
-			"for tag:"+tag+" when one already exists.");
-		}
-		*/
-	} 
 
 	/**
 	 * @return the existing valid SDD type for the histogram, 
@@ -317,6 +241,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException unrecoverable errror
 	 */
 	synchronized void writeDataDescriptorBlock() throws HDFException {
+		List objectList = DataObject.getDataObjectList();
 		try {
 			seek(4); //skip header
 			writeShort(objectList.size()); //number of DD's
@@ -342,6 +267,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException thrown if err occurs during file write
 	 */
 	void writeAllObjects(final ProgressMonitor pm) throws HDFException {
+		List objectList = DataObject.getDataObjectList();
 		pm.setMaximum(objectList.size());
 		int progress=1;
 		pm.setProgress(progress);
@@ -371,6 +297,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readObjects() throws HDFException {
+		List objectList = DataObject.getDataObjectList();
 		try {
 			seek(4);
 			boolean doAgain = true;
@@ -450,19 +377,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 
-	/**
-	 * @return object in file with the matching tag and ref
-	 * @param t tag of HDF object
-	 * @param r <em>unique</em> reference number in file
-	 */
-	public DataObject getObject(short t, short r) {
-		DataObject match = null;
-		final Integer key =calculateKey(t, r);		
-		if (tagRefMap.containsKey(key)){
-			match=(DataObject)tagRefMap.get(key);
-		}
-		return match;
-	}
 	
 	/**
 	 *  @exception IOException unrecoverable error
@@ -511,7 +425,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public List ofType(final short tagType) {
 		final List rval=new ArrayList();
-		
+		List objectList = DataObject.getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()){
 			DataObject dataObject=(DataObject)iter.next();
@@ -573,11 +487,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return filter.accept(getFile());
 	}
 	
-	protected Integer calculateKey(short tag, short ref){
-		int key= (((int)tag)<<16)+(int)ref;
-		
-		return new Integer(key);
-	}
 	
 	/**
 	 * First, calls <code>super.close()</code>, then clears collections of temporary objects used
@@ -588,6 +497,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void close() throws IOException{
 		super.close();
+		List objectList = DataObject.getDataObjectList();
 		for (Iterator it=objectList.iterator(); it.hasNext();){
 			DataObject ob=(DataObject)it.next();
 			ob.bytes=null;
@@ -595,10 +505,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			ob.refKey=null;
 			ob.tagKey=null;
 		}
-		objectList.clear();
-		tagRefMap.clear();
-		objectList=null;
-		tagRefMap=null;
 		intNT=null;
 		doubleNT=null;
 	}

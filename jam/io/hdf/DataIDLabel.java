@@ -65,7 +65,7 @@ final class DataIDLabel extends DataObject {
 			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
 			label = StringUtilities.instance().getASCIIstring(temp);
-			object = file.getObject(tag, ref);
+			object = getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem interpreting DIL.",e);

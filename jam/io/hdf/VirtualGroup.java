@@ -132,7 +132,7 @@ final class VirtualGroup extends DataObject {
 			dis.read(temp);
 			type = util.getASCIIstring(temp);
 			for (i = 0; i < numItems; i++) {
-				addDataObject(file.getObject(tags[i], refs[i]));
+				addDataObject(getObject(tags[i], refs[i]));
 			}
 			//rest of element has no useful information
 		} catch (IOException e) {

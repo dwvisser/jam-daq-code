@@ -250,7 +250,7 @@ public final class ScalerScan implements JamHDFFields {
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
-				(Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
+				(Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH.getRef()));
 			final int numScalers = VH.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -279,7 +279,7 @@ public final class ScalerScan implements JamHDFFields {
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
-				(Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
+				(Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH.getRef()));
 			//corresponding VS
 			final int numScalers = VH.getNumRows();
 			values = new int[numScalers];

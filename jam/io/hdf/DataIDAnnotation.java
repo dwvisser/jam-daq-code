@@ -72,7 +72,7 @@ final class DataIDAnnotation extends DataObject {
 			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
 			note = StringUtilities.instance().getASCIIstring(temp);
-			object = file.getObject(tag, ref);
+			object = getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem interpreting DIA.", e);

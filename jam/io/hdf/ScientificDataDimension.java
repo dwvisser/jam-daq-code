@@ -90,7 +90,7 @@ final class ScientificDataDimension extends DataObject {
 			numberTag = dis.readShort();
 			numberRef = dis.readShort();
 			numberType =
-				((NumberType) file.getObject(numberTag, numberRef)).getType();
+				((NumberType) getObject(numberTag, numberRef)).getType();
 			/* We don't bother reading the scales */
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(null,ioe.getMessage(),
