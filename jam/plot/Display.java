@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.print.PageFormat;
 import javax.swing.*;
 import java.util.*;
+import java.net.*;
 import jam.global.*;
 import jam.data.*;
 
@@ -23,7 +24,7 @@ public class Display
 	/**
 	 * Enumeration of the various preference types for displaying
 	 * histograms.
-	 * 
+	 *
 	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
 	 * @see #AUTO_IGNORE_ZERO
 	 * @see #AUTO_IGNORE_FULL
@@ -39,32 +40,32 @@ public class Display
 		 * If true, ignore channel 0 when autoscaling the plot.
 		 */
 		static public Preferences AUTO_IGNORE_ZERO = new Preferences(0);
-		
+
 		/**
 		 * If true, ignore the last channel when autoscaling the plot.
 		 */
 		static public Preferences AUTO_IGNORE_FULL = new Preferences(1);
-		
+
 		/**
 		 * If true, use black-on-white for displaying the plot.
 		 */
 		static public Preferences WHITE_BACKGROUND = new Preferences(2);
-		
+
 		/**
 		 * If true, use white-on-black for displaying the plot.
 		 */
 		static public Preferences BLACK_BACKGROUND = new Preferences(3);
-		
+
 		/**
 		 * If true, automatically find peaks and display their centroids.
 		 */
 		static public Preferences AUTO_PEAK_FIND = new Preferences(4);
-		
+
 		/**
 		 * If true, show a continuous gradient color scale on 2d plots.
 		 */
 		static public Preferences CONTINUOUS_2D_LOG = new Preferences(5);
-		
+
 		private Preferences(int type) {
 			this.type = type;
 		}
@@ -112,7 +113,7 @@ public class Display
 		final int minsize=400;
 		setMinimumSize(new Dimension(minsize,minsize));
 		setLayout(new BorderLayout());
-		/* setup up middle panel containing plots panel to holds 1d and 2d 
+		/* setup up middle panel containing plots panel to holds 1d and 2d
 		 * plots and swaps them */
 		plotswap = new JPanel();
 		plotswapLayout = new CardLayout();
@@ -147,8 +148,8 @@ public class Display
 				newHistogram();
 			}
 			overlayState = false;
-			showPlot(currentHist); //changes local currentPlot   
-			final boolean oneD=currentHist.getDimensionality() == 1;         
+			showPlot(currentHist); //changes local currentPlot
+			final boolean oneD=currentHist.getDimensionality() == 1;
 			bgoto.setEnabled(oneD);
 			brebin.setEnabled(oneD);
 			bnetarea.setEnabled(oneD);
@@ -269,7 +270,7 @@ public class Display
 
 	/**
 	 * Display a gate.
-	 * 
+	 *
 	 * @param gate The gate to display.
 	 */
 	public void displayGate(Gate gate) {
@@ -280,7 +281,7 @@ public class Display
 				"Display.displayGate() DataException: " + de.getMessage());
 		}
 	}
-	
+
 	public void setRenderForPrinting(boolean rfp, PageFormat pf){
 		currentPlot.setRenderForPrinting(rfp,pf);
 	}
@@ -289,7 +290,7 @@ public class Display
 		return currentPlot.getComponentPrintable(RunInfo.runNumber,
 		JamStatus.instance().getDate());
 	}
-	
+
 	/**
 	 * Do a command sent in as a message.
 	 */
@@ -468,6 +469,13 @@ public class Display
 	 */
 	public void addToolbarAction() {
 		final ClassLoader cl = this.getClass().getClassLoader();
+		URL urlZoom = cl.getResource("toolbarButtonGraphics/general/Zoom24.gif");
+		URL urlZoomIn =cl.getResource("toolbarButtonGraphics/general/ZoomIn24.gif");
+		URL urlZoomOut = cl.getResource("toolbarButtonGraphics/general/ZoomOut24.gif");
+		if (urlZoom==null||urlZoomIn==null||urlZoomOut==null) {
+			JOptionPane.showMessageDialog(null, "Can't load resource: (Zoom24|ZoomIn24|ZoomOut24).gif");
+		}
+
 		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
 		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
 		add(ptoolbar, BorderLayout.WEST);
@@ -504,9 +512,8 @@ public class Display
 			view.add(viewCenter,BorderLayout.CENTER);
 			viewCenter.add(firstPanel,BorderLayout.NORTH);
 			final JPanel zoomPanel = new JPanel(new GridLayout(2,2));
-			final Icon i_expand =
-				new ImageIcon(
-					cl.getResource("toolbarButtonGraphics/general/Zoom24.gif"));
+			final Icon i_expand = new ImageIcon(urlZoom);
+
 			final JButton bexpand = new JButton(i_expand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand. Set new display limits."));
 			bexpand.setActionCommand(Action.EXPAND);
@@ -518,20 +525,14 @@ public class Display
 				"Set display limits to full histogram extents.");
 			bfull.addActionListener(action);
 			zoomPanel.add(bfull);
-			final Icon i_zoomin =
-				new ImageIcon(
-					cl.getResource(
-						"toolbarButtonGraphics/general/ZoomIn24.gif"));
+			final Icon i_zoomin = new ImageIcon(urlZoomIn);
 			final JButton bzoomin = new JButton(i_zoomin);
 			bzoomin.setToolTipText(getHTML(
 			"<u>Z</u>oom<u>i</u>n the display limits."));
 			bzoomin.setActionCommand(Action.ZOOMIN);
 			bzoomin.addActionListener(action);
 			zoomPanel.add(bzoomin);
-			final Icon i_zoomout =
-				new ImageIcon(
-					cl.getResource(
-						"toolbarButtonGraphics/general/ZoomOut24.gif"));
+			final Icon i_zoomout = new ImageIcon(urlZoomOut);
 			final JButton bzoomout = new JButton(i_zoomout);
 			bzoomout.setToolTipText(getHTML(
 			"<u>Z</u>oom<u>o</u>ut the display limits."));
@@ -588,7 +589,7 @@ public class Display
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String getHTML(String body){
 		final StringBuffer rval=new StringBuffer("<html><body>").append(
 		body).append("</html></body>");
