@@ -19,15 +19,29 @@ public class Display extends JPanel implements Displayer, CommandListener,
 Observer {
 
     /** for preference ignore channel zero */
-    public static final int AUTO_IGNORE_ZERO=0;
+    //public static final int AUTO_IGNORE_ZERO=0;
     /** for preference ignore full scale channel  */
-    public static final int AUTO_IGNORE_FULL=1;
+    //public static final int AUTO_IGNORE_FULL=1;
     /** for preference white background  */
-    public static final int WHITE_BACKGROUND=5;
+    //public static final int WHITE_BACKGROUND=5;
     /** for preference black background  */
-    public static final int BLACK_BACKGROUND=6;
+    //public static final int BLACK_BACKGROUND=6;
     
-    public static final int AUTO_PEAK_FIND=11;
+    //public static final int AUTO_PEAK_FIND=11;
+    
+    static public class Preferences{
+    	private int type;
+    	
+    	static public Preferences AUTO_IGNORE_ZERO= new Preferences(0);
+		static public Preferences AUTO_IGNORE_FULL= new Preferences(1);
+		static public Preferences WHITE_BACKGROUND= new Preferences(2);
+		static public Preferences BLACK_BACKGROUND= new Preferences(3);
+		static public Preferences AUTO_PEAK_FIND= new Preferences(4);
+    	static public Preferences CONTINUOUS_2D_LOG= new Preferences(5);
+    	private Preferences(int type){
+    		this.type=type;
+    	}
+    }
 
     private MessageHandler msgHandler;          //output for messages
     private Broadcaster broadcaster;          //broadcaster if needed
@@ -298,22 +312,22 @@ Observer {
      * @param preference The preference to set see
      * @param state   The state of the preference if applicable
      */
-    public void setPreference(int preference, boolean state) {
-        if (preference==AUTO_IGNORE_ZERO){
+    public void setPreference(Preferences preference, boolean state) {
+        if (preference==Preferences.AUTO_IGNORE_ZERO){
             plot1d.setIgnoreChZero(state);
             plot2d.setIgnoreChZero(state);
-        } else if (preference==AUTO_IGNORE_FULL){
+        } else if (preference==Preferences.AUTO_IGNORE_FULL){
             plot1d.setIgnoreChFull(state);
             plot2d.setIgnoreChFull(state);
-        } else if (preference==BLACK_BACKGROUND) {
+        } else if (preference==Preferences.BLACK_BACKGROUND) {
             plot1d.setColorMode(PlotColorMap.WHITE_ON_BLACK);
             plot2d.setColorMode(PlotColorMap.WHITE_ON_BLACK);
             displayHistogram(currentHist);
-        } else if (preference==WHITE_BACKGROUND){
+        } else if (preference==Preferences.WHITE_BACKGROUND){
             plot1d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
             plot2d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
             displayHistogram(currentHist);
-        } else if (preference==AUTO_PEAK_FIND){
+        } else if (preference==Preferences.AUTO_PEAK_FIND){
         	plot1d.setPeakFind(state);
         	displayHistogram(currentHist);
         }

@@ -241,9 +241,9 @@ public class JamCommand
 						selectGate(gate);
 				}
 			} else if (incommand == "Black Background") {
-				display.setPreference(Display.BLACK_BACKGROUND, true);
+				display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
 			} else if (incommand == "White Background") {
-				display.setPreference(Display.WHITE_BACKGROUND, true);
+				display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
 			} else if (incommand == "newclear") {
 				jamMain.setSortMode(JamMain.NO_SORT);
 				DataBase.clearAllLists();
@@ -434,9 +434,9 @@ public class JamCommand
 		}
 		String text = ((AbstractButton) item).getText();
 		if (text == "Ignore zero channel on autoscale") {
-			display.setPreference(Display.AUTO_IGNORE_ZERO, item.isSelected());
+			display.setPreference(Display.Preferences.AUTO_IGNORE_ZERO, item.isSelected());
 		} else if (text == "Ignore max channel on autoscale") {
-			display.setPreference(Display.AUTO_IGNORE_FULL, item.isSelected());
+			display.setPreference(Display.Preferences.AUTO_IGNORE_FULL, item.isSelected());
 		} else if (text == "Verbose front end") {
 			frontEnd.verbose(item.isSelected());
 			JamProperties.setProperty(
@@ -450,7 +450,7 @@ public class JamCommand
 		} else if (text == "Autoscale on Expand/Zoom") {
 			jam.plot.Action.setAutoOnExpand(item.isSelected());
 		} else if (text.equals("Automatic peak find")) {
-			display.setPreference(Display.AUTO_PEAK_FIND, item.isSelected());
+			display.setPreference(Display.Preferences.AUTO_PEAK_FIND, item.isSelected());
 		}
 	}
 
