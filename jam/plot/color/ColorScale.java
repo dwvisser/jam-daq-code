@@ -11,4 +11,6 @@ import java.awt.Color;
  */
 public interface ColorScale {
 	Color getColor(double counts);
+	
+	void setRange(int min, int max);
 }
