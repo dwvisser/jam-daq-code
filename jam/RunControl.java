@@ -63,7 +63,7 @@ public class RunControl implements Controller, ActionListener {
     private NetDaemon		netDaemon;
     private StorageDaemon	storageDaemon;
     private DiskDaemon		diskDaemon;
-    private TapeDaemon		tapeDaemon;
+    //private TapeDaemon		tapeDaemon;
     private SortDaemon		sortDaemon;
 
     /**
@@ -245,9 +245,9 @@ public class RunControl implements Controller, ActionListener {
         if (storageDaemon instanceof DiskDaemon) {
             diskDaemon=(DiskDaemon)storageDaemon;
             device=DISK;
-        } else if (storageDaemon instanceof TapeDaemon) {
+        /*} else if (storageDaemon instanceof TapeDaemon) {
             tapeDaemon=(TapeDaemon)storageDaemon;
-            device=TAPE;
+            device=TAPE;*/
         } else if (storageDaemon == null) {//case if front end is taking care of storing events
             device=FRONT_END;
         } else {
@@ -336,11 +336,11 @@ public class RunControl implements Controller, ActionListener {
             }
             diskDaemon.openEventOutputFile(dataFile);
             diskDaemon.writeHeader();
-        } else if (device==TAPE) {//saving to tape
+        } /*else if (device==TAPE) {//saving to tape
             //FIXME -- tape option doesn't work right now 15-Sep-2002
             //tapeDaemon.openEventOutputFile(dataFile);
             tapeDaemon.writeHeader();
-        } 
+        } */
         if (checkHistogramZero.isSelected()) {// should we zero histograms
             histogramControl.zeroAll();
         }
@@ -445,9 +445,9 @@ public class RunControl implements Controller, ActionListener {
             if (device==DISK){
                 diskDaemon.closeEventOutputFile();
                 console.messageOutln("Event file closed "+dataFile.getPath());
-            } else if(device==TAPE) {
+            /*} else if(device==TAPE) {
                 tapeDaemon.closeEventOutputFile();
-                console.messageOutln(" Tape record ended");
+                console.messageOutln(" Tape record ended");*/
             } else  if (device ==FRONT_END) {
             	System.out.println(getClass().getName()+".atWriteEnd()"+
             	" device=FRONT_END not implemented");
