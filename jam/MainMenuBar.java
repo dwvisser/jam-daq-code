@@ -34,7 +34,6 @@ import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.File;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -45,7 +44,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -114,7 +112,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
-
+	/* Remove KBS
 	class SaveHDF extends AbstractAction {	
 		SaveHDF(){
 			super("Save (hdf)");
@@ -129,7 +127,8 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}			
 		}
 	}
-
+	*/
+	/* Remove KBS
 	class SaveAsHDF extends AbstractAction {	
 		SaveAsHDF(){
 			super("Save as (hdf)...");
@@ -142,7 +141,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
-
+	*/
 /* Remove KBS
 	class OpenHDF extends AbstractAction {	
 		OpenHDF(){
@@ -280,14 +279,16 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private MessageHandler console;
 	final private JamCommand jamCommand;
 	
-	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");	
+	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
+	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
+	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
 	final private JMenuItem histogramNew = new JMenuItem("New...");
 	final private JMenuItem zeroHistogram = new JMenuItem("Zero...");
 	final private JMenu calHist = new JMenu("Calibrate");
 	final private JMenuItem projectHistogram = new JMenuItem("Projections...");
 	final private JMenuItem manipHistogram = new JMenuItem("Combine...");
 	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
-	final private SaveHDF saveHDF;
+
 	//Remove KBS final private OpenHDF openhdf;
 	final private ReloadHDF reloadhdf;
 	final private AddHDF addHDF=new AddHDF();
@@ -353,7 +354,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			newClear = new JMenuItem("New");
 			
 			reloadhdf = new ReloadHDF();
-			saveHDF = new SaveHDF();
+			//KBS saveHDF = new SaveHDF();
 			impHist = new JMenu("Import");
 			runacq = new JMenuItem("Run...");
 			sortacq = new JMenuItem("Sort...");
@@ -378,12 +379,19 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		file.add(reloadhdf).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
 		file.add(addHDF);
+		
+		saveHDF.setActionCommand(CommandNames.SAVE_HDF);	
+		saveHDF.addActionListener(jamCommand);	
 		saveHDF.setEnabled(false);
-		saveHDF.setEnabled(false);
-		file.add(saveHDF).setAccelerator(
-		KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
-		final SaveAsHDF saveAsHDF=new SaveAsHDF();
-		file.add(saveAsHDF); 
+		saveHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
+		file.add(saveHDF);		
+
+		saveAsHDF.setActionCommand(CommandNames.SAVE_AS_HDF);	
+		saveAsHDF.addActionListener(jamCommand);	
+		//saveAsHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
+		file.add(saveAsHDF);		
+
+		 
 		final JMenuItem special=new JMenu("Special");
 		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram...");
 		openSelectdHist.setActionCommand("openselectedhist");		
