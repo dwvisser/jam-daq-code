@@ -11,39 +11,56 @@ import java.util.List;
  *
  */
 public interface  DataIO {
+    
     /**
-     *	write out to a given file all options true
-     *
-     * @param file to write to
-     */ 			        
+     * Writes out to a specified file all the currently held spectra, gates,
+     * scalers, and parameters.
+     * 
+     * @param file
+     *            to write to
+     */
     void writeFile(File file);
 
     /**
-     *	write out a gorup to a given file all options true
-     *
-     * @param file to write to
-     * @param group of hisotgrams to write
-     */ 			        
+     * Writes out to a specified file all the currently held spectra, gates,
+     * scalers, and parameters associated with the given group.
+     * 
+     * @param file
+     *            to write to
+     * @param group to writ out
+     */
     void writeFile(File file, Group group);
     
     /**
-     *	write out to a given file all options true
-     *
+     * Write out a file with the specified histograms and 
+     * all gates that go with them, plus scalers and parameters.
+     * 
      * @param file to write to
-     * @param histogramList list of hisotgrams to write
-     */ 			        
-    void writeFile(File file, List histogramList);
+     * @param histList list of histograms to write
+     */
+    void writeFile(File file, List histList);
     
     /**
-     *	write out to a given file
-     *
-     * @param hist whether to write histograms
-     * @param gate whether to write gates
-     * @param scaler whether to write scalers
-     * @param params whether to write parameters
-     * @param file to write to
-     */ 			        
-    void writeFile(boolean hist, boolean gate, boolean scaler, boolean params, File file);
+     * Writes out (to a specific file) the currently held spectra, gates, and
+     * scalers, subject to the options given. Sets separately which data
+     * writeFile should actually output. Not writing histograms when you are
+     * saving tape data can significantly save time when you have many 2-d
+     * spectra.
+     * 
+     * @param hist
+     *            if true, Histograms will be written
+     * @param gate
+     *            if true, Gates will be written
+     * @param scaler
+     *            if true, scaler values will be written
+     * @param params
+     *            if true, parameter values will be written
+     * @param file
+     *            to write to
+     */
+    //FIXME KBS old write remove when new writes tested
+    void writeFile(boolean hist, boolean gate, boolean scaler, boolean params,
+            File file);
         
         
     /**
