@@ -46,7 +46,7 @@
     <target name="jar" depends="compile">
         <jar jarfile="${build.dir}/Jam.jar"
             basedir="${copy.dir}"
-            excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
+            excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project,classes/**/*,sampledata/*"
         />    
     </target>
 	
