@@ -49,7 +49,7 @@ class Help {
 		final JPanel pcenter = new JPanel(new GridLayout(0, 1));
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
-			new JLabel("Jam v" + JamMain.getVersion(), JLabel.CENTER));
+			new JLabel("Jam v" + Version.getName(), JLabel.CENTER));
 		pcenter.add(new JLabel("by", JLabel.CENTER));
 		pcenter.add(
 			new JLabel(

@@ -129,7 +129,7 @@ public class JamConsole
 		textLog.setBackground(Color.white);
 		textLog.setForeground(Color.black);
 		textLog.setText(
-			"" + getTime() + ">Welcome to Jam v" + JamMain.getVersion());
+			"" + getTime() + ">Welcome to Jam v" + Version.getName());
 		JScrollPane jsp =
 			new JScrollPane(
 				textLog,
