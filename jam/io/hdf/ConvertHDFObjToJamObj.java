@@ -51,7 +51,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     List findGroups(FileOpenMode mode, List groupNames) throws HDFException {
     	final List groupList = new ArrayList();
         /* Get VirtualGroup that is root of all groups */
-        final VirtualGroup groupsInRoot = VirtualGroup.ofName(GROUP_SECT);
+        final VirtualGroup groupsInRoot = VirtualGroup.ofName(GROUP_SECTION);
         //Found root node
         if (groupsInRoot != null) {   	
             //Group iterator
@@ -83,21 +83,21 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 		return new Group(dataIDLabel.getLabel(), Group.Type.FILE);
 	}
 	
-    List findHistograms(VirtualGroup virtualGroupGroup, List histNames) {
-        final List histList = new ArrayList();
-        final Iterator histIter = virtualGroupGroup.getObjects().iterator();
-        while (histIter.hasNext()) {
-            final AbstractHData hData = (AbstractHData) histIter.next();
-            //Is a virtual group
-            if (hData.getTag() == AbstractHData.DFTAG_VG) {
-                //add to list if is a histogram goup
-                final VirtualGroup currentVGrp = (VirtualGroup) hData;
-                if (currentVGrp.getName().equals(HIST_TYPE)) {
-                    histList.add(currentVGrp);
-                }
-            }
-        }
-        return histList;
+	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) throws HDFException {
+    	final List histList = new ArrayList();    	
+    	 final Iterator histIter = virtualGroupGroup.getObjects().iterator();
+    	 while (histIter.hasNext()) {
+    	 	AbstractHData hData = (AbstractHData)histIter.next();
+        	//Is a virtual group
+        	if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+        		//add to list if is a histogram goup
+        		final VirtualGroup currentVGroup = (VirtualGroup) hData;
+        		if ( currentVGroup.getType().equals(HIST_TYPE) ) {
+        			histList.add(currentVGroup);
+        		} 
+        	}
+    	 }
+    	return histList;
     }
     
     /** 
@@ -365,8 +365,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 
     
     Histogram openHistogram(Group group, String name, String title, int number, 
-            Object histData, Object histErrorData) {
-        final Histogram histogram = Histogram.createHistogram(histData, name, title);
+            Object histData, Object histErrorData) throws HDFException {
+        final Histogram histogram = Histogram.createHistogram(group, histData, name, title);
         histogram.setNumber(number);
         if (histErrorData != null) {
             ((AbstractHist1D) histogram).setErrors((double [])histErrorData);

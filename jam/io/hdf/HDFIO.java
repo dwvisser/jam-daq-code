@@ -344,11 +344,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
     private void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
     	uiMessage="";
     	uiErrorMsg ="";
+
     	final SwingWorker worker = new SwingWorker() {
             public Object construct() {
             	try {
-            		//asyncReadFileGroup(infile, mode, histNames);
-            		asyncReadFile(infile, mode, histNames);
+            		asyncReadFileGroup(infile, mode, histNames);
+            		//asyncReadFile(infile, mode, histNames);
             	}catch (Exception e) {
             		uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
             		e.printStackTrace();
@@ -364,10 +365,13 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     msgHandler.errorOutln(uiErrorMsg);
             	}
             	//FIXME KBS should move to someplace else or have callback
-            	JamStatus STATUS=JamStatus.getSingletonInstance();            	
+            	JamStatus STATUS=JamStatus.getSingletonInstance();  
+            	STATUS.setSortMode(infile);
             	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();  	            	
         		AbstractControl.setupAll();
         		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        		//Set first group as current group
+        		Group.setCurrentGroup((Group)Group.getGroupList().get(0));
         		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);        		
         		STATUS.setCurrentHistogram(firstHist);
         		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
@@ -685,20 +689,21 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 
                 asyncMonitor.increment();                
                 
-                //Set group
+                //Set existing group to load hists to (if needed)
+                Group existingGroup=null;
                 if (mode == FileOpenMode.OPEN) {
                     DataBase.getInstance().clearAllLists();                    
-                    //Group.createGroup(infile.getName(), Group.Type.FILE);
                 } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
-                    Group.createGroup(infile.getName(), Group.Type.FILE);
+                   //NO OP 
                 } else if (mode == FileOpenMode.RELOAD) {
-                    final String sortName = JamStatus.getSingletonInstance()
-                            .getSortName();
-                    Group.setCurrentGroup(sortName);
-                } // else mode == FileOpenMode.ADD, so use current group
+                	existingGroup=Group.getSortGroup();
+                } else if (mode == FileOpenMode.ADD) {
+                	existingGroup=Group.getCurrentGroup();
+                }
+                
                 hdfToJam.setInFile(inHDF);
                 
-                converHDFToJam(mode);
+                convertHDFToJam(mode, existingGroup, infile.getName());
                 
                 //final int numHists =hdfToJam.convertHistograms(mode, histNames);
                 //final int numScalers = hdfToJam.convertScalers(mode);
@@ -749,7 +754,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @param mode
      * @throws HDFException
      */
-    private void converHDFToJam(FileOpenMode mode) throws HDFException {
+    private void convertHDFToJam(FileOpenMode mode, Group existingGroup, String fileName) throws HDFException {
 	    //Find groups	
 	    List groupVirtualGroups = hdfToJam.findGroups(mode, null);
 	    groupCount =groupVirtualGroups.size();
@@ -758,6 +763,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
 	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup);
+	    	if (mode==FileOpenMode.OPEN_ADDITIONAL) {
+	    		appendFileName(currentGroup, fileName);
+	    	}
 	        //Find histograms
 	    	List histVirtualGroups =hdfToJam.findHistograms(currentVGroup, null);
 	        //Loop over histograms
@@ -772,6 +780,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
 	    	 }
 	    }
 	    
+    }
+    private void appendFileName(Group group, String fileName) {
+    	group.setName(group.getName()+" ("+fileName+")");
     }
     /**
      * Read in an HDF file
@@ -1092,8 +1103,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     private VirtualGroup addGroupSection() {
     	VirtualGroup virtualGroup;
-       	virtualGroup = new VirtualGroup(GROUP_SECT, FILE_SECTION);
-        new DataIDLabel(virtualGroup, GROUP_SECT);
+       	virtualGroup = new VirtualGroup(GROUP_SECTION, FILE_SECTION);
+        new DataIDLabel(virtualGroup, GROUP_SECTION);
         return  virtualGroup;
     }
     

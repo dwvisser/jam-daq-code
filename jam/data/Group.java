@@ -178,7 +178,8 @@ public class Group {
         NAME_MAP.clear();
         LIST.clear();
         /* Cast needed because of overloaded method. */
-        createGroup(WORKING_NAME,Group.Type.TEMP);
+        //FIXME KBS
+        //createGroup(WORKING_NAME,Group.Type.TEMP);
         setCurrentGroup(WORKING_NAME);
         sortGroup=null;
     }
