@@ -270,10 +270,8 @@ public final class MultipleFileChooser extends JPanel {
 		return numFiles;
 	}
 	
-	/**
-	 * Select a file, browse for data files
-	 * @param selectDir
-	 * 		   
+	/* non-javadoc:
+	 * Select a file, browse for data files.
 	 */
 	private void selectFile(boolean selectFileOnly) {
 		int chooserMode;
