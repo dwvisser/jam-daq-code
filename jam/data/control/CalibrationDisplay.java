@@ -182,7 +182,7 @@ ItemListener, WindowListener {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName());
+                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" ");
                 if (command=="okcalib") {
                     dialogCalib.dispose();
                 }                

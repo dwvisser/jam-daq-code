@@ -275,7 +275,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                 fitText=calibFunction.fit(x,y);
                 currentHist.setCalibration(calibFunction);
                 broadcaster.broadcast(BroadcastEvent.REFRESH);
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName()+" with "+
+                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" with "+
                 fitText);
             } else {
                 msghdlr.errorOutln("Need at least 2 points [Calibrate]");
