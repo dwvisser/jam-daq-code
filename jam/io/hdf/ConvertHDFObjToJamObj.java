@@ -61,37 +61,35 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             final Iterator temp = hists.getObjects().iterator();
             // loop begin
             objectLoop: while (temp.hasNext()) {
-            	final VirtualGroup currentHistGroup = (VirtualGroup) (temp.next());
-            	convertHist(currentHistGroup, histNames, mode);
+            	final VirtualGroup currHistGrp = (VirtualGroup) (temp.next());
+            	convertHist(currHistGrp, histNames, mode);
             }
             //after loop
         }
         return numHists;
     }
     
-    private void convertHist(VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
-    	                   
+    private void convertHist(VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {              
             final NumericalDataGroup ndg;
             /* I check ndgErr==null to determine if error bars exist */
             NumericalDataGroup ndgErr = null;
             /* only the "histograms" VG (only one element) */
             final List tempVec = DataObject.ofType(histGroup.getObjects(),
                     DataObject.DFTAG_NDG);
-            final NumericalDataGroup[] numericalDataGroups = getNumericalGroups(tempVec);
-            if (numericalDataGroups.length == 1) {
-                ndg = numericalDataGroups[0]; //only one NDG -- the data
-            } else if (numericalDataGroups.length == 2) {
+            final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
+            if (dataGroups.length == 1) {
+                ndg = dataGroups[0]; //only one NDG -- the data
+            } else if (dataGroups.length == 2) {
                 if (DataIDLabel.withTagRef(DataObject.DFTAG_NDG,
-                        numericalDataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-                    ndg = numericalDataGroups[1];
-                    ndgErr = numericalDataGroups[0];
+                        dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+                    ndg = dataGroups[1];
+                    ndgErr = dataGroups[0];
                 } else {
-                    ndg = numericalDataGroups[0];
-                    ndgErr = numericalDataGroups[1];
+                    ndg = dataGroups[0];
+                    ndgErr = dataGroups[1];
                 }
             } else {
-            	ndg =null;
-            	throw new HDFException( "Invalid number of data groups (" + numericalDataGroups.length
+            	throw new HDFException( "Invalid number of data groups (" + dataGroups.length
                         + ") in VirtualGroup.");
             }
             final ScientificData sciData = (ScientificData) (DataObject
@@ -340,7 +338,6 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         } else if ( (histDim == 2) && (histNumType == NumberType.DOUBLE) ) {    
         	rval =sciData.getData2dD(inHDF, sizeX, sizeY);
         } else { 
-        	rval =null;
         	throw new HDFException("Unknown histogram data type");
         }
         return rval;

@@ -34,11 +34,11 @@ public class ExtensionFileFilter extends FileFilter {
     
     /**
      * Get the i'th extension.
-     * @param i index of extension
+     * @param index index of extension
      * @return three character file extension
      */
-    public String getExtension(int i){
-    	return extensions[i];
+    public String getExtension(int index){
+    	return extensions[index];
     }
     
 	/**
@@ -54,29 +54,29 @@ public class ExtensionFileFilter extends FileFilter {
     	for (int i=len-1; i >= 0;  i--){
     		extensions[i]=exts[i].toLowerCase();
     	}
-    	final StringBuffer sb=(descr==null) ? new StringBuffer() :
+    	final StringBuffer buffer=(descr==null) ? new StringBuffer() :
     	new StringBuffer(descr);
-    	sb.append(" (");
+    	buffer.append(" (");
 		for (int i=0; i < len;  i++){
-			sb.append("*.").append(extensions[i]);
-			if (i != (len-1)){
-				sb.append(", ");
+			buffer.append("*.").append(extensions[i]);
+			if (i == (len-1)){
+				buffer.append(')');
 			} else {
-				sb.append(')');
+				buffer.append(", ");
 			}
 		}
-		description=sb.toString();
+		description=buffer.toString();
     }
     
-    public boolean accept(File f){
+    public boolean accept(File file){
     	boolean rval=false; //default return value
     	/* we always allow directories, regardless 
     	 * of their extension */
-		if (f.isDirectory()) {
+		if (file.isDirectory()) {
 			rval = true;
 		}
 		/* ok, it's a regular file so check the extension */
-		String name = f.getName().toLowerCase();
+		final String name = file.getName().toLowerCase();
 		for (int i = extensions.length -1; i >= 0; i--){
 			if (name.endsWith(extensions[i])){
 				rval = true;

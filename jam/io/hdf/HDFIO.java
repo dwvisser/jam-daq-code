@@ -452,36 +452,32 @@ public final class HDFIO implements DataIO, JamHDFFields {
     }
     
     private void convertAllDataObjects(List groups, boolean wrtdata, boolean wrtsetting) {
-    	
-        VirtualGroup virtualGroupGroups= addGroupSection();
-        VirtualGroup globalVirtualGroupHistogram= addHistogramSection();
-        VirtualGroup globalVirtualGroupGate = addGateSection();
-        VirtualGroup globalVirtualGroupScaler = addScalerSection();
-        VirtualGroup globalVirtualGroupParameter = addParameterSection();
-        
-        //Loop for all groups
-        Iterator groupsIter = groups.iterator(); 
+        final VirtualGroup vgGroups= addGroupSection();
+        final VirtualGroup vgHists= addHistogramSection();
+        final VirtualGroup vgGates = addGateSection();
+        final VirtualGroup vgScalers = addScalerSection();
+        final VirtualGroup vgParams = addParameterSection();
+        /* Loop for all groups */
+        final Iterator groupsIter = groups.iterator(); 
         while(groupsIter.hasNext()){
-        	Group group = (Group)groupsIter.next();
-        	VirtualGroup virtualGroupGroup = jamToHDF.convertGroup(group);
-        	virtualGroupGroups.addDataObject(virtualGroupGroup);
-        	
-        	//Histograms 
-        	VirtualGroup virtualGroupHists= addHistogramSection();
-        	virtualGroupGroup.addDataObject(virtualGroupHists);
+        	final Group group = (Group)groupsIter.next();
+        	final VirtualGroup vgLocalGroup = jamToHDF.convertGroup(group);
+        	vgGroups.addDataObject(vgLocalGroup);
+        	/* Histograms */ 
+        	final VirtualGroup vgLocalHists= addHistogramSection();
+        	vgLocalGroup.addDataObject(vgLocalHists);
             //Loop for all histograms
             final Iterator histsIter = group.getHistogramList().iterator();
             while (histsIter.hasNext()) {
                 final Histogram hist = (Histogram) histsIter.next();
                 //if (wrtdata) {	//FIXME KBS
                 	final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
-                	virtualGroupHists.addDataObject(histVGroup);
+                	vgLocalHists.addDataObject(histVGroup);
                 	//backward compatible
-                	globalVirtualGroupHistogram.addDataObject(histVGroup);
+                	vgHists.addDataObject(histVGroup);
                 //}
                 histCount++;
-                
-                //Loop for all gates
+                /* Loop for all gates */
                 final Iterator gatesIter = hist.getGates().iterator();
                 while (gatesIter.hasNext()) {
                     final Gate gate = (Gate) gatesIter.next();
@@ -489,43 +485,42 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
                     	histVGroup.addDataObject(gateVGroup);
                     	//backward compatiable
-                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
+                    	vgGates.addDataObject(gateVGroup);	
                     	gateCount++;
                 	}
                 } //end loop gates
                 
-            } //end loop histograms
-            
-            //Convert all scalers
+            } //end loop histograms            
+            /* Convert all scalers */
             if (wrtdata) {
-	            final VirtualGroup virtualGroupScalers = addScalerSection();
-	            virtualGroupGroup.addDataObject(virtualGroupScalers);                        
+	            final VirtualGroup vgLocalScalr = addScalerSection();
+	            vgLocalGroup.addDataObject(vgLocalScalr);                        
 	            final List scalerList = group.getScalerList();
-	            final VdataDescription scalerDataDescription =jamToHDF.convertScalers(scalerList);
-	            virtualGroupScalers.addDataObject(scalerDataDescription);
+	            final VdataDescription scalerDescr =jamToHDF.convertScalers(scalerList);
+	            vgLocalScalr.addDataObject(scalerDescr);
 	            if (group==Group.getSortGroup()) {    
 	            	//backward compatiable
-	            	globalVirtualGroupScaler.addDataObject(scalerDataDescription);	
+	            	vgScalers.addDataObject(scalerDescr);	
 	            }
 	            scalerCount=scalerList.size();
             }
-
-            //Convert all parameters
+            /* Convert all parameters */
             if (wrtsetting) {
-	            final VirtualGroup virtualGroupParameters = addParameterSection();
-	            virtualGroupGroup.addDataObject(virtualGroupParameters); 
+	            final VirtualGroup vgLocalParam = addParameterSection();
+	            vgLocalGroup.addDataObject(vgLocalParam); 
 	            if (group==Group.getSortGroup()) {            	 
-	            	final List parameterList =DataParameter.getParameterList();
-	            	final VdataDescription parameterDataDescription =jamToHDF.convertParameters(parameterList);
-	            	virtualGroupParameters.addDataObject(parameterDataDescription);
+	            	final List paramList =DataParameter.getParameterList();
+	            	final VdataDescription paramDesc =jamToHDF.convertParameters(paramList);
+	            	vgLocalParam.addDataObject(paramDesc);
 	            	//Backward compatiable
-	            	globalVirtualGroupParameter.addDataObject(parameterDataDescription); 
-	                parameterCount=parameterList.size();;
+	            	vgParams.addDataObject(paramDesc); 
+	                parameterCount=paramList.size();
 	            }
             }
             groupCount++;
         }
     }
+    
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -582,13 +577,13 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         }
         if (hasContents(scalers)) {
-        	 VirtualGroup virtualGroupScaler = addScalerSection();
-        	 virtualGroupScaler.addDataObject(jamToHDF.convertScalers(scalers));            
+        	 final VirtualGroup vgScaler = addScalerSection();
+        	 vgScaler.addDataObject(jamToHDF.convertScalers(scalers));            
             message.append(", ").append(scalers.size()).append(" scalers");            
         }
         if (hasContents(parameters)) {
-        	VirtualGroup virtualGroupParameters = addParameterSection();
-            virtualGroupParameters.addDataObject(jamToHDF.convertParameters(parameters));
+        	final VirtualGroup vgParams = addParameterSection();
+            vgParams.addDataObject(jamToHDF.convertParameters(parameters));
             message.append(", ").append(parameters.size()).append(" parameters");
         }
         asyncMonitor.increment();
@@ -618,7 +613,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         synchronized (this) {
             DataObject.clearAll();
-            out = null; //allows Garbage collector to free up memory
         }     
         setLastValidFile(file);
         uiMessage =message.toString();
@@ -640,7 +634,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
     synchronized private boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
         boolean rval = true;
         final StringBuffer message = new StringBuffer();
-        
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
 				STEPS_WRITE+STEPS_CONVERT);
         if (rval) {
@@ -660,23 +653,17 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     message.append("Adding histogram counts in ").append(
                             infile.getName()).append(" (");
                 }
-
                 DataObject.clearAll();
-                
                 //Read in objects
                 inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
                 inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
                  /* read file into set of DataObject's, set their internal variables */
                 inHDF.readFile();
-                
                 DataObject.interpretBytesAll();
-                
                 asyncMonitor.increment();                
-                
-                //Set group
+                /* Set group */
                 if (mode == FileOpenMode.OPEN) {
-                    
                     Group.createGroup(infile.getName(), Group.Type.FILE);
                 } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
                     Group.createGroup(infile.getName(), Group.Type.FILE);
@@ -690,19 +677,15 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 message.append(numHists).append(" histograms");
                 final int numScalers = hdfToJam.convertScalers(mode);
                 message.append(", ").append(numScalers).append(" scalers");
-
                 if (mode != FileOpenMode.ADD) {
-
                     final int numGates = hdfToJam.convertGates(mode);
                     /* clear if opening and there are histograms in file */
                     message.append(", ").append(numGates).append(" gates");
-
                     final int numParams = hdfToJam.convertParameters(mode);
                     message.append(", ").append(numParams)
                             .append(" parameters");
                 }
                 message.append(')');
-
             } catch (HDFException e) {
             	uiErrorMsg ="Exception reading file '"
                 + infile.getName() + "': " + e.toString();            	
@@ -877,7 +860,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     }
                 }
                 /* Add histogram */
-                final HistogramAttributes histAtt = new HistogramAttributes();
+                final HistogramAttributes histAtt = HistogramAttributes.create();
                 histAtt.name = name;
                 histAtt.title = title;
                 histAtt.number = number;
@@ -941,7 +924,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
     }
 
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of groups
      */
     private VirtualGroup addGroupSection() {
@@ -951,7 +934,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         return  virtualGroup;
     }
     
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of histograms.
      */
     private VirtualGroup addHistogramSection() {
@@ -963,7 +946,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
     }
 
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of gates.
      */
     private VirtualGroup addGateSection() {
@@ -974,29 +957,27 @@ public final class HDFIO implements DataIO, JamHDFFields {
         return allGates;
     }
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of scalers.
      */
     private VirtualGroup addScalerSection() {
-
     	final VirtualGroup scalerGroup = new VirtualGroup(
             SCALER_SECT, FILE_SECTION);
     	new DataIDLabel(scalerGroup, SCALER_SECT);
     	return scalerGroup;
     }
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of scalers.
      */
     private VirtualGroup addScalers() {
-
     	final VirtualGroup scalerGroup = new VirtualGroup(
             SCALER_SECT, FILE_SECTION);
     	new DataIDLabel(scalerGroup, SCALER_SECT);
     	return scalerGroup;
     }
     
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of parameters.
      */
     private VirtualGroup addParameterSection() {
@@ -1045,7 +1026,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * Class to hold histogram properties while we decide if we should load
      * them.
      */
-    public class HistogramAttributes {
+    public static class HistogramAttributes {
 
         String name;
 
@@ -1067,6 +1048,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
 
         private HistogramAttributes() {
             super();
+        }
+        
+        static HistogramAttributes create(){
+            return new HistogramAttributes();
         }
 
         /**
