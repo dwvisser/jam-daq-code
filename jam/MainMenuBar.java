@@ -298,10 +298,15 @@ public class MainMenuBar extends JMenuBar {
 		final JMenuItem saveAsHDF = new JMenuItem("Save as (hdf)...");
 		saveAsHDF.setActionCommand("saveAsHDF");
 		saveAsHDF.addActionListener(jamCommand);
-		file.add(saveAsHDF);
+		file.add(saveAsHDF); 
 		final JMenuItem special=new JMenu("Special");
+		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram...");
+		openSelectdHist.setActionCommand("openselectedhist");		
+		openSelectdHist.addActionListener(jamCommand);
+		special.add(openSelectdHist);
 		final JMenuItem saveGates=new JMenuItem(new SaveGatesAction());
 		final JMenuItem reloadGates=new JMenuItem("Reload gates only from HDF...");
+		
 		special.add(saveGates);
 		special.add(reloadGates);
 		reloadGates.setEnabled(false);

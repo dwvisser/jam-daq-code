@@ -13,6 +13,7 @@ import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
 import jam.global.*;
 import jam.io.HistogramIO;
+import jam.io.hdf.OpenSelectedHistogram;
 import jam.io.ImpExpException;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
@@ -51,6 +52,7 @@ public class JamCommand
 	/* classes for reading and writing histograms */
 	private final HistogramIO histio;
 	private final HDFIO hdfio;
+	private final OpenSelectedHistogram openSelectedHist;
 	private final jam.io.BatchExport batchexport;
 
 	/* control classes */
@@ -105,6 +107,7 @@ public class JamCommand
 		hdfio = new HDFIO(jamMain, console);
 		histio = new HistogramIO(jamMain, console);
 		batchexport = new jam.io.BatchExport(jamMain, console);
+		openSelectedHist = new OpenSelectedHistogram(jamMain, console);
 		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
@@ -131,7 +134,7 @@ public class JamCommand
 		displayCounters = new DisplayCounters(jamMain, broadcaster, console);
 		/* setup classes */
 		setupSortOn =
-			new SetupSortOn(
+			new SetupSortOn( 
 				jamMain,
 				runControl,
 				displayCounters,
@@ -211,6 +214,11 @@ public class JamCommand
 				if (histio.reloadJHFFile()) {
 					scalerControl.displayScalers();
 				}
+			} else if ("openselectedhist".equals(incommand)) {				
+				openSelectedHist.open();
+				dataChanged();
+				jamMain.repaint();
+				
 			} else if ("save".equals(incommand)) {
 				histio.writeJHFFile();
 			} else if ("savehdf".equals(incommand)) {
