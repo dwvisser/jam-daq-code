@@ -1,12 +1,38 @@
-/*
- */
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
+import jam.data.DataException;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Class for projecting 2-D histograms.
@@ -247,9 +273,12 @@ Observer {
         cchan.addItem(BETWEEN);
         //add gates to chooser
         if (hfrom  != null){
-            Gate [] g=hfrom.getGates();
-            for (int i = 0;i < g.length;i++){
-                cchan.addItem(g[i].getName());
+            final List g=hfrom.getGates();
+            for (Iterator it=g.iterator(); it.hasNext();){
+            //for (int i = 0;i < len;i++){
+      			//final Gate gate=(Gate)g.get(i);
+      			final Gate gate=(Gate)it.next();
+                cchan.addItem(gate.getName());
             }
         }
         cchan.setSelectedItem(newSelect);
