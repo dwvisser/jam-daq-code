@@ -225,11 +225,13 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Called by setCoeff() to update the formula.
 	 *
 	 */
-	protected abstract void updateFormula(); 
+	protected abstract void updateFormula();
+	
 	/**
+	 * Set the calibration points used for fitting.
 	 * 
-	 * @param ptsChannelIn
-	 * @param ptsEnergyIn
+	 * @param ptsChannelIn the channels
+	 * @param ptsEnergyIn the "energies"
 	 */
 	public void setPoints(double [] ptsChannelIn, double [] ptsEnergyIn) {
 		setIsFitPoints(true);
@@ -243,33 +245,33 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Get the input point channels.
 	 * @return the input point channels
 	 */
-	public double [] getPtsChannel() {
-	    final double [] rval;		
-		if (ptsChannel!=null) {
-			final int len=ptsChannel.length;
-			rval=new double[len];
-			System.arraycopy(ptsChannel,0,rval,0,len);
-		} else {
-			rval=null;
-		}
-		return rval;		
-	}
+	public double[] getPtsChannel() {
+        final double[] rval;
+        if (ptsChannel == null) {
+            rval = new double[0];
+        } else {
+            final int len = ptsChannel.length;
+            rval = new double[len];
+            System.arraycopy(ptsChannel, 0, rval, 0, len);
+        }
+        return rval;
+    }
 	
 	/**
 	 * Get the input point energies.
 	 * @return the input point energies
 	 */
-	public double [] getPtsEnergy() {
-		final double [] rval;		
-		if (ptsEnergy!=null) {
-		    final int len=ptsEnergy.length;
-		    rval = new double[len];
-		    System.arraycopy(ptsEnergy,0,rval,0,len);
-		} else {
-			rval=null;
-		}
-		return rval;				
-	}
+	public double[] getPtsEnergy() {
+        final double[] rval;
+        if (ptsEnergy == null) {
+            rval = new double[0];
+        } else {
+            final int len = ptsEnergy.length;
+            rval = new double[len];
+            System.arraycopy(ptsEnergy, 0, rval, 0, len);
+        }
+        return rval;
+    }
 	
 	/**
 	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
