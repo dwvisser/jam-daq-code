@@ -10,6 +10,7 @@ import jam.global.MessageHandler;
 import jam.plot.Display;
 
 //import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.*;
 
@@ -68,7 +69,7 @@ public class SelectionTree extends JPanel implements Observer {
 		 while(iter.hasNext()){
 		 	Histogram hist =(Histogram)iter.next();
 		 	DefaultMutableTreeNode histNode =
-			      new DefaultMutableTreeNode(hist.getName());
+			      new DefaultMutableTreeNode(hist);
 		 		
 			List listGates =hist.getGates();
 			Iterator iterGate=listGates.iterator();
@@ -76,7 +77,7 @@ public class SelectionTree extends JPanel implements Observer {
 		 	while(iterGate.hasNext()){
 		 		Gate gate= (Gate)iterGate.next();
 		 		DefaultMutableTreeNode gateNode =
-				      new DefaultMutableTreeNode(gate.getName());
+				      new DefaultMutableTreeNode(gate);
 		 		histNode.add(gateNode);
 		 	}
 			
@@ -84,7 +85,9 @@ public class SelectionTree extends JPanel implements Observer {
 		 }
 
 		 histTree = new JTree(fileNode);
-		 this.add(new JScrollPane(histTree));
+		 histTree.setCellRenderer(new SelectionTreeCellRender());
+		 setLayout(new BorderLayout());
+		 this.add(new JScrollPane(histTree), BorderLayout.CENTER);
 	
 		 histTree.addTreeSelectionListener(new TreeSelectionListener(){
 		 	    public void valueChanged(TreeSelectionEvent e) {
@@ -93,7 +96,7 @@ public class SelectionTree extends JPanel implements Observer {
 		 	        if (node == null) 
 		 	        	return;
 		 	        Object nodeInfo = node.getUserObject();
-			 	    selection((String)nodeInfo);		 	        
+			 	    selection(nodeInfo);		 	        
 		 	    }		 			 	
 		 });
 	}
@@ -101,10 +104,19 @@ public class SelectionTree extends JPanel implements Observer {
 	public void refresh(){
 		createHistTree();
 	}
-	private void selection(String histName){
-		Histogram hist =Histogram.getHistogram(histName);
-		status.setHistName(histName);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+	
+	private void selection(Object nodeObject){
+		if (nodeObject instanceof Histogram) {
+			
+			Histogram hist =(Histogram)nodeObject;
+			status.setHistName(hist.getName());
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+		} else if (nodeObject instanceof Gate) {
+			Gate gate =(Gate)nodeObject;
+			status.setCurrentGateName(gate.getName());
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
+			
+		}
 	}
 	/**
 	 * Implementation of Observable interface.
