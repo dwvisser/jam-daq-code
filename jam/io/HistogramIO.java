@@ -432,9 +432,6 @@ public class HistogramIO implements FilenameFilter {
 		} catch (IOException ioe) {
 			throw new ImpExpException(
 				"Problem writing JHF file: " + ioe.getMessage());
-		} catch (DataException de) {
-			throw new ImpExpException(
-				"Problem accessing data object in memory: " + de.getMessage());
 		}
 	}
 
@@ -639,10 +636,7 @@ public class HistogramIO implements FilenameFilter {
 		} catch (IOException ioe) {
 			throw new ImpExpException(
 				"Problem reading JHF file: " + ioe.getMessage());
-		} catch (DataException de) {
-			throw new ImpExpException(
-				"Problem creating data object: " + de.getMessage());
-		}
+		} 
 	}
 
 	/**
@@ -781,14 +775,10 @@ public class HistogramIO implements FilenameFilter {
 		} catch (IOException ioe) {
 			throw new ImpExpException(
 				"Problem reading JHF file: " + ioe.getMessage());
-		} catch (DataException de) {
-			throw new ImpExpException(
-				"Problem creating data object: " + de.getMessage());
 		}
 	}
 
 	private void readJHFDataV00(int mode) throws ImpExpException {
-
 		Histogram hist;
 		boolean eof;
 		int numHist = 0;
