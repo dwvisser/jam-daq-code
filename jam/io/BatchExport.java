@@ -5,36 +5,12 @@ import jam.data.Histogram;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.JamStatus;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 
 /**
  * Dialog for exporting lists of histograms.  Searches 
@@ -162,7 +138,7 @@ public class BatchExport extends JDialog implements ActionListener {
 	private void getClasses() {
 		Class temp;
 
-		Set set = RTSI.find("jam.io", ImpExp.class);
+		Set set = RTSI.find("jam.io", ImpExp.class,false);
 		set.remove(ImpExp.class);
 		exportClasses = new ImpExp[set.size()];
 		int i = 0;
