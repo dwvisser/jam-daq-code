@@ -32,17 +32,6 @@ import javax.swing.border.EmptyBorder;
  */
 public final class DisplayCounters extends JDialog implements Observer {
 
-	/**
-	 * We are sorting online when the internal mode variable equals this.
-	 */
-	//public static final int ONLINE = 1;
-
-	/**
-	 * We are sorting offline when the internal mode variable equals this.
-	 */
-	//public static final int OFFLINE = 2;
-
-	//stuff for dialog box
 	private transient final JPanel pCenter;
 
 	private transient SortDaemon sortDaemon;
@@ -93,6 +82,9 @@ public final class DisplayCounters extends JDialog implements Observer {
 
 	static private DisplayCounters instance = null;
 
+	/**
+	 * @return the only instance of this class
+	 */
 	static public DisplayCounters getSingletonInstance() {
 		if (instance == null) {
 			instance = new DisplayCounters();
@@ -102,14 +94,6 @@ public final class DisplayCounters extends JDialog implements Observer {
 
 	private final static JamStatus STATUS = JamStatus.instance();
 
-	/**
-	 * @param jm
-	 *            the main window
-	 * @param b
-	 *            to broadcast counter "read" and "zero" requests
-	 * @param mh
-	 *            where to print console output
-	 */
 	private DisplayCounters() {
 		super(STATUS.getFrame(), "Buffer Counters", false);
 		final int xpos = 20;
