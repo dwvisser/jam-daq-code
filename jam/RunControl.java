@@ -499,16 +499,6 @@ public class RunControl extends JDialog implements Controller {
 	}
 
 	/**
-	 * Called by sorter for each new file not used for online data taking.
-	 * 
-	 * @return <code>true</code>
-	 */
-	public boolean isSortNext() {
-		/* does nothing for online */
-		return true;
-	}
-
-	/**
 	 * Method called back from sort package when we are done writing out the
 	 * event data and have closed the event file.
 	 * 

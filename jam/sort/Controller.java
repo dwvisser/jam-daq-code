@@ -29,18 +29,6 @@ public interface Controller {
 	void atSortEnd();
 
 	/**
-	 * Called by <code>SortDaemon</code> when it needs to start the next
-	 * stream.
-	 * <dl>
-	 * <dt>OFFLINE</dt>
-	 * <dd>gets a new input stream</dd>
-	 * <dt>ONLINE</dt>
-	 * <dd>does nothing.</dd>
-	 * </dl>
-	 */
-	boolean isSortNext();
-
-	/**
 	 * Method called back by <code>StorageDaemon</code> when it encouters a
 	 * end-run-marker and has closed the data event file it was writing data to.
 	 */

@@ -387,13 +387,12 @@ public final class SortControl extends JDialog implements Controller {
 	}
 
 	/**
-	 * Called by sorter after startup looking to see if there is a next file to
-	 * sort. If there is a next file, we tell <code>StorageDaemon</code> to
-	 * open it, and return <ocde>true</code>.
+	 * Called by <code>SortDaemon</code> when it needs to start the next
+	 * stream.
 	 * 
-	 * @return <code>true</code> if there is a next event file to sort
+	 * @return <code>true</code> if there was a next file and it's open now
 	 */
-	public boolean isSortNext() {
+	public boolean openNextFile() {
 		boolean sortNext = false;
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln("Could not close file: "
