@@ -133,7 +133,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      *             if any histogram apparently has more than 2 dimensions
      * @return number of histograms
      */
-    int convertHistogramsOriginal(Group group, FileOpenMode mode, List histNames) throws HDFException {
+    int convertHistogramsOriginal(Group group, FileOpenMode mode, List histAttributes) throws HDFException {
         int numHists = 0;
         final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
         /* only the "histograms" VG (only one element) */
@@ -144,7 +144,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             // loop begin
             while (temp.hasNext()) {
             	final VirtualGroup currHistGrp = (VirtualGroup) (temp.next());
-            	convertHistogram(group, currHistGrp, histNames, mode);
+            	convertHistogram(group, currHistGrp, histAttributes, mode);
             }
             //after loop 
         }

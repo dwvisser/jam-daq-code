@@ -158,7 +158,7 @@ public class Group {
     public synchronized static Group getCurrentGroup() {
         return currentGroup;
     }
-    *
+    */
 
     /**
      * Gets a list of all groups.

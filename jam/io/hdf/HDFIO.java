@@ -446,7 +446,16 @@ public final class HDFIO implements DataIO, JamFileFields {
     				//Loop for all files
     				for (int i=0;i<inFiles.length;i++) {
 	        			infile =inFiles[i];
-            			asyncReadFileGroup(infile, mode, groupList, histAttributeList);            
+	        			if (mode==FileOpenMode.ADD_OPEN_ONE) {
+	        				if (i==0) {
+	        					asyncReadFileGroup(infile, FileOpenMode.OPEN, groupList, histAttributeList);
+	        				} else {
+	        					final List groupListOpen = Group.getGroupList(); 
+	        				   asyncReadFileGroup(infile, FileOpenMode.ADD, groupListOpen, histAttributeList);
+	        				}
+	        			} else {
+        					asyncReadFileGroup(infile, mode, groupList, histAttributeList);	        				
+	        			}
             			displayMessage();
 	        		}
             		}catch (Exception e) {
@@ -1007,7 +1016,6 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	final List histList;
 	    	if ( mode==FileOpenMode.OPEN || mode==FileOpenMode.OPEN_MORE ) {
 	    		currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, mode);
-	    		
 	    	} else {
 	    		String groupName = hdfToJam.readVirtualGroupName(currentVGroup); 
 	    		if (hdfToJam.containsGroup(groupName, existingGroupList)) {
@@ -1059,27 +1067,28 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    } //Loop group end
     }
     
-    private void convertHDFToJamOriginal(FileOpenMode mode, String fileName, List histNames) throws HDFException {
+    private void convertHDFToJamOriginal(FileOpenMode mode, String fileName, List histAttributes) throws HDFException {
         hdfToJam.setInFile(inHDF);
     	Group currentGroup=null;
         //Set group
-        if (mode == FileOpenMode.OPEN) {                   
+        if ( (mode == FileOpenMode.OPEN) || (mode == FileOpenMode.OPEN_MORE) )  {                   
         	currentGroup=Group.createGroup(null, fileName, Group.Type.FILE);
-        } else if (mode == FileOpenMode.OPEN_MORE) {
-        	currentGroup=Group.createGroup(null, fileName, Group.Type.FILE);
+        } else if ( mode == FileOpenMode.ADD) {
+        	
+        	//so use current group        	
         } else if (mode == FileOpenMode.RELOAD) {
         	JamStatus status =JamStatus.getSingletonInstance();
             final String sortName = status.getSortName();
             status.setCurrentGroup(Group.getGroup(sortName));
             currentGroup=status.getCurrentGroup();
-        } // else mode == FileOpenMode.ADD, so use current group
+        }
         
     	//Keep track of first loaded group
     	if (firstLoadedGroup==null)
     		firstLoadedGroup =currentGroup;
 
         groupCount=0;
-        histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
+        histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histAttributes);
         final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
         if (vddScalers!=null) {
         	hdfToJam.convertScalers(currentGroup, vddScalers, mode);

@@ -128,6 +128,9 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		});
 		JButton bSavelist = new JButton("Save List");
 		pLoadButtons.add(bSavelist);		
+		chkBoxAdd = new JCheckBox("Sum Histograms");
+		pLoadButtons.add(chkBoxAdd);
+		
 		bSavelist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				multiChooser.saveList();
@@ -158,8 +161,8 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		txtListFile.setColumns(20);
 		txtListFile.setEditable(false);
 		pOption.add(txtListFile);		
-		chkBoxAdd = new JCheckBox("Sum Histograms");
-		pOption.add(chkBoxAdd);
+//		chkBoxAdd = new JCheckBox("Sum Histograms");
+//		pOption.add(chkBoxAdd);
 		panel.add(pOption, BorderLayout.NORTH);		
 		hListModel = new DefaultListModel();
 		histList = new JList(hListModel);
@@ -290,30 +293,14 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
         	files[i] =(File)objFiles[i];
         }
         
+    	DataBase.getInstance().clearAllLists();
+        hdfio.setListener(this);
+        
         /* Sum counts */
-        if (chkBoxAdd.isSelected()) {
-            /* Create blank histograms */
-        	//DataBase.getInstance().clearAllLists();
-            hdfio.setListener(this);
-            file = multiChooser.getSelectedFile();
-           // hdfio.readFile(FileOpenMode.OPEN, files[0], selectHistAttributes);
-            /* Build group list */
-            List groupList = new ArrayList();
-            for (int i=0;i<selectHistAttributes.size();i++) {
-            	String groupName =((HistogramAttributes)selectHistAttributes.get(i)).getGroupName();
-            	Group group = Group.getGroup(groupName);
-            	if (! groupList.contains(group) ) {
-            		groupList.add(group);
-            	}
-            }
-            //final Group fileGroup = Group.getGroup(file.getName()); 
-
-            Histogram.setZeroAll();
-            hdfio.readFile(FileOpenMode.ADD, files, groupList, selectHistAttributes);
+        if (chkBoxAdd.isSelected()) {            
+            hdfio.readFile(FileOpenMode.ADD_OPEN_ONE, files, null, selectHistAttributes);
             STATUS.setSortMode(SortMode.FILE, "Multiple Sum"); 
         } else {
-            DataBase.getInstance().clearAllLists();
-            hdfio.setListener(this);
             hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectHistAttributes);
             STATUS.setSortMode(SortMode.FILE, "Multiple");            
         }
