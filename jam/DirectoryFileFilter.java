@@ -14,7 +14,7 @@ public class DirectoryFileFilter extends FileFilter {
 	
     /**
      * @return true if the given file is a directory
-     * @param f file to check
+     * @param file file to check
      */
      public boolean accept(File file){
 		return file.isDirectory();
