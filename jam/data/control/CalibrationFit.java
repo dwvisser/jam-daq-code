@@ -11,7 +11,6 @@ import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +39,6 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 
     private static final int NUMBER_POINTS=5;
 
-    private final Frame frame;
     private final MessageHandler msghdlr;
 
     //calibrate histogram
@@ -61,11 +59,12 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 	private final JButton bcancelCal =new JButton("Cancel");
 
     /**
-     * Constructor
+     * Constructs a calibration fitting dialog.
+     * 
+     * @param mh the console for printing text output
      */
     public CalibrationFit(MessageHandler mh) {
         super("Calibration Fit",false);
-        frame=STATUS.getFrame();
         msghdlr=mh;
         setResizable(false);
         setLocation(30,30);
