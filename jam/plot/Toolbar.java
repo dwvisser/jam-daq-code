@@ -33,7 +33,7 @@ class Toolbar extends JToolBar implements ActionListener {
 	
 	private final Action action;
 	
-	private JButton bnetarea, brebin, bgoto;
+	private JButton bnetarea, bgoto;
 	private JToggleButton boverlay;
 	private JComboBox comboBinRatio;
 	
@@ -58,7 +58,7 @@ class Toolbar extends JToolBar implements ActionListener {
 				: JToolBar.VERTICAL;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Adds the tool bar the left hand side of the plot.
 	 *
 	 * @since Version 0.5
@@ -80,8 +80,8 @@ class Toolbar extends JToolBar implements ActionListener {
 		final Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
 		final Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
 		final Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
-		final Icon iZoomVert = loadToolbarIcon("jam/plot/ZoomVert.png");
-		final Icon iZoomHorz = loadToolbarIcon("jam/plot/ZoomHorz.png");
+		//final Icon iZoomVert = loadToolbarIcon("jam/plot/ZoomVert.png");
+		//final Icon iZoomHorz = loadToolbarIcon("jam/plot/ZoomHorz.png");
 		
 		final Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 		final Icon iArea = loadToolbarIcon("jam/plot/Area.png");
@@ -280,7 +280,7 @@ class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Load icons for tool bar
 	 */
 	private Icon loadToolbarIcon(String path) {
