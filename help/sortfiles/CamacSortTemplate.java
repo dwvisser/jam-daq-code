@@ -31,6 +31,11 @@ public class CamacSortTemplate extends SortRoutine {
              idScal=cnafCommands.scaler(c,n,a,f);//scaler read cnafs
              cnafCommands.clear(c,n,a,f);//scaler clear cnaf
              */  
+             
+             /* comment out setEventSize() if you actually put in the 
+              * CAMAC stuff
+              */
+             setEventSize(2);
                           
              /* initialize histograms, gates, and scalers */
              myHist = new Histogram("detector1", HIST_1D, 1024,"my detector");
