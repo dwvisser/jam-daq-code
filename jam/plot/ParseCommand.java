@@ -64,20 +64,21 @@ public class ParseCommand implements CommandListener {
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
 			accept = true;
 			if (action.getIsCursorCommand()) {
-				boolean vertical = Action.RANGE.equals(action.getCurrentCommand());
-				cursorChannel(parameters,vertical);
+				boolean vertical = Action.RANGE.equals(action
+						.getCurrentCommand());
+				cursorChannel(parameters, vertical);
 			} else {
-				action.doCommand(null, parameters);
+				action.doCommand(null, parameters,true);
 			}
 		} else if (commandMap.containsKey(command)) {
 			accept = true;
 			final String inCommand = (String) commandMap.get(command);
-			action.doCommand(inCommand);
+			action.doCommand(inCommand,true);
 			if (action.getIsCursorCommand()) {
 				boolean vertical = Action.RANGE.equals(inCommand);
-				cursorChannel(parameters,vertical);
+				cursorChannel(parameters, vertical);
 			} else {
-				action.doCommand(null, parameters);
+				action.doCommand(null, parameters,true);
 			}
 		} else {
 			accept = false;
@@ -120,24 +121,32 @@ public class ParseCommand implements CommandListener {
 		/* Must have at least 1 parameter */
 		if (numParam > 0) {
 			final Bin cursor = Bin.Factory.create();
-			if (action.getCursorDimension() == 1) {
+			if (JamStatus.instance().getDisplay().getPlot().getDimensionality() == 1) {
 				/* we have a 1D plot: only x dimension */
 				for (int i = 0; i < numParam; i++) {
-					if (vertical){
-						cursor.setChannel(0,(int)parameters[i]);
+					if (vertical) {
+						cursor.setChannel(0, (int) parameters[i]);
 					} else {
 						cursor.setChannel((int) parameters[i], 0);
 					}
 					action.setCursor(cursor);
-					action.doCommand(Action.CURSOR);
+					action.doCommand(Action.CURSOR, true);
 				}
 			} else {
+				if (vertical){//use 0,counts
+					for (int i=0; i<numParam; i++){
+						cursor.setChannel(0,(int)parameters[i]);
+						action.setCursor(cursor);
+						action.doCommand(Action.CURSOR,true);
+					}
+				}else {
 				/* 2D: x and y dimensions */
 				for (int i = 0; i < numParam - 1; i = i + 2) {
 					cursor.setChannel((int) parameters[i],
 							(int) parameters[i + 1]);
 					action.setCursor(cursor);
-					action.doCommand(Action.CURSOR);
+					action.doCommand(Action.CURSOR,true);
+				}
 				}
 				//FIXME Error if only 1 co-ordinate is givne
 			}
