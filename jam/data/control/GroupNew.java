@@ -1,16 +1,15 @@
 package jam.data.control;
 
-import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
-import jam.ui.PanelOKApplyCancelButtons;
 import jam.data.Group;
+import jam.global.BroadcastEvent;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Container;
+import java.awt.FlowLayout;
 
-import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
@@ -21,15 +20,13 @@ import javax.swing.JTextField;
  */
 public class GroupNew extends AbstractControl implements PanelOKApplyCancelButtons.Callback {
 
-	private final MessageHandler msghdlr;
-
 	private final JTextField textName;
 	
-	private PanelOKApplyCancelButtons pButtons;
-	
-	public GroupNew(MessageHandler msghdlr) {
+	/**
+	 * Constructs a "new group" dialog command.
+	 */
+	public GroupNew() {
 		super("New Group ", false);
-		this.msghdlr = msghdlr;
 		setLocation(30, 30);
 		setResizable(false);
 		final Container cdialog = getContentPane();
@@ -45,8 +42,8 @@ public class GroupNew extends AbstractControl implements PanelOKApplyCancelButto
 		textName.setColumns(15);
 		pMiddle.add(textName);
 		
-		pButtons = new PanelOKApplyCancelButtons(this);
-		cdialog.add(pButtons, BorderLayout.SOUTH);
+		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(this);
+		cdialog.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		
 		pack();
 	}
@@ -62,12 +59,15 @@ public class GroupNew extends AbstractControl implements PanelOKApplyCancelButto
 		createGroup();
 		dispose();
 	}
+	
 	public void apply(){
 		createGroup();
 	}
+	
 	public void cancel(){
 		dispose();
 	}
+	
 	/**
 	 * Create a new group
 	 *
