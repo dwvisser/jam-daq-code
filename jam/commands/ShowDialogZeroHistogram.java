@@ -10,12 +10,13 @@ import jam.data.control.HistogramZero;
  */
 public class ShowDialogZeroHistogram extends AbstractShowDataControlCmd {
 
-	ShowDialogZeroHistogram() {
+	/**
+	 * Initialize command
+	 */
+	protected void initCommand(){
 		putValue(NAME, "Zero\u2026");
-		//Super class member
-		dataControl= new HistogramZero(msghdlr);		
+		dataControl= new HistogramZero(msghdlr);
 	}
-	
 
 }
  

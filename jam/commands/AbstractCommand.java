@@ -34,8 +34,16 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 */
 	public void init(MessageHandler mh) {
 		msghdlr=mh;
+		initCommand();
 	}
 	
+	/**
+	 * Called by init to do any command initialization
+	 * that needs to be done
+	 */
+	protected void initCommand(){
+		
+	}
 	/**
 	 * Implentation for interface Action
 	 * 
