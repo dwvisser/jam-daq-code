@@ -123,33 +123,24 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 						unPackData2d(dis, areaSizeX, areaSizeY, areaLengthPage);
 					Histogram hist = new Histogram(areaName, areaTitle, counts2d);
 					hist.setNumber(areaNumber);
-					if (msgHandler != null) msgHandler.messageOut(" .");
-					//dot indicating a spectrum read
-
-					//histogram 1d double words
+					if (msgHandler != null) {
+						msgHandler.messageOut(" .");
+					}
 				} else if (areaDataType == XSYS1DR4) {
-					//String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					unPackUnknown(buffin, areaLengthPage);
-					//FIXME unPackData1dR(buffin,  areaLengthPage);		    		
-					//FIXMEhist = new Histogram(areaName, areaTitle, counts2d);
-					//FIXMEhist.setNumber(areaNumber);			
-					//FIXMEmsgHandler.messageOut(" .");	//dot indicating a spectrum read
 					if (msgHandler != null) {
 						msgHandler.messageOut(" X");//cross indicating a spectrum NOT read
 					}
 				} else if (areaDataType == XSYSEVAL) {
 					unPackEVAL(buffin, areaLengthPage);
-
 				} else {
 					unPackUnknown(buffin, areaLengthPage);
 					if (msgHandler != null) msgHandler.messageOut("X");
 				}
-
 			}
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
-
 	}
 
 	/**
