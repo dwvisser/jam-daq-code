@@ -1,13 +1,33 @@
 /*
  */
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import jam.data.DataException;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 /**
  * Class to control the histograms
  * Allows one to zero the histograms
@@ -16,7 +36,7 @@ import javax.swing.border.*;
  * @author Ken Swartz
  * @version 0.5
  */
-public class HistogramControl extends DataControl implements ActionListener {
+public class HistogramNew extends DataControl implements ActionListener {
 
     private final Frame frame;
     private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
@@ -45,9 +65,9 @@ public class HistogramControl extends DataControl implements ActionListener {
     /**
      * Constructor
      */
-    public HistogramControl(Frame frame, MessageHandler msghdlr){
+    public HistogramNew(MessageHandler msghdlr){
 		super("New Histogram ",false);
-        this.frame=frame;        
+        frame=status.getFrame();        
         this.msghdlr=msghdlr;
 
         //dialog box New Histogram
@@ -173,22 +193,6 @@ public class HistogramControl extends DataControl implements ActionListener {
         } catch (DataException je) {
             msghdlr.errorOutln(je.getMessage());
         } 
-    }
-
-    /**
-     * Zero all the histograms
-     * Loops through the histograms zeroing them in turn
-     */
-    public void zeroAll() {
-        msghdlr.messageOut("Zero All", MessageHandler.NEW);
-        final Iterator allHistograms=Histogram.getHistogramList().iterator();
-        while(allHistograms.hasNext()){
-            final Histogram hist = ( (Histogram) allHistograms.next() );
-            msghdlr.messageOut(" .", MessageHandler.CONTINUE);
-            hist.setZero();
-        }
-        broadcaster.broadcast(BroadcastEvent.REFRESH);
-        msghdlr.messageOut(" done!", MessageHandler.END);
     }
 
     /**

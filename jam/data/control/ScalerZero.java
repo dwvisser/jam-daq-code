@@ -25,14 +25,14 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 3, 2004
  */
-public class ScalerZeroControl extends DataControl {
+public class ScalerZero extends DataControl {
 
 	private static final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	private static final JamStatus status = JamStatus.instance();
 	private final JCheckBox checkDisabled2;
 	private final JButton bzero2;
 
-	public ScalerZeroControl() {
+	public ScalerZero() {
 		super("Zero Scalers", true);
 		Container dzc = getContentPane();
 		setResizable(false);

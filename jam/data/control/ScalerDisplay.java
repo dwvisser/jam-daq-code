@@ -1,12 +1,31 @@
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import jam.data.Scaler;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Reads and displays the scaler values.
@@ -16,7 +35,7 @@ import javax.swing.border.Border;
  * @since       JDK1.1
  */
 
-public final class ScalerControl
+public final class ScalerDisplay
 	extends DataControl
 	implements ActionListener, ItemListener, Observer {
 
@@ -38,7 +57,7 @@ public final class ScalerControl
 	 * @param frame main window for application that this dialog is attached to
 	 * @param messageHandler object to send text output to user to
 	 */
-	public ScalerControl(MessageHandler messageHandler) {
+	public ScalerDisplay(MessageHandler messageHandler) {
 		super("Scalers", false);
 		broadcaster.addObserver(this);
 		this.messageHandler = messageHandler;
@@ -93,7 +112,7 @@ public final class ScalerControl
 		} else if (command == "scalzero") {
 			checkDisabled.setSelected(true);
 			bzero.setEnabled(false);
-			ScalerZeroControl.zero();
+			ScalerZero.zero();
 		} else {
 			throw new UnsupportedOperationException(
 				"Error Unregonized command: " + command);

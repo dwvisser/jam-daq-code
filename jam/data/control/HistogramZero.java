@@ -2,7 +2,6 @@ package jam.data.control;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -22,19 +21,17 @@ import javax.swing.JPanel;
 /**
  * Zero histograms dialog
  */
-public class HistogramZeroControl extends DataControl {
+public class HistogramZero extends DataControl {
 
-	private static final Broadcaster broadcaster =
-		Broadcaster.getSingletonInstance();
 	private final Frame frame;
 	private final MessageHandler msghdlr;
 
 	/**
 	 * Constructor
 	 */
-	public HistogramZeroControl(Frame f, MessageHandler mh) {
+	public HistogramZero(MessageHandler mh) {
 		super("Zero Histograms", false);
-		frame = f;
+		frame = status.getFrame();
 		msghdlr = mh;
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
@@ -61,22 +58,7 @@ public class HistogramZeroControl extends DataControl {
 			public void actionPerformed(ActionEvent ae) {
 				zeroAll();
 				dispose();
-			}
-			
-			/**
-			 * Zero all the histograms.
-			 */
-			private void zeroAll() {
-				msghdlr.messageOut("Zero All", MessageHandler.NEW);
-				final Iterator allHistograms = Histogram.getHistogramList().iterator();
-				while (allHistograms.hasNext()) {
-					final Histogram hist = ((Histogram) allHistograms.next());
-					msghdlr.messageOut(" .", MessageHandler.CONTINUE);
-					hist.setZero();
-				}
-				broadcaster.broadcast(BroadcastEvent.REFRESH);
-				msghdlr.messageOut(" done!", MessageHandler.END);
-			}
+			}			
 		});
 		pButton.add(all);
 		final JButton cancel = new JButton(" Cancel ");
@@ -95,6 +77,21 @@ public class HistogramZeroControl extends DataControl {
 		});
 	}
 
+	/**
+	 * Zero all the histograms.
+	 */
+	public void zeroAll() {
+		msghdlr.messageOut("Zero All", MessageHandler.NEW);
+		final Iterator allHistograms = Histogram.getHistogramList().iterator();
+		while (allHistograms.hasNext()) {
+			final Histogram hist = ((Histogram) allHistograms.next());
+			msghdlr.messageOut(" .", MessageHandler.CONTINUE);
+			hist.setZero();
+		}
+		broadcaster.broadcast(BroadcastEvent.REFRESH);
+		msghdlr.messageOut(" done!", MessageHandler.END);
+	}
+	
 	public void setup() {
 		/* nothing to do */
 	}
