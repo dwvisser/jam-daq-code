@@ -4,11 +4,15 @@
     <property name="base.dir" value="." />
     <property name="build.dir" value="${user.home}/jambuild" />
     <property name="copy.dir" value="${build.dir}/copy" />
+	<property name="ndoc.dir" value="${build.dir}/ndoclet" />
     <property name="APIbase.dir" value="${build.dir}/APItemp" />
     <property name="API.dir" value="${APIbase.dir}/help/API" />
 	<property name = "windows" value = "${build.dir}/windows/jam-daq" />
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
+	<property name = "MAJOR" value="1" />
+	<property name = "MINOR" value="6" />
+	<property name = "SUBMINOR" value="0" />
     
 	<!-- task definition for windows executable builder -->
 	<taskdef name="jsmoothgen"
@@ -46,7 +50,7 @@
         />    
     </target>
     
-    <target name="helpjar" depends="javadoc,compile">
+    <target name="helpjar" depends="compile">
     	<copy todir="${APIbase.dir}">
     		<fileset dir = "${copy.dir}" includes = "help/**/*" />
     	</copy>
@@ -62,9 +66,9 @@
     		<fileset dir="${base.dir}" 
     		includes="**/*.java,**/*.html,**/*.txt, **/*.jnlp, **/*.jsmooth, **/*.wxs, **/*.hs, **/*.css, **/*.jhm, **/*.xml, **/*.ini" />
             <filterset>
-    			<filter token="MAJOR" value="1" />
-    			<filter token="MINOR" value="6" />
-    			<filter token="SUBMINOR" value="0" />
+    			<filter token="MAJOR" value="${MAJOR}" />
+    			<filter token="MINOR" value="${MINOR}" />
+    			<filter token="SUBMINOR" value="${SUBMINOR}" />
             </filterset>
 		</copy>
 		<copy todir="${copy.dir}">
@@ -93,23 +97,27 @@
     	</javac>
     </target> 	
     
-    <target name="javadoc" depends="copy">
+    <target name="ndoclet" depends="copy">
         <javadoc
-            destdir="${API.dir}"
-            access="protected" use="true" notree="false"
-            nonavbar="false" noindex="false" splitindex="true"
+            destdir="${ndoc.dir}"
+            access="protected" notree="false"
+            nonavbar="false" noindex="false"
             author="true" version="true" nodeprecatedlist="false"
             nodeprecated="false"
-            packagenames="jam,jam.applet,jam.commands,
-        	jam.data,jam.data.control,jam.data.func,jam.data.peaks,
-        	jam.fit,jam.global,jam.io,jam.io.hdf,jam.plot,
-        	jam.plot.color,jam.sort,jam.sort.stream,jam.ui,jam.util"
+            packagenames="jam.*"
             sourcepath="${copy.dir}"
             classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
-            	doctitle="Jam - API"/>
+            	doctitle="Jam: Java-based Data Acquisition Management for Nuclear Physics"
+        	docletpath="${base.dir}/NDoclet.jar"
+        	doclet="ndoclet.NDoclet"
+        />
+      	<zip 
+      		zipfile="${build.dir}/Jam-${MAJOR}.${MINOR}.${SUBMINOR}-api.zip" 
+      		basedir="${ndoc.dir}"
+      	includes="**/*" />
     </target>
-    
-    <target name="x-platform" depends="jar,srczip,helpjar"
+
+            	<target name="x-platform" depends="jar,srczip,helpjar"
     description="Compile source into class jar, help jar and source zip" />
 
     <target name="windows" depends="x-platform"
@@ -126,10 +134,8 @@
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
     	<jsmoothgen project="${windows}/help.jsmooth" 
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
-      	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${build.dir}/windows"
-      	excludes="**/*.jsmooth,**/*.png,**/*.db" />
     </target>
     
-    <target name="all" depends="windows" />
+    <target name="all" depends="windows,ndoclet" />
         
 </project>
