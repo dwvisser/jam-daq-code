@@ -5,6 +5,7 @@ import jam.plot.*;
 import jam.global.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Dialog for setting peak finding parameters.
@@ -28,38 +29,55 @@ public class PeakFindDialog extends JDialog implements ActionListener {
 	private void createDialog() {
 		this.setTitle("Peak Find Preferences");
 		Container contents = getContentPane();
-		contents.setLayout(new BorderLayout());
-		JPanel center=new JPanel(new BorderLayout());
-		JPanel fields=new JPanel(new GridLayout(1,0));
-		fields.add(new JLabel("Width"));
+		contents.setLayout(new BorderLayout(10,10));
+		
+		JPanel fields=new JPanel(new GridLayout(0,1,5,5));
+		contents.add(fields,BorderLayout.CENTER);		
+		fields.setBorder(new EmptyBorder(10,10,0,0));
+		fields.add(new JLabel("Width", JLabel.RIGHT));
+		fields.add(new JLabel("Sensitivity", JLabel.RIGHT));
+		fields.add(new JLabel("Display", JLabel.RIGHT));
+
+						
+		JPanel center=new JPanel(new GridLayout(0,1,5,5));
+		contents.add(center,BorderLayout.EAST);
+		center.setBorder(new EmptyBorder(10,0,0,10));		
+				
 		width=new JTextField("12");
 		width.setToolTipText("FWHM to search for.");
-		fields.add(width);
-		fields.add(new JLabel("Sensitivity"));
+		center.add(width);
+
 		sensitivity=new JTextField("3");
 		sensitivity.setToolTipText("Greater values require better defined peaks.\n"+
 		"A value of 3 gives an appr. 3% chance for a found peak to be false.");
-		fields.add(sensitivity);
-		calibrate = new JCheckBox("Display calibrated value if available",true);
-		center.add(fields,BorderLayout.CENTER);
-		center.add(calibrate,BorderLayout.SOUTH);
-		contents.add(center,BorderLayout.NORTH);
+		center.add(sensitivity);
+
+		calibrate = new JCheckBox("Calibrated value",true);
+		center.add(calibrate);
+
+		
 		/* panel for buttons */         
+		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		contents.add(pbutton, BorderLayout.SOUTH);		
 		JPanel pb = new JPanel();
-		pb.setLayout(new GridLayout(1, 3));
-		contents.add(pb, BorderLayout.SOUTH);
+		pbutton.add(pb);
+		pb.setLayout(new GridLayout(1, 3,5,5));
+
 		JButton bok = new JButton("OK");
 		pb.add(bok);
 		bok.setActionCommand("ok");
 		bok.addActionListener(this);
+		
 		JButton bapply = new JButton("Apply");
 		pb.add(bapply);
 		bapply.setActionCommand("apply");
 		bapply.addActionListener(this);
+		
 		JButton bcancel = new JButton(" Cancel ");
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
+		
 		setResizable(false);
 		pack();
 	}
