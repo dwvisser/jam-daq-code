@@ -32,6 +32,11 @@ public class ExtensionFileFilter extends FileFilter {
 		this(new String[] {ext}, descr);
     }
     
+    /**
+     * Get the i'th extension.
+     * @param i index of extension
+     * @return three character file extension
+     */
     public String getExtension(int i){
     	return extensions[i];
     }
