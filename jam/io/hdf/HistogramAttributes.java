@@ -1,9 +1,3 @@
-/*
- * Created on Mar 5, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package jam.io.hdf;
 
 import java.util.Collections;
@@ -14,6 +8,9 @@ import java.util.Map;
 /**
  * Class to hold histogram properties while we decide if we should load
  * them.
+ * 
+ * @version 2005.03.05
+ * @author Ken Swartz
  */
 public final class HistogramAttributes {
 	
@@ -28,9 +25,10 @@ public final class HistogramAttributes {
 	}
 	
 	/**
-	 * Retrieves a histogram
-	 * @param fullName
-	 * @return
+	 * Retrieves a histogram's attributes.
+	 * 
+	 * @param fullName full name for histogram, including group
+	 * @return attributes for the given name
 	 */
 	public static HistogramAttributes getHistogramAttribute(String fullName){
 		return (HistogramAttributes)FULL_NAMES.get(fullName);
