@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -245,7 +246,7 @@ public abstract class Histogram {
 		final Group currentGroup = Group.getCurrentGroup();
 		/* Make a unique name in the group */ 
 		final Map groupHistMap =currentGroup.getHistogramMap();		
-		name=makeUniqueName(nameIn, groupHistMap);
+		name=makeUniqueName(nameIn, groupHistMap.keySet());
 		/* Create the full histogram name with group name */
 		groupName=currentGroup.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
@@ -347,32 +348,33 @@ public abstract class Histogram {
 	}
 	
 	/**
+	 * Make a unique name out of the given name that differs from
+	 * names in the given set.
 	 * 
 	 * @param name name to make unique
-	 * @param map  Map of all names
+	 * @param nameSet contains the existing names
 	 * @return unique name
 	 */
-	protected String  makeUniqueName(String name, Map map ) {
-
-		String nameAddition;
-		int prime;
-		
-		final StringUtilities stringUtil = StringUtilities.instance();
-		
-		//FIXME give error if name is to be truncated
+	protected String  makeUniqueName(String name, Set nameSet) {
+		final StringUtilities stringUtil = StringUtilities.instance();		
 		String nameTemp = stringUtil.makeLength(name, NAME_LENGTH);
-
-		//find a name that does not conflict with exiting names
-		prime = 1;
-		while (map.containsKey(nameTemp)) {
-			nameAddition = "[" + prime + "]";
-			nameTemp = stringUtil.makeLength(nameTemp, NAME_LENGTH - nameAddition.length())
-					+ nameAddition;
+		boolean warn=name.length()>nameTemp.length();
+		/* find a name that does not conflict with existing names */
+		int prime = 1;
+		while (nameSet.contains(nameTemp)) {
+			final String nameAddition = "[" + prime + "]";
+			nameTemp = stringUtil.makeLength(nameTemp, NAME_LENGTH - nameAddition.length());
+			warn |= name.length()>nameTemp.length();
+			nameTemp += nameAddition;
 			prime++;
 		}
+		if (warn){
+		    System.err.println("\""+name+"\" truncated to produce new name \""+
+		            nameTemp+"\".");
+		}
 		return nameTemp;
-		
 	}
+	
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
