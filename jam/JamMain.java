@@ -534,7 +534,9 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		gradientColorScale.setToolTipText("Check to use a continuous gradient color scale on 2d histogram plots.");
 		gradientColorScale.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
-				JamProperties.setProperty(JamProperties.GRADIENT_SCALE,ie.getStateChange()==ItemEvent.SELECTED);
+				boolean state = ie.getStateChange()==ItemEvent.SELECTED;
+				JamProperties.setProperty(JamProperties.GRADIENT_SCALE,state);
+				display.setPreference(Display.Preferences.CONTINUOUS_2D_LOG,state);
 			}
 		});
 		mPrefer.add(gradientColorScale);

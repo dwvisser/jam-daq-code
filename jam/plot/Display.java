@@ -330,6 +330,8 @@ Observer {
         } else if (preference==Preferences.AUTO_PEAK_FIND){
         	plot1d.setPeakFind(state);
         	displayHistogram(currentHist);
+        } else if (preference==Preferences.CONTINUOUS_2D_LOG){
+        	displayHistogram(currentHist);
         }
     }
     
