@@ -30,12 +30,11 @@ import javax.swing.border.EmptyBorder;
 
 
 /**
- * Panel to select multipel files
+ * Panel to select multiple files.
  * 
  * @author Ken Swartz
- *
  */
-public class MultipleFileChooser extends JPanel {
+public final class MultipleFileChooser extends JPanel {
 
 	private  JList listFiles;
 		
@@ -95,7 +94,7 @@ public class MultipleFileChooser extends JPanel {
 		pButtons.add(bAddfile);
 		bAddfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				addFile();
+				addFile(JFileChooser.FILES_ONLY);
 			}
 		});
 	
@@ -103,7 +102,7 @@ public class MultipleFileChooser extends JPanel {
 		pButtons.add(bAddDir);
 		bAddDir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				addDirectory();
+				addFile(JFileChooser.DIRECTORIES_ONLY);
 			}
 		});
 	
@@ -160,6 +159,11 @@ public class MultipleFileChooser extends JPanel {
 			pButtons.remove(bSaveList);
 		}
 	}
+	
+	/**
+	 * Lock or unlock the buttons.
+	 * @param state <code>true</code> to enable the buttons
+	 */
 	public void setLocked(boolean state){
 		bAddfile.setEnabled(state);
 		bAddDir.setEnabled(state);
@@ -168,6 +172,7 @@ public class MultipleFileChooser extends JPanel {
 		bLoadList.setEnabled(state);
 		bSaveList.setEnabled(state);
 	}
+	
 	/**
 	 * Get selected file, no selection set first file
 	 * as selected
@@ -190,13 +195,18 @@ public class MultipleFileChooser extends JPanel {
 		return Collections.list(listFilesModel.elements());
 	}	
 	
+	/**
+	 * Add a file to the list.
+	 * 
+	 * @param file to add
+	 */
 	public void addFile(File file){
 		listFilesModel.addElement(file);
 	}
+	
 	/**
 	 * save list of items to sort
 	 */
-	
 	public void saveList() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -260,42 +270,31 @@ public class MultipleFileChooser extends JPanel {
 		return numFiles;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * browse for data files
 	 */
-	private void addFile() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		//fd.setMultiSelectionEnabled(true);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
-				"Data Files (*."+fileExtension+")"));
-		int option = fd.showOpenDialog(frame);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			listFilesModel.addElement(fd.getSelectedFile());
-//			File [] files =fd.getSelectedFiles();
-//			for (int i=0; i<files.length;i++ ) {
-//				listFilesModel.addElement(files[i]);
-//			}
-//			lastFile = files[0]; //save current directory
-			//listFilesModel.clear();
-		}
-	}
-	
-	/**
-	 * add all files in a directory to list
-	 *  
-	 */
-	private void addDirectory() {
+	private void addFile(int mode) {
 		final JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fd.setFileSelectionMode(mode);
+		final boolean fileMode = mode == JFileChooser.FILES_ONLY;
+		if (!fileMode && mode != JFileChooser.DIRECTORIES_ONLY){
+		    throw new IllegalArgumentException("Use one of JFileChooser.FILES_ONLY or "+
+            "JFileChooser.DIRECTORIES_ONLY");		    
+		}
+		if (fileMode){
+		    fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
+				"Data Files (*."+fileExtension+")"));
+		}
 		final int option = fd.showOpenDialog(frame);
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
-			addDirFiles(lastFile);
+		    if (fileMode){
+		        addFile(fd.getSelectedFile());
+		    } else {
+				lastFile = fd.getSelectedFile(); //save current directory
+				addDirFiles(lastFile);
+		    }
 		}
 	}
 	
@@ -310,14 +309,14 @@ public class MultipleFileChooser extends JPanel {
 			final ExtensionFileFilter ff = new ExtensionFileFilter(
 					new String[] { fileExtension }, "Data Files(*."+fileExtension+")");
 			if (f.isFile() && ff.accept(f)) {
-				listFilesModel.addElement(f);
+				addFile(f);
 				numFiles++;
-			}
-			if (f.isDirectory()) {
+			} else if (f.isDirectory()) {
 				File[] dirArray = f.listFiles();
 				for (int i = 0; i < dirArray.length; i++) {
-					if (ff.accept(dirArray[i]))
-						listFilesModel.addElement(dirArray[i]);
+					if (ff.accept(dirArray[i])){
+						addFile(dirArray[i]);
+					}
 					numFiles++;
 				}
 			}
