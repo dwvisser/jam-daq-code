@@ -22,7 +22,6 @@ public class HistogramControl extends DataControl implements ActionListener {
     private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
     private final MessageHandler msghdlr;
 
-    private final JDialog dialogZero, dialogNew;
     Histogram currentHistogram;
 
     private final JTextField textName;
@@ -47,38 +46,14 @@ public class HistogramControl extends DataControl implements ActionListener {
      * Constructor
      */
     public HistogramControl(Frame frame, MessageHandler msghdlr){
-        super();
+		super("New Histogram ",false);
         this.frame=frame;        
         this.msghdlr=msghdlr;
-        //zero histogram dialog box
-        dialogZero=new JDialog(frame,"Zero Histograms",false);
-        Container dzc = dialogZero.getContentPane();
-        dialogZero.setResizable(false);
-        dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JPanel pButton = new JPanel(new GridLayout(1,0,5,5));
-        dialogZero.setLocation(20,50);
-        JButton one =new JButton("Displayed");
-        one.setActionCommand("onezero");
-        one.addActionListener(this);
-        pButton.add(one);
-        JButton all =new JButton("   All   ");
-        all.setActionCommand("allzero");
-        all.addActionListener(this);
-        pButton.add(all);
-        JButton cancel=new JButton(" Cancel ");
-        cancel.setActionCommand("cancelzero");
-        cancel.addActionListener(this);
-        pButton.add(cancel);
-        dzc.add(pButton);
-        dialogZero.pack();
 
         //dialog box New Histogram
-        dialogNew =new JDialog (frame,"New Histogram ",false);
-        //dialogNew.setForeground(Color.black);
-        //dialogNew.setBackground(Color.lightGray);
-        dialogNew.setResizable(false);
-        dialogNew.setLocation(30,30);
-        Container cdialogNew=dialogNew.getContentPane();
+        setResizable(false);
+        setLocation(30,30);
+        Container cdialogNew=getContentPane();
         cdialogNew.setLayout(new BorderLayout(10,10));
 
 		//Labels on the left
@@ -160,15 +135,11 @@ public class HistogramControl extends DataControl implements ActionListener {
         bcancel.addActionListener(this);
         pb.add(bcancel);
 
-        dialogNew.pack();
-        dialogZero.addWindowListener(new WindowAdapter(){
+        pack();
+        
+        addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
-                dialogZero.dispose();
-            }
-        });
-        dialogNew.addWindowListener(new WindowAdapter(){
-            public void windowClosing(WindowEvent e){
-                dialogNew.dispose();
+                dispose();
             }
         });
     }
@@ -180,25 +151,6 @@ public class HistogramControl extends DataControl implements ActionListener {
     }
 
     /**
-     * Show zero dialog box
-     */
-    public void showZero(){
-        dialogZero.show();
-    }
-
-    /**
-     * Show new histogram dialog box
-     */
-    public void showNew(){
-        dialogNew.show();
-    }
-	/**
-	 * Default show dialog, shows new dialog
-	 */
-	public void show() {
-		dialogNew.show();
-	}
-    /**
      * Receive actions from Dialog Boxes
      *
      */
@@ -206,25 +158,14 @@ public class HistogramControl extends DataControl implements ActionListener {
         String command=ae.getActionCommand();
         currentHistogram=Histogram.getHistogram(JamStatus.instance().getCurrentHistogramName());
         try {
-            /* commands for zero histogram */
-            if (command=="onezero") {
-                currentHistogram.setZero();
-                broadcaster.broadcast(BroadcastEvent.REFRESH);
-                msghdlr.messageOutln("Zero Histogram: "+currentHistogram.getTitle());
-                dialogZero.dispose();
-            } else if (command=="allzero") {
-                zeroAll();
-                dialogZero.dispose();
-                /* commands for new histogram */
-            }else if (command=="oknew"||command=="applynew"){
+            /* commands for new histogram */
+            if (command=="oknew"||command=="applynew"){
                 makeHistogram();
                 if (command=="oknew"){
-                    dialogNew.dispose();
+                  dispose();
                 }
-            } else if (command=="cancelzero") {
-                dialogZero.dispose();
             } else if (command=="cancelnew"){
-                dialogNew.dispose();
+                dispose();
             } else {
                 /* just so at least a exception is thrown for now */
                 throw new UnsupportedOperationException("Unregonized command: "+command);
