@@ -38,7 +38,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * List of objects in the file.
 	 */
 	private transient List objectList=Collections.synchronizedList(new ArrayList());
-	private transient Map tagMap=Collections.synchronizedMap(new HashMap());
+	private transient Map tagRefMap=Collections.synchronizedMap(new HashMap());
 
 	/**
 	 * variable for marking position in file
@@ -196,13 +196,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @see	#setOffsets()
 	 */
 	void addDataObject(DataObject data, boolean useFileDefault) {
-		objectList.add(data);
-		final Short tag=data.getTagKey();
-		if (!tagMap.containsKey(tag)){
-			tagMap.put(tag,new HashMap());
-		}
 		if (useFileDefault) {
 			data.setRef(getUniqueRef());
+		}
+		
+		final Integer key =data.getKey();
+		if (!tagRefMap.containsKey(key)){
+			tagRefMap.put(key, data);
+			objectList.add(data);
 		}
 	}
 
@@ -224,7 +225,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	private short getUniqueRef() {
 		//Just add 1, set to 1 every time class created 
-		return refCount++;
+		return ++refCount;
 		/*
 		while (refs.containsKey(new Short(rval))){
 			rval++;
@@ -235,7 +236,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	
 	void changeRefKey(DataObject d, Short old) {
 		final Short tag=d.getTagKey();
-		final Map refs=(Map)tagMap.get(tag);
+		final Map refs=(Map)tagRefMap.get(tag);
 		if (refs.containsKey(old)){
 			refs.remove(old);
 		}
@@ -445,13 +446,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public DataObject getObject(short t, short r) {
 		DataObject match = null;
-		final Short tag=new Short(t);
-		final Short ref=new Short(r);
-		if (tagMap.containsKey(tag)){
-			final Map refMap=(Map)tagMap.get(tag);
-			if (refMap.containsKey(ref)){
-				match=(DataObject)refMap.get(ref);
-			}
+		final Integer key =calculateKey(t, r);		
+		if (tagRefMap.containsKey(key)){
+			match=(DataObject)tagRefMap.get(key);
 		}
 		return match;
 	}
@@ -477,13 +474,22 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param tagType the type to return
 	 */
 	List ofType(Collection in, short tagType) {
+		
 		final Set ssin=new HashSet();
-		final Object temp=tagMap.get(new Short(tagType));
+		Iterator iter = in.iterator();
+		while(iter.hasNext()){
+			DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag())
+				ssin.add(dataObject);
+		}
+		/* FIXME remove KBS
+		final Object temp=tagRefMap.get(new Short(tagType));
 		if (temp !=null){
 			ssin.addAll(in);
 			Map refMap=(Map)temp;
 			ssin.retainAll(refMap.values());
 		}
+		*/
 		return new ArrayList(ssin);
 	}
 
@@ -494,12 +500,22 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public List ofType(final short tagType) {
 		final List rval=new ArrayList();
-		final Object temp=tagMap.get(new Short(tagType));
+		
+		final Iterator iter = objectList.iterator();
+		while(iter.hasNext()){
+			DataObject dataObject=(DataObject)iter.next();
+			if (tagType == dataObject.getTag())
+				rval.add(dataObject);
+		}
+		/*FIMXE KBS remove
+		final Object temp=tagRefMap.get(new Short(tagType));
 		if (temp != null){//the refmap exists
 			final Map refMap=(Map)temp;
 			rval.addAll(refMap.values());
 		}
-		return rval;		
+		*/
+		return rval;
+		
 	}
 
 	/**
@@ -546,6 +562,12 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return filter.accept(getFile());
 	}
 	
+	protected Integer calculateKey(short tag, short ref){
+		int key= (((int)tag)<<16)+(int)ref;
+		
+		return new Integer(key);
+	}
+	
 	/**
 	 * First, calls <code>super.close()</code>, then clears collections of temporary objects used
 	 * to build the file, and then sets their references to
@@ -563,9 +585,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			ob.tagKey=null;
 		}
 		objectList.clear();
-		tagMap.clear();
+		tagRefMap.clear();
 		objectList=null;
-		tagMap=null;
+		tagRefMap=null;
 		intNT=null;
 		doubleNT=null;
 	}

@@ -222,14 +222,6 @@ public abstract class DataObject {
 	 */
 	protected abstract void interpretBytes() throws HDFException;
 
-	/**
-	 * Returns the length of the byte array in the file for this data element.
-	 * 
-	 * @return he length of the byte array in the file for this data element
-	 */
-	protected int getLength() {
-		return bytes.length;
-	}
 
 	/* non-javadoc:
 	 * Returns a 4-byte representation of the tag, usually defined in the HDF standard, of this item.  
@@ -276,7 +268,10 @@ public abstract class DataObject {
 			haveNotSetRef=false;
 		}
 	}
-
+	
+	protected Integer getKey(){
+		return new Integer(tagRef2unigueKey(tag, ref));
+	}
 	/* non-javadoc:
 	 * Called back by <code>HDFile</code> to set the offset information.
 	 */
@@ -287,6 +282,23 @@ public abstract class DataObject {
 	int getOffset() {
 		return offset;
 	}
+	/**
+	 * Returns the length of the byte array in the file for this data element.
+	 * 
+	 * @return he length of the byte array in the file for this data element
+	 */
+	protected int getLength() {
+		return bytes.length;
+	}
+
+	/**
+	 * Create a unique key given then tag an ref numbers
+	 */
+	private int tagRef2unigueKey(short tag, short ref) {
+		int key= (((int)tag)<<16)+(int)ref;
+		return key;
+	}
+
 
 	/* non-javadoc:
 	 * Gives the handle to the file holding this object.
