@@ -114,22 +114,19 @@ public class DiskDaemon extends StorageDaemon {
 	 * until you see a end of run marker, then inform controller
 	 */
 	private void writeLoop() throws IOException {
-		int bytesIn;
-		short last2bytes;
-		boolean endRun;
-
-		//checkState() waits until state is STOP or RUN to return a value		
+		/* checkState() waits until state is STOP or RUN 
+		 * to return a value */	
 		while (this.checkState()) {
 			//read from pipe and write file
 			buffer = ringBuffer.getBuffer();
-			bytesIn = buffer.length;
+			final int bytesIn = buffer.length;
 			bos.write(buffer, 0, bytesIn);
 			bufferCount++;
 			//check for end-of-run marker			    		    		
-			last2bytes =
+			final short last2bytes =
 				(short) (((buffer[bytesIn - 2] & 0xFF) << 8)
 					+ (buffer[bytesIn - 1] & 0xFF));
-			if (endRun = eventInput.isEndRun(last2bytes)) {
+			if (eventInput.isEndRun(last2bytes)) {
 				//tell control we are done		    
 				fileCount++;
 				controller.atWriteEnd();
