@@ -21,10 +21,13 @@ import javax.swing.border.*;
 final class SelectionToolbar extends JToolBar implements Observer {
 
 	final JLabel lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
-	final JComboBox histogramChooser =
-		new JComboBox(new HistogramComboBoxModel());
+	final JPanel pCenter;
+	private int previousLayout;
+	final JComboBox histogramChooser = new JComboBox(new HistogramComboBoxModel());
 	final JToggleButton boverLay = new JToggleButton(getHTML("<u>O</u>verlay"));
 	final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
+	//final layoutHorz;
+	//final layoutVert;
 	final MessageHandler console;
 	final JamStatus status;
 	final Broadcaster broadcaster;
@@ -32,36 +35,51 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	private boolean overlay = false;
 	final String classname;
 
-	SelectionToolbar(
-		MessageHandler mh,
-		JamStatus js,
-		Broadcaster b,
-		Display d) {
+	SelectionToolbar(MessageHandler mh,
+					 JamStatus js,
+					 Broadcaster b,
+					 Display d) {
+
 		super("Selection", JToolBar.HORIZONTAL);
+
+		Dimension dim;
+
 		classname = getClass().getName() + "--";
 		console = mh;
 		status = js;
 		broadcaster = b;
 		display = d;
-		final DefaultComboBoxModel noGateComboBoxModel =
-			new DefaultComboBoxModel();
+		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
+
 		noGateComboBoxModel.addElement("NO GATES");
 		/* panel with selection and print etc. */
-		setLayout(new BorderLayout());
+		//setLayout(new BorderLayout());
+
+		pCenter = new JPanel();
+
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT));
+		previousLayout=VERTICAL;
+
+		//Run status
 		final JPanel pRunState = new JPanel(new GridLayout(1, 1));
 		pRunState.setBorder(
 			BorderFactory.createTitledBorder(
-				new BevelBorder(BevelBorder.LOWERED),
+				new LineBorder(Color.black, 1),
 				"Status",
 				TitledBorder.CENTER,
 				TitledBorder.TOP));
 		lrunState.setOpaque(true);
 		lrunState.setForeground(Color.black);
 		pRunState.add(lrunState);
-		final JPanel pCenter = new JPanel(new GridLayout(1, 0));
+
+
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
+		dim=histogramChooser.getPreferredSize();
+		dim.width=200;
+		histogramChooser.setPreferredSize(dim);
 		histogramChooser.setToolTipText(getHTML("<u>D</u>isplay chosen histogram."));
 		histogramChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -76,6 +94,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(histogramChooser);
+
 		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -88,7 +107,13 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(boverLay);
+
+
 		gateChooser.setRenderer(new GateListCellRenderer());
+		dim=gateChooser.getPreferredSize();
+		dim.width=200;
+		gateChooser.setPreferredSize(dim);
+
 		gateChooser.setToolTipText("Display chosen gate.");
 		gateChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -103,10 +128,45 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(gateChooser);
-		add(pRunState, BorderLayout.WEST);
-		add(pCenter, BorderLayout.CENTER);
+
+		add(pRunState);
+		addSeparator();
+		add(pCenter);
+
+		//Size changed redo layout
+		addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent e) {
+				redoLayout();
+			}
+		});
+
+
+//		add(histogramChooser);
+//		add(gateChooser);
+//		add(boverLay);
+//		add(pCenter);
+
+		//add(pRunState, BorderLayout.WEST);
+
 	}
 
+	private void redoLayout(){
+		//
+		if (previousLayout==getOrientation())
+			return;
+
+		if((getOrientation()==HORIZONTAL)) {
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			pCenter.setLayout(new BoxLayout(pCenter, BoxLayout.Y_AXIS));
+			pCenter.add(Box.createVerticalGlue());
+			previousLayout=HORIZONTAL;
+		} else if((getOrientation()==VERTICAL)){
+			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			pCenter.setLayout(new FlowLayout(FlowLayout.LEFT));
+			previousLayout=VERTICAL;
+		}
+
+	}
 	private void histogramsChanged() {
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.repaint();
@@ -118,9 +178,9 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	}
 
 	/**
-	 * Should be called whenever the lists of gates and histograms 
-	 * change. It calls histogramsChanged() and gatesChanged(), 
-	 * each of which add to the event stack, so that histograms will 
+	 * Should be called whenever the lists of gates and histograms
+	 * change. It calls histogramsChanged() and gatesChanged(),
+	 * each of which add to the event stack, so that histograms will
 	 * be guaranteed (?) updated before gates get updated.
 	 */
 	private void dataChanged() {
@@ -152,7 +212,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		lrunState.setBackground(rs.getColor());
 		lrunState.setText(rs.getLabel());
 	}
-	
+
 	private String getHTML(String body){
 		final StringBuffer rval=new StringBuffer("<html><body>").append(
 		body).append("</html></body>");
@@ -160,7 +220,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	}
 
 	/**
-	 * Selects first items in histogram and gate choosers.  Default 
+	 * Selects first items in histogram and gate choosers.  Default
 	 * priveleges allows JamCommand to call this as well.
 	 */
 	void setChoosersToFirstItems() {
@@ -168,7 +228,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		gateChooser.setSelectedIndex(0);
 	}
 
-	/** 
+	/**
 	 * A histogram has been selected so tell all
 	 * applicable classes about it.
 	 *
@@ -203,7 +263,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			display.displayHistogram(null);
 		}
 	}
-	
+
 	private void syncHistChooser(){
 		Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
 		if (hist != null){
@@ -260,7 +320,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 
 	/**
 	 * Implementation of Observable interface.
-	 * 
+	 *
 	 * @param observable the sender
 	 * @param o the message
 	 */
@@ -280,7 +340,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			gatesChanged();
 		}
-		if (command == BroadcastEvent.GATE_SET_SAVE || 
+		if (command == BroadcastEvent.GATE_SET_SAVE ||
 		command == BroadcastEvent.GATE_SET_OFF){
 			gateChooser.repaint();
 			histogramChooser.repaint();
