@@ -13,7 +13,6 @@ import jam.global.RunInfo;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,6 +65,7 @@ public final class Display extends JPanel implements Observer {
 	 *            the class to call to print out messages
 	 */
 	public Display(JamConsole jc) {
+		Bin.Factory.init(this);
 		msgHandler = jc; //where to send output messages
 		action = new Action(this, jc); // display event handler
 		final int size = 420;
@@ -227,8 +227,8 @@ public final class Display extends JPanel implements Observer {
 			currentPlot.displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
 		} else if (command == BroadcastEvent.GATE_SET_ADD) {
-			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, (Point) be
-					.getContent(), null);
+			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
+					(Bin) be.getContent(), null);
 		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
 			currentPlot.displaySetGate(GateSetMode.GATE_REMOVE, null, null);
 		} else if (command == BroadcastEvent.GATE_SELECT) {
@@ -256,9 +256,9 @@ public final class Display extends JPanel implements Observer {
 			action.setPlotChanged();
 		}
 	}
-	
-	public Plot getPlot(){
-		synchronized (plotLock){
+
+	public Plot getPlot() {
+		synchronized (plotLock) {
 			return currentPlot;
 		}
 	}
