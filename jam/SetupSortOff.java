@@ -74,7 +74,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
 
     String sortFile, eventFile, eventInFile, eventOutFile;
     File sortDirectory, eventDirectory;
-    private Vector runList;
 
     /**
      * Indicates event source: from DISK or TAPE.
