@@ -213,7 +213,6 @@ public class DiskDaemon extends StorageDaemon {
 			eventOutput.writeHeader();
 		} catch (EventException ioe) {
 			throw new SortException("Could not write Header Record [DiskDaemon]");
-
 		}
 	}
 
