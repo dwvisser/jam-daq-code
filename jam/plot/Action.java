@@ -2,6 +2,8 @@ package jam.plot;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -31,23 +33,23 @@ import javax.swing.JOptionPane;
 
 public class Action
 	implements ActionListener, PlotMouseListener, CommandListener {
-	
-	private static final String EXPAND="expand";
-	private static final String ZOOMIN="zoomin";
-	private static final String ZOOMOUT="zoomout";
-	private static final String FULL="full";
-	private static final String LINEAR="linear";
-	private static final String LOG="log";
-	private static final String AREA="area";
-	private static final String GOTO="goto";
-	private static final String NETAREA="netarea";
-	private static final String UPDATE="update";
-	private static final String AUTO="auto";
-	private static final String OVERLAY="overlay";
-	private static final String CANCEL="cancel";
-	private static final String RANGE="range";
-	private static final String DISPLAY="display";
-	
+
+	static final String EXPAND = "expand";
+	static final String ZOOMIN = "zoomin";
+	static final String ZOOMOUT = "zoomout";
+	static final String FULL = "full";
+	static final String LINEAR = "linear";
+	static final String LOG = "log";
+	static final String AREA = "area";
+	static final String GOTO = "goto";
+	static final String NETAREA = "netarea";
+	static final String UPDATE = "update";
+	static final String AUTO = "auto";
+	static final String OVERLAY = "overlay";
+	static final String CANCEL = "cancel";
+	static final String RANGE = "range";
+	static final String DISPLAY = "display";
+
 	private boolean autoOnExpand = true;
 
 	/**
@@ -80,13 +82,13 @@ public class Action
 	private boolean energyEx = false;
 
 	//variables for commands
-	private Point cursor;
+	private Point cursor = new Point();
 	private double cursorCount;
-	private Point lim1, lim2;
-	//private Point [] clicks=new Point[6];
-	private final List clicks=new ArrayList();
+	private final List clicks = new ArrayList();
 	private final Map commandMap;
 	private double countLow, countHigh;
+	private final Collection empty =
+		Collections.unmodifiableList(new ArrayList());
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -98,17 +100,16 @@ public class Action
 		this.display = d;
 		this.textOut = mh;
 		commandPresent = false;
-		//numberPoints = 0;
 		overlayState = false;
 		settingGate = false;
 		inquire = new PlotFit(); //class with area/centroid routines
 		/* numFormat for formatting energy output */
 		numFormat = NumberFormat.getInstance();
 		numFormat.setGroupingUsed(false);
-		final int fracDigits=2;
+		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		commandMap=getCommandMap();
+		commandMap = getCommandMap();
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class Action
 	 * @param e the event created by the button press
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final String com=e.getActionCommand();
+		final String com = e.getActionCommand();
 		/* cancel previous command if command has changed */
 		if (com != lastCommand) {
 			done();
@@ -146,24 +147,56 @@ public class Action
 		inCommand = com;
 		doCommand();
 	}
-	
-	
-	final private Map getCommandMap(){
-		final String [] commands={EXPAND,ZOOMIN,ZOOMOUT,FULL,LINEAR,
-			LOG,AREA,GOTO,NETAREA,UPDATE,AUTO,OVERLAY,CANCEL,EXPAND,
-			EXPAND,RANGE,DISPLAY};
-		final String [] abbr={"ex","zi","zo","fu","li",
-			"lo","ar","go","ne","u","a","o", "c", "x", 
-			"y", "r", "d"};
+
+	final private Map getCommandMap() {
+		final String[] commands =
+			{
+				EXPAND,
+				ZOOMIN,
+				ZOOMOUT,
+				FULL,
+				LINEAR,
+				LOG,
+				AREA,
+				GOTO,
+				NETAREA,
+				UPDATE,
+				AUTO,
+				OVERLAY,
+				CANCEL,
+				EXPAND,
+				EXPAND,
+				RANGE,
+				DISPLAY };
+		final String[] abbr =
+			{
+				"ex",
+				"zi",
+				"zo",
+				"fu",
+				"li",
+				"lo",
+				"ar",
+				"go",
+				"ne",
+				"u",
+				"a",
+				"o",
+				"c",
+				"x",
+				"y",
+				"r",
+				"d" };
 		if (commands.length != abbr.length) {
-			JOptionPane.showMessageDialog(display,
-			"Make sure commands and abbreviations arrays are equal in length.",
-			"Error in code.",
-			JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(
+				display,
+				"Make sure commands and abbreviations arrays are equal in length.",
+				"Error in code.",
+				JOptionPane.ERROR_MESSAGE);
 		}
-		final Map rval=new HashMap();
-		for (int i=0; i<commands.length; i++){
-			rval.put(abbr[i],commands[i]);
+		final Map rval = new HashMap();
+		for (int i = 0; i < commands.length; i++) {
+			rval.put(abbr[i], commands[i]);
 		}
 		return rval;
 	}
@@ -182,13 +215,13 @@ public class Action
 		boolean accept = false; //is the command accepted
 		boolean disp = false;
 		final String command = _command.toLowerCase();
-		final int len = command.length();
+		final int parLength = command.length();
 		/* int is a special case meaning
 		 * no command and just parameters */
-		final String sint="int";
-		if (len >= sint.length()) {
+		final String sint = "int";
+		if (parLength >= sint.length()) {
 			if (command.startsWith(sint)) {
-				if (DISPLAY.equals(inCommand)){
+				if (DISPLAY.equals(inCommand)) {
 					display(parameters);
 					return;
 				} else {
@@ -198,35 +231,28 @@ public class Action
 				}
 			}
 		}
-		final String c1,c2;
-		if (len>0){
-			c1=command.substring(0,1);
-			if (len>1) {
-				c2=command.substring(0,2);
-			} else {
-				c2=command;
-			}
-		} else {
-			c1=command;
-			c2=command;
-		}
-		if (command.startsWith("d")) {//display hist by #
-			inCommand=DISPLAY;
+		final String c1 = command.substring(0, Math.min(1, command.length()));
+		final String c2 = command.substring(0, Math.min(2, command.length()));
+		if (command.startsWith("d")) { //display hist by #
+			inCommand = DISPLAY;
 			display(parameters);
-			disp=true;
-		} else if (commandMap.containsKey(c2)){
-			inCommand=(String)commandMap.get(c2);
-			accept=true;
-		} else if (commandMap.containsKey(c1)){
-			inCommand=(String)commandMap.get(c1);
-			accept=true;
+			disp = true;
+		} else if (commandMap.containsKey(c2)) {
+			inCommand = (String) commandMap.get(c2);
+			accept = true;
+		} else if (commandMap.containsKey(c1)) {
+			inCommand = (String) commandMap.get(c1);
+			accept = true;
 		}
 		if (accept) {
 			doCommand();
 			integerChannel(parameters);
 		} else if (!disp) {
-			textOut.errorOutln(getClass().getName()+".commandPerform(): Command '"+command+
-			"' not understood.");
+			textOut.errorOutln(
+				getClass().getName()
+					+ ".commandPerform(): Command '"
+					+ command
+					+ "' not understood.");
 		}
 	}
 
@@ -269,8 +295,11 @@ public class Action
 			netArea();
 		} else {
 			done();
-			textOut.errorOutln(getClass().getName()+".doCommand() '"+
-			inCommand + "' not recognized.");
+			textOut.errorOutln(
+				getClass().getName()
+					+ ".doCommand() '"
+					+ inCommand
+					+ "' not recognized.");
 		}
 	}
 
@@ -285,9 +314,7 @@ public class Action
 			return;
 		}
 		/* cursor position and counts for that channel */
-		//cursorX = pChannel.x;
-		//cursorY = pChannel.y;
-		cursor=pChannel;
+		cursor = pChannel;
 		cursorCount = currentPlot.getCount(pChannel);
 		/* there is a command currently being processed */
 		if (commandPresent) {
@@ -359,25 +386,15 @@ public class Action
 					doCommand();
 				}
 				return;
-			} 
+			}
 		}
 		/* we have a 1 d plot */
 		if (currentPlot instanceof Plot1d) {
 			if (commandPresent) {
-				final int loopMax=Math.min(numPar,2);
-				for (int i = 0;i<loopMax; i++) {
+				final int loopMax = Math.min(numPar, 2);
+				for (int i = 0; i < loopMax; i++) {
 					//check for out of bounds
-					if (parameters[i] < 0) {
-						cursor.x = 0;
-					}
-					if (energyEx && currentPlot.isCalibrated) {
-						cursor.x = parameters[i];
-					} else if (parameters[i] > (currentPlot.getSizeX() - 1)) {
-						cursor.x = currentPlot.getSizeX() - 1;
-					} else {
-						cursor.x = parameters[i];
-					}
-					cursor.y = 0;
+					setCursor(closestInsidePoint(new Point(parameters[i], 0)));
 					if (!energyEx) {
 						cursorCount = currentPlot.getCount(cursor);
 					}
@@ -386,17 +403,9 @@ public class Action
 			} else { //no command so get channel
 				if (numPar > 0) {
 					/* check for out of bounds */
+					setCursor(closestInsidePoint(new Point(parameters[0], 0)));
 					synchronized (this) {
-					if (parameters[0] < 0) {
-						cursor.x = 0;
-					} else if (parameters[0] > (currentPlot.getSizeX() - 1)) {
-						cursor.x = currentPlot.getSizeX() - 1;
-					} else {
-						cursor.x = parameters[0];
-					}
-					cursor.y = 0;
-					//final Point p=new Point(cursorX, cursorY);
-					cursorCount = currentPlot.getCount(cursor);
+						cursorCount = currentPlot.getCount(cursor);
 					}
 					currentPlot.markChannel(cursor);
 					textOut.messageOutln(
@@ -406,19 +415,22 @@ public class Action
 			}
 		} else { //we have a 2 d plot
 			if (commandPresent) {
-				final int loopMax=Math.min(numPar,4);
+				final int loopMax = Math.min(numPar, 4);
 				synchronized (this) {
-				for (int i = 1;i < loopMax; i += 2) {
-					/* check for out of bounds */
-					cursor=closestInsidePoint(new Point(parameters[i-1],
-					parameters[i]));
-					cursorCount = currentPlot.getCount(cursor);
-					doCommand();
-				}
+					for (int i = 1; i < loopMax; i += 2) {
+						/* check for out of bounds */
+						cursor =
+							closestInsidePoint(
+								new Point(parameters[i - 1], parameters[i]));
+						cursorCount = currentPlot.getCount(cursor);
+						doCommand();
+					}
 				}
 			} else { //no command so get channel
 				if (numPar > 1) {
-					cursor=closestInsidePoint(new Point(parameters[0],parameters[1]));
+					cursor =
+						closestInsidePoint(
+							new Point(parameters[0], parameters[1]));
 					cursorCount = currentPlot.getCount(cursor);
 					currentPlot.markChannel(cursor);
 					textOut.messageOutln(
@@ -449,33 +461,30 @@ public class Action
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
-			setLim1(cursor);
-			//setNumberPoints(1);
 			addClick(cursor);
-			textOut.messageOut(getCoordString(lim1) + " to ");
+			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
-			setLim2(cursor);
-			textOut.messageOut(getCoordString(lim2), MessageHandler.END);
-			currentPlot.expand(lim1,lim2);
+			textOut.messageOut(getCoordString(cursor), MessageHandler.END);
+			currentPlot.expand(getClick(0), cursor);
 			if (autoOnExpand) {
 				currentPlot.autoCounts();
 			}
 			done();
 		}
 	}
-	
-	private Point closestInsidePoint(Point p){
-		final Point rval=new Point(p);
+
+	private Point closestInsidePoint(Point p) {
+		final Point rval = new Point(p);
 		if (rval.x < 0) {
-			rval.x=0;
+			rval.x = 0;
 		} else if (rval.x >= currentPlot.getSizeX()) {
 			rval.x = currentPlot.getSizeX() - 1;
-		} 
+		}
 		if (rval.y < 0) {
 			rval.y = 0;
 		} else if (rval.y >= currentPlot.getSizeY()) {
 			cursor.y = currentPlot.getSizeY() - 1;
-		} 
+		}
 		return rval;
 	}
 
@@ -492,18 +501,40 @@ public class Action
 		}
 		if (hist.length > 0) {
 			final int num = hist[0];
-			final Histogram h=Histogram.getHistogram(num);
+			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
 				display.displayHistogram(Histogram.getHistogram(num));
-				textOut.messageOut(Integer.toString(num),MessageHandler.END);
+				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 			} else {
-				textOut.messageOut(Integer.toString(num),MessageHandler.END);
-				textOut.errorOutln("There is no histogram numbered "+num+".");
+				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+				textOut.errorOutln(
+					"There is no histogram numbered " + num + ".");
 			}
 			done();
 		}
 	}
-
+	
+	private void overlay(int[] hist) {
+		if (!commandPresent) {
+			init();
+			textOut.messageOut(
+				"Overlay histogram number: ",
+				MessageHandler.NEW);
+		}
+		if (hist.length > 0) {
+			final int num = hist[0];
+			final Histogram h = Histogram.getHistogram(num);
+			if (h != null) {
+				display.overlayHistogram(Histogram.getHistogram(num));
+				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+			} else {
+				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+				textOut.errorOutln(
+					"There is no histogram numbered " + num + ".");
+			}
+			done();
+		}
+	}
 
 	/**
 	 * Set the range for the counts scale.
@@ -514,7 +545,6 @@ public class Action
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
 			countLow = getCursorCounts();
-			//setNumberPoints(1);
 			addClick(cursor);
 			textOut.messageOut(String.valueOf(countLow) + " to ");
 		} else {
@@ -524,11 +554,11 @@ public class Action
 			done();
 		}
 	}
-	
+
 	/**
 	 * @return the counts in the last channel clicked
 	 */
-	private double getCursorCounts(){
+	private double getCursorCounts() {
 		final double rval;
 		if (currentPlot instanceof Plot1d) {
 			rval = cursor.y;
@@ -537,12 +567,11 @@ public class Action
 		}
 		return rval;
 	}
-	
+
 	/**
 	 * Calculate the area and centroid for a region
 	 * maybe should copy inquire methods to this class
 	 */
-
 	private void areaCent() {
 		if (!commandPresent) {
 			init();
@@ -551,30 +580,30 @@ public class Action
 				"Area for " + name + " from channel ",
 				MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
-			setLim1(cursor);
-			//setNumberPoints(1);
 			addClick(cursor);
-			currentPlot.markChannel(lim1);
-			textOut.messageOut(getCoordString(lim1) + " to ");
+			currentPlot.markChannel(cursor);
+			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
-			setLim2(cursor);
+			final Point lim1 = getClick(0);
 			if (currentPlot instanceof Plot1d) {
-				textOut.messageOut(String.valueOf(lim2.x));
+				textOut.messageOut(String.valueOf(cursor.x));
 				final double area =
 					inquire.getArea(
 						((Plot1d) currentPlot).getCounts(),
-						lim1,lim2);
+						lim1,
+						cursor);
 				final double centroid =
 					inquire.getCentroid(
 						((Plot1d) currentPlot).getCounts(),
 						lim1,
-						lim2);
+						cursor);
 				final double fwhm =
 					inquire.getFWHM(
 						((Plot1d) currentPlot).getCounts(),
-						lim1,lim2);
-				currentPlot.markChannel(lim2);
-				currentPlot.markArea(lim1, lim2);
+						lim1,
+						cursor);
+				currentPlot.markChannel(cursor);
+				currentPlot.markArea(lim1, cursor);
 				textOut.messageOut(
 					":  Area = "
 						+ numFormat.format(area)
@@ -585,13 +614,14 @@ public class Action
 					MessageHandler.END);
 
 			} else {
-				textOut.messageOut(getCoordString(lim2));
+				textOut.messageOut(getCoordString(cursor));
 				final double area =
 					inquire.getArea(
 						((Plot2d) currentPlot).getCounts(),
-						lim1,lim2);
-				currentPlot.markChannel(lim2);
-				currentPlot.markArea(lim1, lim2);
+						lim1,
+						cursor);
+				currentPlot.markChannel(cursor);
+				currentPlot.markArea(lim1, cursor);
 				textOut.messageOut(
 					":  Area = " + numFormat.format(area),
 					MessageHandler.END);
@@ -603,16 +633,15 @@ public class Action
 	/**
 	  * Background subtracted intensity of 
 	  * 1-d plots
-	  *
 	  */
 	public void netArea() {
-		final double [] netArea = new double[1];
-		final double [] netAreaError = new double[1];
-		final double [] fwhm = new double[2];
-		final double [] centroidError = new double[2];
-		final double [] centroid = new double[1];
-		final double [] channelBackground = new double[currentPlot.getSizeX()];
-		final int nclicks=clicks.size();
+		final double[] netArea = new double[1];
+		final double[] netAreaError = new double[1];
+		final double[] fwhm = new double[2];
+		final double[] centroidError = new double[2];
+		final double[] centroid = new double[1];
+		final double[] channelBackground = new double[currentPlot.getSizeX()];
+		final int nclicks = clicks.size();
 		if (!commandPresent) {
 			init();
 			final String name = currentPlot.getHistogram().getName().trim();
@@ -623,10 +652,8 @@ public class Action
 				MessageHandler.NEW);
 		} else if (nclicks == 0) {
 			//************ First background Marker ***********************************
-			/*setClicks(0,cursor);
-			setNumberPoints(1);*/
 			addClick(cursor);
-			final Point p=cursor;
+			final Point p = cursor;
 			if (currentPlot instanceof Plot1d) {
 				currentPlot.markChannel(p);
 				textOut.messageOut(
@@ -640,25 +667,20 @@ public class Action
 			}
 		} else if (nclicks == 1) {
 			//************ Second Background marker **********************************
-			//setClicks(1,cursor);
 			addClick(cursor);
-			final Point p1=getClick(0);
-			final Point p2=cursor;
+			final Point p1 = getClick(0);
+			final Point p2 = cursor;
 			currentPlot.markChannel(p2);
 			if (currentPlot instanceof Plot1d) {
-				currentPlot.markArea(p1,p2);
+				currentPlot.markArea(p1, p2);
 				textOut.messageOut(Integer.toString(p2.x));
 			} else {
-				textOut.messageOut(
-					getCoordString(p2),
-					MessageHandler.CONTINUE);
+				textOut.messageOut(getCoordString(p2), MessageHandler.CONTINUE);
 			}
-			//numberPoints++;
 		} else if (nclicks == 2) {
 			//************ Third Background Marker **********************************
-			//setClicks(2,cursor);
 			addClick(cursor);
-			final Point p=cursor;
+			final Point p = cursor;
 			currentPlot.markChannel(p);
 			if (currentPlot instanceof Plot1d) {
 				textOut.messageOut(" and " + p.x + " to ");
@@ -668,30 +690,24 @@ public class Action
 					getCoordString(p) + " to ",
 					MessageHandler.CONTINUE);
 			}
-			//numberPoints++;
 		} else if (nclicks == 3) {
 			//************ Fourth Background Marker *********************************
-			//setClicks(3,cursor);
-			addClick(cursor);	
-			final Point p1=getClick(2);
-			final Point p2=cursor;
+			addClick(cursor);
+			final Point p1 = getClick(2);
+			final Point p2 = cursor;
 			currentPlot.markChannel(p2);
 			if (currentPlot instanceof Plot1d) {
-				currentPlot.markArea(p1,p2);
+				currentPlot.markArea(p1, p2);
 				textOut.messageOut(
 					String.valueOf(p2.x),
 					MessageHandler.CONTINUE);
 			} else {
-				textOut.messageOut(
-					getCoordString(p2),
-					MessageHandler.CONTINUE);
+				textOut.messageOut(getCoordString(p2), MessageHandler.CONTINUE);
 			}
-			//numberPoints++;
 		} else if (nclicks == 4) {
 			//************ First Region Marker *********************************
-			//setClicks(4,cursor);
 			addClick(cursor);
-			final Point p=cursor;
+			final Point p = cursor;
 			currentPlot.markChannel(p);
 			if (currentPlot instanceof Plot1d) {
 				textOut.messageOut(
@@ -703,29 +719,23 @@ public class Action
 					getCoordString(p) + " to ",
 					MessageHandler.CONTINUE);
 			}
-			//numberPoints++;
 		} else if (nclicks == 5) {
 			//************ Second Region Marker *********************************
-			//setClicks(5,cursor);
 			addClick(cursor);
-			final Point p1=getClick(4);
-			final Point p2=cursor;
+			final Point p1 = getClick(4);
+			final Point p2 = cursor;
 			currentPlot.markChannel(p2);
 			if (currentPlot instanceof Plot1d) {
-				currentPlot.markArea(p1,p2);
-				textOut.messageOut(
-					p2.x + ". ",
-					MessageHandler.CONTINUE);
+				currentPlot.markArea(p1, p2);
+				textOut.messageOut(p2.x + ". ", MessageHandler.CONTINUE);
 			} else {
 				textOut.messageOut(
 					getCoordString(p2) + ". ",
 					MessageHandler.CONTINUE);
 			}
 			final double grossArea =
-				inquire.getArea(
-					((Plot1d) currentPlot).getCounts(),
-					p1,p2);
-			Point [] passClicks=new Point[clicks.size()];
+				inquire.getArea(((Plot1d) currentPlot).getCounts(), p1, p2);
+			Point[] passClicks = new Point[clicks.size()];
 			clicks.toArray(passClicks);
 			/* results of next call are passed back in the parameters */
 			inquire.getNetArea(
@@ -777,11 +787,11 @@ public class Action
 			done();
 		}
 	}
-	
-	private Point getClick(int i){
-		return (Point)clicks.get(i);
+
+	private Point getClick(int i) {
+		return (Point) clicks.get(i);
 	}
-	
+
 	/**
 	 * Zoom in on the histogram
 	 */
@@ -843,64 +853,80 @@ public class Action
 	 * Goto input channel
 	 */
 	private void gotoChannel() {
-		final String sep=", ";
-		final String eq=" = ";
-		final String ch="channel";
-		final String en="energy";
-		final String cal="calibrated";
-		final char sp=' ';
-		final String intro="Goto (click on spectrum or type the ";
-		final char lp=')';
-		final int nclicks=clicks.size();
+		final String sep = ", ";
+		final String eq = " = ";
+		final String ch = "channel";
+		final String en = "energy";
+		final String cal = "calibrated";
+		final char sp = ' ';
+		final String intro = "Goto (click on spectrum or type the ";
+		final char lp = ')';
+		final int nclicks = clicks.size();
 		if (!commandPresent) {
 			init();
 			if (currentPlot instanceof Plot1d && currentPlot.isCalibrated) {
-				final String mess=new StringBuffer(intro).append(cal).append(sp).append(
-				en).append(lp).append(sp).toString();
+				final String mess =
+					new StringBuffer(intro)
+						.append(cal)
+						.append(sp)
+						.append(en)
+						.append(lp)
+						.append(sp)
+						.toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
 			} else {
-				final String mess=new StringBuffer(intro).append(ch).append(lp).append(
-				sp).toString();
+				final String mess =
+					new StringBuffer(intro)
+						.append(ch)
+						.append(lp)
+						.append(sp)
+						.toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
 			}
 		} else if (nclicks == 0) {
-			/*setNumberPoints(1);
-			setClicks(0,cursor);*/
 			addClick(cursor);
-			//inputCursorValue = clicks[0].x;
 			StringBuffer output = new StringBuffer();
 			if (!currentPlot.isCalibrated) {
 				output.append(ch).append(eq).append(cursor.x);
 			} else {
 				if (currentPlot instanceof Plot1d) {
 					final Plot1d plot1d = (Plot1d) currentPlot;
-					output.append(en).append(eq).append(plot1d.getEnergy(
-					cursor.x)).append(sep).append(ch).append(eq).append(cursor.x);
+					output
+						.append(en)
+						.append(eq)
+						.append(plot1d.getEnergy(cursor.x))
+						.append(sep)
+						.append(ch)
+						.append(eq)
+						.append(cursor.x);
 				}
 			}
 			if (currentPlot instanceof Plot1d) {
 				final Plot1d plot1d = (Plot1d) currentPlot;
 				if (!mousePressed) {
 					if (currentPlot.isCalibrated) {
-						output = new StringBuffer(en).append(eq).append(cursor.x);
-						synchronized (this){
+						output =
+							new StringBuffer(en).append(eq).append(cursor.x);
+						synchronized (this) {
 							cursor.x = plot1d.getChannel(cursor.x);
 							if (cursor.x > currentPlot.getSizeX()) {
 								cursor.x = currentPlot.getSizeX() - 1;
 							}
 						}
-						output.append(sep).append(ch).append(eq).append(cursor.x);
+						output.append(sep).append(ch).append(eq).append(
+							cursor.x);
 					}
 				}
 			}
-			final int rangeToUse=100;
-			final int halfRange=rangeToUse/2;
+			final int rangeToUse = 100;
+			final int halfRange = rangeToUse / 2;
 			final int channelLow = cursor.x - halfRange;
 			final int channelHigh = channelLow + rangeToUse;
-			currentPlot.expand(new Point(channelLow,0),
-			new Point(channelHigh,0));
+			currentPlot.expand(
+				new Point(channelLow, 0),
+				new Point(channelHigh, 0));
 			textOut.messageOut(output.toString(), MessageHandler.END);
-			synchronized (this){
+			synchronized (this) {
 				energyEx = false;
 			}
 			auto();
@@ -914,8 +940,7 @@ public class Action
 	private void init() {
 		synchronized (this) {
 			commandPresent = true;
-			//numberPoints = 0;
-			clicks.retainAll(new ArrayList());
+			clicks.retainAll(empty);
 		}
 	}
 
@@ -923,12 +948,11 @@ public class Action
 	 * A command has been completed so clean up
 	 */
 	private void done() {
-		synchronized (this){
+		synchronized (this) {
 			commandPresent = false;
 			mousePressed = false;
 			inCommand = null;
-			//numberPoints = 0;
-			clicks.retainAll(new ArrayList());
+			clicks.retainAll(empty);
 		}
 	}
 
@@ -941,32 +965,28 @@ public class Action
 	public synchronized void setAutoOnExpand(boolean whether) {
 		autoOnExpand = whether;
 	}
-	
-	synchronized void setDefiningGate(boolean whether){
-		settingGate=whether;
-	}
-	
-	synchronized void setMousePressed(boolean whether){
-		mousePressed=whether;
+
+	synchronized void setDefiningGate(boolean whether) {
+		settingGate = whether;
 	}
 
-	private synchronized void setLim1(Point p){
-		lim1=p;
+	synchronized void setMousePressed(boolean whether) {
+		mousePressed = whether;
 	}
-	
-	private synchronized void setLim2(Point p){
-		lim2=p;
-	}
-	
-	private String getCoordString(Point p){
-		final StringBuffer rval=new StringBuffer().append(p.x);
-		if (currentPlot instanceof Plot2d){
+
+	private String getCoordString(Point p) {
+		final StringBuffer rval = new StringBuffer().append(p.x);
+		if (currentPlot instanceof Plot2d) {
 			rval.append(',').append(p.y);
 		}
 		return rval.toString();
 	}
-	
-	private synchronized void addClick(Point p){
+
+	private synchronized void addClick(Point p) {
 		clicks.add(p);
+	}
+
+	private synchronized void setCursor(Point p) {
+		cursor = p;
 	}
 }

@@ -416,7 +416,7 @@ public class JamCommand
 					JamProperties.FRONTEND_DEBUG,
 					selected);
 			} else if ("Autoscale on Expand/Zoom".equals(text)) {
-				jam.plot.Action.setAutoOnExpand(selected);
+				display.setAutoOnExpand(selected);
 			} else if ("Automatic peak find".equals(text)) {
 				display.setPreference(
 					Display.Preferences.AUTO_PEAK_FIND,

@@ -18,17 +18,6 @@ import jam.data.*;
 public class Display extends JPanel implements Displayer, CommandListener,
 Observer {
 
-    /** for preference ignore channel zero */
-    //public static final int AUTO_IGNORE_ZERO=0;
-    /** for preference ignore full scale channel  */
-    //public static final int AUTO_IGNORE_FULL=1;
-    /** for preference white background  */
-    //public static final int WHITE_BACKGROUND=5;
-    /** for preference black background  */
-    //public static final int BLACK_BACKGROUND=6;
-    
-    //public static final int AUTO_PEAK_FIND=11;
-    
     static public class Preferences{
     	private int type;
     	
@@ -43,7 +32,7 @@ Observer {
     	}
     }
 
-    private MessageHandler msgHandler;          //output for messages
+    private final MessageHandler msgHandler;          //output for messages
     private Broadcaster broadcaster;          //broadcaster if needed
     private Action action;      //handles display events
 
@@ -55,8 +44,6 @@ Observer {
     private Plot currentPlot;
     boolean overlayState=false;
 
-//    private CalibrationFunction calibrationFunction;
-
     // plot panels
     public JPanel plotswap;
     public CardLayout plotswapLayout;
@@ -66,11 +53,11 @@ Observer {
     /**
      * Constructor for Applet, no boadcaster
      *
-     * @param   msgHandler  the class to call if the plot button is pushed.
+     * @param mh the class to call if the plot button is pushed.
      */
-    public Display(Broadcaster broadcaster, MessageHandler msgHandler){
-        this(msgHandler);
-        this.broadcaster=broadcaster;
+    public Display(Broadcaster b, MessageHandler mh){
+        this(mh);
+        this.broadcaster=b;
         //add broadcaster to action
         action.setBroadcaster(broadcaster);
     }
@@ -78,11 +65,11 @@ Observer {
     /**
      * Constructor called by all constructors
      *
-     * @param   msgHandler  the class to call to print out messages
+     * @param   mh  the class to call to print out messages
      */
-    public Display(MessageHandler msgHandler){
+    public Display(MessageHandler mh){
+		this.msgHandler=mh;        //where to send output messages
         try{
-            this.msgHandler=msgHandler;        //where to send output messages
             //display event handler
             action=new Action(this, msgHandler);
             setSize(500,500);
@@ -94,12 +81,12 @@ Observer {
             //  panel 1d plot and its scroll bars
             plot1d=new Plot1d(action);
             plot1d.addPlotMouseListener(action);
-            Scroller scroller1d=new Scroller(plot1d);
+            final Scroller scroller1d=new Scroller(plot1d);
             plotswap.add("OneD",scroller1d);
             //  panel 2d plot and its scroll bars
             plot2d=new Plot2d(action);
             plot2d.addPlotMouseListener(action);
-            Scroller scroller2d=new Scroller(plot2d);
+            final Scroller scroller2d=new Scroller(plot2d);
             plotswap.add("TwoD",scroller2d);
             //default setup
             currentPlot=plot1d;
@@ -120,7 +107,7 @@ Observer {
      */
     public void displayHistogram(Histogram hist){
         currentHist=hist;
-        Limits lim=Limits.getLimits(hist);
+        final Limits lim=Limits.getLimits(hist);
         if (hist!=null) {
             if(lim==null){//create a new Limits object for this histogram
                 newHistogram();
@@ -138,14 +125,11 @@ Observer {
      * only works for 1 d
      */
     public void overlayHistogram(Histogram hist){
-        int type;  //type of histogram 1 or 2 d
-
         if (hist!=null) {
             if(Limits.getLimits(hist)==null){
                 newHistogram();
             }
-            type=hist.getType();
-            // test to make sure none of the histograms are 2d
+            /* test to make sure none of the histograms are 2d */
             if (currentPlot instanceof Plot1d){
                 if (hist.getDimensionality()==1){
                     overlayHist=hist;
@@ -221,7 +205,6 @@ Observer {
      */
     private void newHistogram(){
         Limits plotLimits;
-        //System.err.println("newHistogram(): hist="+currentHist.getName());
         if (currentHist!=null){
             try {
                 if ((currentHist.getType()==Histogram.ONE_DIM_INT)||
@@ -230,7 +213,8 @@ Observer {
                 } else {
                     currentPlot=plot2d;
                 }
-                new Limits(currentHist, currentPlot.getIgnoreChZero(),currentPlot.getIgnoreChFull() );
+                new Limits(currentHist, currentPlot.getIgnoreChZero(),
+                currentPlot.getIgnoreChFull() );
                 plotLimits=Limits.getLimits(currentHist);
             } catch ( IndexOutOfBoundsException e ) {
                 //FIXME
@@ -260,7 +244,7 @@ Observer {
     public void printHistogram( Graphics gpage,
     Dimension pageSize,
     int pagedpi) {
-        int runNumber=RunInfo.runNumber;
+        final int runNumber=RunInfo.runNumber;
         if (gpage!=null) {
             currentPlot.print(gpage, pageSize, pagedpi, runNumber,
             JamStatus.instance().getDate());
@@ -281,8 +265,8 @@ Observer {
      * receive broadcast events.
      */
     public void update(Observable observable, Object o){
-        BroadcastEvent be=(BroadcastEvent)o;
-        int command=be.getCommand();
+        final BroadcastEvent be=(BroadcastEvent)o;
+        final int command=be.getCommand();
         if(command==BroadcastEvent.REFRESH){
             displayHistogram(currentHist);
         } else if (command==BroadcastEvent.GATE_SET_ON){
@@ -334,24 +318,14 @@ Observer {
         }
     }
     
-    public void setPeakFindProperties(double width, double sensitivity, boolean cal){
+    public void setPeakFindProperties(double width, double sensitivity, 
+    boolean cal){
     	plot1d.setWidth(width);
     	plot1d.setSensitivity(sensitivity);
     	plot1d.setPeakFindDisplayCal(cal);
     	displayHistogram(currentHist);
     }
 
-    /**
-     * Draw a fit overlayed on the current histogram Plot.
-     */
-    /*public void displayFit(double [] counts, int lowerLimit, int upperLimit){
-        plot1d.displayFit(counts, lowerLimit, upperLimit);
-    }
-
-    public void displayFit(double [] counts, double [] residual, int lowerLimit, int upperLimit){
-        plot1d.displayFit(counts, residual, lowerLimit, upperLimit);
-    }*/
-    
     public void displayFit(
 	double[][] signals,
 	double[] background,
@@ -371,10 +345,11 @@ Observer {
     }
 
     /**
-     * Adds a plot mouse listner, plot mouse is a mouse which is calibrated
-     * to the current display.
+     * Adds a plot mouse listner, plot mouse is a mouse which is
+     * calibrated to the current display.
      *
-     * @param   listener the class to notify when the mouse in pressed in the plot
+     * @param   listener the class to notify when the mouse in pressed
+     * in the plot
      * @see #removePlotMouseListener
      */
     public void addPlotMouseListener(PlotMouseListener listener){
@@ -384,7 +359,8 @@ Observer {
     /**
      * Removes a plot mouse.
      *
-     * @param   listener the class to notify when the mouse in pressed in the plot
+     * @param   listener the class to notify when the mouse in pressed
+     * in the plot
      * @see #addPlotMouseListener
      */
     public void removePlotMouseListener(PlotMouseListener listener){
@@ -397,9 +373,8 @@ Observer {
      * @param   hist  the histogram to display
      */
     private void showPlot(Histogram hist){
-        boolean doRepaint;
         currentHist=hist;
-        doRepaint=false;
+        boolean doRepaint=false;
         //cancel all previous stuff
         if (currentPlot!=null) {
             currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
@@ -437,111 +412,109 @@ Observer {
         }
     }
 
-	JButton bgoto;
+	private JButton bgoto;
     /**
      * Adds the tool bar the left hand side of the plot.
      *
      * @since Version 0.5
      */
     public void addToolbarAction() {
-    	ClassLoader cl=this.getClass().getClassLoader();
-    	
-        JToolBar ptoolbar=new JToolBar("Actions",JToolBar.VERTICAL);
+    	final ClassLoader cl=this.getClass().getClassLoader();
+        final JToolBar ptoolbar=new JToolBar("Actions",JToolBar.VERTICAL);
         this.add(ptoolbar,BorderLayout.WEST);
-        //ptoolbar.setForeground(Color.black);
-        GridBagLayout gb =new GridBagLayout();
-        GridBagConstraints gbc =new GridBagConstraints();
+        final GridBagLayout gb =new GridBagLayout();
+        final GridBagConstraints gbc =new GridBagConstraints();
         gbc.ipady=5;
         ptoolbar.setLayout(gb);
-        Insets insetsToolbar=new Insets(5,5,5,5);
+        final Insets insetsToolbar=new Insets(5,5,5,5);
         gbc.insets=insetsToolbar;
         try{
             JLabel ltoolbar=new JLabel("View",SwingConstants.CENTER);
             addComponent(ptoolbar, ltoolbar, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton bupdate=new JButton("Update");
+            final JButton bupdate=new JButton("Update");
             bupdate.setToolTipText("Click to update display with most current data.");
-            bupdate.setActionCommand("update");        //refresh because update is a component method
+            bupdate.setActionCommand(Action.UPDATE);        //refresh because update is a component method
             bupdate.addActionListener(action);
             addComponent(ptoolbar, bupdate, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JPanel zoomPanel=new JPanel(new GridLayout(2,2));
-            Icon i_expand = new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Zoom24.gif"));
-            JButton bexpand=new JButton(i_expand);
+            final JPanel zoomPanel=new JPanel(new GridLayout(2,2));
+            final Icon i_expand = new ImageIcon(cl.getResource("toolbarButtonGraphics/general/Zoom24.gif"));
+            final JButton bexpand=new JButton(i_expand);
             bexpand.setToolTipText("EXpand. Set new display limits.");
-            bexpand.setActionCommand("expand");
+            bexpand.setActionCommand(Action.EXPAND);
             bexpand.addActionListener(action);
             zoomPanel.add(bexpand);
-            JButton bfull=new JButton("FUll");
-            bfull.setActionCommand("full");
-            bfull.setToolTipText("Click here to set display limits to full histogram extents.");
+            final JButton bfull=new JButton("FUll");
+            bfull.setActionCommand(Action.FULL);
+            bfull.setToolTipText("Set display limits to full histogram extents.");
             bfull.addActionListener(action);
             zoomPanel.add(bfull);
-            Icon i_zoomin=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomIn24.gif"));
-            JButton bzoomin=new JButton(i_zoomin);
+            final Icon i_zoomin=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomIn24.gif"));
+            final JButton bzoomin=new JButton(i_zoomin);
             bzoomin.setToolTipText("ZoomIn the display limits.");
-            bzoomin.setActionCommand("zoomin");
+            bzoomin.setActionCommand(Action.ZOOMIN);
             bzoomin.addActionListener(action);
             zoomPanel.add(bzoomin);
-            Icon i_zoomout=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomOut24.gif"));
-            JButton bzoomout=new JButton(i_zoomout);
+            final Icon i_zoomout=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomOut24.gif"));
+            final JButton bzoomout=new JButton(i_zoomout);
             bzoomout.setToolTipText("ZoomOut the display limits.");
-            bzoomout.setActionCommand("zoomout");
+            bzoomout.setActionCommand(Action.ZOOMOUT);
             bzoomout.addActionListener(action);
             zoomPanel.add(bzoomout);
             addComponent(ptoolbar, zoomPanel, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
             bgoto = new JButton("Goto");
-	        bgoto.setActionCommand("goto");
-	        bgoto.setToolTipText("Click here to zoom in on desired region");
+	        bgoto.setActionCommand(Action.GOTO);
+	        bgoto.setToolTipText("Zoom in on desired region");
 	        bgoto.addActionListener(action);
 	        addComponent(ptoolbar, bgoto, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
             ltoolbar=new JLabel ("Scale",SwingConstants.CENTER);
             addComponent(ptoolbar, ltoolbar, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton blinear=new JButton("LInear ");
-            blinear.setToolTipText("Click here to set counts scale to linear.");
-            blinear.setActionCommand("linear");
+            final JButton blinear=new JButton("LInear ");
+            blinear.setToolTipText("Set counts scale to linear.");
+            blinear.setActionCommand(Action.LINEAR);
             blinear.addActionListener(action);
             addComponent(ptoolbar, blinear, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton blog=new JButton("LOg ");
-            blog.setToolTipText("Click here to set counts scale to log.");
-            blog.setActionCommand("log");
+            final JButton blog=new JButton("LOg ");
+            blog.setToolTipText("Set counts scale to log.");
+            blog.setActionCommand(Action.LOG);
             blog.addActionListener(action);
             addComponent(ptoolbar, blog, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton brange=new JButton("Range");
+            final JButton brange=new JButton("Range");
             brange.setToolTipText("Click here then on display to set limits of counts scale.");
-            brange.setActionCommand("range");
+            brange.setActionCommand(Action.RANGE);
             brange.addActionListener(action);
             addComponent(ptoolbar, brange, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton bauto=new JButton("Auto");
+            final JButton bauto=new JButton("Auto");
             bauto.setToolTipText("Click here to automatically set the counts scale.");
-            bauto.setActionCommand("auto");
+            bauto.setActionCommand(Action.AUTO);
             bauto.addActionListener(action);
             addComponent(ptoolbar, bauto, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
             ltoolbar=new JLabel ("Inquire",SwingConstants.CENTER);
             addComponent(ptoolbar, ltoolbar, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton barea=new JButton("ARea");
+            final JButton barea=new JButton("ARea");
             barea.setToolTipText("Click here then on display to get area and summary stats of a region.");
-            barea.setActionCommand("area");
+            barea.setActionCommand(Action.AREA);
             barea.addActionListener(action);
             addComponent(ptoolbar, barea, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton bnetarea=new JButton("NETarea");
-            bnetarea.setToolTipText("Click here then on display to get net area and summary stats of a region.");
-            bnetarea.setActionCommand("netarea");
+            final JButton bnetarea=new JButton("NETarea");
+            bnetarea.setToolTipText("Get net area and summary stats of a region.");
+            bnetarea.setActionCommand(Action.NETAREA);
             bnetarea.addActionListener(action);
             addComponent(ptoolbar, bnetarea, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
-            JButton bcancel=new JButton("Cancel");
-            bcancel.setActionCommand("cancel");
-            bcancel.setToolTipText("Click here to cancel a toolbar action in progress.");
+            final JButton bcancel=new JButton("Cancel");
+            bcancel.setActionCommand(Action.CANCEL);
+            bcancel.setToolTipText("Cancel an action in progress.");
             bcancel.addActionListener(action);
             addComponent(ptoolbar, bcancel, 0, GridBagConstraints.RELATIVE ,1,1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.SOUTH);
@@ -553,17 +526,16 @@ Observer {
     /**
      * Helper method for GridBagLayout and GridBagConstaints
      *
-     * @return  <code>void</code>
      * @since Version 0.5
      */
     private static void addComponent(Container container, Component component,
     int gridx, int gridy, int gridwidth, int gridheight, int fill,
     int anchor) throws AWTException {
-        LayoutManager lm = container.getLayout();
+        final LayoutManager lm = container.getLayout();
         if (!(lm instanceof GridBagLayout)) {
             throw new AWTException("Invaid layout"+lm);
         } else {
-            GridBagConstraints gbc=new GridBagConstraints ();
+            final GridBagConstraints gbc=new GridBagConstraints ();
             gbc.ipady=5;
             gbc.gridx=gridx;
             gbc.gridy=gridy;
@@ -576,6 +548,12 @@ Observer {
         }
     }
     
+    /**
+     * Set whether the display should auto-scale the counts on a plot when
+     * the viewport changes.
+     *
+     * @param whether true if autoscaling should occur
+     */
     public void setAutoOnExpand(boolean whether){
     	action.setAutoOnExpand(whether);
     }

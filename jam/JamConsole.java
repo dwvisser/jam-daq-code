@@ -137,8 +137,6 @@ public class JamConsole
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
 		textIn = new JTextField(" ");
-		textIn.setBackground(Color.white);
-		textIn.setForeground(Color.black);
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(this);
 		newMessage = true;
@@ -304,43 +302,31 @@ public class JamConsole
 		this.currentListener = msgCommand;
 	}
 
+	public static final String INTS_ONLY="int";
+	
 	/**
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(String _inString) {
-		StringTokenizer inLine; //the input line
-		String[] inWords; //the words in the in line
-		int numberInWords; //number words in inputline
-		int[] parameters;
-
-		String command = null;
-		//int commandLen = 0;
 		int countParam = 0;
-		//make string tokenizer use spaces, commas, and returns as delimiters
+		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		String inString = _inString.trim();
-		inLine = new StringTokenizer(inString, " ,END_LINE");
-		numberInWords = inLine.countTokens();
-		inWords = new String[numberInWords];
-		//check at least something was entered
-		if (inLine.hasMoreTokens()) {
-			command = inLine.nextToken();
-			//commandLen = command.length();
-			// try to see if first token is a number
-			try {
-				parameters = new int[numberInWords];
+		StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
+		int numberInWords = inLine.countTokens();
+		if (inLine.hasMoreTokens()) {//check at least something was entered
+			int [] parameters=new int[numberInWords];
+			String command = inLine.nextToken();
+			try {// try to see if first token is a number
 				parameters[countParam] = Integer.parseInt(command);
 				//if we got this far first token is a int
 				countParam++;
-				command = "int";
-				//commandLen = 3;
-				//not a number so make command
+				command = INTS_ONLY;
 			} catch (NumberFormatException nfe) {
-				//new parameter list
+				/* reset parameter list to hold one less */
 				parameters = new int[numberInWords - 1];
 				countParam = 0;
 			}
-			// rest of tokens must be numbers
-			try {
+			try {// rest of tokens must be numbers
 				while (inLine.hasMoreTokens()) {
 					parameters[countParam] =
 						Integer.parseInt(inLine.nextToken());
@@ -349,9 +335,7 @@ public class JamConsole
 			} catch (NumberFormatException nfe) {
 				errorOutln("Input not a integer");
 			}
-
-			//perform command
-			if (currentListener != null) {
+			if (currentListener != null) {//perform command
 				currentListener.commandPerform(command, parameters);
 			} else {
 				warningOutln("No current Listener for commands [JamConsole");
