@@ -4,7 +4,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandListener;
-import jam.global.GlobalException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -343,14 +342,7 @@ public class Action
 			 * check if gate is being set */
 		} else {
 			if (settingGate) {
-				try {
-					broadcaster.broadcast(
-						BroadcastEvent.GATE_SET_POINT,
-						pChannel);
-				} catch (GlobalException ge) {
-					textOut.errorOutln(
-						getClass().getName() + ".plotMousePressed()" + ge);
-				}
+				broadcaster.broadcast(BroadcastEvent.GATE_SET_POINT,pChannel);
 				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
 				pChannel,pPixel);
 			} else {
@@ -476,11 +468,7 @@ public class Action
 		/* following to recover the chooser if user just overlayed
 		 * a histogram
 		 */
-		try{
-			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
-		} catch (GlobalException e){
-			textOut.errorOutln("While updating histogram: "+e.getMessage());
-		}
+		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
 	}
 
 	/**
@@ -535,11 +523,7 @@ public class Action
 			if (h != null) {
 				JamStatus.instance().setCurrentHistogramName(h.getName());
 				textOut.messageOut(Integer.toString(num)+" ", MessageHandler.END);
-				try {
-					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
-				} catch (GlobalException ge) {
-					textOut.errorOutln(ge.getMessage());
-				}
+				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln(
