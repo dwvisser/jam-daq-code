@@ -48,10 +48,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -93,7 +91,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		textPathHist,
 		textPathData;
 	private final JTextField textPathLog;
-	private final JSpinner sortIntervalSpinner;
 	private static final JamStatus status=JamStatus.instance();
 
 	/* strings of data entered */
@@ -101,7 +98,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 	private String histDirectory, dataDirectory;
 	private String logDirectory;
 
-	private File /*sortDirectory,*/ sortClassPath;
+	private File sortClassPath;
 	private Class sortClass;
 	/* 1/fraction of events to sort */
 	private int sortInterval;
@@ -110,7 +107,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 	private SortDaemon sortDaemon;
 	private NetDaemon netDaemon;
 	private DiskDaemon diskDaemon;
-	//private StorageDaemon storageDaemon;
 	private SortRoutine sortRoutine;
 
 	/* streams to read and write events */
@@ -197,7 +193,8 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		pLabels.add(lep);
 		final JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
 		pLabels.add(llfp);
-		final JLabel lssf = new JLabel("Sort sample fraction", JLabel.RIGHT);
+		/* blank label balances out the grid */
+		final JLabel lssf = new JLabel(/*"Sort sample fraction", JLabel.RIGHT*/);
 		pLabels.add(lssf);
 
 
@@ -331,11 +328,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		JPanel pSortInterval = new JPanel(new GridLayout(1,2, 40,0));
 		pEntries.add(pSortInterval);
 		final Integer one=new Integer(1);
-		sortIntervalSpinner = new JSpinner(new SpinnerNumberModel(one,one,null,
-		one));
-		sortIntervalSpinner.setToolTipText(
-			"Sort every n'th buffer. 1 means sort all events.");
-		pSortInterval.add(sortIntervalSpinner);
 
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
@@ -548,9 +540,8 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 					store=true;
 				}
 			}
-			//setTapeMode(!store);
 			textPathData.setEnabled(store);
-			this.bbrowsed.setEnabled(store);
+			bbrowsed.setEnabled(store);
 		}
 	}
 
@@ -566,12 +557,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		logDirectory = textPathLog.getText().trim() + fileSeparator;
 		if (!cdisk.isSelected()) {
 			dataDirectory = dataDirectory + fileSeparator;
-		}
-		try {
-			//sortInterval = Integer.parseInt(textSortInterval.getText().trim());
-			sortInterval = ((Integer)sortIntervalSpinner.getValue()).intValue();
-		} catch (NumberFormatException nfe) {
-			throw new JamException("Not a valid number for sort Interval");
 		}
 	}
 
@@ -626,10 +611,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		final RingBuffer sortingRing = new RingBuffer();
 		final RingBuffer storageRing =
 			cdisk.isSelected() ? new RingBuffer() : null;
-		/*if (STORE_EVENTS_LOCAL) {
-			storageRing = new RingBuffer();
-		}*/
-		//typical setup of event streams
+		/* typical setup of event streams */
 		try { //create new event input stream class
 			eventInputStream =
 				(EventInputStream) ((Class) inStreamChooser.getSelectedItem())
@@ -757,16 +739,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 	}
 
 	/**
-	 * Makes the tape the device events will be saved to
-	 *
-	 * Author Dale Visser
-	 */
-	/*private void setTapeMode(boolean mode) {
-		textPathData.setEnabled(!mode);
-		this.bbrowsed.setEnabled(!mode);
-	}*/
-
-	/**
 	 * Is the Browse for the Path Name where the
 	 * histogram file to be saved.
 	 *
@@ -838,7 +810,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		inStreamChooser.setEnabled(notlock);
 		outStreamChooser.setEnabled(notlock);
 		sortChoice.setEnabled(notlock);
-		sortIntervalSpinner.setEnabled(notlock);
 		bok.setEnabled(notlock);
 		bapply.setEnabled(notlock);
 		bbrowseh.setEnabled(notlock);
