@@ -1,14 +1,33 @@
 package jam.applet;
+import jam.JamConsole;
+import jam.JamException;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.data.RemoteData;
+import jam.global.CommandListener;
+import jam.global.MessageHandler;
+import jam.plot.Display;
+
 import java.applet.Applet;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.rmi.*;
-import jam.global.*;
-import jam.data.*;
-import jam.plot.*;
-import jam.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.net.URL;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
 /**
  * An applet to allow remote viewing of Jam Histograms
  *
@@ -365,16 +384,16 @@ public class HistApplet
 	 * @param   gates  the list of gates
 	 * @return  <code>void</code> 
 	 */
-	public void setGateList(Gate[] gates) {
+	public void setGateList(List gates) {
 		//if we have gates load gates of current histogram into chooser 
 		if (gateChooser != null) {
 
 			gateChooser.removeAll();
-			if (gates.length == 0) {
+			if (gates.size() == 0) {
 				gateChooser.add("none");
 			} else {
-				for (int i = 0; i < gates.length; i++) {
-					gateChooser.add((String) gates[i].getName());
+				for (int i = 0; i < gates.size(); i++) {
+					gateChooser.add((String) ((Gate)gates.get(i)).getName());
 				}
 			}
 		}
