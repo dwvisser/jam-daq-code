@@ -185,10 +185,8 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
                 dialogCalib.dispose();
             } else {
                 //just so at least a exception is thrown for now
-                throw new DataException("Unregonized command [HistogramControl]");
+                throw new UnsupportedOperationException("Unregonized command: "+command);
             }
-        } catch (DataException je) {
-            msghdlr.errorOutln(je.getMessage());
         } catch (GlobalException ge) {
             msghdlr.errorOutln(getClass().getName()+
             ".actionPerformed(): "+ge);

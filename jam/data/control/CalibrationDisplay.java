@@ -1,5 +1,4 @@
 package jam.data.control;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationFunction;
@@ -192,7 +191,6 @@ ItemListener, WindowListener {
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
         currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
-        try {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
@@ -208,11 +206,8 @@ ItemListener, WindowListener {
                 dialogCalib.dispose();
             } else {
                 //just so at least a exception is thrown for now
-                throw new DataException("Unregonized command [HistogramControl]");
+                throw new UnsupportedOperationException("Unregonized command: "+command);
             }
-        } catch (DataException je) {
-            msghdlr.errorOutln(je.getMessage());
-        }
     }
 
     /**
@@ -238,11 +233,11 @@ ItemListener, WindowListener {
     /**
      * set the calibration coefficients for a histogram
      */
-    private void setCoefficients() throws DataException {
+    private void setCoefficients() {
         double coeff [] =new double[numberTerms];
         int i=0;
         CalibrationFunction calibFunction=currentHistogram.getCalibration();
-        //silently ignore if histogram null
+        /* silently ignore if histogram null */
         if (calibFunction!=null){
             try {
                 for( i=0;i<numberTerms;i++){
@@ -252,8 +247,6 @@ ItemListener, WindowListener {
             } catch (NumberFormatException nfe){
                 msghdlr.errorOutln("Invalid input, coefficient "+
                 calibFunction.getLabels()[i]);
-            } catch (DataException de) {
-                msghdlr.errorOutln(de.getMessage());
             }
             getCalibration();
         } else {
