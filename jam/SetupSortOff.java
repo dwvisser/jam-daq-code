@@ -31,7 +31,7 @@ class SetupSortOff  implements ItemListener {
     		try{
                 if (jamMain.canSetSortMode()) {
                     resetSort();//clear current data areas and kill daemons
-                    loadNames();
+                    //loadNames();
                     loadSorter();
                     msgHandler.messageOutln("Loaded sort class '"+
                     sortRoutine.getClass().getName()+
@@ -60,12 +60,12 @@ class SetupSortOff  implements ItemListener {
     /**
      * Use for mode when sorting from disk.
      */
-    public static final int DISK=0;
+    //public static final int DISK=0;
     
     /**
      * Use for mode when sorting from tape.
      */
-    public static final int TAPE=1;
+    //public static final int TAPE=1;
 	private final static String OK="OK";
 	private final static String Apply="Apply";
 	private final static String Cancel="Cancel";
@@ -73,7 +73,7 @@ class SetupSortOff  implements ItemListener {
     
 	private final String defaultSortPath, defaultSortRoutine, 
 	defaultEventInStream, 
-    defaultEventOutStream, defaultEventPath, defaultSpectra, defaultTape;
+    defaultEventOutStream, defaultEventPath, defaultSpectra/*, defaultTape*/;
 
     /* handles we need */
     final private JamMain jamMain;
@@ -103,18 +103,18 @@ class SetupSortOff  implements ItemListener {
     /**
      * Indicates event source: from DISK or TAPE.
      */
-    private int mode;
+    //private int mode;
     
     /**
      * The path to the tape device.
      */
-    private String tapeDevice;
+    //private String tapeDevice;
 
     /* dialog box widgets */
     private final  JDialog d;
-    private final JTextField textSortPath, textDev;
+    private final JTextField textSortPath;//, textDev;
     private final JCheckBox checkLock;
-    private final JToggleButton ctape, cdisk,defaultPath,specify;
+    private final JToggleButton /*ctape, cdisk,*/defaultPath,specify;
     private final JButton bok, bapply, bbrowsef;
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 	
@@ -132,7 +132,7 @@ class SetupSortOff  implements ItemListener {
         defaultEventPath =JamProperties.getPropString(
         JamProperties.EVENT_INPATH);
         defaultSpectra=JamProperties.getPropString(JamProperties.HIST_PATH);
-        defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
+        //defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
         final boolean useDefaultPath=(defaultSortPath.equals(
         JamProperties.DEFAULT_SORT_CLASSPATH));
         if (!useDefaultPath){
@@ -263,8 +263,8 @@ class SetupSortOff  implements ItemListener {
 			notDone = (!match) && it.hasNext();
 		}
 		pChoosers.add(outStreamChooser);
-        final JPanel pselect=new JPanel();
-        pselect.setLayout(new FlowLayout(FlowLayout.CENTER,space,space));
+        //final JPanel pselect=new JPanel();
+        /*pselect.setLayout(new FlowLayout(FlowLayout.CENTER,space,space));
         pChooserArea.add(pselect,BorderLayout.SOUTH);
         pselect.add(new JLabel("Tape Device:"));
         textDev=new JTextField(defaultTape);
@@ -293,7 +293,7 @@ class SetupSortOff  implements ItemListener {
         cdisk.setToolTipText("The only option for now.");
         eventMode.add(cdisk);
         pselect.add(ctape);
-        pselect.add(cdisk);
+        pselect.add(cdisk);*/
         final JPanel pb=new JPanel();
         pb.setLayout(new GridLayout(1,0,space,space));
         cp.add(pb,BorderLayout.SOUTH);
@@ -330,8 +330,7 @@ class SetupSortOff  implements ItemListener {
                 d.dispose();
             }
         } );
-
-        setMode(DISK);    //initial mode is from disk
+		sortControl.setDevice(SortControl.DISK);
         d.pack();
     }
 
@@ -383,11 +382,11 @@ class SetupSortOff  implements ItemListener {
      * Loads the names of objects entered in the dialog box into 
      * String objects.
      */
-    private void loadNames() {
+    /*private void loadNames() {
         synchronized (this){
         	tapeDevice=textDev.getText();
         }
-    }
+    }*/
 
     /**
      * Resolves the String objects into class names and loads the 
@@ -492,17 +491,17 @@ class SetupSortOff  implements ItemListener {
         diskDaemon.setupOff(eventInput, eventOutput);
         StorageDaemon storageDaemon=diskDaemon;
         /* setup source of data tape */
-        if(mode==TAPE){
+        /*if(mode==TAPE){
             final TapeDaemon tapeDaemon = new TapeDaemon(sortControl, 
             msgHandler);
             tapeDaemon.setDevice(tapeDevice);
             tapeDaemon.setupOff(eventInput, eventOutput);
             deviceName=tapeDevice;
             storageDaemon=tapeDaemon;
-        } else {
+        } else {*/
             deviceName="Disk";
             //storageDaemon=diskDaemon;
-        }
+        //}
         /* tell run control about all, disk always to device */
         sortControl.setup(this, sortDaemon, storageDaemon, 
         diskDaemon, deviceName);
@@ -543,22 +542,22 @@ class SetupSortOff  implements ItemListener {
      * @see #DISK
      * @see #TAPE
      */
-    private void setMode(int m) {
+    /*private void setMode(int m) {
         if (m==TAPE) {
         	synchronized (this) {
             	this.mode=TAPE;
             }
             sortControl.setDevice(SortControl.TAPE);
-            textDev.setEditable(true);
+            //textDev.setEditable(true);
         }
         if (m==DISK) {
             synchronized (this) {
             	this.mode=DISK;
             }
             sortControl.setDevice(SortControl.DISK);
-            textDev.setEditable(false);
+            //textDev.setEditable(false);
         }
-    }
+    }*/
 
     /**
      * Browses for the sort file.
@@ -593,18 +592,18 @@ class SetupSortOff  implements ItemListener {
     	checkLock.setSelected(lock);
     	inStreamChooser.setEnabled(notLock);
     	outStreamChooser.setEnabled(notLock);
-    	cdisk.setEnabled(notLock);
+    	//cdisk.setEnabled(notLock);
     	bok.setEnabled(notLock);
     	bapply.setEnabled(notLock);
     	specify.setEnabled(notLock);
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            if (mode==DISK) {
+            //if (mode==DISK) {
                 jamMain.setSortMode(JamMain.OFFLINE_DISK);
-            } else {
+            /*} else {
                 jamMain.setSortMode(JamMain.OFFLINE_TAPE);
-            }
+            }*/
             bbrowsef.setEnabled(false);
         } else{
             jamMain.setSortMode(JamMain.NO_SORT);
