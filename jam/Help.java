@@ -114,7 +114,7 @@ class Help {
 		final String text = new String(textarray, 0, length);
 		center.add(new JScrollPane(new JTextArea(text)));
 		contents.add(center, BorderLayout.CENTER);
-		final JPanel south = new JPanel(new GridLayout(1, 0));
+		final JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		contents.add(south, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
