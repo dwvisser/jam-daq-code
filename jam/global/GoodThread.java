@@ -78,7 +78,7 @@ public class GoodThread extends Thread {
      *
      * @return <code>true</code> if OK to resume, <code>false</code> if state is <code>STOP</code>
      */
-    protected boolean checkState(){
+     public boolean checkState(){
     	synchronized (stateLock){
 			while (state == State.SUSPEND) {
 				try {
