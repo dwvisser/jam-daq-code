@@ -2,7 +2,6 @@ package jam.sort;
 
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.data.Monitor;
 import jam.global.Beginner;
 import jam.global.Ender;
 import jam.global.Sorter;
@@ -98,24 +97,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * constant used to define a 2 d gate
 	 */
 	protected final static int GATE_2D = Gate.TWO_DIMENSION;
-
-	/**
-	 * constant used to define a scaler monitor a monitor whose value is derived
-	 * from a scaler
-	 */
-	protected final static int MONI_SCAL = Monitor.SCALER;
-
-	/**
-	 * constant used to define a gate monitor a monitor whose value is derived
-	 * from a gate
-	 */
-	protected final static int MONI_GATE = Monitor.GATE;
-
-	/**
-	 * constant used to define a sort monitor a monitor whose value is derived
-	 * in the sort routine
-	 */
-	protected final static int MONI_SORT = Monitor.SORT;
 
 	/**
 	 * Indicates that the parameter count hasn't been set by any means.
