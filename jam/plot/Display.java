@@ -364,6 +364,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 				action.plotChanged();
 				currentPlot = p;				
 			}			
+			toolbar.setHistogramProperties(currentPlot.getDimensionality(), currentPlot.getBinWidth());
 		}
 	} 
 

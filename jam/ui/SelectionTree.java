@@ -5,9 +5,12 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.global.SortMode;
 import jam.global.MessageHandler;
 import jam.plot.Display;
 
+//import java.awt.*;
+import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -31,6 +36,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class SelectionTree extends JPanel implements Observer {
 
 	JTree histTree;
+	
+	DefaultTreeModel treeModel;
+	
+	DefaultMutableTreeNode rootNode;
 	
 	private final MessageHandler console;
 
@@ -50,9 +59,32 @@ public class SelectionTree extends JPanel implements Observer {
 		broadcaster = Broadcaster.getSingletonInstance();
 		console = status.getMessageHandler();
 		display = status.getDisplay();
-		//broadcaster.addObserver(this);
+		broadcaster.addObserver(this);
 		
-		 histTree = new JTree();
+		Dimension dim;
+		dim=getMinimumSize();
+		dim.width=160;
+		//setMinimumSize(dim);
+		setPreferredSize(dim);
+		 setLayout(new BorderLayout());
+		
+		 treeModel= new DefaultTreeModel(new DefaultMutableTreeNode("No Data") );
+		 	
+		 histTree = new JTree(treeModel);
+		 histTree.setCellRenderer(new SelectionTreeCellRender());
+		 histTree.addTreeSelectionListener(new TreeSelectionListener(){
+	 	    public void valueChanged(TreeSelectionEvent e) {
+	 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					histTree.getLastSelectedPathComponent();
+	 	        if (node == null) 
+	 	        	return;
+	 	        Object nodeInfo = node.getUserObject();
+		 	    selection(nodeInfo);		 	        
+	 	    }		 			 	
+		 });
+		 
+		 this.add(new JScrollPane(histTree), BorderLayout.CENTER);
+		 
 		//createHistTree();
  
 	}	
@@ -60,12 +92,21 @@ public class SelectionTree extends JPanel implements Observer {
 	
 	private void createHistTree(){
 
-		histTree.removeAll();
 		
-		//String fileName=status.getOpenFile();
-	
-		 DefaultMutableTreeNode fileNode =
-		      new DefaultMutableTreeNode("FileName");
+		SortMode sortMode =status.getSortMode();
+		
+		if (sortMode==SortMode.FILE){
+			String fileName=status.getOpenFile().getName();
+			rootNode = new DefaultMutableTreeNode(fileName);
+		}else if (sortMode==SortMode.OFFLINE){
+			rootNode = new DefaultMutableTreeNode("Offline Sort ");
+		} else if ((sortMode==SortMode.ONLINE_DISK) ||(sortMode==SortMode.ONLINE_DISK)){
+			rootNode = new DefaultMutableTreeNode("Online Sort ");
+		} else if (sortMode ==SortMode.NO_SORT) {
+			rootNode = new DefaultMutableTreeNode("Histograms ");
+		} else {
+			rootNode = new DefaultMutableTreeNode("No Data ");
+		}
 		 
 		 Iterator iter = Histogram.getHistogramList().iterator();
 		 
@@ -84,28 +125,17 @@ public class SelectionTree extends JPanel implements Observer {
 		 		histNode.add(gateNode);
 		 	}
 			
-			 fileNode.add(histNode);
+			 rootNode.add(histNode);
 		 }
 
-		 histTree = new JTree(fileNode);
-		 histTree.setCellRenderer(new SelectionTreeCellRender());
-		 setLayout(new BorderLayout());
-		 this.add(new JScrollPane(histTree), BorderLayout.CENTER);
-	
-		 histTree.addTreeSelectionListener(new TreeSelectionListener(){
-		 	    public void valueChanged(TreeSelectionEvent e) {
-		 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-						histTree.getLastSelectedPathComponent();
-		 	        if (node == null) 
-		 	        	return;
-		 	        Object nodeInfo = node.getUserObject();
-			 	    selection(nodeInfo);		 	        
-		 	    }		 			 	
-		 });
+		 treeModel.setRoot(rootNode);		
+		 
 	}
 	
 	public void refresh(){
 		createHistTree();
+		repaint();
+		histTree.repaint();
 	}
 	
 	private void selection(Object nodeObject){
@@ -135,6 +165,13 @@ public class SelectionTree extends JPanel implements Observer {
 		
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			createHistTree();
+		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
+			createHistTree();
+		} else if (command == BroadcastEvent.Command.GATE_ADD) {
+			createHistTree();
+		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
+				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
+			refresh();
 		}
 		/*
 			final String lastHistName = status.getHistName();
@@ -144,14 +181,6 @@ public class SelectionTree extends JPanel implements Observer {
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			syncHistChooser();			
-		} else if (command == BroadcastEvent.Command.GATE_ADD) {
-			final String lastHistName = status.getHistName();
-			selectHistogram(Histogram.getHistogram(lastHistName));
-			gatesChanged();
-		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
-				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
-			gateChooser.repaint();
-			histogramChooser.repaint();
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) be.getContent());
 		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){

@@ -601,6 +601,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		selectingArea = false;
 		markArea = false;
 		setMarkingChannels(false);		
+		binWidth=1.0;
+
 	}
 	
 	void setDisplayingGate(boolean dg) {

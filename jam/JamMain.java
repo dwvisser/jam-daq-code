@@ -109,14 +109,15 @@ public final class JamMain extends JFrame implements Observer {
 		contents.add(selectBar, BorderLayout.NORTH);
 		
 		//FIXME KBS for selection tree		
-		// Histogram selection tree 
-		/*
+		// Histogram selection tree 		
 		SelectionTree selectTree = new SelectionTree();
+		
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
 		splitTree.setResizeWeight(0.5);
 		contents.add(splitTree, BorderLayout.CENTER);		
+		
 		/**/
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -137,7 +138,7 @@ public final class JamMain extends JFrame implements Observer {
 		showMainWindow(showGUI);
 		
 		//FIXME KBS for selection tree
-		//selectTree.refresh();
+		selectTree.refresh();
 	}
 
 	/**

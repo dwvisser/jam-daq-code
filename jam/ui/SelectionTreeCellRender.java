@@ -29,29 +29,36 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements 
 	private static final ImageIcon histIcon1D =
 		new ImageIcon(cl.getResource("jam/ui/hist1D.png"));
 	private static final ImageIcon gateIcon1D =
-		new ImageIcon(cl.getResource("jam/ui/gate1D.png"));
+		new ImageIcon(cl.getResource("jam/ui/gate1D.png"));	
+	private static final ImageIcon gateDefinedIcon1D =
+		new ImageIcon(cl.getResource("jam/ui/gateDefined1D.png"));
 	
 	private static final ImageIcon histIcon2D =
 		new ImageIcon(cl.getResource("jam/ui/hist2D.png"));
 	
 	private static final ImageIcon gateIcon2D =
 		new ImageIcon(cl.getResource("jam/ui/gate2D.png"));
+	private static final ImageIcon gateDefinedIcon2D =
+		new ImageIcon(cl.getResource("jam/ui/gateDefined2D.png"));
 	
 	
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		
 		if (selected) {
-			setBackground(getBackgroundSelectionColor());
 			setBackground(Color.BLUE);
+
 			setForeground(getTextSelectionColor());
+			setForeground(Color.BLUE);			
 		} else {
 			setBackground(getBackgroundNonSelectionColor() );
-			setBackground(Color.WHITE);
+
 			setForeground(getTextNonSelectionColor());
+			setForeground(Color.BLACK);			
 		}
-		setBackground(Color.BLUE);
-		setForeground(Color.BLUE);
+		//setBackground(Color.BLUE);
+		//setBackground(Color.BLUE);
+		//setForeground(Color.BLUE);
 		
 		Object nodeObject =((DefaultMutableTreeNode)value).getUserObject();
 		if (nodeObject instanceof Histogram){
@@ -68,13 +75,22 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements 
 			Gate gate =(Gate)nodeObject;
 			setText( gate.getName() );
 			if (gate.getDimensionality()==1){
-				setIcon(gateIcon1D);		
+				if (gate.isDefined()){
+					setIcon(gateDefinedIcon1D);					
+				}else {
+					setIcon(gateIcon1D);
+				}
 			}else{
-				setIcon(gateIcon2D);
+				if (gate.isDefined()){
+					setIcon(gateDefinedIcon2D);					
+				}else {
+					setIcon(gateIcon2D);
+				}
 			}
 		}else {
-			setText( "File Test" );			
-//			setText( (String)usrObj );
+			String name =(String)nodeObject;
+			setIcon(null);
+			setText(name );			
 		}
 		return this;
 	}

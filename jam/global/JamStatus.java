@@ -28,6 +28,8 @@ public final class JamStatus {
 	private static MessageHandler console;
 	private static FrontEndCommunication frontEnd;
 	private boolean showGUI=true;
+	private SortMode sortMode = SortMode.NO_SORT;
+	private File openFile = null;
 
 	/**
 	 * The one instance of JamStatus.
@@ -150,8 +152,6 @@ public final class JamStatus {
 		}
 	}
 
-	private SortMode sortMode = SortMode.NO_SORT;
-	private File openFile = null;
 
 	/**
 	 * @return the current sort mode
