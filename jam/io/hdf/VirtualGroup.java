@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 /**
  * Class to represent an HDF <em>Virtual Group</em> data object.
  *
@@ -49,8 +47,8 @@ final class VirtualGroup extends DataObject {
 		refreshBytes();
 	}
 
-	VirtualGroup(byte[] data, short tag, short ref) {
-		super(data, tag, ref);
+	VirtualGroup(){
+	    super();
 	}
 
 	/**

@@ -9,8 +9,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 /**
  * Class to represent an HDF <em>Data identifier label</em> data object.  The label is meant to be a short
  * probably one or 2 word <em>label</em>.
@@ -45,8 +43,8 @@ final class DataIDLabel extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	DataIDLabel(byte[] data, short tag, short reference) {
-		super(data, tag, reference);
+	DataIDLabel(){
+	    super();
 	}
 
 	/**
@@ -57,7 +55,6 @@ final class DataIDLabel extends DataObject {
 	protected void interpretBytes() throws HDFException {
 		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		final DataInputStream dis = new DataInputStream(bais);
-
 		try {
 			final short tag = dis.readShort();
 			final short ref = dis.readShort();

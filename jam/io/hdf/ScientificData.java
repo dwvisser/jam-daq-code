@@ -38,7 +38,8 @@ final class ScientificData extends DataObject {
 	private byte inputMode;
 
 	private static final byte STORE = 0;
-	private static final byte WAIT_AND_READ = 1;
+	private static final byte WAIT_TO_READ = 1;
+	private static final String REF_MSG = "DataObject mode not properly set: Ref# ";
 
 	private int[] counts;
 	private double[] countsD;
@@ -91,9 +92,13 @@ final class ScientificData extends DataObject {
 		this.counts2dD = counts2d;
 	}
 
-	ScientificData(int offset, int length, short t, short reference) {
-		super(offset, length, t, reference);
-		inputMode = WAIT_AND_READ;
+	void init(int offset, int length, short tag, short reference) {
+		super.init(offset, length, tag, reference);
+		inputMode = WAIT_TO_READ;
+	}
+	
+	ScientificData(){
+	    super();
 	}
 
 	/**
@@ -116,7 +121,7 @@ final class ScientificData extends DataObject {
 			case STORE : //read data from internal array
 				localBytes = bytes;
 				break;
-			case WAIT_AND_READ :
+			case WAIT_TO_READ :
 				localBytes = new byte[length];
 				try {
 					file.seek(offset);
@@ -128,14 +133,14 @@ final class ScientificData extends DataObject {
 				break;
 			default :
 				throw new IllegalStateException(
-					"DataObject mode not properly set: Ref# " + ref);
+					REF_MSG + ref);
 		}
 		final int[] output = new int[size];
-		final DataInput di =
+		final DataInput dataInput =
 			new DataInputStream(new ByteArrayInputStream(localBytes));
 		try {
 			for (int i = 0; i < size; i++) {
-				output[i] = di.readInt();
+				output[i] = dataInput.readInt();
 			}
 		} catch (IOException e) {
 			throw new HDFException(
@@ -157,7 +162,7 @@ final class ScientificData extends DataObject {
 			case STORE : //read data from internal array
 				localBytes = bytes;
 				break;
-			case WAIT_AND_READ :
+			case WAIT_TO_READ :
 				localBytes = new byte[length];
 				try {
 					file.seek(offset);
@@ -169,7 +174,7 @@ final class ScientificData extends DataObject {
 				break;
 			default :
 				throw new HDFException(
-					"DataObject mode not properly set: Ref# " + ref);
+					REF_MSG + ref);
 		}
 		output = new double[size];
 		final DataInput di =
@@ -194,7 +199,7 @@ final class ScientificData extends DataObject {
 			case STORE : //read data from internal array
 				localBytes = bytes;
 				break;
-			case WAIT_AND_READ :
+			case WAIT_TO_READ :
 				localBytes = new byte[length];
 				try {
 					file.seek(offset);
@@ -206,7 +211,7 @@ final class ScientificData extends DataObject {
 				break;
 			default :
 				throw new HDFException(
-					"DataObject mode not properly set: Ref# " + ref);
+					REF_MSG + ref);
 		}
 		int[][] output = new int[sizeX][sizeY];
 		final DataInput di =
@@ -234,7 +239,7 @@ final class ScientificData extends DataObject {
 			case STORE : //read data from internal array
 				localBytes = bytes;
 				break;
-			case WAIT_AND_READ :
+			case WAIT_TO_READ :
 				localBytes = new byte[length];
 				try {
 					file.seek(offset);
@@ -246,7 +251,7 @@ final class ScientificData extends DataObject {
 				}
 			default :
 				throw new HDFException(
-					"DataObject mode not properly set: Ref# " + ref);
+					REF_MSG + ref);
 		}
 		double[][] output = new double[sizeX][sizeY];
 		final DataInput di =

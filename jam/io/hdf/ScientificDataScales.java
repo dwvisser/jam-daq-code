@@ -3,8 +3,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
-
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
  *
@@ -16,18 +14,17 @@ final class ScientificDataScales extends DataObject {
 	/**
 	 * The number of dimensions
 	 */
-	private int rank;
+	private final int rank;
 
 	/**
 	 * The size of the dimensions.  
 	 */
-	private int sizeX, sizeY;
+	private final int sizeX, sizeY;
 
 	private static final byte TRUE = 1;//FALSE=0
 
 	ScientificDataScales(ScientificDataDimension sdd) throws HDFException {
 		super(DFTAG_SDS); //sets tag
-		int i, j;
 		rank = sdd.getRank();
 		sizeX = sdd.getSizeX();
 		sizeY = sdd.getSizeY();
@@ -40,11 +37,11 @@ final class ScientificDataScales extends DataObject {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
-			for (i = 0; i < rank; i++) {
+			for (int i = 0; i < rank; i++) {
 				dos.writeByte(TRUE);
 			}
-			for (i = 0; i < rank; i++) {
-				for (j = 0; j < rank; j++) {
+			for (int i = 0; i < rank; i++) {
+				for (int j = 0; j < rank; j++) {
 					dos.writeInt(j);
 				}
 			}

@@ -5,8 +5,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import javax.swing.JOptionPane;
-
 /**
  * Class to represent an HDF <em>File Description</em> data object.  The text is meant to be a description of
  * the contents of the file.
@@ -43,9 +41,8 @@ final class FileDescription extends DataObject {
 	 */
 	public void interpretBytes() throws HDFException {
 		byte[] temp;
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bais);
-
+		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bais);
 		try {
 			temp = new byte[bytes.length];
 			dis.read(temp);

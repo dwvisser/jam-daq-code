@@ -16,10 +16,10 @@ final class ScientificDataLabel extends DataObject {
 
 	private String[] labels;
 
-	ScientificDataLabel(byte[] data, short t, short reference) {
-		super(data, t, reference);
+	ScientificDataLabel(){
+	    super();
 	}
-
+	
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 *

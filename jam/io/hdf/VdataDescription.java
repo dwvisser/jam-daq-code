@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 /**
  * Class to represent an HDF <em>Vdata description</em> data object.
  * 
@@ -214,9 +212,9 @@ public final class VdataDescription extends DataObject {
         }
         return rval;
     }
-
-    VdataDescription(byte[] data, short tag, short reference) {
-        super(data, tag, reference);
+    
+    VdataDescription(){
+        super();
     }
 
     public void interpretBytes() throws HDFException {

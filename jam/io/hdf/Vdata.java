@@ -23,14 +23,14 @@ public final class Vdata extends DataObject {
 	/**
 	 * The vector of fields.  Contains the useful java representations of the objects.
 	 */
-	private final Object[][] cells;
+	private Object[][] cells;
 
-	private final int nvert;
-	private final short[] order;
-	private final short nfields;
-	private final short ivsize;
-	private final short[] types;
-	private final short[] offsets;
+	private int nvert;
+	private short[] order;
+	private short nfields;
+	private short ivsize;
+	private short[] types;
+	private short[] offsets;
 	
 	Vdata(VdataDescription vdd) {
 		super(DFTAG_VS); //sets tag
@@ -46,8 +46,12 @@ public final class Vdata extends DataObject {
 		setRef(description.getRef());
 	}
 	
-	Vdata(byte[] data, short t, short reference) throws HDFException {
-		super(data, t, reference);
+	Vdata(){
+	    super();
+	}
+	
+	void init(byte[] data, short tag, short reference) throws HDFException{
+		super.init(data, tag, reference);
 		description = (VdataDescription) (getObject(DFTAG_VH, reference));
 		description.interpretBytes();
 		nfields = description.getNumFields();

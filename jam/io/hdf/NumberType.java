@@ -100,8 +100,12 @@ final class NumberType extends DataObject {
 		createBytes(type);
 	}
 
-	NumberType(byte[] data, short tag, short reference) {
-		super(data, tag, reference);
+//	NumberType(byte[] data, short tag, short reference) {
+//		super(data, tag, reference);
+//	}
+	
+	NumberType(){
+	    super();
 	}
 	
 	private void createBytes(byte type) {

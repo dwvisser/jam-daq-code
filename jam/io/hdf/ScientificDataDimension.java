@@ -49,21 +49,6 @@ final class ScientificDataDimension extends DataObject {
 		return rval;
 	}
 	
-	/*	FIXME KBS remove
-	 *  ScientificDataDimension(Histogram h) throws HDFException {
-			super(DFTAG_SDD); //sets tag
-			rank = h.getDimensionality();
-			sizeX = h.getSizeX();
-			sizeY = h.getSizeY();
-			if (h.getType().isInteger()) {
-				numberType = NumberType.INT;
-			} else {
-				numberType = NumberType.DOUBLE;			
-			}
-			ScientificDataDimension(rank, sizeX, sizeY, numberType);
-		}
-	*/	
-	
 	ScientificDataDimension(int rank, int sizeX, int sizeY, byte numberType) throws HDFException {
 		super(DFTAG_SDD); //sets tag
 		this.rank=rank;
@@ -100,9 +85,9 @@ final class ScientificDataDimension extends DataObject {
 		 */
 		new ScientificDataScales(this);
 	}
-
-	ScientificDataDimension(byte[] data, short t, short reference) {
-		super(data, t, reference);
+	
+	ScientificDataDimension(){
+	    super();
 	}
 
 	public void interpretBytes() throws HDFException {

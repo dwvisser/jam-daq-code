@@ -5,11 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 /**
  * Class to represent an HDF <em>Numerical Data Group</em> data object.
@@ -27,12 +27,8 @@ final class NumericalDataGroup extends DataObject {
 
 	NumericalDataGroup() throws HDFException {
 		super(DFTAG_NDG); //sets tag
-		elements = new Vector();
+		elements = Collections.synchronizedList(new ArrayList());
 		refreshBytes();
-	}
-
-	NumericalDataGroup(byte[] data, short t, short reference) {
-		super(data, t, reference);
 	}
 
 	/**
