@@ -61,16 +61,6 @@ public class ImpExpORNL extends AbstractImpExp {
 
 	private int totalHalfWords;
 
-	private int temp;
-
-	private int year;
-
-	private int month;
-
-	private int day;
-
-	private String chilText;
-
 	/* Histogram info in Drr file for each histogram */
 	private int[] dim; // Histogram dimensionality
 
@@ -135,10 +125,6 @@ public class ImpExpORNL extends AbstractImpExp {
 	private int[] iDnumber; //ID list
 
 	private byte[] tempShort = new byte[2];
-
-	public ImpExpORNL() {
-		super();
-	}
 
 	private static final String[] EXTS = { "his", "drr" };
 
@@ -205,7 +191,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Read in ORNL drr file, which is the index to the his file.
 	 */
 	private void readDrr(InputStream buffin) throws IOException,
@@ -236,15 +222,14 @@ public class ImpExpORNL extends AbstractImpExp {
 		msgHandler.messageOut("file byte order: " + byteOrder + ", ");
 		totalHist = byteArrayToInt(totalHistByte, 0); //number of histograms
 		totalHalfWords = readInt(disDrr); //total number of 16 bit words
-		temp = readInt(disDrr); //space nothing defined
-		year = readInt(disDrr); //date year
-		month = readInt(disDrr); //date month
-		day = readInt(disDrr); //date day
-		temp = readInt(disDrr); //time hour
-		temp = readInt(disDrr); //time minutes
-		temp = readInt(disDrr); //time seconds
-		disDrr.read(bChilText); //text from chill file
-		chilText = String.valueOf(bChilText);
+		readInt(disDrr); //space nothing defined
+		readInt(disDrr); //year
+		readInt(disDrr); //month
+		readInt(disDrr); //day of month
+		readInt(disDrr); //hour
+		readInt(disDrr); //minutes
+		readInt(disDrr); //seconds
+		disDrr.read(bChilText); //ASCII text from CHIL file
 		/* Histogram info in Drr file */
 		dim = new int[totalHist]; // Histogram dimensionality
 		chSize = new int[totalHist]; //half words per channel
@@ -280,21 +265,21 @@ public class ImpExpORNL extends AbstractImpExp {
 		iDnumber = new int[totalHist];
 		/* loop for all histograms reading directory entries */
 		for (int i = 0; i < totalHist; i++) {
-			dim[i] = (int) readShort(disDrr); //Histogram dimensionality
-			chSize[i] = (int) readShort(disDrr); //half-words per channel
-			param1[i] = (int) readShort(disDrr); //dummy param #
-			param2[i] = (int) readShort(disDrr); //dummy param #
-			param3[i] = (int) readShort(disDrr); //dummy param #
-			param4[i] = (int) readShort(disDrr); //dummy param #
-			lenParRaw1[i] = (int) readShort(disDrr); //length Raw parameter
-			lenParRaw2[i] = (int) readShort(disDrr); //length Raw parameter
-			lenParRaw3[i] = (int) readShort(disDrr); //length Raw parameter
-			lenParRaw4[i] = (int) readShort(disDrr); //length Raw parameter
-			lenParScal1[i] = (int) readShort(disDrr);
+			dim[i] = readShort(disDrr); //Histogram dimensionality
+			chSize[i] = readShort(disDrr); //half-words per channel
+			param1[i] = readShort(disDrr); //dummy param #
+			param2[i] = readShort(disDrr); //dummy param #
+			param3[i] = readShort(disDrr); //dummy param #
+			param4[i] = readShort(disDrr); //dummy param #
+			lenParRaw1[i] = readShort(disDrr); //length Raw parameter
+			lenParRaw2[i] = readShort(disDrr); //length Raw parameter
+			lenParRaw3[i] = readShort(disDrr); //length Raw parameter
+			lenParRaw4[i] = readShort(disDrr); //length Raw parameter
+			lenParScal1[i] = readShort(disDrr);
 			/* length Scaled parameters */
-			lenParScal2[i] = (int) readShort(disDrr);
-			lenParScal3[i] = (int) readShort(disDrr);
-			lenParScal4[i] = (int) readShort(disDrr);
+			lenParScal2[i] = readShort(disDrr);
+			lenParScal3[i] = readShort(disDrr);
+			lenParScal4[i] = readShort(disDrr);
 			minCh1[i] = readShort(disDrr); //min channel 1
 			minCh2[i] = readShort(disDrr); //min channel 2
 			minCh3[i] = readShort(disDrr); //min channel 3
@@ -326,7 +311,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		return numHists >= 0 && numHists <= 8000;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Read in a histogram.
 	 */
 	private void readHist(RandomAccessFile fileHis, int k) throws IOException {
@@ -431,11 +416,10 @@ public class ImpExpORNL extends AbstractImpExp {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * write out a ORNL drr file
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
-		Histogram hist;
 		final StringUtilities su = StringUtilities.instance();
 		int diskOffSet = 0;
 		DataOutputStream dosDrr = new DataOutputStream(buffout);
@@ -448,15 +432,15 @@ public class ImpExpORNL extends AbstractImpExp {
 		 */
 		totalHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
-			hist = ((Histogram) allHists.get(i));
-			int sizeX = hist.getSizeX();
-			int sizeY = hist.getSizeY(); //will be zero for 1-d
+			final Histogram hist = ((Histogram) allHists.get(i));
+			final int sizeX = hist.getSizeX();
+			final int sizeY = hist.getSizeY(); //will be zero for 1-d
 			final int dim=hist.getDimensionality();
 			if (dim==1) {
 				totalHalfWords = totalHalfWords + 2 * sizeX;
 			} else if (dim == 2) {
-				totalHalfWords = totalHalfWords + 2 * hist.getSizeX()
-						* hist.getSizeY();
+				totalHalfWords = totalHalfWords + 2 * sizeX
+						* sizeY;
 			} else {
 				throw new IOException(
 						"Unrecognized histogram type [ImpExpORNL]");
@@ -478,7 +462,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		dosDrr.writeBytes(su.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (int i = 0; i < allHists.size(); i++) {
-			hist = ((Histogram) allHists.get(i));
+			final Histogram hist = ((Histogram) allHists.get(i));
 			short sizeX = (short) (hist.getSizeX());
 			short sizeY = (short) (hist.getSizeY()); //will be zero for 1-d
 			// use data output stream name only 15 char long title 50 char long
@@ -534,7 +518,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		dosDrr.close();
 	}
 
-	/**
+	/* non-javadoc:
 	 * Write out the .his file.
 	 */
 	private void writeHis(OutputStream outputStream) throws IOException {
@@ -579,7 +563,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		dosHis.close();
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
@@ -598,7 +582,7 @@ public class ImpExpORNL extends AbstractImpExp {
 				| ((low & 0xFF) << 8) | (lowest & 0xFF);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get a short from an array of byes
 	 */
 	private short byteArrayToShort(byte[] array, int offset) {
@@ -638,9 +622,6 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * @param msg
 	 *            text to go on title bar of dialog box
 	 * @return whether file was successfully read
-	 * @exception ImpExpException
-	 *                all exceptions given to <code>ImpExpException</code> go
-	 *                to the msgHandler
 	 */
 	protected boolean openFile(File in, String msg) {
 		File inFile = in;
