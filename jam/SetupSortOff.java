@@ -48,7 +48,11 @@ import javax.swing.border.EmptyBorder;
  */
 public final class SetupSortOff extends AbstractSetup {
     
-    class ApplyActionListener implements ActionListener{
+    private final class ApplyActionListener implements ActionListener{
+        
+        ApplyActionListener(){
+            super();
+        }
 
     	/**
     	 * Perform setup tasks when OK or APPLY is clicked.
@@ -64,7 +68,6 @@ public final class SetupSortOff extends AbstractSetup {
 		try{
 			if (STATUS.canSetup()) {
 				resetSort();//clear current data areas and kill daemons
-				
 				loadSorter();
 		        loadEventInput();
 		        loadEventOutput();
@@ -78,8 +81,7 @@ public final class SetupSortOff extends AbstractSetup {
 					setupSort();      //create data areas and daemons
 					msgHandler.messageOutln("Daemons and dialogs initialized.");
 				}
-				selectFirstSortHistogram();
-				
+				selectFirstSortHistogram();		
 				if (dispose) {
 					dialog.dispose();
 				}
@@ -286,7 +288,6 @@ public final class SetupSortOff extends AbstractSetup {
      */
     private void setupSort() throws SortException, JamException {
         initializeSorter();
-
         /* setup sorting */
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);
@@ -381,3 +382,5 @@ public final class SetupSortOff extends AbstractSetup {
 		}
 	}
 }
+
+
