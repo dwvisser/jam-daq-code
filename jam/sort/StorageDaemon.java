@@ -42,8 +42,8 @@ public abstract class StorageDaemon extends GoodThread {
 	boolean outputFileOpen;
 
 	//files to sort in a list
-	Vector sortFilesList;
-	Enumeration sortFiles;
+	List sortFilesList;
+	Iterator sortFiles;
 
 	protected FileOutputStream fos;
 	protected BufferedOutputStream bos;
@@ -115,10 +115,9 @@ public abstract class StorageDaemon extends GoodThread {
 	 *
 	 * @param sortFilesList the list of files to sort from
 	 */
-	public void setEventInputList(Vector sortFilesList) {
-
+	public void setEventInputList(List sortFilesList) {
 		this.sortFilesList = sortFilesList;
-		sortFiles = sortFilesList.elements();
+		sortFiles = sortFilesList.iterator();
 	}
 
 	/**
@@ -126,7 +125,7 @@ public abstract class StorageDaemon extends GoodThread {
 	 * 
 	 * @return the list of sort files to be sorted from
 	 */
-	public Vector getEventInputList() {
+	public List getEventInputList() {
 		return sortFilesList;
 	}
 
