@@ -47,7 +47,7 @@ public class Group {
     }
 
     /** Working group name */
-    public final static String workingGroupName = "Working";
+    public final static String WORKING_NAME = "Working";
     /** List of all groups */
     private final static List LIST = new ArrayList();
 

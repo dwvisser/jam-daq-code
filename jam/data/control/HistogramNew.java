@@ -11,15 +11,21 @@ import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Panel;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Iterator;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -34,8 +40,14 @@ import javax.swing.border.EmptyBorder;
  */
 public class HistogramNew extends AbstractControl {
 
+	final int CHOOSER_SIZE = 200;
+	
 	private final MessageHandler msghdlr;
 
+	private final JComboBox comboGroup;	
+	
+	private DefaultComboBoxModel comboGroupModel;	
+	
 	private final JTextField textName;
 
 	private final JTextField textTitle;
@@ -64,6 +76,8 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdialogNew.add(pLabels, BorderLayout.WEST);
+		final JLabel lg = new JLabel("Group", JLabel.RIGHT);
+		pLabels.add(lg);		
 		final JLabel ln = new JLabel("Name", JLabel.RIGHT);
 		pLabels.add(ln);
 		final JLabel lti = new JLabel("Title", JLabel.RIGHT);
@@ -76,6 +90,23 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pEntires = new JPanel(new GridLayout(0, 1, 5, 5));
 		pEntires.setBorder(new EmptyBorder(10, 0, 0, 10));
 		cdialogNew.add(pEntires, BorderLayout.CENTER);
+		final JPanel pGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		pEntires.add(pGroup);
+		comboGroupModel = new DefaultComboBoxModel();
+		comboGroup = new JComboBox(comboGroupModel);
+		Dimension dim = comboGroup.getPreferredSize();
+		dim.width = CHOOSER_SIZE;
+		comboGroup.setPreferredSize(dim);
+		/*
+		comboGroup.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent ie) {
+			}
+		});
+		*/
+		
+
+		pGroup.add(comboGroup);
+		
 		final JPanel pName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pName);
 		final String space = " ";
@@ -142,17 +173,38 @@ public class HistogramNew extends AbstractControl {
 			}
 		});
 	}
-
+	public void show() {
+		doSetup();
+		super.show();
+	}
 	/**
 	 * Does nothing. It is here to match other contollers.
 	 */
 	public void doSetup() {
+		boolean workingDefined =false;
+		comboGroupModel.removeAllElements();
+		Iterator iter = Group.getGroupList().iterator();
+		while(iter.hasNext()) {
+			Group group =(Group)iter.next();
+			if (group.getType()!=Group.Type.SORT)
+			{
+				comboGroupModel.addElement( group.getName() );
+			}			
+			if ( Group.WORKING_NAME.equals(group.getName()) ){
+				workingDefined=true;	
+			}					
+			
+		}
+		if (!workingDefined) {
+			comboGroupModel.addElement( Group.WORKING_NAME);
+		}
 	}
 
 	/**
 	 * Make a new histogram from the field inputs
 	 */
 	private void makeHistogram() {
+		String groupName = (String)comboGroupModel.getSelectedItem();		
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
 		final int size = Integer
@@ -167,7 +219,11 @@ public class HistogramNew extends AbstractControl {
 		} else {
 			array = new double[size][size];
 		}
-		Group.createGroup("Working", Group.Type.FILE);
+		if (null==Group.getGroup(groupName)) {
+			Group.createGroup(groupName, Group.Type.TEMP);
+		} else {
+			Group.setCurrentGroup(groupName);			
+		}
 		Histogram hist= Histogram.createHistogram(array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		JamStatus.getSingletonInstance().setCurrentHistogram(hist);
