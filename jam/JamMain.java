@@ -798,14 +798,14 @@ AcquisitionStatus, Observer {
             openhdf.setEnabled(false);
             saveHDF.setEnabled(false);
             reloadhdf.setEnabled(true);
-            impHist.setEnabled(false);
+            //impHist.setEnabled(false);
             setRunState(ACQ_OFF);
             if (mode==ONLINE_DISK){
                 rewindtape.setEnabled(false);
-                this.setTitle("jam - Online Sorting TO disk");
+                this.setTitle("Jam--Online Sorting TO disk");
             } else {
                 rewindtape.setEnabled(true);
-                this.setTitle("jam - Online Sorting TO tape)");
+                this.setTitle("Jam--Online Sorting TO tape)");
             }
             //offline sort
         }   else if(mode==OFFLINE_DISK||mode==OFFLINE_TAPE){
@@ -823,18 +823,16 @@ AcquisitionStatus, Observer {
             saveHDF.setEnabled(false);
             reloadhdf.setEnabled(true);
             newClear.setEnabled(false);
-            impHist.setEnabled(false);
+            //impHist.setEnabled(false);
             setRunState(ACQ_OFF);
             if(mode==OFFLINE_DISK){
                 rewindtape.setEnabled(false);
-                this.setTitle("jam - Offline Sorting FROM disk");
+                this.setTitle("Jam--Offline Sorting FROM disk");
             } else {
                 rewindtape.setEnabled(true);
-                this.setTitle("jam - Offline Sorting FROM tape");
-            }
-
-            //remote display
-        } else if(mode==REMOTE){
+                this.setTitle("Jam--Offline Sorting FROM tape");
+            }     
+        } else if(mode==REMOTE){//remote display
             cstartacq.setEnabled(false);
             cstopacq.setEnabled(false);
             iflushacq.setEnabled(false);
@@ -850,7 +848,7 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(false);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle(" jam - Remote ");
+            this.setTitle("Jam--Remote Mode");
 
             // read in a file
         } else if(mode==FILE){
@@ -872,15 +870,10 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(true);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle("jam    file "+openFileName);
+            this.setTitle("Jam--"+openFileName);
         }
-
-
-        //no sort
         if(mode==NO_SORT){
-
             sortMode=mode;
-
             cstartacq.setEnabled(false);
             cstopacq.setEnabled(false);
             iflushacq.setEnabled(false);
@@ -896,8 +889,7 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(true);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle(" jam Sorting not Enabled ");
-
+            this.setTitle("Jam--sorting not enabled ");
         }
     }
 
