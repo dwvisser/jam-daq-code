@@ -307,10 +307,16 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		histogram.add(gainShift);
 		final JMenu gate = new JMenu("Gate");
 		add(gate);
+		
+		final JMenuItem gateNew = new JMenuItem(commands.getAction(
+				CommandNames.SHOW_NEW_GATE));
+			gate.add(gateNew);				
+/*				
 		final JMenuItem gateNew = new JMenuItem("New Gate\u2026");
 		gateNew.setActionCommand("gatenew");
 		gateNew.addActionListener(jamCommand);
 		gate.add(gateNew);
+*/		
 		final JMenuItem gateAdd = new JMenuItem("Add Gate\u2026");
 		gateAdd.setActionCommand("gateadd");
 		gateAdd.addActionListener(jamCommand);
