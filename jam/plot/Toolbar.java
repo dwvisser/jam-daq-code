@@ -130,8 +130,7 @@ class Toolbar extends JToolBar implements ActionListener {
 			comboBinRatio.setMaximumSize(dimMax);			
 			comboBinRatio.setRenderer(new ReBinComboBoxRenderer()); 
 			comboBinRatio.setToolTipText(
-					getHTML("<u>Re</u>bin, enter a bin width in the console."));			
-			
+					getHTML("<u>Re</u>bin, enter a bin width in the console."));
 			comboBinRatio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					final Object item = ((JComboBox) ae.getSource())
@@ -139,27 +138,14 @@ class Toolbar extends JToolBar implements ActionListener {
 					selectionReBin((Integer)item);
 				}
 			});
-			
 			add(comboBinRatio);				
 			addSeparator();
-			
-			/* FIXME KBS remove
-			brebin = iRebin == null ? 
-					new JButton(getHTML("<u>Re</u>bin")) : new JButton(iRebin);
-			brebin.setToolTipText(
-				getHTML("<u>Re</u>bin, enter a bin width in the console."));
-			brebin.setActionCommand(Action.REBIN);
-			brebin.addActionListener(this);
-			add(brebin);
-			addSeparator();
-			*/
 			final JButton bfull = iFullScale==null ? 
 					new JButton(getHTML("<u>F</u>ull")) : new JButton(iFullScale);
 				bfull.setActionCommand(Action.FULL);
 				bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
 				bfull.addActionListener(this);
 				add(bfull);
-			
 			final JButton bexpand = iExpand==null ? 
 					new JButton(getHTML("<u>E</u>xpand")) : new JButton(iExpand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
@@ -178,7 +164,7 @@ class Toolbar extends JToolBar implements ActionListener {
 			bzoomout.setActionCommand(Action.ZOOMOUT);
 			bzoomout.addActionListener(this);
 			add(bzoomout);
-			/* FIXME KBS still to add
+			/* TODO KBS still to add
 			final JButton bzoomvert = iZoomVert == null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>H</u>orizontal")) : new JButton(iZoomVert);
 			bzoomvert.setToolTipText(getHTML("<u>Z</u>oom<u>H</u>orizontal plot."));
