@@ -482,7 +482,8 @@ public class Action
 	}
 
 	/**
-	 * Expand the region to view.
+	 * @param hist the first element of which is the number 
+	 * of the hist to display
 	 */
 	private void display(int[] hist) {
 		if (!commandPresent) {
@@ -493,8 +494,14 @@ public class Action
 		}
 		if (hist.length > 0) {
 			final int num = hist[0];
-			display.displayHistogram(Histogram.getHistogram(num));
-			textOut.messageOut(Integer.toString(num));
+			final Histogram h=Histogram.getHistogram(num);
+			if (h != null) {
+				display.displayHistogram(Histogram.getHistogram(num));
+				textOut.messageOut(Integer.toString(num),MessageHandler.END);
+			} else {
+				textOut.messageOut(Integer.toString(num),MessageHandler.END);
+				textOut.errorOutln("There is no histogram numbered "+num+".");
+			}
 			done();
 		}
 	}
