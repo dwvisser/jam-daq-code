@@ -2,19 +2,44 @@ package jam;
 import jam.data.Histogram;
 import jam.data.control.DataControl;
 import jam.fit.LoadFit;
-import jam.global.*;
-import jam.io.*;
+import jam.global.ComponentPrintable;
+import jam.global.JamProperties;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.io.ImpExp;
+import jam.io.ImpExpASCII;
+import jam.io.ImpExpORNL;
+import jam.io.ImpExpSPE;
+import jam.io.ImpExpXSYS;
+import jam.io.ImportBanGates;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
+import jam.util.YaleCAENgetScalers;
+
 import java.awt.Event;
-import java.awt.event.*;
-import java.net.URL;
-import javax.help.*;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.net.URL;
+
+import javax.help.CSH;
+import javax.help.HelpSet;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  *
@@ -252,6 +277,11 @@ public class MainMenuBar extends JMenuBar {
 		saveAsHDF.setActionCommand("saveAsHDF");
 		saveAsHDF.addActionListener(jamCommand);
 		file.add(saveAsHDF);
+		file.addSeparator();
+		JMenuItem utilities=new JMenu("Utilities");
+		file.add(utilities);
+		final YaleCAENgetScalers ycgs=new YaleCAENgetScalers(jamMain,console);
+		utilities.add(new JMenuItem(ycgs.getAction()));
 		file.addSeparator();
 		file.add(impHist);
 		final ImpExp ieASCII=new ImpExpASCII(jamMain,console);
