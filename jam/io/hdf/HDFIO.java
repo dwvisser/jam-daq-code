@@ -126,6 +126,19 @@ public class HDFIO implements DataIO, JamHDFFields {
     }
 
     /**
+     * Writes out to a specified file a list of histograms
+     * and gates,
+     * scalers, and parameters.
+     *  
+     * @param file the to write to
+     * @param histogramList list of histograms to write
+     */
+    public void writeFile(File file, List histogramList) {
+    	
+    	
+    }
+    
+    /**
      * Writes out (to a specific file) the currently held spectra, gates, and
      * scalers, subject to the options given. Sets separately which data
      * writeFile should actually output. Not writing histograms when you are
@@ -143,15 +156,11 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param file
      *            to write to
      */
-    public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers,
+    public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
             boolean wrtparameters, final File file) {
-        final boolean writeIt = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
-                .showConfirmDialog(frame, "Replace the existing file? \n"
-                        + file.getName(), "Save " + file.getName(),
-                        JOptionPane.YES_NO_OPTION)
-                : true;
-        if (writeIt) {
-            final List tempHist = wrthis ? Histogram.getHistogramList()
+        if (overWriteExistsConfirm(file)) {
+        	//Histogram list
+            final List tempHist = wrthist ? Histogram.getHistogramList()
                     : EMPTY_LIST;
             final Iterator iter = tempHist.iterator();
             final List hist = new ArrayList();
@@ -161,6 +170,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                     hist.add(h);
                 }
             }
+            //Gate list
             final List gate = new ArrayList();
             if (wrtgate) {
                 gate.addAll(Gate.getGateList());
@@ -172,20 +182,35 @@ public class HDFIO implements DataIO, JamHDFFields {
                     it.remove();
                 }
             }
+            //Scaler list
             final List scaler = wrtscalers ? Scaler.getScalerList()
                     : EMPTY_LIST;
+            //Parameter list
             final List parameter = wrtparameters ? DataParameter
                     .getParameterList() : EMPTY_LIST;
-            final Runnable r = new Runnable() {
-                public void run() {
-                    writeFile(file, hist, gate, scaler, parameter);
-                }
-            };
-            final Thread t = new Thread(r);
-            t.start();
+                   
+             //Asyncronized write 
+             asyncWriteFile(file, hist, gate, scaler, parameter);
         }
     }
+    /**
+     * Asyncronized write 
+     *
+     */
+    private void asyncWriteFile(final File file, final List histograms, final List gates, final List scalers,
+            final List parameters) {
+       
+        final Runnable r = new Runnable() {
+            public void run() {
+                writeFile(file, histograms, gates, scalers, parameters);
+            }
+        };
+        
+        //Spawn in another thread
+        final Thread t = new Thread(r);
+        t.start();
 
+    }
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -202,15 +227,14 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param parameters
      *            list of <code>Parameter</code> objects to write
      */
-    private void writeFile(File file, java.util.List spectra,
-            java.util.List gates, java.util.List scalers,
-            java.util.List parameters) {
+    private void writeFile(File file, List spectra, List gates, List scalers,
+            List parameters) {
         if (file.exists()) {
             /*
              * At this point, we've confirmed overwrite with the user.
              */
             file.delete();
-        }
+        } 
         final int progressRange = spectra.size() + gates.size()
                 + scalers.size() + parameters.size();
         int progress = 1;
@@ -285,7 +309,21 @@ public class HDFIO implements DataIO, JamHDFFields {
         setLastValidFile(file);
         System.gc();
     }
+    /**
+     * Confirm overwrite if file exits
+     * @param file
+     * @return
+     */
+    private boolean overWriteExistsConfirm(File file) {
+        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
+                .showConfirmDialog(frame, "Replace the existing file? \n"
+                        + file.getName(), "Save " + file.getName(),
+                        JOptionPane.YES_NO_OPTION)
+                : true;
+        return writeConfirm;                
+    }
 
+    
     private void setProgressNote(final ProgressMonitor pm, final String note) {
         final Runnable runner = new Runnable() {
             public void run() {
@@ -502,21 +540,21 @@ public class HDFIO implements DataIO, JamHDFFields {
         NumericalDataGroup ndgErr = null;
         Histogram histogram;
         /* get list of all VG's in file */
-        final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
+        final List groups = in.ofType(DataObject.DFTAG_VG);
         final VirtualGroup hists = VirtualGroup.ofName(groups,
                 HIST_SECTION_NAME);
         /* only the "histograms" VG (only one element) */
         ScientificData sdErr = null;
         if (hists != null) {
             /* get list of all DIL's in file */
-            final java.util.List labels = in.ofType(DataObject.DFTAG_DIL);
+            final List labels = in.ofType(DataObject.DFTAG_DIL);
             /* get list of all DIA's in file */
-            final java.util.List annotations = in.ofType(DataObject.DFTAG_DIA);
+            final List annotations = in.ofType(DataObject.DFTAG_DIA);
             sb.append(hists.getObjects().size()).append(" histograms");
             final Iterator temp = hists.getObjects().iterator();
             while (temp.hasNext()) {
                 final VirtualGroup current = (VirtualGroup) (temp.next());
-                final java.util.List tempVec = in.ofType(current.getObjects(),
+                final List tempVec = in.ofType(current.getObjects(),
                         DataObject.DFTAG_NDG);
                 final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
                         .size()];
@@ -711,11 +749,11 @@ public class HDFIO implements DataIO, JamHDFFields {
         final StringUtilities su = StringUtilities.instance();
         Gate g = null;
         /* get list of all VG's in file */
-        final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
+        final List groups = in.ofType(DataObject.DFTAG_VG);
         /* get only the "gates" VG (only one element) */
         final VirtualGroup gates = VirtualGroup.ofName(groups,
                 GATE_SECTION_NAME);
-        final java.util.List annotations = in.ofType(DataObject.DFTAG_DIA);
+        final List annotations = in.ofType(DataObject.DFTAG_DIA);
         if (gates != null) {
             /* clear if opening and there are histograms in file */
             sb.append(", ").append(gates.getObjects().size()).append(" gates");
@@ -770,7 +808,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @throws HDFException
      *             thrown if unrecoverable error occurs
      */
-    protected void addScalerSection(java.util.List scalers) throws HDFException {
+    protected void addScalerSection(List scalers) throws HDFException {
         final StringUtilities su = StringUtilities.instance();
         final short[] types = { VdataDescription.DFNT_INT32,
                 VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };
@@ -851,7 +889,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */
-    protected void addParameterSection(java.util.List parameters)
+    protected void addParameterSection(List parameters)
             throws HDFException {
         final short[] types = { VdataDescription.DFNT_CHAR8,
                 VdataDescription.DFNT_FLT32 };
@@ -929,7 +967,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      *            the list to check
      * @return true if the given list exists and has at least one element
      */
-    protected boolean hasContents(java.util.List v) {
+    protected boolean hasContents(List v) {
         final boolean val = (v != null) && (!v.isEmpty());
         return val;
     }
@@ -963,7 +1001,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 
         int[] rval = null; //default return value
         /* all VG's in file */
-        final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
+        final List groups = in.ofType(DataObject.DFTAG_VG);
         final VirtualGroup hists = VirtualGroup.ofName(groups,
                 HIST_SECTION_NAME);
         /* only the "histograms" VG (only one element) */
@@ -972,12 +1010,12 @@ public class HDFIO implements DataIO, JamHDFFields {
                     + in.getFile());
         }
         /* there are histograms in the file */
-        final java.util.List labels = in.ofType(DataObject.DFTAG_DIL);
+        final List labels = in.ofType(DataObject.DFTAG_DIL);
         final Iterator temp = hists.getObjects().iterator();
         lookForSpectrum: while (temp.hasNext()) {
             final VirtualGroup current = (VirtualGroup) (temp.next());
             /* NDG's in current hist record */
-            final java.util.List tempVec = in.ofType(current.getObjects(),
+            final List tempVec = in.ofType(current.getObjects(),
                     DataObject.DFTAG_NDG);
             final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
                     .size()];
