@@ -8,7 +8,7 @@ import java.io.*;
  * @version 0.5
  * @since JDK 1.1
  */
-public abstract class EventOutputStream extends OutputStream {
+public abstract class EventOutputStream /*extends OutputStream*/ {
 
 	//status variables
 
