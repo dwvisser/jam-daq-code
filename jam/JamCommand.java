@@ -193,7 +193,6 @@ public class JamCommand
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String incommand = e.getActionCommand();
-		boolean selectEnabled = true; //is selection enabled
 		try {
 			if ("Black Background".equals(incommand)) {
 				display.setPreference(
@@ -208,23 +207,19 @@ public class JamCommand
 				DataBase.clearAllLists();
 				dataChanged();
 			} else if ("open".equals(incommand)) {
-				selectEnabled = false;
 				if (histio.readJHFFile()) {
 					jamMain.setSortModeFile(histio.getFileNameOpen());
 					DataControl.setupAll(); //setup all data bases
 					dataChanged();
 					jamMain.repaint();
 				}
-				selectEnabled = true;
 			} else if ("openhdf".equals(incommand)) {
-				selectEnabled = false;
 				if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
 					jamMain.setSortModeFile(hdfio.getFileNameOpen());
 					DataControl.setupAll();
 					dataChanged();
 					jamMain.repaint();
 				}
-				selectEnabled = true;
 			} else if ("reloadhdf".equals(incommand)) {
 				if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
 					scalerControl.displayScalers();
@@ -254,21 +249,17 @@ public class JamCommand
 					dataChanged();
 				}
 			} else if ("openornl".equals(incommand)) {
-				selectEnabled = false;
 				if (impExpORNL.openFile()) {
 					jamMain.setSortModeFile(impExpORNL.getLastFileName());
 					DataControl.setupAll();
 					dataChanged();
 				}
-				selectEnabled = true;
 			} else if ("openxsys".equals(incommand)) {
-				selectEnabled = false;
 				if (impExpXSYS.openFile()) {
 					jamMain.setSortModeFile(impExpXSYS.getLastFileName());
 					DataControl.setupAll();
 					dataChanged();
 				}
-				selectEnabled = true;
 			} else if ("saveascii".equals(incommand)) {
 				impExpASCII.saveFile(
 					Histogram.getHistogram(status.getCurrentHistogramName()));
@@ -284,10 +275,6 @@ public class JamCommand
 					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
-			/*} else if ("print".equals(incommand)) {
-				printHistogram();
-			} else if ("printsetup".equals(incommand)) {
-				PrinterJob.getPrinterJob();*/
 			} else if ("online".equals(incommand)) {
 				setupSortOn.show();
 			} else if ("offline".equals(incommand)) {
