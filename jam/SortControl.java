@@ -1,5 +1,3 @@
-/*
- */
 package jam;
 import jam.global.GlobalException;
 import jam.global.GoodThread;
@@ -8,17 +6,13 @@ import jam.global.MessageHandler;
 import jam.global.RunInfo;
 import jam.io.ExtensionFileFilter;
 import jam.sort.Controller;
-import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.StorageDaemon;
-import jam.sort.TapeDaemon;
 import jam.sort.stream.EventException;
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,17 +48,17 @@ import javax.swing.ListSelectionModel;
  * @version 1.0
  */
 class SortControl implements Controller, ActionListener, ItemListener {
-	public static final int DISK = 0;
-	public static final int TAPE = 1;
+	//public static final int DISK = 0;
+	//public static final int TAPE = 1;
 
-	private static final String DISKFILES = "Disk Files";
-	private static final String TAPERECORDS = "Tape Records";
-	private static final String DISKBUTTONS = "Disk Buttons";
-	private static final String TAPEBUTTONS = "Tape Buttons";
+	//private static final String DISKFILES = "Disk Files";
+	//private static final String TAPERECORDS = "Tape Records";
+	//private static final String DISKBUTTONS = "Disk Buttons";
+	//private static final String TAPEBUTTONS = "Tape Buttons";
 
-	private JamMain jamMain;
-	private MessageHandler msgHandler;
-	private SetupSortOff setupSort;
+	private final JamMain jamMain;
+	private final MessageHandler msgHandler;
+	//private SetupSortOff setupSort;
 
 	// daemon threads
 	private StorageDaemon dataInpDaemon;
@@ -73,7 +67,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 * Device to use either DISK or TAPE     
 	 */
-	private int device;
+	//private int device;
 	/**
 	 * The tape device eg. /dev/rmt/1
 	 */
@@ -94,20 +88,20 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 * Text field to display tape device
 	 */
-	private JTextField textDev, textInitRecord, textFinalRecord;
+	//private JTextField textDev, textInitRecord, textFinalRecord;
 
 	/**
 	 * Text field for output file
 	 */
 	private JTextField textOutFile;
 
-	/** check box for writting out events */
+	/** check box for writing out events */
 	private JCheckBox cout;
 
-	private CardLayout centerCardLayout;
-	private CardLayout westCardLayout;
+	//private CardLayout centerCardLayout;
+	//private CardLayout westCardLayout;
 
-	private JPanel pwest, pcenter, ptaperecords, pdiskfiles;
+	private JPanel /*pwest, pcenter, ptaperecords,*/ pdiskfiles;
 
 	/** 
 	  * list for disk 
@@ -118,20 +112,20 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/** 
 	  * list for tape 
 	  */
-	private JList listTapeRecords;
-	private DefaultListModel tapeRecordModel;
+	/*private JList listTapeRecords;
+	private DefaultListModel tapeRecordModel;*/
 
 	private JButton addfile,
 		addDir,
 		loadlist,
 		remove,
 		removeAll,
-		savelist,
-		addrun,
-		addrange,
-		removeruns,
-		loadrunlist,
-		saverunlist;
+		savelist;
+		//addrun,
+		//addrange,
+		//removeruns,
+		//loadrunlist,
+		//saverunlist;
 
 	/** 
 	  * button to get file brower 
@@ -161,7 +155,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		d = new JDialog(jamMain, "Sorting ", false);
 		//d.setForeground(Color.black);
 		//d.setBackground(Color.lightGray);
-		d.setResizable(false);
+		d.setResizable(true);
 		d.setLocation(20, 50);
 		//d.setSize(500, 350);
 		Container cd = d.getContentPane();
@@ -169,62 +163,64 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		JPanel ptop = new JPanel();
 		ptop.setLayout(new GridLayout(0, 1, 5, 5));
 		cd.add(ptop, BorderLayout.NORTH);
-		JPanel ptape = new JPanel();
-		ptape.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		ptop.add(ptape);
-		JLabel ltd = new JLabel("Device:");
+		//JPanel ptape = new JPanel();
+		/*ptape.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		ptop.add(ptape);*/
+		/*JLabel ltd = new JLabel("Device:");
 		textDev = new JTextField("    ");
 		textDev.setColumns(12);
-		textDev.setEditable(false);
+		textDev.setEditable(false);*/
 		//textDev.setBackground(Color.lightGray);
 		//textDev.setForeground(Color.black);
-		ptape.add(ltd);
+		/*ptape.add(ltd);
 		ptape.add(textDev);
 		JLabel lfrom = new JLabel("Run(s)");
-		ptape.add(lfrom);
-		textInitRecord = new JTextField("");
-		textInitRecord.setColumns(5);
+		ptape.add(lfrom);*/
+		/*textInitRecord = new JTextField("");
+		textInitRecord.setColumns(5);*/
 		//textInitRecord.setBackground(Color.white);
 		//textInitRecord.setForeground(Color.black);
-		ptape.add(textInitRecord);
+		/*ptape.add(textInitRecord);
 		JLabel lto = new JLabel("to");
-		ptape.add(lto);
-		textFinalRecord = new JTextField("");
-		textFinalRecord.setColumns(5);
+		ptape.add(lto);*/
+		/*textFinalRecord = new JTextField("");
+		textFinalRecord.setColumns(5);*/
 		//textFinalRecord.setBackground(Color.white);
 		//textFinalRecord.setForeground(Color.black);
-		ptape.add(textFinalRecord);
+		//ptape.add(textFinalRecord);
 
 		//Center panel--card layout
-		centerCardLayout = new CardLayout();
-		pcenter = new JPanel(centerCardLayout);
+		//centerCardLayout = new CardLayout();
+		//pcenter = new JPanel(centerCardLayout);
 		pdiskfiles = new JPanel();
-		pdiskfiles.setLayout(new GridLayout());
+		pdiskfiles.setLayout(new BorderLayout());
 		eventFileModel = new DefaultListModel();
 		listEventFiles = new JList(eventFileModel);
 		listEventFiles.setSelectionMode(
 			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		//listEventFiles.setBackground(Color.white);
 		//listEventFiles.setForeground(Color.black);
-		pdiskfiles.add(new JScrollPane(listEventFiles));
-		ptaperecords = new JPanel();
+		pdiskfiles.add(new JLabel("Event Files to Sort",JLabel.RIGHT), 
+		BorderLayout.NORTH);
+		pdiskfiles.add(new JScrollPane(listEventFiles), BorderLayout.CENTER);
+		/*ptaperecords = new JPanel();
 		ptaperecords.setLayout(new GridLayout());
 		tapeRecordModel = new DefaultListModel();
 		listTapeRecords = new JList(tapeRecordModel);
 		listTapeRecords.setSelectionMode(
-			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);*/
 		//listTapeRecords.setBackground(Color.white);
 		//listTapeRecords.setForeground(Color.black);
-		ptaperecords.add(new JScrollPane(listTapeRecords));
-		pcenter.add(pdiskfiles, DISKFILES);
-		pcenter.add(ptaperecords, TAPERECORDS);
-		centerCardLayout.show(pcenter, DISKFILES);
-		cd.add(pcenter, BorderLayout.CENTER);
+		//ptaperecords.add(new JScrollPane(listTapeRecords));
+		//pcenter.add(pdiskfiles, DISKFILES);
+		//pcenter.add(ptaperecords, TAPERECORDS);
+		//centerCardLayout.show(pcenter, DISKFILES);
+		cd.add(pdiskfiles, BorderLayout.CENTER);
 
-		westCardLayout = new CardLayout();
-		pwest = new JPanel(westCardLayout);
+		//westCardLayout = new CardLayout();
+		//pwest = new JPanel(westCardLayout);
 
-		JPanel ef = new JPanel(new GridLayout(0, 1, 5, 2));
+		JPanel ef = new JPanel(new GridLayout(0, 1));
 
 		addfile = new JButton("Add File");
 		addfile.setActionCommand("addfile");
@@ -256,9 +252,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		savelist.addActionListener(this);
 		ef.add(savelist);
 
-		JPanel tr = new JPanel(new GridLayout(0, 1, 5, 2));
+		//JPanel tr = new JPanel(new GridLayout(0, 1, 5, 2));
 
-		addrun = new JButton("Add Run");
+		/*addrun = new JButton("Add Run");
 		addrun.setActionCommand("addrun");
 		addrun.addActionListener(this);
 		tr.add(addrun);
@@ -281,12 +277,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		saverunlist = new JButton("Save List");
 		saverunlist.setActionCommand("savelist");
 		saverunlist.addActionListener(this);
-		tr.add(saverunlist);
+		tr.add(saverunlist);*/
 
-		pwest.add(ef, DISKBUTTONS);
-		pwest.add(tr, TAPEBUTTONS);
-		westCardLayout.show(pwest, DISKBUTTONS);
-		cd.add(pwest, BorderLayout.WEST);
+		//pwest.add(ef, DISKBUTTONS);
+		//pwest.add(tr, TAPEBUTTONS);
+		//westCardLayout.show(pwest, DISKBUTTONS);
+		cd.add(ef, BorderLayout.WEST);
 
 		JPanel ple = new JPanel();
 		ple.setLayout(new GridLayout(0, 1, 5, 5));
@@ -297,14 +293,14 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		cd.add(pbottom, BorderLayout.SOUTH);
 
 		// panel for output file
-		JPanel pout = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		JPanel pout = new JPanel(new BorderLayout());
 		pbottom.add(pout);
-		cout = new JCheckBox("Output Events", false);
+		cout = new JCheckBox("Output Events to File:", false);
 		cout.addItemListener(this);
-		pout.add(cout);
+		pout.add(cout,BorderLayout.WEST);
 
-		JLabel lh = new JLabel("File:", JLabel.LEFT);
-		pout.add(lh);
+		//JLabel lh = new JLabel("File:", JLabel.LEFT);
+		//pout.add(lh);
 
 		textOutFile =
 			new JTextField(defaultEvents + File.separator + defaultOutputFile);
@@ -312,17 +308,17 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		//textOutFile.setBackground(Color.lightGray);
 		//textOutFile.setForeground(Color.black);
 		textOutFile.setEnabled(false);
-		pout.add(textOutFile);
+		pout.add(textOutFile,BorderLayout.CENTER);
 
 		bbrowse = new JButton("Browse");
 		bbrowse.setActionCommand("bfileout");
 		bbrowse.addActionListener(this);
 		bbrowse.setEnabled(false);
-		pout.add(bbrowse);
+		pout.add(bbrowse,BorderLayout.EAST);
 
 		//panel with begin and end bottoms	
 		JPanel pb = new JPanel();
-		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 5));
+		pb.setLayout(new GridLayout(1,0));
 
 		bbegin = new JButton("Begin");
 		bbegin.setActionCommand("begin");
@@ -344,10 +340,10 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				d.dispose();
 			}
 		});
-		lastFile = new File(defaultEvents);//default directory
+		lastFile = new File(defaultEvents); //default directory
 		//call to private version to avoid breaking if subclassed
-		setDevice(DISK);//initial mode is from disk
-		writeEvents = false;//don't write out events
+		//setDevice(DISK); //initial mode is from disk
+		writeEvents = false; //don't write out events
 		d.pack();
 	}
 
@@ -367,8 +363,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		try {
 			if (command == "addfile") {
 				addEventFile();
-			} else if (command == "addrun") {
-				addRunNumber();
+			/*} else if (command == "addrun") {
+				addRunNumber();*/
 			} else if (command == "addDir") {
 				addDirectory();
 			} else if (command == "remove") {
@@ -379,10 +375,10 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				Savelist();
 			} else if (command == "loadlist") {
 				Loadlist();
-			} else if (command == "addrange") {
+			/*} else if (command == "addrange") {
 				addRunNumberRange();
 			} else if (command == "removeruns") {
-				removeRuns();
+				removeRuns();*/
 			} else if (command == "begin") {
 				loadNames();
 				lockFields(true);
@@ -390,7 +386,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			} else if (command == "end") {
 				endSort();
 				msgHandler.warningOutln(
-				"Ended offline sorting before reading all events.");
+					"Ended offline sorting before reading all events.");
 				//lockFields(false);
 			} else if (command == "bfileout") {
 				textOutFile.setText(getOutFile().getPath());
@@ -432,27 +428,25 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	public void setup(
-		SetupSortOff setupSort,
 		SortDaemon sortDaemon,
 		StorageDaemon fromDaemon,
 		StorageDaemon toDaemon,
 		String devName) {
-		this.setupSort = setupSort;
+		//this.setupSort = setupSort;
 		this.sortDaemon = sortDaemon;
 		this.dataInpDaemon = fromDaemon;
 		this.dataOutDaemon = toDaemon;
 		this.deviceName = devName;
-		textDev.setText(deviceName);
+		//textDev.setText(deviceName);
 		bbegin.setEnabled(true);
-		if (dataInpDaemon instanceof DiskDaemon) {
-			setDevice(DISK);
-		} else if (dataInpDaemon instanceof TapeDaemon) {
-			setDevice(TAPE);
-		} else {
+		/*if (dataInpDaemon instanceof DiskDaemon) {
+			setDevice(DISK);*/
+			/*} else if (dataInpDaemon instanceof TapeDaemon) {
+				setDevice(TAPE);*/
+		/*} else {
 			System.err.println(
 				"Error unknown storageDaemon type " + dataInpDaemon);
-		}
-
+		}*/
 	}
 
 	/**
@@ -460,8 +454,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * give the list to storage deamon
 	 */
 	private void loadNames() throws JamException, SortException {
-		int count = 0;
-		if (device == TAPE) { //if sorting from tape
+		//int count = 0;
+		/*if (device == TAPE) { //if sorting from tape
 			Vector runList = new Vector(tapeRecordModel.getSize());
 			try {
 				for (count = 0; count < tapeRecordModel.getSize(); count++) {
@@ -480,16 +474,16 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			}
 			dataInpDaemon.setEventInputList(runList);
 			//tell storage daemon list of run
-		} else { //if sorting from disk	 
-			Vector fileList = new Vector(eventFileModel.getSize());
-			for (count = 0; count < eventFileModel.getSize(); count++) {
-				String fileName =
-					((String) (eventFileModel.getElementAt(count))).trim();
-				fileList.addElement(fileName); //add to list		
-			}
-			//tell storage daemon list of files
-			dataInpDaemon.setEventInputList(fileList);
+		} else { //if sorting from disk*/
+		Vector fileList = new Vector(eventFileModel.getSize());
+		for (int count = 0; count < eventFileModel.getSize(); count++) {
+			String fileName =
+				((String) (eventFileModel.getElementAt(count))).trim();
+			fileList.addElement(fileName); //add to list		
 		}
+		//tell storage daemon list of files
+		dataInpDaemon.setEventInputList(fileList);
+		//}
 		//save output file
 		fileOut = new File(textOutFile.getText().trim());
 		msgHandler.messageOutln("Loaded list of sort files");
@@ -512,12 +506,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			sortDaemon.setWriteEnabled(false);
 		}
 		//offline from disk
-		if (device == DISK) {
+		//if (device == DISK) {
 			msgHandler.messageOutln("Starting sorting from Disk");
 			//offline from disk		
-		} else {
+		/*} else {
 			msgHandler.messageOutln("Starting sorting from Tape");
-		}
+		}*/
 		bbegin.setEnabled(false);
 		sortDaemon.setState(GoodThread.RUN);
 		jamMain.setRunState(RunState.ACQ_ON);
@@ -527,7 +521,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * stop offline sorting
 	 *
 	 */
-	private void endSort() throws JamException, SortException, GlobalException {
+	private void endSort()
+		throws JamException, SortException, GlobalException {
 		sortDaemon.cancelOfflineSorting();
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln(
@@ -536,16 +531,17 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		}
 		if (writeEvents) {
 			dataOutDaemon.closeEventOutputFile();
-			msgHandler.messageOutln("Closed pre-sorted file: " + fileOut.getPath());
+			msgHandler.messageOutln(
+				"Closed pre-sorted file: " + fileOut.getPath());
 		}
 		//setupSort.resetSort();
-		if (device == DISK) {
+		//if (device == DISK) {
 			msgHandler.warningOutln(
 				"Stopped sorting from disk before all events were read.");
-		} else {//from tape
+		/*} else { //from tape
 			msgHandler.messageOutln(
 				"Stopped sorting from tape before all events were read.");
-		}
+		}*/
 		jamMain.setRunState(RunState.ACQ_OFF);
 	}
 
@@ -575,7 +571,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				"Could not close file: "
 					+ dataInpDaemon.getEventInputFileName());
 		}
-		if (device == DISK) {
+		//if (device == DISK) {
 			if (dataInpDaemon.hasMoreFiles()) {
 				if (dataInpDaemon.openEventInputListFile()) {
 					msgHandler.messageOutln(
@@ -594,8 +590,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 							+ dataInpDaemon.getEventInputFileName());
 					sortNext = true; //try next file anyway
 				}
-			} 
-		} else {//sorting from tape
+			}
+		/*} else { //sorting from tape
 			if (dataInpDaemon.hasMoreFiles()) {
 				msgHandler.messageOutln("Looking for runs ...");
 				if (dataInpDaemon.openEventInputListFile()) {
@@ -607,16 +603,16 @@ class SortControl implements Controller, ActionListener, ItemListener {
 							+ " title: "
 							+ RunInfo.runTitle);
 					sortNext = true;
-				} else {//return sortNext=false
+				} else { //return sortNext=false
 					msgHandler.messageOutln(
 						"Could not find run: "
 							+ dataInpDaemon.getEventInputFileName());
 				}
 			}
-		}
+		}*/
 		return sortNext;
 	}
-	
+
 	/**
 	 * Called back by sorter when sort encounters a end-run-marker.
 	 * Tell StorageDaemon to close file. 
@@ -659,9 +655,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * 
 	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
 	 */
-	public final void setDevice(int device) {
-		this.device = device;
-		if (device == TAPE) {
+	//public final void setDevice(int device) {
+		//this.device = device;
+		/*if (device == TAPE) {
 			centerCardLayout.show(pcenter, TAPERECORDS);
 			westCardLayout.show(pwest, TAPEBUTTONS);
 			textInitRecord.setEditable(true);
@@ -669,28 +665,28 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			textFinalRecord.setEditable(true);
 			//textFinalRecord.setBackground(Color.white);
 			textDev.setEnabled(true);
-		} else if (device == DISK) {
-			centerCardLayout.show(pcenter, DISKFILES);
-			westCardLayout.show(pwest, DISKBUTTONS);
-			textInitRecord.setEditable(false);
+		} else if (device == DISK) {*/
+			//centerCardLayout.show(pcenter, DISKFILES);
+			//westCardLayout.show(pwest, DISKBUTTONS);
+			/*textInitRecord.setEditable(false);
 			//textInitRecord.setBackground(Color.lightGray);
 			textInitRecord.setText("");
 			textFinalRecord.setEditable(false);
 			//textFinalRecord.setBackground(Color.lightGray);
 			textFinalRecord.setText("");
-			textDev.setEnabled(true);
-		}
-	}
-	
+			textDev.setEnabled(true);*/
+		//}
+	//}
+
 	/**
 	 * Sets TAPE or DISK mode.
 	 * 
 	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
 	 */
 	//public void setDevice(int device) {
-		/* delegate to private method to allow constructor
-		 * to avoid a call to an overridable method
-		 */
+	/* delegate to private method to allow constructor
+	 * to avoid a call to an overridable method
+	 */
 	/*	_setDevice(device);
 	}*/
 
@@ -716,7 +712,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 * add run numbers
 	 */
-	private void addRunNumber() throws JamException {
+	/*private void addRunNumber() throws JamException {
 		try {
 			Integer j =
 				new Integer(Integer.parseInt(textInitRecord.getText().trim()));
@@ -726,11 +722,11 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				"Run number not a integer " + textInitRecord.getText());
 		}
 
-	}
+	}*/
 	/**
 	 * add a range of run numbers
 	 */
-	private void addRunNumberRange() throws JamException {
+	/*private void addRunNumberRange() throws JamException {
 		;
 
 		Integer j;
@@ -754,7 +750,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			j = new Integer(i);
 			tapeRecordModel.addElement(j.toString());
 		}
-	}
+	}*/
 	/**
 	 * add all files in a directory to sort
 	 *
@@ -802,12 +798,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 * remove a run from the list
 	 */
-	private void removeRuns() {
+	/*private void removeRuns() {
 		Object[] removeList = listTapeRecords.getSelectedValues();
 		for (int i = 0; i < removeList.length; i++) {
 			tapeRecordModel.removeElement(removeList[i]);
 		}
-	}
+	}*/
 
 	/**
 	 * save list of items to sort
@@ -826,19 +822,19 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			lastFile = fd.getSelectedFile(); //save current directory
 		}
 		try {
-			if (device == TAPE) {
+			/*if (device == TAPE) {
 				FileWriter saveStream = new FileWriter(fd.getSelectedFile());
 				for (int i = 0; i < tapeRecordModel.size(); i++) {
 					saveStream.write(tapeRecordModel.elementAt(i) + "\n");
 				}
 				saveStream.close();
-			} else {
+			} else {*/
 				FileWriter saveStream = new FileWriter(fd.getSelectedFile());
 				for (int i = 0; i < eventFileModel.size(); i++) {
 					saveStream.write(eventFileModel.elementAt(i) + "\n");
 				}
 				saveStream.close();
-			}
+			//}
 		} catch (IOException ioe) {
 			throw new JamException("Unable to save list to file, open file [SortControl]");
 		}
@@ -863,11 +859,11 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			&& fd.getSelectedFile() != null) {
 			lastFile = fd.getSelectedFile(); //save current directory
 			DefaultListModel dlm;
-			if (device == TAPE) {
+			/*if (device == TAPE) {
 				dlm = tapeRecordModel;
-			} else { //DISK
+			} else { //DISK*/
 				dlm = eventFileModel;
-			}
+			//}
 			try {
 				BufferedReader br =
 					new BufferedReader(new FileReader(lastFile));
@@ -889,7 +885,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	private File getOutFile() {
-		File rval=null;//default return value
+		File rval = null; //default return value
 		JFileChooser fd = new JFileChooser(outDirectory);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(
@@ -913,23 +909,23 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 */
 	private void lockFields(boolean lock) {
 		//if (lock) {
-			setupLock = lock;
-			final boolean notLock=!lock;
-			addfile.setEnabled(notLock);
-			addDir.setEnabled(notLock);
-			remove.setEnabled(notLock);
-			loadlist.setEnabled(notLock);
-			savelist.setEnabled(notLock);
-			addrun.setEnabled(notLock);
-			addrange.setEnabled(notLock);
-			removeruns.setEnabled(notLock);
-			removeAll.setEnabled(notLock);
-			loadrunlist.setEnabled(notLock);
-			saverunlist.setEnabled(notLock);
-			textInitRecord.setEnabled(notLock);
-			textFinalRecord.setEnabled(notLock);
-			textOutFile.setEditable(notLock);
-			cout.setEnabled(notLock);
+		setupLock = lock;
+		final boolean notLock = !lock;
+		addfile.setEnabled(notLock);
+		addDir.setEnabled(notLock);
+		remove.setEnabled(notLock);
+		loadlist.setEnabled(notLock);
+		savelist.setEnabled(notLock);
+//		addrun.setEnabled(notLock);
+//		addrange.setEnabled(notLock);
+//		removeruns.setEnabled(notLock);
+		removeAll.setEnabled(notLock);
+//		loadrunlist.setEnabled(notLock);
+//		saverunlist.setEnabled(notLock);
+		//textInitRecord.setEnabled(notLock);
+		//textFinalRecord.setEnabled(notLock);
+		textOutFile.setEditable(notLock);
+		cout.setEnabled(notLock);
 		/*} else {
 			setupLock = false;
 			addfile.setEnabled(true);
