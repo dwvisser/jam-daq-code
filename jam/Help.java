@@ -17,11 +17,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
+import javax.help.HelpSet;
+import javax.help.CSH;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -157,4 +161,21 @@ class Help {
 	public final void showLicense() {
 		licenseD.show();
 	}
+	
+	public static void main(String [] args){
+		final String helpsetName = "help/jam.hs";
+		try {
+			final URL hsURL =
+				ClassLoader.getSystemClassLoader().getResource(helpsetName);
+			final HelpSet hs = new HelpSet(null, hsURL);
+			final ActionListener al=new CSH.DisplayHelpFromSource(hs.createHelpBroker());
+			final JButton proxy=new JButton("Proxy");
+			proxy.addActionListener(al);
+			proxy.doClick();
+		} catch (Exception ee) {
+			JOptionPane.showMessageDialog(null,ee.getMessage(),ee.getClass().getName(),
+			JOptionPane.ERROR_MESSAGE);
+		}
+	}
+		
 }
