@@ -18,7 +18,7 @@ import javax.swing.JScrollBar;
  */
 class Scroller
 	extends JPanel
-	implements AdjustmentListener/*, MouseListener*/ {
+	implements AdjustmentListener {
 
 	//which scrollbars to update
 	final static int ALL = 0;
