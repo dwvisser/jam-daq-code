@@ -107,7 +107,7 @@ public class JamConsole
 	 * a text field for intput.
 	 */
 	public JamConsole() {
-		this(NUMBER_LINES_DISPLAY, NUMBER_LINES_LOG);
+		this(NUMBER_LINES_LOG);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class JamConsole
 	 * Create a JamConsole which has an text area for output
 	 * a text field for intput
 	 */
-	public JamConsole(int linesDisplay, int linesLog) {
+	public JamConsole(int linesLog) {
 		maxLines = linesLog;
 		this.setLayout(new BorderLayout(5, 5));
 		textLog = new JTextPane();
@@ -126,11 +126,8 @@ public class JamConsole
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		//textLog.setRows(linesDisplay);
-		//attr_normal.getAttribute()
 		textLog.setBackground(Color.white);
 		textLog.setForeground(Color.black);
-		//textLog.setLineWrap(true);
 		textLog.setText(
 			"" + getTime() + ">Welcome to Jam version " + JamMain.JAM_VERSION);
 		JScrollPane jsp =
