@@ -29,7 +29,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
