@@ -53,7 +53,7 @@ public class JamMain extends JFrame {
 	 * Sort Mode--Just read in a data file.
 	 */
 	static public final int FILE = 6; //we have read in a file
-	
+
 	/**
 	 * Configuration information for Jam.
 	 */
@@ -89,26 +89,26 @@ public class JamMain extends JFrame {
 
 	private int sortMode;
 	private final String classname;
-	private RunState runState=RunState.NO_ACQ;
+	private RunState runState = RunState.NO_ACQ;
 	private String openFileName;
 
 	private JamMain() {
 		super("Jam");
-		final int titleDisplayTime=10000; //milliseconds
+		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
-		final ClassLoader cl=getClass().getClassLoader();
-		setIconImage((new ImageIcon(cl.getResource(
-		"jam/nukeicon.png")).getImage()));
-		classname=getClass().getName()+"--";
+		final ClassLoader cl = getClass().getClassLoader();
+		setIconImage(
+			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
+		classname = getClass().getName() + "--";
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
 		status = JamStatus.instance(); //class that is statically available
-		status.setAcqisitionStatus(new AcquisitionStatus(){
-			public boolean isAcqOn(){
+		status.setAcqisitionStatus(new AcquisitionStatus() {
+			public boolean isAcqOn() {
 				return runState.isAcqOn();
 			}
-			
-			public boolean isOnLine(){
+
+			public boolean isOnLine() {
 				return (sortMode == ONLINE_DISK);
 			}
 		});
@@ -122,19 +122,18 @@ public class JamMain extends JFrame {
 		/* histogram displayer (needed by jamCommand) */
 		display = new Display(broadcaster, console);
 		//me.add(display, BorderLayout.CENTER);
-		final JSplitPane splitCenter=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-		true,display,console);
+		final JSplitPane splitCenter =
+			new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, display, console);
 		/*fraction of resize space that goes to display*/
-		me.add(splitCenter,BorderLayout.CENTER);
+		me.add(splitCenter, BorderLayout.CENTER);
 		/* create user command listener */
-		jamCommand = new JamCommand(this, display, broadcaster, 
-		console);
-		menubar=new MainMenuBar(this, jamCommand, display,console);
+		jamCommand = new JamCommand(this, display, broadcaster, console);
+		menubar = new MainMenuBar(this, jamCommand, display, console);
 		this.setJMenuBar(menubar);
-		selectBar=new SelectionToolbar(console,status,broadcaster,display);
+		selectBar = new SelectionToolbar(console, status, broadcaster, display);
 		broadcaster.addObserver(selectBar);
 		me.add(selectBar, BorderLayout.NORTH);
-		display.addToolbarAction();//the left-hand action toolbar
+		display.addToolbarAction(); //the left-hand action toolbar
 		/* operations to close window */
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
@@ -150,21 +149,23 @@ public class JamMain extends JFrame {
 		} catch (DataException de) {
 			console.errorOutln(de.getMessage());
 		}
-		DataControl.setupAll();//setup jam.data.control dialog boxes
+		DataControl.setupAll(); //setup jam.data.control dialog boxes
 		try { //setting no sort does not throw an exception
 			setSortMode(NO_SORT);
 		} catch (JamException je) {
-			console.errorOutln(classname+"Exception while setting sort mode: "+
-			je.getMessage());
+			console.errorOutln(
+				classname
+					+ "Exception while setting sort mode: "
+					+ je.getMessage());
 		}
 		/* Important to initially display in the AWT/Swing thread. */
-		final Runnable showWindow=new Runnable(){
-			public void run(){ 
+		final Runnable showWindow = new Runnable() {
+			public void run() {
 				pack();
 				selectBar.setChoosersToFirstItems();
 				splitCenter.setResizeWeight(0.5);
-				final int posx=50;
-				final int posy=0;
+				final int posx = 50;
+				final int posy = 0;
 				setLocation(posx, posy);
 				show();
 				/* print out where config files were read from */
@@ -204,12 +205,12 @@ public class JamMain extends JFrame {
 	 * @param mode the new mode for Jam to be in
 	 */
 	public void setSortMode(int mode) throws JamException {
-		final StringBuffer title=new StringBuffer("Jam - ");
-		final String disk="disk";
+		final StringBuffer title = new StringBuffer("Jam - ");
+		final String disk = "disk";
 		if (!((mode == NO_SORT) || (mode == FILE))) {
-			boolean error=true;
-			final StringBuffer etext=new StringBuffer(
-			"Can't setup, setup is locked for ");
+			boolean error = true;
+			final StringBuffer etext =
+				new StringBuffer("Can't setup, setup is locked for ");
 			if (sortMode == ONLINE_DISK) {
 				etext.append("online");
 			} else if (sortMode == OFFLINE_DISK) {
@@ -217,9 +218,9 @@ public class JamMain extends JFrame {
 			} else if (sortMode == REMOTE) {
 				etext.append("remote");
 			} else {
-				error=false;
+				error = false;
 			}
-			if (error){
+			if (error) {
 				throw new JamException(etext.toString());
 			}
 		}
@@ -227,14 +228,14 @@ public class JamMain extends JFrame {
 			sortMode = mode;
 		}
 		menubar.setSortMode(mode);
-		if (mode == ONLINE_DISK || mode==ONLINE_NODISK) {
+		if (mode == ONLINE_DISK || mode == ONLINE_NODISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting");
 			if (mode == ONLINE_DISK) {
 				title.append(" TO ").append(disk);
 			} /*else {
-				this.setTitle(title.append(tape).toString());
-			}*/
+							this.setTitle(title.append(tape).toString());
+						}*/
 			setTitle(title.toString());
 		} else if (mode == OFFLINE_DISK) {
 			setRunState(RunState.ACQ_OFF);
@@ -242,13 +243,13 @@ public class JamMain extends JFrame {
 			if (mode == OFFLINE_DISK) {
 				title.append(" FROM ").append(disk);
 			} /*else {
-				this.setTitle(title.append(tape).toString());
-			}*/
+							this.setTitle(title.append(tape).toString());
+						}*/
 			this.setTitle(title.toString());
 		} else if (mode == REMOTE) { //remote display
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
-		} else if (mode == FILE) {//just read in a file
+		} else if (mode == FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(openFileName).toString());
 		} else if (mode == NO_SORT) {
@@ -256,7 +257,7 @@ public class JamMain extends JFrame {
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
 		} else {
-			console.errorOutln("Invalid sort mode: "+mode);
+			console.errorOutln("Invalid sort mode: " + mode);
 		}
 	}
 
@@ -268,7 +269,7 @@ public class JamMain extends JFrame {
 	 * @param fileName the file to be sorted?
 	 */
 	public void setSortModeFile(String fileName) throws JamException {
-		synchronized (this){
+		synchronized (this) {
 			this.openFileName = fileName;
 		}
 		setSortMode(FILE);
@@ -283,14 +284,14 @@ public class JamMain extends JFrame {
 	public int getSortMode() {
 		return sortMode;
 	}
-	
+
 	/**
 	 * @return true is the mode can be changed
 	 */
 	public boolean canSetSortMode() {
 		return ((sortMode == NO_SORT) || (sortMode == FILE));
 	}
-	
+
 	/**
 	 *  <p>Sets run state when taking data online.
 	 *  The run state mostly determints the state of control JMenu items.
@@ -322,24 +323,43 @@ public class JamMain extends JFrame {
 	public RunState getRunState() {
 		return runState;
 	}
-	
+
 	/**
 	 * Main method that is run to start up full Jam process
 	 * 
 	 * @param args not used currently
 	 */
 	public static void main(String args[]) {
-		final String linux="Linux";
-		try {
-			if (linux.equals(System.getProperty("os.name"))){
-				UIManager.setLookAndFeel(new com.incors.plaf.kunststoff.KunststoffLookAndFeel());
-			} else {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		final String linux = "Linux";
+		final String kunststoff =
+			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
+		boolean useKunststoff = linux.equals(System.getProperty("os.name"));
+		if (useKunststoff) {
+			try {
+				UIManager.setLookAndFeel(kunststoff);
+			} catch (ClassNotFoundException e) {
+				useKunststoff = false;
+			} catch (Exception e) { //all other exceptions
+				final String title = "Jam--error setting GUI appearance";
+				JOptionPane.showMessageDialog(
+					null,
+					e.getMessage(),
+					title,
+					JOptionPane.WARNING_MESSAGE);
 			}
-		} catch (Exception e) {
-			final String title="Jam--error setting GUI appearance";
-			JOptionPane.showMessageDialog(null,e.getMessage(),title,
-			JOptionPane.WARNING_MESSAGE);
+		}
+		if (!useKunststoff) {
+			try {
+				UIManager.setLookAndFeel(
+					UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				final String title = "Jam--error setting GUI appearance";
+				JOptionPane.showMessageDialog(
+					null,
+					e.getMessage(),
+					title,
+					JOptionPane.WARNING_MESSAGE);
+			}
 		}
 		new JamMain();
 	}
