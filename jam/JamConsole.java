@@ -129,6 +129,7 @@ public class JamConsole
 	 */
 	public JamConsole(int linesLog) {
 		JamStatus.instance().setMessageHandler(this);
+		SetupSortOn.createSingletonInstance(this);
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
 		textLog.setToolTipText(
