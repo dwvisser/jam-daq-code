@@ -119,7 +119,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	 	CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
 		CMD_MAP.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
 		CMD_MAP.put(PlotPrefs.DISPLAY_AXIS_LABELS, SetAxisLabels.class);
-		CMD_MAP.put(HDFPrefs.SUPPRESS_WRITE_EMPTY, SetHDFSuppressWriteEmpty.class);
+		CMD_MAP.put(HDFPrefs.SUPPRESS_WRITE_EMPTY, SetHDFSuppressSaveEmpty.class);
 		CMD_MAP.put(JamPrefs.VERBOSE, SetVerbose.class);
 		CMD_MAP.put(JamPrefs.DEBUG, SetDebug.class);
 		CMD_MAP.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);

@@ -8,13 +8,13 @@ import jam.io.hdf.HDFPrefs;
  * @author ken
  *
  */
-public class SetHDFSuppressWriteEmpty extends AbstractSetBooleanPreference {
+public class SetHDFSuppressSaveEmpty extends AbstractSetBooleanPreference {
 
-	SetHDFSuppressWriteEmpty(){
+	SetHDFSuppressSaveEmpty(){
 		super();
-		putValue(NAME, "Suppress writing empty Histograms");
+		putValue(NAME, "Suppress saving empty Histograms");
 		putValue(SHORT_DESCRIPTION,
-		"Don't write out empty Histograms");
+		"Don't save empty Histograms");
 		prefsNode=HDFPrefs.PREFS;
 		key=HDFPrefs.SUPPRESS_WRITE_EMPTY;
 		defaultState=true;
