@@ -1,15 +1,41 @@
 package jam.io;
 
-import jam.JamMain;
 import jam.data.Histogram;
-import jam.global.*;
-import java.awt.*;
-import jam.util.*;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.global.RTSI;
+import jam.util.FileUtilities;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 
 /**
  * Dialog for exporting lists of histograms.  Searches 
@@ -26,13 +52,10 @@ public class BatchExport extends JDialog implements ActionListener {
 	private JList l_hists;
 	private JButton b_export;
 	private MessageHandler console;
-	private JamMain jam;
 
-	public BatchExport(JamMain jam, MessageHandler console) {
-		super(jam);
-		this.jam = jam;
+	public BatchExport(MessageHandler console) {
+		super(JamStatus.instance().getFrame(),"Batch Histogram Export");
 		this.console = console;
-		setTitle("Batch Histogram Export");
 		getClasses();
 		buildGUI();
 		this.pack();
