@@ -179,30 +179,30 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		final int noSpace=0;
 		pLabels.setBorder(new EmptyBorder(topInset,leftInset,noSpace,noSpace));
 		dcp.add(pLabels, BorderLayout.WEST);
-		JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
+		final JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
 		pLabels.add(ln);
-		JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
+		final JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
 		pLabels.add(lsc);
-		JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
+		final JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
 		pLabels.add(lscs);
-		JLabel ls = new JLabel("Sort Routine", JLabel.RIGHT);
+		final JLabel ls = new JLabel("Sort Routine", JLabel.RIGHT);
 		pLabels.add(ls);
-		JLabel leos	= new JLabel("Event output stream", JLabel.RIGHT);
-		pLabels.add(leos);
-		JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
+		final JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
 		pLabels.add(leis);
-		JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
+		final JLabel leos	= new JLabel("Event output stream", JLabel.RIGHT);
+		pLabels.add(leos);
+		final JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
 		pLabels.add(lhdfp);
-		JLabel lep = new JLabel("Event path", JLabel.RIGHT);
+		final JLabel lep = new JLabel("Event path", JLabel.RIGHT);
 		pLabels.add(lep);
-		JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
+		final JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
 		pLabels.add(llfp);
-		JLabel lssf = new JLabel("Sort sample fraction", JLabel.RIGHT);
+		final JLabel lssf = new JLabel("Sort sample fraction", JLabel.RIGHT);
 		pLabels.add(lssf);
 
 
 		//Entries Panel
-		JPanel pEntries = new JPanel(new GridLayout(0,1,gap,gap));
+		final JPanel pEntries = new JPanel(new GridLayout(0,1,gap,gap));
 		pEntries.setBorder(new EmptyBorder(topInset,noSpace,noSpace,noSpace));
 		dcp.add(pEntries, BorderLayout.CENTER);
 		textExpName = new JTextField(defaultName);
@@ -262,8 +262,8 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		});
 		Iterator it = sortClassList.iterator();
 		while (it.hasNext()) {
-			Class c = (Class) it.next();
-			String name = c.getName();
+			final Class c = (Class) it.next();
+			final String name = c.getName();
 			if (name.equals(defaultSortRoutine)) {
 				sortChoice.setSelectedItem(c);
 				break;
@@ -299,8 +299,8 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 			"Select the writer for your output event format.");
 		it = lhs.iterator();
 		while (it.hasNext()) {
-			Class c = (Class) it.next();
-			String name = c.getName();
+			final Class c = (Class) it.next();
+			final String name = c.getName();
 			boolean match = name.equals(defaultEventOutStream);
 			if (match) {
 				outStreamChooser.setSelectedItem(c);
