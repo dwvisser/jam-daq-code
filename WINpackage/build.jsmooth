@@ -12,7 +12,7 @@
 <classPath>lib\jh.jar</classPath>
 <embeddedJar>false</embeddedJar>
 <executableName>bin\Jam.exe</executableName>
-<iconLocation>nukeicon.ico</iconLocation>
+<iconLocation>nukeicon32.png</iconLocation>
 <initialMemoryHeap>8388608</initialMemoryHeap>
 <mainClassName>jam.JamMain</mainClassName>
 <maximumMemoryHeap>209715200</maximumMemoryHeap>
