@@ -481,12 +481,12 @@ class Action implements ActionListener, PlotMouseListener {
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
-			currentPlot.setMarkingArea(true);
-			currentPlot.markingArea(cursor);
+			//currentPlot.setSelectingArea(true);
+			currentPlot.initializeSelectingArea(cursor);
 			addClick(cursor);
 			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
-			currentPlot.setMarkingArea(false);
+			currentPlot.setSelectingArea(false);
 			textOut.messageOut(getCoordString(cursor), MessageHandler.END);
 			currentPlot.expand(getClick(0), cursor);
 			if (autoOnExpand) {
@@ -637,12 +637,12 @@ class Action implements ActionListener, PlotMouseListener {
 				MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
 			addClick(cursor);
-			currentPlot.setMarkingArea(true);
-			currentPlot.markingArea(cursor);
+			//currentPlot.setSelectingArea(true);
+			currentPlot.initializeSelectingArea(cursor);
 			currentPlot.markChannel(cursor);
 			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
-			currentPlot.setMarkingArea(false);
+			currentPlot.setSelectingArea(false);
 			final Point lim1 = getClick(0);
 			if (currentPlot instanceof Plot1d) {
 				textOut.messageOut(String.valueOf(cursor.x));
@@ -765,8 +765,8 @@ class Action implements ActionListener, PlotMouseListener {
 			}
 		} else if (nclicks == 4) {
 			//************ First Region Marker *********************************
-			currentPlot.setMarkingArea(true);
-			currentPlot.markingArea(cursor);
+			//currentPlot.setSelectingArea(true);
+			currentPlot.initializeSelectingArea(cursor);
 			addClick(cursor);
 			final Point p = cursor;
 			currentPlot.markChannel(p);
@@ -782,7 +782,7 @@ class Action implements ActionListener, PlotMouseListener {
 			}
 		} else if (nclicks == 5) {
 			//************ Second Region Marker *********************************
-			currentPlot.setMarkingArea(false);
+			currentPlot.setSelectingArea(false);
 			addClick(cursor);
 			final Point p1 = getClick(4);
 			final Point p2 = cursor;
@@ -1014,7 +1014,7 @@ class Action implements ActionListener, PlotMouseListener {
 			commandPresent = false;
 			mousePressed = false;
 			inCommand = null;
-			currentPlot.setMarkingArea(false);
+			currentPlot.setSelectingArea(false);
 			clicks.clear();
 		}
 	}
