@@ -47,9 +47,9 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 	private static final String NUM_PEAKS = "# Peaks to Fit";
 
 	private static final int POSSIBLE_PEAKS = 5;
-	private static final String[] sArea = new String[POSSIBLE_PEAKS];
-	private static final String[] sWidth = new String[POSSIBLE_PEAKS];
-	private static final String[] sCentroid = new String[POSSIBLE_PEAKS];
+	private static final String[] S_AREA = new String[POSSIBLE_PEAKS];
+	private static final String[] S_WIDTH = new String[POSSIBLE_PEAKS];
+	private static final String[] S_CENTROID = new String[POSSIBLE_PEAKS];
 
 	private Parameter widthEstimate;
 	private Parameter[] area = new Parameter[POSSIBLE_PEAKS];
@@ -117,25 +117,25 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 		addParameter(paramB);
 		addParameter(paramC);
 		for (int i = 0; i < POSSIBLE_PEAKS; i++) {
-			sArea[i] = "Area " + (i + 1);
-			sWidth[i] = "Width " + (i + 1);
-			sCentroid[i] = "Centroid " + (i + 1);
+			S_AREA[i] = "Area " + (i + 1);
+			S_WIDTH[i] = "Width " + (i + 1);
+			S_CENTROID[i] = "Centroid " + (i + 1);
 			area[i] =
 				new Parameter(
-					sArea[i],
+					S_AREA[i],
 					Parameter.DOUBLE,
 					Parameter.FIX,
 					Parameter.ESTIMATE);
 			area[i].setEstimate(true);
 			centroid[i] =
 				new Parameter(
-					sCentroid[i],
+					S_CENTROID[i],
 					Parameter.DOUBLE,
 					Parameter.FIX,
 					Parameter.MOUSE);
 			centroid[i].setValue(100.0);
 			width[i] =
-				new Parameter(sWidth[i], Parameter.DOUBLE, Parameter.FIX, Parameter.ESTIMATE);
+				new Parameter(S_WIDTH[i], Parameter.DOUBLE, Parameter.FIX, Parameter.ESTIMATE);
 			width[i].setEstimate(true);
 			width[i].setValue(10.0);
 			addParameter(centroid[i]);
@@ -160,7 +160,7 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 		/* Second, Process whether independent widths or not, and number of peaks. */
 		if (!independentWidths.getBooleanValue()) { //not independent; 
 			for (int i = 1; i < npeak; i++) {
-				setParameter(sWidth[i], width[1].getDoubleValue());
+				setParameter(S_WIDTH[i], width[1].getDoubleValue());
 			}
 		}
 		final int _minCH = lo.getIntValue();
@@ -182,7 +182,7 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 			if (width[i].isEstimate()){
 				width[i].setValue(widthEstimate.getDoubleValue());
 				dWidth[i]=widthEstimate.getDoubleValue();
-				textInfo.messageOutln("Initial "+sWidth[i]+" = "+dWidth[i]);
+				textInfo.messageOutln("Initial "+S_WIDTH[i]+" = "+dWidth[i]);
 			}
 			if (area[i].isEstimate()) {
 				dArea[i] = 0.0;
@@ -198,7 +198,7 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 				//inverse of area under fwhm standard normal
 				area[i].setValue(dArea[i]);
 				textInfo.messageOutln(
-					"Estimated " + sArea[i] + " = " + dArea[i]);
+					"Estimated " + S_AREA[i] + " = " + dArea[i]);
 			}
 		}
 	}
@@ -298,10 +298,10 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 			rval = diffCenter * diffCenter;
 		} else {
 			for (int i = 0; i < numPeaks.getIntValue(); i++) {
-				if (parName.equals(sArea[i])) {
+				if (parName.equals(S_AREA[i])) {
 					rval = MAGIC_A * exp[i] / dWidth[i];
 					break;
-				} else if (parName.equals(sWidth[i])) {
+				} else if (parName.equals(S_WIDTH[i])) {
 					rval = MAGIC_A * dArea[i] * exp[i] / (dWidth[i] * dWidth[i]);
 					rval *= 2
 						* MAGIC_B
@@ -310,7 +310,7 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 						/ (dWidth[i] * dWidth[i])
 						- 1;
 					break;
-				} else if (parName.equals(sCentroid[i])) {
+				} else if (parName.equals(S_CENTROID[i])) {
 					rval =
 						2
 							* MAGIC_A

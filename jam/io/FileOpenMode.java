@@ -13,7 +13,7 @@ public final class FileOpenMode {
 	private final static int RELOAD_VALUE = 2;
 	private final static int ADD_VALUE = 3;
 	
-	private final static String [] names={"Open", "Open Additional",
+	private final static String [] NAMES={"Open", "Open Additional",
 	        "Reload", "Add"
 	};
 
@@ -28,7 +28,7 @@ public final class FileOpenMode {
 	}
 	
 	public String toString(){
-	    return names[value];
+	    return NAMES[value];
 	}
 	
 	/**
