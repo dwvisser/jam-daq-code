@@ -9,74 +9,70 @@ import java.awt.Component;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
 
 /**
+ * Renderer for Jam's hist/gate selection tree.
+ * 
  * @author Ken Swartz
  * @version Nov 26, 2004
  */
-public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
-		TreeCellRenderer {
+public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
-	private Color defaultBackgroundColor;
-	public SelectionTreeCellRender(){
-		defaultBackgroundColor = getBackgroundSelectionColor();
-		//	setBackgroundSelectionColor(Color.GRAY);
-		//	setBackground(Color.GRAY);		
-		//setTextSelectionColor(Color.RED);
-	 
-	}
-	
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean selected, boolean expanded, boolean leaf, int row,
-			boolean hasFocus) {
-		
-			super.getTreeCellRendererComponent(tree, value, selected,
-                						expanded, leaf, row, hasFocus);
-		
-		if (selected) {
-			//setBackground(getBackgroundSelectionColor());
-			//setForeground(getTextSelectionColor());
-			//setForeground(Color.BLUE);			
-		} else {
-			//setBackground(getBackgroundNonSelectionColor());
-			//setForeground(getTextNonSelectionColor());
-			//setForeground(Color.BLACK);	
-		}
-		Object nodeObject =((DefaultMutableTreeNode)value).getUserObject();
-		if (nodeObject instanceof Histogram){
-			Histogram hist =(Histogram)nodeObject;
-			setBackgroundSelectionColor(defaultBackgroundColor);
-			if (hist.getDimensionality()==1){
-				setIcon(Icons.HIST1D);			
-			}else{
-				setIcon(Icons.HIST2D);
-			}
-			setText( ((Histogram)nodeObject).getName() );
+    private Color defaultBackgroundColor;
 
+    /**
+     * Constructs a new renderer.
+     */
+    public SelectionTreeCellRender() {
+        super();
+        defaultBackgroundColor = getBackgroundSelectionColor();
+    }
 
-		}else if (nodeObject instanceof Gate) {
-			Gate gate =(Gate)nodeObject;
-			setBackgroundSelectionColor(Color.CYAN);
-			setText( gate.getName() );
-			if (gate.getDimensionality()==1){
-				if (gate.isDefined()){
-					setIcon(Icons.GATE_DEF1D);					
-				}else {
-					setIcon(Icons.GATE1D);
-				}
-			}else{
-				if (gate.isDefined()){
-					setIcon(Icons.GATE_DEF2D);					
-				}else {
-					setIcon(Icons.GATE2D);
-				}
-			}
-		}else {
-			String name =(String)nodeObject;
-			setIcon(null);
-			setText(name );			
-		}
-		return this;
-	}
+    /**
+     * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
+     *      java.lang.Object, boolean, boolean, boolean, int, boolean)
+     */
+    public Component getTreeCellRendererComponent(JTree tree, Object value,
+            boolean selected, boolean expanded, boolean leaf, int row,
+            boolean hasFocus) {
+        super.getTreeCellRendererComponent(tree, value, selected, expanded,
+                leaf, row, hasFocus);
+        Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
+        if (nodeObject instanceof Histogram) {
+            Histogram hist = (Histogram) nodeObject;
+            setBackgroundSelectionColor(defaultBackgroundColor);
+            //final StringBuffer tip=new StringBuffer(hist.getSizeX());
+            if (hist.getDimensionality() == 1) {
+                setIcon(Icons.HIST1D);
+            } else {
+                setIcon(Icons.HIST2D);
+                //tip.append('x').append(hist.getSizeY());
+            }
+            //tip.append(" - ").append(hist.getTitle());
+            setText(hist.getName());
+            //setToolTipText(tip.toString());
+        } else if (nodeObject instanceof Gate) {
+            Gate gate = (Gate) nodeObject;
+            setBackgroundSelectionColor(Color.CYAN);
+            setText(gate.getName());
+            if (gate.getDimensionality() == 1) {
+                if (gate.isDefined()) {
+                    setIcon(Icons.GATE_DEF1D);
+                } else {
+                    setIcon(Icons.GATE1D);
+                }
+            } else {
+                if (gate.isDefined()) {
+                    setIcon(Icons.GATE_DEF2D);
+                } else {
+                    setIcon(Icons.GATE2D);
+                }
+            }
+        } else {
+            String name = (String) nodeObject;
+            setIcon(null);
+            setText(name);
+        }
+        return this;
+    }
 }
