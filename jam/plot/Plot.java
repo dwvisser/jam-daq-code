@@ -10,6 +10,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.print.PageFormat;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 
@@ -104,6 +107,7 @@ public abstract class Plot extends JPanel {
 	protected PlotMouse plotMouse;
 	//limits for plot
 	protected Limits plotLimits;
+	protected PageFormat pageformat=null;
 
 	// histogram related stuff.
 	protected Histogram currentHist; //the currently displayed histogram
@@ -125,7 +129,7 @@ public abstract class Plot extends JPanel {
 
 	//gate stuff
 	protected Gate currentGate;
-	protected java.util.List pointsGate;
+	protected final List pointsGate=new Vector(10,5);
 	boolean settingGate = false;
 
 	//are we display more than a histogram
@@ -563,9 +567,11 @@ public abstract class Plot extends JPanel {
 			if (printing) { //output to printer
 				graph.setFont(printFont);
 				PlotColorMap.setColorMap(PlotColorMap.PRINT);
+				graph.setView(pageformat);
 			} else { //output to screen
 				graph.setFont(screenFont);
 				PlotColorMap.setColorMap(colorMode);
+				graph.setView(null);
 			}
 			g.setColor(PlotColorMap.background);
 			//since setting background  color seems insufficient
@@ -634,8 +640,9 @@ public abstract class Plot extends JPanel {
 	 */
 	abstract void paintFit(Graphics g);
 
-	public synchronized void setRenderForPrinting(boolean rfp) {
+	public synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		printing = rfp;
+		pageformat=pf;
 	}
 
 	ComponentPrintable getComponentPrintable(int run, String d) {
