@@ -351,11 +351,13 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * Paint a gate as a set of blocks that are
 	 * channels in the gate.
 	 *
-	 * @param g the graphics context to paint to
+	 * @param gc the graphics context to paint to
 	 * @throws DataException if there's a problem painting the gate
 	 */
-	void paintGate(Graphics g) throws DataException {
-		g.setXORMode(Color.BLACK);
+	void paintGate(Graphics gc) throws DataException {
+		Graphics2D g=(Graphics2D)gc;
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		0.5f));
 		g.setColor(PlotColorMap.gateShow);
 		final boolean noFillMode =
 			JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D);
@@ -453,9 +455,11 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		return r;
 	}
 
-	void paintMouseMoved(Graphics g) {
-		final Color xorColor = Color.BLACK;
-		g.setXORMode(xorColor);
+	void paintMouseMoved(Graphics gc) {
+		Graphics2D g=(Graphics2D)gc;
+		g.setColor(Color.BLACK);
+		g.setComposite(AlphaComposite.getInstance(
+		AlphaComposite.SRC_OVER,0.8f));
 		g.drawLine(
 			lastGatePoint.x,
 			lastGatePoint.y,
