@@ -302,24 +302,26 @@ public abstract class DataObject {
 	    return ALL_TYPES.contains(new Short(type));
 	}
 	
-	static DataObject create(byte [] bytes, short tag, short ref, int offset, int length) throws HDFException {
-	    DataObject dataObject = null;
-	    if (isValidType(tag)){
-	    	dataObject =createDataObject(tag);
-	    	if (dataObject!=null) //Only create necessary objects
-	    		dataObject.init(bytes, tag, ref);
-	    } else {
-	        throw new IllegalArgumentException("Invalid tag: "+tag);
-	    }
-	    return dataObject;
-	}
+	static final DataObject create(byte[] bytes, short tag, short ref) throws HDFException {
+        DataObject dataObject = null;
+        if (isValidType(tag)) {
+            dataObject = createDataObject(tag);
+            if (dataObject != null) {//Only create necessary objects
+                dataObject.init(bytes, tag, ref);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid tag: " + tag);
+        }
+        return dataObject;
+    }
 	
 	static DataObject create(short tag, short ref, int offset, int length) throws HDFException {
 	    DataObject dataObject = null;
 	    if (isValidType(tag)){
 	    	dataObject =createDataObject(tag); 
-	    	if (dataObject!=null)	//Only create necessary objects
+	    	if (dataObject!=null){	//Only create necessary objects
 	    		dataObject.init(offset, length, tag, ref);
+	    	}
 	    } else {
 	        throw new IllegalArgumentException("Invalid tag: "+tag);
 	    }
@@ -407,8 +409,9 @@ public abstract class DataObject {
 	 * @param	f	    The file to contain the new object.
 	 * @param	data	    The byte representation of the data.
 	 * @param	r   The unique value specifying the type of data object.
+	 * @throws IllegalArgumentException if the data is null or empty
 	 */
-	void init(byte[] data, short tag, short ref) throws HDFException {
+	void init(byte[] data, short tag, short ref) {
 	    if (data == null || data.length==0){
 	        throw new IllegalArgumentException("Can't init DataObject with empty data.");
 	    }
@@ -547,6 +550,4 @@ public abstract class DataObject {
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
 	protected abstract void interpretBytes() throws HDFException;
-
-
 }
