@@ -29,7 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
 /**
- * Help shows the program about
+ * Deals with JavaHelp-based User Guide and an "About" dialog.
  *
  * @author Ken Swartz
  * @author Dale Visser
@@ -41,8 +41,7 @@ public class Help extends JDialog {
 	private final static int posx=20;
 
 	/**
-	 * @param frame the parent frame, i.e. the main Jam Window
-	 * @param mh for outputting error messages
+	 * Constructor.
 	 */
 	public Help() {
 		super(status.getFrame(),
@@ -131,6 +130,11 @@ public class Help extends JDialog {
 		}
 	}
 	
+	/**
+	 * Launches the User Guide, with an Exit button in an auxiliary frame.
+	 * 
+	 * @param args ignored
+	 */
 	public static void main(String [] args){
 		final String helpsetName = "help/jam.hs";
 		setLookAndFeel();
@@ -141,7 +145,7 @@ public class Help extends JDialog {
 			final ActionListener al=new CSH.DisplayHelpFromSource(hs.createHelpBroker());
 			final JButton proxy=new JButton("Proxy");
 			proxy.addActionListener(al);
-			final JFrame frame=new JFrame("JamHelp");
+			final JFrame frame=new JFrame("Jam User Guide");
 			final JButton exit=new JButton("Exit");
 			frame.getContentPane().add(exit,BorderLayout.CENTER);
 			exit.addActionListener(new ActionListener(){
