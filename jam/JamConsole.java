@@ -2,6 +2,7 @@ package jam;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
+import jam.commands.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -167,21 +168,6 @@ public class JamConsole
 			}
 		});
 
-/* Remove KBS did not work
- 		String upArrow=KeyEvent.getKeyText(KeyEvent.VK_UP);
-		//String upArrow=KeyEvent.getKeyText(KeyEvent.VK_KP_UP);		
-		//String upArrow=KeyEvent.getKeyText(KeyEvent.VK_DOWN);
- 		
-		textIn.getInputMap().put(KeyStroke.getKeyStroke("Up"),"previousCommand");				
-				
-		textIn.getActionMap().put("previousCommand", 
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					int i=1;
-					//do nothing
-				}
-			});		
-*/			
 		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
@@ -237,16 +223,6 @@ public class JamConsole
 			}							
 		}					
 	}
-	
-	/**
-	 * Get the last command from the command stack
-	 * Unused, apparently.
-	 */
-	/*private void previousCommand() {									 
-		textIn.setText((String)cmdStack.get(lastCmdIndex));
-		if (lastCmdIndex>0)
-			lastCmdIndex=lastCmdIndex-1;
-	}*/
 	
 	/**
 	 * Outputs the string as a message to the console, which has more than one part,
@@ -547,23 +523,32 @@ public class JamConsole
 	 * @param params
 	 */
 	private void notifyListeners(String cmd, String [] params){
-		
-		Iterator it =listenerList.iterator();
-		boolean validListenerFound;
-		
 		try { 
-		
-			validListenerFound=false;
+			final Iterator it =listenerList.iterator();
+			boolean validListenerFound=false;
 			while(it.hasNext()) {
-			
 				CommandListener cl =(CommandListener)(it.next());
 				validListenerFound |=cl.performParseCommand(cmd, params);
 			}			
-			if (!validListenerFound)
-				errorOutln("Invalid command "+cmd);
-				
+			if (!validListenerFound){
+				final StringBuffer sb=new StringBuffer("\"");
+				sb.append(cmd).append("\" is an invalid command. ");
+				final String [] offer=JamCmdManager.getInstance().getSimilarCommnands(cmd);
+				if (offer.length>0){
+					sb.append("Maybe you meant ");
+					if (offer.length>1){
+						sb.append("one of the following:\t");
+					} else {
+						sb.append(":\t");
+					}
+					for (int i=0; i<offer.length; i++){
+						sb.append(offer[i]).append("\t");
+					}
+				}
+				errorOutln(sb.toString());
+			}				
 		} catch (CommandListenerException cle){						
-			errorOutln("Performing command command "+cmd+"; "+cle.getMessage());					
+			errorOutln("Performing command "+cmd+"; "+cle.getMessage());					
 		}
 			
 	}
