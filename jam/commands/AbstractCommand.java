@@ -1,6 +1,9 @@
 package jam.commands;
 
-import jam.global.*;
+import jam.global.Broadcaster;
+import jam.global.CommandListenerException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
 
 /**
  * Base class for commands
@@ -9,8 +12,8 @@ import jam.global.*;
  */
 public abstract class AbstractCommand implements Commandable {
 
-	protected JamStatus status;
-	protected Broadcaster broadcaster;
+	protected final JamStatus status=JamStatus.instance();
+	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	protected MessageHandler msghdlr;
 	
 	/**
@@ -28,18 +31,16 @@ public abstract class AbstractCommand implements Commandable {
 	 * @param msghdlr
 	 * @param broadcaster
 	 */
-	public void init(JamStatus status, MessageHandler msghdlr, Broadcaster broadcaster) {
-		this.status=status;
+	public void init(MessageHandler msghdlr) {
 		this.msghdlr=msghdlr;
-		this.broadcaster=broadcaster;		
 	}
+	
 	/**
 	 * Perform a command
 	 *
 	 * @param cmdParams the command parameters
 	 */
 	public void performCommand(Object [] cmdParams)  throws CommandException {
-		
 		try {
 			execute(cmdParams);
 			logCommand();
@@ -85,7 +86,7 @@ public abstract class AbstractCommand implements Commandable {
 	 * 
 	 * @param cmdParams command parameters
 	 */
-	public abstract	void execute(Object [] cmdParams) throws CommandException;
+	protected abstract	void execute(Object [] cmdParams) throws CommandException;
 		
 	
 	/**
@@ -93,5 +94,5 @@ public abstract class AbstractCommand implements Commandable {
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
-	public abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;			
+	protected abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;			
 }
