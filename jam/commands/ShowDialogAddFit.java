@@ -3,7 +3,7 @@ package jam.commands;
 import jam.global.CommandListenerException;
 
 import jam.fit.LoadFit;
-import javax.swing.JFrame;
+
 /**
  * Command to add fit
  * @author Ken Swartz
@@ -15,7 +15,6 @@ public class ShowDialogAddFit extends AbstractCommand {
 
 	protected void initCommand(){
 		putValue(NAME, "Load Fit\u2026");
-		JFrame frame = status.getFrame();
 		loadfit = new LoadFit(msghdlr);		
 	}
 	
