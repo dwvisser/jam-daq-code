@@ -13,7 +13,6 @@ import javax.swing.DefaultComboBoxModel;
 public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private String selection = null;
-	private JamCommand jc;
 	private int lastSize=0;
 	private Object [] lastValue;
 
@@ -21,9 +20,8 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * Create a data model for any JComboBox wishing to display the available
 	 * histograms.
 	 */
-	public HistogramComboBoxModel(JamCommand jc) {
+	public HistogramComboBoxModel() {
 		super();
-		this.jc = jc;
 	}
 
 	/**
