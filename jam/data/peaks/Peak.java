@@ -70,7 +70,7 @@ public class Peak extends Object implements Comparable {
         setPosition(p,0.0);
     }
 
-    public void setPosition(double p, double e){
+    public final void setPosition(double p, double e){
         position=p;
         perr=e;
     }
@@ -79,7 +79,7 @@ public class Peak extends Object implements Comparable {
         setArea(a,0.0);
     }
 
-    public void setArea(double a, double e){
+    public final void setArea(double a, double e){
         area=a;
         aerr=e;
     }
@@ -88,7 +88,7 @@ public class Peak extends Object implements Comparable {
         setWidth(w,0.0);
     }
 
-    public void setWidth(double w, double e){
+    public final void setWidth(double w, double e){
         width=w;
         werr=e;
     }
