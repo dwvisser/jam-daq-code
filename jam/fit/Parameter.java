@@ -20,7 +20,7 @@ package jam.fit;
  * <dt>(NO_)KNOWN</dt><dd>input only, not varied by routine</dd>
  * </dl>
  */
-public class Parameter {
+public final class Parameter {
 
 	/* used to determine the type */ 
 	private final static int TYPE_MASK = 7;
@@ -98,7 +98,7 @@ public class Parameter {
 	/**
 	 * Whether or not the parameter is currently fixed.
 	 */
-	protected boolean fix;
+	private boolean fix;
 
 	/**
 	 * Whether or not this parameter should be estimated automatically before doing fit.
@@ -120,18 +120,9 @@ public class Parameter {
 		fix = false;
 		estimate = false;
 
-		//default type	
-		/*if (type == 0) {
-			type = DOUBLE;
-		}*/
 		if (type == BOOLEAN) {
 			errorOption = false;
 		}
-
-		/*if ((options & Parameter.NO_ERROR) != 0) {
-			errorOption = false;
-		}*/
-
 		if ((options & Parameter.FIX) != 0) {
 			fixOption = true;
 		}
@@ -199,14 +190,14 @@ public class Parameter {
 		return type;
 	}
 
-	public void setFixed(boolean state) {
+	public synchronized void setFixed(boolean state) {
 		this.fix = state;
 	}
 
 	/**
 	 * Tells whether the parameter is currently fixed.
 	 */
-	public boolean isFixed() {
+	public synchronized boolean isFixed() {
 		return fix;
 	}
 	
@@ -218,60 +209,83 @@ public class Parameter {
 		return this.errorOption;
 	}
 
-	public void setEstimate(boolean state) {
+	public synchronized void setEstimate(boolean state) {
 		estimate = state;
 	}
 
-	public boolean isEstimate() {
+	public synchronized boolean isEstimate() {
 		return (fix ? false : estimate);
 	}
 
 	/**
 	 * Set the floating point value.
 	 *
-	 * @exception   FitException	    thrown if unrecoverable error occurs
+	 * @throws UnsupportedOperationException if this is not a DOUBLE parameter
 	 */
-	public void setValue(double value) throws FitException {
+	public synchronized void setValue(double value) {
 		if (type == DOUBLE) {
 			valueDbl = value;
-		} else
-			throw new FitException(
+		} else {
+			throw new UnsupportedOperationException(
 				"Parameter '" + name + "' can't set a double value.");
+		}
 	}
 
-	public void setValue(double value, double error) {
-		valueDbl = value;
-		errorDbl = error;
+	/**
+	 * Set the floating point value.
+	 *
+	 * @throws UnsupportedOperationException if this is not a DOUBLE parameter with
+	 * error bar
+	 */
+	public synchronized void setValue(double value, double error) {
+		if (errorOption){
+			valueDbl = value;
+			errorDbl = error;
+		} else {
+			throw new UnsupportedOperationException(
+				"Parameter '" + name + "' can't set a double value and error bar.");
+		}
 	}
 
-	public void setValue(int value) {
+	/**
+	 * Set the floating point value.
+	 *
+	 * @throws UnsupportedOperationException if this is not an INT parameter
+	 */
+	public synchronized void setValue(int value) {
+	if (type == INT){
 		valueInt = value;
+	} else {
+		throw new UnsupportedOperationException(
+			"Parameter '" + name + "' can't set an integer value.");
+	}
 	}
 
-	public void setValue(String text) {
+	public synchronized void setValue(String text) {
 		valueTxt = text;
 	}
-	public void setValue(boolean flag) {
+	
+	public synchronized void setValue(boolean flag) {
 		valueBln = flag;
 	}
 
-	public void setError(double err) {
+	public synchronized void setError(double err) {
 		errorDbl = err;
 	}
 
-	public double getDoubleValue() {
+	public synchronized double getDoubleValue() {
 		return valueDbl;
 	}
 
-	public int getIntValue() {
+	public synchronized int getIntValue() {
 		return valueInt;
 	}
 
-	public boolean getBooleanValue() {
+	public synchronized boolean getBooleanValue() {
 		return valueBln;
 	}
 
-	public double getDoubleError() {
+	public synchronized double getDoubleError() {
 		return errorDbl;
 	}
 
@@ -290,7 +304,7 @@ public class Parameter {
 		return type==INT;
 	}
 	
-	public String getText(){
+	public synchronized String getText(){
 		return valueTxt;
 	}
 
@@ -314,6 +328,6 @@ public class Parameter {
 	}
 	
 	public boolean isMouseClickable(){
-		return this.mouseOption;
+		return mouseOption;
 	}
 }

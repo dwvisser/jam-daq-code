@@ -211,7 +211,7 @@ public class LevenbergMarquadt {
 			beta = new Matrix(nPar, 1, 0.0);
 			nVar = 0;
 			for (j = 0; j < nPar; j++) {
-				if (!parameters[j].fix) {
+				if (!parameters[j].isFixed()) {
 					//increment number of variable function parameters
 					nVar++;
 				}
