@@ -91,14 +91,13 @@ public class Group {
      */
     public synchronized static Group createGroup(String groupName, String fileName, Type type) {
 
-    	final Group group = new Group(groupName, type, fileName);
-        setCurrentGroup(group);
+    	final Group group = new Group(groupName, type, fileName);        
         
         /* Only one sort group */
         if (type.type==Group.Type.TYPE_SORT) {
-        	sortGroup =currentGroup;
+        	sortGroup =group;
         }
-        return currentGroup;
+        return group;
     }
 
     /**
@@ -134,15 +133,6 @@ public class Group {
             currentGroup = (Group) (NAME_MAP.get(groupName));
         }
     }
-    /**
-     * Sets the "current" group.
-     * 
-     * @param group
-     *            to be "current"
-     */
-    public synchronized static void setCurrentGroup(Group group) {
-        currentGroup = group;
-    }
 
     /**
      * Returns the group with the given name.
@@ -163,15 +153,27 @@ public class Group {
         return sortGroup;
     }
 
+    /**
+     * Sets the "current" group.
+     * 
+     * @param group
+     *            to be "current"
+     */
+    /* FIXME KBS use method in JamStatus
+    public synchronized static void setCurrentGroup(Group group) {
+        currentGroup = group;
+    }
 
     /**
      * Get the current group.
      * 
      * @return the current group
      */
+    /* FIXME KBS use method in JamStatus
     public synchronized static Group getCurrentGroup() {
         return currentGroup;
     }
+    *
 
     /**
      * Gets a list of all groups.

@@ -85,13 +85,25 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	}
 
 	private void notifyApp() {
+		Histogram firstHist = null;
+		
 		//Update app status		
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
 		//FIXME KBS need a way to get first addtional readin histogram
 		//Set the current histogram to the first opened histogram
-		final Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+        /* Set selection of group and histogram. Set to first group */
+        if (Group.getGroupList().size() > 0) {
+        	Group currentGroup =(Group) Group.getGroupList().get(0);
+            STATUS.setCurrentGroup(currentGroup);
+        }
+        /* Set the current histogram to the first opened histogram. */
+        if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {
+            firstHist = (Histogram) STATUS.getCurrentGroup().getHistogramList()
+                    .get(0);
+        }
+		
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}			

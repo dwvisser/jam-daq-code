@@ -46,7 +46,8 @@ public class Scaler {
         }
         name=stringUtil.makeLength(name, NAME_LENGTH);
         if (group==null) {
-        	group = Group.getCurrentGroup();
+        	//FIXME KBS
+        	//group = STATUS.getCurrentGroup();
         }
         group.addScaler(this);
         String groupName=group.getName();

@@ -103,11 +103,12 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         /* Set selection of group and histogram. Set to first group */
         if (Group.getGroupList().size() > 0) {
-            Group.setCurrentGroup((Group) Group.getGroupList().get(0));
+        	Group currentGroup =(Group) Group.getGroupList().get(0);
+            STATUS.setCurrentGroup(currentGroup);
         }
         /* Set the current histogram to the first opened histogram. */
-        if (Group.getCurrentGroup().getHistogramList().size() > 0) {
-            firstHist = (Histogram) Group.getCurrentGroup().getHistogramList()
+        if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {
+            firstHist = (Histogram) STATUS.getCurrentGroup().getHistogramList()
                     .get(0);
         }
         STATUS.setCurrentHistogram(firstHist);

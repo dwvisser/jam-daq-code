@@ -423,7 +423,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      * @param mode whether to open or reload @throws HDFException thrown if
      * unrecoverable error occurs
      */
-    int convertGates(FileOpenMode mode) throws HDFException {
+    int convertGates(Group currentGroup, FileOpenMode mode) throws HDFException {
         int numGates = 0;
         final StringUtilities util = StringUtilities.instance();
         //Gate gate = null;
@@ -442,7 +442,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
                 final String hname = DataIDAnnotation.withTagRef(annotations,
                         currVG.getTag(), currVG.getRef()).getNote();
-                final String groupName = Group.getCurrentGroup().getName();
+                final String groupName = currentGroup.getName();
                 final String histFullName = groupName + "/"
                         + STRING_UTIL.makeLength(hname, Histogram.NAME_LENGTH);
                 final Histogram hist = Histogram.getHistogram(histFullName);

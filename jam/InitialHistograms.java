@@ -22,15 +22,16 @@ public final class InitialHistograms {
      * Constructs an instance of this class.
      */
 	public InitialHistograms() {
-		Group.createGroup("Initial", Group.Type.FILE);
+		Group initialGroup =Group.createGroup("Initial", Group.Type.FILE);
+
 		/* histogram with Jam name 2d */
-		final Histogram histJam2d = Histogram.createHistogram(histNameJam2d(),
+		final Histogram histJam2d = Histogram.createHistogram(initialGroup, histNameJam2d(),
 				"Histogram2D", "Jam Name 2D");
 		/* histogram with Jam name */
-		final Histogram histJam1d = Histogram.createHistogram(histNameJam1d(),
+		final Histogram histJam1d = Histogram.createHistogram(initialGroup, histNameJam1d(),
 				"Histogram1D", "Jam Name 1D");
 		/* histogram with triangles */
-		Histogram.createHistogram(histTriangle(), "Triangle");
+		Histogram.createHistogram(initialGroup, histTriangle(), "Triangle");
 		new Gate("Letter A", histJam1d); //gate
 		new Gate("Letter B", histJam1d); //gate
 		new Gate("Letter C", histJam1d); //gate

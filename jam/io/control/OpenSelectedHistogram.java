@@ -68,7 +68,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 
 	private Broadcaster broadcaster=Broadcaster.getSingletonInstance();;
 
-	private JamStatus status =JamStatus.getSingletonInstance();;
+	private JamStatus STATUS =JamStatus.getSingletonInstance();;
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out of an
@@ -235,15 +235,25 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 	}
 
 	private void notifyApp() {
+		Histogram firstHist = null;
 		//Update app status		
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
 		//FIXME KBS need a way to get first addtional readin histogram
 		//Set the current histogram to the first opened histogram
-		final Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+        if (Group.getGroupList().size() > 0) {
+        	Group currentGroup =(Group) Group.getGroupList().get(0);
+            STATUS.setCurrentGroup(currentGroup);
+        }
+        /* Set the current histogram to the first opened histogram. */
+        if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {
+            firstHist = (Histogram) STATUS.getCurrentGroup().getHistogramList()
+                    .get(0);
+        }
+		
 		if (firstHist!=null) {
-			status.setCurrentHistogram(firstHist);
+			STATUS.setCurrentHistogram(firstHist);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 		}
 		

@@ -22,7 +22,7 @@ final class AddHDFCmd extends AbstractLoaderHDF {
 	
 	protected final void execute(final Object[] cmdParams) {
         File file = null;
-        Group loadGroup = Group.getCurrentGroup();
+        Group loadGroup = STATUS.getCurrentGroup();
         //Parse commad parameters if given
         if (cmdParams != null) {
             if (cmdParams.length > 0) {
@@ -32,7 +32,6 @@ final class AddHDFCmd extends AbstractLoaderHDF {
                 loadGroup = (Group) cmdParams[1];
             }
         }
-        loadGroup = Group.getCurrentGroup();
         loadHDFFile(file, loadGroup);
     }
 	

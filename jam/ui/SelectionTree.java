@@ -152,6 +152,7 @@ public class SelectionTree extends JPanel implements Observer {
                     .getLastPathComponent()).getUserObject();
             if (firstNode instanceof Group) {
             	final Group group = (Group)firstNode;
+            	 //Group.setCurrentGroup(group);
             	 STATUS.setCurrentGroup(group);
             }else if (firstNode instanceof Histogram) {
                 /* Histogram selected */

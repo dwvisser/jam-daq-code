@@ -1080,10 +1080,10 @@ public final class HDFIO implements DataIO, JamFileFields {
         } else if (mode == FileOpenMode.OPEN_MORE) {
         	currentGroup=Group.createGroup(null, fileName, Group.Type.FILE);
         } else if (mode == FileOpenMode.RELOAD) {
-            final String sortName = JamStatus.getSingletonInstance()
-                    .getSortName();
-            Group.setCurrentGroup(sortName);
-            currentGroup=Group.getCurrentGroup();
+        	JamStatus status =JamStatus.getSingletonInstance();
+            final String sortName = status.getSortName();
+            status.setCurrentGroup(Group.getGroup(sortName));
+            currentGroup=status.getCurrentGroup();
         } // else mode == FileOpenMode.ADD, so use current group
         groupCount=0;
         histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
@@ -1092,7 +1092,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         	hdfToJam.convertScalers(currentGroup, vddScalers, mode);
         }
         if (mode != FileOpenMode.ADD) {
-        	gateCount = hdfToJam.convertGates(mode);
+        	gateCount = hdfToJam.convertGates(currentGroup, mode);
             /* clear if opening and there are histograms in file */
             final VDataDescription vddParam= hdfToJam.findParametersOriginal();
             if (vddParam!=null) {

@@ -71,10 +71,10 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 		hdfio.removeListener();
 		Histogram firstHist=null;
 		/* Set to sort group. */
-		Group.setCurrentGroup(Group.getSortGroup());
+		STATUS.setCurrentGroup(Group.getSortGroup());
 		/* Set the current histogram to the first opened histogram. */
-		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
-			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		if (STATUS.getCurrentGroup().getHistogramList().size()>0 ) {
+			firstHist = (Histogram)STATUS.getCurrentGroup().getHistogramList().get(0);
 		}				
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);

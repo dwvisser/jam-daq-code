@@ -347,7 +347,8 @@ public abstract class Histogram {
 		this.sizeY = sizeY;		
 		this.title = title;
 		if (group==null) {
-			group = Group.getCurrentGroup();
+			//FIXME KBS
+			//group = STATUS.getCurrentGroup();
 		}
 		/* Make a unique name in the group */ 
 		final Map groupHistMap =group.getHistogramMap();	
