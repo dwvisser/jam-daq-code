@@ -54,8 +54,8 @@ final class DataIDAnnotation extends DataObject {
 		}
 	}
 
-	DataIDAnnotation(HDFile hdf, byte[] data, short tag, short reference) {
-		super(hdf, data, tag,reference);
+	DataIDAnnotation(byte[] data, short tag, short reference) {
+		super(data, tag,reference);
 	}
 
 	/**

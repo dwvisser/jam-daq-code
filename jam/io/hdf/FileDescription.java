@@ -22,8 +22,8 @@ final class FileDescription extends DataObject {
 	 */
 	DataObject object;
 
-	FileDescription(HDFile hdf, String label) {
-		super(hdf, DFTAG_FD); //sets tag
+	FileDescription(String label) {
+		super(DFTAG_FD); //sets tag
 		int byteLength = label.length();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);

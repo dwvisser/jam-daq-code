@@ -16,8 +16,8 @@ final class ScientificDataLabel extends DataObject {
 
 	private String[] labels;
 
-	ScientificDataLabel(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
+	ScientificDataLabel(byte[] data, short t, short reference) {
+		super(data, t, reference);
 	}
 
 	/**

@@ -32,8 +32,8 @@ public final class Vdata extends DataObject {
 	private final short[] types;
 	private final short[] offsets;
 	
-	Vdata(HDFile fi, VdataDescription vdd) {
-		super(fi, DFTAG_VS); //sets tag
+	Vdata(VdataDescription vdd) {
+		super(DFTAG_VS); //sets tag
 		description = vdd;
 		nfields = description.getNumFields();
 		nvert = description.getNumRows();
@@ -46,8 +46,8 @@ public final class Vdata extends DataObject {
 		setRef(description.getRef());
 	}
 	
-	Vdata(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
+	Vdata(byte[] data, short t, short reference) {
+		super(data, t, reference);
 		description = (VdataDescription) (getObject(DFTAG_VH, reference));
 		description.interpretBytes();
 		nfields = description.getNumFields();

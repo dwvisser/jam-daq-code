@@ -17,8 +17,8 @@ import javax.swing.JOptionPane;
  */
 final class FileIdentifier extends DataObject {
 
-	FileIdentifier(HDFile hdf, String label) {
-		super(hdf, DFTAG_FID); //sets tag
+	FileIdentifier(String label) {
+		super(DFTAG_FID); //sets tag
 		int byteLength = label.length();
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		final DataOutputStream dos = new DataOutputStream(baos);

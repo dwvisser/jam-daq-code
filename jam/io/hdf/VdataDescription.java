@@ -120,9 +120,9 @@ public final class VdataDescription extends DataObject {
      */
     private final static short VH_VERSION = 3;
 
-    VdataDescription(HDFile fi, String name, String classtype, int size,
+    VdataDescription(String name, String classtype, int size,
             String[] names, short[] types, short[] orders) {
-        super(fi, DFTAG_VH); //sets tag
+        super(DFTAG_VH); //sets tag
         /* Double check dimensionality */
         if ((names.length != types.length) || (names.length != orders.length)) {
             throw new IllegalArgumentException(
@@ -212,8 +212,8 @@ public final class VdataDescription extends DataObject {
         bytes = baos.toByteArray();
     }
 
-    VdataDescription(HDFile hdf, byte[] data, short t, short reference) {
-        super(hdf, data, t, reference);
+    VdataDescription(byte[] data, short t, short reference) {
+        super(data, t, reference);
     }
 
     public void interpretBytes() {

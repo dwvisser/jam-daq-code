@@ -46,8 +46,8 @@ final class DataIDLabel extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	DataIDLabel(HDFile hdf, byte[] data, short tag, short reference) {
-		super(hdf, data, tag, reference);
+	DataIDLabel(byte[] data, short tag, short reference) {
+		super(data, tag, reference);
 	}
 
 	/**

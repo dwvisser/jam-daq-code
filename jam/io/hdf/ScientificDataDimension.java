@@ -32,8 +32,8 @@ final class ScientificDataDimension extends DataObject {
 
 	private byte numberType;
 
-	ScientificDataDimension(HDFile fi, Histogram h) {
-		super(fi, DFTAG_SDD); //sets tag
+	ScientificDataDimension(Histogram h) {
+		super(DFTAG_SDD); //sets tag
 		rank = h.getDimensionality();
 		sizeX = h.getSizeX();
 		sizeY = h.getSizeY();
@@ -72,8 +72,8 @@ final class ScientificDataDimension extends DataObject {
 		new ScientificDataScales(this);
 	}
 
-	ScientificDataDimension(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
+	ScientificDataDimension(byte[] data, short t, short reference) {
+		super(data, t, reference);
 	}
 
 	public void interpretBytes() {

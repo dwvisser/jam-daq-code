@@ -25,8 +25,8 @@ final class NumericalDataGroup extends DataObject {
 	 */
 	private List elements;
 
-	NumericalDataGroup(HDFile fi) {
-		super(fi, DFTAG_NDG); //sets tag
+	NumericalDataGroup() {
+		super(DFTAG_NDG); //sets tag
 		elements = new Vector();
 		try {
 			refreshBytes();
@@ -36,8 +36,8 @@ final class NumericalDataGroup extends DataObject {
 		}
 	}
 
-	NumericalDataGroup(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
+	NumericalDataGroup(byte[] data, short t, short reference) {
+		super(data, t, reference);
 	}
 
 	/**

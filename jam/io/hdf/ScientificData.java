@@ -5,6 +5,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * Class to represent an HDF <em>Scientific Data</em> data object.
@@ -47,8 +48,8 @@ final class ScientificData extends DataObject {
 
 	private byte numberType;
 
-	ScientificData(HDFile fi, int[] counts) {
-		super(fi, DFTAG_SD); //sets tag
+	ScientificData(int[] counts) {
+		super(DFTAG_SD); //sets tag
 		numberType = NumberType.INT;
 		inputMode = STORE;
 		rank = 1;
@@ -57,8 +58,8 @@ final class ScientificData extends DataObject {
 		this.counts = counts;
 	}
 
-	ScientificData(HDFile fi, double[] counts) {
-		super(fi, DFTAG_SD); //sets tag
+	ScientificData(double[] counts) {
+		super(DFTAG_SD); //sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = STORE;
 		rank = 1;
@@ -67,8 +68,8 @@ final class ScientificData extends DataObject {
 		this.countsD = counts;
 	}
 
-	ScientificData(HDFile fi, int[][] counts2d) {
-		super(fi, DFTAG_SD); //sets tag
+	ScientificData(int[][] counts2d) {
+		super(DFTAG_SD); //sets tag
 		numberType = NumberType.INT;
 		inputMode = STORE;
 		rank = 2;
@@ -78,8 +79,8 @@ final class ScientificData extends DataObject {
 		this.counts2d = counts2d;
 	}
 
-	ScientificData(HDFile fi, double[][] counts2d) {
-		super(fi, DFTAG_SD); //sets tag
+	ScientificData(double[][] counts2d) {
+		super(DFTAG_SD); //sets tag
 		numberType = NumberType.DOUBLE;
 		inputMode = STORE;
 		rank = 2;
@@ -90,13 +91,8 @@ final class ScientificData extends DataObject {
 		this.counts2dD = counts2d;
 	}
 
-	ScientificData(
-		HDFile hdf,
-		int offset,
-		int length,
-		short t,
-		short reference) {
-		super(hdf, offset, length, t, reference);
+	ScientificData(int offset, int length, short t, short reference) {
+		super(offset, length, t, reference);
 		inputMode = WAIT_AND_READ;
 	}
 
@@ -111,7 +107,7 @@ final class ScientificData extends DataObject {
 	 * @throws UnsupportedOperationException if this object doesn't represent 1d int
 	 * @throws IllegalStateException if the input mode isn't recognized
 	 */
-	int[] getData1d(int size) throws HDFException { //assumes int type!
+	int[] getData1d(RandomAccessFile file, int size) throws HDFException { //assumes int type!
 		final byte[] localBytes;
 		if (numberType != NumberType.INT || rank != 1) {
 			throw new UnsupportedOperationException("getData1d called on wrong type of SD.");
@@ -148,7 +144,7 @@ final class ScientificData extends DataObject {
 		return output;
 	}
 
-	double[] getData1dD(int size) throws HDFException { //assumes int type!
+	double[] getData1dD(RandomAccessFile file, int size) throws HDFException { //assumes int type!
 		double[] output;
 		int i;
 		byte[] localBytes;
@@ -189,7 +185,7 @@ final class ScientificData extends DataObject {
 		return output;
 	}
 
-	int[][] getData2d(int sizeX, int sizeY) throws HDFException {
+	int[][] getData2d(RandomAccessFile file, int sizeX, int sizeY) throws HDFException {
 		final byte[] localBytes;
 
 		if (numberType != NumberType.INT || rank != 2)
@@ -228,7 +224,7 @@ final class ScientificData extends DataObject {
 		return output;
 	}
 
-	double[][] getData2dD(int sizeX, int sizeY) throws HDFException {
+	double[][] getData2dD(RandomAccessFile file, int sizeX, int sizeY) throws HDFException {
 		final byte[] localBytes;
 
 		if (numberType != NumberType.DOUBLE || rank != 2) {

@@ -42,8 +42,8 @@ final class VirtualGroup extends DataObject {
 	private final short version = 3; //version of DFTAG_VG info
 	private final short more = 0; //unused but must add
 
-	VirtualGroup(HDFile fi, String name, String type) {
-		super(fi, DFTAG_VG); //sets tag
+	VirtualGroup(String name, String type) {
+		super(DFTAG_VG); //sets tag
 		this.name = name;
 		this.type = type;
 		try {
@@ -54,8 +54,8 @@ final class VirtualGroup extends DataObject {
 		}
 	}
 
-	VirtualGroup(HDFile hdf, byte[] data, short t, short r) {
-		super(hdf, data, t, r);
+	VirtualGroup(byte[] data, short t, short r) {
+		super(data, t, r);
 	}
 
 	/**

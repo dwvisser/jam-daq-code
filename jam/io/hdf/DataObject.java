@@ -159,11 +159,6 @@ public abstract class DataObject {
 	protected boolean haveNotSetRef=true;
 	
 	/**
-	 * Reference to the particular <code>HDFile</code> this data element resides in.
-	 */
-	protected HDFile file;
-
-	/**
 	 * Get the list of all data objects
 	 * @return
 	 */
@@ -179,7 +174,6 @@ public abstract class DataObject {
 		for (Iterator it=objectList.iterator(); it.hasNext();){
 			DataObject ob=(DataObject)it.next();
 			ob.bytes=null;
-			ob.file=null;
 		}
 
 		objectList.clear();
@@ -261,13 +255,6 @@ public abstract class DataObject {
 	 * @param	file	The file to contain the new object.
 	 * @param	tag	The hdf tag of the new object.
 	 */
-	DataObject(HDFile file, short tag) {
-		this.file = file;
-		setTag(tag);
-		setRef(getUniqueRef());
-		addDataObjectToList(this); //ref gets set in this call
-	}
-
 	DataObject(short tag) {
 		setTag(tag);
 		setRef(getUniqueRef());
@@ -283,8 +270,7 @@ public abstract class DataObject {
 	 * @param	data	    The byte representation of the data.
 	 * @param	r   The unique value specifying the type of data object.
 	 */
-	DataObject(HDFile f, byte[] data, short t, short r) {
-		this.file = f;
+	DataObject(byte[] data, short t, short r) {
 		setTag(t);
 		setRef(r);
 		this.bytes = data;
@@ -299,8 +285,7 @@ public abstract class DataObject {
 	 * @param	offset	    The location in <code>file</code>
 	 * @param	reference   The unique value specifying the type of data object.
 	 */
-	DataObject(HDFile file, int offset, int length, short t, short reference) {
-		this.file = file;
+	DataObject(int offset, int length, short t, short reference) {
 		this.tag=t;
 		setRef(reference);
 		this.offset = offset;
@@ -355,7 +340,7 @@ public abstract class DataObject {
 	public final short getRef() {
 		return ref;
 	}
-		/* non-javadoc:
+	/* non-javadoc:
 	 * Called back by <code>HDFile</code> to set the offset information.
 	 */
 	void setOffset(int off) {

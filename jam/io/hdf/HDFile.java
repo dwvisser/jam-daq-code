@@ -62,7 +62,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		super(file, mode);
 		DataObject.clear();
 		this.file = file;
-        addNumberTypes();
+		//FIXME KBS remove
+		//addNumberTypes();
 		/*
 		if ("rw".equals(mode)) { //Saving a file
 			//writeMagicWord();
@@ -196,7 +197,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			}
 		}
 		if (rval==null){
-			rval = new ScientificDataDimension(this, h);
+			rval = new ScientificDataDimension(h);
 		}
 		return rval;
 	}
@@ -281,37 +282,37 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					reset();
 					switch (tag) {
 						case DataObject.DFTAG_DIA :
-							new DataIDAnnotation(this, bytes, tag, ref);
+							new DataIDAnnotation(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_DIL :
-							new DataIDLabel(this, bytes, tag, ref);
+							new DataIDLabel(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VERSION :
-							new LibVersion(this, bytes, tag, ref);
+							new LibVersion(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_NT :
-							new NumberType(this, bytes, tag, ref);
+							new NumberType(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_NDG :
-							new NumericalDataGroup(this, bytes, tag, ref);
+							new NumericalDataGroup(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_SD :
-							new ScientificData(this, offset, length, tag, ref);
+							new ScientificData(offset, length, tag, ref);
 							break;
 						case DataObject.DFTAG_SDD :
-							new ScientificDataDimension(this, bytes, tag, ref);
+							new ScientificDataDimension(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_SDL :
-							new ScientificDataLabel(this, bytes, tag, ref);
+							new ScientificDataLabel(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VG :
-							new VirtualGroup(this, bytes, tag, ref);
+							new VirtualGroup(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VH :
-							new VdataDescription(this, bytes, tag, ref);
+							new VdataDescription(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VS :
-							new Vdata(this, bytes, tag, ref);
+							new Vdata(bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_MT :
 							break; //do nothing
@@ -443,14 +444,12 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	
 	void addDefaultDataObjects(String fileID) {
-		new LibVersion(this); //DataObjects add themselves
+		new LibVersion(); //DataObjects add themselves
 		
-		//FIXME need to be created earlier
-		//new NumberType(this, NumberType.INT);
-		//new NumberType(this, NumberType.DOUBLE);
+		NumberType.createDefaultTypes();
 		
-		new JavaMachineType(this);
-		new FileIdentifier(this, fileID);
+		new JavaMachineType();
+		new FileIdentifier(fileID);
 		addFileNote();
 		
 	}			
@@ -480,23 +479,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 
 		final String notation = baos.toString()+noteAddition;
-		new FileDescription(this, notation);
-	}
-
-	
-	/**
-	 * Almost all of Jam's number storage needs are satisfied by the type
-	 * hard-coded into the class <code>NumberType</code>.  This method
-	 * creates the <code>NumberType</code> object in the file
-	 * that gets referred to repeatedly by the other data elements.
-	 *
-	 * @see jam.io.hdf.NumberType
-	 */
-	protected void addNumberTypes() {
-		synchronized (this){
-			new NumberType(this, NumberType.INT);
-			new NumberType(this, NumberType.DOUBLE);
-		}
+		new FileDescription(notation);
 	}
 	
 }

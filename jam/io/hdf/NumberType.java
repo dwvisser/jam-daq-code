@@ -76,26 +76,32 @@ final class NumberType extends DataObject {
 	static NumberType getIntType() {
 		return intNT;
 	}
+	
+	/**
+	 * Almost all of Jam's number storage needs are satisfied by the type
+	 * hard-coded into the class <code>NumberType</code>.  This method
+	 * creates the <code>NumberType</code> objects in the file
+	 * that gets referred to repeatedly by the other data elements.
+	 *
+	 * @see jam.io.hdf.NumberType
+	 */	
+	static void createDefaultTypes() {
+			intNT =new NumberType(NumberType.INT); 
+			doubleNT=new NumberType(NumberType.DOUBLE);
+	}
 
 	/**
 	 * @param hdfile HDF file we belong to
 	 * @param type one of <code>INT</code> or <code>DOUBLE</code>, 
 	 * @throws IllegalArgumentException if an invalid type is given
 	 */
-	NumberType(HDFile hdfile, byte type) {
-		super(hdfile, DFTAG_NT); //sets tag
-		createBytes(type);
-		setStatics(type);
-	}
-	
 	NumberType(byte type){
 		super(DFTAG_NT);
 		createBytes(type);
-		setStatics(type);
 	}
 
-	NumberType(HDFile hdf, byte[] data, short tag, short reference) {
-		super(hdf, data, tag, reference);
+	NumberType(byte[] data, short tag, short reference) {
+		super(data, tag, reference);
 	}
 	
 	private void createBytes(byte type) {
@@ -107,14 +113,6 @@ final class NumberType extends DataObject {
 		} else {
 			throw new IllegalArgumentException("Invalid type for NumberType: "+type);
 		}
-	}
-	private void setStatics(byte type) {
-		if (type == INT) {
-			intNT =this;
-		} else if (type == DOUBLE) {
-			doubleNT=this;
-		}
-		
 	}
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.

@@ -24,8 +24,8 @@ final class JavaMachineType extends DataObject {
 	 */
 	private static final short DFMT_SUN = 0x1111;
 
-	JavaMachineType(HDFile fi) {
-		super(fi, DFTAG_MT); //sets tag
+	JavaMachineType() {
+		super(DFTAG_MT); //sets tag
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {

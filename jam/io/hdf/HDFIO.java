@@ -282,6 +282,8 @@ public class HDFIO implements DataIO, JamHDFFields {
                         + file.getName());
         } 
         
+    	out.addDefaultDataObjects(file.getPath());
+    	
         final int progressRange = hists.size() + gates.size()
                 + scalers.size() + parameters.size();
 
@@ -332,7 +334,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         
         try {                
 
-        	out.addDefaultDataObjects(file.getPath());
+
             
             out.setOffsets();
             
@@ -623,18 +625,18 @@ public class HDFIO implements DataIO, JamHDFFields {
 				final Object dataArray;
 				if (histDim == 1) {
 					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData1d(sizeX);
+						dataArray = sd.getData1d(in, sizeX);
 					} else { //DOUBLE
-						dataArray = sd.getData1dD(sizeX);
+						dataArray = sd.getData1dD(in, sizeX);
 					}
 					/*if (ndgErr != null) {
 						histogram.setErrors(sdErr.getData1dD(sizeX));
 					}*/
 				} else { //2d
 					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData2d(sizeX, sizeY);
+						dataArray = sd.getData2d(in, sizeX, sizeY);
 					} else {
-						dataArray = sd.getData2dD(sizeX, sizeY);
+						dataArray = sd.getData2dD(in, sizeX, sizeY);
 					}
 				}
 				/* Add histogram */
@@ -648,7 +650,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				histAtt.histNumType = histNumType;
 				histAtt.dataArray = dataArray;
 				if (ndgErr != null){
-					histAtt.errorArray=sdErr.getData1dD(sizeX);
+					histAtt.errorArray=sdErr.getData1dD(in, sizeX);
 				}
 				lstHistAtt.add(histAtt);
 			}
@@ -663,7 +665,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     protected void addHistogramSection() {
         synchronized (this) {
-            histGroup = new VirtualGroup(out, HIST_SECTION_NAME,
+            histGroup = new VirtualGroup(HIST_SECTION_NAME,
                     FILE_SECTION_NAME);
         }
         new DataIDLabel(histGroup, HIST_SECTION_NAME);
@@ -681,14 +683,14 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     protected void addHistogram(Histogram h) throws HDFException {
         ScientificData sd;
-        final VirtualGroup temp = new VirtualGroup(out, h.getName(),
+        final VirtualGroup temp = new VirtualGroup(h.getName(),
                 HIST_TYPE_NAME);
         histGroup.addDataObject(temp); //add to Histogram section vGroup
         new DataIDLabel(temp, h.getName());
         /* vGroup label is Histogram name */
         new DataIDAnnotation(temp, h.getTitle());
         /* vGroup Annotation is Histogram title */
-        final NumericalDataGroup ndg = new NumericalDataGroup(out);
+        final NumericalDataGroup ndg = new NumericalDataGroup();
         /* NDG to contain data */
         new DataIDLabel(ndg, Integer.toString(h.getNumber()));
         /* make the NDG label the histogram number */
@@ -700,9 +702,9 @@ public class HDFIO implements DataIO, JamHDFFields {
         final Histogram.Type type = h.getType();
         if (type == Histogram.Type.ONE_DIM_INT) {
             final AbstractHist1D h1 = (AbstractHist1D) h;
-            sd = new ScientificData(out, (int[]) h.getCounts());
+            sd = new ScientificData((int[]) h.getCounts());
             if (h1.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup(out);
+                NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 temp.addDataObject(ndgErr);
                 ScientificDataDimension sddErr = out.getSDD(h,
@@ -710,28 +712,28 @@ public class HDFIO implements DataIO, JamHDFFields {
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
                 temp.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(out, h1.getErrors());
+                ScientificData sdErr = new ScientificData(h1.getErrors());
                 ndgErr.addDataObject(sdErr);
                 temp.addDataObject(sdErr);
             }
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
             final AbstractHist1D h1 = (AbstractHist1D) h;
-            sd = new ScientificData(out, (double[]) h.getCounts());
+            sd = new ScientificData((double[]) h.getCounts());
             if (h1.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup(out);
+                NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 temp.addDataObject(ndgErr);
                 ScientificDataDimension sddErr = sdd;
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(out, h1.getErrors());
+                ScientificData sdErr = new ScientificData(h1.getErrors());
                 ndgErr.addDataObject(sdErr);
                 temp.addDataObject(sdErr);
             }
         } else if (type == Histogram.Type.TWO_DIM_INT) {
-            sd = new ScientificData(out, (int[][]) h.getCounts());
+            sd = new ScientificData((int[][]) h.getCounts());
         } else if (type == Histogram.Type.TWO_D_DOUBLE) {
-            sd = new ScientificData(out, (double[][]) h.getCounts());
+            sd = new ScientificData((double[][]) h.getCounts());
         } else {
             throw new IllegalArgumentException(
                     "HDFIO encountered a Histogram of unknown type.");
@@ -868,22 +870,22 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histDim == 1) {
                 if (histNumType == NumberType.INT) {
                     histogram = Histogram.createHistogram(sd
-                            .getData1d(sizeX), name, title);
+                            .getData1d(in, sizeX), name, title);
                 } else { //DOUBLE
                     histogram = Histogram.createHistogram(sd
-                            .getData1dD(sizeX), name, title);
+                            .getData1dD(in, sizeX), name, title);
                 }
                 if (sdErr != null) {
                     ((AbstractHist1D) histogram).setErrors(sdErr
-                            .getData1dD(sizeX));
+                            .getData1dD(in, sizeX));
                 }
             } else { //2d
                 if (histNumType == NumberType.INT) {
                     histogram = Histogram.createHistogram(sd.getData2d(
-                            sizeX, sizeY), name, title);
+                    		in, sizeX, sizeY), name, title);
                 } else {
                     histogram = Histogram.createHistogram(sd
-                            .getData2dD(sizeX, sizeY), name, title);
+                            .getData2dD(in, sizeX, sizeY), name, title);
                 }
             }
             histogram.setNumber(number);
@@ -894,16 +896,16 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {
-                        histogram.setCounts(sd.getData1d(sizeX));
+                        histogram.setCounts(sd.getData1d(in, sizeX));
                     } else {
-                        histogram.setCounts(sd.getData1dD(sizeX));
+                        histogram.setCounts(sd.getData1dD(in, sizeX));
                     }
                 } else { // 2-d
                     if (histNumType == NumberType.INT) {
-                        histogram.setCounts(sd.getData2d(sizeX, sizeY));
+                        histogram.setCounts(sd.getData2d(in, sizeX, sizeY));
                     } else {
                         histogram
-                                .setCounts(sd.getData2dD(sizeX, sizeY));
+                                .setCounts(sd.getData2dD(in, sizeX, sizeY));
                     }
                 }
             }
@@ -914,16 +916,16 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {
-                        histogram.addCounts(sd.getData1d(sizeX));
+                        histogram.addCounts(sd.getData1d(in, sizeX));
                     } else {
-                        histogram.addCounts(sd.getData1dD(sizeX));
+                        histogram.addCounts(sd.getData1dD(in, sizeX));
                     }
                 } else { // 2-d
                     if (histNumType == NumberType.INT) {
-                        histogram.addCounts(sd.getData2d(sizeX, sizeY));
+                        histogram.addCounts(sd.getData2d(in, sizeX, sizeY));
                     } else {
                         histogram
-                                .addCounts(sd.getData2dD(sizeX, sizeY));
+                                .addCounts(sd.getData2dD(in, sizeX, sizeY));
                     }
                 }
             }
@@ -936,7 +938,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     protected void addGateSection() {
         synchronized (this) {
-            gateGroup = new VirtualGroup(out, GATE_SECTION_NAME,
+            gateGroup = new VirtualGroup(GATE_SECTION_NAME,
                     FILE_SECTION_NAME);
         }
         new DataIDLabel(gateGroup, GATE_SECTION_NAME);
@@ -971,11 +973,11 @@ public class HDFIO implements DataIO, JamHDFFields {
             y = g.getBananaGate().ypoints;
         }
         /* get the VG for the current gate */
-        final VirtualGroup vg = new VirtualGroup(out, name, gateType);
+        final VirtualGroup vg = new VirtualGroup(name, gateType);
         gateGroup.addDataObject(vg); //add to Gate section vGroup
-        final VdataDescription desc = new VdataDescription(out, name, gateType,
+        final VdataDescription desc = new VdataDescription(name, gateType,
                 size, names, types, orders);
-        final Vdata data = new Vdata(out, desc);
+        final Vdata data = new Vdata(desc);
         vg.addDataObject(desc); //add vData description to gate VG
         vg.addDataObject(data); //add vData to gate VG
         if (g.getDimensionality() == 1) {
@@ -1085,15 +1087,15 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
         }
         orders[2] = 1; //value
-        final VirtualGroup scalerGroup = new VirtualGroup(out,
+        final VirtualGroup scalerGroup = new VirtualGroup(
                 SCALER_SECTION_NAME, FILE_SECTION_NAME);
         new DataIDLabel(scalerGroup, SCALER_SECTION_NAME);
         final String name = SCALER_SECTION_NAME;
         final String scalerType = SCALER_TYPE_NAME;
         final String[] names = SCALER_COLUMN_NAMES;
-        final VdataDescription desc = new VdataDescription(out, name,
+        final VdataDescription desc = new VdataDescription(name,
                 scalerType, size, names, types, orders);
-        final Vdata data = new Vdata(out, desc);
+        final Vdata data = new Vdata(desc);
         scalerGroup.addDataObject(desc); //add vData description to gate VG
         scalerGroup.addDataObject(data); //add vData to gate VG
 
@@ -1167,15 +1169,15 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
         }
         orders[1] = 1; //value
-        final VirtualGroup parameterGroup = new VirtualGroup(out,
+        final VirtualGroup parameterGroup = new VirtualGroup(
                 PARAMETER_SECTION_NAME, FILE_SECTION_NAME);
         new DataIDLabel(parameterGroup, PARAMETER_SECTION_NAME);
         final String name = PARAMETER_SECTION_NAME;
         final String parameterType = PARAMETER_TYPE_NAME;
         final String[] names = PARAMETER_COLUMN_NAMES;
-        final VdataDescription desc = new VdataDescription(out, name,
+        final VdataDescription desc = new VdataDescription(name,
                 parameterType, size, names, types, orders);
-        final Vdata data = new Vdata(out, desc);
+        final Vdata data = new Vdata(desc);
         parameterGroup.addDataObject(desc); //add vData description to gate VG
         parameterGroup.addDataObject(data); //add vData to gate VG
         for (int i = 0; i < size; i++) {
@@ -1249,80 +1251,6 @@ public class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
-
-    /**
-     * @param spectrumName
-     *            the name of the histogram
-     * @return the integer array corresponding to the histogram data
-     * @throws HDFException
-     *             if the file doesn't have the requested spectrum
-     */
-    public int[] readIntegerSpectrum(String spectrumName) throws HDFException {
-        NumericalDataGroup ndg;
-
-        int[] rval = null; //default return value
-        /* all VG's in file */
-        final List groups = in.ofType(DataObject.DFTAG_VG);
-        final VirtualGroup hists = VirtualGroup.ofName(groups,
-                HIST_SECTION_NAME);
-        /* only the "histograms" VG (only one element) */
-        if (hists == null) {
-            throw new HDFException("No Histogram section in file: "
-                    + in.getFile());
-        }
-        /* there are histograms in the file */
-        final List labels = in.ofType(DataObject.DFTAG_DIL);
-        final Iterator temp = hists.getObjects().iterator();
-        lookForSpectrum: while (temp.hasNext()) {
-            final VirtualGroup current = (VirtualGroup) (temp.next());
-            /* NDG's in current hist record */
-            final List tempVec = in.ofType(current.getObjects(),
-                    DataObject.DFTAG_NDG);
-            final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
-                    .size()];
-            tempVec.toArray(numbers);
-            final String name = DataIDLabel.withTagRef(labels,
-                    current.getTag(), current.getRef()).getLabel();
-            if (name.trim().equals(spectrumName)) {
-                if (numbers.length == 1) { //only one NDG -- the data
-                    ndg = numbers[0];
-                } else if (numbers.length == 2) {
-                    /*
-                     * determine which of the two contains error bars and ignore
-                     * it, assigning the other to ndg
-                     */
-                    if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
-                            numbers[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-                        ndg = numbers[1];
-                    } else {
-                        ndg = numbers[0];
-                    }
-                } else {
-                    throw new HDFException("Invalid number of data groups ("
-                            + numbers.length + ") in NDG.");
-                }
-                final ScientificData sd = (ScientificData) (in.ofType(ndg
-                        .getObjects(), DataObject.DFTAG_SD).get(0));
-                final ScientificDataDimension sdd = (ScientificDataDimension) (in
-                        .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
-                /* Whether integer or floating point */
-                sd.setNumberType(sdd.getType());
-                final int histDim = sdd.getRank();
-                if (histDim != 1) {
-                    throw new HDFException("Invalid number of dimensions in '"
-                            + name + "': " + histDim);
-                }
-                sd.setRank(histDim);
-                if (sd.getNumberType() == NumberType.INT) {
-                    rval = sd.getData1d(sdd.getSizeX());
-                    break lookForSpectrum;
-                } 
-                /* got non-integer, shouldn't have */
-                throw new IllegalStateException("'" + name + "' is not integer!");
-            }
-        }
-        return rval;
-    }
 	/**
 	 * Class to hold histogram properties while we decide if we should load them.
 	 *  

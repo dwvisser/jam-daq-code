@@ -44,8 +44,8 @@ final class LibVersion extends DataObject {
 
     /* DFTAG_VERSION seems to need to be 92(80=92-12) long */
 
-	LibVersion(HDFile file) {
-		super(file, DFTAG_VERSION); //sets tag
+	LibVersion() {
+		super(DFTAG_VERSION); //sets tag
 		final int byteLength = 12 + description.length(); // 3 ints + string
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		final DataOutputStream dos = new DataOutputStream(baos);
@@ -61,8 +61,8 @@ final class LibVersion extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	LibVersion(HDFile hdf, byte[] data, short tag,short reference) {
-		super(hdf, data, tag, reference);
+	LibVersion(byte[] data, short tag,short reference) {
+		super(data, tag, reference);
 	}
 	
 	public void interpretBytes() throws HDFException {
