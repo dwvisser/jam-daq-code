@@ -49,6 +49,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -65,9 +66,11 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.StorageDaemon
  */
-public final class SetupSortOn extends JDialog {
+public final class SetupSortOn {
 
 	private final Frame frame;
+	
+	private final JDialog dialog;
 
 	private final RunControl runControl;
 
@@ -156,7 +159,7 @@ public final class SetupSortOn extends JDialog {
 	}
 
 	private SetupSortOn(JamConsole jc) {
-		super(STATUS.getFrame(), "Setup Online ", false);
+		dialog=new JDialog(STATUS.getFrame(), "Setup Online ", false);
 		final int fileTextColumns = 25;
 		final String defaultName = JamProperties
 				.getPropString(JamProperties.EXP_NAME);
@@ -182,9 +185,9 @@ public final class SetupSortOn extends JDialog {
 		jamConsole = jc;
 		frontEnd = STATUS.getFrontEndCommunication();
 		frame = STATUS.getFrame();
-		setResizable(false);
-		setLocation(20, 50);
-		final Container dcp = getContentPane();
+		dialog.setResizable(false);
+		dialog.setLocation(20, 50);
+		final Container dcp = dialog.getContentPane();
 		dcp.setLayout(new BorderLayout(5, 5));
 		final int gap = 5;
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
@@ -340,7 +343,6 @@ public final class SetupSortOn extends JDialog {
 		pEntries.add(textPathLog);
 		JPanel pSortInterval = new JPanel(new GridLayout(1, 2, 40, 0));
 		pEntries.add(pSortInterval);
-		final Integer one = new Integer(1);
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
 		cdisk.addItemListener(new ItemListener() {
@@ -348,7 +350,7 @@ public final class SetupSortOn extends JDialog {
 				boolean store = cdisk.isSelected();
 				if (!store) {
 					final boolean oops = JOptionPane.showConfirmDialog(
-							SetupSortOn.this,
+					        dialog,
 							"De-selecting this checkbox means Jam won't store events to disk.\n"
 									+ "Is this what you really want?",
 							"Event Storage Disabled",
@@ -415,7 +417,7 @@ public final class SetupSortOn extends JDialog {
 		/*  panel for buttons */
 		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		dcp.add(pbutton, BorderLayout.SOUTH);
-		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
+		final JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
 		pbutton.add(pb);
 		bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
@@ -431,12 +433,12 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pb.add(bapply);
-		JButton bcancel = new JButton("Cancel");
+		final JButton bcancel = new JButton("Cancel");
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+			    dialog.dispose();
 			}
 		});
 		checkLock = new JCheckBox("Setup Locked", false);
@@ -458,8 +460,8 @@ public final class SetupSortOn extends JDialog {
 		});
 		checkLock.setEnabled(false);
 		pb.add(checkLock);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		pack();
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		dialog.pack();
 	}
 
 	private java.util.List setChooserDefault(boolean isDefault) {
@@ -517,23 +519,24 @@ public final class SetupSortOn extends JDialog {
 					resetAcq(false);
 					lockMode(true);
 					setupAcq(); //create daemons
-					jamConsole.messageOutln("Loaded sort routine "
+					jamConsole.messageOutln("Loaded "
 							+ sortRoutine.getClass().getName()
-							+ ", input stream "
+							+ ", "
 							+ eventInputStream.getClass().getName()
-							+ " and output stream "
+							+ " and "
 							+ eventOutputStream.getClass().getName());
+					jamConsole.messageOutln("Communications and processing daemons successfully initiated.");
 					if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
 						setupCamac(); //set the camac crate
+						jamConsole.messageOutln("CAMAC command lists sent.");
 					} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
 						setupVMEmap();
+						jamConsole.messageOutln("VME map sent.");
 					}
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-					jamConsole
-							.messageOutln("Setup data network, and Online sort daemons setup");
 				}
 				if (dispose) {
-					dispose();
+					dialog.dispose();
 				}
 			} else {
 				throw new JamException("Can't setup sorting, mode locked ");
@@ -742,5 +745,12 @@ public final class SetupSortOn extends JDialog {
 		STATUS.setSortMode(sortMode, name);
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
+	}
+	
+	/**
+	 * @return the dialog
+	 */
+	public JDialog getDialog(){
+	    return dialog;
 	}
 }

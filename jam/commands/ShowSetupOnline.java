@@ -18,7 +18,7 @@ final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Online sorting\u2026");
-		dialog=SetupSortOn.getSingletonInstance();
+		dialog=SetupSortOn.getSingletonInstance().getDialog();
 		enable();
 	}
 

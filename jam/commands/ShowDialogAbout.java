@@ -11,9 +11,12 @@ import jam.global.JamStatus;
  */
 final class ShowDialogAbout extends AbstractShowDialog {
 
+    /**
+     * Initializes dialog info.
+     */
 	public void initCommand() {
 		putValue(NAME, "About\u2026");
-		dialog = new AboutDialog(JamStatus.instance().getFrame());
+		dialog = (new AboutDialog(JamStatus.instance().getFrame())).getDialog();
 	}
 
 }
