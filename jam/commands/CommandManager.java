@@ -8,6 +8,7 @@ import jam.global.CommandNames;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.PlotPrefs;
+import jam.plot.color.ColorPrefs;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,8 +97,9 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
 		cmdMap.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
 		cmdMap.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
-		cmdMap.put(PlotPrefs.SMOOTH_COLOR_SCALE, 
+		cmdMap.put(ColorPrefs.SMOOTH_COLOR_SCALE, 
 		SetSmoothColorScale.class);
+		cmdMap.put(SHOW_GRADIENT_SETTINGS,ShowGradientSettings.class);
 		cmdMap.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
 		cmdMap.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
 		cmdMap.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
