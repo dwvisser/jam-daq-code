@@ -12,13 +12,13 @@ import jam.sort.*;
 public class CI extends SortRoutine {
 	
 	/*** GLOBAL DECLARATIONS ***/
-	final int ADC_BASE = 0xe0000000;
-	final int THRESHOLDS = 100;
-    final int ADC_CHANNELS = 4096; //num of channels per ADC
-	final int TWO_D_CHANNELS = 512;
-	//number of channels per dimension in 2-d histograms
+	static final int ADC_BASE = 0xe0000000;
+	static final int THRESHOLDS = 100;
+    static final int ADC_CHANNELS = 4096; //num of channels per ADC
+	/* number of channels per dimension in 2-d histograms */
+	static final int TWO_D_CHANNELS = 512;
 
-	//amount of bits to shift for compression
+	/* amount of bits to shift for compression */
 	final int TWO_D_FACTOR =
 		Math.round((float) (Math.log(ADC_CHANNELS / TWO_D_CHANNELS) / Math.log(2.0)));
 	
@@ -35,7 +35,7 @@ public class CI extends SortRoutine {
 	Scaler sClock, sBeam, sGe, sAccept, sNaI;//  scalers
 	
 	Monitor mDeadTime;
-	final String DEAD_TIME = "Dead Time (%)";
+	static final String DEAD_TIME = "Dead Time (%)";
 	int lastGe, lastAccept;//for calculating dead time
 	
 	/*** END OF GLOBAL DECLARATIONS ***/
@@ -55,13 +55,13 @@ public class CI extends SortRoutine {
 		
 		/*** MONITOR SECTION ***/
 		//Monitors associated with scalers, window will return scaler rate in Hz
-		Monitor mClock = new Monitor(sClock.getName(), sClock);
-		Monitor mBeam = new Monitor(sBeam.getName(), sBeam);
-		Monitor mGe = new Monitor(sGe.getName(), sGe);
-		Monitor mAccept = new Monitor(sAccept.getName(), sAccept);
-		Monitor mNaI = new Monitor(sNaI.getName(), sNaI);
+		new Monitor(sClock.getName(), sClock);
+		new Monitor(sBeam.getName(), sBeam);
+		new Monitor(sGe.getName(), sGe);
+		new Monitor(sAccept.getName(), sAccept);
+		new Monitor(sNaI.getName(), sNaI);
 		//Monitor associated with Gate, window will show rate of new counts in Hz
-		Monitor mTAC = new Monitor("TAC window", gTAC);
+		new Monitor("TAC window", gTAC);
 		//User-defined monitor which is calculated in this sort routine
 		mDeadTime=new Monitor(DEAD_TIME,this);
 		
