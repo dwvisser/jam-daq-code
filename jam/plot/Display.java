@@ -1,16 +1,9 @@
-/*
- * @(#)Display.java
- *
- *Copyright (c) statement
- */
 package jam.plot;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import jam.global.*;
 import jam.data.*;
-import jam.plot.*;
 
 /**
  * This class is a display routine for plots.
@@ -281,13 +274,13 @@ Observer {
             displayHistogram(currentHist);
         } else if (command==BroadcastEvent.GATE_SET_ON){
             currentPlot.displaySetGate(Plot.GATE_NEW, null, null);
-            action.settingGate=true;
+            Action.settingGate=true;
         } else if (command==BroadcastEvent.GATE_SET_OFF){
             currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
-            action.settingGate=false;
+            Action.settingGate=false;
         } else if (command==BroadcastEvent.GATE_SET_SAVE){
             currentPlot.displaySetGate(Plot.GATE_SAVE, null, null);
-            action.settingGate=false;
+            Action.settingGate=false;
         } else if (command==BroadcastEvent.GATE_SET_ADD){
             currentPlot.displaySetGate(Plot.GATE_CONTINUE, (Point)be.getContent(), null);
         } else if (command==BroadcastEvent.GATE_SET_REMOVE){
@@ -320,7 +313,7 @@ Observer {
             plot1d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
             plot2d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
             displayHistogram(currentHist);
-        } else if (preference==this.AUTO_PEAK_FIND){
+        } else if (preference==AUTO_PEAK_FIND){
         	plot1d.setPeakFind(state);
         	displayHistogram(currentHist);
         }
@@ -387,7 +380,7 @@ Observer {
         //cancel all previous stuff
         if (currentPlot!=null) {
             currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
-            action.settingGate=false;
+            Action.settingGate=false;
         }
         if (hist!=null){
             if ((currentHist.getType()==Histogram.ONE_DIM_INT)||
