@@ -875,7 +875,6 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	private void Loadlist() throws JamException {
-		int i;
 		String listItem;
 
 		JFileChooser fd = new JFileChooser(lastFile);
