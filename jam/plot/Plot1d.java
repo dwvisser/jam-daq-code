@@ -17,6 +17,8 @@ class Plot1d extends Plot {
 	private double[] fitTotal;
 	private double[][] fitSignals;
 
+	private int areaMark1, areaMark2;
+
 	/**
 	 * Constructor
 	 */
@@ -81,24 +83,29 @@ class Plot1d extends Plot {
 	 * @param mode GATE_NEW, GATE_CONTINUE, GATE_SAVE or GATE_CANCEL
 	 * @param pChannel channel coordinates of clicked channel
 	 */
-	public void displaySetGate(int mode, Point pChannel, Point pPixel) {
-		if (mode == GATE_NEW) {
-			//pointsGate = new Vector(10, 5);
-			pointsGate.clear();
-		} else if (mode == GATE_CONTINUE) {
-			pointsGate.add(pChannel);
+	public void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
+		if (mode == GateSetMode.GATE_NEW) {
+			pointsGate.reset();
+		} else if (mode == GateSetMode.GATE_CONTINUE) {
+			pointsGate.addPoint(pChannel.x,pChannel.y);
 			Graphics g = this.getGraphics();
 			g.setColor(PlotColorMap.gateDraw);
 			graph.update(g); //so graph has all pertinent imfo
-			graph.settingGate1d(pointsGate);
+			graph.settingGate1d(graph.toView(pointsGate));
 			g.dispose();
-		} else if (mode == GATE_SAVE) {
-			//pointsGate = null;
-			pointsGate.clear();
-		} else if (mode == GATE_CANCEL) {
-			//pointsGate = null;
-			pointsGate.clear();
+		} else if (mode == GateSetMode.GATE_SAVE) {
+			pointsGate.reset();
+		} else if (mode == GateSetMode.GATE_CANCEL) {
+			pointsGate.reset();
 		}
+	}
+	
+	void paintSetGate(Graphics g){
+		
+	}
+	
+	void paintMouseMoved(Graphics g){
+		
 	}
 
 	/**
@@ -144,8 +151,8 @@ class Plot1d extends Plot {
 			System.arraycopy(background, 0, fitBackground, 0, length);
 			if (signals != null) {
 				for (int bin = 0; bin < length; bin++) {
-					fitTotal[bin] += background[bin]; 
-					for (int sig=0; sig<signals.length; sig++){
+					fitTotal[bin] += background[bin];
+					for (int sig = 0; sig < signals.length; sig++) {
 						fitSignals[sig][bin] += background[bin];
 					}
 				}
@@ -153,10 +160,11 @@ class Plot1d extends Plot {
 		}
 		if (residuals != null) {
 			this.fitResiduals = new double[length];
-			System.arraycopy(residuals,0,fitResiduals,0,length);
+			System.arraycopy(residuals, 0, fitResiduals, 0, length);
 		}
-		Graphics g=this.getGraphics();
-		graph.update(g,viewSize,plotLimits);  //so graph has all pertinent imfo
+		Graphics g = this.getGraphics();
+		graph.update(g, viewSize, plotLimits);
+		//so graph has all pertinent imfo
 		paintFit(g);
 		g.dispose();
 	}
@@ -183,21 +191,20 @@ class Plot1d extends Plot {
 	 * dont use y values
 	 */
 	public void markArea(Point p1, Point p2) {
-		final int xll, xul;
-
-		if (p1.x <= p2.x) {
-			xll = p1.x;
-			xul = p2.x;
-		} else {
-			xll = p2.x;
-			xul = p1.x;
+		synchronized (this) {
+			markingArea = (p1 != null) && (p2 != null);
+			if (markingArea) {
+				areaMark1 = Math.min(p1.x, p2.x);
+				areaMark2 = Math.max(p1.x, p2.x);
+			}
 		}
-		Graphics g = this.getGraphics();
+		repaint();
+	}
+
+	void paintMarkArea(Graphics g) {
 		g.setColor(PlotColorMap.area);
 		graph.update(g, viewSize, plotLimits);
-		//so graph has all pertinent imfo
-		graph.markArea1d(xll, xul, counts);
-		g.dispose();
+		graph.markArea1d(areaMark1, areaMark2, counts);
 	}
 
 	/**
@@ -281,24 +288,24 @@ class Plot1d extends Plot {
 	 * paints a fit to a given graphics
 	 */
 	void paintFit(Graphics g) {
-		if (fitChannels != null){
-			if (fitBackground != null){
+		if (fitChannels != null) {
+			if (fitBackground != null) {
 				g.setColor(PlotColorMap.fitBackground);
-				graph.drawLine(fitChannels,fitBackground);
+				graph.drawLine(fitChannels, fitBackground);
 			}
-			if (fitResiduals != null){
+			if (fitResiduals != null) {
 				g.setColor(PlotColorMap.fitResidual);
-				graph.drawLine(fitChannels,fitResiduals);
+				graph.drawLine(fitChannels, fitResiduals);
 			}
-			if (fitSignals != null){
+			if (fitSignals != null) {
 				g.setColor(PlotColorMap.fitSignal);
-				for (int sig=0; sig<fitSignals.length; sig++){
-					graph.drawLine(fitChannels,fitSignals[sig]);					
+				for (int sig = 0; sig < fitSignals.length; sig++) {
+					graph.drawLine(fitChannels, fitSignals[sig]);
 				}
 			}
-			if (fitTotal != null){
+			if (fitTotal != null) {
 				g.setColor(PlotColorMap.fitTotal);
-				graph.drawLine(fitChannels,fitTotal);
+				graph.drawLine(fitChannels, fitTotal);
 			}
 		}
 	}
