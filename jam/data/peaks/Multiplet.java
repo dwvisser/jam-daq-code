@@ -144,7 +144,7 @@ public class Multiplet extends Vector {
         return combineMultiplets(temp);
     }
 
-    public void addPeak(Peak p) {
+    public final void addPeak(Peak p) {
         if (p != null){
             addElement(p);
         }
