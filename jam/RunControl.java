@@ -107,7 +107,7 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    public RunControl(JamMain jamMain, HistogramControl histogramControl, ScalerControl scalerControl,
+    RunControl(JamMain jamMain, HistogramControl histogramControl, ScalerControl scalerControl,
     VMECommunication vmeComm, DataIO dataio, JamConsole console){
         this.jamMain=jamMain;
         this.histogramControl=histogramControl;
@@ -259,7 +259,7 @@ public class RunControl implements Controller, ActionListener {
      *
      * @exception   JamException    all exceptions given to <code>JamException</code> go to the console
      */
-    public void startAcq() throws JamException {
+    void startAcq() throws JamException {
         netDaemon.setState(GoodThread.RUN);
         vmeComm.VMEstart();
         // if we are in a run, display run number
@@ -278,7 +278,7 @@ public class RunControl implements Controller, ActionListener {
     /**
      * Tells VME to stop acquisition, and suspends the net listener.
      */
-    public void stopAcq() throws JamException {
+    void stopAcq() throws JamException {
         vmeComm.VMEstop();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
@@ -372,7 +372,7 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.end();			    //stop Acq. flush buffer
         vmeComm.readScalers();		    //read scalers
         bend.setEnabled(false);	    		    //toggle button states
-        jamMain.setRunState(RunState.RUN_OFF);
+        jamMain.setRunState(RunState.ACQ_OFF);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
         int numSeconds=0;
         do {//wait for sort to catch up
@@ -420,17 +420,12 @@ public class RunControl implements Controller, ActionListener {
     }
 
     /**
-     * Called back by <code>SortDaemon</code>.
-     * When sort encounters a end-run-marker, writes out histograms, gates,
-     * and scalers if so requested. This method is <i>deprecated</i>.
+     * Only here for the controller interface.
      *
      * @deprecated
      */
     public void atSortEnd()  {
-    	//found with empty if so commenting out code altogether
-    	//dwvisser 12 August 2002
-        /*if(runOn){
-        }*/
+    	/* Nothing needed here at the moment. */
     }
 
     /**
