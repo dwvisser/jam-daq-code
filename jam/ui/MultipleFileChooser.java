@@ -34,6 +34,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -66,11 +67,11 @@ public class MultipleFileChooser extends JPanel {
 	
 	private File lastFile; //last file referred to in a JFileChooser
 	
-	JPanel pCommands;
+	private JPanel pButtons;
 	
-	JButton bSaveList;
+	private JButton bSaveList;
 	
-	JButton bLoadList;
+	private JButton bLoadList;
 	
 	private String fileExtension="*";
 	
@@ -91,24 +92,21 @@ public class MultipleFileChooser extends JPanel {
 		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
 
-		//Commands Panel
+		//Commands Panel		
+		JPanel pLeft = new JPanel();
+		pLeft.setLayout(new BoxLayout(pLeft, BoxLayout.Y_AXIS));		
+		pLeft.setBorder(new EmptyBorder(0, 5, 0, 0));
+		this.add(pLeft, BorderLayout.WEST);
 		
-		pCommands = new JPanel();
-		pCommands.setLayout(new BoxLayout(pCommands, BoxLayout.Y_AXIS));
-
+		pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
 		
-		pCommands.setBorder(new EmptyBorder(0, 5, 0, 0));
-		this.add(pCommands, BorderLayout.WEST);
-		
-		JPanel pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
-		
-		pCommands.add(Box.createVerticalGlue());				
-		pCommands.add(Box.createVerticalGlue());		
-		pCommands.add(Box.createVerticalGlue());
-		pCommands.add(pButtons);
-		pCommands.add(Box.createVerticalGlue());
-		pCommands.add(Box.createVerticalGlue());
-		pCommands.add(Box.createVerticalGlue());		
+		pLeft.add(Box.createVerticalGlue());				
+		pLeft.add(Box.createVerticalGlue());		
+		pLeft.add(Box.createVerticalGlue());
+		pLeft.add(pButtons);
+		pLeft.add(Box.createVerticalGlue());
+		pLeft.add(Box.createVerticalGlue());
+		pLeft.add(Box.createVerticalGlue());		
 		
 		JButton bAddfile = new JButton("Add File");
 		pButtons.add(bAddfile);
@@ -167,20 +165,18 @@ public class MultipleFileChooser extends JPanel {
 	 */
 	public void activeListSaveLoadButtons(boolean state){
 		if (state) {
-			pCommands.add(bLoadList);
-			pCommands.add(bSaveList);
+			pButtons.add(bLoadList);
+			pButtons.add(bSaveList);
 		} else {
-			pCommands.remove(bLoadList);
-			pCommands.remove(bSaveList);
+			pButtons.remove(bLoadList);
+			pButtons.remove(bSaveList);
 		}
 	}
-	//public List getList() {
-	//	return listFilesModel.
-	//}
-	
-	public void setSelectionIndex(int index) {
-		listFiles.setSelectedIndex(index); 
-	}
+	/**
+	 * Get selected file, no selection set first file
+	 * as selected
+	 * @return
+	 */
 	public File getSelectedFile() {
 		File file = (File)listFiles.getSelectedValue();
 		if (file ==null && listFilesModel.getSize()>0) {
@@ -189,6 +185,10 @@ public class MultipleFileChooser extends JPanel {
 		}
 		return file;
 	}
+	
+	public Enumeration getFileElements() {
+		return listFilesModel.elements();
+	}	
 	
 	/**
 	 * save list of items to sort
