@@ -16,7 +16,7 @@ public class Scaler implements Serializable  {
 
 
     public static Hashtable scalerTable=new Hashtable(11);
-    public static Vector scalerList=new Vector(11);
+    public static List scalerList=new Vector(11);
     /**
      * Limit on name length.
      */
@@ -41,8 +41,7 @@ public class Scaler implements Serializable  {
             throw new DataException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
         name=StringUtilities.makeLength(name, NAME_LENGTH);
-
-        //make sure name is unique
+        /* make sure name is unique */
         int prime=1;
         String addition;
         while(scalerTable.containsKey(name)){
@@ -51,13 +50,11 @@ public class Scaler implements Serializable  {
             prime++;
 
         }
-
         this.name=name;
         this.number=number;
-
-        // Add to list of scalers
+        /* Add to list of scalers */
         scalerTable.put(name, this);
-        scalerList.addElement(this);
+        scalerList.add(this);
     }
 
     /**
@@ -65,7 +62,7 @@ public class Scaler implements Serializable  {
      *
      * @return the list of all scalers
      */
-    public static Vector getScalerList(){
+    public static List getScalerList(){
         return scalerList;
     }
 
@@ -75,19 +72,13 @@ public class Scaler implements Serializable  {
      *
      * @param the new list of all scalers
      */
-    public static void setScalerList(Vector inScalerList){
-        Enumeration allScalers;
-        Scaler scaler;
-
-        //clear current lists
-        scalerTable.clear();
-        scalerList.removeAllElements();
-
-        allScalers=inScalerList.elements();
-        while( allScalers.hasMoreElements()) {//loop for all histograms
-            scaler=(Scaler)allScalers.nextElement();
+    public static void setScalerList(List inScalerList){
+        clearList();
+        Iterator allScalers=inScalerList.iterator();
+        while( allScalers.hasNext()) {//loop for all histograms
+            Scaler scaler=(Scaler)allScalers.next();
             scalerTable.put(scaler.getName(), scaler);
-            scalerList.addElement(scaler);
+            scalerList.add(scaler);
         }
 
     }
@@ -97,9 +88,8 @@ public class Scaler implements Serializable  {
      */
     public static void  clearList(){
         scalerTable.clear();
-
-        scalerList.removeAllElements();
-        //run garbage collector, memory should be freed
+        scalerList.clear();
+        /* run garbage collector to free memory */
         System.gc();
     }
 
@@ -115,7 +105,7 @@ public class Scaler implements Serializable  {
         //check we do not try to update mores scalers than there are
         numberScalers=Math.min( inValue.length, scalerList.size() );
         for (int i=0;i<numberScalers;i++){
-            currentScaler=(Scaler)scalerList.elementAt(i);
+            currentScaler=(Scaler)scalerList.get(i);
             currentScaler.setValue(inValue[currentScaler.getNumber()]);
         }
     }

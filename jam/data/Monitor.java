@@ -24,7 +24,7 @@ public class Monitor implements Serializable {
     /**
      * List of all monitors.
      */
-    public static Vector monitorList=new Vector(11);
+    public static List monitorList=new Vector(11);
 
 
     /**
@@ -76,7 +76,7 @@ public class Monitor implements Serializable {
         this.type=type;
         // Add to list of monitors
         monitorTable.put(name,this);
-        monitorList.addElement(this);
+        monitorList.add(this);
     }
 
     /**
@@ -139,7 +139,7 @@ public class Monitor implements Serializable {
      *
      * @return the list of monitors
      */
-    public static Vector getMonitorList() {
+    public static List getMonitorList() {
         return monitorList;
     }
 
@@ -148,16 +148,15 @@ public class Monitor implements Serializable {
      *
      * @param inMonList must contain all <code>Monitor</code> objects
      */
-    public static void setMonitorList(Vector inMonList){
+    public static void setMonitorList(List inMonList){
         //clear current lists
-        monitorTable.clear();
-        monitorList.removeAllElements();
+        clearList();
         //loop for all histograms
-        for(Enumeration allMonitors=inMonList.elements(); allMonitors.hasMoreElements();) {
-            Monitor monitor=(Monitor)allMonitors.nextElement();
+        for(Iterator allMonitors=inMonList.iterator(); allMonitors.hasNext();) {
+            Monitor monitor=(Monitor)allMonitors.next();
             String name=monitor.getName();
             monitorTable.put(name, monitor);
-            monitorList.addElement(monitor);
+            monitorList.add(monitor);
         }
     }
 
@@ -166,7 +165,7 @@ public class Monitor implements Serializable {
      */
     public static void  clearList(){
         monitorTable.clear();
-        monitorList.removeAllElements();
+        monitorList.clear();
         //run garbage collector
         System.gc();
     }
