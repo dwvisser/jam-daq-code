@@ -22,17 +22,17 @@ final class LibVersion extends DataObject {
 	/**
 	 * Major version number
 	 */
-	static final private int majorv = 4;
+	static final private int MAJOR = 4;
 
 	/**
 	 * Minor version number
 	 */
-	static final private int minorv = 1;
+	static final private int MINOR = 1;
 
 	/**
 	 * release serial number
 	 */
-	static final private int release = 2;
+	static final private int RELEASE = 2;
 
 	/**
 	 * Descriptive String
@@ -54,9 +54,9 @@ final class LibVersion extends DataObject {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		final DataOutputStream dos = new DataOutputStream(baos);
 		try {
-			dos.writeInt(majorv);
-			dos.writeInt(minorv);
-			dos.writeInt(release);
+			dos.writeInt(MAJOR);
+			dos.writeInt(MINOR);
+			dos.writeInt(RELEASE);
 			dos.writeBytes(description);
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(null,ioe.getMessage(),
@@ -69,17 +69,10 @@ final class LibVersion extends DataObject {
 		super(hdf, data, t, reference);
 	}
 	
-	/**
-	 * Implementation of <code>DataObject</code> abstract method.
-	 *
-	 * @exception HDFException thrown if there is a problem interpreting the bytes
-	 */
 	public void interpretBytes() throws HDFException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bais);
-		byte[] temp;
-
-		temp = new byte[bytes.length - 12]; //array has 3 int's and a String
+		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bais);
+		final byte [] temp = new byte[bytes.length - 12]; //array has 3 int's and a String
 		try { //stuff coded as final so don't try to assign
 			dis.readInt();
 			dis.readInt();
