@@ -10,8 +10,6 @@ public class LinearFunction extends CalibrationFunction {
 	
 	/**
 	 * Creates a new <code>LinearFunction</code> object of the specified type.  
-	 *
-	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public LinearFunction() {
 		super(NUMBER_TERMS);

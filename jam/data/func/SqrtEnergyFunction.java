@@ -9,10 +9,9 @@ import jam.data.DataException;
 public class SqrtEnergyFunction extends CalibrationFunction {
 
 	private static final int NUMBER_TERMS = 2;
+	
 	/**
 	 * Creates a new <code>SqrtEnergyFunction </code> object of the specified type.  
-	 *
-	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public SqrtEnergyFunction() {
 		super(NUMBER_TERMS);
