@@ -187,13 +187,16 @@ public class MainMenuBar extends JMenuBar {
 		setup.add(setupRemote);
 		final JMenu mcontrol = new JMenu("Control");
 		add(mcontrol);
+		//final ButtonGroup startstop=new ButtonGroup();
 		cstartacq = new JCheckBoxMenuItem("start", false);
 		cstartacq.setEnabled(false);
 		cstartacq.addActionListener(jamCommand);
+		//startstop.add(cstartacq);
 		mcontrol.add(cstartacq);
 		cstopacq = new JCheckBoxMenuItem("stop", true);
 		cstopacq.setEnabled(false);
 		cstopacq.addActionListener(jamCommand);
+		//startstop.add(cstartacq);
 		mcontrol.add(cstopacq);
 		iflushacq = new JMenuItem("flush");
 		iflushacq.setEnabled(false);
@@ -494,32 +497,39 @@ public class MainMenuBar extends JMenuBar {
 		}
 	}
 	
-	void setRunState(int rs){
-		if (rs == JamMain.NO_ACQ) {
+	void setRunState(RunState rs){
+		/*if (rs == RunState.NO_ACQ) {
 			cstartacq.setEnabled(false); // enable start JMenu item
 			cstopacq.setEnabled(false); // start stop flush
 			iflushacq.setEnabled(false); // enable flush JMenu
 		}
-		if (rs == JamMain.ACQ_OFF) {
+		if (rs == RunState.ACQ_OFF) {
 			cstartacq.setState(false); //check JMenu start active
 			cstopacq.setState(true);
 			iflushacq.setEnabled(false);
 		}
-		if (rs == JamMain.ACQ_ON) {
+		if (rs == RunState.ACQ_ON) {
 			cstartacq.setState(true); //check JMenu stop active
 			cstopacq.setState(false);
 			iflushacq.setEnabled(true);
 		}
-		if (rs == JamMain.RUN_OFF) {
+		if (rs == RunState.RUN_OFF) {
 			cstartacq.setState(false); //check JMenu start active
 			cstopacq.setState(true);
 			iflushacq.setEnabled(false);
 		}
-		if (rs == JamMain.RUN_ON) {
+		if (rs == RunState.RUN_ON) {
 			cstartacq.setState(true); //check JMenu stop active
 			cstopacq.setState(false);
 			iflushacq.setEnabled(true);
-		}
+		}*/
+		final boolean acqmode=rs.isAcquireMode();
+		final boolean acqon=rs.isAcquireOn();
+		cstartacq.setEnabled(acqmode);
+		cstopacq.setEnabled(acqmode);
+		iflushacq.setEnabled(acqon);
+		cstartacq.setSelected(acqon);
+		cstopacq.setSelected(acqmode && (!acqon));
 	}
 	
 	/**
