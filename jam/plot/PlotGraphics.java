@@ -195,12 +195,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		update(graph); //get graphics and copy to local variables
 		this.plotLimits = plotLimits;
 		//retrieve imformation from plotLimits object
-		if (plotLimits == null) {
-			System.err.println(
-				getClass().getName()
-					+ ".update() called with null "
-					+ "Limits object.");
-		} else {
+		if (plotLimits != null) {
 			minCount = plotLimits.getMinimumCounts();
 			maxCount = plotLimits.getMaximumCounts();
 			if (plotType == ONE_DIMENSION) {
@@ -1085,17 +1080,13 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 */
 	public void drawGate2d(boolean[][] gate) {
-		int channelWidth, channelHeight;
-
-		int x = 0;
-		int y = 0;
 		for (int j = minY; j <= maxY; j++) { // for each point
 			for (int i = minX; i <= maxX; i++) {
 				if (gate[i][j]) { //if inside gate
-					x = toViewHorzLin(i);
-					y = toViewVertLin(j);
-					channelWidth = toViewHorzLin(i + 1) - x;
-					channelHeight = y - toViewVertLin(j + 1);
+					final int x = toViewHorzLin(i);
+					final int y = toViewVertLin(j);
+					final int channelWidth = toViewHorzLin(i + 1) - x;
+					final int channelHeight = y - toViewVertLin(j + 1);
 					g.fillRect(
 						x,
 						y - channelHeight + 1,
