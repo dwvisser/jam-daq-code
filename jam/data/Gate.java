@@ -37,9 +37,9 @@ public class Gate implements Serializable {
 
     //static strutures to hold all gates.
     static Hashtable gateTable=new Hashtable(37);	    //should be an prime number
-    static Vector gateList=new Vector(37);
+    static List gateList=new Vector(37);
 
-    private static Vector gateSetPoints;
+    private static List gateSetPoints;
 
     protected String name;		    //name of gate
     protected Histogram histogram;	    //histogram gate belongs to
@@ -85,7 +85,7 @@ public class Gate implements Serializable {
         this.name=name;
         unsetLimits();
         gateTable.put(name,this);
-        gateList.addElement(this);
+        gateList.add(this);
         try {//register ourselves with the histogram we belong to
             histogram.addGate(this);
         } catch (DataException de){
@@ -103,13 +103,13 @@ public class Gate implements Serializable {
     public static void setGateList(List inGateList){
         /* clear current lists */
         gateTable.clear();
-        gateList.removeAllElements();
+        gateList.clear();
         /* loop for all histograms */
         for(Iterator allGates=inGateList.iterator(); allGates.hasNext();) {
             Gate gate=(Gate)allGates.next();
             String name=gate.getName();
             gateTable.put(name, gate);
-            gateList.addElement(gate);
+            gateList.add(gate);
         }
     }
 
@@ -118,12 +118,12 @@ public class Gate implements Serializable {
      *
      * @return ordered list of all <code>Gate</code> objects
      */
-    public static Vector getGateList() {
+    public static List getGateList() {
         return gateList;
     }
 
-    public static Vector getGateList(int type)  {
-        Vector out=(Vector)(gateList.clone());
+    public static List getGateList(int type)  {
+        Vector out=new Vector(gateList);
         for (int i=0;i<out.size(); i++){
             if (((Gate)(out.elementAt(i))).getType() != type) {
                 out.removeElementAt(i);
@@ -137,7 +137,7 @@ public class Gate implements Serializable {
      * Clears the list of gates.
      */
     public static void  clearList(){
-        gateList.removeAllElements();
+        gateList.clear();
         gateTable.clear();
         //run garbage collector, memory should be freed
         System.gc();
@@ -157,13 +157,13 @@ public class Gate implements Serializable {
      * update methode used in setting gate
      */
     public static void update(Point p){
-        gateSetPoints.addElement(p);
+        gateSetPoints.add(p);
     }
 
     /**
      * update methode used in setting gate
      */
-    public static Vector getSetPoints(){
+    public static List getSetPoints(){
         return gateSetPoints;
     }
 
@@ -263,7 +263,7 @@ public class Gate implements Serializable {
      * @param gatePoints a <code>Vector</code> of <code>Point</code> objects
      * @exception DataException thrown if called for wrong type of gate
      */
-    public void setLimits(Vector gatePoints) throws DataException{
+    public void setLimits(List gatePoints) throws DataException{
         int pointX;
         int pointY;
         Polygon gatePoly = new Polygon();;
@@ -272,8 +272,8 @@ public class Gate implements Serializable {
         " of type TWO_DIMENSION");
         //make a plolygon from points
         for (int i=0; i<gatePoints.size();i++ ) {
-            pointX=((Point)gatePoints.elementAt(i)).x;
-            pointY=((Point)gatePoints.elementAt(i)).y;
+            pointX=((Point)gatePoints.get(i)).x;
+            pointY=((Point)gatePoints.get(i)).y;
             gatePoly.addPoint(pointX,pointY);
         }
         setLimits(gatePoly);
@@ -356,13 +356,13 @@ public class Gate implements Serializable {
      * @exception DataException thrown if called for wrong type of gate
      */
     public boolean inGate(int channelX, int channelY)throws DataException{
-        boolean inside=false;
-
+        boolean inside=false;//default value if not all conditions are met
         if (type != TWO_DIMENSION) throw new DataException("inGate(int,int): can only be called for gates" +
         " of type TWO_DIMENSION");
-        if (!isSet) return false;
-        if( (channelX >= 0) && (channelX < sizeX)&& (channelY >= 0) && (channelY < sizeY) ){
-            inside=insideGate[channelX][channelY];
+        if (isSet) {
+        	if( (channelX >= 0) && (channelX < sizeX)&& (channelY >= 0) && (channelY < sizeY) ){
+            	inside=insideGate[channelX][channelY];
+        	}
         }
         return inside;
     }
