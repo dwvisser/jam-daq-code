@@ -2,11 +2,10 @@ package jam.data.control;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
-import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
-import jam.data.func.PolynomialFunction;
 import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
@@ -20,6 +19,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.Observable;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -34,7 +34,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.Observable;
 
 /**
  * Class to control the histograms
@@ -46,27 +45,22 @@ import java.util.Observable;
  */
 public class CalibrationFit extends AbstractControl {
 
-    private static final int NUMBER_POINTS=5;
-	private final static int MAX_NUMBER_TERMS = 5;
+    private static final int NUM_POINTS=5;
+	private final static int MAX_TERMS = 5;
 	private final static String BLANK_TITLE = "Histogram not calibrated";
 	private final static String BLANK_LABEL = "    --     ";	
 	
 	//Avaliable functions load icons
 	static {
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-		
 		AbstractCalibrationFunction linearFunc=new LinearFunction();
 		AbstractCalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
-		//CalibrationFunction polyFunc=new PolynomialFunction(2);
-		
-		//Load icons
+		/* Load icons. */
 		URL urlLine=loader.getResource("jam/data/func/line.png");
 		URL urlSqrtE =loader.getResource("jam/data/func/sqrt.png");
-		//URL urlPoly =loader.getResource("jam/data/func/poly.png");
 		if (urlLine!=null && urlSqrtE!=null) {
 			AbstractCalibrationFunction.setIcon(linearFunc.getName(), new ImageIcon(urlLine));
 			AbstractCalibrationFunction.setIcon(sqrtEFunc.getName(), new ImageIcon(urlSqrtE));
-			//CalibrationFunction.setIcon(polyFunc.getName(), new ImageIcon(urlPoly));
 		} else {
 			JOptionPane.showMessageDialog(null, "Can't load resource function icons");
 		}
@@ -214,11 +208,11 @@ public class CalibrationFit extends AbstractControl {
     //Create panel with the points to fit
     private JPanel createPointsPanel() {
     	JPanel pAllPoints = new JPanel(new GridLayout(0, 1, 10,2));
-        pPoint=new JPanel[NUMBER_POINTS];
-        tEnergy =new JTextField[NUMBER_POINTS];
-        tChannel =new JTextField[NUMBER_POINTS];
-        cUse =new JCheckBox[NUMBER_POINTS];
-        for ( int i=0; i<NUMBER_POINTS; i++ ){
+        pPoint=new JPanel[NUM_POINTS];
+        tEnergy =new JTextField[NUM_POINTS];
+        tChannel =new JTextField[NUM_POINTS];
+        cUse =new JCheckBox[NUM_POINTS];
+        for ( int i=0; i<NUM_POINTS; i++ ){
             pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
             pAllPoints.add(pPoint[i]);
             pPoint[i].add(new JLabel("Energy"));
@@ -247,11 +241,11 @@ public class CalibrationFit extends AbstractControl {
     //Create panel with the coefficients    
     private JPanel createCoeffPanel() {    
     	JPanel pCoeff = new JPanel(new GridLayout(0, 1, 10,2));
-		pcoeff = new JPanel[MAX_NUMBER_TERMS];
-		lcoeff = new JLabel[MAX_NUMBER_TERMS];
-		tcoeff = new JTextField[MAX_NUMBER_TERMS];
+		pcoeff = new JPanel[MAX_TERMS];
+		lcoeff = new JLabel[MAX_TERMS];
+		tcoeff = new JTextField[MAX_TERMS];
 	
-		for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+		for (int i = 0; i < MAX_TERMS; i++) {
 			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
 			pCoeff.add(pcoeff[i]);
 			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
@@ -263,90 +257,77 @@ public class CalibrationFit extends AbstractControl {
 		return pCoeff;
     }
     
-    /* 
+    /*
      * Function selected
      */
-    private void selectFunction(String funcName){
-    	Class calClass;
-		try {
-			calibrationFunction = getCurrentCalibrationFunction();
-			if (!funcName.equals(AbstractCalibrationFunction.NOT_CALIB)) {
-				calClass = (Class)AbstractCalibrationFunction.getMapFunctions().get(funcName);
-				boolean change = calClass.isInstance(calibrationFunction);
-				if ( calibrationFunction==null || !change ) {
-					calibrationFunction = (AbstractCalibrationFunction)calClass.newInstance();
-				}
-			}else {
-				calibrationFunction=null;
-			}			
-	        
-			updateFields(calibrationFunction, rbFitPoints.isSelected());
-			
-		//} catch (ClassNotFoundException e) {
-		//	msghdlr.errorOutln("Creating fit function "+getClass().getName()+" "+e.toString());
-		} catch (InstantiationException e) {		
-			msghdlr.errorOutln("Creating fit function "+getClass().getName()+" "+e.toString());			
-		} catch (IllegalAccessException e){	
-			msghdlr.errorOutln("Creating fit function "+getClass().getName()+" "+e.toString());			
-		}
+    private void selectFunction(String funcName) {
+        Class calClass;
+        try {
+            calibrationFunction = getCurrentCalibrationFunction();
+            if (!funcName.equals(AbstractCalibrationFunction.NOT_CALIB)) {
+                calClass = (Class) AbstractCalibrationFunction
+                        .getMapFunctions().get(funcName);
+                boolean change = calClass.isInstance(calibrationFunction);
+                if (calibrationFunction == null || !change) {
+                    calibrationFunction = (AbstractCalibrationFunction) calClass
+                            .newInstance();
+                }
+            } else {
+                calibrationFunction = null;
+            }
+            updateFields(calibrationFunction, rbFitPoints.isSelected());
+        } catch (InstantiationException e) {
+            msghdlr.errorOutln("Creating fit function " + getClass().getName()
+                    + " " + e.toString());
+        } catch (IllegalAccessException e) {
+            msghdlr.errorOutln("Creating fit function " + getClass().getName()
+                    + " " + e.toString());
+        }
     }
-    /** 
-     * Set the fit type to be points instead of
-     * setting coefficients
+    
+    /*
+     * Set the fit type to be points instead of setting coefficients.
      */
-    private void setFitTypePoints(boolean state){
-    	
-
-    	if (state) {
-    		tabPane.setSelectedIndex(0);
-    	} else {
-    		tabPane.setSelectedIndex(1);
-    	}
-    	
-    	updateFields(calibrationFunction, state);
+    private void setFitTypePoints(boolean state) {
+        if (state) {
+            tabPane.setSelectedIndex(0);
+        } else {
+            tabPane.setSelectedIndex(1);
+        }
+        updateFields(calibrationFunction, state);
     }        
     
     private void updateSelection() {
-    	
-    	String name=null;   
-    	boolean isCalPts=true;
-    	    	
-    	calibrationFunction=getCurrentCalibrationFunction();
-    			
-		//Select name 
-		if(calibrationFunction!=null) {
-			name= calibrationFunction.getName();
-			//Set fit type
-			if (calibrationFunction.isFitPoints()) {
-				isCalPts=true;
-				rbFitPoints.setSelected(true);
-			} else {
-				isCalPts=false;
-				rbSetCoeffs.setSelected(true);
-			}			
-		} else {
-			name=AbstractCalibrationFunction.NOT_CALIB;
-			rbFitPoints.setSelected(true);
-		}		
-		
-		isUpdate=true;
-		//FIXME KBS 
-    	comboBoxFunction.setSelectedItem(name);    	
-		isUpdate=false;
-    	updateFields(calibrationFunction, isCalPts );
+        final String name;
+        boolean isCalPts = true;
+        calibrationFunction = getCurrentCalibrationFunction();
+        /* Select name. */
+        if (calibrationFunction == null) {
+            name = AbstractCalibrationFunction.NOT_CALIB;
+            rbFitPoints.setSelected(true);
+        } else {
+            name = calibrationFunction.getName();
+            /* Set fit type. */
+            if (calibrationFunction.isFitPoints()) {
+                isCalPts = true;
+                rbFitPoints.setSelected(true);
+            } else {
+                isCalPts = false;
+                rbSetCoeffs.setSelected(true);
+            }
+        }
+        isUpdate = true;
+        //FIXME KBS 
+        comboBoxFunction.setSelectedItem(name);
+        isUpdate = false;
+        updateFields(calibrationFunction, isCalPts);
     }
 
-    public void doSetup(){
-
-    	boolean histIs1d;
-    	String name=null;
-    	String title=null;
-    	
-    	//Get histogram status
-    	calibrationFunction=getCurrentCalibrationFunction();		
-    	boolean isCalPts = calibrationFunction!=null? calibrationFunction.isFitPoints(): true;
-    	
-    	updateFields(calibrationFunction, isCalPts);
+    public void doSetup() {
+        calibrationFunction = getCurrentCalibrationFunction();
+        final boolean isCalPts = calibrationFunction == null ? true
+                : calibrationFunction.isFitPoints();
+        updateFields(calibrationFunction, isCalPts);
     }
     
     private void doApplyCalib(){
@@ -384,16 +365,15 @@ public class CalibrationFit extends AbstractControl {
      * Already checked have a 1d histogram and a fit function 
      */
     private void doFitCalibration(){
-    	
-        double energy [] =new double[NUMBER_POINTS];
-        double channel [] =new double[NUMBER_POINTS];
+        double energy [] =new double[NUM_POINTS];
+        double channel [] =new double[NUM_POINTS];
         int numberPoints=0;
         double x[];
         double y[];
         String fitText;
         AbstractHist1D currentHistogram=getCurrentHistogram();
         try {
-            for(int i=0;i<NUMBER_POINTS;i++){
+            for(int i=0;i<NUM_POINTS;i++){
                 //is entry marked
                 if(cUse[i].isSelected()) {
                     //is there text in enery field
@@ -463,37 +443,29 @@ public class CalibrationFit extends AbstractControl {
 
 	
 	/**
-	 * Sets inputs fields, enables and diables them as
-	 * appropricate depending of if there is a calibration
-	 * or what type it is. 
-	 */
-	public void updateFields(AbstractCalibrationFunction hcf, boolean isCalPts) {
-		
-		boolean hasCalibration;
-		String title;
-				
-		hasCalibration =hcf!=null;
-		
-		//Setup title 
-		if(hasCalibration) {
-			title=hcf.getTitle();
-		} else {
-			title = BLANK_TITLE;
-		}			
-		lcalibEq.setText(title);
-				 
-		//Points fields
-		if (hasCalibration) {
-			double [] ptsChannel=hcf.getPtsChannel();
-			double [] ptsEnergy=hcf.getPtsEnergy();
+     * Sets inputs fields, enables and diables them as appropricate depending of
+     * if there is a calibration or what type it is.
+     * 
+     * @param hcf
+     *            calibration, if any
+     * @param isCalPts
+     *            if <code>true</code>, calibration was fit to points
+     */
+	private void updateFields(AbstractCalibrationFunction hcf, boolean isCalPts) {		
+		final boolean calNotNull = hcf != null;
+        final String title = calNotNull ? hcf.getTitle() : BLANK_TITLE;
+		lcalibEq.setText(title);	 
+		/* Points fields */
+		if (calNotNull) {
+			final double [] ptsChannel=hcf.getPtsChannel();
+			final double [] ptsEnergy=hcf.getPtsEnergy();
 			numberTerms = hcf.getNumberTerms();
-			String[] labels = hcf.getLabels();
-			double[] coeff = hcf.getCoeff();			
-			
-			//Calibrated with points
+			final String[] labels = hcf.getLabels();
+			final double[] coeff = hcf.getCoeff();			
+			/* Calibrated with points */
 			if (isCalPts) {
-				for (int i=0; i<NUMBER_POINTS; i++){
-					if (ptsChannel!=null && i<ptsChannel.length) {
+				for (int i=0; i<NUM_POINTS; i++){
+					if (i<ptsChannel.length) {
 						tChannel[i].setText(String.valueOf(ptsChannel[i]));
 						tEnergy[i].setText(String.valueOf(ptsEnergy[i]));
 					}else {
@@ -505,7 +477,7 @@ public class CalibrationFit extends AbstractControl {
 					tEnergy[i].setEditable(true);
 					tEnergy[i].setEnabled(true);
 				}
-				for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+				for (int i = 0; i < MAX_TERMS; i++) {
 					if (i<numberTerms) {
 						lcoeff[i].setText(labels[i]);
 						tcoeff[i].setText(String.valueOf(coeff[i]));
@@ -520,7 +492,7 @@ public class CalibrationFit extends AbstractControl {
 				}
 			//Coeffients set for fit
 			}else {
-				for (int i=0; i<NUMBER_POINTS; i++){
+				for (int i=0; i<NUM_POINTS; i++){
 					tChannel[i].setText("");
 					tChannel[i].setEnabled(true);
 					tChannel[i].setEditable(false);
@@ -528,7 +500,7 @@ public class CalibrationFit extends AbstractControl {
 					tEnergy[i].setEnabled(true);
 					tEnergy[i].setEditable(false);
 				}				
-				for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+				for (int i = 0; i < MAX_TERMS; i++) {
 					if (i<numberTerms) {
 						lcoeff[i].setText(labels[i]);
 						tcoeff[i].setText(String.valueOf(coeff[i]));
@@ -546,7 +518,7 @@ public class CalibrationFit extends AbstractControl {
 			
 		//Not calibrated
 		} else {
-			for (int i=0; i<NUMBER_POINTS; i++){
+			for (int i=0; i<NUM_POINTS; i++){
 				tChannel[i].setText("");
 				tChannel[i].setEditable(false);
 				tChannel[i].setEnabled(false);
@@ -554,7 +526,7 @@ public class CalibrationFit extends AbstractControl {
 				tEnergy[i].setEditable(false);
 				tEnergy[i].setEnabled(false);
 			}			
-			for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+			for (int i = 0; i < MAX_TERMS; i++) {
 				lcoeff[i].setText(BLANK_LABEL);
 				tcoeff[i].setText("");
 				tcoeff[i].setEnabled(false);
