@@ -37,21 +37,22 @@ public class CommandManager implements CommandListener, CommandNames {
 	
 	/* initializer block for map */
 	static {
+		/* File Menu */
 		cmdMap.put(OPEN_HDF, OpenHDFCmd.class);
 		cmdMap.put(SAVE_HDF, SaveHDFCmd.class);
 		cmdMap.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
 		cmdMap.put(SAVE_GATES, SaveGatesCmd.class);
 		cmdMap.put(ADD_HDF, AddHDFCmd.class);
 		cmdMap.put(RELOAD_HDF, ReloadHDFCmd.class);
+		/* Histogram Menu */
 		cmdMap.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
 		cmdMap.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);
-		
 		cmdMap.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
 		cmdMap.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
 		cmdMap.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
 		cmdMap.put(SHOW_HIST_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
 		cmdMap.put(SHOW_HIST_GAIN_SHIFT, ShowDialogGainShiftCmd.class);				 
-				 
+	    /* Gate Menu */
 		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
 		cmdMap.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
 		cmdMap.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
@@ -89,12 +90,12 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
 		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
 		cmdMap.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
-		
+		/* View menu */
 		cmdMap.put(SHOW_VIEW_NEW, ShowDialogAddView.class);
 		cmdMap.put(SHOW_VIEW_DELETE, ShowDialogDeleteView.class);
-		
-		
+		/* Fit Menu */
 		cmdMap.put(SHOW_FIT_NEW, ShowDialogAddFit.class);
+		/* Preferences Menu */
 		cmdMap.put(PlotPrefs.AUTO_IGNORE_ZERO, SetAutoScaleIgnoreZero.class);
 		cmdMap.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
 		cmdMap.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
