@@ -27,7 +27,7 @@ routine must extend the <span class=jam>Jam</span> class,
     conditions and increment histograms.</li>
     <li><i>The monitor section (optional): </i>This section can be used to calculate the
 return value of certain Monitor objects.</li>
-	<li>The "begin run" routine (optional):</i> If you include the 
+	<li><i>The "begin run" routine (optional):</i> If you include the 
 	<code>begin()</code> subroutine, Jam calls it 
 	during online acquisition when the user 
 clicks on <a href="online.html#beginrun">Begin</a>. If the 
@@ -83,17 +83,50 @@ public void MySort extends SortRoutine {
 }</code></pre>
 
 <h3>Variables</h3>
+
+As of Jam 1.6.0, there are some changes which simplify and shorten the way Histograms are 
+declared and created 
+in sort routines. It will, however, require users to change and re-compile old sort 
+routines in order to use them with the new version. For example, to create a 2048 channel 
+1D histogram and a 512x16 2D-histogram, the declaration and creation would look like:
+
+<pre>HistInt1D sample1d=createHist1D(2048,"ADC Channel 0");
+HistInt2D sample2d=createHist2D(512, 16, "AngVsE", "Angle vs. Energy","Energy","Angle");</pre>
+
+<p>Here are all the possible forms:</p>
+<pre>createHist1D(int chans, String name, String title, String labelX, String labelY);
+createHist1D(int chans, String name, String title);
+createHist1D(int chans, String name);
+createHist2D(int chX, int chY, String name, String title, String labelX, String labelY);
+createHist2D(int chX, int chY, String name, String title);
+createHist2D(int chX, int chY, String name);
+createHist2D(int chans, String name, String title, String labelX, String labelY);
+createHist2D(int chans, String name, String title);
+createHist2D(int chans, String name);</pre>
+
+<p>If a form which omits axis labels is used, the default axis labels are "Channels"
+or "Counts" as appropriate. If a form which omits the title is omitted, the name is
+used as the title. If a form of <code>createHist2D()</code> with only one <code>chans</code>
+parameter is used, then the histogram is assumed to have the same number of x-channels as
+y-channels.</p>
+
 <p>Variables can either be primitive types (e.g., <code>int</code> or <code>double</code>)
 or a class (for example <code>Histogram</code> or <code>Gate</code>). Whereas a
 intrinsic variable can just be allocated a value (e.g., <code>number=4</code>),
 each new instance of a class, which is called an object, must explicitly
 created using the <code>new</code> keyword followed by a constructor for that
 class. A constructor is the class name given with the parameters needed
-to create it. For example, one constructor for histogram is <code>Histogram(name,
-number, type, size, title)</code>  where you must provide the parameters: <code>name, number
-type, size,</code> and <code>title</code>. For example:<p>
+to create it. For example, the constructor for a gate is <code>Gate(String name,
+Histogram hist)</code>  where you must provide the parameters: <code>name</code>
+and <code>hist</code>. Look at the example below, keeping in mind that 
+<code>HistInt1D</code> is a subclass of <code>Histogram</code>, and therefore instances
+of <code>HistInt1D</code> are also <code>Histogram</code>'s:<p>
 
-<code>h1 = new Histogram("d1", Histogram.ONE_DIM_INT, 2048, "Detector 1");
+<pre>HistInt1D h1;
+Gate g1;
+
+h1 = createHist1d(8192, "Germanium 1");
+g1 = new Gate("g1", h1);</pre>
 
 <h3>Classes</h3>
 The classes that are available for you in sort class are:
@@ -124,28 +157,45 @@ A parameter which can be set at runtime to pass values to the sort routine.
 <dd>
 A monitor is a class that allows rates in an experiment to 
 be monitored.
-
 </dl>
-<h4>Electronics Configuration Classes</h4>
+
+<p>For more information on using any of these classes, download Jam's API documentation, and look
+at the <code>jam.data</code> package.</p>
+
+<h4>Utility Classes</h4>
+
+<p>Sort routines you write that extend <code>jam.sort.SortRoutine</code> are provided
+with pre-existing instances of several useful utility classes.</p>
+<h5>Electronics Configuration</h5>
 <dl>
-   
-<dt>Pre-existing instance <code>cnafCommands</code> of class type: <a href="../API/jam/sort/CamacCommands.html">CamacCommands</a></dt>
-<dd>
-This is a class whose methods you call to setup the CAMAC crate. See <a href="camaccommand.html">here</a>
-for more explanation.
-<dt>Pre-existing instance <code>vmeMap</code> of class <a href="../API/jam/sort/VME_Map.html">VME_Map</a></dt>
-
+<dt>Pre-existing instance, <code>cnafCommands</code>, of 
+the class <code>jam.sort.CamacCommands</code></dt>
+<dd>This is a class whose methods you call to setup a CAMAC crate.</dd>
+<dt>Pre-existing instance, <code>vmeMap</code>, of the class 
+<code>jam.sort.VME_Map</code></dt>
+<dd>This is a class whose methods you call to setup a VME crate using CAEN V775 and V785
+ADC's.</dd>
 </dl>
+<h5>Calibration</h5>
+<p>There is a pre-existing instance, <code>gains</code>, of the class 
+<code>jam.sort.GainCalibration</code>, which may be used to load a gain calibration text
+file and easily apply those gains to incoming raw data.</p>
+
+<p>For more details on these classes, download Jam's API documentation, and browse
+to the <code>jam.sort</code> package.</p>
+
 <h3>Sort Routine Examples</h3>
 <h4>CAMAC-based Acquisition Systems</h4>
-<p><a href="../sortfiles/CamacSortTemplate.java">Here</a> is a template of a sort routine with two histogram and one gate.
+<p><a href="../sortfiles/CamacSortTemplate.html">Here</a> is a template of a sort 
+routine with two histogram and one gate.
 One histogram is incremented for every event while the second histogram
 is only incremented if the event falls in the first histograms gate.
 For <code>cnafCommnands</code> the <code>c,n,a,f</code> would have to be replace by 
 actual values.</p>
-<p>A more complete example of a CAMAC-based sort routine may be found <a href="../sortfiles/EvsDE.java">here</a>.</p>
+<p>A more complete example of a CAMAC-based sort routine may be found 
+<a href="../sortfiles/EvsDE.html">here</a>.</p>
 <h4>VME-based systems using CAEN V7x5 ADC's and TDC's</h4>
 <p>Here is a version of a sort routine used at LENA, modified here for
-demonstration purposes: <a href="../sortfiles/CI.java">CI.java</a></p>
+demonstration purposes: <a href="../sortfiles/CI.html">CI.java</a></p>
 </body>
 </html>
