@@ -7,7 +7,6 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RunInfo;
 
 import java.awt.BorderLayout;
@@ -20,6 +19,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
+
 import javax.swing.JPanel;
 
 /**
@@ -37,20 +37,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 														PlotPrefs,
 														Observer {
 
-	private static final String KEY1 = "1D Plot";
-
-	private static final String KEY2 = "2D Plot";
-
-	private final MessageHandler msgHandler; //output for messages
-
 	private final Action action; //handles display events
 
 	private final Object plotLock = new Object();
 
 	/** Grid panel that contains plots */
-	private JPanel plotGridPanel;
+	private JPanel gridPanel;
 	/** Layout of grid with plots*/
-	private GridLayout plotGridPanelLayout;
+	//private GridLayout gridLayout;
 	/** Array of all avaliable plots */
 	private ArrayList plotList;
 	/** Current plot of plotList */
@@ -80,7 +74,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 *            the class to call to print out messages
 	 */
 	public Display(JamConsole jc) {		
-		msgHandler = jc; //where to send output messages
 		/* Set gobal status */
 		JamStatus.instance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
@@ -107,21 +100,16 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * Constructor helper
 	 * Create a panel for plots
 	 */
-	private void createGridPanel()
-	{
-		//Create main panel with tool bar 
+	private void createGridPanel() {
+		/* Create main panel with tool bar */ 
 		final int size = 400;
 		setPreferredSize(new Dimension(size, size));
 		final int minsize = 400;
 		setMinimumSize(new Dimension(minsize, minsize));
 		setLayout(new BorderLayout());
-		
-		//Create imbeded grid panel
-		plotGridPanelLayout = new GridLayout(1,1);
-		plotGridPanel =  new JPanel();
-		plotGridPanel.setLayout(plotGridPanelLayout);
-		add(plotGridPanel, BorderLayout.CENTER);		
-		
+		/* Create imbedded grid panel */
+		gridPanel =  new JPanel(new GridLayout(1,1));
+		add(gridPanel, BorderLayout.CENTER);		
 	};
 	
 	/**
@@ -132,14 +120,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	public void setView(View viewIn){
 		currentView=viewIn;
 		final int numberPlots=currentView.getNumberHists();
-		plotGridPanelLayout.setRows(currentView.getRows());
-		plotGridPanelLayout.setColumns(currentView.getColumns());
-		plotGridPanel.setLayout(plotGridPanelLayout);		
-		plotGridPanel.revalidate(); 
+		final GridLayout gridLayout=new GridLayout(currentView.getRows(),
+				currentView.getColumns());
+		gridPanel.setLayout(gridLayout);		
+		gridPanel.revalidate(); 
 		createPlots(numberPlots);
 		updateLayout();		
 		//Set properties for each plot
-		plotGridPanel.removeAll();
+		gridPanel.removeAll();
 		Plot plot=null;
 		//Set initial states for all plots
 		for (int i=0;i<numberPlots;i++){
@@ -149,7 +137,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			plot.select(false);
 			plot.reset();
 			plot.removeAllPlotMouseListeners();			
-			plotGridPanel.add(plot);			
+			gridPanel.add(plot);			
 			Histogram hist=currentView.getHistogram(i);
 			plot.displayHistogram(hist);
 		}
@@ -343,16 +331,19 @@ public final class Display extends JPanel implements  PlotSelectListener,
 
 	public void setPeakFindProperties(double width, double sensitivity,
 			boolean cal) {
-		currentPlot.setWidth(width);
-		currentPlot.setSensitivity(sensitivity);
-		currentPlot.setPeakFindDisplayCal(cal);
-		//displayHistogram(); 
+		synchronized (plotLock) {
+			currentPlot.setWidth(width);
+			currentPlot.setSensitivity(sensitivity);
+			currentPlot.setPeakFindDisplayCal(cal);
+		}
+		//displayHistogram();
 	}
 
 	public void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
-		currentPlot.displayFit(signals, background, residuals, ll);
+		getPlot().displayFit(signals, background, residuals, ll);
 	}
+	
 	/**
 	 * Set a plot as the current plot
 	 * @param p
@@ -370,14 +361,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 					currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 					currentPlot.removeAllPlotMouseListeners();
 				}
-				if (p.hasHistogram())
+				if (p.hasHistogram()){
 					p.addPlotMouseListener(action);
+				}
 				/* Change selected plot */
 				for (i=0;i<plotList.size();i++) {
 					((Plot)plotList.get(i)).select(false);
 				}
 				action.setDefiningGate(false);
-				
 				p.select(true);
 				/* Cancel all current actions */
 				action.plotChanged();
