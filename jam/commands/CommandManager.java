@@ -30,87 +30,87 @@ public class CommandManager implements CommandListener, CommandNames {
 
 	private final JamStatus status=JamStatus.instance();
 	private final MessageHandler msghdlr;
-	private static CommandManager _instance=null;
-	private static final Map cmdMap = Collections.synchronizedMap(new HashMap());
-	private static final Map instances=Collections.synchronizedMap(new HashMap());
+	private static CommandManager managerInstance=null;
+	private static final Map CMD_MAP = Collections.synchronizedMap(new HashMap());
+	private static final Map INSTANCES=Collections.synchronizedMap(new HashMap());
 	private Commandable currentCommand;
 	
 	/* initializer block for map */
 	static {
 		/* File Menu */
-		cmdMap.put(OPEN_HDF, OpenHDFCmd.class);
-		cmdMap.put(SAVE_HDF, SaveHDFCmd.class);
-		cmdMap.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
-		cmdMap.put(SAVE_GATES, SaveGatesCmd.class);
-		cmdMap.put(ADD_HDF, AddHDFCmd.class);
-		cmdMap.put(RELOAD_HDF, ReloadHDFCmd.class);
+		CMD_MAP.put(OPEN_HDF, OpenHDFCmd.class);
+		CMD_MAP.put(SAVE_HDF, SaveHDFCmd.class);
+		CMD_MAP.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
+		CMD_MAP.put(SAVE_GATES, SaveGatesCmd.class);
+		CMD_MAP.put(ADD_HDF, AddHDFCmd.class);
+		CMD_MAP.put(RELOAD_HDF, ReloadHDFCmd.class);
 		/* Histogram Menu */
-		cmdMap.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
-		cmdMap.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);
-		cmdMap.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
-		cmdMap.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
-		cmdMap.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
-		cmdMap.put(SHOW_HIST_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
-		cmdMap.put(SHOW_HIST_GAIN_SHIFT, ShowDialogGainShiftCmd.class);				 
+		CMD_MAP.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
+		CMD_MAP.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);
+		CMD_MAP.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
+		CMD_MAP.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
+		CMD_MAP.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
+		CMD_MAP.put(SHOW_HIST_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
+		CMD_MAP.put(SHOW_HIST_GAIN_SHIFT, ShowDialogGainShiftCmd.class);				 
 	    /* Gate Menu */
-		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
-		cmdMap.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
-		cmdMap.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
-		cmdMap.put(SHOW_RUN_CONTROL, ShowRunControl.class); 
-		cmdMap.put(SHOW_SORT_CONTROL, ShowSortControl.class); 
-		cmdMap.put(START, StartAcquisition.class);
-		cmdMap.put(STOP, StopAcquisition.class);
-		cmdMap.put(FLUSH, FlushAcquisition.class);
-		cmdMap.put(EXIT, ShowDialogExitCmd.class);
-		cmdMap.put(CLEAR, FileNewClearCmd.class);
-		cmdMap.put(PARAMETERS, ShowDialogParametersCmd.class);
-		cmdMap.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);
-		cmdMap.put(SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
-		cmdMap.put(SCALERS, ScalersCmd.class);
-		cmdMap.put(EXPORT_TEXT, ExportTextFileCmd.class);
-		cmdMap.put(EXPORT_DAMM, ExportDamm.class);
-		cmdMap.put(EXPORT_SPE, ExportRadware.class);	
-		cmdMap.put(PRINT, Print.class);
-		cmdMap.put(PAGE_SETUP, PageSetupCmd.class);	 
-		cmdMap.put(IMPORT_TEXT, ImportTextFile.class);
-		cmdMap.put(IMPORT_DAMM, ImportDamm.class);
-		cmdMap.put(IMPORT_SPE, ImportRadware.class);
-		cmdMap.put(IMPORT_XSYS, ImportXSYS.class);
-		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
-		cmdMap.put(OPEN_SCALERS_YALE_CAEN, OpenScalersYaleCAEN.class);	
-		cmdMap.put(SHOW_SCALER_SCAN, ShowDialogScalerScan.class);		
-		cmdMap.put(DELETE_HISTOGRAM, DeleteHistogram.class);
-		cmdMap.put(HELP_ABOUT, ShowDialogAbout.class);
-		cmdMap.put(HELP_LICENSE, ShowDialogLicense.class);
-		cmdMap.put(USER_GUIDE, ShowUserGuide.class);	
-		cmdMap.put(OPEN_SELECTED, OpenSelectedHistogram.class);
-		cmdMap.put(DISPLAY_MONITORS, ShowMonitorDisplay.class);
-		cmdMap.put(DISPLAY_MON_CONFIG, ShowMonitorConfig.class);
-		cmdMap.put(SHOW_BATCH_EXPORT, ShowBatchExport.class);
-		cmdMap.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
-		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
-		cmdMap.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
+		CMD_MAP.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
+		CMD_MAP.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
+		CMD_MAP.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
+		CMD_MAP.put(SHOW_RUN_CONTROL, ShowRunControl.class); 
+		CMD_MAP.put(SHOW_SORT_CONTROL, ShowSortControl.class); 
+		CMD_MAP.put(START, StartAcquisition.class);
+		CMD_MAP.put(STOP, StopAcquisition.class);
+		CMD_MAP.put(FLUSH, FlushAcquisition.class);
+		CMD_MAP.put(EXIT, ShowDialogExitCmd.class);
+		CMD_MAP.put(CLEAR, FileNewClearCmd.class);
+		CMD_MAP.put(PARAMETERS, ShowDialogParametersCmd.class);
+		CMD_MAP.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);
+		CMD_MAP.put(SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
+		CMD_MAP.put(SCALERS, ScalersCmd.class);
+		CMD_MAP.put(EXPORT_TEXT, ExportTextFileCmd.class);
+		CMD_MAP.put(EXPORT_DAMM, ExportDamm.class);
+		CMD_MAP.put(EXPORT_SPE, ExportRadware.class);	
+		CMD_MAP.put(PRINT, Print.class);
+		CMD_MAP.put(PAGE_SETUP, PageSetupCmd.class);	 
+		CMD_MAP.put(IMPORT_TEXT, ImportTextFile.class);
+		CMD_MAP.put(IMPORT_DAMM, ImportDamm.class);
+		CMD_MAP.put(IMPORT_SPE, ImportRadware.class);
+		CMD_MAP.put(IMPORT_XSYS, ImportXSYS.class);
+		CMD_MAP.put(IMPORT_BAN, ImportORNLban.class);
+		CMD_MAP.put(OPEN_SCALERS_YALE_CAEN, OpenScalersYaleCAEN.class);	
+		CMD_MAP.put(SHOW_SCALER_SCAN, ShowDialogScalerScan.class);		
+		CMD_MAP.put(DELETE_HISTOGRAM, DeleteHistogram.class);
+		CMD_MAP.put(HELP_ABOUT, ShowDialogAbout.class);
+		CMD_MAP.put(HELP_LICENSE, ShowDialogLicense.class);
+		CMD_MAP.put(USER_GUIDE, ShowUserGuide.class);	
+		CMD_MAP.put(OPEN_SELECTED, OpenSelectedHistogram.class);
+		CMD_MAP.put(DISPLAY_MONITORS, ShowMonitorDisplay.class);
+		CMD_MAP.put(DISPLAY_MON_CONFIG, ShowMonitorConfig.class);
+		CMD_MAP.put(SHOW_BATCH_EXPORT, ShowBatchExport.class);
+		CMD_MAP.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
+		CMD_MAP.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
+		CMD_MAP.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
 		/* View menu */
-		cmdMap.put(SHOW_VIEW_NEW, ShowDialogAddView.class);
-		cmdMap.put(SHOW_VIEW_DELETE, ShowDialogDeleteView.class);
+		CMD_MAP.put(SHOW_VIEW_NEW, ShowDialogAddView.class);
+		CMD_MAP.put(SHOW_VIEW_DELETE, ShowDialogDeleteView.class);
 		/* Fit Menu */
-		cmdMap.put(SHOW_FIT_NEW, ShowDialogAddFit.class);
+		CMD_MAP.put(SHOW_FIT_NEW, ShowDialogAddFit.class);
 		/* Preferences Menu */
-		cmdMap.put(PlotPrefs.AUTO_IGNORE_ZERO, SetAutoScaleIgnoreZero.class);
-		cmdMap.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
-		cmdMap.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
-		cmdMap.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
-		cmdMap.put(ColorPrefs.SMOOTH_COLOR_SCALE, 
+		CMD_MAP.put(PlotPrefs.AUTO_IGNORE_ZERO, SetAutoScaleIgnoreZero.class);
+		CMD_MAP.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
+		CMD_MAP.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
+		CMD_MAP.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
+		CMD_MAP.put(ColorPrefs.SMOOTH_COLOR_SCALE, 
 		SetSmoothColorScale.class);
-		cmdMap.put(SHOW_GRADIENT_SETTINGS,ShowGradientSettings.class);
-		cmdMap.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
-		cmdMap.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
-		cmdMap.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
-		cmdMap.put(PlotPrefs.DISPLAY_AXIS_LABELS, SetAxisLabels.class);		
-		cmdMap.put(JamPrefs.VERBOSE, SetVerbose.class);
-		cmdMap.put(JamPrefs.DEBUG, SetDebug.class);
-		cmdMap.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);
-		cmdMap.put(SHOW_SETUP_REMOTE, ShowSetupRemote.class);
+		CMD_MAP.put(SHOW_GRADIENT_SETTINGS,ShowGradientSettings.class);
+		CMD_MAP.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
+		CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
+		CMD_MAP.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
+		CMD_MAP.put(PlotPrefs.DISPLAY_AXIS_LABELS, SetAxisLabels.class);		
+		CMD_MAP.put(JamPrefs.VERBOSE, SetVerbose.class);
+		CMD_MAP.put(JamPrefs.DEBUG, SetDebug.class);
+		CMD_MAP.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);
+		CMD_MAP.put(SHOW_SETUP_REMOTE, ShowSetupRemote.class);
 	}
 	
 
@@ -128,10 +128,10 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @return the unique instance of this class
 	 */
 	public static CommandManager getInstance () {
-		if (_instance==null) {
-			_instance=new CommandManager();
+		if (managerInstance==null) {
+			managerInstance=new CommandManager();
 		}		
-		return _instance;
+		return managerInstance;
 	}
 	
 	/**
@@ -187,13 +187,13 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * the given command doesn't exist
 	 */
 	private boolean createCmd(String strCmd)  {
-		final boolean exists=cmdMap.containsKey(strCmd);
+		final boolean exists=CMD_MAP.containsKey(strCmd);
 		if (exists) {
-			final Class cmdClass = (Class)cmdMap.get(strCmd);
+			final Class cmdClass = (Class)CMD_MAP.get(strCmd);
 			currentCommand = null;
-			final boolean created=instances.containsKey(strCmd);
+			final boolean created=INSTANCES.containsKey(strCmd);
 			if (created){
-				currentCommand=(Commandable) instances.get(strCmd);
+				currentCommand=(Commandable) INSTANCES.get(strCmd);
 			} else {
 				try {
 					currentCommand = (Commandable) (cmdClass.newInstance());
@@ -206,9 +206,9 @@ public class CommandManager implements CommandListener, CommandNames {
 					/* There was a problem resolving the command class or 
 					 * with creating an instance. This should never happen
 					 * if exists==true. */
-					throw new RuntimeException(e);
+					throw new IllegalArgumentException(e.getMessage());
 				}
-				instances.put(strCmd,currentCommand);
+				INSTANCES.put(strCmd,currentCommand);
 			}
 		}
 		return exists;
@@ -224,7 +224,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	
 	public String [] getSimilarCommnands(final String s, boolean onlyEnabled){
 		final SortedSet sim=new TreeSet();
-		final Set keys=cmdMap.keySet();
+		final Set keys=CMD_MAP.keySet();
 		for (int i=s.length(); i>=1; i--){
 			final String com=s.substring(0,i);
 			for (Iterator it=keys.iterator(); it.hasNext();){
@@ -250,7 +250,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	}
 	
 	public String [] getAllCommands(){
-		final Object [] c=cmdMap.keySet().toArray();
+		final Object [] c=CMD_MAP.keySet().toArray();
 		final String [] rval=new String[c.length];
 		System.arraycopy(c,0,rval,0,c.length);
 		return rval;
