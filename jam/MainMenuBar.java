@@ -111,81 +111,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
-	/* Remove KBS
-	class SaveHDF extends AbstractAction {	
-		SaveHDF(){
-			super("Save (hdf)");
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			final File last=hdfio.lastValidFile();
-			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
-			MainMenuBar.this,"Replace the existing file?","Save "+last.getName(),
-			JOptionPane.YES_NO_OPTION)){
-				hdfio.writeFile(last);				
-			}			
-		}
-	}
-	*/
-	/* Remove KBS
-	class SaveAsHDF extends AbstractAction {	
-		SaveAsHDF(){
-			super("Save as (hdf)...");
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			int write = hdfio.writeFile();
-			if (write==JFileChooser.APPROVE_OPTION){
-				setSaveEnabled(true);
-			}
-		}
-	}
-	*/
-/* Remove KBS
-	class OpenHDF extends AbstractAction {	
-		OpenHDF(){
-			super("Open(hdf)...");
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			if (hdfio.readFile(FileOpenMode.OPEN)) { //true if successful
-				status.setSortMode(hdfio.getFileOpen());
-				DataControl.setupAll();
-				jamCommand.dataChanged();
-				jamMain.repaint();
-				setSaveEnabled(true);
-			}
-		}
-	}
-*/
-/* Remove KBS
-	class ReloadHDF extends AbstractAction {	
-		private final ScalerControl scalerControl;
-		
-		ReloadHDF(){
-			super("Reload(hdf)...");
-			scalerControl=jamCommand.getScalerControl();
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			if (hdfio.readFile(FileOpenMode.RELOAD)) { //true if successful
-				scalerControl.displayScalers();
-			}
-		}
-	}
-	*/
-	/* Remove KBS
-	class AddHDF extends AbstractAction {	
-		AddHDF(){
-			super("Add counts(hdf)...");
-			this.setEnabled(false);
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			hdfio.readFile(FileOpenMode.ADD);
-		}
-	}
-	*/
 	/**
 	 * Action for the File|Page Setup menu item.
 	 * 
@@ -251,6 +176,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		}
 	}*/
 	
+	/*KBS remove
 	class SaveGatesAction extends AbstractAction {
 
 		SaveGatesAction(){
@@ -261,7 +187,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			hdfio.writeFile(false,true,true,true);
 		}
 	}
-
+	*/
 
 	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
@@ -286,10 +212,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private JMenuItem manipHistogram = new JMenuItem("Combine\u2026");
 	final private JMenuItem gainShift = new JMenuItem("Gain Shift\u2026");
 
-	//Remove KBS final private OpenHDF openhdf;
-	//Remove KBS final private ReloadHDF reloadhdf;
-	//Remove KBS
-	//final private AddHDF addHDF=new AddHDF();
 	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
@@ -388,9 +310,11 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		openSelectdHist.setActionCommand("openselectedhist");		
 		openSelectdHist.addActionListener(jamCommand);
 		special.add(openSelectdHist);
-		final JMenuItem saveGates=new JMenuItem(new SaveGatesAction());
+		
+		final JMenuItem saveGates=new JMenuItem(commands.getAction(CommandNames.SAVE_GATES));
 		special.add(saveGates);
 		file.add(special);
+		
 		file.addSeparator();
 		final JMenuItem utilities=new JMenu("Utilities");
 		file.add(utilities);
@@ -435,13 +359,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
 		final JMenuItem exit = new JMenuItem("Exit\u2026");
-		/*
-		exit.addActionListener(new ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				jm.showExitDialog();
-			}
-		});
-		*/
 		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,ctrl_mask));
 		file.add(exit);
 		exit.setActionCommand("exit");

@@ -23,6 +23,9 @@ public interface CommandNames {
 	
 	/** Save as to a hdf */ 
 	String SAVE_AS_HDF = "saveas";	
+
+	/** Save gates and scalers to a hdf */ 
+	String SAVE_GATES = "savegates";	
 	
 	/** Open selected histograms in hdf */ 
 	String OPEN_SELECTED = "opensel";	

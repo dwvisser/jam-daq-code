@@ -32,6 +32,7 @@ public class JamCmdManager implements CommandListener {
 		cmdMap.put(CommandNames.OPEN_HDF, OpenHDFCmd.class);
 		cmdMap.put(CommandNames.SAVE_HDF, SaveHDFCmd.class);
 		cmdMap.put(CommandNames.SAVE_AS_HDF, SaveAsHDFCmd.class);
+		cmdMap.put(CommandNames.SAVE_GATES, SaveGatesCmd.class);
 		cmdMap.put(CommandNames.ADD_HDF, AddHDFCmd.class);
 		cmdMap.put(CommandNames.RELOAD_HDF, ReloadHDFCmd.class);
 		cmdMap.put(CommandNames.SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
