@@ -101,12 +101,7 @@ public class Gate implements Serializable {
 		sizeY = histogram.getSizeY();
 		unsetLimits();
 		addToCollections();
-		try { //register ourselves with the histogram we belong to
-			histogram.addGate(this);
-		} catch (DataException de) {
-			//should never be here
-			System.out.println("Error: gate constuctor wrong gate type ");
-		}
+		histogram.addGate(this);
 	}
 	
 	private final void addToCollections(){
