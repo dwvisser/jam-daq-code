@@ -25,7 +25,7 @@ final class ShowSetupOffline extends AbstractShowDialog implements Observer {
 	protected final void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(!(mode == SortMode.ONLINE_DISK || 
-		mode == SortMode.ONLINE_NO_DISK || 
+		mode == SortMode.ON_NO_DISK || 
 		mode == SortMode.REMOTE));
 	}
 

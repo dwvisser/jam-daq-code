@@ -29,7 +29,7 @@ implements Observer {
 		final BroadcastEvent event=(BroadcastEvent)obj;
 		if (event.getCommand()==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			final SortMode mode=status.getSortMode();
-			setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK
+			setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
 			|| mode==SortMode.OFFLINE);
 		}
 	}	

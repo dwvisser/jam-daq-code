@@ -9,54 +9,54 @@ package jam.global;
  * @see jam.global.JamStatus#setSortMode(SortMode)
  */
 public final class SortMode {
-	static private final int noSort = 0;
-	static private final int onlineDisk = 1;
-	static private final int onlineNoDisk = 2;
-	static private final int offline = 3;
-	static private final int remote = 5;
-	static private final int file = 6; //we have read in a file
+	static private final int I_NOSORT = 0;
+	static private final int I_ON_DISK = 1;
+	static private final int I_ON_NODISK = 2;
+	static private final int I_OFFLINE = 3;
+	static private final int I_REMOTE = 5;
+	static private final int I_FILE = 6; //we have read in a file
 	
-	private final int mode;
+	private final transient int mode;
 	
-	private SortMode(int i){
-		mode=i;
+	private SortMode(int iMode){
+		mode=iMode;
 	}
 	
 	public boolean isOnline(){
-		return mode==onlineDisk || mode==onlineNoDisk;
+		return mode==I_ON_DISK || mode==I_ON_NODISK;
 	}
 	
 	public boolean isOffline(){
-		return mode==offline;
+		return mode==I_OFFLINE;
 	}
 
 	/**
 	 * Not sorting, and no file loaded.
 	 */
-	static public final SortMode NO_SORT=new SortMode(noSort);
+	static public final SortMode NO_SORT=new SortMode(I_NOSORT);
 	
 	/**
 	 * Sorting online data and storing events to disk.
 	 */
-	static public final SortMode ONLINE_DISK=new SortMode(onlineDisk);
+	static public final SortMode ONLINE_DISK=new SortMode(I_ON_DISK);
 	
 	/**
 	 * Sort online data without storing events.
 	 */
-	static public final SortMode ONLINE_NO_DISK=new SortMode(onlineNoDisk);
+	static public final SortMode ON_NO_DISK=new SortMode(I_ON_NODISK);
 
 	/**
 	 * Sorting data from disk, that is, sorting offline.
 	 */
-	static public final SortMode OFFLINE=new SortMode(offline);
+	static public final SortMode OFFLINE=new SortMode(I_OFFLINE);
 	
 	/**
 	 * Acting as a client to a remote Jam process.
 	 */
-	static public final SortMode REMOTE=new SortMode(remote);
+	static public final SortMode REMOTE=new SortMode(I_REMOTE);
 	
 	/**
 	 * Looking at data that was read in from a file.
 	 */
-	static public final SortMode FILE=new SortMode(file);
+	static public final SortMode FILE=new SortMode(I_FILE);
 }

@@ -642,7 +642,7 @@ public final class SetupSortOn extends JDialog {
 		sortDaemon = new SortDaemon(runControl, jamConsole);
 		final boolean useDisk = cdisk.isSelected();
 		final SortMode sortmode = useDisk ? SortMode.ONLINE_DISK
-				: SortMode.ONLINE_NO_DISK;
+				: SortMode.ON_NO_DISK;
 		sortDaemon
 				.setup(sortmode, eventInputStream, sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
@@ -744,7 +744,7 @@ public final class SetupSortOn extends JDialog {
 		defaultPath.setEnabled(notlock);
 		STATUS.setSortMode(notlock ? SortMode.NO_SORT
 				: (cdisk.isSelected() ? SortMode.ONLINE_DISK
-						: SortMode.ONLINE_NO_DISK));
+						: SortMode.ON_NO_DISK));
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
 	}
