@@ -97,16 +97,14 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	private String experimentName;
 
-	private String dataPath;
+	private File dataPath;
 
 	private File dataFile;
 
 	/**
 	 * histogram file information
 	 */
-	private String histFilePath;
-
-	private String histFileName;
+	private File histFilePath;
 
 	private File histFile;
 
@@ -125,11 +123,6 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	private boolean runOn = false;
 
-	/**
-	 * Run dialog box
-	 */
-	//private final JButton bbegin;
-	//private final JButton bend;
 	private final JTextField textRunNumber, textRunTitle, textExptName;
 
 	private final JCheckBox checkHistogramZero;
@@ -274,19 +267,26 @@ public class RunControl extends JDialog implements Controller {
 	};
 
 	/**
-	 * Setup up called by SetupSort
-	 *  
+	 * Setup for online acquisition.
+	 * 
+	 * @see jam.SetupSortOn 
+	 * @param exptName name of the current experiment
+	 * @param datapath path to event files
+	 * @param histpath path to HDF files
+	 * @param sd the sorter thread
+	 * @param nd the network communication thread
+	 * @param dd the storage thread
 	 */
-	public void setupOn(String experimentName, String dataPath,
-			String histFilePath, SortDaemon sortDaemon, NetDaemon netDaemon,
+	public void setupOn(String exptName, File datapath,
+			File histpath, SortDaemon sd, NetDaemon nd,
 			DiskDaemon dd) {
-		this.experimentName = experimentName;
-		this.dataPath = dataPath;
-		this.histFilePath = histFilePath;
-		this.sortDaemon = sortDaemon;
-		this.netDaemon = netDaemon;
-		netDaemon.setEndRunAction(endAction);
-		textExptName.setText(experimentName);
+		experimentName = exptName;
+		dataPath = datapath;
+		histFilePath = histpath;
+		sortDaemon = sd;
+		netDaemon = nd;
+		nd.setEndRunAction(endAction);
+		textExptName.setText(exptName);
 		if (dd == null) {//case if front end is taking care of storing events
 			device = FRONT_END;
 		} else {
@@ -368,7 +368,6 @@ public class RunControl extends JDialog implements Controller {
 	 *                the console
 	 */
 	private void beginRun() throws JamException, SortException {
-		String dataFileName = "";
 		try {//get run number and title
 			runNumber = Integer.parseInt(textRunNumber.getText().trim());
 			runTitle = textRunTitle.getText().trim();
@@ -379,12 +378,12 @@ public class RunControl extends JDialog implements Controller {
 			throw new JamException("Run number not an integer [RunControl]");
 		}
 		if (device == DISK) {//saving to disk
-			dataFileName = dataPath + experimentName + runNumber
+			final String dataFileName = experimentName + runNumber
 					+ EVENT_FILE_EXTENSION;
-			dataFile = new File(dataFileName);
+			dataFile = new File(dataPath,dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
 				throw new JamException("Event file already exits, File: "
-						+ dataFileName + ", Jam Cannot overwrite. [RunControl]");
+						+ dataFile.getPath() + ", Jam Cannot overwrite. [RunControl]");
 			}
 			diskDaemon.openEventOutputFile(dataFile);
 			diskDaemon.writeHeader();
@@ -406,7 +405,7 @@ public class RunControl extends JDialog implements Controller {
 		status.setRunState(RunState.RUN_ON(runNumber));
 		if (device == DISK) {
 			console.messageOutln("Began run " + runNumber
-					+ ", events being written to file: " + dataFileName);
+					+ ", events being written to file: " + dataFile.getPath());
 		} else {
 			console
 					.messageOutln("Began run, events being written out be front end.");
@@ -458,11 +457,11 @@ public class RunControl extends JDialog implements Controller {
 		netDaemon.setState(GoodThread.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
-		histFileName = histFilePath + experimentName + runNumber + ".hdf";
+		final String histFileName =  experimentName + runNumber + ".hdf";
 		// only write a histogram file
+		histFile = new File(histFilePath,histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
-				+ histFileName);
-		histFile = new File(histFileName);
+				+ histFile.getPath());
 		dataio.writeFile(histFile);
 		runNumber++;//increment run number
 		textRunNumber.setText(Integer.toString(runNumber));
