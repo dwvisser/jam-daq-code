@@ -27,27 +27,26 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
         fireContentsChanged(this,0,getSize());
     }
 
-
+	/**
+	 * Returns list elements for chooser.
+	 */
     public Object getElementAt(int index){
+    	Object rval = NO_GATES;//default value if no gates
         if (numGates()>0){
             if (index==0) {
-                return CHOOSE_A_GATE;
+                rval = CHOOSE_A_GATE;
             } else {
-                return Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
+                rval = Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
             }
-        } else {
-            return NO_GATES;
-        }
+        } 
+        return rval;
     }
 
-    // for ListModel interface (inherited through ComboBoxModel interface and missed
-    // by AbstractListModel)
+    /**
+     * Number of list elements in chooser.
+     */
     public int getSize(){
-        if (numGates()>0){
-            return  numGates()+1;
-        } else {
-            return 1;
-        }
+		return numGates()+1;
     }
 
     //for ComboBoxModel interface

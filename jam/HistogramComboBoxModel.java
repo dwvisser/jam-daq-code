@@ -27,22 +27,22 @@ public class HistogramComboBoxModel  extends DefaultComboBoxModel {
         fireContentsChanged(this,0,getSize());
     }
 
-    // for ListModel interface 
+    /**
+     * Returns the individual list elements in the histogram chooser.
+     */
     public Object getElementAt(int index){
+    	Object rval=NO_HISTS; //default value if no histograms
         if (numHists()>0){
-            return ((Histogram) Histogram.getHistogramList().elementAt(index)).getName();
-        } else {
-            return NO_HISTS;
-        }
+            rval = ((Histogram) Histogram.getHistogramList().elementAt(index)).getName();
+        } 
+        return rval;
     }
 
-    // for ListModel interface 
+    /**
+     * Returns the number of list elements in the chooser.
+     */
     public int getSize(){
-        if (numHists()>0){
-            return numHists();
-        } else {
-            return 1;//item will be NO_HISTS String
-        }
+		return Math.max(1,numHists());
     }
 
     //for ComboBoxModel interface
