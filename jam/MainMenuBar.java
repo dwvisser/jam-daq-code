@@ -567,7 +567,7 @@ public class MainMenuBar extends JMenuBar {
 	}
 
 	void setSortMode(int mode) {
-		if (mode == JamMain.ONLINE_DISK || mode == JamMain.ONLINE_TAPE) {
+		if (mode == JamMain.ONLINE_DISK || mode == JamMain.ONLINE_NODISK) {
 			cstartacq.setEnabled(true); //enable control JMenu items
 			cstopacq.setEnabled(true);
 			iflushacq.setEnabled(true);
@@ -583,7 +583,7 @@ public class MainMenuBar extends JMenuBar {
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
 		}
-		if (mode == JamMain.OFFLINE_DISK || mode == JamMain.OFFLINE_TAPE) {
+		if (mode == JamMain.OFFLINE_DISK) {
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);
