@@ -7,9 +7,9 @@ import jam.data.Histogram;
 import jam.plot.Display;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.JFrame;
 /**
@@ -22,7 +22,7 @@ public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
 	private static String histName = "";
-	private static String overlayName;	
+	private static Set overlayNames=new HashSet();	
 	private static String gateName;
 	private static JFrame frame;
 	private static Display display;
@@ -32,14 +32,13 @@ public final class JamStatus {
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
 	private String sortName="";
-	private static boolean overlayState;
 
 	/**
 	 * The one instance of JamStatus.
 	 */
 	static private final JamStatus INSTANCE=new JamStatus();
 	
-	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	private static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Never meant to be called by outside world.
@@ -51,6 +50,8 @@ public final class JamStatus {
 	/**
 	 * Return the one instance of this class, creating
 	 * it if necessary.
+	 * 
+	 * @return the only instance of this class
 	 */
 	static public JamStatus instance() {
 		return INSTANCE;
@@ -66,6 +67,11 @@ public final class JamStatus {
 		showGUI=state;
 	}
 	
+	/**
+	 * Returns whether a GUI is available.
+	 * 
+	 * @return <code>true</code> if the Jam window is showing
+	 */
 	public synchronized boolean isShowGUI(){
 		return showGUI;
 	}
@@ -79,10 +85,20 @@ public final class JamStatus {
 		frame = f;
 	}
 	
+	/**
+	 * Sets the display.
+	 * 
+	 * @param d the display
+	 */
 	public synchronized void setDisplay(Display d){
 		display=d;
 	}
 	
+	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
 	public synchronized Display getDisplay(){
 		return display;
 	}
@@ -127,7 +143,7 @@ public final class JamStatus {
 			}
 			sortMode = mode;
 		}
-		broadcaster.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
+		BROADCASTER.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
 	
 	/**
@@ -136,7 +152,7 @@ public final class JamStatus {
 	 * @param rs new run state
 	 */
 	public void setRunState(RunState rs){
-		broadcaster.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,rs);
+		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,rs);
 	}
 	
 	/**
@@ -218,19 +234,28 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets the current Histogram name.
+	 * Sets the current <code>Histogram</code> name.
+	 * 
+	 * @param name the current histogram name
 	 */
 	public synchronized void setHistName(String name) {
 		histName = name;
 	}
 
 	/**
-	 * Gets the current Histogram name.
+	 * Gets the current <code>Histogram</code> name.
+	 * 
+	 * @return the current histogram name
 	 */
 	public synchronized String getHistName() {
 		return histName;
 	}
 	
+	/**
+	 * Gets the current histogram.
+	 * 
+	 * @return the current histogram
+	 */
 	public synchronized Histogram getCurrentHistogram(){
 		return Histogram.getHistogram(histName);
 	}
@@ -238,55 +263,79 @@ public final class JamStatus {
 	 * Overlay histogram state
 	 * @param state
 	 */
-	public void setOverState(boolean state){
+	/*public void setOverState(boolean state){
 		overlayState=state;
-	}
+	}*/
+	
 	/**
 	 * Overlay histogram state
 	 * @param state
 	 */
-	public boolean getOverState(){
+	/*public boolean getOverState(){
 		return overlayState;
+	}*/
+	
+	/**
+	 * Adds an overlay <code>Histogram</code> name.
+	 * 
+	 * @param name name of a histogram to add to overlay
+	 */
+	public synchronized void addOverlayHistogramName(String name) {
+		overlayNames.add(name);
+	}
+
+	/**
+	 * Gets the overlay histograms.
+	 * 
+	 * @return the histograms being overlaid
+	 */
+	public synchronized Histogram [] getOverlayHistograms() {
+		final Set rval=new HashSet();
+		final Iterator iter=overlayNames.iterator();
+		while (iter.hasNext()){
+		    final String name=(String)iter.next();
+		    final Histogram hist=Histogram.getHistogram(name);
+		    if (hist != null){
+		        rval.add(hist);
+		    }
+		}
+		final Histogram [] array=new Histogram[rval.size()];
+		rval.toArray(array);
+		return array;
 	}
 	
 	/**
-	 * Sets the overlay Histogram name.
+	 * Clear all overlay histogram names from list.
+	 *
 	 */
-	public synchronized void setOverlayHistogramName(String histogramName) {
-		overlayName = histogramName;
+	public synchronized void clearOverlays(){
+	    overlayNames.clear();
 	}
 
 	/**
-	 * Gets the overlay Histogram name.
-	 */
-	public synchronized String getOverlayHistogramName() {
-		return overlayName;
-	}
-
-	/**
-	 * Sets the current Gate name.
+	 * Sets the current <code>Gate</code> name.
+	 * 
+	 * @param name of current gate
 	 */
 	public synchronized void setCurrentGateName(String name) {
 		gateName = name;
 	}
 
 	/**
-	 * Gets the current Gate name.
+	 * Gets the current <code>Gate</code> name.
+	 * 
+	 * @return name of current gate
 	 */
 	public synchronized String getCurrentGateName() {
 		return gateName;
 	}
 
 	/**
-	 * Gets the current date and time as a String.
+	 * Sets the global message handler.
+	 * 
+	 * @param mh the message handler
+	 * @throws IllegalStateException if called a second time
 	 */
-	public String getDate() {
-		final Date date = new Date(); //getDate and time
-		final DateFormat datef = DateFormat.getDateTimeInstance(); //default format
-		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		return datef.format(date); //format date
-	}
-	
 	public synchronized void setMessageHandler(MessageHandler mh){
 		if (console != null){
 			throw new IllegalStateException("Can't set message handler twice!");
@@ -294,13 +343,23 @@ public final class JamStatus {
 		console=mh;
 		frontEnd=new VMECommunication();
 		JamPrefs.PREFS.addPreferenceChangeListener(frontEnd);
-		broadcaster.addObserver(frontEnd);
+		BROADCASTER.addObserver(frontEnd);
 	}
 	
+	/**
+	 * Gets the global message handler.
+	 * 
+	 * @return the message handler
+	 */
 	public synchronized MessageHandler getMessageHandler(){
 		return console;
 	}
 	
+	/**
+	 * Gets the front end communicator
+	 * 
+	 * @return the front end communicator
+	 */
 	public synchronized FrontEndCommunication getFrontEndCommunication(){
 		return frontEnd;
 	}
