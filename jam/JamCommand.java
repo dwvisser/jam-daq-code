@@ -113,7 +113,7 @@ public class JamCommand
 		calibDisplay = new CalibrationDisplay(console);
 		calibFit = new CalibrationFit(console);
 		projection = new Projections(jamMain, broadcaster, console);
-		manipulate = new Manipulations(jamMain, broadcaster, console);
+		manipulate = new Manipulations(console);
 		gainshift = new GainShift(console);
 		/* acquisition control */
 		runControl =
@@ -212,7 +212,7 @@ public class JamCommand
 			} else if ("gateset".equals(incommand)) {
 				gateControl.show();
 			} else if ("displaymonitors".equals(incommand)) {
-				monitorControl.showDisplay();
+				monitorControl.show();
 			} else if ("configmonitors".equals(incommand)) {
 				monitorControl.showConfig();
 			} else if ("about".equals(incommand)) {
