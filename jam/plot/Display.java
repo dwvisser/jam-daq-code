@@ -195,16 +195,17 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void displayHistogram(Histogram hist) {
 		if (hist != null) {
-			if (!isOverlay){
+			//FIXME KBS remove
+			//if (!isOverlay){
 				currentPlot.removeAllPlotMouseListeners();
 				currentPlot.addPlotMouseListener(action);
 				currentPlot.setMarkArea(false);
 				currentPlot.setMarkingChannels(false);
 				currentPlot.displayHistogram(hist);			 
 				toolbar.setHistogramProperties(hist.getDimensionality(), currentPlot.getBinWidth());
-			}else{
-				overlayHistogram(hist);
-			}
+			//}else{
+			//	overlayHistogram(hist);
+			//}
 				
 		}
 		/* Add to view */
@@ -223,9 +224,15 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * Overlay a histogram
 	 * @param hist histogram to overlay
 	 */
-	public void overlayHistogram(Histogram hist){
-		int num=hist.getNumber();
-		overlayHistogram(num);	
+	public void overlayHistogram(Histogram [] hists){
+		if (hists.length>0) {
+			for (int i=0;i<hists.length; i++) {
+				int num=hists[0].getNumber();		
+				overlayHistogram(num);	
+			}
+		}else{
+			removeOverlays();
+		}
 	}
 	
 	/**
@@ -340,7 +347,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
 			final Histogram hist = status.getCurrentHistogram();			
 			displayHistogram(hist); 
-			removeOverlays();
+			final Histogram []overHists=status.getOverlayHistograms();
+			overlayHistogram(overHists);
+			
 		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);

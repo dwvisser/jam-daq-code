@@ -41,6 +41,7 @@ public class SelectionTree extends JPanel implements Observer {
     private static final Broadcaster BROADCASTER = Broadcaster
             .getSingletonInstance();
 
+
     /** Is sync event so don't */
     private boolean syncEvent = false;
 
@@ -125,6 +126,9 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private synchronized void select(TreePath[] paths) {
         /* Syncronize events should not fire events */
+    	DefaultMutableTreeNode overlayNode=null;
+    	Object overlayObject=null;
+    	Histogram overlayHistogram;
         if (!isSyncEvent()) {
             /*
              * Remove so we don't get repeated callbacks while selecting other
@@ -138,8 +142,30 @@ public class SelectionTree extends JPanel implements Observer {
                 final Histogram hist = (Histogram) firstNode;
                 STATUS.setHistName(hist.getName());
                 STATUS.setCurrentGateName(null);
-                BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-                        hist);
+                
+                //Do we have a overlay
+                if (paths.length>1) {
+                	for (int i=1;i<paths.length;i++) {
+                		overlayNode=((DefaultMutableTreeNode) paths[i].getLastPathComponent());
+                		overlayObject=overlayNode.getUserObject();
+                		if (overlayObject instanceof Histogram) {
+                			overlayHistogram=(Histogram)(overlayObject);
+                			//can only overlay 1 d hists
+                			if (overlayHistogram.getDimensionality()==1){
+                				STATUS.addOverlayHistogramName(overlayHistogram.getName());
+                			}else{                			
+                				tree.removeSelectionPath(paths[i]);
+                				//FIXME KBS error message "Cannot overlay 2 D histograms"
+                			}
+                		} else {
+                			//FIXME
+                		}
+                	}
+                } else {
+                	STATUS.clearOverlays();
+                }
+                
+                BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,hist);                	
             } else if (firstNode instanceof Gate) {
                 final Gate gate = (Gate) firstNode;
                 final Histogram hist = getAssociatedHist(prime);
