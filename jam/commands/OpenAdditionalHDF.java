@@ -29,6 +29,9 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
+		readAdditionalHDFFile(cmdParams);
+		//FIXME KBS remove thread in HDFIO 
+		/*
 		final Runnable r=new Runnable(){
 			public void run(){
 				readAdditionalHDFFile(cmdParams);
@@ -36,6 +39,7 @@ public class OpenAdditionalHDF extends AbstractCommand {
 		};
 		final Thread t=new Thread(r);
 		t.run();
+		*/
 	}
 
 	/**

@@ -35,6 +35,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
+		readHDFFile(cmdParams);
+		//FIXME KBS remove thread in HDFIO
+		/*
 		//Run in another thread
 		final Runnable r=new Runnable(){
 			public void run(){
@@ -43,6 +46,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 		};
 		final Thread t=new Thread(r);
 		t.run();
+		*/
 	}
 	/**
 	 * Read in a HDF file
@@ -72,7 +76,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 			isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
 		if (isFileRead){//File was read in	
-			//snotifyApp(HDFIO.getLastValidFile());
+			//notifyApp(HDFIO.getLastValidFile());
 		}								
 	}
 	
