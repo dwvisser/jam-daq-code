@@ -13,10 +13,13 @@ import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.prefs.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and 
@@ -36,10 +39,12 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 */
 	private static File lastValidFile;
 	private static final Object lvfMonitor = new Object();
-	private static final Preferences prefs=Preferences.userNodeForPackage(HDFIO.class);
-	private static final String LAST_FILE_KEY="LastValidFile";
-	static{
-		lastValidFile=new File(prefs.get(LAST_FILE_KEY,System.getProperty("user.dir")));
+	private static final Preferences prefs =
+		Preferences.userNodeForPackage(HDFIO.class);
+	private static final String LAST_FILE_KEY = "LastValidFile";
+	static {
+		lastValidFile =
+			new File(prefs.get(LAST_FILE_KEY, System.getProperty("user.dir")));
 	}
 
 	/**
@@ -117,10 +122,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @param  wrtgate  if true, Gates will be written
 	 * @param  wrtscalers  if true, scaler values will be written
 	 */
-	public int writeFile(
-		boolean wrthis,
-		boolean wrtgate,
-		boolean wrtscalers) {
+	public int writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers) {
 		return writeFile(wrthis, wrtgate, wrtscalers, true);
 	}
 
@@ -132,6 +134,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @param  wrtgate  if true, Gates will be written
 	 * @param  wrtscalers  if true, scaler values will be written
 	 * @param  wrtparameters if true, parameter values will be written
+	 * @return <code>JFileChooser.APPROVE_OPTION</code> or 
+	 * <code>JFileChooser.CANCEL_OPTION</code>
 	 */
 	public int writeFile(
 		boolean wrthis,
@@ -140,7 +144,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		boolean wrtparameters) {
 		final JFileChooser jfile = new JFileChooser(getLastValidFile());
 		jfile.setFileFilter(new HDFileFilter(true));
-		final int option = jfile.showSaveDialog(frame);
+		int option = jfile.showSaveDialog(frame);
 		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION
 			&& jfile.getSelectedFile() != null) {
@@ -170,6 +174,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 		File file) {
 		writeFile(wrthis, wrtgate, wrtscalers, true, file);
 	}
+	
+	static private final List EMPTY_LIST = new ArrayList();
 
 	/**
 	 * Writes out (to a specific file) the currently held spectra, 
@@ -190,30 +196,34 @@ public class HDFIO implements DataIO, JamHDFFields {
 		boolean wrtscalers,
 		boolean wrtparameters,
 		File file) {
-		java.util.List hist = new ArrayList();
-		final java.util.List gate = new ArrayList();
-		java.util.List scaler = new ArrayList();
-		java.util.List parameter = new ArrayList();
-		if (wrthis) {
-			hist = Histogram.getHistogramList();
-		}
-		if (wrtgate) {
-			gate.addAll(Gate.getGateList());
-			final Iterator enum = gate.iterator();
-			while (enum.hasNext()) {
-				final Gate g = (Gate) (enum.next());
+		final boolean writeIt =
+				file.exists()
+					&& JOptionPane.YES_OPTION
+						== JOptionPane.showConfirmDialog(
+							frame,
+							"Replace the existing file? \n" + file.getName(),
+							"Save " + file.getName(),
+							JOptionPane.YES_NO_OPTION);
+		if (writeIt){
+			final List hist = wrthis ? Histogram.getHistogramList() : 
+			EMPTY_LIST;
+			final List gate = new ArrayList();
+			if (wrtgate) {
+				gate.addAll(Gate.getGateList());
+			}
+			final Iterator it = gate.iterator();
+			while (it.hasNext()) {
+				final Gate g = (Gate) (it.next());
 				if (!g.isDefined()) {
-					enum.remove();
+					it.remove();
 				}
 			}
+			final List scaler = wrtscalers ? Scaler.getScalerList() : 
+			EMPTY_LIST;
+			final List parameter = wrtparameters ? 
+			DataParameter.getParameterList() : EMPTY_LIST;
+			writeFile(file, hist, gate, scaler, parameter);
 		}
-		if (wrtscalers) {
-			scaler = Scaler.getScalerList();
-		}
-		if (wrtparameters) {
-			parameter = DataParameter.getParameterList();
-		}
-		writeFile(file, hist, gate, scaler, parameter);
 	}
 
 	/**
@@ -320,7 +330,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @return  <code>true</code> if successful
 	 */
 	public boolean readFile(FileOpenMode mode) {
-		boolean outF = false;//default if not set to true later
+		boolean outF = false; //default if not set to true later
 		final JFileChooser jfile = new JFileChooser(getLastValidFile());
 		jfile.setFileFilter(new HDFileFilter(true));
 		final int option = jfile.showOpenDialog(frame);
@@ -328,7 +338,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		if (option == JFileChooser.APPROVE_OPTION
 			&& jfile.getSelectedFile() != null) {
 			outF = readFile(mode, jfile.getSelectedFile());
-		} 
+		}
 		return outF;
 	}
 
@@ -347,13 +357,14 @@ public class HDFIO implements DataIO, JamHDFFields {
 					"Open " + infile.getName() + ": ",
 					MessageHandler.NEW);
 				DataBase.getInstance().clearAllLists();
-			} else if (mode==FileOpenMode.RELOAD) {
+			} else if (mode == FileOpenMode.RELOAD) {
 				msgHandler.messageOut(
 					"Reload " + infile.getName() + ": ",
 					MessageHandler.NEW);
-			} else {//ADD
-				msgHandler.messageOut("Adding histogram counts in "+
-				infile.getName()+": ", MessageHandler.NEW);
+			} else { //ADD
+				msgHandler.messageOut(
+					"Adding histogram counts in " + infile.getName() + ": ",
+					MessageHandler.NEW);
 			}
 			synchronized (this) {
 				in = new HDFile(infile, "r");
@@ -363,7 +374,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 			in.readObjects();
 			getHistograms(mode);
 			getScalers(mode);
-			if (mode != FileOpenMode.ADD){
+			if (mode != FileOpenMode.ADD) {
 				getGates(mode);
 				getParameters(mode);
 			}
@@ -527,7 +538,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 						ndgErr = numbers[1];
 					}
 				} else {
-					throw new IllegalStateException (
+					throw new IllegalStateException(
 						"Invalid number of data groups ("
 							+ numbers.length
 							+ ") in NDG.");
@@ -603,7 +614,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 						}
 					}
 					histogram.setNumber(number);
-				} else if (mode==FileOpenMode.RELOAD){
+				} else if (mode == FileOpenMode.RELOAD) {
 					histogram =
 						Histogram.getHistogram(
 							su.makeLength(name, Histogram.NAME_LENGTH));
@@ -625,7 +636,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 					} else { //not in memory
 						msgHandler.messageOut("X", MessageHandler.CONTINUE);
 					}
-				} else {//ADD
+				} else { //ADD
 					histogram =
 						Histogram.getHistogram(
 							su.makeLength(name, Histogram.NAME_LENGTH));
@@ -643,8 +654,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 								histogram.addCounts(
 									sd.getData2dD(sizeX, sizeY));
 							}
-						}	
-					}				
+						}
+					}
 				}
 				msgHandler.messageOut(". ", MessageHandler.CONTINUE);
 			}
@@ -890,9 +901,9 @@ public class HDFIO implements DataIO, JamHDFFields {
 					s = Scaler.getScaler(sname);
 				}
 				if (s != null) {
-					final int fileValue=VS.getInteger(i, 2).intValue();
-					if (mode==FileOpenMode.ADD){
-						s.setValue(s.getValue()+fileValue);
+					final int fileValue = VS.getInteger(i, 2).intValue();
+					if (mode == FileOpenMode.ADD) {
+						s.setValue(s.getValue() + fileValue);
 					} else {
 						s.setValue(fileValue);
 					}
@@ -1016,15 +1027,15 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @return last file successfully read from or written to.
 	 */
 	public static File getLastValidFile() {
-		synchronized (lvfMonitor){
+		synchronized (lvfMonitor) {
 			return lastValidFile;
 		}
 	}
-	
-	private static void setLastValidFile(File f){
-		synchronized (lvfMonitor){
-			lastValidFile=f;
-			prefs.put(LAST_FILE_KEY,f.getAbsolutePath());
+
+	private static void setLastValidFile(File f) {
+		synchronized (lvfMonitor) {
+			lastValidFile = f;
+			prefs.put(LAST_FILE_KEY, f.getAbsolutePath());
 		}
 	}
 
