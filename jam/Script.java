@@ -40,7 +40,7 @@ import java.util.Observer;
 public final class Script implements Observer {
 	
 	private transient final JamMain jam;
-	private transient  File base;
+	private transient final File base;
 	private transient SetupSortOff sso;
 	private transient SortControl sortControl;
 	private transient HDFIO hdfio;
