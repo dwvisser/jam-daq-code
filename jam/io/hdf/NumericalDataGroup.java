@@ -10,7 +10,7 @@ import java.io.*;
  * @author   Dale Visser
  * @since       JDK1.1
  */
-public class NumericalDataGroup extends DataObject {
+public final class NumericalDataGroup extends DataObject {
 
 	/**
 	 * List of data elements this NDG ties together.

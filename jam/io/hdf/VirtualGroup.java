@@ -9,7 +9,7 @@ import java.io.*;
  * @version	0.5 December 98
  * @author 	Dale Visser
  */
-public class VirtualGroup extends DataObject {
+public final class VirtualGroup extends DataObject {
 
 	/**
 	 * List of data elements this vGroup ties together.

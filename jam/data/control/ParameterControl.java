@@ -14,7 +14,7 @@ import javax.swing.*;
  * @author 	Ken Swartz
  *
  */
-public class ParameterControl
+public final class ParameterControl
 	extends DataControl
 	implements ActionListener, ItemListener {
 

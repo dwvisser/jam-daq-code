@@ -18,7 +18,7 @@ import jam.data.Histogram;
  * @author 	Dale Visser
  * @since       JDK1.1
  */
-public class HDFile extends RandomAccessFile implements HDFconstants {
+public final class HDFile extends RandomAccessFile implements HDFconstants {
 
 	/**
 	 *  number types automatically thrown into the file

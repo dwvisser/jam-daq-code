@@ -14,7 +14,7 @@ import javax.swing.*;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class MonitorControl
+public final class MonitorControl
 	extends DataControl
 	implements ActionListener, ItemListener, Runnable {
 

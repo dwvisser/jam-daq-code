@@ -6,7 +6,7 @@ import java.awt.Color;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-class GradientColorScale implements ColorScale{
+final class GradientColorScale implements ColorScale{
 		
 	private double min,max,constant;
 	private boolean recalculateConstant=true;

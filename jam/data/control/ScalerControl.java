@@ -14,7 +14,7 @@ import javax.swing.*;
  * @since       JDK1.1
  */
 
-public class ScalerControl extends DataControl implements ActionListener, ItemListener, Observer {
+public final class ScalerControl extends DataControl implements ActionListener, ItemListener, Observer {
 
     private Frame frame;
     private Broadcaster broadcaster;

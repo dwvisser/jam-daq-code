@@ -10,7 +10,7 @@ import javax.swing.*;
 * @author Dale Visser
 * @version 1.2
 */
-public class BoundedRangeModelY extends DefaultBoundedRangeModel {
+public final class BoundedRangeModelY extends DefaultBoundedRangeModel {
 
 
   Histogram hist;
