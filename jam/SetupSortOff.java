@@ -94,8 +94,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
 
         d = new JDialog (jamMain,"Setup Offline",false);  //dialog box
         Container cp=d.getContentPane();
-        d.setForeground(Color.black);
-        d.setBackground(Color.lightGray);
 
         d.setResizable(false);
         d.setLocation(20,50);
@@ -130,8 +128,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
         textSortPath.setToolTipText("Use Browse button to change. \nMay fail if classes have unresolvable references."+
         "\n* use the sort.classpath property in your JamUser.ini file to set this automatically.");
 		textSortPath.setColumns(35);
-		textSortPath.setBackground(Color.gray);
-		textSortPath.setForeground(Color.black);
 		textSortPath.setEditable(false);
         pf.add(textSortPath,BorderLayout.CENTER);
 		bbrowsef = new JButton("Browse");
@@ -221,8 +217,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
         pselect.add(ltd);
         textDev=new JTextField(defaultTape);
         textDev.setColumns(12);
-        textDev.setBackground(Color.white);
-        textDev.setForeground(Color.black);
         pselect.add(textDev);
 
         ButtonGroup eventMode = new ButtonGroup();
@@ -480,12 +474,10 @@ class SetupSortOff  implements ActionListener, ItemListener {
             this.mode=TAPE;
             sortControl.setDevice(SortControl.TAPE);
             textDev.setEditable(true);
-            textDev.setBackground(Color.white);
         } else if (mode==DISK) {
             this.mode=DISK;
             sortControl.setDevice(SortControl.DISK);
             textDev.setEditable(false);
-            textDev.setBackground(Color.lightGray);
         }
     }
 
