@@ -107,16 +107,19 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	Group convertGroup(VirtualGroup virtualGroup, String fileName, List histAttributeList, FileOpenMode mode) {
 		
 		Group group;
-	
+		String groupName;	
 		
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
-				
-		if (hasHistogramsInList(virtualGroup,  histAttributeList)) {
+
+		groupName=dataIDLabel.getLabel();
+		
+		//FIXME KBS hasHistogramsInList should check group name as well has hist name
+		if (hasHistogramsInList(virtualGroup,  groupName, histAttributeList)) {
 			
 			/* Don't use file name for group name for open. */
 			final String fname = mode==FileOpenMode.OPEN ? null : fileName;
-			group = Group.createGroup(dataIDLabel.getLabel(), fname, Group.Type.FILE);
+			group = Group.createGroup(groupName, fname, Group.Type.FILE);
 			
 		} else {
 			group =null;
@@ -124,7 +127,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
  		return group;
 	} 
 	
-	boolean hasHistogramsInList(VirtualGroup virtualGroup, List histAttributeList) {
+	boolean hasHistogramsInList(VirtualGroup virtualGroup, String groupName, List histAttributeList) {
 		
 		boolean rtnVal=true;
 		
@@ -134,8 +137,11 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		if (histAttributeList!=null) {
 			Iterator iterHistAtt = histAttributeList.iterator();
 			while(iterHistAtt.hasNext()) {
-				String name = ((HistogramAttributes)iterHistAtt.next()).getName();
-				nameList.add(name);
+				HistogramAttributes histAttribute = (HistogramAttributes)iterHistAtt.next();
+				String histName = histAttribute.getName();
+				String histGroupName = histAttribute.getGroupName();				
+				if (groupName.equals(histGroupName))
+					nameList.add(histName);
 			}
 		
 			List histList = findHistograms(virtualGroup, nameList);	
