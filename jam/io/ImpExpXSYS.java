@@ -5,6 +5,8 @@ import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -96,6 +98,9 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
 		DataBase.getInstance().clearAllLists();//clear the data base
+		Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+		
 		try {
 			//read in data until end of file	
 			while (unPackHeaderXSYS(buffin)) {

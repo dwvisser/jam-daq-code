@@ -268,6 +268,8 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
         final File[] files = (File[]) multiChooser.getFileList().toArray(
                 new File[0]);
         DataBase.getInstance().clearAllLists();
+        broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+        
         hdfio.setListener(this);
         /* Sum counts */
         if (chkBoxAdd.isSelected()) {

@@ -66,6 +66,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	        	final File selectedFile = jfile.getSelectedFile();
 	        	openFile=selectedFile;	//Save for callback
 	        	DataBase.getInstance().clearAllLists();
+	        	BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 	    		hdfio.setListener(this);
 				isReading=hdfio.readFile(FileOpenMode.OPEN, selectedFile);	        	
 	        } else {
@@ -101,7 +102,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
         /* Set general status. */
         STATUS.setOpenFile(file);
         AbstractControl.setupAll();
-        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         /*
          * Set selection of group and histogram. 
          * Set to first group and first histogram 

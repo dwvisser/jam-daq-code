@@ -202,12 +202,12 @@ public class Projections extends AbstractManipulation implements Observer {
 	public void update(Observable observable, Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com = event.getCommand();
-		if (com == BroadcastEvent.Command.HISTOGRAM_NEW) {
+		if (com == BroadcastEvent.Command.HISTOGRAM_NEW ||
+		    com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
-		} else if (com == BroadcastEvent.Command.HISTOGRAM_ADD || 
-				com == BroadcastEvent.Command.GATE_ADD ||
-				com == BroadcastEvent.Command.GATE_SET_OFF ||
-				com == BroadcastEvent.Command.GATE_SET_SAVE) {
+		} else if ( com == BroadcastEvent.Command.GATE_ADD ||
+				    com == BroadcastEvent.Command.GATE_SET_OFF ||
+				   com == BroadcastEvent.Command.GATE_SET_SAVE) {
 			doSetup();
 		} 
 	}

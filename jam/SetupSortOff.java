@@ -325,7 +325,7 @@ public final class SetupSortOff extends AbstractSetup {
         }
         sortRoutine=null;
         DataBase.getInstance().clearAllLists();
-        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);        
         lockMode(false);
     }
 

@@ -214,7 +214,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command=be.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW ||
-		        command == BroadcastEvent.Command.HISTOGRAM_ADD) {
+		    command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
 		}
 	}

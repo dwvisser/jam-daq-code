@@ -237,7 +237,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command com=be.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW ||
-				com == BroadcastEvent.Command.HISTOGRAM_ADD) {
+			com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
 		}
 	}

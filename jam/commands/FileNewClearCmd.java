@@ -39,7 +39,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 		"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
 			STATUS.setSortMode(SortMode.NO_SORT, "Data Cleared");
 			DataBase.getInstance().clearAllLists();
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		}
 		

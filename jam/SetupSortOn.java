@@ -549,7 +549,7 @@ public final class SetupSortOn extends AbstractSetup {
 			sortRoutine = null;
 		}
 		DataBase.getInstance().clearAllLists();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 	}
 
 	/* non-javadoc:

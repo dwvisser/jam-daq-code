@@ -136,8 +136,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			plotContainer.removeAllPlotMouseListeners();
 			plotContainer.setNumber(i);
 			plotContainer.select(false);
-			plotContainer.reset();
-			plotContainer.removeAllPlotMouseListeners();			
+			plotContainer.reset();			
 			gridPanel.add(plotContainer.getComponent());			
 			Histogram hist=currentView.getHistogram(i);
 			plotContainer.displayHistogram(hist);
@@ -342,6 +341,21 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.REFRESH) {
 			update();
+		}else if (command==BroadcastEvent.Command.HISTOGRAM_NEW){
+			//Clear plots select first plot
+			final int numberPlots=currentView.getNumberHists();
+			PlotContainer plotContainer=null;
+			/* Set initial states for all plots */
+			for (int i=0;i<numberPlots;i++){
+				plotContainer =(PlotContainer)plotList.get(i);
+				plotContainer.removeAllPlotMouseListeners();
+				plotContainer.select(false);
+				plotContainer.reset();						
+				plotContainer.displayHistogram(null);
+			}
+			plotContainer =(PlotContainer)plotList.get(0);
+			plotSelected(plotContainer);						
+			
 		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
 			final Histogram hist = status.getCurrentHistogram();			
 			displayHistogram(hist); 
