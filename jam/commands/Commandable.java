@@ -2,7 +2,6 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
-import jam.global.MessageHandler;
 
 import java.awt.Event;
 
@@ -17,13 +16,11 @@ import javax.swing.Action;
 public interface Commandable extends Action {
 	
 	/**
-	 * References needed for commands. Commands have null constructors
-	 * so a init method is needed 
-	 * 
-	 * @param msghdlr message and error output
+	 * Performs any initial setup that wasn't possible in the
+	 * constructor.
 	 */
-	void init(MessageHandler msghdlr);
-
+	void initCommand();
+	
 	/**
 	 * Execute a command with the given command parameters.
 	 * 

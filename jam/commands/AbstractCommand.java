@@ -9,7 +9,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 /**
- * Base class for commands
+ * Implementation of <code>Commandable</code> interface in which
+ * <code>actionPerformed()</code> executes 
+ * <code>performCommand(null)</code>, which in turn executes the
+ * abstract method, <code>execute(null)</code.
  * 
  * @author Ken Swartz
  */
@@ -26,7 +29,8 @@ Commandable {
 	 *
 	 */
 	AbstractCommand(){
-		super();	
+		super();
+		msghdlr=status.getMessageHandler();
 	}
 	
 	public final void init(MessageHandler mh) {
@@ -35,11 +39,9 @@ Commandable {
 	}
 	
 	/**
-	 * Called by init to do any command initialization
-	 * that needs to be done
+	 * Default implementation that does nothing.
 	 */
-	protected void initCommand(){
-		
+	public void initCommand(){
 	}
 	
 	/**

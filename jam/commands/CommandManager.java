@@ -185,7 +185,7 @@ public class CommandManager implements CommandListener, CommandNames {
 			} else {
 				try {
 					currentCommand = (Commandable) (cmdClass.newInstance());
-					currentCommand.init(msghdlr);
+					currentCommand.initCommand();
 					if (currentCommand instanceof Observer){
 						Broadcaster.getSingletonInstance().addObserver(
 						(Observer)currentCommand);
