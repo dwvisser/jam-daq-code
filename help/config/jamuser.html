@@ -13,7 +13,8 @@ listed in <code>JamConfig.ini</code>.
 <blockquote><code><pre>
 !User initialization file for Jam astro account
 exp.name=testRun_
-sort.class=sort.coinc.july02.FPplusYLSA	
+sort.routine=sort.coinc.july02.FPplusYLSA	
+sort.classpath=default
 hist.path=/data/aug02
 event.inpath=/home/jam
 event.outpath=/home/jam
@@ -31,9 +32,13 @@ exp.name
 <DD>
 default name experimental name jam will use (online)
 <DT>
-sort.class
+sort.routine
 <DD>
-default sort to load when setting up, entered as you would refer to it on the classpath from a Java program
+default sort routine to load when setting up, entered as you would refer to it on the classpath from a Java program
+<dt>
+sort.classpath
+<dd>
+additional path to search for sort routines (when not present or set as above, the system classpath is used)
 <DT>
 hist.path
 <DD>
