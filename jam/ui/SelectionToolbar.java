@@ -121,7 +121,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(gateChooser);
-		addSeparator();
 		add(pCenter);
 	}
 
@@ -194,9 +193,9 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	 *            The histogram to be selected and displayed
 	 */
 	private void selectHistogram(Histogram hist) {
-		if (isSync)
+		if (isSync){
 			return;
-		
+		}
 		if (hist == null) { 
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		} else {
@@ -212,7 +211,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 					gatesChanged();
 					setOverlaySelected(false);
 					setOverlayEnabled(oneD);
-					
 					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 				}
 			}
