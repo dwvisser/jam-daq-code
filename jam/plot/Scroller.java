@@ -128,8 +128,6 @@ class Scroller
 	 * Called when any scrollbar has been changed.
 	 */
 	public synchronized void adjustmentValueChanged(AdjustmentEvent ae) {
-		int size;
-
 		JScrollBar source = (JScrollBar) ae.getSource();
 		Adjustable adj = ae.getAdjustable();
 		int scrollValue = ae.getValue();
@@ -137,11 +135,9 @@ class Scroller
 		boolean updatePlot = false;
 		//scale scroll bar
 		if (source.equals(scrollCount)) {
-			if ((scrollValue == lastScrollValC)
-				&& (scrollVisible == lastScrollVisC)) {
-				/* end viscous loop */
-			} else {
-				countChange(scrollValue, scrollVisible);
+			if ((scrollValue != lastScrollValC)
+				|| (scrollVisible != lastScrollVisC)) {
+				countChange(scrollValue);
 				lastScrollValC = scrollValue;
 				lastScrollVisC = scrollVisible;
 				updatePlot = true;
@@ -198,7 +194,7 @@ class Scroller
 	 * vertical scrollBar change scale use to be a quadratic function
 	 * we will make it linear.
 	 */
-	private synchronized void countChange(int scrollValue, int scrollVisible) {
+	private synchronized void countChange(int scrollValue) {
 		int newMax, oldMax;
 		double scrolldiff, scaleChange;
 
