@@ -10,7 +10,6 @@ import java.awt.Event;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.KeyStroke;
 /**
@@ -19,7 +18,7 @@ import javax.swing.KeyStroke;
  * @author Ken Swartz
  *
  */
-final class ReloadHDFCmd extends LoaderHDF implements Observer {
+final class ReloadHDFCmd extends AbstractLoaderHDF {
 	
 	ReloadHDFCmd(){
 		super();
@@ -49,8 +48,8 @@ final class ReloadHDFCmd extends LoaderHDF implements Observer {
 	}
 
 	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
@@ -64,22 +63,19 @@ final class ReloadHDFCmd extends LoaderHDF implements Observer {
 		final boolean sorting = online || offline;
 		setEnabled(sorting);
 	}
+	
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */
-	public void CompletedIO(String message, String errorMessage) {
+	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		
-		Histogram firstHist;
-		//Set to sort group
-		Group.setCurrentGroup((Group)Group.getSortGroup());
-
-		//Set the current histogram to the first opened histogram
+		Histogram firstHist=null;
+		/* Set to sort group. */
+		Group.setCurrentGroup(Group.getSortGroup());
+		/* Set the current histogram to the first opened histogram. */
 		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
 			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
-		}else{
-			firstHist=null;
-		}					
+		}				
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}
