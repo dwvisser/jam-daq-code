@@ -140,7 +140,6 @@ class SetupSortOn implements ActionListener, ItemListener {
         defaultSpectra=JamProperties.getPropString(JamProperties.HIST_PATH);
         defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
 		defaultLog = JamProperties.getPropString(JamProperties.LOG_PATH);
-		File f=new File(defaultLog);
         String storageType = JamProperties.getPropString(JamProperties.EVENT_WRITER);
         if (storageType.equals(JamProperties.STORE_EVENTS_LOCALLY)) {
             storeEventsLocally=true;
