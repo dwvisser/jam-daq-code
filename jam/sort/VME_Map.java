@@ -20,9 +20,11 @@ public class VME_Map {
     private final StringBuffer messages=new StringBuffer();
 
     /**
-     *
+     * Constructs a new VME map for the given <code>SortRoutine</code>.
+     * 
+     * @param sr the owner of this map
      */
-    public VME_Map(SortRoutine sr) {
+    VME_Map(SortRoutine sr) {
         sortRoutine = sr;
         messages.append(sortRoutine.getClass().getName());
         messages.append(": \n");
@@ -38,11 +40,12 @@ public class VME_Map {
      * @param channel integer from 0 to 31 indicating channel in ADC or TDC
      * @param threshold integer from 0 to 4095 indicating lower threshold for recording the value
      * @return index in event array passed to <code>Sorter</code> containing this parameter's data
+     * @throws SortException if there's a problem defining the parameter
      */
     public int eventParameter(int slot, int baseAddress,
     int channel, int threshold) throws SortException {
         VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
-        channel, threshold, indexCounter);
+        channel, threshold);
         eventParameters.add(vmec);
         indexCounter++;
         sortRoutine.setEventSizeMode(SortRoutine.SET_BY_VME_MAP);
@@ -51,16 +54,31 @@ public class VME_Map {
         return parameterNumber;
     }
 
+    /**
+     * Sets the time between when the front end is supposed
+     * to query the scaler module(s) and insert the scaler
+     * values as a block in the event stream.
+     * 
+     * @param seconds between scaler blocks
+     */
     public void setScalerInterval(int seconds) {
         interval=seconds;
     }
 
+    /**
+     * Gets the time interval between scaler blocks in the
+     * event stream.
+     * 
+     * @return time interval in seconds
+     */
     public int getScalerInterval() {
         return interval;
     }
 
     /**
-     * Get the event size for a given stream
+     * Get the event size for a given stream.
+     * 
+     * @return number of parameters per event
      */
     public int getEventSize(){
         return maxParameterNumber+1;
@@ -75,6 +93,10 @@ public class VME_Map {
         return rval;
     }
 
+    /**
+     * Gets the event parameters in this map.
+     * @return an array of the VME channels defined for this map
+     */
     public VME_Channel [] getEventParameters(){
         return convertToArray(eventParameters);
     }
@@ -84,6 +106,7 @@ public class VME_Map {
      *
      * @param baseAddress must be 0x3???0000
      * @param range range in ns, between 141 and 1200
+     * @throws SortException for an invalid given range
      */
     public void setV775Range(int baseAddress, int range) throws SortException {
         String hexBase = "0x"+Integer.toHexString(baseAddress);
@@ -102,6 +125,17 @@ public class VME_Map {
         V775ranges.put(address,FSR);    
     }
     
+    /**
+     * Gets the ranges of the TDC modules as a <code>Map</code>. The keys
+     * in the map are the <code>Integer</code> base addresses of the TDC 
+     * modules, and the values are the <code>Byte</code> that actually gets
+     * written to the range register in the module to set the requested range.
+     * 
+     * @return a <code>Map</code> to the time ranges in the TDC's
+     * @see #setV775Range(int, int)
+     * @see java.lang.Integer
+     * @see java.lang.Byte
+     */
     public Map getV775Ranges(){
         return V775ranges;
     }
