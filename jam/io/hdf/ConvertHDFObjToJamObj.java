@@ -19,6 +19,8 @@ import java.util.List;
  */
 final class ConvertHDFObjToJamObj implements JamHDFFields {
 
+	final StringUtilities STRING_UTIL = StringUtilities.instance();
+	
     private HDFile inHDF;
 
     ConvertHDFObjToJamObj() {
@@ -55,86 +57,75 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         /* only the "histograms" VG (only one element) */
         if (hists != null) {
             numHists = hists.getObjects().size();
-            /* get list of all DIL's in file */
-            final List labels = DataObject.ofType(DataObject.DFTAG_DIL);
-            /* get list of all DIA's in file */
-            final List annotations = DataObject.ofType(DataObject.DFTAG_DIA);
             /* Histogram iterator */
             final Iterator temp = hists.getObjects().iterator();
             // loop begin
-            convertHistsLoop(temp,labels,annotations,histNames,mode);
+            objectLoop: while (temp.hasNext()) {
+            	final VirtualGroup currentHistGroup = (VirtualGroup) (temp.next());
+            	convertHist(currentHistGroup, histNames, mode);
+            }
             //after loop
         }
         return numHists;
     }
     
-    private void convertHistsLoop(Iterator temp, List labels, List annotations, 
-            List histNames, FileOpenMode mode) throws HDFException {
-        String errMsg = null;
-        boolean errorOccured = false;
-        objectLoop: while (temp.hasNext()) {
-            final VirtualGroup current = (VirtualGroup) (temp.next());
+    private void convertHist(VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    	                   
             final NumericalDataGroup ndg;
             /* I check ndgErr==null to determine if error bars exist */
             NumericalDataGroup ndgErr = null;
             /* only the "histograms" VG (only one element) */
-            final List tempVec = DataObject.ofType(current.getObjects(),
+            final List tempVec = DataObject.ofType(histGroup.getObjects(),
                     DataObject.DFTAG_NDG);
-            final NumericalDataGroup[] numbers = getNumericalGroups(tempVec);
-            if (numbers.length == 1) {
-                ndg = numbers[0]; //only one NDG -- the data
-            } else if (numbers.length == 2) {
-                if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
-                        numbers[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-                    ndg = numbers[1];
-                    ndgErr = numbers[0];
+            final NumericalDataGroup[] numericalDataGroups = getNumericalGroups(tempVec);
+            if (numericalDataGroups.length == 1) {
+                ndg = numericalDataGroups[0]; //only one NDG -- the data
+            } else if (numericalDataGroups.length == 2) {
+                if (DataIDLabel.withTagRef(DataObject.DFTAG_NDG,
+                        numericalDataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+                    ndg = numericalDataGroups[1];
+                    ndgErr = numericalDataGroups[0];
                 } else {
-                    ndg = numbers[0];
-                    ndgErr = numbers[1];
+                    ndg = numericalDataGroups[0];
+                    ndgErr = numericalDataGroups[1];
                 }
             } else {
-                errorOccured = true;
-                errMsg = "Invalid number of data groups (" + numbers.length
-                        + ") in NDG.";
-                break objectLoop;
+            	ndg =null;
+            	throw new HDFException( "Invalid number of data groups (" + numericalDataGroups.length
+                        + ") in VirtualGroup.");
             }
             final ScientificData sciData = (ScientificData) (DataObject
                     .ofType(ndg.getObjects(), DataObject.DFTAG_SD).get(0));
             final ScientificDataDimension sdd = (ScientificDataDimension) (DataObject
                     .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
-            final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
-                    .getTag(), ndg.getRef());
-            final int number = Integer.parseInt(numLabel.getLabel());
             final byte histNumType = sdd.getType();
             sciData.setNumberType(histNumType);
             final int histDim = sdd.getRank();
             sciData.setRank(histDim);
             final int sizeX = sdd.getSizeX();
             final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
-            final DataIDLabel templabel = DataIDLabel.withTagRef(labels,
-                    current.getTag(), current.getRef());
-            final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(
-                    annotations, current.getTag(), current.getRef());
-            final String name = templabel.getLabel();
+
+            final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
+            final int number = Integer.parseInt(numLabel.getLabel());            
+            final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
+            final String name = templabel.getLabel();            
+            final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
             final String title = tempnote.getNote();
+            
             final ScientificData sdErr = produceErrorData(ndgErr, histDim);
             /* Given name list check that that the name is in the list. */
             if (histNames == null || histNames.contains(name)) {
                 if (mode.isOpenMode()) {
                     openHistogram(name, title, number, histNumType, histDim,
                             sizeX, sizeY, sciData, sdErr);
-                } else {
-                    final boolean add = mode == FileOpenMode.ADD;
-                    if (add || mode == FileOpenMode.RELOAD) {
-                        reloadOrAddHistogram(name, histNumType, histDim, sizeX,
-                                sizeY, sciData, add);
-                    }
+                } else if (mode == FileOpenMode.RELOAD) {
+                    reloadHistogram(name, histNumType, histDim, sizeX,
+                            sizeY, sciData);
+                } else if  (mode == FileOpenMode.RELOAD) {                	
+                       addHistogram(name, histNumType, histDim, sizeX,
+                                sizeY, sciData);
                 }
             }
-        } // objectLoop
-        if (errorOccured) {
-            throw new IllegalStateException(errMsg);
-        }
     }
     
     private ScientificData produceErrorData(NumericalDataGroup ndgErr, int histDim) {
@@ -300,20 +291,6 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return param;
     }
 
-    private Object getData(byte histNumType, int histDim, int sizeX, int sizeY,
-            ScientificData sciData) throws HDFException {
-        final Object rval;
-        if (histDim == 1) {
-            rval = histNumType == NumberType.INT ? (Object)sciData.getData1d(
-                    inHDF, sizeX) : sciData.getData1dD(
-                            inHDF, sizeX);
-        } else { //2d
-            rval = histNumType == NumberType.INT ? (Object) sciData.getData2d(
-                    inHDF, sizeX, sizeY) : sciData.getData2dD(
-                            inHDF, sizeX, sizeY);
-        }
-        return rval;
-    }
     
     private void openHistogram(String name, String title, int number, 
             byte histNumType, int histDim, int sizeX, int sizeY, ScientificData sciData,
@@ -327,19 +304,46 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         }
     }
     
-    private void reloadOrAddHistogram(String name, byte histNumType, int histDim,
-            int sizeX, int sizeY, ScientificData sciData, boolean add) throws HDFException {
-        final StringUtilities util = StringUtilities.instance();
-        final Group group = add ? Group.getCurrentGroup() : Group.getSortGroup();
-        final Histogram histogram = group.getHistogram(util.makeLength(name,
+    private void addHistogram(String name, byte histNumType, int histDim,
+            int sizeX, int sizeY, ScientificData sciData) throws HDFException {
+
+        final Group group = Group.getCurrentGroup();
+        final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
                 Histogram.NAME_LENGTH));
         if (histogram != null) {
             final Object data = getData(histNumType, histDim, sizeX, sizeY, sciData);
-            if (add){
-                histogram.addCounts(data);
-            } else {
-                histogram.setCounts(data);
-            }
+            histogram.addCounts(data);            
         }
     }
+    
+    private void reloadHistogram(String name, byte histNumType, int histDim,
+            int sizeX, int sizeY, ScientificData sciData) throws HDFException {
+        
+        final Group group = Group.getSortGroup();
+        final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
+                Histogram.NAME_LENGTH));
+        if (histogram != null) {
+            final Object data = getData(histNumType, histDim, sizeX, sizeY, sciData);
+            histogram.setCounts(data);
+        }
+    }
+    
+    private Object getData(byte histNumType, int histDim, int sizeX, int sizeY,
+            ScientificData sciData) throws HDFException {
+        final Object rval;
+        if ( (histDim == 1) && (histNumType == NumberType.INT) ) {
+            rval = sciData.getData1d(inHDF, sizeX);
+        } else if ( (histDim == 1) && (histNumType == NumberType.DOUBLE) ) {
+        	rval = sciData.getData1dD(inHDF, sizeX);
+        } else if ( (histDim == 2) && (histNumType == NumberType.INT) ) {
+        	rval =sciData.getData2d(inHDF, sizeX, sizeY);
+        } else if ( (histDim == 2) && (histNumType == NumberType.DOUBLE) ) {    
+        	rval =sciData.getData2dD(inHDF, sizeX, sizeY);
+        } else { 
+        	rval =null;
+        	throw new HDFException("Unknown histogram data type");
+        }
+        return rval;
+    }
+    
 }

@@ -106,13 +106,12 @@ public class HistogramNew extends AbstractControl {
 		
 		final JPanel pName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pName);
-		final String space = " ";
-		textName = new JTextField(space);
+		textName = new JTextField("");
 		textName.setColumns(15);
 		pName.add(textName);
 		final JPanel pTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pTitle);
-		textTitle = new JTextField(space);
+		textTitle = new JTextField("");
 		textTitle.setColumns(30);
 		pTitle.add(textTitle);
 		final Panel pradio = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));

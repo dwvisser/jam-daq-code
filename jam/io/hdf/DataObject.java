@@ -217,13 +217,14 @@ public abstract class DataObject {
 	 * Clear the lists of all data objects.
 	 */	
 	static void clearAll() {
+		//set all object data to none
 		for (final Iterator it=objectList.iterator(); it.hasNext();){
 			final DataObject dataObject=(DataObject)it.next();
 			dataObject.bytes=ByteBuffer.wrap(CLEARBYTES);
 		}
 		objectList.clear();
 		tagRefMap.clear();
-		refCount =0;
+		refCount =0;		
 	}
 	
 	/**
@@ -380,6 +381,8 @@ public abstract class DataObject {
 		return new Integer(key);
 	}
 	
+	private final StringUtilities UTIL=StringUtilities.instance();
+	
 	/**
 	 * Creates a new HDF DataObject, belonging to the specified <code>HDFile</code>.  My approach is to have a 
 	 * separate HDFile object for each physical HDF file on disk.  Each <code>HDFile</code> object
@@ -518,8 +521,6 @@ public abstract class DataObject {
 	private final Integer getKey(){
 		return calculateKey(tag, ref);
 	}
-	
-	private static final StringUtilities UTIL=StringUtilities.instance();
 	
 	/**
 	 * Utility method for inserting a String as an ASCII array 

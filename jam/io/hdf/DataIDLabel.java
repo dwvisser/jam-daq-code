@@ -14,6 +14,36 @@ import java.util.List;
  */
 final class DataIDLabel extends DataObject {
 
+
+    static DataIDLabel withTagRef(int tag, int ref) {    	
+    	DataIDLabel dil =null;
+		final List objectList = getDataObjectList();
+		final Iterator iter = objectList.iterator();
+		while(iter.hasNext()) {
+			final DataObject dataObject=(DataObject)iter.next();
+			if ( dataObject.getTag() ==DataObject.DFTAG_DIL)  {
+				dil =  (DataIDLabel)dataObject;
+			    if ( (dil.getObject().getTag() == tag) &&
+                     (dil.getObject().getRef() == ref) ){			    		
+			    	break;
+			    }
+			}
+		}
+		return dil;
+	}
+    		
+    static DataIDLabel withTagRef(List labels, int tag, int ref) {
+        DataIDLabel output = null;
+        for (final Iterator temp = labels.iterator(); temp.hasNext();) {
+            final DataIDLabel dil = (DataIDLabel) (temp.next());
+            if ((dil.getObject().getTag() == tag)
+                    && (dil.getObject().getRef() == ref)) {
+                output = dil;
+            }
+        }
+        return output;
+    }
+    
     /**
      * Object being labelled.
      */
@@ -69,15 +99,4 @@ final class DataIDLabel extends DataObject {
         return object;
     }
 
-    static DataIDLabel withTagRef(List labels, int tag, int ref) {
-        DataIDLabel output = null;
-        for (final Iterator temp = labels.iterator(); temp.hasNext();) {
-            final DataIDLabel dil = (DataIDLabel) (temp.next());
-            if ((dil.getObject().getTag() == tag)
-                    && (dil.getObject().getRef() == ref)) {
-                output = dil;
-            }
-        }
-        return output;
-    }
 }

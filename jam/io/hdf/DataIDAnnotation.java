@@ -2,7 +2,6 @@ package jam.io.hdf;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
-
 /**
  * Class to represent an HDF <em>Data identifier annotation</em> data object.  
  * An annotation is lenghtier than a label, and can hold a descriptive text block.
@@ -14,6 +13,53 @@ import java.util.List;
  */
 final class DataIDAnnotation extends DataObject {
 
+
+	/**
+	 * 
+	 * @param labels list of <code>DataIDAnnotation</code>'s
+	 * @param tag to look for
+	 * @param ref to look for
+	 * @return annotation object that refers to the object witht the given
+	 * tag and ref
+	 */
+    static DataIDAnnotation withTagRef(int tag, int ref) {    	
+    	
+    	DataIDAnnotation dia =null;
+		final List objectList = getDataObjectList();
+		final Iterator iter = objectList.iterator();
+		while(iter.hasNext()) {
+			final DataObject dataObject=(DataObject)iter.next();
+			if ( dataObject.getTag() ==DataObject.DFTAG_DIA)  {
+				dia =  (DataIDAnnotation)dataObject;
+			    if ( (dia.getObject().getTag() == tag) &&
+                     (dia.getObject().getRef() == ref) ){			    		
+			    	break;
+			    }
+			}
+		}
+		return dia;
+	}
+	
+	/**
+	 * 
+	 * @param labels list of <code>DataIDAnnotation</code>'s
+	 * @param tag to look for
+	 * @param ref to look for
+	 * @return annotation object that refers to the object witht the given
+	 * tag and ref
+	 */
+	static DataIDAnnotation withTagRef(List labels, int tag, int ref) {
+		DataIDAnnotation output=null;
+		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
+			final DataIDAnnotation dia = (DataIDAnnotation) (temp.next());
+			if ((dia.getObject().getTag() == tag)
+				&& (dia.getObject().getRef() == ref)) {
+				output = dia;
+			}
+		}
+		return output;
+	}
+	
 	/**
 	 * Object being annotated.
 	 */
@@ -70,26 +116,4 @@ final class DataIDAnnotation extends DataObject {
 		return object;
 	}
 
-	/**
-	 * 
-	 * @param labels list of <code>DataIDAnnotation</code>'s
-	 * @param tag to look for
-	 * @param ref to look for
-	 * @return annotation object that refers to the object witht the given
-	 * tag and ref
-	 */
-	static DataIDAnnotation withTagRef(
-		List labels,
-		int tag,
-		int ref) {
-		DataIDAnnotation output=null;
-		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
-			final DataIDAnnotation dia = (DataIDAnnotation) (temp.next());
-			if ((dia.getObject().getTag() == tag)
-				&& (dia.getObject().getRef() == ref)) {
-				output = dia;
-			}
-		}
-		return output;
-	}
 }

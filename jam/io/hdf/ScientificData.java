@@ -1,9 +1,5 @@
 package jam.io.hdf;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -125,6 +121,23 @@ final class ScientificData extends DataObject {
 //    	}
     }
 
+    Object getData(HDFile infile, int sizeX, int sizeY) throws HDFException {
+    	Object rval;
+        if ( (rank == 1) && (numberType == NumberType.INT) ) {
+            rval = getData1d(infile, sizeX);
+        } else if ( (rank == 1) && (numberType == NumberType.DOUBLE) ) {
+        	rval = getData1dD(infile, sizeX);
+        } else if ( (rank == 2) && (numberType == NumberType.INT) ) {
+        	rval =getData2d(infile, sizeX, sizeY);
+        } else if ( (rank == 2) && (numberType == NumberType.DOUBLE) ) {    
+        	rval =getData2dD(infile, sizeX, sizeY);
+        } else { 
+        	rval =null;
+        	throw new HDFException("Unknown histogram data type");
+        }
+        return rval;
+
+    }
     /*
      * non-javadoc: @throws HDFException unrecoverable error @throws
      * UnsupportedOperationException if this object doesn't represent 1d int
@@ -185,16 +198,11 @@ final class ScientificData extends DataObject {
         }
         final byte[] localBytes = getLocalBytes(infile);
         double[][] output = new double[sizeX][sizeY];
-        final DataInput dataInput = new DataInputStream(
-                new ByteArrayInputStream(localBytes));
-        try {
-            for (int i = 0; i < sizeX; i++) {
-                for (int j = 0; j < sizeY; j++) {
-                    output[i][j] = dataInput.readDouble();
-                }
+        final ByteBuffer buffer = ByteBuffer.wrap(localBytes);        
+        for (int i = 0; i < sizeX; i++) {
+            for (int j = 0; j < sizeY; j++) {
+            	 output[i][j]= buffer.getDouble();
             }
-        } catch (IOException e) {
-            throw new HDFException(TWOD_MSG + e.getMessage());
         }
         bytes =null;	//so they can be gc'ed
         return output;
