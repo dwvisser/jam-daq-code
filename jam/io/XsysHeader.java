@@ -61,50 +61,107 @@ package jam.io;
  */
 interface XsysHeader {
 
-	//key word indicating it is a xsys spectrum file
-	static final String XSYSHEADER="SPEC";
+	/** key word indicating it is a xsys spectrum file */
+	String XSYSHEADER="SPEC";
 
-	//pointer to data in buffer for XSYS format data	
-	static final int PAGE=512;			    //a page in VMS is 512 bytes long
-	static final int L_INT=4;			    // number of byte in a integer
-	static final int XSYS_BUFFER_SIZE=128;		    //buffer size in ints
-	static final int L_BUFFER=XSYS_BUFFER_SIZE*L_INT;   //buffer size bytes
+	/** number of bytes in an integer */
+	int L_INT=4;
 	
-	static final int CALIB_ENERGY=999;
+	/** buffer size in ints */
+	int XSYS_BUFFER_SIZE=128;
+	
+	/** buffer size bytes */
+	int L_BUFFER=XSYS_BUFFER_SIZE*L_INT;
+	
+	/** flag used in xsys file to indicate cabration coefficients follow */
+	int CALIB_ENERGY=999;
 
-	//pointer to data are in integer so we convert the to bytes
-	static final int P_HEADER=0*L_INT;		    //poisition of marker
-	static final int P_RUN_NUMBER=1*L_INT;		    //position of run number
-	static final int P_TITLE=22*L_INT;		    //position of title
-	static final int L_TITLE=80;			    //length of title
+	/* pointers to data are ints so we convert them to bytes */
 	
-	static final int NUMBER_SCALERS=24;		    //number of scalers			
-	static final int P_SCALERS=42*L_INT;		    //position of scalers
-	static final int P_SCALER_TITLES=66*L_INT;	    //position of scalers field
-	static final int L_SCALER_TITLES=8;		    //length of scaler titles
+	/** position of marker */
+	int P_HEADER=0*L_INT;
+	
+	/** position of run number */
+	int P_RUN_NUMBER=1*L_INT;
+	
+	/** position of title */
+	int P_TITLE=22*L_INT;
+	
+	/** length of title */
+	int L_TITLE=80;
+	
+	/** number of scalers */
+	int NUMBER_SCALERS=24;			
+	
+	/** position of scalers */
+	int P_SCALERS=42*L_INT;		    //
+	
+	/** position of scalers field */
+	int P_SCALER_TITLES=66*L_INT;	    //
+	
+	/** length of scaler titles */
+	int L_SCALER_TITLES=8;		    //
 		
-	static final int P_AREA_NUMBER=2*L_INT;		    //position of data area number	
-	static final int P_AREA_DATA_TYPE=3*L_INT;	    //positon of data type
-	static final int P_AREA_LENGTH_WORD=4*L_INT;	    //positon of length in words
-	static final int P_AREA_LENGTH_PAGE=5*L_INT;
-	static final int P_AREA_NAME=7*L_INT;		    //position of Area Name
-	static final int L_AREA_NAME=8;			    //Length area Name
-	static final int P_AREA_SIZE_X=9*L_INT;		    //area X size
-	static final int P_AREA_SIZE_Y=10*L_INT;	    //area Y size
 	
-	static final int P_AREA_CALIB_FLAG=13*L_INT;	    //postition calibration flag
-	static final int P_AREA_MBD_CHAN=15*L_INT;	    //postition of mbd channel number	
-	static final int P_AREA_CALIB_COEF=17*L_INT;	    //position calibration coeff.
-	static final int L_AREA_CALIB_COEF=3;		    //length  calibration coeff.		
+	/** position of data area number */
+	int P_AREA_NUMBER=2*L_INT;		    //	
 	
-	//type of data areas
-	static final int XSYS1DI4=1;		    // xsys 1d I*4 data area 
-	static final int XSYS2DI4=2;		    // xsys 2d I*4 data area
-	static final int XSYS2DI2=3;		    // xsys 2d I*2 data area
-	static final int XSYS1DR4=4;		    // xsys 1d R*4 data area
-	static final int XSYS1DR8=5;		    // xsys 1d R*8 data area		
-	static final int XSYSEVAL=6;		    // xsys eval routine
-	static final int XSYS2DGT=7;		    // xsys 2d gate
-	static final int XSYSR4PT=8;		    // xsys R*4 protected from clearing
-						
+	/** positon of data type */
+	int P_AREA_DATA_TYPE=3*L_INT;	    //
+	
+	/** positon of length in words*/
+	int P_AREA_LENGTH_WORD=4*L_INT;	    //
+	
+	/** ??? */
+	int P_AREA_LENGTH_PAGE=5*L_INT;
+	
+	/** position of Area Name */
+	int P_AREA_NAME=7*L_INT;
+	
+	/** Length area Name */
+	int L_AREA_NAME=8;
+	
+	/** area X size */
+	int P_AREA_SIZE_X=9*L_INT;
+	
+	/** area Y size */
+	int P_AREA_SIZE_Y=10*L_INT;
+		
+	/** position calibration flag */
+	int P_AREA_CALIB_FLAG=13*L_INT;
+	
+	/** position of mbd channel number */
+	int P_AREA_MBD_CHAN=15*L_INT;	
+	
+	/** position calibration coeff. */
+	int P_AREA_CALIB_COEF=17*L_INT;
+	
+	/** length calibration coeff. */
+	int L_AREA_CALIB_COEF=3;	
+	
+	/* types of data areas */
+	
+	/** 1d I*4 data area */
+	int XSYS1DI4=1;
+	
+	/** 2d I*4 data area */
+	int XSYS2DI4=2;
+	
+	/** 2d I*2 data area */
+	int XSYS2DI2=3;
+	
+	/** 1d R*4 data area */
+	int XSYS1DR4=4;
+	
+	/** 1d R*8 data area */
+	int XSYS1DR8=5;		
+	
+	/** eval routine */
+	int XSYSEVAL=6;
+	
+	/** 2d gate */
+	int XSYS2DGT=7;
+	
+	/** R*4 protected from clearing */
+	int XSYSR4PT=8;
 }
