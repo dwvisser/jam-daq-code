@@ -59,7 +59,7 @@ public class JamProperties {
 	public final static String EVENT_OUTPATH = "event.outpath";
 	public final static String EVENT_OUTFILE = "event.outfile";
 	public final static String HIST_PATH = "hist.path";
-	public final static String CNAF_PATH = "cnaf.path";
+	//public final static String CNAF_PATH = "cnaf.path";
 	public final static String CAMAC_PATH = "camac.path";
 	public final static String BROWSER_PATH = "browser.path";
 	public final static String DOCS_PATH = "docs.path";
@@ -378,7 +378,7 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		jamProperties.setProperty(CNAF_PATH,"JAM/CAMAC/CNAFS");
+		//jamProperties.setProperty(CNAF_PATH,"JAM/CAMAC/CNAFS");
 		jamProperties.setProperty(DOCS_PATH,(new File(DEFAULT_JAM_HOME,"docs")).getPath());
 		jamProperties.setProperty(EVENT_WRITER,STORE_EVENTS_LOCALLY);
 		jamProperties.setProperty(BROWSER_PATH,"netscape");
