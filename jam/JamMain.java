@@ -95,65 +95,51 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 */
 	public final static int RUN_ON = 4;
 
+	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
+	
 	/**
 	 * Configuration information for Jam.
 	 */
-	JamProperties jamProperties;
+	private final JamProperties jamProperties;
 
 	/**
 	 * Overall status of Jam.
 	 */
-	JamStatus status;
+	private final JamStatus status;
 
 	/**
 	 * Event distributor.
 	 */
-	Broadcaster broadcaster;
+	private final Broadcaster broadcaster;
 
 	/**
 	 * Histogram displayer.
 	 */
-	Display display;
+	private final Display display;
 
 	/**
 	 * Menu command handler.
 	 */
-	JamCommand jamCommand;
+	private final JamCommand jamCommand;
 
 	/**
 	 * Message output and text input.
 	 */
-	JamConsole console;
-	static private final char beta='\u03b2';
-	static private final char alpha='\u03b1';
-	static private final String JAM_VERSION = "1.4";
-	static private final String VERSION_TYPE = "Release Candidate 2";
-
-
-	/**
-	 * Program exit dialog box.
-	 */
-	//private JDialog dialogExit;
+	private final JamConsole console;
 
 	//menu items for File menu
 	private JMenuItem newClear, open, openhdf, reload, reloadhdf, save;
-	private JMenuItem saveas, saveAsHDF, saveHDF;
+	private JMenuItem saveHDF;
 	private JMenu impHist;
 
 	//menu items for Control menu
 	private JCheckBoxMenuItem cstartacq, cstopacq;
 	private JMenuItem runacq, sortacq, statusacq, paramacq, iflushacq;
 
-	// select panel controls
-	public JPanel pselect;
-	FlowLayout flselect;
 	private JLabel lrunState; //run state label
-	JComboBox histogramChooser; //reference needed by command
+	private JComboBox histogramChooser; //reference needed by command
 	private JToggleButton boverLay; //button for overlay
-	JComboBox gateChooser; // reference needed by command
-
-	//blank combo box models
-	private DefaultComboBoxModel /*noHistComboBoxModel,*/ noGateComboBoxModel;
+	private JComboBox gateChooser; // reference needed by command
 
 	private HistogramComboBoxModel hcbm;
 	private GateComboBoxModel gcbm;
@@ -162,7 +148,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	private JMenu fitting;
 	private Hashtable fitterList;
 
-	private Container me;
+	private final Container me;
 
 	/**
 	 * Sort mode
@@ -179,13 +165,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Name of file if used file|open to read a file
 	 */
 	private String openFileName;
-
-	/** 
-	 * True if remote client
-	 */
-	boolean remote;
-
-	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
 
 	/**
 	 * Construtor
@@ -221,7 +200,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		//setup menu (needs jamCommand)
 		this.setJMenuBar(setupMenu());
 		//add toolbar (needs jamCommand as item, action listener)
-		addToolbarSelect();
+		Component pselect=addToolbarSelect();
 		me.add(pselect, BorderLayout.NORTH);
 		// tool bar display (on left side);
 		display.addToolbarAction();
@@ -253,7 +232,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		}
 		/* The pack() call and everything after it here should be executed in the 
 		 * event dispatch thread. */
-		Runnable showWindow=new Runnable(){
+		final Runnable showWindow=new Runnable(){
 			public void run(){ 
 				pack();
 				setChoosersToFirstItems();
@@ -282,11 +261,12 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * </ul>
 	 * 
 	 * @author Ken Swartz
+	 * @return the menu bar
 	 */
 	private JMenuBar setupMenu() {
-		JMenuBar menubar = new JMenuBar();
+		final JMenuBar menubar = new JMenuBar();
 		//file menu
-		JMenu file = new JMenu("File");
+		final JMenu file = new JMenu("File");
 		menubar.add(file);
 		newClear = new JMenuItem("New");
 		newClear.setActionCommand("newclear");
@@ -307,49 +287,49 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		saveHDF.addActionListener(jamCommand);
 		saveHDF.setEnabled(false);
 		file.add(saveHDF);
-		saveAsHDF = new JMenuItem("Save as (hdf)...");
+		final JMenuItem saveAsHDF = new JMenuItem("Save as (hdf)...");
 		saveAsHDF.setActionCommand("saveAsHDF");
 		saveAsHDF.addActionListener(jamCommand);
 		file.add(saveAsHDF);
 		file.addSeparator();
 		impHist = new JMenu("Import");
 		file.add(impHist);
-		JMenuItem openascii = new JMenuItem("Import ASCII...");
+		final JMenuItem openascii = new JMenuItem("Import ASCII...");
 		openascii.setActionCommand("openascii");
 		openascii.addActionListener(jamCommand);
 		impHist.add(openascii);
-		JMenuItem openspe = new JMenuItem("Import RADWARE .spe ...");
+		final JMenuItem openspe = new JMenuItem("Import RADWARE .spe ...");
 		openspe.setActionCommand("openspe");
 		openspe.addActionListener(jamCommand);
 		impHist.add(openspe);
-		JMenuItem openornl = new JMenuItem("Import ORNL .drr .his ...");
+		final JMenuItem openornl = new JMenuItem("Import ORNL .drr .his ...");
 		openornl.setActionCommand("openornl");
 		openornl.addActionListener(jamCommand);
 		impHist.add(openornl);
-		JMenuItem openxsys = new JMenuItem("Import XSYS .dat ...");
+		final JMenuItem openxsys = new JMenuItem("Import XSYS .dat ...");
 		openxsys.setActionCommand("openxsys");
 		openxsys.addActionListener(jamCommand);
 		impHist.add(openxsys);
-		JMenu expHist = new JMenu("Export");
+		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
-		JMenuItem saveascii = new JMenuItem("Export ASCII...");
+		final JMenuItem saveascii = new JMenuItem("Export ASCII...");
 		saveascii.setActionCommand("saveascii");
 		saveascii.addActionListener(jamCommand);
 		expHist.add(saveascii);
-		JMenuItem savespe = new JMenuItem("Export RADWARE .spe ...");
+		final JMenuItem savespe = new JMenuItem("Export RADWARE .spe ...");
 		savespe.setActionCommand("savespe");
 		savespe.addActionListener(jamCommand);
 		expHist.add(savespe);
-		JMenuItem saveornl = new JMenuItem("Export ORNL .drr .his  ...");
+		final JMenuItem saveornl = new JMenuItem("Export ORNL .drr .his  ...");
 		saveornl.setActionCommand("saveornl");
 		saveornl.addActionListener(jamCommand);
 		expHist.add(saveornl);
-		JMenuItem batchexport = new JMenuItem("Batch Export...");
+		final JMenuItem batchexport = new JMenuItem("Batch Export...");
 		batchexport.setActionCommand("batchexport");
 		batchexport.addActionListener(jamCommand);
 		expHist.add(batchexport);
 		file.addSeparator();
-		JMenu oldJHF = new JMenu("JHF Format");
+		final JMenu oldJHF = new JMenu("JHF Format");
 		file.add(oldJHF);
 		open = new JMenuItem("Open(jhf)...");
 		open.setActionCommand("open");
@@ -365,22 +345,22 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		save.addActionListener(jamCommand);
 		save.setEnabled(false);
 		oldJHF.add(save);
-		saveas = new JMenuItem("Save as(jhf)...");
+		final JMenuItem saveas = new JMenuItem("Save as(jhf)...");
 		saveas.setActionCommand("saveas");
 		saveas.addActionListener(jamCommand);
 		oldJHF.add(saveas);
 		file.addSeparator();
-		JMenuItem print = new JMenuItem("Print...");
+		final JMenuItem print = new JMenuItem("Print...");
 		print.setActionCommand("print");
 		print.addActionListener(jamCommand);
 		file.add(print);
 		file.addSeparator();
-		JMenuItem printsetup = new JMenuItem("Print Setup...");
+		final JMenuItem printsetup = new JMenuItem("Print Setup...");
 		printsetup.setActionCommand("printsetup");
 		printsetup.addActionListener(jamCommand);
 		file.add(printsetup);
 		file.addSeparator();
-		JMenuItem exit = new JMenuItem("Exit...");
+		final JMenuItem exit = new JMenuItem("Exit...");
 		exit.setActionCommand("exitShow");
 		exit.addActionListener(new ActionListener() {
 			public synchronized void actionPerformed(
@@ -389,24 +369,24 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			}
 		});
 		file.add(exit);
-		JMenu setup = new JMenu("Setup");
+		final JMenu setup = new JMenu("Setup");
 		menubar.add(setup);
-		JMenuItem setupOnline = new JMenuItem("Online sorting...");
+		final JMenuItem setupOnline = new JMenuItem("Online sorting...");
 		setupOnline.setActionCommand("online");
 		setupOnline.addActionListener(jamCommand);
 		setup.add(setupOnline);
 		setup.addSeparator();
-		JMenuItem setupOffline = new JMenuItem("Offline sorting...");
+		final JMenuItem setupOffline = new JMenuItem("Offline sorting...");
 		setupOffline.setActionCommand("offline");
 		setupOffline.addActionListener(jamCommand);
 		setup.add(setupOffline);
 		setup.addSeparator();
-		JMenuItem setupRemote = new JMenuItem("Remote Hookup...");
+		final JMenuItem setupRemote = new JMenuItem("Remote Hookup...");
 		setupRemote.setActionCommand("remote");
 		setupRemote.addActionListener(jamCommand);
 		setupRemote.setEnabled(false);
 		setup.add(setupRemote);
-		JMenu mcontrol = new JMenu("Control");
+		final JMenu mcontrol = new JMenu("Control");
 		menubar.add(mcontrol);
 		cstartacq = new JCheckBoxMenuItem("start", false);
 		cstartacq.setEnabled(false);
@@ -441,90 +421,90 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		statusacq.setActionCommand("status");
 		statusacq.addActionListener(jamCommand);
 		mcontrol.add(statusacq);
-		JMenu histogram = new JMenu("Histogram");
+		final JMenu histogram = new JMenu("Histogram");
 		menubar.add(histogram);
-		JMenuItem histogramNew = new JMenuItem("New...");
+		final JMenuItem histogramNew = new JMenuItem("New...");
 		histogramNew.setActionCommand("newhist");
 		histogramNew.addActionListener(jamCommand);
 		histogram.add(histogramNew);
-		JMenuItem zeroHistogram = new JMenuItem("Zero...");
+		final JMenuItem zeroHistogram = new JMenuItem("Zero...");
 		zeroHistogram.setActionCommand("zerohist");
 		zeroHistogram.addActionListener(jamCommand);
 		histogram.add(zeroHistogram);
-		JMenu calHist = new JMenu("Calibrate");
+		final JMenu calHist = new JMenu("Calibrate");
 		histogram.add(calHist);
-		JMenuItem calibFit = new JMenuItem("Fit...");
+		final JMenuItem calibFit = new JMenuItem("Fit...");
 		calibFit.setActionCommand("calfitlin");
 		calibFit.addActionListener(jamCommand);
 		calHist.add(calibFit);
-		JMenuItem calibFunc = new JMenuItem("Enter Coefficients...");
+		final JMenuItem calibFunc = new JMenuItem("Enter Coefficients...");
 		calibFunc.setActionCommand("caldisp");
 		calibFunc.addActionListener(jamCommand);
 		calHist.add(calibFunc);
-		JMenuItem projectHistogram = new JMenuItem("Projections...");
+		final JMenuItem projectHistogram = new JMenuItem("Projections...");
 		projectHistogram.setActionCommand("project");
 		projectHistogram.addActionListener(jamCommand);
 		histogram.add(projectHistogram);
-		JMenuItem manipHistogram = new JMenuItem("Combine...");
+		final JMenuItem manipHistogram = new JMenuItem("Combine...");
 		manipHistogram.setActionCommand("manipulate");
 		manipHistogram.addActionListener(jamCommand);
 		histogram.add(manipHistogram);
-		JMenuItem gainShift = new JMenuItem("Gain Shift...");
+		final JMenuItem gainShift = new JMenuItem("Gain Shift...");
 		gainShift.setActionCommand("gainshift");
 		gainShift.addActionListener(jamCommand);
 		histogram.add(gainShift);
-		JMenu gate = new JMenu("Gate");
+		final JMenu gate = new JMenu("Gate");
 		menubar.add(gate);
-		JMenuItem gateNew = new JMenuItem("New Gate...");
+		final JMenuItem gateNew = new JMenuItem("New Gate...");
 		gateNew.setActionCommand("gatenew");
 		gateNew.addActionListener(jamCommand);
 		gate.add(gateNew);
-		JMenuItem gateAdd = new JMenuItem("Add Gate...");
+		final JMenuItem gateAdd = new JMenuItem("Add Gate...");
 		gateAdd.setActionCommand("gateadd");
 		gateAdd.addActionListener(jamCommand);
 		gate.add(gateAdd);
-		JMenuItem gateSet = new JMenuItem("Set Gate...");
+		final JMenuItem gateSet = new JMenuItem("Set Gate...");
 		gateSet.setActionCommand("gateset");
 		gateSet.addActionListener(jamCommand);
 		gate.add(gateSet);
-		JMenu scalers = new JMenu("Scalers");
+		final JMenu scalers = new JMenu("Scalers");
 		menubar.add(scalers);
-		JMenuItem showScalers = new JMenuItem("Display Scalers...");
+		final JMenuItem showScalers = new JMenuItem("Display Scalers...");
 		showScalers.setActionCommand("displayscalers");
 		showScalers.addActionListener(jamCommand);
 		scalers.add(showScalers);
-		JMenuItem clearScalers = new JMenuItem("Zero Scalers...");
+		final JMenuItem clearScalers = new JMenuItem("Zero Scalers...");
 		scalers.add(clearScalers);
 		clearScalers.setActionCommand("zeroscalers");
 		clearScalers.addActionListener(jamCommand);
 		scalers.addSeparator();
-		JMenuItem showMonitors = new JMenuItem("Display Monitors...");
+		final JMenuItem showMonitors = new JMenuItem("Display Monitors...");
 		showMonitors.setActionCommand("displaymonitors");
 		showMonitors.addActionListener(jamCommand);
 		scalers.add(showMonitors);
-		JMenuItem configMonitors = new JMenuItem("Configure Monitors...");
+		final JMenuItem configMonitors = new JMenuItem("Configure Monitors...");
 		configMonitors.setActionCommand("configmonitors");
 		configMonitors.addActionListener(jamCommand);
 		scalers.add(configMonitors);
-		JMenu mPrefer = new JMenu("Preferences");
+		final JMenu mPrefer = new JMenu("Preferences");
 		menubar.add(mPrefer);
-		JCheckBoxMenuItem ignoreZero =
+		final JCheckBoxMenuItem ignoreZero =
 			new JCheckBoxMenuItem("Ignore zero channel on autoscale", true);
 		ignoreZero.setEnabled(true);
 		ignoreZero.addItemListener(jamCommand);
 		mPrefer.add(ignoreZero);
-		JCheckBoxMenuItem ignoreFull =
+		final JCheckBoxMenuItem ignoreFull =
 			new JCheckBoxMenuItem("Ignore max channel on autoscale", true);
 		ignoreFull.setEnabled(true);
 		ignoreFull.addItemListener(jamCommand);
 		mPrefer.add(ignoreFull);
-		JCheckBoxMenuItem autoOnExpand =
+		final JCheckBoxMenuItem autoOnExpand =
 			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
 		autoOnExpand.setEnabled(true);
 		autoOnExpand.addItemListener(jamCommand);
 		mPrefer.add(autoOnExpand);
 		mPrefer.addSeparator();
-		JCheckBoxMenuItem noFill2d =
+		final JCheckBoxMenuItem noFill2d =
 			new JCheckBoxMenuItem(
 				NO_FILL_MENU_TEXT,
 				JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D));
@@ -537,42 +517,45 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			}
 		});
 		mPrefer.add(noFill2d);
-		JCheckBoxMenuItem gradientColorScale = new JCheckBoxMenuItem("Use gradient color scale",JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE));
-		gradientColorScale.setToolTipText("Check to use a continuous gradient color scale on 2d histogram plots.");
+		final JCheckBoxMenuItem gradientColorScale = 
+		new JCheckBoxMenuItem("Use gradient color scale",
+		JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE));
+		gradientColorScale.setToolTipText(
+		"Check to use a continuous gradient color scale on 2d histogram plots.");
 		gradientColorScale.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
-				boolean state = ie.getStateChange()==ItemEvent.SELECTED;
+				final boolean state = ie.getStateChange()==ItemEvent.SELECTED;
 				JamProperties.setProperty(JamProperties.GRADIENT_SCALE,state);
 				display.setPreference(Display.Preferences.CONTINUOUS_2D_LOG,state);
 			}
 		});
 		mPrefer.add(gradientColorScale);
 		mPrefer.addSeparator();
-		JCheckBoxMenuItem autoPeakFind =
+		final JCheckBoxMenuItem autoPeakFind =
 			new JCheckBoxMenuItem("Automatic peak find", true);
 		autoPeakFind.setEnabled(true);
 		autoPeakFind.addItemListener(jamCommand);
 		mPrefer.add(autoPeakFind);
-		JMenuItem peakFindPrefs = new JMenuItem("Peak Find Properties...");
+		final JMenuItem peakFindPrefs = new JMenuItem("Peak Find Properties...");
 		peakFindPrefs.setActionCommand("peakfind");
 		peakFindPrefs.addActionListener(jamCommand);
 		mPrefer.add(peakFindPrefs);
 		mPrefer.addSeparator();
-		ButtonGroup colorScheme = new ButtonGroup();
-		JRadioButtonMenuItem whiteOnBlack =
+		final ButtonGroup colorScheme = new ButtonGroup();
+		final JRadioButtonMenuItem whiteOnBlack =
 			new JRadioButtonMenuItem("Black Background", false);
 		whiteOnBlack.setEnabled(true);
 		whiteOnBlack.addActionListener(jamCommand);
 		colorScheme.add(whiteOnBlack);
 		mPrefer.add(whiteOnBlack);
-		JRadioButtonMenuItem blackOnWhite =
+		final JRadioButtonMenuItem blackOnWhite =
 			new JRadioButtonMenuItem("White Background", true);
 		blackOnWhite.setEnabled(true);
 		blackOnWhite.addActionListener(jamCommand);
 		colorScheme.add(blackOnWhite);
 		mPrefer.add(blackOnWhite);
 		mPrefer.addSeparator();
-		JCheckBoxMenuItem verboseVMEReply =
+		final JCheckBoxMenuItem verboseVMEReply =
 			new JCheckBoxMenuItem("Verbose front end", false);
 		verboseVMEReply.setEnabled(true);
 		verboseVMEReply.setToolTipText(
@@ -582,7 +565,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			verboseVMEReply.isSelected());
 		verboseVMEReply.addItemListener(jamCommand);
 		mPrefer.add(verboseVMEReply);
-		JCheckBoxMenuItem debugVME =
+		final JCheckBoxMenuItem debugVME =
 			new JCheckBoxMenuItem("Debug front end", false);
 		debugVME.setToolTipText(
 			"If selected, the front end will send debugging messages.");
@@ -592,24 +575,24 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			debugVME.isSelected());
 		debugVME.addItemListener(jamCommand);
 		mPrefer.add(debugVME);
-		fitting = new JMenu("Fitting");
+		final JMenu fitting = new JMenu("Fitting");
 		menubar.add(fitting);
-		JMenuItem loadFit = new JMenuItem("Load Fit...");
+		final JMenuItem loadFit = new JMenuItem("Load Fit...");
 		loadFit.setActionCommand("loadfit");
 		loadFit.addActionListener(jamCommand);
 		fitting.add(loadFit);
 		fitting.addSeparator();
-		JMenu helpMenu = new JMenu("Help");
+		final JMenu helpMenu = new JMenu("Help");
 		menubar.add(helpMenu);
-		JMenuItem about = new JMenuItem("About...");
+		final JMenuItem about = new JMenuItem("About...");
 		helpMenu.add(about);
 		about.setActionCommand("about");
 		about.addActionListener(jamCommand);
-		JMenuItem userG = new JMenuItem("User Guide...");
+		final JMenuItem userG = new JMenuItem("User Guide...");
 		helpMenu.add(userG);
 		userG.setActionCommand("userguide");
 		userG.addActionListener(getUserGuideListener());
-		JMenuItem license = new JMenuItem("License...");
+		final JMenuItem license = new JMenuItem("License...");
 		helpMenu.add(license);
 		license.setActionCommand("license");
 		license.addActionListener(jamCommand);
@@ -619,19 +602,18 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	/**
 	 * Adds the tool bar the at the top of the plot.
 	 *
-	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void addToolbarSelect() {
-		noGateComboBoxModel = new DefaultComboBoxModel();
+	private Component addToolbarSelect() {
+		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
 
 		/* panel with selection and print etc. */
-		pselect = new JPanel(new BorderLayout());
+		JPanel pselect = new JPanel(new BorderLayout());
 		pselect.setBackground(Color.lightGray);
 		pselect.setForeground(Color.black);
 		//run status
-		JPanel pRunState = new JPanel(new GridLayout(1, 1));
+		final JPanel pRunState = new JPanel(new GridLayout(1, 1));
 		pRunState.setBorder(
 			BorderFactory.createTitledBorder(
 				new BevelBorder(BevelBorder.LOWERED),
@@ -643,7 +625,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		lrunState.setForeground(Color.black);
 		pRunState.add(lrunState);
 		//histogram chooser
-		JPanel pCenter = new JPanel(new GridLayout(1, 0));
+		final JPanel pCenter = new JPanel(new GridLayout(1, 0));
 		hcbm=new HistogramComboBoxModel(jamCommand);
 		histogramChooser = new JComboBox(hcbm);
 		histogramChooser.setMaximumRowCount(30);
@@ -659,18 +641,18 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		boverLay.setToolTipText("Click to overlay next histogram chosen.");
 		boverLay.addActionListener(jamCommand);
 		pCenter.add(boverLay);
-		//gate chooser
-		gateChooser = new JComboBox(noGateComboBoxModel);
+		gateChooser=new JComboBox(noGateComboBoxModel);
 		gateChooser.setToolTipText("Click to choose gate to display.");
 		gateChooser.setActionCommand("selectgate");
 		gateChooser.addActionListener(jamCommand);
 		pCenter.add(gateChooser);
 		pselect.add(pRunState, BorderLayout.WEST);
 		pselect.add(pCenter, BorderLayout.CENTER);
+		return pselect;
 	}
 
 	private void showExitDialog() {
-		int rval =
+		final int rval =
 			JOptionPane.showConfirmDialog(
 				this,
 				"Are you sure you want to exit?",
@@ -684,20 +666,22 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	/**
-	 *Implementation of Observable interface
+	 * Implementation of Observable interface.
+	 * 
+	 * @param observable the sender
+	 * @param o the message
 	 */
 	public void update(Observable observable, Object o) {
 		try {
-			BroadcastEvent be = (BroadcastEvent) o;
-			String lastHistName;
+			final BroadcastEvent be = (BroadcastEvent) o;
 			if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
-				lastHistName = status.getCurrentHistogramName();
+				final String lastHistName = status.getCurrentHistogramName();
 				jamCommand.selectHistogram(
 					Histogram.getHistogram(lastHistName));
 			} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_ADD) {
 				dataChanged();
 			} else if (be.getCommand() == BroadcastEvent.GATE_ADD) {
-				lastHistName = status.getCurrentHistogramName();
+				final String lastHistName = status.getCurrentHistogramName();
 				jamCommand.selectHistogram(
 					Histogram.getHistogram(lastHistName));
 				gatesChanged();
@@ -708,10 +692,10 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	/**
-	 * Should be called whenever the lists of gates and histograms change.
-	 * It calls histogramsChanged() and gatesChanged(), each of which add
-	 * to the event stack, so that histograms will be guaranteed (?) updated
-	 * before gates get updated.
+	 * Should be called whenever the lists of gates and histograms 
+	 * change. It calls histogramsChanged() and gatesChanged(), 
+	 * each of which add to the event stack, so that histograms will 
+	 * be guaranteed (?) updated before gates get updated.
 	 */
 	void dataChanged() {
 		histogramsChanged();
@@ -719,30 +703,13 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	void histogramsChanged() {
-		Thread worker = new Thread() {
-			public void run() {
-				if (gcbm != null)
-					hcbm.changeOccured();
-			}
-		};
-		worker.start();
 		histogramChooser.setSelectedIndex(0);
+		histogramChooser.repaint();
 	}
 
 	void gatesChanged() {
-		Thread worker = new Thread() {
-			public void run() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ie) {
-					console.errorOutln(ie.getMessage());
-				}
-				if (gcbm != null)
-					gcbm.changeOccured();
-			}
-		};
-		worker.start();
 		gateChooser.setSelectedIndex(0);
+		gateChooser.repaint();
 	}
 	
 	void setOverlayEnabled(boolean state){
@@ -751,9 +718,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 
 	/**
 	 * Sets the gate chooser to the current model of gates
-	 *
-	 * @param   gateList  the list of gates
-	 * @return  <code>void</code>
 	 */
 	private void setGateModel() {
 		gcbm = new GateComboBoxModel(jamCommand);
@@ -765,7 +729,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Enables and disables JMenu items as appropriate.
 	 * Gives the window a title for the sort Mode.
 	 *
-	 * @exception   JamException    sends a message to the console if there is an inappropriate call
+	 * @exception   JamException    sends a message to the console if 
+	 * there is an inappropriate call
 	 * @see #ONLINE_DISK
 	 * @see #ONLINE_TAPE
 	 * @see #OFFLINE_DISK
@@ -773,6 +738,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * @see #FILE
 	 * @see #REMOTE
 	 * @see #NO_SORT
+	 * @param mode the new mode for Jam to be in
 	 */
 	public void setSortMode(int mode) throws JamException {
 		if (!((mode == NO_SORT) || (mode == FILE))) {
@@ -891,7 +857,9 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Set the jam to be in sort mode file and gives
 	 * it the file Name.
 	 *
-	 * @exception   JamException    sends a message to the console if there is a problem
+	 * @exception   JamException    sends a message to the console if 
+	 * there is a problem
+	 * @param fileName the file to be sorted?
 	 */
 	public void setSortModeFile(String fileName) throws JamException {
 		this.openFileName = fileName;
@@ -899,7 +867,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	/**
-	 * Gets the current sort mode.
+	 * @return the current sort mode.
 	 *
 	 * @see #ONLINE_DISK
 	 * @see #ONLINE_TAPE
@@ -912,15 +880,16 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	public int getSortMode() {
 		return sortMode;
 	}
+	
 	/**
-	 * Can the sort mode be changed from what
-	 * it is an set.
+	 * @return true is the mode can be changed
 	 */
 	public boolean canSetSortMode() {
 		return ((sortMode == NO_SORT) || (sortMode == FILE));
 	}
+	
 	/**
-	 * Are we online
+	 * @return true if Jam is in online acquisition mode
 	 */
 	public boolean isOnLine() {
 		return ((sortMode == ONLINE_TAPE) || (sortMode == ONLINE_DISK));
@@ -932,64 +901,67 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 *  This method uses imformation set by <code>setSortMode()</code>.
 	 *  In addition:</p>
 	 *  <ul>
-	 *  <li>Control JMenu items are enabled and disabled as appropriate.</li>
-	 *  <li>Control JMenu items are states are set and unset as appropriate.</li>
+	 *  <li>Control JMenu items are enabled and disabled as 
+	 * appropriate.</li>
+	 *  <li>Control JMenu items are states are set and unset as 
+	 * appropriate.</li>
 	 *  <li>The JMenu bar is to show online sort.</li>
 	 *  <li>Updates display status label .</li>
 	 * </ul>
 	 *
-	 * @param  runState    see the options for this just below
-	 * @param  runNumber   serial number assigned the run in the run control dialog box
+	 * @param  rs    see the options for this just below
+	 * @param  runNumber   serial number assigned the run in the run 
+	 * control dialog box
 	 * @see #NO_ACQ
 	 * @see #ACQ_OFF
 	 * @see #ACQ_ON
 	 * @see #RUN_OFF
 	 * @see #RUN_ON
 	 */
-	public void setRunState(int runState, int runNumber) {
-		if (runState == NO_ACQ) {
+	public void setRunState(int rs, int runNumber) {
+		if (rs == NO_ACQ) {
 			cstartacq.setEnabled(false); // enable start JMenu item
 			cstopacq.setEnabled(false); // start stop flush
 			iflushacq.setEnabled(false); // enable flush JMenu
 			lrunState.setBackground(Color.lightGray);
 			lrunState.setText("   Welcome   ");
-		} else if (runState == ACQ_OFF) {
+		} else if (rs == ACQ_OFF) {
 			cstartacq.setState(false); //check JMenu start active
 			cstopacq.setState(true);
 			iflushacq.setEnabled(false);
 			lrunState.setBackground(Color.red);
 			lrunState.setText("   Stopped   ");
-		} else if (runState == ACQ_ON) {
+		} else if (rs == ACQ_ON) {
 			cstartacq.setState(true); //check JMenu stop active
 			cstopacq.setState(false);
 			iflushacq.setEnabled(true);
 			lrunState.setBackground(Color.orange);
 			lrunState.setText("   Started   ");
-		} else if (runState == RUN_OFF) {
+		} else if (rs == RUN_OFF) {
 			cstartacq.setState(false); //check JMenu start active
 			cstopacq.setState(true);
 			iflushacq.setEnabled(false);
 			lrunState.setBackground(Color.red);
 			lrunState.setText("   Stopped   ");
-		} else if (runState == RUN_ON) {
+		} else if (rs == RUN_ON) {
 			cstartacq.setState(true); //check JMenu stop active
 			cstopacq.setState(false);
 			iflushacq.setEnabled(true);
 			lrunState.setBackground(Color.green);
 			lrunState.setText("   Run " + runNumber + "   ");
 		}
-		//update  current run state
-		this.runState = runState;
-		//this.repaint(); didn't fix
+		this.runState = rs;
 	}
 
 	/**
 	 * Sets the run state with out the run number specified
 	 * see <code> setRunState(int runState, int runNumber) </code>
 	 *
+	 * @see #getRunState()
+	 * @param rs one of six possible modes
 	 */
-	public void setRunState(int runState) {
-		setRunState(runState, 0);
+	public void setRunState(int rs) {
+		setRunState(rs, 0);
 	}
 
 	/**
@@ -1001,13 +973,14 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * @see #RUN_OFF
 	 * @see #RUN_ON
 	 * @see #NO_ACQ
+	 * @return one of the six possible modes
 	 */
 	public int getRunState() {
 		return runState;
 	}
 
 	/**
-	 * Return true if Jam is currently taking data.
+	 * @return true if Jam is currently taking data.
 	 * either just acquistion or a run.
 	 */
 	public boolean isAcqOn() {
@@ -1018,25 +991,39 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Add a fitting routine to the fitting JMenu
 	 * give the name you want to add
 	 *
+	 * @param name the name of the fit routine added
 	 */
 	public void addFit(String name) {
-		JMenuItem fitItem = new JMenuItem(name + "...");
+		final JMenuItem fitItem = new JMenuItem(name + "...");
 		fitItem.setActionCommand(name);
 		fitItem.addActionListener(jamCommand.loadFit);
 		fitting.add(fitItem);
 	}
 
+	/**
+	 * @return whether histogram overlay mode is enabled
+	 */
 	public boolean overlaySelected() {
 		return boverLay.isSelected();
 	}
 
-	public void deselectOverlay() {
+	/**
+	 * De-select overlay mode.
+	 */
+	 public void deselectOverlay() {
 		if (boverLay.isSelected()) {
 			boverLay.doClick();
 		}
 	}
 	
+	/**
+	 * @return a string representing the build version of Jam running
+	 */
 	static public String getVersion(){
+		final char beta='\u03b2';
+		final char alpha='\u03b1';
+		final String JAM_VERSION = "1.4";
+		final String VERSION_TYPE = "Release Candidate 2";
 		String rval=JAM_VERSION;
 		if (VERSION_TYPE.length()>0){
 			rval += " ("+VERSION_TYPE+")";
@@ -1045,8 +1032,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	/**
-	 * Selects first items in histogram and gate choosers.  Default priveleges
-	 * allows JamCommand to call this as well.
+	 * Selects first items in histogram and gate choosers.  Default 
+	 * priveleges allows JamCommand to call this as well.
 	 */
 	private void setChoosersToFirstItems() {
 		histogramChooser.setSelectedIndex(0);
@@ -1056,12 +1043,15 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	/**
 	 * Return an ActionListener cabable of displaying the User
 	 * Guide.
+	 * 
+	 * @return an ActionListener cabable of displaying the User
+	 * Guide
 	 */
 	private ActionListener getUserGuideListener() {
-		HelpSet hs;
-		String helpsetName = "help/jam.hs";
+		final HelpSet hs;
+		final String helpsetName = "help/jam.hs";
 		try {
-			URL hsURL = getClass().getClassLoader().getResource(helpsetName);
+			final URL hsURL = getClass().getClassLoader().getResource(helpsetName);
 			hs = new HelpSet(null, hsURL);
 		} catch (Exception ee) {
 			System.out.println("HelpSet " + helpsetName + " not found");
@@ -1072,6 +1062,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 
 	/**
 	 * Main method that is run to start up full Jam process
+	 * 
+	 * @param args not used currently
 	 */
 	public static void main(String args[]) {
 		System.out.println("Launching Jam v" + getVersion());

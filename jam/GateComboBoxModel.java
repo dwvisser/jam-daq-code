@@ -15,6 +15,8 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
     public static final String CHOOSE_A_GATE="Choose a gate";
     JamCommand jc;
     private JamStatus status;
+    private int lastSize=0;
+    private Object [] lastValue;
 
     public GateComboBoxModel(JamCommand jamCommand){
         super();
@@ -25,7 +27,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
     /**
      * Needs to be called after every action that changes the list of histograms.
      */
-    void changeOccured(){
+    private void changeOccured(){
         fireContentsChanged(this,0,getSize());
     }
 
@@ -41,6 +43,11 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
                 rval = Histogram.getHistogram(status.getCurrentHistogramName()).getGates()[index-1].getName();
             }
         } 
+        if (lastValue[index]==null){
+        	lastValue[index]=rval;
+        } else if (!lastValue[index].equals(rval)){
+        	changeOccured();
+        }
         return rval;
     }
 
@@ -48,12 +55,24 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
      * Number of list elements in chooser.
      */
     public int getSize(){
-		return numGates()+1;
+    	final int rval=numGates()+1;
+    	if (rval != lastSize){
+			lastSize=rval;
+			lastValue=new Object[rval];
+    		changeOccured();
+    	}
+		return rval;
     }
 
-    //for ComboBoxModel interface
+    /**
+     * for ComboBoxModel interface
+     * 
+     * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+     *
+     * To change the template for this generated type comment go to
+     * Window>Preferences>Java>Code Generation>Code and Comments
+     */
     public void setSelectedItem(Object anItem) {
-        //System.err.println(this.getClass().getName()+".setSelectedItem(\""+anItem+"\")");
         selection = (String) anItem;
     }
 

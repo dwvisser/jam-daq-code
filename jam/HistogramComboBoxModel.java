@@ -14,6 +14,8 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	private String selection = null;
 	private String NO_HISTS = "No Histograms";
 	private JamCommand jc;
+	private int lastSize=0;
+	private Object [] lastValue;
 
 	public HistogramComboBoxModel(JamCommand jc) {
 		super();
@@ -51,6 +53,11 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 				}
 			}
 		}
+		if (lastValue[index]==null){
+			lastValue[index]=rval;
+		} else if (!lastValue[index].equals(rval)){
+			changeOccured();
+		}
 		return rval;
 	}
 
@@ -58,7 +65,13 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * Returns the number of list elements in the chooser.
 	 */
 	public int getSize() {
-		return Math.max(1, numHists());
+		int rval = Math.max(1, numHists());
+		if (rval != lastSize){
+			lastSize=rval;
+			lastValue=new Object[rval];
+			changeOccured();
+		}
+		return rval;
 	}
 
 	//for ComboBoxModel interface
