@@ -72,10 +72,6 @@ final class PlotGraphics {
 
 	private FontMetrics fm;
 
-	//private int numberColors;
-
-	//private int[] colorThresholds;
-
 	private Tickmarks tm;
 
 	/**
@@ -83,16 +79,11 @@ final class PlotGraphics {
 	 */
 	private Insets border;
 
-	/**
-	 * margins for printing a hard copy.
-	 */
-	private Insets margin;
-
 	/** The Limits in channel and scale of the plot */
 	private Limits plotLimits;
 
 	/** is the plot 1d or 2d */
-	private int plotDimensions;
+	private final int plotDimensions;
 
 	/**
 	 * variable for converting pixels to data and data to pixels
@@ -149,19 +140,20 @@ final class PlotGraphics {
 
 	/**
 	 * Full constructor, all contructors eventually call this one. Other
-	 * constructors have defaults
+	 * constructors have defaults.
+	 * 
+	 * @param plot the plot this belongs to
 	 */
-	PlotGraphics(JPanel plot) {
+	PlotGraphics(AbstractPlot plot) {
 		graphLayout = PlotGraphicsLayout.LABELS;
 		/* class that draws tick marks and makes color thresholds */
 		tm = new Tickmarks();
 		/* margin for printing */
-		margin = new Insets(0, 0, 0, 0);
 		/* maybe should be avaliable in constructor, middle of plot */
 		viewMiddle = new Point();
 		if (plot instanceof Plot1d) {
 			plotDimensions = 1;
-		} else if (plot instanceof Plot2d) {
+		} else {//Plot2d
 			plotDimensions = 2;
 		}
 		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
@@ -220,7 +212,6 @@ final class PlotGraphics {
 	 * @param f
 	 *            the font for labels
 	 * 
-	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
 	void update(Graphics graph, Dimension newViewSize, Limits limits) {
