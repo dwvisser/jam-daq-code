@@ -36,7 +36,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * Class for projecting 2-D histograms.
  * 
- * @author Dale Visser
+ * @author Dale Visser, Ken Swartz
  */
 public class Projections extends AbstractManipulation implements Observer {
 

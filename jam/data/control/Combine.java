@@ -1,4 +1,3 @@
-
 package jam.data.control;
 
 import jam.data.AbstractHist1D;
@@ -27,11 +26,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 /**
- * Class for gain adjusting and doing arithmetic with 1-D histograms.
+ * Combine histograms and also normalize a histogram
  * 
- * @author Dale Visser
+ * @author Dale Visser, Ken Swartz
  */
-public class Manipulations extends AbstractManipulation implements Observer {
+public class Combine extends AbstractManipulation implements Observer {
 
 	private final String NEW_HIST = "NEW: ";
 	
@@ -57,7 +56,7 @@ public class Manipulations extends AbstractManipulation implements Observer {
 	 * Construct a new "manipilate histograms" dialog.
 	 * @param mh where to print messages
 	 */
-	public Manipulations(MessageHandler mh) {
+	public Combine(MessageHandler mh) {
 		super("Manipulate 1-D Histograms", false);
 		messageHandler = mh;
 		setResizable(false);

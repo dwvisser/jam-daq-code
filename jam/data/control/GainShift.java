@@ -34,7 +34,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * Class for adjusting the gain of 1d spectra.
  * 
- * @author Dale Visser
+ * @author Dale Visser, Ken Swartz
  * @version JDK 1.1
  */
 public class GainShift extends AbstractManipulation implements ItemListener, Observer {

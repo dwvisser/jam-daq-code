@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.control.Manipulations;
+import jam.data.control.Combine;
 
 /**
  *  Command to show project histgram dialog
@@ -11,6 +11,6 @@ final class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
 	public void initCommand() {
 		putValue(NAME, "Combine\u2026");
-		dialog = new Manipulations(msghdlr);
+		dialog = new Combine(msghdlr);
 	}
 }
