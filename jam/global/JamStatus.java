@@ -47,6 +47,7 @@ public  class JamStatus {
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
     private static JFrame frame;
+
     /** For fowarding class */
     private static JamMain jamMain;
     
@@ -104,6 +105,15 @@ public  class JamStatus {
     public void setSortMode(int mode) {
     	jamMain.setSortMode(mode); 
     }
+	/**
+	 * Forwards call to JamMain but some of the implementation should be
+	 * here
+	 *  
+	 * @param fileName file name
+	 */    
+	public void setSortModeFile(String fileName) {
+		jamMain.setSortModeFile(fileName);
+	}
     /**
      * Set the acquisition status.
      * 
