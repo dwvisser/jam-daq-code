@@ -17,6 +17,8 @@ import java.util.TreeSet;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javax.swing.JOptionPane;
+
 /**
  * This utility class is looking for all the classes implementing or 
  * inheriting from a given interface or class.
@@ -66,7 +68,9 @@ public class RTSI {
 		try {
 			tosubclass = Class.forName(name);
 		} catch (ClassNotFoundException ex) {
-			System.err.println("Class " + name + " not found!");
+			JOptionPane.showMessageDialog(null,
+			"Class " + name + " not found!",
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 			tosubclass = null;
 		}
 		return tosubclass;
@@ -129,9 +133,13 @@ public class RTSI {
 				rval.add(defaultLoader.loadClass((String) (it.next())));
 			}
 		} catch (ClassNotFoundException e) {
-			System.err.println(e.getMessage());
+			JOptionPane.showMessageDialog(null,
+			e.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		} catch (LinkageError e){
-			System.err.println(e.getMessage());
+			JOptionPane.showMessageDialog(null,
+			e.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
 	}
@@ -236,7 +244,9 @@ public class RTSI {
 				coll.add(classname);
 			}
 		} catch (ClassNotFoundException cnfex) {
-			System.err.println(cnfex);
+			JOptionPane.showMessageDialog(null,
+			cnfex.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -255,7 +265,9 @@ public class RTSI {
 			jfile = conn.getJarFile();
 			success = true;
 		} catch (IOException ioex) {
-			System.err.println(ioex);
+			JOptionPane.showMessageDialog(null,
+			ioex.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 			success = false;
 		}
 		if (success) {
@@ -345,7 +357,9 @@ public class RTSI {
 			try {
 				url = classpath.toURL();
 			} catch (MalformedURLException e) {
-				System.err.println(e.getMessage());
+				JOptionPane.showMessageDialog(null,
+				e.getMessage(),
+				"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 			}
 			if (url != null) {
 				loader = new URLClassLoader(new URL[] { url });
@@ -373,7 +387,9 @@ public class RTSI {
 				rval.add(loader.loadClass((String) it.next()));
 			}
 		} catch (ClassNotFoundException e) {
-			System.err.println(e.getMessage());
+			JOptionPane.showMessageDialog(null,
+			e.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
 	}
@@ -417,9 +433,13 @@ public class RTSI {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
-					System.err.println(cnfex);
+					JOptionPane.showMessageDialog(null,
+					cnfex.getMessage(),
+					"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 				} catch (LinkageError le){
-					System.err.println(le);
+					JOptionPane.showMessageDialog(null,
+					le.getMessage(),
+					"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -443,7 +463,9 @@ public class RTSI {
 				url = path.toURL();
 			}
 		} catch (MalformedURLException e) {
-			System.err.println(e.getMessage());
+			JOptionPane.showMessageDialog(null,
+			e.getMessage(),
+			"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 		}
 		if (url == null) {
 			rval = null;
@@ -452,7 +474,9 @@ public class RTSI {
 			try {
 				rval = loader.loadClass(className);
 			} catch (ClassNotFoundException e) {
-				System.err.println(e);
+				JOptionPane.showMessageDialog(null,
+				e.getMessage(),
+				"jam.global.RTSI",JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		return rval;

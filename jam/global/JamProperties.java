@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 /**
  * This is an class that is used to get and set the properties for Jam.
  * As the properties are loaded before a way to print out messages has
@@ -406,28 +408,24 @@ public class JamProperties {
 			}
 		} catch (FileNotFoundException fnfe) {
 			loadError =
-				"Jam Configuration file not found "
-					+ fileName
-					+ " [JamProperties]";
-			if (msgHandler != null) {
-				msgHandler.errorOutln(loadError);
-			} else {
-				//FIXME are these print out needed
-				System.err.println("Error: " + loadError);
-				System.err.println("Exception: " + fnfe.getMessage());
-			}
+				"Jam configuration file, "+fileName+",  not found.";
+			showErrorMessage(fnfe, loadError);
 		} catch (IOException ioe) {
 			loadError =
-				"Could not read Configuration file "
-					+ fileName
-					+ " [JamProperties]";
-			if (msgHandler != null) {
-				msgHandler.errorOutln(loadError);
-			} else {
-				//FIXME are these print out needed	    
-				System.err.println("Error: " + loadError);
-				System.err.println("Exception: " + ioe.getMessage());
-			}
+				"Could not read configuration file, "
+					+ fileName+".";
+			showErrorMessage(ioe, loadError);
+		}
+	}
+	
+	private void showErrorMessage(Exception e, String extra){
+		final String cname=getClass().getName();
+		final String message=e.getMessage()+"; "+extra;
+		if (msgHandler==null){
+			JOptionPane.showMessageDialog(null,message,
+			cname,JOptionPane.ERROR_MESSAGE);
+		} else {
+			msgHandler.errorOutln(cname+"--"+message);
 		}
 	}
 
