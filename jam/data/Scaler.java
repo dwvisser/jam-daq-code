@@ -39,16 +39,17 @@ public class Scaler {
      * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
      * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
      */
-    public Scaler(String name, int number) {        
+    public Scaler(Group group, String name, int number) {        
 		final StringUtilities stringUtil=StringUtilities.instance();
         if(name.length()>NAME_LENGTH){//give error if name is too long
             throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
         name=stringUtil.makeLength(name, NAME_LENGTH);
-        
-        final Group currentGroup = Group.getCurrentGroup();
-        currentGroup.addScaler(this);
-        String groupName=currentGroup.getName();
+        if (group==null) {
+        	group = Group.getCurrentGroup();
+        }
+        group.addScaler(this);
+        String groupName=group.getName();
 
         /* make sure name is unique */
         int prime=1;
@@ -65,6 +66,16 @@ public class Scaler {
         /* Add to list of scalers */
         TABLE.put(name, this);
         LIST.add(this);
+    }
+    /**
+     * Creates a new scaler with an assigned name and number.
+     *
+     * @param	name	name of the scaler, which must be <=16 characters
+     * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
+     * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
+     */
+    public Scaler(String name, int number) {
+    	this(null, name, number);
     }
 
     /**

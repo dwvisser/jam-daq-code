@@ -784,7 +784,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 }
 	    	 }
 	    	 //Load scalers
-	    	 List gateList = hdfToJam.findScalers(currentVGroup);
+	    	 List scalerList = hdfToJam.findScalers(currentVGroup);
+	    	 //Has scalers
+	    	 if (scalerList.size()>0) {
+	    	 	hdfToJam.convertScalers(currentGroup, (VirtualGroup)scalerList.get(0), mode);
+	    	 }
+	    	 
 	    	 //Load Parameters
 	    	 List parameterList = hdfToJam.findParameters(currentVGroup);
 	    	  

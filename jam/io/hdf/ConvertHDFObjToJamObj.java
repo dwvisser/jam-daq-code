@@ -257,6 +257,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     }
     
     Gate convertGate(Histogram hist, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
+    	
+    	//Get VDD member of Virtual group
         final VdataDescription vdd = (VdataDescription) (AbstractHData
                 .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
                 .get(0));
@@ -304,7 +306,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     }
 
 	List findScalers(VirtualGroup virtualGroupGroup) throws HDFException {
-		return findSubGroups(virtualGroupGroup, SCALER_SECT);		
+		return findSubGroupsName(virtualGroupGroup, SCALER_SECT);		
     }
 
     /*
@@ -317,18 +319,33 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     	int numScalers = 0;
         final VdataDescription vdd = VdataDescription.ofName(AbstractHData
                 .ofType(AbstractHData.DFTAG_VH), SCALER_SECT);
+        Group currentGroup = Group.getCurrentGroup();
         if (vdd != null) {
-        	numScalers= convertScalers(vdd, mode);        	
+        	numScalers= convertScalers(currentGroup, vdd, mode);        	
         }
         return numScalers;
-    }	
+    }
     /*
      * non-javadoc: Retrieve the scalers from the file.
      * 
      * @param mode whether to open, reload or add @throws HDFException if there
      * is a problem retrieving scalers
      */
-    int convertScalers(VdataDescription vdd, FileOpenMode mode) throws HDFException {
+
+    int convertScalers(Group group, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
+    	 final VdataDescription vdd = (VdataDescription) (AbstractHData
+                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
+                .get(0));
+    	 return convertScalers(group, vdd, mode); 
+    }
+    
+    /*
+     * non-javadoc: Retrieve the scalers from the file.
+     * 
+     * @param mode whether to open, reload or add @throws HDFException if there
+     * is a problem retrieving scalers
+     */
+    int convertScalers(Group group, VdataDescription vdd, FileOpenMode mode) throws HDFException {
         int numScalers = 0;
       
         /* get the VS corresponding to the given VH */
@@ -337,7 +354,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         for (int i = 0; i < numScalers; i++) {
             final String sname = data.getString(i, 1);
             final int sNumber = data.getInteger(i, 0).intValue();
-            final Scaler scaler = produceScaler(mode, sNumber, sname);
+            final Scaler scaler = produceScaler(group, mode, sNumber, sname);
             if (scaler != null) {
                 final int fileValue = data.getInteger(i, 2).intValue();
                 if (mode == FileOpenMode.ADD) {
@@ -350,8 +367,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return numScalers;
     }
     
-    private Scaler produceScaler(FileOpenMode mode, int number, String name){
-        return mode.isOpenMode() ? new Scaler(name,
+    private Scaler produceScaler(Group group, FileOpenMode mode, int number, String name){
+        return mode.isOpenMode() ? new Scaler(group, name,
                 number) : Scaler
                 .getScaler(name);        
     }
@@ -411,7 +428,24 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
        	}
    	    return groupSubList;   	 		
    	 }
-    
+
+	private List findSubGroupsName(VirtualGroup virtualGroupGroup, String groupName){
+    	final List groupSubList = new ArrayList();    	
+    	final Iterator iter = virtualGroupGroup.getObjects().iterator();
+   	 	while (iter.hasNext()) {
+   	 		AbstractHData hData = (AbstractHData)iter.next();
+   	 		//Is a virtual group
+   	 		if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+   	 			//add to list if is a scaler goup
+   	 			final VirtualGroup currentVGroup = (VirtualGroup) hData;
+   	 			if ( currentVGroup.getName().equals(groupName) ) {
+   	 				groupSubList.add(currentVGroup);
+   	 			} 
+   	 		}
+       	}
+   	    return groupSubList;   	 		
+   	 }
+	
     Histogram openHistogram(Group group, String name, String title, int number, 
             Object histData, Object histErrorData) throws HDFException {
         final Histogram histogram = Histogram.createHistogram(group, histData, name, title);
