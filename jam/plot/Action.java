@@ -348,7 +348,7 @@ class Action implements ActionListener, PlotMouseListener,
 			 * no command being processed check if gate is being set
 			 */
 			if (settingGate) {
-				broadcaster.broadcast(BroadcastEvent.GATE_SET_POINT, pChannel);
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT, pChannel);
 				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 						pPixel);
 			} else {
@@ -478,7 +478,7 @@ class Action implements ActionListener, PlotMouseListener,
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
 		 */
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 	/**
@@ -530,7 +530,7 @@ class Action implements ActionListener, PlotMouseListener,
 				if (hist.length < 2) {
 					display.removeOverlays();
 				}
-				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln("There is no histogram numbered " + num

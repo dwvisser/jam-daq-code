@@ -170,7 +170,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 		bupdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				if (mode == ONLINE) {
-					broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
+					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 					textBuffRecv.setText(String.valueOf(netDaemon
 							.getPacketCount()));
 					textBuffSort.setText(String.valueOf(sortDaemon
@@ -200,7 +200,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 			public void actionPerformed(ActionEvent ae) {
 				final String space = " ";
 				if (mode == ONLINE) {
-					broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
+					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
 					textBuffSort.setText(space);
 					sortDaemon.setBufferCount(0);
 					textBuffSort.setText(String.valueOf(sortDaemon
@@ -222,7 +222,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 					storageDaemon.setBufferCount(0);
 					textBuffWrit.setText(String.valueOf(storageDaemon
 							.getBufferCount()));
-					broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
+					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 
 				} else { //offline
 					textBuffSort.setText(space);
@@ -308,9 +308,9 @@ public final class DisplayCounters extends JDialog implements Observer {
 		final int INDEX_CNT_EVNT = 1;
 		final int INDEX_CNT_BUFF = 2;
 		final BroadcastEvent be = (BroadcastEvent) o;
-		final int command = be.getCommand();
+		final BroadcastEvent.Command command = be.getCommand();
 		int vmeCounters[] = new int[NUMBER_COUNTERS];
-		if (command == BroadcastEvent.COUNTERS_UPDATE) {
+		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
 			if (mode == ONLINE) {
 				/* update remote fields */
 				vmeCounters = (int[]) be.getContent();

@@ -127,14 +127,14 @@ FrontEndCommunication {
      */
     public void update(Observable observable, Object o){
         final BroadcastEvent be=(BroadcastEvent)o;
-        final int command=be.getCommand();
-        if(command==BroadcastEvent.SCALERS_READ){
+        final BroadcastEvent.Command command=be.getCommand();
+        if(command==BroadcastEvent.Command.SCALERS_READ){
             readScalers();
-        } else if (command==BroadcastEvent.SCALERS_CLEAR){
+        } else if (command==BroadcastEvent.Command.SCALERS_CLEAR){
             clearScalers();
-        } else if (command==BroadcastEvent.COUNTERS_READ){
+        } else if (command==BroadcastEvent.Command.COUNTERS_READ){
             readCounters();
-        } else if (command==BroadcastEvent.COUNTERS_ZERO){
+        } else if (command==BroadcastEvent.Command.COUNTERS_ZERO){
             zeroCounters();
         }
     }
@@ -461,7 +461,7 @@ FrontEndCommunication {
                     Scaler.update(scalerValues);
                 } else if (status==COUNTER){
                     unPackCounters(messageDis);
-                    broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE, counterValues);
+                    broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE, counterValues);
                 } else if (status==ERROR) {
                     console.errorOutln(getClass().getName()+": "
                         +unPackMessage(messageDis));

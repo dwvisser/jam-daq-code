@@ -170,7 +170,7 @@ public class HistogramNew extends DataControl {
 		final int size = Integer
 				.parseInt(((String) comboSize.getSelectedItem()).trim());
 		new Histogram(name, type, size, title);
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {

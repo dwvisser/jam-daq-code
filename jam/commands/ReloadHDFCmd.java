@@ -45,8 +45,8 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 
 	public void update(Observable observe, Object obj){
 		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
 	}

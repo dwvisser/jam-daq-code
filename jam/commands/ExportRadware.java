@@ -22,8 +22,8 @@ final class ExportRadware extends AbstractExportFile implements Observer{
 	
 	public void update(Observable observe, Object obj){
 		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.HISTOGRAM_SELECT){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
 			enable();
 		}
 	}

@@ -389,7 +389,7 @@ public class SortDaemon extends GoodThread {
 	 * Update the counters display.
 	 */
 	private void updateCounters() {
-		broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
+		broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE);
 	}
 
 	/**

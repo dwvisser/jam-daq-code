@@ -120,11 +120,11 @@ public final class JamStatus {
 			}
 			sortMode = mode;
 		}
-		broadcaster.broadcast(BroadcastEvent.SORT_MODE_CHANGED);
+		broadcaster.broadcast(BroadcastEvent.Command.SORT_MODE_CHANGED);
 	}
 	
 	public void setRunState(RunState rs){
-		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,rs);
+		broadcaster.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,rs);
 	}
 	
 	/**

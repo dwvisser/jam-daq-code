@@ -47,9 +47,9 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	 */
 	public void update(Observable o, Object arg) {
 		final BroadcastEvent be=(BroadcastEvent)arg;
-		final int command=be.getCommand();
+		final BroadcastEvent.Command command=be.getCommand();
 		boolean enable = online();
-		if (command==BroadcastEvent.RUN_STATE_CHANGED){
+		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
 			final RunState rs=(RunState)be.getContent();
 			enable &= rs.isAcqOn();
 		}

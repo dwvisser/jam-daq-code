@@ -156,7 +156,7 @@ public final class ScalerDisplay extends DataControl implements Observer {
 	 */
 	public void read() {
 		if (status.isOnLine()) {
-			broadcaster.broadcast(BroadcastEvent.SCALERS_READ);
+			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} else {
 			displayScalers();
 		}
@@ -172,7 +172,7 @@ public final class ScalerDisplay extends DataControl implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.SCALERS_UPDATE) {
+		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
 			displayScalers();
 		}
 	}

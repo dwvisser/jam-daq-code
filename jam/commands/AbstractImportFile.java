@@ -30,7 +30,7 @@ class AbstractImportFile extends AbstractImportExport {
 				if (importExport.openFile(null)) {
 					status.setSortMode(importExport.getLastFile());
 					DataControl.setupAll();
-					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}
 			} else { //File given
 				File file = (File) cmdParams[0];

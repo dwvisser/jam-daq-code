@@ -82,7 +82,7 @@ public class GateNew extends DataControl {
 		final Histogram hist =
 			Histogram.getHistogram(status.getCurrentHistogramName());
 		new Gate(textNew.getText(), hist);
-		broadcaster.broadcast(BroadcastEvent.GATE_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
 		messageHandler.messageOutln(
 			"New gate "
 				+ textNew.getText()

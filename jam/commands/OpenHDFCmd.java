@@ -60,14 +60,14 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	private void notifyApp(File file) {
 		status.setSortMode(file);
 		DataControl.setupAll();
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		status.getFrame().repaint();
 	}			
 	
 	public void update(Observable observe, Object obj){
 		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
 	}

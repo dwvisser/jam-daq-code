@@ -78,8 +78,8 @@ public class ScalerZero extends DataControl {
 		if (!status.isOnLine()) {
 			throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
 		}
-		broadcaster.broadcast(BroadcastEvent.SCALERS_CLEAR);
-		broadcaster.broadcast(BroadcastEvent.SCALERS_READ);
+		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
+		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 	}
 
 	/**

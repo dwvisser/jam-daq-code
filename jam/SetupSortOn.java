@@ -510,7 +510,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 							setupVME_Map();
 						}
 						lockMode(true);
-						broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+						broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 						jamConsole
 								.messageOutln("Setup data network, and Online sort daemons setup");
 					}
@@ -719,7 +719,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			sortRoutine = null;
 		}
 		DataBase.getInstance().clearAllLists();
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
 	/**

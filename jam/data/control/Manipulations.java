@@ -179,7 +179,7 @@ public class Manipulations extends DataControl implements ActionListener,
 		try {
 			if (command == "ok" || command == "apply") {
 				manipulate();
-				broadcaster.broadcast(BroadcastEvent.REFRESH);
+				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				if (command == "ok") {
 					dispose();
 				}
@@ -216,9 +216,9 @@ public class Manipulations extends DataControl implements ActionListener,
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
 
-		if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
+		if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			setup();
-		} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_ADD) {
+		} else if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			setup();
 		}
 
@@ -338,7 +338,7 @@ public class Manipulations extends DataControl implements ActionListener,
 			name = ttextto.getText().trim();
 			hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom1
 					.getSizeX(), name);
-			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New histogram of type double created, name: '"
 							+ name + "'");

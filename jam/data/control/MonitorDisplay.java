@@ -114,11 +114,11 @@ public class MonitorDisplay extends DataControl implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.MONITORS_UPDATE) {
+		if (be.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {
 			displayMonitors();
-		} else if (be.getCommand() == BroadcastEvent.MONITORS_ENABLED)  {
+		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED)  {
 			enableMonitors();
-		}else if (be.getCommand() == BroadcastEvent.MONITORS_DISABLED)  {
+		}else if (be.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED)  {
 			disableMonitors();
 		}
 	}

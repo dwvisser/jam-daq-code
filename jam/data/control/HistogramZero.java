@@ -46,7 +46,7 @@ public class HistogramZero extends DataControl {
 					Histogram.getHistogram(
 						JamStatus.instance().getCurrentHistogramName());
 				currentHistogram.setZero();
-				broadcaster.broadcast(BroadcastEvent.REFRESH);
+				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 				msghdlr.messageOutln(
 					"Zero Histogram: " + currentHistogram.getTitle());
 				dispose();
@@ -88,7 +88,7 @@ public class HistogramZero extends DataControl {
 			msghdlr.messageOut(" .", MessageHandler.CONTINUE);
 			hist.setZero();
 		}
-		broadcaster.broadcast(BroadcastEvent.REFRESH);
+		broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
 		msghdlr.messageOut(" done!", MessageHandler.END);
 	}
 	

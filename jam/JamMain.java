@@ -288,10 +288,10 @@ public final class JamMain extends JFrame implements Observer {
 	
 	public void update(Observable event, Object param){
 		final BroadcastEvent be=(BroadcastEvent)param;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			sortModeChanged();
-		} else if (command==BroadcastEvent.RUN_STATE_CHANGED){
+		} else if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
 			setRunState((RunState)be.getContent());
 		}
 	}

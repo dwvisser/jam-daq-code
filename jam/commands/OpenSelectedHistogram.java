@@ -28,7 +28,7 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	 */
 	protected void execute(Object[] cmdParams) {
 		osh.open();
-		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		status.getFrame().repaint();
 	}
 

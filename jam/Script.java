@@ -238,8 +238,8 @@ public final class Script implements Observer {
 	private RunState rs=RunState.NO_ACQ;
 	public void update(Observable event, Object param){
 		final BroadcastEvent be=(BroadcastEvent)param;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.RUN_STATE_CHANGED){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
 			synchronized(rs){
 				rs=(RunState)param;
 			}

@@ -1,4 +1,5 @@
 package jam.data.control;
+
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -35,27 +36,41 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * Class to set 1 D and 2 D gates.
- *
+ * 
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
 public class GateSet extends DataControl implements Observer {
 
 	private static final int ONE_DIMENSION = 1;
+
 	private static final int TWO_DIMENSION = 2;
+
 	private static final int NONE = -1;
+
 	private boolean newGate = false; //a gate has been chosen
+
 	private final Frame frame;
+
 	private final MessageHandler messageHandler;
+
 	private Histogram currentHistogram;
+
 	private Gate currentGate;
+
 	private int type;
+
 	private java.util.List gatePoints;
+
 	//number intial points, increment increase
 	private int numberPoints;
+
 	private final JComboBox cgate;
+
 	private final JLabel lLower, lUpper;
+
 	private final JTextField textLower, textUpper;
+
 	private final JButton addP, removeP, unset, save, cancel;
 
 	/**
@@ -205,7 +220,7 @@ public class GateSet extends DataControl implements Observer {
 				removeP.setEnabled(true);
 			}
 			unset.setEnabled(true);
-			broadcaster.broadcast(BroadcastEvent.GATE_SET_ON);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ON);
 			//change the title of the dialog
 			setTitle("Gate setting " + currentGate.getName());
 			//make fields and buttons active
@@ -219,61 +234,58 @@ public class GateSet extends DataControl implements Observer {
 	}
 
 	/**
-	 * Implementation of Observable interface
-	 * To receive broadcast events.
-	 *
-	 * @param observable the event sender
-	 * @param o the message
+	 * Implementation of Observable interface To receive broadcast events.
+	 * 
+	 * @param observable
+	 *            the event sender
+	 * @param o
+	 *            the message
 	 */
 	public void update(Observable observable, Object o) {
 		final BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.HISTOGRAM_SELECT) {
+		final BroadcastEvent.Command com = be.getCommand();
+		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			cancel();
-		} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
+		} else if (com == BroadcastEvent.Command.HISTOGRAM_NEW
+				|| com == BroadcastEvent.Command.HISTOGRAM_ADD
+				|| com == BroadcastEvent.Command.GATE_ADD) {
 			setup();
-		} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_ADD) {
-			setup();
-		} else if (be.getCommand() == BroadcastEvent.GATE_ADD) {
-			setup();
-		} else if (be.getCommand() == BroadcastEvent.GATE_SET_POINT) {
+		} else if (com == BroadcastEvent.Command.GATE_SET_POINT) {
 			addPoint((Bin) be.getContent());
 		}
 	}
-	
-	private synchronized void setType(int m){
-		type=m;
+
+	private synchronized void setType(int m) {
+		type = m;
 	}
 
 	/**
-	 * Loads the list of gates and
-	 * set co-ordinates as x y if 2d
-	 * or lower upper if 1 d
-	 *
+	 * Loads the list of gates and set co-ordinates as x y if 2d or lower upper
+	 * if 1 d
+	 *  
 	 */
 	public void setup() {
 		/* get current state */
 		synchronized (this) {
-			currentHistogram =
-				Histogram.getHistogram(status.getCurrentHistogramName());
+			currentHistogram = Histogram.getHistogram(status
+					.getCurrentHistogramName());
 		}
 		if (currentHistogram == null) {
 			/* There are many normal situations with no current histogram. */
 			setType(NONE); //undefined type
-		} else if (
-			currentHistogram.getDimensionality()==1) {
+		} else if (currentHistogram.getDimensionality() == 1) {
 			setType(Gate.ONE_DIMENSION);
-		} else if (
-			currentHistogram.getDimensionality()==2) {
+		} else if (currentHistogram.getDimensionality() == 2) {
 			setType(Gate.TWO_DIMENSION);
 		} else {
-			messageHandler.errorOutln(
-				getClass().getName() + ".setup(): undefined histogram type.");
+			messageHandler.errorOutln(getClass().getName()
+					+ ".setup(): undefined histogram type.");
 			setType(NONE);
 		}
 		cgate.setSelectedIndex(0);
 		//change labels depending if we have a one or two D histogram
 		if (currentHistogram != null
-			&& currentHistogram.getDimensionality() == 1) {
+				&& currentHistogram.getDimensionality() == 1) {
 			setType(ONE_DIMENSION);
 			lLower.setText(" lower");
 			lUpper.setText(" upper");
@@ -286,32 +298,33 @@ public class GateSet extends DataControl implements Observer {
 
 	/**
 	 * Add a point from the text fields.
-	 *
-	 * @throws DataException if there's a problem with the
-	 * number format
-	 * @throws GlobalException if there's additional problems
+	 * 
+	 * @throws DataException
+	 *             if there's a problem with the number format
+	 * @throws GlobalException
+	 *             if there's additional problems
 	 */
 	private void addPoint() {
 		try {
 			final int x = Integer.parseInt(textLower.getText().trim());
 			final int y = Integer.parseInt(textUpper.getText().trim());
-			final Bin p = Bin.Factory.create(x, y); 
+			final Bin p = Bin.Factory.create(x, y);
 			addPoint(p);
-			broadcaster.broadcast(BroadcastEvent.GATE_SET_ADD, p);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ADD, p);
 		} catch (NumberFormatException ne) {
 			messageHandler.errorOutln("Invalid input not a number [GateSet]");
 		}
 	}
+
 	/**
 	 * Remove a point in setting a 2d gate.
 	 */
 	private void removePoint() {
 		if (!gatePoints.isEmpty()) {
 			gatePoints.remove(gatePoints.size() - 1);
-			broadcaster.broadcast(BroadcastEvent.GATE_SET_REMOVE);
+			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
 			if (!gatePoints.isEmpty()) {
-				final Bin lastBin =
-					(Bin) gatePoints.get(gatePoints.size() - 1);
+				final Bin lastBin = (Bin) gatePoints.get(gatePoints.size() - 1);
 				textLower.setText(String.valueOf(lastBin.getX()));
 				textUpper.setText(String.valueOf(lastBin.getY()));
 			} else {
@@ -326,14 +339,14 @@ public class GateSet extends DataControl implements Observer {
 		cgate.repaint();
 		messageHandler.messageOutln("Gate UnSet: " + currentGate.getName());
 		cancel();
-		broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
+		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}
 
 	/**
-	 * Add a point to the gate
-	 * when we are setting a new gate.
-	 *
-	 * @param pChannel the point corresponding to the channel to add
+	 * Add a point to the gate when we are setting a new gate.
+	 * 
+	 * @param pChannel
+	 *            the point corresponding to the channel to add
 	 */
 	private void addPoint(Bin pChannel) {
 		if (newGate) { //do nothing if no gate chosen
@@ -351,9 +364,9 @@ public class GateSet extends DataControl implements Observer {
 					gatePoints.add(pChannel);
 					textUpper.setText(String.valueOf(pChannel.getX()));
 				} else {
-					messageHandler.errorOutln(
-						getClass().getName()
-							+ ".addPoint(): setting 1 d gate should not be here.");
+					messageHandler
+							.errorOutln(getClass().getName()
+									+ ".addPoint(): setting 1 d gate should not be here.");
 				}
 			} else if (type == TWO_DIMENSION) {
 				gatePoints.add(pChannel);
@@ -361,8 +374,7 @@ public class GateSet extends DataControl implements Observer {
 				textUpper.setText(String.valueOf(pChannel.getY()));
 			}
 		} else {
-			messageHandler.errorOutln(
-				getClass().getName()
+			messageHandler.errorOutln(getClass().getName()
 					+ ".addPoint(Point): an expected condition was not true. "
 					+ "Contact the developer.");
 		}
@@ -370,9 +382,11 @@ public class GateSet extends DataControl implements Observer {
 
 	/**
 	 * Save the gate value.
-	 *
-	 * @throws DataException if there's a problem
-	 * @throws GlobalException if there's a problem
+	 * 
+	 * @throws DataException
+	 *             if there's a problem
+	 * @throws GlobalException
+	 *             if there's a problem
 	 */
 	private void save() {
 		checkHistogram(); //check we have same histogram
@@ -382,12 +396,8 @@ public class GateSet extends DataControl implements Observer {
 					final int x1 = Integer.parseInt(textLower.getText());
 					final int x2 = Integer.parseInt(textUpper.getText());
 					currentGate.setLimits(x1, x2);
-					messageHandler.messageOutln(
-						"Gate Set "
-							+ currentGate.getName()
-							+ " Limits="
-							+ x1
-							+ ","
+					messageHandler.messageOutln("Gate Set "
+							+ currentGate.getName() + " Limits=" + x1 + ","
 							+ x2);
 				} else if (type == TWO_DIMENSION) {
 					/* complete gate, adding a last point = first point */
@@ -400,13 +410,13 @@ public class GateSet extends DataControl implements Observer {
 						gatePoly2d.addPoint(pointX, pointY);
 					}
 					currentGate.setLimits(gatePoly2d);
-					messageHandler.messageOutln(
-						"Gate Set " + currentGate.getName());
+					messageHandler.messageOutln("Gate Set "
+							+ currentGate.getName());
 					printPoints(gatePoly2d);
 				}
-				broadcaster.broadcast(BroadcastEvent.GATE_SELECT, currentGate);
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, currentGate);
 				cgate.repaint();
-				broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
+				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
 			}
 		} catch (NumberFormatException ne) {
 			messageHandler.errorOutln("Invalid input not a number [GateSet]");
@@ -416,8 +426,9 @@ public class GateSet extends DataControl implements Observer {
 
 	/**
 	 * Output the list of gate points to the console.
-	 *
-	 * @param poly the points defining the gate
+	 * 
+	 * @param poly
+	 *            the points defining the gate
 	 */
 	private void printPoints(Polygon poly) {
 		final int x[] = poly.xpoints;
@@ -430,14 +441,14 @@ public class GateSet extends DataControl implements Observer {
 	}
 
 	/**
-	 * Cancel the setting of the gate and
-	 * disable editting of all fields.
-	 *
-	 * @throws GlobalException if there's a problem
+	 * Cancel the setting of the gate and disable editting of all fields.
+	 * 
+	 * @throws GlobalException
+	 *             if there's a problem
 	 */
 	private void cancel() {
 		checkHistogram();
-		broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
+		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 		setTitle("Gate setting <none>");
 		synchronized (this) {
 			newGate = false;
@@ -455,17 +466,17 @@ public class GateSet extends DataControl implements Observer {
 	}
 
 	/**
-	 * Check that plot's current histogram has not changed.
-	 * If so, cancel and make the plot's current histogram
-	 * our current histogram.
-	 *
+	 * Check that plot's current histogram has not changed. If so, cancel and
+	 * make the plot's current histogram our current histogram.
+	 * 
 	 * @author Ken Swartz
-	 * @throws GlobalException if there's a problem
+	 * @throws GlobalException
+	 *             if there's a problem
 	 */
 	private void checkHistogram() {
 		/* has histogram changed? */
-		if (currentHistogram
-			!= Histogram.getHistogram(status.getCurrentHistogramName())) {
+		if (currentHistogram != Histogram.getHistogram(status
+				.getCurrentHistogramName())) {
 			setup(); //setup chooser list
 			cancel(); //cancel current gate if was setting
 		}

@@ -112,7 +112,7 @@ public class Scaler implements Serializable  {
             final Scaler currentScaler=(Scaler)scalerList.get(i);
             currentScaler.setValue(inValue[currentScaler.getNumber()]);
         }
-        broadcaster.broadcast(BroadcastEvent.SCALERS_UPDATE);
+        broadcaster.broadcast(BroadcastEvent.Command.SCALERS_UPDATE);
     }
 
     /**

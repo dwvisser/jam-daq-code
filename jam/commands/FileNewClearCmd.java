@@ -41,7 +41,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 		"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
 			status.setSortMode(SortMode.NO_SORT);
 			DataBase.getInstance().clearAllLists();
-			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		}
 		
 	}
@@ -56,8 +56,8 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	
 	public void update(Observable observe, Object obj){
 		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
 	}

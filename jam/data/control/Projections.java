@@ -247,11 +247,11 @@ public class Projections extends DataControl implements ActionListener,
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
+		if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			setup();
-		} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_ADD) {
+		} else if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			setupAdd();
-		} else if (be.getCommand() == BroadcastEvent.GATE_ADD) {
+		} else if (be.getCommand() == BroadcastEvent.Command.GATE_ADD) {
 			setupAdd();
 		}
 	}
@@ -383,7 +383,7 @@ public class Projections extends DataControl implements ActionListener,
 				hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
 						.getSizeY(), name);
 			}
-			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New Histogram created: '" + name + "'");
 		} else {

@@ -252,11 +252,10 @@ public class GainShift extends DataControl implements ActionListener,
 	 * Listen for histograms new, histogram added
 	 */
 	public void update(Observable observable, Object o) {
-		BroadcastEvent be = (BroadcastEvent) o;
-
-		if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
-			setup();
-		} else if (be.getCommand() == BroadcastEvent.HISTOGRAM_ADD) {
+		final BroadcastEvent be = (BroadcastEvent) o;
+		final BroadcastEvent.Command com=be.getCommand();
+		if (com == BroadcastEvent.Command.HISTOGRAM_NEW ||
+				com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			setup();
 		}
 	}
@@ -358,7 +357,7 @@ public class GainShift extends DataControl implements ActionListener,
 			name = ttextto.getText().trim();
 			hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
 					.getSizeX(), name);
-			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New Histogram created: '" + name + "'");
 		} else {

@@ -27,7 +27,7 @@ implements Observer {
 		
 	public void update(Observable observe, Object obj){
 		final BroadcastEvent event=(BroadcastEvent)obj;
-		if (event.getCommand()==BroadcastEvent.SORT_MODE_CHANGED){
+		if (event.getCommand()==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			final SortMode mode=status.getSortMode();
 			setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK
 			|| mode==SortMode.OFFLINE);

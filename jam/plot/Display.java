@@ -173,25 +173,25 @@ public final class Display extends JPanel implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		final BroadcastEvent be = (BroadcastEvent) o;
-		final int command = be.getCommand();
-		if (command == BroadcastEvent.REFRESH) {
+		final BroadcastEvent.Command command = be.getCommand();
+		if (command == BroadcastEvent.Command.REFRESH) {
 			displayHistogram();
-		} else if (command == BroadcastEvent.GATE_SET_ON) {
+		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);
-		} else if (command == BroadcastEvent.GATE_SET_OFF) {
+		} else if (command == BroadcastEvent.Command.GATE_SET_OFF) {
 			getPlot().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
 			getPlot().repaint();
-		} else if (command == BroadcastEvent.GATE_SET_SAVE) {
+		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE) {
 			getPlot().displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
-		} else if (command == BroadcastEvent.GATE_SET_ADD) {
+		} else if (command == BroadcastEvent.Command.GATE_SET_ADD) {
 			getPlot().displaySetGate(GateSetMode.GATE_CONTINUE,
 					(Bin) be.getContent(), null);
-		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
+		} else if (command == BroadcastEvent.Command.GATE_SET_REMOVE) {
 			getPlot().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
-		} else if (command == BroadcastEvent.GATE_SELECT) {
+		} else if (command == BroadcastEvent.Command.GATE_SELECT) {
 			Gate gate = (Gate) (be.getContent());
 			getPlot().displayGate(gate);
 		}

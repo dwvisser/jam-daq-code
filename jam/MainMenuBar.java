@@ -225,12 +225,12 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 
 	public void update(Observable observe, Object obj) {
 		final BroadcastEvent be = (BroadcastEvent) obj;
-		final int command = be.getCommand();
-		if (command == BroadcastEvent.SORT_MODE_CHANGED) {
+		final BroadcastEvent.Command command = be.getCommand();
+		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
-		} else if (command ==BroadcastEvent.HISTOGRAM_SELECT) {	
+		} else if (command ==BroadcastEvent.Command.HISTOGRAM_SELECT) {	
 			adjustHistogramItems((Histogram)be.getContent());
-		} else if (command == BroadcastEvent.FIT_NEW) {
+		} else if (command == BroadcastEvent.Command.FIT_NEW) {
 			Action fitAction =(Action)(be.getContent());
 			fitting.add(new JMenuItem(fitAction));
 		}

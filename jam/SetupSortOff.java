@@ -88,7 +88,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 					setupSort();      //create data areas and daemons
 					msgHandler.messageOutln("Daemons and dialogs initialized.");
 				}
-				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				if (dispose) {
 					dispose();
 				}
@@ -506,7 +506,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         }
         sortRoutine=null;
         DataBase.getInstance().clearAllLists();
-        broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+        broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         lockMode(false);
     }
 
