@@ -15,6 +15,7 @@ public  class JamStatus {
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
     private static JFrame frame;
+    
     /**
      * The one instance of JamStatus.
      */
@@ -35,24 +36,27 @@ public  class JamStatus {
     }
     
     /**
-     * Set the application frame
-     * @param frame
+     * Set the application frame.
+     * 
+     * @param f the frame of the current Jam application
      */
     public void setFrame(JFrame f){
 		frame=f;
     }
+    
     /**
-     * Get the application frame
-     * @param frame
-     * @return
+     * Get the application frame.
+     *
+     * @return the frame of the current Jam application
      */
 	public JFrame getFrame(){
 		return frame;
 	}
     
     /**
-     * Set the acquisition status
-     * @param as
+     * Set the acquisition status.
+     * 
+     * @param as the current status of the Jam application
      */
     public void setAcqisitionStatus(AcquisitionStatus as){
         acquisitionStatus=as;
