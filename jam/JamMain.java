@@ -141,9 +141,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	private JToggleButton boverLay; //button for overlay
 	private JComboBox gateChooser; // reference needed by command
 
-	private HistogramComboBoxModel hcbm;
-	private GateComboBoxModel gcbm;
-
 	//fit menu fields
 	private JMenu fitting;
 	private Hashtable fitterList;
@@ -221,7 +218,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		} catch (DataException de) {
 			console.errorOutln(de.getMessage());
 		}
-		setGateModel();
+		gateChooser.setModel(new GateComboBoxModel());
 		/* setup all other dialog boxes.
 		   data control, gate set, histogram manipulate, project */
 		DataControl.setupAll();
@@ -626,8 +623,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		pRunState.add(lrunState);
 		//histogram chooser
 		final JPanel pCenter = new JPanel(new GridLayout(1, 0));
-		hcbm=new HistogramComboBoxModel(jamCommand);
-		histogramChooser = new JComboBox(hcbm);
+		histogramChooser = new JComboBox(new HistogramComboBoxModel());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.setToolTipText(
@@ -714,14 +710,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	
 	void setOverlayEnabled(boolean state){
 		this.boverLay.setEnabled(state);
-	}
-
-	/**
-	 * Sets the gate chooser to the current model of gates
-	 */
-	private void setGateModel() {
-		gcbm = new GateComboBoxModel();
-		gateChooser.setModel(gcbm);
 	}
 
 	/**
