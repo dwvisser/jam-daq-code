@@ -1,9 +1,12 @@
 package jam.sort;
-import java.io.*;
-import jam.sort.stream.*;
-import jam.global.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.GoodThread;
+import jam.global.MessageHandler;
+import jam.sort.stream.EventInputStatus;
+import jam.sort.stream.EventInputStream;
 
-//FIXME need to change status class
 /**
  * The daemon (background thread) which sorts data.
  * It takes an <code>EventInputStream</code>, and a <code>Sorter</code> class.
@@ -11,7 +14,8 @@ import jam.global.*;
  * gives these to the <code>Sorter</code> method <code>sort(int [])</code>.
  * Last modified 18 December 1999 to use RingInputStream KBS.
 
- * @author Ken Swartz and Dale Visser
+ * @author Ken Swartz
+ * @author Dale Visser
  * @version 1.1
  * @since JDK 1.1
  */
@@ -30,7 +34,7 @@ public class SortDaemon extends GoodThread {
     /**
      * Number of events to occur before updating counters.
      */
-    final public static int COUNT_UPDATE=1000;
+    private final static int COUNT_UPDATE=1000;
 
     /**
      * The size of buffers to read in.
@@ -38,12 +42,11 @@ public class SortDaemon extends GoodThread {
     final static int BUFFER_SIZE=8*1024;
 
     //handles to classes
-    Controller controller;
-    EventInputStream eventInputStream;
-    EventOutputStream eventOutputStream;
-    MessageHandler msgHandler;
+    private final Controller controller;
+    private final MessageHandler msgHandler;
 
-    protected SortRoutine sortRoutine;
+    private SortRoutine sortRoutine;
+	private EventInputStream eventInputStream;
 
     /**
      * mode offline or online
@@ -51,50 +54,40 @@ public class SortDaemon extends GoodThread {
     int mode;
 
     /**
-     * Stream to send output events to.
-     */
-    FileOutputStream fileEventOutStream;
-
-    /**
      * Used in offline only, whether to send events to an output file
      */
-    boolean sendToOutFile=false;
-    boolean observed=false;
-    Broadcaster broadCaster;
+    private boolean observed=false;
+    private Broadcaster broadCaster;
 
     /**
      *  Used for online only, ringbuffer buffers input from network
      */
-    RingBuffer ringBuffer;
+    private RingBuffer ringBuffer;
 
     /**
      * class to convert input array to stream
      */
-    RingInputStream ringInputStream;
-    byte [] buffer;
+    private RingInputStream ringInputStream;
+    private byte [] buffer;
 
     //event information
-    int eventSize;
-    int []eventData;
-    int [] eventDataZero;
-    int eventCount;
-    int bufferCount;
+    private int eventSize;
+    private int []eventData;
+    private int [] eventDataZero;
+    private int eventCount;
+    private int bufferCount;
 
-    EventInputStatus status;
-
-    boolean endBuffer=false;
-
-    private boolean sortLoop=true;
+    //private static final boolean sortLoop=true;
 
     /**
      * Creates a new <code>SortDaemon</code> process.
      *
-     * @param controller the sort control process
-     * @param msgHandler the console for writing out messages to the user
+     * @param con the sort control process
+     * @param mh the console for writing out messages to the user
      */
-    public SortDaemon(Controller controller, MessageHandler msgHandler){
-        this.controller=controller;
-        this.msgHandler=msgHandler;
+    public SortDaemon(Controller con, MessageHandler mh){
+        controller=con;
+        msgHandler=mh;
     }
 
     /**
@@ -129,7 +122,7 @@ public class SortDaemon extends GoodThread {
      *
      * @param sortRoutine an object capable of sorting event data
      */
-    public void load(SortRoutine sortRoutine){
+    public void setSortRoutine(SortRoutine sortRoutine){
         this.sortRoutine=sortRoutine;
     }
 
@@ -210,7 +203,9 @@ public class SortDaemon extends GoodThread {
      * @exception Exception thrown if an unrecoverable error occurs during sorting
      */
     public  void sortOnline() throws Exception {
-        while(sortLoop) {				//loop while acquisition on
+    	EventInputStatus status;
+    	
+        while(true) {				//loop while acquisition on
             controller.atSortStart();  //does nothing for online
             //get a new buffer and make a input sream out of it
             buffer=ringBuffer.getBuffer();
@@ -220,8 +215,7 @@ public class SortDaemon extends GoodThread {
             //read events until not a event
             while ((((status=eventInputStream.readEvent(eventData))
             == EventInputStatus.EVENT) || (status == EventInputStatus.SCALER_VALUE)
-            || (status == EventInputStatus.IGNORE))
-            && sortLoop) {
+            || (status == EventInputStatus.IGNORE))) {
                 if (status == EventInputStatus.EVENT) {
                     sortRoutine.sort(eventData);
                     eventCount++;
@@ -241,8 +235,6 @@ public class SortDaemon extends GoodThread {
                 msgHandler.warningOutln("Unknown word in event stream.");
             } else if (status==EventInputStatus.END_FILE){
                 msgHandler.warningOutln("Tried to read past end of event input stream.");
-            } else if (!sortLoop){
-                //do nothing, let thread end
             } else {//we have unknown status
                 /* unrecoverable error should not be here */
                 throw new SortException("Sorter stopped due to unknown status: "+status);
@@ -251,27 +243,37 @@ public class SortDaemon extends GoodThread {
         }//end infinite loop
     }
 
+	private boolean offlineSortingCanceled=false;
+
+	/**
+	 * Call to gracefully interrupt and end the current offline sort.
+	 *
+	 */
+	public void cancelOfflineSorting(){
+		offlineSortingCanceled=true;
+	}
+
     /**
      * Performs the offline sorting until an end-of-run state is reached in the event stream.
      *
      * @exception Exception thrown if an unrecoverable error occurs during sorting
      */
     public  void sortOffline() throws Exception {
+    	EventInputStatus status; 
+    	
         boolean atBuffer=false;    //are we at a buffer word
-        controller.atSortStart();
-        while(this.checkState()){//loop while sorting on (infinite loop)
-            controller.atSortStart();
-            while(controller.isSortNext()) {//loop for each new sort file
+        controller.atSortStart(); //immediately suspends the thread at next statement
+        while(checkState()){//infinite loop
+            controller.atSortStart();//suspends this thread
+            offlineSortingCanceled=false;//after we come out of suspend
+            while(!offlineSortingCanceled && controller.isSortNext()) {//loop for each new sort file
                 boolean endSort=false;
-                while(!endSort) {
+                while(!offlineSortingCanceled && !endSort) {//buffer loop
                     System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array
                     while ((((status=eventInputStream.readEvent(eventData))
                     == EventInputStatus.EVENT) || (status == EventInputStatus.SCALER_VALUE)|| 
-                    (status == EventInputStatus.IGNORE)) && sortLoop ) {
-                        /*while ((status=eventInputStream.readEvent(eventData))==
-                        EventInputStatus.EVENT && sortLoop){//read events until not a event*/
-                        if (status == EventInputStatus.EVENT) {
-                            //System.err.println(getClass().getName()+".sortOffline: event size = "+eventSize);
+                    (status == EventInputStatus.IGNORE))) {
+                        if (!offlineSortingCanceled && status == EventInputStatus.EVENT) {
                             sortRoutine.sort(eventData);
                             eventCount++;
                             System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array and get ready for next event
@@ -280,10 +282,12 @@ public class SortDaemon extends GoodThread {
                                 updateCounters();
                                 yield();
                             }
-                        } //else SCALER_VALUE, assume sort stream took care and move on
-                          //or IGNORE which means something ignorable in the event stream
+                        } 
+                        /* else SCALER_VALUE, assume sort stream 
+                         * took care and move on or IGNORE which means
+                         * something ignorable in the event stream */
                     }
-                    //we get to this point if status was not EVENT
+                    /* we get to this point if status was not EVENT */
                     if (status==EventInputStatus.END_BUFFER) {//if we dont have event
                         if (!atBuffer) {
                             atBuffer=true;
@@ -298,26 +302,18 @@ public class SortDaemon extends GoodThread {
                         updateCounters();
                         endSort=true;    //tell control we are done
                     } else if (status==EventInputStatus.UNKNOWN_WORD) {
-                        //endSort=true;
-                        // stop process although we could continue
-                        //throw new SortException(" Sorter stopped, unknown word in event stream");
                         msgHandler.warningOutln(getClass().getName()+
                         ".sortOffline(): Unknown word in event stream.");
-                    } else if (!sortLoop) {
-                        //do nothing, let thread end
-                    } else {
+					} else {
                         endSort=true;
                         //unrecoverable error
                         throw new SortException("Sorter, Unknown eventInput status = "+status);
                     }
                     yield();
-                    //end buffer loop
-                }
-                //end isSortNext loop
-            }
+                }//end buffer loop
+            }//end isSortNext loop
             controller.atSortEnd();
-            //end infinite loop
-        }
+        }//end infinite loop
     }
 
     /**
