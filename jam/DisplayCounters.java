@@ -64,7 +64,7 @@ class DisplayCounters implements Observer {
 	 * @param b to broadcast counter "read" and "zero" requests
 	 * @param mh where to print console output
 	 */
-	DisplayCounters(Frame jm, Broadcaster b, MessageHandler mh) {
+	DisplayCounters(MessageHandler mh) {
 		final int xpos = 20;
 		final int ypos = 50;
 		final int flowgaph = 10;
@@ -73,9 +73,9 @@ class DisplayCounters implements Observer {
 		final int hgap = 5;
 		final int vgap = 10;
 
-		this.jamMain = jm;
-		this.broadcaster = b;
-		this.messageHandler = mh;
+		jamMain = JamStatus.instance().getFrame();
+		broadcaster = Broadcaster.getSingletonInstance();
+		messageHandler = mh;
 		d = new JDialog(jamMain, "Buffer Counters", false);
 		d.setResizable(false);
 		d.setLocation(xpos, ypos);
