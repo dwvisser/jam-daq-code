@@ -1,4 +1,5 @@
 package jam.plot;
+import java.awt.Point;
 
 /**
  * Class to simple fits such as area and centroid
@@ -12,21 +13,11 @@ class PlotFit {
 	/**
 	 * Get the area for a 1 d histogram
 	 */
-	public double getArea(double[] counts, int x1, int x2) {
-		int xmin;
-		int xmax;
+	public double getArea(double[] counts, Point p1, Point p2) {
+		final int xmin=Math.min(p1.x,p2.x);
+		final int xmax=Math.max(p1.x,p2.x);
 		double area = 0;
-
-		// put limits in right order	
-		if (x1 <= x2) {
-			xmin = x1;
-			xmax = x2;
-		} else {
-			xmin = x2;
-			xmax = x1;
-		}
-		//sum up counts	
-		for (int i = xmin; i <= xmax; i++) {
+		for (int i = xmin; i <= xmax; i++) {//sum up counts	
 			area += counts[i];
 		}
 		return area;
@@ -36,30 +27,13 @@ class PlotFit {
 	 * Get the area for a 2 d histogram bounded by the rectangle
 	 * x1, y1, x2, y2
 	 */
-	public double getArea(double[][] counts, int x1, int y1, int x2, int y2) {
-		int xmin;
-		int xmax;
-		int ymin;
-		int ymax;
+	public double getArea(double[][] counts, Point p1, Point p2) {
+		final int xmin=Math.min(p1.x,p2.x);
+		final int xmax=Math.max(p1.x,p2.x);
+		final int ymin=Math.min(p1.y,p2.y);
+		final int ymax=Math.max(p1.y,p2.y);
 		double area = 0;
-
-		// put limits in right order	
-		if (x1 <= x2) {
-			xmin = x1;
-			xmax = x2;
-		} else {
-			xmin = x2;
-			xmax = x1;
-		}
-		if (y1 < y2) {
-			ymin = y1;
-			ymax = y2;
-		} else {
-			ymin = y2;
-			ymax = y1;
-		}
-		//sum up counts
-		for (int i = xmin; i <= xmax; i++) {
+		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			for (int j = ymin; j <= ymax; j++) {
 				area += counts[i][j];
 			}
@@ -72,32 +46,14 @@ class PlotFit {
 	 */
 	public double getCentroid(
 		double[] counts,
-		int x1,
-		int y1,
-		int x2,
-		int y2) {
-		int xmin, xmax, ymin, ymax;
+		Point p1,
+		Point p2) {
+		final int xmin=Math.min(p1.x,p2.x);
+		final int xmax=Math.max(p1.x,p2.x);
 		double area = 0;
 		double darea;
 		double centroid = 0;
-
-		// put limits in right order	
-		if (x1 <= x2) {
-			xmin = x1;
-			xmax = x2;
-		} else {
-			xmin = x2;
-			xmax = x1;
-		}
-		if (y1 < y2) {
-			ymin = y1;
-			ymax = y2;
-		} else {
-			ymin = y2;
-			ymax = y1;
-		}
-		//sum up counts	
-		for (int i = xmin; i <= xmax; i++) {
+		for (int i = xmin; i <= xmax; i++) {//sum up counts	
 			area += counts[i];
 		}
 		darea = (double) area;
@@ -184,9 +140,9 @@ class PlotFit {
 	 * So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
 	 */
-	public double getFWHM(double[] counts, int x1, int y1, int x2, int y2) {
-		int xmin;
-		int xmax;
+	public double getFWHM(double[] counts, Point p1, Point p2) {
+		int xmin=Math.min(p1.x,p2.x);
+		int xmax=Math.max(p1.x,p2.x);
 		int area = 0;
 		double darea;
 		double distance;
@@ -195,14 +151,6 @@ class PlotFit {
 		double variance = 0;
 		double fwhm;
 
-		// put limits in right order	
-		if (x1 <= x2) {
-			xmin = x1;
-			xmax = x2;
-		} else {
-			xmin = x2;
-			xmax = x1;
-		}
 		//sum up counts	
 		for (int i = xmin; i <= xmax; i++) {
 			area += counts[i];
@@ -236,7 +184,7 @@ class PlotFit {
 		double[] fwhm,
 		double[] centroid,
 		double[] centroidError,
-		int[][] xyCursor,
+		Point [] clicks,
 		double grossArea,
 		int X,
 		double[] counts) {
@@ -246,8 +194,6 @@ class PlotFit {
 		double distance;
 		double gradient, intercept;
 		double netBackground = 0;
-		int x1, x2, x3, x4;
-		int rx1, rx2;
 		double avLow, avHigh, countsLow, countsHigh;
 		double midLow, midHigh;
 		double[] channel;
@@ -260,19 +206,12 @@ class PlotFit {
 		variance = 0;
 		distance = 0;
 
-		x1 = xyCursor[0][0];
-		x2 = xyCursor[1][0];
-		x3 = xyCursor[2][0];
-		x4 = xyCursor[3][0];
-		// Put markers in correct order
-		if (xyCursor[4][0] < xyCursor[5][0]) {
-			rx1 = xyCursor[4][0];
-			rx2 = xyCursor[5][0];
-		} else {
-			rx1 = xyCursor[4][0];
-			rx2 = xyCursor[5][0];
-		}
-
+		final int x1 = clicks[0].x;
+		final int x2 = clicks[1].x;
+		final int x3 = clicks[2].x;
+		final int x4 = clicks[3].x;
+		final int rx1=Math.min(clicks[4].x,clicks[5].x);
+		final int rx2=Math.max(clicks[4].x,clicks[5].x);
 		for (int n = x1; n <= x2; n++) {
 			countsLow = counts[n] + countsLow;
 		}
@@ -319,8 +258,6 @@ class PlotFit {
 		//Error in Centroid position
 		centroidError[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
 		fwhm[0] = 2.354 * Math.sqrt(variance);
-
 		return (6);
-
 	}
 }
