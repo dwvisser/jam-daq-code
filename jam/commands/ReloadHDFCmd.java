@@ -40,7 +40,7 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 		final BroadcastEvent be=(BroadcastEvent)obj;
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
-			//enable();
+			enable();
 		}
 	}
 	
@@ -51,6 +51,5 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 		final boolean offline = mode == SortMode.OFFLINE;
 		final boolean sorting = online || offline;
 		setEnabled(sorting);
-		
 	}
 }
