@@ -72,7 +72,7 @@ public interface FrontEndCommunication extends Observer{
     /**
      * Tell the Front End to start acquistion.
      */
-    void start();
+    void startAcquisition();
 
     
     /**
@@ -80,7 +80,7 @@ public interface FrontEndCommunication extends Observer{
      * should also flushes out existing data in
      * the front end.
      */
-    void stop();
+    void stopAcquisition();
     
     /**
      * Tell the Front End to end a run.
