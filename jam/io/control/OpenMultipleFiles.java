@@ -3,6 +3,7 @@ package jam.io.control;
 import jam.data.DataBase;
 import jam.data.Group;
 import jam.data.Histogram;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -49,7 +50,7 @@ import javax.swing.event.ChangeListener;
  * @author Ken Swartz
  *
  */
-public class OpenMultipleFiles {
+public class OpenMultipleFiles implements HDFIO.AsyncListener{
 
 	//UI components
 	private final Frame frame;
@@ -259,6 +260,7 @@ public class OpenMultipleFiles {
             msgHandler.errorOutln("No histograms selected");
             return;
         }
+        hdfio.setListener(this);
         final Iterator iter = multiChooser.getFileList().iterator();
         /* Sum counts */
         if (chkBoxAdd.isSelected()) {
@@ -290,7 +292,10 @@ public class OpenMultipleFiles {
         final Object[] selected = histList.getSelectedValues();
         /* Put selected histograms into a list */
         for (int i = 0; i < selected.length; i++) {
-            selectNames.add(selected[i]);
+        	//Get name from full name
+        	String histogramFullName = (String)selected[i];
+        	String histName = HistogramAttributes.getHistogramAttribute(histogramFullName).getName();        	
+            selectNames.add(histName);
         }
     	return selectNames;
     }
@@ -307,5 +312,35 @@ public class OpenMultipleFiles {
 	    	histList.setSelectedIndices(indexs);
 	    } 
     }
+	private void notifyApp() {
+		//Update app status		
+		AbstractControl.setupAll();
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		
+		//Set the current histogram to the first opened histogram
+		List groupList = Group.getGroupList();
+		if (groupList.size()>0) {
+			Group firstGroup =(Group)Group.getGroupList().get(0); 
+			Group.setCurrentGroup(firstGroup);
+			List histList =firstGroup.getHistogramList();
+			if (histList.size()>0) {
+				Histogram firstHist = (Histogram)histList.get(0);
+				if (histList!=null) {
+					STATUS.setCurrentHistogram(firstHist);
+					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+				}
+			}
+		}
+		
+	}			
+	
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void completedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		notifyApp();		
+	}
+    
 }
 
