@@ -3,6 +3,7 @@
 
     <property name="base.dir" value="." />
     <property name="build.dir" value="${user.home}/jambuild" />
+    <property name="copy.dir" value="${build.dir}/copy" />
     <property name="APIbase.dir" value="${build.dir}/APItemp" />
     <property name="API.dir" value="${APIbase.dir}/help/API" />
 	<property name = "windows" value = "${build.dir}/windows/jam-daq" />
@@ -18,6 +19,7 @@
         <mkdir dir="${API.dir}" />
         <mkdir dir="${winbin}" />
         <mkdir dir="${winlib}" />
+        <mkdir dir="${copy.dir}" />
     </target>
     
     <target name="clean">
@@ -30,23 +32,23 @@
     		<delete dir="${build.dir}" />
     </target>
     
-    <target name="jar" depends="prepare">
+    <target name="jar" depends="compile">
         <jar jarfile="${build.dir}/Jam.jar"
-            basedir="${base.dir}"
+            basedir="${copy.dir}"
             excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
         />    
     </target>
 
-    <target name="srczip" depends="prepare">
+    <target name="srczip" depends="copy">
         <zip zipfile="${build.dir}/JamSrc.zip"
-            basedir="${base.dir}"
+            basedir="${copy.dir}"
             includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html"
         />    
     </target>
     
-    <target name="helpjar" depends="prepare,javadoc">
+    <target name="helpjar" depends="javadoc,compile">
     	<copy todir="${APIbase.dir}">
-    		<fileset dir = "${base.dir}" includes = "help/**/*" />
+    		<fileset dir = "${copy.dir}" includes = "help/**/*" />
     	</copy>
         <jar jarfile="${build.dir}/JamHelp.jar"
             basedir="${APIbase.dir}"
@@ -56,14 +58,42 @@
     </target>
     
     <target name="copy" depends="prepare">
+    	<copy todir="${copy.dir}">
+    		<fileset dir="${base.dir}" 
+    		includes="**/*.java,**/*.html,**/*.txt, **/*.jnlp, **/*.jsmooth, **/*.wxs, **/*.hs, **/*.css, **/*.jhm, **/*.xml, **/*.ini" />
+            <filterset>
+    			<filter token="MAJOR" value="1" />
+    			<filter token="MINOR" value="5" />
+    			<filter token="SUBMINOR" value="1" />
+            </filterset>
+		</copy>
+		<copy todir="${copy.dir}">
+			<fileset dir="${base.dir}"
+			includes="**/*.png,**/*.jar, **/*.evn, **/*.hdf" />
+		</copy>    		
         <copy todir="${build.dir}" flatten="true" >
-            <fileset dir = "${base.dir}"
-                includes="*.jar,*.txt,*.html,help/config/*.ini" >
+            <fileset dir = "${copy.dir}"
+                includes="*.txt,*.html,help/config/*.ini" >
             </fileset>
         </copy>
-    </target> 
+        <copy todir="${build.dir}" flatten="true" >
+            <fileset dir = "${copy.dir}"
+                includes="*.txt,*.html,help/config/*.ini" >
+            </fileset>
+        </copy>
+    </target>    
     
-    <target name="javadoc">
+    <target name="compile" depends="copy">
+    	<javac srcdir="${copy.dir}" destdir="${copy.dir}">
+    		<classpath>
+    			<pathelement location="${copy.dir}" />
+    			<pathelement location="${copy.dir}/jh.jar" />
+    			<pathelement location="${copy.dir}/junit.jar" />
+    		</classpath>
+    	</javac>
+    </target> 	
+    
+    <target name="javadoc" depends="copy">
         <javadoc
             destdir="${API.dir}"
             access="protected" use="true" notree="false"
@@ -71,8 +101,8 @@
             author="true" version="true" nodeprecatedlist="false"
             nodeprecated="false"
             packagenames="jam.io,jam.data.control,jam.io.hdf,jam.data.peaks,jam.global,jam.fit,jam.util,jam.sort,jam,jam.data.func,jam.sort.stream,jam.plot,jam.data,jam.applet"
-            sourcepath="${base.dir}"
-            classpath="${base.dir};${base.dir}\junit.jar;${base.dir}\jh.jar" 
+            sourcepath="${copy.dir}"
+            classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
             	doctitle="Jam - API"/>
     </target>
 
@@ -80,11 +110,11 @@
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
     	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar" />
-    	 	<fileset dir="${base.dir}" includes="jh.jar" />
+    	 	<fileset dir="${copy.dir}" includes="jh.jar" />
     	</copy>
     	<copy todir="${windows}" file="${build.dir}/JamSrc.zip" />
     	<copy todir="${windows}" flatten="true">
-    		<fileset dir="${base.dir}/WINpackage" includes="*.*" />
+    		<fileset dir="${copy.dir}/WINpackage" includes="*.*" />
     	</copy>
     	<jsmoothgen project="${windows}/build.jsmooth" 
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
@@ -94,6 +124,6 @@
       	excludes="**/*.jsmooth,**/*.png,**/*.db" />
     </target>
     
-    <target name="all" depends="copy,windows" />
+    <target name="all" depends="windows" />
         
 </project>
