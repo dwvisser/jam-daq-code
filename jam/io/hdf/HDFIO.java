@@ -187,28 +187,22 @@ public class HDFIO implements DataIO,JamHDFFields {
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, boolean wrtparameters, File file) {
         java.util.List hist, gate, scaler, parameter;
-//        Enumeration enum;
-        Vector temp;
-        Gate g;
-
+        
         writeHistograms=wrthis;
         writeGates=wrtgate;
         writeScalers=wrtscalers;
         writeParameters=wrtparameters;
-
-        //System.out.println(wrthis+":"+":"+wrtgate+":"+wrtscalers+":"+file);
-
         if (writeHistograms){
             hist = Histogram.getHistogramList();
         } else {
-            hist=null;
+            hist=new Vector(0);
         }
         if (writeGates) {
             gate = Gate.getGateList();
-            //only save those gates which are defined
-            temp = new Vector(gate.size());
+            /* only save those gates which are defined */
+            Vector temp = new Vector(gate.size());
             for (Iterator enum = gate.iterator() ; enum.hasNext() ;) {
-                g=(Gate)(enum.next());
+                Gate g=(Gate)(enum.next());
                 if (g.isDefined()){
                     temp.addElement(g);
                 }
@@ -216,17 +210,17 @@ public class HDFIO implements DataIO,JamHDFFields {
             temp.trimToSize();
             gate=temp;
         } else {
-            gate=null;
+            gate=new Vector(0);
         }
         if (writeScalers) {
             scaler = Scaler.getScalerList();
         } else {
-            scaler = null;
+            scaler = new Vector(0);
         }
         if (writeParameters) {
             parameter = DataParameter.getParameterList();
         } else {
-            parameter = null;
+            parameter = new Vector(0);
         }
         writeFile(file, hist, gate, scaler, parameter);
     }
@@ -282,12 +276,10 @@ public class HDFIO implements DataIO,JamHDFFields {
                 addParameterSection(parameters);
                 msgHandler.messageOut(parameters.size()+" parameters ",MessageHandler.CONTINUE);
             }
-
             out.setOffsets();
             out.writeDataDescriptorBlock();
             out.writeAllObjects(msgHandler);
             out.close();
-
         } catch (Exception e) {
             msgHandler.messageOut("",MessageHandler.END);
             msgHandler.errorOutln("Exception writing to file '"+file.getName()+"': "+e.toString());
@@ -344,6 +336,7 @@ public class HDFIO implements DataIO,JamHDFFields {
             getParameters(mode);
             in = null;  // destroys reference to HDFile (and its DataObject's
             //  allowing Garbage Collector to free up memory
+            System.gc();
             msgHandler.messageOut("done!",MessageHandler.END);
             lastValidFile = infile;
         } catch (HDFException except) {
@@ -446,16 +439,13 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @exception   HDFException  thrown if unrecoverable error occurs
      */
     protected void getHistograms(int mode) throws HDFException{
-        Enumeration temp;
-        VirtualGroup hists,current;//current histogram to read in
-        Vector groups; // vector of all histogram virtual groups in file
-        NumericalDataGroup ndg,ndgErr;
-        ScientificData sd,sdErr;
+        VirtualGroup current;//current histogram to read in
+        NumericalDataGroup ndg;
+        NumericalDataGroup ndgErr=null;//I check for null to determine if error bars exist
+        ScientificData sd;
         ScientificDataDimension sdd,sddErr;
         byte histNumType;
         int histDim;
-        Vector labels;
-        Vector annotations;
         int number;//histogram number
         String name;//histogram name
         String title;//histogram title
@@ -465,26 +455,24 @@ public class HDFIO implements DataIO,JamHDFFields {
         DataIDLabel numLabel;
         Histogram histogram;
         NumericalDataGroup [] numbers;
-        Vector tempVec;
         try{
-            groups=in.ofType(DataObject.DFTAG_VG);//all VG's in file
-            hists=VirtualGroup.ofName(groups,HIST_SECTION_NAME);
-            //only the "histograms" VG (only one element)
-            sdErr=null;
+            java.util.List groups=in.ofType(DataObject.DFTAG_VG);//all VG's in file
+            VirtualGroup hists=VirtualGroup.ofName(groups,HIST_SECTION_NAME);
+            /* only the "histograms" VG (only one element) */
+            ScientificData sdErr=null;
             if (hists != null){
                 if (mode==OPEN) DataBase.clearAllLists();//clear if opening and there are histograms in file
-                labels=in.ofType(DataObject.DFTAG_DIL);//all DIL's in file
-                annotations=in.ofType(DataObject.DFTAG_DIA);//all DIA's in file
+                java.util.List labels=in.ofType(DataObject.DFTAG_DIL);//all DIL's in file
+                java.util.List annotations=in.ofType(DataObject.DFTAG_DIA);//all DIA's in file
                 msgHandler.messageOut(hists.getObjects().size()+" histograms",MessageHandler.CONTINUE);
-                for (temp = hists.getObjects().elements() ; temp.hasMoreElements() ;) {
-                    current=(VirtualGroup)(temp.nextElement());
-                    tempVec = in.ofType(current.getObjects(),DataObject.DFTAG_NDG);
+                for (Iterator temp = hists.getObjects().iterator() ; temp.hasNext() ;) {
+                    current=(VirtualGroup)(temp.next());
+                    java.util.List tempVec = in.ofType(current.getObjects(),DataObject.DFTAG_NDG);
                     numbers = new NumericalDataGroup[tempVec.size()];
-                    tempVec.copyInto(numbers);
+                    tempVec.toArray(numbers);
                     //System.out.println("numbers has "+numbers.length+" elements");
                     if (numbers.length == 1) {
                         ndg=numbers[0]; //only one NDG -- the data
-                        ndgErr=null;
                     } else if (numbers.length == 2) {
                         if (DataIDLabel.withTagRef(labels,DataObject.DFTAG_NDG,numbers[0].getRef()).getLabel().equals(ERROR_LABEL)){
                             ndg=numbers[1];
@@ -496,8 +484,8 @@ public class HDFIO implements DataIO,JamHDFFields {
                     } else {
                         throw new HDFException("Invalid number of data groups ("+numbers.length+") in NDG.");
                     }
-                    sd=(ScientificData)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SD).elementAt(0));
-                    sdd=(ScientificDataDimension)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SDD).elementAt(0));
+                    sd=(ScientificData)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SD).get(0));
+                    sdd=(ScientificDataDimension)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SDD).get(0));
                     numLabel=DataIDLabel.withTagRef(labels,ndg.getTag(),ndg.getRef());
                     number=Integer.parseInt(numLabel.getLabel());
                     histNumType=sdd.getType();
@@ -515,10 +503,10 @@ public class HDFIO implements DataIO,JamHDFFields {
                     name=templabel.getLabel();
                     title=tempnote.getNote();
                     if (ndgErr != null){
-                        sdErr = (ScientificData)(in.ofType(ndgErr.getObjects(),DataObject.DFTAG_SD).elementAt(0));
+                        sdErr = (ScientificData)(in.ofType(ndgErr.getObjects(),DataObject.DFTAG_SD).get(0));
                         sdErr.setRank(histDim);
                         sdErr.setNumberType(NumberType.DOUBLE);
-                        sddErr =(ScientificDataDimension)(in.ofType(ndgErr.getObjects(),DataObject.DFTAG_SDD).elementAt(0));
+                        sddErr =(ScientificDataDimension)(in.ofType(ndgErr.getObjects(),DataObject.DFTAG_SDD).get(0));
                     }
                     if (mode==OPEN){
                         System.out.print("New Histogram: "+name+", "+histDim+
@@ -661,13 +649,11 @@ public class HDFIO implements DataIO,JamHDFFields {
         int        i, numRows;
         String        gname, hname;
         VirtualGroup      gates;
-        Gate        g;
-        Vector        groups, annotations;
-        Enumeration      temp;
+        java.util.List groups, annotations;
         VirtualGroup      currVG;
         Polygon        pg;
 
-        g=null;
+        Gate g=null;
         try {
             groups = in.ofType(DataObject.DFTAG_VG);//all VG's in file
             gates = VirtualGroup.ofName(groups,GATE_SECTION_NAME);
@@ -676,9 +662,9 @@ public class HDFIO implements DataIO,JamHDFFields {
             if (gates != null){
                 if (mode==OPEN) Gate.clearList();//clear if opening and there are histograms in file
                 msgHandler.messageOut(gates.getObjects().size()+" gates",MessageHandler.CONTINUE);
-                for (temp = gates.getObjects().elements() ; temp.hasMoreElements(); ){
-                    currVG = (VirtualGroup)(temp.nextElement());
-                    VH=(VdataDescription)(in.ofType(currVG.getObjects(),DataObject.DFTAG_VH).elementAt(0));
+                for (Iterator temp = gates.getObjects().iterator() ; temp.hasNext(); ){
+                    currVG = (VirtualGroup)(temp.next());
+                    VH=(VdataDescription)(in.ofType(currVG.getObjects(),DataObject.DFTAG_VH).get(0));
                     if (VH != null) {
                         VS=(Vdata)(in.getObject(DataObject.DFTAG_VS,VH.getRef()));//corresponding VS
                         numRows = VH.getNumRows();
@@ -937,40 +923,41 @@ public class HDFIO implements DataIO,JamHDFFields {
     }
 
     public int [] readIntegerSpectrum(String spectrumName) throws IOException, HDFException{
-        NumericalDataGroup ndg, ndgErr;
-        Vector groups=in.ofType(DataObject.DFTAG_VG);//all VG's in file
+        NumericalDataGroup ndg;
+        
+        int [] rval=null;//default return value
+        java.util.List groups=in.ofType(DataObject.DFTAG_VG);//all VG's in file
         VirtualGroup hists=VirtualGroup.ofName(groups,HIST_SECTION_NAME);
-        //only the "histograms" VG (only one element)
+        /* only the "histograms" VG (only one element) */
         if (hists == null) {
             throw new HDFException("No Histogram section in file: "+in.getFile());
         } else{
-            //there are histograms in the file
-            Vector labels=in.ofType(DataObject.DFTAG_DIL);//all DIL's in file
-            //msgHandler.messageOut(hists.getObjects().size()+" histograms",MessageHandler.CONTINUE);
-            for (Enumeration temp = hists.getObjects().elements() ; temp.hasMoreElements() ;) {
-                VirtualGroup current=(VirtualGroup)(temp.nextElement());
-                Vector tempVec = in.ofType(current.getObjects(),DataObject.DFTAG_NDG);//NDG's in current hist record
-                NumericalDataGroup [] numbers = new NumericalDataGroup[tempVec.size()]; tempVec.copyInto(numbers);
+            /* there are histograms in the file */
+            java.util.List labels=in.ofType(DataObject.DFTAG_DIL);//all DIL's in file
+            lookForSpectrum : for (Iterator temp = hists.getObjects().iterator() ; temp.hasNext() ;) {
+                VirtualGroup current=(VirtualGroup)(temp.next());
+                java.util.List tempVec = in.ofType(current.getObjects(),DataObject.DFTAG_NDG);//NDG's in current hist record
+                NumericalDataGroup [] numbers = new NumericalDataGroup[tempVec.size()]; 
+                tempVec.toArray(numbers);
                 String name = DataIDLabel.withTagRef(labels,current.getTag(),current.getRef()).getLabel();
                 if (name.trim().equals(spectrumName)) {
                     if (numbers.length == 1) {//only one NDG -- the data
                         ndg=numbers[0];
-                        ndgErr=null;
                     } else if (numbers.length == 2) {
+                    	/* determine which of the two contains error bars
+                    	 * and ignore it, assigning the other to ndg */
                         if (DataIDLabel.withTagRef(
                         labels,DataObject.DFTAG_NDG,numbers[0].getRef()).getLabel().equals(ERROR_LABEL)){
                             ndg=numbers[1];
-                            ndgErr=numbers[0];
                         } else {
                             ndg=numbers[0];
-                            ndgErr=numbers[1];
                         }
                     } else {
                         throw new HDFException("Invalid number of data groups ("+numbers.length+") in NDG.");
                     }
-                    ScientificData sd=(ScientificData)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SD).elementAt(0));
+                    ScientificData sd=(ScientificData)(in.ofType(ndg.getObjects(),DataObject.DFTAG_SD).get(0));
                     ScientificDataDimension sdd=(ScientificDataDimension)
-                    (in.ofType(ndg.getObjects(),DataObject.DFTAG_SDD).elementAt(0));
+                    (in.ofType(ndg.getObjects(),DataObject.DFTAG_SDD).get(0));
                     sd.setNumberType(sdd.getType());//Whether integer or floating point
                     int histDim=sdd.getRank();
                     if (histDim != 1) {
@@ -978,14 +965,15 @@ public class HDFIO implements DataIO,JamHDFFields {
                     }
                     sd.setRank(histDim);
                     if (sd.getNumberType()==NumberType.INT) {
-                        return sd.getData1d(sdd.getSizeX());
+                        rval = sd.getData1d(sdd.getSizeX());
+                        break lookForSpectrum;
                     } else {//DOUBLE
                         throw new HDFException("'"+name+"' is not integer!");
                     }
                 }                
             }
         }
-        return null;
+        return rval;
     }
     
 }
