@@ -242,9 +242,8 @@ public class DiskDaemon extends StorageDaemon {
 			if (mode == ONLINE) {
 				writeLoop();
 			} else {
-				System.err.println(
-					"Error: diskdaemon should not be here no read"
-						+ " loop [DiskDaemon]");
+				throw new IllegalStateException(
+					"run() called when mode not ONLINE");
 			}
 		} catch (IOException ioe) {
 			msgHandler.errorOutln(
