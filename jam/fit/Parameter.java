@@ -13,7 +13,6 @@ package jam.fit;
  * </dl>
  * <p>Options. You can use as many options as you want.</p>
  * <dl>
- *	<dt>(NO_)ERROR</dt>	<dd>has an error bar associated with it</dd>
  *	<dt>(NO_)OUTPUT</dt>	<dd>is calculated and has no associated error bars (e.g. Chi-Squared)</dd>
  *	<dt>(NO_)MOUSE</dt>	<dd> value can be obtained with mouse from screen</dd>
  *  <dt>(NO_)ESTIMATE</dt>	<dd>can be estimated</dd>
@@ -47,8 +46,6 @@ public class Parameter {
 	public final static int TEXT = 4;
 
 	/* Options */
-	public final static int ERROR = 0; //default
-	public final static int NO_ERROR = 8;
 	public final static int FIX = 16;
 	public final static int NO_FIX = 0; //default    
 	public final static int ESTIMATE = 32;
@@ -98,7 +95,7 @@ public class Parameter {
 	//TEXT fields
 	private String valueTxt;
 
-	private double known;
+	//private double known;
 
 	private double valueDefaultInt;
 	private double valueDefaultDbl;
@@ -119,9 +116,9 @@ public class Parameter {
 		this.name = name;
 		this.options = options;
 		type = options & TYPE_MASK;
-		if (type == Parameter.TEXT)
-			options |= NO_ERROR; //change default for TEXT
-
+		if (type == Parameter.TEXT){
+			options |= KNOWN; //change default for TEXT
+		}
 		valueInt = 0;
 		valueDbl = 0.0;
 		errorDbl = 0.0;
@@ -136,9 +133,9 @@ public class Parameter {
 			errorOption = false;
 		}
 
-		if ((options & Parameter.NO_ERROR) != 0) {
+		/*if ((options & Parameter.NO_ERROR) != 0) {
 			errorOption = false;
-		}
+		}*/
 
 		if ((options & Parameter.FIX) != 0) {
 			fixOption = true;
@@ -154,6 +151,7 @@ public class Parameter {
 		}
 		if ((options & Parameter.KNOWN) != 0) {
 			knownOption = true;
+			errorOption = false;//default=true
 		}
 
 	}
@@ -266,10 +264,6 @@ public class Parameter {
 		errorDbl = err;
 	}
 
-	public void setKnown(double inKnown) {
-		known = inKnown;
-	}
-
 	public double getDoubleValue() {
 		return valueDbl;
 	}
@@ -284,10 +278,6 @@ public class Parameter {
 
 	public double getDoubleError() {
 		return errorDbl;
-	}
-
-	public double getKnown() {
-		return known;
 	}
 
 	public boolean isBoolean() {
@@ -330,9 +320,5 @@ public class Parameter {
 	
 	public boolean isMouseClickable(){
 		return this.mouseOption;
-	}
-	
-	public boolean isFixable(){
-		return this.fixOption;
 	}
 }
