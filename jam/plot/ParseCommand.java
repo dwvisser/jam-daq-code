@@ -1,13 +1,12 @@
 package jam.plot;
 
+import jam.global.CommandListener;
+import jam.global.JamStatus;
+import jam.ui.Console;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import jam.JamConsole;
-import jam.commands.CommandManager;
-import jam.global.JamStatus;
-import jam.global.CommandListener;
-import jam.global.MessageHandler;
 
 /**
  * 
@@ -19,8 +18,6 @@ import jam.global.MessageHandler;
 final class ParseCommand implements CommandListener {
 
 	private final Action action;
-
-	private final MessageHandler textOut;
 
 	private final Map commandMap = new HashMap();
 	{
@@ -46,11 +43,13 @@ final class ParseCommand implements CommandListener {
 		commandMap.put("s", Action.SCALE);
 	}
 
-	ParseCommand(Action action, JamConsole jc) {
+	ParseCommand(Action action) {
 		this.action = action;
-		textOut = jc;
 	}
 
+	/**
+	 * @see CommandListener#performParseCommand(String, String[])
+	 */
 	public boolean performParseCommand(String _command, String[] cmdParams) {
 		boolean accept = false; //is the command accepted
 		final String command = _command.toLowerCase();
@@ -58,7 +57,7 @@ final class ParseCommand implements CommandListener {
 		 * int is a special case meaning no command and just parameters
 		 */
 		final double[] parameters = convertParameters(cmdParams);
-		if (command.equals(JamConsole.NUMBERS_ONLY)) {
+		if (command.equals(Console.NUMBERS_ONLY)) {
 			accept = true;
 			if (action.getIsCursorCommand()) {
 				boolean vertical = Action.RANGE.equals(action
@@ -83,11 +82,8 @@ final class ParseCommand implements CommandListener {
 		return accept;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Convert the parameters to doubles.
-	 * 
-	 * @param parameters
-	 * @return
 	 */
 	private double[] convertParameters(String[] cmdParams) {
 		final int numberParams = cmdParams.length;
@@ -105,49 +101,46 @@ final class ParseCommand implements CommandListener {
 		return parameters;
 	}
 
-	/**
-	 * Accepts integer input and does a command if one is present.
-	 * 
-	 * @param parameters
-	 *            the integers
-	 */
-	private void cursorChannel(double[] parameters, boolean vertical) {
-		final Display display = JamStatus.instance().getDisplay();
-		final PlotContainer currentPlot = display.getPlot();
-		final int numParam = parameters.length;
-		/* Must have at least 1 parameter */
-		if (numParam > 0) {
-			final Bin cursor = Bin.Factory.create();
-			if (JamStatus.instance().getDisplay().getPlot().getDimensionality() == 1) {
-				/* we have a 1D plot: only x dimension */
-				for (int i = 0; i < numParam; i++) {
-					if (vertical) {
-						cursor.setChannel(0, (int) parameters[i]);
-					} else {
-						cursor.setChannel((int) parameters[i], 0);
-					}
-					action.setCursor(cursor);
-					action.doCommand(Action.CURSOR, true);
-				}
-			} else {
-				if (vertical){//use 0,counts
-					for (int i=0; i<numParam; i++){
-						cursor.setChannel(0,(int)parameters[i]);
-						action.setCursor(cursor);
-						action.doCommand(Action.CURSOR,true);
-					}
-				}else {
-				/* 2D: x and y dimensions */
-				for (int i = 0; i < numParam - 1; i = i + 2) {
-					cursor.setChannel((int) parameters[i],
-							(int) parameters[i + 1]);
-					action.setCursor(cursor);
-					action.doCommand(Action.CURSOR,true);
-				}
-				}
-			}
-		}
-	}
+	/*
+     * non-javadoc: Accepts integer input and does a command if one is present.
+     * 
+     * @param parameters the integers
+     */
+    private void cursorChannel(double[] parameters, boolean vertical) {
+        final int numParam = parameters.length;
+        /* Must have at least 1 parameter */
+        if (numParam > 0) {
+            final Bin cursor = Bin.Factory.create();
+            if (JamStatus.instance().getDisplay().getPlot().getDimensionality() == 1) {
+                /* we have a 1D plot: only x dimension */
+                for (int i = 0; i < numParam; i++) {
+                    if (vertical) {
+                        cursor.setChannel(0, (int) parameters[i]);
+                    } else {
+                        cursor.setChannel((int) parameters[i], 0);
+                    }
+                    action.setCursor(cursor);
+                    action.doCommand(Action.CURSOR, true);
+                }
+            } else {
+                if (vertical) {//use 0,counts
+                    for (int i = 0; i < numParam; i++) {
+                        cursor.setChannel(0, (int) parameters[i]);
+                        action.setCursor(cursor);
+                        action.doCommand(Action.CURSOR, true);
+                    }
+                } else {
+                    /* 2D: x and y dimensions */
+                    for (int i = 0; i < numParam - 1; i = i + 2) {
+                        cursor.setChannel((int) parameters[i],
+                                (int) parameters[i + 1]);
+                        action.setCursor(cursor);
+                        action.doCommand(Action.CURSOR, true);
+                    }
+                }
+            }
+        }
+    }
 
 	/**
 	 * Parse a string go a number
@@ -159,24 +152,6 @@ final class ParseCommand implements CommandListener {
 	private double convertNumber(String s) throws NumberFormatException {
 		return (s.indexOf('.') >= 0) ? Double.parseDouble(s) : Integer
 				.parseInt(s);
-	}
-
-	/**
-	 * Display help
-	 */
-	private void help() {
-		final StringBuffer sb = new StringBuffer("Commands:\t");
-		sb
-				.append("li - Linear Scale\tlo - Log Scale\ta  - Auto Scale\tra - Range\t");
-		sb
-				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
-		sb.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
-		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final String[] commands = CommandManager.getInstance().getAllCommands();
-		for (int i = 0; i < commands.length; i++) {
-			sb.append(commands[i]).append("\t");
-		}
-		textOut.messageOutln(sb.toString());
 	}
 }
 
