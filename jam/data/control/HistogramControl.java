@@ -29,7 +29,7 @@ public class HistogramControl extends DataControl implements ActionListener {
     Histogram currentHistogram;
 
     //new Histogram
-    private JTextField textName,textNumber,textSize,textTitle;
+    private JTextField textName,textSize,textTitle;
     private JCheckBox coneInt,coneDbl,ctwoInt,ctwoDbl;
 
     private String histogramName,histogramTitle;
