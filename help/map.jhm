@@ -23,6 +23,7 @@
       <mapID target="fitmenu" url="menus/fitting.html" />
       <mapID target="help" url="menus/help.html" />
       <mapID target="l002" url="L002format.html" />
+      <mapID target="caen" url="CAENformat.html" />
       <mapID target="protocol" url="frontEndComm.html" />
       <mapID target="API" url="API/index.html" />
    </map>

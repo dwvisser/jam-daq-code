@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>YaleCAEN_InputStream expected file stream/file format</title>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
+</head>
+
+<body>
+<h2>YaleCAEN_InputStream expected file stream/file format</h2>
+
+The first 8-kByte buffer of an event file begins with a 256-byte header record. It is identical to the header in the <a href="L002format.html">L002 format specification</a>. Thereafter, the entire buffer is read as 32-bit words. All 4-byte numbers are interpreted as 4-byte big-endian signed integers.
+
+<h3>1<sup>st</sup> 8-kByte buffer:</h3>
+<ol>
+    <li>256-byte run header</li>
+    <li>0 or more <a href="#eventblock">EVENT</a> and/or <a href="#scalerblock">SCALER</a> blocks</li>
+    <li>0 or more <a href="#padding">PAD</a> words</li>
+    <li>1 <a href="#endbuffdef">END_OF_BUFFER</a> word</li>
+</ol>
+<h3>2<sup>nd</sup> 8-kByte buffer and subsequent buffers:</h3>
+<ol>
+    <li>0 or more <a href="#eventblock">EVENT</a> and/or <a href="#scalerblock">SCALER</a> blocks</li>
+    <li>0 or more <a href="#padding">PAD</a> words</li>
+    <li>1 <a href="#endbuffdef">END_OF_BUFFER</a> word</li>
+</ol>
+
+<p>Buffers must add up to <em>exactly</em> 8 kilobytes. I.e., there can be no empty space at the end of a buffer. We pad out extra space in the buffer, and finalize it with the end-of-buffer word.</p>
+
+<a name="eventblock"><h3>EVENT blocks</h3></a>
+<ol>
+    <li>1 CAEN v7x5 event header word</li>
+    <li>0 or more CAEN v7x5 event parameter words</li>
+    <li>1 CAEN v7x5 end-of-event word</li>
+</ol>
+
+<a name="scalerblock"><h3>SCALER blocks</h3></a>
+
+<table>
+    <tr><td>byte#</td><td>word#</td><td>description</td></tr>
+    <tr><td>1-4</td><td>1</td><td>0x01cccccc</td></tr>
+    <tr><td>5-8</td><td>2</td><td>number of scaler values in block (N)</td></tr>
+    <tr><td>9-12</td><td>3</td><td>1<sup>st</sup> scaler value</td></tr>
+    <tr><td>...</td><td>...</td><td>...</td></tr>
+    <tr><td>(5N+1)-(6N)</td><td>N+2</td><td>N<sup>th</sup> scaler value</td></tr>
+</table>
+
+<a name="padding"><h3>Padding words</h3>
+
+<p>The reasons for the different kinds of padding characters are historical. If Jam's sorting process sees the STOP_PAD or END_PAD padding the buffer, it knows that the VME computer has completely read out the ADC's and TDC's, and may consider its event reconstruction buffer to contain only completely reconstructed events. In general, a single event may be split between two buffers, because the order of readout of the modules is not guaranteed.</p>
+
+<dl>
+    <dt>BUFFER_PAD (0x01ffffff)</dt>
+    <dd>Normally used to pad out buffers when a subsequent buffer is expected.</dd>
+    <dt>STOP_PAD (0x1dddddd)</dt>
+    <dd>Used to pad out the last buffer sent after the experimenter has requested that the acquisition <em>stop</em>. The presence of these padding characters is a signal to the sorting process that it has received the last buffer for now.</dt> 
+    <dt>END_PAD (0x1eeeeee)</dt>
+    <dd>Used to pad out the last buffer sent after the experimenter has requested that the <em>run be ended</em>. The presence of these padding characters is a signal to the sorting process that it has received the last buffer <em>in the run</em>, and should close the event file.</dd>
+</dl>
+
+<a name="endbuffdef"><h3>END-OF-BUFFER word (0x01bbbbbb)</h3></a>
+<p>This is <em>always</em> the last word in the 8-kilobyte buffer.
+</body>
+</html>  
