@@ -268,14 +268,7 @@ public class HDFIO implements DataIO, JamHDFFields {
     	
         final StringBuffer message = new StringBuffer();
         int progress = 1;
-        
-        if (file.exists()) {
-            /*
-             * At this point, we've confirmed overwrite with the user.
-             */
-            file.delete();
-        } 
-        
+                
     	DataObject.clearAll();        
     	
     	addDefaultDataObjects(file.getPath());
