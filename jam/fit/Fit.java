@@ -1,6 +1,7 @@
 package jam.fit;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
+import jam.plot.Bin;
 import jam.plot.Display;
 import jam.plot.PlotMouseListener;
 
@@ -466,13 +467,13 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	/**
 	 *
 	 */
-	public void plotMousePressed(Point p, Point pPixel) {
+	public void plotMousePressed(Bin p, Point pPixel) {
 		while (parameterEnum.hasNext()) {
 			Parameter parameter = (Parameter) parameterEnum.next();
 			mouseClickCount++;
 			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
 				textData[mouseClickCount - 1].setForeground(Color.BLACK);
-				textData[mouseClickCount - 1].setText("" + p.x);
+				textData[mouseClickCount - 1].setText("" + p.getX());
 				break;
 			}
 		}
