@@ -250,8 +250,8 @@ Observer {
      */
     private void addChooserHists(JComboBox c, int type1, int type2){
         //Histogram h;
-        for (Enumeration e=Histogram.getHistogramList().elements();e.hasMoreElements();){
-            Histogram h=(Histogram)e.nextElement();
+        for (Iterator e=Histogram.getHistogramList().iterator();e.hasNext();){
+            Histogram h=(Histogram)e.next();
             if ((h.getType()==type1)||(h.getType()==type2)){
                 c.addItem(h.getName());
             }

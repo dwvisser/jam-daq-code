@@ -257,12 +257,12 @@ public class HistogramControl extends DataControl implements ActionListener {
      */
     public void zeroAll() throws GlobalException {
         Histogram hist;
-        Enumeration allHistograms;
+        Iterator allHistograms;
 
         msghdlr.messageOut("Zero All", MessageHandler.NEW);
-        allHistograms=Histogram.getHistogramList().elements();
-        while(allHistograms.hasMoreElements()){
-            hist = ( (Histogram) allHistograms.nextElement() );
+        allHistograms=Histogram.getHistogramList().iterator();
+        while(allHistograms.hasNext()){
+            hist = ( (Histogram) allHistograms.next() );
             msghdlr.messageOut(" .", MessageHandler.CONTINUE);
             hist.setZero();
         }

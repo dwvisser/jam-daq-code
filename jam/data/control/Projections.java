@@ -226,8 +226,8 @@ Observer {
     private void setupToHist(String newSelect){
         cto.removeAllItems();
         cto.addItem(NEW_HIST);
-        for (Enumeration e=Histogram.getHistogramList().elements();e.hasMoreElements();){
-            Histogram h=(Histogram)e.nextElement();
+        for (Iterator e=Histogram.getHistogramList().iterator();e.hasNext();){
+            Histogram h=(Histogram)e.next();
             if ((h.getType()==Histogram.ONE_DIM_INT)||(h.getType()==Histogram.ONE_DIM_DOUBLE)){
                 cto.addItem(h.getName());
             }

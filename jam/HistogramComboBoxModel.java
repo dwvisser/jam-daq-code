@@ -33,7 +33,7 @@ public class HistogramComboBoxModel  extends DefaultComboBoxModel {
     public Object getElementAt(int index){
     	Object rval=NO_HISTS; //default value if no histograms
         if (numHists()>0){
-            rval = ((Histogram) Histogram.getHistogramList().elementAt(index)).getName();
+            rval = ((Histogram) Histogram.getHistogramList().get(index)).getName();
         } 
         return rval;
     }

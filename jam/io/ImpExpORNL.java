@@ -2,9 +2,7 @@ package jam.io;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
-import jam.util.FileUtilities;
-import jam.util.StringUtilities;
-import jam.util.UtilException;
+import jam.util.*;
 import java.awt.Frame;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
@@ -16,8 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by <code>DAMM</code> and
@@ -458,7 +455,7 @@ public class ImpExpORNL extends ImpExp {
 	private void writeDrr(OutputStream buffout) throws IOException {
 
 		DataOutputStream dosDrr;
-		Vector allHists;
+		List allHists;
 		Histogram hist;
 
 		short sizeX;
@@ -474,7 +471,7 @@ public class ImpExpORNL extends ImpExp {
 		//total number of 1/2 words need in file //size of file needed? in 16 bit words
 		totalHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
-			hist = ((Histogram) allHists.elementAt(i));
+			hist = ((Histogram) allHists.get(i));
 			if (hist.getType() == Histogram.ONE_DIM_INT) {
 				totalHalfWords = totalHalfWords + 2 * hist.getSizeX();
 			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
@@ -506,7 +503,7 @@ public class ImpExpORNL extends ImpExp {
 		//text from chill file
 
 		for (int i = 0; i < allHists.size(); i++) {
-			hist = ((Histogram) allHists.elementAt(i));
+			hist = ((Histogram) allHists.get(i));
 			sizeX = (short) (hist.getSizeX());
 			sizeY = (short) (hist.getSizeY()); //will be zero for 1-d
 
@@ -561,7 +558,7 @@ public class ImpExpORNL extends ImpExp {
 
 		//write out numbers
 		for (int i = 0; i < allHists.size(); i++) {
-			dosDrr.writeInt(((Histogram) allHists.elementAt(i)).getNumber());
+			dosDrr.writeInt(((Histogram) allHists.get(i)).getNumber());
 			// Id number
 		}
 
@@ -576,7 +573,7 @@ public class ImpExpORNL extends ImpExp {
 	private void writeHis(OutputStream outputStream) throws IOException {
 
 		DataOutputStream dosHis;
-		Enumeration allHistograms;
+		Iterator allHistograms;
 		Histogram hist;
 
 		int sizeX;
@@ -588,9 +585,9 @@ public class ImpExpORNL extends ImpExp {
 
 		dosHis = new DataOutputStream(outputStream);
 
-		allHistograms = Histogram.getHistogramList().elements();
-		while (allHistograms.hasMoreElements()) {
-			hist = ((Histogram) allHistograms.nextElement());
+		allHistograms = Histogram.getHistogramList().iterator();
+		while (allHistograms.hasNext()) {
+			hist = ((Histogram) allHistograms.next());
 			sizeX = hist.getSizeX();
 			sizeY = hist.getSizeY();
 
