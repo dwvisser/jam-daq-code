@@ -140,14 +140,22 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		//Set properties for each plot
 		plotGridPanel.removeAll();
 		Plot plot=null;
+		//Set initial states for all plots
 		for (int i=0;i<numberPlots;i++){
 			plot =(Plot)plotList.get(i);
 			plot.removeAllPlotMouseListeners();
 			plot.setNumber(i);
+			plot.select(false);
+			plot.reset();
+			plot.removeAllPlotMouseListeners();			
 			plotGridPanel.add(plot);			
 			Histogram hist=currentView.getHistogram(i);
 			plot.displayHistogram(hist);
 		}
+		updateLayout();
+		//Default set to first plot
+		currentPlot=null;
+		plot =(Plot)plotList.get(0);
 		if (plot != null){
 			setPlot(plot);			
 		}
