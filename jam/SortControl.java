@@ -1,44 +1,16 @@
 package jam;
-import jam.global.GlobalException;
-import jam.global.GoodThread;
-import jam.global.JamProperties;
-import jam.global.MessageHandler;
-import jam.global.RunInfo;
+import jam.global.*;
 import jam.io.ExtensionFileFilter;
-import jam.sort.Controller;
-import jam.sort.SortDaemon;
-import jam.sort.SortException;
-import jam.sort.StorageDaemon;
-import jam.sort.stream.EventException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import jam.sort.*;
+import jam.sort.stream.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class to control the offline sort process
@@ -90,18 +62,18 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		removeAll,
 		savelist;
 
-	/** 
-	  * button to get file brower 
+	/**
+	  * button to get file brower
 	  */
 	private JButton bbrowse;
 
-	/** 
-	  *control button for begin sort 
+	/**
+	  *control button for begin sort
 	  */
 	private JButton bbegin;
 
-	/** 
-	  * control button for end sort 
+	/**
+	  * control button for end sort
 	  */
 	private JButton bend;
 
@@ -116,25 +88,34 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		defaultOutputFile =
 			JamProperties.getPropString(JamProperties.EVENT_OUTFILE);
 		d = new JDialog(jamMain, "Sorting ", false);
-		d.setResizable(true);
+		d.setResizable(false);
 		d.setLocation(20, 50);
+
+		//GUI layout
 		Container cd = d.getContentPane();
 		cd.setLayout(new BorderLayout(10, 10));
-		JPanel ptop = new JPanel();
-		ptop.setLayout(new GridLayout(0, 1, 5, 5));
+
+		//Top Panel
+		final JPanel ptop = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		ptop.setBorder(new EmptyBorder(10,0,0,0));
 		cd.add(ptop, BorderLayout.NORTH);
-		pdiskfiles = new JPanel();
-		pdiskfiles.setLayout(new BorderLayout());
-		eventFileModel = new DefaultListModel();
-		listEventFiles = new JList(eventFileModel);
-		listEventFiles.setSelectionMode(
-			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		pdiskfiles.add(new JLabel("Event Files to Sort",JLabel.RIGHT), 
-		BorderLayout.NORTH);
-		pdiskfiles.add(new JScrollPane(listEventFiles), BorderLayout.CENTER);
+		ptop.add(new JLabel("Event Files to Sort",JLabel.RIGHT));
+
+		//List Panel
+		pdiskfiles = new JPanel(new BorderLayout(5,5));
+		pdiskfiles.setBorder(new EmptyBorder(0,0,0,20));
 		cd.add(pdiskfiles, BorderLayout.CENTER);
 
-		JPanel ef = new JPanel(new GridLayout(0, 1));
+		eventFileModel = new DefaultListModel();
+		listEventFiles = new JList(eventFileModel);
+		listEventFiles.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		pdiskfiles.add(new JScrollPane(listEventFiles), BorderLayout.CENTER);
+
+
+		//Commands Panel
+		final JPanel ef = new JPanel(new GridLayout(0, 1,5,2));
+		ef.setBorder(new EmptyBorder(0,10,0,0));
+		cd.add(ef, BorderLayout.WEST);
 
 		addfile = new JButton("Add File");
 		addfile.setActionCommand("addfile");
@@ -166,38 +147,37 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		savelist.addActionListener(this);
 		ef.add(savelist);
 
-		cd.add(ef, BorderLayout.WEST);
+		//ef.add(Box.createVerticalGlue());
 
-		JPanel ple = new JPanel();
-		ple.setLayout(new GridLayout(0, 1, 5, 5));
-		cd.add(ple, BorderLayout.EAST);
-
-		JPanel pbottom = new JPanel();
-		pbottom.setLayout(new GridLayout(0, 1, 5, 2));
+		//Bottom Panel
+		final JPanel pbottom = new JPanel(new GridLayout(0, 1, 5, 5));
+		pbottom.setBorder(new EmptyBorder(0,5,0,10));
 		cd.add(pbottom, BorderLayout.SOUTH);
 
 		// panel for output file
-		JPanel pout = new JPanel(new BorderLayout());
+		final JPanel pout = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		pbottom.add(pout);
 		cout = new JCheckBox("Output Events to File:", false);
 		cout.addItemListener(this);
-		pout.add(cout,BorderLayout.WEST);
+		pout.add(cout);
 
 		textOutFile =
 			new JTextField(defaultEvents + File.separator + defaultOutputFile);
 		textOutFile.setColumns(28);
 		textOutFile.setEnabled(false);
-		pout.add(textOutFile,BorderLayout.CENTER);
+		pout.add(textOutFile);
 
-		bbrowse = new JButton("Browse");
+		bbrowse = new JButton("Browse..");
 		bbrowse.setActionCommand("bfileout");
 		bbrowse.addActionListener(this);
 		bbrowse.setEnabled(false);
-		pout.add(bbrowse,BorderLayout.EAST);
+		pout.add(bbrowse);
 
-		//panel with begin and end bottoms	
-		JPanel pb = new JPanel();
-		pb.setLayout(new GridLayout(1,0));
+		//panel with begin and end bottoms
+		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pbottom.add(pbutton);
+		final JPanel pb = new JPanel(new GridLayout(1,0,5,5));
+		pbutton.add(pb);
 
 		bbegin = new JButton("Begin");
 		bbegin.setActionCommand("begin");
@@ -213,7 +193,6 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		bend.setEnabled(false);
 		pb.add(bend);
 
-		pbottom.add(pb);
 
 		d.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -282,15 +261,15 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			setWriteEvents(cout.isSelected());
 		}
 	}
-	
+
 	void setWriteEvents(boolean state){
 		textOutFile.setEnabled(state);
-		bbrowse.setSelected(state);
+		bbrowse.setEnabled(state);
 		writeEvents = state;
 	}
 
 	/**
-	 * Setup up called by SetupSortOff  
+	 * Setup up called by SetupSortOff
 	 *
 	 */
 	public void setup(
@@ -311,7 +290,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		final List fileList = new Vector(eventFileModel.getSize());
 		for (int count = 0; count < eventFileModel.getSize(); count++) {
 			final File f=(File)eventFileModel.get(count);
-			fileList.add(f);	
+			fileList.add(f);
 		}
 		/* tell storage daemon list of files */
 		dataInpDaemon.setEventInputList(fileList);
@@ -322,7 +301,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 
 	/**
 	 * start sorting offline
-	 * 
+	 *
 	 * @param lockOnThis passed by script thread, which wants to know when
 	 * sorting is done
 	 */
@@ -418,10 +397,10 @@ class SortControl implements Controller, ActionListener, ItemListener {
 
 	/**
 	 * Called back by sorter when sort encounters a end-run-marker.
-	 * Tell StorageDaemon to close file. 
-	 * Tells user sorting is done and unlocks fields so that 
+	 * Tell StorageDaemon to close file.
+	 * Tells user sorting is done and unlocks fields so that
 	 * new files can be input to sort.
-	 * 
+	 *
 	 */
 	public void atSortEnd() {
 		try {
@@ -488,7 +467,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			addEventFile(lastFile);
 		}
 	}
-	
+
 	void addEventFile(File f){
 		if (f != null && f.exists()){
 			final ExtensionFileFilter ff =
@@ -519,7 +498,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	}
 
 	/**
-	 * remove all items from sort list 
+	 * remove all items from sort list
 	 *
 	 */
 	private void removeAllItems() {
@@ -572,7 +551,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			readList(fd.getSelectedFile());
 		}
 	}
-	
+
 	void readList(File f) throws JamException {
 		lastFile=f;
 		try {
@@ -593,7 +572,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	}
 
 	/**
-	 * Is the Browse for the File Output Name 
+	 * Is the Browse for the File Output Name
 	 *
 	 */
 	private File getOutFile() {
@@ -613,14 +592,14 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		}
 		return rval;
 	}
-	
+
 	void setEventOutput(File f){
 		outDirectory=f;
 		textOutFile.setText(f.getAbsolutePath());
 		setWriteEvents(true);
 	}
 
-	/** 
+	/**
 	 * Lock the file and record input list while sorting
 	 * This method is called when sorting is actived to lock fields
 	 * again when done to unlock fields
