@@ -37,16 +37,17 @@ public class Scaler implements Serializable  {
      */
 
     public Scaler(String name, int number) throws DataException{        
+		final StringUtilities su=StringUtilities.instance();
         if(name.length()>NAME_LENGTH){//give error if name is too long
             throw new DataException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
-        name=StringUtilities.makeLength(name, NAME_LENGTH);
+        name=su.makeLength(name, NAME_LENGTH);
         /* make sure name is unique */
         int prime=1;
         String addition;
         while(scalerTable.containsKey(name)){
             addition="["+prime+"]";
-            name=StringUtilities.makeLength(name,NAME_LENGTH - addition.length())+addition;
+            name=su.makeLength(name,NAME_LENGTH - addition.length())+addition;
             prime++;
 
         }

@@ -67,9 +67,10 @@ public class Gate implements Serializable {
 	 * @param hist the <code>Histogram</code> to which the gate will belong.
 	 */
 	public Gate(String name, Histogram hist) {
+		StringUtilities su=StringUtilities.instance();
 		this.histogram = hist;
 		//work out name, and give error message if name is to be truncated
-		String name2 = name = StringUtilities.makeLength(name, NAME_LENGTH);
+		String name2 = name = su.makeLength(name, NAME_LENGTH);
 		if (name.length() > NAME_LENGTH) {
 			System.err.println(
 				"Gate name '"
@@ -85,7 +86,7 @@ public class Gate implements Serializable {
 		while (gateTable.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
-				StringUtilities.makeLength(
+				su.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;

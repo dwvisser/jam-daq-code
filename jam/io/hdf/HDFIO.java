@@ -453,6 +453,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @exception   HDFException  thrown if unrecoverable error occurs
      */
     protected void getHistograms(int mode) throws HDFException{
+		final StringUtilities su=StringUtilities.instance();
         NumericalDataGroup ndg=null;
         /* I check ndgErr==null to determine if error bars exist */
         NumericalDataGroup ndgErr=null;
@@ -555,7 +556,7 @@ public class HDFIO implements DataIO,JamHDFFields {
                         histogram.setNumber(number);
                     } else {//RELOAD
                         histogram = Histogram.getHistogram(
-                        StringUtilities.makeLength(name,Histogram.NAME_LENGTH));
+                        su.makeLength(name,Histogram.NAME_LENGTH));
                         if (histogram != null) {
                             if (histDim==1) {
                                 if (histNumType==NumberType.INT) {
@@ -661,6 +662,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @throws HDFException thrown if unrecoverable error occurs
      */
     private void getGates(int mode) throws HDFException{
+		final StringUtilities su=StringUtilities.instance();
         Gate g=null;
         try {
         	/* get list of all VG's in file */
@@ -690,9 +692,9 @@ public class HDFIO implements DataIO,JamHDFFields {
                         currVG.getTag(),currVG.getRef()).getNote();
                         if (mode==OPEN){
                             g = new Gate(gname,Histogram.getHistogram(
-                            StringUtilities.makeLength(hname,Histogram.NAME_LENGTH)));
+                            su.makeLength(hname,Histogram.NAME_LENGTH)));
                         } else {//reload
-                            g = Gate.getGate(StringUtilities.makeLength(gname,
+                            g = Gate.getGate(su.makeLength(gname,
                             Gate.NAME_LENGTH));
                         }
                         if (g!=null) {                  
@@ -731,6 +733,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @param scalers the list of scalers
      */
     protected void addScalerSection(java.util.List scalers) throws HDFException{
+		final StringUtilities su=StringUtilities.instance();
     	final short [] types = {VdataDescription.DFNT_INT32,
     	VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32};
         final short [] orders = new short[3];
@@ -760,7 +763,7 @@ public class HDFIO implements DataIO,JamHDFFields {
         for (int i=0; i < size ; i++) {
             final Scaler s=(Scaler)(scalers.get(i));
             data.addInteger(0,i,s.getNumber());
-            data.addChars(1,i,StringUtilities.makeLength(s.getName(),orders[1]));
+            data.addChars(1,i,su.makeLength(s.getName(),orders[1]));
             data.addInteger(2,i,s.getValue());
         }
         data.refreshBytes();
@@ -848,8 +851,9 @@ public class HDFIO implements DataIO,JamHDFFields {
         parameterGroup.addDataObject(data); //add vData to gate VG
 
         for (int i=0; i < size ; i++) {
+			final StringUtilities su=StringUtilities.instance();
             final DataParameter p=(DataParameter)(parameters.get(i));
-            data.addChars(0,i,StringUtilities.makeLength(p.getName(),
+            data.addChars(0,i,su.makeLength(p.getName(),
             orders[0]));
             data.addFloat(1,i,(float)p.getValue());
         }

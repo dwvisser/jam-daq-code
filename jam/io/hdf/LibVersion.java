@@ -30,11 +30,7 @@ public class LibVersion extends DataObject {
 	/**
 	 * Descriptive String
 	 */
-	String description =
-		StringUtilities.makeLength(
-			"HDF 4.1r2 compliant. 12/31/98 Dale Visser",
-			80);
-	//DFTAG_VERSION seems to need to be 92(80=92-12) long 
+	String description;
 
 	public LibVersion(HDFile fi) {
 		super(fi, DFTAG_VERSION); //sets tag
@@ -50,11 +46,20 @@ public class LibVersion extends DataObject {
 			System.err.println(ioe);
 		}
 		bytes = baos.toByteArray();
+		initDescription();
 	}
 
 	public LibVersion(HDFile hdf, byte[] data, short t,short reference) {
 		super(hdf, data, t, reference);
-		//tag = DFTAG_VERSION;
+		initDescription();
+	}
+	
+	final void initDescription(){
+		final StringUtilities su=StringUtilities.instance();
+		su.makeLength(
+			"HDF 4.1r2 compliant. 12/31/98 Dale Visser",
+			80);
+		/* DFTAG_VERSION seems to need to be 92(80=92-12) long */ 
 	}
 
 	/**

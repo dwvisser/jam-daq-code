@@ -34,7 +34,7 @@ public class DataParameter {
 	 * @param name the name for the new parameter used in the dialog box
 	 */
 	public DataParameter(String name) throws DataException {
-
+		StringUtilities su=StringUtilities.instance();
 		//give error if name is too long
 		if (name.length() > NAME_LENGTH) {
 			throw new DataException(
@@ -44,25 +44,21 @@ public class DataParameter {
 					+ NAME_LENGTH
 					+ " characters or less.  Please modify sort file.");
 		}
-		name = StringUtilities.makeLength(name, NAME_LENGTH);
-
+		name = su.makeLength(name, NAME_LENGTH);
 		//make sure name is unique
 		int prime = 1;
 		String addition;
 		while (parameterTable.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
-				StringUtilities.makeLength(
+				su.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;
 			prime++;
-
 		}
-
 		this.name = name;
 		this.value = 0.0; //default zero value	
-
 		// Add to list of parameters    	
 		parameterTable.put(name, this);
 		parameterList.add(this);

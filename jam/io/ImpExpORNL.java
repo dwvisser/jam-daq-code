@@ -409,6 +409,7 @@ public class ImpExpORNL extends ImpExp {
 	private void writeDrr(OutputStream buffout) throws IOException {
 		Histogram hist;
 
+		final StringUtilities su=StringUtilities.instance();
 		int diskOffSet = 0;
 		DataOutputStream dosDrr = new DataOutputStream(buffout);
 		List allHists = Histogram.getHistogramList();
@@ -445,7 +446,7 @@ public class ImpExpORNL extends ImpExp {
 		dosDrr.writeInt(0); //time
 		dosDrr.writeInt(0); //time
 		dosDrr.writeBytes(
-			StringUtilities.makeLength("File Created by Jam", 80));
+			su.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (int i = 0; i < allHists.size(); i++) {
 			hist = ((Histogram) allHists.get(i));
@@ -484,7 +485,7 @@ public class ImpExpORNL extends ImpExp {
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			dosDrr.writeFloat(0.0f); //dummy calibration
-			dosDrr.writeBytes(StringUtilities.makeLength(hist.getTitle(), 40));
+			dosDrr.writeBytes(su.makeLength(hist.getTitle(), 40));
 			//sub-Title
 			if (hist.getType() == Histogram.ONE_DIM_INT) {
 				// increment disk offset for .his file

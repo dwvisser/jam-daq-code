@@ -301,6 +301,7 @@ public class HistogramIO implements FilenameFilter {
 		Iterator allHistograms, allGates, allScalers;
 		int numHist, numGates, numScalers;
 		int[] gate1d;
+		final StringUtilities su=StringUtilities.instance();
 		try {
 			FileOutputStream fileStream = new FileOutputStream(fileSave);
 			BufferedOutputStream bos =
@@ -321,7 +322,7 @@ public class HistogramIO implements FilenameFilter {
 				while (allHistograms.hasNext()) {
 					hist = ((Histogram) allHistograms.next());
 					String name =
-						StringUtilities.makeLength(
+						su.makeLength(
 							hist.getName(),
 							HIST_NAME_LENGTH);
 					for (int i = 0; i < HIST_NAME_LENGTH; i++) {
@@ -329,7 +330,7 @@ public class HistogramIO implements FilenameFilter {
 					}
 					dos.writeInt(hist.getNumber());
 					String title =
-						StringUtilities.makeLength(
+						su.makeLength(
 							hist.getTitle(),
 							HIST_TITLE_LENGTH);
 					for (int i = 0; i < HIST_TITLE_LENGTH; i++) {
@@ -795,6 +796,7 @@ public class HistogramIO implements FilenameFilter {
 		int numHist = 0;
 		int[] counts;
 		int[][] counts2D;
+		final StringUtilities su=StringUtilities.instance();
 		try {
 			FileInputStream fis = new FileInputStream(fileOpen);
 			BufferedInputStream bis = new BufferedInputStream(fis, BUFFER_SIZE);
@@ -806,7 +808,7 @@ public class HistogramIO implements FilenameFilter {
 				for (int i = 0; i < MAGIC_WORD_LENGTH; i++) {
 					name = name + dis.readChar();
 				}
-				name = StringUtilities.makeLength(name, HIST_NAME_LENGTH);
+				name = su.makeLength(name, HIST_NAME_LENGTH);
 				int number = dis.readInt();
 				String title = new String();
 				for (int i = 0; i < 50; i++) {
