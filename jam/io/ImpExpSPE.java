@@ -19,25 +19,25 @@ import java.io.OutputStream;
 public class ImpExpSPE extends ImpExp {
 
 	static final int NAME_LENGTH = 8;
-	static final int MAX_SIZE = 4096;
+	static final int MAX_SIZE = 8192;
 	static final int MAGIC_WORD = 24;
 
 	public ImpExpSPE(Frame frame, MessageHandler msgHandler) {
 		super(frame, msgHandler);
 
 	}
-	
-	public ImpExpSPE(){
+
+	public ImpExpSPE() {
 		super();
 	}
 
-    public String getFileExtension(){
-    	return ".spe";
-    }
-    
-    public String getFormatDescription(){
-    	return "Radware gf3";
-    }
+	public String getFileExtension() {
+		return ".spe";
+	}
+
+	public String getFormatDescription() {
+		return "Radware gf3";
+	}
 
 	/**
 	 * Prompts for and opens a file.
@@ -56,7 +56,9 @@ public class ImpExpSPE extends ImpExp {
 	public void saveFile(Histogram hist) throws ImpExpException {
 
 		if (hist.getDimensionality() == 2) {
-			if (msgHandler != null) msgHandler.errorOutln("Cannot write out 2 dimensional spe files");
+			if (msgHandler != null)
+				msgHandler.errorOutln(
+					"Cannot write out 2 dimensional spe files");
 		} else {
 			saveFile("Export RadWare .spe file ", "spe", hist);
 		}
@@ -78,13 +80,12 @@ public class ImpExpSPE extends ImpExp {
 			char[] cName = new char[NAME_LENGTH];
 			int size;
 			float countsFloat[];
-			int counts[];
+			double counts[];
 			int tempInt;
 
 			String nameHist;
 			int typeHist;
 			String titleHist;
-			int[] countsHist;
 
 			magicInt = dis.readInt();
 
@@ -94,41 +95,33 @@ public class ImpExpSPE extends ImpExp {
 						+ magicInt
 						+ " [ImpExpSPE]");
 			}
-
-			//read in name								    	    		    		    		    
+			/* read in name */
 			for (int i = 0; i < NAME_LENGTH; i++) {
 				cName[i] = (char) dis.readByte();
 			}
-
-			size = dis.readInt();
-			tempInt = dis.readInt(); //should read in a 1
-			tempInt = dis.readInt(); //should read in a 1
-			tempInt = dis.readInt(); //should read in a 1
-
+			size = dis.readInt(); //IDIM1
+			tempInt = dis.readInt(); //should read in a 1, IDIM2
+			tempInt = dis.readInt(); //should read in a 1, IRED1
+			tempInt = dis.readInt(); //should read in a 1, IRED2
 			tempInt = dis.readInt(); //should read a hex  0018  dec 24 
 			tempInt = dis.readInt(); //should read a hex  2000  dec 8192	
-
-			counts = new int[size];
+			counts = new double[size];
 			countsFloat = new float[size];
-
 			for (int i = 0;
 				i < size;
 				i++) { //does not read last channel as Jam size
 				countsFloat[i] = dis.readFloat();
-				counts[i] = (int) countsFloat[i];
+				counts[i] = (double) countsFloat[i];
 			}
-
 			tempInt = dis.readInt(); //should read a hex  2000  dec 8192	
-
-			//parameters of histogram
+			/* parameters of histogram */
 			nameHist = String.valueOf(cName);
-			typeHist = Histogram.ONE_DIM_INT;
+			typeHist = Histogram.ONE_DIM_DOUBLE;
 			titleHist = String.valueOf(cName);
-			countsHist = counts;
-
-			new Histogram(nameHist, nameHist, countsHist);
-			if (msgHandler != null) msgHandler.messageOut(" .");
-
+			new Histogram(nameHist, nameHist, counts);
+			if (msgHandler != null) {
+				msgHandler.messageOut(" .");
+			}
 			dis.close();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
@@ -147,71 +140,50 @@ public class ImpExpSPE extends ImpExp {
 		throws ImpExpException {
 		try {
 			DataOutputStream dos = new DataOutputStream(outStream);
-
-			int magicInt;
-			String name;
-			int size;
-			int type;
-			int[] countsInt;
-			double[] countsDbl;
-			float[] countsFlt;
-
-			//first int
-			magicInt = MAGIC_WORD;
-			//get data from histogram
-			name = hist.getName() + "        ";
+			/* get data from histogram */
+			String name = hist.getName() + "        ";
 			//FIXME 8 spaces to pad out should use NAME_LENGTH		
-			size = hist.getSizeX();
-			type = hist.getType();
-
-			// put data into a float array	 	
-			countsFlt = new float[size];
+			int size = hist.getSizeX();
+			int type = hist.getType();
+			/* put data into a float array */
+			float[] countsFlt = new float[size];
 			if (type == Histogram.ONE_DIM_INT) {
-				countsInt = (int[]) hist.getCounts();
+				int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsInt[i];
 				}
 			} else if (type == Histogram.ONE_DIM_DOUBLE) {
-				countsDbl = (double[]) hist.getCounts();
+				double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsDbl[i];
 				}
 			} else {
-				System.err.println(
-					"Error unrecognized histogram type [ImpExpSPE]");
+				throw new ImpExpException("Error unrecognized histogram type [ImpExpSPE]");
 			}
-
 			if (size > MAX_SIZE) {
-				throw new ImpExpException(" Writting out SPE file, size too large [ImpExpSPE]");
-
+				throw new ImpExpException("Writing out SPE file, size too large [ImpExpSPE]");
 			}
-
-			//write out key word
-			dos.writeInt(magicInt);
-
-			//write out histogram name		    		    		    		    
+			dos.writeInt(MAGIC_WORD); //write out key word
+			/* write out histogram name */
 			for (int i = 0; i < NAME_LENGTH; i++) {
 				dos.writeByte((byte) name.charAt(i));
 			}
-
-			//write out histogram size only does 1 d so far			
-			dos.writeInt(size);
-			dos.writeInt(1);
-			dos.writeInt(1);
-			dos.writeInt(1);
-			//next characters found experimentally end of record ?
-			dos.writeInt(24); //?	    hex 0018, dec 24   which is a S0 ^X
-			dos.writeInt(8192);
-			//?	    hex 2000, dec 8192 which is space followed by null
-
-			//write out histogram data
-			for (int i = 0; i < size; i++) {
+			/* write out histogram size only does 1 d so far */
+			dos.writeInt(size); //IDIM1
+			dos.writeInt(1); //IDIM2 in gf3, numch=IDIM1*IDIM2
+			dos.writeInt(1);//IRED1, purpose?
+			dos.writeInt(1);//IRED2, purpose?
+			dos.writeInt(MAGIC_WORD); //hex 0018, dec 24   which is a S0 ^X
+			dos.writeInt(4*size);//number of bytes in spectrum
+			for (int i = 0; i < size; i++) { //write out histogram data
 				dos.writeFloat(countsFlt[i]);
 			}
-			//next character found experimentally end of record?
-			dos.writeInt(8192); //?	    hex 2000, space followed by null
-
-			if (msgHandler != null) msgHandler.messageOut(" .");
+			/* next character found experimentally end of record?
+			 * seems to be necessary */
+			dos.writeInt(4*size); 
+			if (msgHandler != null){
+				msgHandler.messageOut(" .");
+			}
 			dos.flush();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
