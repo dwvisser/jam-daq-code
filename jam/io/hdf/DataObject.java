@@ -13,6 +13,11 @@ public abstract class DataObject {
 	 * contains the 2-byte tag for the data type
 	 */
 	protected short tag;
+	
+	/**
+	 * for use in Maps
+	 */
+	protected Short tagKey;
 
 	/**
 	 * Tag for machine type.  
@@ -122,6 +127,8 @@ public abstract class DataObject {
 	  * the context of an HDF file.
 	  */
 	protected short ref;
+	
+	protected Short refKey;
 
 	/**
 	 * Offset from start of file.
@@ -153,7 +160,7 @@ public abstract class DataObject {
 	 */
 	public DataObject(HDFile file, short tag) {
 		this.file = file;
-		this.tag = tag;
+		setTag(tag);
 		file.addDataObject(this, true); //ref gets set in this call
 	}
 
@@ -168,8 +175,8 @@ public abstract class DataObject {
 	 */
 	public DataObject(HDFile f, byte[] data, short t, short r) {
 		this.file = f;
-		tag=t;
-		this.ref = r;
+		setTag(t);
+		setRef(r);
 		this.bytes = data;
 		file.addDataObject(this, false);
 	}
@@ -184,11 +191,16 @@ public abstract class DataObject {
 	 */
 	public DataObject(HDFile file, int offset, int length, short t, short reference) {
 		this.file = file;
-		tag=t;
-		this.ref = reference;
+		setTag(t);
+		setRef(reference);
 		this.offset = offset;
 		this.length = length;
 		file.addDataObject(this, false);
+	}
+	
+	protected final void setTag(short t){
+		tag=t;
+		tagKey=new Short(t);
 	}
 
 	/**
@@ -227,8 +239,12 @@ public abstract class DataObject {
 	 * The tag is a 2-byte integer
 	 * denoting a unique data object type.
 	 */
-	public short getTag() {
+	public final short getTag() {
 		return tag;
+	}
+	
+	public final Short getTagKey(){
+		return tagKey;
 	}
 
 	/**
@@ -236,14 +252,26 @@ public abstract class DataObject {
 	 * tag type in an HDF file.  In my code, it is unique, period, but the HDF standard does not 
 	 * expect or require this.
 	 */
-	public short getRef() {
+	public final short getRef() {
 		return ref;
 	}
-
-	public void setRef(short reference) {
-		if (ref!=reference){
-			file.changeRef(this,ref,reference);
-			ref = reference;
+	
+	public final Short getRefKey(){
+		return refKey; 
+	}
+	
+	protected boolean haveNotSetRef=true;
+	
+	public final void setRef(short newref) {
+		if ((haveNotSetRef) || (ref!=newref)){
+			final Short oldref=refKey;
+			ref = newref;
+			refKey=new Short(newref);
+			/* only call "change" if this isn't the first time */
+			if (!haveNotSetRef){	
+				file.changeRefKey(this,oldref);
+			}
+			haveNotSetRef=false;
 		}
 	}
 
