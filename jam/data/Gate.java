@@ -2,7 +2,6 @@ package jam.data;
 import jam.util.StringUtilities;
 
 import java.awt.Polygon;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +17,7 @@ import java.util.Map;
  * @version 0.5
  * @since JDK 1.1
  */
-public final class Gate implements Serializable {
+public final class Gate {
 
 	/**
 	 * Maximum number of characters in the histogram name.
@@ -26,31 +25,31 @@ public final class Gate implements Serializable {
 	public static final int NAME_LENGTH = 16;
 
 	/* static structures to hold all gates */
-	private static final Map gateTable = Collections.synchronizedMap(new HashMap());
-	private static final List gateList = Collections.synchronizedList(new ArrayList());
-	private static final List [] gateListDim= new List[2];
+	private static final Map TABLE = Collections.synchronizedMap(new HashMap());
+	private static final List LIST = Collections.synchronizedList(new ArrayList());
+	private static final List [] DIM_LIST= new List[2];
 	static {
-		for (int i=0; i<gateListDim.length; i++){
-			gateListDim[i]=Collections.synchronizedList(new ArrayList());
+		for (int i=0; i<DIM_LIST.length; i++){
+			DIM_LIST[i]=Collections.synchronizedList(new ArrayList());
 		}		
 	}
 
-	private final String name; //name of gate
-	private final String histogramName; //histogram gate belongs to
-	private final int dimensions; //type of gate ONE_DIMESION or TWO_DIMENSION
+	private transient final String name; //name of gate
+	private transient final String histName; //histogram gate belongs to
+	private transient final int dimensions; //type of gate ONE_DIMESION or TWO_DIMENSION
 
-	private final int sizeX; //size of gate for 1d and x of 2d
-	private final int sizeY; //size used for 2d histograms only
+	private transient final int sizeX; //size of gate for 1d and x of 2d
+	private transient final int sizeY; //size used for 2d histograms only
 
-	private boolean isSet;
+	private transient boolean isSet;
 
 	/* values for 1 d gate */
-	private int lowerLimit; //lower limit for 1d gate
-	private int upperLimit; //upper limit for 1d gate
+	private transient int lowerLimit; //lower limit for 1d gate
+	private transient int upperLimit; //upper limit for 1d gate
 
 	/* values for a 2d gate */
-	private final Polygon bananaGate=new Polygon(); //polygon of 2d gate
-	private boolean insideGate[][]; // true if point inside 2d gate
+	private transient final Polygon bananaGate=new Polygon(); //polygon of 2d gate
+	private transient boolean insideGate[][]; // true if point inside 2d gate
 
 	/**
 	 * Constructs a new gate with the given name, and belonging to the given <code>Histogram</code>.
@@ -60,18 +59,18 @@ public final class Gate implements Serializable {
 	 * @param hist the <code>Histogram</code> to which the gate will belong.
 	 */
 	public Gate(String name, Histogram hist) {
-		StringUtilities su=StringUtilities.instance();
-		histogramName = hist.getName();
+		final StringUtilities stringUtil=StringUtilities.instance();
+		histName = hist.getName();
 		//work out name, and give error message if name is to be truncated
-		String name2 = name = su.makeLength(name, NAME_LENGTH);
+		String name2 = name = stringUtil.makeLength(name, NAME_LENGTH);
 		name = name2;
 		//add to histogramTable here
 		int prime = 1;
 		String addition;
-		while (gateTable.containsKey(name)) {
+		while (TABLE.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
-				su.makeLength(
+				stringUtil.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;
@@ -87,9 +86,9 @@ public final class Gate implements Serializable {
 	}
 	
 	private final void addToCollections(){
-		gateTable.put(name, this);
-		gateList.add(this);
-		gateListDim[dimensions-1].add(this);
+		TABLE.put(name, this);
+		LIST.add(this);
+		DIM_LIST[dimensions-1].add(this);
 	}
 
 	/**
@@ -103,8 +102,8 @@ public final class Gate implements Serializable {
 		for (Iterator allGates = inGateList.iterator(); allGates.hasNext();) {
 			Gate gate = (Gate) allGates.next();
 			String name = gate.getName();
-			gateTable.put(name, gate);
-			gateList.add(gate);
+			TABLE.put(name, gate);
+			LIST.add(gate);
 		}
 	}
 
@@ -114,26 +113,26 @@ public final class Gate implements Serializable {
 	 * @return ordered list of all <code>Gate</code> objects
 	 */
 	public static List getGateList() {
-		return Collections.unmodifiableList(gateList);
+		return Collections.unmodifiableList(LIST);
 	}
 
 	public static List getGateList(int type) {
-		return Collections.unmodifiableList(gateListDim[type-1]);
+		return Collections.unmodifiableList(DIM_LIST[type-1]);
 	}
 
 	/**
 	 * Clears the list of gates.
 	 */
 	public static void clearList() {
-		for (Iterator it=gateList.iterator(); it.hasNext();){
+		for (Iterator it=LIST.iterator(); it.hasNext();){
 			Gate gate=(Gate)it.next();
 			gate.insideGate=null;
 			gate.bananaGate.reset();
 		}
-		gateList.clear();
-		gateListDim[0].clear();
-		gateListDim[1].clear();
-		gateTable.clear();
+		LIST.clear();
+		DIM_LIST[0].clear();
+		DIM_LIST[1].clear();
+		TABLE.clear();
 		//run garbage collector, memory should be freed
 		System.gc();
 	}
@@ -146,8 +145,8 @@ public final class Gate implements Serializable {
 	 */
 	public static Gate getGate(String name) {
 		Gate rval=null;
-		if (name != null && gateTable.containsKey(name)){
-			rval = (Gate)gateTable.get(name);
+		if (name != null && TABLE.containsKey(name)){
+			rval = (Gate)TABLE.get(name);
 		}
 		return rval;
 	}
@@ -178,7 +177,7 @@ public final class Gate implements Serializable {
 	 * @return the <code>Histogram</code> this <code>Gate</code> belongs to
 	 */
 	public Histogram getHistogram() {
-		return Histogram.getHistogram(histogramName);
+		return Histogram.getHistogram(histName);
 	}
 
 	/**
@@ -188,11 +187,11 @@ public final class Gate implements Serializable {
 	 * @throws UnsupportedOperationException if called for 1d gate
 	 */
 	public int[] getLimits1d() {
-
-		int[] bounds = new int[2];
-		if (dimensions != 1)
+		final int [] bounds = new int[2];
+		if (dimensions != 1){
 			throw new UnsupportedOperationException(
 				"getLimits1d(): can only be called for 1D gates.");
+		}
 		bounds[0] = lowerLimit;
 		bounds[1] = upperLimit;
 		return bounds;
@@ -206,9 +205,10 @@ public final class Gate implements Serializable {
 	 * @throws UnsupportedOperationException thrown if called for 1d gate
 	 */
 	public boolean[][] getLimits2d() {
-		if (dimensions != 2)
+		if (dimensions != 2) {
 			throw new UnsupportedOperationException (
 				"getLimits2d(): can only be called for 2D gates.");
+		}
 		return insideGate;
 	}
 
@@ -229,21 +229,21 @@ public final class Gate implements Serializable {
 	/**
 	 * Sets the limts for a 1-d gate.
 	 *
-	 * @param ll lower channel limit
-	 * @param ul upper channel limit
+	 * @param lower lower channel limit
+	 * @param upper upper channel limit
 	 * @throws UnsupportedOperationException if called for 2d gate
 	 */
-	public void setLimits(int ll, int ul) {
+	public void setLimits(int lower, int upper) {
 		if (dimensions != 1){
 			throw new UnsupportedOperationException(
 				"setLimits(int,int): can only be called for 1D gates");
 		}
-		if (ll <= ul) {
-			lowerLimit = ll;
-			upperLimit = ul;
+		if (lower <= upper) {
+			lowerLimit = lower;
+			upperLimit = upper;
 		} else {
-			lowerLimit = ul;
-			upperLimit = ll;
+			lowerLimit = upper;
+			upperLimit = lower;
 		}
 		isSet = true;
 	}
@@ -258,9 +258,10 @@ public final class Gate implements Serializable {
 		for (int i=0; i<gatePoly.npoints; i++){
 			bananaGate.addPoint(gatePoly.xpoints[i],gatePoly.ypoints[i]);
 		}
-		if (dimensions != 2)
+		if (dimensions != 2) {
 			throw new UnsupportedOperationException(
 				"setLimits(Polygon): can only be called for 2D gates.");
+		}
 		//set points true if in plolygon
 		for (int i = 0; i < sizeX; i++) {
 			for (int j = 0; j < sizeY; j++) {
@@ -344,11 +345,11 @@ public final class Gate implements Serializable {
 	 * @return sum of counts in gate
 	 */
 	public double getArea() {
-		final Histogram histogram=Histogram.getHistogram(histogramName);
+		final Histogram histogram=Histogram.getHistogram(histName);
 		final Histogram.Type htype=histogram.getType();
 		double sum = 0.0;
 		if (dimensions == 1) {
-			if (htype == Histogram.Type.ONE_DIM_DOUBLE) {
+			if (htype == Histogram.Type.ONE_D_DOUBLE) {
 				final double[] counts = (double[]) histogram.getCounts();
 				for (int i = lowerLimit; i <= upperLimit; i++) {
 					sum += counts[i];
@@ -394,7 +395,7 @@ public final class Gate implements Serializable {
 		double centroid = 0.0;
 		double area = 0.0;
 		if (dimensions == 1) {
-			final Histogram histogram=Histogram.getHistogram(histogramName);
+			final Histogram histogram=Histogram.getHistogram(histName);
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] counts = (int[]) histogram.getCounts();
 				//sum up counts and weight
@@ -455,7 +456,7 @@ public final class Gate implements Serializable {
 	 * @return	the number of the associated <code>Histogram</code>
 	 */
 	public int getHistogramNumber() {
-		return Histogram.getHistogram(histogramName).getNumber();
+		return Histogram.getHistogram(histName).getNumber();
 	}
 
 	/**

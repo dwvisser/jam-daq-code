@@ -3,7 +3,6 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.util.StringUtilities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,18 +18,18 @@ import java.util.Map;
  * @since JDK 1.1
  */
 
-public class Scaler implements Serializable  {
+public class Scaler {
 
-    private static final Map scalerTable=Collections.synchronizedMap(new HashMap());
-    private static final List scalerList=Collections.synchronizedList(new ArrayList());
+    private static final Map TABLE=Collections.synchronizedMap(new HashMap());
+    private static final List LIST=Collections.synchronizedList(new ArrayList());
     
     /**
      * Limit on name length.
      */
     public final static int NAME_LENGTH = 16;
 
-    private final String name;	//name of scaler
-    private final int number;		//number in list
+    private transient final String name;	//name of scaler
+    private transient final int number;		//number in list
     private int value;		//value of scaler
 
     /**
@@ -41,25 +40,25 @@ public class Scaler implements Serializable  {
      * @throws UnsupportedArgumentException if name > <code>NAME_LENGTH</code> characters
      */
     public Scaler(String name, int number) {        
-		final StringUtilities su=StringUtilities.instance();
+		final StringUtilities stringUtil=StringUtilities.instance();
         if(name.length()>NAME_LENGTH){//give error if name is too long
             throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
-        name=su.makeLength(name, NAME_LENGTH);
+        name=stringUtil.makeLength(name, NAME_LENGTH);
         /* make sure name is unique */
         int prime=1;
         String addition;
-        while(scalerTable.containsKey(name)){
+        while(TABLE.containsKey(name)){
             addition="["+prime+"]";
-            name=su.makeLength(name,NAME_LENGTH - addition.length())+addition;
+            name=stringUtil.makeLength(name,NAME_LENGTH - addition.length())+addition;
             prime++;
 
         }
         this.name=name;
         this.number=number;
         /* Add to list of scalers */
-        scalerTable.put(name, this);
-        scalerList.add(this);
+        TABLE.put(name, this);
+        LIST.add(this);
     }
 
     /**
@@ -68,7 +67,7 @@ public class Scaler implements Serializable  {
      * @return the list of all scalers
      */
     public static List getScalerList(){
-        return Collections.unmodifiableList(scalerList);
+        return Collections.unmodifiableList(LIST);
     }
 
     /**
@@ -82,8 +81,8 @@ public class Scaler implements Serializable  {
         Iterator allScalers=inScalerList.iterator();
         while( allScalers.hasNext()) {//loop for all histograms
             Scaler scaler=(Scaler)allScalers.next();
-            scalerTable.put(scaler.getName(), scaler);
-            scalerList.add(scaler);
+            TABLE.put(scaler.getName(), scaler);
+            LIST.add(scaler);
         }
 
     }
@@ -92,13 +91,13 @@ public class Scaler implements Serializable  {
      * Clears the list of all scalers.
      */
     public static void  clearList(){
-        scalerTable.clear();
-        scalerList.clear();
+        TABLE.clear();
+        LIST.clear();
         /* run garbage collector to free memory */
         System.gc();
     }
 
-    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+    private static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
 
     /**
      * Update all the scaler values.
@@ -107,12 +106,12 @@ public class Scaler implements Serializable  {
      */
     public static void update(int [] inValue){
         /* check we do not try to update mores scalers than there are */
-        final int numberScalers=Math.min( inValue.length, scalerList.size() );
-        for (int i=0;i<numberScalers;i++){
-            final Scaler currentScaler=(Scaler)scalerList.get(i);
-            currentScaler.setValue(inValue[currentScaler.getNumber()]);
+        final int numScalers=Math.min( inValue.length, LIST.size() );
+        for (int i=0;i<numScalers;i++){
+            final Scaler scaler=(Scaler)LIST.get(i);
+            scaler.setValue(inValue[scaler.getNumber()]);
         }
-        broadcaster.broadcast(BroadcastEvent.Command.SCALERS_UPDATE);
+        BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_UPDATE);
     }
 
     /**
@@ -122,7 +121,7 @@ public class Scaler implements Serializable  {
      * @return the scaler with the specified name
      */
     public static Scaler getScaler(String name){
-        return (Scaler)scalerTable.get(name);
+        return (Scaler)TABLE.get(name);
     }
 
     /**
