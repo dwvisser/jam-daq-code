@@ -167,7 +167,7 @@ public class MultipleGaussians extends NonLinearFit {
 	 *
 	 * @exception   FitException	    thrown if unrecoverable error occurs during estimation
 	 */
-	public void estimate() throws FitException {
+	public void estimate()  {
 		/* First, sort clickable mouse entries */
 		orderParameters();
 		npeak = this.numPeaks.getIntValue();
@@ -183,9 +183,8 @@ public class MultipleGaussians extends NonLinearFit {
 				setParameter(s_width[i], width[1].getDoubleValue());
 			}
 		}
-		int _minCH = lo.getIntValue();
-		int _maxCH = hi.getIntValue();
-		//double [] local_centroid=new double[POSSIBLE_PEAKS];
+		final int _minCH = lo.getIntValue();
+		final int _maxCH = hi.getIntValue();
 		for (int i = 0; i < npeak; i++) {
 			d_centroid[i] = centroid[i].getDoubleValue();
 			d_width[i] = width[i].getDoubleValue();
@@ -199,7 +198,6 @@ public class MultipleGaussians extends NonLinearFit {
 		A.setValue(backLevel);
 		textInfo.messageOutln("Estimated A = " + backLevel);
 		/* estimate areas */
-		//double sigmaToScan = 3; //3 sigma gets 99.6% of peak
 		for (int i = 0; i < npeak; i++) {
 			if (width[i].isEstimate()){
 				width[i].setValue(widthEstimate.getDoubleValue());
@@ -229,16 +227,18 @@ public class MultipleGaussians extends NonLinearFit {
 	 * Overrides normal setParameters to make sure channels are in proper order.  This
 	 * Allows the fit limits and centroids to be clicked in any order.
 	 */
-	private void orderParameters() throws FitException {
-		SortedSet list = new TreeSet();
+	private void orderParameters()  {
+		final SortedSet list = new TreeSet();
+		/* must use Double so Comparator interface works */
 		list.add(new Double(lo.getIntValue()));
 		list.add(new Double(hi.getIntValue()));
-		for (int i = 0; i < POSSIBLE_PEAKS; i++) {
+		final int n=numPeaks.getIntValue();
+		for (int i = 0; i < n; i++) {
 			list.add(new Double(centroid[i].getDoubleValue()));
 		}
-		Iterator it = list.iterator();
+		final Iterator it = list.iterator();
 		lo.setValue(((Number) it.next()).intValue());
-		for (int i = 0; i < POSSIBLE_PEAKS; i++) {
+		for (int i = 0; i < n; i++) {
 			centroid[i].setValue(((Number) it.next()).doubleValue());
 		}
 		hi.setValue(((Number) it.next()).intValue());
@@ -345,28 +345,4 @@ public class MultipleGaussians extends NonLinearFit {
 		}
 		return rval;
 	}
-
-	/**
-	 * Set a parameter designated by name to a new value.  Overrides method in <code>NonLinearFit</code> to account for 
-	 * the <code>independentWidths</code) state.
-	 *
-	 * @param	which	the name of the parameter
-	 * @param	value	the value to assign
-	 * @exception   FitException	    thrown if unrecoverable error occurs
-	 */
-	/*public void setParameter(String which, double value) throws FitException {
-		if (independentWidths.getBooleanValue()) {
-			getParameter(which).setValue(value);
-		} else { //widths not independent
-			if (which.equals(WIDTH2)) {
-				width2.setValue(width1.getDoubleValue());
-			} else if (which.equals(WIDTH3)) {
-				width3.setValue(width1.getDoubleValue());
-			} else {
-				//all others
-				getParameter(which).setValue(value);
-			}
-		}
-	}*/
-
 }
