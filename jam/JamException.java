@@ -19,4 +19,14 @@ public class JamException extends Exception {
     public JamException(String errorMessage) {
         super(errorMessage);
     }
+    
+    /**
+     * Constructs a new JamException.
+     * 
+     * @param message the error message
+     * @param cause thrown cause that is the reason for throwing this exception
+     */
+    public JamException(String message, Throwable cause){
+        super(message,cause);
+    }
 }
