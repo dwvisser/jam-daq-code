@@ -115,8 +115,9 @@ public class CommandManager implements CommandListener, CommandNames {
 	}
 	
 	/**
-	 * Singleton accessor
-	 * @return
+	 * Singleton accessor.
+	 * 
+	 * @return the unique instance of this class
 	 */
 	public static CommandManager getInstance () {
 		if (_instance==null) {

@@ -19,9 +19,7 @@ public interface Commandable extends Action {
 	 * References needed for commands. Commands have null constructors
 	 * so a init method is needed 
 	 * 
-	 * @param status		Reference to frame and current histograms
 	 * @param msghdlr		Message and error output
-	 * @param broadcaster	Change in status messages
 	 */
 	void init(MessageHandler msghdlr);
 

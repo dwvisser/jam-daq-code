@@ -29,11 +29,6 @@ Commandable {
 		super();	
 	}
 	
-	/**
-	 * Initializer
-	 * 
-	 * @param msghdlr
-	 */
 	public final void init(MessageHandler mh) {
 		msghdlr=mh;
 		initCommand();
