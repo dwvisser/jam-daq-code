@@ -1,5 +1,6 @@
 package jam.plot;
 import java.awt.*;
+import java.awt.print.PageFormat;
 import javax.swing.*;
 import java.util.*;
 import jam.global.*;
@@ -246,8 +247,8 @@ public class Display
 		}
 	}
 	
-	public void setRenderForPrinting(boolean rfp){
-		currentPlot.setRenderForPrinting(rfp);
+	public void setRenderForPrinting(boolean rfp, PageFormat pf){
+		currentPlot.setRenderForPrinting(rfp,pf);
 	}
 
 	public ComponentPrintable getComponentPrintable(){
@@ -277,6 +278,7 @@ public class Display
 		} else if (command == BroadcastEvent.GATE_SET_OFF) {
 			currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
+			currentPlot.repaint();
 		} else if (command == BroadcastEvent.GATE_SET_SAVE) {
 			currentPlot.displaySetGate(Plot.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
