@@ -98,7 +98,7 @@ public class Display extends JPanel implements CommandListener, Observer {
 	private Histogram[] overlayHist;
 
 	private Plot currentPlot;
-	private boolean overlayState = false;
+	//private boolean overlayState = false;
 
 	/* plot panels */
 	private final JPanel plotswap;
@@ -154,7 +154,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 			if (lim == null) { //create a new Limits object for this histogram
 				newHistogram();
 			}
-			overlayState = false;
 			showPlot(currentHist); //changes local currentPlot
 			final boolean oneD = currentHist.getDimensionality() == 1;
 			bgoto.setEnabled(oneD);
@@ -170,6 +169,10 @@ public class Display extends JPanel implements CommandListener, Observer {
 	public void addToOverlay(Histogram h) {
 		overlays.add(h);
 		doOverlay();
+	}
+	
+	public void removeOverlays(){
+		overlays.clear();
 	}
 
 	/**
@@ -197,7 +200,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 				/* test to make sure none of the histograms are 2d */
 				if (hist.getDimensionality() == 1) {
 					overlayHist[i] = hist;
-					overlayState = true;
 				} else {
 					throw new IllegalStateException(
 					"Display attempted overlay with 2d histogram.");
@@ -206,7 +208,7 @@ public class Display extends JPanel implements CommandListener, Observer {
 				throw new IllegalStateException("Display attempted overlay with null histogram.");
 			}
 		}
-		plot1d.overlayHistogram(overlayHist);
+		plot1d.overlayHistograms(overlayHist);
 	}
 
 	/**
