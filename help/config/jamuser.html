@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>Customizing JamUser.ini</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+</HEAD>
+<BODY>
+
+<h2>Example JamUser.ini file</h2>
+<em>Note</em>: Properties listed in <code>JamUser.ini</code> will always override those
+listed in <code>JamConfig.ini</code>.
+
+<blockquote><code>
+!Initialization file for Jam
+<BR>exp.name=Mg24pt_
+<BR>sort.file=sort.Spectrograph 
+<BR>event.path=/home/jam/events
+<BR>hist.path=/home/jam/spectra
+<br>log.path=/hom/jam/logs
+</code>
+</blockquote>
+
+<h3>Parameter definitions</h3>
+<p>The host is the computer Jam runs on, while the target is the computer in the VME crate.</p>
+
+<DL>
+<DT>
+exp.name
+<DD>
+default name experimental name jam will use (online)
+<DT>
+sort.file
+<DD>
+default sort file jam will load, entered as you would refer to it on the classpath from a Java program
+<DT>
+event.path
+<DD>
+default path jam will use for saving and opening event files
+<DT>
+hist.path
+<DD>
+default path jam will use for saving and opening histogram files
+<DT>
+log.path
+<DD>
+default path jam will use for storing console logs
+</dl>
+
+</body>
+</html>

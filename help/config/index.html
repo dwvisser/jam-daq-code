@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>Jam Download</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+
+<H2>Jam Configuration</H2>
+
+<p>There are two files that Jam reads when starting up. <code>JamConfig.ini</code> contains the properties of the current system and <code>JamUser.ini</code> contains the user/session preferences. If these files do not exist, Jam uses a default setup. This default setup is sufficient for offline sorting, but <em>not</em> for online data acquisition. Jam  reads <code>JamConfig.ini</code> first, followed by <code>JamUser.ini</code>.  Properties in <code>JamConfig.ini</code> can be overridden by <code>JamUser.ini</code>.</p>
+
+<dl>
+<dt><code>JamConfig.ini</code></dt>
+<dd>This file tells jam what IP address, ports and to use to communicate with the front-end computer. It can also give a default sort class and default data stream definitions.  <code>JamConfig.ini</code> also gives the default user properties, which will be overridden if the user defines them in her <code>JamUser.ini</code> file. Only one copy of <code>JamConfig.ini</code> should be used on any particular system. The file should reside in the directory defined by the property <code>jam.home</code>. The property <code>jam.home</code> is set by the <code>-D</code> option in the java command. For example:<br>
+<blockquote><code>java -Djam.home=/home/user/datacq/jam jam.JamMain</code></blockquote>
+</dd>
+
+<dt><code>JamUser.ini</code></dt>
+<dd>This file is a user defined file and tells jam what the default sort class, startup directories for opening files opening, etc., should be. The <code>JamUser.ini</code> file is usually placed in the user's home directory on Unix and Windows XP systems.</dd>
+</dl>
+
+<P>See also:</p>
+<ul>
+    <li><a href="jamconfig.html">Customizing JamConfig.ini</a></li>
+    <li><a href="jamuser.html">Customizing JamUser.ini</a></li>
+</ul>
+
+
+</BODY>
+</HTML>
