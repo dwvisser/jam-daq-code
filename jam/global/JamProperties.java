@@ -52,7 +52,8 @@ public class JamProperties {
 	public final static String HOST_DATA_IP = "host-data.IP";
 	public final static String HOST_DATA_PORT_RECV = "host-data.portRecv";
 	public final static String EXP_NAME = "exp.name";
-	public final static String SORT_CLASS = "sort.class";
+	public final static String SORT_ROUTINE = "sort.routine";
+	public final static String SORT_CLASSPATH = "sort.classpath";
 	public final static String EVENT_INSTREAM = "event.instream";
 	public final static String EVENT_OUTSTREAM = "event.outstream";
 	public final static String EVENT_INPATH = "event.inpath";
@@ -391,7 +392,8 @@ public class JamProperties {
 	private void loadDefaultUser() {
 		jamProperties.setProperty(CAMAC_PATH,(new File(userHome,"camac")).getPath());
 		jamProperties.setProperty(EXP_NAME,"default_");
-		jamProperties.setProperty(SORT_CLASS,"jam.sort.Example");
+		jamProperties.setProperty(SORT_ROUTINE,"jam.sort.Example");
+		jamProperties.setProperty(SORT_CLASSPATH,"default");
 		jamProperties.setProperty(HIST_PATH,(new File(userHome,"spectra")).getPath());
 		jamProperties.setProperty(EVENT_INPATH,(new File(userHome,"events")).getPath());
 		jamProperties.setProperty(EVENT_OUTPATH,(new File(userHome,"presort")).getPath());
