@@ -174,10 +174,8 @@ public final class OpenSelectedHistogram {
 	 *  
 	 */
 	private void doCancel() {
-
-		//Clear memory
+		/* Clear memory */
 		histListModel.clear();
-
 		dialog.dispose();
 	}
 
@@ -186,70 +184,49 @@ public final class OpenSelectedHistogram {
 	 *  
 	 */
 	public void open() {
-		openLoadNames();
-	}
-	/**
-	 * Load histograms on open 
-	 *  
-	 */
-	private void openLoadNames() {
-		List histNames;
 		if (openFile()) {
-			loadHistNames(fileOpen);
-							
-			txtFile.setText(fileOpen.getAbsolutePath());				
-			dialog.setVisible(true);
-		}
+        	loadHistNames(fileOpen);					
+        	txtFile.setText(fileOpen.getAbsolutePath());				
+        	dialog.setVisible(true);
+        }
 	}
-
-	/**
-	 * Load name of histograms from the selected file
-	 *  
+	
+	/* non-javadoc:
+	 * Load name of histograms from the selected file.
 	 */
-	private void loadHistNames(File fileSelect) {
-		
-		List histAttributes;
-
-		// Read in histogram names attributes		
-		histAttributes= hdfio.readHistogramAttributes(fileSelect);
-		Iterator iter = histAttributes.iterator(); 
+	private void loadHistNames(File fileSelect) {	
+		/* Read in histogram names attributes */		
+		final List histAttributes= hdfio.readHistogramAttributes(fileSelect);
+		final Iterator iter = histAttributes.iterator(); 
 		while (iter.hasNext()) {
-			HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+			final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
 			histListModel.addElement(histAtt.getName());				
 		}
-		
 		histList.clearSelection();
 	}
 
 
-	/** 
+	/* non-javadoc:
 	 * Load the histograms in the selected list.
 	 */
 	private String loadHistograms() {
-		
-		List histogramNamesSelected=null;
-		String firstHistName=null;
-		int i;		
-		
-		Object[] selected = histList.getSelectedValues();
-		
+		final Object[] selected = histList.getSelectedValues();
 		//No histograms selected
 		if (selected.length == 0) {
 			msgHandler.errorOutln("No histograms selected");
 			return null;
 		}
-		
-		//Put selected histograms into a list
-		histogramNamesSelected =new ArrayList();
-		for (i=0; i<selected.length;i++) {
-			histogramNamesSelected.add((String)selected[i]);
-			if (i==0)
+		/* Put selected histograms into a list */
+		final List histogramNamesSelected =new ArrayList();
+		String firstHistName=null;
+		for (int i=0; i<selected.length;i++) {
+			histogramNamesSelected.add(selected[i]);
+			if (i==0) {
 				firstHistName =(String)selected[i];
+			}
 		}
-		
-		//Read in histograms
+		/* Read in histograms */
 		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, fileOpen, histogramNamesSelected);
-		
 		return firstHistName;
 	}
 
