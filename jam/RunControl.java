@@ -282,7 +282,6 @@ public class RunControl implements Controller, ActionListener {
      * Tells VME to stop acquisition, and suspends the net listener.
      */
     public void stopAcq() throws JamException, GlobalException {
-        System.out.println("Hi, I'm stopping.");
         vmeComm.VMEstop();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
@@ -342,9 +341,7 @@ public class RunControl implements Controller, ActionListener {
             //FIXME -- tape option doesn't work right now 15-Sep-2002
             //tapeDaemon.openEventOutputFile(dataFile);
             tapeDaemon.writeHeader();
-        } /*else {
-            // ***** send message to front end indicating file ****
-        }*/
+        } 
         if (checkHistogramZero.isSelected()) {// should we zero histograms
             histogramControl.zeroAll();
         }
