@@ -797,7 +797,7 @@ abstract class AbstractPlot implements PlotPrefs,
 	 *            the gate to be displayed
 	 */
 	synchronized void displayGate(Gate gate) {
-		Histogram plotHist=getHistogram();
+		final Histogram plotHist=getHistogram();
 		if (plotHist != null && plotHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
