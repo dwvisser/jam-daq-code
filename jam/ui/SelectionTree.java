@@ -131,9 +131,14 @@ public class SelectionTree extends JPanel implements Observer {
 		 treeModel.setRoot(rootNode);		
 		 
 	}
-	
-	public void refresh(){
+
+	public void reload(){
 		createHistTree();
+		repaint();
+		histTree.repaint();
+	}
+
+	public void refresh(){
 		repaint();
 		histTree.repaint();
 	}
@@ -145,7 +150,14 @@ public class SelectionTree extends JPanel implements Observer {
 			status.setHistName(hist.getName());
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		} else if (nodeObject instanceof Gate) {
-			Gate gate =(Gate)nodeObject;
+			Gate gate =(Gate)nodeObject;			
+			Histogram hist =gate.getHistogram();
+			//Change selected histogram if needed
+			if (hist!=status.getCurrentHistogram()) {
+				status.setHistName(hist.getName());
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+			}
+			
 			status.setCurrentGateName(gate.getName());
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			

@@ -47,7 +47,6 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements 
 		
 		if (selected) {
 			setBackground(Color.BLUE);
-
 			setForeground(getTextSelectionColor());
 			setForeground(Color.BLUE);			
 		} else {
@@ -73,6 +72,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements 
 
 		}else if (nodeObject instanceof Gate) {
 			Gate gate =(Gate)nodeObject;
+
 			setText( gate.getName() );
 			if (gate.getDimensionality()==1){
 				if (gate.isDefined()){

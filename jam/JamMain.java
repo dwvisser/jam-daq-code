@@ -138,7 +138,7 @@ public final class JamMain extends JFrame implements Observer {
 		showMainWindow(showGUI);
 		
 		//FIXME KBS for selection tree
-		selectTree.refresh();
+		selectTree.reload();
 	}
 
 	/**
