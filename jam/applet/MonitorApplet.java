@@ -1,4 +1,5 @@
 package jam.applet;
+import jam.data.Group;
 import jam.data.Monitor;
 import jam.data.RemoteData;
 import jam.data.Scaler;
@@ -305,10 +306,11 @@ public class MonitorApplet
 	 * creat a set of example monitors for debugging
 	 */
 	private void createExample() {
+		Group testGroup = new Group("Test" , Group.Type.TEMP);
 		numberMonitors = 3;
 		monitor = new Monitor[numberMonitors];
 		monitorValues = new double[numberMonitors];
-		//Scaler scal = new Scaler("ex", 0);
+		Scaler scal = new Scaler(testGroup, "ex", 0);
 		//monitor[0] = new Monitor("test", scal);
 		//monitor[0].setThreshold(10);
 		//monitor[1] = new Monitor("help", scal);

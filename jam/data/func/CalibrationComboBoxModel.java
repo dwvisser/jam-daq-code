@@ -1,9 +1,5 @@
 package jam.data.func;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -52,19 +48,6 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 				": only CalibrationFunction Strings or null please");
 			}
 		}
-			//FIXME KBS
-			/*
-			if (name!=null) {
-				for (Iterator it=CalibrationFunction.getListNames().iterator(); it.hasNext(); ){
-					final Object clazz=it.next();
-					if (name.equals(clazz)){
-						synchronized (selectSync) {
-							selection = clazz;
-						}					
-					}
-				}
-			}
-			*/
 	}
 
 	/**
