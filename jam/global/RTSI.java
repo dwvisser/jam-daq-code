@@ -117,20 +117,18 @@ public class RTSI {
 		 * in a folder name */
 		String s_file = url.getFile()/*.replaceAll("%20"," ")*/;//replaceAll only works in JDK1.4
 		s_file=replaceURLspaces(s_file);
-		//System.out.println(s_file);
-		//File directory = new File(url.getFile());
 		File directory = new File(s_file);
 
-		// New code
-		// ======
+		/* New code
+		 * ====== */
 		if (directory.exists()) {
-			// Get the list of the files contained in the package
+			/* Get the list of the files contained 
+			 * in the package */
 			String[] files = directory.list();
 			for (int i = 0; i < files.length; i++) {
-
-				// we are only interested in .class files
+				/* we are only interested in .class files */
 				if (files[i].endsWith(".class")) {
-					// removes the .class extension
+					/* removes the .class extension */
 					String classname =
 						files[i].substring(0, files[i].length() - 6);
 					try {
@@ -144,12 +142,6 @@ public class RTSI {
 						}
 					} catch (ClassNotFoundException cnfex) {
 						System.err.println(cnfex);
-					//} catch (InstantiationException iex) {
-						// We try to instanciate an interface
-						// or an object that does not have a 
-						// default constructor
-					//} catch (IllegalAccessException iaex) {
-						// The class is not public
 					}
 				}
 			}
@@ -184,12 +176,6 @@ public class RTSI {
 							}
 						} catch (ClassNotFoundException cnfex) {
 							System.err.println(cnfex);
-						//} catch (InstantiationException iex) {
-							// We try to instanciate an interface
-							// or an object that does not have a 
-							// default constructor
-						//} catch (IllegalAccessException iaex) {
-							// The class is not public
 						}
 					}
 				}
@@ -197,8 +183,6 @@ public class RTSI {
 				System.err.println(ioex);
 			}
 		}
-		/*rval.remove(tosubclass);
-		System.out.println(rval.size());*/
 		return rval;
 	}
 	
