@@ -239,7 +239,6 @@ public class HistogramIO implements FilenameFilter {
 	public File getFile(String msg, String extension, int state)
 		throws ImpExpException {
 		File fileIn = null;//default return value
-		try {
 			FileDialog fd = new FileDialog(frame, msg, state);
 			/* use previous file and directory as default */
 			if ((fileName) != null) {
@@ -266,10 +265,6 @@ public class HistogramIO implements FilenameFilter {
 				fileIn = new File(directoryName, fileName);
 			} 
 			return fileIn;
-		} catch (UtilException ue) {
-			throw new ImpExpException(
-				"Problem calling setExtension(): " + ue.getMessage());
-		}
 	}
 
 	/** 
