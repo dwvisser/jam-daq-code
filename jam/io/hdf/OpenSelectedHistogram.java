@@ -54,8 +54,9 @@ public class OpenSelectedHistogram {
 		frame = f;
 		console = c;
 		
-		dialog =new JDialog(f, "Open Histograms", false);
-		dialog.setLocation(20,50);		
+		dialog =new JDialog(f, "Open Selected Histograms", false);
+		dialog.setLocation(f.getLocation().x+50, f.getLocation().y+50);
+		//dialog.setLocation(f.getLocation());		
 		//Container
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10,10));
@@ -426,7 +427,7 @@ public class OpenSelectedHistogram {
 							(double [][])dataArray);
 			}
 		}
-		histogram.setNumber(number);
+		//FIXME KBS histogram.setNumber(number);
 	}
 	/**
 	 * Create file name indicator, appended to file name
