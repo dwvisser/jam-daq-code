@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import jam.global.*;
 import jam.data.Histogram;
 import javax.swing.JOptionPane;
+import jam.JamConsole;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons
@@ -213,16 +214,18 @@ public class Action
 	 */
 	public void commandPerform(String _command, int[] parameters) {
 		boolean accept = false; //is the command accepted
-		boolean disp = false;
+		//boolean disp = false;
 		final String command = _command.toLowerCase();
-		final int parLength = command.length();
+		final int comLen = command.length();
 		/* int is a special case meaning
 		 * no command and just parameters */
-		final String sint = "int";
-		if (parLength >= sint.length()) {
-			if (command.startsWith(sint)) {
+		if (comLen >= JamConsole.INTS_ONLY.length()) {
+			if (command.equals(JamConsole.INTS_ONLY)) {
 				if (DISPLAY.equals(inCommand)) {
 					display(parameters);
+					return;
+				} else if (OVERLAY.equals(inCommand)) {
+					overlay(parameters);
 					return;
 				} else {
 					integerChannel(parameters);
@@ -233,11 +236,12 @@ public class Action
 		}
 		final String c1 = command.substring(0, Math.min(1, command.length()));
 		final String c2 = command.substring(0, Math.min(2, command.length()));
-		if (command.startsWith("d")) { //display hist by #
+		/*if (command.startsWith("d")) { //display hist by #
 			inCommand = DISPLAY;
 			display(parameters);
 			disp = true;
-		} else if (commandMap.containsKey(c2)) {
+		} else */
+		if (commandMap.containsKey(c2)) {
 			inCommand = (String) commandMap.get(c2);
 			accept = true;
 		} else if (commandMap.containsKey(c1)) {
@@ -245,9 +249,15 @@ public class Action
 			accept = true;
 		}
 		if (accept) {
-			doCommand();
-			integerChannel(parameters);
-		} else if (!disp) {
+			if (DISPLAY.equals(inCommand)){
+				display(parameters);
+			} else if (OVERLAY.equals(inCommand)){
+				overlay(parameters);
+			} else {
+				doCommand();
+				integerChannel(parameters);
+			}
+		} else /*if (!disp)*/ {
 			textOut.errorOutln(
 				getClass().getName()
 					+ ".commandPerform(): Command '"
@@ -504,13 +514,20 @@ public class Action
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
 				display.displayHistogram(Histogram.getHistogram(num));
-				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+				textOut.messageOut(Integer.toString(num)+" ", MessageHandler.END);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln(
 					"There is no histogram numbered " + num + ".");
 			}
-			done();
+			if (hist.length > 1){
+				int newlen=hist.length-1;
+				int [] pass=new int[newlen];
+				System.arraycopy(hist,1,pass,0,newlen);
+				overlay(pass);
+			} else {
+				done();
+			}
 		}
 	}
 	
