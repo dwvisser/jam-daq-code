@@ -108,7 +108,7 @@ public abstract class Fit
 	/**
 	 * Layout for <code>dfit</dfit>
 	 */
-	private GridBagLayout gridBag;
+	//private GridBagLayout gridBag;
 
 	/**
 	 * Checkboxes for parameter fixing.
@@ -138,7 +138,7 @@ public abstract class Fit
 	/**
 	 * Fit error field values.
 	 */
-	private JTextField[] textError;
+	private JLabel[] textError;
 
 	/**
 	 * Parameter labels
@@ -153,7 +153,7 @@ public abstract class Fit
 	/**
 	 * Histogram name field
 	 */
-	private JTextField textHistName;
+	private JLabel textHistName;
 
 	/**
 	 * Button to get mouse input.
@@ -237,56 +237,53 @@ public abstract class Fit
 
 		parameters = getParameters();
 		parNumber = parameters.size();
+		
+		//BorderLayout borderLayout=new BorderLayout();
 
 		// make dialog box
 		dfit = new JDialog(frame, NAME, false);
 		Container cp = dfit.getContentPane();
 		dfit.setForeground(Color.black);
 		dfit.setBackground(Color.lightGray);
-		dfit.setResizable(true);
+		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
-		dfit.setSize(450, (4 + parNumber) * 33);
-		cp.setLayout(new BorderLayout(1, 1));
+		//dfit.setSize(450, (4 + parNumber) * 33);
+		cp.setLayout(new BorderLayout());
 
 		//top panel with histogram name
-		JPanel pHistName = new JPanel();
-		pHistName.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		JPanel pHistName = new JPanel(new BorderLayout());
+		//pHistName.setLayout(new BorderLayout());
+
+		//JLabel histLabel = ;
+		pHistName.add(new JLabel("Fit Histogram: ",JLabel.RIGHT),BorderLayout.WEST);
+		textHistName = new JLabel("     ");
+		//textHistName.setBackground(Color.lightGray);
+		//textHistName.setForeground(Color.black);
+		//textHistName.setEditable(false);
+		//textHistName.setEnabled(false);
+		pHistName.add(textHistName,BorderLayout.CENTER);
 		cp.add(pHistName, BorderLayout.NORTH);
-
-		JLabel histLabel = new JLabel("Fit Histogram: ");
-		pHistName.add(histLabel);
-
-		textHistName = new JTextField("     ", 25);
-		textHistName.setBackground(Color.lightGray);
-		textHistName.setForeground(Color.black);
-		textHistName.setEditable(false);
-		pHistName.add(textHistName);
-
-		//bUpdateHistName = new JButton("Update");
-		//bUpdateHistName.setActionCommand("updatehist");
-		//bUpdateHistName.addActionListener(this);
-		//pHistName.add(bUpdateHistName);	    
 
 		//bottom panel with status and buttons
 		JPanel bottomPanel = new JPanel();
-		bottomPanel.setLayout(new GridLayout(0, 1, 10, 5));
+		bottomPanel.setLayout(new GridLayout(0, 1));
 		cp.add(bottomPanel, BorderLayout.SOUTH);
 
 		//status panel part of bottom panel		
 		JPanel statusPanel = new JPanel();
-		int hgap = 10;
-		int vgap = 5;
-		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
-		statusPanel.add(new JLabel("Status:"));
+		//int hgap = 10;
+		//int vgap = 5;
+		statusPanel.setLayout(new BorderLayout());
+		statusPanel.add(new JLabel("Status: ",JLabel.RIGHT),BorderLayout.WEST);
 		status =
 			new JLabel("OK                                                          ");
-		statusPanel.add(status);
+		statusPanel.add(status,BorderLayout.CENTER);
 		bottomPanel.add(statusPanel);
 
 		//button panel part of bottom panel
 		JPanel pbut = new JPanel();
-		vgap = 10;
-		pbut.setLayout(new FlowLayout(FlowLayout.CENTER, hgap, vgap));
+		//vgap = 10;
+		pbut.setLayout(new GridLayout(1,0));
 		bottomPanel.add(pbut);
 
 		bMouseGet = new JButton("Get Mouse");
@@ -294,7 +291,7 @@ public abstract class Fit
 		bMouseGet.addActionListener(this);
 		pbut.add(bMouseGet);
 
-		JButton bGo = new JButton(" Do Fit  ");
+		JButton bGo = new JButton("Do Fit");
 		bGo.setActionCommand("fitgo");
 		bGo.addActionListener(this);
 		pbut.add(bGo);
@@ -304,120 +301,131 @@ public abstract class Fit
 		bDraw.addActionListener(this);
 		pbut.add(bDraw);
 
-		JButton bReset = new JButton(" Reset  ");
+		JButton bReset = new JButton("Reset");
 		bReset.setActionCommand("reset");
 		bReset.addActionListener(this);
 		pbut.add(bReset);
 
-		JButton bCancel = new JButton("Cancel ");
+		JButton bCancel = new JButton("Cancel");
 		bCancel.setActionCommand("fitcancel");
 		bCancel.addActionListener(this);
 		pbut.add(bCancel);
 
 		//Layout of parameter widgets 
-		panelParam = new JPanel();
-		gridBag = new GridBagLayout();
-		panelParam.setLayout(gridBag);
+		panelParam = new JPanel(new GridLayout(0,1));
+		//gridBag = new GridBagLayout();
+		//panelParam.setLayout(gridBag);
 		cp.add(panelParam, BorderLayout.CENTER);
+		//JPanel paramNames=new JPanel(new GridLayout(0,1));
+		//panelParam.add(paramNames,BorderLayout.WEST);
+		//JPanel paramValues=new JPanel(new GridLayout(0))
 
-		//arrays to hold widgets for each parameter (not accualy widgets)	     	    
+		//arrays to hold widgets for each parameter
+		JPanel west=new JPanel(new GridLayout(0,1));
+		JPanel center=new JPanel(new GridLayout(0,1));
+		JPanel east=new JPanel(new GridLayout(0,1));
+		//JPanel [] center=new JPanel[parNumber];
+		//JPanel [] east=new JPanel[parNumber];
+		cp.add(west,BorderLayout.WEST);
+		cp.add(east,BorderLayout.EAST);
+		cp.add(center,BorderLayout.CENTER);
+		
 		cFixValue = new JCheckBox[parNumber];
 		cEstimate = new JCheckBox[parNumber];
 		cOption = new JCheckBox[parNumber];
 		textKnown = new JTextField[parNumber];
 		textData = new JTextField[parNumber];
-		textError = new JTextField[parNumber];
+		textError = new JLabel[parNumber];
 		text = new JLabel[parNumber];
 
 		for (int i = 0; i < parameters.size(); i++) {
-
+			JPanel middle=new JPanel(new GridLayout(1,3));
+			center.add(middle);
 			parameter = (Parameter) parameters.get(i);
 			parName = parameter.getName();
 			if (parameter.type == Parameter.DOUBLE) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
-				textData[i].setBackground(Color.white);
-				textData[i].setForeground(Color.black);
-				textData[i].setEditable(true);
-				addComponent(new Label(parName), 1, i + 1);
-				addComponent(textData[i], 3, i + 1);
-
+				//textData[i].setBackground(Color.white);
+				//textData[i].setForeground(Color.black);
+				textData[i].setEnabled(true);
+				west.add(new JLabel(parName,JLabel.RIGHT));
+				middle.add(textData[i]);
 			} else if (parameter.type == Parameter.INT) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
-				textData[i].setBackground(Color.white);
-				textData[i].setForeground(Color.black);
-				textData[i].setEditable(true);
-				addComponent(new Label(parName), 1, i + 1);
-				addComponent(textData[i], 3, i + 1);
+				//textData[i].setBackground(Color.white);
+				//textData[i].setForeground(Color.black);
+				textData[i].setEnabled(true);
+				west.add(new JLabel(parName,JLabel.RIGHT));
+				middle.add(textData[i]);
 
 			} else if (parameter.type == Parameter.TEXT) {
 				text[i] = new JLabel(formatValue(parameter));
 				//need to chang width more colums
-				addComponent(text[i], 1, i + 1, 5, 1);
-
+				//addComponent(text[i], 1, i + 1, 5, 1);
+				west.add(new JLabel(parName,JLabel.RIGHT));
+				middle.add(text[i]);
 			} else if (parameter.type == Parameter.BOOLEAN) {
 				cOption[i] =
 					new JCheckBox(parName, parameter.getBooleanValue());
 				cOption[i].addItemListener(this);
-				addComponent(new Label(""), 1, i + 1);
-				addComponent(cOption[i], 3, i + 1, 3, 1);
+				//addComponent(new Label(""), 1, i + 1);
+				//addComponent(cOption[i], 3, i + 1, 3, 1);
+				west.add(cOption[i]);
 
 			}
 			if (parameter.knownOption) {
 				textKnown[i] = new JTextField("0.0", 8);
-				textKnown[i].setBackground(Color.white);
-				textKnown[i].setForeground(Color.black);
-				textKnown[i].setEditable(true);
-				addComponent(textKnown[i], 2, i + 1);
+				//textKnown[i].setBackground(Color.white);
+				//textKnown[i].setForeground(Color.black);
+				textKnown[i].setEnabled(true);
+				//addComponent(textKnown[i], 2, i + 1);
+				middle.add(textKnown[i]);
 			}
-
+			JPanel right=new JPanel(new GridLayout(1,0));
+			east.add(right);
 			// take care of options.
 			if (parameter.errorOption) {
 
-				textError[i] = new JTextField(formatError(parameter), 8);
-				textError[i].setBackground(Color.white);
+				textError[i] = new JLabel(formatError(parameter));
+				/*textError[i].setBackground(Color.white);
 				textError[i].setForeground(Color.black);
-				textError[i].setEditable(true);
-				addComponent(new Label("+/-"), 4, i + 1);
-				addComponent(textError[i], 5, i + 1);
+				textError[i].setEditable(true);*/
+				textError[i].setEnabled(true);
+				//textError[i].setEditable(false);
+				//middle.add(new Label("\u00b1",JLabel.CENTER));
+				middle.add(textError[i]);
 
 			}
 			if (parameter.fixOption) {
 				cFixValue[i] = new JCheckBox("Fixed", parameter.fix);
 				cFixValue[i].addItemListener(this);
-				addComponent(cFixValue[i], 6, i + 1);
+				right.add(cFixValue[i]);
 			}
 			if (parameter.estimateOption) {
 
 				cEstimate[i] = new JCheckBox("Estimate", parameter.estimate);
 				cEstimate[i].addItemListener(this);
-				addComponent(cEstimate[i], 7, i + 1);
+				right.add(cEstimate[i]);
 			}
 
 			if (parameter.outputOption) {
-				textData[i].setBackground(Color.lightGray);
-				textData[i].setEditable(false);
+				//textData[i].setBackground(Color.lightGray);
+				textData[i].setEnabled(false);
 
 			}
 		}
 		//loop for all parameters
 
 		dfit.addWindowListener(new WindowAdapter() {
-
 			public void windowClosing(WindowEvent e) {
-
-				//System.out.println("dispose Fit");
 				setMouseActive(false);
-
 				dfit.dispose();
-
 			}
-			// window methods to 
 			public void windowActivated(WindowEvent e) {
 				updateHist();
-
 			}
 		});
-
+		dfit.pack();
 		reset();
 	}
 
@@ -731,8 +739,8 @@ public abstract class Fit
 			if (param.errorOption) {
 				param.setError(0.0);
 				textError[index].setText(formatError(param));
-				textError[index].setBackground(Color.lightGray);
-				textError[index].setEditable(false);
+				//textError[index].setBackground(Color.lightGray);
+				textError[index].setEnabled(false);
 			}
 			//not a fixed value
 		} else {
@@ -741,8 +749,8 @@ public abstract class Fit
 				cEstimate[index].setEnabled(true);
 			}
 			if (param.errorOption) {
-				textError[index].setBackground(Color.white);
-				textError[index].setEditable(true);
+				//textError[index].setBackground(Color.white);
+				textError[index].setEnabled(true);
 			}
 		}
 	}
@@ -795,7 +803,7 @@ public abstract class Fit
 		int[] ia;
 		int j;
 
-		textHistName.setEditable(true);
+		//textHistName.setEditable(true);
 		h = display.getHistogram();
 		if (h.getDimensionality() == 1) {
 			if (h.getType() == Histogram.ONE_DIM_INT) {
@@ -811,7 +819,7 @@ public abstract class Fit
 		} else { //2d
 			textHistName.setText("Need 1D Hist!");
 		}
-		textHistName.setEditable(false);
+		//textHistName.setEditable(false);
 	}
 
 	/**
@@ -884,7 +892,7 @@ public abstract class Fit
 	private String formatError(Parameter param) throws FitException {
 		if (!param.errorOption)
 			throw new FitException("No error term for this parameter.  Can't formatError().");
-		return format(param.valueDbl, param.errorDbl)[1];
+		return "\u00b1 "+format(param.valueDbl, param.errorDbl)[1];
 	}
 
 	/**
@@ -894,11 +902,11 @@ public abstract class Fit
 	 * @since Version 0.5
 	 */
 
-	private void addComponent(Component component, int gridx, int gridy) {
+	/*private void addComponent(Component component, int gridx, int gridy) {
 
 		addComponent(component, gridx, gridy, 1, 1);
 
-	}
+	}*/
 
 	/**
 	 * Helper method for GridBagConstains 
@@ -906,7 +914,7 @@ public abstract class Fit
 	 * @since Version 0.5
 	 */
 
-	private void addComponent(
+	/*private void addComponent(
 		Component component,
 		int gridx,
 		int gridy,
@@ -932,7 +940,7 @@ public abstract class Fit
 		gridBag.setConstraints(component, gbc);
 
 		panelParam.add(component);
-	}
+	}*/
 
 	private String format(double value, int integer, int fraction) {
 		NumberFormat fval;
