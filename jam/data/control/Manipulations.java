@@ -50,7 +50,7 @@ Observer {
         JPanel pLabels = new JPanel(new GridLayout(0,1,hgap,vgap));
         pLabels.setBorder(new EmptyBorder(10,10,0,0));
         cdmanip.add(pLabels, BorderLayout.WEST);
-        pLabels.add(new JLabel("From  Histogram", JLabel.RIGHT));
+        pLabels.add(new JLabel("From  histogram", JLabel.RIGHT));
         pLabels.add(new JLabel("Operation", JLabel.RIGHT));
         pLabels.add(new JLabel("With histogram", JLabel.RIGHT));
         pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
