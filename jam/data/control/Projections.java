@@ -62,12 +62,12 @@ ItemListener, Observer {
     private final JLabel channels=new JLabel("Channels");
     private final JLabel and = new JLabel("and");
 
-    public Projections(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
+    public Projections(MessageHandler messageHandler){
         super("Project 2D Histogram",false);
-        this.frame=frame;
-        this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
         status = JamStatus.instance();
+        frame=status.getFrame();
+        broadcaster=Broadcaster.getSingletonInstance();
         setResizable(false);
 
         final int CHOOSER_SIZE=200;
@@ -78,11 +78,8 @@ ItemListener, Observer {
         final Container cdproject = getContentPane();
         cdproject.setLayout(new BorderLayout(hgap,vgap));
         setLocation(20,50);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				dispose();
-			}
-
 			public void windowOpened(WindowEvent e){
 				setup();
 			}
