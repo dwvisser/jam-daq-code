@@ -226,11 +226,11 @@ public class JamCommand
 			} else if (incommand == "selecthistogram") {
 				if (selectEnabled) { //nested to avoid missing "selecthistogram"
 					Object item = ((JComboBox) e.getSource()).getSelectedItem();
-					if (item instanceof String) {
-						Histogram h = Histogram.getHistogram((String) item);
-						if (h != null) {
-							selectHistogram(h);
-						}
+					if (item instanceof Histogram) {
+						Histogram h = (Histogram)item;
+						//if (h != null) {
+						selectHistogram(h);
+						//}
 					}
 				}
 			} else if (incommand == "selectgate") {
