@@ -2,8 +2,8 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,8 +41,6 @@ import javax.swing.border.EmptyBorder;
  */
 public class GainShift extends AbstractControl implements ActionListener,
 		ItemListener, Observer {
-	private final Frame frame;
-
 	private final MessageHandler messageHandler;
 
 	private final JComboBox cto;
@@ -64,13 +61,17 @@ public class GainShift extends AbstractControl implements ActionListener,
 
 	private AbstractHist1D hfrom;
 
+	/**
+	 * Constructs a gain shift dialog.
+	 * 
+	 * @param mh where to print messages
+	 */
 	public GainShift(MessageHandler mh) {
 		super("Gain Shift 1-D Histogram", false);
 		chan1i = 0.0;
 		chan2i = 1.0;
 		chan1f = 0.0;
 		chan2f = 1.0;
-		frame = STATUS.getFrame();
 		messageHandler = mh;
 
 		final int CHOOSER_SIZE = 200;
@@ -282,8 +283,8 @@ public class GainShift extends AbstractControl implements ActionListener,
 		cfrom.setSelectedIndex(0);
 	}
 
-	/**
-	 * Change the label in the UI depending on the gain shift type
+	/* non-javadoc:
+	 * Change the label in the UI depending on the gain shift type.
 	 */
 	private void setUILabels(boolean state) {
 		if (state) {
@@ -328,7 +329,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Set dialog box for a new histogram to be written out.
 	 */
 	private void setUseNewHist(boolean state) {
@@ -336,7 +337,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 		ttextto.setEnabled(state);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Does the work of manipulating histograms
 	 */
 	private void doGainShift() throws DataException {
@@ -385,7 +386,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 				+ format(b2) + " x ch");
 	}
 
-	/**
+	/* non-javadoc:
 	 * get the coeff. from the text fields
 	 */
 	private void getCoefficients() throws DataException {
@@ -401,7 +402,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 
 	}
 
-	/**
+	/* non-javadoc:
 	 * get the channels from the text fields
 	 */
 	private void getChannels() throws DataException {
@@ -440,7 +441,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 		chan2f = (a1 + b1 * chan2i - a2) / b2;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Gain-shifting subroutine adapted from Fortran code written and used at
 	 * the Nuclear Physics Laboratory at University of Washigton, Seattle.
 	 * 
@@ -474,9 +475,9 @@ public class GainShift extends AbstractControl implements ActionListener,
 
 		//loop for each channel of original array
 		for (int n = 0; n < y1.length; n++) {
-			e1lo = a1 + b1 * ((double) n - 0.5); //energy at lower edge of
+			e1lo = a1 + b1 * (n - 0.5); //energy at lower edge of
 			// spec#1 channel
-			e1hi = a1 + b1 * ((double) n + 0.5); //energy at upper edge of
+			e1hi = a1 + b1 * (n + 0.5); //energy at upper edge of
 			// spec#1 channel
 			x2lo = (e1lo - a2) / b2; //fractional chan#2 corresponding to e1lo
 			x2hi = (e1hi - a2) / b2; //fractional chan#2 corresponding to e1hi
@@ -531,7 +532,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 		return y2;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Error terms gain-shifting subroutine adapted from Fortran code written
 	 * and used at the Nuclear Physics Laboratory at University of Washigton,
 	 * Seattle.
@@ -611,26 +612,22 @@ public class GainShift extends AbstractControl implements ActionListener,
 		return y2;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Converts int array to double array
 	 */
 	private double[] toDoubleArray(int[] in) {
-		double[] out;
-
-		out = new double[in.length];
+		final double[] out = new double[in.length];
 		for (int i = 0; i < in.length; i++) {
-			out[i] = (double) in[i];
+			out[i] = in[i];
 		}
 		return out;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Converts double array to int array
 	 */
 	private int[] toIntArray(double[] in) {
-		int[] out;
-
-		out = new int[in.length];
+		final int[] out = new int[in.length];
 		for (int i = 0; i < in.length; i++) {
 			out[i] = (int) Math.round(in[i]);
 		}

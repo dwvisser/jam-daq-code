@@ -7,7 +7,6 @@ import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,15 +22,15 @@ import javax.swing.JPanel;
  */
 public class HistogramZero extends AbstractControl {
 
-	private final Frame frame;
 	private final MessageHandler msghdlr;
 
 	/**
-	 * Constructor
+	 * Construct a new "zero histograms" dialog.
+	 * 
+	 * @param mh where to print messages
 	 */
 	public HistogramZero(MessageHandler mh) {
 		super("Zero Histograms", false);
-		frame = STATUS.getFrame();
 		msghdlr = mh;
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();

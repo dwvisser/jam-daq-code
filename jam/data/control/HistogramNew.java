@@ -1,14 +1,13 @@
 package jam.data.control;
 
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -34,11 +33,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class HistogramNew extends AbstractControl {
 
-	private final Frame frame;
-
 	private final MessageHandler msghdlr;
-
-	private Histogram currentHistogram;
 
 	private final JTextField textName;
 
@@ -52,11 +47,12 @@ public class HistogramNew extends AbstractControl {
 			"1024", "2048", "4096", "8192", };
 
 	/**
-	 * Constructor
+	 * Construct a new "new histogram" dialog.
+	 * 
+	 * @param msghdlr where to print messages
 	 */
 	public HistogramNew(MessageHandler msghdlr) {
 		super("New Histogram ", false);
-		frame = STATUS.getFrame();
 		this.msghdlr = msghdlr;
 		/* dialog box */
 		setResizable(false);

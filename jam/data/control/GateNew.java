@@ -28,6 +28,11 @@ public class GateNew extends AbstractControl {
 	private final JTextField textNew;
 	private final MessageHandler messageHandler;
 
+	/**
+	 * Construct a new "new gate" dialog.
+	 * 
+	 * @param mh where to send messages
+	 */
 	public GateNew(MessageHandler mh) {
 		super("New Gate", false);
 		messageHandler = mh;

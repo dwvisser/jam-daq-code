@@ -2,11 +2,10 @@ package jam.data.control;
 
 import jam.data.DataException;
 import jam.data.Gate;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
 
@@ -14,7 +13,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,8 +47,6 @@ public class Projections extends AbstractControl implements Observer {
 
 	private static final String NEW_HIST = "New Histogram";
 
-	private final Frame frame;
-
 	private final Broadcaster broadcaster;
 
 	private final MessageHandler messageHandler;
@@ -63,13 +59,14 @@ public class Projections extends AbstractControl implements Observer {
 
 	private String hfromname;
 
-	private JamStatus status;
-
+	/**
+	 * Constructs a new projections dialog.
+	 * 
+	 * @param mh where to print messages
+	 */
 	public Projections(MessageHandler mh) {
 		super("Project 2D Histogram", false);
 		messageHandler = mh;
-		status = JamStatus.instance();
-		frame = status.getFrame();
 		broadcaster = Broadcaster.getSingletonInstance();
 		setResizable(false);
 		final int CHOOSER_SIZE = 200;
@@ -260,7 +257,7 @@ public class Projections extends AbstractControl implements Observer {
 		setupCuts(lastCut);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Adds a list of histograms to a choose
 	 */
 	private void setupToHist(String newSelect) {
@@ -275,7 +272,7 @@ public class Projections extends AbstractControl implements Observer {
 		cto.setSelectedItem(newSelect);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Setups up the channel and gate selector.
 	 *  
 	 */
@@ -303,7 +300,7 @@ public class Projections extends AbstractControl implements Observer {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * setup if using a new histogram
 	 */
 	private void setUseNewHist(boolean state) {
@@ -311,7 +308,7 @@ public class Projections extends AbstractControl implements Observer {
 		ttextto.setEditable(state);
 	}
 
-	/**
+	/* non-javadoc:
 	 * setup if using limits
 	 */
 	private void setUseLimits(boolean state) {
@@ -321,7 +318,7 @@ public class Projections extends AbstractControl implements Observer {
 		tlim2.setEditable(state);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {

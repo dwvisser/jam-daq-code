@@ -34,6 +34,10 @@ public final class GateAdd extends AbstractControl {
 	private final JComboBox cadd;
 	private final MessageHandler messageHandler;
 	
+	/**
+	 * Create a new "add gate" dialog.
+	 * @param mh where to print messages
+	 */
 	public GateAdd(MessageHandler mh){
 		super("Add Gate",false);
 		messageHandler=mh;

@@ -28,6 +28,9 @@ public class ScalerZero extends AbstractControl {
 	private transient final JCheckBox disable;
 	private transient final JButton bzero2;
 
+	/**
+	 * Constructs a new dialog for zeroing scaler values.
+	 */
 	public ScalerZero() {
 		super("Zero Scalers", true);
 		Container dzc = getContentPane();

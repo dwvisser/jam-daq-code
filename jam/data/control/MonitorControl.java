@@ -47,8 +47,6 @@ public final class MonitorControl
 
 	private final JSpinner spinnerUpdate;
 
-	//general variables
-	private boolean sortMonitors = false; //have Monitors been added by sort
 
 	private int interval; //update interval
 	private GoodThread loopThread; //loop to update monitors
@@ -56,6 +54,9 @@ public final class MonitorControl
 	
 	private static MonitorControl mc=null;
 	
+	/**
+	 * @return the only instance of this class
+	 */
 	static public MonitorControl getSingletonInstance(){
 		if (mc==null){
 			mc=new MonitorControl();
@@ -146,43 +147,42 @@ public final class MonitorControl
 	 * Setup all monitors.
 	 */
 	public void doSetup() {
-		if (!Monitor.getMonitorList().isEmpty()) {
-			sortMonitors = true;
-		}
-		final int cols = 6;
-		/* Clear panel */
-		pMonitors.removeAll();
-		/* for each monitor make a panel with
-		 * label, threshold, maximum, and alarm */
-		final Iterator monitors = Monitor.getMonitorList().iterator();
-		if (monitors.hasNext()){
-			/* Add labels of columns */
-			pMonitors.add(new JLabel("Name", JLabel.CENTER));
-			pMonitors.add(new JLabel("Threshold", JLabel.CENTER));
-			pMonitors.add(new JLabel("Maximum", JLabel.CENTER));
-			pMonitors.add(new JLabel("Alarm", JLabel.LEFT));
-		}
-		while (monitors.hasNext()) {
-			Monitor monitor = (Monitor) monitors.next();
-			final JLabel labelConfig =
-				new JLabel(monitor.getName(), JLabel.CENTER);
-			pMonitors.add(labelConfig);
-			final JTextField textThreshold = new JTextField();
-			textThreshold.setColumns(cols);
-			textThreshold.setEditable(true);
-			textThreshold.setText("10");
-			pMonitors.add(textThreshold);
-			final JTextField textMaximum = new JTextField();
-			textMaximum.setColumns(cols);
-			textMaximum.setEditable(true);
-			textMaximum.setText("100");
-			pMonitors.add(textMaximum);
-			final JCheckBox checkAlarm = new JCheckBox();
-			checkAlarm.setSelected(false);
-			pMonitors.add(checkAlarm);
-		}
-		pack();
-	}
+        final int cols = 6;
+        /* Clear panel */
+        pMonitors.removeAll();
+        /*
+         * for each monitor make a panel with label, threshold, maximum, and
+         * alarm
+         */
+        final Iterator monitors = Monitor.getMonitorList().iterator();
+        if (monitors.hasNext()) {
+            /* Add labels of columns */
+            pMonitors.add(new JLabel("Name", JLabel.CENTER));
+            pMonitors.add(new JLabel("Threshold", JLabel.CENTER));
+            pMonitors.add(new JLabel("Maximum", JLabel.CENTER));
+            pMonitors.add(new JLabel("Alarm", JLabel.LEFT));
+        }
+        while (monitors.hasNext()) {
+            Monitor monitor = (Monitor) monitors.next();
+            final JLabel labelConfig = new JLabel(monitor.getName(),
+                    JLabel.CENTER);
+            pMonitors.add(labelConfig);
+            final JTextField textThreshold = new JTextField();
+            textThreshold.setColumns(cols);
+            textThreshold.setEditable(true);
+            textThreshold.setText("10");
+            pMonitors.add(textThreshold);
+            final JTextField textMaximum = new JTextField();
+            textMaximum.setColumns(cols);
+            textMaximum.setEditable(true);
+            textMaximum.setText("100");
+            pMonitors.add(textMaximum);
+            final JCheckBox checkAlarm = new JCheckBox();
+            checkAlarm.setSelected(false);
+            pMonitors.add(checkAlarm);
+        }
+        pack();
+    }
 
 	/**
 	 * Recall the monitor's parameters

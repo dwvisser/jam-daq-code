@@ -32,6 +32,9 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 	private JPanel pTitles;
 	private JPanel pBars;
 
+	/**
+	 * Constructs a new monitor display dialog.
+	 */
 	public MonitorDisplay() {
 		super("Monitors Disabled", false);
 		
