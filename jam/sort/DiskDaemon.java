@@ -101,6 +101,10 @@ public class DiskDaemon extends StorageDaemon {
 			}
 		}
 	}
+	
+	private boolean reachedRunEnd=false;
+	private final Object rreLock=new Object();
+	
 	/**
 	 * Take data from ring buffer and write it out to a file 
 	 * until you see a end of run marker, then inform controller
@@ -121,6 +125,9 @@ public class DiskDaemon extends StorageDaemon {
 			if (eventInput.isEndRun(last2bytes)) {
 				//tell control we are done		    
 				fileCount++;
+				synchronized(rreLock){
+					reachedRunEnd=true;
+				}
 				controller.atWriteEnd();
 			}
 			yield();
@@ -248,6 +255,15 @@ public class DiskDaemon extends StorageDaemon {
 		if (ringBuffer == null){
 			throw new IllegalStateException("Should always have a ring buffer here.");
 		}
-		return ringBuffer.empty();
+		boolean rval=false;
+		if (ringBuffer.empty()){
+			synchronized (rreLock){
+				if (reachedRunEnd){
+					reachedRunEnd=false;
+					rval=true;
+				}
+			}
+		}
+		return rval;
 	}
 }
