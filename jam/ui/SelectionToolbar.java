@@ -52,7 +52,10 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	/** Is sync event so don't */
 	private boolean isSync=false;
 	
-
+	/**
+	 * Constructs a selection toolbar.
+	 *
+	 */
 	public SelectionToolbar() {
 		super("Selection", JToolBar.HORIZONTAL);
 		this.setFloatable(false);
@@ -232,8 +235,8 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	 * A gate has been selected. Tell all appropriate classes, like Display and
 	 * JamStatus.
 	 * 
-	 * @param gateObject
-	 *            the object, which should be a <code>Gate</code>
+	 * @param gate
+	 *            to select
 	 * @see jam.data.Gate
 	 */
 	private void selectGate(Gate gate) {
@@ -243,7 +246,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			final double area = gate.getArea();
 			if (gate.getDimensionality() == 1) {
-				final double centroid = (double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
+				final double centroid = ((int) (gate.getCentroid() * 100.0)) / 100.0;
 				final int lowerLimit = gate.getLimits1d()[0];
 				final int upperLimit = gate.getLimits1d()[1];
 				console.messageOut("Gate: " + gate.getName() + ", Ch. "

@@ -46,6 +46,10 @@ public final class Version {
 		//nothing to do;
 	}
 	
+	/**
+	 * 
+	 * @return the only instance of this class
+	 */
 	static public Version getInstance(){
 		return INSTANCE;
 	}

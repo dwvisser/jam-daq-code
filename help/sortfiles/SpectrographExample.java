@@ -127,6 +127,11 @@ public final class SpectrographExample extends SortRoutine {
 	private transient int idCthd, idScintR, idScintL, idFrntPsn, idRearPsn,
 			idFrntHgh, idRearHgh;
 
+	/**
+	 * Constructors for sort routines not necessary.
+	 *
+	 * @see #initialize()
+	 */
 	public SpectrographExample() {
 		super();
 		hCthd = createHist1D(ADC_CHANNELS, "Cathode     ",
@@ -205,12 +210,6 @@ public final class SpectrographExample extends SortRoutine {
 		new Monitor(DEAD_TIME, this);
 	}
 
-	/**
-	 * Description of the Method
-	 * 
-	 * @exception Exception
-	 *                Description of the Exception
-	 */
 	public void initialize() throws SortException {
 		vmeMap.setScalerInterval(3);
 		for (int i = 0; i < TDC_BASE.length; i++) {
@@ -272,14 +271,6 @@ public final class SpectrographExample extends SortRoutine {
 
 	}
 
-	/**
-	 * Description of the Method
-	 * 
-	 * @param dataEvent
-	 *            Description of the Parameter
-	 * @exception Exception
-	 *                Description of the Exception
-	 */
 	public void sort(int[] dataEvent) throws SortException {
 		/*
 		 * unpack data into convenient names

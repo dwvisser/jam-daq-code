@@ -1,6 +1,5 @@
-/*
- */
- package jam;
+package jam;
+
 /**
  * Exception that can be thrown by classes in Jam
  * will be caught and the messeage will be output
@@ -12,7 +11,12 @@
  */ 
 public class JamException extends Exception {
 
+    /**
+     * Constructs a new JamException.
+     * 
+     * @param errorMessage the error message
+     */
     public JamException(String errorMessage) {
-	super(errorMessage);
+        super(errorMessage);
     }
 }

@@ -40,6 +40,12 @@ public class EvsDE extends SortRoutine {
 
 	transient int idDE;
 
+	/**
+	 * Constructor, not usually necessary, but be sure to
+	 * call <code>super()</code>.
+	 *
+	 * @see #initialize()
+	 */
 	public EvsDE() {
 		super();
 		final int oneD=2048;
@@ -72,6 +78,9 @@ public class EvsDE extends SortRoutine {
 		mEvntRt = new Monitor("Event Rate", sEvntRaw);
 	}
 
+	/**
+	 * @see SortRoutine#initialize()
+	 */
 	public void initialize() throws SortException {
 		cnafCommands.init(1, 28, 8, 26); //crate dataway Z
 		cnafCommands.init(1, 28, 9, 26); //crate dataway C
@@ -93,7 +102,7 @@ public class EvsDE extends SortRoutine {
 	}
 
 	/**
-	 * Sort routine
+	 * @see SortRoutine#sort(int[])
 	 */
 	public void sort(int[] dataEvent) {
 		/* Variables for the raw signal values. */

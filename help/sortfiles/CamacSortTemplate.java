@@ -1,9 +1,3 @@
-/**
- * Template sort routine for Jam
- * 
- * @author Ken Swartz
- * @version 1 June 99
- */
 package help.sortfiles;
 
 import jam.data.Gate;
@@ -12,6 +6,12 @@ import jam.data.Scaler;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
 
+/**
+ * Template sort routine for Jam
+ * 
+ * @author Ken Swartz
+ * @version 1 June 99
+ */
 public final class CamacSortTemplate extends SortRoutine {
 
 	/** variables declarations */
@@ -27,6 +27,11 @@ public final class CamacSortTemplate extends SortRoutine {
 
 	transient final Scaler myScal; //declare scaler myScal;
 
+	/**
+	 * Constructor, not usually used. 
+	 *
+	 * @see #initialize()
+	 */
 	public CamacSortTemplate() {
 		super();
 		final int hist1d = 1024;
@@ -39,7 +44,9 @@ public final class CamacSortTemplate extends SortRoutine {
 
 	/**
 	 * The initialization method code to define camac commands, variables and
-	 * classes
+	 * classes.
+	 * 
+	 * @see SortRoutine#initialize()
 	 */
 	public void initialize() throws SortException {
 		/*
@@ -58,8 +65,7 @@ public final class CamacSortTemplate extends SortRoutine {
 	}
 
 	/**
-	 * The sort method called for each event with eventData having the event
-	 * data
+	 * @see SortRoutine#sort(int[])
 	 */
 	public void sort(int[] eventData) {
 		myHist.inc(eventData[PARAM_ID]); //increment myHist with word idHist;

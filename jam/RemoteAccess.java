@@ -19,14 +19,17 @@ import java.util.List;
 public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 
 	/**
-	 * Contructor
+	 * Contructor.
+	 * 
+	 * @throws RemoteException if there's a problem
 	 */
 	public RemoteAccess() throws RemoteException {
 		super();
 	}
 	
 	/**
-	 * A test string 
+	 * @return a test string 
+	 * @throws RemoteException if there's a problem
 	 */
 	public String getTestString() throws RemoteException {
 		String message = "Remote from jam";
@@ -34,21 +37,24 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	}
 	
 	/**
-	 * Experiment name
+	 * @return the experiment name
+	 * @throws RemoteException if there's a problem
 	 */
 	public String getExperimentName() throws RemoteException {
 		return RunInfo.experimentName;
 	}
 
 	/**
-	 *Get the list of histograms
+	 * @return the list of histograms
+	 * @throws RemoteException if there's a problem
 	 */
 	public List getHistogramList() throws RemoteException {
 		return Histogram.getHistogramList();
 	}
 	
 	/**
-	 *Get the list of histograms names
+	 * @return the list of histograms names
+	 * @throws RemoteException if there's a problem
 	 */
 	public String[] getHistogramNames() throws RemoteException {
 		List hists = Histogram.getHistogramList();
@@ -60,21 +66,26 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	}
 	
 	/**
-	 * Get a histogram given its name
+	 * @param name the name of a histogram
+	 * @return the histogram
+	 * @throws RemoteException if there's a problem
 	 */
 	public Histogram getHistogram(String name) throws RemoteException {
 		return Histogram.getHistogram(name);
 	}
 	
 	/**
-	 *Get the list of gates
+	 * @return the list of all gates
+	 * @throws RemoteException if there's a problem
 	 */
 	public List getGateList() throws RemoteException {
 		return Gate.getGateList();
 	}
 	
 	/**
-	 *Get the list of gate names given a histogram
+	 * @param histName name of a histogram
+	 * @return the list of names of gates in the histogram
+	 * @throws RemoteException if there's a problem
 	 */
 	public String[] getGateNames(String histName) throws RemoteException {
 		Histogram hist = Histogram.getHistogram(histName);
@@ -87,28 +98,33 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	}
 	
 	/**
-	 * Get a gate given its name
+	 * @param name of a gate
+	 * @return the gate
+	 * @throws RemoteException if there's a problem
 	 */
 	public Gate getGate(String name) throws RemoteException {
 		return Gate.getGate(name);
 	}
 
 	/**
-	 *Get the list of scalers
+	 * @return the list of scalers
+	 * @throws RemoteException if there's a problem
 	 */
 	public List getScalerList() throws RemoteException {
 		return Scaler.getScalerList();
 	}
 	
 	/**
-	 *Get the list of monitors
+	 * @return the list of monitors
+	 * @throws RemoteException if there's a problem
 	 */
 	public List getMonitorList() throws RemoteException {
 		return Monitor.getMonitorList();
 	}
 
 	/**
-	 *Get the values of monitors
+	 * @return the values of monitors
+	 * @throws RemoteException if there's a problem
 	 */
 	public double[] getMonitorValues() throws RemoteException {
 		List monitors = Monitor.getMonitorList();
@@ -120,7 +136,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	}
 
 	/**
-	 * A test routine for this class
+	 * A test routine for this class.
+	 * @param args ignored
 	 */
 	public static void main(String args[]) {
 		System.out.println("Test starting up Server");
@@ -131,8 +148,10 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 			System.out.println("Server setup");
 		} catch (RemoteException re) {
 			System.out.println("Error constructing Server");
+			re.printStackTrace();
 		} catch (java.net.MalformedURLException mue) {
 			System.out.println("Error malformed URL");
+			mue.printStackTrace();
 		}
 	}
 }

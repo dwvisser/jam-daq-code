@@ -128,6 +128,8 @@ class SplashWindow extends JWindow {
 
 	/**
 	 * Displays this window for up to a minute.
+	 * 
+	 * @param args ignored
 	 */
 	static public void main(String[] args) {
 		new SplashWindow(null, 60000);

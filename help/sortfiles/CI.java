@@ -99,7 +99,7 @@ public class CI extends SortRoutine {
 	}
 
 	/**
-	 * Method called to initialize objects when the sort routine is loaded.
+	 * @see SortRoutine#initialize()
 	 */
 	public void initialize() throws SortException {
 		/*
@@ -118,7 +118,7 @@ public class CI extends SortRoutine {
 	}//end of initialize()
 
 	/**
-	 * Method for sorting of data into spectra.
+	 * @see SortRoutine#sort(int[])
 	 */
 	public void sort(int[] data) {
 		/** * EXTRACT DATA FROM ARRAY ** */
@@ -145,13 +145,13 @@ public class CI extends SortRoutine {
 	}
 
 	/**
-	 * Method for calculating values of user-defined monitors.
+	 * @see SortRoutine#monitor(String)
 	 */
 	public double monitor(String name) {
 		double rval = 0.0;
 		if (name.equals(DEAD_TIME)) {
-			final double geVal = (double) sGe.getValue();
-			final double acceptVal = (double) sAccept.getValue();
+			final double geVal = sGe.getValue();
+			final double acceptVal = sAccept.getValue();
 			rval = 100.0 * (1.0 - (lastAccept - acceptVal) / (geVal - lastGe));
 			lastGe = (int) geVal;
 			lastAccept = (int) acceptVal;

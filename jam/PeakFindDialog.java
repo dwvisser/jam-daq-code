@@ -29,6 +29,10 @@ public class PeakFindDialog extends JDialog {
 	private transient final Display display;
 	private transient final MessageHandler console;
 
+	/**
+	 * Constructs a new peak find dialog.
+	 *
+	 */
 	public PeakFindDialog() {
 		final JamStatus status=JamStatus.instance();
 		display = status.getDisplay();

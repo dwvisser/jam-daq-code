@@ -14,7 +14,20 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface JamPrefs {
+    
+    /**
+     * The preferences node for the <code>jam</code> package.
+     */
 	Preferences PREFS=Preferences.userNodeForPackage(JamPrefs.class);
+	
+	/**
+	 * Name for the verbosity preference.
+	 */
 	String VERBOSE="verbose";
+	
+	/**
+	 * Name for the preference whether to show debug
+	 * messages.
+	 */
 	String DEBUG="debug";
 }
