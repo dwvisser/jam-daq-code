@@ -36,7 +36,6 @@
    	<tocitem text="L002 Event Format" target="l002" />
    	<tocitem text="Yale-CAEN Event Format" target="caen" />
    	<tocitem text="Front End Communication" target="protocol" />
-	<tocitem text="Jam Javadoc" target="API" />
    </tocitem>
 </tocitem>
 </toc>

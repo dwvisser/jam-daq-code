@@ -25,7 +25,6 @@
    <mapID target="l002" url="L002format.html" />
    <mapID target="caen" url="CAENformat.html" />
    <mapID target="protocol" url="frontEndComm.html" />
-   <mapID target="API" url="API/index.html" />
    <mapID target="ack" url="acknowledgements.html" />
    <mapID target="notice" url="notice.html" />
    <mapID target="contrib" url="contribute.html" />
