@@ -27,7 +27,7 @@ final class ScientificDataDimension extends DataObject {
 
     private byte numberType;
 
-    static ScientificDataDimension getSDD(short rank, int sizeX, int sizeY,
+    static ScientificDataDimension create(short rank, int sizeX, int sizeY,
             byte numberType) {
         ScientificDataDimension rval = null;//return value
         final Iterator temp = DataObject.ofType(DataObject.DFTAG_SDD)
@@ -47,7 +47,7 @@ final class ScientificDataDimension extends DataObject {
         return rval;
     }
 
-    ScientificDataDimension(short rank, int sizeX, int sizeY, byte numberType) {
+    private ScientificDataDimension(short rank, int sizeX, int sizeY, byte numberType) {
         super(DFTAG_SDD); //sets tag
         this.rank = rank;
         this.sizeX = sizeX;
