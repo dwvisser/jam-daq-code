@@ -29,22 +29,6 @@ import javax.swing.DefaultBoundedRangeModel;
  */
 final class Limits {
 
-    static class ScaleType{
-    	/**
-    	 * Value representing linear counts scale.
-    	 */
-    	static public final ScaleType LINEAR=new ScaleType(0);
-    	
-    	/**
-    	 * Value representing log counts scale.
-    	 */
-    	static public final ScaleType LOG=new ScaleType(1);
-    	private int type;
-    	
-    	private ScaleType(int t){
-    		type=t;	
-    	}
-    }
 
     /** 
      * Lookup table for the display limits for the various histograms.
@@ -66,7 +50,7 @@ final class Limits {
     private int sizeX;		//translate to rangemodel min, max
     private int zeroY=INITLO;
     private int sizeY;		//translate to rangemodel min, max
-    private Limits.ScaleType scale=ScaleType.LINEAR;        // is it in log or linear
+    private Scale scale=Scale.LINEAR;        // is it in log or linear
     
     /** 
      * Creates the display limits for the specified histogram, 
@@ -124,10 +108,10 @@ final class Limits {
         setLimitsX(INITLO,sizex-1);
         if (dim==1) {
             setLimitsY(INITLO,INITHI);
-            setScale(Limits.ScaleType.LINEAR);
+            setScale(Scale.LINEAR);
         } else {//2-dim
             setLimitsY(INITLO,sizey-1);
-            setScale(Limits.ScaleType.LOG);
+            setScale(Scale.LOG);
         }
         /* auto scale counts */
 		int chminX=0;
@@ -341,7 +325,7 @@ final class Limits {
      * @param s one of <code>Limits.LINEAR</code> or <code>
      * Limits.LOG</code>
      */
-    void setScale(Limits.ScaleType s){
+    void setScale(Scale s){
     	synchronized(scale){
 			scale=s;
     	}
@@ -425,7 +409,7 @@ final class Limits {
      * @return <code>PlotGraphics.LINEAR</code> or <code>
      * PlotGraphics.LOG</code>
      */
-    synchronized Limits.ScaleType getScale(){
+    synchronized Scale getScale(){
         return scale;
     }
 

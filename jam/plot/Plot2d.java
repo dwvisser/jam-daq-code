@@ -2,6 +2,7 @@ package jam.plot;
 
 import jam.data.DataException;
 import jam.data.Histogram;
+import jam.plot.color.PlotColorMap;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
@@ -31,6 +32,8 @@ class Plot2d extends AbstractPlot {
 
 	/** areaMark is a rectangle in channel space */
 	private final Rectangle areaMark = new Rectangle();
+	
+	private final PlotColorMap plotColorMap=PlotColorMap.getSingletonInstance();
 
 	private boolean smoothColorScale = true;
 
@@ -69,7 +72,7 @@ class Plot2d extends AbstractPlot {
 	}
 
 	protected void paintMarkedChannels(Graphics g) {
-		g.setColor(PlotColorMap.mark);
+		g.setColor(plotColorMap.getMark());
 		final Iterator it = markedChannels.iterator();
 		while (it.hasNext()) {
 			final Bin p = (Bin) it.next();
@@ -82,7 +85,7 @@ class Plot2d extends AbstractPlot {
 	 */
 	protected void paintSelectingArea(Graphics gc) {
 		final Graphics2D g = (Graphics2D) gc;
-		g.setColor(PlotColorMap.area);
+		g.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
 			graph.markArea2dOutline(selectionStartPoint, Bin.Factory
 					.create(lastMovePoint));
@@ -116,7 +119,7 @@ class Plot2d extends AbstractPlot {
 		final Graphics2D g2 = (Graphics2D) g;
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 				0.5f));
-		g.setColor(PlotColorMap.area);
+		g.setColor(plotColorMap.getArea());
 		graph.clipPlot();
 		synchronized (areaMark) {
 			graph.markArea2d(graph.getRectangleOutline2d(areaMark));
@@ -180,7 +183,7 @@ class Plot2d extends AbstractPlot {
 	}
 
 	protected void paintSetGatePoints(Graphics g) {
-		g.setColor(PlotColorMap.gateDraw);
+		g.setColor(plotColorMap.getGateDraw());
 		graph.settingGate2d(pointsGate);
 	}
 
@@ -191,7 +194,7 @@ class Plot2d extends AbstractPlot {
 	 */
 	protected void paintSettingGate(Graphics gc) {
 		final Graphics2D g = (Graphics2D) gc;
-		g.setColor(PlotColorMap.gateDraw);
+		g.setColor(plotColorMap.getGateDraw());
 		g.setComposite(AlphaComposite
 				.getInstance(AlphaComposite.SRC_OVER, 0.8f));
 		synchronized (lastMovePoint) {
@@ -303,7 +306,7 @@ class Plot2d extends AbstractPlot {
 		return minCounts;
 	}
 
-	private void setScale(Limits.ScaleType s) {
+	private void setScale(Scale s) {
 		synchronized (this) {
 			scale = s;
 		}
@@ -321,7 +324,7 @@ class Plot2d extends AbstractPlot {
 	protected void paintHistogram(Graphics g) {
 		Histogram plotHist=getHistogram();
 		setScale(plotLimits.getScale());
-		g.setColor(PlotColorMap.hist);
+		g.setColor(plotColorMap.getHistogram());
 		g.getClipBounds(clipBounds);
 		final int minX = graph.toDataHorz((int) clipBounds.getMinX());
 		final int maxX = graph.toDataHorz((int) clipBounds.getMaxX());
@@ -330,18 +333,17 @@ class Plot2d extends AbstractPlot {
 		if (getSmoothColorScale()) {
 			graph.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			g.setPaintMode();
-			g.setColor(PlotColorMap.foreground);
+			g.setColor(plotColorMap.getForeground());
 			graph.drawScale2d();
 		} else {
-			graph.drawHist2d(counts2d, minX, minY, maxX, maxY, PlotColorMap
+			graph.drawHist2d(counts2d, minX, minY, maxX, maxY, plotColorMap
 					.getColorScale());
 			g.setPaintMode();
-			g.setColor(PlotColorMap.foreground);
-			graph.drawScale2d(PlotColorMap.getColorScale());
+			g.setColor(plotColorMap.getForeground());
+			graph.drawScale2d(plotColorMap.getColorScale());
 		}
 		/* draw labels/ticks after histogram so they are on top */
-		g.setColor(PlotColorMap.foreground);
-
+		g.setColor(plotColorMap.getForeground());
 		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
 		graph.drawNumber(plotHist.getNumber(), new int[0]);
 		graph.drawTicks(PlotGraphics.BOTTOM);
@@ -361,7 +363,7 @@ class Plot2d extends AbstractPlot {
 			graph.drawAxisLabel(Y_LABEL_2D, PlotGraphics.LEFT);
 		}
 		g.setPaintMode();
-		g.setColor(PlotColorMap.foreground);
+		g.setColor(plotColorMap.getForeground());
 	}
 
 	/**
@@ -376,7 +378,7 @@ class Plot2d extends AbstractPlot {
 		Graphics2D g = (Graphics2D) gc;
 		g.setComposite(AlphaComposite
 				.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-		g.setColor(PlotColorMap.gateShow);
+		g.setColor(plotColorMap.getGateShow());
 		if (isNoFillMode()) {
 			paintPolyGate(g);
 		} else {
@@ -394,7 +396,7 @@ class Plot2d extends AbstractPlot {
 	 */
 	void paintPolyGate(Graphics g) {
 		g.setPaintMode();
-		g.setColor(PlotColorMap.gateShow);
+		g.setColor(plotColorMap.getGateShow());
 		final Polygon gatePoints = currentGate.getBananaGate();
 		if (gatePoints != null) {
 			final int numberPoints = gatePoints.npoints;

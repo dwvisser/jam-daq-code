@@ -4,7 +4,9 @@ import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
+import jam.plot.color.PlotColorMap;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -76,7 +78,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	protected Histogram.Type type;
 
-	protected Limits.ScaleType scale;
+	protected Scale scale;
 
 	protected double[] counts;
 
@@ -518,7 +520,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * Set the scale to linear scale
 	 */
 	void setLinear() {
-		plotLimits.setScale(Limits.ScaleType.LINEAR);
+		plotLimits.setScale(Scale.LINEAR);
 		refresh();
 	}
 
@@ -526,7 +528,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * Set the scale to log scale
 	 */
 	void setLog() {
-		plotLimits.setScale(Limits.ScaleType.LOG);
+		plotLimits.setScale(Scale.LOG);
 		repaint();
 	}
 
@@ -639,19 +641,21 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		PlotColorMap pcm=PlotColorMap.getSingletonInstance();
 		if (printing) { //output to printer
 			//FIXME KBS font not set
 			//graph.setFont(printFont);
-			PlotColorMap.setColorMap(PlotColorMap.PRINT);
+			pcm.setColorMap(PlotColorMap.PRINT);
 			graph.setView(pageformat);
 		} else { //output to screen
 			//graph.setFont(screenFont);
-			PlotColorMap.setColorMap(colorMode);
+			pcm.setColorMap(colorMode);
 			graph.setView(null);
 		}
-		g.setColor(PlotColorMap.foreground); //color foreground
-		this.setForeground(PlotColorMap.foreground);
-		this.setBackground(PlotColorMap.background);
+		final Color foreground=pcm.getForeground();
+		g.setColor(foreground); //color foreground
+		this.setForeground(foreground);
+		this.setBackground(pcm.getBackground());
 		viewSize = getSize();
 		graph.update(g, viewSize, plotLimits);
 		/*
@@ -747,7 +751,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * size in pixels for a plot.
 	 */
 	protected void paintHeader(Graphics g) {
-		g.setColor(PlotColorMap.foreground);
+		g.setColor(PlotColorMap.getSingletonInstance().getForeground());
 		if (printing) { //output to printer
 			graph.drawDate(date); //date
 			graph.drawRun(runNumber); //run number
@@ -873,7 +877,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			colorMode = cm ? PlotColorMap.WHITE_ON_BLACK
 					: PlotColorMap.BLACK_ON_WHITE;
 		}
-		setBackground(PlotColorMap.background);
+		setBackground(PlotColorMap.getSingletonInstance().getBackground());
 	}
 	//Plot mouse methods
 	/**

@@ -1,6 +1,7 @@
 package jam.plot;
 
 import jam.data.Histogram;
+import jam.plot.color.PlotColorMap;
 
 import java.awt.AlphaComposite;
 import java.awt.Composite;
@@ -37,6 +38,8 @@ class Plot1d extends AbstractPlot {
 	private List overlayHists;
 
 	private Map countsOverlay = Collections.synchronizedMap(new HashMap());
+	
+	private final PlotColorMap colorMap=PlotColorMap.getSingletonInstance();
 
 	/**ss
 	 * Constructor.
@@ -121,12 +124,12 @@ class Plot1d extends AbstractPlot {
 	}
 
 	protected void paintSetGatePoints(Graphics g) {
-		g.setColor(PlotColorMap.gateShow);
+		g.setColor(colorMap.getGateShow());
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
 
 	protected void paintSettingGate(Graphics g) {
-		g.setColor(PlotColorMap.gateDraw);
+		g.setColor(colorMap.getGateDraw());
 		final int x1 = pointsGate.xpoints[pointsGate.npoints - 1];
 		final int x2 = graph.toDataHorz(lastMovePoint.x);
 		graph.markAreaOutline1d(x1, x2);
@@ -191,7 +194,7 @@ class Plot1d extends AbstractPlot {
 	}
 
 	protected void paintMarkedChannels(Graphics g) {
-		g.setColor(PlotColorMap.mark);
+		g.setColor(colorMap.getMark());
 		final Iterator it = markedChannels.iterator();
 		while (it.hasNext()) {
 			final int px = ((Bin) it.next()).getX();
@@ -201,7 +204,7 @@ class Plot1d extends AbstractPlot {
 
 	protected void paintSelectingArea(Graphics gc) {
 		Graphics2D g = (Graphics2D) gc;
-		g.setColor(PlotColorMap.area);
+		g.setColor(colorMap.getArea());
 		graph.markAreaOutline1d(selectionStartPoint.getX(), lastMovePoint.x);
 		setMouseMoved(false);
 		clearSelectingAreaClip();
@@ -233,7 +236,7 @@ class Plot1d extends AbstractPlot {
 		final Composite prev = g2.getComposite();
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 				0.5f));
-		g.setColor(PlotColorMap.area);
+		g.setColor(colorMap.getArea());
 		graph.update(g, viewSize, plotLimits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
 		g2.setComposite(prev);
@@ -248,14 +251,13 @@ class Plot1d extends AbstractPlot {
 		if (plotHist.getDimensionality() != 1) {
 			return;//not sure how this happens, but need to check
 		}
-		g.setColor(PlotColorMap.hist);
+		g.setColor(colorMap.getHistogram());
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
 			graph.drawPeakLabels(plotHist.findPeaks(sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
-		g.setColor(PlotColorMap.foreground);
-		g.setColor(PlotColorMap.foreground);
+		g.setColor(colorMap.getForeground());
 		graph.drawTitle(plotHist.getTitle(), PlotGraphics.TOP);
 		final int len = displayingOverlay ? overlayHists.size() : 0;
 		final int[] overlays = new int[len];
@@ -300,7 +302,7 @@ class Plot1d extends AbstractPlot {
 		final Iterator iter = overlayHists.iterator();
 		int i = 0;
 		while (iter.hasNext()) {
-			g2.setColor(PlotColorMap.overlay[i % PlotColorMap.overlay.length]);
+			g2.setColor(colorMap.getOverlay(i));
 			graph.drawHist((double[]) countsOverlay.get(iter.next()), binWidth);
 			i++;
 		}
@@ -317,7 +319,7 @@ class Plot1d extends AbstractPlot {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 					0.5f));
 		}
-		g.setColor(PlotColorMap.gateShow);
+		g.setColor(colorMap.getGateShow());
 		int ll = currentGate.getLimits1d()[0];
 		int ul = currentGate.getLimits1d()[1];
 		graph.drawGate1d(ll, ul, noFill);
@@ -330,21 +332,21 @@ class Plot1d extends AbstractPlot {
 	protected void paintFit(Graphics g) {
 		if (fitChannels != null) {
 			if (fitBackground != null) {
-				g.setColor(PlotColorMap.fitBackground);
+				g.setColor(colorMap.getFitBackground());
 				graph.drawLine(fitChannels, fitBackground);
 			}
 			if (fitResiduals != null) {
-				g.setColor(PlotColorMap.fitResidual);
+				g.setColor(colorMap.getFitResidual());
 				graph.drawLine(fitChannels, fitResiduals);
 			}
 			if (fitSignals != null) {
-				g.setColor(PlotColorMap.fitSignal);
+				g.setColor(colorMap.getFitSignal());
 				for (int sig = 0; sig < fitSignals.length; sig++) {
 					graph.drawLine(fitChannels, fitSignals[sig]);
 				}
 			}
 			if (fitTotal != null) {
-				g.setColor(PlotColorMap.fitTotal);
+				g.setColor(colorMap.getFitTotal());
 				graph.drawLine(fitChannels, fitTotal);
 			}
 		}

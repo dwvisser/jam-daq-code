@@ -1,5 +1,9 @@
 package jam.plot;
 
+import jam.plot.color.ColorScale;
+import jam.plot.color.GradientColorScale;
+import jam.plot.color.PlotColorMap;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -54,6 +58,8 @@ class PlotGraphics  {
 
 	/* fake zero for Log scale 1/2 a count */
 	static final double LOG_FAKE_ZERO = 0.5;
+	
+	private static final PlotColorMap plotColorMap=PlotColorMap.getSingletonInstance();
 
 	PlotGraphicsLayout graphLayout;
 	
@@ -319,13 +325,13 @@ class PlotGraphics  {
 		int xNext = this.viewLeft -graphLayout. TITLE_OFFSET_TOP - width;
 		final int y = viewTop - graphLayout.TITLE_OFFSET_TOP;
 		final Color c = g.getColor();
-		g.setColor(PlotColorMap.foreground);
+		g.setColor(plotColorMap.getForeground());
 		g.drawString(s, xNext, y);
 		for (int i = 0; i < overlayNumbers.length; i++) {
 			xNext += width;
 			final String sNext = ", " + overlayNumbers[i];
 			width = fm.stringWidth(sNext);
-			g.setColor(PlotColorMap.overlay[i % PlotColorMap.overlay.length]);
+			g.setColor(plotColorMap.getOverlay(i));
 			g.drawString(sNext, xNext, y);
 		}
 		g.setColor(c);
@@ -376,7 +382,7 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawTicks(int side) {
-		Limits.ScaleType scale = Limits.ScaleType.LINEAR;
+		Scale scale = Scale.LINEAR;
 		if (side == BOTTOM) {//always linear
 			ticksBottom(minXch, maxXch);
 		} else { //side==LEFT, if 1d-depends on Limits's scale
@@ -399,7 +405,7 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	private void ticksBottom(int lowerLimit, int upperLimit) {
-		final Limits.ScaleType scale = Limits.ScaleType.LINEAR;
+		final Scale scale = Scale.LINEAR;
 		final int[] ticks = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MINOR);
 		for (int i = 0; i < ticks.length; i++) {
@@ -430,14 +436,14 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	private void ticksLeft(int lowerLimit, int upperLimit,
-			Limits.ScaleType scale) {
+			Scale scale) {
 		int x;
 		int y;
 
 		int[] ticks = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MINOR);
 		for (int i = 0; i < ticks.length; i++) {
-			if (scale == Limits.ScaleType.LINEAR) {
+			if (scale == Scale.LINEAR) {
 				y = toViewVertLin(ticks[i]);
 			} else {
 				y = toViewVertLog(ticks[i]);
@@ -451,7 +457,7 @@ class PlotGraphics  {
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
-			if (scale == Limits.ScaleType.LINEAR) {
+			if (scale == Scale.LINEAR) {
 				y = toViewVertLin(ticksMajor[i]);
 			} else {
 				y = toViewVertLog(ticksMajor[i]);
@@ -477,7 +483,7 @@ class PlotGraphics  {
 		if (plotDimensions == 1 && side == LEFT && plotLimits != null) {
 			labelsLeft(minY, maxY, plotLimits.getScale());
 		} else if (plotDimensions == 2 && side == LEFT) {
-			labelsLeft(minY, maxY, Limits.ScaleType.LINEAR);
+			labelsLeft(minY, maxY, Scale.LINEAR);
 		}
 		}
 	}
@@ -491,7 +497,7 @@ class PlotGraphics  {
 	 */
 
 	private void labelsBottom(int lowerLimit, int upperLimit) {
-		final Limits.ScaleType scale = Limits.ScaleType.LINEAR;
+		final Scale scale = Scale.LINEAR;
 		final int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
@@ -511,14 +517,14 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	private void labelsLeft(int lowerLimit, int upperLimit,
-			Limits.ScaleType scale) {
+			Scale scale) {
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			final String label = Integer.toString(ticksMajor[i]);
 			final int offset = fm.stringWidth(label);
 			int y = fm.getAscent() / 2;
-			if (scale == Limits.ScaleType.LINEAR) {
+			if (scale == Scale.LINEAR) {
 				y += toViewVertLin(ticksMajor[i]);
 			} else {
 				y += toViewVertLog(ticksMajor[i]);
@@ -585,10 +591,10 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawHist(double[] counts, double binWidth) {
-		final Limits.ScaleType scale = plotLimits==null ? null :
+		final Scale scale = plotLimits==null ? null :
 			plotLimits.getScale();
 		drawHist(counts, binWidth,
-				scale != Limits.ScaleType.LINEAR);
+				scale != Scale.LINEAR);
 	}
 
 	/**
@@ -599,7 +605,7 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawLine(double[] channel, double[] countsdl) {
-		if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
+		if (plotLimits.getScale() == Scale.LINEAR) {
 			drawLineLinear(channel, countsdl);
 		} else {
 			drawLineLog(channel, countsdl);
@@ -819,7 +825,7 @@ class PlotGraphics  {
 		double highEnd = colorThresholds[numberColors - 1];
 		for (int row = 0; row < scaleHeight; row++) {
 			int y = viewBottom - row;
-			if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
+			if (plotLimits.getScale() == Scale.LINEAR) {
 				level = lowerLimit + (double) row * (highEnd - lowEnd)
 						/ scaleHeight;
 			} else { //log scale
@@ -1167,7 +1173,7 @@ class PlotGraphics  {
 		int x1 = toViewHorzLin(channel + 0.5);
 		int y1 = viewBottom;
 		int x2 = x1;
-		if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
+		if (plotLimits.getScale() == Scale.LINEAR) {
 			y2 = toViewVertLinCk(count);
 		} else {
 			y2 = toViewVertLog(count);
@@ -1188,11 +1194,11 @@ class PlotGraphics  {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
 		setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
-		g.setColor(PlotColorMap.peakLabel);
+		g.setColor(plotColorMap.getPeakLabel());
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
 			int x2 = x1;
-			if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
+			if (plotLimits.getScale() == Scale.LINEAR) {
 				y1 = toViewVertLinCk(peaks[2][i]) - 3;
 			} else {
 				y1 = toViewVertLog(peaks[2][i]) - 3;
@@ -1229,7 +1235,7 @@ class PlotGraphics  {
 		int minChan = Math.max(minXch, lowChan);
 		int maxChan = Math.min(maxXch, highChan);
 		final Polygon fill = new Polygon();
-		final boolean log = plotLimits.getScale() != Limits.ScaleType.LINEAR;
+		final boolean log = plotLimits.getScale() != Scale.LINEAR;
 		int xi = toViewHorzLin(minChan);
 		int yi = log ? toViewVertLog(0) : toViewVertLinCk(0);
 		fill.addPoint(xi, yi);

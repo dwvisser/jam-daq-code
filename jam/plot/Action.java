@@ -302,7 +302,7 @@ class Action implements ActionListener, PlotMouseListener,
 			} else if (LOG.equals(inCommand)) {
 				log();
 			} else if (SCALE.equals(inCommand)) {
-				if (display.getPlot().getLimits().getScale() == Limits.ScaleType.LINEAR) {
+				if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
 					log();
 				} else {
 					linear();

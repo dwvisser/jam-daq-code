@@ -1,4 +1,4 @@
-package jam.plot;
+package jam.plot.color;
 import java.awt.Color;
 
 /**
@@ -9,6 +9,6 @@ import java.awt.Color;
  * @see java.awt.Color
  * @see GradientColorScale
  */
-interface ColorScale {
+public interface ColorScale {
 	Color getColor(double counts);
 }
