@@ -8,6 +8,7 @@ import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
+import jam.global.BroadcastEvent;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.MultipleFileChooser;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -36,6 +37,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.util.Observable;
 
 /**
  * Class to control the histograms
@@ -60,7 +62,8 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     private CalibrationFunction calibFunction=new LinearFunction();
 
     //GUI stuff
-    private final JComboBox cFunc;
+    JTabbedPane tabPane;
+    private final JComboBox comboBoxFunction;
     private final JLabel lcalibEq=new JLabel("Select a function.", JLabel.CENTER);
     private JPanel pPoint [];
     private JTextField [] tEnergy, tChannel;
@@ -89,7 +92,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         setResizable(false);
         setLocation(30,30);
         final Container cdialogCalib=getContentPane();
-        cdialogCalib.setLayout(new BorderLayout(5, 5));
+        cdialogCalib.setLayout(new BorderLayout(5, 5));       
         
         //Selection panel at the top
         JPanel pSelection = new JPanel(new GridLayout(0,1,5,0));
@@ -99,13 +102,14 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         //Equation chooser
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         pChoose.add(new JLabel("Function: "));
-        cFunc = new JComboBox(new CalibrationComboBoxModel());
-        cFunc.setRenderer(new CalibrationListCellRenderer());
-		cFunc.addItemListener(new ItemListener(){
+        comboBoxFunction = new JComboBox(new CalibrationComboBoxModel());
+        comboBoxFunction.setRenderer(new CalibrationListCellRenderer());
+		comboBoxFunction.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
-				final String calClass = (String)cFunc.getSelectedItem();
+				final String calClass = (String)comboBoxFunction.getSelectedItem();
 				try {
 					calibFunction = (CalibrationFunction)Class.forName(calClass).newInstance();
+					updateCoefficients();
 				} catch (Exception e) {
 					msghdlr.errorOutln(getClass().getName()+
 					".setFunctionType(): "+e.toString());            	
@@ -113,8 +117,8 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 				lcalibEq.setText(calibFunction.getTitle());
 			}
 		});
-		cFunc.setSelectedItem(LinearFunction.class.getName());
-        pChoose.add(cFunc);
+		comboBoxFunction.setSelectedItem(LinearFunction.class.getName());
+        pChoose.add(comboBoxFunction);
         pSelection.add(pChoose);
         
         //Equation 
@@ -128,7 +132,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         rbFitPoints.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent itemEvent) {
 				if (rbFitPoints.isSelected()) {
-					setFitTypePoints(true);
+					setFitTypePoints(true);					
 				}
 			}
 		});
@@ -148,12 +152,12 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         pSelection.add(pFitType);
         
 		//Tabbed panel with fit points an coefficients
-		JTabbedPane tabPane = new JTabbedPane();
+		tabPane = new JTabbedPane();
 		cdialogCalib.add(tabPane, BorderLayout.CENTER);
 		JPanel ptsPanel = createPointsPanel();
-		tabPane.addTab("Points", null, ptsPanel, "Points and Energy to fit");		
-		JPanel histPanel = creatCoeffPanel();
-		tabPane.addTab("Fit", null, histPanel, "Fit coefficients");		
+		tabPane.addTab("Points", null, ptsPanel, "Channels and Energies to fit.");		
+		JPanel histPanel = createCoeffPanel();
+		tabPane.addTab("Coefficients", null, histPanel, "Fit coefficients.");		
 		tabPane.addChangeListener(new ChangeListener() {
 	        // This method is called whenever the selected tab changes
 	        public void stateChanged(ChangeEvent evt) {
@@ -171,7 +175,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                         if(calibFunction==null){
                             msghdlr.errorOutln("Need to choose a function [CalibrationFit]");
                         } else {
-                            doCalibration();
+                            doFitCalibration();
                         }
                     }
                     public void cancel() {
@@ -180,6 +184,9 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 });
         cdialogCalib.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		pack();
+		
+		//Initially points
+		rbFitPoints.setSelected(true);
 		
 		/*
         JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -225,11 +232,11 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
             pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
             pAllPoints.add(pPoint[i]);
             pPoint[i].add(new JLabel("Energy"));
-            tEnergy[i] =new JTextField(" ");
+            tEnergy[i] =new JTextField("");
             tEnergy[i].setColumns(6);
             pPoint[i].add(tEnergy[i]);
             pPoint[i].add(new JLabel("Channel"));
-            tChannel[i] =new JTextField(" ");
+            tChannel[i] =new JTextField("");
             tChannel[i].setColumns(6);
             pPoint[i].add(tChannel[i]);
             cUse[i] =new JCheckBox("use");
@@ -239,15 +246,8 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
             final int index=i;//silly, but necessary for anonymous class
             cUse[i].addItemListener(new ItemListener(){
 				public void itemStateChanged(ItemEvent ie){
-					setFieldActive(index, cUse[index].isSelected());
+					setPointFieldActive(index, cUse[index].isSelected());
 				}				
-				/**
-				 *sets fields to be active
-				 */
-				private void setFieldActive(int number, boolean state){
-					tChannel[number].setEnabled(state);
-					tEnergy[number].setEnabled(state);
-				}
             });
         }
         return pAllPoints;
@@ -255,7 +255,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     }
     
     //Create panel with the coefficients    
-    private JPanel creatCoeffPanel() {    
+    private JPanel createCoeffPanel() {    
     	JPanel pCoeff = new JPanel(new GridLayout(0, 1, 10,2));
 		pcoeff = new JPanel[MAX_NUMBER_TERMS];
 		lcoeff = new JLabel[MAX_NUMBER_TERMS];
@@ -266,7 +266,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 			pCoeff.add(pcoeff[i]);
 			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
 			pcoeff[i].add(lcoeff[i]);
-			tcoeff[i] = new JTextField(" ");
+			tcoeff[i] = new JTextField("");
 			tcoeff[i].setColumns(10);
 			pcoeff[i].add(tcoeff[i]);
 		}
@@ -274,21 +274,29 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     }
     
     private void setFitTypePoints(boolean state){
-    	for (int i =0; i<NUMBER_POINTS; i++) {
-    		tEnergy[i].setEditable(state);
+    	if (state) {
+    		tabPane.setSelectedIndex(0);
+    	} else {
+    		tabPane.setSelectedIndex(1);
+    	}
+    	for (int i =0; i<NUMBER_POINTS; i++) {    	
     		tEnergy[i].setEnabled(state);
-    		tEnergy[i].setText("");    		
-    		tChannel[i].setEditable(state);
-    		tChannel[i].setEnabled(state);
-    		tChannel[i].setText("");
+    		tChannel[i].setEnabled(state);    		
     		cUse[i].setEnabled(state);    		
-    		cUse[i].setSelected(!state);
     	}
     	for (int i =0; i<MAX_NUMBER_TERMS; i++) {
-    		tcoeff[i].setEditable(!state);
-    	}
-		
+    		tcoeff[i].setEnabled(!state);
+    	}		
     }
+    
+	/**
+	 *sets fields to be active
+	 */
+	private void setPointFieldActive(int number, boolean state){
+		tChannel[number].setEnabled(state);
+		tEnergy[number].setEnabled(state);
+	}
+    
     /**
      * Receive actions from Dialog Boxes
      *
@@ -301,7 +309,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 if(calibFunction==null){
                     msghdlr.errorOutln("Need to choose a function [CalibrationFit]");
                 } else {
-                    doCalibration();
+                    doFitCalibration();
                     if (command=="okcalib") {
                         dispose();
                     }
@@ -319,7 +327,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     /**
      * Call the fitting method of the chosen function to calibrate a histogram
      */
-    private void doCalibration(){
+    private void doFitCalibration(){
     	
         double energy [] =new double[NUMBER_POINTS];
         double channel [] =new double[NUMBER_POINTS];
@@ -399,6 +407,44 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 		}
 	}
     
+	/**
+	 * setups up the dialog box
+	 */
+	public void updateCoefficients() {
+		CalibrationFunction hcf=null;
+		final boolean isHist1d = currentHistogram != null
+				&& currentHistogram.getDimensionality() == 1;
+		
+		if (currentHistogram!=null)
+			hcf = currentHistogram.getCalibration();
+		
+		final boolean exists = isHist1d && hcf != null;
+		//comboBoxFunction.setEnabled(exists);
+		if (exists) {
+			numberTerms = hcf.getNumberTerms();
+			lcalibEq.setText(hcf.getTitle());
+			String[] labels = hcf.getLabels();
+			double[] coeff = hcf.getCoeff();
+			for (int i = 0; i < numberTerms; i++) {
+				lcoeff[i].setText(labels[i]);
+				tcoeff[i].setText(String.valueOf(coeff[i]));
+				tcoeff[i].setEnabled(true);
+			}
+			for (int i = numberTerms; i < MAX_NUMBER_TERMS; i++) {
+				lcoeff[i].setText(BLANK_LABEL);
+				tcoeff[i].setText("");
+				tcoeff[i].setEnabled(false);
+			}
+		} else {// histogram not calibrated
+			//lcalibEq.setText(BLANK_TITLE);
+			for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+				lcoeff[i].setText(BLANK_LABEL);
+				tcoeff[i].setText("");
+				tcoeff[i].setEnabled(false);
+			}
+		}
+	}
+
 	private AbstractHist1D getCurrentHistogram() {
 		final AbstractHist1D rval;
 		final Histogram hist = STATUS.getCurrentHistogram();
@@ -423,30 +469,68 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     }
 
     public void doSetup(){
+    	CalibrationFunction hcf=null;
 		final AbstractHist1D hist=getCurrentHistogram();
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 
-		final boolean hist1d = currentHistogram!=null && 
+		final boolean histIs1d = currentHistogram!=null && 
 		currentHistogram.getDimensionality()==1;
-		if(hist1d) {
-			final CalibrationFunction hcf=currentHistogram.getCalibration();
+		if(histIs1d) {
+			hcf=currentHistogram.getCalibration();
 			final String name= hcf==null ? null : hcf.getClass().getName();
-			cFunc.setSelectedItem(name);
+			comboBoxFunction.setSelectedItem(name);
 		}	 
-		cFunc.setEnabled(hist1d);
-		bokCal.setEnabled(hist1d);
-		bapplyCal.setEnabled(hist1d);
-		bcancelCal.setEnabled(hist1d);		
-		/*
+		//comboBoxFunction.setEnabled(histIs1d);
+		bokCal.setEnabled(histIs1d);
+		bapplyCal.setEnabled(histIs1d);
+		bcancelCal.setEnabled(histIs1d);		
+		
+		//Points fields
 		for (int i=0; i<NUMBER_POINTS; i++){
-			final boolean enable=hist1d && cUse[i].isSelected();
-			tEnergy[i].setEnabled(enable);
-			tChannel[i].setEnabled(enable);
-			cUse[i].setEnabled(hist1d);
+			final boolean enable=histIs1d && cUse[i].isSelected();
+			//tChannel[i].setText(enable);
 		}
-		*/
+		final boolean exists = histIs1d && hcf != null;
+		
+		//Coefficient fields
+		if (exists) {
+			numberTerms = hcf.getNumberTerms();
+			lcalibEq.setText(hcf.getTitle());
+			String[] labels = hcf.getLabels();
+			double[] coeff = hcf.getCoeff();
+			for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+				if (i<numberTerms) {
+					lcoeff[i].setText(labels[i]);
+					tcoeff[i].setText(String.valueOf(coeff[i]));
+					tcoeff[i].setEnabled(true);
+				} else {
+					lcoeff[i].setText(BLANK_LABEL);
+					tcoeff[i].setText("");
+					tcoeff[i].setEnabled(false);					
+				}
+			}
+		} else {// histogram not calibrated
+			//lcalibEq.setText(BLANK_TITLE);
+			for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+				lcoeff[i].setText(BLANK_LABEL);
+				tcoeff[i].setText("");
+				tcoeff[i].setEnabled(false);
+			}
+		}
+		
     }
+    public void update(Observable observable, Object object) {
+    	
+    	final BroadcastEvent be = (BroadcastEvent) object;
+		final BroadcastEvent.Command com=be.getCommand();
+		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT ||
+			com == BroadcastEvent.Command.HISTOGRAM_ADD) {
+			doSetup();     	            
+			updateCoefficients();
+            //cancel(); //cancel current gate if was setting
+		}
+	}    
     
     
 }
