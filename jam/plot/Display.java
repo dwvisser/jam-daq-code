@@ -509,7 +509,7 @@ public class Display
 		java.util.prefs.Preferences.userNodeForPackage(getClass());
 		final String location=helpnode.get(key,defaultVal);		
 		final int orientation = (BorderLayout.NORTH.equals(location) || 
-		location==BorderLayout.SOUTH) ? JToolBar.HORIZONTAL : 
+		BorderLayout.SOUTH.equals(location)) ? JToolBar.HORIZONTAL : 
 		JToolBar.VERTICAL;
 		final JToolBar ptoolbar = new JToolBar("Actions", orientation);
 		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
