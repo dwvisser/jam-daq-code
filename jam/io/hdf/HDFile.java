@@ -168,22 +168,17 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		int countObjct=0;
 		final int numObjSteps = getNumberObjctProgressStep(objectList.size());
 		final Iterator temp = objectList.iterator();
-		boolean foundEmpty = false;
 		writeLoop: while (temp.hasNext()) {
 			if (countObjct%numObjSteps==0) {
 				monitor.increment();
 			}
 			final AbstractHData dataObject = (AbstractHData) (temp.next());
 			if (dataObject.getBytes().capacity() == 0){
-			    foundEmpty=true;
 			    break writeLoop;
 			}
 			writeDataObject(dataObject);
 			countObjct++;
 		}
-		//if (foundEmpty){
-		//	throw new HDFException("DataObject with no length encountered, halted writing HDF File.");
-		//}
 	}
 		
 	/**
