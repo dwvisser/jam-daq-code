@@ -46,6 +46,8 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	/** Count number of data object that have been lazy loaded */
 	private int lazyCount;
 	
+	private int refCounter;
+	
 	/**
 	 * variable for marking position in file
 	 */
@@ -218,6 +220,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		int countObjct=0;		
 		lazyLoadNum=0;
 		lazyCount=0;	
+		refCounter=0;
 		
 		try {
 			if (!checkMagicWord()) {
@@ -238,9 +241,12 @@ public final class HDFile extends RandomAccessFile implements Constants {
 
 				for (int i = 1; i <= numDD; i++) {
 					final short tag = readShort();
-					final short ref = readShort();
+					short ref = readShort();
 					final int offset = readInt();
 					final int length = readInt();
+					
+					//FIXME KBS trial to read in old format data 1_5_0 and 2_0_0
+					//ref=fixRefOldFormat(ref, tag);
 					
 					//Not an empty tag
 					if (tag !=DFTAG_NULL) {
@@ -275,6 +281,23 @@ public final class HDFile extends RandomAccessFile implements Constants {
 				"Problem reading HDF file objects. ",e);
 		}
 	}
+	/**
+	 * Fixes reference for old files
+	 * @param ref
+	 * @return
+	 */
+	private short fixRefOldFormat(short ref, short tag) {
+		short refNew;
+		if (ref==0)
+			if (tag==AbstractData.DFTAG_NDG)	
+				refNew= (short)++refCounter;
+			else 
+				refNew = ref;
+		else
+			refNew = ref;
+		return refNew;
+	}
+
 	/* non-javadoc:
 	 * Lazy load the bytes for an object
 	 */

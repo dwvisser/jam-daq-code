@@ -329,7 +329,7 @@ public abstract class Histogram {
 		
 		/* Create the full histogram name with group name */		
 		groupName=group.getName();		
-		this.uniqueFullName = groupName+"/"+nameIn;
+		this.uniqueFullName = groupName+"/"+name;
 		/* Add to group */
 		group.addHistogram(this);
 		gates.clear();

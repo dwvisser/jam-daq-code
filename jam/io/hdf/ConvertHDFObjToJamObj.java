@@ -140,10 +140,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         if (hists != null) {
             numHists = hists.getObjects().size();
             /* Histogram iterator */
-            final Iterator temp = hists.getObjects().iterator();
+            final Iterator histIter = hists.getObjects().iterator();
             // loop begin
-            while (temp.hasNext()) {
-            	final VirtualGroup currHistGrp = (VirtualGroup) (temp.next());
+            while (histIter.hasNext()) {
+            	final VirtualGroup currHistGrp = (VirtualGroup) (histIter.next());
             	convertHistogram(group, currHistGrp, histAttributes, mode);
             }
             //after loop 
