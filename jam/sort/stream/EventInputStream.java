@@ -13,7 +13,7 @@ import java.util.Hashtable;
  * @since       JDK1.1
  */
 
-public abstract class EventInputStream extends InputStream {
+public abstract class EventInputStream /*extends InputStream*/ {
     
     /**
      * Number of signal values for each event.
