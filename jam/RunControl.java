@@ -131,6 +131,9 @@ public class RunControl extends JDialog implements Controller {
 
 	private static RunControl instance = null;
 
+	/**
+	 * @return the only instance of this class
+	 */
 	static public RunControl getSingletonInstance() {
 		if (instance == null) {
 			instance = new RunControl(STATUS.getFrame());
@@ -141,17 +144,8 @@ public class RunControl extends JDialog implements Controller {
 	/**
 	 * Creates the run control dialog box.
 	 * 
-	 * @param jamMain
-	 *            launching point of Jam application
-	 * @param histogramControl
-	 * @param scalerControl
-	 *            dialog for reading and zeroing scalers
-	 * @param vmeComm
-	 *            object which sends and receives messages to/from the VME
-	 *            computer
-	 * @param dataio
-	 *            object in control of reading/writing data to/from disk
-	 * @param console
+	 * @param frame
+	 *            parent frame
 	 */
 	private RunControl(Frame frame) {
 		super(frame, "Run", false);
@@ -312,10 +306,6 @@ public class RunControl extends JDialog implements Controller {
 	/**
 	 * Starts acquisition of data. Figure out if online or offline an run
 	 * appropriate method.
-	 * 
-	 * @exception JamException
-	 *                all exceptions given to <code>JamException</code> go to
-	 *                the console
 	 */
 	public void startAcq() {
 		netDaemon.setState(GoodThread.RUN);
@@ -380,6 +370,7 @@ public class RunControl extends JDialog implements Controller {
 	 * @exception JamException
 	 *                all exceptions given to <code>JamException</code> go to
 	 *                the console
+	 * @throws SortException if there's a problem while sorting
 	 */
 	private void beginRun() throws JamException, SortException {
 		try {//get run number and title
@@ -387,7 +378,7 @@ public class RunControl extends JDialog implements Controller {
 			runTitle = textRunTitle.getText().trim();
 			RunInfo.runNumber = runNumber;
 			RunInfo.runTitle = runTitle;
-			RunInfo.runStartTime = getTime();
+			RunInfo.runStartTime = new Date();
 		} catch (NumberFormatException nfe) {
 			throw new JamException("Run number not an integer [RunControl]");
 		}
@@ -441,7 +432,7 @@ public class RunControl extends JDialog implements Controller {
 	 * histogram, gates and scalers if requested
 	 */
 	private void endRun() {
-		RunInfo.runEndTime = getTime();
+		RunInfo.runEndTime = new Date();
 		vmeComm.end(); //stop Acq. flush buffer
 		vmeComm.readScalers(); //read scalers
 		endAction.setEnabled(false); //toggle button states
@@ -508,7 +499,9 @@ public class RunControl extends JDialog implements Controller {
 	}
 
 	/**
-	 * Called by sorter for each new file not used for online data taking
+	 * Called by sorter for each new file not used for online data taking.
+	 * 
+	 * @return <code>true</code>
 	 */
 	public boolean isSortNext() {
 		/* does nothing for online */
@@ -541,12 +534,5 @@ public class RunControl extends JDialog implements Controller {
 		} catch (SortException je) {
 			console.errorOutln(je.getMessage());
 		}
-	}
-
-	/**
-	 * get current date and time
-	 */
-	private Date getTime() {
-		return new java.util.Date();
 	}
 }
