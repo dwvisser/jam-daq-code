@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
+import java.util.prefs.PreferenceChangeEvent;
 
 /**
  * Plots a 1-dimensional histogram.
@@ -32,6 +33,7 @@ class Plot1d extends Plot {
 	 */
 	Plot1d(Action a) {
 		super(a);
+		setPeakFind(prefs.getBoolean(AUTO_PEAK_FIND,true));
 	}
 
 	/**
@@ -252,7 +254,7 @@ class Plot1d extends Plot {
 	}
 
 	private boolean autoPeakFind = true;
-	void setPeakFind(boolean which) {
+	private void setPeakFind(boolean which) {
 		autoPeakFind = which;
 	}
 
@@ -504,6 +506,15 @@ class Plot1d extends Plot {
 			p.addPoint(p2.x,p2.y);
 			return getClipBounds(p,true);
 		}
+	}
+	
+	public void preferenceChange(PreferenceChangeEvent pce){
+		super.preferenceChange(pce);
+		final String key=pce.getKey();
+		if (key.equals(AUTO_PEAK_FIND)){
+			setPeakFind(Boolean.valueOf(pce.getNewValue()).booleanValue());
+		} 
+		repaint();
 	}
 
 }
