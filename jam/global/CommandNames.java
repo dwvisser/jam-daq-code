@@ -120,6 +120,8 @@ public interface CommandNames {
 	/** Open file with Yale CAEN scalers */
 	String OPEN_SCALERS_YALE_CAEN ="openscalers";
 
+	/** Show the dialog for scaler scan */
+	String SHOW_SCALER_SCAN ="showscalerscan";
 	
 	/** Print the displayed plot */
 	String PRINT="print";
@@ -157,7 +159,7 @@ public interface CommandNames {
 	/** Show the offline sorting setup dialog. */
 	String SHOW_SETUP_REMOTE="showSetupRemote";
 
-	/** Show the dialog eith event and buffer counts.*/
+	/** Show the dialog with event and buffer counts.*/
 	String SHOW_BUFFER_COUNT="showCounters";
 	
 	/** Show the peak find setup.*/

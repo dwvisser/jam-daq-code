@@ -9,7 +9,6 @@ import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.plot.Display;
 import jam.plot.PlotPrefs;
-import jam.util.ScalerScan;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -95,8 +94,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final JMenuItem utilities = new JMenu("Utilities");
 		file.add(utilities);
 		utilities.add(getMenuItem(OPEN_SCALERS_YALE_CAEN));
-		final ScalerScan ss = new ScalerScan();
-		utilities.add(new JMenuItem(ss.getAction()));
+		utilities.add(getMenuItem(SHOW_SCALER_SCAN));
 		file.addSeparator();
 		
 		file.add(impHist);
