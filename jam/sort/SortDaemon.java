@@ -60,7 +60,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	private boolean observed = false;
 
-	private Broadcaster broadCaster;
+	private Broadcaster broadcaster;
 
 	/**
 	 * Used for online only, ringbuffer buffers input from network
@@ -116,18 +116,13 @@ public class SortDaemon extends GoodThread {
 	public void setup(int mode, EventInputStream eventInputStream, int eventSize) {
 		this.mode = mode;
 		this.eventInputStream = eventInputStream;
-		this.eventSize = eventSize;
-		eventInputStream.setEventSize(eventSize);//set the event size for the
-												 // stream
-		eventCount = 0;
-		eventData = new int[eventSize];
-		eventDataZero = new int[eventSize];
-		for (int i = 0; i < eventSize; i++) {//explicitly zero eventDataZero
-			eventDataZero[i] = 0;
-		}
+		setEventSize(eventSize);
+		/* Set the event size for the stream. */
+		eventInputStream.setEventSize(eventSize);
+		setEventCount(0);
 		if (mode == ONLINE) {
 			ringInputStream = new RingInputStream();//input stream converts
-													// array to stream
+			// array to stream
 		}
 		setPriority(ThreadPriorities.SORT);
 		setDaemon(true);
@@ -154,6 +149,18 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
+	 * Sets the sort sample interval This is the frequeny of buffers sent to the
+	 * sort routine. For example if this is set to 2 only every second buffer is
+	 * sent to the sort routine.
+	 * 
+	 * @param sample
+	 *            the sample interval
+	 */
+	public synchronized void setSortInterval(int sample) {
+		sortInterval = sample;
+	}
+
+	/**
 	 * set the state of the event output
 	 */
 	public void setWriteEnabled(boolean state) {
@@ -168,10 +175,9 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void setEventSize(int size) {
 		eventSize = size;
+		/* JVM spec--both arrays initialized w/ zeroes. */
 		eventData = new int[eventSize];
-		for (int i = 0; i < size; i++) {//explicitly zero eventDataZero
-			eventDataZero[i] = 0;
-		}
+		eventDataZero = new int[eventSize];
 	}
 
 	/**
@@ -186,12 +192,12 @@ public class SortDaemon extends GoodThread {
 	/**
 	 * Sets this object to observe broadcasted messages.
 	 * 
-	 * @param broadCaster
+	 * @param bc
 	 *            the message sender
 	 */
-	public void setObserver(Broadcaster broadCaster) {
+	public void setObserver(Broadcaster bc) {
 		observed = true;
-		this.broadCaster = broadCaster;
+		broadcaster = bc;
 	}
 
 	/**
@@ -241,25 +247,23 @@ public class SortDaemon extends GoodThread {
 					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
 				if (status == EventInputStatus.EVENT) {
 					/* Sort only the sortInterval'th events. */
-					if (eventCount % getSortInterval() == 0) {
+					if (getEventCount() % getSortInterval() == 0) {
 						sortRoutine.sort(eventData);
-						eventSortedCount++;
+						incrementSortedCount();
 					}
-					eventCount++;
+					incrementEventCount();
 					//zero event array and get ready for next event
 					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
 				} //else SCALER_VALUE, assume sort stream took care and move on
 			}
 			//we have reached the end of a buffer
 			if (status == EventInputStatus.END_BUFFER) {
-				bufferCount++;
+				incrementBufferCount();
 				yield();
 			} else if (status == EventInputStatus.END_RUN) {
-				bufferCount++;
+				incrementBufferCount();
 				yield();
 			} else if (status == EventInputStatus.UNKNOWN_WORD) {
-				//throw new SortException("Sorter stopped. Unknown word in
-				// event stream.");
 				msgHandler.warningOutln("Unknown word in event stream.");
 			} else if (status == EventInputStatus.END_FILE) {
 				msgHandler
@@ -308,45 +312,40 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void sortOffline() throws Exception {
 		EventInputStatus status = EventInputStatus.IGNORE;
-
 		boolean atBuffer = false; //are we at a buffer word
-		controller.atSortStart(); //immediately suspends the thread at next
-								  // statement
+		/*
+		 * Next statement causes checkState() to immediately suspend this
+		 * thread.
+		 */
+		controller.atSortStart();
 		while (checkState()) {//checkstate loop
-			controller.atSortStart();//suspends this thread when we're done
-									 // sorting all files
+			/* suspends this thread when we're done sorting all files */
+			controller.atSortStart();
 			resumeOfflineSorting();//after we come out of suspend
-			while (!offlineSortingCanceled() && controller.isSortNext()) {//loop
-																		  // for
-																		  // each
-																		  // new
-																		  // sort
-																		  // file
+			/* Loop for each new sort file. */
+			while (!offlineSortingCanceled() && controller.isSortNext()) {
 				boolean endSort = false;
 				while (!offlineSortingCanceled() && !endSort) {//buffer loop
-					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero
-																				// event
-																				// array
+					/* Zero the event container. */
+					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
+					/* Loop to read & sort one event at a time. */
 					while (!offlineSortingCanceled()
 							&& (((status = eventInputStream
 									.readEvent(eventData)) == EventInputStatus.EVENT)
-									|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {//read&sort
-																														   // event-at-a-time
-																														   // loop
+									|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
 						if (!offlineSortingCanceled()) {
 							if (status == EventInputStatus.EVENT) {
 								sortRoutine.sort(eventData);
-								eventCount++;
-								eventSortedCount++;
+								incrementEventCount();
+								incrementSortedCount();
+								/*
+								 * Zero event array and get ready for next
+								 * event.
+								 */
 								System.arraycopy(eventDataZero, 0, eventData,
-										0, eventSize);//zero event array and
-													  // get ready for next
-													  // event
+										0, eventSize);
 								atBuffer = false;
-								if (eventCount % COUNT_UPDATE == 0) { //exactly
-																	  // divisible
-																	  // by
-																	  // COUNT_UPDATE
+								if (getEventCount() % COUNT_UPDATE == 0) {
 									updateCounters();
 									yield();
 								}
@@ -361,8 +360,7 @@ public class SortDaemon extends GoodThread {
 						 */
 					}//end read&sort event-at-a-time loop
 					/* we get to this point if status was not EVENT */
-					if (status == EventInputStatus.END_BUFFER) {//if we don't
-																// have event
+					if (status == EventInputStatus.END_BUFFER) {
 						if (!atBuffer) {
 							atBuffer = true;
 							bufferCount++;
@@ -408,7 +406,7 @@ public class SortDaemon extends GoodThread {
 	 */
 	private void updateCounters() {
 		if (observed) {
-			broadCaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
+			broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
 		}
 	}
 
@@ -429,6 +427,10 @@ public class SortDaemon extends GoodThread {
 		eventSortedCount = count;
 	}
 
+	private synchronized void incrementSortedCount() {
+		eventSortedCount++;
+	}
+
 	/**
 	 * Sets the number of events processed.
 	 * 
@@ -439,12 +441,16 @@ public class SortDaemon extends GoodThread {
 		eventCount = count;
 	}
 
+	private synchronized void incrementEventCount() {
+		eventCount++;
+	}
+
 	/**
 	 * Returns the number of buffers processed.
 	 * 
 	 * @return the number of buffers processed
 	 */
-	public int getBufferCount() {
+	public synchronized int getBufferCount() {
 		return bufferCount;
 	}
 
@@ -454,23 +460,15 @@ public class SortDaemon extends GoodThread {
 	 * @param count
 	 *            the number of buffers processed
 	 */
-	public void setBufferCount(int count) {
+	public synchronized void setBufferCount(int count) {
 		bufferCount = count;
 	}
 
-	private int sortInterval = 1;
-
-	/**
-	 * Sets the sort sample interval This is the frequeny of buffers sent to the
-	 * sort routine. For example if this is set to 2 only every second buffer is
-	 * sent to the sort routine.
-	 * 
-	 * @param sample
-	 *            the sample interval
-	 */
-	public synchronized void setSortInterval(int sample) {
-		sortInterval = sample;
+	private synchronized void incrementBufferCount() {
+		bufferCount++;
 	}
+
+	private int sortInterval = 1;
 
 	private synchronized void incSortInterval() {
 		sortInterval++;
