@@ -190,7 +190,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * console is used to output log to the user.
 	 *
 	 */
-	public JamMain() {
+	private JamMain() {
 		super("Jam");
 		new SplashWindow(this, 10000);
 		me = this.getContentPane();
