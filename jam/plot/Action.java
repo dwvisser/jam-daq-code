@@ -180,60 +180,70 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 *            channel of mouse click
 	 */
 	public synchronized void plotMousePressed(Bin pChannel, Point pPixel) {
-		/* check that a histogram is defined */
-		final Histogram hist = status.getCurrentHistogram();
-		if (hist == null) {
-			return;
-		}
-		
-		final Plot currentPlot = display.getPlot();
-		
-		/* cursor position and counts for that channel */
+				
+		// cursor position and counts for that channel
 		cursor.setChannel(pChannel);
-		/* there is a command currently being processed */
+		
+		// there is a command currently being processed
 		if (commandPresent) {
 			//Do the command
 			doCommand(inCommand);
-		} else {
-
-			//No command being processed check if gate is being set
-			if (settingGate) {
+			
+       //No command being processed check if gate is being set			
+		} else if (settingGate) {
+				final Plot currentPlot = display.getPlot();
 				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
 						pChannel);
 				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 						pPixel);
-			//Display the channel, default behaviour
-			} else {
-				channelDisplay(cursor, hist, currentPlot);
-			}
+
+		} else {
+			//Do cursor command
+			doCommand(CURSOR);
 		}
 	}
+	
+	void doCommand(String inCommand) {
+		doCommand(inCommand, null);
+	}
+		
 	/**
 	 * Sort the input command and do command.
 	 */
-	synchronized void doCommand(String inCommand) {
+	synchronized void doCommand(String inCommand, double [] parameters) {
 		
-
 		//Not a cursor command so its a "real" command
-		if (!inCommand.equals(CURSOR)) {
+		if (inCommand==null) {
+			inCommand=lastCommand;
+		}else if (!inCommand.equals(CURSOR)) {
 			//cancel previous command if command has changed
 			// and its not a cursor command			
 			if (inCommand != lastCommand) {
 				done();
 			}
 			lastCommand = inCommand;	
-		//Cursor command use last command
+			
+		//Cursor command 
 		} else {
-			inCommand=lastCommand;
+			//use last command if one exists
+			if(lastCommand!=null)
+				inCommand=lastCommand;
 		}
 					
 		//FIXME KBS copy to member field for now		
 		this.inCommand=inCommand;
-
-		/* check that a histogram is defined */
-		if (status.getCurrentHistogram() != null) {
+ 
+		// check that a histogram is defined 
+		if (status.getCurrentHistogram() == null) {
+			return;
+		}
+			
 			if (CANCEL.equals(inCommand)) {
 				cancel();
+			}else if (DISPLAY.equals(inCommand)) {
+				display(parameters);
+			}else if (CURSOR.equals(inCommand)) {
+				channelDisplay();
 			} else if (UPDATE.equals(inCommand)) {
 				update();
 			} else if (EXPAND.equals(inCommand)) {
@@ -268,12 +278,13 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			} else {
 				done();
 				textOut.errorOutln("Plot command not recognized.");
-			}
-		}
+			} 
 	}
 
 
-
+	void setCursor(Bin cursorIn){
+		cursor.setChannel(cursorIn);
+	}
 	/**
 	 * Accepts integer input and does a command if one is present.
 	 * 
@@ -368,11 +379,17 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * @param hist
 	 * @param currentPlot
 	 */
-	private void channelDisplay(Bin cursor, Histogram hist, Plot currentPlot){
+	private void channelDisplay(){
 		/* output counts for the channel */
 		final double count;
 		final String coord;
 		final int xch;
+		
+		/* check that a histogram is defined */
+		final Histogram hist = status.getCurrentHistogram();
+		final Plot currentPlot = display.getPlot();		
+	
+		
 		synchronized (cursor) {
 			xch = cursor.getX();
 			count = cursor.getCounts();
@@ -445,9 +462,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	void display(double[] hist) {
 		if (!commandPresent) {
 			init();
-			textOut
-					.messageOut("Display histogram number: ",
-							MessageHandler.NEW);
+			textOut.messageOut("Display histogram number: ", MessageHandler.NEW);
 		}
 		if (hist.length > 0) {
 			final int num = (int) hist[0];
@@ -544,7 +559,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else {
 			final Plot currentPlot = display.getPlot();
 			final Histogram hist = status.getCurrentHistogram();
-			final double binWidth = parameter[0];
+			final double binWidth = cursor.getX(); //parameter[0];
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {
 				currentPlot.setBinWidth(binWidth);
 				textOut
@@ -966,6 +981,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private synchronized void addClick(Bin c) {
 		clicks.add(Bin.copy(c));
 	}
+
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jam.JamConsole;
 import jam.commands.CommandManager;
+import jam.global.JamStatus;
 import jam.global.CommandListener;
 import jam.global.MessageHandler;
 
@@ -28,6 +29,8 @@ public class ParseCommand implements CommandListener{
 	
 	private final Bin cursor;
 	
+	private JamStatus status = JamStatus.instance();
+	
 	ParseCommand(Action action, JamConsole jc){
 		this.action=action;
 		textOut=jc;
@@ -48,16 +51,8 @@ public class ParseCommand implements CommandListener{
 		 */
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
 			final double[] parameters = convertParameters(cmdParams);
-			if (Action.DISPLAY.equals(inCommand)) {
-				action.display(parameters);
-				accept = true;
-			} else if (Action.OVERLAY.equals(inCommand)) {
-				action.overlay(parameters);
-				accept = true;
-			} else {
-				action.integerChannel(parameters);
-				accept = true;
-			}
+			integerChannel(parameters);
+			action.doCommand(null, parameters);
 			accept = true;
 		} else if (commandMap.containsKey(command)) {
 			inCommand = (String) commandMap.get(command);
@@ -74,7 +69,7 @@ public class ParseCommand implements CommandListener{
 				help();				
 			} else {
 				action.doCommand(inCommand);
-				action.integerChannel(parameters);
+				integerChannel(parameters);
 			}
 		}
 		return accept;
@@ -107,19 +102,37 @@ public class ParseCommand implements CommandListener{
 	 * @param parameters
 	 *            the integers
 	 */
-/*
 	void integerChannel(double[] parameters) {
-		final int numPar = parameters.length;
 
-		 // FIXME we should be better organized so range and rebin are not
-		 //special cases
-		if (parameters.length==1)		
-			cursor.setChannel((int)parameters[0], 0);
-		else if	(parameters.length>1)
-			cursor.setChannel((int)parameters[0], (int)parameters[1]);
+		Display display =status.getDisplay();
+		final Plot currentPlot = display.getPlot();
+				
+		final int numParam = parameters.length;
 		
-		action.doCommand(Action.CURSOR);
+		//Must have at least 1 parameter
+		if (numParam<1)
+			return;
 		
+		// we have a 1 d plot		
+		if (currentPlot.getDimensionality() == 1) {
+			//Only x dimension
+			for (int i=0; i< numParam; i++ ) {
+				cursor.setChannel((int)parameters[i], 0);
+				action.setCursor(cursor);				
+				action.doCommand(Action.CURSOR);
+
+			}
+		}else {
+			//X and y dimensions
+			for (int i=0; i< numParam-1; i++ ) {
+				cursor.setChannel((int)parameters[i], (int)parameters[i+1]);
+				action.setCursor(cursor);				
+				action.doCommand(Action.CURSOR);				
+			}
+		}
+
+		
+		/*
 		if ((commandPresent)) {
 			if (RANGE.equals(inCommand)) {
 				synchronized (cursor) {
@@ -187,8 +200,9 @@ public class ParseCommand implements CommandListener{
 				}
 			}
 		}
+		*/
 	}
-	*/
+
 	/**
 	 * Parse a string go a number
 	 * 

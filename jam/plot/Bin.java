@@ -83,7 +83,7 @@ public final class Bin {
 	
 	synchronized String getCoordString() {
 		final StringBuffer rval = new StringBuffer().append(channel.x);
-		if (display.getPlot().getDimensionality()==1) {
+		if (display.getPlot().getDimensionality()==2) {
 			rval.append(',').append(channel.y);
 		}
 		return rval.toString();
