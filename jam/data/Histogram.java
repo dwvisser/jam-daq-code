@@ -143,6 +143,7 @@ public class Histogram implements Serializable {
 		int prime;
 		Iterator allHistograms;
 
+		StringUtilities su=StringUtilities.instance();
 		this.type = type;
 		this.title = title;
 		this.errors = null;
@@ -150,7 +151,7 @@ public class Histogram implements Serializable {
 		boolean unique = false;
 		errorsSet = false;
 		//give error if name is to be truncated
-		String name2 = name = StringUtilities.makeLength(name, NAME_LENGTH);
+		String name2 = name = su.makeLength(name, NAME_LENGTH);
 		if (name.length() > NAME_LENGTH) {
 			System.err.println(
 				"Histogram name '"
@@ -165,7 +166,7 @@ public class Histogram implements Serializable {
 		while (sortedNameMap.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
-				StringUtilities.makeLength(
+				su.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;
@@ -457,7 +458,7 @@ public class Histogram implements Serializable {
 	 * @param any int type indicates sorted by number
 	 * @return list of all histograms sorted by number
 	 */
-	public static List getSortedList(int any){
+	public static List getListSortedByNumber(){
 		return new ArrayList(sortedNumberMap.values());
 	}
 
@@ -465,7 +466,7 @@ public class Histogram implements Serializable {
 	 * @param any String type indicates sorted by name
 	 * @return list of all histograms sorted by number
 	 */
-	public static List getSortedList(String any){
+	public static List getListSortedByName(){
 		return new ArrayList(sortedNameMap.values());
 	}
 
