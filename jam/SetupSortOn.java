@@ -513,10 +513,10 @@ public final class SetupSortOn {
 				jamConsole
 						.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
 								+ experimentName);
+				/* Kill all existing Daemons and clear data areas */
+				resetAcq(false);
 				loadSorter(); //load sorting routine
 				if (sortRoutine != null) {
-					/* Kill all existing Daemons and clear data areas */
-					resetAcq(false);
 					lockMode(true);
 					setupAcq(); //create daemons
 					jamConsole.messageOutln("Loaded "
@@ -533,7 +533,6 @@ public final class SetupSortOn {
 						setupVMEmap();
 						jamConsole.messageOutln("VME map sent.");
 					}
-					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}
 				if (dispose) {
 					dialog.dispose();
@@ -547,6 +546,8 @@ public final class SetupSortOn {
 			jamConsole.errorOutln(je.getMessage());
 		} catch (Exception e) {
 			jamConsole.errorOutln(e.getMessage());
+		} finally {
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);		    
 		}
 	}
 
