@@ -8,14 +8,12 @@ import jam.data.control.GateAdd;
 import jam.data.control.GateNew;
 import jam.data.control.GateSet;
 import jam.data.control.Manipulations;
-import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
-import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 
 import java.awt.event.ActionEvent;
@@ -25,7 +23,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.AbstractButton;
-import javax.swing.JFrame;
 
 /**
  * This class recieves the commands for many of the pull
@@ -45,24 +42,16 @@ public class JamCommand
 	static final int MESSAGE_SCALER = 1; //alert scaler class
 	private final String classname;
 
-	private final JamMain jamMain;
-	private final JFrame frame;
 	private final Display display;
 	private final JamConsole console;
 
 	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
-	/* classes for reading and writing histograms */
-	private final HDFIO hdfio;
-	private final jam.io.BatchExport batchexport;
-
 	/* control classes */
 	private RunControl runControl;
 	private SortControl sortControl;
 	private DisplayCounters displayCounters;
-	//private final HistogramControl histogramControl;
 	private final GateSet gateControl;
-	private final MonitorControl monitorControl;
 	private final ParameterControl paramControl;
 	private final CalibrationDisplay calibDisplay;
 	private final CalibrationFit calibFit;
@@ -91,57 +80,47 @@ public class JamCommand
 	 * @param d the area where histograms are displayed
 	 * @param jc the text input and output area
 	 */
-	public JamCommand(JamMain jm, Display d, JamConsole jc) {
+	public JamCommand(JamMain jam, Display d, JamConsole jc) {
 		super();
 		classname = getClass().getName() + " - ";
-		this.jamMain = jm;
-		this.frame =(JFrame)jamMain;
-		this.display = d;
-		this.console = jc;
+		display = d;
+		console = jc;
 		status = JamStatus.instance();
 		/* class to hold run information */
 		new RunInfo();
-		/* io classes */
-		hdfio = new HDFIO(jamMain, console);
-		batchexport = new jam.io.BatchExport(jamMain, console);
 		/* communication */
-		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
+		frontEnd = new VMECommunication(console);
 		/* data bases manipulation */
 		gateControl = new GateSet(console);
-		monitorControl = new MonitorControl(console);
-		paramControl = new ParameterControl(jamMain, console);
+		paramControl = new ParameterControl(jam, console);
 		calibDisplay = new CalibrationDisplay(console);
 		calibFit = new CalibrationFit(console);
-		projection = new Projections(jamMain, broadcaster, console);
+		projection = new Projections(console);
 		manipulate = new Manipulations(console);
 		gainshift = new GainShift(console);
 		/* acquisition control */
 		runControl =
 			new RunControl(
-				jamMain,
+				jam,
 				(VMECommunication) frontEnd,
-				hdfio,
 				console);
-		sortControl = new SortControl(jamMain, console);
-		displayCounters = new DisplayCounters(jamMain, broadcaster, console);
+		sortControl = new SortControl(jam, console);
+		displayCounters = new DisplayCounters(console);
 		/* setup classes */
 		setupSortOn =
 			new SetupSortOn( 
-				jamMain,
 				runControl,
 				displayCounters,
-				frontEnd,
-				console,broadcaster);
+				frontEnd, console);
 		setupSortOff =
 			new SetupSortOff(
-				jamMain,
+				jam,
 				sortControl,
 				displayCounters,
-				broadcaster,
 				console);
-		setupRemote = new SetupRemote(jamMain, console);
-		help = new Help(jamMain, console);//Help window
-		peakFindDialog = new PeakFindDialog(jamMain, display, console);
+		setupRemote = new SetupRemote(jam, console);
+		help = new Help(jam, console);//Help window
+		peakFindDialog = new PeakFindDialog(display, console);
 		addObservers();		
 		jamCmdMgr = CommandManager.getInstance();
 		jamCmdMgr.setMessageHandler(console); 
@@ -179,8 +158,6 @@ public class JamCommand
 				display.setPreference(
 					Display.Preferences.WHITE_BACKGROUND,
 					true);
-			} else if ("batchexport".equals(incommand)) {
-				batchexport.show();
 			} else if ("online".equals(incommand)) {
 				setupSortOn.show();
 			} else if ("offline".equals(incommand)) {
@@ -211,10 +188,6 @@ public class JamCommand
 				(new GateAdd(console)).show();
 			} else if ("gateset".equals(incommand)) {
 				gateControl.show();
-			} else if ("displaymonitors".equals(incommand)) {
-				monitorControl.display.show();
-			} else if ("configmonitors".equals(incommand)) {
-				monitorControl.show();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
@@ -305,10 +278,6 @@ public class JamCommand
 			remoteAccess = ra;
 			remote = on;
 		}
-	}
-	
-	HDFIO getHDFIO(){
-		return hdfio;
 	}
 	
 	SetupSortOff getSetupSortOff(){
