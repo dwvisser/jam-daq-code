@@ -12,9 +12,9 @@ public class PolynomialOffsetFunction extends CalibrationFunction {
 	 * the specified order of polynomial in (x-x0).
 	 *
 	 * @param numberTerms number of terms (including the constant term)
-	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
+	 * @throws IllegalArgumentException   thrown if invalid <code>type</code> passed to constructor
 	 */
-	public PolynomialOffsetFunction(int numberTerms) throws DataException {
+	public PolynomialOffsetFunction(int numberTerms) {
 		super(numberTerms);
 		if (numberTerms < MAX_NUMBER_TERMS) {
 			title = "E = a0+a1*(ch-x0)+a2*(ch-x0)^2+ ...";
@@ -25,7 +25,9 @@ public class PolynomialOffsetFunction extends CalibrationFunction {
 				labels[i + 1] = "a(" + i + ")";
 			}
 		} else {
-			throw new DataException("Number of terms greater than MAX_NUMBER_TERMS [PolynomialOffsetFunction]");
+			throw new IllegalArgumentException(
+			"Number of terms greater than MAX_NUMBER_TERMS [PolynomialOffsetFunction]: "+
+			numberTerms);
 		}
 	}
 	
