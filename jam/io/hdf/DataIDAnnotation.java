@@ -16,26 +16,26 @@ import java.util.List;
  * @since       JDK1.1
  * @see		DataIDLabel
  */
-public class DataIDAnnotation extends DataObject {
+final class DataIDAnnotation extends DataObject {
 
 	/**
 	 * Object being annotated.
 	 */
-	DataObject object;
+	private DataObject object;
 
 	/**
 	 * Text of annotation.
 	 */
-	String note;
+	private String note;
 
 	/**
 	 * Annotate an existing <code>DataObject</code> with specified annotation text.
 	 *
 	 * @param obj   item to be annotated
 	 * @param note  text of annotation
-	 * @exception  thrown on unrecoverable error 
+	 * @exception  HDFException thrown on unrecoverable error 
 	 */
-	public DataIDAnnotation(DataObject obj, String note) throws HDFException {
+	DataIDAnnotation(DataObject obj, String note) throws HDFException {
 		super(obj.getFile(), DFTAG_DIA); //sets tag
 		try {
 			this.object = obj;
@@ -48,11 +48,11 @@ public class DataIDAnnotation extends DataObject {
 			dos.writeBytes(note);
 			bytes = baos.toByteArray();
 		} catch (IOException e) {
-			throw new HDFException("Problem creating DIA: " + e.getMessage());
+			throw new HDFException("Problem creating DIA.",e);
 		}
 	}
 
-	public DataIDAnnotation(HDFile hdf, byte[] data, short t, short reference) {
+	DataIDAnnotation(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t,reference);
 	}
 
@@ -61,7 +61,7 @@ public class DataIDAnnotation extends DataObject {
 	 *
 	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
-	public void interpretBytes() throws HDFException {
+	protected void interpretBytes() throws HDFException {
 		short tag;
 		short ref;
 		byte[] temp;
@@ -77,19 +77,27 @@ public class DataIDAnnotation extends DataObject {
 			object = file.getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting DIA: " + e.getMessage());
+				"Problem interpreting DIA.", e);
 		}
 	}
 
-	public String getNote() {
+	String getNote() {
 		return note;
 	}
 
-	public DataObject getObject() {
+	private DataObject getObject() {
 		return object;
 	}
 
-	static public DataIDAnnotation withTagRef(
+	/**
+	 * 
+	 * @param labels list of <code>DataIDAnnotation</code>'s
+	 * @param tag to look for
+	 * @param ref to look for
+	 * @return annotation object that refers to the object witht the given
+	 * tag and ref
+	 */
+	static DataIDAnnotation withTagRef(
 		List labels,
 		int tag,
 		int ref) {

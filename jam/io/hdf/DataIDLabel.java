@@ -17,16 +17,16 @@ import javax.swing.JOptionPane;
  * @author 	Dale Visser
  * @since       JDK1.1
  */
-public class DataIDLabel extends DataObject {
+final class DataIDLabel extends DataObject {
 
 	/**
 	 * Object being labelled.
 	 */
-	DataObject object;
+	private DataObject object;
 
-	String label;
+	private String label;
 
-	public DataIDLabel(DataObject obj, String label) {
+	DataIDLabel(DataObject obj, String label) {
 		super(obj.getFile(), DFTAG_DIL); //sets tag
 		object = obj;
 		this.label = label;
@@ -44,7 +44,7 @@ public class DataIDLabel extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	public DataIDLabel(HDFile hdf, byte[] data, short t, short reference) {
+	DataIDLabel(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
 	}
 
@@ -53,7 +53,7 @@ public class DataIDLabel extends DataObject {
 	 *
 	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
-	public void interpretBytes() throws HDFException {
+	protected void interpretBytes() throws HDFException {
 		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		final DataInputStream dis = new DataInputStream(bais);
 
@@ -66,22 +66,26 @@ public class DataIDLabel extends DataObject {
 			object = file.getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting DIL: " + e.getMessage());
+				"Problem interpreting DIL.",e);
 		}
 	}
 
 	/**
-	 * Returns the text contained.
+	 * @return the text contained.
 	 */
-	public String getLabel() {
+	String getLabel() {
 		return label;
 	}
 
-	public DataObject getObject() {
+	/**
+	 * 
+	 * @return the object referred to
+	 */
+	private DataObject getObject() {
 		return object;
 	}
 
-	static public DataIDLabel withTagRef(List labels, int tag, int ref) {
+	static DataIDLabel withTagRef(List labels, int tag, int ref) {
 		DataIDLabel output=null;
 		DataIDLabel dil;
 		for (Iterator temp = labels.iterator(); temp.hasNext();) {
