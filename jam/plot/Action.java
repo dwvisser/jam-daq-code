@@ -473,6 +473,14 @@ public class Action
 	void update() {
 		currentPlot.update();
 		done();
+		/* following to recover the chooser if user just overlayed
+		 * a histogram
+		 */
+		try{
+			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+		} catch (GlobalException e){
+			textOut.errorOutln("While updating histogram: "+e.getMessage());
+		}
 	}
 
 	/**
