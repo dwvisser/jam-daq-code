@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Jam Project" default="all">
 
-    <property name="build.dir" value="C:\Documents and Settings\Administrator\Desktop\jambuild" />
-    <property name="base.dir" value="C:\Documents and Settings\Administrator\My Documents\Java Development\workspace\Jam Project" />
+    <property name="base.dir" value="." />
+    <property name="build.dir" value="${base.dir}/build" />
     
     <target name="prepare">
         <mkdir dir="${build.dir}" />
