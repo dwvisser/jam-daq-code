@@ -339,7 +339,6 @@ public class RunControl implements Controller, ActionListener {
             diskDaemon.openEventOutputFile(dataFile);
             diskDaemon.writeHeader();
         } else if (device==TAPE) {//saving to tape
-            jamMain.setRewindEnabled(false);
             //FIXME -- tape option doesn't work right now 15-Sep-2002
             //tapeDaemon.openEventOutputFile(dataFile);
             tapeDaemon.writeHeader();
@@ -385,7 +384,6 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.readScalers();		    //read scalers
         bend.setEnabled(false);	    		    //toggle button states
         jamMain.setRunState(JamMain.RUN_OFF,runNumber);
-        jamMain.setRewindEnabled(true);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
         do {//wait for sort to catch up
             try {
