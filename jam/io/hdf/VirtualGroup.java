@@ -156,7 +156,8 @@ final class VirtualGroup extends AbstractHData {
 	/**
 	 * @return a list of all <code>DataObject</code> of the
 	 * given type
-	 * @param tagType the type to return 
+	 * @param groupType the type to return 
+	 * @throws HDFException if type is not unique to one VGroup in the file
 	 */
 	static VirtualGroup ofClass(String groupType) throws HDFException {
 		 VirtualGroup output = null;
@@ -166,7 +167,7 @@ final class VirtualGroup extends AbstractHData {
 			final AbstractHData dataObject=(AbstractHData)iter.next();
 			if (dataObject.getTag()==DFTAG_VG){
 				final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
-				String type = virtualGroup.getType();
+				final String type = virtualGroup.getType();
 				if (groupType.equals(type)){
 					//Should only find one node
 					if (output==null) {
@@ -189,6 +190,7 @@ final class VirtualGroup extends AbstractHData {
      * @param groupName
      *            name of the desired group
      * @return the group with the given name
+     * @throws HDFException if there is more than one VGroup with the name
      */
     static VirtualGroup ofName(String groupName) throws HDFException {
 		 VirtualGroup output = null;
@@ -198,7 +200,7 @@ final class VirtualGroup extends AbstractHData {
 				final AbstractHData dataObject=(AbstractHData)iter.next();
 				if (dataObject.getTag()==DFTAG_VG){
 					final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
-					String type = virtualGroup.getName();
+					final String type = virtualGroup.getName();
 					if (groupName.equals(type)){
 						//Should only find one node
 						if (output==null) {
