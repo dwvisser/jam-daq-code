@@ -11,7 +11,7 @@
     <target name="jar" depends="javadoc">
         <jar jarfile="${build.dir}/Jam.jar"
             basedir="${base.dir}"
-            excludes="*.xml,*.jardesc,*.jar,jam\**\*.java,jam\**\*.html,.classpath,.project"
+            excludes="*.xml,*.jardesc,*.jar,jam\**\*.java,jam\**\*.html,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
         />    
     </target>
 

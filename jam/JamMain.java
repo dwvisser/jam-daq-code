@@ -1012,7 +1012,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		final char beta='\u03b2';
 		final char alpha='\u03b1';
 		final String JAM_VERSION = "1.4";
-		final String VERSION_TYPE = "Release Candidate 2";
+		final String VERSION_TYPE = "Release Candidate 3";
 		String rval=JAM_VERSION;
 		if (VERSION_TYPE.length()>0){
 			rval += " ("+VERSION_TYPE+")";

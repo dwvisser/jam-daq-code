@@ -135,7 +135,6 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	/**
-	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
 	 * @param anItem the item to set the selection to
 	 */
 	public void setSelectedItem(Object anItem) {
