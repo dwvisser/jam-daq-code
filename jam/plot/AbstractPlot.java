@@ -216,7 +216,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			plotHistNumber=hist.getNumber();			
 			copyCounts(hist); //copy hist counts
 			/* Limits contains handle to Models */
-			scrollbars.setLimits();
+			scrollbars.setLimits(plotLimits);
 		} else { //we have a null histogram so fake it
 			hasHistogram=false;
 			counts = new double[100];

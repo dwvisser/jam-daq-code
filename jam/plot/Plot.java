@@ -518,7 +518,6 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
-
 	}
 
 }
