@@ -105,7 +105,7 @@ class Toolbar extends JToolBar implements ActionListener {
 					new JToggleButton(getHTML("<u>O</u>verlay")) : new JToggleButton(iOverlay);
 			boverlay.setToolTipText(
 				getHTML("<u>O</u>verlay a histogram."));
-			boverlay.setActionCommand(Action.OVERLAY);
+			boverlay.setActionCommand(Action.OVERLAY_STATE);
 			boverlay.addActionListener(this);
 			add(boverlay);
 			
@@ -337,7 +337,13 @@ class Toolbar extends JToolBar implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
-		action.doCommand(command,false);
+		if (e.getSource()!=boverlay){
+			action.doCommand(command,false);
+		}else {
+			double state[]=new double [1];
+			state[0]=boverlay.isSelected()?1.0:0.0;
+			action.doCommand(command, state, false);
+		}
 	}
 	/**
 	 * Called by a combo box rebin selection

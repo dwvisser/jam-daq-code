@@ -10,16 +10,24 @@ import jam.global.SortMode;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Enumeration;
 import java.util.Observer;
 
+import javax.swing.border.EmptyBorder;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingConstants;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,6 +50,9 @@ public class SelectionTree extends JPanel implements Observer {
 	DefaultTreeModel treeModel;
 	
 	DefaultMutableTreeNode rootNode;
+	
+	private final JLabel lrunState = new JLabel("   Welcome   ",
+			SwingConstants.CENTER);
 	
 	private final MessageHandler console;
 
@@ -70,6 +81,15 @@ public class SelectionTree extends JPanel implements Observer {
 		setPreferredSize(dim);
 		setLayout(new BorderLayout());
 		
+		//final Box pRunState = new Box(BoxLayout.X_AXIS, );
+		final JPanel pRunState = new JPanel();
+		pRunState.setBorder(new EmptyBorder(10,10,10,10));
+		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		pRunState.add(new JLabel(" Status: "));
+		lrunState.setOpaque(true);
+		pRunState.add(lrunState);
+		 this.add(pRunState, BorderLayout.NORTH);
+
 		//Default blank model
 		treeModel= new DefaultTreeModel(new DefaultMutableTreeNode("No Data") );
 		 	

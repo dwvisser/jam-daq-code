@@ -30,7 +30,7 @@ import javax.swing.JPanel;
  * @version 0.5 April 98
  * @author Ken Swartz
  * @see java.awt.Graphics
- * @since JDK1.1
+ * @since JDK1.1 
  */
 public final class Display extends JPanel implements  PlotSelectListener,
 														PreferenceChangeListener,
@@ -63,6 +63,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	private boolean isScrolling;
 	/** show axis lables */
 	private boolean isAxisLabels;
+	/** Overlay histograms */
+	private boolean isOverlay;
 
 	/** Tool bar with plot controls (zoom...) */
 	private final Toolbar toolbar;
@@ -90,6 +92,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		createGridPanel();
 		toolbar = new Toolbar(this, action);		
 		initPrefs();
+		isOverlay=false;
 		/* Initial view only 1 plot */
 		setView(View.SINGLE);
 	}
@@ -201,20 +204,23 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	/**
 	 * Display a histogram.
 	 */
-	public void displayHistogram() {
-		final Histogram hist = status.getCurrentHistogram();
+	public void displayHistogram(Histogram hist) {
 		if (hist != null) {
-			final Limits lim = Limits.getLimits(hist);
-			currentPlot.removeAllPlotMouseListeners();
-			currentPlot.addPlotMouseListener(action);
-			currentPlot.setMarkArea(false);
-			currentPlot.setMarkingChannels(false);
-			currentPlot.displayHistogram(hist);			 
-			toolbar.setHistogramProperties(hist.getDimensionality(), currentPlot.getBinWidth());
-			
+			if (!isOverlay){
+				final Limits lim = Limits.getLimits(hist);
+				currentPlot.removeAllPlotMouseListeners();
+				currentPlot.addPlotMouseListener(action);
+				currentPlot.setMarkArea(false);
+				currentPlot.setMarkingChannels(false);
+				currentPlot.displayHistogram(hist);			 
+				toolbar.setHistogramProperties(hist.getDimensionality(), currentPlot.getBinWidth());
+			}else{
+				overlayHistogram(hist);
+			}
+				
 		}
 		/* Add to view */
-		//currentPlot.repaint();
+		currentPlot.repaint();
 		currentView.setHistogram(getPlot().getNumber(), hist);
 
 	}
@@ -243,12 +249,21 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 		currentPlot.overlayHistograms(num);		
 	}
-	
+	public void overlayHistogram(Histogram hist){
+		int num=hist.getNumber();
+		overlayHistogram(num);
+		
+	}
 	/**
 	 * Remove all overlays.
 	 */
 	public void removeOverlays() {
 		currentPlot.removeOverlays();
+	}
+	public void setOverlay(boolean overlayState){
+		isOverlay=overlayState;
+		if (isOverlay==false)
+			currentPlot.removeOverlays();
 	}
 	
 	/**
@@ -297,9 +312,11 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.REFRESH) {
-			displayHistogram();
+			final Histogram hist = status.getCurrentHistogram();
+			displayHistogram(hist);
 		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
-			displayHistogram();
+			final Histogram hist = status.getCurrentHistogram();			
+			displayHistogram(hist); 
 			removeOverlays();
 		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
@@ -327,7 +344,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		currentPlot.setWidth(width);
 		currentPlot.setSensitivity(sensitivity);
 		currentPlot.setPeakFindDisplayCal(cal);
-		displayHistogram();
+		//displayHistogram(); 
 	}
 
 	public void displayFit(double[][] signals, double[] background,

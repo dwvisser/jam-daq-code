@@ -75,6 +75,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	static final String OVERLAY = "overlay";
 
+	static final String OVERLAY_STATE = "overlaystate";
+	
 	static final String CANCEL = "cancel";
 
 	static final String RANGE = "range";
@@ -244,7 +246,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
 		} else if (OVERLAY.equals(currentCommand)) {
-			overlay(parameters);
+			overlay(parameters);			
+		} else if (OVERLAY_STATE.equals(currentCommand)) {			
+			overlayEnable(parameters);
 		} else if (CURSOR.equals(currentCommand)) {
 			channelDisplay();
 		} else if (UPDATE.equals(currentCommand)) {
@@ -408,7 +412,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			}
 		}
 	}
-
+	/**
+	 * Overlay a histogram
+	 * @param hist
+	 */
 	void overlay(double[] hist) {
 		if (!commandPresent) {
 			isCursorCommand = false;
@@ -441,6 +448,24 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (areHists) {
 			done();
 		}
+	}
+	/**
+	 * 
+	 * @param hist
+	 */
+	void overlayEnable(double[] enable) {
+		init();
+		textOut.messageOut("Overlay histogram numbers: ",
+				MessageHandler.NEW);
+		if (enable[0]<1.0)
+			overlayState=false;
+		else
+			overlayState=true;
+		
+		display.setOverlay(overlayState);
+		
+		done();
+
 	}
 	/**
 	 * Display a gate

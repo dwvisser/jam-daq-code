@@ -224,7 +224,11 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 			currentSubPlot.overlayHistograms(overlays);
 		}
 	}
-
+	
+	void overlayHistogram(Histogram hist){
+		int num =hist.getNumber();
+		overlayHistograms(num);
+	}
 	/**
 	 * Clear overlays.
 	 */

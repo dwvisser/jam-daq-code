@@ -224,7 +224,7 @@ public class HistApplet
 			if ((ie.getItem() != null)) {
 				hist = Histogram.getHistogram((String) ie.getItem());
 				if (hist != null) {
-					display.displayHistogram();
+					display.displayHistogram(hist);
 					setGateList(hist.getGates());
 				} else {
 					//error no such histogram
@@ -331,7 +331,7 @@ public class HistApplet
 		final Histogram firstHist = histogramList.isEmpty() ? null : 
 		(Histogram)histogramList.get(0);
 			if (firstHist != null) {
-				display.displayHistogram();
+				display.displayHistogram(firstHist);
 				setGateList(firstHist.getGates());
 			} 
 		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
