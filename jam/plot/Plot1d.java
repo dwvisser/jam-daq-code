@@ -109,6 +109,7 @@ class Plot1d extends AbstractPlot {
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
 				pointsGate.addPoint(pChannel.getX(), pChannel.getY());
+				setLastMovePoint(pPixel);
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
 				removeMouseListener(mouseInputAdapter);

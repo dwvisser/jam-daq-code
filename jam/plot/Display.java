@@ -188,46 +188,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 	
 	/**
-	 * Set the view, tiled layout of plots
-	 * 
-	 * @param nPlotrows	number of rows
-	 * @param nPlotcolumns
-	 */
-	/*FIXME KBS to be removed
-	public void setView(int nPlotRows, int nPlotColumns){
-		
-		Plot plot=null;
-		int numberPlots;
-		int plotLayout;
-		int i;
-
-		plotGridPanelLayout.setRows(nPlotRows);
-		plotGridPanelLayout.setColumns(nPlotColumns);
-		plotGridPanel.setLayout(plotGridPanelLayout);		
-		plotGridPanel.revalidate();
-
-		numberPlots=nPlotRows*nPlotColumns;
-		createPlots(numberPlots);
-
-		//Type of layout
-		if (numberPlots>1)
-			plotLayout=Plot.LAYOUT_TYPE_TILED;
-		else
-			plotLayout=Plot.LAYOUT_TYPE_FULL;
-
-		
-		plotGridPanel.removeAll();
-		for (i=0;i<numberPlots;i++){
-			plot =(Plot)(plotList.get(i));
-			plotGridPanel.add(plot);
-			
-			plot.setLayoutType(plotLayout);
-			
-		}
-		setPlot(plot);			
-	}
-	*/
-	/**
 	 * Create some plots.
 	 * 
 	 * @param numberPlots the number of plots to create
@@ -288,13 +248,15 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void plotSelected(Object selectedObject){
 		Plot selectedPlot =(Plot)selectedObject;
-		setPlot(selectedPlot);
-		Histogram hist =selectedPlot.getHistogram();
+		if (selectedPlot!=getPlot()) {
+			setPlot(selectedPlot);
+			Histogram hist =selectedPlot.getHistogram();
 		
-		//Tell the frame work the current histogram ifits different
-		if (hist!=status.getCurrentHistogram() &&hist!=null) {
-			JamStatus.instance().setCurrentHistogramName(hist.getName());		
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+			//Tell the framework the current hist
+			if (hist!=null) {
+				JamStatus.instance().setCurrentHistogramName(hist.getName());		
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+			}
 		}
 	}
 	/**
@@ -373,6 +335,12 @@ public final class Display extends JPanel implements  PlotSelectListener,
 				/* Change plot mouse listener source */
 				if (currentPlot!=null ) {
 					currentPlot.reset();
+					/// Cancel all previous stuff.
+					currentPlot.setSelectingArea(false);
+					currentPlot.setMarkArea(false);
+					currentPlot.setMarkingChannels(false);					
+					currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+					
 					currentPlot.removeAllPlotMouseListeners();
 				}
 				if (p.HasHistogram())
@@ -381,6 +349,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 				for (i=0;i<plotList.size();i++) {
 					((Plot)plotList.get(i)).select(false);
 				}
+				action.setDefiningGate(false);
+				
 				p.select(true);
 				/* Cancel all current actions */
 				action.plotChanged();
@@ -424,6 +394,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param hist
 	 *            the histogram to display
 	 */
+	//FIXME KBS merge functionallity with setPlot
 	private void showPlot(Histogram hist) {
 				
 		Plot plot = getPlot();
