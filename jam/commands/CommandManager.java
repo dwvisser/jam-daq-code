@@ -40,6 +40,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		/* File Menu */
 		CMD_MAP.put(OPEN_HDF, OpenHDFCmd.class);
 		CMD_MAP.put(OPEN_ADDITIONAL_HDF, OpenAdditionalHDF.class);
+		CMD_MAP.put(OPEN_MULTIPLE_HDF, OpenMultipleHDFCmd.class);
+		
 		CMD_MAP.put(SAVE_HDF, SaveHDFCmd.class);
 		CMD_MAP.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
 		CMD_MAP.put(SAVE_GATES, SaveGatesCmd.class);

@@ -92,8 +92,10 @@ public final class MenuBar implements Observer, CommandNames {
 		
 		final JMenuItem openSpecial = new JMenu("Open Special");
 		file.add(openSpecial);
+		openSpecial.add(getMenuItem(OPEN_MULTIPLE_HDF));		
 		openSpecial.add(getMenuItem(OPEN_ADDITIONAL_HDF));
 		openSpecial.add(getMenuItem(OPEN_SELECTED));
+		
 
 		file.add(getMenuItem(RELOAD_HDF));
 		file.add(getMenuItem(ADD_HDF));
