@@ -35,6 +35,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.Border;
 
 /**
  * Class to set 1 D and 2 D gates.
@@ -101,15 +105,21 @@ WindowListener,Observer  {
         this.messageHandler=mh;
         display=d;
         status = JamStatus.instance();
+
+        //>>Gate setting dialog
         dgate=new JDialog(frame,"Gate setting <none>",false);
         dgate.setResizable(false);
         final Container contents=dgate.getContentPane();
         contents.setLayout(new BorderLayout());
         dgate.setLocation(20,50);
+
         //panel with chooser
         JPanel pc =new JPanel();
-        pc.setLayout(new GridLayout(1,0));
+        pc.setLayout(new FlowLayout(FlowLayout.CENTER,20,20));
         cgate=new JComboBox(new GateComboBoxModel());
+		Dimension dimset = cgate.getPreferredSize();
+		dimset.width=200;
+		cgate.setPreferredSize(dimset);
         cgate.setRenderer(new GateListCellRenderer());
         cgate.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent ae){
@@ -120,7 +130,8 @@ WindowListener,Observer  {
         	}
         });
         pc.add(cgate);
-        /* panel with data fields */
+
+        // panel with data fields
         final JPanel pf =new JPanel();
         pf.setLayout(new GridLayout(2,1));
         final JPanel p1= new JPanel(new FlowLayout());
@@ -134,9 +145,13 @@ WindowListener,Observer  {
         textUpper=new JTextField("",4);
         p2.add(textUpper);
         pf.add(p1); pf.add(p2);
-        /* panel with buttons */
+
+        // panel with buttons add remove buttons
         final JPanel pedit =new JPanel();
-        pedit.setLayout(new GridLayout(0,1));
+        pedit.setLayout(new GridLayout(3,1,5,5));
+        Border border = new EmptyBorder(0,0,10,30);
+        pedit.setBorder(border);
+
         addP = new JButton("Add");
         addP.setActionCommand("add");
         addP.addActionListener(this);
@@ -152,9 +167,12 @@ WindowListener,Observer  {
         unset.addActionListener(this);
         unset.setEnabled(false);
         pedit.add(unset);
-        /* panel with buttons */
+
+        // panel with OK, Cancel buttons
+        final JPanel pokcancel =new JPanel(new FlowLayout(FlowLayout.CENTER));
         final Panel pb =new Panel();
-        pb.setLayout(new GridLayout(1,0));
+        pb.setLayout(new GridLayout(1,0,5,5));
+        pokcancel.add(pb);
         save = new JButton("Save");
         save.setActionCommand("save");
         save.addActionListener(this);
@@ -165,14 +183,16 @@ WindowListener,Observer  {
         cancel.addActionListener(this);
         cancel.setEnabled(false);
         pb.add(cancel);
+
         contents.add(pc,BorderLayout.NORTH);
         contents.add(pf,BorderLayout.CENTER);
         contents.add(pedit,BorderLayout.EAST);
-        contents.add(pb,BorderLayout.SOUTH);
+        contents.add(pokcancel,BorderLayout.SOUTH);
+
         dgate.addWindowListener(this);
         dgate.pack();
 
-        /* new gate dialog box */
+        //>>new gate dialog box
         dnew=new JDialog(frame,"New Gate",false);
         final Container cdnew=dnew.getContentPane();
         dnew.setResizable(false);
@@ -181,8 +201,7 @@ WindowListener,Observer  {
 
         /* panel with chooser */
         final JPanel ptnew =new JPanel();
-        //ptnew.setLayout(new GridLayout(1,1,5,5));
-        ptnew.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
+        ptnew.setLayout(new FlowLayout(FlowLayout.LEFT,20,20));
         cdnew.add(ptnew,BorderLayout.CENTER);
         ptnew.add(new JLabel("Name"));
         textNew=new JTextField("",20);
@@ -213,7 +232,7 @@ WindowListener,Observer  {
         pbnew.add(bcancel);
         dnew.pack();
 
-        //add gate dialog box
+        //>>Add gate dialog box
         dadd=new JDialog(frame,"Add Gate",false);
         final Container cdadd=dadd.getContentPane();
         dadd.setResizable(false);
@@ -221,8 +240,7 @@ WindowListener,Observer  {
 
         //panel with chooser
         final JPanel ptadd =new JPanel();
-        //ptadd.setLayout(new GridLayout(1,0));
-        ptadd.setLayout(new FlowLayout(FlowLayout.CENTER));
+        ptadd.setLayout(new FlowLayout(FlowLayout.CENTER,20,20));
         cdadd.add(ptadd,BorderLayout.CENTER);
 
         cadd=new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
@@ -235,6 +253,9 @@ WindowListener,Observer  {
 				}
 			}
 		});
+		Dimension dimadd = cadd.getPreferredSize();
+		dimadd.width=200;
+		cadd.setPreferredSize(dimadd);
         ptadd.add(cadd);
 
         // panel for buttons
