@@ -40,6 +40,8 @@ public class Manipulations extends AbstractControl implements WindowListener,
 
 	private static final String NEW_HIST = "NEW: ";
 	
+	private final String HIST_WILD_CARD="/.";	
+	
 	private final MessageHandler messageHandler;
 
 	private JComboBox cfrom1, cfrom2, cto;
@@ -194,6 +196,10 @@ public class Manipulations extends AbstractControl implements WindowListener,
                     public void apply() {
                         try {
                             manipulate();
+                            /*FIXME KBS
+                    		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
+                    				+ " to " + hto.getFullName() + " " + typeProj);
+                            */
                             BROADCASTER
                                     .broadcast(BroadcastEvent.Command.REFRESH);
                             STATUS.setCurrentHistogram(hto);
@@ -269,13 +275,13 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		comboBox.removeAllItems();
 		//Add working group new
 		if(addNew) {
-			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+"/.");
+			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
 			//Add new histograms
 			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
 				Group group = (Group)iter.next();
 				if (group.getType() != Group.Type.SORT &&
 					!Group.WORKING_NAME.equals(group.getName())) {
-					comboBox.addItem(NEW_HIST+group.getName()+"/.");
+					comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
 				}
 			}
 		}
@@ -307,9 +313,6 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		}		
 	}
 	
-	private boolean isNewHistogram(String name){
-		return name.startsWith(NEW_HIST);
-	}
 
 	/* non-javadoc:
 	 * Does the work of manipulating histograms
@@ -355,18 +358,10 @@ public class Manipulations extends AbstractControl implements WindowListener,
 
 		//read in information for to histogram
 		String name = (String) cto.getSelectedItem();
-		
 		if (isNewHistogram(name)) {
-			name = ttextto.getText().trim();
-			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom1
-					.getSizeX(), name);*/
-			Group.createGroup("Working", Group.Type.FILE);
-			hto = (AbstractHist1D)Histogram.createHistogram(
-					new double[hfrom1.getSizeX()],name);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-			messageHandler
-					.messageOutln("New histogram of type double created, name: '"
-							+ name + "'");
+			String histName = ttextto.getText().trim();
+			createNewHistogram(name, histName, hfrom1.getSizeX());
+			
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
@@ -440,6 +435,34 @@ public class Manipulations extends AbstractControl implements WindowListener,
 		return out;
 	}
 
+	private boolean isNewHistogram(String name){
+		return name.startsWith(NEW_HIST);
+	}
+	
+	private String parseGroupName(String name){
+		
+		StringBuffer sb = new StringBuffer(name);
+		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
+		return groupName;
+
+	}
+	
+	private void createNewHistogram(String name, String histName, int size) {
+
+		
+			String groupName = parseGroupName(name);
+			if (groupName.equals(Group.WORKING_NAME))
+			{
+				Group.createGroup(groupName, Group.Type.FILE);
+			}
+			hto = (AbstractHist1D)Histogram.createHistogram(
+					new double[size],histName);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			messageHandler
+					.messageOutln("New Histogram of type double created: '" + groupName+"/"+histName + "'");
+
+		}
+	
 	/**
 	 * Process window events If the window is active check that the histogram
 	 * been displayed has not changed. If it has cancel the gate setting.

@@ -253,13 +253,13 @@ public class Projections extends AbstractControl implements Observer {
 	private void setupToHist() {
 		cto.removeAllItems();
 		/* Add working group new */
-		cto.addItem(NEW_HIST+Group.WORKING_NAME+"/.");
+		cto.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
 		//Add new histograms
 		for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
 			Group group = (Group)iter.next();
 			if (group.getType() != Group.Type.SORT &&
 				!Group.WORKING_NAME.equals(group.getName())	) {
-				cto.addItem(NEW_HIST+group.getName()+"/.");
+				cto.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
 			}
 		}
 		/* Add Existing hisograms */
@@ -359,27 +359,12 @@ public class Projections extends AbstractControl implements Observer {
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
-			/*if (cdown.isSelected()) {//project down
-				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
-						.getSizeX(), name);
-			} else {//project across
-				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
-						.getSizeY(), name);
-			}*/
-
-			String groupName = parseGroupName(name);
-			if (groupName.equals(Group.WORKING_NAME))
-			{
-				Group.createGroup(groupName, Group.Type.FILE);
-			}
-			hto = Histogram.createHistogram(new double[size],histName);
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-			messageHandler
-					.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
+			createNewHistogram(name, histName, size);
 		} else {
 			hto = Histogram.getHistogram(name);
 
 		}
+		
 		final String typeProj;
 		if (cdown.isSelected()) {
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
@@ -502,6 +487,20 @@ public class Projections extends AbstractControl implements Observer {
 		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
 		return groupName;
 
+	}
+	
+	private void createNewHistogram(String name, String histName, int size) {
+
+	
+		String groupName = parseGroupName(name);
+		if (groupName.equals(Group.WORKING_NAME))
+		{
+			Group.createGroup(groupName, Group.Type.FILE);
+		}
+		hto = Histogram.createHistogram(new double[size],histName);
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		messageHandler
+				.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 	}
 	
 }
