@@ -130,10 +130,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private final Display display;
 
 	/** Jam status to get current histogram */
-	private static final JamStatus status = JamStatus.instance();
+	private static final JamStatus STATUS = JamStatus.instance();
 
 	/** Broadcaster for event and gate change */
-	private Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -159,7 +159,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		PlotPrefs.prefs.addPreferenceChangeListener(this);
+		PlotPrefs.PREFS.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else if (settingGate) {
 			/* No command being processed check if gate is being set */
 			final Plot currentPlot = display.getPlot();
-			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
 					pChannel);
 			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 					pPixel);
@@ -231,7 +231,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			}
 		}
 		/* check that a histogram is defined */
-		if (status.getCurrentHistogram() != null) {
+		if (STATUS.getCurrentHistogram() != null) {
 			doCurrentCommand(inParams == null ? new double[0] : inParams, console);
 		}
 	}
@@ -308,7 +308,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final int xch;
 
 		/* check that a histogram is defined */
-		final Histogram hist = status.getCurrentHistogram();
+		final Histogram hist = STATUS.getCurrentHistogram();
 		final Plot currentPlot = display.getPlot();
 
 		synchronized (cursor) {
@@ -340,14 +340,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void update() {
 		isCursorCommand = false;
-		broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
+		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		display.update();
 
 		done();
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
 		 */
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 	}
 
 	/**
@@ -371,8 +371,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				display.removeOverlays();
-				broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
-				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+				BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
+				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						h);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
@@ -468,7 +468,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
 		final Plot currentPlot = display.getPlot();
-		final Histogram hist = status.getCurrentHistogram();
+		final Histogram hist = STATUS.getCurrentHistogram();
 		if (parameters.length > 0) {
 			final double binWidth = parameters[0];
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {
@@ -644,7 +644,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final String intro = "Goto (click on spectrum or type the ";
 		final char lp = ')';
 		final Plot currentPlot = display.getPlot();
-		final Histogram hist = status.getCurrentHistogram();
+		final Histogram hist = STATUS.getCurrentHistogram();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -710,7 +710,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			final String name = status.getHistName().trim();
+			final String name = STATUS.getHistName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
@@ -758,7 +758,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void netArea() {
 		final Plot currentPlot = display.getPlot();
-		final Histogram hist = status.getCurrentHistogram();
+		final Histogram hist = STATUS.getCurrentHistogram();
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
 		final double[] fwhm = new double[2];

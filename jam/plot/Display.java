@@ -85,7 +85,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		Bin.Factory.init(this);
 		/* display event handler */
 		action = new Action(this, jc); 
-		prefs.addPreferenceChangeListener(this);
+		PREFS.addPreferenceChangeListener(this);
 		plotList=new ArrayList();		
 		createGridPanel();
 		toolbar = new Toolbar(this, action);		
@@ -95,9 +95,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 	
 	private final void initPrefs() {
-		prefs.addPreferenceChangeListener(this);
-		isScrolling=prefs.getBoolean(ENABLE_SCROLLING, true);
-		isAxisLabels=prefs.getBoolean(DISPLAY_AXIS_LABELS, true);
+		PREFS.addPreferenceChangeListener(this);
+		isScrolling=PREFS.getBoolean(ENABLE_SCROLLING, true);
+		isAxisLabels=PREFS.getBoolean(DISPLAY_AXIS_LABELS, true);
 	}
 		
 	/**
@@ -351,7 +351,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 					currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 					currentPlot.removeAllPlotMouseListeners();
 				}
-				if (p.HasHistogram())
+				if (p.hasHistogram())
 					p.addPlotMouseListener(action);
 				/* Change selected plot */
 				for (i=0;i<plotList.size();i++) {

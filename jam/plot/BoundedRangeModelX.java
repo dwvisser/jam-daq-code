@@ -19,7 +19,7 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 
 	private Plot plot;
 	
-	private static final JamStatus status=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 
 	BoundedRangeModelX(Plot p) {
 		super();
@@ -28,7 +28,7 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 
 	void setFields(Plot p) {
 		plot = p;
-		final Histogram hist = status.getCurrentHistogram();
+		final Histogram hist = STATUS.getCurrentHistogram();
 		if (hist != null) {
 			lim = Limits.getLimits(hist);
 		}
