@@ -227,7 +227,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		g = (Graphics2D) graph;
 		g.setRenderingHints(RH);
 		if (fm==null){
-			this.setFont(font);
+			setFont(font);
 		}
 	}
 
