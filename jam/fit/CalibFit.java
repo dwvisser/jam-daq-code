@@ -2,7 +2,6 @@
  *
  */
 package jam.fit; 
-import java.util.Vector;
 
 /**
  * Makes a linear fit to a number of points
