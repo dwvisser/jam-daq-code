@@ -495,10 +495,10 @@ public class Display
 		Icon iRange = loadToolbarIcon("jam/plot/Range.png");
 		Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
 
-		Icon iExpand = loadToolbarIcon("toolbarButtonGraphics/general/Zoom24.gif");
+		Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
 		Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
-		Icon iZoomIn =loadToolbarIcon("toolbarButtonGraphics/general/ZoomIn24.gif");
-		Icon iZoomOut = loadToolbarIcon("toolbarButtonGraphics/general/ZoomOut24.gif");
+		Icon iZoomIn =loadToolbarIcon("jam/plot/ZoomIn.png");
+		Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
 		Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 
 		Icon iArea = loadToolbarIcon("jam/plot/Area.png");
