@@ -1,5 +1,3 @@
-/*
-*/
 package jam.fit;
 import jam.*;
 import jam.global.MessageHandler;
@@ -63,15 +61,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		pf.add(lf);
 		chooseFit = new JComboBox(this.getFitClassNames());
 		pf.add(chooseFit);
-		/*textFitFile = new JTextField(DEFAULT_FIT);
-		textFitFile.setColumns(25);
-		textFitFile.setBackground(Color.white);
-		textFitFile.setForeground(Color.black);
-		pf.add(textFitFile);*/
-		/*JButton bbrowsef = new JButton("Browse");
-		bbrowsef.setActionCommand("browsefit");
-		bbrowsef.addActionListener(this);
-		pf.add(bbrowsef);*/
 		// panel for buttons 				
 		JPanel pb = new JPanel();
 		pb.setLayout(new GridLayout(1,0));
@@ -119,7 +108,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		String fitName;
 		try {
 			if (command == "ok" || command == "apply") {
-				//fitName = textFitFile.getText().trim();
 				fitName = (String)chooseFit.getSelectedItem();
 				makeFit(fitName);
 				if (command == "ok") {
@@ -127,9 +115,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 				}
 			} else if (command == "cancel") {
 				dl.dispose();
-			/*} else if (command == "browsefit") {
-				fitName = getFitFile();
-				textFitFile.setText(fitDirectory + fitName);*/
 			} else {
 				showFitDialog(command);
 			}
@@ -172,14 +157,11 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * Load a fit routine.
 	 */
 	private void makeFit(String fitName) throws JamException {
-
 		int indexPeriod;
 
 		try {
 			// create fit class
-
 			fitClass = (Fit) Class.forName(fitName).newInstance();
-
 		} catch (ClassNotFoundException ce) {
 			fitClass = null;
 			throw new JamException(" Fit Class not found : " + fitName);
@@ -208,7 +190,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	
 	private Vector getFitClassNames() {
 		Class temp=null;
-
 		Set set = jam.global.RTSI.find("jam.fit", Fit.class);
 		set.remove(Fit.class);
 		for (Iterator it=set.iterator(); it.hasNext(); ){
@@ -225,5 +206,4 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		}
 		return rval;
 	}
-
 }
