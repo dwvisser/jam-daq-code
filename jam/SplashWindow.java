@@ -2,25 +2,44 @@ package jam;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.*;
 
 import javax.swing.*;
 
 /**
  * Generates the "splash" window that displays while Jam
- * is launching.  The window disappears after a specified 
+ * is launching.  The window disappears after a specified
  * timeout period or when the user clicks on it.
  */
 class SplashWindow extends JWindow {
-	
+
+	private URL urlNukeIcon;
+	private URL urlOSIGif;
 	/**
 	 * Creates the splash window which will exist for as long
 	 * as the specified wait time in milliseconds.
-	 * 
+	 *
 	 * @param f parent frame
 	 * @param waitTime time in milliseconds after which the window disappears
 	 */
 	public SplashWindow(Frame f, int waitTime) {
 		super(f);
+
+		//load resources
+		ClassLoader cl = this.getClass().getClassLoader();
+		urlNukeIcon= cl.getResource("jam/nukeicon.png");
+		if (urlNukeIcon==null) {
+			JOptionPane.showMessageDialog(f, "Can't load resource: jam/nukeicon.png");
+			System.exit(0);
+		}
+
+		urlOSIGif = cl.getResource("jam/OSI.gif");
+		if (urlOSIGif==null) {
+			JOptionPane.showMessageDialog(f, "Can't load resource: jam/OSI.gif");
+			System.exit(0);
+		}
+
+
 		drawWindow();
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -53,13 +72,13 @@ class SplashWindow extends JWindow {
 	}
 
 	private void drawWindow() {
-		ClassLoader cl = this.getClass().getClassLoader();
+
 		Container cp = getContentPane();
 		JPanel west = new JPanel(new FlowLayout());
 		west.setBackground(Color.white);
 		west.setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.black));
-		ImageIcon nukeicon=new 
-		ImageIcon(cl.getResource("jam/nukeicon.png"));
+
+		ImageIcon nukeicon=new ImageIcon(urlNukeIcon);
 		final int sizexy=80;
 		nukeicon.setImage(nukeicon.getImage().getScaledInstance(
 		sizexy,sizexy,Image.SCALE_SMOOTH));
@@ -71,13 +90,13 @@ class SplashWindow extends JWindow {
 				"Jam: Data Acquisition for Nuclear Physics"));
 		center.add(new JLabel("\u00a9 2002 Yale University"));
 		center.add(new JLabel("University of Illinois/NCSA Open Source License"));
-		
+
 		center.add(new JLabel("See Help|License... for license text."));
 		JPanel east=new JPanel(new FlowLayout());
 		east.setBackground(Color.white);
 		east.setBorder(BorderFactory.createMatteBorder(1,0,0,1,Color.black));
 		JLabel osi = new JLabel(
-		new ImageIcon(cl.getResource("jam/OSI.gif")));
+		new ImageIcon(urlOSIGif));
 		osi.setToolTipText("Open Source Initiative. See http://www.opensource.org/");
 		east.add(osi);
 		JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
