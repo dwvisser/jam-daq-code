@@ -54,7 +54,7 @@ public abstract class Fit
 	 *
 	 * @see Parameter
 	 */
-	protected Vector parameters = new Vector();
+	protected java.util.List parameters = new Vector();
 
 	/**
 	 * The list of <code>Parameter</code> objects accessible by name.
@@ -66,7 +66,7 @@ public abstract class Fit
 	/**
 	 * <code>Enumeration</code> of parameters
 	 */
-	protected Enumeration parameterEnum;
+	protected Iterator parameterEnum;
 
 	/**
 	 * The histogram to be fitted.
@@ -331,7 +331,7 @@ public abstract class Fit
 
 		for (int i = 0; i < parameters.size(); i++) {
 
-			parameter = (Parameter) parameters.elementAt(i);
+			parameter = (Parameter) parameters.get(i);
 			parName = parameter.getName();
 			if (parameter.type == Parameter.DOUBLE) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
@@ -484,12 +484,9 @@ public abstract class Fit
 	 * @param	ie  item which changed
 	 */
 	public void itemStateChanged(ItemEvent ie) {
-		int i;
-		Parameter par;
-
 		try {
-			for (i = 0; i < parameters.size(); i++) {
-				par = (Parameter) (parameters.elementAt(i));
+			for (int i = 0; i < parameters.size(); i++) {
+				Parameter par = (Parameter) (parameters.get(i));
 
 				if ((par.options & Parameter.FIX) != 0) {
 					if (ie.getItemSelectable() == cFixValue[i]) {
@@ -520,11 +517,8 @@ public abstract class Fit
 	 *
 	 */
 	public void plotMousePressed(Point p, Point pPixel) {
-
-		Parameter parameter;
-
-		while (parameterEnum.hasMoreElements()) {
-			parameter = (Parameter) parameterEnum.nextElement();
+		while (parameterEnum.hasNext()) {
+			Parameter parameter = (Parameter) parameterEnum.next();
 			mouseClickCount++;
 			if (parameter.mouseOption && (!parameter.isFix())) {
 				textData[mouseClickCount - 1].setBackground(Color.white);
@@ -532,23 +526,18 @@ public abstract class Fit
 				break;
 			}
 		}
-
-		if (!parameterEnum.hasMoreElements()) {
+		if (!parameterEnum.hasNext()) {
 			setMouseActive(false);
 		}
-
 	}
 
 	/**
 	 * Set the state to enter values using mouse
 	 */
 	private void setInit() {
-		Parameter parameter;
-
 		mouseClickCount = 0;
-
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.elementAt(i);
+			Parameter parameter = (Parameter) parameters.get(i);
 			if (parameter.isNumberField()) {
 				if (parameter.mouseOption && (!parameter.isFix())) {
 					textData[i].setBackground(Color.red);
@@ -575,7 +564,7 @@ public abstract class Fit
 				}
 			}
 		}
-		parameterEnum = parameters.elements();
+		parameterEnum = parameters.iterator();
 	}
 
 	/**
@@ -586,38 +575,37 @@ public abstract class Fit
 		Parameter parameter = null;
 		try {
 			for (int i = 0; i < parameters.size(); i++) {
-				parameter = (Parameter) parameters.elementAt(i);
+				parameter = (Parameter) parameters.get(i);
 				if (parameter.type == Parameter.DOUBLE) {
-					((Parameter) (parameters.elementAt(i))).setValue(
+					((Parameter) (parameters.get(i))).setValue(
 						Double
 							.valueOf(textData[i].getText().trim())
 							.doubleValue());
 					if (parameter.errorOption) {
-						((Parameter) (parameters.elementAt(i))).setError(
+						((Parameter) (parameters.get(i))).setError(
 							Double
 								.valueOf(textError[i].getText().trim())
 								.doubleValue());
 					}
 					if (parameter.knownOption) {
-						((Parameter) (parameters.elementAt(i))).setKnown(
+						((Parameter) (parameters.get(i))).setKnown(
 							Double
 								.valueOf(textKnown[i].getText().trim())
 								.doubleValue());
 					}
 				} else if (parameter.getType() == Parameter.INT) {
-					((Parameter) (parameters.elementAt(i))).setValue(
+					((Parameter) (parameters.get(i))).setValue(
 						Integer
 							.valueOf(textData[i].getText().trim())
 							.intValue());
 					if (parameter.knownOption) {
-						((Parameter) (parameters.elementAt(i))).setKnown(
+						((Parameter) (parameters.get(i))).setKnown(
 							Double
 								.valueOf(textKnown[i].getText().trim())
 								.doubleValue());
 					}
-
 				} else if (parameter.isBoolean()) {
-					((Parameter) (parameters.elementAt(i))).setValue(
+					((Parameter) (parameters.get(i))).setValue(
 						cOption[i].isSelected());
 				}
 
@@ -639,7 +627,7 @@ public abstract class Fit
 		updateHist();
 
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.elementAt(i);
+			parameter = (Parameter) parameters.get(i);
 			if (parameter.isTextField() && parameter.type != Parameter.TEXT) {
 				textData[i].setText(formatValue(parameter));
 				if (parameter.isFix()) {
@@ -671,7 +659,7 @@ public abstract class Fit
 		Parameter parameter;
 
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.elementAt(i);
+			parameter = (Parameter) parameters.get(i);
 			if (parameter.type == Parameter.DOUBLE) {
 				parameter.setValue(0.0);
 				textData[i].setText(formatValue(parameter));
@@ -688,11 +676,8 @@ public abstract class Fit
 	}
 
 	private void clear() throws FitException {
-
-		Parameter parameter;
-
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.elementAt(i);
+			Parameter parameter = (Parameter) parameters.get(i);
 			if (!parameter.isBoolean()) {
 				// text field backgrounds				    	    		    
 				if (parameter.outputOption) {
@@ -778,7 +763,7 @@ public abstract class Fit
 	 * @see #parameters
 	 */
 	protected void addParameter(Parameter newParameter) {
-		parameters.addElement(newParameter);
+		parameters.add(newParameter);
 		parameterTable.put(newParameter.getName(), newParameter);
 	}
 
@@ -798,7 +783,7 @@ public abstract class Fit
 	 * @return	the contents of <code>parameters</code> 
 	 * @see	#parameters
 	 */
-	Vector getParameters() {
+	java.util.List getParameters() {
 		return parameters;
 	}
 
@@ -876,23 +861,17 @@ public abstract class Fit
 	 * Formats values in number text fields.
 	 */
 	private String formatValue(Parameter param) throws FitException {
-
-		String temp = "Invalid Type";
-
-		double value;
-		double error;
-		int integer, fraction;
-
+		String temp = "Invalid Type";//default return value
 		if (param.type == Parameter.DOUBLE) {
-			value = param.valueDbl;
-			error = param.errorDbl;
+			double value = param.valueDbl;
+			double error = param.errorDbl;
 			if (param.errorOption) {
-				return format(value, error)[0];
+				temp = format(value, error)[0];
 			} else {
-				integer = (int) log10(Math.abs(value));
+				int integer = (int) log10(Math.abs(value));
 				integer = Math.max(integer, 1);
-				fraction = Math.max(4 - integer, 0);
-				return format(value, integer, fraction);
+				int fraction = Math.max(4 - integer, 0);
+				temp = format(value, integer, fraction);
 			}
 		} else if (param.type == Parameter.INT) {
 			temp = (new Integer(param.valueInt)).toString().trim();
