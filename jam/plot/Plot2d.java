@@ -362,16 +362,16 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	/**
 	 * Paint a gate as a set of blocks that are channels in the gate.
 	 * 
-	 * @param gc
+	 * @param graphics
 	 *            the graphics context to paint to
 	 */
-	protected void paintGate(Graphics gc) {
-		Graphics2D g = (Graphics2D) gc;
-		g.setComposite(AlphaComposite
+	protected void paintGate(Graphics graphics) {
+		final Graphics2D graphics2d = (Graphics2D) graphics;
+		graphics2d.setComposite(AlphaComposite
 				.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-		g.setColor(plotColorMap.getGateShow());
+		graphics2d.setColor(plotColorMap.getGateShow());
 		if (isNoFillMode()) {
-			paintPolyGate(g);
+			paintPolyGate(graphics2d);
 		} else {
 			graph.drawGate2d(currentGate.getLimits2d());
 		}
