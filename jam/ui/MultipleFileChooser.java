@@ -35,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -45,6 +46,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.Box;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
@@ -80,20 +83,35 @@ public class MultipleFileChooser extends JPanel {
 		this.frame =frame;
 		this.msgHandler=msgHandler;		
 	
+		this.setLayout(new BorderLayout(5,5));
 		//Panel with list 
 		listFilesModel = new DefaultListModel();
 		listFiles = new JList(listFilesModel);
 		//listFiles.setBounds()
 		listFiles.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
-		
+
 		//Commands Panel
-		pCommands = new JPanel(new GridLayout(0, 1, 5, 2));
+		
+		pCommands = new JPanel();
+		pCommands.setLayout(new BoxLayout(pCommands, BoxLayout.Y_AXIS));
+
+		
 		pCommands.setBorder(new EmptyBorder(0, 5, 0, 0));
 		this.add(pCommands, BorderLayout.WEST);
-	
+		
+		JPanel pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
+		
+		pCommands.add(Box.createVerticalGlue());				
+		pCommands.add(Box.createVerticalGlue());		
+		pCommands.add(Box.createVerticalGlue());
+		pCommands.add(pButtons);
+		pCommands.add(Box.createVerticalGlue());
+		pCommands.add(Box.createVerticalGlue());
+		pCommands.add(Box.createVerticalGlue());		
+		
 		JButton bAddfile = new JButton("Add File");
-		pCommands.add(bAddfile);
+		pButtons.add(bAddfile);
 		bAddfile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				addFile();
@@ -101,7 +119,7 @@ public class MultipleFileChooser extends JPanel {
 		});
 	
 		JButton bAddDir = new JButton("Add Directory");
-		pCommands.add(bAddDir);
+		pButtons.add(bAddDir);
 		bAddDir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				addDirectory();
@@ -109,7 +127,7 @@ public class MultipleFileChooser extends JPanel {
 		});
 	
 		JButton bRemove = new JButton("Remove File");
-		pCommands.add(bRemove);
+		pButtons.add(bRemove);
 		bRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				removeFile();
@@ -117,7 +135,7 @@ public class MultipleFileChooser extends JPanel {
 		});
 		
 		JButton bRemoveAll = new JButton("Remove All");
-		pCommands.add(bRemoveAll);		
+		pButtons.add(bRemoveAll);		
 		bRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				removeAllFiles();

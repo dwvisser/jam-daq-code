@@ -204,7 +204,7 @@ public class OpenMultipleFiles {
 	
 	private JPanel createHistSelectPanel() {
 		
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
 		
 		DefaultListModel listModel = new DefaultListModel();
 		histList = new JList(listModel);
@@ -213,14 +213,20 @@ public class OpenMultipleFiles {
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
 		JScrollPane listScrollPane = new JScrollPane(histList);
-		listScrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
+		listScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		panel.add(listScrollPane, BorderLayout.CENTER);
 		
-		JPanel pOption = new JPanel(new GridLayout(1,1,5,5));
+		JPanel pOption = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
+		JLabel lFile = new JLabel("Histograms list File");
+		pOption.add(lFile);
+		JTextField txtFile = new JTextField();
+		txtFile.setColumns(20);
+		txtFile.setEditable(false);
+		pOption.add(txtFile);		
+		JButton bRefresh = new JButton("Refresh");
+		pOption.add(bRefresh);		
 		JCheckBox chkAllHists = new JCheckBox("All");
 		pOption.add(chkAllHists);		
-		JButton bRefresh = new JButton("Refresh");
-		pOption.add(bRefresh);
 		panel.add(pOption, BorderLayout.SOUTH);
 		return panel;
 		
