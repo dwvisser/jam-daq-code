@@ -2,7 +2,9 @@
  *
  */
 package jam.fit;
-import java.util.*;
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian peak with 

@@ -1,6 +1,8 @@
 package jam.sort.stream;
-import java.io.*;
-import jam.global.*;
+import jam.global.MessageHandler;
+
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  * This class knows how to handle the Kmax data format.  It extends

@@ -1,5 +1,7 @@
 package jam.sort.stream;
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /** 
  * Stream to write events out 

@@ -1,6 +1,8 @@
 package jam.plot;
 import jam.data.Histogram;
+
 import java.util.Hashtable;
+
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 

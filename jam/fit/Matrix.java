@@ -1,7 +1,8 @@
 package jam.fit;
 
-import java.util.*;
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.Vector;
 
 /**
 *  <p>Matrix is a generic  set of linear algebra algorithms.It can accept a 

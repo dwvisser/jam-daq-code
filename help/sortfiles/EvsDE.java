@@ -1,5 +1,8 @@
 package help.sortfiles;				
-import jam.data.*;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.data.Monitor;
+import jam.data.Scaler;
 import jam.sort.SortRoutine;
 
 /** 

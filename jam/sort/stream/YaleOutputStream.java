@@ -1,9 +1,10 @@
 package jam.sort.stream;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import jam.util.*;
 import jam.global.RunInfo;
+import jam.util.StringUtilities;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 /**
  * This class knows how to handle Oak Ridge tape format.  It extends

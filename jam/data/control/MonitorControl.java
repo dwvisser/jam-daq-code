@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.DataException;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;

@@ -1,7 +1,15 @@
 package jam.sort;
-import java.io.*;
-import jam.sort.stream.*;
-import jam.global.*;
+import jam.global.MessageHandler;
+import jam.sort.stream.EventException;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Writes events to disk and reads them back.

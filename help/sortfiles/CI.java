@@ -1,6 +1,9 @@
 package help.sortfiles;
-import jam.data.*;
-import jam.sort.*;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.data.Monitor;
+import jam.data.Scaler;
+import jam.sort.SortRoutine;
 
 /*
  * Test sort file for ADC at LENA.  Modified 2 March 2002 for 

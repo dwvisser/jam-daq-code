@@ -1,9 +1,12 @@
 package jam.sort.stream;
-import java.io.InputStream;
+import jam.global.MessageHandler;
+import jam.global.RunInfo;
+
 import java.io.DataInputStream;
 import java.io.IOException;
-import jam.global.*;
+import java.io.InputStream;
 import java.util.Hashtable;
+
 import javax.swing.JOptionPane;
 
 /**

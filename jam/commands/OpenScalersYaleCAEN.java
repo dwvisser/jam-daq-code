@@ -2,11 +2,12 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
+import jam.io.ExtensionFileFilter;
 import jam.util.YaleCAENgetScalers;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
-import jam.io.ExtensionFileFilter;
 
 
 /**

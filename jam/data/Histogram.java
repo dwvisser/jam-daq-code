@@ -1,9 +1,17 @@
 package jam.data;
-import java.util.*;
-import java.io.Serializable;
-import jam.util.StringUtilities;
-import jam.data.func.*;
+import jam.data.func.CalibrationFunction;
 import jam.data.peaks.PeakFinder;
+import jam.util.StringUtilities;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Class containing spectra and the routines to perform operations on them.

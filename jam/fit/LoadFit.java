@@ -1,10 +1,10 @@
 package jam.fit;
 import jam.JamException;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
-import jam.global.JamStatus;
-import jam.global.Broadcaster;
-import jam.global.BroadcastEvent;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
@@ -19,8 +19,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Set;
 
-import javax.swing.Action;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;

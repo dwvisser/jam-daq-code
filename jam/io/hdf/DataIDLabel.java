@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.JOptionPane;
 /**
  * Class to represent an HDF <em>Data identifier label</em> data object.  The label is meant to be a short

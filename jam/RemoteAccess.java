@@ -1,11 +1,17 @@
 /*
  */
 package jam;
-import java.rmi.*;
-import java.rmi.server.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.data.Monitor;
+import jam.data.RemoteData;
+import jam.data.Scaler;
+import jam.global.RunInfo;
+
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 /** 
  * Allows remote access to histograms

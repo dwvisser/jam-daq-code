@@ -1,7 +1,8 @@
 package jam.data;
 
-import junit.framework.TestCase;
 import java.util.List;
+
+import junit.framework.TestCase;
 
 /**
  * JUnit tests for <code>jam.data.Histogram</data>.

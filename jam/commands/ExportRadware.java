@@ -1,8 +1,9 @@
 package jam.commands;
 
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.io.ImpExpSPE;
-import jam.data.Histogram;
+
 import java.util.Observable;
 import java.util.Observer;
 

@@ -2,9 +2,11 @@ package jam;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.JamStatus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.DefaultComboBoxModel;
 
 /**

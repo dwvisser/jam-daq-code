@@ -1,7 +1,7 @@
 package jam.commands;
 
-import jam.data.control.ParameterControl;
 import jam.data.DataParameter;
+import jam.data.control.ParameterControl;
 
 import java.util.List;
 import java.util.Observable;

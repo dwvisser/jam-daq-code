@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+
 import javax.swing.JComponent;
 
 /**

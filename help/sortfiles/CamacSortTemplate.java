@@ -5,8 +5,10 @@
  * @version 1 June 99
  */
  package help.sortfiles;
- import jam.sort.SortRoutine;
- import jam.data.*;
+ import jam.data.Gate;
+import jam.data.Histogram;
+import jam.data.Scaler;
+import jam.sort.SortRoutine;
 
 public class CamacSortTemplate extends SortRoutine {
 

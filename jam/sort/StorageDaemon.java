@@ -1,8 +1,21 @@
 package jam.sort;
-import java.util.*;
-import java.io.*;
-import jam.sort.stream.*;
-import jam.global.*;
+import jam.global.GoodThread;
+import jam.global.MessageHandler;
+import jam.sort.stream.EventException;
+import jam.sort.stream.EventInputStream;
+import jam.sort.stream.EventOutputStream;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * General class to read and write event data streams from/to storage.

@@ -1,11 +1,11 @@
 package jam.io.hdf;
-import java.util.List;
-import java.util.Iterator;
-import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class to represent an HDF <em>Data identifier annotation</em> data object.  

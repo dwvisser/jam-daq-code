@@ -3,8 +3,9 @@
  */
 package jam.commands;
 
-import jam.global.SortMode;
 import jam.SetupSortOn;
+import jam.global.SortMode;
+
 import java.util.Observable;
 import java.util.Observer;
 

@@ -22,7 +22,14 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
 
 /**
  * @author dwvisser

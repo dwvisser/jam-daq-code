@@ -8,6 +8,7 @@ package jam.data.control;
 
 import jam.GateComboBoxModel;
 import jam.GateListCellRenderer;
+import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;

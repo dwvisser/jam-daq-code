@@ -1,6 +1,7 @@
 package jam.plot;
-import java.awt.Point;
 import jam.fit.MultipleGaussians;
+
+import java.awt.Point;
 
 /**
  * Class to perform simple fits such as area and centroid

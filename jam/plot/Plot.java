@@ -1,4 +1,5 @@
 package jam.plot;
+import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;

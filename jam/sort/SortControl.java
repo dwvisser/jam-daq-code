@@ -1,8 +1,8 @@
 package jam.sort;
 
 import jam.global.Sorter;
-import jam.sort.stream.EventOutputStream;
 import jam.sort.stream.EventInputStream;
+import jam.sort.stream.EventOutputStream;
 
 /**
  * Controls the sorting, interface to sorting from 

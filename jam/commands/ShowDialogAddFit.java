@@ -1,8 +1,7 @@
 package jam.commands;
 
-import jam.global.CommandListenerException;
-
 import jam.fit.LoadFit;
+import jam.global.CommandListenerException;
 
 /**
  * Command to add fit.

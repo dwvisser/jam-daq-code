@@ -1,5 +1,5 @@
 package jam.data.func;
-import jam.data.*;
+import jam.data.DataException;
 
 /**
  * A sqrt function that can be use to calibrate a histogram taken by a

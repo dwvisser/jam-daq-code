@@ -1,7 +1,9 @@
 package help.sortfiles;
 import jam.Script;
+import jam.sort.stream.YaleCAEN_InputStream;
+import jam.sort.stream.YaleOutputStream;
+
 import java.io.File;
-import jam.sort.stream.*;
 
 /**
  * Script for performing pre-sorts on specified subsets of the data. 

@@ -1,5 +1,5 @@
 package jam.io;
-import java.io.*;
+import java.io.File;
 /**
  * Interface to read in and write out Jam data
  * package

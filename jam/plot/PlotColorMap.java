@@ -1,5 +1,5 @@
 package jam.plot;
-import java.awt.*;
+import java.awt.Color;
 /**
  * Color map for display
  * The possible colors are

@@ -1,11 +1,27 @@
 package jam.applet;
+import jam.data.Monitor;
+import jam.data.RemoteData;
+import jam.data.Scaler;
+import jam.data.control.PlotBar;
+
 import java.applet.Applet;
-import java.net.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.rmi.*;
-import jam.data.control.*;
-import jam.data.*;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.net.URL;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 /**
  * An applet to allow remote viewing of Jam Monitors.

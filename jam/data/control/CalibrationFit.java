@@ -1,10 +1,10 @@
 package jam.data.control;
 import jam.data.DataException;
 import jam.data.Histogram;
-import jam.data.func.CalibrationFunction;
-import jam.data.func.LinearFunction;
 import jam.data.func.CalibrationComboBoxModel;
+import jam.data.func.CalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
+import jam.data.func.LinearFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 

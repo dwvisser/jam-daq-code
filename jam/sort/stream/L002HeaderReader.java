@@ -1,5 +1,6 @@
 package jam.sort.stream;
 import jam.global.MessageHandler;
+
 import java.io.IOException;
 
 /**

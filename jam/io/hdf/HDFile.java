@@ -3,18 +3,19 @@ package jam.io.hdf;
 import jam.data.Histogram;
 import jam.global.JamProperties;
 import jam.global.MessageHandler;
-import java.io.RandomAccessFile;
-import java.io.IOException;
-import java.io.File;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Class which represents the HDF file on disk.

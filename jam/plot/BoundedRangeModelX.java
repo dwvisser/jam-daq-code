@@ -1,6 +1,7 @@
 package jam.plot;
-import jam.data.*;
-import javax.swing.*;
+import jam.data.Histogram;
+
+import javax.swing.DefaultBoundedRangeModel;
 
 /**
 * <code>Scroller</code> contains instance of this, and it is be handed

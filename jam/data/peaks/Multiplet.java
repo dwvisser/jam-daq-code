@@ -5,7 +5,9 @@
  */
 
 package jam.data.peaks;
-import java.util.*;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
 
 /**
  * Represents a group of peaks in a spectrum.

@@ -1,9 +1,10 @@
 package jam.sort.stream;
+import jam.global.RunInfo;
+import jam.util.StringUtilities;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-import jam.util.StringUtilities;
-import jam.global.RunInfo;
 
 /**
  * <b>Not</b> yet fully implemented, but will write out
