@@ -84,8 +84,9 @@ class Toolbar extends JToolBar implements ActionListener {
 		setToolTipText(
 			"Underlined letters are shortcuts for the console.");
 		container.add(this, location);
+		setRollover(false);
 		try {
-			setRollover(true);
+
 			final JButton bupdate = iUpdate == null ? 
 					new JButton(getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
 			bupdate.setToolTipText(
@@ -118,15 +119,16 @@ class Toolbar extends JToolBar implements ActionListener {
 			Integer [] intArray= new Integer[REBIN_RATIOS.length];
 			for (int i = 0; i < REBIN_RATIOS.length; i++) {
 	            intArray[i] = new Integer(i);
-			}
-			
+			}			
 			comboBinRatio = new JComboBox(intArray);
-			comboBinRatio.setBorder(null);
 			Dimension dimMax= comboBinRatio.getMaximumSize();			
 			Dimension dimPref= comboBinRatio.getPreferredSize();
-			dimMax.width=dimPref.width+40;
-			comboBinRatio.setMaximumSize(dimMax);
-			comboBinRatio.setRenderer(new ReBinComboBoxRenderer());
+			dimMax.width=dimPref.width+40;			
+			comboBinRatio.setMaximumSize(dimMax);			
+			comboBinRatio.setRenderer(new ReBinComboBoxRenderer()); 
+			comboBinRatio.setToolTipText(
+					getHTML("<u>Re</u>bin, enter a bin width in the console."));			
+			
 			comboBinRatio.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ae) {
 					final Object item = ((JComboBox) ae.getSource())
@@ -317,16 +319,10 @@ class Toolbar extends JToolBar implements ActionListener {
 	 */
 	 class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
 
-		Icon icon = iRebin;
-		
+		Icon icon = iRebin; 		
 		
 		ReBinComboBoxRenderer() {
 	 		setOpaque(true);
-	 		//setBorderPainted(false);
-	 		Dimension dim;
-	 		dim=getPreferredSize();
-	 		dim.width=dim.width-100;
-	 		//setPreferredSize(dim);
 	 		setHorizontalAlignment(LEFT);
 	 		//setVerticalAlignment(CENTER);
 	 	}	
@@ -345,7 +341,7 @@ class Toolbar extends JToolBar implements ActionListener {
 	 		//Get the selected index. (The index param isn't
 	 		//always valid, so just use the value.)
 	 		int selectedIndex = ((Integer)value).intValue();
-
+	 		//Set foreground and background
 	 		if (isSelected) {
 	 			setBackground(list.getSelectionBackground());
 	 			setForeground(list.getSelectionForeground());
@@ -353,11 +349,12 @@ class Toolbar extends JToolBar implements ActionListener {
 	 			setBackground(list.getBackground());
 	 			setForeground(list.getForeground());
 	 		}
-	 		
+	 		//Set font
+ 			setFont(list.getFont());
+ 			
 	 		//Set the icon and text. 
 	 		setIcon(icon);
  			setText(REBIN_RATIOS[selectedIndex]);
- 			setFont(list.getFont());
  			
  			return this;
 	 	}
