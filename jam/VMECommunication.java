@@ -39,15 +39,6 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
 
 	private static final byte STRING_NULL=(byte)0x0;
 
-    /* type of message */
-    private static final int OK=0;//standard message
-	private static final int ERROR=1;//message indicating error condition
-	private static final int SCALER=2;//received from VME, contains scaler values
-	private static final int CNAF=3;//sent to VME, contains CNAF commands
-	private static final int COUNTER=4;//???
-	private static final int VME_ADDRESSES=5;//sent to VME, contains VME addressing information
-	private static final int SCALER_INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
-
     private final JamCommand jamCommand;
     private final JamMain jamMain;
     private final Broadcaster broadcaster;

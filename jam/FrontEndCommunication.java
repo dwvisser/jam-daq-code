@@ -1,5 +1,3 @@
-/*
- */
  package jam;
  import java.util.*;
  import jam.sort.*;
@@ -17,8 +15,44 @@
  * @author   Ken Swartz
  * @since       JDK1.1
  */
- interface FrontEndCommunication extends Observer{
+public interface FrontEndCommunication extends Observer{
 
+	/**
+	 * Standard informational message.
+	 */
+	int OK=0;//standard message
+	
+	/**
+	 * Error message.
+	 */
+	int ERROR=1;//message indicating error condition
+	
+	/**
+	 * Message containing scaler values.
+	 */
+	int SCALER=2;//received from VME, contains scaler values
+	
+	/**
+	 * Message containing CNAF commands.
+	 */
+	int CNAF=3;//sent to VME, contains CNAF commands
+	
+	/**
+	 * Message containing front end event and buffer counters.
+	 */
+	int COUNTER=4;
+	
+	/**
+	 * Message containing CAEN VME electronics configuration info.
+	 */
+	int VME_ADDRESSES=5;//sent to VME, contains VME addressing information
+	
+	/**
+	 * Message containing the interval in seconds at which to 
+	 * insert scalers in the event stream.
+	 */
+	int SCALER_INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
+	
     /** Setup up the networking to the Front End.
      * Called when Online data taking is setup.
      * @throws JamException when something goes wrong
