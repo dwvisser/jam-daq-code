@@ -184,19 +184,19 @@ public class HistogramNew extends AbstractControl {
 		boolean workingDefined =false;
 		comboGroupModel.removeAllElements();
 		Iterator iter = Group.getGroupList().iterator();
+		
+		//Add working group first
+		comboGroupModel.addElement( Group.WORKING_NAME);
 		while(iter.hasNext()) {
 			Group group =(Group)iter.next();
-			if (group.getType()!=Group.Type.SORT)
-			{
+			//Don't add sort group or working group that was already added
+			if (group.getType()!=Group.Type.SORT && 
+				!Group.WORKING_NAME.equals(group.getName()) ){
+				
 				comboGroupModel.addElement( group.getName() );
+				
 			}			
-			if ( Group.WORKING_NAME.equals(group.getName()) ){
-				workingDefined=true;	
-			}					
 			
-		}
-		if (!workingDefined) {
-			comboGroupModel.addElement( Group.WORKING_NAME);
 		}
 	}
 
