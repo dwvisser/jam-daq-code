@@ -8,8 +8,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.PrintGraphics;
 import java.awt.RenderingHints;
+import java.awt.print.PageFormat;
 import java.util.*;
 import javax.swing.JPanel;
 
@@ -105,7 +105,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/** the dimensions of the plot canvas */
 	private Dimension viewSize;
 	/** print page dots per inch */
-	private int pagedpi;
+	//private int pagedpi;
 	/**sides of plot in pixels */
 	private int viewLeft; //left hand side of plot area
 	private int viewRight; //right hand side of plot area
@@ -156,7 +156,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	}
 
 	/**
-	 * change or set the font
+	 * Set the font used on the plot.
 	 */
 	public final synchronized void setFont(Font f) {
 		font = f;
@@ -166,12 +166,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 	}
 
-	/**
-	 * change or set the page dpi for printing
-	 */
-	/*public void setPagedpi(int pagedpi) {
-		this.pagedpi = pagedpi;
-	}*/
+	private PageFormat pageformat=null;
+	public synchronized void setView(PageFormat pf){
+		pageformat=pf;
+		if (pf!=null){
+			viewSize = new Dimension((int)pf.getImageableWidth(),
+			(int)pf.getImageableHeight());
+		}
+	}
 
 	/**
 	 * updates the current display parameters
@@ -198,7 +200,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 					+ ".update() called with null "
 					+ "Limits object.");
 		} else {
-			//scale = plotLimits.getScale();
 			minCount = plotLimits.getMinimumCounts();
 			maxCount = plotLimits.getMaximumCounts();
 			if (plotType == ONE_DIMENSION) {
@@ -219,19 +220,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 			rangeX = maxX - minX + 1;
 			rangeY = maxY - minY + 1;
 			rangeYLog = maxYLog - minYLog;
-			if (graph instanceof PrintGraphics) {
-				//setup margins
-				margin.top = (int) (MARGIN_TOP * pagedpi);
-				margin.left = (int) (MARGIN_LEFT * pagedpi);
-				margin.right = (int) (MARGIN_RIGHT * pagedpi);
-				margin.bottom = (int) (MARGIN_BOTTOM * pagedpi);
-				//take care of margins landscape hard wired
-				this.viewSize =
-					new Dimension(
-						newViewSize.width - margin.left - margin.right,
-						newViewSize.height - margin.top - margin.bottom);
-				g.translate(margin.left, margin.top);
-			} else {
+			if (pageformat == null){
 				this.viewSize = newViewSize;
 			}
 			//plot* are the borders and are part of the plot
@@ -377,26 +366,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 			ul = maxY;
 			ticksLeft(ll, ul, scale);
 		}
-		/*if (plotType == ONE_DIMENSION) {
-			//do bottom always linear
-			if (side == BOTTOM) {
-				ticksBottom(minX, maxX, Limits.ScaleType.LINEAR);
-			}
-			if (side == LEFT) {
-				//left side depends on scale
-				ticksLeft(minY, maxY, plotLimits.getScale());
-			}
-			// two dimension tick marks, always linear
-		} else if (plotType == TWO_DIMENSION) {
-			//bottom
-			if (side == BOTTOM) {
-				ticksBottom(minX, maxX, Limits.ScaleType.LINEAR);
-			}
-			//left side
-			if (side == LEFT) {
-				ticksLeft(minY, maxY, Limits.ScaleType.LINEAR);
-			}
-		}*/
 	}
 
 	/**
@@ -1188,27 +1157,15 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void settingGate2d(List gatePoints) {
-
-		int numberPoints;
-		Point p1;
-		Point p2;
-		int x1;
-		int x2;
-		int y1;
-		int y2;
-
-		numberPoints = gatePoints.size();
-		// size of vector, first element at zero
+		final int numberPoints = gatePoints.size();
 		clipPlot();
-
 		for (int i = 1; i < numberPoints; i++) {
-			p1 = (Point) (gatePoints.get(i - 1));
-			p2 = (Point) (gatePoints.get(i));
-
-			x1 = toViewHorzLin(p1.x);
-			y1 = toViewVertLin(p1.y);
-			x2 = toViewHorzLin(p2.x);
-			y2 = toViewVertLin(p2.y);
+			final Point p1 = (Point) (gatePoints.get(i - 1));
+			final Point p2 = (Point) (gatePoints.get(i));
+			final int x1 = toViewHorzLin(p1.x);
+			final int y1 = toViewVertLin(p1.y);
+			final int x2 = toViewHorzLin(p2.x);
+			final int y2 = toViewVertLin(p2.y);
 			g.drawLine(x1, y1, x2, y2);
 		}
 	}
