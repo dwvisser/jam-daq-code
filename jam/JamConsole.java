@@ -179,6 +179,7 @@ public class JamConsole
 		textLog.getFont()).getHeight();
 		final int logHeight=lineHeight*defaultNumLines;
 		textLog.setPreferredSize(new Dimension(700,logHeight));
+		addCommandListener(CommandManager.getInstance());
 	}
 
 	/**
@@ -368,7 +369,7 @@ public class JamConsole
 	 * need to add types
 	 *
 	 */
-	public void addCommandListener(CommandListener msgCommand) {
+	public final void addCommandListener(CommandListener msgCommand) {
 		listenerList.add(msgCommand);
 	}
 
