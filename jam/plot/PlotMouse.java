@@ -15,6 +15,7 @@ import java.awt.event.*;
 public class PlotMouse extends MouseAdapter {
 	private java.util.List listenersList; //list of listeners for plotmouse
 	private PlotGraphics pg; //converts screen pixels to data values
+	private final Action action;
 
 	/**
 	 * Construction, PlotMouseListener belongs to a Plot.
@@ -22,8 +23,9 @@ public class PlotMouse extends MouseAdapter {
 	 * mouse events.
 	 *
 	 */
-	public PlotMouse(PlotGraphics plotGraphics) {
+	public PlotMouse(PlotGraphics plotGraphics, Action a) {
 		this.pg = plotGraphics;
+		action=a;
 		listenersList = new Vector(2);
 	}
 	
@@ -50,8 +52,8 @@ public class PlotMouse extends MouseAdapter {
 	 * in the listeners list
 	 */
 	public void mousePressed(MouseEvent e) {
-	// Set mousePressed (true) indicates mouse was used 
-	    Action.mousePressed = true;
+	/* Set mousePressed =true indicates mouse was used */ 
+	    action.setMousePressed(true);
 		Point pin = e.getPoint();
 		Point pout = pg.toData(pin);
 		for (int i = 0; i < listenersList.size(); i++) {
