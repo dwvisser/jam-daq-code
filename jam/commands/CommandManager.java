@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.JamPrefs;
 import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
@@ -94,6 +95,10 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
 		cmdMap.put(PlotPrefs.SMOOTH_COLOR_SCALE, 
 		SetSmoothColorScale.class);
+		cmdMap.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
+		cmdMap.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
+		cmdMap.put(JamPrefs.VERBOSE, SetVerbose.class);
+		cmdMap.put(JamPrefs.DEBUG, SetDebug.class);
 	}
 	
 

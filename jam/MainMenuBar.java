@@ -4,7 +4,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
-import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
@@ -13,13 +12,10 @@ import jam.plot.PlotPrefs;
 import jam.util.ScalerScan;
 import jam.util.YaleCAENgetScalers;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -34,8 +30,6 @@ import javax.swing.JMenuItem;
  * @since 30 Dec 2003
  */
 final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
-
-	private static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
 	final private JamStatus status = JamStatus.instance();
 	
@@ -205,26 +199,9 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final JMenu mPrefer = new JMenu("Preferences");
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_ZERO));
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));
-		final JCheckBoxMenuItem autoOnExpand =
-			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
-		autoOnExpand.setEnabled(true);
-		autoOnExpand.addItemListener(jamCommand);
-		mPrefer.add(autoOnExpand);
+		mPrefer.add(getMenuItem(PlotPrefs.AUTO_ON_EXPAND));
 		mPrefer.addSeparator();
-		final JCheckBoxMenuItem noFill2d =
-			new JCheckBoxMenuItem(
-				NO_FILL_MENU_TEXT,
-				JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE));
-		noFill2d.setEnabled(true);
-		noFill2d.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent ie) {
-				JamProperties.setProperty(
-					JamProperties.NO_FILL_GATE,
-					ie.getStateChange() == ItemEvent.SELECTED);
-				display.repaint();
-			}
-		});
-		mPrefer.add(noFill2d);
+		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
 		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
@@ -236,26 +213,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
-		final JCheckBoxMenuItem verboseVMEReply =
-			new JCheckBoxMenuItem("Verbose front end", false);
-		verboseVMEReply.setEnabled(true);
-		verboseVMEReply.setToolTipText(
-			"If selected, the front end will send verbose messages.");
-		JamProperties.setProperty(
-			JamProperties.FRONTEND_VERBOSE,
-			verboseVMEReply.isSelected());
-		verboseVMEReply.addItemListener(jamCommand);
-		mPrefer.add(verboseVMEReply);
-		final JCheckBoxMenuItem debugVME =
-			new JCheckBoxMenuItem("Debug front end", false);
-		debugVME.setToolTipText(
-			"If selected, the front end will send debugging messages.");
-		debugVME.setEnabled(true);
-		JamProperties.setProperty(
-			JamProperties.FRONTEND_DEBUG,
-			debugVME.isSelected());
-		debugVME.addItemListener(jamCommand);
-		mPrefer.add(debugVME);
+		mPrefer.add(getMenuItem(JamPrefs.VERBOSE));
+		mPrefer.add(getMenuItem(JamPrefs.DEBUG));
 		return mPrefer;
 	}
 	
