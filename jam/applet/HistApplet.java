@@ -233,7 +233,7 @@ public class HistApplet
 			} else {
 				//error no such histogram
 				System.err.println(
-					"Error: no item in histogram choicer " + ie.getItem());
+					"Error: no item in histogram chooser " + ie.getItem());
 			}
 
 			//a gate has been choicen		
@@ -243,10 +243,9 @@ public class HistApplet
 				gate = Gate.getGate((String) ie.getItem());
 				if (gate.getType() == Gate.ONE_DIMENSION) {
 					area = gate.getArea();
-					lowerLimit = 0;
-					upperLimit = 0;
-					//FIXME		    lowerLimit=gate.getLimits1d()[0];
-					//		    upperLimit=gate.getLimits1d()[1];		    			
+					final int [] limits=gate.getLimits1d();
+					lowerLimit=limits[0];
+					upperLimit=limits[1];		    			
 					console.messageOut(
 						"Gate: "
 							+ gate.getName()
