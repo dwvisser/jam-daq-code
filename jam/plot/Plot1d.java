@@ -10,13 +10,8 @@ import jam.data.*;
  */
 class Plot1d extends Plot {
 
-	//private double [] fitChan,fitFunc,fitResd;
-	private double[] fitChannels;
-	private double[] fitResiduals;
-	private double[] fitBackground;
-	private double[] fitTotal;
+	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
 	private double[][] fitSignals;
-
 	private int areaMark1, areaMark2;
 
 	/**
@@ -30,51 +25,20 @@ class Plot1d extends Plot {
 	 * Overlay a second histogram
 	 */
 	public void overlayHistogram(Histogram hist) {
-		int countsInt[];
-		double countsDble[];
-
 		displayingOverlay = true;
 		overlayHist = hist;
-		countsOverlay = new double[hist.getSizeX()];
+		final int sizex=hist.getSizeX();
+		countsOverlay = new double[sizex];
 		if (hist.getType() == Histogram.ONE_DIM_INT) {
-			countsInt = (int[]) hist.getCounts();
+			final int [] countsInt = (int[]) hist.getCounts();
 			for (int i = 0; i < hist.getSizeX(); i++) {
 				countsOverlay[i] = countsInt[i];
 			}
 		} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-			countsDble = (double[]) hist.getCounts();
-			for (int i = 0; i < hist.getSizeX(); i++) {
-				countsOverlay[i] = countsDble[i];
-			}
+			final double [] countsDble = (double[]) hist.getCounts();
+			System.arraycopy(countsDble,0,countsOverlay,0,sizex);
 		}
-		Graphics g = this.getGraphics();
-		graph.update(g); //so graph has all pertinent info
-		paintOverlay(g);
-		g.dispose();
-	}
-
-	/**
-	 * Display a gate
-	 *
-	 */
-	public void displayGate(Gate gate) throws DataException {
-		if (currentHist != null && currentHist.hasGate(gate)) {
-			displayingGate = true;
-			currentGate = gate;
-			Graphics g = this.getGraphics();
-			//update plotgraphics with pertinent imfo
-			graph.update(g, getSize(), plotLimits);
-			paintGate(g);
-			g.dispose();
-		} else {
-			System.err.println(
-				getClass().getName()
-					+ ": trying to display '"
-					+ gate
-					+ "' on histogram '"
-					+ currentHist
-					+ "'");
-		}
+		repaint();
 	}
 
 	/**
@@ -86,22 +50,23 @@ class Plot1d extends Plot {
 	public void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
-		} else if (mode == GateSetMode.GATE_CONTINUE) {
-			pointsGate.addPoint(pChannel.x,pChannel.y);
-			Graphics g = this.getGraphics();
-			g.setColor(PlotColorMap.gateDraw);
-			graph.update(g); //so graph has all pertinent imfo
-			graph.settingGate1d(graph.toView(pointsGate));
-			g.dispose();
-		} else if (mode == GateSetMode.GATE_SAVE) {
-			pointsGate.reset();
-		} else if (mode == GateSetMode.GATE_CANCEL) {
-			pointsGate.reset();
+			setSettingGate(true);
+		} else {
+			if (mode == GateSetMode.GATE_CONTINUE) {
+				pointsGate.addPoint(pChannel.x,pChannel.y);
+			} else if (mode == GateSetMode.GATE_SAVE) {
+				pointsGate.reset();
+			} else if (mode == GateSetMode.GATE_CANCEL) {
+				pointsGate.reset();
+				setSettingGate(false);
+			}
+			repaint();
 		}
 	}
 	
 	void paintSetGate(Graphics g){
-		
+		g.setColor(PlotColorMap.gateDraw);
+		graph.settingGate1d(graph.toView(pointsGate));
 	}
 	
 	void paintMouseMoved(Graphics g){
@@ -162,11 +127,7 @@ class Plot1d extends Plot {
 			this.fitResiduals = new double[length];
 			System.arraycopy(residuals, 0, fitResiduals, 0, length);
 		}
-		Graphics g = this.getGraphics();
-		graph.update(g, viewSize, plotLimits);
-		//so graph has all pertinent imfo
-		paintFit(g);
-		g.dispose();
+		repaint();
 	}
 
 	/**
