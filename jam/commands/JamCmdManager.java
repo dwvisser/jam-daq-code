@@ -18,7 +18,7 @@ import javax.swing.Action;
  *
  * @author Ken Swartz
  */
-public class JamCmdManager implements CommandListener {
+public class JamCmdManager implements CommandListener, CommandNames {
 
 	private MessageHandler msghdlr=null;
 	private static JamCmdManager _instance=null;
@@ -29,24 +29,29 @@ public class JamCmdManager implements CommandListener {
 	
 	/* initializer block for map */
 	static {
-		cmdMap.put(CommandNames.OPEN_HDF, OpenHDFCmd.class);
-		cmdMap.put(CommandNames.SAVE_HDF, SaveHDFCmd.class);
-		cmdMap.put(CommandNames.SAVE_AS_HDF, SaveAsHDFCmd.class);
-		cmdMap.put(CommandNames.SAVE_GATES, SaveGatesCmd.class);
-		cmdMap.put(CommandNames.ADD_HDF, AddHDFCmd.class);
-		cmdMap.put(CommandNames.RELOAD_HDF, ReloadHDFCmd.class);
-		cmdMap.put(CommandNames.SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
-		cmdMap.put(CommandNames.EXIT, ShowDialogExitCmd.class);
-		cmdMap.put(CommandNames.NEW, FileNewClearCmd.class);
-		cmdMap.put(CommandNames.PARAMETERS, ShowDialogParametersCmd.class);
-		cmdMap.put(CommandNames.DISPLAY_SCALERS, ShowDialogScalersCmd.class);
-		cmdMap.put(CommandNames.SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
-		cmdMap.put(CommandNames.SCALERS, ScalersCmd.class);
-		cmdMap.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);
-		cmdMap.put(CommandNames.EXPORT_DAMM, ExportDamm.class);
-		cmdMap.put(CommandNames.EXPORT_SPE, ExportRadware.class);	
-		cmdMap.put(CommandNames.PRINT, Print.class);
-		cmdMap.put(CommandNames.PAGE_SETUP, PageSetupCmd.class);	
+		cmdMap.put(OPEN_HDF, OpenHDFCmd.class);
+		cmdMap.put(SAVE_HDF, SaveHDFCmd.class);
+		cmdMap.put(SAVE_AS_HDF, SaveAsHDFCmd.class);
+		cmdMap.put(SAVE_GATES, SaveGatesCmd.class);
+		cmdMap.put(ADD_HDF, AddHDFCmd.class);
+		cmdMap.put(RELOAD_HDF, ReloadHDFCmd.class);
+		cmdMap.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
+		cmdMap.put(EXIT, ShowDialogExitCmd.class);
+		cmdMap.put(NEW, FileNewClearCmd.class);
+		cmdMap.put(PARAMETERS, ShowDialogParametersCmd.class);
+		cmdMap.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);
+		cmdMap.put(SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
+		cmdMap.put(SCALERS, ScalersCmd.class);
+		cmdMap.put(EXPORT_TEXT, ExportTextFileCmd.class);
+		cmdMap.put(EXPORT_DAMM, ExportDamm.class);
+		cmdMap.put(EXPORT_SPE, ExportRadware.class);	
+		cmdMap.put(PRINT, Print.class);
+		cmdMap.put(PAGE_SETUP, PageSetupCmd.class);	
+		cmdMap.put(IMPORT_TEXT, ImportTextFile.class);
+		cmdMap.put(IMPORT_DAMM, ImportDamm.class);
+		cmdMap.put(IMPORT_SPE, ImportRadware.class);
+		cmdMap.put(IMPORT_XSYS, ImportXSYS.class);
+		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
 	}
 	
 

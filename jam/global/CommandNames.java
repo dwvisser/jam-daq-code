@@ -60,6 +60,21 @@ public interface CommandNames {
 	/** Export the displayed histogram as a .his file for DAMM. */
 	String EXPORT_DAMM="exportdamm";	
 	
+	/** Import a text file. */
+	String IMPORT_TEXT="importtext";
+			
+	/** Import a Radware file. */
+	String IMPORT_SPE="importspe";
+			
+	/** Import a .his file from DAMM. */
+	String IMPORT_DAMM="importdamm";	
+
+	/** Import a .ban file from DAMM. */
+	String IMPORT_BAN="importban";	
+	
+	/** Import an XSYS file */
+	String IMPORT_XSYS="importxsys";
+
 	/** Print the displayed plot */
 	String PRINT="print";
 	
