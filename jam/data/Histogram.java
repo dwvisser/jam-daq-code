@@ -85,14 +85,24 @@ public abstract class Histogram {
 			type = num;
 		}
 
+		/**
+		 * @return 1 or 2
+		 */
 		public int getDimensionality() {
 			return DIM[type];
 		}
 
+		/**
+		 * 
+		 * @return <code>true</true> if counts are integer, not floating point
+		 */
 		public boolean isInteger() {
 			return INT[type];
 		}
 
+		/**
+		 * @see Object#toString()
+		 */
 		public String toString() {
 			return STRING[type];
 		}
@@ -130,6 +140,11 @@ public abstract class Histogram {
 			return rval;
 		}
 
+		/**
+		 * @param sizeX horizontal channels
+		 * @param sizeY vertical channels
+		 * @return array of the appropriate type and size
+		 */
 		public Object getSampleArray(int sizeX, int sizeY) {
 			final Object rval;
 			if (sizeY == 0) {
@@ -333,6 +348,16 @@ public abstract class Histogram {
 		setLabelY(axisLabelY);
 	}
 
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly created histogram
+	 */
 	static public Histogram createHistogram(Object array, String name,
 			String title, String labelX, String labelY) {
 		final Histogram rval;
@@ -351,11 +376,26 @@ public abstract class Histogram {
 		return rval;
 	}
 
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @return a newly created histogram
+	 */
 	static public Histogram createHistogram(Object array, String name,
 			String title) {
 		return createHistogram(array, name, title, null, null);
 	}
 	
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @return a newly created histogram
+	 */
 	static public Histogram createHistogram(Object array, String name) {
 		return createHistogram(array, name, name, null, null);
 	}
@@ -388,6 +428,10 @@ public abstract class Histogram {
 		return Collections.unmodifiableList(LIST);
 	}
 
+	/**
+	 * @param dim 1 or 2
+	 * @return list of all histograms with the given dimensionality
+	 */
 	public static List getHistogramList(int dim) {
 		if (dim < 1 || dim > 2) {
 			throw new IllegalArgumentException(
@@ -457,10 +501,10 @@ public abstract class Histogram {
 	abstract void clearCounts();
 
 	/**
-	 * Returns the histogram with the given name, null if name doesn't exist.
 	 * 
 	 * @param name
 	 *            name of histogram to retrieve
+	 * @return the histogram with the given name, null if name doesn't exist.
 	 */
 	public static Histogram getHistogram(String name) {
 		Histogram rval = null;//default return value
@@ -670,7 +714,8 @@ public abstract class Histogram {
 	}
 
 	/**
-	 * Returns whether this histogram has the given gate.
+	 * @param gate that we're wondering about
+	 * @return whether this histogram has the given gate
 	 */
 	public synchronized boolean hasGate(Gate gate) {
 		boolean rval = false;//default return value
@@ -686,6 +731,7 @@ public abstract class Histogram {
 	/**
 	 * Add a <code>Gate</code> to this histogram.
 	 * 
+	 * @param gate to add
 	 * @throws UnsupportedOperationException
 	 *             if a gate of a different type is given
 	 */
