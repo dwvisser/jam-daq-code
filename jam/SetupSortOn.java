@@ -3,7 +3,6 @@ import jam.data.DataBase;
 import jam.data.control.DataControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.MessageHandler;
@@ -530,8 +529,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 			msgHandler.errorOutln(je.getMessage());
 		} catch (JamException je) {
 			jamConsole.errorOutln(je.getMessage());
-		} catch (GlobalException ge) {
-			jamConsole.errorOutln(ge.getMessage());
 		} catch (Exception e) {
 			jamConsole.errorOutln(e.getMessage());
 		}
@@ -756,7 +753,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 *      clear all data areas
 	 *      Histograms, Gates, Scalers, Monitors, Parameters
 	 */
-	private void resetAcq(boolean killSort) throws GlobalException {
+	private void resetAcq(boolean killSort) {
 		if (diskDaemon != null) {
 			diskDaemon.setState(GoodThread.STOP);
 		}
