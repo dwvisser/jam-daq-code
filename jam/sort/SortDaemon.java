@@ -241,13 +241,29 @@ public class SortDaemon extends GoodThread {
         }//end infinite loop
     }
 
-	private boolean offlineSortingCanceled=false;
+	private boolean osc=false;
+	private final Object offlineSortingLock=new Object();
 
 	/**
 	 * Call to gracefully interrupt and end the current offline sort.
+	 * This is used as one of the conditions to read in the next buffer
 	 */
 	public void cancelOfflineSorting(){
-		offlineSortingCanceled=true;
+		synchronized(offlineSortingLock){
+			osc=true;
+		}
+	}
+	
+	private void resumeOfflineSorting(){
+		synchronized(offlineSortingLock){
+			osc=false;
+		}
+	}
+	
+	private boolean offlineSortingCanceled(){
+		synchronized(offlineSortingLock){
+			return osc;
+		}
 	}
 
     /**
@@ -256,36 +272,45 @@ public class SortDaemon extends GoodThread {
      * @exception Exception thrown if an unrecoverable error occurs during sorting
      */
     public void sortOffline() throws Exception {
-    	EventInputStatus status; 
+    	EventInputStatus status=EventInputStatus.IGNORE; 
     	
         boolean atBuffer=false;    //are we at a buffer word
         controller.atSortStart(); //immediately suspends the thread at next statement
-        while(checkState()){//infinite loop
+        while(checkState()){//checkstate loop
             controller.atSortStart();//suspends this thread when we're done sorting all files
-            offlineSortingCanceled=false;//after we come out of suspend
-            while(!offlineSortingCanceled && controller.isSortNext()) {//loop for each new sort file
+            resumeOfflineSorting();//after we come out of suspend
+            while(!offlineSortingCanceled() && controller.isSortNext()) {//loop for each new sort file
                 boolean endSort=false;
-                while(!offlineSortingCanceled && !endSort) {//buffer loop
+                while(!offlineSortingCanceled() && !endSort) {//buffer loop
                     System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array
-                    while ((((status=eventInputStream.readEvent(eventData))
-                    == EventInputStatus.EVENT) || (status == EventInputStatus.SCALER_VALUE)|| 
-                    (status == EventInputStatus.IGNORE))) {
-                        if (!offlineSortingCanceled && status == EventInputStatus.EVENT) {
-                            sortRoutine.sort(eventData);
-                            eventCount++;
-                            System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array and get ready for next event
-                            atBuffer=false;
-                            if (eventCount%COUNT_UPDATE==0){      //exactly divisible by COUNT_UPDATE
-                                updateCounters();
-                                yield();
-                            }
-                        } 
+                    while (!offlineSortingCanceled() &&
+                    (
+                    ((status=eventInputStream.readEvent(eventData)) == 
+                    EventInputStatus.EVENT) || 
+                    (status == EventInputStatus.SCALER_VALUE) || 
+                    (status == EventInputStatus.IGNORE)
+                    )
+                    ) {//read&sort event-at-a-time loop
+                        if (!offlineSortingCanceled()){
+                        	if (status == EventInputStatus.EVENT) {
+								sortRoutine.sort(eventData);
+								eventCount++;
+								System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array and get ready for next event
+								atBuffer=false;
+								if (eventCount%COUNT_UPDATE==0){      //exactly divisible by COUNT_UPDATE
+									updateCounters();
+									yield();
+								}
+                        	} 
+                        } else {//cause us to exit smoothly
+                        	status = EventInputStatus.END_RUN;
+                        }
                         /* else SCALER_VALUE, assume sort stream 
                          * took care and move on or IGNORE which means
                          * something ignorable in the event stream */
-                    }
+                    }//end read&sort event-at-a-time loop
                     /* we get to this point if status was not EVENT */
-                    if (status==EventInputStatus.END_BUFFER) {//if we dont have event
+                    if (status==EventInputStatus.END_BUFFER) {//if we don't have event
                         if (!atBuffer) {
                             atBuffer=true;
                             bufferCount++;
@@ -302,15 +327,17 @@ public class SortDaemon extends GoodThread {
                         msgHandler.warningOutln(getClass().getName()+
                         ".sortOffline(): Unknown word in event stream.");
 					} else {
+                        updateCounters();
                         endSort=true;
-                        //unrecoverable error
-                        throw new SortException("Sorter, Unknown eventInput status = "+status);
+                        if (!offlineSortingCanceled()){
+							throw new IllegalStateException("Illegal post-readEvent() status = "+status);
+                        }
                     }
                     yield();
                 }//end buffer loop
             }//end isSortNext loop
             controller.atSortEnd();
-        }//end infinite loop
+        }//end checkstate loop
     }
 
     /**
