@@ -177,7 +177,7 @@ class PlotFit {
 		return fwhm;
 	}
 
-	public double getNetArea(
+	public void getNetArea(
 		double[] netArea,
 		double[] netAreaError,
 		double[] channelBackground,
@@ -188,24 +188,13 @@ class PlotFit {
 		double grossArea,
 		int X,
 		double[] counts) {
-		double darea;
-		double area;
-		double variance;
-		double distance;
-		double gradient, intercept;
 		double netBackground = 0;
-		double avLow, avHigh, countsLow, countsHigh;
-		double midLow, midHigh;
-		double[] channel;
-		double[] countsdl;
-		channel = new double[X];
-		countsdl = new double[X];
-		countsHigh = 0;
-		countsLow = 0;
-		area = 0;
-		variance = 0;
-		distance = 0;
-
+		double [] channel = new double[X];
+		double countsHigh = 0;
+		double countsLow = 0;
+		double area = 0;
+		double variance = 0;
+		double distance = 0;
 		final int x1 = clicks[0].x;
 		final int x2 = clicks[1].x;
 		final int x3 = clicks[2].x;
@@ -213,20 +202,18 @@ class PlotFit {
 		final int rx1=Math.min(clicks[4].x,clicks[5].x);
 		final int rx2=Math.max(clicks[4].x,clicks[5].x);
 		for (int n = x1; n <= x2; n++) {
-			countsLow = counts[n] + countsLow;
+			countsLow += counts[n];
 		}
 		for (int n = x3; n <= x4; n++) {
-			countsHigh = counts[n] + countsHigh;
+			countsHigh += counts[n];
 		}
-		avLow = countsLow / (x2 - x1 + 1);
-		avHigh = countsHigh / (x4 - x3 + 1);
-		midLow = (x2 + x1) / 2;
-		midHigh = (x4 + x3) / 2;
-
-		gradient = (avHigh - avLow) / (midHigh - midLow);
-		intercept = avHigh - (gradient * midHigh);
-
-		// sum counts between region - background at each channel
+		double avLow = countsLow / (x2 - x1 + 1);
+		double avHigh = countsHigh / (x4 - x3 + 1);
+		double midLow = (x2 + x1) / 2;
+		double midHigh = (x4 + x3) / 2;
+		double gradient = (avHigh - avLow) / (midHigh - midLow);
+		double intercept = avHigh - (gradient * midHigh);
+		/* sum counts between region - background at each channel */
 		for (int p = rx1; p <= rx2; p++) {
 			area += counts[p];
 			channel[p] = p + 0.5;
@@ -238,26 +225,23 @@ class PlotFit {
 			channelBackground[n] = gradient * n + intercept;
 		}
 		netAreaError[0] = Math.pow(grossArea + netBackground, 0.5);
-		darea = (double) area;
-		// calculate weight
+		double darea = (double) area;
+		/* calculate weight */
 		if (area > 0) { // must have more than zero counts
 			for (int i = rx1; i <= rx2; i++) {
 				centroid[0] += (double) (i * counts[i] / darea);
 			}
 		} else {
 			centroid[0] = 0;
-			return (0);
 		}
-
-		// Calculation of Variance
+		/* Calculation of Variance */
 		for (int i = rx1; i <= rx2; i++) {
 			distance = (double) Math.pow((i - centroid[0]), 2);
 			variance += (double) counts[i] * distance / (darea - 1.0);
 
 		}
-		//Error in Centroid position
+		/* Error in Centroid position */
 		centroidError[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
 		fwhm[0] = 2.354 * Math.sqrt(variance);
-		return (6);
 	}
 }
