@@ -556,10 +556,15 @@ class Action implements ActionListener, PlotMouseListener {
 					"There is no histogram numbered " + num + ".");
 			}
 			if (hist.length > 1){
-				final int newlen=hist.length-1;
-				final double [] pass=new double[newlen];
-				System.arraycopy(hist,1,pass,0,newlen);
-				overlay(pass);
+				if (h.getDimensionality() != 1){
+					textOut.errorOutln(h.getName().trim()+
+					" is not 1D, so you may not overlay other histograms.");
+				} else {
+					final int newlen=hist.length-1;
+					final double [] pass=new double[newlen];
+					System.arraycopy(hist,1,pass,0,newlen);
+					overlay(pass);
+				}
 			} else {
 				done();
 			}
@@ -578,8 +583,13 @@ class Action implements ActionListener, PlotMouseListener {
 			final int num = (int)hist[i];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
-				display.addToOverlay(Histogram.getHistogram(num));
-				textOut.messageOut(Integer.toString(num)+' ', MessageHandler.CONTINUE);
+				if (h.getDimensionality() != 1){
+					textOut.errorOutln(h.getName().trim()+
+					" is not 1D, so it cannot be overlaid.");
+				} else {
+					display.addToOverlay(h);
+					textOut.messageOut(Integer.toString(num)+' ', MessageHandler.CONTINUE);
+				}
 			} else {
 				textOut.errorOutln(
 					"There is no histogram numbered " + num + ".");
