@@ -1,8 +1,9 @@
-/*
- */
 package jam.sort;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Class for containing a map of the ADC and TDC modules to be addressed, along with
@@ -10,20 +11,21 @@ import java.util.*;
  */
 public class VME_Map {
 
-    private List eventParameters;//vector containing all event parameters
+    private final List eventParameters= new ArrayList();//contains all event parameters
     private int indexCounter = 0;//counter for array assignments of parameter ID's
-    private SortRoutine sortRoutine;
+    private final SortRoutine sortRoutine;
     private int interval=1;//interval in milliseconds for the VME to insert scalers into the event stream
-    private Map V775ranges;
+    private final Map V775ranges=new HashMap();
     private int maxParameterNumber = 0;
+    private final StringBuffer messages=new StringBuffer();
 
     /**
      *
      */
     public VME_Map(SortRoutine sr) {
         sortRoutine = sr;
-        eventParameters = new Vector();
-        V775ranges = new Hashtable();
+        messages.append(sortRoutine.getClass().getName());
+        messages.append(": \n");
     }
 
     /**
@@ -39,7 +41,7 @@ public class VME_Map {
      */
     public int eventParameter(int slot, int baseAddress,
     int channel, int threshold) throws SortException {
-        VME_Channel vmec = new VME_Channel(slot, baseAddress,
+        VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
         channel, threshold, indexCounter);
         eventParameters.add(vmec);
         indexCounter++;
@@ -91,8 +93,8 @@ public class VME_Map {
         }
         byte temp2=(byte)(36000/range);
         int actualRange=36000/temp2;
-        System.err.println("A range of "+range+" ns requested for TDC with base address "+hexBase+
-            ", "+temp2+" set in register corresponding to a range of "+actualRange+" ns.");
+        messages.append("A range of "+range+" ns requested for TDC with base address "+hexBase+
+            ", "+temp2+" set in register corresponding to a range of "+actualRange+" ns.\n");
         Byte FSR = new Byte(temp2);
         if (V775ranges.containsKey(ba)) V775ranges.remove(ba);//remove so no double entries
         V775ranges.put(ba,FSR);    
@@ -100,5 +102,9 @@ public class VME_Map {
     
     public Map getV775Ranges(){
         return V775ranges;
+    }
+    
+    void appendMessage(String s){
+    	messages.append(s);
     }
 }
