@@ -299,47 +299,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 
 	/**
-	 * Accepts integer input and does a command if one is present.
-	 * 
-	 * @param parameters
-	 *            the integers
-	 */
-	//FIXME KBS should be in parse command
-	/*
-	 * void integerChannel(double[] parameters) { final int numPar =
-	 * parameters.length;
-	 * 
-	 * //FIXME we should be better organized so range and rebin are not //
-	 * special cases if ((commandPresent)) { if (RANGE.equals(inCommand)) {
-	 * synchronized (cursor) { final int len = Math.min(numPar, 2); if (len>=2)
-	 * cursor.setChannel((int) parameters[0], (int) parameters[1]); else if
-	 * (len==1) cursor.setChannel((int) parameters[0], 0); //for (int i = 0; i <
-	 * len; i++) { // rangeList.add(new Integer((int) parameters[i]));
-	 * 
-	 * doCommand(inCommand); //} } return; } else if (REBIN.equals(inCommand)) {
-	 * if (numPar > 0) { parameter = new double[numPar];
-	 * System.arraycopy(parameters, 0, parameter, 0, numPar); } } } // we have a
-	 * 1 d plot final Plot currentPlot = display.getPlot(); if
-	 * (currentPlot.getDimensionality() == 1) { if (commandPresent) { final int
-	 * loopMax = Math.min(numPar, 2); for (int i = 0; i < loopMax; i++) { if
-	 * (GOTO.equals(inCommand)) { cursor.setChannel((int) parameters[i], 0); }
-	 * else { cursor.setChannel((int) parameters[i], 0);
-	 * cursor.shiftInsidePlot(); } doCommand(inCommand); } } else { //no command
-	 * so get channel if (numPar > 0) { // check for out of bounds synchronized
-	 * (cursor) { cursor.setChannel((int) parameters[0], 0);
-	 * cursor.shiftInsidePlot(); final double cursorCount = cursor.getCounts();
-	 * currentPlot.markChannel(cursor); textOut.messageOutln("Bin " +
-	 * cursor.getX() + ": Counts = " + cursorCount); } done(); } } } else { //we
-	 * have a 2d plot if (commandPresent) { final int loopMax = Math.min(numPar,
-	 * 4); synchronized (this) { for (int i = 1; i < loopMax; i += 2) {
-	 * cursor.setChannel((int) parameters[i - 1], (int) parameters[i]);
-	 * cursor.shiftInsidePlot(); doCommand(inCommand); } } } else { //no command
-	 * so get channel if (numPar > 1) { cursor.setChannel((int) parameters[0],
-	 * (int) parameters[1]); cursor.shiftInsidePlot();
-	 * currentPlot.markChannel(cursor); textOut.messageOutln("Bin " +
-	 * cursor.getCoordString() + ": Counts = " + cursor.getCounts()); done(); } } } }
-	 */
-	/**
 	 * Display the counts at cursor
 	 * 
 	 * @param cursor

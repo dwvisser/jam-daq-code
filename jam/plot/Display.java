@@ -207,13 +207,16 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			final Limits lim = Limits.getLimits(hist);
 			currentPlot.removeAllPlotMouseListeners();
 			currentPlot.addPlotMouseListener(action);
-			showPlot(hist); //changes local currentPlot
+			currentPlot.setMarkArea(false);
+			currentPlot.setMarkingChannels(false);
+			currentPlot.displayHistogram(hist);			 
 			toolbar.setHistogramDimension(hist.getDimensionality());
-		} else { //we have a null histogram, but display anyway
-			showPlot(hist);
+			
 		}
 		/* Add to view */
+		//currentPlot.repaint();
 		currentView.setHistogram(getPlot().getNumber(), hist);
+
 	}
 	/**
 	 * Get the current select histogram
@@ -390,31 +393,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		getPlot().removePlotMouseListener(listener);
 	}
 
-	/**
-	 * Shows (display) a histogram.
-	 * 
-	 * @param hist
-	 *            the histogram to display
-	 */
-	//FIXME KBS merge functionallity with setPlot
-	private void showPlot(Histogram hist) {
-				
-		Plot plot = getPlot();
-			
-		/// Cancel all previous stuff.
-		plot.setSelectingArea(false);
-		plot.setMarkArea(false);
-		plot.setMarkingChannels(false);
-		
-		plot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
-		action.setDefiningGate(false);
-	
-		if (hist != null) {
-			plot.displayHistogram(hist);			
-		} 
-		
-		plot.repaint();	
-	}
 	/**
 	 * Preferences changed
 	 */

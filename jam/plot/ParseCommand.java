@@ -136,12 +136,11 @@ public class ParseCommand implements CommandListener{
 				action.setCursor(cursor);				
 				action.doCommand(Action.CURSOR);				
 			}
-			//Error if only 1 co-ordinate
-			//if i<	
+			//FIXME Error if only 1 co-ordinate is givne	
 		}
 
 		
-		/*
+		/* FIXME KBS remove
 		if ((commandPresent)) {
 			if (RANGE.equals(inCommand)) {
 				synchronized (cursor) {
