@@ -7,7 +7,7 @@ import jam.global.MessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.swing.Action;
 /**
  * Class to create commands and execute them
  *
@@ -47,7 +47,16 @@ public class JamCmdManager implements CommandListener {
 	public JamCmdManager(MessageHandler msghdlr) {
 		this.msghdlr = msghdlr;
 	}
-
+	/**
+	 * Create a new Action command
+	 * 
+	 * @param actionName action name as in CommandNames
+	 * @return Action object
+	 */
+	public Action getAction(String actionName){
+		createCmd(actionName);
+		return  (Action)currentCommand;
+	}
 	/**
 	 * Perform command with object parameters
 	 *
@@ -70,17 +79,13 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
 	 */
-	public boolean performParseCommand(String strCmd, String[] strCmdParams)
+	public boolean performParseCommand(String strCmd, String[] strCmdParams) 
 		throws CommandListenerException {
 		boolean success=false;
-		try {
-			if (createCmd(strCmd)) {
-				currentCommand.performParseCommand(strCmdParams);
-				success=true;
-			} 
-		} catch (CommandException ce) {
-			throw new CommandListenerException(ce.getMessage());
-		}
+		if (createCmd(strCmd)) {
+			currentCommand.performParseCommand(strCmdParams);
+			success=true;
+		} 
 		return success;
 	}
 	
@@ -90,7 +95,7 @@ public class JamCmdManager implements CommandListener {
 	 * @return <code>true</code> if successful, <code>false</code> if 
 	 * the given command doesn't exist
 	 */
-	private boolean createCmd(String strCmd) throws CommandException {
+	private boolean createCmd(String strCmd)  {
 		final boolean exists=cmdMap.containsKey(strCmd);
 		if (exists) {
 			final Class cmdClass = (Class)cmdMap.get(strCmd);
