@@ -38,7 +38,7 @@ public class InitialHistograms{
      * @return counts for a 1d histogram that says JAM.
      */
     private int [] histNameJam1d(){
-        final int sizeX=1024;
+        final int sizeX=900;
         final int[] counts = new int [sizeX];
         //Make a J
         for (int i =100;i< 150;i++) {
@@ -160,7 +160,7 @@ public class InitialHistograms{
      * @return counds for a 1d histogram of triangles
      */
     private int [] histTriangle(){
-        final int sizeX=1024;
+        final int sizeX=1000;
         final int [] counts = new int [sizeX];
         // make a small triangle
         int position=0;
@@ -183,7 +183,7 @@ public class InitialHistograms{
         }
         position=800;
         range=200;
-        for (int i=position; i<=position+range;i++){
+        for (int i=position; i<position+range;i++){
             if (i<=(position+range/2)) {
                 counts[i]=i-position;
             } else  {
