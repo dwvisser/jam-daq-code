@@ -157,8 +157,7 @@ public class SelectionTree extends JPanel implements Observer {
             final Histogram hist = (Histogram) nodeObject;
             status.setHistName(hist.getName());
             status.setCurrentGateName(null);
-            broadcaster
-                    .broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+            broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
         } else if (nodeObject instanceof Gate) {
             Gate gate = (Gate) nodeObject;
             Histogram hist = gate.getHistogram();

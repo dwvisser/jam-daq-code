@@ -22,7 +22,8 @@ public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
 	private static String histName = "";
-	private static String overlayName, gateName;
+	private static String overlayName;	
+	private static String gateName;
 	private static JFrame frame;
 	private static Display display;
 	private static MessageHandler console;
@@ -31,7 +32,7 @@ public final class JamStatus {
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
 	private String sortName="";
-	
+	private static boolean overlayState;
 
 	/**
 	 * The one instance of JamStatus.
@@ -233,7 +234,21 @@ public final class JamStatus {
 	public synchronized Histogram getCurrentHistogram(){
 		return Histogram.getHistogram(histName);
 	}
-
+	/**
+	 * Overlay histogram state
+	 * @param state
+	 */
+	public void setOverState(boolean state){
+		overlayState=state;
+	}
+	/**
+	 * Overlay histogram state
+	 * @param state
+	 */
+	public boolean getOverState(){
+		return overlayState;
+	}
+	
 	/**
 	 * Sets the overlay Histogram name.
 	 */
