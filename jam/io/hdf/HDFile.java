@@ -256,8 +256,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	ScientificDataDimension getSDD(Histogram h) {
 		byte type=NumberType.DOUBLE;
-		if (h.getType() == Histogram.ONE_DIM_INT
-			|| h.getType() == Histogram.TWO_DIM_INT) {
+		if (h.getType().isInteger()) {
 			type = NumberType.INT;
 		}
 		return getSDD(h,type);

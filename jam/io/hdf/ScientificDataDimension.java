@@ -41,9 +41,7 @@ public class ScientificDataDimension extends DataObject {
 		rank = h.getDimensionality();
 		sizeX = h.getSizeX();
 		sizeY = h.getSizeY();
-		isDouble =
-			(h.getType() == Histogram.ONE_DIM_DOUBLE
-				|| h.getType() == Histogram.TWO_DIM_DOUBLE);
+		isDouble = !h.getType().isInteger();
 		int byteLength = 6 + 8 * rank; // see p. 6-33 HDF 4.1r2 specs
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);
