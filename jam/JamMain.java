@@ -250,6 +250,7 @@ public final class JamMain extends JFrame {
 		} else if (mode == FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(openFileName).toString());
+			menubar.setSaveEnabled(true);
 		} else if (mode == NO_SORT) {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
@@ -266,7 +267,7 @@ public final class JamMain extends JFrame {
 	 * there is a problem
 	 * @param fileName the file to be sorted?
 	 */
-	public void setSortModeFile(String fileName) {
+	public void setSortMode(int mode, String fileName) {
 		synchronized (this) {
 			this.openFileName = fileName;
 		}
