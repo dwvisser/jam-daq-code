@@ -1,6 +1,7 @@
 package jam.commands;
 
 import jam.data.Histogram;
+import jam.data.Group;
 
 /**
  * Command to create a histogram
@@ -25,6 +26,7 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
+		Group.setCurrentGroup("Working");
 		Histogram.createHistogram(hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 
@@ -39,6 +41,7 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = Integer.parseInt(cmdParams[3]);
 		final int sizeY = Integer.parseInt(cmdParams[4]);
+		Group.setCurrentGroup("Working");
 		Histogram.createHistogram(hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 

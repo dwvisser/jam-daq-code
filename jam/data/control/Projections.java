@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -358,6 +359,7 @@ public class Projections extends AbstractControl implements Observer {
 				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 						.getSizeY(), name);
 			}*/
+			Group.setCurrentGroup("Working");
 			hto = Histogram.createHistogram(new double[size],name);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler

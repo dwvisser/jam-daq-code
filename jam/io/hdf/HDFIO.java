@@ -5,6 +5,7 @@ import jam.data.DataBase;
 import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.data.Scaler;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
@@ -401,6 +402,19 @@ public class HDFIO implements DataIO, JamHDFFields {
             in.readObjects();
             pm.setProgress(1);
             pm.setNote("Getting histograms");
+            
+            //Set group
+            if (mode == FileOpenMode.OPEN) {
+            	Group.clear();
+            	Group.setCurrentGroup(infile.getName());
+            }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
+            	Group.setCurrentGroup(infile.getName());
+        	} else if (mode == FileOpenMode.RELOAD) {
+            	Group.setCurrentGroup(infile.getName());
+        	} else { //ADD
+            	Group.setCurrentGroup(infile.getName());
+        	}
+            
             getHistograms(mode, message);
             pm.setProgress(2);
             pm.setNote("Getting scalers");

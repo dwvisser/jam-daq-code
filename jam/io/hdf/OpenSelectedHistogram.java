@@ -2,6 +2,7 @@ package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
@@ -220,6 +221,7 @@ public class OpenSelectedHistogram {
 
 		//No histograms selected
 		if (selected.length > 0) {
+			Group.setCurrentGroup(fileOpen.getName());
 			//Loop for each selected item
 			for (i = 0; i < selected.length; i++) {
 				if (loadedHistograms.containsKey(selected[i])) {

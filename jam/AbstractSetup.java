@@ -3,6 +3,7 @@
  */
 package jam;
 
+import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -193,6 +194,7 @@ abstract class AbstractSetup {
         }
         /* setup scaler, parameter, monitors, gate, dialog boxes */
         AbstractControl.setupAll();
+
     }
 
     /**
@@ -206,7 +208,9 @@ abstract class AbstractSetup {
         if (sortClass == null) {
             sortClass = (Class) sortChoice.getSelectedItem();
         }
-        try {
+        Group.clear();
+        Group.setCurrentGroup(sortClass.getName());
+        try {        	
             if (specify.isSelected()) {
                 /* we call loadClass() in order to guarantee latest version */
                 synchronized (this) {

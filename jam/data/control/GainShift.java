@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
@@ -358,6 +359,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 			name = ttextto.getText().trim();
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 					.getSizeX(), name);*/
+			Group.setCurrentGroup("Working");
 			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler

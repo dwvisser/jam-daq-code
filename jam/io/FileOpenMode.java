@@ -7,10 +7,12 @@ package jam.io;
  * @version May 3, 2004
  */
 public class FileOpenMode {
-	private final static int OPEN_VALUE = 1;
-	private final static int RELOAD_VALUE = 2;
-	private final static int ADD_VALUE = 3;
 	
+	private final static int OPEN_VALUE = 1;
+	private final static int OPEN_ADDITIONAL_VALUE=2;	
+	private final static int RELOAD_VALUE = 3;
+	private final static int ADD_VALUE = 4;
+
 	private final int value;
 
 	private FileOpenMode(int mode){
@@ -26,6 +28,10 @@ public class FileOpenMode {
 	 * the contents of the file.
 	 */
 	public static final FileOpenMode OPEN=new FileOpenMode(OPEN_VALUE);
+	/**
+	 * Mode for opening an additional file. 
+	 */
+	public static final FileOpenMode OPEN_ADDITIONAL=new FileOpenMode(OPEN_ADDITIONAL_VALUE);
 	
 	/**
 	 * Mode for replacing the contents of data in memory with any 

@@ -1,6 +1,7 @@
 package jam.data.control;
 
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 
@@ -169,6 +170,7 @@ public class HistogramNew extends AbstractControl {
 		} else {
 			array = new double[size][size];
 		}
+		Group.setCurrentGroup("Working");
 		Histogram.createHistogram(array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");

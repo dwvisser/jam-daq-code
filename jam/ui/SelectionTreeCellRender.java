@@ -2,6 +2,7 @@ package jam.ui;
 
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.data.Group;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -38,7 +39,11 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
         super.getTreeCellRendererComponent(tree, value, selected, expanded,
                 leaf, row, hasFocus);
         Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
-        if (nodeObject instanceof Histogram) {
+        if (nodeObject instanceof Group) {
+        	  Group group = (Group)nodeObject;
+        	  setIcon(Icons.GROUP);
+        	  setText(group.getName());
+        } else if (nodeObject instanceof Histogram) {
             Histogram hist = (Histogram) nodeObject;
             setBackgroundSelectionColor(defaultBackgroundColor);
             final StringBuffer tip=new StringBuffer();

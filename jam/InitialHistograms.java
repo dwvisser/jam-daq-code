@@ -2,6 +2,7 @@ package jam;
 
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 
@@ -19,10 +20,12 @@ public class InitialHistograms {
      * Constructs an instance of this class.
      */
 	public InitialHistograms() {
-		makehists();
+		makehists(); 
 	}
 
 	private void makehists() {
+
+		Group.setCurrentGroup("Initial");
 		/* histogram with Jam name 2d */
 		final Histogram histJam2d = Histogram.createHistogram(histNameJam2d(),
 				"Histogram2D", "Jam Name 2D");

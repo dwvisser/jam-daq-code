@@ -1,5 +1,6 @@
 package jam;
 import jam.data.DataBase;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -64,6 +65,7 @@ public final class SetupSortOff extends AbstractSetup {
 		try{
 			if (STATUS.canSetup()) {
 				resetSort();//clear current data areas and kill daemons
+				
 				loadSorter();
 		        loadEventInput();
 		        loadEventOutput();
@@ -284,6 +286,7 @@ public final class SetupSortOff extends AbstractSetup {
      */
     private void setupSort() throws SortException, JamException {
         initializeSorter();
+
         /* setup sorting */
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);

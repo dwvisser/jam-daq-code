@@ -267,6 +267,7 @@ public abstract class Histogram {
 		NAME_MAP.put(name, this);
 		LIST.add(this);
 		DIM_LIST[type.getDimensionality() - 1].add(this);
+		Group.getCurrentGroup().add(this);
 	}
 
 	/**

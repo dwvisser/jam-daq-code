@@ -1,7 +1,9 @@
+
 package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
@@ -335,6 +337,7 @@ public class Manipulations extends AbstractControl implements ActionListener,
 			name = ttextto.getText().trim();
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom1
 					.getSizeX(), name);*/
+			Group.setCurrentGroup("Working");
 			hto = (AbstractHist1D)Histogram.createHistogram(
 					new double[hfrom1.getSizeX()],name);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);

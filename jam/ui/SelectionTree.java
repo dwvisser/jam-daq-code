@@ -2,6 +2,7 @@ package jam.ui;
 
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -99,30 +100,39 @@ public class SelectionTree extends JPanel implements Observer {
         final String sortName = STATUS.getSortName();
         final DefaultMutableTreeNode rootNode;
         if (sortMode == SortMode.FILE) {
-            rootNode = new DefaultMutableTreeNode(sortName);
+            rootNode = new DefaultMutableTreeNode("File");
         } else if (sortMode == SortMode.OFFLINE) {
-            rootNode = new DefaultMutableTreeNode(sortName);
+            rootNode = new DefaultMutableTreeNode("Offline Sort");
         } else if ((sortMode == SortMode.ONLINE_DISK)
                 || (sortMode == SortMode.ONLINE_DISK)) {
-            rootNode = new DefaultMutableTreeNode(sortName);
+            rootNode = new DefaultMutableTreeNode("Online Sort");
         } else if (sortMode == SortMode.NO_SORT) {
-            rootNode = new DefaultMutableTreeNode(sortName);
+            rootNode = new DefaultMutableTreeNode("No Sort");
         } else {
             rootNode = new DefaultMutableTreeNode("No Data");
         }
         treeModel.setRoot(rootNode);
-        /* Loop through histograms and load them */
-        final Iterator iter = Histogram.getHistogramList().iterator();
-        while (iter.hasNext()) {
-            final Histogram hist = (Histogram) iter.next();
-            final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
-                    hist);
-            /* Loop through histograms and load them */
-            final Iterator iterGate = hist.getGates().iterator();
-            while (iterGate.hasNext()) {
-                histNode.add(new DefaultMutableTreeNode(iterGate.next()));
-            }
-            rootNode.add(histNode);
+        
+        // Loop through all groups 
+        final Iterator iterGroup = Group.getGroupList().iterator();
+        while (iterGroup.hasNext()) {
+        	final Group group = (Group)iterGroup.next();
+            final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
+            		group);
+	        // Loop through histograms and load them		
+	        final Iterator iterHist = group.getChildren().iterator();
+	        while (iterHist.hasNext()) {
+	            final Histogram hist = (Histogram) iterHist.next();
+	            final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
+	                    hist);
+	            groupNode.add(histNode);
+	            // Loop through gates and load them
+	            final Iterator iterGate = hist.getGates().iterator();
+	            while (iterGate.hasNext()) {
+	                histNode.add(new DefaultMutableTreeNode(iterGate.next()));
+	            }
+	        }
+	        rootNode.add(groupNode);
         }
         tree.expandRow(tree.getRowCount()-1);
     }
