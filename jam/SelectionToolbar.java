@@ -3,7 +3,6 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Display;
@@ -202,18 +201,13 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		if (hist != null) {
 			if (!overlay) {
 				status.setCurrentHistogramName(hist.getName());
-				try {
-					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
-					final Histogram h =
-						Histogram.getHistogram(
-							status.getCurrentHistogramName());
-					display.displayHistogram(h);
-					gatesChanged();
-					setOverlayEnabled(h.getDimensionality() == 1);
-				} catch (GlobalException ge) {
-					console.errorOutln(
-						getClass().getName() + ".selectHistogram(): " + ge);
-				}
+				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+				final Histogram h =
+					Histogram.getHistogram(
+					status.getCurrentHistogramName());
+				display.displayHistogram(h);
+				gatesChanged();
+				setOverlayEnabled(h.getDimensionality() == 1);
 			} else {
 				status.setOverlayHistogramName(hist.getName());
 				console.messageOut(hist.getName(), MessageHandler.END);
