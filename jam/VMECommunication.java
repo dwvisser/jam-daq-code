@@ -343,11 +343,10 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
     public void setupVME_Map(VME_Map vmeMap) throws JamException {
         String temp="";
         VME_Channel [] eventParams = vmeMap.getEventParameters();
-        //VME_Channel [] scalerParams = vmeMap.getScalerParameters();
-        Hashtable hRanges = vmeMap.getV775Ranges();
+        Map hRanges = vmeMap.getV775Ranges();
         int numRanges = 0;
         if (eventParams.length > 0) {
-            int totalParams = eventParams.length;//+scalerParams.length;
+            int totalParams = eventParams.length;
             temp += totalParams + "\n";
             for (int i=0; i < eventParams.length; i++) {
                 temp += eventParams[i].getSlot() + " ";
@@ -355,22 +354,20 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
                 temp += eventParams[i].getChannel()+" ";
                 temp += eventParams[i].getThreshold() + "\n";
             }
-            /*if (scalerParams.length > 0) {
-                for (int i=0; i < scalerParams.length; i++) {
-                    temp += scalerParams[i].getParameterNumber() + " ";
-                    temp += "0x"+Integer.toHexString(scalerParams[i].getBaseAddress())+" ";
-                    temp += scalerParams[i].getChannel()+" ";
-                    temp += "0\n";
-                }
-            }*/
             numRanges=hRanges.size();
             temp += numRanges+"\n";
             if (numRanges > 0) {
-                Enumeration eb = hRanges.keys();
-                Enumeration er = hRanges.elements();
-                while (eb.hasMoreElements()) {
+                /*Enumeration eb = hRanges.keys();
+                Enumeration er = hRanges.elements();*/
+                Iterator i=hRanges.entrySet().iterator();
+                /*while (eb.hasMoreElements()) {
                     int base = ((Integer)eb.nextElement()).intValue();
                     temp += "0x"+Integer.toHexString(base)+" "+er.nextElement()+"\n";
+                }*/
+                while (i.hasNext()){
+                	Map.Entry next=(Map.Entry)i.next();
+                	int base = ((Integer)next.getKey()).intValue();
+                	temp += "0x"+Integer.toHexString(base)+" "+next.getValue()+"\n";
                 }
             }
             temp += "\0";
@@ -399,7 +396,8 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
     /**
      * Method which is used to send all packets containing a string to the VME crate.
      *
-     * @parameter message   string to send
+     * @param status one of OK, SCALER, ERROR, CNAF, COUNTER, VME_ADDRESSES or SCALER_INTERVAL
+     * @param message string to send
      */
     private void VMEsend(int status, String message)  throws JamException {
         DatagramPacket packetMessage;
@@ -407,11 +405,12 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         for (int i=0;i<=2;i++){//zero first int
             byteMessage[i]=0;
         }
-        if (! validStatus(status)) throw new JamException(getClass().getName()+".vmeSend() with invalid status: "+status);
+        if (! validStatus(status)) {
+        	throw new JamException(getClass().getName()+".vmeSend() with invalid status: "+status);
+        } 
         byteMessage[3]=(byte) status;
         System.arraycopy(message.getBytes(),0,byteMessage,4,message.length());
         byteMessage[byteMessage.length-1]=STRING_NULL;
-        //packetDump(byteMessage);  //debugging call
         try {//create and send packet
             packetMessage=new DatagramPacket(byteMessage, byteMessage.length, addressVME, vmePort);
             if (socketSend != null) {
@@ -480,23 +479,10 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         sendPacket(byteMessage);//send it
     }
 
-    /*private void packCNAF(byte [] byteMessage, int offset, int [] cnaf){
-        byteMessage[offset+0]=(byte)(cnaf[0]&0xFF);        //id
-        byteMessage[offset+1]=(byte)(cnaf[1]&0xFF);        //c
-        byteMessage[offset+2]=(byte)(cnaf[2]&0xFF);        //n
-        byteMessage[offset+3]=(byte)(cnaf[3]&0xFF);        //a
-        byteMessage[offset+4]=(byte)(cnaf[4]&0xFF);        //f
-        byteMessage[offset+5]=(byte)((cnaf[5]>>>24 )&0xFF);      //data byte msb
-        byteMessage[offset+6]=(byte)((cnaf[5]>>>16 )&0xFF);      //data byte 1
-        byteMessage[offset+7]=(byte)((cnaf[5]>>>8)&0xFF);      //data byte 2
-        byteMessage[offset+8]=(byte)((cnaf[5]>>>0)&0xFF);      //data byte lsb
-    }*/
-
     /**
      * send out a packet
      */
     private void sendPacket(byte [] byteMessage) throws JamException {
-        //packetDump(byteMessage);//for debugging
         try {//create and send packet
             DatagramPacket packetMessage=new DatagramPacket(byteMessage, byteMessage.length, addressVME,
             vmePort);
@@ -586,12 +572,10 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     private void unPackScalers(DataInputStream messageDis) throws JamException {
         try {
-            //System.err.println("received scaler packet");
             int numScaler=messageDis.readInt();//number of scalers
             scalerValues=new int [numScaler];
             for (int i=0; i<numScaler;i++){
                 scalerValues[i]=messageDis.readInt();
-                //System.err.println("scaler "+i+": "+scalerValues[i]);
             }
         } catch (IOException ioe) {
             throw new JamException ("Unable to unpack scaler datagram [VMECommnunication]");
