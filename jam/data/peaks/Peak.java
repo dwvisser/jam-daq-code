@@ -101,13 +101,13 @@ public class Peak extends Object implements Comparable {
     }
 
     public int compareTo(Object p1) {
+    	int rval=0;//default return value
         if (getPosition() < ((Peak)p1).getPosition()){
-            return -1;
+            rval = -1;
         } else if (getPosition() > ((Peak)p1).getPosition()){
-            return 1;
-        } else {
-            return 0;
-        }
+            rval = 1;
+        } 
+        return rval;
     }
             
 }
