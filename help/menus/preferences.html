@@ -14,6 +14,9 @@
   <dt>Ignore zero channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the first channel of the histogram when the user clicks <em>Auto</em>.</dd>
   <dt>Ignore max channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the last channel of the histogram when the user clicks <em>Auto</em>.</dd>
   <dt>Autoscale on Expand/Zoom</dt><dd>Enabled by default. When enabled, histogram display is auto-scaled any time the view changes.
+  <dt>Disable 2d Gate Fill</dt><dd>Some Mac OSX systems are slow to draw filled in 2d gates. This option directs Jam to draw just the outline instead. The default setting is false, i.e., to highlight all the channels inside 2d gates when they're drawn. Inserting the line
+  	<pre>graph.nofill2d=true</pre>
+  	in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file will override the default at startup.</dd>
   <dt>Automatic peak find</dt><dd>Enabled by default. When enabled, peak channels from an automatically applied Gaussian filter are marked.
   <dt>Peak Find Properties...</dt><dd>Opens a dialog for customizing how peaks are found. 'Width' is the Full Width at Half Max (FWHM) searched for. 'Sensitivity' defines how gaussian-like a found peak must be before it is marked. Higher sensitivities mean a peak must be more like a gaussian. A checkbox picks whether peaks are labeled with their channel or their calibrated energy (if available).
   <dt>Black Background</dt><dd>Sets the display color scheme to white on black.</dd>
