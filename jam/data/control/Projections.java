@@ -33,7 +33,6 @@ Observer {
     JButton bApply =new JButton("Apply");
 
     private Histogram hfrom;
-    private Histogram hto;
 
     public Projections(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
         super();
@@ -355,10 +354,10 @@ Observer {
         messageHandler.messageOutln("Project "+hfrom.getName().trim()+" to "+ name.trim()+" "+typeProj);
     }
 
-    int [] projectX(int [][] inArray, int outLength, int ll, int ul){
+    int [] projectX(int [][] inArray, int outLength, int _ll, int _ul){
         int [] out = new int [outLength];
-        ll = Math.max(0,ll);
-        ul = Math.min(outLength-1,ul);
+        int ll = Math.max(0,_ll);
+        int ul = Math.min(outLength-1,_ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
@@ -370,10 +369,10 @@ Observer {
         return out;
     }
 
-    int [] projectY(int [][] inArray, int outLength, int ll, int ul){
+    int [] projectY(int [][] inArray, int outLength, int _ll, int _ul){
         int [] out = new int [outLength];
-        ll = Math.max(0,ll);
-        ul = Math.min(outLength-1,ul);
+        int ll = Math.max(0,_ll);
+        int ul = Math.min(outLength-1,_ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
