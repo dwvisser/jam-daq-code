@@ -7,9 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.Iterator;
 
 /**
@@ -19,15 +18,15 @@ import java.util.Iterator;
  * @author Ken Swartz
  */
 
-class Plot2d extends Plot implements MouseMotionListener, MouseListener {
+class Plot2d extends Plot {
 
-	/* last data gate point */
+	/** last data gate point */
 	private final Point lastPoint = new Point();
 
-	/* last pixel point added to gate list */
+	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
 
-	/* last pixel point mouse moved to */
+	/** last pixel point mouse moved to */
 	private final Point lastMovePoint = new Point();
 
 	/** areaMark is a rectangle in channel space */
@@ -43,7 +42,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	}
 
 	
-	void paintMarkedChannels(Graphics g){
+	protected void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
 		final Iterator it=markedChannels.iterator();
 		while (it.hasNext()){
@@ -57,35 +56,23 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * 
 	 * @param p1 starting data point
 	 */
-	public void markingArea(Point p1) {
-		//Copy points, don't construct new rectangles
-		areaStartPoint.x=p1.x;
-		areaStartPoint.y=p1.y;
-		//set initial values out of range so we
-		//know they are initial values
-		lastMovePoint.x=-1;
-		lastMovePoint.y=-1;
+	void markingArea(Point p1) {
+		areaStartPoint.setLocation(p1);
+		setLastMovePoint(p1);
 	} 
+	
 	/**
 	 * Paint call while marking an area
 	 */
-	void paintMarkingArea(Graphics gc) {
-		
-		Graphics2D g=(Graphics2D)gc;
-		g.setColor(PlotColorMap.area);		
-		
-		//Check we moved otherwise same point
-		final Point move; 		
-		if ((lastMovePoint.x>0)||(lastMovePoint.y)>0) {
-			move=graph.toData(lastMovePoint);
-		} else {
-			move=areaStartPoint;
+	protected void paintMarkingArea(Graphics gc) {
+		final Graphics2D g=(Graphics2D)gc;
+		g.setColor(PlotColorMap.area);	
+		synchronized (lastMovePoint){	
+			graph.markArea2dOutline(areaStartPoint,lastMovePoint);
 		}
-		graph.markArea2dOutline(areaStartPoint, move);
-		setMouseMoved(false);
-		
+		setMouseMoved(false);	
+		markingAreaClip.setSize(0,0);	
 	}
-	
 	
 	/**
 	 * Mark a rectangular area on the plot.
@@ -93,7 +80,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param p1 one corner of the rectangle
 	 * @param p2 another corner of the rectangle
 	 */
-	public void markArea(Point p1, Point p2) {
+	void markArea(Point p1, Point p2) {
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 		}
@@ -113,7 +100,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		}
 	}
 
-	void paintMarkArea(Graphics g) {
+	protected void paintMarkArea(Graphics g) {
 		final Graphics2D g2=(Graphics2D)g;
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
@@ -136,15 +123,15 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param pChannel the channel coordinates of the point
 	 * @param pPixel the plot coordinates of the point
 	 */
-	public void displaySetGate(
+	void displaySetGate(
 		GateSetMode mode,
 		Point pChannel,
 		Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			setSettingGate(true);
 			pointsGate.reset();
-			this.addMouseListener(this);
-			this.addMouseMotionListener(this);
+			this.addMouseListener(mouseInputAdapter);
+			this.addMouseMotionListener(mouseInputAdapter);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.x,pChannel.y);
 			setLastPoint(pChannel); //save data point
@@ -181,33 +168,35 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 			final Rectangle clip=getClipBounds(pointsGate,true);
 			setSettingGate(false);
 			pointsGate.reset();
-			removeMouseListener(this);
-			removeMouseMotionListener(this);
+			removeMouseListener(mouseInputAdapter);
+			removeMouseMotionListener(mouseInputAdapter);
 			repaint(clip);
 		} 
 	}
 
-	void paintSetGate(Graphics g) {
+	protected void paintSetGate(Graphics g) {
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate2d(pointsGate);
 	}
+	
 	/**
 	 * Called by mouse movement while setting a gate
 	 * @param g
 	 */	
-	void paintSettingGate(Graphics gc) {
+	private void paintSettingGate(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
 		g.setColor(PlotColorMap.gateDraw);
 		g.setComposite(AlphaComposite.getInstance(
 		AlphaComposite.SRC_OVER,0.8f));
-		g.drawLine(
-			lastGatePoint.x,
-			lastGatePoint.y,
-			lastMovePoint.x,
-			lastMovePoint.y);
+		synchronized (lastMovePoint){
+			g.drawLine(
+				lastGatePoint.x,
+				lastGatePoint.y,
+				lastMovePoint.x,
+				lastMovePoint.y);
+		}
 		setMouseMoved(false);
 		mouseMoveClip.reset();
-		
 	}
 
 	private void setLastGatePoint(Point p) {
@@ -228,7 +217,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param p the channel to get counts for
 	 * @return the counts at channel <code>p</code>
 	 */
-	public double getCount(Point p) {
+	double getCount(Point p) {
 		return counts2d[p.x][p.y];
 	}
 
@@ -237,7 +226,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 *
 	 * @return the counts for the displayed 2d histogram
 	 */
-	public double[][] getCounts() {
+	double[][] getCounts() {
 		return counts2d;
 	}
 
@@ -248,7 +237,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @return the maximum counts in the region of currently 
 	 * displayed 2d Histogram
 	 */
-	public int findMaximumCounts() {
+	protected int findMaximumCounts() {
 		int chminX = plotLimits.getMinimumX();
 		int chmaxX = plotLimits.getMaximumX();
 		int chminY = plotLimits.getMinimumY();
@@ -291,7 +280,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @return the minimum counts in the region of currently 
 	 * displayed 2d Histogram
 	 */
-	public int findMinimumCounts() {
+	protected int findMinimumCounts() {
 		int chminX = plotLimits.getMinimumX();
 		int chmaxX = plotLimits.getMaximumX();
 		int chminY = plotLimits.getMinimumY();
@@ -325,7 +314,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 *
 	 * @param g the graphics context to paint to
 	 */
-	public void paintHistogram(Graphics g) {
+	protected void paintHistogram(Graphics g) {
 		setScale(plotLimits.getScale());
 		g.setColor(PlotColorMap.hist);
 		g.getClipBounds(clipBounds);
@@ -379,7 +368,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param gc the graphics context to paint to
 	 * @throws DataException if there's a problem painting the gate
 	 */
-	void paintGate(Graphics gc) {
+	protected void paintGate(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
@@ -430,7 +419,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 *
 	 * @param g the graphics context to paint on
 	 */
-	void paintFit(Graphics g) {
+	protected void paintFit(Graphics g) {
 		error("Cannot plot fits with 2D histograms.");
 	}
 
@@ -439,7 +428,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 *
 	 * @param g the graphics context to paint with
 	 */
-	void paintOverlay(Graphics g) {
+	protected void paintOverlay(Graphics g) {
 		error("Cannot plot overlays with 2D histograms.");
 	}
 
@@ -451,32 +440,41 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param me created when the mouse pointer moves while in the 
 	 * plot
 	 */
-	public void mouseMoved(MouseEvent me) {		
-		//settting gate
+	protected void mouseMoved(MouseEvent me) {		
 		if (settingGate) {
 			/* only if we have 1 or more */
 			if (pointsGate.npoints > 0) {
-				//draw new line
-				if (mouseMoveClip.npoints == 0) {
-					mouseMoveClip.addPoint(lastGatePoint.x, lastGatePoint.y);
+				/* draw new line */
+				synchronized (lastMovePoint){
+					if (mouseMoveClip.npoints == 0) {
+						mouseMoveClip.addPoint(lastGatePoint.x, lastGatePoint.y);
+						mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
+					}
+					lastMovePoint.setLocation(me.getPoint());
 					mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
 				}
-				lastMovePoint.setLocation(me.getX(), me.getY());
-				mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
 				setMouseMoved(true);
-				this.repaint(getClipBounds(mouseMoveClip,false));
+				repaint(getClipBounds(mouseMoveClip,false));
 			}
-		//marking area	
-		} else if (markingArea) {			
-			lastMovePoint.setLocation(me.getX(), me.getY());
+		} else if (markingArea) {
+			synchronized (lastMovePoint){
+				if (markingAreaClip.height==0){	
+					markingAreaClip.add(graph.getRectangleOutline2d(areaStartPoint,
+					lastMovePoint));
+				}
+				lastMovePoint.setLocation(graph.toData(me.getPoint()));
+				markingAreaClip.add(getClipBounds(graph.getRectangleOutline2d(areaStartPoint,
+				lastMovePoint),false));
+			}
 			setMouseMoved(true);
-			this.repaint();
-			//this.repaint(getClipBounds(mouseMoveClip,false));			
+			repaint(/*markingAreaClip*/);			
 		}
 	}
 	
+	private final Rectangle markingAreaClip=new Rectangle();
+	
 	/**
-	 * Given a polygon, return the bounding rectangle + 1 pixel
+	 * Given a shape, return the bounding rectangle + 1 pixel
 	 * more on each side.
 	 * 
 	 * @param pin the polygon to use
@@ -485,30 +483,39 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @return the bounding rectangle + 1 pixel
 	 * more on each side
 	 */
-	private Rectangle getClipBounds(Polygon pin, boolean convert){
-		Polygon p=new Polygon(pin.xpoints,pin.ypoints,pin.npoints);
-		if (convert){
-			p=graph.toView(p);
+	private Rectangle getClipBounds(Shape pin, boolean convert){
+		final Rectangle r=pin.getBounds();
+		if (convert){//r is already in channel coordinates
+			r.add(r.getMaxX() + 1, r.getMaxY() + 1);
+			r.add(r.getX() - 1, r.getY() - 1);
+			final Point p1=r.getLocation();
+			final Point p2=new Point(p1.x+r.width,p1.y+r.height);
+			/* now do conversion */
+			r.setBounds(graph.getRectangleOutline2d(p1,p2));
+			return r;
+		} else {//r is in view coordinates
+			/* Recursively call back with a polygon in channel
+			 * coordinates.
+			 */
+			final Polygon p=new Polygon();
+			final Point p1=graph.toData(r.getLocation());
+			final Point p2=graph.toData(new Point(r.x+r.width,r.y+r.height));
+			final Point p3=graph.toData(new Point(r.x+r.width,r.y));
+			p.addPoint(p1.x,p1.y);
+			p.addPoint(p2.x,p2.y);
+			p.addPoint(p3.x,p3.y);
+			return getClipBounds(p,true);
 		}
-		final Rectangle r = p.getBounds();
-		r.add(r.getMaxX() + 1, r.getMaxY() + 1);
-		r.add(r.getX() - 1, r.getY() - 1);
-		return r;
 	}
+	
 	/**
 	 * Paint called if mouse moved is enabled
 	 */
-	void paintMouseMoved(Graphics gc) {
-
-		//Setting gate
+	protected void paintMouseMoved(Graphics gc) {
 		if (settingGate) {
 			paintSettingGate(gc);			
 		} else if (markingArea) {
-			paintMarkingArea( gc);
-			
+			paintMarkingArea(gc);
 		}		
 	}
-
-
-
 }
