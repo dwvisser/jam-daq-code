@@ -185,6 +185,8 @@ AcquisitionStatus, Observer {
      */
     boolean remote;
     
+    static final String NO_FILL_2D="Disable 2d Gate Fill";
+    
     /**
      * Construtor
      * create Jam window
@@ -508,6 +510,11 @@ AcquisitionStatus, Observer {
         ignoreFull.setEnabled(true);
         ignoreFull.addItemListener(jamCommand);
         mPrefer.add(ignoreFull);
+        JCheckBoxMenuItem noFill2d = new JCheckBoxMenuItem(this.NO_FILL_2D,
+        JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D));
+        noFill2d.setEnabled(true);
+        noFill2d.addItemListener(jamCommand);
+        mPrefer.add(noFill2d);
 		JCheckBoxMenuItem autoOnExpand = new JCheckBoxMenuItem("Autoscale on Expand/Zoom",true);
 		autoOnExpand.setEnabled(true);
 		autoOnExpand.addItemListener(jamCommand);

@@ -451,7 +451,12 @@ public class JamCommand
 			jam.plot.Action.setAutoOnExpand(item.isSelected());
 		} else if (text.equals("Automatic peak find")) {
 			display.setPreference(Display.AUTO_PEAK_FIND, item.isSelected());
+		} else if (text.equals(JamMain.NO_FILL_2D)) {
+			JamProperties.setProperty(
+				JamProperties.NO_FILL_2D,
+				item.isSelected());
 		}
+			
 	}
 
 	/** A histogram has been selected so tell all

@@ -67,7 +67,7 @@ public class JamProperties {
 	public final static String LOG_PATH = "log.path";
 	public final static String FRONTEND_VERBOSE = "frontend.verbose";
 	public final static String FRONTEND_DEBUG = "frontend.debug";
-	
+	public final static String NO_FILL_2D = "graph.nofill2d";
 	private final String NO_ERRORS="No error messages.";
 	private final String NO_WARNINGS="No warning messages.";
 	
@@ -382,6 +382,7 @@ public class JamProperties {
 		jamProperties.setProperty(DOCS_PATH,(new File(DEFAULT_JAM_HOME,"docs")).getPath());
 		jamProperties.setProperty(EVENT_WRITER,STORE_EVENTS_LOCALLY);
 		jamProperties.setProperty(BROWSER_PATH,"netscape");
+		setProperty(NO_FILL_2D,false);
 	}
 
 	/**

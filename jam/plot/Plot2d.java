@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import jam.data.*;
+import jam.global.JamProperties;
+
 /**
  *  Class to plot a 2 dimensional histogram
  *
@@ -95,7 +97,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             displayingGate=true;
             currentGate=gate;
             Graphics g=this.getGraphics();
-            graph.update(g);  //so graph has all pertinent imfo
+            graph.update(g);  //so graph has all pertinent info
             paintGate(g);
             paintPolyGate(g);
             g.dispose();
@@ -354,7 +356,9 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     void paintGate(Graphics g) throws DataException{
         g.setXORMode(Color.black);
         g.setColor(PlotColorMap.gateShow);
-        if (g instanceof PrintGraphics) {
+        boolean noFillMode=g instanceof PrintGraphics ||
+        	JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D);
+        if (noFillMode) {
             paintPolyGate(g);
         } else {
             graph.drawGate2d(currentGate.getLimits2d());
