@@ -1,5 +1,6 @@
 package jam;
 import jam.data.control.HistogramZero;
+import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
@@ -188,7 +189,7 @@ public final class Script {
 	void setJamCommand(JamCommand jc){
 		sso=jc.getSetupSortOff();
 		sc=jc.getSortControl();
-		hdfio=jc.getHDFIO();
+		hdfio=new HDFIO(JamStatus.instance().getFrame(),null);
 	}
 	
 	/**
