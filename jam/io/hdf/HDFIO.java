@@ -18,7 +18,6 @@ import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 import jam.util.SwingWorker;
 
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.ByteArrayOutputStream;
@@ -33,8 +32,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
@@ -222,6 +219,34 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
+    /**
+     * Read in an HDF file.
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile) {
+    	spawnAsyncReadFile(mode, infile, null);
+        return true;
+    }
+    /**
+     * Read in an HDF file.
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile,List histNames) {
+    	spawnAsyncReadFile(mode, infile, histNames);
+        return true;
+    }
+
+    
     /*
      * non-javadoc: Asyncronized write
      */
@@ -250,6 +275,46 @@ public final class HDFIO implements DataIO, JamHDFFields {
         worker.start();     	    	
     }
 
+    /*
+     * non-javadoc: Asyncronized read
+     */
+    public void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
+
+    	uiMessage="";
+    	uiErrorMessage ="";
+
+    	final SwingWorker worker = new SwingWorker() {
+
+            public Object construct() {
+            	asyncReadFile(mode, infile, histNames);
+            	return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            public void finished() {
+            	if (!uiErrorMessage.equals("")) {
+                    msgHandler.errorOutln(uiErrorMessage);
+            	} else {
+            		msgHandler.messageOutln(uiMessage);
+            	}
+            	
+            	//FIXME KBS should move to someplace else or have callback
+            	JamStatus STATUS=JamStatus.getSingletonInstance();            	
+            	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
+            	            	
+        		AbstractControl.setupAll();
+        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        		        			
+        		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);        		
+        		STATUS.setCurrentHistogram(firstHist);
+        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+        		STATUS.getFrame().repaint();
+            	
+            }
+        };
+        worker.start();     	
+    }
+    
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -316,7 +381,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         asyncMonitor.increment();
         message.append(")");
-        //msgHandler.messageOut("", MessageHandler.END);
+
         HDFile out=null;
         try {
             synchronized (this) {
@@ -344,96 +409,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
             out = null; //allows Garbage collector to free up memory
         }
         asyncMonitor.close();
-        //outln(message.toString());
         
         setLastValidFile(file);
         uiMessage =message.toString();
         
     }
 
-    /*
-     * non-javadoc: Confirm overwrite if file exits
-     */
-    private boolean overWriteExistsConfirm(File file) {
-        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
-                .showConfirmDialog(frame, "Replace the existing file? \n"
-                        + file.getName(), "Save " + file.getName(),
-                        JOptionPane.YES_NO_OPTION)
-                : true;
-        if (writeConfirm) {
-            /* we've confirmed overwrite with the user. */
-            file.delete();
-        }
-
-        return writeConfirm;
-    }
-
-    /**
-     * Read in an HDF file.
-     * 
-     * @param infile
-     *            file to load
-     * @param mode
-     *            whether to open or reload
-     * @return <code>true</code> if successful
-     */
-    public boolean readFile(FileOpenMode mode, File infile) {
-    	spawnAsyncReadFile(mode, infile, null);
-        return true;
-    }
-    /**
-     * Read in an HDF file.
-     * 
-     * @param infile
-     *            file to load
-     * @param mode
-     *            whether to open or reload
-     * @return <code>true</code> if successful
-     */
-    public boolean readFile(FileOpenMode mode, File infile,List histNames) {
-    	spawnAsyncReadFile(mode, infile, histNames);
-        return true;
-    }
-
-    /*
-     * non-javadoc: Asyncronized write
-     */
-    public void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
-
-    	uiMessage="";
-    	uiErrorMessage ="";
-
-    	final SwingWorker worker = new SwingWorker() {
-
-            public Object construct() {
-            	asyncReadFile(mode, infile, histNames);
-            	return null;
-            }
-
-            //Runs on the event-dispatching thread.
-            public void finished() {
-            	if (!uiErrorMessage.equals("")) {
-                    msgHandler.errorOutln(uiErrorMessage);
-            	} else {
-            		msgHandler.messageOutln(uiMessage);
-            	}
-            	
-            	//FIXME KBS should move to someplace else or have callback
-            	JamStatus STATUS=JamStatus.getSingletonInstance();            	
-            	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
-            	            	
-        		AbstractControl.setupAll();
-        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-        		        			
-        		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);        		
-        		STATUS.setCurrentHistogram(firstHist);
-        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-        		STATUS.getFrame().repaint();
-            	
-            }
-        };
-        worker.start();     	
-    }
 
     /**
      * Read in an HDF file
@@ -453,7 +434,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         
         if (!HDFile.isHDFFile(infile)) {
 			uiErrorMessage=infile + " is not a valid HDF File!";
-            //msgHandler.errorOutln(infile + " is not a valid HDF File!");
             rval = false;
         }
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
@@ -521,17 +501,14 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             .append(" parameters");
                 }
                 message.append(')');
-                //msgHandler.messageOutln(message.toString());
 
             } catch (HDFException e) {
             	uiErrorMessage ="Exception reading file '"
                 + infile.getName() + "': " + e.toString();            	
-                //msgHandler.errorOutln(e.toString());
                 rval = false;
             } catch (IOException e) {
             	uiErrorMessage ="Exception reading file '"
                     + infile.getName() + "': " + e.toString();            	
-                //msgHandler.errorOutln(e.toString());
                 rval = false;
             } finally {
             	try {
@@ -552,6 +529,24 @@ public final class HDFIO implements DataIO, JamHDFFields {
         uiMessage =message.toString();
         return rval;
     }
+    
+    /*
+     * non-javadoc: Confirm overwrite if file exits
+     */
+    private boolean overWriteExistsConfirm(File file) {
+        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
+                .showConfirmDialog(frame, "Replace the existing file? \n"
+                        + file.getName(), "Save " + file.getName(),
+                        JOptionPane.YES_NO_OPTION)
+                : true;
+        if (writeConfirm) {
+            /* we've confirmed overwrite with the user. */
+            file.delete();
+        }
+
+        return writeConfirm;
+    }
+
 
     /**
      * Read the histograms in.
