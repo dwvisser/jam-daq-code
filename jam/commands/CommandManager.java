@@ -30,10 +30,10 @@ public class CommandManager implements CommandListener, CommandNames {
 
 	private final JamStatus status=JamStatus.getSingletonInstance();
 	private final MessageHandler msghdlr;
-	private static CommandManager managerInstance=null;
+	private static CommandManager instance=null;
 	private static final Map CMD_MAP = Collections.synchronizedMap(new HashMap());
 	private static final Map INSTANCES=Collections.synchronizedMap(new HashMap());
-	private Commandable currentCommand;
+	private Commandable currentCom;
 	
 	/* initializer block for map */
 	static {
@@ -139,10 +139,10 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @return the unique instance of this class
 	 */
 	public static CommandManager getInstance () {
-		if (managerInstance==null) {
-			managerInstance=new CommandManager();
+		if (instance==null) {
+			instance=new CommandManager();
 		}		
-		return managerInstance;
+		return instance;
 	}
 	
 	/**
@@ -155,9 +155,9 @@ public class CommandManager implements CommandListener, CommandNames {
 	public boolean performParseCommand(String strCmd, String[] strCmdParams) {
 		boolean validCommand=false;
 		if (createCmd(strCmd)) {
-			if (currentCommand.isEnabled()){
+			if (currentCom.isEnabled()){
 				try{
-					currentCommand.performParseCommand(strCmdParams);
+					currentCom.performParseCommand(strCmdParams);
 				} catch (CommandListenerException cle){
 					msghdlr.errorOutln("Performing command "+strCmd+"; "+
 					cle.getMessage());
@@ -182,17 +182,17 @@ public class CommandManager implements CommandListener, CommandNames {
 		final boolean exists=CMD_MAP.containsKey(strCmd);
 		if (exists) {
 			final Class cmdClass = (Class)CMD_MAP.get(strCmd);
-			currentCommand = null;
+			currentCom = null;
 			final boolean created=INSTANCES.containsKey(strCmd);
 			if (created){
-				currentCommand=(Commandable) INSTANCES.get(strCmd);
+				currentCom=(Commandable) INSTANCES.get(strCmd);
 			} else {
 				try {
-					currentCommand = (Commandable) (cmdClass.newInstance());
-					currentCommand.initCommand();
-					if (currentCommand instanceof Observer){
+					currentCom = (Commandable) (cmdClass.newInstance());
+					currentCom.initCommand();
+					if (currentCom instanceof Observer){
 						Broadcaster.getSingletonInstance().addObserver(
-						(Observer)currentCommand);
+						(Observer)currentCom);
 					}
 				} catch (Exception e) {
 					/* There was a problem resolving the command class or 
@@ -200,7 +200,7 @@ public class CommandManager implements CommandListener, CommandNames {
 					 * if exists==true. */
 					throw new IllegalArgumentException(e.getMessage());
 				}
-				INSTANCES.put(strCmd,currentCommand);
+				INSTANCES.put(strCmd,currentCom);
 			}
 		}
 		return exists;
@@ -212,7 +212,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @return the action
 	 */
 	public Action getAction(String strCmd){
-		return createCmd(strCmd) ? currentCommand : null;
+		return createCmd(strCmd) ? currentCom : null;
 	}
 	
 	/**
@@ -227,16 +227,16 @@ public class CommandManager implements CommandListener, CommandNames {
 	/**
 	 * Help the user by getting similar commands.
 	 * 
-	 * @param s what the user typed
+	 * @param string what the user typed
 	 * @param onlyEnabled <code>true</code> means only return enabled commands
 	 * @return list of similar commands
 	 */
-	public String [] getSimilarCommnands(final String s, boolean onlyEnabled){
+	public String [] getSimilarCommnands(final String string, boolean onlyEnabled){
 		final SortedSet sim=new TreeSet();
 		final Set keys=CMD_MAP.keySet();
-		for (int i=s.length(); i>=1; i--){
-			final String com=s.substring(0,i);
-			for (Iterator it=keys.iterator(); it.hasNext();){
+		for (int i=string.length(); i>=1; i--){
+			final String com=string.substring(0,i);
+			for (final Iterator it=keys.iterator(); it.hasNext();){
 				final String key=(String)it.next();
 				if (key.startsWith(com)){
 					final boolean addIt=(!onlyEnabled) || 
