@@ -12,7 +12,7 @@ import java.util.Vector;
  * 
  * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public class PeakFinder extends Object {
+public class PeakFinder {
 
     //static private Multiplet [] multiplets;
     //public String name;
@@ -28,7 +28,7 @@ public class PeakFinder extends Object {
     /** When given the standard deviation for a gaussian peak, multiplying by this
      * gives the full width at half maximum height.
      */
-    static final double SIGMA_TO_FWHM = 2.354;
+    static final double SIGMA2FWHM = 2.354;
 
     /*     
      * Given a spectrum and search parameters, performs a digital filter peak search as
@@ -53,53 +53,52 @@ public class PeakFinder extends Object {
      * @return an array of the multiplets found in the spectrum
      */
     static private Multiplet [] peakFind(){
-        double maxSeparation=MAX_SEP;
         Multiplet peaks = new Multiplet();
-        Multiplet currentMultiplet=new Multiplet();
+        Multiplet current=new Multiplet();
         Vector multiplets = new Vector();
         Multiplet [] rval;
-        double [] SC = new double[spectrum.length];//defined by Java spec to be zeroes initially
-        double [] SCC = new double[spectrum.length];
-        int filter_limit=(int)Math.ceil(1.5*width);//gives filter at limit < 0.005 filter at center
-        double [] filter = new double[2*filter_limit+1];
-        double [] filter2 = new double[2*filter_limit+1]; //will contain the squares of filter's elements
-        double sigma=width/SIGMA_TO_FWHM;
+        double [] sum1 = new double[spectrum.length];//defined by Java spec to be zeroes initially
+        double [] sum2 = new double[spectrum.length];
+        int filterLimit=(int)Math.ceil(1.5*width);//gives filter at limit < 0.005 filter at center
+        double [] filter = new double[2*filterLimit+1];
+        double [] filter2 = new double[2*filterLimit+1]; //will contain the squares of filter's elements
+        double sigma=width/SIGMA2FWHM;
         // Create the filter and its square.
         for (int i=0; i < filter.length; i++) {
-            int k = i-filter_limit;
-            filter[i] = 2*(sigma*sigma - k*k)/(Math.sqrt(Math.PI)*sigma*sigma*sigma)*
-            Math.exp(-(k*k)/(2.0*sigma*sigma));
+            final int iPrime = i-filterLimit;
+            filter[i] = 2*(sigma*sigma - iPrime*iPrime)/(Math.sqrt(Math.PI)*sigma*sigma*sigma)*
+            Math.exp(-(iPrime*iPrime)/(2.0*sigma*sigma));
             filter2[i] = filter[i] * filter[i];
         }
         //Run the filter on the spectrum. (Eqns 2 in article)
-        for (int i=filter_limit; i < spectrum.length-filter_limit; i++){
+        for (int i=filterLimit; i < spectrum.length-filterLimit; i++){
             for (int j = 0; j < filter.length; j++){
-                int l=j-filter_limit;
-                SC[i] += filter[j] * spectrum[i-l];
-                SCC[i] += filter2[j] * spectrum[i-l];
+                int l=j-filterLimit;
+                sum1[i] += filter[j] * spectrum[i-l];
+                sum2[i] += filter2[j] * spectrum[i-l];
             }
         }
         //Build list of peak candidates
-        for (int i=filter_limit+1; i < spectrum.length-filter_limit-1; i++){
-            if (SC[i] > sensitivity*Math.sqrt(SCC[i]) &&
-            SC[i] > SC[i-1] &&
-            SC[i] > SC[i+1]) {//conditions met, calculate centroid
-                double posn = (SC[i-1]*(i-1)+SC[i]*i+SC[i+1]*(i+1))/(SC[i-1]+SC[i]+SC[i+1]);
-                peaks.addPeak(new Peak(posn, SC[i],width));
+        for (int i=filterLimit+1; i < spectrum.length-filterLimit-1; i++){
+            if (sum1[i] > sensitivity*Math.sqrt(sum2[i]) &&
+            sum1[i] > sum1[i-1] &&
+            sum1[i] > sum1[i+1]) {//conditions met, calculate centroid
+                double posn = (sum1[i-1]*(i-1)+sum1[i]*i+sum1[i+1]*(i+1))/(sum1[i-1]+sum1[i]+sum1[i+1]);
+                peaks.addPeak(new Peak(posn, sum1[i],width));
             }
         }
         //break into multiplets
         for (int i=0; i<peaks.size(); i++){
             if (i==0) {
-                multiplets.addElement(currentMultiplet);
-                currentMultiplet.addPeak(peaks.getPeak(i));
+                multiplets.addElement(current);
+                current.addPeak(peaks.getPeak(i));
             } else {
-                if ((peaks.getPeak(i).getPosition()-peaks.getPeak(i-1).getPosition()) > (maxSeparation*width)){
-                    currentMultiplet=new Multiplet();
-                    multiplets.addElement(currentMultiplet);
-                    currentMultiplet.addPeak(peaks.getPeak(i));
+                if ((peaks.getPeak(i).getPosition()-peaks.getPeak(i-1).getPosition()) > (MAX_SEP*width)){
+                    current=new Multiplet();
+                    multiplets.addElement(current);
+                    current.addPeak(peaks.getPeak(i));
                 } else {//add current peak to working multiplet
-                    currentMultiplet.addPeak(peaks.getPeak(i));
+                    current.addPeak(peaks.getPeak(i));
                 }
             }
         }
@@ -111,36 +110,36 @@ public class PeakFinder extends Object {
                 Multiplet temp=new Multiplet();
                 for (int j=0; j<rval[i].size(); j++){
                     if (j==0){
-                        Peak thisPeak = rval[i].getPeak(j);
-                        Peak nextPeak = rval[i].getPeak(j+1);
-                        double Dnext = thisPeak.getPosition()-nextPeak.getPosition();
-                        double Knext = Dnext * Math.exp(-Dnext*Dnext/(4.0*sigma*sigma)) *
-                        (1.0 - Dnext*Dnext/(6.0 * sigma * sigma));
-                        double psnCorrection = nextPeak.getArea()*Knext/thisPeak.getArea();
-                        temp.addPeak(new Peak(thisPeak.getPosition()+psnCorrection, thisPeak.getArea(),
+                        final Peak thisPeak = rval[i].getPeak(j);
+                        final Peak nextPeak = rval[i].getPeak(j+1);
+                        final double dNext = thisPeak.getPosition()-nextPeak.getPosition();
+                        final double kNext = dNext * Math.exp(-dNext*dNext/(4.0*sigma*sigma)) *
+                        (1.0 - dNext*dNext/(6.0 * sigma * sigma));
+                        final double correction = nextPeak.getArea()*kNext/thisPeak.getArea();
+                        temp.addPeak(new Peak(thisPeak.getPosition()+correction, thisPeak.getArea(),
                         thisPeak.getWidth()));
                     } else if (j == (rval[i].size()-1)) {
-                        Peak thisPeak = rval[i].getPeak(j);
-                        Peak lastPeak = rval[i].getPeak(j-1);
-                        double Dlast = thisPeak.getPosition()-lastPeak.getPosition();
-                        double Klast = Dlast * Math.exp(-Dlast*Dlast/(4.0*sigma*sigma)) *
-                        (1.0 - Dlast*Dlast/(6.0 * sigma * sigma));
-                        double psnCorrection = lastPeak.getArea()*Klast/thisPeak.getArea();
-                        temp.addPeak(new Peak(thisPeak.getPosition()+psnCorrection, thisPeak.getArea(),
+                        final Peak thisPeak = rval[i].getPeak(j);
+                        final Peak lastPeak = rval[i].getPeak(j-1);
+                        final double dLast = thisPeak.getPosition()-lastPeak.getPosition();
+                        final double kLast = dLast * Math.exp(-dLast*dLast/(4.0*sigma*sigma)) *
+                        (1.0 - dLast*dLast/(6.0 * sigma * sigma));
+                        final double correction = lastPeak.getArea()*kLast/thisPeak.getArea();
+                        temp.addPeak(new Peak(thisPeak.getPosition()+correction, thisPeak.getArea(),
                         thisPeak.getWidth()));
                     } else {//in the middle somewhere
-                        Peak thisPeak = rval[i].getPeak(j);
-                        Peak nextPeak = rval[i].getPeak(j+1);
-                        double Dnext = thisPeak.getPosition()-nextPeak.getPosition();
-                        double Knext = Dnext * Math.exp(-Dnext*Dnext/(4.0*sigma*sigma)) *
-                        (1.0 - Dnext*Dnext/(6.0 * sigma * sigma));
-                        Peak lastPeak = rval[i].getPeak(j-1);
-                        double Dlast = thisPeak.getPosition()-lastPeak.getPosition();
-                        double Klast = Dlast * Math.exp(-Dlast*Dlast/(4.0*sigma*sigma)) *
-                        (1.0 - Dlast*Dlast/(6.0 * sigma * sigma));
-                        double psnCorrection = (nextPeak.getArea()*Knext+lastPeak.getArea()*Klast)/
+                        final Peak thisPeak = rval[i].getPeak(j);
+                        final Peak nextPeak = rval[i].getPeak(j+1);
+                        final double dNext = thisPeak.getPosition()-nextPeak.getPosition();
+                        final double kNext = dNext * Math.exp(-dNext*dNext/(4.0*sigma*sigma)) *
+                        (1.0 - dNext*dNext/(6.0 * sigma * sigma));
+                        final Peak lastPeak = rval[i].getPeak(j-1);
+                        final double dLast = thisPeak.getPosition()-lastPeak.getPosition();
+                        final double kLast = dLast * Math.exp(-dLast*dLast/(4.0*sigma*sigma)) *
+                        (1.0 - dLast*dLast/(6.0 * sigma * sigma));
+                        final double correction = (nextPeak.getArea()*kNext+lastPeak.getArea()*kLast)/
                         thisPeak.getArea();
-                        temp.addPeak(new Peak(thisPeak.getPosition()+psnCorrection, thisPeak.getArea(),
+                        temp.addPeak(new Peak(thisPeak.getPosition()+correction, thisPeak.getArea(),
                         thisPeak.getWidth()));
                     }
                 }
@@ -154,8 +153,8 @@ public class PeakFinder extends Object {
             for (int p=0; p<rval[m].size(); p++) {
                 estArea += rval[m].getPeak(p).getArea();
             }
-            for (int ch = (int)Math.round(rval[m].getPeak(0).getPosition()-width*maxSeparation);
-            ch < (int)Math.round(rval[m].getPeak(rval[m].size()-1).getPosition()+width*maxSeparation);
+            for (int ch = (int)Math.round(rval[m].getPeak(0).getPosition()-width*MAX_SEP);
+            ch < (int)Math.round(rval[m].getPeak(rval[m].size()-1).getPosition()+width*MAX_SEP);
             ch++) {
                 trueArea += spectrum[ch];
             }
