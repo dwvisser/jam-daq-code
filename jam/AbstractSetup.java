@@ -82,6 +82,9 @@ abstract class AbstractSetup {
      */
     protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
+    /**
+     * Handle to event broadcaster.
+     */
 	protected static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
     
     /**
@@ -215,7 +218,7 @@ abstract class AbstractSetup {
         }
         //FIXME maybe we should do DataBase.clearAll(); here
         Group.clearList();
-        String sortName = parseSortClassName( sortClass.getName() );
+        final String sortName = parseSortClassName( sortClass.getName() );
         Group.createGroup(sortName, Group.Type.SORT);
         try {        	
             if (specify.isSelected()) {
@@ -335,24 +338,25 @@ abstract class AbstractSetup {
     }
     /**
      * Get just the class name from the full name 
-     * @param sortClassName
-     * @return
+     * @param name the full sort class name
+     * @return the classname, minus any packages
      */
-    private String parseSortClassName(String sortClassName) {
-    	String sortName;
-    	int index;
-		index = sortClassName.lastIndexOf(".");
-		sortName = sortClassName.substring(index+1, sortClassName.length());
-		return sortName;
+    private String parseSortClassName(String name) {
+    	final int index = name.lastIndexOf(".");
+		return name.substring(index+1, name.length());
     }
     
-    void selectFirstSortHistogram() {
+    /**
+     * Do what it takes to open up the tree to the first histogram
+     * in the sort routine.
+     */
+    protected void selectFirstSortHistogram() {
 		//Select first histogram
-		Group sortGroup = Group.getSortGroup();
+		final Group sortGroup = Group.getSortGroup();
 		STATUS.setCurrentGroup(sortGroup);
-		List histList = sortGroup.getHistogramList();
-		if (histList.size()>0) {
-			Histogram firstHist =  (Histogram)histList.get(0);
+		final List histList = sortGroup.getHistogramList();
+		if (!histList.isEmpty()) {
+			final Histogram firstHist =  (Histogram)histList.get(0);
 			STATUS.setCurrentHistogram(firstHist);
 		}			
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
@@ -368,3 +372,5 @@ abstract class AbstractSetup {
         return dialog;
     }
 }
+
+
