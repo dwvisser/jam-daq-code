@@ -15,7 +15,7 @@ import java.util.List;
  * @author Ken Swartz
  * @since       JDK1.1
  */
-public final class HDFile extends RandomAccessFile implements HDFconstants {
+public final class HDFile extends RandomAccessFile implements Constants {
 
 	/**
 	 * Check if a file is an HDF file
@@ -108,9 +108,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		//final int DDblockSize = 2 + 4 + 12 * objectList.size();
 		final int initOffset = sizeDataDescriptorBlock() + 4; //add in HDF file header
 		int counter = initOffset;
-		final Iterator temp = AbstractHData.getDataObjectList().iterator();
+		final Iterator temp = AbstractData.getDataObjectList().iterator();
 		while (temp.hasNext()) {
-			final AbstractHData dataObject = (AbstractHData) (temp.next());
+			final AbstractData dataObject = (AbstractData) (temp.next());
 			dataObject.refreshBytes();
 			dataObject.setOffset(counter);
 			counter += dataObject.getBytes().capacity();
@@ -121,7 +121,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	    /* The size of the DD block. */
 		/* numDD's + offset to next (always 0 here) + size*12 for
 		 * tag/ref/offset/length info */
-		final int size = AbstractHData.getDataObjectList().size();
+		final int size = AbstractData.getDataObjectList().size();
 	    return 2 + 4 + 12 * size;
 	}
 
@@ -146,14 +146,14 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException unrecoverable errror
 	 */
 	private synchronized void writeDataDescriptorBlock() throws HDFException {
-		final List objectList = AbstractHData.getDataObjectList();
+		final List objectList = AbstractData.getDataObjectList();
 		try {
 			seek(HEADER_BYTES); //skip header
 			writeShort(objectList.size()); //number of DD's
 			writeInt(0); //no additional descriptor block
 			final Iterator temp = objectList.iterator();
 			while (temp.hasNext()) {
-				final AbstractHData dataObject = (AbstractHData) (temp.next());
+				final AbstractData dataObject = (AbstractData) (temp.next());
 				writeShort(dataObject.getTag());
 				writeShort(dataObject.getRef());
 				writeInt(dataObject.getOffset());
@@ -172,7 +172,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException thrown if err occurs during file write
 	 */
 	private void writeAllObjects() throws HDFException {
-		final List objectList = AbstractHData.getDataObjectList();
+		final List objectList = AbstractData.getDataObjectList();
 		int countObjct=0;
 		final int numObjSteps = getNumberObjctProgressStep(objectList.size(), FRACTION_WRITE_ALL);
 		final Iterator temp = objectList.iterator();
@@ -180,7 +180,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			if (countObjct%numObjSteps==0 && monitor!=null) {
 				monitor.increment();
 			}
-			final AbstractHData dataObject = (AbstractHData) (temp.next());
+			final AbstractData dataObject = (AbstractData) (temp.next());
 			if (dataObject.getBytes().capacity() == 0){
 			    break writeLoop;
 			}
@@ -196,7 +196,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param	data	HDF data element
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
-	private void writeDataObject(AbstractHData data) throws HDFException {
+	private void writeDataObject(AbstractData data) throws HDFException {
 		try {
 			seek(data.getOffset());
 			write(data.getBytes().array());
@@ -246,13 +246,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					if (tag !=DFTAG_NULL) {
 						//Load scientific data as last moment needed
 						if ( lazyLoadData &&
-							 tag==AbstractHData.DFTAG_SD)
+							 tag==AbstractData.DFTAG_SD)
 						{
-							AbstractHData.create(tag,ref,offset,length);
+							AbstractData.create(tag,ref,offset,length);
 							lazyLoadNum++;
 						} else {
 							final byte [] bytes = readBytes(offset,length);
-							AbstractHData.create(bytes,tag,ref);
+							AbstractData.create(bytes,tag,ref);
 						}
 					}
 					
@@ -278,7 +278,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/* non-javadoc:
 	 * Lazy load the bytes for an object
 	 */
-	byte [] lazyReadData(AbstractHData dataObject) throws HDFException {
+	byte [] lazyReadData(AbstractData dataObject) throws HDFException {
         final int numObjSteps=getNumberObjctProgressStep(lazyLoadNum, FRACTION_TIME_READ_LAZY_HISTOGRAMS);
 		final byte [] localBytes = new byte[dataObject.getLength()];	
 		try {

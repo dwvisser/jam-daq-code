@@ -13,7 +13,7 @@ import java.util.List;
  * @author Dale Visser
  * @since JDK1.1
  */
-final class NumericalDataGroup extends AbstractHData {
+final class NumericalDataGroup extends AbstractData {
 
     /**
      * List of data elements this NDG ties together.
@@ -33,7 +33,7 @@ final class NumericalDataGroup extends AbstractHData {
         /* see DFTAG_NDG specification for HDF 4.1r2 */
         bytes = ByteBuffer.allocate(numBytes);
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final AbstractHData dataObject = (AbstractHData) (temp.next());
+            final AbstractData dataObject = (AbstractData) (temp.next());
             bytes.putShort(dataObject.getTag());
             bytes.putShort(dataObject.getRef());
         }
@@ -61,7 +61,7 @@ final class NumericalDataGroup extends AbstractHData {
      * @param data
      *            data element to be added
      */
-    void addDataObject(AbstractHData data) {
+    void addDataObject(AbstractData data) {
         elements.add(data);
     }
 

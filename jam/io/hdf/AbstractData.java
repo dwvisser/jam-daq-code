@@ -20,7 +20,7 @@ import java.util.Set;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public abstract class AbstractHData implements HDFconstants {
+public abstract class AbstractData implements Constants {
 
 	/**
 	 * List of Data Objects in the file.
@@ -67,8 +67,8 @@ public abstract class AbstractHData implements HDFconstants {
 	    INITABLE.put(new Short(DFTAG_SD),ScientificData.class);
 	    INITABLE.put(new Short(DFTAG_SDL),ScientificDataLabel.class);
 	    INITABLE.put(new Short(DFTAG_VG),VirtualGroup.class);
-	    INITABLE.put(new Short(DFTAG_VH),VdataDescription.class);
-	    INITABLE.put(new Short(DFTAG_VS),Vdata.class);
+	    INITABLE.put(new Short(DFTAG_VH),VDataDescription.class);
+	    INITABLE.put(new Short(DFTAG_VS),VData.class);
 	}
 	//Instance members
 	
@@ -120,7 +120,7 @@ public abstract class AbstractHData implements HDFconstants {
 	static void clearAll() {
 		//set all object data to none
 		for (final Iterator it=objectList.iterator(); it.hasNext();){
-			final AbstractHData dataObject=(AbstractHData)it.next();
+			final AbstractData dataObject=(AbstractData)it.next();
 			dataObject.bytes=ByteBuffer.wrap(CLEARBYTES);
 		}
 		objectList.clear();
@@ -143,7 +143,7 @@ public abstract class AbstractHData implements HDFconstants {
 	 * @param data data object
 	 * @see	#setOffsets()
 	 */
-	static void addDataObjectToList(AbstractHData data) {
+	static void addDataObjectToList(AbstractData data) {
 		final Integer key =data.getKey();
 		if (!tagRefMap.containsKey(key)){
 			tagRefMap.put(key, data);
@@ -155,11 +155,11 @@ public abstract class AbstractHData implements HDFconstants {
 	 * @param tag tag of HDF object
 	 * @param ref <em>unique</em> reference number in file
 	 */
-	public static AbstractHData getObject(short tag, short ref) {
-		AbstractHData match = null;
+	public static AbstractData getObject(short tag, short ref) {
+		AbstractData match = null;
 		final Integer key =calculateKey(tag, ref);		
 		if (tagRefMap.containsKey(key)){
-			match=(AbstractHData)tagRefMap.get(key);
+			match=(AbstractData)tagRefMap.get(key);
 		}
 		return match;
 	}
@@ -174,7 +174,7 @@ public abstract class AbstractHData implements HDFconstants {
 		final Set ssin=new HashSet();
 		final Iterator iter = collection.iterator();
 		while(iter.hasNext()){
-			final AbstractHData dataObject=(AbstractHData)iter.next();
+			final AbstractData dataObject=(AbstractData)iter.next();
 			if (tagType == dataObject.getTag()){
 				ssin.add(dataObject);
 			}
@@ -192,7 +192,7 @@ public abstract class AbstractHData implements HDFconstants {
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()){
-			final AbstractHData dataObject=(AbstractHData)iter.next();
+			final AbstractData dataObject=(AbstractData)iter.next();
 			if (tagType == dataObject.getTag()){
 				rval.add(dataObject);
 			}
@@ -204,8 +204,8 @@ public abstract class AbstractHData implements HDFconstants {
 	    return ALL_TYPES.contains(new Short(type));
 	}
 	
-	static final AbstractHData create(byte[] bytes, short tag, short ref) throws HDFException {
-        AbstractHData dataObject = null;
+	static final AbstractData create(byte[] bytes, short tag, short ref) throws HDFException {
+        AbstractData dataObject = null;
         if (isValidType(tag)) {
             dataObject = createDataObject(tag);
             if (dataObject != null) {//Only create necessary objects
@@ -217,8 +217,8 @@ public abstract class AbstractHData implements HDFconstants {
         return dataObject;
     }
 	
-	static AbstractHData create(short tag, short ref, int offset, int length) throws HDFException {
-	    AbstractHData dataObject = null;
+	static AbstractData create(short tag, short ref, int offset, int length) throws HDFException {
+	    AbstractData dataObject = null;
 	    if (isValidType(tag)){
 	    	dataObject =createDataObject(tag); 
 	    	if (dataObject!=null){	//Only create necessary objects
@@ -230,13 +230,13 @@ public abstract class AbstractHData implements HDFconstants {
 	    return dataObject;
 	}
 	
-	private static AbstractHData createDataObject(short tag) throws HDFException {
-		AbstractHData rval = null;
+	private static AbstractData createDataObject(short tag) throws HDFException {
+		AbstractData rval = null;
         final Short key = new Short(tag);
         if (INITABLE.containsKey(key)){
             final Class dataClass=(Class)INITABLE.get(key);
             try {
-                rval = (AbstractHData)dataClass.newInstance();
+                rval = (AbstractData)dataClass.newInstance();
             } catch (InstantiationException ie) {
                 throw new HDFException("Couldn't create "+dataClass.getName()+" instance.", ie);	            	
         	} catch ( IllegalAccessException iae){
@@ -248,7 +248,7 @@ public abstract class AbstractHData implements HDFconstants {
 	static void interpretBytesAll() throws HDFException {
 			final Iterator temp = getDataObjectList().iterator();
 			while (temp.hasNext()) {
-				final AbstractHData dataObject = (AbstractHData) (temp.next());
+				final AbstractData dataObject = (AbstractData) (temp.next());
 				dataObject.interpretBytes();
 			}
 	}
@@ -292,7 +292,7 @@ public abstract class AbstractHData implements HDFconstants {
 	 * @param	file	The file to contain the new object.
 	 * @param	tag	The hdf tag of the new object.
 	 */
-	AbstractHData(short tag) {
+	AbstractData(short tag) {
 		setTag(tag);
 		setRef(getUniqueRef());
 		addDataObjectToList(this); //ref gets set in this call
@@ -302,7 +302,7 @@ public abstract class AbstractHData implements HDFconstants {
 	 * Creates a data object.
 	 *
 	 */
-	protected AbstractHData(){
+	protected AbstractData(){
 	}
 	
 	/* non-javadoc:

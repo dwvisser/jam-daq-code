@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-final class NumberType extends AbstractHData {
+final class NumberType extends AbstractData {
 
     /**
      * First version of encoding

@@ -21,7 +21,7 @@ import java.util.List;
  *  
  * @author Ken Swartz
  */
-final class ConvertJamObjToHDFObj implements JamHDFFields{
+final class ConvertJamObjToHDFObj implements JamFileFields{
 
 	private final StringUtilities STRING_UTIL = StringUtilities.instance();
     /**
@@ -82,8 +82,8 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      */
     VirtualGroup addGroupSection() {
     	VirtualGroup virtualGroup;
-       	virtualGroup = new VirtualGroup(GROUP_SECTION, FILE_SECTION);
-        new DataIDLabel(virtualGroup, GROUP_SECTION);
+       	virtualGroup = new VirtualGroup(GRP_SECTION, FILE_SECTION);
+        new DataIDLabel(virtualGroup, GRP_SECTION);
         return  virtualGroup;
     }
     
@@ -247,8 +247,8 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 
         int[] xcoord = new int[0];
         int[] ycoord = new int[0];
-        final short[] types = { VdataDescription.DFNT_INT32,
-                VdataDescription.DFNT_INT32 };
+        final short[] types = { VDataDescription.DFNT_INT32,
+                VDataDescription.DFNT_INT32 };
         final short[] orders = { 1, 1 };
         final String gateName = gate.getName();
         if (gate.getDimensionality() == 1) {
@@ -267,11 +267,11 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         /* add name as note to vg */
         new DataIDAnnotation(vggate, gate.getHistogram().getName());
         
-        final VdataDescription desc = new VdataDescription(gateName, gateType,
+        final VDataDescription desc = new VDataDescription(gateName, gateType,
                 size, columnNames, types, orders);
         vggate.add(desc); //add vData description to gate VG        
         //HDF Undocumented Vdata has same reference as VdataDescription
-        final Vdata data = new Vdata(desc);
+        final VData data = new VData(desc);
         //KBS not needed
         //vggate.addDataObject(data); //add vData to gate VG
         
@@ -303,11 +303,11 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VdataDescription convertScalers(List scalers)  {
+	VDataDescription convertScalers(List scalers)  {
                 
         final int size = scalers.size();        
-        final short[] types = { VdataDescription.DFNT_INT32,
-                VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };
+        final short[] types = { VDataDescription.DFNT_INT32,
+                VDataDescription.DFNT_CHAR8, VDataDescription.DFNT_INT32 };
         final short[] orders = new short[3];
         orders[0] = 1; //number
         orders[1] = (short)maxNameLengthScaler(scalers); //name ... 
@@ -316,10 +316,10 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         final String scalerType = SCALER_TYPE;
         final String[] names = SCALER_COLS;
         
-        final VdataDescription desc = new VdataDescription(name,
+        final VDataDescription desc = new VDataDescription(name,
                 scalerType, size, names, types, orders);        
         
-        final Vdata data = new Vdata(desc);
+        final VData data = new VData(desc);
 
         for (int i = 0; i < size; i++) {
             final Scaler scaler = (Scaler) (scalers.get(i));
@@ -338,11 +338,11 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VdataDescription convertGroupScalers(List scalers)  {
+	VDataDescription convertGroupScalers(List scalers)  {
         
         final int size = scalers.size();		
-        final short[] types = { VdataDescription.DFNT_INT32,
-                VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };        
+        final short[] types = { VDataDescription.DFNT_INT32,
+                VDataDescription.DFNT_CHAR8, VDataDescription.DFNT_INT32 };        
         final short[] orders = new short[3];
         orders[0] = 1; 										//number
         orders[1] =  (short)maxNameLengthScaler(scalers); 	//name 
@@ -351,10 +351,10 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         final String scalerType = SCALER_TYPE;
         final String[] names = SCALER_COLS;
         
-        final VdataDescription desc = new VdataDescription(name,
+        final VDataDescription desc = new VDataDescription(name,
                 scalerType, size, names, types, orders);
         
-        final Vdata data = new Vdata(desc);
+        final VData data = new VData(desc);
 
         for (int i = 0; i < size; i++) {
             final Scaler scaler = (Scaler) (scalers.get(i));
@@ -374,18 +374,18 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */		
-	VdataDescription convertParameters(List parameters) {
+	VDataDescription convertParameters(List parameters) {
 		
-	    final short[] types = { VdataDescription.DFNT_CHAR8,
-	            VdataDescription.DFNT_FLT32 };
+	    final short[] types = { VDataDescription.DFNT_CHAR8,
+	            VDataDescription.DFNT_FLT32 };
 	    final short[] orders = new short[2];
 	    final int size = parameters.size();
 	    /* set order values */
 	    orders[0] = (short)maxNameLengthParam(parameters); //name 
 	    orders[1] = 1; //value
-	    final VdataDescription desc = new VdataDescription(PARAMETERS,
+	    final VDataDescription desc = new VDataDescription(PARAMETERS,
 	            PAR_TYPE, size, PARAM_COLS, types, orders);
-	    final Vdata data = new Vdata(desc);
+	    final VData data = new VData(desc);
 	    for (int i = 0; i < size; i++) {
 	        final StringUtilities util = StringUtilities.instance();
 	        final DataParameter param = (DataParameter) (parameters.get(i));

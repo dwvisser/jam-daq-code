@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  * @version 0.5 November 98
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
-final class ScientificDataScales extends AbstractHData {
+final class ScientificDataScales extends AbstractData {
 
     /**
      * The number of dimensions

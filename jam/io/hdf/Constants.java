@@ -6,7 +6,7 @@ package jam.io.hdf;
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  * @version 1.0
  */
-interface HDFconstants{
+interface Constants{
 
     /**
      * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
@@ -117,14 +117,14 @@ interface HDFconstants{
 	/**
 	 * HDF tag for Vdata description
 	 *
-	 * @see VdataDescription
+	 * @see VDataDescription
 	 */
 	public final static short DFTAG_VH = 1962;
 
 	/**
 	 * HDF tag for Vdata
 	 *
-	 * @see Vdata
+	 * @see VData
 	 */
 	public final static short DFTAG_VS = 1963;
     

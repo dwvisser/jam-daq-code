@@ -11,7 +11,7 @@ import javax.swing.filechooser.FileFilter;
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  */
-public class HDFileFilter extends FileFilter implements HDFconstants, 
+public class HDFileFilter extends FileFilter implements Constants, 
 java.io.FileFilter {
     
     final boolean option;
@@ -20,7 +20,7 @@ java.io.FileFilter {
      * Constructs a filter for HDF files. It checks the first 4 bytes of the file.
      * 
      * @param showDir whether to show directories as well
-     * @see HDFconstants#HDF_HEADER
+     * @see Constants#HDF_HEADER
      */
     public HDFileFilter(boolean showDir){
     	super();

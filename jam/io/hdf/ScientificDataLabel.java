@@ -9,7 +9,7 @@ package jam.io.hdf;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-final class ScientificDataLabel extends AbstractHData {
+final class ScientificDataLabel extends AbstractData {
 
     ScientificDataLabel() {
         super();

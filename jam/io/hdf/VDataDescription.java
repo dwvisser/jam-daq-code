@@ -11,7 +11,7 @@ import java.util.List;
  * @author Dale Visser
  * @since JDK1.1
  */
-public final class VdataDescription extends AbstractHData {
+public final class VDataDescription extends AbstractData {
 
     /**
      * Specifies how data records are interlaced in the Vdata record.
@@ -112,7 +112,7 @@ public final class VdataDescription extends AbstractHData {
      */
     private final static short VH_VERSION = 3;
 
-    VdataDescription(String name, String classtype, int size, String[] names,
+    VDataDescription(String name, String classtype, int size, String[] names,
             short[] types, short[] orders) {
         super(DFTAG_VH); //sets tag
         /* Double check dimensionality */
@@ -206,7 +206,7 @@ public final class VdataDescription extends AbstractHData {
         return rval;
     }
 
-    VdataDescription() {
+    VDataDescription() {
         super();
     }
 
@@ -297,10 +297,10 @@ public final class VdataDescription extends AbstractHData {
      *            type string showing what kind of info is contained
      * @return the data description with the given name
      */
-    static public VdataDescription ofName(List list, String which) {
-        VdataDescription output = null;
+    static public VDataDescription ofName(List list, String which) {
+        VDataDescription output = null;
         for (final Iterator temp = list.iterator(); temp.hasNext();) {
-            final VdataDescription vdd = (VdataDescription) (temp.next());
+            final VDataDescription vdd = (VDataDescription) (temp.next());
             if (vdd.getName().equals(which)) {
                 output = vdd;
             }

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-final class FileDescription extends AbstractHData {
+final class FileDescription extends AbstractData {
 
 	FileDescription(String label) {
 		super(DFTAG_FD); //sets tag

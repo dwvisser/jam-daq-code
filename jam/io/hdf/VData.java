@@ -14,9 +14,9 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-public final class Vdata extends AbstractHData {
+public final class VData extends AbstractData {
 
-    private VdataDescription description;
+    private VDataDescription description;
 
     /**
      * The vector of fields. Contains the useful java representations of the
@@ -38,7 +38,7 @@ public final class Vdata extends AbstractHData {
 
     private static final String VS_STRING = "VS_";
 
-    Vdata(VdataDescription vdd) {
+    VData(VDataDescription vdd) {
         super(DFTAG_VS); //sets tag
         description = vdd;
         nfields = description.getNumFields();
@@ -52,13 +52,13 @@ public final class Vdata extends AbstractHData {
         setRef(description.getRef());
     }
 
-    Vdata() {
+    VData() {
         super();
     }
 
     void init(byte[] data, short tag, short reference) {
         super.init(data, tag, reference);
-        description = (VdataDescription) (getObject(DFTAG_VH, reference));
+        description = (VDataDescription) (getObject(DFTAG_VH, reference));
         description.interpretBytes();
         nfields = description.getNumFields();
         nvert = description.getNumRows();
@@ -72,7 +72,7 @@ public final class Vdata extends AbstractHData {
     void addInteger(int column, int row, int indata) {
         Integer temp;
 
-        if (description.getType(column) == VdataDescription.DFNT_INT32) {
+        if (description.getType(column) == VDataDescription.DFNT_INT32) {
             temp = new Integer(indata);
             setCell(column, row, temp);
         } else { //uh oh... not right type
@@ -84,7 +84,7 @@ public final class Vdata extends AbstractHData {
     void addFloat(int column, int row, float indata) {
         Float temp;
 
-        if (description.getType(column) == VdataDescription.DFNT_FLT32) {
+        if (description.getType(column) == VDataDescription.DFNT_FLT32) {
             temp = new Float(indata);
             setCell(column, row, temp);
         } else { //uh oh... not right type
@@ -94,7 +94,7 @@ public final class Vdata extends AbstractHData {
     }
 
     void addChars(int column, int row, String indata) {
-        if (description.getType(column) == VdataDescription.DFNT_CHAR8) {
+        if (description.getType(column) == VDataDescription.DFNT_CHAR8) {
             setCell(column, row, indata);
         } else { //uh oh... not right type
             throw new IllegalStateException("Wrong data type for column "
@@ -115,19 +115,19 @@ public final class Vdata extends AbstractHData {
     private void interpretColumnBytes(int col) throws HDFException {
         final boolean order1 = order[col] == 1;
         switch (types[col]) {
-        case VdataDescription.DFNT_INT32:
+        case VDataDescription.DFNT_INT32:
             setIntColumn(col,order1);
             break;
-        case VdataDescription.DFNT_INT16:
+        case VDataDescription.DFNT_INT16:
             setShortColumn(col,order1);
             break;
-        case VdataDescription.DFNT_FLT32:
+        case VDataDescription.DFNT_FLT32:
             setFloatColumn(col,order1);
             break;
-        case VdataDescription.DFNT_DBL64:
+        case VDataDescription.DFNT_DBL64:
             setDoubleColumn(col,order1);
             break;
-        case VdataDescription.DFNT_CHAR8:
+        case VDataDescription.DFNT_CHAR8:
             for (int row = 0; row < nvert; row++) {
                 setCell(col, row, getString(row, col));
             }
@@ -188,38 +188,38 @@ public final class Vdata extends AbstractHData {
      * retreive from
      */
     private byte [] getBytes(int row, int col){
-        final ByteBuffer out = ByteBuffer.allocate(VdataDescription
+        final ByteBuffer out = ByteBuffer.allocate(VDataDescription
                 .getColumnByteLength(types[col], order[col]));
         switch (types[col]) {
-        case VdataDescription.DFNT_INT16:
+        case VDataDescription.DFNT_INT16:
             for (int i = 0; i < order[col]; i++) {
                 final short shortValue = ((Short) (cells[col][row]))
                         .shortValue();
                 out.putShort(shortValue);
             }
             break;
-        case VdataDescription.DFNT_INT32:
+        case VDataDescription.DFNT_INT32:
             for (int i = 0; i < order[col]; i++) {
                 final int intValue = ((Integer) (cells[col][row]))
                         .intValue();
                 out.putInt(intValue);
             }
             break;
-        case VdataDescription.DFNT_FLT32:
+        case VDataDescription.DFNT_FLT32:
             for (int i = 0; i < order[col]; i++) {
                 final float floatValue = ((Float) (cells[col][row]))
                         .floatValue();
                 out.putFloat(floatValue);
             }
             break;
-        case VdataDescription.DFNT_DBL64:
+        case VDataDescription.DFNT_DBL64:
             for (int i = 0; i < order[col]; i++) {
                 final double doubleValue = ((Double) (cells[col][row]))
                         .doubleValue();
                 out.putDouble(doubleValue);
             }
             break;
-        case VdataDescription.DFNT_CHAR8:
+        case VDataDescription.DFNT_CHAR8:
             final String string = (String) (cells[col][row]);
             out.put(StringUtilities.instance().getASCIIarray(string));
             break;
@@ -248,7 +248,7 @@ public final class Vdata extends AbstractHData {
         byte[] temp;
 
         String out = null;
-        if (types[col] == VdataDescription.DFNT_CHAR8) {
+        if (types[col] == VDataDescription.DFNT_CHAR8) {
             location = row * ivsize + offsets[col];
             length = order[col];
             temp = new byte[length];
@@ -283,7 +283,7 @@ public final class Vdata extends AbstractHData {
         DataInputStream dis;
 
         Integer out = null;
-        if (types[col] == VdataDescription.DFNT_INT32) {
+        if (types[col] == VDataDescription.DFNT_INT32) {
             location = row * ivsize + offsets[col];
             temp = new byte[length];
             System.arraycopy(bytes.array(), location, temp, 0, length);
@@ -306,7 +306,7 @@ public final class Vdata extends AbstractHData {
 
     private Short getShort(int row, int col) throws HDFException {
         Short rval = null;
-        if (types[col] == VdataDescription.DFNT_INT32) {
+        if (types[col] == VDataDescription.DFNT_INT32) {
             final int location = row * ivsize + offsets[col];
             final int shortLength = 2;
             final byte[] temp = new byte[shortLength];
@@ -341,7 +341,7 @@ public final class Vdata extends AbstractHData {
         DataInputStream dis;
 
         Float out = null;
-        if (types[col] == VdataDescription.DFNT_FLT32) {
+        if (types[col] == VDataDescription.DFNT_FLT32) {
             location = row * ivsize + offsets[col];
             temp = new byte[length];
             System.arraycopy(bytes.array(), location, temp, 0, length);
@@ -374,7 +374,7 @@ public final class Vdata extends AbstractHData {
         DataInputStream dis;
 
         Double out = null;
-        if (types[col] == VdataDescription.DFNT_DBL64) {
+        if (types[col] == VDataDescription.DFNT_DBL64) {
             location = row * ivsize + offsets[col];
             temp = new byte[length];
             System.arraycopy(bytes.array(), location, temp, 0, length);

@@ -32,7 +32,7 @@ import javax.swing.JOptionPane;
  * @author Dale Visser, Ken Swartz
  * @since JDK1.1
  */
-public final class HDFIO implements DataIO, JamHDFFields {
+public final class HDFIO implements DataIO, JamFileFields {
 
     /**
      * Last file successfully read from or written to for all instances of
@@ -440,7 +440,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         gateCount = 0;
         scalerCount = 0;
         parameterCount = 0;
-        AbstractHData.clearAll();
+        AbstractData.clearAll();
         jamToHDF.addDefaultDataObjects(file.getPath());
         asyncMonitor.setup("Saving HDF file", "Converting Objects",
                 MONITOR_STEPS_READ_WRITE + MONITOR_STEPS_OVERHEAD_WRITE);
@@ -472,7 +472,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
             asyncMonitor.close();
         }
-        AbstractHData.clearAll();
+        AbstractData.clearAll();
         out = null; //allows Garbage collector to free up memory
         setLastValidFile(file);
         uiMessage = message.toString();
@@ -500,7 +500,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         final StringBuffer message = new StringBuffer();
         VirtualGroup allHists, allGates;
 
-        AbstractHData.clearAll();
+        AbstractData.clearAll();
         jamToHDF.addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
@@ -526,8 +526,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
                 allGates.add(gateVGroup);
                 // add Histogram links...
-                final VirtualGroup hist = VirtualGroup.ofName(AbstractHData
-                        .ofType(AbstractHData.DFTAG_VG), gate.getHistogram().getName());
+                final VirtualGroup hist = VirtualGroup.ofName(AbstractData
+                        .ofType(AbstractData.DFTAG_VG), gate.getHistogram().getName());
                 if (hist != null) {
                     //reference the Gate in the Histogram group
                     hist.add(gateVGroup);
@@ -571,7 +571,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             asyncMonitor.close();            
         }
         synchronized (this) {
-            AbstractHData.clearAll();
+            AbstractData.clearAll();
             out = null; //allows Garbage collector to free up memory
         }     
         setLastValidFile(file);
@@ -604,7 +604,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ);
         try {
 
-            AbstractHData.clearAll();
+            AbstractData.clearAll();
             
             //Read in objects
             inHDF = new HDFile(infile, "r", asyncMonitor, MONITOR_STEPS_READ_WRITE);
@@ -612,7 +612,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
              /* read file into set of AbstractHData's, set their internal variables */
             inHDF.readFile();
             
-            AbstractHData.interpretBytesAll();
+            AbstractData.interpretBytesAll();
             
             asyncMonitor.increment();                
             if (hdfToJam.hasVGroupRootGroup()) {
@@ -659,7 +659,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
              inHDF = null;
         }
         
-        AbstractHData.clearAll();
+        AbstractData.clearAll();
         setLastValidFile(infile);
             
         uiMessage =message.toString();
@@ -709,7 +709,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             infile.getName());
                 }
                               
-                AbstractHData.clearAll();
+                AbstractData.clearAll();
                 
                 //Read in objects
                 inHDF = new HDFile(infile, "r", asyncMonitor, MONITOR_STEPS_READ_WRITE);
@@ -718,7 +718,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                  /* read file into set of AbstractHData's, set their internal variables */
                 inHDF.readFile();
                 
-                AbstractHData.interpretBytesAll();
+                AbstractData.interpretBytesAll();
                 
                 asyncMonitor.increment();                
                 
@@ -739,7 +739,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 
                 histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
 
-                final VdataDescription vddScalers= hdfToJam.findScalersOriginal();                
+                final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
                 int numScalers =0;
                 if (vddScalers!=null) {
                 	numScalers = hdfToJam.convertScalers(currentGroup, vddScalers, mode);
@@ -751,7 +751,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     int numParams=0;
                     /* clear if opening and there are histograms in file */
 
-                    final VdataDescription vddParam= hdfToJam.findParametersOriginal();
+                    final VDataDescription vddParam= hdfToJam.findParametersOriginal();
 
                     if (vddParam!=null) {
                     	numParams = hdfToJam.convertParameters(currentGroup, vddParam, mode);
@@ -784,7 +784,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                  /* destroys reference to HDFile (and its AbstractHData's) */
                  inHDF = null;
             }
-            AbstractHData.clearAll();
+            AbstractData.clearAll();
             setLastValidFile(infile);
         }
         uiMessage =message.toString();
@@ -809,14 +809,14 @@ public final class HDFIO implements DataIO, JamHDFFields {
         	            
         try {
         	
-            AbstractHData.clearAll();
+            AbstractData.clearAll();
             
             /* Read in histogram names */
             inHDF = new HDFile(infile, "r");
             inHDF.setLazyLoadData(true);
             inHDF.readFile();
             
-            AbstractHData.interpretBytesAll();
+            AbstractData.interpretBytesAll();
             
             if (hdfToJam.hasVGroupRootGroup()) {
             	rval.addAll(loadHistogramAttributesGroup());
@@ -838,7 +838,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         	}
     		inHDF=null;
     	}
-        AbstractHData.clearAll();
+        AbstractData.clearAll();
         return rval;
     }
     
@@ -891,7 +891,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 if (scalerList.size() > 0) {
                     final VirtualGroup vgScalers = jamToHDF.addScalerSection();
                     vgGroup.add(vgScalers);
-                    final VdataDescription vddScalers = jamToHDF
+                    final VDataDescription vddScalers = jamToHDF
                             .convertScalers(scalerList);
                     vgScalers.add(vddScalers);
                     if (group == Group.getSortGroup()) {
@@ -909,7 +909,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             .addParameterSection();
                     vgGroup.add(vgParams);
                     if (group == Group.getSortGroup()) {
-                        final VdataDescription vddParams = jamToHDF
+                        final VDataDescription vddParams = jamToHDF
                                 .convertParameters(paramList);
                         vgParams.add(vddParams);
                         /* Backwards compatible */
@@ -996,7 +996,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         
         histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
 
-        final VdataDescription vddScalers= hdfToJam.findScalersOriginal();                
+        final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
         int numScalers =0;
         if (vddScalers!=null) {
         	numScalers = hdfToJam.convertScalers(currentGroup, vddScalers, mode);
@@ -1008,7 +1008,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             int numParams=0;
             /* clear if opening and there are histograms in file */
 
-            final VdataDescription vddParam= hdfToJam.findParametersOriginal();
+            final VDataDescription vddParam= hdfToJam.findParametersOriginal();
 
             if (vddParam!=null) {
             	numParams = hdfToJam.convertParameters(currentGroup, vddParam, mode);

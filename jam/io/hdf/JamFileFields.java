@@ -6,7 +6,7 @@ package jam.io.hdf;
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser </a>
  */
-public interface JamHDFFields {
+public interface JamFileFields {
     
     /**
      * The section name for the whole file.
@@ -16,10 +16,10 @@ public interface JamHDFFields {
     /**
      * The section name for the histograms.
      */
-    String GROUP_SECTION = "Groups";
+    String GRP_SECTION = "Groups";
 
     /**
-     * The type name for the histograms?
+     * The type name for the groups?
      */
     String GROUP_TYPE = "GROUP";
     

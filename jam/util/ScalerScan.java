@@ -25,12 +25,12 @@ package jam.util;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.io.hdf.AbstractHData;
+import jam.io.hdf.AbstractData;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
-import jam.io.hdf.JamHDFFields;
-import jam.io.hdf.Vdata;
-import jam.io.hdf.VdataDescription;
+import jam.io.hdf.JamFileFields;
+import jam.io.hdf.VData;
+import jam.io.hdf.VDataDescription;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -57,7 +57,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class ScalerScan implements JamHDFFields {
+public final class ScalerScan implements JamFileFields {
 	
 	private static final char TAB = '\t';
 	
@@ -234,14 +234,14 @@ public final class ScalerScan implements JamHDFFields {
 
 	private String[] getScalerNames(HDFile in) {
 		String[] sname = null;
-		final VdataDescription VH =
-			VdataDescription.ofName(
-					AbstractHData.ofType(AbstractHData.DFTAG_VH),
+		final VDataDescription VH =
+			VDataDescription.ofName(
+					AbstractData.ofType(AbstractData.DFTAG_VH),
 				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			final Vdata VS =
-				(Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, VH.getRef()));
+			final VData VS =
+				(VData) (AbstractData.getObject(AbstractData.DFTAG_VS, VH.getRef()));
 			final int numScalers = VH.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -263,14 +263,14 @@ public final class ScalerScan implements JamHDFFields {
 
 	private int[] getScalerValues(HDFile in) throws HDFException {
 		int[] values = null;
-		final VdataDescription VH =
-			VdataDescription.ofName(
-					AbstractHData.ofType(AbstractHData.DFTAG_VH),
+		final VDataDescription VH =
+			VDataDescription.ofName(
+					AbstractData.ofType(AbstractData.DFTAG_VH),
 				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			final Vdata VS =
-				(Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, VH.getRef()));
+			final VData VS =
+				(VData) (AbstractData.getObject(AbstractData.DFTAG_VS, VH.getRef()));
 			//corresponding VS
 			final int numScalers = VH.getNumRows();
 			values = new int[numScalers];

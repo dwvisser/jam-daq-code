@@ -12,7 +12,7 @@ import java.util.List;
  * @version 0.5 December 98
  * @author Dale Visser
  */
-final class VirtualGroup extends AbstractHData {
+final class VirtualGroup extends AbstractData {
 
     /**
      * List of data elements this vGroup ties together.
@@ -61,11 +61,11 @@ final class VirtualGroup extends AbstractHData {
         //see DFTAG_VG specification for HDF 4.1r2
         bytes.putShort(numItems);
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final AbstractHData dataObject = (AbstractHData) (temp.next());
+            final AbstractData dataObject = (AbstractData) (temp.next());
             bytes.putShort(dataObject.getTag());
         }
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final AbstractHData dataObject = (AbstractHData) (temp.next());
+            final AbstractData dataObject = (AbstractData) (temp.next());
             bytes.putShort(dataObject.getRef());
         }
         bytes.putShort((short) name.length());
@@ -112,7 +112,7 @@ final class VirtualGroup extends AbstractHData {
      * @throws IllegalArgumentException
      *             if <code>data==null</code>
      */
-    void add(AbstractHData data) {
+    void add(AbstractData data) {
         if (data == null) {
             throw new IllegalArgumentException("Can't add null to vGroup.");
         }

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-final class ScientificData extends AbstractHData {
+final class ScientificData extends AbstractData {
 
     /**
      * The number of dimensions

@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * @author Ken Swartz
  * @version 15 Feb 2005
  */
-final class ConvertHDFObjToJamObj implements JamHDFFields {
+final class ConvertHDFObjToJamObj implements JamFileFields {
 
 	final StringUtilities STRING_UTIL = StringUtilities.instance();
 	
@@ -34,7 +34,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     
     boolean hasVGroupRootGroup() throws HDFException {
     	boolean hasRoot =false;
-        final VirtualGroup groupsRoot = VirtualGroup.ofName(GROUP_SECTION);
+        final VirtualGroup groupsRoot = VirtualGroup.ofName(GRP_SECTION);
         if (groupsRoot!=null) {
         	hasRoot =true;
         }
@@ -60,16 +60,16 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     List findGroups(FileOpenMode mode, List groupNames) throws HDFException {
     	final List groupList = new ArrayList();
         /* Get VirtualGroup that is root of all groups */
-        final VirtualGroup groupsInRoot = VirtualGroup.ofName(GROUP_SECTION);
+        final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);
         //Found root node
         if (groupsInRoot != null) {   	
             //Group iterator
             final Iterator groupIter = groupsInRoot.getObjects().iterator();
             // loop begin
             while (groupIter.hasNext()) {
-            	final AbstractHData hData = (AbstractHData)groupIter.next();
+            	final AbstractData hData = (AbstractData)groupIter.next();
             	//Is a virtual group
-            	if ( hData.getTag() == AbstractHData.DFTAG_VG ) {
+            	if ( hData.getTag() == AbstractData.DFTAG_VG ) {
             		//Cast to VirtualGroup and add to list
             		final VirtualGroup currentVGrp = (VirtualGroup)hData;
             		if (groupNames==null) {
@@ -140,13 +140,13 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             /* I check ndgErr==null to determine if error bars exist */
             NumericalDataGroup ndgErr = null;
             /* only the "histograms" VG (only one element) */
-            final List tempVec = AbstractHData.ofType(histGroup.getObjects(),
-                    AbstractHData.DFTAG_NDG);
+            final List tempVec = AbstractData.ofType(histGroup.getObjects(),
+                    AbstractData.DFTAG_NDG);
             final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
             if (dataGroups.length == 1) {
                 ndg = dataGroups[0]; //only one NDG -- the data
             } else if (dataGroups.length == 2) {
-                if (DataIDLabel.withTagRef(AbstractHData.DFTAG_NDG,
+                if (DataIDLabel.withTagRef(AbstractData.DFTAG_NDG,
                         dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
                     ndg = dataGroups[1];
                     ndgErr = dataGroups[0];
@@ -158,10 +158,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             	throw new HDFException( "Invalid number of data groups (" + dataGroups.length
                         + ") in VirtualGroup.");
             }
-            final ScientificData sciData = (ScientificData) (AbstractHData
-                    .ofType(ndg.getObjects(), AbstractHData.DFTAG_SD).get(0));
-            final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractHData
-                    .ofType(ndg.getObjects(), AbstractHData.DFTAG_SDD).get(0));
+            final ScientificData sciData = (ScientificData) (AbstractData
+                    .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
+            final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
+                    .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
             final byte histNumType = sdd.getType();
             sciData.setNumberType(histNumType);
             final int histDim = sdd.getRank();
@@ -207,8 +207,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     
     private ScientificData produceErrorData(NumericalDataGroup ndgErr, int histDim) {
         final boolean exists = ndgErr != null;
-        final ScientificData rval = exists ? (ScientificData) (AbstractHData.ofType(ndgErr
-                .getObjects(), AbstractHData.DFTAG_SD).get(0)) : null;
+        final ScientificData rval = exists ? (ScientificData) (AbstractData.ofType(ndgErr
+                .getObjects(), AbstractData.DFTAG_SD).get(0)) : null;
         if (exists) {
             rval.setRank(histDim);
             rval.setNumberType(NumberType.DOUBLE);
@@ -245,10 +245,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         final StringUtilities util = StringUtilities.instance();
         //Gate gate = null;
         /* get list of all VG's in file */
-        final List groups = AbstractHData.ofType(AbstractHData.DFTAG_VG);
+        final List groups = AbstractData.ofType(AbstractData.DFTAG_VG);
         /* get only the "gates" VG (only one element) */
         final VirtualGroup gates = VirtualGroup.ofName(groups, GATE_SECTION);
-        final List annotations = AbstractHData.ofType(AbstractHData.DFTAG_DIA);
+        final List annotations = AbstractData.ofType(AbstractData.DFTAG_DIA);
         if (gates != null) {
             numGates = gates.getObjects().size();
             final Iterator temp = gates.getObjects().iterator();
@@ -277,8 +277,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     Gate convertGate(Histogram hist, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
     	
     	//Get VDD member of Virtual group
-        final VdataDescription vdd = (VdataDescription) (AbstractHData
-                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
+        final VDataDescription vdd = (VDataDescription) (AbstractData
+                .ofType(currVG.getObjects(), AbstractData.DFTAG_VH)
                 .get(0));
         final String gname = currVG.getName();     
         if (vdd == null) {
@@ -287,11 +287,11 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return convertGate(hist, vdd, gname, mode);
     	
     }
-    Gate convertGate(Histogram hist, VdataDescription vdd, String gateName, FileOpenMode mode) throws HDFException {
+    Gate convertGate(Histogram hist, VDataDescription vdd, String gateName, FileOpenMode mode) throws HDFException {
         final Gate gate;
         final Polygon shape = new Polygon();
-        final Vdata data = (Vdata) (AbstractHData.getObject(
-                AbstractHData.DFTAG_VS, vdd.getRef()));
+        final VData data = (VData) (AbstractData.getObject(
+                AbstractData.DFTAG_VS, vdd.getRef()));
         //corresponding VS
         final int numRows = vdd.getNumRows();
 
@@ -327,9 +327,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 		return findSubGroupsName(virtualGroupGroup, SCALER_SECT);		
     }
 
-	VdataDescription findScalersOriginal() throws HDFException {
-        final VdataDescription vdd = VdataDescription.ofName(AbstractHData
-                .ofType(AbstractHData.DFTAG_VH), SCALER_SECT);
+	VDataDescription findScalersOriginal() throws HDFException {
+        final VDataDescription vdd = VDataDescription.ofName(AbstractData
+                .ofType(AbstractData.DFTAG_VH), SCALER_SECT);
 		return vdd;
     }
 	
@@ -341,8 +341,8 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      */
 
     int convertScalers(Group group, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
-    	 final VdataDescription vdd = (VdataDescription) (AbstractHData
-                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
+    	 final VDataDescription vdd = (VDataDescription) (AbstractData
+                .ofType(currVG.getObjects(), AbstractData.DFTAG_VH)
                 .get(0));
     	 return convertScalers(group, vdd, mode); 
     }
@@ -353,11 +353,11 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      * @param mode whether to open, reload or add @throws HDFException if there
      * is a problem retrieving scalers
      */
-    int convertScalers(Group group, VdataDescription vdd, FileOpenMode mode) throws HDFException {
+    int convertScalers(Group group, VDataDescription vdd, FileOpenMode mode) throws HDFException {
         int numScalers = 0;
       
         /* get the VS corresponding to the given VH */
-        final Vdata data = (Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, vdd.getRef()));
+        final VData data = (VData) (AbstractData.getObject(AbstractData.DFTAG_VS, vdd.getRef()));
         numScalers = vdd.getNumRows();
         for (int i = 0; i < numScalers; i++) {
             final String sname = data.getString(i, 1);
@@ -385,9 +385,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 		return findSubGroupsName(virtualGroupGroup, PARAMETERS);		
     }
 	
-	VdataDescription findParametersOriginal() throws HDFException {
-		final VdataDescription vdd = VdataDescription.ofName(AbstractHData
-                .ofType(AbstractHData.DFTAG_VH), PARAMETERS);	
+	VDataDescription findParametersOriginal() throws HDFException {
+		final VDataDescription vdd = VDataDescription.ofName(AbstractData
+                .ofType(AbstractData.DFTAG_VH), PARAMETERS);	
 		return vdd;
     }
 	
@@ -400,9 +400,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 
     int convertParameters(Group group, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
     	int numParameters = 0;    	
-    	List list =AbstractHData.ofType(currVG.getObjects(), AbstractHData.DFTAG_VH);
+    	List list =AbstractData.ofType(currVG.getObjects(), AbstractData.DFTAG_VH);
     	if (list.size()>0) {
-    		final VdataDescription vdd = (VdataDescription) list.get(0);    	 
+    		final VDataDescription vdd = (VDataDescription) list.get(0);    	 
     		/* only the "parameters" VH (only one element) in the file */
     		if (vdd != null) {    	 
     			numParameters =convertParameters(group, vdd, mode);
@@ -417,11 +417,11 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      * @param mode whether to open or reload @throws HDFException if an error
      * occurs reading the parameters
      */
-    int convertParameters(Group group, VdataDescription vdd, FileOpenMode mode) throws HDFException {
+    int convertParameters(Group group, VDataDescription vdd, FileOpenMode mode) throws HDFException {
         int numParams = 0;
         /* Get corresponding VS for this VH */
-        final Vdata data = (Vdata) (AbstractHData.getObject(
-                AbstractHData.DFTAG_VS, vdd.getRef()));
+        final VData data = (VData) (AbstractData.getObject(
+                AbstractData.DFTAG_VS, vdd.getRef()));
         numParams = vdd.getNumRows();
         for (int i = 0; i < numParams; i++) {
             final String pname = data.getString(i, 0);
@@ -445,9 +445,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     	final List groupSubList = new ArrayList();    	
     	final Iterator iter = virtualGroupGroup.getObjects().iterator();
    	 	while (iter.hasNext()) {
-   	 		AbstractHData hData = (AbstractHData)iter.next();
+   	 		AbstractData hData = (AbstractData)iter.next();
    	 		//Is a virtual group
-   	 		if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+   	 		if ( hData.getTag() == AbstractData.DFTAG_VG ) {        		
    	 			//add to list if is a scaler goup
    	 			final VirtualGroup currentVGroup = (VirtualGroup) hData;
    	 			if ( currentVGroup.getType().equals(groupType) ) {
@@ -462,9 +462,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     	final List groupSubList = new ArrayList();    	
     	final Iterator iter = virtualGroupGroup.getObjects().iterator();
    	 	while (iter.hasNext()) {
-   	 		AbstractHData hData = (AbstractHData)iter.next();
+   	 		AbstractData hData = (AbstractData)iter.next();
    	 		//Is a virtual group
-   	 		if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+   	 		if ( hData.getTag() == AbstractData.DFTAG_VG ) {        		
    	 			//add to list if is a scaler goup
    	 			final VirtualGroup currentVGroup = (VirtualGroup) hData;
    	 			if ( currentVGroup.getName().equals(groupName) ) {
