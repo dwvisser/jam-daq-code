@@ -5,13 +5,12 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.SortMode;
 import jam.global.MessageHandler;
+import jam.global.SortMode;
 import jam.plot.Display;
 
-//import java.awt.*;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
@@ -20,14 +19,10 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-//import javax.swing.tree.DefaultTreeNode;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 
 /**
