@@ -119,12 +119,18 @@ public final class JamMain extends JFrame implements Observer {
 			}
 		});
 		/* Initial histograms and setup */
-		new InitialHistograms();
+		InitialHistograms ih = new InitialHistograms();
+		
+		
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
+
 		//selectTree.loadTree();
 		//selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
+
+		status.setCurrentHistogram(ih.getInitialHist());
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, ih.getInitialHist());
 	}
 
 	/**

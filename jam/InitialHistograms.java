@@ -16,6 +16,7 @@ import jam.global.Broadcaster;
 
 public class InitialHistograms {
 
+	private Histogram histInitial; 
     /**
      * Constructs an instance of this class.
      */
@@ -23,6 +24,9 @@ public class InitialHistograms {
 		makehists(); 
 	}
 
+	public Histogram getInitialHist(){
+		return histInitial;
+	}
 	private void makehists() {
 
 		Group.createGroup("Initial", Group.Type.FILE);
@@ -41,6 +45,7 @@ public class InitialHistograms {
 		new Gate("Area B", histJam2d); //gate 2d
 		new Gate("Area C", histJam2d); //gate 2d
 		Broadcaster.getSingletonInstance().broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		histInitial =histJam2d;
 	}
 
 	/**
