@@ -1,6 +1,6 @@
 package jam.plot;
 
-import jam.fit.MultipleGaussians;
+import jam.fit.GaussianConstants;
 
 import java.util.Arrays;
 
@@ -8,8 +8,6 @@ import java.util.Arrays;
  * Class to perform simple fits such as area and centroid
  */
 class PlotFit {
-
-	private static final double SIGMA_TO_FWHM = MultipleGaussians.SIGMA_TO_FWHM;
 
 	/**
 	 * Get the area for a 1 d histogram
@@ -107,7 +105,7 @@ class PlotFit {
 				variance += (counts[i] / darea) * (distance * distance);
 			}
 			sigma = Math.sqrt(variance);
-			fwhm = SIGMA_TO_FWHM * sigma;
+			fwhm = GaussianConstants.SIG_TO_FWHM * sigma;
 		}
 		return fwhm;
 	}
