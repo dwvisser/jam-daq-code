@@ -1,6 +1,5 @@
 package jam.plot;
 
-import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
@@ -55,39 +54,61 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 
 	static final String Y_LABEL_2D = "Channels"; 
 
-	protected static final String NO_HIST_TITLE = "No Histogram";
+	//protected static final String NO_HIST_TITLE = "No Histogram";
 	/** Number of Histogram to plot */
 	protected int plotHistNumber;
 	
-	protected Scroller scrollbars;
+	private Scroller scrollbars;
 
-	protected PlotGraphics graph;
+	/**
+	 * Plot graphics handler.
+	 */
+	protected final PlotGraphics graph;
 
 	/* Gives channels of mouse click. */
-	protected PlotMouse plotMouse;
+	private PlotMouse plotMouse;
 
+	/**
+	 * Descriptor of domain and range of histogram to plot.
+	 */
 	protected Limits plotLimits;
 
-	protected PageFormat pageformat = null;
+	private PageFormat pageformat = null;
 
 	/* Histogram related stuff. */
 
+	/**
+	 * Number of x-channels.
+	 */
 	protected int sizeX;
 
+	/**
+	 * Number of y-channels.
+	 */
 	protected int sizeY;
 
+	/**
+	 * Descriptor of array type for histogram.
+	 */
 	protected Histogram.Type type;
 
-	protected Scale scale;
-
+	/**
+	 * 1D counts.
+	 */
 	protected double[] counts;
 
+	/**
+	 * 2D counts.
+	 */
 	protected double[][] counts2d;
 	
-	protected boolean hasHistogram;
+	private boolean hasHistogram;
 
 	/* Gate stuff. */
 
+	/**
+	 * The currently selected gate.
+	 */
 	protected Gate currentGate;
 
 	/** Gate points in plot coordinates (channels). */
@@ -116,17 +137,15 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	/** currently have individual channels already marked? */
 	protected boolean markingChannels = false;
 
-	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
-
-	/* configuration for screen plotting */
+	/**
+	 *  configuration for screen plotting 
+	 */
 	protected Dimension viewSize;
 
+	/**
+	 * Channels that have been marked by clicking or typing.
+	 */
 	protected final List markedChannels = new ArrayList();
-
-	/* configuration for page plotting are set using printHistogram */
-	protected Dimension pageSize;
-
-	protected int pagedpi;
 
 	//TODO don't handle change of fonts yet
 	//protected Font screenFont;
@@ -134,12 +153,15 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	//protected Font printFont;
 
 	/* Color mode for screen, one of PlotColorMap options. */
-	protected int colorMode;
+	private int colorMode;
 
 	private int runNumber;
 
 	private String date;
 
+	/**
+	 * Bin width to use when plotting (1D only).
+	 */
 	protected double binWidth = 1.0;
 
 	private boolean noFillMode;
@@ -154,8 +176,11 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	protected boolean ignoreChFull;
 
-	protected boolean printing = false;
+	private boolean printing = false;
 
+	/**
+	 * Repaint clip to use when repainting during area selection.
+	 */
 	protected final Rectangle selectingAreaClip = new Rectangle();
 
 	/**
@@ -167,23 +192,15 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	/** clip to use when repainting for mouse movement, in graphics coordinates */
 	protected final Polygon mouseMoveClip = new Polygon();
 
-	protected boolean mouseMoved = false;
-
-	protected double sensitivity = 3;
-
-	protected double width = 12;
-
-	protected boolean pfcal = true;
+	private boolean mouseMoved = false;
 
 	/**
 	 * Constructor
 	 */
 	protected AbstractPlot() {
 		super(false);			
-
 		setOpaque(true);
 		this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-
 		graph = new PlotGraphics(this);
 		//Create plot mouse
 		plotMouse = new PlotMouse(graph);
@@ -199,18 +216,19 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		setColorMode(PREFS.getBoolean(BLACK_BACKGROUND, false));
 		setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
 	} 
-	/**
-	 * Udate layout
-	 *
-	 */
+	
+	/*
+     * non-javadoc: Update layout.
+     */
 	void setLayout(int type) {
 		graph.setLayout(type);
 	}
-	/**
-	 * Set the histogram to plot. If the plot limits are null, make one save all
-	 * neccessary histogram parameters to local variables. Allows general use of
-	 * data set.
-	 */
+	
+	/*
+     * non-javadoc: Set the histogram to plot. If the plot limits are null, make
+     * one save all neccessary histogram parameters to local variables. Allows
+     * general use of data set.
+     */
 	synchronized void displayHistogram(Histogram hist) {
 		plotLimits=Limits.getLimits(hist);
 		if (hist != null) {
@@ -233,6 +251,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		displayingFit = false;
 	}
 	
+	/**
+	 * @see PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
+	 */
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
@@ -253,11 +274,11 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}		
 	}
 	
-	/**
-	 * Plot has a valid histogram
-	 * @return
-	 */
-	protected boolean hasHistogram(){
+	/*
+     * non-javadoc: Plot has a valid histogram
+     *  
+     */
+	boolean hasHistogram(){
 		return hasHistogram;
 	}
 	
@@ -265,7 +286,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		noFillMode = bool;
 	}
 
-	protected synchronized boolean isNoFillMode() {
+	/**
+	 * @return if we are in the "no fill mode"
+	 */
+	protected final synchronized boolean isNoFillMode() {
 		return noFillMode;
 	}
 
@@ -274,37 +298,50 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		return plotHist != null && plotHist.getCounts() != null;
 	}
 
-	/**
-	 * s add scrollbars
+	/*
+	 * non-javadoc: add scrollbars
 	 */
 	void addScrollBars(Scroller scrollbars) {
 		this.scrollbars = scrollbars;
 	}
 
+	/**
+	 * Sets whether we are in the middle of defining a gate.
+	 * @param sg <code>true</code> if we are defining a gate
+	 */
 	protected void setSettingGate(boolean sg) {
 		synchronized (this) {
 			settingGate = sg;
 		}
 	}
 
+	/**
+	 * Sets whether the mouse is moving.
+	 * 
+	 * @param mm <code>true</code> if the mouse is moving
+	 */
 	protected void setMouseMoved(boolean mm) {
 		synchronized (this) {
 			mouseMoved = mm;
 		}
 	}
 
-
 	/**
-	 * Show the setting of a gate mode are we starting a new gate or continue or
-	 * saving on
+	 * Show the making of a gate, point by point.
+	 * 
+	 * @param mode
+	 *            GATE_NEW, GATE_CONTINUE, GATE_SAVE or GATE_CANCEL
+	 * @param pChannel
+	 *            channel coordinates of clicked channel
+	 * @param pPixel screen coordinates of click
 	 */
 	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
 	
 	abstract void overlayHistograms(List overlayHists);
 	
-	/**
-	 * Copies the counts into the local array--needed by scroller.
-	 */
+	/*
+     * non-javadoc: Copies the counts into the local array--needed by scroller.
+     */
 	private final void copyCounts(Histogram hist) {	
 		type = hist.getType();
 		sizeX = hist.getSizeX();
@@ -323,7 +360,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 				counts[i] = temp[i];
 			}
 		} else if (type == Histogram.Type.ONE_D_DOUBLE) {
-			System.arraycopy((double[]) hist.getCounts(), 0, counts, 0,
+			System.arraycopy(hist.getCounts(), 0, counts, 0,
 					hist.getSizeX());
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
 			int[][] counts2dInt = (int[][]) hist.getCounts();
@@ -342,7 +379,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	}
 
 	/**
-	 * get plot Limits method limits are how the histogram is to be drawn
+	 * @return limits are how the histogram is to be drawn
 	 */
 	Limits getLimits() {
 		return plotLimits;
@@ -381,6 +418,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		setLastMovePoint(p1.getPoint());
 	}
 
+	/**
+	 * Set the last point the cursor was moved to.
+	 * @param p the last point
+	 */
 	protected final void setLastMovePoint(Point p) {
 		synchronized (lastMovePoint) {
 			lastMovePoint.setLocation(p);
@@ -411,9 +452,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		markArea = tf;
 	}
 
-	/**
-	 * Expand the region viewed.
-	 */
+	/*
+     * non-javadoc: Expand the region viewed.
+     */
 	void expand(jam.plot.Bin c1, jam.plot.Bin c2) {
 		final int x1 = c1.getX();
 		final int x2 = c2.getX();
@@ -458,22 +499,22 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		refresh();
 	}
 
-	/**
-	 * Zoom the region viewed.
+	/*
+	 * Non-javadoc: Zoom the region viewed.
 	 */
-	void zoom(Plot.Zoom inOut) {
+	void zoom(PlotContainer.Zoom inOut) {
 		int xll = plotLimits.getMinimumX();
 		int xul = plotLimits.getMaximumX();
 		int yll = plotLimits.getMinimumY();
 		int yul = plotLimits.getMaximumY();
 		final int diffX = Math.max(1, (xul - xll) / ZOOM_FACTOR);
 		final int diffY = Math.max(1, (yul - yll) / ZOOM_FACTOR);
-		if (inOut == Plot.Zoom.OUT) {//zoom out
+		if (inOut == PlotContainer.Zoom.OUT) {//zoom out
 			xll = xll - diffX;
 			xul = xul + diffX;
 			yll = yll - diffY;
 			yul = yul + diffY;
-		} else if (inOut == Plot.Zoom.IN) {//zoom in
+		} else if (inOut == PlotContainer.Zoom.IN) {//zoom in
 			xll = xll + diffX;
 			xul = xul - diffX;
 			yll = yll + diffY;
@@ -553,8 +594,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		repaint();
 	}
 
-	/**
-	 * method to set Counts scale
+	/*
+	 * non-javadoc: method to set Counts scale
 	 */
 	void setRange(int limC1, int limC2) {
 		if (limC1 <= limC2) {
@@ -602,7 +643,6 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		markArea = false;
 		setMarkingChannels(false);		
 		binWidth=1.0;
-
 	}
 	
 	void setDisplayingGate(boolean dg) {
@@ -621,30 +661,42 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	/**
 	 * Get histogram counts at the specified point, which is given in channel
 	 * coordinates.
+	 * 
+	 * @param p the channel
+	 * @return the counts at the channel
 	 */
 	protected abstract double getCount(jam.plot.Bin p);
 
 	/**
-	 */
-	 protected abstract Object getCounts();
+     * @return the counts array for the displayed histogram
+     */
+    protected abstract Object getCounts();
 
-	 /** Get the energy for a channel
-	 */
-	abstract double getEnergy(double channel);
+	 /**
+      * Get the energy for a channel.
+      * 
+      * @param channel
+      *            the channel
+      * @return the energy for the channel
+      */
+    abstract double getEnergy(double channel);
 
 	/**
-	 * Find the maximum number of counts in the region of interest
+	 * Find the maximum number of counts in the region of interest.
+	 * 
+	 * @return the maximum number of counts in the region of interest
 	 */
 	protected abstract int findMaximumCounts();
 
 	/**
-	 * Find the minimum number of counts in the region of interest
+	 * Find the minimum number of counts in the region of interest.
+	 * 
+	 * @return the minimum number of counts in the region of interest
 	 */
 	protected abstract int findMinimumCounts();
 
 	/**
-	 * Routine that draws the histograms. Overrides <code>Canvas</code>
-	 * method.
+	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -729,12 +781,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * 
 	 * @param gate
 	 *            the gate to be displayed
-	 * @throws DataException
-	 *             thrown if there is an unrecoverable errer accessing the
-	 *             <code>Gate</code>
 	 */
 	synchronized void displayGate(Gate gate) {
-
 		Histogram plotHist=getHistogram();
 		if (plotHist != null && plotHist.hasGate(gate)) {
 			setDisplayingGate(true);
@@ -753,11 +801,11 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	abstract void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll);
 
-	/**
-	 * Paints header for plot to screen and printer. Also sets colors and the
-	 * size in pixels for a plot.
-	 */
-	protected void paintHeader(Graphics g) {
+	/*
+     * non-javadoc: Paints header for plot to screen and printer. Also sets
+     * colors and the size in pixels for a plot.
+     */
+	private void paintHeader(Graphics g) {
 		g.setColor(PlotColorMap.getSingletonInstance().getForeground());
 		if (printing) { //output to printer
 			graph.drawDate(date); //date
@@ -791,22 +839,30 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	abstract protected void paintMarkedChannels(Graphics g);
 
 	/**
-	 * method overriden for 1 and 2 d plots
+	 * Method overriden for 1 and 2 d plots for painting the histogram.
+	 * 
+	 * @param g the graphics context
 	 */
 	abstract protected void paintHistogram(Graphics g);
 
 	/**
-	 * method overriden for 1 and 2 d for painting fits
+	 * Method overriden for 1 and 2 d for painting the gate.
+	 * 
+	 * @param g the graphics context
 	 */
 	abstract protected void paintGate(Graphics g);
 
 	/**
-	 * method overriden for 1 and 2 d for painting fits
+	 * Method overriden for 1 and 2 d for painting overlays.
+	 * 
+	 * @param g the graphics context
 	 */
 	abstract protected void paintOverlay(Graphics g);
 
 	/**
-	 * method overriden for 1 and 2 d for painting fits
+	 * Method overriden for 1 and 2 d for painting fits.
+	 * 
+	 * @param g the graphics context
 	 */
 	abstract protected void paintFit(Graphics g);
 
@@ -827,9 +883,11 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	abstract protected void paintSetGatePoints(Graphics g);
 
 	/**
-	 * Paint called if mouse moved is enabled
+	 * Paint called if mouse moved is enabled.
+	 * 
+	 * @param gc the graphics context
 	 */
-	protected final void paintMouseMoved(Graphics gc) {
+	private final void paintMouseMoved(Graphics gc) {
 		if (settingGate) {
 			paintSettingGate(gc);
 		} else if (selectingArea) {
@@ -848,35 +906,21 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		return new ComponentPrintable(this);
 	}
 
-	/**
+	/* non-javadoc:
 	 * ignore channel zero on auto scale
 	 */
 	private final void setIgnoreChZero(boolean state) {
 		ignoreChZero = state;
 	}
 
-	/**
-	 * are we ignoring channel zero on auto scale
-	 */
-	boolean getIgnoreChZero() {
-		return ignoreChZero;
-	}
-
-	/**
+	/* non-javadoc:
 	 * ignore channel full scale on auto scale
 	 */
 	private final void setIgnoreChFull(boolean state) {
 		ignoreChFull = state;
 	}
 
-	/**
-	 * are we ignoring channel full scale on auto scale
-	 */
-	boolean getIgnoreChFull() {
-		return ignoreChFull;
-	}
-
-	/**
+	/* non-javadoc:
 	 * Set the color mode, color palette
 	 */
 	private final void setColorMode(boolean cm) {
@@ -889,7 +933,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	
 	/* Plot mouse methods */
 	
-	/**
+	/* non-javadoc: 
 	 * Add plot select listener
 	 */
 	void setPlotSelectListener(PlotSelectListener plotSelectListener) {
@@ -898,12 +942,14 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	
 	/**
 	 * Add a mouse listener.
+	 * 
+	 * @param listener the listener to add
 	 */
 	void addPlotMouseListener(PlotMouseListener listener) {
 		plotMouse.addListener(listener);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Remove a mouse listener.
 	 */
 	void removePlotMouseListener(PlotMouseListener listener) {
@@ -917,60 +963,13 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	void removeAllPlotMouseListeners() {
 		plotMouse.removeAllListeners();
 	}
-	//End Plot mouse methods	
-	/**
-	 * Get the plot graphics for this plot need for plot mouse
-	 */
-	PlotGraphics getPlotGraphics() {
-		return graph;
-	}
-
-	/**
-	 * Sets x-axis limits for scrolling.
-	 */
-	void setLimitsX(int limX1, int limX2) {
-		if (limX1 <= limX2) {
-			plotLimits.setMinimumX(limX1);
-			plotLimits.setMaximumX(limX2);
-		} else {
-			plotLimits.setMinimumX(limX2);
-			plotLimits.setMaximumX(limX1);
-		}
-	}
-
-	/**
-	 * Sets y-axis limits for scrolling.
-	 */
-	void setLimitsY(int limY1, int limY2) {
-		if (limY1 <= limY2) {
-			plotLimits.setMinimumY(limY1);
-			plotLimits.setMaximumY(limY2);
-		} else {
-			plotLimits.setMinimumY(limY2);
-			plotLimits.setMaximumY(limY1);
-		}
-	}
-
-	/**
-	 * Sets limits of counts scale.
-	 * 
-	 * @param limC1
-	 *            first limit for counts, upper or lower
-	 * @param limC2
-	 *            second limit for counts
-	 */
-	void setLimitsCounts(int limC1, int limC2) {
-		if (limC1 <= limC2) {
-			plotLimits.setMinimumCounts(limC1);
-			plotLimits.setMaximumCounts(limC2);
-		} else {
-			plotLimits.setMinimumCounts(limC2);
-			plotLimits.setMaximumCounts(limC1);
-		}
-	}
+	
+	/* End Plot mouse methods */
 
 	/**
 	 * Set the maximum counts limit on the scale, but constrained for scrolling.
+	 * 
+	 * @param maxC maximum counts
 	 */
 	void setMaximumCountsConstrained(int maxC) {
 		int temp = maxC;
@@ -985,14 +984,14 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		plotLimits.setMaximumCounts(temp);
 	}
 
-	/**
+	/* non-javadoc:
 	 * get histogram x size need by scroller
 	 */
 	int getSizeX() {
 		return sizeX;
 	}
 
-	/**
+	/* non-javadoc: 
 	 * get histogram y size needed by scroller
 	 */
 	int getSizeY() {
@@ -1011,6 +1010,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	abstract protected void mouseMoved(MouseEvent me);
 
+	/**
+	 * Anonymous implementation to handle mouse input.
+	 */
 	protected final MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
 		/**
 		 * Undo last temporary line drawn.
@@ -1028,12 +1030,19 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 	};
 
+	/**
+	 * @return <code>true</code> if the area selection clip is clear
+	 */
 	protected final boolean isSelectingAreaClipClear() {
 		synchronized (selectingAreaClip) {
 			return selectingAreaClip.height == 0;
 		}
 	}
 
+	/**
+	 * Clears the area selection clip.
+	 *
+	 */
 	protected final void clearSelectingAreaClip() {
 		synchronized (selectingAreaClip) {
 			selectingAreaClip.setSize(0, 0);
