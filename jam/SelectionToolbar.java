@@ -55,9 +55,8 @@ final class SelectionToolbar extends JToolBar implements Observer {
 					 Broadcaster b,
 					 Display d) {
 		super("Selection", JToolBar.HORIZONTAL);
-
+		this.setFloatable(false);
 		final int chooserWidth=200;
-
 		classname = getClass().getName() + "--";
 		console = mh;
 		status = js;
