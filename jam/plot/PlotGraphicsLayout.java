@@ -5,7 +5,7 @@ package jam.plot;
  * @version 0.5
  * @author Ken Swartz 
  */
-interface PlotGraphicsLayout {
+public interface PlotGraphicsLayout {
 
     //border outside of plot
     final int BORDER_TOP=40;
@@ -48,7 +48,7 @@ interface PlotGraphicsLayout {
 	final int COLOR_SCALE_LABEL_OFFSET=5;
 	final int COLOR_SCALE_SIZE=15;	    // size of a color swatch
 
-    // stuff for printing, margins, font
+    // stuff for printing, margins in inches, font
 	final double MARGIN_TOP=0.5;
 	final double MARGIN_BOTTOM=0.5;
 	final double MARGIN_LEFT=0.5;
