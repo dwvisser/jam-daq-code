@@ -1,18 +1,15 @@
 package jam.plot.color;
 
+import jam.ui.PanelOKApplyCancelButtons;
+
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -69,25 +66,32 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		final Container c = getContentPane();
 		c.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
-		final AbstractButton okButton = new JButton("OK");
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				apply();
-				setVisible(false);
-			}
-		});
-		final AbstractButton applyButton = new JButton("Apply");
-		applyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				apply();
-			}
-		});
-		final AbstractButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				setVisible(false);
-			}
-		});
+		final PanelOKApplyCancelButtons buttons= new PanelOKApplyCancelButtons(
+		        new PanelOKApplyCancelButtons.Listener(){
+		            public void ok(){
+		                apply();
+		                setVisible(false);
+		            }
+		            
+		        	public void apply(){
+		        		final double x0R = x0RSlider.getValue() / 100.0;
+		        		final double x0G = x0GSlider.getValue() / 100.0;
+		        		final double x0B = x0BSlider.getValue() / 100.0;
+		        		final double aR = aRSlider.getValue() / 100.0;
+		        		final double aG = aGSlider.getValue() / 100.0;
+		        		final double aB = aBSlider.getValue() / 100.0;
+		        		COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aB);
+		        		COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aG);
+		        		COLOR_PREFS.putDouble(ColorPrefs.ARED, aR);
+		        		COLOR_PREFS.putDouble(ColorPrefs.X0B, x0B);
+		        		COLOR_PREFS.putDouble(ColorPrefs.X0G, x0G);
+		        		COLOR_PREFS.putDouble(ColorPrefs.X0R, x0R);
+		        	}
+		        	
+		        	public void cancel(){
+		        	    setVisible(false);
+		        	}
+		        });
 		x0RSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0R);
 		x0RSlider.addChangeListener(this);
 		x0RSlider.setPreferredSize(new Dimension(20, 130));
@@ -196,7 +200,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(50, 100));
 		final JPanel colorPanel = new JPanel(new GridBagLayout());
-		final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		//final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		final JPanel sliderPanel = new JPanel(new GridBagLayout());
 		gbc.insets = new Insets(5, 5, 5, 5);
 		setGrid(gbc,0,0,2);
@@ -249,15 +253,12 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		colorPanel.add(colorSchemeComboBox, gbc);
 		setGrid(gbc,0,2,1);
 		colorPanel.add(sp, gbc);
-		buttonPanel.add(okButton);
-		buttonPanel.add(applyButton);
-		buttonPanel.add(cancelButton);
 		setGrid(gbc,1,1,1);
 		c.add(colorPanel, gbc);
 		setGrid(gbc,2,1,1);
 		c.add(sliderPanel, gbc);
 		setGrid(gbc,0,2,3);
-		c.add(buttonPanel, gbc);
+		c.add(buttons.getComponent(), gbc);
 		gbc.gridwidth = 1;
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		pack();
@@ -285,18 +286,4 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		elementVizRainbowPanel.repaint();
 	}
 
-	private void apply(){
-		final double x0R = x0RSlider.getValue() / 100.0;
-		final double x0G = x0GSlider.getValue() / 100.0;
-		final double x0B = x0BSlider.getValue() / 100.0;
-		final double aR = aRSlider.getValue() / 100.0;
-		final double aG = aGSlider.getValue() / 100.0;
-		final double aB = aBSlider.getValue() / 100.0;
-		COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aB);
-		COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aG);
-		COLOR_PREFS.putDouble(ColorPrefs.ARED, aR);
-		COLOR_PREFS.putDouble(ColorPrefs.X0B, x0B);
-		COLOR_PREFS.putDouble(ColorPrefs.X0G, x0G);
-		COLOR_PREFS.putDouble(ColorPrefs.X0R, x0R);
-	}
 }
