@@ -38,8 +38,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 * List of objects in the file.
 	 */
-	private final List objectList=new ArrayList();
-	private final Map tagMap=new HashMap();
+	private List objectList=new ArrayList();
+	private Map tagMap=new HashMap();
 
 	/**
 	 * The size of the DD block.
@@ -603,5 +603,29 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public boolean checkMagicWord() {
 		final HDFileFilter filter=new HDFileFilter(false);
 		return filter.accept(this.getFile());
+	}
+	
+	/**
+	 * First, calls <code>super.close()</code>, then clears collections of temporary objects used
+	 * to build the file, and then sets their references to
+	 * to <code>null</code>. 
+	 * 
+	 * @see java.io.RandomAccessFile#close()
+	 */
+	public void close() throws IOException{
+		super.close();
+		for (Iterator it=objectList.iterator(); it.hasNext();){
+			DataObject ob=(DataObject)it.next();
+			ob.bytes=null;
+			ob.file=null;
+			ob.refKey=null;
+			ob.tagKey=null;
+		}
+		objectList.clear();
+		tagMap.clear();
+		objectList=null;
+		tagMap=null;
+		intNT=null;
+		doubleNT=null;
 	}
 }
