@@ -171,12 +171,8 @@ public class Limits {
 		if (histogram.getDimensionality()==1){
 			maxCounts=getMaxCounts(counts,chminX,chmaxX);
 		} else {//dim==2
-			//final int [][] counts2dInt=(int [][])counts;
 			maxCounts=getMaxCounts(counts,chminX,chmaxX,chminY,chmaxY);
-		} /*else {//htype==Histogram.TWO_DIM_DOUBLE
-			final double [][] counts2d=(double [][])counts;
-			maxCounts=getMaxCounts(counts2d,chminX,chmaxX,chminY,chmaxY);
-		}*/
+		} 
 		maxCounts *= scaleUp;
 		maxCounts /= scaleBackDown;
 		return maxCounts;
