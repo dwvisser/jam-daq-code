@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
  * 
  * @author Ken Swartz
  */
-abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.AsyncListener {
+abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HDFIO.AsyncListener {
     
 	final HDFIO	hdfio;	
 	Group loadGroup;
@@ -28,7 +28,7 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
      */
     protected FileOpenMode fileOpenMode;
 
-    LoaderHDF() {
+    AbstractLoaderHDF() {
     	Frame frame= STATUS.getFrame();    	
     	hdfio = new HDFIO(frame, msghdlr);    	
     }    
@@ -36,7 +36,8 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 	/**
 	 * Read in an HDF file.
 	 * 
-	 * @param cmdParams a file reference or null
+	 * @param file a file reference or null
+	 * @param loadGroup 
 	 */ 
 	protected final void loadHDFFile(File file, Group loadGroup) {		
 		this.loadGroup=loadGroup;			
@@ -49,19 +50,19 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 	        /* Don't do anything if it was cancel. */
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	        	file = jfile.getSelectedFile();
+	        	final File selectedFile = jfile.getSelectedFile();
 	    		hdfio.setListener(this);
-	    		isFileReading=hdfio.readFile(fileOpenMode, file, loadGroup, null);	        	
+	    		isFileReading=hdfio.readFile(fileOpenMode, selectedFile, loadGroup, null);	        	
 	        } else{
 	        	isFileReading=false;
 	        }	        	
 		} else {
 			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup, null);
 		}		
-		//File was not read in so no call back do notify here	
-		if (isFileReading){
-			
-		}
+		/* File was not read in so no call back do notify here */
+		//FIXME add statements inside if clause:
+//		if (isFileReading){	
+//		}
 	}
 	
 	protected final void executeParse(String[] cmdTokens) {
@@ -71,17 +72,15 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */
-	public void CompletedIO(String message, String errorMessage) {
+	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		
-		Histogram firstHist;
-		
-		//Set to sort group
-		//Set the current histogram to the first opened histogram
+		Histogram firstHist=null;
+		/*
+         * Set to sort group. Set the current histogram to the first opened
+         * histogram.
+         */
 		if (loadGroup.getHistogramList().size()>0 ) {
 			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
-		}else{
-			firstHist=null;
 		}					
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
