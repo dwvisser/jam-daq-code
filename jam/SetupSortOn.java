@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
@@ -71,13 +72,13 @@ import javax.swing.border.EmptyBorder;
  */
 class SetupSortOn implements ActionListener, ItemListener {
 
-	private final JamMain jamMain;
+	private final Frame frame;
 	private final RunControl runControl;
 	private final DisplayCounters displayCounters;
 	private final JamConsole jamConsole;
 	private final MessageHandler msgHandler;
 	private final FrontEndCommunication frontEnd;
-	private final Broadcaster broadcaster;
+	private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	private final JDialog d;
 	/* stuff for dialog box */
 	private final JToggleButton cdisk; //save events to disk
@@ -121,13 +122,10 @@ class SetupSortOn implements ActionListener, ItemListener {
 	/**
 	 * Constructor
 	 */
-	public SetupSortOn(
-						JamMain jamMain,
-						RunControl runControl,
+	public SetupSortOn(RunControl runControl,
 						DisplayCounters displayCounters,
 						FrontEndCommunication frontEnd,
-						JamConsole jamConsole,
-						Broadcaster b) {
+						JamConsole jamConsole) {
 
 		final int fileTextColumns = 25;
 		final String defaultName =
@@ -151,14 +149,13 @@ class SetupSortOn implements ActionListener, ItemListener {
 		if (!useDefaultPath) {
 			sortClassPath = new File(defaultSortPath);
 		}
-		this.jamMain = jamMain;
 		this.runControl = runControl;
 		this.displayCounters = displayCounters;
 		this.jamConsole = jamConsole;
 		this.msgHandler = jamConsole;
 		this.frontEnd = frontEnd;
-		broadcaster = b;
-		d = new JDialog(jamMain, "Setup Online ", false);
+		frame=status.getFrame();
+		d = new JDialog(frame, "Setup Online ", false);
 		d.setResizable(false);
 		d.setLocation(20, 50);
 
@@ -439,7 +436,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private File getSortPath() {
 		JFileChooser fd = new JFileChooser(sortClassPath);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(jamMain);
+		int option = fd.showOpenDialog(frame);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
@@ -796,7 +793,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private String getPathHist() {
 		JFileChooser fd = new JFileChooser(histDirectory);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(jamMain);
+		int option = fd.showOpenDialog(frame);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
@@ -816,7 +813,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private String getPathLog() {
 		JFileChooser fd = new JFileChooser(logDirectory);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(jamMain);
+		int option = fd.showOpenDialog(frame);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
@@ -836,7 +833,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private String getPathData() {
 		JFileChooser fd = new JFileChooser(dataDirectory);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(jamMain);
+		int option = fd.showOpenDialog(frame);
 		//save current values
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {

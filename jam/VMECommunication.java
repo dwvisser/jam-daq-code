@@ -8,14 +8,21 @@ import jam.global.MessageHandler;
 import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
 import jam.sort.VME_Map;
-import java.io.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
 
 /**
  * Class to communicate with VME crate using
@@ -36,9 +43,8 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
 
 	private static final byte STRING_NULL=(byte)0x0;
 
-    private final JamCommand jamCommand;
-    private final JamMain jamMain;
-    private final Broadcaster broadcaster;
+    //private final JamCommand jamCommand;
+    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
     private final MessageHandler console;
 
     private InetAddress addressVME;
@@ -57,11 +63,8 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param broadcaster class that distributes Jam-wide messages
      * @param console class that takes text input from the user
      */
-    VMECommunication(JamMain jamMain, JamCommand jamCommand, Broadcaster broadcaster, MessageHandler console) {
+    VMECommunication(MessageHandler console) {
         super();
-        this.jamMain=jamMain;
-        this.jamCommand=jamCommand;
-        this.broadcaster=broadcaster;
         this.console=console;
         active=false;
         setName("Network Messenger");

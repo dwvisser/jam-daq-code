@@ -77,7 +77,7 @@ class SetupSortOff  implements ItemListener {
     final private JamMain jamMain;
     final private SortControl sortControl;
     final private DisplayCounters displayCounters;
-    final private Broadcaster broadcaster;
+    final static private Broadcaster broadcaster=Broadcaster.getSingletonInstance();
     final private MessageHandler msgHandler;
     private SortDaemon sortDaemon;
 
@@ -107,7 +107,7 @@ class SetupSortOff  implements ItemListener {
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 
     SetupSortOff(JamMain jm,  SortControl sc,
-    DisplayCounters dc, Broadcaster b, MessageHandler mh) {
+    DisplayCounters dc, MessageHandler mh) {
 
 
 		classname=getClass().getName()+"--";
@@ -132,7 +132,6 @@ class SetupSortOff  implements ItemListener {
         this.jamMain=jm;
         this.sortControl=sc;
         this.displayCounters=dc;
-        this.broadcaster=b;
         this.msgHandler=mh;
         d = new JDialog (jamMain,"Setup Offline",false);  //dialog box
         final Container cp=d.getContentPane();
