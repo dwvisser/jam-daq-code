@@ -123,14 +123,8 @@ public class JamCommand
 			display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
 		} else if ("White Background".equals(incommand)) {
 			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
-		//} else if ("offline".equals(incommand)) {
-		//	setupSortOff.show();
 		} else if ("remote".equals(incommand)) {
 			setupRemote.showRemote();
-		//} else if ("sort".equals(incommand)) {
-		//	sortControl.show();
-		} else if ("status".equals(incommand)) {
-			DisplayCounters.getSingletonInstance().show();
 		} else if ("project".equals(incommand)) {
 			projection.show();
 		} else if ("manipulate".equals(incommand)) {
