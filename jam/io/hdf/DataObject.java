@@ -302,30 +302,45 @@ public abstract class DataObject {
 	    return ALL_TYPES.contains(new Short(type));
 	}
 	
-	static DataObject create(byte [] bytes, short tag, short ref, int offset, int length)
-	throws HDFException {
-	    DataObject rval = null;
+	static DataObject create(byte [] bytes, short tag, short ref, int offset, int length) throws HDFException {
+	    DataObject dataObject = null;
 	    if (isValidType(tag)){
-	        final Short key = new Short(tag);
-	        if (INITABLE.containsKey(key)){
-	            final Class clazz=(Class)INITABLE.get(key);
-	            try {
-	                rval = (DataObject)clazz.newInstance();
-	                if (tag == DFTAG_SD){
-	                    rval.init(offset, length, tag, ref);
-	                } else {
-	                    rval.init(bytes, tag, ref);
-	                }
-	            } catch (Exception iae){
-	                throw new HDFException("Couldn't create "+clazz.getName()+" instance.", iae);
-	            } 
-	        }
+	    	dataObject =createDataObject(tag);
+	    	if (dataObject!=null) //Only create necessary objects
+	    		dataObject.init(bytes, tag, ref);
 	    } else {
 	        throw new IllegalArgumentException("Invalid tag: "+tag);
 	    }
-	    return rval;
+	    return dataObject;
 	}
 	
+	static DataObject create(short tag, short ref, int offset, int length) throws HDFException {
+	    DataObject dataObject = null;
+	    if (isValidType(tag)){
+	    	dataObject =createDataObject(tag); 
+	    	if (dataObject!=null)	//Only create necessary objects
+	    		dataObject.init(offset, length, tag, ref);
+	    } else {
+	        throw new IllegalArgumentException("Invalid tag: "+tag);
+	    }
+	    return dataObject;
+	}
+	
+	private static DataObject createDataObject(short tag) throws HDFException {
+		DataObject rval = null;
+        final Short key = new Short(tag);
+        if (INITABLE.containsKey(key)){
+            final Class dataClass=(Class)INITABLE.get(key);
+            try {
+                rval = (DataObject)dataClass.newInstance();
+            } catch (InstantiationException ie) {
+                throw new HDFException("Couldn't create "+dataClass.getName()+" instance.", ie);	            	
+        	} catch ( IllegalAccessException iae){
+                throw new HDFException("Couldn't create "+dataClass.getName()+" instance.", iae);
+            } 
+        }
+		return rval;
+	}
 	static void interpretBytesAll() throws HDFException {
 			final Iterator temp = getDataObjectList().iterator();
 			while (temp.hasNext()) {
@@ -457,6 +472,15 @@ public abstract class DataObject {
 	}
 	
 	/**
+	 * Refreshes the byte array for each object,
+	 * Should be called before find size or writing out.
+	 * Override when an update of is needed.
+	 */
+	void refreshBytes() {
+		
+	}
+	
+	/**
 	 * Returns a 2-byte representation of the reference number, which is unique for any given
 	 * tag type in an HDF file.  In my code, it is unique, period, but the HDF standard does not 
 	 * expect or require this.
@@ -477,15 +501,10 @@ public abstract class DataObject {
 	int getOffset() {
 		return offset;
 	}
-	
-	/**
-	 * Refreshes the byte array for each object,
-	 * Should be called before find size or writing out.
-	 * Override when an update of is needed.
-	 */
-	void refreshBytes() {
-		
+	int getLength() {
+		return length;
 	}
+	
 	/* non-javadoc:
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 */

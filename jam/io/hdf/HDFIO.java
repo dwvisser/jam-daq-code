@@ -459,6 +459,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 //Read in objects
                 synchronized (this) {
                     inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE_PROGRESS);
+                    inHDF.setLazyLoadData(true);
                 }
                 inHDF.seek(0);
                  /* read file into set of DataObject's, set their internal variables */
@@ -521,7 +522,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
 
             DataObject.clearAll();
             asyncMonitor.close();
-            System.gc();            
+            
             setLastValidFile(infile);
         }
         uiMessage =message.toString();

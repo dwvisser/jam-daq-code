@@ -28,9 +28,16 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		final HDFileFilter filter=new HDFileFilter(false);
 		return filter.accept(file);
 	}
+	
 	private AsyncProgressMonitor asyncProgressMonitor;
+	
 	private int stepsProgress;
 	
+	private boolean lazyLoadData =true;
+	/** Number of data objects to lazy load */
+	private int lazyLoadNumber;
+	/** Count number of data object that have been lazy loaded */
+	private int lazyLoadCount;		
 	/**
 	 * variable for marking position in file
 	 */
@@ -63,6 +70,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		stepsProgress=0;	//ignores progress
 	}
 	
+	void setLazyLoadData(boolean isLazyLoadData) {
+		lazyLoadData=isLazyLoadData;
+	}
+	
+	boolean isLazyLoadData() {
+		return lazyLoadData;
+	}
 	/* non-javadoc:
 	 * Write a hdf file from all DataObjects
 	 * 
@@ -211,6 +225,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		
 		int numberObjctProgressStep;
 		int countObjct=0;
+		lazyLoadNumber=0;
+		lazyLoadCount=0;
 			
 		try {
 			if (!checkMagicWord()) {
@@ -230,14 +246,26 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					final short ref = readShort();
 					final int offset = readInt();
 					final int length = readInt();
-					final byte [] bytes = readBytes(offset,length);
-					DataObject.create(bytes,tag,ref,offset,length);
 					
+					//Load scientific data as last moment needed
+					if ( lazyLoadData &&
+						 tag==DataObject.DFTAG_SD)
+					{
+						DataObject.create(tag,ref,offset,length);
+						lazyLoadNumber++;
+					} else {
+						final byte [] bytes = readBytes(offset,length);
+						DataObject.create(bytes,tag,ref,offset,length);
+					}
+
+					countObjct++;
+					
+					//Update progress bar
 					if (countObjct%numberObjctProgressStep==0) {
 						if (asyncProgressMonitor!=null)	//FIXME KBS cleanup
 							asyncProgressMonitor.increment();
 					}
-					countObjct++;
+
 				}
 				if (nextBlock == 0) {
 					doAgain = false;
@@ -307,11 +335,46 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		super.close();
 	}
 
+	/**
+	 * Lazy load the bytes for an object
+	 * @param sd
+	 * @throws HDFException
+	 */
+	byte [] lazyReadData(DataObject dataObject) throws HDFException {
+
+        int numberObjctProgressStep=getNumberObjctProgressStep(lazyLoadNumber);
+        
+		byte [] localBytes = new byte[dataObject.getLength()];
+		
+		try {
+	        seek(dataObject.getOffset());
+	        read(localBytes);
+
+			if (lazyLoadCount%numberObjctProgressStep==0) {
+				if (asyncProgressMonitor!=null) {	//FIXME KBS cleanup
+					asyncProgressMonitor.increment();
+				}
+			}
+			lazyLoadCount++;
+	        
+		} catch (IOException e) {
+			throw new HDFException(
+				"Problem lazy reading data objects. ",e);
+		}		
+		return localBytes;
+	}
+	/**
+	 * 
+	 * @param numberObjects
+	 * @return
+	 */
 	private int getNumberObjctProgressStep(int numberObjects) {
 		int numberObjctProgressStep;
 		int countObjct=0;
 		if (stepsProgress>0) {
 			numberObjctProgressStep =numberObjects/stepsProgress;
+			if (lazyLoadData)	//half the steps if lazy load (redo to take care of round off)
+				numberObjctProgressStep=2*numberObjects/stepsProgress;
 			if (numberObjctProgressStep <=0)
 				numberObjctProgressStep=1;
 		} else {

@@ -102,19 +102,27 @@ final class ScientificData extends DataObject {
         this.counts2dD = counts2d;
     }
 
+    ScientificData() {
+        super();
+    }
+    
     void init(int offset, int length, short tag, short reference) {
         super.init(offset, length, tag, reference);
         inputMode = WAIT_TO_READ;
     }
-
-    ScientificData() {
-        super();
+    void init(byte [] bytes, short tag, short reference) throws HDFException {
+        super.init(bytes, tag, reference);
+        inputMode = STORE;
     }
+
 
     /**
      * requires associated SDD, NT, NDG records
      */
     public void interpretBytes() {
+    	if (inputMode==STORE) {
+    		
+    	}
     }
 
     /*
@@ -122,9 +130,8 @@ final class ScientificData extends DataObject {
      * UnsupportedOperationException if this object doesn't represent 1d int
      * @throws IllegalStateException if the input mode isn't recognized
      */
-    int[] getData1d(RandomAccessFile file, int size) throws HDFException { 
-                                                                           
-                                                                           
+    int[] getData1d(HDFile infile, int size) throws HDFException { 
+                                                                                                                                                      
         final byte[] localBytes;
         if (numberType != NumberType.INT || rank != 1) {
             throw new HDFException(
@@ -135,14 +142,7 @@ final class ScientificData extends DataObject {
             localBytes = bytes.array();
             break;
         case WAIT_TO_READ:
-            localBytes = new byte[length];
-            try {
-                file.seek(offset);
-                file.read(localBytes);
-            } catch (IOException e) {
-                throw new HDFException("Problem getting 1d Data in SD: "
-                        + e.getMessage());
-            }
+            localBytes = infile.lazyReadData(this);
             break;
         default:
             throw new IllegalStateException(REF_MSG + ref);
@@ -158,10 +158,11 @@ final class ScientificData extends DataObject {
             throw new HDFException("Problem getting 1d Data in SD: "
                     + e.getMessage());
         }
+        bytes =null;	//so they can be gc'ed
         return output;
     }
 
-    double[] getData1dD(RandomAccessFile file, int size) throws HDFException { 
+    double[] getData1dD(HDFile infile, int size) throws HDFException { 
                                                                                                                                                              
         double[] output;
         byte[] localBytes;
@@ -175,14 +176,7 @@ final class ScientificData extends DataObject {
             localBytes = bytes.array();
             break;
         case WAIT_TO_READ:
-            localBytes = new byte[length];
-            try {
-                file.seek(offset);
-                file.read(localBytes);
-            } catch (IOException e) {
-                throw new HDFException("Problem getting 1D data in SD: "
-                        + e.getMessage());
-            }
+        	 localBytes = infile.lazyReadData(this);
             break;
         default:
             throw new HDFException(REF_MSG + ref);
@@ -198,10 +192,11 @@ final class ScientificData extends DataObject {
             throw new HDFException("Problem getting 1D data in SD: "
                     + e.getMessage());
         }
+        bytes =null;	//so they can be gc'ed
         return output;
     }
 
-    int[][] getData2d(RandomAccessFile file, int sizeX, int sizeY)
+    int[][] getData2d(HDFile infile, int sizeX, int sizeY)
             throws HDFException {
         final byte[] localBytes;
 
@@ -213,13 +208,7 @@ final class ScientificData extends DataObject {
             localBytes = bytes.array();
             break;
         case WAIT_TO_READ:
-            localBytes = new byte[length];
-            try {
-                file.seek(offset);
-                file.read(localBytes);
-            } catch (IOException e) {
-                throw new HDFException(TWOD_MSG + e.getMessage());
-            }
+       	 	localBytes = infile.lazyReadData(this);
             break;
         default:
             throw new HDFException(REF_MSG + ref);
@@ -236,10 +225,11 @@ final class ScientificData extends DataObject {
         } catch (IOException e) {
             throw new HDFException(TWOD_MSG + e.getMessage());
         }
+        bytes =null;	//so they can be gc'ed
         return output;
     }
 
-    double[][] getData2dD(RandomAccessFile file, int sizeX, int sizeY)
+    double[][] getData2dD(HDFile infile, int sizeX, int sizeY)
             throws HDFException {
         final byte[] localBytes;
 
@@ -251,14 +241,7 @@ final class ScientificData extends DataObject {
             localBytes = bytes.array();
             break;
         case WAIT_TO_READ:
-            localBytes = new byte[length];
-            try {
-                file.seek(offset);
-                file.read(localBytes);
-                break;
-            } catch (IOException e) {
-                throw new HDFException(TWOD_MSG + e.getMessage());
-            }
+        	localBytes = infile.lazyReadData(this);        	
         default:
             throw new HDFException(REF_MSG + ref);
         }
@@ -274,6 +257,7 @@ final class ScientificData extends DataObject {
         } catch (IOException e) {
             throw new HDFException(TWOD_MSG + e.getMessage());
         }
+        bytes =null;	//so they can be gc'ed
         return output;
     }
 
@@ -319,10 +303,11 @@ final class ScientificData extends DataObject {
     /**
      * @return the length of the byte array in the file for this data element.
      */
-    protected int getLength() {
+    /* FIXME KBS remove
+    protected int getByteLength() {
         return byteLength;
     }
-
+    */
     void setNumberType(byte type) {
         synchronized (this) {
             numberType = type;
