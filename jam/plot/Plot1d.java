@@ -353,7 +353,7 @@ class Plot1d extends Plot {
 	protected final int findMaximumCounts() {
 		int chmax = plotLimits.getMaximumX();
 		int chmin = plotLimits.getMinimumX();
-		int maxCounts = 0;
+		double maxCounts = 0;
 		if ((chmin == 0) && (ignoreChZero)) {
 			chmin = 1;
 		}
@@ -362,10 +362,10 @@ class Plot1d extends Plot {
 		}
 		for (int i = chmin; i <= chmax; i++) {
 			if (counts[i] > maxCounts) {
-				maxCounts = (int) counts[i]; //FIXME
+				maxCounts = counts[i];
 			}
 		}
-		return (maxCounts);
+		return (int)maxCounts;
 	}
 
 	/**
