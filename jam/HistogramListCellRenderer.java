@@ -10,6 +10,7 @@ import java.awt.Component;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import jam.data.Gate;
 import jam.data.Histogram;
 
 /**
@@ -19,6 +20,17 @@ import jam.data.Histogram;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class HistogramListCellRenderer implements ListCellRenderer {
+	
+	final JLabel gateIcon;
+	
+	public HistogramListCellRenderer(){
+		super();
+		final ClassLoader cl=getClass().getClassLoader();
+		final ImageIcon ii=new 
+		ImageIcon(cl.getResource("jam/gate.png"));
+		ii.setDescription("[contains gate(s)]");
+		gateIcon=new JLabel(ii);
+	}
 
 	/* (non-Javadoc)
 	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
@@ -47,9 +59,26 @@ public class HistogramListCellRenderer implements ListCellRenderer {
 			} else {//2
 				type += "red>2D</font></html>";
 			}
-			rval.add(new JLabel(type,JLabel.RIGHT),BorderLayout.EAST);
+			final JLabel ltype=new JLabel(type,JLabel.RIGHT);
+			final Gate [] g=h.getGates();
+			if (g.length==0){
+				rval.add(ltype,BorderLayout.EAST);
+			} else {//display a gate icon too
+				final JPanel east=new JPanel();
+				east.setLayout(new BoxLayout(east,BoxLayout.X_AXIS));
+				east.add(gateIcon);
+				east.add(ltype);
+				/*String tooltip="";
+				final int max=g.length-1;
+				for (int i=0; i<max; i++){
+					final String comma=", ";
+					tooltip += g[i].getName()+comma;
+				}
+				tooltip += g[max].getName();
+				east.setToolTipText(tooltip);*/
+				rval.add(east,BorderLayout.EAST);
+			}
 		}
 		return rval;
 	}
-
 }
