@@ -8,6 +8,7 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
+import jam.global.SortModeListener;
 import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
@@ -57,7 +58,9 @@ import javax.swing.KeyStroke;
  * @version 1.4
  * @since 30 Dec 2003
  */
-public class MainMenuBar extends JMenuBar {
+public class MainMenuBar extends JMenuBar implements SortModeListener {
+
+	private final JamStatus status=JamStatus.instance();
 
 	/**
 	 * Action for the File|Print menu item. 
@@ -143,7 +146,7 @@ public class MainMenuBar extends JMenuBar {
 		
 		public void actionPerformed(ActionEvent ae){
 			if (hdfio.readFile(FileOpenMode.OPEN)) { //true if successful
-				jamMain.setSortMode(hdfio.getFileOpen());
+				status.setSortMode(hdfio.getFileOpen());
 				DataControl.setupAll();
 				jamCommand.dataChanged();
 				jamMain.repaint();
@@ -214,7 +217,7 @@ public class MainMenuBar extends JMenuBar {
 		public void actionPerformed(ActionEvent ae){
 			try {
 				if (impexp.openFile()) {
-				 	jamMain.setSortMode(impexp.getLastFile());
+				 	status.setSortMode(impexp.getLastFile());
 					DataControl.setupAll();
 					jamCommand.dataChanged();
 				}
@@ -311,6 +314,7 @@ public class MainMenuBar extends JMenuBar {
 		super();
 		this.jamCommand=jamCommand;
 		hdfio=jamCommand.getHDFIO();
+		status.addSortModeListener(this);
 		final int ctrl_mask;
 		final boolean macosx=JamProperties.isMacOSX();
 		if (macosx){
@@ -674,7 +678,8 @@ public class MainMenuBar extends JMenuBar {
 		fitting.add(new JMenuItem(action));
 	}
 
-	void setSortMode(SortMode mode) {
+	public void sortModeChanged() {
+		final SortMode mode=status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			cstartacq.setEnabled(true); //enable control JMenu items
 			cstopacq.setEnabled(true);

@@ -5,6 +5,7 @@ import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
+import jam.global.SortModeListener;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
@@ -12,7 +13,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,7 +29,7 @@ import javax.swing.WindowConstants;
  * @author   Ken Swartz
  * @since    JDK1.1
  */
-public final class JamMain extends JFrame {
+public final class JamMain extends JFrame implements SortModeListener {
 	/**
 	 * Configuration information for Jam.
 	 */
@@ -38,7 +38,7 @@ public final class JamMain extends JFrame {
 	/**
 	 * Overall status of Jam.
 	 */
-	private final JamStatus status;
+	private final JamStatus status=JamStatus.instance();
 
 	/**
 	 * Event distributor.
@@ -63,23 +63,21 @@ public final class JamMain extends JFrame {
 	private final MainMenuBar menubar;
 	private final SelectionToolbar selectBar;
 
-	private SortMode sortMode;
 	private final String classname;
 	private RunState runState = RunState.NO_ACQ;
-	private String openFileName;
 
 	private JamMain(final boolean showGUI) {
 		super("Jam");
 		setLookAndFeel();
 		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
+		status.addSortModeListener(this);
 		final ClassLoader cl = getClass().getClassLoader();
 		setIconImage(
 			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
 		classname = getClass().getName() + "--";
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
-		status = JamStatus.instance(); //class that is statically available
 		status.setFrame(this);
 		status.setJamMain(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
@@ -88,7 +86,7 @@ public final class JamMain extends JFrame {
 			}
 
 			public boolean isOnLine() {
-				return (sortMode == SortMode.ONLINE_DISK);
+				return (status.getSortMode() == SortMode.ONLINE_DISK);
 			}
 		});
 		/* class to distrute events to all listeners */
@@ -129,7 +127,7 @@ public final class JamMain extends JFrame {
 		});
 		new InitialHistograms();
 		DataControl.setupAll(); //setup jam.data.control dialog boxes
-		setSortMode(SortMode.NO_SORT);
+		status.setSortMode(SortMode.NO_SORT);
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
@@ -155,63 +153,19 @@ public final class JamMain extends JFrame {
 		s.setJamCommand(jamCommand);
 	}
 
-	/* KBS Remove now in  command ShowDialogExitCmd 
-	void showExitDialog() {
-		final int rval =
-			JOptionPane.showConfirmDialog(
-				this,
-				"Are you sure you want to exit?",
-				"Exit Jam Confirmation",
-				JOptionPane.YES_NO_OPTION);
-		if (rval == JOptionPane.YES_OPTION) {
-			System.exit(0);
-		} else {
-			this.setVisible(true);
-		}
-	}
-	*/
-
 	/**
 	 * Set the mode for sorting data, adjusting title and menu items as 
 	 * appropriate.
 	 *
 	 * @exception JamException sends a message to the console if 
 	 * there is an inappropriate call
-	 * @see #ONLINE_DISK
-	 * @see #ONLINE_NODISK
-	 * @see #OFFLINE_DISK
-	 * @see #FILE
-	 * @see #REMOTE
-	 * @see #NO_SORT
+	 * @see jam.global.SortMode
 	 * @param mode the new mode for Jam to be in
 	 */
-	public void setSortMode(SortMode mode) {
+	public void sortModeChanged() {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
-		
-		//Check that run state can be changed
-		if (!((mode == SortMode.NO_SORT) || (mode == SortMode.FILE))) {
-			boolean error = true;
-			final StringBuffer etext =
-				new StringBuffer("Can't setup, setup is locked for ");
-			if (sortMode == SortMode.ONLINE_DISK) {
-				etext.append("online");
-			} else if (sortMode == SortMode.OFFLINE) {
-				etext.append("offline");
-			} else if (sortMode == SortMode.REMOTE) {
-				etext.append("remote");
-			} else {
-				error = false;
-			}
-			if (error) {
-				throw new UnsupportedOperationException(etext.toString());
-			}
-		}
-		
-		synchronized (this) {
-			sortMode = mode;
-		}
-		menubar.setSortMode(mode);
+		final SortMode mode=status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting");
@@ -231,46 +185,13 @@ public final class JamMain extends JFrame {
 			this.setTitle(title.append("Remote Mode").toString());
 		} else if (mode == SortMode.FILE) { //just read in a file
 			setRunState(RunState.NO_ACQ);
-			this.setTitle(title.append(openFileName).toString());
+			this.setTitle(title.append(status.getOpenFile()).toString());
 			menubar.setSaveEnabled(true);
 		} else if (mode == SortMode.NO_SORT) {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
-		} else {
-			console.errorOutln("Invalid sort mode: " + mode);
-		}
-	}
-
-	/**
-	 * Sets the sort mode to FILE and gives it the file name.
-	 *
-	 * @exception JamException sends a message to the console if 
-	 * there is a problem
-	 * @param fileName the file to be sorted?
-	 */
-	public void setSortMode(File file) {
-		synchronized (this) {
-			this.openFileName=file.getName();
-		}
-		setSortMode(SortMode.FILE);
-	}
-
-	/**
-	 * @return the current sort mode.
-	 *
-	 * @see #setSortMode(int)
-	 * @see #setSortModeFile(String)
-	 */
-	public SortMode getSortMode() {
-		return sortMode;
-	}
-
-	/**
-	 * @return true is the mode can be changed
-	 */
-	public boolean canSetSortMode() {
-		return ((sortMode == SortMode.NO_SORT) || (sortMode == SortMode.FILE));
+		} 
 	}
 
 	/**
