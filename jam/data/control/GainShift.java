@@ -122,7 +122,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 				HistogramComboBoxModel.Mode.ONE_D));
 		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cfrom.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
+		dim.width = CHAR_LENGTH*meanCharWidth;				
 		cfrom.setPreferredSize(dim);
 		
 		cfrom.setEditable(false);
@@ -163,14 +163,14 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		cto = new JComboBox();
 		meanCharWidth= getMeanCharWidth(cto.getFontMetrics(cto.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
+		dim.width = CHAR_LENGTH*meanCharWidth;				
 		cto.setPreferredSize(dim);		
 		cto.addItem("New Histogram");
 		cto.addItemListener(this);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
-		ttextto = new JTextField("gainshift", NEW_NAME_LENGTH);
+		ttextto = new JTextField("gainshift", TEXT_LENGTH);
 		pto.add(ttextto);
 		pEntries.add(pto);
 
@@ -332,7 +332,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D)createNewHistogram(groupName, name, histName, hfrom.getSizeX());
+			hto = (AbstractHist1D)createNewHistogram(groupName, histName, hfrom.getSizeX());
 			messageHandler
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 			

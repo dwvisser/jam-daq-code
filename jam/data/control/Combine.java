@@ -90,7 +90,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		cfrom1 = new JComboBox();
 		meanCharWidth= getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
 		dim = cfrom1.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;
+		dim.width = CHAR_LENGTH*meanCharWidth;
 		cfrom1.setPreferredSize(dim);
 
 		cfrom1.addItem("1DHISTOGRAM1");
@@ -155,7 +155,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		cfrom2 = new JComboBox();
 		meanCharWidth= getMeanCharWidth(cfrom2.getFontMetrics(cfrom2.getFont()));
 		dim = cfrom2.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;
+		dim.width = CHAR_LENGTH*meanCharWidth;
 		cfrom2.setPreferredSize(dim);		
 		cfrom2.addItem("1DHISTOGRAM2");
 		ttimes2 = new JTextField("1.0", 8);
@@ -170,7 +170,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		cto = new JComboBox();
 		meanCharWidth= getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;		
+		dim.width = CHAR_LENGTH*meanCharWidth;		
 		cto.setPreferredSize(dim);
 		cto.addItem(NEW_HIST);
 		cto.addItemListener(new ItemListener(){
@@ -180,7 +180,7 @@ public class Combine extends AbstractManipulation implements Observer {
 				}
 			}
 		});
-		ttextto = new JTextField("combine", NEW_NAME_LENGTH);
+		ttextto = new JTextField("combine", TEXT_LENGTH);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
@@ -305,7 +305,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto =(AbstractHist1D)createNewHistogram(groupName, name, histName, hfrom1.getSizeX());
+			hto =(AbstractHist1D)createNewHistogram(groupName, histName, hfrom1.getSizeX());
 			messageHandler.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");			
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
