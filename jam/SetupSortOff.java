@@ -331,41 +331,41 @@ class SetupSortOff  implements ActionListener, ItemListener {
         try {
             sortClass= (SortRoutine) Class.forName(sortFile).newInstance();// create sort class
         } catch (ClassNotFoundException ce) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException("Cannot find sort class: "+sortFile+" [SetupSortOn]");
         } catch (InstantiationException ie) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException("Cannot instantize sort file: "+sortFile);
         } catch (IllegalAccessException iae) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException(" Cannot access sort file: "+sortFile);
         }
         try {//create new event input stream class
             eventInput= (EventInputStream) Class.forName(eventInFile).newInstance();
             eventInput.setConsole(msgHandler);
         } catch (ClassNotFoundException ce) {
-            eventInput=null;
+//            eventInput=null;
             throw new JamException("Cannot find event input stream class: "+eventInFile+
             " [SetupSortOn]");
         } catch (InstantiationException ie) {
-            eventInput=null;
+//            eventInput=null;
             ie.printStackTrace();
             throw new JamException("Cannot instantize event input stream file: "+eventInFile);
         } catch (IllegalAccessException iae) {
-            eventInput=null;
+//            eventInput=null;
             throw new JamException(" Cannot access event input stream file: "+eventInFile);
         }
         try {//create new event output stream class
             eventOutput = (EventOutputStream) Class.forName(eventOutFile).newInstance();
         } catch (ClassNotFoundException ce) {
-            eventInput=null;
+//            eventInput=null;
             throw new JamException("Cannot find event output stream class: "+eventOutFile+
             " [SetupSortOn]");
         } catch (InstantiationException ie) {
-            eventInput=null;
+//            eventInput=null;
             throw new JamException("Cannot instantize event output stream file: "+eventOutFile);
         } catch (IllegalAccessException iae) {
-            eventInput=null;
+//            eventInput=null;
             throw new JamException(" Cannot access event output stream file: "+eventOutFile);
         }
     }

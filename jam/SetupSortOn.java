@@ -499,16 +499,16 @@ class SetupSortOn implements ActionListener, ItemListener {
      */
     private void loadSorter() throws  JamException {
         try{// create sort class
-            sortClass=null;
+//            sortClass=null;
             sortClass=(SortRoutine) Class.forName(sortFile).newInstance();
         } catch (ClassNotFoundException ce) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException("Cannot find sort class: "+sortFile+" [SetupSortOn]");
         } catch (InstantiationException ie) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException("Cannot instantize sort file: "+sortFile);
         } catch (IllegalAccessException iae) {
-            sortClass=null;
+//            sortClass=null;
             throw new JamException(" Cannot access sort file: "+sortFile);
         }
     }
@@ -536,16 +536,16 @@ class SetupSortOn implements ActionListener, ItemListener {
             eventInputStream= (EventInputStream) Class.forName(eventInFile).newInstance();
             eventInputStream.setConsole(msgHandler);
         } catch (ClassNotFoundException ce) {
-            eventInputStream=null;
+//            eventInputStream=null;
             throw new JamException(getClass().getName()+
             ": can't find EventInputStream class: "+eventInFile);
         } catch (InstantiationException ie) {
-            eventInputStream=null;
+//            eventInputStream=null;
             ie.printStackTrace();
             throw new JamException(getClass().getName()+
             ": can't instantiate EventInputStream class: "+eventInFile);
         } catch (IllegalAccessException iae) {
-            eventInputStream=null;
+//            eventInputStream=null;
             throw new JamException(getClass().getName()+
             ": illegal access to EventInputStream class: "+eventInFile);
         }
@@ -554,16 +554,16 @@ class SetupSortOn implements ActionListener, ItemListener {
             eventOutputStream= (EventOutputStream) Class.forName(eventOutFile).newInstance();
             eventOutputStream.setEventSize(sortClass.getEventSize());
         } catch (ClassNotFoundException ce) {
-            eventOutputStream=null;
+//            eventOutputStream=null;
             throw new JamException(getClass().getName()+
             ": can't find EventOutputStream class: "+eventInFile);
         } catch (InstantiationException ie) {
-            eventOutputStream=null;
+//            eventOutputStream=null;
             ie.printStackTrace();
             throw new JamException(getClass().getName()+
             ": can't instantiate EventOutputStream class: "+eventInFile);
         } catch (IllegalAccessException iae) {
-            eventOutputStream=null;
+//            eventOutputStream=null;
             throw new JamException(getClass().getName()+
             ": illegal access to EventOutputStream class: "+eventInFile);
         }
