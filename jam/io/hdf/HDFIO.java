@@ -458,11 +458,11 @@ public final class HDFIO implements DataIO, JamFileFields {
 	        			}
             			displayMessage();
 	        		}
-            		}catch (Exception e) {
-            			uiErrorMsg ="Unknown Error reading file "+infile.getName()+", "+e;
-            			e.printStackTrace();
-            			asyncMonitor.close();
-            		}
+        		}catch (Exception e) {
+        			uiErrorMsg ="Unknown Error reading file "+infile.getName()+", "+e;
+        			e.printStackTrace();
+        			asyncMonitor.close();
+        		}
                 asyncMonitor.close();
             	return null;
             }
@@ -528,22 +528,26 @@ public final class HDFIO implements DataIO, JamFileFields {
                 MONITOR_STEPS_READ_WRITE + MONITOR_STEPS_OVERHEAD_WRITE);
 		final Preferences prefs = HDFPrefs.PREFS;
 		final boolean suppressEmpty = prefs.getBoolean(
-				HDFPrefs.SUPPRESS_WRITE_EMPTY, true);        
-        convertJamToHDF(groups, histograms, writeData, writeSettings, suppressEmpty);
-        message.append("Saved ").append(file.getName()).append(" (");
-        message.append(groupCount).append(" groups");
-        message.append(", ").append(histCount).append(" histograms");
-        message.append(", ").append(gateCount).append(" gates");
-        message.append(", ").append(scalerCount).append(" scalers");
-        message.append(", ").append(paramCount).append(" parameters");
-        message.append(")");
+				HDFPrefs.SUPPRESS_WRITE_EMPTY, true);     
         asyncMonitor.increment();
+        
         HDFile out = null;
         try {
+			convertJamToHDF(groups, histograms, writeData, writeSettings, suppressEmpty);
+			
             out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
             asyncMonitor.setNote("Writing Data Objects");
             out.writeFile();
             asyncMonitor.setNote("Closing File");
+            
+            message.append("Saved ").append(file.getName()).append(" (");
+            message.append(groupCount).append(" groups");
+            message.append(", ").append(histCount).append(" histograms");
+            message.append(", ").append(gateCount).append(" gates");
+            message.append(", ").append(scalerCount).append(" scalers");
+            message.append(", ").append(paramCount).append(" parameters");
+            message.append(")");
+            
         } catch (FileNotFoundException e) {
             uiErrorMsg = "Opening file: " + file.getName();
         } catch (HDFException e) {
@@ -557,6 +561,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             }
             asyncMonitor.close();
         }
+        
         AbstractData.clearAll();
         out = null; //allows Garbage collector to free up memory
         setLastValidFile(file);
@@ -913,7 +918,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     }
     
     private void convertJamToHDF(List groups, List histList,
-            boolean writeData, boolean wrtSettings, boolean suppressEmpty) {
+            boolean writeData, boolean wrtSettings, boolean suppressEmpty) throws HDFException {
         final VirtualGroup globalGroups = jamToHDF.addGroupSection();
         final VirtualGroup globalHists = jamToHDF.addHistogramSection();
         final VirtualGroup globalGates = jamToHDF.addGateSection();

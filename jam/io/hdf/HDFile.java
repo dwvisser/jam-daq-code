@@ -245,8 +245,8 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					final int offset = readInt();
 					final int length = readInt();
 					
-					//FIXME KBS trial to read in old format data 1_5_0 and 2_0_0
-					debugDumpDD(tag, ref, offset, length);
+					//DEBUG KBS helpper method for debugging
+					//debugDumpDD(tag, ref, offset, length);
 					
 					//Not an empty tag
 					if (tag !=DFTAG_NULL) {
@@ -315,17 +315,6 @@ public final class HDFile extends RandomAccessFile implements Constants {
 			//System.out.println("tag "+tag+" ref "+ref+" offset "+offset+" length "+length );
 		}
 		reset();		
-		/*
-		short refNew;
-		if (ref==0)
-			if (tag==AbstractData.DFTAG_NDG)	
-				refNew= (short)++refCounter;
-			else 
-				refNew = ref;
-		else
-			refNew = ref;
-		*/
-		//return ref;
 	}
 
 	/* non-javadoc:

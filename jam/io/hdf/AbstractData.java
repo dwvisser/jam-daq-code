@@ -103,7 +103,8 @@ public abstract class AbstractData implements Constants {
 	/**
 	 * Set to false once the ref number is defined.
 	 */
-	protected boolean refNotSet=true;
+	//FIXME KBS remove
+	//protected boolean refNotSet=true;
 	
 	/**
 	 * Get the list of all data objects.
@@ -129,29 +130,21 @@ public abstract class AbstractData implements Constants {
 	}
 	
 	/**
-	 * <p>Adds the data object to the list of objects.
-	 * --- FIXME KBS remove --  
-	 * The reference number is 
-	 * implicitly assigned at this time as the index number in the 
-	 * internal <code>Vector objectList</code>.  A typical call should 
-	 * look like:</p>
-	 * <blockquote><code>hdf = new hdfFile(outfile, "rw");<br>
-	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
-	 * <p>Each call causes setOffsets to be called.</p>
-	 * ---
+	 * <p>Adds the data object to the list of objects.  
+	 * The reference number is expected to have been previously
+	 * assigned, but is checked to be unique for the object tag.
 	 *
 	 * @param data data object
 	 * @see	#setOffsets()
 	 */
 	static void addDataObjectToList(AbstractData data) {
+		
 		final Integer key = calculateKey(data.getTag(), data.getRef());
 		if (!tagRefMap.containsKey(key)){
 			tagRefMap.put(key, data);
 			objectList.add(data);
 		} else {
-			//FIXME KBS
-			//NOP we should not be here
-			int i=0;
+			 throw new IllegalArgumentException("Can't add o list of DataObjects as DataOjbect with the same tag and ref exists.");
 		}
 	}
 	/**
@@ -257,24 +250,23 @@ public abstract class AbstractData implements Constants {
 			}
 	}
 	/**
-	 * 
-	 * The HDF standard only requires that for a particular tag type, each instance have a
-	 * unique ref.
-	 * ----------------NO TRUE ANY LONGER-----------------  
-	 * Since our files are not expected to contain more than
-	 * several dozen objects, 
-	 * I take the simplest approach of simply
-	 * assigning the index number + 1 from the objectList.
-	 * ----------------NO TRUE ANY LONGER-----------------
-	 * 
-	 * Just adds one to ref Count
+	 * Create a new ref that is unque for the given tag 
+	 * The HDF standard requires that for a particular tag type, 
+	 * each instance have a unique ref. 
 	 * 
 	 * @return a reference number for the given HDF object
 	 * @param refs the map for a given tag type
 	 */
-	static short createUniqueRef() {
-		//Just add 1, set to 0 every time DataObject.clear is called 
-		return ++refCount;
+	static short createUniqueRef(short tag) {
+		//Add 1 as its a good guess
+		refCount++;
+		//see if a unique object already exists		
+		Integer key= calculateKey(tag, refCount);
+		while(tagRefMap.containsKey(key)) {
+			refCount++;
+			key= calculateKey(tag, refCount);
+		}
+		return refCount;		
 	}
 
 	/* non-javadoc:
@@ -284,8 +276,8 @@ public abstract class AbstractData implements Constants {
 	    final int tagInt=tag;
 	    final int refInt = ref;
 		final int key= (tagInt<<16)+refInt;		
-		//FIXME KBS debug
-		System.out.println("  Key tag "+tagInt+" ref "+refInt+" key "+key);
+		//Debug
+		//System.out.println("  Key tag "+tagInt+" ref "+refInt+" key "+key);
 		return new Integer(key);
 	}
 	
@@ -300,19 +292,11 @@ public abstract class AbstractData implements Constants {
 	 * @param	tag	The hdf tag of the new object.
 	 */
 	AbstractData(short tag) {
-		setTag(tag);
-		setRef(createUniqueRef());
+		this.tag=tag;
+		this.ref= createUniqueRef(tag);
 		addDataObjectToList(this); //ref gets set in this call
 	}
-	
-	/**
-	 * Creates a data object.
-	 *
-	 */
-	
-	//protected AbstractData(){
-	//}
-	
+		
 	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> with the specified byte array as the data which will (or does already) 
 	 * physically
@@ -330,8 +314,6 @@ public abstract class AbstractData implements Constants {
 		setTag(tag);
 		setRef(ref);
 		bytes = ByteBuffer.wrap(data);
-		//FIXME KBS remove
-		//addDataObjectToList(this);
 	}
 
 	/* non-javadoc:
@@ -342,13 +324,11 @@ public abstract class AbstractData implements Constants {
 	 * @param	offset	    The location in <code>file</code>
 	 * @param	reference   The unique value specifying the type of data object.
 	 */
-	void init(int offset, int length, short tag, short reference) {
+	void init(int offset, int length, short tag, short reference)  {
 		this.tag=tag;
 		setRef(reference);
 		this.offset = offset;
 		this.length = length;
-		//FIXME KBS remove		
-		//addDataObjectToList(this);
 	}
 	
 	private final void setTag(short newTag){
@@ -368,34 +348,26 @@ public abstract class AbstractData implements Constants {
 	 * 
 	 * @param newref
 	 */
-	final void setRef(short newref) {
+	final void setRef(short newref)  {
+		
+		//Check if object exist with old ref
 		final Integer key = calculateKey(tag, ref);
 		if (tagRefMap.containsKey(key)) {
 			tagRefMap.remove(key);
+			
 			//Add
+			final Integer keyNew = calculateKey(tag, newref);
+			//Check for collision
+			if (tagRefMap.containsKey(key))
+				throw new IllegalArgumentException("Can't set reference on DataObject as one the reference already exists.");			
+				//FIXME KBS remove
+				//throw new HDFException("Cannot change reference to existing object");
+			
 			ref = newref;
-			final Integer keyNew = calculateKey(tag, ref);
+			
 			tagRefMap.put(keyNew, this);
-		 }
-		/*FIXME KBS remove
-		if (refNotSet) {
-			ref = newref;
-		} else {
-			if (ref!=newref){
-				//Change key, 
-				//remove and add with new key
-				final Integer key = calculateKey(tag, ref);
-				if (tagRefMap.containsKey(key)) {
-					tagRefMap.remove(key);
-					//Add
-					ref = newref;
-					final Integer keyNew = calculateKey(tag, ref);
-					tagRefMap.put(keyNew, this);
-				 }
-			}			
-			refNotSet=false;
-		}
-		*/
+			
+		 }		
 	}
 	
 	/**
