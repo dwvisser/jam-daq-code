@@ -356,55 +356,43 @@ Observer {
     }
 
     int [] projectX(int [][] inArray, int outLength, int ll, int ul){
-        int [] out;
-
-        out = new int [outLength];
-
+        int [] out = new int [outLength];
         ll = Math.max(0,ll);
-        ul = Math.min(outLength,ul);
-
+        ul = Math.min(outLength-1,ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
-
         for (int i=0; i < inArray.length; i++) {
-            for (int j=ll; j<=ul; j++){
+            /*for (int j=ll; j<=ul; j++){
                 out[i] += inArray[i][j];
-            }
+            }*/
+            System.arraycopy(inArray[i],0,out,0,inArray[i].length);
         }
         return out;
     }
 
     int [] projectY(int [][] inArray, int outLength, int ll, int ul){
-        int [] out;
-
-        out = new int [outLength];
-
+        int [] out = new int [outLength];
         ll = Math.max(0,ll);
-        ul = Math.min(outLength,ul);
-
+        ul = Math.min(outLength-1,ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
-
         for (int i=ll; i <=ul; i++) {
-            for (int j=0; j<inArray[0].length; j++){
+            /*for (int j=0; j<inArray[0].length; j++){
                 out[j] += inArray[i][j];
-            }
+            }*/
+            System.arraycopy(inArray[i],0,out,0,inArray[i].length);
         }
         return out;
     }
 
 
     int [] projectX(int [][] inArray, int outLength, Gate gate) throws DataException {
-        int [] out;
-
-        out = new int [outLength];
-
+        int [] out = new int [outLength];
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
-
         for (int i=0;i<inArray.length;i++){
             for (int j=0;j<inArray[0].length;j++){
                 if (gate.inGate(i,j)) {
