@@ -10,5 +10,5 @@ import java.awt.Color;
  * @see GradientColorScale
  */
 interface ColorScale {
-	public Color getColor(double counts);
+	Color getColor(double counts);
 }
