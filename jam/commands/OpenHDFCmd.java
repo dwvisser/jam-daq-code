@@ -77,6 +77,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		}
 		//File was not read in so no call back do notify here		
 		if (!isFileReading){	
+			hdfio.removeListener();
 			notifyApp(null);
 		}								
 	}
