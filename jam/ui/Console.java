@@ -140,7 +140,7 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	public Console(int linesLog) {
 		JamStatus.instance().setMessageHandler(this);
-		SetupSortOn.createSingletonInstance(this);
+		SetupSortOn.createInstance(this);
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
 		textLog
