@@ -8,16 +8,19 @@ import jam.data.control.HistogramControl;
  *
  */
 final class ShowDialogNewHistogramCmd extends AbstractCommand {
+	
+	final private HistogramControl histogramControl;
 
 	ShowDialogNewHistogramCmd(){
 		super();
+		putValue(NAME, "New\u2026");
+		histogramControl= new HistogramControl(status.getFrame(), msghdlr);
 	}
 	
 	/**
 	 * Execute the command
 	 */
 	protected void execute(Object [] cmdParams){
-		HistogramControl histogramControl= new HistogramControl(status.getFrame(), msghdlr);
 		histogramControl.showNew();		
 	}
 	
