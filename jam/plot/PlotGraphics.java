@@ -47,7 +47,7 @@ import javax.swing.JPanel;
  * @see java.awt.Graphics
  * @since JDK1.1
  */
-class PlotGraphics  {
+final class PlotGraphics {
 
 	static final int BOTTOM = 1;
 
@@ -59,11 +59,12 @@ class PlotGraphics  {
 
 	/* fake zero for Log scale 1/2 a count */
 	static final double LOG_FAKE_ZERO = 0.5;
-	
-	private static final PlotColorMap plotColorMap=PlotColorMap.getSingletonInstance();
+
+	private static final PlotColorMap COLOR_MAP = PlotColorMap
+			.getSingletonInstance();
 
 	PlotGraphicsLayout graphLayout;
-	
+
 	/* current stuff to draw font, and font metrics and colors */
 	private Graphics2D g;
 
@@ -142,16 +143,16 @@ class PlotGraphics  {
 
 	private Point viewMiddle; //middle of plot area
 
-	private Font screenFont;	//Screen Font
-	
-	private Font printFont;		//Printing Font
-	
+	private Font screenFont; //Screen Font
+
+	private Font printFont; //Printing Font
+
 	/**
 	 * Full constructor, all contructors eventually call this one. Other
 	 * constructors have defaults
 	 */
-	PlotGraphics(JPanel plot) {		
-		graphLayout = new PlotGraphicsLayout();
+	PlotGraphics(JPanel plot) {
+		graphLayout = PlotGraphicsLayout.LABELS;
 		/* class that draws tick marks and makes color thresholds */
 		tm = new Tickmarks();
 		/* margin for printing */
@@ -165,22 +166,21 @@ class PlotGraphics  {
 		}
 		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
 	}
-	
+
 	/**
 	 * Set the layout type
+	 * 
 	 * @param type
 	 */
-	void setLayout(int type){
-		
-		graphLayout.setLayoutType(type);
-		
+	void setLayout(int type) {
+		graphLayout = PlotGraphicsLayout.getLayout(type);
 		/* some initial layout stuff */
-		border = new Insets(graphLayout.BORDER_TOP,
-				graphLayout.BORDER_LEFT, graphLayout.BORDER_BOTTOM,
-				graphLayout.BORDER_RIGHT);		
-		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD, (int) graphLayout.SCREEN_FONT_SIZE);
-		printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN, graphLayout.PRINT_FONT_SIZE);
-		
+		border = new Insets(graphLayout.BORDER_TOP, graphLayout.BORDER_LEFT,
+				graphLayout.BORDER_BOTTOM, graphLayout.BORDER_RIGHT);
+		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD,
+				(int) graphLayout.SCREEN_FONT_SIZE);
+		printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN,
+				graphLayout.PRINT_FONT_SIZE);
 		setGraphicsFont(screenFont);
 	}
 
@@ -204,8 +204,8 @@ class PlotGraphics  {
 					.getImageableHeight());
 		}
 	}
-	
-	private final Object limitsLock=new Object();
+
+	private final Object limitsLock = new Object();
 
 	/**
 	 * updates the current display parameters the most basic update this one
@@ -305,13 +305,13 @@ class PlotGraphics  {
 		int offset = 1;
 		int xPos;
 		int yPos;
-		offset = fm.stringWidth(title); 
-		if (graphLayout.LAYOUT_TYPE==PlotGraphicsLayout.LAYOUT_TYPE_LABELS)
-			xPos=viewMiddle().x - offset / 2;
-		else
-			xPos=viewLeft+graphLayout.TITLE_OFFSET_LEFT;
-		
-		yPos=viewTop - graphLayout.TITLE_OFFSET_TOP;
+		offset = fm.stringWidth(title);
+		if (graphLayout == PlotGraphicsLayout.LABELS) {
+			xPos = viewMiddle().x - offset / 2;
+		} else {
+			xPos = viewLeft + graphLayout.TITLE_OFFSET_LEFT;
+		}
+		yPos = viewTop - graphLayout.TITLE_OFFSET_TOP;
 		if (side == PlotGraphics.TOP) {
 			setGraphicsFont(font.deriveFont(graphLayout.TITLE_SCREEN_SIZE));
 			g.drawString(title, xPos, yPos);
@@ -323,16 +323,16 @@ class PlotGraphics  {
 		final String s = Integer.toString(number);
 		setGraphicsFont(font);
 		int width = fm.stringWidth(s);
-		int xNext = this.viewLeft -graphLayout. TITLE_OFFSET_TOP - width;
+		int xNext = this.viewLeft - graphLayout.TITLE_OFFSET_TOP - width;
 		final int y = viewTop - graphLayout.TITLE_OFFSET_TOP;
 		final Color c = g.getColor();
-		g.setColor(plotColorMap.getForeground());
+		g.setColor(COLOR_MAP.getForeground());
 		g.drawString(s, xNext, y);
 		for (int i = 0; i < overlayNumbers.length; i++) {
 			xNext += width;
 			final String sNext = ", " + overlayNumbers[i];
 			width = fm.stringWidth(sNext);
-			g.setColor(plotColorMap.getOverlay(i));
+			g.setColor(COLOR_MAP.getOverlay(i));
 			g.drawString(sNext, xNext, y);
 		}
 		g.setColor(c);
@@ -436,8 +436,7 @@ class PlotGraphics  {
 	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void ticksLeft(int lowerLimit, int upperLimit,
-			Scale scale) {
+	private void ticksLeft(int lowerLimit, int upperLimit, Scale scale) {
 		int x;
 		int y;
 
@@ -480,12 +479,12 @@ class PlotGraphics  {
 		if (side == BOTTOM) {
 			labelsBottom(minXch, maxXch);
 		}
-		synchronized (limitsLock){
-		if (plotDimensions == 1 && side == LEFT && plotLimits != null) {
-			labelsLeft(minY, maxY, plotLimits.getScale());
-		} else if (plotDimensions == 2 && side == LEFT) {
-			labelsLeft(minY, maxY, Scale.LINEAR);
-		}
+		synchronized (limitsLock) {
+			if (plotDimensions == 1 && side == LEFT && plotLimits != null) {
+				labelsLeft(minY, maxY, plotLimits.getScale());
+			} else if (plotDimensions == 2 && side == LEFT) {
+				labelsLeft(minY, maxY, Scale.LINEAR);
+			}
 		}
 	}
 
@@ -505,7 +504,8 @@ class PlotGraphics  {
 			final String label = Integer.toString(ticksMajor[i]);
 			final int offset = fm.stringWidth(label); //length of string
 			final int x = toViewHorzLin(ticksMajor[i]) - offset / 2;
-			final int y = viewBottom + fm.getAscent() + graphLayout.LABEL_OFFSET_BOTTOM;
+			final int y = viewBottom + fm.getAscent()
+					+ graphLayout.LABEL_OFFSET_BOTTOM;
 			g.drawString(label, x, y);
 		}
 	}
@@ -517,8 +517,7 @@ class PlotGraphics  {
 	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void labelsLeft(int lowerLimit, int upperLimit,
-			Scale scale) {
+	private void labelsLeft(int lowerLimit, int upperLimit, Scale scale) {
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
 				Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
@@ -561,7 +560,8 @@ class PlotGraphics  {
 	private void axisLabelBottom(String label) {
 		final int offset = fm.stringWidth(label);
 		final int x = viewMiddle().x - offset / 2;
-		final int y = viewBottom + fm.getAscent() + graphLayout.AXIS_LABEL_OFFSET_BOTTOM;
+		final int y = viewBottom + fm.getAscent()
+				+ graphLayout.AXIS_LABEL_OFFSET_BOTTOM;
 		g.drawString(label, x, y);
 	}
 
@@ -592,10 +592,8 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawHist(double[] counts, double binWidth) {
-		final Scale scale = plotLimits==null ? null :
-			plotLimits.getScale();
-		drawHist(counts, binWidth,
-				scale != Scale.LINEAR);
+		final Scale scale = plotLimits == null ? null : plotLimits.getScale();
+		drawHist(counts, binWidth, scale != Scale.LINEAR);
 	}
 
 	/**
@@ -625,7 +623,7 @@ class PlotGraphics  {
 	 */
 	private void drawHist(double[] counts, double binWidth, boolean log) {
 		/* x's are in channels, y's are in counts */
-		final GeneralPath path=new GeneralPath();
+		final GeneralPath path = new GeneralPath();
 		final double[] drawCounts = getDrawCounts(counts, binWidth);
 		final int dclen = drawCounts.length;
 		final int lastBinAll = dclen - 1;
@@ -646,22 +644,22 @@ class PlotGraphics  {
 				delCh = binChLo + binWidth - minXch;
 				binChLo = minXch;
 			}
-			path.moveTo(x,y);
+			path.moveTo(x, y);
 			for (int i = firstBin; i <= lastBin; i++) {
 				/* first a vertical line */
 				y = log ? toViewVertLog(drawCounts[i])
 						: toViewVertLinCk(drawCounts[i]);
-				path.lineTo(x,y);
+				path.lineTo(x, y);
 				/* now horizontal across bin */
 				binChLo += delCh;
 				x = Math.min(viewRight, toViewHorzLin(binChLo));
-				path.lineTo(x,y);
+				path.lineTo(x, y);
 				delCh = Math.min(binWidth, maxXch + 1 - binChLo);
 			}
 			// last vertical line
 			if (x < viewRight) {
 				y = viewBottom;
-				path.lineTo(x,y);
+				path.lineTo(x, y);
 			}
 			g.draw(path);
 		}
@@ -775,57 +773,68 @@ class PlotGraphics  {
 		//int upperLimit = maxCount;
 		//numberColors = colors.length;
 		//colorThresholds = new int[numberColors];
-		/*colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
-				numberColors, plotLimits.getScale());*/
+		/*
+		 * colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
+		 * numberColors, plotLimits.getScale());
+		 */
 		colors.setRange(minCount, maxCount);
-		final int [] colorThresholds=colors.getColorThresholds();
+		final int[] colorThresholds = colors.getColorThresholds();
 		final int numberColors = colorThresholds.length;
 		final int textHeight = (fm.getAscent());
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(minCount);
-		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
-				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
+		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET
+				+ graphLayout.COLOR_SCALE_SIZE
+				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight
+				/ 2);
 		for (int k = 0; k < numberColors; k++) {
 			label = Integer.toString(colorThresholds[k]);
 			g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET
-					+ graphLayout.COLOR_SCALE_SIZE + graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
-					- graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
+					+ graphLayout.COLOR_SCALE_SIZE
+					+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
+					- graphLayout.COLOR_SCALE_SIZE - k
+					* graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
 		}
 		/* draw colors on side */
 		for (int k = 0; k < numberColors; k++) {
 			g.setColor(colors.getColorByIndex(k));
 			g.fillRect(viewRight + graphLayout.COLOR_SCALE_OFFSET, //horizontal
-					viewBottom - graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE, //vertical
+					viewBottom - graphLayout.COLOR_SCALE_SIZE - k
+							* graphLayout.COLOR_SCALE_SIZE, //vertical
 					graphLayout.COLOR_SCALE_SIZE, graphLayout.COLOR_SCALE_SIZE); //size
 		}
 	}
 
 	void drawScale2d() {
-		final Scale scale=plotLimits.getScale();
+		final Scale scale = plotLimits.getScale();
 		final ColorScale colors = GradientColorScale.getScale(scale);
-		colors.setRange(minCount,maxCount);
+		colors.setRange(minCount, maxCount);
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
 		setGraphicsFont(font);
 		int textHeight = (fm.getAscent());
-		final DiscreteColorScale dcs=DiscreteColorScale.getScale(scale);
-		dcs.setRange(lowerLimit,upperLimit);
-		final int [] colorThresholds=dcs.getColorThresholds();
-		final int numberColors=colorThresholds.length;
+		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
+		dcs.setRange(lowerLimit, upperLimit);
+		final int[] colorThresholds = dcs.getColorThresholds();
+		final int numberColors = colorThresholds.length;
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
-		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
-				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
+		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET
+				+ graphLayout.COLOR_SCALE_SIZE
+				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight
+				/ 2);
 		for (int k = 0; k < numberColors; k++) {
 			label = Integer.toString(colorThresholds[k]);
-			g.drawString(label, viewRight +graphLayout. COLOR_SCALE_OFFSET
-					+ graphLayout.COLOR_SCALE_SIZE + graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
-					- graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
+			g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET
+					+ graphLayout.COLOR_SCALE_SIZE
+					+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom
+					- graphLayout.COLOR_SCALE_SIZE - k
+					* graphLayout.COLOR_SCALE_SIZE + textHeight / 2);
 		}
 		/* draw colors on side */
 		int scaleHeight = numberColors * graphLayout.COLOR_SCALE_SIZE;
 		int x1 = viewRight + graphLayout.COLOR_SCALE_OFFSET;
-		int x2 = x1 +graphLayout. COLOR_SCALE_SIZE - 1;
+		int x2 = x1 + graphLayout.COLOR_SCALE_SIZE - 1;
 		double level;
 		double lowEnd = Math.max(1.0, lowerLimit);
 		double highEnd = colorThresholds[numberColors - 1];
@@ -859,9 +868,11 @@ class PlotGraphics  {
 			int maxChanX, int maxChanY, DiscreteColorScale colors) {
 		//numberColors = colors.length;
 		//colorThresholds = new int[numberColors];
-		/*colorThresholds = tm.getColorThresholds(minCounts, maxCounts,
-				numberColors, plotLimits.getScale());*/
-		colors.setRange(minCount,maxCount);
+		/*
+		 * colorThresholds = tm.getColorThresholds(minCounts, maxCounts,
+		 * numberColors, plotLimits.getScale());
+		 */
+		colors.setRange(minCount, maxCount);
 		/* for each bin */
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
@@ -877,23 +888,23 @@ class PlotGraphics  {
 					final int channelWidth = toViewHorzLin(i + 1) - x;
 					final int channelHeight = y - toViewVertLin(j + 1);
 					//paintChannel: for (int k = 0; k < numberColors; k++) {
-						/* check for min counts first as these are most likely */
-						//if (count <= colorThresholds[k]) {
-							final Color paint=colors.getColor(count);
-							g.setColor(paint);
-							/* inline for speed */
-							g.fillRect(x, y - channelHeight + 1, channelWidth,
-									channelHeight);
-							/*break paintChannel;
-						}
-					}*/
+					/* check for min counts first as these are most likely */
+					//if (count <= colorThresholds[k]) {
+					final Color paint = colors.getColor(count);
+					g.setColor(paint);
+					/* inline for speed */
+					g.fillRect(x, y - channelHeight + 1, channelWidth,
+							channelHeight);
+					/*
+					 * break paintChannel; } }
+					 */
 					/* go here on break. */
 					/* check if greater than all thresholds */
-					/*if (count > colorThresholds[numberColors - 1]) {
-						g.setColor(colors[numberColors - 1]);
-						g.fillRect(x, y - channelHeight + 1, channelWidth,
-								channelHeight);
-					}*/
+					/*
+					 * if (count > colorThresholds[numberColors - 1]) {
+					 * g.setColor(colors[numberColors - 1]); g.fillRect(x, y -
+					 * channelHeight + 1, channelWidth, channelHeight); }
+					 */
 					/* end of loop for each point */
 				}
 			}
@@ -912,9 +923,9 @@ class PlotGraphics  {
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
 			int maxChanX, int maxChanY) {
-		final ColorScale colors = GradientColorScale.getScale(
-				plotLimits.getScale());
-		colors.setRange(minCount,maxCount);
+		final ColorScale colors = GradientColorScale.getScale(plotLimits
+				.getScale());
+		colors.setRange(minCount, maxCount);
 		/* loop over channels */
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
@@ -1056,17 +1067,19 @@ class PlotGraphics  {
 	}
 
 	/**
-	 * Given a rectangle in plot coordinates, return the bounding 
-	 * rectangle in graphics coordinates.
+	 * Given a rectangle in plot coordinates, return the bounding rectangle in
+	 * graphics coordinates.
 	 * 
-	 * @param channels in plot coordinates
+	 * @param channels
+	 *            in plot coordinates
 	 * @return in graphics coordinates
 	 */
 	Rectangle getRectangleOutline2d(Rectangle channels) {
 		final int highX = (int) channels.getMaxX();
 		final int highY = (int) channels.getMaxY();
-		return getRectangleOutline2d(Bin.Factory.create(channels.getLocation()), 
-				Bin.Factory.create(highX,highY));
+		return getRectangleOutline2d(
+				Bin.Factory.create(channels.getLocation()), Bin.Factory.create(
+						highX, highY));
 	}
 
 	/**
@@ -1200,7 +1213,7 @@ class PlotGraphics  {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
 		setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
-		g.setColor(plotColorMap.getPeakLabel());
+		g.setColor(COLOR_MAP.getPeakLabel());
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
 			int x2 = x1;
@@ -1227,7 +1240,8 @@ class PlotGraphics  {
 		final Rectangle r = getRectangleOutline2d(p, p);
 		final String label = "" + p.getX() + "," + p.getY();
 		g.draw(r);
-		g.drawString(label, (int) r.getMaxX() + graphLayout.MARK_OFFSET, r.y - graphLayout.MARK_OFFSET);
+		g.drawString(label, (int) r.getMaxX() + graphLayout.MARK_OFFSET, r.y
+				- graphLayout.MARK_OFFSET);
 	}
 
 	/**
@@ -1440,8 +1454,10 @@ class PlotGraphics  {
 			return (Math.log(LOG_FAKE_ZERO));
 		}
 	}
+
 	/**
 	 * The screen font
+	 * 
 	 * @return
 	 */
 	Font printFont() {

@@ -14,7 +14,7 @@ import java.awt.Color;
  * @since 1.6.0
  */
 public class DiscreteColorScale implements ColorScale {
-	private static final Color[] colorScaleBonW = { new Color(0, 0, 127), //0
+	private static final Color[] B_ON_W = { new Color(0, 0, 127), //0
 			new Color(0, 0, 255), //1
 			new Color(128, 0, 255), //2
 			new Color(255, 0, 255), //3
@@ -25,7 +25,7 @@ public class DiscreteColorScale implements ColorScale {
 			new Color(0, 0, 0) //9
 	};
 
-	private static final Color[] colorScaleWonB = { new Color(0, 0, 127), //0
+	private static final Color[] W_ON_B = { new Color(0, 0, 127), //0
 			new Color(0, 0, 255), //1
 			new Color(128, 0, 255), //2
 			new Color(255, 0, 255), //3
@@ -37,7 +37,7 @@ public class DiscreteColorScale implements ColorScale {
 	};
 
 	/* color map for printing */
-	private static Color[] colorScaleGray = { new Color(0, 127, 0), //0
+	private static final Color[] GRAY = { new Color(0, 127, 0), //0
 			new Color(0, 0, 255), //1
 			new Color(128, 0, 255), //2
 			new Color(255, 0, 255), //3
@@ -82,7 +82,7 @@ public class DiscreteColorScale implements ColorScale {
 
 	private DiscreteColorScale(Scale s) {
 		scale = s;
-		setColors(PlotColorMap.BLACK_ON_WHITE);
+		setColors(PlotColorMap.B_ON_W);
 	}
 
 	private static final DiscreteColorScale LOG = new DiscreteColorScale(
@@ -130,12 +130,12 @@ public class DiscreteColorScale implements ColorScale {
 	}
 
 	static synchronized void setColors(int mode) {
-		if (mode == PlotColorMap.BLACK_ON_WHITE) {
-			colors = colorScaleBonW;
-		} else if (mode == PlotColorMap.WHITE_ON_BLACK) {
-			colors = colorScaleWonB;
+		if (mode == PlotColorMap.B_ON_W) {
+			colors = B_ON_W;
+		} else if (mode == PlotColorMap.W_ON_B) {
+			colors = W_ON_B;
 		} else if (mode == PlotColorMap.PRINT) {
-			colors = colorScaleGray;
+			colors = GRAY;
 		} else {
 			throw new IllegalArgumentException(
 					"Given mode doesn't refer to an existing color scheme.");

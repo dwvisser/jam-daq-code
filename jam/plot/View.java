@@ -20,13 +20,13 @@ import java.util.TreeMap;
  */
 public final class View {
 
-	private final static List viewNameList;
+	private final static List NAME_LIST;
 	
-	private final static Map viewMap;	
+	private final static Map MAP;	
 
 	static {
-		viewNameList= new ArrayList();
-		viewMap = new TreeMap();
+		NAME_LIST= new ArrayList();
+		MAP = new TreeMap();
 	}
 	
 	public static final View SINGLE=new View("Single", 1,1) ;
@@ -58,7 +58,7 @@ public final class View {
 		final int numHists=rows*cols;
 		histogramNames= new String[numHists];
 		prime=1;
-		while (viewMap.containsKey(tempName)) {
+		while (MAP.containsKey(tempName)) {
 			final String addition = "[" + prime + "]";
 			tempName = su.makeLength(tempName, NAME_LENGTH - addition.length())
 			       + addition;			
@@ -69,21 +69,21 @@ public final class View {
 	}
 	
 	private static synchronized void addView(String name, View view){
-		viewMap.put(name,view);
-		viewNameList.add(name);
+		MAP.put(name,view);
+		NAME_LIST.add(name);
 	}
 	
 	public static List getNameList(){
-		return Collections.unmodifiableList(viewNameList);
+		return Collections.unmodifiableList(NAME_LIST);
 	}
 	
 	public static synchronized View getView(String name){
-		return (View)viewMap.get(name);
+		return (View)MAP.get(name);
 	}
 	
 	public static synchronized void removeView(String name){
-		viewMap.remove(name);
-		viewNameList.remove(name);
+		MAP.remove(name);
+		NAME_LIST.remove(name);
 	}
 	
 	/**

@@ -14,7 +14,7 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface ColorPrefs {
-	final Preferences colorPrefs = Preferences
+	final Preferences COLOR_PREFS = Preferences
 			.userNodeForPackage(ColorPrefs.class);
 
 	final String X0R = "X0R";

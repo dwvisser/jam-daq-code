@@ -29,28 +29,28 @@ import javax.swing.JToolBar;
  */
 class Toolbar extends JToolBar implements ActionListener {
 
-	String [] REBIN_RATIOS={"1","2","4","8","16"};
+	static final String [] REBIN_RATIOS={"1","2","4","8","16"};
 	
 	private final Action action;
 	
 	private JButton bnetarea, brebin, bgoto;
 	private JComboBox comboBinRatio;
 	
-	private static final int orientation;
-	private static final String location, key;
-	private static final Preferences helpnode;
+	private static final int ORIENTATION;
+	private static final String LOCATION, KEY;
+	private static final Preferences PREFS;
 	
 	final Icon iRebin;
 	
 	static {
 		final String defaultVal = BorderLayout.NORTH;
-		key = "toolbarLocation";
-		helpnode =
+		KEY = "toolbarLocation";
+		PREFS =
 			Preferences.userNodeForPackage(Toolbar.class);
-		location = helpnode.get(key, defaultVal);
-		orientation =
-			(BorderLayout.NORTH.equals(location)
-				|| BorderLayout.SOUTH.equals(location))
+		LOCATION = PREFS.get(KEY, defaultVal);
+		ORIENTATION =
+			(BorderLayout.NORTH.equals(LOCATION)
+				|| BorderLayout.SOUTH.equals(LOCATION))
 				? JToolBar.HORIZONTAL
 				: JToolBar.VERTICAL;
 	}
@@ -61,7 +61,7 @@ class Toolbar extends JToolBar implements ActionListener {
 	 * @since Version 0.5
 	 */
 	Toolbar(Container container, Action action) {
-		super("Actions", orientation);
+		super("Actions", ORIENTATION);
 		this.action=action;
 		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
@@ -83,7 +83,7 @@ class Toolbar extends JToolBar implements ActionListener {
 		final Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 		setToolTipText(
 			"Underlined letters are shortcuts for the console.");
-		container.add(this, location);
+		container.add(this, LOCATION);
 		setRollover(false);
 		try {
 
@@ -225,8 +225,8 @@ class Toolbar extends JToolBar implements ActionListener {
 					/* Get the new orientation */
 					Integer newValue = (Integer) evt.getNewValue();
 					/* place an appropriate value in the user prefs */
-					helpnode.put(
-						key,
+					PREFS.put(
+						KEY,
 						(newValue.intValue() == JToolBar.HORIZONTAL)
 							? BorderLayout.NORTH
 							: BorderLayout.WEST);

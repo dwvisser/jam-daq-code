@@ -46,26 +46,24 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 
 	private JTextField x0RField, x0GField, x0BField, aRField, aGField, aBField;
 
-	private static final double log10 = 1.0 / Math.log(10);//0.434294482;
-
-	static private final ColorSettingsFrame csf = new ColorSettingsFrame();
+	static private final ColorSettingsFrame CSF = new ColorSettingsFrame();
 
 	static public ColorSettingsFrame getSingletonInstance() {
-		return csf;
+		return CSF;
 	}
 
 	private ColorSettingsFrame() {
-		final int x0R = (int) Math.round(100 * colorPrefs.getDouble(
+		final int x0R = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.X0R, .80));
-		final int x0G = (int) Math.round(100 * colorPrefs.getDouble(
+		final int x0G = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.X0G, .60));
-		final int x0B = (int) Math.round(100 * colorPrefs.getDouble(
+		final int x0B = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.X0B, .20));
-		final int aR = (int) Math.round(100 * colorPrefs.getDouble(
+		final int aR = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.ARED, .50));
-		final int aG = (int) Math.round(100 * colorPrefs.getDouble(
+		final int aG = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.AGREEN, .40));
-		final int aB = (int) Math.round(100 * colorPrefs.getDouble(
+		final int aB = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.ABLUE, .30));
 		setTitle("Color Scale Settings");
 		final Container c = getContentPane();
@@ -168,17 +166,17 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 					aGSlider.setValue(0);
 					aBSlider.setValue(84);
 				} else {//current
-					final int x0R = (int) Math.round(100 * colorPrefs
+					final int x0R = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.X0R, .80));
-					final int x0G = (int) Math.round(100 * colorPrefs
+					final int x0G = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.X0G, .60));
-					final int x0B = (int) Math.round(100 * colorPrefs
+					final int x0B = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.X0B, .20));
-					final int aR = (int) Math.round(100 * colorPrefs.getDouble(
+					final int aR = (int) Math.round(100 * COLOR_PREFS.getDouble(
 							ColorPrefs.ARED, .50));
-					final int aG = (int) Math.round(100 * colorPrefs.getDouble(
+					final int aG = (int) Math.round(100 * COLOR_PREFS.getDouble(
 							ColorPrefs.AGREEN, .40));
-					final int aB = (int) Math.round(100 * colorPrefs.getDouble(
+					final int aB = (int) Math.round(100 * COLOR_PREFS.getDouble(
 							ColorPrefs.ABLUE, .30));
 					x0RSlider.setValue(x0R);
 					x0GSlider.setValue(x0G);
@@ -283,14 +281,14 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		elementVizRainbowPanel.x0R = x0RSlider.getValue() / 100.0;
 		elementVizRainbowPanel.x0G = x0GSlider.getValue() / 100.0;
 		elementVizRainbowPanel.x0B = x0BSlider.getValue() / 100.0;
-		elementVizRainbowPanel.aR = aRSlider.getValue() / 100.0;
-		elementVizRainbowPanel.aG = aGSlider.getValue() / 100.0;
-		elementVizRainbowPanel.aB = aBSlider.getValue() / 100.0;
+		elementVizRainbowPanel.sigR = aRSlider.getValue() / 100.0;
+		elementVizRainbowPanel.sigG = aGSlider.getValue() / 100.0;
+		elementVizRainbowPanel.sigB = aBSlider.getValue() / 100.0;
 		elementVizRainbowPanel.repaint();
 	}
 
 	public static void main(String[] args) {
-		csf.setVisible(true);
+		CSF.setVisible(true);
 	}
 	
 	private void apply(){
@@ -300,11 +298,11 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		final double aR = aRSlider.getValue() / 100.0;
 		final double aG = aGSlider.getValue() / 100.0;
 		final double aB = aBSlider.getValue() / 100.0;
-		colorPrefs.putDouble(ColorPrefs.ABLUE, aB);
-		colorPrefs.putDouble(ColorPrefs.AGREEN, aG);
-		colorPrefs.putDouble(ColorPrefs.ARED, aR);
-		colorPrefs.putDouble(ColorPrefs.X0B, x0B);
-		colorPrefs.putDouble(ColorPrefs.X0G, x0G);
-		colorPrefs.putDouble(ColorPrefs.X0R, x0R);
+		COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aB);
+		COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aG);
+		COLOR_PREFS.putDouble(ColorPrefs.ARED, aR);
+		COLOR_PREFS.putDouble(ColorPrefs.X0B, x0B);
+		COLOR_PREFS.putDouble(ColorPrefs.X0G, x0G);
+		COLOR_PREFS.putDouble(ColorPrefs.X0R, x0R);
 	}
 }
