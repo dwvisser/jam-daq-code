@@ -56,7 +56,7 @@ public final class Vdata extends DataObject {
         super();
     }
 
-    void init(byte[] data, short tag, short reference) throws HDFException {
+    void init(byte[] data, short tag, short reference) {
         super.init(data, tag, reference);
         description = (VdataDescription) (getObject(DFTAG_VH, reference));
         description.interpretBytes();
