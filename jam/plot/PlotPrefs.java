@@ -18,4 +18,6 @@ public interface PlotPrefs {
 	final String BLACK_BACKGROUND="BlackBackground";
 	final String AUTO_PEAK_FIND = "AutoPeakFind";
 	final String SMOOTH_COLOR_SCALE="ContinuousColorScale";
+	final String AUTO_ON_EXPAND="AutoOnExpand";
+	final String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
 }
