@@ -1,193 +1,244 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html><head>
-<title></title>
-  <style type="text/css">
-    <!--code { font-family: Courier New, Courier; font-size: 10pt; margin: 0px; }-->
-  </style>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-</head><body>
+<HTML>
+<HEAD>
+<TITLE>CI.java</TITLE>
+<STYLE TYPE="text/css"><!--
+.syntax0 {
+color: #000000;
+}
+.syntax1 {
+color: #cc0000;
+}
+.syntax2 {
+color: #ff8400;
+}
+.syntax3 {
+color: #6600cc;
+}
+.syntax4 {
+color: #cc6600;
+}
+.syntax5 {
+color: #ff0000;
+}
+.syntax6 {
+color: #9966ff;
+}
+.syntax7 {
+background: #ffffcc;
+color: #ff0066;
+}
+.syntax8 {
+color: #006699;
+font-weight: bold;
+}
+.syntax9 {
+color: #009966;
+font-weight: bold;
+}
+.syntax10 {
+color: #0099ff;
+font-weight: bold;
+}
+.syntax11 {
+color: #66ccff;
+font-weight: bold;
+}
+.syntax12 {
+color: #02b902;
+}
+.syntax13 {
+color: #ff00cc;
+}
+.syntax14 {
+color: #cc00cc;
+}
+.syntax15 {
+color: #9900cc;
+}
+.syntax16 {
+color: #6600cc;
+}
+.syntax17 {
+color: #0000ff;
+}
+.syntax18 {
+color: #000000;
+font-weight: bold;
+}
+.gutter {
+background: #dbdbdb;
+color: #000000;
+}
+.gutterH {
+background: #dbdbdb;
+color: #990066;
+}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<PRE><SPAN CLASS="gutter">   1:</SPAN><SPAN CLASS="syntax9">package</SPAN> help.sortfiles;
+<SPAN CLASS="gutter">   2:</SPAN>
+<SPAN CLASS="gutter">   3:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Gate;
+<SPAN CLASS="gutter">   4:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.HistInt1D;
+<SPAN CLASS="gutterH">   5:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.HistInt2D;
+<SPAN CLASS="gutter">   6:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Monitor;
+<SPAN CLASS="gutter">   7:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Scaler;
+<SPAN CLASS="gutter">   8:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortException;
+<SPAN CLASS="gutter">   9:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortRoutine;
+<SPAN CLASS="gutterH">  10:</SPAN>
+<SPAN CLASS="gutter">  11:</SPAN><SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  12:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Test</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">file</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">ADC</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">at</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">LENA</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Modified</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">2</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">March</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">2002</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">example</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">purposes</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">by</SPAN>
+<SPAN CLASS="gutter">  13:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Dale</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Visser</SPAN><SPAN CLASS="syntax3">.</SPAN>
+<SPAN CLASS="gutter">  14:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutterH">  15:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@author</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">C</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Iliadis</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutter">  16:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@author</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Dale</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Visser</SPAN>
+<SPAN CLASS="gutter">  17:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  18:</SPAN><SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">class</SPAN> CI <SPAN CLASS="syntax8">extends</SPAN> SortRoutine <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  19:</SPAN>
+<SPAN CLASS="gutterH">  20:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">GLOBAL</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">DECLARATIONS</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  21:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ADC_BASE <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">0xe0000000</SPAN>;
+<SPAN CLASS="gutter">  22:</SPAN>
+<SPAN CLASS="gutter">  23:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> THRESHOLDS <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">100</SPAN>;
+<SPAN CLASS="gutter">  24:</SPAN>
+<SPAN CLASS="gutterH">  25:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ADC_CHANNELS <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">4096</SPAN>; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">num</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">of</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">channels</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">per</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">ADC</SPAN>
+<SPAN CLASS="gutter">  26:</SPAN>
+<SPAN CLASS="gutter">  27:</SPAN>        <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">number</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">channels</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">per</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">dimension</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">2-d</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">histograms</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  28:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> TWO_D_CHANS <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">512</SPAN>;
+<SPAN CLASS="gutter">  29:</SPAN>
+<SPAN CLASS="gutterH">  30:</SPAN>        <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">amount</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">bits</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">to</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">shift</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">for</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">compression</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  31:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> TWO_D_FACTOR <SPAN CLASS="syntax18">=</SPAN> Math.<SPAN CLASS="syntax6">round</SPAN>((<SPAN CLASS="syntax10">float</SPAN>) (Math.<SPAN CLASS="syntax6">log</SPAN>(ADC_CHANNELS
+<SPAN CLASS="gutter">  32:</SPAN>                        <SPAN CLASS="syntax18">/</SPAN> TWO_D_CHANS) <SPAN CLASS="syntax18">/</SPAN> Math.<SPAN CLASS="syntax6">log</SPAN>(<SPAN CLASS="syntax5">2</SPAN>.<SPAN CLASS="syntax5">0</SPAN>)));
+<SPAN CLASS="gutter">  33:</SPAN>
+<SPAN CLASS="gutter">  34:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax10">int</SPAN> idGe, idNaI, idTAC;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">id</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">numbers</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">for</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">the</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">signals</SPAN>
+<SPAN CLASS="gutterH">  35:</SPAN>
+<SPAN CLASS="gutter">  36:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D hGe, hNaI, hTAC;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">ungated</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">1D</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">spectra</SPAN>
+<SPAN CLASS="gutter">  37:</SPAN>
+<SPAN CLASS="gutter">  38:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt2D hGeNaI;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">ungated</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">2D</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">spectra</SPAN>
+<SPAN CLASS="gutter">  39:</SPAN>
+<SPAN CLASS="gutterH">  40:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D hGe_TAC;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">    </SPAN><SPAN CLASS="syntax2">gated</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">on</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">TAC</SPAN>
+<SPAN CLASS="gutter">  41:</SPAN>
+<SPAN CLASS="gutter">  42:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D hGe_g2d, hTAC_g2d;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">gated</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">on</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Ge</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">vs.</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">NaI</SPAN>
+<SPAN CLASS="gutter">  43:</SPAN>
+<SPAN CLASS="gutter">  44:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Gate gTAC;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">1D</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">gate</SPAN>
+<SPAN CLASS="gutterH">  45:</SPAN>
+<SPAN CLASS="gutter">  46:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Gate gGeNaI;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">2D</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">gate</SPAN>
+<SPAN CLASS="gutter">  47:</SPAN>
+<SPAN CLASS="gutter">  48:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Scaler sClock, sBeam, sGe, sAccept, sNaI;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scalers</SPAN>
+<SPAN CLASS="gutter">  49:</SPAN>
+<SPAN CLASS="gutterH">  50:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Monitor mDeadTime;
+<SPAN CLASS="gutter">  51:</SPAN>
+<SPAN CLASS="gutter">  52:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> String DEAD_TIME <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Dead</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Time</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">(%)</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>;
+<SPAN CLASS="gutter">  53:</SPAN>
+<SPAN CLASS="gutter">  54:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax10">int</SPAN> lastGe, lastAccept;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">for</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">calculating</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">dead</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">time</SPAN>
+<SPAN CLASS="gutterH">  55:</SPAN>
+<SPAN CLASS="gutter">  56:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">END</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">OF</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">GLOBAL</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">DECLARATIONS</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  57:</SPAN>        
+<SPAN CLASS="gutter">  58:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax6">CI</SPAN>()<SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  59:</SPAN>                <SPAN CLASS="syntax14">super</SPAN>();
+<SPAN CLASS="gutterH">  60:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> String NAI<SPAN CLASS="syntax18">=</SPAN><SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">NaI</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>;
+<SPAN CLASS="gutter">  61:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">HISTOGRAM</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SECTION</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  62:</SPAN>                hGe <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS,<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Ge</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Germanium</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  63:</SPAN>                hNaI <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS, NAI);
+<SPAN CLASS="gutter">  64:</SPAN>                hTAC <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">TAC</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutterH">  65:</SPAN>                hGe_TAC <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Ge-TAC</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>,
+<SPAN CLASS="gutter">  66:</SPAN>                                <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Germanium,</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">gated</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">on</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">TAC</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  67:</SPAN>                hGe_g2d <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Ge-2dgate</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, 
+<SPAN CLASS="gutter">  68:</SPAN>                                <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Germanium--gated</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">on</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">NaI</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">vs</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Ge</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  69:</SPAN>                hTAC_g2d <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(ADC_CHANNELS, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">TAC-2dgate</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>,
+<SPAN CLASS="gutterH">  70:</SPAN>                                <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">TAC--gated</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">on</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">NaI</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">vs</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Ge</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  71:</SPAN>                hGeNaI <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist2D</SPAN>(TWO_D_CHANS, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">GeNaI</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>,
+<SPAN CLASS="gutter">  72:</SPAN>                                <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">NaI</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">vs.</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Germanium</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Germanium</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, NAI);
+<SPAN CLASS="gutter">  73:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">GATE</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SECTION</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  74:</SPAN>                gTAC <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Gate</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">TAC</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, hTAC);
+<SPAN CLASS="gutterH">  75:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter">  76:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Monitor</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">associated</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">with</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Gate,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">window</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">will</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">show</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">rate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">new</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">counts</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN>
+<SPAN CLASS="gutter">  77:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Hz</SPAN>
+<SPAN CLASS="gutter">  78:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  79:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">TAC</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">window</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, gTAC);
+<SPAN CLASS="gutterH">  80:</SPAN>                gGeNaI <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Gate</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">GeNaI</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, hGeNaI);
+<SPAN CLASS="gutter">  81:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SCALER</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SECTION</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  82:</SPAN>                sClock <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Clock</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">0</SPAN>);<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">(name,</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">position</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">in</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scaler</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">unit)</SPAN>
+<SPAN CLASS="gutter">  83:</SPAN>                sBeam <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Beam</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">1</SPAN>);
+<SPAN CLASS="gutter">  84:</SPAN>                sGe <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Ge</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">2</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">Ge</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">provides</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">trigger</SPAN>
+<SPAN CLASS="gutterH">  85:</SPAN>                sAccept <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Ge</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Accept</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">3</SPAN>);
+<SPAN CLASS="gutter">  86:</SPAN>                sNaI <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(NAI, <SPAN CLASS="syntax5">4</SPAN>);
+<SPAN CLASS="gutter">  87:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">MONITOR</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SECTION</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  88:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter">  89:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Monitors</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">associated</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">with</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scalers,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">window</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">will</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">return</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scaler</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">rate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN>
+<SPAN CLASS="gutterH">  90:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Hz</SPAN>
+<SPAN CLASS="gutter">  91:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  92:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(sClock.<SPAN CLASS="syntax6">getName</SPAN>(), sClock);
+<SPAN CLASS="gutter">  93:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(sBeam.<SPAN CLASS="syntax6">getName</SPAN>(), sBeam);
+<SPAN CLASS="gutter">  94:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(sGe.<SPAN CLASS="syntax6">getName</SPAN>(), sGe);
+<SPAN CLASS="gutterH">  95:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(sAccept.<SPAN CLASS="syntax6">getName</SPAN>(), sAccept);
+<SPAN CLASS="gutter">  96:</SPAN>                <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(sNaI.<SPAN CLASS="syntax6">getName</SPAN>(), sNaI);
+<SPAN CLASS="gutter">  97:</SPAN>                <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">User-defined</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">monitor</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">which</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">is</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">calculated</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">in</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">this</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">sort</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">routine</SPAN>
+<SPAN CLASS="gutter">  98:</SPAN>                mDeadTime <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(DEAD_TIME, <SPAN CLASS="syntax14">this</SPAN>);
+<SPAN CLASS="gutter">  99:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutterH"> 100:</SPAN>
+<SPAN CLASS="gutter"> 101:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter"> 102:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">initialize</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter"> 103:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter"> 104:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">initialize</SPAN>() <SPAN CLASS="syntax8">throws</SPAN> SortException <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutterH"> 105:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter"> 106:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">insert</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scaler</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">block</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">event</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">data</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">every</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">3</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">seconds</SPAN>
+<SPAN CLASS="gutter"> 107:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 108:</SPAN>                vmeMap.<SPAN CLASS="syntax6">setScalerInterval</SPAN>(<SPAN CLASS="syntax5">3</SPAN>);
+<SPAN CLASS="gutter"> 109:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">ADC</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">CHANNELS</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SECTION</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutterH"> 110:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter"> 111:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">eventParameters,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">args</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">=</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">(slot,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">base</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">address,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">channel,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">threshold</SPAN>
+<SPAN CLASS="gutter"> 112:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">channel)</SPAN>
+<SPAN CLASS="gutter"> 113:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 114:</SPAN>                idGe <SPAN CLASS="syntax18">=</SPAN> vmeMap.<SPAN CLASS="syntax6">eventParameter</SPAN>(<SPAN CLASS="syntax5">2</SPAN>, ADC_BASE, <SPAN CLASS="syntax5">0</SPAN>, THRESHOLDS);
+<SPAN CLASS="gutterH"> 115:</SPAN>                idNaI <SPAN CLASS="syntax18">=</SPAN> vmeMap.<SPAN CLASS="syntax6">eventParameter</SPAN>(<SPAN CLASS="syntax5">2</SPAN>, ADC_BASE, <SPAN CLASS="syntax5">1</SPAN>, THRESHOLDS);
+<SPAN CLASS="gutter"> 116:</SPAN>                idTAC <SPAN CLASS="syntax18">=</SPAN> vmeMap.<SPAN CLASS="syntax6">eventParameter</SPAN>(<SPAN CLASS="syntax5">2</SPAN>, ADC_BASE, <SPAN CLASS="syntax5">2</SPAN>, THRESHOLDS);
+<SPAN CLASS="gutter"> 117:</SPAN>                hTAC_g2d.<SPAN CLASS="syntax6">addGate</SPAN>(gTAC);
+<SPAN CLASS="gutter"> 118:</SPAN>        <SPAN CLASS="syntax18">}</SPAN><SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">end</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">of</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">initialize()</SPAN>
+<SPAN CLASS="gutter"> 119:</SPAN>
+<SPAN CLASS="gutterH"> 120:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter"> 121:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">int</SPAN><SPAN CLASS="syntax3">[</SPAN><SPAN CLASS="syntax3">]</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter"> 122:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter"> 123:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">sort</SPAN>(<SPAN CLASS="syntax10">int</SPAN>[] data) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 124:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">EXTRACT</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">DATA</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">FROM</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">ARRAY</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutterH"> 125:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> eGe <SPAN CLASS="syntax18">=</SPAN> data[idGe];
+<SPAN CLASS="gutter"> 126:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> eNaI <SPAN CLASS="syntax18">=</SPAN> data[idNaI];
+<SPAN CLASS="gutter"> 127:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> eTAC <SPAN CLASS="syntax18">=</SPAN> data[idTAC];
+<SPAN CLASS="gutter"> 128:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ecGe <SPAN CLASS="syntax18">=</SPAN> eGe <SPAN CLASS="syntax18">&gt;</SPAN><SPAN CLASS="syntax18">&gt;</SPAN> TWO_D_FACTOR;<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">bit-shifts</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">are</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">faster</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">than</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">division</SPAN>
+<SPAN CLASS="gutter"> 129:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ecNaI <SPAN CLASS="syntax18">=</SPAN> eNaI <SPAN CLASS="syntax18">&gt;</SPAN><SPAN CLASS="syntax18">&gt;</SPAN> TWO_D_FACTOR;
+<SPAN CLASS="gutterH"> 130:</SPAN>
+<SPAN CLASS="gutter"> 131:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">INCREMENT</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">UNGATED</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SPECTRA</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter"> 132:</SPAN>                hGe.<SPAN CLASS="syntax6">inc</SPAN>(eGe);
+<SPAN CLASS="gutter"> 133:</SPAN>                hNaI.<SPAN CLASS="syntax6">inc</SPAN>(eNaI);
+<SPAN CLASS="gutter"> 134:</SPAN>                hTAC.<SPAN CLASS="syntax6">inc</SPAN>(eTAC);
+<SPAN CLASS="gutterH"> 135:</SPAN>                hGeNaI.<SPAN CLASS="syntax6">inc</SPAN>(ecGe, ecNaI);<SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">inc(x-channel,</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">y-channel)</SPAN>
+<SPAN CLASS="gutter"> 136:</SPAN>
+<SPAN CLASS="gutter"> 137:</SPAN>                <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">INCREMENT</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">GATED</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SPECTRA</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter"> 138:</SPAN>                <SPAN CLASS="syntax8">if</SPAN> (gTAC.<SPAN CLASS="syntax6">inGate</SPAN>(eTAC))<SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 139:</SPAN>                        hGe_TAC.<SPAN CLASS="syntax6">inc</SPAN>(eGe);
+<SPAN CLASS="gutterH"> 140:</SPAN>                <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 141:</SPAN>                <SPAN CLASS="syntax8">if</SPAN> (gGeNaI.<SPAN CLASS="syntax6">inGate</SPAN>(ecGe, ecNaI)) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 142:</SPAN>                        hGe_g2d.<SPAN CLASS="syntax6">inc</SPAN>(eGe);
+<SPAN CLASS="gutter"> 143:</SPAN>                        hTAC_g2d.<SPAN CLASS="syntax6">inc</SPAN>(eTAC);
+<SPAN CLASS="gutter"> 144:</SPAN>                <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutterH"> 145:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 146:</SPAN>
+<SPAN CLASS="gutter"> 147:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter"> 148:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">monitor</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">String</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter"> 149:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutterH"> 150:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">double</SPAN> <SPAN CLASS="syntax6">monitor</SPAN>(String name) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 151:</SPAN>                <SPAN CLASS="syntax10">double</SPAN> rval <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">0</SPAN>.<SPAN CLASS="syntax5">0</SPAN>;
+<SPAN CLASS="gutter"> 152:</SPAN>                <SPAN CLASS="syntax8">if</SPAN> (name.<SPAN CLASS="syntax6">equals</SPAN>(DEAD_TIME)) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 153:</SPAN>                        <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">double</SPAN> geVal <SPAN CLASS="syntax18">=</SPAN> sGe.<SPAN CLASS="syntax6">getValue</SPAN>();
+<SPAN CLASS="gutter"> 154:</SPAN>                        <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">double</SPAN> acceptVal <SPAN CLASS="syntax18">=</SPAN> sAccept.<SPAN CLASS="syntax6">getValue</SPAN>();
+<SPAN CLASS="gutterH"> 155:</SPAN>                        rval <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">100</SPAN>.<SPAN CLASS="syntax5">0</SPAN> <SPAN CLASS="syntax18">*</SPAN> (<SPAN CLASS="syntax5">1</SPAN>.<SPAN CLASS="syntax5">0</SPAN> <SPAN CLASS="syntax18">-</SPAN> (lastAccept <SPAN CLASS="syntax18">-</SPAN> acceptVal) <SPAN CLASS="syntax18">/</SPAN> (geVal <SPAN CLASS="syntax18">-</SPAN> lastGe));
+<SPAN CLASS="gutter"> 156:</SPAN>                        lastGe <SPAN CLASS="syntax18">=</SPAN> (<SPAN CLASS="syntax10">int</SPAN>) geVal;
+<SPAN CLASS="gutter"> 157:</SPAN>                        lastAccept <SPAN CLASS="syntax18">=</SPAN> (<SPAN CLASS="syntax10">int</SPAN>) acceptVal;
+<SPAN CLASS="gutter"> 158:</SPAN>                <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 159:</SPAN>                <SPAN CLASS="syntax8">return</SPAN> rval;
+<SPAN CLASS="gutterH"> 160:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 161:</SPAN>
+<SPAN CLASS="gutter"> 162:</SPAN><SPAN CLASS="syntax18">}</SPAN><SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">end</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">of</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">class</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">CI</SPAN>
+</PRE></BODY>
+</HTML>
 
-
-<!-- ======================================================== -->
-<!-- = Java Sourcecode to HTML automatically converted code = -->
-<!-- =   Java2Html Converter V4.1 2004 by Markus Gebhard  markus@jave.de   = -->
-<!-- =     Further information: http://www.java2html.de     = -->
-<div align="left" class="java">
-<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
-   <tr>
-  <!-- start source code -->
-   <td nowrap="nowrap" valign="top" align="left">
-    <code>
-<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">help.sortfiles;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Gate;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.HistInt1D;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.HistInt2D;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Monitor;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Scaler;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortException;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortRoutine;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;Test&nbsp;sort&nbsp;file&nbsp;for&nbsp;ADC&nbsp;at&nbsp;LENA.&nbsp;Modified&nbsp;2&nbsp;March&nbsp;2002&nbsp;for&nbsp;example&nbsp;purposes&nbsp;by</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;Dale&nbsp;Visser.</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">C.&nbsp;Iliadis&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Dale&nbsp;Visser</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">CI&nbsp;</font><font color="#7f0055"><b>extends&nbsp;</b></font><font color="#000000">SortRoutine&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;GLOBAL&nbsp;DECLARATIONS&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ADC_BASE&nbsp;=&nbsp;</font><font color="#990000">0xe0000000</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">THRESHOLDS&nbsp;=&nbsp;</font><font color="#990000">100</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ADC_CHANNELS&nbsp;=&nbsp;</font><font color="#990000">4096</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//num&nbsp;of&nbsp;channels&nbsp;per&nbsp;ADC</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;number&nbsp;of&nbsp;channels&nbsp;per&nbsp;dimension&nbsp;in&nbsp;2-d&nbsp;histograms&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">TWO_D_CHANS&nbsp;=&nbsp;</font><font color="#990000">512</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;amount&nbsp;of&nbsp;bits&nbsp;to&nbsp;shift&nbsp;for&nbsp;compression&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">TWO_D_FACTOR&nbsp;=&nbsp;Math.round</font><font color="#000000">((</font><font color="#7f0055"><b>float</b></font><font color="#000000">)&nbsp;(</font><font color="#000000">Math.log</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">/&nbsp;TWO_D_CHANS</font><font color="#000000">)&nbsp;</font><font color="#000000">/&nbsp;Math.log</font><font color="#000000">(</font><font color="#990000">2.0</font><font color="#000000">)))</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">idGe,&nbsp;idNaI,&nbsp;idTAC;</font><font color="#3f7f5f">//&nbsp;&nbsp;id&nbsp;numbers&nbsp;for&nbsp;the&nbsp;signals</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;hGe,&nbsp;hNaI,&nbsp;hTAC;</font><font color="#3f7f5f">//&nbsp;&nbsp;ungated&nbsp;1D&nbsp;spectra</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt2D&nbsp;hGeNaI;</font><font color="#3f7f5f">//&nbsp;&nbsp;ungated&nbsp;2D&nbsp;spectra</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;hGe_TAC;</font><font color="#3f7f5f">//&nbsp;&nbsp;gated&nbsp;on&nbsp;TAC</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;hGe_g2d,&nbsp;hTAC_g2d;</font><font color="#3f7f5f">//&nbsp;&nbsp;gated&nbsp;on&nbsp;Ge&nbsp;vs.&nbsp;NaI</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Gate&nbsp;gTAC;</font><font color="#3f7f5f">//&nbsp;&nbsp;1D&nbsp;gate</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Gate&nbsp;gGeNaI;</font><font color="#3f7f5f">//2D&nbsp;gate</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Scaler&nbsp;sClock,&nbsp;sBeam,&nbsp;sGe,&nbsp;sAccept,&nbsp;sNaI;</font><font color="#3f7f5f">//&nbsp;&nbsp;scalers</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Monitor&nbsp;mDeadTime;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#000000">String&nbsp;DEAD_TIME&nbsp;=&nbsp;</font><font color="#2a00ff">&#34;Dead&nbsp;Time&nbsp;(%)&#34;</font><font color="#000000">;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">lastGe,&nbsp;lastAccept;</font><font color="#3f7f5f">//for&nbsp;calculating&nbsp;dead&nbsp;time</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;END&nbsp;OF&nbsp;GLOBAL&nbsp;DECLARATIONS&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">CI</font><font color="#000000">(){</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>super</b></font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#000000">String&nbsp;NAI=</font><font color="#2a00ff">&#34;NaI&#34;</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;HISTOGRAM&nbsp;SECTION&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,</font><font color="#2a00ff">&#34;Ge&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Germanium&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hNaI&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,&nbsp;NAI</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hTAC&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,&nbsp;</font><font color="#2a00ff">&#34;TAC&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe_TAC&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,&nbsp;</font><font color="#2a00ff">&#34;Ge-TAC&#34;</font><font color="#000000">,</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#2a00ff">&#34;Germanium,&nbsp;gated&nbsp;on&nbsp;TAC&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe_g2d&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,&nbsp;</font><font color="#2a00ff">&#34;Ge-2dgate&#34;</font><font color="#000000">,&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#2a00ff">&#34;Germanium--gated&nbsp;on&nbsp;NaI&nbsp;vs&nbsp;Ge&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hTAC_g2d&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">ADC_CHANNELS,&nbsp;</font><font color="#2a00ff">&#34;TAC-2dgate&#34;</font><font color="#000000">,</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#2a00ff">&#34;TAC--gated&nbsp;on&nbsp;NaI&nbsp;vs&nbsp;Ge&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGeNaI&nbsp;=&nbsp;createHist2D</font><font color="#000000">(</font><font color="#000000">TWO_D_CHANS,&nbsp;</font><font color="#2a00ff">&#34;GeNaI&#34;</font><font color="#000000">,</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#2a00ff">&#34;NaI&nbsp;vs.&nbsp;Germanium&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Germanium&#34;</font><font color="#000000">,&nbsp;NAI</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;GATE&nbsp;SECTION&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">gTAC&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Gate</font><font color="#000000">(</font><font color="#2a00ff">&#34;TAC&#34;</font><font color="#000000">,&nbsp;hTAC</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Monitor&nbsp;associated&nbsp;with&nbsp;Gate,&nbsp;window&nbsp;will&nbsp;show&nbsp;rate&nbsp;of&nbsp;new&nbsp;counts&nbsp;in</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Hz</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#2a00ff">&#34;TAC&nbsp;window&#34;</font><font color="#000000">,&nbsp;gTAC</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">gGeNaI&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Gate</font><font color="#000000">(</font><font color="#2a00ff">&#34;GeNaI&#34;</font><font color="#000000">,&nbsp;hGeNaI</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;SCALER&nbsp;SECTION&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sClock&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Clock&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;</font><font color="#3f7f5f">//&nbsp;(name,&nbsp;position&nbsp;in&nbsp;scaler&nbsp;unit)</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sBeam&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Beam&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">1</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sGe&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Ge&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">2</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//Ge&nbsp;provides&nbsp;trigger</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sAccept&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Ge&nbsp;Accept&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sNaI&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#000000">NAI,&nbsp;</font><font color="#990000">4</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;MONITOR&nbsp;SECTION&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Monitors&nbsp;associated&nbsp;with&nbsp;scalers,&nbsp;window&nbsp;will&nbsp;return&nbsp;scaler&nbsp;rate&nbsp;in</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Hz</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">sClock.getName</font><font color="#000000">()</font><font color="#000000">,&nbsp;sClock</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">sBeam.getName</font><font color="#000000">()</font><font color="#000000">,&nbsp;sBeam</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">sGe.getName</font><font color="#000000">()</font><font color="#000000">,&nbsp;sGe</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">sAccept.getName</font><font color="#000000">()</font><font color="#000000">,&nbsp;sAccept</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">sNaI.getName</font><font color="#000000">()</font><font color="#000000">,&nbsp;sNaI</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//User-defined&nbsp;monitor&nbsp;which&nbsp;is&nbsp;calculated&nbsp;in&nbsp;this&nbsp;sort&nbsp;routine</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">mDeadTime&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#000000">DEAD_TIME,&nbsp;</font><font color="#7f0055"><b>this</b></font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#initialize()</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">initialize</font><font color="#000000">()&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">SortException&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;insert&nbsp;scaler&nbsp;block&nbsp;in&nbsp;event&nbsp;data&nbsp;every&nbsp;3&nbsp;seconds</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">vmeMap.setScalerInterval</font><font color="#000000">(</font><font color="#990000">3</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;ADC&nbsp;CHANNELS&nbsp;SECTION&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;eventParameters,&nbsp;args&nbsp;=&nbsp;(slot,&nbsp;base&nbsp;address,&nbsp;channel,&nbsp;threshold</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;channel)</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">idGe&nbsp;=&nbsp;vmeMap.eventParameter</font><font color="#000000">(</font><font color="#990000">2</font><font color="#000000">,&nbsp;ADC_BASE,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;THRESHOLDS</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">idNaI&nbsp;=&nbsp;vmeMap.eventParameter</font><font color="#000000">(</font><font color="#990000">2</font><font color="#000000">,&nbsp;ADC_BASE,&nbsp;</font><font color="#990000">1</font><font color="#000000">,&nbsp;THRESHOLDS</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">idTAC&nbsp;=&nbsp;vmeMap.eventParameter</font><font color="#000000">(</font><font color="#990000">2</font><font color="#000000">,&nbsp;ADC_BASE,&nbsp;</font><font color="#990000">2</font><font color="#000000">,&nbsp;THRESHOLDS</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hTAC_g2d.addGate</font><font color="#000000">(</font><font color="#000000">gTAC</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><font color="#3f7f5f">//end&nbsp;of&nbsp;initialize()</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#sort(int[])</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">sort</font><font color="#000000">(</font><font color="#7f0055"><b>int</b></font><font color="#000000">[]&nbsp;</font><font color="#000000">data</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;EXTRACT&nbsp;DATA&nbsp;FROM&nbsp;ARRAY&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">eGe&nbsp;=&nbsp;data</font><font color="#000000">[</font><font color="#000000">idGe</font><font color="#000000">]</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">eNaI&nbsp;=&nbsp;data</font><font color="#000000">[</font><font color="#000000">idNaI</font><font color="#000000">]</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">eTAC&nbsp;=&nbsp;data</font><font color="#000000">[</font><font color="#000000">idTAC</font><font color="#000000">]</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ecGe&nbsp;=&nbsp;eGe&nbsp;&gt;&gt;&nbsp;TWO_D_FACTOR;</font><font color="#3f7f5f">//bit-shifts&nbsp;are&nbsp;faster&nbsp;than&nbsp;division</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ecNaI&nbsp;=&nbsp;eNaI&nbsp;&gt;&gt;&nbsp;TWO_D_FACTOR;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;INCREMENT&nbsp;UNGATED&nbsp;SPECTRA&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe.inc</font><font color="#000000">(</font><font color="#000000">eGe</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hNaI.inc</font><font color="#000000">(</font><font color="#000000">eNaI</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hTAC.inc</font><font color="#000000">(</font><font color="#000000">eTAC</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGeNaI.inc</font><font color="#000000">(</font><font color="#000000">ecGe,&nbsp;ecNaI</font><font color="#000000">)</font><font color="#000000">;</font><font color="#3f7f5f">//&nbsp;inc(x-channel,&nbsp;y-channel)</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;*&nbsp;INCREMENT&nbsp;GATED&nbsp;SPECTRA&nbsp;**&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">gTAC.inGate</font><font color="#000000">(</font><font color="#000000">eTAC</font><font color="#000000">)){</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe_TAC.inc</font><font color="#000000">(</font><font color="#000000">eGe</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">gGeNaI.inGate</font><font color="#000000">(</font><font color="#000000">ecGe,&nbsp;ecNaI</font><font color="#000000">))&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hGe_g2d.inc</font><font color="#000000">(</font><font color="#000000">eGe</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hTAC_g2d.inc</font><font color="#000000">(</font><font color="#000000">eTAC</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#monitor(String)</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>double&nbsp;</b></font><font color="#000000">monitor</font><font color="#000000">(</font><font color="#000000">String&nbsp;name</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>double&nbsp;</b></font><font color="#000000">rval&nbsp;=&nbsp;</font><font color="#990000">0.0</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">name.equals</font><font color="#000000">(</font><font color="#000000">DEAD_TIME</font><font color="#000000">))&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>double&nbsp;</b></font><font color="#000000">geVal&nbsp;=&nbsp;sGe.getValue</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>double&nbsp;</b></font><font color="#000000">acceptVal&nbsp;=&nbsp;sAccept.getValue</font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">rval&nbsp;=&nbsp;</font><font color="#990000">100.0&nbsp;</font><font color="#000000">*&nbsp;</font><font color="#000000">(</font><font color="#990000">1.0&nbsp;</font><font color="#000000">-&nbsp;</font><font color="#000000">(</font><font color="#000000">lastAccept&nbsp;-&nbsp;acceptVal</font><font color="#000000">)&nbsp;</font><font color="#000000">/&nbsp;</font><font color="#000000">(</font><font color="#000000">geVal&nbsp;-&nbsp;lastGe</font><font color="#000000">))</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">lastGe&nbsp;=&nbsp;</font><font color="#000000">(</font><font color="#7f0055"><b>int</b></font><font color="#000000">)&nbsp;</font><font color="#000000">geVal;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">lastAccept&nbsp;=&nbsp;</font><font color="#000000">(</font><font color="#7f0055"><b>int</b></font><font color="#000000">)&nbsp;</font><font color="#000000">acceptVal;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">rval;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#000000">}</font><font color="#3f7f5f">//end&nbsp;of&nbsp;class&nbsp;CI</font></code>
-    
-   </td>
-  <!-- end source code -->
-   </tr>
-</table>
-</div>
-<!-- =       END of automatically generated HTML code       = -->
-<!-- ======================================================== -->
-
-
-</body></html>

@@ -1,107 +1,163 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html><head>
-<title></title>
-  <style type="text/css">
-    <!--code { font-family: Courier New, Courier; font-size: 10pt; margin: 0px; }-->
-  </style>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-</head><body>
+<HTML>
+<HEAD>
+<TITLE>CamacSortTemplate.java</TITLE>
+<STYLE TYPE="text/css"><!--
+.syntax0 {
+color: #000000;
+}
+.syntax1 {
+color: #cc0000;
+}
+.syntax2 {
+color: #ff8400;
+}
+.syntax3 {
+color: #6600cc;
+}
+.syntax4 {
+color: #cc6600;
+}
+.syntax5 {
+color: #ff0000;
+}
+.syntax6 {
+color: #9966ff;
+}
+.syntax7 {
+background: #ffffcc;
+color: #ff0066;
+}
+.syntax8 {
+color: #006699;
+font-weight: bold;
+}
+.syntax9 {
+color: #009966;
+font-weight: bold;
+}
+.syntax10 {
+color: #0099ff;
+font-weight: bold;
+}
+.syntax11 {
+color: #66ccff;
+font-weight: bold;
+}
+.syntax12 {
+color: #02b902;
+}
+.syntax13 {
+color: #ff00cc;
+}
+.syntax14 {
+color: #cc00cc;
+}
+.syntax15 {
+color: #9900cc;
+}
+.syntax16 {
+color: #6600cc;
+}
+.syntax17 {
+color: #0000ff;
+}
+.syntax18 {
+color: #000000;
+font-weight: bold;
+}
+.gutter {
+background: #dbdbdb;
+color: #000000;
+}
+.gutterH {
+background: #dbdbdb;
+color: #990066;
+}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<PRE><SPAN CLASS="gutter">   1:</SPAN><SPAN CLASS="syntax9">package</SPAN> help.sortfiles;
+<SPAN CLASS="gutter">   2:</SPAN>
+<SPAN CLASS="gutter">   3:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Gate;
+<SPAN CLASS="gutter">   4:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.HistInt1D;
+<SPAN CLASS="gutterH">   5:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Scaler;
+<SPAN CLASS="gutter">   6:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.DataParameter;
+<SPAN CLASS="gutter">   7:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortException;
+<SPAN CLASS="gutter">   8:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortRoutine;
+<SPAN CLASS="gutter">   9:</SPAN>
+<SPAN CLASS="gutterH">  10:</SPAN><SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  11:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Template</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">routine</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Jam</SPAN>
+<SPAN CLASS="gutter">  12:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutter">  13:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@author</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Ken</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Swartz</SPAN>
+<SPAN CLASS="gutter">  14:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@version</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">1</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">June</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">99</SPAN>
+<SPAN CLASS="gutterH">  15:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  16:</SPAN><SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">class</SPAN> CamacSortTemplate <SPAN CLASS="syntax8">extends</SPAN> SortRoutine <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  17:</SPAN>
+<SPAN CLASS="gutter">  18:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">variables</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">declarations</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  19:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> PARAM_ID <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">0</SPAN>; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">id</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">number</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">for</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">event</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">word</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">from</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">cnaf</SPAN>
+<SPAN CLASS="gutterH">  20:</SPAN>
+<SPAN CLASS="gutter">  21:</SPAN>        <SPAN CLASS="syntax8">static</SPAN> <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> SCALER_ID <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">0</SPAN>; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">id</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">number</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">for</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scaler</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">from</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">cnaf</SPAN>
+<SPAN CLASS="gutter">  22:</SPAN>
+<SPAN CLASS="gutter">  23:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D myHist; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">declare</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">histogram</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myHist</SPAN>
+<SPAN CLASS="gutter">  24:</SPAN>
+<SPAN CLASS="gutterH">  25:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D myHistGated; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">declare</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">histogram</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myHistGated</SPAN>
+<SPAN CLASS="gutter">  26:</SPAN>
+<SPAN CLASS="gutter">  27:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Gate myGate; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">declare</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">gate</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myGate;</SPAN>
+<SPAN CLASS="gutter">  28:</SPAN>
+<SPAN CLASS="gutter">  29:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Scaler myScal; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">declare</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scaler</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myScal;</SPAN>
+<SPAN CLASS="gutterH">  30:</SPAN>        
+<SPAN CLASS="gutter">  31:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> DataParameter myParam;
+<SPAN CLASS="gutter">  32:</SPAN>
+<SPAN CLASS="gutter">  33:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  34:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Constructor</SPAN><SPAN CLASS="syntax3">,</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">not</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">usually</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">used</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutterH">  35:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN>
+<SPAN CLASS="gutter">  36:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">initialize</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter">  37:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  38:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax6">CamacSortTemplate</SPAN>() <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  39:</SPAN>                <SPAN CLASS="syntax14">super</SPAN>();
+<SPAN CLASS="gutterH">  40:</SPAN>
+<SPAN CLASS="gutter">  41:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> hist1d <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax5">1024</SPAN>;
+<SPAN CLASS="gutter">  42:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">initialize</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">histograms,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gates,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">and</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scalers</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  43:</SPAN>                myHist <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(hist1d, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">detector1</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">my</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">detector</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  44:</SPAN>                myHistGated <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(hist1d, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">detecGated</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">my</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">detector</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">gated</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutterH">  45:</SPAN>                myGate <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Gate</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">detector1</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, myHist);
+<SPAN CLASS="gutter">  46:</SPAN>                myScal <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">scaler1</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, SCALER_ID);
+<SPAN CLASS="gutter">  47:</SPAN>                myParam <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">DataParameter</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">ParamAdjust</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  48:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter">  49:</SPAN>
+<SPAN CLASS="gutterH">  50:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  51:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">The</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">initialization</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">method</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">code</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">to</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">define</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">camac</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">commands</SPAN><SPAN CLASS="syntax3">,</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">variables</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">and</SPAN>
+<SPAN CLASS="gutter">  52:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">classes</SPAN><SPAN CLASS="syntax3">.</SPAN>
+<SPAN CLASS="gutter">  53:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutter">  54:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">initialize</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutterH">  55:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  56:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">initialize</SPAN>() <SPAN CLASS="syntax8">throws</SPAN> SortException <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  57:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter">  58:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">uncomment</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">to</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">setup</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">camac</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">commands</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">here</SPAN>
+<SPAN CLASS="gutter">  59:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafCommands.init(c,n,a,f);//initialize</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">crate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafs</SPAN>
+<SPAN CLASS="gutterH">  60:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">idEvnt=cnafCommands.eventRead(c,n,a,f);//event</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafs</SPAN>
+<SPAN CLASS="gutter">  61:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafCommands.eventCommand(c,n,a,f);//non-read</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">command</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">to</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">issue</SPAN>
+<SPAN CLASS="gutter">  62:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">idScal=cnafCommands.scaler(c,n,a,f);//scaler</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">read</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafs</SPAN>
+<SPAN CLASS="gutter">  63:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnafCommands.clear(c,n,a,f);//scaler</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">clear</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">cnaf</SPAN>
+<SPAN CLASS="gutter">  64:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  65:</SPAN>
+<SPAN CLASS="gutter">  66:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter">  67:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">comment</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">out</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">setEventSize()</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">if</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">you</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">actually</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">put</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">CAMAC</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">stuff</SPAN>
+<SPAN CLASS="gutter">  68:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  69:</SPAN>                <SPAN CLASS="syntax6">setEventSize</SPAN>(<SPAN CLASS="syntax5">2</SPAN>);
+<SPAN CLASS="gutterH">  70:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter">  71:</SPAN>
+<SPAN CLASS="gutter">  72:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  73:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">int</SPAN><SPAN CLASS="syntax3">[</SPAN><SPAN CLASS="syntax3">]</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter">  74:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutterH">  75:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">sort</SPAN>(<SPAN CLASS="syntax10">int</SPAN>[] eventData) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  76:</SPAN>                myHist.<SPAN CLASS="syntax6">inc</SPAN>(eventData[PARAM_ID]); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">increment</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myHist</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">with</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">word</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">idHist;</SPAN>
+<SPAN CLASS="gutter">  77:</SPAN>                <SPAN CLASS="syntax8">if</SPAN> (myGate.<SPAN CLASS="syntax6">inGate</SPAN>(eventData[PARAM_ID])) <SPAN CLASS="syntax18">{</SPAN> <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">if</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">event</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">word</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">is</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">in</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myGate</SPAN>
+<SPAN CLASS="gutter">  78:</SPAN>                        myHistGated.<SPAN CLASS="syntax6">inc</SPAN>(eventData[PARAM_ID]); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">increment</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">myHistGate</SPAN>
+<SPAN CLASS="gutter">  79:</SPAN>                <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutterH">  80:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter">  81:</SPAN><SPAN CLASS="syntax18">}</SPAN>
+</PRE></BODY>
+</HTML>
 
-
-<!-- ======================================================== -->
-<!-- = Java Sourcecode to HTML automatically converted code = -->
-<!-- =   Java2Html Converter V4.1 2004 by Markus Gebhard  markus@jave.de   = -->
-<!-- =     Further information: http://www.java2html.de     = -->
-<div align="left" class="java">
-<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
-   <tr>
-  <!-- start source code -->
-   <td nowrap="nowrap" valign="top" align="left">
-    <code>
-<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">help.sortfiles;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Gate;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.HistInt1D;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Scaler;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortException;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortRoutine;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;Template&nbsp;sort&nbsp;routine&nbsp;for&nbsp;Jam</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Ken&nbsp;Swartz</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@version&nbsp;</font><font color="#3f5fbf">1&nbsp;June&nbsp;99</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#7f0055"><b>public&nbsp;final&nbsp;class&nbsp;</b></font><font color="#000000">CamacSortTemplate&nbsp;</font><font color="#7f0055"><b>extends&nbsp;</b></font><font color="#000000">SortRoutine&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**&nbsp;variables&nbsp;declarations&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">PARAM_ID&nbsp;=&nbsp;</font><font color="#990000">0</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//id&nbsp;number&nbsp;for&nbsp;event&nbsp;word&nbsp;from&nbsp;cnaf</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>static&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">SCALER_ID&nbsp;=&nbsp;</font><font color="#990000">0</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//id&nbsp;number&nbsp;for&nbsp;scaler&nbsp;from&nbsp;cnaf</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;myHist;&nbsp;</font><font color="#3f7f5f">//declare&nbsp;histogram&nbsp;myHist</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;myHistGated;&nbsp;</font><font color="#3f7f5f">//declare&nbsp;histogram&nbsp;myHistGated</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Gate&nbsp;myGate;&nbsp;</font><font color="#3f7f5f">//declare&nbsp;gate&nbsp;myGate;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Scaler&nbsp;myScal;&nbsp;</font><font color="#3f7f5f">//declare&nbsp;scaler&nbsp;myScal;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Constructor,&nbsp;not&nbsp;usually&nbsp;used.&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">#initialize()</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">CamacSortTemplate</font><font color="#000000">()&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>super</b></font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">hist1d&nbsp;=&nbsp;</font><font color="#990000">1024</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;initialize&nbsp;histograms,&nbsp;gates,&nbsp;and&nbsp;scalers&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myHist&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">hist1d,&nbsp;</font><font color="#2a00ff">&#34;detector1&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;my&nbsp;detector&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myHistGated&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">hist1d,&nbsp;</font><font color="#2a00ff">&#34;detecGated&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;my&nbsp;detector&nbsp;gated&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myGate&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Gate</font><font color="#000000">(</font><font color="#2a00ff">&#34;detector1&#34;</font><font color="#000000">,&nbsp;myHist</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myScal&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;scaler1&#34;</font><font color="#000000">,&nbsp;SCALER_ID</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;The&nbsp;initialization&nbsp;method&nbsp;code&nbsp;to&nbsp;define&nbsp;camac&nbsp;commands,&nbsp;variables&nbsp;and</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;classes.</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#initialize()</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">initialize</font><font color="#000000">()&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">SortException&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;uncomment&nbsp;to&nbsp;setup&nbsp;camac&nbsp;commands&nbsp;here</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;cnafCommands.init(c,n,a,f);//initialize&nbsp;crate&nbsp;cnafs</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;idEvnt=cnafCommands.eventRead(c,n,a,f);//event&nbsp;cnafs</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;cnafCommands.eventCommand(c,n,a,f);//non-read&nbsp;command&nbsp;to&nbsp;issue</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;idScal=cnafCommands.scaler(c,n,a,f);//scaler&nbsp;read&nbsp;cnafs</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;cnafCommands.clear(c,n,a,f);//scaler&nbsp;clear&nbsp;cnaf</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;comment&nbsp;out&nbsp;setEventSize()&nbsp;if&nbsp;you&nbsp;actually&nbsp;put&nbsp;in&nbsp;the&nbsp;CAMAC&nbsp;stuff</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">setEventSize</font><font color="#000000">(</font><font color="#990000">2</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#sort(int[])</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">sort</font><font color="#000000">(</font><font color="#7f0055"><b>int</b></font><font color="#000000">[]&nbsp;</font><font color="#000000">eventData</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myHist.inc</font><font color="#000000">(</font><font color="#000000">eventData</font><font color="#000000">[</font><font color="#000000">PARAM_ID</font><font color="#000000">])</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//increment&nbsp;myHist&nbsp;with&nbsp;word&nbsp;idHist;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">myGate.inGate</font><font color="#000000">(</font><font color="#000000">eventData</font><font color="#000000">[</font><font color="#000000">PARAM_ID</font><font color="#000000">]))&nbsp;{&nbsp;</font><font color="#3f7f5f">//if&nbsp;event&nbsp;word&nbsp;is&nbsp;in&nbsp;myGate</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">myHistGated.inc</font><font color="#000000">(</font><font color="#000000">eventData</font><font color="#000000">[</font><font color="#000000">PARAM_ID</font><font color="#000000">])</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//increment&nbsp;myHistGate</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#000000">}</font></code>
-    
-   </td>
-  <!-- end source code -->
-   </tr>
-</table>
-</div>
-<!-- =       END of automatically generated HTML code       = -->
-<!-- ======================================================== -->
-
-
-</body></html>

@@ -1,164 +1,215 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html><head>
-<title></title>
-  <style type="text/css">
-    <!--code { font-family: Courier New, Courier; font-size: 10pt; margin: 0px; }-->
-  </style>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-</head><body>
+<HTML>
+<HEAD>
+<TITLE>EvsDE.java</TITLE>
+<STYLE TYPE="text/css"><!--
+.syntax0 {
+color: #000000;
+}
+.syntax1 {
+color: #cc0000;
+}
+.syntax2 {
+color: #ff8400;
+}
+.syntax3 {
+color: #6600cc;
+}
+.syntax4 {
+color: #cc6600;
+}
+.syntax5 {
+color: #ff0000;
+}
+.syntax6 {
+color: #9966ff;
+}
+.syntax7 {
+background: #ffffcc;
+color: #ff0066;
+}
+.syntax8 {
+color: #006699;
+font-weight: bold;
+}
+.syntax9 {
+color: #009966;
+font-weight: bold;
+}
+.syntax10 {
+color: #0099ff;
+font-weight: bold;
+}
+.syntax11 {
+color: #66ccff;
+font-weight: bold;
+}
+.syntax12 {
+color: #02b902;
+}
+.syntax13 {
+color: #ff00cc;
+}
+.syntax14 {
+color: #cc00cc;
+}
+.syntax15 {
+color: #9900cc;
+}
+.syntax16 {
+color: #6600cc;
+}
+.syntax17 {
+color: #0000ff;
+}
+.syntax18 {
+color: #000000;
+font-weight: bold;
+}
+.gutter {
+background: #dbdbdb;
+color: #000000;
+}
+.gutterH {
+background: #dbdbdb;
+color: #990066;
+}
+-->
+</STYLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<PRE><SPAN CLASS="gutter">   1:</SPAN><SPAN CLASS="syntax9">package</SPAN> help.sortfiles;
+<SPAN CLASS="gutter">   2:</SPAN>
+<SPAN CLASS="gutter">   3:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Gate;
+<SPAN CLASS="gutter">   4:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.HistInt1D;
+<SPAN CLASS="gutterH">   5:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.HistInt2D;
+<SPAN CLASS="gutter">   6:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Monitor;
+<SPAN CLASS="gutter">   7:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.data.Scaler;
+<SPAN CLASS="gutter">   8:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortException;
+<SPAN CLASS="gutter">   9:</SPAN><SPAN CLASS="syntax9">import</SPAN> jam.sort.SortRoutine;
+<SPAN CLASS="gutterH">  10:</SPAN>
+<SPAN CLASS="gutter">  11:</SPAN><SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  12:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">This</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">is</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">an</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">example</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">routine</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Jam</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">It</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">sorts</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">a</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">delta</SPAN><SPAN CLASS="syntax3">-</SPAN><SPAN CLASS="syntax3">E</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">vs</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">E</SPAN>
+<SPAN CLASS="gutter">  13:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">telescope</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">The</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">histograms</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">consist</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">of</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">1</SPAN><SPAN CLASS="syntax3">-</SPAN><SPAN CLASS="syntax3">d</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">histograms</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">both</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Delta</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">E</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">and</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">E</SPAN><SPAN CLASS="syntax3">,</SPAN>
+<SPAN CLASS="gutter">  14:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">and</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">a</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">2</SPAN><SPAN CLASS="syntax3">-</SPAN><SPAN CLASS="syntax3">d</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">histogram</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">which</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">is</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">gated</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">on</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">The</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">event</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">data</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">are</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">delta</SPAN><SPAN CLASS="syntax3">-</SPAN><SPAN CLASS="syntax3">E</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">and</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">E</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">pulse</SPAN>
+<SPAN CLASS="gutterH">  15:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">heights</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">The</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">convention</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">for</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">2</SPAN><SPAN CLASS="syntax3">-</SPAN><SPAN CLASS="syntax3">d</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Histograms</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">is</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">x</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">first</SPAN><SPAN CLASS="syntax3">,</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">then</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">y</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">x</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">vs</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">y</SPAN><SPAN CLASS="syntax3">)</SPAN><SPAN CLASS="syntax3">.</SPAN>
+<SPAN CLASS="gutter">  16:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN>
+<SPAN CLASS="gutter">  17:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@author</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Ken</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Swartz</SPAN>
+<SPAN CLASS="gutter">  18:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@author</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Dale</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Visser</SPAN>
+<SPAN CLASS="gutter">  19:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@version</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">0</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3">5</SPAN>
+<SPAN CLASS="gutterH">  20:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@since</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">JDK</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">1</SPAN><SPAN CLASS="syntax3">.</SPAN><SPAN CLASS="syntax3">1</SPAN>
+<SPAN CLASS="gutter">  21:</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  22:</SPAN><SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">class</SPAN> EvsDE <SPAN CLASS="syntax8">extends</SPAN> SortRoutine <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter">  23:</SPAN>
+<SPAN CLASS="gutter">  24:</SPAN>        <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">histograms</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  25:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt1D hEnergy, hDE, hSum, hSumGate;
+<SPAN CLASS="gutter">  26:</SPAN>        
+<SPAN CLASS="gutter">  27:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> HistInt2D hEvsDE;
+<SPAN CLASS="gutter">  28:</SPAN>
+<SPAN CLASS="gutter">  29:</SPAN>        <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gates</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  30:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Gate gEvsDE;
+<SPAN CLASS="gutter">  31:</SPAN>
+<SPAN CLASS="gutter">  32:</SPAN>        <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scalers</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  33:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Scaler sBeam, sClck, sEvntRaw, sEvntAccpt;
+<SPAN CLASS="gutter">  34:</SPAN>
+<SPAN CLASS="gutterH">  35:</SPAN>        <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">rate</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">monitors</SPAN>
+<SPAN CLASS="gutter">  36:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax8">final</SPAN> Monitor mBeam, mClck, mEvntRt;
+<SPAN CLASS="gutter">  37:</SPAN>
+<SPAN CLASS="gutter">  38:</SPAN>        <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">id</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">numbers</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">for</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">the</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">signals;</SPAN>
+<SPAN CLASS="gutter">  39:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax10">int</SPAN> idE;
+<SPAN CLASS="gutterH">  40:</SPAN>
+<SPAN CLASS="gutter">  41:</SPAN>        <SPAN CLASS="syntax8">transient</SPAN> <SPAN CLASS="syntax10">int</SPAN> idDE;
+<SPAN CLASS="gutter">  42:</SPAN>
+<SPAN CLASS="gutter">  43:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  44:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">Constructor</SPAN><SPAN CLASS="syntax3">,</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">not</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">usually</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">necessary</SPAN><SPAN CLASS="syntax3">,</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">but</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">be</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">sure</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">to</SPAN>
+<SPAN CLASS="gutterH">  45:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">call</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax17">&lt;</SPAN><SPAN CLASS="syntax17">code</SPAN><SPAN CLASS="syntax17">&gt;</SPAN><SPAN CLASS="syntax3">super</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN><SPAN CLASS="syntax17">&lt;</SPAN><SPAN CLASS="syntax17">/</SPAN><SPAN CLASS="syntax17">code</SPAN><SPAN CLASS="syntax17">&gt;</SPAN><SPAN CLASS="syntax3">.</SPAN>
+<SPAN CLASS="gutter">  46:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN>
+<SPAN CLASS="gutter">  47:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">initialize</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter">  48:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  49:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax6">EvsDE</SPAN>() <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutterH">  50:</SPAN>                <SPAN CLASS="syntax14">super</SPAN>();
+<SPAN CLASS="gutter">  51:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> oneD<SPAN CLASS="syntax18">=</SPAN><SPAN CLASS="syntax5">2048</SPAN>;
+<SPAN CLASS="gutter">  52:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> twoD<SPAN CLASS="syntax18">=</SPAN><SPAN CLASS="syntax5">256</SPAN>;
+<SPAN CLASS="gutter">  53:</SPAN>                hEnergy <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(oneD,<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">E</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Energy</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  54:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">delta-E</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">signal</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  55:</SPAN>                hDE <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(oneD, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">DE</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Delta-E</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  56:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Energy</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">vs.</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">delta-E</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">2-d</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">histogram</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  57:</SPAN>                hEvsDE <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist2D</SPAN>(twoD, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">EvsDE</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">E</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">vs</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Delta</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">E</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Energy</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>,
+<SPAN CLASS="gutter">  58:</SPAN>                                <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Delta</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Energy</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  59:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Energy</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">plus</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">delta-E</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  60:</SPAN>                hSum <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(oneD, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">sum</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Energy</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Sum</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  61:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Energy</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">plus</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">delta-E</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gated</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">on</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">particle</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">ID</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  62:</SPAN>                hSumGate <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createHist1D</SPAN>(oneD, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">sumGate</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Gated</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Energy</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Sum</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>);
+<SPAN CLASS="gutter">  63:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Particle</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">ID</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  64:</SPAN>                gEvsDE <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Gate</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">PID</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, hEvsDE);
+<SPAN CLASS="gutterH">  65:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Integrated</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">beam</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">current</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">(BIC)</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  66:</SPAN>                sBeam <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Beam</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">0</SPAN>);
+<SPAN CLASS="gutter">  67:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">A</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">clock</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  68:</SPAN>                sClck <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Clock</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">1</SPAN>);
+<SPAN CLASS="gutter">  69:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Total</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">events</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">seen</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH">  70:</SPAN>                sEvntRaw <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Event</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Raw</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">2</SPAN>);
+<SPAN CLASS="gutter">  71:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Total</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">events</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">used</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  72:</SPAN>                sEvntAccpt <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax6">createScaler</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Event</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Accept</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, <SPAN CLASS="syntax5">3</SPAN>);
+<SPAN CLASS="gutter">  73:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Monitor</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">rate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">BIC</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scaler</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  74:</SPAN>                mBeam <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Beam</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, sBeam);
+<SPAN CLASS="gutterH">  75:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Monitor</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">rate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">clock</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  76:</SPAN>                mClck <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Clock</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, sClck);
+<SPAN CLASS="gutter">  77:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Moniter</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">rate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">accepted</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">events</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter">  78:</SPAN>                mEvntRt <SPAN CLASS="syntax18">=</SPAN> <SPAN CLASS="syntax8">new</SPAN> <SPAN CLASS="syntax6">Monitor</SPAN>(<SPAN CLASS="syntax13">&quot;</SPAN><SPAN CLASS="syntax13">Event</SPAN><SPAN CLASS="syntax13"> </SPAN><SPAN CLASS="syntax13">Rate</SPAN><SPAN CLASS="syntax13">&quot;</SPAN>, sEvntRaw);
+<SPAN CLASS="gutter">  79:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutterH">  80:</SPAN>
+<SPAN CLASS="gutter">  81:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutter">  82:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">initialize</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter">  83:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter">  84:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">initialize</SPAN>() <SPAN CLASS="syntax8">throws</SPAN> SortException <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutterH">  85:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">init</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">28</SPAN>, <SPAN CLASS="syntax5">8</SPAN>, <SPAN CLASS="syntax5">26</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">crate</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">dataway</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Z</SPAN>
+<SPAN CLASS="gutter">  86:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">init</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">28</SPAN>, <SPAN CLASS="syntax5">9</SPAN>, <SPAN CLASS="syntax5">26</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">crate</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">dataway</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">C</SPAN>
+<SPAN CLASS="gutter">  87:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">init</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">30</SPAN>, <SPAN CLASS="syntax5">9</SPAN>, <SPAN CLASS="syntax5">26</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">crate</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">I</SPAN>
+<SPAN CLASS="gutter">  88:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">init</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">3</SPAN>, <SPAN CLASS="syntax5">12</SPAN>, <SPAN CLASS="syntax5">11</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">adc</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">811</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">clear</SPAN>
+<SPAN CLASS="gutter">  89:</SPAN>
+<SPAN CLASS="gutterH">  90:</SPAN>                <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">event</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">return</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">id</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">number</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">to</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">be</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">used</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">in</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">sort</SPAN>
+<SPAN CLASS="gutter">  91:</SPAN>                idE <SPAN CLASS="syntax18">=</SPAN> cnafCommands.<SPAN CLASS="syntax6">eventRead</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">3</SPAN>, <SPAN CLASS="syntax5">0</SPAN>, <SPAN CLASS="syntax5">0</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">read</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Energy</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">signal</SPAN>
+<SPAN CLASS="gutter">  92:</SPAN>                idDE <SPAN CLASS="syntax18">=</SPAN> cnafCommands.<SPAN CLASS="syntax6">eventRead</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">3</SPAN>, <SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">0</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">read</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Delta</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">E</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">signal</SPAN>
+<SPAN CLASS="gutter">  93:</SPAN>
+<SPAN CLASS="gutter">  94:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">eventCommand</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">3</SPAN>, <SPAN CLASS="syntax5">12</SPAN>, <SPAN CLASS="syntax5">11</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">clear</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">adc</SPAN>
+<SPAN CLASS="gutterH">  95:</SPAN>
+<SPAN CLASS="gutter">  96:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">scaler</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">5</SPAN>, <SPAN CLASS="syntax5">0</SPAN>, <SPAN CLASS="syntax5">0</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">read</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">beam</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scalers</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Joerger</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">S12</SPAN>
+<SPAN CLASS="gutter">  97:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">scaler</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">5</SPAN>, <SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">0</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">read</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">clock</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scalers</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Joerger</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">S12</SPAN>
+<SPAN CLASS="gutter">  98:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">scaler</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">5</SPAN>, <SPAN CLASS="syntax5">2</SPAN>, <SPAN CLASS="syntax5">0</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">read</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">event</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">raw</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scalers</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">Joerger</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">S12</SPAN>
+<SPAN CLASS="gutter">  99:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">read</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">event</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">accept</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">scalers</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Joerger</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">S12</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH"> 100:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">scaler</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">5</SPAN>, <SPAN CLASS="syntax5">3</SPAN>, <SPAN CLASS="syntax5">0</SPAN>);
+<SPAN CLASS="gutter"> 101:</SPAN>                cnafCommands.<SPAN CLASS="syntax6">clear</SPAN>(<SPAN CLASS="syntax5">1</SPAN>, <SPAN CLASS="syntax5">5</SPAN>, <SPAN CLASS="syntax5">0</SPAN>, <SPAN CLASS="syntax5">9</SPAN>); <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">clear</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">scaler</SPAN>
+<SPAN CLASS="gutter"> 102:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 103:</SPAN>
+<SPAN CLASS="gutter"> 104:</SPAN>        <SPAN CLASS="syntax3">/**</SPAN>
+<SPAN CLASS="gutterH"> 105:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax12">@see</SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">SortRoutine</SPAN><SPAN CLASS="syntax3">#</SPAN><SPAN CLASS="syntax3">sort</SPAN><SPAN CLASS="syntax3">(</SPAN><SPAN CLASS="syntax3">int</SPAN><SPAN CLASS="syntax3">[</SPAN><SPAN CLASS="syntax3">]</SPAN><SPAN CLASS="syntax3">)</SPAN>
+<SPAN CLASS="gutter"> 106:</SPAN><SPAN CLASS="syntax3">        </SPAN><SPAN CLASS="syntax3"> </SPAN><SPAN CLASS="syntax3">*/</SPAN>
+<SPAN CLASS="gutter"> 107:</SPAN>        <SPAN CLASS="syntax8">public</SPAN> <SPAN CLASS="syntax10">void</SPAN> <SPAN CLASS="syntax6">sort</SPAN>(<SPAN CLASS="syntax10">int</SPAN>[] dataEvent) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutter"> 108:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Variables</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">for</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">raw</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">signal</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">values.</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 109:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> energy <SPAN CLASS="syntax18">=</SPAN> dataEvent[<SPAN CLASS="syntax5">0</SPAN>];
+<SPAN CLASS="gutterH"> 110:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> eDE <SPAN CLASS="syntax18">=</SPAN> dataEvent[<SPAN CLASS="syntax5">1</SPAN>];
+<SPAN CLASS="gutter"> 111:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Variables</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">for</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">compressed</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">version</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">of</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">signal</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">values.</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 112:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ecE <SPAN CLASS="syntax18">=</SPAN> energy <SPAN CLASS="syntax18">&gt;</SPAN><SPAN CLASS="syntax18">&gt;</SPAN> <SPAN CLASS="syntax5">3</SPAN>; <SPAN CLASS="syntax2">//</SPAN><SPAN CLASS="syntax2">compress</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">by</SPAN><SPAN CLASS="syntax2"> </SPAN><SPAN CLASS="syntax2">8</SPAN>
+<SPAN CLASS="gutter"> 113:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> ecDE <SPAN CLASS="syntax18">=</SPAN> eDE <SPAN CLASS="syntax18">&gt;</SPAN><SPAN CLASS="syntax18">&gt;</SPAN> <SPAN CLASS="syntax5">3</SPAN>;
+<SPAN CLASS="gutter"> 114:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutterH"> 115:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Add</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">raw</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">E</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">and</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">dE</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">signal</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">values,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">and</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">renormalize</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">to</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">spectrum</SPAN>
+<SPAN CLASS="gutter"> 116:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">size.</SPAN>
+<SPAN CLASS="gutter"> 117:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 118:</SPAN>                <SPAN CLASS="syntax8">final</SPAN> <SPAN CLASS="syntax10">int</SPAN> sum <SPAN CLASS="syntax18">=</SPAN> (energy <SPAN CLASS="syntax18">+</SPAN> eDE) <SPAN CLASS="syntax18">/</SPAN> <SPAN CLASS="syntax5">2</SPAN>;
+<SPAN CLASS="gutter"> 119:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Increment</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">ungated</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">spectra</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">appropriate</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">channels.</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutterH"> 120:</SPAN>                hEnergy.<SPAN CLASS="syntax6">inc</SPAN>(energy);
+<SPAN CLASS="gutter"> 121:</SPAN>                hDE.<SPAN CLASS="syntax6">inc</SPAN>(eDE);
+<SPAN CLASS="gutter"> 122:</SPAN>                hSum.<SPAN CLASS="syntax6">inc</SPAN>(sum);
+<SPAN CLASS="gutter"> 123:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">singles</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">2d</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">spectra</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 124:</SPAN>                hEvsDE.<SPAN CLASS="syntax6">inc</SPAN>(ecE, ecDE);
+<SPAN CLASS="gutterH"> 125:</SPAN>                <SPAN CLASS="syntax1">/*</SPAN>
+<SPAN CLASS="gutter"> 126:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">Check</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">if</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">event</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">is</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">in</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">PID</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gate.</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">If</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">so,</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">increment</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">the</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">gated</SPAN>
+<SPAN CLASS="gutter"> 127:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*</SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">histogram.</SPAN>
+<SPAN CLASS="gutter"> 128:</SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1">        </SPAN><SPAN CLASS="syntax1"> </SPAN><SPAN CLASS="syntax1">*/</SPAN>
+<SPAN CLASS="gutter"> 129:</SPAN>                <SPAN CLASS="syntax8">if</SPAN> (gEvsDE.<SPAN CLASS="syntax6">inGate</SPAN>(ecE, ecDE)) <SPAN CLASS="syntax18">{</SPAN>
+<SPAN CLASS="gutterH"> 130:</SPAN>                        hSumGate.<SPAN CLASS="syntax6">inc</SPAN>(sum);
+<SPAN CLASS="gutter"> 131:</SPAN>                <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 132:</SPAN>        <SPAN CLASS="syntax18">}</SPAN>
+<SPAN CLASS="gutter"> 133:</SPAN><SPAN CLASS="syntax18">}</SPAN>
+</PRE></BODY>
+</HTML>
 
-
-<!-- ======================================================== -->
-<!-- = Java Sourcecode to HTML automatically converted code = -->
-<!-- =   Java2Html Converter V4.1 2004 by Markus Gebhard  markus@jave.de   = -->
-<!-- =     Further information: http://www.java2html.de     = -->
-<div align="left" class="java">
-<table border="0" cellpadding="3" cellspacing="0" bgcolor="#ffffff">
-   <tr>
-  <!-- start source code -->
-   <td nowrap="nowrap" valign="top" align="left">
-    <code>
-<font color="#7f0055"><b>package&nbsp;</b></font><font color="#000000">help.sortfiles;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Gate;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.HistInt1D;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.HistInt2D;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Monitor;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.data.Scaler;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortException;</font><br/>
-<font color="#7f0055"><b>import&nbsp;</b></font><font color="#000000">jam.sort.SortRoutine;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;This&nbsp;is&nbsp;an&nbsp;example&nbsp;sort&nbsp;routine&nbsp;for&nbsp;Jam.&nbsp;It&nbsp;sorts&nbsp;for&nbsp;a&nbsp;delta-E&nbsp;vs.&nbsp;E</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;telescope.&nbsp;The&nbsp;histograms&nbsp;consist&nbsp;of&nbsp;1-d&nbsp;histograms&nbsp;for&nbsp;both&nbsp;Delta&nbsp;E&nbsp;and&nbsp;E,</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;and&nbsp;a&nbsp;2-d&nbsp;histogram&nbsp;which&nbsp;is&nbsp;gated&nbsp;on.&nbsp;The&nbsp;event&nbsp;data&nbsp;are&nbsp;delta-E&nbsp;and&nbsp;E&nbsp;pulse</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;heights.&nbsp;The&nbsp;convention&nbsp;for&nbsp;2-d&nbsp;Histograms&nbsp;is&nbsp;x&nbsp;first,&nbsp;then&nbsp;y&nbsp;(x&nbsp;vs&nbsp;y).</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Ken&nbsp;Swartz</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@author&nbsp;</font><font color="#3f5fbf">Dale&nbsp;Visser</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@version&nbsp;</font><font color="#3f5fbf">0.5</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@since&nbsp;</font><font color="#3f5fbf">JDK&nbsp;1.1</font><br/>
-<font color="#ffffff">&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">EvsDE&nbsp;</font><font color="#7f0055"><b>extends&nbsp;</b></font><font color="#000000">SortRoutine&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;histograms&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt1D&nbsp;hEnergy,&nbsp;hDE,&nbsp;hSum,&nbsp;hSumGate;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">HistInt2D&nbsp;hEvsDE;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;gates&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Gate&nbsp;gEvsDE;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;scalers&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Scaler&nbsp;sBeam,&nbsp;sClck,&nbsp;sEvntRaw,&nbsp;sEvntAccpt;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">//rate&nbsp;monitors</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;final&nbsp;</b></font><font color="#000000">Monitor&nbsp;mBeam,&nbsp;mClck,&nbsp;mEvntRt;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f7f5f">//id&nbsp;numbers&nbsp;for&nbsp;the&nbsp;signals;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">idE;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>transient&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">idDE;</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;Constructor,&nbsp;not&nbsp;usually&nbsp;necessary,&nbsp;but&nbsp;be&nbsp;sure&nbsp;to</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;call&nbsp;</font><font color="#7f7f9f">&lt;code&gt;</font><font color="#3f5fbf">super()</font><font color="#7f7f9f">&lt;/code&gt;</font><font color="#3f5fbf">.</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">#initialize()</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">EvsDE</font><font color="#000000">()&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>super</b></font><font color="#000000">()</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">oneD=</font><font color="#990000">2048</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">twoD=</font><font color="#990000">256</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hEnergy&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">oneD,</font><font color="#2a00ff">&#34;E&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Energy&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;delta-E&nbsp;signal&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hDE&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">oneD,&nbsp;</font><font color="#2a00ff">&#34;DE&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Delta-E&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Energy&nbsp;vs.&nbsp;delta-E&nbsp;2-d&nbsp;histogram&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hEvsDE&nbsp;=&nbsp;createHist2D</font><font color="#000000">(</font><font color="#000000">twoD,&nbsp;</font><font color="#2a00ff">&#34;EvsDE&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;E&nbsp;vs&nbsp;Delta&nbsp;E&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Energy&#34;</font><font color="#000000">,</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#2a00ff">&#34;Delta&nbsp;Energy&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Energy&nbsp;plus&nbsp;delta-E&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hSum&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">oneD,&nbsp;</font><font color="#2a00ff">&#34;sum&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Energy&nbsp;Sum&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Energy&nbsp;plus&nbsp;delta-E&nbsp;gated&nbsp;on&nbsp;particle&nbsp;ID&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hSumGate&nbsp;=&nbsp;createHist1D</font><font color="#000000">(</font><font color="#000000">oneD,&nbsp;</font><font color="#2a00ff">&#34;sumGate&#34;</font><font color="#000000">,&nbsp;</font><font color="#2a00ff">&#34;Gated&nbsp;Energy&nbsp;Sum&#34;</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Particle&nbsp;ID&nbsp;gate&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">gEvsDE&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Gate</font><font color="#000000">(</font><font color="#2a00ff">&#34;PID&#34;</font><font color="#000000">,&nbsp;hEvsDE</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Integrated&nbsp;beam&nbsp;current&nbsp;(BIC)&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sBeam&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Beam&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;A&nbsp;clock&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sClck&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Clock&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">1</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Total&nbsp;events&nbsp;seen&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sEvntRaw&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Event&nbsp;Raw&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">2</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Total&nbsp;events&nbsp;used&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">sEvntAccpt&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Scaler</font><font color="#000000">(</font><font color="#2a00ff">&#34;Event&nbsp;Accept&#34;</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Monitor&nbsp;of&nbsp;rate&nbsp;of&nbsp;the&nbsp;BIC&nbsp;scaler&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">mBeam&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#2a00ff">&#34;Beam&nbsp;&#34;</font><font color="#000000">,&nbsp;sBeam</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Monitor&nbsp;of&nbsp;the&nbsp;rate&nbsp;of&nbsp;the&nbsp;clock&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">mClck&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#2a00ff">&#34;Clock&#34;</font><font color="#000000">,&nbsp;sClck</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Moniter&nbsp;of&nbsp;the&nbsp;rate&nbsp;of&nbsp;accepted&nbsp;events&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">mEvntRt&nbsp;=&nbsp;</font><font color="#7f0055"><b>new&nbsp;</b></font><font color="#000000">Monitor</font><font color="#000000">(</font><font color="#2a00ff">&#34;Event&nbsp;Rate&#34;</font><font color="#000000">,&nbsp;sEvntRaw</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#initialize()</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">initialize</font><font color="#000000">()&nbsp;</font><font color="#7f0055"><b>throws&nbsp;</b></font><font color="#000000">SortException&nbsp;</font><font color="#000000">{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.init</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">28</font><font color="#000000">,&nbsp;</font><font color="#990000">8</font><font color="#000000">,&nbsp;</font><font color="#990000">26</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//crate&nbsp;dataway&nbsp;Z</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.init</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">28</font><font color="#000000">,&nbsp;</font><font color="#990000">9</font><font color="#000000">,&nbsp;</font><font color="#990000">26</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//crate&nbsp;dataway&nbsp;C</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.init</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">30</font><font color="#000000">,&nbsp;</font><font color="#990000">9</font><font color="#000000">,&nbsp;</font><font color="#990000">26</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//crate&nbsp;I</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.init</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">,&nbsp;</font><font color="#990000">12</font><font color="#000000">,&nbsp;</font><font color="#990000">11</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//adc&nbsp;811&nbsp;clear</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">//event&nbsp;return&nbsp;id&nbsp;number&nbsp;to&nbsp;be&nbsp;used&nbsp;in&nbsp;sort</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">idE&nbsp;=&nbsp;cnafCommands.eventRead</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//read&nbsp;Energy&nbsp;signal</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">idDE&nbsp;=&nbsp;cnafCommands.eventRead</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">,&nbsp;</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//read&nbsp;Delta&nbsp;E&nbsp;signal</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.eventCommand</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">,&nbsp;</font><font color="#990000">12</font><font color="#000000">,&nbsp;</font><font color="#990000">11</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//clear&nbsp;adc</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.scaler</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">5</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//read&nbsp;beam&nbsp;scalers&nbsp;Joerger&nbsp;S12</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.scaler</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">5</font><font color="#000000">,&nbsp;</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//read&nbsp;clock&nbsp;scalers&nbsp;Joerger&nbsp;S12</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.scaler</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">5</font><font color="#000000">,&nbsp;</font><font color="#990000">2</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//read&nbsp;event&nbsp;raw&nbsp;scalers&nbsp;Joerger&nbsp;S12</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;read&nbsp;event&nbsp;accept&nbsp;scalers&nbsp;Joerger&nbsp;S12&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.scaler</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">5</font><font color="#000000">,&nbsp;</font><font color="#990000">3</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">cnafCommands.clear</font><font color="#000000">(</font><font color="#990000">1</font><font color="#000000">,&nbsp;</font><font color="#990000">5</font><font color="#000000">,&nbsp;</font><font color="#990000">0</font><font color="#000000">,&nbsp;</font><font color="#990000">9</font><font color="#000000">)</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//clear&nbsp;scaler</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff"></font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#3f5fbf">/**</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*&nbsp;</font><font color="#7f9fbf">@see&nbsp;</font><font color="#3f5fbf">SortRoutine#sort(int[])</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;</font><font color="#3f5fbf">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font><font color="#000000">sort</font><font color="#000000">(</font><font color="#7f0055"><b>int</b></font><font color="#000000">[]&nbsp;</font><font color="#000000">dataEvent</font><font color="#000000">)&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Variables&nbsp;for&nbsp;the&nbsp;raw&nbsp;signal&nbsp;values.&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">energy&nbsp;=&nbsp;dataEvent</font><font color="#000000">[</font><font color="#990000">0</font><font color="#000000">]</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">eDE&nbsp;=&nbsp;dataEvent</font><font color="#000000">[</font><font color="#990000">1</font><font color="#000000">]</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Variables&nbsp;for&nbsp;the&nbsp;compressed&nbsp;version&nbsp;of&nbsp;the&nbsp;signal&nbsp;values.&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ecE&nbsp;=&nbsp;energy&nbsp;&gt;&gt;&nbsp;</font><font color="#990000">3</font><font color="#000000">;&nbsp;</font><font color="#3f7f5f">//compress&nbsp;by&nbsp;8</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">ecDE&nbsp;=&nbsp;eDE&nbsp;&gt;&gt;&nbsp;</font><font color="#990000">3</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Add&nbsp;the&nbsp;raw&nbsp;E&nbsp;and&nbsp;dE&nbsp;signal&nbsp;values,&nbsp;and&nbsp;renormalize&nbsp;to&nbsp;the&nbsp;spectrum</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;size.</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>final&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">sum&nbsp;=&nbsp;</font><font color="#000000">(</font><font color="#000000">energy&nbsp;+&nbsp;eDE</font><font color="#000000">)&nbsp;</font><font color="#000000">/&nbsp;</font><font color="#990000">2</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;Increment&nbsp;the&nbsp;ungated&nbsp;spectra&nbsp;in&nbsp;the&nbsp;appropriate&nbsp;channels.&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hEnergy.inc</font><font color="#000000">(</font><font color="#000000">energy</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hDE.inc</font><font color="#000000">(</font><font color="#000000">eDE</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hSum.inc</font><font color="#000000">(</font><font color="#000000">sum</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*&nbsp;singles&nbsp;2d&nbsp;spectra&nbsp;*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hEvsDE.inc</font><font color="#000000">(</font><font color="#000000">ecE,&nbsp;ecDE</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">/*</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;Check&nbsp;if&nbsp;event&nbsp;is&nbsp;in&nbsp;the&nbsp;PID&nbsp;gate.&nbsp;If&nbsp;so,&nbsp;increment&nbsp;the&nbsp;gated</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*&nbsp;histogram.</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#3f7f5f">*/</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>if&nbsp;</b></font><font color="#000000">(</font><font color="#000000">gEvsDE.inGate</font><font color="#000000">(</font><font color="#000000">ecE,&nbsp;ecDE</font><font color="#000000">))&nbsp;{</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">hSumGate.inc</font><font color="#000000">(</font><font color="#000000">sum</font><font color="#000000">)</font><font color="#000000">;</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br/>
-<font color="#000000">}</font></code>
-    
-   </td>
-  <!-- end source code -->
-   </tr>
-</table>
-</div>
-<!-- =       END of automatically generated HTML code       = -->
-<!-- ======================================================== -->
-
-
-</body></html>
