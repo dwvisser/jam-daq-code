@@ -56,11 +56,22 @@ public class RingBuffer {
      */
     public synchronized void putBuffer(byte [] inBuffer) throws RingFullException {
         if(posPut-posGet+1>ringBuffer.length){
-            throw new RingFullException("Ring Buffer Full, could lose buffer.");
+        	final StringBuffer message=new StringBuffer();
+        	message.append("Lost a buffer in thread \"");
+        	message.append(Thread.currentThread().getName());
+        	message.append("\" when put() was called.");
+            throw new RingFullException(message.toString());
         }
         System.arraycopy(inBuffer, 0, ringBuffer[posPut&MASK], 0, inBuffer.length);
+        final boolean emptyBeforePut=empty();
         posPut++;
-        notifyAll();
+        /* The only reason another thread could be in wait() on this
+         * object is that we were empty. Checking eliminates a lot
+         * of needless notify() calls.
+         */
+        if (emptyBeforePut){
+			notifyAll();
+        }
     }
     
     /**
@@ -71,9 +82,12 @@ public class RingBuffer {
     public synchronized byte [] getBuffer(){        
         while(empty()){
             try {
-                wait(1000);      //wait a second and try again by myself
+				/* notified when a putBuffer() occurs on the empty
+				 * ring
+				 */
+                wait();
             } catch (InterruptedException ie){
-                System.err.println("Error Ring buffer interupt exception "+ie+"[RingBuffer]");
+                System.err.println("Error Ring buffer interrupt exception "+ie+"[RingBuffer]");
             }
         }
         //&MASK serves to keep index accessed running 0..63,0..63, etc.
