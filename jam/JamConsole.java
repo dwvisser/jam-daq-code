@@ -52,8 +52,15 @@ import javax.swing.text.StyleConstants;
  */
 public class JamConsole extends JPanel implements MessageHandler {
 
-	private final static int NUMBER_LINES_LOG = 100;
-	private final static int CMD_STACK_SIZE = 50;
+	/**
+	 * Number of lines in scrollback log.
+	 */
+	private final static int NUM_LINES = 100;
+	
+	/**
+	 * Command stack size.
+	 */
+	private final static int STACK_SIZE = 50;
 
 	/**
 	 * End of line character(s).
@@ -70,13 +77,6 @@ public class JamConsole extends JPanel implements MessageHandler {
 	private final JScrollPane jsp;
 	private final LinkedList cmdStack = new LinkedList();
 	private int lastCmdIndex;
-
-	/**
-	 * Is the message a new one or a continuation of one?
-	 *
-	 * @serial
-	 */
-	private boolean newMessage;
 
 	/**
 	 * A lock for message output so messages don't overlap.
@@ -96,7 +96,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 *
 	 * @serial
 	 */
-	private BufferedWriter logFileWriter; //output stream
+	private BufferedWriter logWriter; //output stream
 
 	/**
 	 * Private.
@@ -117,7 +117,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * a text field for intput.
 	 */
 	public JamConsole() {
-		this(NUMBER_LINES_LOG);
+		this(NUM_LINES);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(new ActionListener() {
 			/* Processes event when a return is hit in input field */
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(ActionEvent event) {
 				addCommand(textIn.getText());
 				parseCommand(textIn.getText());
 				textIn.setText(null);
@@ -169,14 +169,13 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 			}
 		});
-		newMessage = true;
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
-		final int defaultNumLines = 8;
+		final int defaultLines = 8;
 		final int lineHeight =
 			textLog.getFontMetrics(textLog.getFont()).getHeight();
-		final int logHeight = lineHeight * defaultNumLines;
+		final int logHeight = lineHeight * defaultLines;
 		textLog.setPreferredSize(new Dimension(700, logHeight));
 		addCommandListener(CommandManager.getInstance());
 	}
@@ -188,32 +187,30 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 */
 	private void addCommand(String cmdStr) {
 		cmdStack.add(cmdStr);
-		if (cmdStack.size() > CMD_STACK_SIZE)
+		if (cmdStack.size() > STACK_SIZE){
 			cmdStack.removeFirst();
-
+		}
 		lastCmdIndex = cmdStack.size();
 	}
 	/**
-	 * Get a previous command from the command stack
+	 * Get a previous command from the command stack.
+	 * 
 	 * @param direction >0 forward, <0 backward 
-	 *
 	 */
 	private void previousCommand(int direction) {
-
 		if (direction < 0) {
-
-			if (lastCmdIndex > 0)
+			if (lastCmdIndex > 0){
 				lastCmdIndex = lastCmdIndex - 1;
+			}
 			textIn.setText((String) cmdStack.get(lastCmdIndex));
-
 		} else {
-
 			if (lastCmdIndex < cmdStack.size()) {
 				lastCmdIndex = lastCmdIndex + 1;
-				if (lastCmdIndex < cmdStack.size())
+				if (lastCmdIndex < cmdStack.size()){
 					textIn.setText((String) cmdStack.get(lastCmdIndex));
-				else
+				} else {
 					textIn.setText("");
+				}
 			}
 		}
 	}
@@ -226,13 +223,15 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * @param part one of NEW, CONTINUE, or END
 	 */
 	public synchronized void messageOut(String _message, int part) {
-		String message = new String(_message);
+		//String message = new String(_message);
+		final StringBuffer message=new StringBuffer(_message);
 		if (part == NEW) {
 			msgLock = true;
 			messageFile = getDate() + ">" + message;
-			message = END_LINE + getTime() + ">" + message;
+			//message = END_LINE + getTime() + ">" + message;
+			message.insert(0,'>').insert(0,getTime()).insert(0,END_LINE);
 			try {
-				doc.insertString(doc.getLength(), message, attr_normal);
+				doc.insertString(doc.getLength(), message.toString(), attr_normal);
 			} catch (BadLocationException e) {
 				JOptionPane.showMessageDialog(
 					this,
@@ -243,7 +242,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		} else if (part == CONTINUE) {
 			messageFile = messageFile + message;
 			try {
-				doc.insertString(doc.getLength(), message, attr_normal);
+				doc.insertString(doc.getLength(), message.toString(), attr_normal);
 			} catch (BadLocationException e) {
 				JOptionPane.showMessageDialog(
 					this,
@@ -254,7 +253,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		} else if (part == END) {
 			messageFile = messageFile + message + END_LINE;
 			try {
-				doc.insertString(doc.getLength(), message, attr_normal);
+				doc.insertString(doc.getLength(), message.toString(), attr_normal);
 			} catch (BadLocationException e) {
 				JOptionPane.showMessageDialog(
 					this,
@@ -269,8 +268,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 			/* if file logging on write to file */
 			if (logFileOn) {
 				try {
-					logFileWriter.write(messageFile, 0, messageFile.length());
-					logFileWriter.flush();
+					logWriter.write(messageFile, 0, messageFile.length());
+					logWriter.flush();
 				} catch (IOException ioe) {
 					logFileOn = false;
 					errorOutln("Unable to write to log file, logging turned off [JamConsole]");
@@ -315,8 +314,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 		//if file logging on write to file
 		if (logFileOn) {
 			try {
-				logFileWriter.write(messageFile, 0, messageFile.length());
-				logFileWriter.flush();
+				logWriter.write(messageFile, 0, messageFile.length());
+				logWriter.flush();
 			} catch (IOException ioe) {
 				logFileOn = false;
 				errorOutln("Unable to write to log file, logging turned off [JamConsole]");
@@ -325,21 +324,19 @@ public class JamConsole extends JPanel implements MessageHandler {
 		//unlock text area and notify others they can use it
 		msgLock = false;
 		notifyAll();
-		//FIXME get rid of
-		newMessage = true;
 	}
 
 	/**
 	 * Writes an error message to the console immediately.
 	 */
-	public void errorOutln(String message) {
+	public synchronized void errorOutln(String message) {
 		promptOutln("Error: " + message, attr_error);
 	}
 
 	/**
 	 * Outputs a warning message to the console immediately.
 	 */
-	public void warningOutln(String message) {
+	public synchronized void warningOutln(String message) {
 		promptOutln("Warning: " + message, attr_warning);
 	}
 
@@ -371,8 +368,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 		Toolkit.getDefaultToolkit().beep();
 		if (logFileOn) { //if file logging on write to file
 			try {
-				logFileWriter.write(messageFile, 0, messageFile.length());
-				logFileWriter.flush();
+				logWriter.write(messageFile, 0, messageFile.length());
+				logWriter.flush();
 			} catch (IOException ioe) {
 				logFileOn = false;
 				errorOutln("Unable to write to log file, logging turned off [JamConsole]");
@@ -486,7 +483,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 			i++;
 		}
 		try {
-			logFileWriter = new BufferedWriter(new FileWriter(file));
+			logWriter = new BufferedWriter(new FileWriter(file));
 
 		} catch (IOException ioe) {
 			throw new JamException("Not able to create log file " + newName);
@@ -501,8 +498,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 */
 	void closeLogFile() throws JamException {
 		try {
-			logFileWriter.flush();
-			logFileWriter.close();
+			logWriter.flush();
+			logWriter.close();
 		} catch (IOException ioe) {
 			throw new JamException("Could not close log file  [JamConsole]");
 		}
@@ -514,7 +511,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * @exception   JamException    exceptions that go to the console
 	 */
 	void setLogFileOn(boolean state) throws JamException {
-		if (logFileWriter != null) {
+		if (logWriter != null) {
 			logFileOn = state;
 		} else {
 			logFileOn = false;
