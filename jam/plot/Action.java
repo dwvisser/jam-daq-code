@@ -349,7 +349,7 @@ public class Action
 					if (parameters[i] < 0) {
 						cursorX = 0;
 					}
-					if (energyEx == true && currentPlot.isCalibrated) {
+					if (energyEx && currentPlot.isCalibrated) {
 						cursorX = parameters[i];
 					} else if (parameters[i] > (currentPlot.getSizeX() - 1)) {
 						cursorX = currentPlot.getSizeX() - 1;

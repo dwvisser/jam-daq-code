@@ -320,7 +320,7 @@ public class Matrix {
 					for (ii = 0; ii < sData.length(); ii++) {
 						testSpace = testSpace && (sData.charAt(ii) == ' ');
 					}
-					if (testSpace == false) {
+					if (!testSpace) {
 						fl = new Double(sData);
 						col.addElement(sData);
 					} // append column element as string
