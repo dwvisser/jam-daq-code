@@ -313,5 +313,11 @@ class Plot1d extends Plot  {
     public double getEnergy(double channel){
     	return currentHist.getCalibration().getCalculatedEnergy(channel);
     }
-
+    
+    /**
+     * Caller should have checked 'isCalibrated' first.
+     */
+    public int getChannel(double energy){
+    	return (int)Math.round(currentHist.getCalibration().getChannel(energy));
+    }
 }
