@@ -35,8 +35,8 @@ import java.util.List;
  */
 public class SetupRemote implements ActionListener, ItemListener {
 
-	final String DEFAULT_NAME = "jam";
-	final String DEFAULT_URL = "rmi://iotwo.physics.yale.edu/jam";
+	static final String DEFAULT_NAME = "jam";
+	static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
 
 	final static int SERVER = 0;
 	final static int SNAP = 1;
