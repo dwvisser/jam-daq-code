@@ -19,12 +19,15 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.OpenSelectedHistogram;
 import jam.plot.Display;
 
+import jam.commands.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 
+import javax.swing.JFrame;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
@@ -47,6 +50,7 @@ public class JamCommand
 	private final String classname;
 
 	private final JamMain jamMain;
+	private final JFrame frame;
 	private final Display display;
 	private final JamConsole console;
 
@@ -84,6 +88,7 @@ public class JamCommand
 
 	private final JamStatus status;
 
+	private JamCmdManager jamCmdMgr;
 	private RemoteAccess remoteAccess=null;
 	private boolean remote=false;
 
@@ -99,6 +104,7 @@ public class JamCommand
 		super();
 		classname = getClass().getName() + " - ";
 		this.jamMain = jm;
+		this.frame =(JFrame)jamMain;
 		this.display = d;
 		this.broadcaster = b;
 		this.console = jc;
@@ -112,7 +118,7 @@ public class JamCommand
 		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
-		histogramControl = new HistogramControl(jamMain, broadcaster, console);
+		histogramControl = new HistogramControl(frame, broadcaster, console);
 		gateControl = new GateControl(jamMain, broadcaster, console, display);
 		scalerControl = new ScalerControl(jamMain, broadcaster, console);
 		monitorControl = new MonitorControl(jamMain, broadcaster, console);
@@ -153,6 +159,7 @@ public class JamCommand
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		addObservers();
 		console.setCommandListener(display);
+		jamCmdMgr = new JamCmdManager(JamStatus.instance(), console, broadcaster);
 	}
 	
 	/**
@@ -218,8 +225,8 @@ public class JamCommand
 				paramControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			} else if ("newhist".equals(incommand)) {
-				histogramControl.showNew();
+			//KBS} else if ("newhist".equals(incommand)) {
+			//	histogramControl.showNew();
 			} else if ("zerohist".equals(incommand)) {
 				histogramControl.showZero();
 			} else if ("project".equals(incommand)) {
@@ -267,11 +274,14 @@ public class JamCommand
 						"Error: stop command given when not in Online mode.");
 				}
 			} else {
-				console.errorOutln(
-					getClass().getName()
+				
+				if(!jamCmdMgr.performCommand(incommand, null)){
+				
+					console.errorOutln(getClass().getName()
 						+ ": Error unrecognized command \""
 						+ incommand
 						+ "\"");
+				}						
 			}
 		} catch (JamException exc) {
 			console.errorOutln("JamException: " + exc.getMessage());
