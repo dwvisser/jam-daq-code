@@ -1,15 +1,45 @@
 package jam;
-import jam.global.*;
+import jam.global.GoodThread;
+import jam.global.JamProperties;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.global.RunInfo;
 import jam.io.ExtensionFileFilter;
-import jam.sort.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import jam.sort.Controller;
+import jam.sort.SortDaemon;
+import jam.sort.SortException;
+import jam.sort.StorageDaemon;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Class to control the offline sort process
@@ -19,7 +49,7 @@ import javax.swing.border.*;
  * @author Dale Visser and Ken Swartz
  * @version 1.0
  */
-class SortControl implements Controller{
+public final class SortControl extends JDialog implements Controller{
 
 	private final Frame jamMain;
 	private final MessageHandler msgHandler;
@@ -40,7 +70,7 @@ class SortControl implements Controller{
 	/**
 	 *  Dialog box widget
 	 */
-	private final JDialog d;
+	//private final JDialog d;
 
 	/**
 	 * Text field for output file
@@ -62,7 +92,7 @@ class SortControl implements Controller{
 		removeAll,
 		savelist;
 		
-	private final JamStatus status;
+	private final static JamStatus status=JamStatus.instance();
 
 	/**
 	  * button to get file brower
@@ -82,20 +112,27 @@ class SortControl implements Controller{
 	String defaultEvents;
 	String defaultOutputFile;
 
-	public SortControl(MessageHandler mh) {
-		msgHandler = mh;
-		status=JamStatus.instance();
+	private static SortControl instance=null;
+	public static SortControl getSingletonInstance(){
+		if (instance==null){
+			instance=new SortControl();
+		}
+		return instance;
+	}
+
+	private SortControl() {
+		super(status.getFrame(),"Sorting",false);
+		msgHandler = status.getMessageHandler();
 		jamMain = status.getFrame();
 		defaultEvents =
 			JamProperties.getPropString(JamProperties.EVENT_OUTPATH);
 		defaultOutputFile =
 			JamProperties.getPropString(JamProperties.EVENT_OUTFILE);
-		d = new JDialog(jamMain, "Sorting ", false);
-		d.setResizable(true);//sometimes there are long paths to files
-		d.setLocation(20, 50);
+		setResizable(true);//sometimes there are long paths to files
+		setLocation(20, 50);
 
 		//GUI layout
-		Container cd = d.getContentPane();
+		final Container cd = getContentPane();
 		cd.setLayout(new BorderLayout(10, 10));
 
 		//Top Panel
@@ -228,22 +265,10 @@ class SortControl implements Controller{
 		bend.setEnabled(false);
 		pb.add(bend);
 
-
-		d.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				d.dispose();
-			}
-		});
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		lastFile = new File(defaultEvents); //default directory
 		writeEvents = false; //don't write out events
-		d.pack();
-	}
-
-	/**
-	 * method to show dialog box
-	 */
-	public void show() {
-		d.show();
+		pack();
 	}
 
 	void setWriteEvents(boolean state){

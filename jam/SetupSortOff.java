@@ -19,9 +19,9 @@ import javax.swing.border.*;
  * @author Ken Swartz
  * @version 1.1
  */
-class SetupSortOff  implements ItemListener {
+public final class SetupSortOff extends JDialog implements ItemListener {
 	
-	private final JamStatus status=JamStatus.instance();
+	private static final JamStatus status=JamStatus.instance();
 
     class ApplyActionListener implements ActionListener{
 
@@ -52,7 +52,7 @@ class SetupSortOff  implements ItemListener {
 				}
 				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 				if (dispose) {
-					d.dispose();
+					dispose();
 				}
 			} else {
 				throw new JamException(classname+
@@ -99,16 +99,22 @@ class SetupSortOff  implements ItemListener {
     //private File sortDirectory;
 
     /* dialog box widgets */
-    private final  JDialog d;
     private final JTextField textSortPath;
     private final JCheckBox checkLock;
     private final JToggleButton defaultPath,specify;
     private final JButton bok, bapply, bbrowsef;
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 
-    SetupSortOff(SortControl sc) {
+	private static SetupSortOff instance=null;
+	public static SetupSortOff getSingletonInstance(){
+		if (instance==null){
+			instance=new SetupSortOff();
+		}
+		return instance;
+	}
 
-
+    private SetupSortOff() {
+		super(status.getFrame(),"Setup Offline",false);  //dialog box
 		classname=getClass().getName()+"--";
         defaultSortRoutine = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
@@ -128,15 +134,14 @@ class SetupSortOff  implements ItemListener {
 			sortClassPath=new File(defaultSortPath);
         }
         frame=status.getFrame();
-        this.sortControl=sc;
+        sortControl=SortControl.getSingletonInstance();
         displayCounters=DisplayCounters.getSingletonInstance();
         msgHandler=status.getMessageHandler();
-        d = new JDialog (frame,"Setup Offline",false);  //dialog box
-        final Container cp=d.getContentPane();
-        d.setResizable(false);
+        final Container cp=getContentPane();
+        setResizable(false);
         final int posx=20;
         final int posy=50;
-        d.setLocation(posx,posy);
+        setLocation(posx,posy);
         cp.setLayout(new BorderLayout(5,5));
 
 		final int space=5;
@@ -266,7 +271,7 @@ class SetupSortOff  implements ItemListener {
         bapply.addActionListener(aal);
         final JButton bcancel =new JButton(new AbstractAction(Cancel){
         	public void actionPerformed(ActionEvent ae){
-        		d.dispose();
+        		dispose();
         	}
         });
         pb.add(bcancel);
@@ -284,13 +289,8 @@ class SetupSortOff  implements ItemListener {
         	}
         });
         pb.add(checkLock);
-
-        d.addWindowListener( new WindowAdapter() {
-            public void windowClosing(WindowEvent e){
-                d.dispose();
-            }
-        } );
-        d.pack();
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        pack();
     }
 
     private void setSortClassPath(File f){
@@ -308,13 +308,6 @@ class SetupSortOff  implements ItemListener {
 	private Set getSortClasses(File path) {
 		return RTSI.find(path, jam.sort.SortRoutine.class);
 	}
-
-    /**
-     * method to show dialog box
-     */
-    public void show(){
-        d.show();
-    }
 
     /**
      * Choice to unlock setup or

@@ -127,7 +127,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 	
 	public static void createSingletonInstance(JamConsole jc){
 		if (instance == null){
-			instance=new SetupSortOn(status.getFrame(), jc);
+			instance=new SetupSortOn(jc);
 		} else {
 			throw new IllegalStateException("Object already created.");
 		}
@@ -136,9 +136,8 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 	/**
 	 * Constructor
 	 */
-	private SetupSortOn(Frame f, JamConsole jc) {
-		super(f, "Setup Online ", false);
-
+	private SetupSortOn(JamConsole jc) {
+		super(status.getFrame(), "Setup Online ", false);
 		final int fileTextColumns = 25;
 		final String defaultName =
 			JamProperties.getPropString(JamProperties.EXP_NAME);
