@@ -53,9 +53,9 @@ public final class BoundedRangeModelX extends DefaultBoundedRangeModel {
       extent = max-min+1;
       value=0;
     }
-    /*System.err.println("BRMX.setRangeProperties(value: "+value+", extent: "+extent+
-        ", min: "+min+", max: "+max+")");*/
-    //BoundedRangeModel method, throws appropriate event up to scroll bar
+    /* BoundedRangeModel method, throws appropriate event up to 
+     * scroll bar.
+     */
     setRangeProperties(value,extent,min,max,true);
   }
 }

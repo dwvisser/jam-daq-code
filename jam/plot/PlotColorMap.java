@@ -39,7 +39,6 @@ class PlotColorMap {
     }
 
     public static void setColorMap(int mode){
-        //System.err.println("PlotGraphicsColorMap.setColorMap("+mode+")");
         if (mode==BLACK_ON_WHITE){
             colorMode=mode;
             background=Color.white;
@@ -86,7 +85,7 @@ class PlotColorMap {
 			fitResidual=Color.RED;
             colorScale=colorScaleGray;
         } else {
-            System.err.println("PlotGraphicsColorMap.setColorMap("+mode+"): Invalid Color Mode!");
+            throw new IllegalArgumentException("PlotGraphicsColorMap.setColorMap("+mode+"): Invalid Color Mode!");
         }
     }
 
