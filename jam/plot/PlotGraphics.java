@@ -1037,8 +1037,50 @@ class PlotGraphics implements PlotGraphicsLayout {
 			g.drawLine(x1, viewBottom, x1, viewTop);
 		}
 	}
+
 	/**
-	 * 
+	 * Mark the outline of an area in a 1d 
+	 * @param x1 first clicked channel point
+	 * @param x2 second clicked channel point
+	 */
+	public void markArea1dOutline(int x1, int x2){
+		int xv1;
+		int xv2;
+		int x;
+		int width;		
+		
+		clipPlot();
+
+		if (x1<x2) {
+			xv1 = toViewHorzLin(x1);
+			//pixel before next channel
+			xv2 = toViewHorzLin(x2+1)-1;			
+			x=xv1+1;
+			width=xv2-xv1;
+		}else if (x1>x2){
+			//pixel before next channel
+			xv1 = toViewHorzLin(x1+1)-1;
+			xv2 = toViewHorzLin(x2);			
+			x=xv2+1;
+			width=xv1-xv2;
+			
+		//so both at the same point shows something	
+		} else{
+			xv1 = toViewHorzLin(x1);
+			//pixel before next channel
+			xv2 = toViewHorzLin(x2+1)-1;			
+			x=xv1;
+			//At least 1 wide
+			width=Math.max(xv2-xv1,1);
+		} 	
+		//Full plot vertically
+		final int height=viewBottom-viewTop;
+		g.drawRect(x,viewTop,width,height);					
+		
+	}
+	
+	/**
+	 * Mark the outline of an area in a 2d plot 
 	 *
 	 */
 	public void markArea2dOutline(Rectangle rec){

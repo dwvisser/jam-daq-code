@@ -1,5 +1,6 @@
 package jam.plot;
 import java.awt.*;
+import java.awt.event.*;
 import jam.data.*;
 import jam.global.JamProperties;
 import java.util.Iterator;
@@ -15,6 +16,14 @@ class Plot1d extends Plot {
 	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
 	private double[][] fitSignals;
 	private int areaMark1, areaMark2;
+
+	//FIXME KBS in both PLot1d and Plot2d
+	/*  last pixel point mouse moved to */
+	private final Point lastMovePoint = new Point();
+
+	//FIXME KBS in both PLot1d and Plot2d
+	/** A rectangle in pixel space while marking area*/
+	private final Rectangle recMarking = new Rectangle();
 
 	/**
 	 * Constructor
@@ -70,9 +79,15 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
-	
-	void paintMouseMoved(Graphics g){
-		
+	/**
+	 * Painting to do if the mouse has moved
+	 * 
+	 */
+	void paintMouseMoved(Graphics gc){
+
+		if (markingArea) {
+			paintMarkingArea( gc);
+		}				 
 	}
 
 	/**
@@ -147,16 +162,28 @@ class Plot1d extends Plot {
 	 * @param p1 starting data point
 	 */
 	public void markingArea(Point p1) {
-		areaStartPoint=p1;
+		//Copy points, don't construct new rectangles
+		areaStartPoint.x=p1.x;
+		areaStartPoint.y=p1.y;
+		//set initial values out of range so we
+		//know they are initial values
+		lastMovePoint.x=-1;
+		lastMovePoint.y=-1;		
 	}
 	
-	void paintMarkingArea(Graphics g) {
-	//FIXME KBS	final Graphics2D g2=(Graphics2D)g;
-	//	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-	//	0.5f));
-	//	g.setColor(PlotColorMap.area);
-	//	graph.update(g, viewSize, plotLimits);
-	//	graph.markArea1d(areaMark1, areaMark2, counts);
+	void paintMarkingArea(Graphics gc) {
+		Graphics2D g=(Graphics2D)gc;
+		g.setColor(Color.GREEN);		
+		//Chech we moved otherwise same point
+		final Point move; 		
+		if (lastMovePoint.x>0) {
+			move=graph.toData(lastMovePoint);
+		} else {
+			move=areaStartPoint;
+		}
+		graph.markArea1dOutline(areaStartPoint.x, move.x);
+		setMouseMoved(false);
+		
 	}
 	
 	/**
@@ -363,4 +390,15 @@ class Plot1d extends Plot {
 		return (int) Math.round(
 			currentHist.getCalibration().getChannel(energy));
 	}
+	/**
+	 * Called when the mouse has moved
+	 */
+	public void mouseMoved(MouseEvent me) {
+		if (markingArea) {			
+			lastMovePoint.setLocation(me.getX(), me.getY());
+			setMouseMoved(true);
+			this.repaint();			
+		}			
+	}
+	
 }
