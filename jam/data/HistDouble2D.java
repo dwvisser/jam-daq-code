@@ -95,7 +95,7 @@ final class HistDouble2D extends AbstractHist2D {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
-		setCounts((double[][]) countsIn);
+		setCountsArray((double[][]) countsIn);
 	}
 
 	/* (non-Javadoc)
@@ -106,10 +106,10 @@ final class HistDouble2D extends AbstractHist2D {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
 		}
-		addCounts((double[][]) countsIn);
+		addCountsArray((double[][]) countsIn);
 	}
 
-	private synchronized void addCounts(double[][] countsIn) {
+	private synchronized void addCountsArray(final double[][] countsIn) {
 		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
 		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {
@@ -134,7 +134,7 @@ final class HistDouble2D extends AbstractHist2D {
 		return sum;
 	}
 	
-	private synchronized void setCounts(double[][] countsIn) {
+	private synchronized void setCountsArray(double[][] countsIn) {
 		final int loopLen = Math.min(countsIn.length, counts2dD.length);
 		for (int i = 0; i < loopLen; i++) {
 			System.arraycopy(countsIn[i], 0, counts2dD[i], 0, Math.min(
