@@ -169,7 +169,7 @@ public class L003InputStream
 			}
 			//save first read
 			if (scalerByteCounter < SCALER_BUFFER_SIZE + 1) {
-				scalers = new String(scalerDump);
+				scalers = String.valueOf(scalerDump);
 			}
 		}
 
@@ -213,11 +213,11 @@ public class L003InputStream
 			dataInput.readFully(reserved2);
 
 			//save reads to header variables
-			headerKey = new String(headerStart);
+			headerKey = String.valueOf(headerStart);
 			headerRunNumber = number;
-			headerTitle = new String(title);
+			headerTitle = String.valueOf(title);
 			headerEventSize = size;
-			headerDate = new String(date);
+			headerDate = String.valueOf(date);
 
 			loadRunInfo();
 			return (headerKey.equals(HEADER_START));

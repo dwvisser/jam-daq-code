@@ -11,25 +11,25 @@ import java.io.IOException;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 2, 2004
  */
-public abstract class L002HeaderReader extends EventInputStream implements L002Parameters {
+public abstract class AbstractL002HeaderReader extends EventInputStream implements L002Parameters {
 
 	/**
 	 * Creates the input stream given an event size.
 	 *
 	 * @param eventSize number of parameters per event.
 	 */
-	public L002HeaderReader(MessageHandler console, int eventSize) {
+	public AbstractL002HeaderReader(MessageHandler console, int eventSize) {
 		super(console, eventSize);
 	}
 
 	/**
 	 * @param console for printing messages
 	 */
-	public L002HeaderReader(MessageHandler console) {
+	public AbstractL002HeaderReader(MessageHandler console) {
 		super(console);
 	}
 	
-	public L002HeaderReader(){
+	public AbstractL002HeaderReader(){
 		super();
 	}
 
@@ -57,11 +57,11 @@ public abstract class L002HeaderReader extends EventInputStream implements L002P
 			dataInput.readInt();//DATA_RECORD_LENGTH
 			dataInput.readFully(reserved2);
 			/* save reads to header variables */
-			headerKey=new String(headerStart);
+			headerKey=String.valueOf(headerStart);
 			headerRunNumber=number;
-			headerTitle=new String(title);
+			headerTitle=String.valueOf(title);
 			headerEventSize=eventSize;
-			headerDate=new String(date);
+			headerDate=String.valueOf(date);
 			loadRunInfo();
 			/* read secondary headers */
 			for (int i=0; i<numSecHead; i++) {

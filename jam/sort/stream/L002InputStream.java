@@ -14,7 +14,7 @@ import java.io.IOException;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class L002InputStream extends L002HeaderReader implements L002Parameters {
+public class L002InputStream extends AbstractL002HeaderReader implements L002Parameters {
 
     private EventInputStatus status;
     private int parameter;

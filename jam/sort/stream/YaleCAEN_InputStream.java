@@ -16,7 +16,7 @@ import java.util.Hashtable;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parameters {
+public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L002Parameters {
     
     static final int NUM_V7X5_UNITS=19;//20 slots in a VME crate - 1 controller slot
     static final int NUM_CHANNELS = NUM_V7X5_UNITS*32;
