@@ -14,10 +14,12 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
     public static final String NO_GATES="No Gates";
     public static final String CHOOSE_A_GATE="Choose a gate";
     JamCommand jc;
+    private JamStatus status;
 
     public GateComboBoxModel(JamCommand jamCommand){
         super();
         jc=jamCommand;
+        status=JamStatus.instance();
     }
 
     /**
@@ -36,7 +38,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
             if (index==0) {
                 rval = CHOOSE_A_GATE;
             } else {
-                rval = Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
+                rval = Histogram.getHistogram(status.getCurrentHistogramName()).getGates()[index-1].getName();
             }
         } 
         return rval;
@@ -63,7 +65,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
     private int numGates(){
         int returnValue;
 
-        Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
+        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
         if (hist == null) {
             returnValue = 0;
         } else {
