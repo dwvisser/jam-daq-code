@@ -700,7 +700,6 @@ public class Matrix {
 			p = j;
 			for (i = j + 1; i < rows; i++) {
 				if (Math.abs(U.element[i][j]) > d) {
-					// System.out.println(U.element[i][j] +", "+i);
 					d = Math.abs(U.element[i][j]);
 					p = i;
 				}
@@ -803,7 +802,6 @@ public class Matrix {
 			res = Math.abs(A.element[0][0] - v);
 			v = A.element[0][0];
 		}
-		// System.out.println("Iterations: "+i);
 		return A.element[0][0];
 	}
 
