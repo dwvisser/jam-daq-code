@@ -704,84 +704,31 @@ public class MainMenuBar extends JMenuBar implements Observer {
 
 	private void sortModeChanged() {
 		final SortMode mode=status.getSortMode();
-		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
-			cstartacq.setEnabled(true); //enable control JMenu items
-			cstopacq.setEnabled(true);
-			iflushacq.setEnabled(true);
-			runacq.setEnabled(true);
-			sortacq.setEnabled(false);
-			paramacq.setEnabled(true);
-			statusacq.setEnabled(true);
-			newClear.setEnabled(false);
-			openhdf.setEnabled(false);
-			saveHDF.setEnabled(false);
-			reloadhdf.setEnabled(true);
-			addhdf.setEnabled(true);
-		}
-		if (mode == SortMode.OFFLINE) {
-			cstartacq.setEnabled(false);
-			cstopacq.setEnabled(false);
-			iflushacq.setEnabled(false);
-			runacq.setEnabled(false);
-			sortacq.setEnabled(true);
-			paramacq.setEnabled(true);
-			statusacq.setEnabled(true);
-			openhdf.setEnabled(false);
-			saveHDF.setEnabled(false);
-			reloadhdf.setEnabled(true);
-			addhdf.setEnabled(true);
-			newClear.setEnabled(false);
-		}
-		if (mode == SortMode.REMOTE) { //remote display
-			cstartacq.setEnabled(false);
-			cstopacq.setEnabled(false);
-			iflushacq.setEnabled(false);
-			runacq.setEnabled(false);
-			sortacq.setEnabled(false);
-			paramacq.setEnabled(false);
-			statusacq.setEnabled(false);
-			newClear.setEnabled(false);
-			openhdf.setEnabled(false);
-			reloadhdf.setEnabled(false);
-			addhdf.setEnabled(false);
-			impHist.setEnabled(false);
-		}
-		if (mode == SortMode.FILE) {
-			cstartacq.setEnabled(false);
-			cstopacq.setEnabled(false);
-			iflushacq.setEnabled(false);
-			runacq.setEnabled(false);
-			sortacq.setEnabled(false);
-			paramacq.setEnabled(false);
-			statusacq.setEnabled(false);
-			newClear.setEnabled(true);
-			openhdf.setEnabled(true);
-			saveHDF.setEnabled(true);
-			reloadhdf.setEnabled(false);
-			addhdf.setEnabled(true);
-			impHist.setEnabled(true);
-		}
-		if (mode == SortMode.NO_SORT) {
-			cstartacq.setEnabled(false);
-			cstopacq.setEnabled(false);
-			iflushacq.setEnabled(false);
-			runacq.setEnabled(false);
-			sortacq.setEnabled(false);
-			paramacq.setEnabled(false);
-			statusacq.setEnabled(false);
-			newClear.setEnabled(true);
-			openhdf.setEnabled(true);
-			reloadhdf.setEnabled(false);
-			addhdf.setEnabled(false);
-			impHist.setEnabled(true);
-		}
+		final boolean online = mode == SortMode.ONLINE_DISK || 
+		mode == SortMode.ONLINE_NO_DISK;
+		final boolean offline = mode == SortMode.OFFLINE;
+		final boolean sorting = online || offline;
+		final boolean file = mode==SortMode.FILE || mode==SortMode.NO_SORT;
+		cstartacq.setEnabled(online);
+		cstopacq.setEnabled(online);
+		iflushacq.setEnabled(online);
+		runacq.setEnabled(online);
+		sortacq.setEnabled(offline);
+		paramacq.setEnabled(sorting);
+		statusacq.setEnabled(sorting);
+		openhdf.setEnabled(file);
+		saveHDF.setEnabled(file);
+		reloadhdf.setEnabled(sorting);
+		addhdf.setEnabled(sorting||file);
+		newClear.setEnabled(file);
+		impHist.setEnabled(file);
 	}
 
 	void setRunState(RunState rs) {
 		final boolean acqmode = rs.isAcquireMode();
 		final boolean acqon = rs.isAcqOn();
-		cstartacq.setEnabled(acqmode);
-		cstopacq.setEnabled(acqmode);
+//		cstartacq.setEnabled(acqmode);
+//		cstopacq.setEnabled(acqmode);
 		iflushacq.setEnabled(acqon);
 		cstartacq.setSelected(acqon);
 		cstopacq.setSelected(acqmode && (!acqon));
