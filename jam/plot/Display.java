@@ -92,12 +92,12 @@ Observer {
             plotswapLayout=new CardLayout();
             plotswap.setLayout(plotswapLayout);
             //  panel 1d plot and its scroll bars
-            plot1d=new Plot1d();
+            plot1d=new Plot1d(action);
             plot1d.addPlotMouseListener(action);
             Scroller scroller1d=new Scroller(plot1d);
             plotswap.add("OneD",scroller1d);
             //  panel 2d plot and its scroll bars
-            plot2d=new Plot2d();
+            plot2d=new Plot2d(action);
             plot2d.addPlotMouseListener(action);
             Scroller scroller2d=new Scroller(plot2d);
             plotswap.add("TwoD",scroller2d);
@@ -287,13 +287,13 @@ Observer {
             displayHistogram(currentHist);
         } else if (command==BroadcastEvent.GATE_SET_ON){
             currentPlot.displaySetGate(Plot.GATE_NEW, null, null);
-            Action.settingGate=true;
+            action.setDefiningGate(true);
         } else if (command==BroadcastEvent.GATE_SET_OFF){
             currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
-            Action.settingGate=false;
+            action.setDefiningGate(false);
         } else if (command==BroadcastEvent.GATE_SET_SAVE){
             currentPlot.displaySetGate(Plot.GATE_SAVE, null, null);
-            Action.settingGate=false;
+            action.setDefiningGate(false);
         } else if (command==BroadcastEvent.GATE_SET_ADD){
             currentPlot.displaySetGate(Plot.GATE_CONTINUE, (Point)be.getContent(), null);
         } else if (command==BroadcastEvent.GATE_SET_REMOVE){
@@ -403,7 +403,7 @@ Observer {
         //cancel all previous stuff
         if (currentPlot!=null) {
             currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
-            Action.settingGate=false;
+            action.setDefiningGate(false);
         }
         if (hist!=null){
             if ((currentHist.getType()==Histogram.ONE_DIM_INT)||
@@ -574,5 +574,9 @@ Observer {
             ((GridBagLayout)lm).setConstraints(component, gbc);
             container.add (component);
         }
+    }
+    
+    public void setAutoOnExpand(boolean whether){
+    	action.setAutoOnExpand(whether);
     }
 }
