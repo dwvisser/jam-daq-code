@@ -487,8 +487,6 @@ public class Display
 	 * @since Version 0.5
 	 */
 	public void addToolbarAction() {
-		//final ClassLoader cl = this.getClass().getClassLoader();
-
 		Icon iUpdate =loadToolbarIcon("jam/plot/Update.png");
 		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
 		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
@@ -508,30 +506,8 @@ public class Display
 		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
 		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
 		add(ptoolbar, BorderLayout.WEST);
-		/* tbcontents may seem unnecessary, but it is needed
-		 * for Windows XP systems using the Aqua theme.
-		 * Without an additional JPanel container between the
-		 * buttons and the JToolbar, Windows XP displays the
-		 * buttons without borders, and doesn't enable/disable
-		 * them as expected
-		 */
-		//final JPanel tbcontents=new JPanel();
-		// FIXME clean up KBS
-		//ptoolbar.add(tbcontents,BorderLayout.CENTER);
-		//BoxLayout bl = new BoxLayout(tbcontents,BoxLayout.Y_AXIS);
-		//tbcontents.setLayout(new GridLayout(0,1));
-		/* FIXME clean up KBS
-		final JPanel view=new JPanel(new BorderLayout());
-		final JPanel scale=new JPanel(new BorderLayout());
-		final JPanel inquire=new JPanel(new BorderLayout());
-		tbcontents.add(scale);
-		tbcontents.add(view);
-		tbcontents.add(inquire);
-		*/
 		try {
 			ptoolbar.setRollover(true);
-			//view.add(new JLabel("View", SwingConstants.CENTER),BorderLayout.NORTH);
-
 
 			final JButton bupdate = new JButton(iUpdate);
 			bupdate.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
@@ -616,90 +592,12 @@ public class Display
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
 			bcancel.addActionListener(action);
 			ptoolbar.add(bcancel);
-
-			//tbcontents.add(Box.createVerticalGlue());
-
-			/* FIXME cleanup KBS
-			final JPanel firstPanel=new JPanel(new GridLayout(0,1));
-
-
-			brebin.setToolTipText("After clicking, enter a bin width in the console.");
-			brebin.setActionCommand(Action.REBIN);
-
-			brebin.addActionListener(action);
-			firstPanel.add(bupdate);
-			final JPanel viewCenter=new JPanel(new BorderLayout());
-			view.add(viewCenter,BorderLayout.CENTER);
-			viewCenter.add(firstPanel,BorderLayout.NORTH);
-			final JPanel zoomPanel = new JPanel(new GridLayout(2,2));
-
-			final Icon i_expand = new ImageIcon(urlZoom);
-			final JButton bexpand = new JButton(i_expand);
-			bexpand.setToolTipText(getHTML("<u>E</u>xpand. Set new display limits."));
-			bexpand.setActionCommand(Action.EXPAND);
-			bexpand.addActionListener(action);
-			zoomPanel.add(bexpand);
-			final Icon iFullScale =new ImageIcon(urlFullScale);
-			final JButton bfull = new JButton(iFullScale);
-			//final JButton bfull = new JButton(getHTML("<u>F</u>ull"));
-			bfull.setActionCommand(Action.FULL);
-			bfull.setToolTipText(
-				"Set display limits to full histogram extents.");
-			bfull.addActionListener(action);
-			zoomPanel.add(bfull);
-			final Icon i_zoomin = new ImageIcon(urlZoomIn);
-			final JButton bzoomin = new JButton(i_zoomin);
-			bzoomin.setToolTipText(getHTML(
-			"<u>Z</u>oom<u>i</u>n the display limits."));
-			bzoomin.setActionCommand(Action.ZOOMIN);
-			bzoomin.addActionListener(action);
-			zoomPanel.add(bzoomin);
-			final Icon i_zoomout = new ImageIcon(urlZoomOut);
-			final JButton bzoomout = new JButton(i_zoomout);
-			bzoomout.setToolTipText(getHTML(
-			"<u>Z</u>oom<u>o</u>ut the display limits."));
-			bzoomout.setActionCommand(Action.ZOOMOUT);
-			bzoomout.addActionListener(action);
-			zoomPanel.add(bzoomout);
-			viewCenter.add(zoomPanel,BorderLayout.CENTER);
-			bgoto.setActionCommand(Action.GOTO);
-			bgoto.setToolTipText("Zoom in on desired region");
-			bgoto.addActionListener(action);
-			view.add(bgoto,BorderLayout.SOUTH);
-			scale.add(new JLabel("Scale", SwingConstants.CENTER),BorderLayout.NORTH);
-			final JPanel scaleCenter=new JPanel(new GridLayout(0,1));
-			scale.add(scaleCenter,BorderLayout.CENTER);
-
-			final JButton blinear = new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g"));
-			blinear.setToolTipText(getHTML("Toggle <u>s</u>cale type."));
-			blinear.setActionCommand(Action.SCALE);
-			blinear.addActionListener(action);
-			scaleCenter.add(blinear);
-
-			scaleCenter.add(brebin);
-			inquire.add(new JLabel("Inquire", SwingConstants.CENTER),BorderLayout.NORTH);
-			final Icon iArea = new ImageIcon(urlArea);
-			final JButton barea = new JButton(iArea);
-			//final JButton barea = new JButton(getHTML("<u>Ar</u>ea"));
-			barea.setToolTipText(
-				"Click here then on display to get area and summary stats of a region.");
-			barea.setActionCommand(Action.AREA);
-			barea.addActionListener(action);
-			final JPanel inquireCenter=new JPanel(new GridLayout(0,1));
-			inquire.add(inquireCenter,BorderLayout.CENTER);
-			inquireCenter.add(barea);
-			bnetarea.setToolTipText(
-				"Get net area and summary stats of a region.");
-			bnetarea.setActionCommand(Action.NETAREA);
-			bnetarea.addActionListener(action);
-			inquireCenter.add(bnetarea);
-			final JButton bcancel = new JButton(getHTML("<u>C</u>ancel"));
-			bcancel.setActionCommand(Action.CANCEL);
-			bcancel.setToolTipText("Cancel an action in progress.");
-			bcancel.addActionListener(action);
-			inquireCenter.add(new JPanel());//blank grid space before cancel
-			inquireCenter.add(bcancel);
-			*/
+			final int height=ptoolbar.getPreferredSize().height;
+			final Dimension oldmin=getMinimumSize();
+			if (height>oldmin.height){
+				final Dimension newMin=new Dimension(oldmin.width,height);
+				this.setMinimumSize(newMin);	
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
