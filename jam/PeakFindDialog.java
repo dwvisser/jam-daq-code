@@ -42,16 +42,15 @@ public class PeakFindDialog extends JDialog {
 	
 	private void createDialog() {
 		this.setTitle("Peak Find Preferences");
-		Container contents = getContentPane();
-		contents.setLayout(new BorderLayout(10,10));
-		
-		JPanel fields=new JPanel(new GridLayout(0,1,5,5));
+		final Container contents = getContentPane();
+		contents.setLayout(new BorderLayout(10,10));	
+		final JPanel fields=new JPanel(new GridLayout(0,1,5,5));
 		contents.add(fields,BorderLayout.CENTER);		
 		fields.setBorder(new EmptyBorder(10,10,0,0));
 		fields.add(new JLabel("Width", JLabel.RIGHT));
 		fields.add(new JLabel("Sensitivity", JLabel.RIGHT));
 		fields.add(new JLabel("Display", JLabel.RIGHT));	
-		JPanel center=new JPanel(new GridLayout(0,1,5,5));
+		final JPanel center=new JPanel(new GridLayout(0,1,5,5));
 		contents.add(center,BorderLayout.EAST);
 		center.setBorder(new EmptyBorder(10,0,0,10));		
 		width=new JTextField("12");
@@ -85,16 +84,14 @@ public class PeakFindDialog extends JDialog {
 
 	private void setPeakFindProperties(){
 		final double dWidth = Double.parseDouble(width.getText().trim());
-		final double dSense = Double.parseDouble(sensitivity.getText().trim());
-		boolean cal = calibrate.isSelected();
-		display.setPeakFindProperties(dWidth,dSense,cal);
-		console.messageOut("Peak Find Properties Set: Width="+dWidth+
-		", Sensitivity="+dSense,MessageHandler.NEW);
-		if (!cal) {
-			console.messageOut(", centroid channel displayed.",MessageHandler.END);
-		} else {
-			console.messageOut(", calibrated value displayed if available, "+
-			"centroid channel if not.",MessageHandler.END);
-		}
+        final double dSense = Double.parseDouble(sensitivity.getText().trim());
+        final boolean cal = calibrate.isSelected();
+        display.setPeakFindProperties(dWidth, dSense, cal);
+        console.messageOut("Peak Find Properties Set: Width=" + dWidth
+                + ", Sensitivity=" + dSense, MessageHandler.NEW);
+        final String message = cal ? ", calibrated value displayed if available, "
+                + "centroid channel if not."
+                : ", centroid channel displayed.";
+        console.messageOut(message, MessageHandler.END);
 	}
 }
