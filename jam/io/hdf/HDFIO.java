@@ -492,6 +492,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 *
 	 * @param  mode  whether to open or reload
 	 * @exception   HDFException  thrown if unrecoverable error occurs
+	 * @throws IllegalStateException if any histogram apparently has more than 2 dimensions
 	 */
 	protected void getHistograms(int mode) throws HDFException {
 		final StringUtilities su = StringUtilities.instance();
@@ -506,10 +507,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 		/* only the "histograms" VG (only one element) */
 		ScientificData sdErr = null;
 		if (hists != null) {
-			/* clear if opening and there are histograms in file */
-			/*if (mode==OPEN) {
-				DataBase.getInstance().clearAllLists();
-			}*/
 			/* get list of all DIL's in file */
 			final java.util.List labels = in.ofType(DataObject.DFTAG_DIL);
 			/* get list of all DIA's in file */
@@ -542,7 +539,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 						ndgErr = numbers[1];
 					}
 				} else {
-					throw new HDFException(
+					throw new IllegalStateException (
 						"Invalid number of data groups ("
 							+ numbers.length
 							+ ") in NDG.");
@@ -586,8 +583,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 							.get(0));
 					sdErr.setRank(histDim);
 					sdErr.setNumberType(NumberType.DOUBLE);
-					/*final ScientificDataDimension sddErr =(ScientificDataDimension)(in.ofType(
-					ndgErr.getObjects(),DataObject.DFTAG_SDD).get(0));*/
 				}
 				if (mode == OPEN) {
 					if (histDim == 1) {
@@ -605,7 +600,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 							histogram.setErrors(sdErr.getData1dD(sizeX));
 						}
 					} else { //2d
-						//System.out.println(" x "+sizeY+" channels");
 						if (histNumType == NumberType.INT) {
 							histogram =
 								new Histogram(
