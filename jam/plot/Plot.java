@@ -106,12 +106,12 @@ abstract class Plot extends JPanel {
 
 	//gate stuff
 	protected Gate currentGate;
+	
+	/** gate points in plot coordinates (channels) */
 	protected final Polygon pointsGate = new Polygon();
 	boolean settingGate = false;
 
-	final Polygon mouseMoveClip = new Polygon();
-	protected boolean mouseMoved = false;
-
+	/** selection start point in plot coordinates */
 	protected Point selectionStartPoint= new Point();
 	
 	/** currently displaying a gate? */
@@ -169,8 +169,13 @@ abstract class Plot extends JPanel {
 	
 	protected final Rectangle selectingAreaClip=new Rectangle();
 
-	/** last pixel point mouse moved to */
+	/** last point mouse moved to, uses plot coordinates when selecting
+	 * an area, and uses graphics coordinates when setting a gate (FIX?) */
 	protected final Point lastMovePoint = new Point();	
+
+	/** clip to use when repainting for mouse movement, in graphics coordinates */
+	protected final Polygon mouseMoveClip = new Polygon();
+	protected boolean mouseMoved = false;
 
 	/**
 	 * Constructor
@@ -646,19 +651,20 @@ abstract class Plot extends JPanel {
 			if (displayingFit) {
 				paintFit(g);
 			}
-			if (selectingArea) {
+			/*if (selectingArea) {
 				paintSelectingArea(g);
-			}			
+			}*/			
 			if (markArea) {
 				paintMarkArea(g);
 			}
 			if (settingGate){
-				paintSetGate(g);
+				paintSetGatePoints(g);
 			}
 			if (markingChannels){
 				paintMarkedChannels(g);
 			}
 			if (mouseMoved) {
+				/* we handle selecting area or setting gate here */
 				paintMouseMoved(g);
 			}
 		}
@@ -778,9 +784,25 @@ abstract class Plot extends JPanel {
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract protected void paintSetGate(Graphics g);
+	abstract protected void paintSettingGate(Graphics g);
 
-	abstract protected void paintMouseMoved(Graphics g);
+	/**
+	 * Method for painting segments while setting a gate.
+	 * 
+	 * @param g the graphics context
+	 */
+	abstract protected void paintSetGatePoints(Graphics g);
+	
+	/**
+	 * Paint called if mouse moved is enabled
+	 */
+	protected final void paintMouseMoved(Graphics gc) {
+		if (settingGate) {
+			paintSettingGate(gc);			
+		} else if (selectingArea) {
+			paintSelectingArea(gc);
+		}		
+	}
 
 	synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		printing = rfp;
