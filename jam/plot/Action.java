@@ -188,7 +188,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			doCommand(currentCommand, false);
 		} else if (settingGate) {
 			/* No command being processed check if gate is being set */
-			final PlotContainer currentPlot = display.getPlot();
+			final PlotContainer currentPlot = display.getPlotContainer();
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
 					pChannel);
 			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
@@ -303,7 +303,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
         String binText;
         /* check that a histogram is defined */
         final Histogram hist = STATUS.getCurrentHistogram();
-        final PlotContainer currentPlot = display.getPlot();
+        final PlotContainer currentPlot = display.getPlotContainer();
         synchronized (cursor) {
             xch = cursor.getX();
             ych = cursor.getY();
@@ -337,7 +337,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		display.update();
 		
 		//Reset rebin to 1
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		currentPlot.setBinWidth(1.0);		
 		
 		done();
@@ -411,7 +411,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				if (h.getDimensionality() != 1) {
 					textOut.errorOutln(h.getFullName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
-				} else if (display.getPlot().getDimensionality() != 1) {
+				} else if (display.getPlotContainer().getDimensionality() != 1) {
 					textOut
 							.errorOutln(" Current histogram not 1D, so it cannot be overlaid.");
 
@@ -442,12 +442,13 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
         done();
     }*/
 	
+	private static final String S_TO = " to ";
 	/**
 	 * Display a gate
 	 * @param params
 	 */
 	void displayGate(Object []params ) {
-		Gate gate =(Gate)params[0];
+		final Gate gate =(Gate)params[0];
 		STATUS.setCurrentGateName(gate.getName());
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 		final double area = gate.getArea();
@@ -456,7 +457,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final int lowerLimit = gate.getLimits1d()[0];
 			final int upperLimit = gate.getLimits1d()[1];
 			textOut.messageOut("Gate: " + gate.getName() + ", Ch. "
-					+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
+					+ lowerLimit + S_TO + upperLimit, MessageHandler.NEW);
 			textOut.messageOut("  Area = " + area + ", Centroid = "
 					+ centroid, MessageHandler.END);
 		} else {
@@ -476,14 +477,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else {
-			final PlotContainer plot = display.getPlot();
+			final PlotContainer plot = display.getPlotContainer();
 			final boolean twoD = plot.getDimensionality() == 2;
 			final boolean useCounts = twoD && !console;
 			final double cts = useCounts ? cursor.getCounts() : cursor.getY();
 			if (clicks.size() == 0) {
 				countLow = (int)cts;
 				clicks.add(cursor);
-				textOut.messageOut("" + countLow + " to ");
+				textOut.messageOut("" + countLow + S_TO);
 			} else {
 				countHigh = (int)cts;
 				clicks.add(cursor);
@@ -504,7 +505,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			init();
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		if (parameters.length > 0) {
 			final double binWidth = parameters[0];
@@ -530,7 +531,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	private void expand() {
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -539,7 +540,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			synchronized (cursor) {
 				currentPlot.initializeSelectingArea(cursor);
 				addClick(cursor);
-				textOut.messageOut(cursor.getCoordString() + " to ");
+				textOut.messageOut(cursor.getCoordString() + S_TO);
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
@@ -558,7 +559,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	private void zoomhorz() {
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -567,7 +568,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			synchronized (cursor) {
 				currentPlot.initializeSelectingArea(cursor);
 				addClick(cursor);
-				textOut.messageOut(cursor.getCoordString() + " to ");
+				textOut.messageOut(cursor.getCoordString() + S_TO);
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
@@ -594,7 +595,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void zoomin() {
 		isCursorCommand = false;
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.IN);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -607,7 +608,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void zoomout() {
 		isCursorCommand = false;
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		currentPlot.zoom(PlotContainer.Zoom.OUT);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -620,7 +621,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void full() {
 		isCursorCommand = false;
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		currentPlot.setFull();
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -633,7 +634,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void linear() {
 		isCursorCommand = false;
-		display.getPlot().setLinear();
+		display.getPlotContainer().setLinear();
 		done();
 	}
 
@@ -642,7 +643,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void log() {
 		isCursorCommand = false;
-		display.getPlot().setLog();
+		display.getPlotContainer().setLog();
 		done();
 	}
 
@@ -651,7 +652,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void changeScale() {
 		isCursorCommand = false;
-		if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
+		if (display.getPlotContainer().getLimits().getScale() == Scale.LINEAR) {
 			log();
 		} else {
 			linear();
@@ -664,7 +665,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void auto() {
 		isCursorCommand = false;
-		display.getPlot().autoCounts();
+		display.getPlotContainer().autoCounts();
 		done();
 	}
 
@@ -680,7 +681,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final char sp = ' ';
 		final String intro = "Goto (click on spectrum or type the ";
 		final char lp = ')';
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		if (!commandPresent) {
 			isCursorCommand = true;
@@ -740,7 +741,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
      * inquire methods to this class?
      */
 	private void areaCent() {
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -752,7 +753,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				addClick(cursor);
 				currentPlot.initializeSelectingArea(cursor);
 				currentPlot.markChannel(cursor);
-				textOut.messageOut(cursor.getCoordString() + " to ");
+				textOut.messageOut(cursor.getCoordString() + S_TO);
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
@@ -791,7 +792,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Background subtracted intensity of 1-d plots
 	 */
 	private void netArea() {
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
@@ -819,9 +820,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				currentPlot.markChannel(cursor);
 				if (currentPlot.getDimensionality() == 1) {
 					textOut.messageOut(crt + "Background " + cursor.getX()
-							+ " to ", MessageHandler.CONTINUE);
+							+ S_TO, MessageHandler.CONTINUE);
 				} else {
-					textOut.messageOut(cursor.getCoordString() + " to ",
+					textOut.messageOut(cursor.getCoordString() + S_TO,
 							MessageHandler.CONTINUE);
 				}
 			}
@@ -847,10 +848,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				addClick(cursor);
 				currentPlot.markChannel(cursor);
 				if (currentPlot.getDimensionality() == 1) {
-					textOut.messageOut(" and " + cursor.getX() + " to ");
+					textOut.messageOut(" and " + cursor.getX() + S_TO);
 
 				} else {
-					textOut.messageOut(cursor.getCoordString() + " to ",
+					textOut.messageOut(cursor.getCoordString() + S_TO,
 							MessageHandler.CONTINUE);
 				}
 			}
@@ -879,10 +880,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				currentPlot.markChannel(cursor);
 				if (currentPlot.getDimensionality() == 1) {
 					textOut.messageOut("." + crt + "Peak " + cursor.getX()
-							+ " to ", MessageHandler.CONTINUE);
+							+ S_TO, MessageHandler.CONTINUE);
 				} else {
 
-					textOut.messageOut(cursor.getCoordString() + " to ",
+					textOut.messageOut(cursor.getCoordString() + S_TO,
 							MessageHandler.CONTINUE);
 				}
 			}
@@ -976,7 +977,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			mousePressed = false;
 			currentCommand = null;
 			clicks.clear();
-			display.getPlot().setSelectingArea(false);
+			display.getPlotContainer().setSelectingArea(false);
 		}
 	}
 
