@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
@@ -14,59 +15,73 @@ import javax.swing.JPanel;
  * @author Ken Swartz
  *
  */
-public class PanelOKApplyCancelButtons extends JPanel {
+public class PanelOKApplyCancelButtons {
 
-	private JButton bok;
+	private final Callback callback;
+	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
 	
-	private Callback callback;
-	
-	public PanelOKApplyCancelButtons(Callback callback) {
-		
-		this.callback=callback;
-		this.setLayout(new FlowLayout(FlowLayout.CENTER));
-	
-		
+	/**
+	 * Constructs a Swing component which has OK, Apply, and Cancel buttons.
+	 * 
+	 * @param cb object with methods to be called when the buttons get pressed
+	 */
+	public PanelOKApplyCancelButtons(Callback cb) {
+		callback=cb;
 		final JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
-		this.add(pb);
-		
+		panel.add(pb);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				executeOk();
+				callback.ok();
 			}
 		});
 		pb.add(bok);
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				executeApply();
+				callback.apply();
 			}
 		});
 		pb.add(bapply);
 		final JButton bcancel = new JButton("Cancel");
 		bcancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				executeCancel();
+				callback.cancel();
 			}
 		});
 		pb.add(bcancel);
 	}
 	
-	public void executeOk() {
-		callback.ok();
+	/**
+	 * Returns the Swing button panel.
+	 * 
+	 * @return the Swing button panel
+	 */
+	public JComponent getComponent(){
+	    return panel;
 	}
 	
-	public void executeApply() {
-		callback.apply();
-	}
-	
-	public void executeCancel() {
-		callback.cancel();
-	}
-	
+	/**
+	 * Handler for OK, apply and cancel methods which are called when
+	 * their associated buttons are pressed.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 */
 	public interface Callback {
+	    
+	    /**
+	     * To be called when the user clicks the OK button.
+	     */
 		void ok();
+		
+	    /**
+	     * To be called when the user clicks the Apply button.
+	     */
 		void apply();
+
+	    /**
+	     * To be called when the user clicks the Cancel button.
+	     */
 		void cancel();
 	}
 	
