@@ -187,10 +187,10 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
             ps = new JPanel[numberScalers];
             labelScaler=new JLabel[numberScalers];
             textScaler =new JTextField[numberScalers];
-            Enumeration enumScaler=Scaler.getScalerList().elements();
+            Iterator enumScaler=Scaler.getScalerList().iterator();
             int count=0;
-            while(enumScaler.hasMoreElements()) {
-                Scaler currentScaler=(Scaler)enumScaler.nextElement();
+            while(enumScaler.hasNext()) {
+                Scaler currentScaler=(Scaler)enumScaler.next();
                 ps[count]= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));//right justified, hgap, vgap
                 //ps[count].setLayout(
                 labelScaler[count]=new JLabel (currentScaler.getName(),JLabel.RIGHT);
@@ -261,11 +261,11 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
     public void displayScalers(){
         // we have some elements in the scaler list
         if (Scaler.getScalerList().size() != 0){
-            Enumeration enumScaler=Scaler.getScalerList().elements();
+            Iterator enumScaler=Scaler.getScalerList().iterator();
             sortScalers=true;
             int count=0;
-            while(enumScaler.hasMoreElements()) {
-                Scaler currentScaler=(Scaler)enumScaler.nextElement();
+            while(enumScaler.hasNext()) {
+                Scaler currentScaler=(Scaler)enumScaler.next();
                 textScaler[count].setText(String.valueOf(
                 currentScaler.getValue()));
                 count++;
