@@ -31,4 +31,5 @@
    <mapID target="contrib" url="contribute.html" />
    <mapID target="scripting" url="usingjam/scripting.html" />
    <mapID target="compiling" url="usingjam/compiling.html" />
+   <mapID target="console" url="usingjam/console.html"/>
 </map>

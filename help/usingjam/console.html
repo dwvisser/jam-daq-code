@@ -1,0 +1,33 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Using the built-in console</title>
+<link REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+</head>
+<body>
+
+<h2>Using the built-in console</h2>
+<h3>Toolbar Actions</h3>
+One- and two-letter commands are available, which perform the same functions as the various toolbar buttons. The command, <code>help</code>, will give a list of currently valid commands, starting with these toolbar commands.
+
+<h3>Menu Items</h3>
+<p>All menu items in Jam may also be invoked from the console. A list of the commands is available here: <a href="../API/constant-values.html#jam.global.CommandNames.ADD_HDF">Command Names</a>. These commands <em>are</em> case-sensitive, and <em>must</em> be typed fully. If you type a command name incompletely, Jam will attempt to suggest the command you're looking for.</p>
+
+<h4>Setting Preferences</h4>
+<p>In <span class="menu">Preferences</span>, the various preferences which get checked/unchecked use the following syntax in the console:</p>
+<dl>
+<dt>Toggle preference</dt>
+<dd><code><em>PrefName</em></code></dd>
+<dt>Turn preference on</dt>
+<dd><code><em>PrefName</em> on</code><br>
+<code><em>PrefName</em> true</code><br>
+<code><em>PrefName</em> 1</code></dd>
+<dt>Turn preference off</dt>
+<dd><code><em>PrefName</em> off</code><br>
+<code><em>PrefName</em> false</code><br>
+<code><em>PrefName</em> 0</code></dd>
+</dl>
+<p>The preference names may be found here: <a href="../API/constant-values.html#jam.JamPrefs.VERBOSE">Console output prefs</a> and <a href="../API/constant-values.html#jam.plot.PlotPrefs.AUTO_IGNORE_ZERO">Plot prefs</a>.
+</body>
+</html>

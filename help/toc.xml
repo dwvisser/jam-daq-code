@@ -19,6 +19,7 @@
    	   <tocitem text="Automating Data Analysis with Scripts" target="scripting" />
        <tocitem text="Compiling Sort Routines and Scripts" target="compiling" />
        <tocitem text="Fitting Spectra" target="dofit" />
+       <tocitem text="Using the Console" target="console" />
    </tocitem>
    <tocitem text="Menus" target="menus" >
    	  <tocitem text="File Menu" target="file" />
