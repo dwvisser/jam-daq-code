@@ -14,6 +14,7 @@ import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
+import jam.fit.LoadFit;
 import jam.global.*;
 import jam.io.HistogramIO;
 import jam.io.ImpExpASCII;
@@ -24,7 +25,6 @@ import jam.io.ImpExpXSYS;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.PrintJob;
 import java.awt.Toolkit;
@@ -38,8 +38,6 @@ import java.util.Properties;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
-import javax.swing.SwingUtilities;
-import jam.fit.LoadFit;
 
 /**
  * This class recieves the commands for all the pull
@@ -58,12 +56,11 @@ public class JamCommand
 	implements ActionListener, ItemListener {
 
 	static final int MESSAGE_SCALER = 1; //alert scaler class
+	private final String classname;
 
 	private JamMain jamMain;
-	private Frame frame;
 	private Display display;
 	private JamConsole console;
-	private MessageHandler msgHandler;
 
 	private Broadcaster broadcaster;
 
@@ -83,58 +80,54 @@ public class JamCommand
 	// fix this
 	/** The "load fit" dialog box.
 	 */
-	public LoadFit loadFit;
+	private final LoadFit loadFit;
 
 	//control of data objects
-	private HistogramControl histogramControl;
-	private GateControl gateControl;
-	private ScalerControl scalerControl;
-	private MonitorControl monitorControl;
-	private ParameterControl paramControl;
-	private CalibrationDisplay calibDisplay;
-	private CalibrationFit calibFit;
-	private Projections projection;
-	private Manipulations manipulate;
-	private GainShift gainshift;
+	private final HistogramControl histogramControl;
+	private final GateControl gateControl;
+	private final ScalerControl scalerControl;
+	private final MonitorControl monitorControl;
+	private final ParameterControl paramControl;
+	private final CalibrationDisplay calibDisplay;
+	private final CalibrationFit calibFit;
+	private final Projections projection;
+	private final Manipulations manipulate;
+	private final GainShift gainshift;
 
-	private PeakFindDialog peakFindDialog;
+	private final PeakFindDialog peakFindDialog;
 
 	//class to setup acquistion and sorting
-	private SetupSortOn setupSortOn;
-	private SetupSortOff setupSortOff;
-	private SetupRemote setupRemote;
+	private final SetupSortOn setupSortOn;
+	private final SetupSortOff setupSortOff;
+	private final SetupRemote setupRemote;
 
-	private FrontEndCommunication frontEnd;
+	private final FrontEndCommunication frontEnd;
 	private RemoteAccess remoteAccess;
-	private Help help;
+	private final Help help;
 
 	private boolean overlay;
 	private boolean remote;
 
-	private boolean selectEnabled = true; //is selection enabled
 	private JamStatus status;
 
 	/** Constructor for this class.
-	 * @param jamMain The launch class for the Jam application
-	 * @param display the area where histograms are displayed
-	 * @param broadcaster the object which handles application-wide communications
-	 * @param console the text input and output area
+	 * @param jm The launch class for the Jam application
+	 * @param d the area where histograms are displayed
+	 * @param b the object which handles application-wide 
+	 * communications
+	 * @param jc the text input and output area
 	 */
-	public JamCommand(
-		JamMain jamMain,
-		Display display,
-		Broadcaster broadcaster,
-		JamConsole console) {
-		this.jamMain = jamMain;
-		this.display = display;
-		this.broadcaster = broadcaster;
-		this.console = console;
-		this.msgHandler = console;
-		this.frame = (Frame) jamMain;
+	public JamCommand(JamMain jm, Display d, Broadcaster b, JamConsole jc) {
+		super();
+		classname = getClass().getName() + " - ";
+		this.jamMain = jm;
+		this.display = d;
+		this.broadcaster = b;
+		this.console = jc;
 		status = JamStatus.instance();
-		// class to hold run information
+		/* class to hold run information */
 		new RunInfo();
-		//io classes
+		/* io classes */
 		hdfio = new HDFIO(jamMain, console);
 		histio = new HistogramIO(jamMain, console);
 		impExpASCII = new ImpExpASCII(jamMain, console);
@@ -146,15 +139,15 @@ public class JamCommand
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		//data bases manipulation
 		histogramControl = new HistogramControl(jamMain, broadcaster, console);
-		gateControl = new GateControl(frame, broadcaster, console);
-		scalerControl = new ScalerControl(frame, broadcaster, console);
-		monitorControl = new MonitorControl(frame, broadcaster, console);
-		paramControl = new ParameterControl(frame, broadcaster, console);
-		calibDisplay = new CalibrationDisplay(frame, broadcaster, console);
-		calibFit = new CalibrationFit(frame, broadcaster, console);
-		projection = new Projections(frame, broadcaster, console);
-		manipulate = new Manipulations(frame, broadcaster, console);
-		gainshift = new GainShift(frame, broadcaster, console);
+		gateControl = new GateControl(jamMain, broadcaster, console);
+		scalerControl = new ScalerControl(jamMain, broadcaster, console);
+		monitorControl = new MonitorControl(jamMain, broadcaster, console);
+		paramControl = new ParameterControl(jamMain, broadcaster, console);
+		calibDisplay = new CalibrationDisplay(jamMain, broadcaster, console);
+		calibFit = new CalibrationFit(jamMain, broadcaster, console);
+		projection = new Projections(jamMain, broadcaster, console);
+		manipulate = new Manipulations(jamMain, broadcaster, console);
+		gainshift = new GainShift(jamMain, broadcaster, console);
 		//run and/or sort control
 		runControl =
 			new RunControl(
@@ -185,7 +178,7 @@ public class JamCommand
 				console);
 		setupRemote = new SetupRemote(jamMain, console);
 		//Help window
-		help = new Help(jamMain);
+		help = new Help(jamMain, console);
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		//add observers to the list of class to be notified of broadcasted events
 		broadcaster.addObserver(jamMain);
@@ -197,14 +190,14 @@ public class JamCommand
 		broadcaster.addObserver(manipulate);
 		broadcaster.addObserver(projection);
 		broadcaster.addObserver(gainshift);
-		//let display listen for text input commands
-		console.setCommandListener((CommandListener) display);
-		//are we going to overlay a histogram
+		console.setCommandListener(display);
 		overlay = false;
-		//remote display histograms
+		/* remotely display histograms */
 		remote = false;
-		//New PageFormat object
-		//pageFormat=new PageFormat();
+	}
+	
+	ActionListener getLoadFit(){
+		return loadFit;
 	}
 
 	/**
@@ -215,40 +208,48 @@ public class JamCommand
 	 * @param  e    Action event from pull down menus
 	 * @since Version 0.5
 	 */
-	public synchronized void actionPerformed(ActionEvent e) {
-		String incommand = e.getActionCommand();
+	public void actionPerformed(ActionEvent e) {
+		final String incommand = e.getActionCommand();
+		boolean selectEnabled = true; //is selection enabled
 		try {
-			if (incommand == "overlay") {
-				overlay = jamMain.overlaySelected();
+			if ("overlay".equals(incommand)) {
+				synchronized(this){
+					overlay = jamMain.overlaySelected();
+				}
 				if (overlay) {
 					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
 				}
-			} else if (incommand == "selecthistogram") {
+			} else if ("selecthistogram".equals(incommand)) {
 				if (selectEnabled) { //nested to avoid missing "selecthistogram"
-					Object item = ((JComboBox) e.getSource()).getSelectedItem();
+					final Object item =
+						((JComboBox) e.getSource()).getSelectedItem();
 					if (item instanceof Histogram) {
-						Histogram h = (Histogram)item;
-						//if (h != null) {
+						final Histogram h = (Histogram) item;
 						selectHistogram(h);
-						//}
 					}
 				}
-			} else if (incommand == "selectgate") {
-				Object item = ((JComboBox) e.getSource()).getSelectedItem();
+			} else if ("selectgate".equals(incommand)) {
+				final Object item =
+					((JComboBox) e.getSource()).getSelectedItem();
 				if (selectEnabled && item instanceof String) {
-					Gate gate = Gate.getGate((String) item);
-					if (gate != null)
+					final Gate gate = Gate.getGate((String) item);
+					if (gate != null) {
 						selectGate(gate);
+					}
 				}
-			} else if (incommand == "Black Background") {
-				display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
-			} else if (incommand == "White Background") {
-				display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
-			} else if (incommand == "newclear") {
+			} else if ("Black Background".equals(incommand)) {
+				display.setPreference(
+					Display.Preferences.BLACK_BACKGROUND,
+					true);
+			} else if ("White Background".equals(incommand)) {
+				display.setPreference(
+					Display.Preferences.WHITE_BACKGROUND,
+					true);
+			} else if ("newclear".equals(incommand)) {
 				jamMain.setSortMode(JamMain.NO_SORT);
 				DataBase.clearAllLists();
 				jamMain.dataChanged();
-			} else if (incommand == "open") {
+			} else if ("open".equals(incommand)) {
 				selectEnabled = false;
 				if (histio.readJHFFile()) {
 					jamMain.setSortModeFile(histio.getFileNameOpen());
@@ -257,7 +258,7 @@ public class JamCommand
 					jamMain.repaint();
 				}
 				selectEnabled = true;
-			} else if (incommand == "openhdf") {
+			} else if ("openhdf".equals(incommand)) {
 				selectEnabled = false;
 				if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
 					jamMain.setSortModeFile(hdfio.getFileNameOpen());
@@ -266,35 +267,35 @@ public class JamCommand
 					jamMain.repaint();
 				}
 				selectEnabled = true;
-			} else if (incommand == "reloadhdf") {
+			} else if ("reloadhdf".equals(incommand)) {
 				if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
 					scalerControl.displayScalers();
 				}
-			} else if (incommand == "reload") {
+			} else if ("reload".equals(incommand)) {
 				if (histio.reloadJHFFile()) {
 					scalerControl.displayScalers();
 				}
-			} else if (incommand == "save") {
+			} else if ("save".equals(incommand)) {
 				histio.writeJHFFile();
-			} else if (incommand == "savehdf") {
+			} else if ("savehdf".equals(incommand)) {
 				hdfio.writeFile(HDFIO.lastValidFile());
-			} else if (incommand == "saveas") {
+			} else if ("saveas".equals(incommand)) {
 				histio.writeJHFFile();
-			} else if (incommand == "saveAsHDF") {
+			} else if ("saveAsHDF".equals(incommand)) {
 				hdfio.writeFile();
-			} else if (incommand == "openascii") {
+			} else if ("openascii".equals(incommand)) {
 				if (impExpASCII.openFile()) {
 					jamMain.setSortModeFile(impExpASCII.getLastFileName());
 					DataControl.setupAll();
 					jamMain.dataChanged();
 				}
-			} else if (incommand == "openspe") {
+			} else if ("openspe".equals(incommand)) {
 				if (impExpSPE.openFile()) {
 					jamMain.setSortModeFile(impExpSPE.getLastFileName());
 					DataControl.setupAll();
 					jamMain.dataChanged();
 				}
-			} else if (incommand == "openornl") {
+			} else if ("openornl".equals(incommand)) {
 				selectEnabled = false;
 				if (impExpORNL.openFile()) {
 					jamMain.setSortModeFile(impExpORNL.getLastFileName());
@@ -302,7 +303,7 @@ public class JamCommand
 					jamMain.dataChanged();
 				}
 				selectEnabled = true;
-			} else if (incommand == "openxsys") {
+			} else if ("openxsys".equals(incommand)) {
 				selectEnabled = false;
 				if (impExpXSYS.openFile()) {
 					jamMain.setSortModeFile(impExpXSYS.getLastFileName());
@@ -310,90 +311,88 @@ public class JamCommand
 					jamMain.dataChanged();
 				}
 				selectEnabled = true;
-			} else if (incommand == "saveascii") {
+			} else if ("saveascii".equals(incommand)) {
 				impExpASCII.saveFile(
 					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if (incommand == "savespe") {
+			} else if ("savespe".equals(incommand)) {
 				impExpSPE.saveFile(
 					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if (incommand == "saveornl") {
+			} else if ("saveornl".equals(incommand)) {
 				impExpORNL.saveFile(
 					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if (incommand == "savexsys") { //FIXME not implemented
+			} else if ("savexsys".equals(incommand)) { //FIXME not implemented
 				console.errorOutln("Save xsys file NOT implemented");
 				impExpXSYS.saveFile(
 					Histogram.getHistogram(status.getCurrentHistogramName()));
-			} else if (incommand == "batchexport") {
+			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
-			} else if (incommand == "print") {
+			} else if ("print".equals(incommand)) {
 				printHistogram();
-			} else if (incommand == "printsetup") {
+			} else if ("printsetup".equals(incommand)) {
 				PrinterJob.getPrinterJob();
-			} else if (incommand == "online") {
+			} else if ("online".equals(incommand)) {
 				setupSortOn.show();
-			} else if (incommand == "offline") {
+			} else if ("offline".equals(incommand)) {
 				setupSortOff.show();
-			} else if (incommand == "remote") {
+			} else if ("remote".equals(incommand)) {
 				setupRemote.showRemote();
-			} else if (incommand == "flush") {
+			} else if ("flush".equals(incommand)) {
 				runControl.flushAcq();
-			} else if (incommand == "run") {
+			} else if ("run".equals(incommand)) {
 				runControl.show();
-			} else if (incommand == "sort") {
+			} else if ("sort".equals(incommand)) {
 				sortControl.show();
-			} else if (incommand == "parameters") {
+			} else if ("parameters".equals(incommand)) {
 				paramControl.show();
-			} else if (incommand == "status") {
+			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			} else if (incommand == "rewindtape") {
+			} else if ("rewindtape".equals(incommand)) {
 				console.messageOut("Rewinding tape... ", JamConsole.NEW);
 				console.messageOut(jam.sort.TapeDaemon.rewindTape());
-			} else if (incommand == "newhist") {
+			} else if ("newhist".equals(incommand)) {
 				histogramControl.showNew();
-			} else if (incommand == "zerohist") {
+			} else if ("zerohist".equals(incommand)) {
 				histogramControl.showZero();
-			} else if (incommand == "project") {
+			} else if ("project".equals(incommand)) {
 				projection.show();
-			} else if (incommand == "manipulate") {
+			} else if ("manipulate".equals(incommand)) {
 				manipulate.show();
-			} else if (incommand == "gainshift") {
+			} else if ("gainshift".equals(incommand)) {
 				gainshift.show();
-			} else if (incommand == "caldisp") {
+			} else if ("caldisp".equals(incommand)) {
 				calibDisplay.show();
-			} else if (incommand == "calfitlin") {
+			} else if ("calfitlin".equals(incommand)) {
 				calibFit.showLinFit();
-			} else if (incommand == "gatenew") {
+			} else if ("gatenew".equals(incommand)) {
 				gateControl.showNew();
-			} else if (incommand == "gateadd") {
+			} else if ("gateadd".equals(incommand)) {
 				gateControl.showAdd();
-			} else if (incommand == "gateset") {
+			} else if ("gateset".equals(incommand)) {
 				gateControl.showSet();
-			} else if (incommand == "displayscalers") {
+			} else if ("displayscalers".equals(incommand)) {
 				scalerControl.showDisplay();
-			} else if (incommand == "displaymonitors") {
+			} else if ("displaymonitors".equals(incommand)) {
 				monitorControl.showDisplay();
-			} else if (incommand == "configmonitors") {
+			} else if ("configmonitors".equals(incommand)) {
 				monitorControl.showConfig();
-			} else if (incommand == "zeroscalers") {
+			} else if ("zeroscalers".equals(incommand)) {
 				scalerControl.showZero();
-			} else if (incommand == "loadfit") {
+			} else if ("loadfit".equals(incommand)) {
 				loadFit.showLoad();
-			} else if (incommand == "about") {
+			} else if ("about".equals(incommand)) {
 				help.showAbout();
-			} else if (incommand == "jamdoc") {
-				help.showJamDocs();
-			} else if (incommand.equals("license")) {
+			} else if ("license".equals(incommand)) {
 				help.showLicense();
-			} else if (incommand.equals("peakfind")) {
+			} else if ("peakfind".equals(incommand)) {
 				peakFindDialog.show();
-			} else if (incommand == "start") {
+			} else if ("start".equals(incommand)) {
 				if (status.isOnLine()) {
 					runControl.startAcq();
 				} else {
 					console.errorOutln(
 						"Error: start command given when not in Online mode.");
 				}
-			} else if (incommand == "stop") {
+			} else if ("stop".equals(incommand)) {
 				if (status.isOnLine()) {
 					runControl.stopAcq();
 				} else {
@@ -423,85 +422,81 @@ public class JamCommand
 		}
 	}
 
-	/** Recieves the inputs from the pull down menus that are selectable checkboxes.
+	/** 
+	 * Recieves the inputs from the pull down menus that are selectable 
+	 * checkboxes.
+	 *
 	 * @param ie event triggered by selecting an item in the menus
 	 */
 	public void itemStateChanged(ItemEvent ie) {
-		AbstractButton item = (AbstractButton) ie.getItem();
+		final AbstractButton item = (AbstractButton) ie.getItem();
 		if ((item == null)) { //catch error
-			System.err.println("Error: Item selected is null");
-			return;
-		}
-		String text = ((AbstractButton) item).getText();
-		if (text == "Ignore zero channel on autoscale") {
-			display.setPreference(Display.Preferences.AUTO_IGNORE_ZERO, item.isSelected());
-		} else if (text == "Ignore max channel on autoscale") {
-			display.setPreference(Display.Preferences.AUTO_IGNORE_FULL, item.isSelected());
-		} else if (text == "Verbose front end") {
-			frontEnd.verbose(item.isSelected());
-			JamProperties.setProperty(
-				JamProperties.FRONTEND_VERBOSE,
-				item.isSelected());
-		} else if (text == "Debug front end") {
-			frontEnd.debug(item.isSelected());
-			JamProperties.setProperty(
-				JamProperties.FRONTEND_DEBUG,
-				item.isSelected());
-		} else if (text == "Autoscale on Expand/Zoom") {
-			jam.plot.Action.setAutoOnExpand(item.isSelected());
-		} else if (text.equals("Automatic peak find")) {
-			display.setPreference(Display.Preferences.AUTO_PEAK_FIND, item.isSelected());
+			console.errorOutln("The selected item is null.");
+		} else {
+			final String text = item.getText();
+			final boolean selected = item.isSelected();
+			if ("Ignore zero channel on autoscale".equals(text)) {
+				display.setPreference(
+					Display.Preferences.AUTO_IGNORE_ZERO,
+					selected);
+			} else if ("Ignore max channel on autoscale".equals(text)) {
+				display.setPreference(
+					Display.Preferences.AUTO_IGNORE_FULL,
+					selected);
+			} else if ("Verbose front end".equals(text)) {
+				frontEnd.verbose(selected);
+				JamProperties.setProperty(
+					JamProperties.FRONTEND_VERBOSE,
+					selected);
+			} else if ("Debug front end".equals(text)) {
+				frontEnd.debug(selected);
+				JamProperties.setProperty(
+					JamProperties.FRONTEND_DEBUG,
+					selected);
+			} else if ("Autoscale on Expand/Zoom".equals(text)) {
+				jam.plot.Action.setAutoOnExpand(selected);
+			} else if ("Automatic peak find".equals(text)) {
+				display.setPreference(
+					Display.Preferences.AUTO_PEAK_FIND,
+					selected);
+			}
 		}
 	}
 
-	/** A histogram has been selected so tell all
+	/** 
+	 * A histogram has been selected so tell all
 	 * applicable classes about it.
-	 * @param hist The histogram to be selected and displayed.
+	 *
+	 * @param hist The histogram to be selected and displayed
 	 */
-	void selectHistogram(Histogram hist) throws GlobalException {
+	void selectHistogram(Histogram hist) {
 		if (hist != null) {
 			if (!overlay) {
 				status.setCurrentHistogramName(hist.getName());
-				Thread worker = new Thread() {
-					public void run() {
-						try {
-							SwingUtilities.invokeAndWait(new Runnable() {
-								public void run() {
-									try {
-										broadcaster.broadcast(
-											BroadcastEvent.HISTOGRAM_SELECT);
-									} catch (GlobalException ge) {
-										msgHandler.errorOutln(
-											getClass().getName()
-												+ ".selectHistogram(): "
-												+ ge);
-									}
-									Histogram h=Histogram.getHistogram(status.getCurrentHistogramName());
-									display.displayHistogram(h);
-									jamMain.gatesChanged();
-									jamMain.setOverlayEnabled(h.getDimensionality()==1);
-								}
-							});
-						} catch (InterruptedException ie) {
-							msgHandler.errorOutln(ie.toString());
-						} catch (
-							java.lang.reflect.InvocationTargetException ite) {
-							msgHandler.errorOutln(ite.toString());
-						}
-					}
-				};
-				worker.start();
+				try {
+					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+					final Histogram h =
+						Histogram.getHistogram(
+							status.getCurrentHistogramName());
+					display.displayHistogram(h);
+					jamMain.gatesChanged();
+					jamMain.setOverlayEnabled(h.getDimensionality() == 1);
+				} catch (GlobalException ge) {
+					console.errorOutln(
+						getClass().getName() + ".selectHistogram(): " + ge);
+				}
 			} else {
 				status.setOverlayHistogramName(hist.getName());
 				console.messageOut(hist.getName(), MessageHandler.END);
 				display.overlayHistogram(hist);
-				overlay = false;
+				synchronized (this) {
+					overlay = false;
+				}
 				jamMain.deselectOverlay();
 			}
 		} else { //null object passed
-			System.err.println(
-				getClass().getName()
-					+ ".selectHistogram(Histogram): null argument");
+			console.errorOutln(
+				classname + "selectHistogram(Histogram): null argument");
 		}
 	}
 
@@ -509,24 +504,23 @@ public class JamCommand
 	 * A gate has been selected. Tell all appropriate classes, like
 	 * Display and JamStatus.
 	 *
-	 * @exception DataException thrown if could not get limits
+	 * @param gateObject the object, which should be a <code>Gate</code>
+	 * @see jam.data.Gate
 	 */
 	private void selectGate(Object gateObject) {
-		int lowerLimit, upperLimit, area;
-		double centroid;
-
+		final String methodname = "selectGate(): ";
 		if (gateObject instanceof Gate) {
-			Gate gate = (Gate) gateObject;
+			final Gate gate = (Gate) gateObject;
 			try {
 				status.setCurrentGateName(gate.getName());
 				broadcaster.broadcast(BroadcastEvent.GATE_SELECT);
 				if (gate.getType() == Gate.ONE_DIMENSION) {
-					area = gate.getArea();
-					centroid =
+					final int area = gate.getArea();
+					final double centroid =
 						(double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
-					lowerLimit = gate.getLimits1d()[0];
-					upperLimit = gate.getLimits1d()[1];
-					msgHandler.messageOut(
+					final int lowerLimit = gate.getLimits1d()[0];
+					final int upperLimit = gate.getLimits1d()[1];
+					console.messageOut(
 						"Gate: "
 							+ gate.getName()
 							+ ", Ch. "
@@ -534,29 +528,27 @@ public class JamCommand
 							+ " to "
 							+ upperLimit,
 						MessageHandler.NEW);
-					msgHandler.messageOut(
+					console.messageOut(
 						"  Area = " + area + ", Centroid = " + centroid,
 						MessageHandler.END);
 				} else {
-					area = gate.getArea();
-					msgHandler.messageOut(
+					final int area = gate.getArea();
+					console.messageOut(
 						"Gate " + gate.getName(),
 						MessageHandler.NEW);
-					msgHandler.messageOut(
-						", Area = " + area,
-						MessageHandler.END);
+					console.messageOut(", Area = " + area, MessageHandler.END);
 				}
 				display.displayGate(gate);
 			} catch (DataException de) {
-				msgHandler.errorOutln(de.getMessage());
+				console.errorOutln(classname + methodname + de.getMessage());
 			} catch (GlobalException ge) {
-				msgHandler.errorOutln(
-					getClass().getName() + ".selectGate(): " + ge);
+				console.errorOutln(classname + methodname + ge.getMessage());
 			}
 		} else {
 			//error not a Gate
-			System.err.println(
-				"Error: JamCommand.selectGate(Object): Object instanceof "
+			console.errorOutln(
+				classname
+					+ "problem selecting gate - object instanceof "
 					+ gateObject.getClass().getName()
 					+ ", String rep=\""
 					+ gateObject
@@ -564,14 +556,18 @@ public class JamCommand
 		}
 	}
 
-	/** Sets whether or not we are in remote mode...broken for now...may be
-	 * implemented in the future.
-	 * @param on Whether we are in remote mode or not.
-	 * @param remoteAccess ???
+	/** 
+	 * Sets whether or not we are in remote mode; remote mode not yet
+	 * implemented.
+	 *
+	 * @param on true if we are in remote mode
+	 * @param ra remote accessor of this process
 	 */
-	public void setRemote(boolean on, RemoteAccess remoteAccess) {
-		this.remoteAccess = remoteAccess;
-		remote = on;
+	public void setRemote(boolean on, RemoteAccess ra) {
+		synchronized (this) {
+			remoteAccess = ra;
+			remote = on;
+		}
 	}
 
 	/**
@@ -581,39 +577,26 @@ public class JamCommand
 	 */
 	public void printHistogram() {
 		/* see nutshell java examples pages 75 and 177 */
-		Toolkit tk = jamMain.getToolkit();
-		PrintJob pjob;
-		int pagedpi;
-		Dimension pageSize;
-		Graphics gpage = null;
-		String jobname = "jam_histogram";
-		Properties printprefs = System.getProperties();
+		final Toolkit tk = jamMain.getToolkit();
+		final String jobname = "jam_histogram";
+		final Properties printprefs = System.getProperties();
 		printprefs.put("awt.print.orientation", "landscape");
-		pjob = tk.getPrintJob((Frame) jamMain, jobname, printprefs);
+		final PrintJob pjob = tk.getPrintJob(jamMain, jobname, printprefs);
 		if (pjob != null) { //user cancelled print request
-			gpage = pjob.getGraphics();
+			final Graphics gpage = pjob.getGraphics();
 			/* cancel pjob=null might not work on windows 95 
 			 * so try graphics object */
 			if (gpage != null) {
-				pageSize = pjob.getPageDimension();
-				pagedpi = pjob.getPageResolution();
-				System.err.println(
-					getClass().getName()
-						+ ".printHistogram(): printPlot pageSize "
-						+ pageSize);
-				System.err.println(
-					getClass().getName()
-						+ ".printHistogram(): printPlot pagedpi "
-						+ pagedpi);
-				msgHandler.messageOut(
-					"Printing histogram: " + status.getCurrentHistogramName(),
+				final Dimension pageSize = pjob.getPageDimension();
+				final int pagedpi = pjob.getPageResolution();
+				console.messageOut(
+					"Printing histogram: " + status.getCurrentHistogramName()+" . ",
 					MessageHandler.NEW);
-				msgHandler.messageOut(" . ");
 				/* work done by display... */
 				display.printHistogram(gpage, pageSize, pagedpi);
 				gpage.dispose();
 				pjob.end();
-				msgHandler.messageOut("done!", MessageHandler.END);
+				console.messageOut("done!", MessageHandler.END);
 			}
 		}
 	}
