@@ -161,9 +161,6 @@ public class ScientificData extends DataObject {
 		return output;
 	}
 
-	/**
-	 *  @exception HDFException unrecoverable error
-	 */
 	double[] getData1dD(int size) throws HDFException { //assumes int type!
 		double[] output;
 		int i;
@@ -290,7 +287,7 @@ public class ScientificData extends DataObject {
 	 * @throws   HDFException  thrown if unrecoverable error occurs
 	 * @throws IllegalStateException if the rank is not 1 or 2
 	 */
-	byte[] getBytes() throws HDFException {
+	byte[] getBytes() {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 			DataOutputStream dos = new DataOutputStream(baos);
@@ -322,7 +319,7 @@ public class ScientificData extends DataObject {
 			}
 			return baos.toByteArray();
 		} catch (IOException e) {
-			throw new HDFException("Problem getting SD: " + e.getMessage());
+			throw new IllegalStateException("Problem getting SD: " + e.getMessage());
 		}
 	}
 
