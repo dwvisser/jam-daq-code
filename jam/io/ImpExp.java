@@ -144,36 +144,34 @@ public abstract class ImpExp {
 	 *
 	 * @param	    msg		    text to go on title bar of dialog box
 	 * @param	    extension	    file extension to suggest to user
+	 * @return	whether file was successfully read
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
-	protected boolean openFile(String msg, String extension)
-		throws ImpExpException {
-		File inFile;
-		FileInputStream inStream;
-		BufferedInputStream inBuffStream;
-
-		inFile = getFileOpen(msg, extension);
-		//open file dialoge			       		
+	protected boolean openFile(String msg, String extension) {
+		File inFile=null;
+		
+		boolean rval=false; //default return value
 		try {
+			/* open file dialog */    		
+			inFile = getFileOpen(msg, extension);
 			if (inFile != null) { // if Open file was  not canceled
 				lastFile = inFile;
-				inStream = new FileInputStream(inFile);
-				inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
+				FileInputStream inStream = new FileInputStream(inFile);
+				BufferedInputStream inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
 				if (msgHandler != null) msgHandler.messageOut(
 					msg + " " + getFileName(inFile),
 					MessageHandler.NEW);
-				//implementing class implement following method	    		
+				/* implementing class implement following method */
 				readHist(inBuffStream);
 				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
-				return true;
-			} else {
-				return false;
+				rval = true;
 			}
-			/*} catch(FileNotFoundException exc){
-				throw new ImpExpException("File not found [ImpExp]");	*/
 		} catch (IOException ioe) {
-			throw new ImpExpException("Importing file [ImpExp]");
+			msgHandler.errorOutln("Problem handling file \""+inFile.getPath()+"\": "+ioe.getMessage());
+		} catch (ImpExpException iee) {
+			msgHandler.errorOutln("Problem while importing or exporting: "+iee.getMessage());
 		}
+		return rval;
 	}
 
 	/**
@@ -291,9 +289,12 @@ public abstract class ImpExp {
 	 * @see #getFile 
 	 */
 	protected String getFileName(File file) {
-		if (file == null)
-			return null;
-		return file.getName();
+		String rval=null;//default return value
+		if (file != null) {
+//			return null;
+			rval = file.getName();
+		}
+		return rval;
 	}
 
 	public String getLastFileName() {
