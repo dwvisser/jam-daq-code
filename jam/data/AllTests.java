@@ -11,6 +11,9 @@ import junit.framework.TestSuite;
  * @see HistogramTest
  */
 public class AllTests {
+	
+	private AllTests(){
+	}
 
 	/**
 	 * @return the test suite
