@@ -77,7 +77,7 @@ class SplashWindow extends JWindow {
 		osi.setToolTipText("Open Source Initiative. See http://www.opensource.org/");
 		east.add(osi);
 		JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel versionLabel = new JLabel("v. " + JamMain.getVersion(),SwingConstants.RIGHT);
+		JLabel versionLabel = new JLabel("v. " + Version.getName(),SwingConstants.RIGHT);
 		panelSouth.add(versionLabel);
 		panelSouth.setBackground(Color.cyan);
 		panelSouth.setBorder(
