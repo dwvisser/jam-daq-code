@@ -87,7 +87,7 @@ public class VME_Map {
      */
     public void setV775Range(int baseAddress, int range) throws SortException {
         String hexBase = "0x"+Integer.toHexString(baseAddress);
-        Integer ba=new Integer(baseAddress);
+        final Integer address=new Integer(baseAddress);
         if (range < 141 || range > 1200) {
             throw new SortException("Requested invalid TDC range: "+range+" ns, must be 141 to 1200 ns.");
         }
@@ -95,9 +95,11 @@ public class VME_Map {
         int actualRange=36000/temp2;
         messages.append("A range of "+range+" ns requested for TDC with base address "+hexBase+
             ", "+temp2+" set in register corresponding to a range of "+actualRange+" ns.\n");
-        Byte FSR = new Byte(temp2);
-        if (V775ranges.containsKey(ba)) V775ranges.remove(ba);//remove so no double entries
-        V775ranges.put(ba,FSR);    
+        final Byte FSR = new Byte(temp2);
+        if (V775ranges.containsKey(address)){
+        	V775ranges.remove(address);//remove so no double entries
+        }
+        V775ranges.put(address,FSR);    
     }
     
     public Map getV775Ranges(){
