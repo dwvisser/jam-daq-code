@@ -18,6 +18,7 @@ import jam.sort.SortRoutine;
 import jam.sort.VME_Map;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
+import jam.ui.Console;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -76,7 +77,7 @@ public final class SetupSortOn {
 
 	private final DisplayCounters displayCounters;
 
-	private final JamConsole jamConsole;
+	private final Console jamConsole;
 
 	private final FrontEndCommunication frontEnd;
 
@@ -150,7 +151,7 @@ public final class SetupSortOn {
 	 * 
 	 * @param jc the console to use
 	 */
-	public static void createSingletonInstance(JamConsole jc) {
+	public static void createSingletonInstance(Console jc) {
 		if (instance == null) {
 			instance = new SetupSortOn(jc);
 		} else {
@@ -158,7 +159,7 @@ public final class SetupSortOn {
 		}
 	}
 
-	private SetupSortOn(JamConsole jc) {
+	private SetupSortOn(Console jc) {
 		dialog=new JDialog(STATUS.getFrame(), "Setup Online ", false);
 		final int fileTextColumns = 25;
 		final String defaultName = JamProperties

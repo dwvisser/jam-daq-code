@@ -1,6 +1,5 @@
 package jam.plot;
 
-import jam.JamConsole;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -8,6 +7,7 @@ import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
+import jam.ui.Console;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -73,7 +73,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param jc
 	 *            the class to call to print out messages
 	 */
-	public Display(JamConsole jc) {		
+	public Display(Console jc) {		
 		/* Set gobal status */
 		JamStatus.instance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
@@ -260,8 +260,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void setOverlay(boolean overlayState){
 		isOverlay=overlayState;
-		if (isOverlay==false)
+		if (isOverlay==false){
 			currentPlot.removeOverlays();
+		}
 	}
 	
 	/**

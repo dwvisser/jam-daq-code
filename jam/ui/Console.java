@@ -1,5 +1,7 @@
-package jam;
+package jam.ui;
 
+import jam.JamException;
+import jam.SetupSortOn;
 import jam.commands.CommandManager;
 import jam.global.CommandListener;
 import jam.global.JamStatus;
@@ -51,7 +53,7 @@ import javax.swing.text.StyleConstants;
  * @version 0.5 last edit 11-98
  * @version 0.5 last edit 1-99
  */
-public class JamConsole extends JPanel implements MessageHandler {
+public class Console extends JPanel implements MessageHandler {
 
 	/**
 	 * Number of lines in scrollback log.
@@ -66,8 +68,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	/**
 	 * End of line character(s).
 	 */
-	private static final String END_LINE = (String) System
-			.getProperty("line.separator");
+	private static final String END_LINE = System.getProperty("line.separator");
 
 	private transient final java.util.List listenerList = Collections
 			.synchronizedList(new ArrayList());
@@ -127,15 +128,17 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * Create a JamConsole which has an text area for output a text field for
 	 * intput.
 	 */
-	public JamConsole() {
+	public Console() {
 		this(NUM_LINES);
 	}
 
 	/**
-	 * Constructor: Create a JamConsole which has an text area for output a text
-	 * field for intput
+	 * Constructs a JamConsole which has an text area for output a text
+	 * field for intput.
+	 * 
+	 * @param linesLog number of lines to retain in onscreen display
 	 */
-	public JamConsole(int linesLog) {
+	public Console(int linesLog) {
 		JamStatus.instance().setMessageHandler(this);
 		SetupSortOn.createSingletonInstance(this);
 		maxLines = linesLog;
@@ -290,6 +293,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Output a message so it will be continued on the same line.
+	 * 
+	 * @param message text to output
 	 */
 	public synchronized void messageOut(String message) {
 		messageOut(message, CONTINUE);
@@ -331,12 +336,17 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	private static final String EMPTY = "";
 
+	/**
+	 * Output an empty line to the console.
+	 */
 	public synchronized void messageOutln() {
 		messageOutln(EMPTY);
 	}
 
 	/**
 	 * Writes an error message to the console immediately.
+	 * 
+	 * @param message error
 	 */
 	public synchronized void errorOutln(String message) {
 		promptOutln("Error: " + message, attr_error);
@@ -344,6 +354,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Outputs a warning message to the console immediately.
+	 * 
+	 * @param message warning
 	 */
 	public synchronized void warningOutln(String message) {
 		promptOutln("Warning: " + message, attr_warning);
@@ -386,16 +398,20 @@ public class JamConsole extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * Where to send commands that are input need to add types
+	 * Where to send commands that are input need to add types.
 	 *  
+	 * @param msgCommand listener to add
 	 */
 	public final void addCommandListener(CommandListener msgCommand) {
 		listenerList.add(msgCommand);
 	}
 
+	/**
+	 * Command expected when input is numbers only.
+	 */
 	public static final String NUMBERS_ONLY = "int";
 
-	/**
+	/* non-javadoc:
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(final String _inString) {
@@ -475,10 +491,12 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * Create a file for the log to be saved to. The method appends a number
 	 * (starting at 1) to the file name if the file already exists.
 	 * 
+	 * @param name name to try
+	 * @return actual name used
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
-	String setLogFileName(String name) throws JamException {
+	public String setLogFileName(String name) throws JamException {
 		String newName = name + ".log";
 		File file = new File(newName);
 		/*
@@ -492,9 +510,9 @@ public class JamConsole extends JPanel implements MessageHandler {
 		}
 		try {
 			logWriter = new BufferedWriter(new FileWriter(file));
-
 		} catch (IOException ioe) {
-			throw new JamException("Not able to create log file " + newName);
+			throw new JamException("Problem opening log file " + file.getAbsolutePath()+
+			        ": "+ioe.getMessage());
 		}
 		return newName;
 	}
@@ -505,7 +523,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
-	void closeLogFile() throws JamException {
+	public void closeLogFile() throws JamException {
 		try {
 			logWriter.flush();
 			logWriter.close();
@@ -514,13 +532,14 @@ public class JamConsole extends JPanel implements MessageHandler {
 		}
 	}
 
-	/**
+	/** 
 	 * Turn on the logging to a file
 	 * 
+	 * @param state <code>true</code> to be logging
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
-	void setLogFileOn(boolean state) throws JamException {
+	public void setLogFileOn(boolean state) throws JamException {
 		if (logWriter != null) {
 			logFileOn = state;
 		} else {
@@ -547,8 +566,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		}
 	}
 
-	/**
-	 * get the current time
+	/* non-javadoc: formatted version of the current time
 	 */
 	private String getTime() {
 		final Date date = new java.util.Date(); //get time
@@ -558,7 +576,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		return stime;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get the current date and time
 	 */
 	private String getDate() {
@@ -606,7 +624,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * On a class destruction close log file
+	 * @see Object#finalize()
 	 */
 	protected void finalize() throws Throwable {
 		if (logFileOn) {

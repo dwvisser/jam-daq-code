@@ -1,5 +1,6 @@
-package jam;
+package jam.ui;
 
+import jam.JamPrefs;
 import jam.commands.CommandManager;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -30,7 +31,7 @@ import javax.swing.JMenuItem;
  * @version 1.4
  * @since 30 Dec 2003
  */
-final class MainMenuBar implements Observer, CommandNames {
+public final class MainMenuBar implements Observer, CommandNames {
 
 	final transient private JamStatus status = JamStatus.instance();
 
@@ -42,11 +43,13 @@ final class MainMenuBar implements Observer, CommandNames {
 	/** Fit menu needed as members so we can add a fit */
 	final transient private JMenu view = new JMenu("View");
 
-	final transient JMenuBar menubar=new JMenuBar();
+	final transient private JMenuBar menubar=new JMenuBar();
 
 	final transient private JMenu calHist = new JMenu("Calibrate");
 
 	final transient private CommandManager commands = CommandManager.getInstance();
+	
+	private static final MainMenuBar INSTANCE=new MainMenuBar();
 
 	/**
 	 * Jam's menu bar. It has the following menus:
@@ -65,7 +68,7 @@ final class MainMenuBar implements Observer, CommandNames {
 	 * @author Dale Visser
 	 * @author Ken Swartz
 	 */
-	MainMenuBar() {
+	private MainMenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		menubar.add(getFileMenu());
@@ -239,6 +242,9 @@ final class MainMenuBar implements Observer, CommandNames {
 		return new JMenuItem(commands.getAction(name));
 	}
 
+	/**
+	 * @see Observer#update(java.util.Observable, java.lang.Object)
+	 */
 	public void update(Observable observe, Object obj) {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
@@ -286,4 +292,11 @@ final class MainMenuBar implements Observer, CommandNames {
 			});
 		}
 	}	
+	
+	/**
+	 * @return the only menubar created by this class
+	 */
+	static public JMenuBar getMenuBar(){
+	    return INSTANCE.menubar;
+	}
 }

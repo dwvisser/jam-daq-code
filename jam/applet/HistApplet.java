@@ -1,10 +1,10 @@
 package jam.applet;
-import jam.JamConsole;
 import jam.JamException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.plot.Display;
+import jam.ui.Console;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -42,7 +42,7 @@ public class HistApplet
 	implements ActionListener, ItemListener {
 
 	private Display display;
-	private JamConsole console;
+	private Console console;
 	private RemoteData remoteData;
 
 	private JTextField textHost;
@@ -106,7 +106,7 @@ public class HistApplet
 		blink.addActionListener(this);
 		pHost.add(blink);
 		/* output console at bottome */
-		console = new JamConsole(20);
+		console = new Console(20);
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */						
 		display = new Display(console);
@@ -253,14 +253,14 @@ public class HistApplet
 							+ lowerLimit
 							+ " to "
 							+ upperLimit,
-						JamConsole.NEW);
-					console.messageOut("  Area = " + area, JamConsole.END);
+						Console.NEW);
+					console.messageOut("  Area = " + area, Console.END);
 				} else {
 					area = gate.getArea();
 					console.messageOut(
 						"Gate " + gate.getName(),
-						JamConsole.NEW);
-					console.messageOut(", Area = " + area, JamConsole.END);
+						Console.NEW);
+					console.messageOut(", Area = " + area, Console.END);
 				}
 			}
 		}
