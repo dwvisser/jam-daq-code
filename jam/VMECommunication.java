@@ -83,7 +83,7 @@ FrontEndCommunication {
     	final String VME_IP=JamProperties.getPropString(JamProperties.TARGET_IP);
     	final int PORT_VME_SEND=JamProperties.getPropInt(JamProperties.TARGET_PORT);
         vmePort=PORT_VME_SEND;
-        if (!active) { //FIXME maybe should check for null sockets instead
+        if (!active) { 
             try {//ceate a ports to send and receive
                 addressLocal  =InetAddress.getByName(LOCAL_IP);
             } catch (UnknownHostException ue) {
