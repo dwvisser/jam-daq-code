@@ -475,6 +475,10 @@ public class SortDaemon extends GoodThread {
 			sortInterval--;
 		}
 	}
+	
+	private synchronized void resetSortInterval(){
+		sortInterval=1;
+	}
 
 	/**
 	 * Returns the sort sample interval.
