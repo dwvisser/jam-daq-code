@@ -77,12 +77,10 @@ public class MonitorControl
 		Container cdconfig = dconfig.getContentPane();
 		dconfig.setResizable(false);
 		dconfig.setLocation(20, 50);
-		//dconfig.setSize(300,150);
 		int spacing = 5;
 		cdconfig.setLayout(new GridLayout(0, 1, spacing, spacing));
 
 		plabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, spacing, spacing));
-		//plabel=new JPanel(new GridLayout(1,4,spacing,spacing));
 		JLabel labelTemp = new JLabel("Name", JLabel.LEFT);
 		plabel.add(labelTemp);
 		labelTemp = new JLabel("Threshold", JLabel.LEFT);
@@ -92,7 +90,7 @@ public class MonitorControl
 		labelTemp = new JLabel("Alarm", JLabel.RIGHT);
 		plabel.add(labelTemp);
 
-		//panel for input fields
+		/* panel for input fields */
 		pupdate = new JPanel();
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		cdconfig.add(pupdate);
@@ -109,7 +107,7 @@ public class MonitorControl
 		JLabel lunit = new JLabel("sec", JLabel.LEFT);
 		pupdate.add(lunit);
 
-		//panel for buttons
+		/* panel for buttons */
 		pb = new JPanel();
 		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
 
@@ -134,38 +132,33 @@ public class MonitorControl
 		pb.add(bcancel);
 		cdconfig.add(pb);
 
-		// dialog box to display Monitors
+		/* dialog box to display Monitors */
 		ddisp = new JDialog(frame, "Monitors Disabled", false);
 		ddisp.setResizable(false);
 		ddisp.setLocation(20, 50);
 		Container cddisp = ddisp.getContentPane();
 		cddisp.setLayout(new GridLayout(0, 2, 5, 5));
-
-		// alarm panel for display dialog
+		/* alarm panel for display dialog */
 		pal = new JPanel();
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
-
 		checkAudio = new JCheckBox("Audio Alarm", true);
 		checkAudio.addItemListener(this);
 		pal.add(checkAudio);
-
-		//variable initialization
+		/* variable initialization */
 		sortMonitors = false;
 		configured = false;
-
-		//window listeners for dispose
+		/* window listeners for dispose */
 		ddisp.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				ddisp.dispose();
 			}
 		});
-
 		dconfig.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				dconfig.dispose();
 			}
 		});
-		//setup monitors
+		/* setup monitors */
 		setup();
 	}
 
@@ -218,14 +211,9 @@ public class MonitorControl
 	}
 
 	/**
-	 * Setup the monitors
-	 *
+	 * Setup all monitors.
 	 */
 	public void setup() {
-		//Monitor currentMonitor;
-		//Enumeration enumMonitor;
-		//int count;
-
 		numberMonitors = Monitor.getMonitorList().size();
 		if (numberMonitors != 0) { // we have monitors in the Monitor list
 			sortMonitors = true;
@@ -233,13 +221,13 @@ public class MonitorControl
 			monitor = new Monitor[numberMonitors];
 			int count = 0;
 			while (enumMonitor.hasNext()) {
-				//put montitors into the monitor array
+				/* put montitors into the monitor array */
 				Monitor currentMonitor = (Monitor) enumMonitor.next();
 				monitor[count] = currentMonitor;
 				count++;
 			}
 		}
-		//setup dialog boxes
+		/* setup dialog boxes */
 		setupConfig();
 		setupDisplay();
 	}
@@ -249,11 +237,9 @@ public class MonitorControl
 	 *
 	 */
 	private void setupDisplay() {
-		//ddisp.setResizable(true);
-		//ddisp.setSize(400, 150+35*numberMonitors);
 		Container cddisp = ddisp.getContentPane();
 		cddisp.removeAll();
-		//widgets for dislay page
+		/* widgets for dislay page */
 		pm = new JPanel[numberMonitors];
 		labelDisp = new JLabel[numberMonitors];
 		textValue = new JTextField[numberMonitors];
@@ -278,33 +264,27 @@ public class MonitorControl
 		}
 		cddisp.add(pal);
 		ddisp.pack();
-		//ddisp.setResizable(false);
 	}
+	
 	/**
-	 * setup configuration dialog box
-	 *
+	 * Set up the configuration dialog box.
 	 */
 	private void setupConfig() {
-		//dconfig.setResizable(true);
-		//dconfig.setSize(350, 260+35*numberMonitors);
 		Container cdconfig = dconfig.getContentPane();
 		cdconfig.removeAll();
-
 		cdconfig.add(plabel);
-
-		//widgets for configuration page
+		/* widgets for configuration page */
 		pc = new JPanel[numberMonitors];
 		labelConfig = new JLabel[numberMonitors];
 		textThreshold = new JTextField[numberMonitors];
 		textMaximum = new JTextField[numberMonitors];
 		checkAlarm = new JCheckBox[numberMonitors];
-
-		//for each monintor make a panel with label, threshold, maximum, and alarm
+		/* for each monitor make a panel with 
+		 * label, threshold, maximum, and alarm */
 		if (numberMonitors != 0) {
 			for (int i = 0; i < numberMonitors; i++) {
 				pc[i] = new JPanel();
 				pc[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-				//pc[i].setLayout(new GridLayout(1,4,0,0));
 				cdconfig.add(pc[i]);
 
 				labelConfig[i] = new JLabel("          ", JLabel.RIGHT);
@@ -333,33 +313,31 @@ public class MonitorControl
 		}
 		cdconfig.add(pupdate);
 		cdconfig.add(pb);
-		//dconfig.setResizable(false);
 		dconfig.pack();
 	}
+	
 	/**
-	 * Show the Display dialog box
-	 *
+	 * Show the Display dialog box.
 	 */
 	public void showDisplay() {
 		ddisp.show();
 	}
+	
 	/**
-	 * Show the configuration dialog box
-	 *
+	 * Show the configuration dialog box.
 	 */
 	public void showConfig() {
 		dconfig.show();
 	}
+	
 	/**
-	 * recal the monitors parameters
-	 * and set the input fields
+	 * Recall the monitor's parameters
+	 * and set the input fields.
 	 */
 	void recall() {
-
-		//update interval
+		/* update interval */
 		textUpdate.setText("" + interval);
-
-		//get the Monitor parameters
+		/*get the Monitor parameters */
 		for (int i = 0; i < numberMonitors; i++) {
 			textThreshold[i].setText("" + monitor[i].getThreshold());
 			textMaximum[i].setText("" + monitor[i].getMaximum());
@@ -367,9 +345,10 @@ public class MonitorControl
 			plotBar[i].repaint();
 		}
 	}
+	
 	/**
-	 *  configure the monitors
-	 *  That is set the values their parameters according to the input fields
+	 * Configure the monitors, i.e. set the values their parameters 
+	 * according to the input fields.
 	 *
 	 * @exception   DataException     <code>DataException</code> tried to add gate to wrong type of histogram
 	 */
