@@ -169,9 +169,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/**
 	 * change or set the page dpi for printing
 	 */
-	public void setPagedpi(int pagedpi) {
+	/*public void setPagedpi(int pagedpi) {
 		this.pagedpi = pagedpi;
-	}
+	}*/
 
 	/**
 	 * updates the current display parameters
@@ -895,7 +895,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	}
 
 	/**
-	 * Draw scale for a d plot
+	 * Draw scale for a 2d plot
 	 *
 	 * @param colors colors to use
 	 * @return  <code>void</code>
