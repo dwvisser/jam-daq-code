@@ -243,8 +243,6 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @param  parameters specified list of <code>Parameter</code> objects to write
      */
     private void writeFile(File file, Vector spectra, Vector gates, Vector scalers, Vector parameters) {
-
-        int i;
         Enumeration temp; //for cycling through contents of Vectors
 
         try {
@@ -387,8 +385,6 @@ public class HDFIO implements DataIO,JamHDFFields {
         ScientificDataDimension sdd,sddErr;
         NumericalDataGroup ndg,ndgErr;
         ScientificData sd,sdErr;
-        ScientificDataScales sds;
-        ScientificDataLabel sdl;
 
         try {
             temp = new VirtualGroup(out, h.getName(),HIST_TYPE_NAME);
@@ -453,8 +449,7 @@ public class HDFIO implements DataIO,JamHDFFields {
      */
     protected void getHistograms(int mode) throws HDFException{
         Enumeration temp;
-        DataObject ob;
-        VirtualGroup vg,hists,current;//current histogram to read in
+        VirtualGroup hists,current;//current histogram to read in
         Vector groups; // vector of all histogram virtual groups in file
         NumericalDataGroup ndg,ndgErr;
         ScientificData sd,sdErr;
@@ -575,8 +570,7 @@ public class HDFIO implements DataIO,JamHDFFields {
                     }
                     msgHandler.messageOut(". ",MessageHandler.CONTINUE);
                 }
-            } else {//no histograms
-            }
+            } 
         } catch (DataException e) {
             throw new HDFException ("Problem getting Histograms: "+e.getMessage());
         }
@@ -667,7 +661,6 @@ public class HDFIO implements DataIO,JamHDFFields {
         VdataDescription    VH;
         Vdata        VS;
         int        i, numRows;
-        Scaler        s;
         String        gname, hname;
         VirtualGroup      gates;
         Gate        g;
@@ -698,16 +691,16 @@ public class HDFIO implements DataIO,JamHDFFields {
                         } else {//reload
                             g = Gate.getGate(StringUtilities.makeLength(gname,Gate.NAME_LENGTH));
                         }
-                        if (g==null) {
-                            // do nothing, print an X outside of VH clause
-                        } else if (g.getType()==Gate.ONE_DIMENSION){//1-d gate
-                            g.setLimits(VS.getInteger(0,0).intValue(),VS.getInteger(0,1).intValue());
-                        } else {//2-d gate
-                            pg = new Polygon();
-                            for (i=0;i<numRows;i++){
-                                pg.addPoint(VS.getInteger(i,0).intValue(),VS.getInteger(i,1).intValue());
-                            }
-                            g.setLimits(pg);
+                        if (g!=null) {                  
+                        	if (g.getType()==Gate.ONE_DIMENSION){//1-d gate
+                            	g.setLimits(VS.getInteger(0,0).intValue(),VS.getInteger(0,1).intValue());
+                        	} else {//2-d gate
+                            	pg = new Polygon();
+                            	for (i=0;i<numRows;i++){
+                                	pg.addPoint(VS.getInteger(i,0).intValue(),VS.getInteger(i,1).intValue());
+                            	}
+                            	g.setLimits(pg);
+                        	}
                         }
                     } else {
                         msgHandler.messageOutln("Problem processing a VH in HDFIO!");
@@ -730,8 +723,6 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @exception   HDFException      thrown if unrecoverable error occurs
      */
     protected void addScalerSection(Vector scalers) throws HDFException{
-
-        VirtualGroup vg;
         VdataDescription desc;
         Vdata data;
 
@@ -831,7 +822,6 @@ public class HDFIO implements DataIO,JamHDFFields {
     protected void addParameterSection(Vector parameters) throws HDFException{
 
         int size;          //number of parameters
-        VirtualGroup vg;
         VdataDescription desc;
         Vdata data;
         String parameterType;
@@ -960,7 +950,6 @@ public class HDFIO implements DataIO,JamHDFFields {
         } else{
             //there are histograms in the file
             Vector labels=in.ofType(DataObject.DFTAG_DIL);//all DIL's in file
-            Vector annotations=in.ofType(DataObject.DFTAG_DIA);//all DIA's in file
             //msgHandler.messageOut(hists.getObjects().size()+" histograms",MessageHandler.CONTINUE);
             for (Enumeration temp = hists.getObjects().elements() ; temp.hasMoreElements() ;) {
                 VirtualGroup current=(VirtualGroup)(temp.nextElement());

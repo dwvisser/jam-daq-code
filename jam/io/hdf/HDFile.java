@@ -283,7 +283,6 @@ public class HDFile extends RandomAccessFile implements HDFconstants {
         int DDblockSize;
         Enumeration temp;
         DataObject ob;
-        byte [] bytes;
         try {
             DDblockSize=2 + 4+ 12 * DataObjects.size(); // numDD's + offset to next (always 0 here) + size*12 for
             // tag/ref/offset/length info
@@ -333,7 +332,6 @@ public class HDFile extends RandomAccessFile implements HDFconstants {
      *  @exception HDFException unrecoverable error
      */
     public void printDDblock() throws HDFException{
-        int i;
         int numDD;
         int nextBlock;
         try {

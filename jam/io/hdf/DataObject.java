@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import java.util.*;
-import java.lang.*;
 /**
  * Abstract class to represent a generic HDF data object.
  *

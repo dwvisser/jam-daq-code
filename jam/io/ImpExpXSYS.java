@@ -187,7 +187,6 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		throws IOException, ImpExpException {
 
 		boolean endOfFile = false;
-		char[] tempChar = new char[100];
 
 		//read in full buffer, because there is stuff in buffer we want to skip	
 		endOfFile : for (int i = 0; i < L_BUFFER; i++) {
@@ -366,61 +365,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		}
 
 	}
-	/** 
-	 * packs a Xsys histogram header
-	 * returns true if it could returns false if end of file found
-	 *
-	 */
-	private void packHeaderXSYS(BufferedOutputStream buffin)
-		throws IOException {
 
-		boolean endOfFile = false;
-		char[] tempChar = new char[100];
-		/*FIXME						
-				header=bufferToString(buffer, P_HEADER, L_INT);
-			    
-				if(!(header.equals(XSYSHEADER))){
-					System.out.println(" NOT xsysfile"); //FIXME
-		//			console.errorOutln(" Not an XSYS file, wrong Key word");
-		//		print error message here and throw Exception
-				} 
-				//read in header info
-				header=bufferToLittleEndian(XSYSHEAD);
-				runNumber=bufferToBigEndian(buffer,P_RUN_NUMBER);
-				runTitle=bufferToString(buffer, P_TITLE, L_TITLE);	    
-				areaNumber=bufferToBigEndian(buffer,P_AREA_NUMBER);
-				areaDataType=bufferToBigEndian(buffer, P_AREA_DATA_TYPE); 	    
-				areaName=bufferToString(buffer, P_AREA_NAME, L_AREA_NAME);
-				areaLengthPage=bufferToBigEndian(buffer, P_AREA_LENGTH_PAGE);
-				areaSizeX=bufferToBigEndian(buffer,P_AREA_SIZE_X);
-				areaSizeY=bufferToBigEndian(buffer,P_AREA_SIZE_Y);
-		
-				//read in scalers 
-				for (int i=0;i<=N_SCALERS-1;i++){
-				    scalers[i]=bufferToBigEndian(buffer, P_SCALERS+L_INT*i);
-				    scalerTitles[i]=bufferToString(buffer, P_SCALER_TITLES+L_SCALER_TITLES*i, L_SCALER_TITLES);
-				}
-		
-				System.out.println(" XSYS area Name  "+areaName);	    
-		//		System.out.println(" run Number  "+runNumber);	    
-		//		System.out.println(" title "+runTitle);	    
-		//		System.out.println(" Area Number  "+areaNumber);
-		//		System.out.println(" Area data type  "+areaDataType);	    
-		//		System.out.println(" page length  "+areaLengthPage);
-		//		System.out.println(" Area Size X"+areaSizeX);
-		//		System.out.println(" Area Size Y"+areaSizeY);
-		//	    read in a buffer,  read in a buffer because there is stuff in buffer we dont want	
-		
-			    //write out buffer
-		:	    for (int i=0;i<L_BUFFER;i++){	
-				    if (( buffer[i]=buffin.read() )==(-1)){
-					endOfFile=true;
-					break endOfFile;
-				    }
-				}
-				    		
-		*/
-	}
 	/**
 	 * calibrate a historam
 	 */
@@ -445,25 +390,23 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 *
 	 * Author Ken Swartz
 	 */
-	private int toBigEndian(int[] inByte) {
-
+	public int toBigEndian(int[] inByte) {
 		int outInt;
-
 		//for unsigned integers    clear not in loop
 		outInt =
 			(inByte[0] << 0)
 				| (inByte[1] << 8)
 				| (inByte[2] << 16)
 				| (inByte[3] << 24);
-
-		//An alternative way to read in data
-		//=(datain.readUnsignedByte()<<0)
-		//|(datain.readUnsignedByte()<<8)
-		//|(datain.readUnsignedByte()<<16)
-		//|(datain.readUnsignedByte()<<24);
-
+		/*  Note: An alternative way to read in data
+		          =(datain.readUnsignedByte()<<0)
+		           |(datain.readUnsignedByte()<<8)
+		           |(datain.readUnsignedByte()<<16)
+		           |(datain.readUnsignedByte()<<24);
+		*/
 		return (outInt);
 	}
+
 	/**
 	 * Extract an int from a array of bytes in little endian order, 
 	 * 
@@ -505,6 +448,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 
 		return outInt;
 	}
+	
 	/**
 	 * Take an array of bytes in big endian and turn convert to
 	 * to little endian byte array
@@ -512,8 +456,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 * inByte must be a multiple of 4 in length
 	 * @param inByte array of big endian bytes
 	 */
-	private byte[] toLittleEndian(byte[] inByte) {
-
+	public byte[] toLittleEndian(byte[] inByte) {
 		byte[] outByte;
 		//bytes sign extended in converting to in 
 		//so we need to mask the higher order bits
@@ -524,7 +467,6 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 			outByte[i + 2] = inByte[i + 1];
 			outByte[i + 3] = inByte[i + 0];
 		}
-
 		return outByte;
 	}
 

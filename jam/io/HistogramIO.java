@@ -428,12 +428,7 @@ public class HistogramIO implements FilenameFilter{
      */
     private void readJHFData(File fileOpen ,int mode) 
 		throws FileNotFoundException,ImpExpException {
-	
-	Histogram hist;
-    	Enumeration allHistograms;	
-	boolean includeInitialReads=true;
 	boolean eof;
-	int numHist=0;
       try{	
 	FileInputStream fileStream=new FileInputStream (fileOpen);       
 	BufferedInputStream bis=new BufferedInputStream(fileStream, BUFFER_SIZE);
@@ -469,7 +464,6 @@ public class HistogramIO implements FilenameFilter{
      */
     private void readJHFDataV02(int mode) throws FileNotFoundException,ImpExpException {
 	Histogram hist;
-    	Enumeration allHistograms;	
 	boolean eof;
 	int numHist=0;
 	Gate gate;
@@ -557,7 +551,7 @@ public class HistogramIO implements FilenameFilter{
 	    	    for (int j=0;j<gateNameLength;j++){
 	    		gateName=gateName+dis.readChar();
 	    	    }
-	    	    int gateNumber=dis.readInt();
+	    	    dis.readInt();//skip gate number
 	    	    int gateType=dis.readInt();
 	    	    boolean isDefined = dis.readBoolean();
 		    
@@ -614,7 +608,7 @@ public class HistogramIO implements FilenameFilter{
 		    } else { //RELOAD_MODE
 			scaler=Scaler.getScaler(scalerName);
 		    }
-    		    int scalerNumber=dis.readInt();
+    		    dis.readInt();//skip scaler number
     		    int scalerValue=dis.readInt();
     		    scaler.setValue(scalerValue);
     		    msgHandler.messageOut(" .");			    
@@ -637,7 +631,6 @@ public class HistogramIO implements FilenameFilter{
      */
     private void readJHFDataV01(int mode) throws ImpExpException {
 	Histogram hist;
-    	Enumeration allHistograms;	
 	boolean eof;
 	int numHist=0;
 	Gate gate;
@@ -708,7 +701,7 @@ public class HistogramIO implements FilenameFilter{
 	    	    for (int j=0;j<gateNameLength;j++){
 	    		gateName=gateName+dis.readChar();
 	    	    }
-	    	    int gateNumber=dis.readInt();
+	    	    dis.readInt();//skip gate Number
 	    	    int gateType=dis.readInt();
 		    
 	    	    boolean isDefined = dis.readBoolean();
@@ -754,7 +747,7 @@ public class HistogramIO implements FilenameFilter{
 		    } else { //RELOAD_MODE
 			scaler=Scaler.getScaler(scalerName);
 		    }
-    		    int scalerNumber=dis.readInt();
+    		    dis.readInt();//skip scaler number
     		    int scalerValue=dis.readInt();
     		    scaler.setValue(scalerValue);
     		    msgHandler.messageOut(" .");			    
@@ -774,7 +767,6 @@ public class HistogramIO implements FilenameFilter{
     private void readJHFDataV00(int mode) throws ImpExpException {
 	
 	Histogram hist;
-    	Enumeration allHistograms;	
 	boolean eof;
 	int numHist=0;
 	int [] counts;

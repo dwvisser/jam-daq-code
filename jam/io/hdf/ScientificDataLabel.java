@@ -53,11 +53,8 @@ public class ScientificDataLabel extends DataObject {
     public void interpretBytes() throws HDFException {
 	int i,numLabels,lengthCounter;
 	int [] lengths;
-	short tag;
-	short ref;
 	byte [] temp;
 	ByteArrayInputStream bais=new ByteArrayInputStream(bytes);
-	DataInputStream dis=new DataInputStream(bais);
 	
 	try{
 	    numLabels=0;

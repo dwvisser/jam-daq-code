@@ -326,7 +326,6 @@ public class BatchExport extends JDialog implements ActionListener {
 	 *
 	 */
 	private void browseForDir() {
-		File lastFile;
 		JFileChooser fd =
 			new JFileChooser(new File(t_directory.getText().trim()));
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -344,7 +343,6 @@ public class BatchExport extends JDialog implements ActionListener {
 	 *
 	 */
 	private void loadList() {
-		int i;
 		Object listItem;
 
 		JFileChooser fd = new JFileChooser(lastListFile);
