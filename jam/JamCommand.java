@@ -129,7 +129,7 @@ public class JamCommand
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		//data bases manipulation
 		histogramControl = new HistogramControl(jamMain, broadcaster, console);
-		gateControl = new GateControl(jamMain, broadcaster, console);
+		gateControl = new GateControl(jamMain, broadcaster, console, display);
 		scalerControl = new ScalerControl(jamMain, broadcaster, console);
 		monitorControl = new MonitorControl(jamMain, broadcaster, console);
 		paramControl = new ParameterControl(jamMain, broadcaster, console);
