@@ -13,10 +13,10 @@ public interface AcquisitionStatus {
     /**
      * Are we Online
      */
-    public boolean isOnLine();
+    boolean isOnLine();
+    
     /**
      * Are we currently taking data
      */
-    public boolean isAcqOn();
-    
+    boolean isAcqOn();
 }
