@@ -157,9 +157,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		//Default set to first plot
 		currentPlot=null;
 		plot =(Plot)plotList.get(0);
-		if (plot != null){
-			setPlot(plot);			
-		}
+		plotSelected(plot);
+		
 	}
 
 	/**
