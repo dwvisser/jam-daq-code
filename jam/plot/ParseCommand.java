@@ -49,28 +49,27 @@ public class ParseCommand implements CommandListener{
 		/*
 		 * int is a special case meaning no command and just parameters
 		 */
+		final double[] parameters = convertParameters(cmdParams);		
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
-			final double[] parameters = convertParameters(cmdParams);
-			integerChannel(parameters);
-			action.doCommand(null, parameters);
 			accept = true;
-		} else if (commandMap.containsKey(command)) {
-			inCommand = (String) commandMap.get(command);
-			accept = true;
-			handleIt = true;
-		}
-		if (accept && handleIt) {
-			final double[] parameters = convertParameters(cmdParams);
-			if (Action.DISPLAY.equals(inCommand)) {
-				action.display(parameters);
-			} else if (Action.OVERLAY.equals(inCommand)) {
-				action.overlay(parameters);
-			} else if (Action.HELP.equals(inCommand)) {
-				help();				
-			} else {
-				action.doCommand(inCommand);
-				integerChannel(parameters);
+			if (action.getIsCursorCommand()) {
+				cursorChannel(parameters);				
+			}else {				
+				action.doCommand(null, parameters);
 			}
+		} else if (commandMap.containsKey(command)) {
+			accept = true;
+			inCommand = (String) commandMap.get(command);
+			action.doCommand(inCommand);			
+			if (action.getIsCursorCommand()) {				
+				cursorChannel(parameters);				
+			}else {				
+				action.doCommand(null, parameters);				
+			}
+			
+
+		} else{
+			accept = false;
 		}
 		return accept;
 	}
@@ -102,7 +101,7 @@ public class ParseCommand implements CommandListener{
 	 * @param parameters
 	 *            the integers
 	 */
-	void integerChannel(double[] parameters) {
+	private void cursorChannel(double[] parameters) {
 
 		Display display =status.getDisplay();
 		final Plot currentPlot = display.getPlot();
@@ -114,21 +113,23 @@ public class ParseCommand implements CommandListener{
 			return;
 		
 		// we have a 1 d plot		
-		if (currentPlot.getDimensionality() == 1) {
+		if (action.getCursorDimension()== 1) {
 			//Only x dimension
 			for (int i=0; i< numParam; i++ ) {
 				cursor.setChannel((int)parameters[i], 0);
 				action.setCursor(cursor);				
 				action.doCommand(Action.CURSOR);
-
 			}
 		}else {
-			//X and y dimensions
-			for (int i=0; i< numParam-1; i++ ) {
+			//x and y dimensions
+			for (int i=0; i< numParam-1; i=i+2 ) {
 				cursor.setChannel((int)parameters[i], (int)parameters[i+1]);
 				action.setCursor(cursor);				
 				action.doCommand(Action.CURSOR);				
 			}
+			//Error if only 1 co-ordinate
+			//if i<
+				
 		}
 
 		
