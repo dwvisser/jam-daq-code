@@ -135,12 +135,14 @@ public final class JamMain extends JFrame {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				//KBS FIXME call jamCmdManager
-				showExitDialog();
+				jamCommand.actionPerformed(new ActionEvent(this, 0,  "exit"));
+				//KBS Remove 
+				//showExitDialog();
 			}
 			public void windowClosed(WindowEvent e) {
-//				KBS FIXME call jamCmdManager
-				showExitDialog();
+				jamCommand.actionPerformed(new ActionEvent(this, 0, "exit"));
+				//KBS Remove
+				//showExitDialog();
 			}
 		});
 		new InitialHistograms();
@@ -171,6 +173,7 @@ public final class JamMain extends JFrame {
 		s.setJamCommand(jamCommand);
 	}
 
+	/* KBS Remove now in  command ShowDialogExitCmd 
 	void showExitDialog() {
 		final int rval =
 			JOptionPane.showConfirmDialog(
@@ -184,6 +187,7 @@ public final class JamMain extends JFrame {
 			this.setVisible(true);
 		}
 	}
+	*/
 
 	/**
 	 * Set the mode for sorting data, adjusting title and menu items as 
