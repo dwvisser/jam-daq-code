@@ -22,7 +22,6 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
-import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -40,36 +39,32 @@ public class YaleCAENgetScalers {
 	private final MessageHandler console;
 	private String strScalerText;
 	private String fileName;
-	private String strError;
+	private final StringBuffer strError=new StringBuffer();
 
 	public YaleCAENgetScalers() {
-		JamStatus js=JamStatus.instance();
+		JamStatus js = JamStatus.instance();
 		frame = js.getFrame();
 		console = js.getMessageHandler();
 	}
 
 	public void display() {
-
 		new TextDisplayDialog(frame, fileName, false, strScalerText);
-	
 	}
+	
 	/**
 	 * Takes an event file, searches for scaler blocks in it and 
-	 * returns tab-delimited text listing each scaler block on one
+	 * creates tab-delimited text listing each scaler block on one
 	 * row of text.
 	 * 
 	 * @param events the file to search
-	 * @return text showing the scaler values in the event file
+	 * @return whether we were successful
 	 */
-	public boolean processEventFile(File events)  {
-		
-		boolean rtnState=true;
+	public boolean processEventFile(File events) {
+		boolean rtnState = true;
 		final StringBuffer strBuff = new StringBuffer();
 		final int SCALER_HEADER = 0x01cccccc;
 		DataInputStream dis = null;
-		
-		strError="";
-		
+		strError.delete(0, strError.length());
 		try {
 			dis =
 				new DataInputStream(
@@ -90,28 +85,29 @@ public class YaleCAENgetScalers {
 					strBuff.append('\n');
 				}
 			}
-		//End of file reached	
+			//End of file reached	
 		} catch (EOFException eofe) {
 			if (dis != null) {
 				//Bury close exception
-				try {dis.close();}catch(Exception e){};
+				try {
+					dis.close();
+					rtnState = true;
+				} catch (Exception e) {
+					strError.append(e.getMessage());
+					rtnState=false;
+				};
 			}
-			strError="";
-			rtnState = true;
 		} catch (IOException ioe) {
-			strError=",reading file: "+ioe.getMessage();
-			rtnState = false;						
+			strError.append("Reading file: " + ioe.getMessage());
+			rtnState = false;
 		}
-		
-		fileName=events.getName();		
-		strScalerText=strBuff.toString();		
-		return rtnState;		
+		fileName = events.getName();
+		strScalerText = strBuff.toString();
+		return rtnState;
 	}
-	
+
 	public String getErrorTxt() {
-		return strError;
+		return strError.toString();
 	}
-	private File lastFile =
-		new File(JamProperties.getPropString(JamProperties.EVENT_INPATH));
 
 }
