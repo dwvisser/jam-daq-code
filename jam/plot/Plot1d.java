@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
  * @see jam.plot.Plot
  * @author Ken Swartz
  */
-class Plot1d extends AbstractPlot {
+final class Plot1d extends AbstractPlot {
 
 	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
 
@@ -41,6 +41,12 @@ class Plot1d extends AbstractPlot {
 	private Map countsOverlay = Collections.synchronizedMap(new HashMap());
 	
 	private final PlotColorMap colorMap=PlotColorMap.getSingletonInstance();
+
+	private double sensitivity = 3;
+
+	private double width = 12;
+
+	private boolean pfcal = true;
 
 	/**ss
 	 * Constructor.
@@ -93,14 +99,6 @@ class Plot1d extends AbstractPlot {
 		repaint();
 	}
 
-	/**
-	 * Show the making of a gate, point by point.
-	 * 
-	 * @param mode
-	 *            GATE_NEW, GATE_CONTINUE, GATE_SAVE or GATE_CANCEL
-	 * @param pChannel
-	 *            channel coordinates of clicked channel
-	 */
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
