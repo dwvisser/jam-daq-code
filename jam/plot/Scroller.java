@@ -65,8 +65,6 @@ class Scroller
 	 *
 	 */
 	public Scroller(Plot plot) {
-		int sizebar, mid;
-
 		this.plot = plot;
 		if (plot instanceof Plot2d) {
 			isPlot2d = true;
@@ -81,8 +79,6 @@ class Scroller
 		//plot in middle panel
 		this.add(plot, BorderLayout.CENTER);
 		//scroll bar to move along the x axis
-		sizebar = (SCROLL_MAX - SCROLL_MIN) / 10;
-		mid = (SCROLL_MAX + SCROLL_MIN) / 2;
 		scrollHorz = new JScrollBar(JScrollBar.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
 		scrollHorz.setBackground(Color.lightGray);
