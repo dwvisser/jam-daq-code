@@ -157,29 +157,36 @@ final class VirtualGroup extends AbstractHData {
 	 * @return a list of all <code>DataObject</code> of the
 	 * given type
 	 * @param groupType the type to return 
-	 * @throws HDFException if type is not unique to one VGroup in the file
+     * @throws IllegalStateException if there is more than one VGroup with the type
 	 */
-	static VirtualGroup ofClass(String groupType) throws HDFException {
-		 VirtualGroup output = null;
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
-		while(iter.hasNext()){
-			final AbstractHData dataObject=(AbstractHData)iter.next();
-			if (dataObject.getTag()==DFTAG_VG){
-				final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
-				final String type = virtualGroup.getType();
-				if (groupType.equals(type)){
-					//Should only find one node
-					if (output==null) {
-						output =virtualGroup;
-					} else {
-						throw new HDFException("More than one VirtualGroup found with class "+groupType);
-					}
-				}
-			}
-		}
-		return output;
-	}
+	static VirtualGroup ofClass(String groupType) {
+        VirtualGroup rval = null;
+        final List objectList = getDataObjectList();
+        final Iterator iter = objectList.iterator();
+        boolean error=false;
+        loop : while (iter.hasNext()) {
+            final Object dataObject = iter.next();
+            if (dataObject instanceof VirtualGroup) {
+                final VirtualGroup virtualGroup = (VirtualGroup) dataObject;
+                final String type = virtualGroup.getType();
+                if (groupType.equals(type)) {
+                    /* Should only find one node. */
+                    if (rval == null) {
+                        rval = virtualGroup;
+                    } else {
+                        error=true;
+                        break loop;
+                    }
+                }
+            }
+        }
+        if (error){
+            throw new IllegalStateException(
+                    "More than one VirtualGroup found with class "
+                            + groupType);
+        }
+        return rval;
+    }
 
     /**
      * Returns a VirtualGroup of <code>VirtualGroup</code>'s with the name
@@ -190,28 +197,35 @@ final class VirtualGroup extends AbstractHData {
      * @param groupName
      *            name of the desired group
      * @return the group with the given name
-     * @throws HDFException if there is more than one VGroup with the name
+     * @throws IllegalStateException if there is more than one VGroup with the name
      */
-    static VirtualGroup ofName(String groupName) throws HDFException {
-		 VirtualGroup output = null;
-			final List objectList = getDataObjectList();
-			final Iterator iter = objectList.iterator();
-			while(iter.hasNext()){
-				final AbstractHData dataObject=(AbstractHData)iter.next();
-				if (dataObject.getTag()==DFTAG_VG){
-					final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
-					final String type = virtualGroup.getName();
-					if (groupName.equals(type)){
-						//Should only find one node
-						if (output==null) {
-							output =virtualGroup;
-						} else {
-							throw new HDFException("More than one VirtualGroup found with class "+groupName);
-						}
-					}
-				}
-			}
-			return output;
+    static VirtualGroup ofName(String groupName) {
+        VirtualGroup output = null;
+        final List objectList = getDataObjectList();
+        final Iterator iter = objectList.iterator();
+        boolean error=false;
+        loop : while (iter.hasNext()) {
+            final Object dataObject = iter.next();
+            if (dataObject instanceof VirtualGroup) {
+                final VirtualGroup virtualGroup = (VirtualGroup) dataObject;
+                final String name = virtualGroup.getName();
+                if (groupName.equals(name)) {
+                    /* Should only find one node. */
+                    if (output == null) {
+                        output = virtualGroup;
+                    } else {
+                        error = true;
+                        break loop;
+                    }
+                }
+            }
+        }
+        if (error){
+            throw new IllegalStateException(
+                    "More than one VirtualGroup found with class "
+                            + groupName);            
+        }
+        return output;
     }
 	
     /**
