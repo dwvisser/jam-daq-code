@@ -1,15 +1,23 @@
 package jam.plot;
-import java.awt.*;
-import java.awt.event.*;
+import jam.JamConsole;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.CommandListener;
+import jam.global.GlobalException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.NumberFormat;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import jam.global.*;
-import jam.data.Histogram;
+import java.util.Map;
+
 import javax.swing.JOptionPane;
-import jam.JamConsole;
 
 /**
  * Class the does the actions on plots. Receives commands from buttons
@@ -48,6 +56,8 @@ public class Action
 	static final String CANCEL = "cancel";
 	static final String RANGE = "range";
 	static final String DISPLAY = "display";
+	static final String REBIN = "rebin";
+	static final String SCALE ="scale";
 
 	private boolean autoOnExpand = true;
 
@@ -164,7 +174,8 @@ public class Action
 				EXPAND,
 				EXPAND,
 				RANGE,
-				DISPLAY };
+				DISPLAY,
+				REBIN, SCALE };
 		final String[] abbr =
 			{
 				"ex",
@@ -182,8 +193,8 @@ public class Action
 				"c",
 				"x",
 				"y",
-				"r",
-				"d" };
+				"ra",
+				"d","re","s" };
 		if (commands.length != abbr.length) {
 			JOptionPane.showMessageDialog(
 				display,
@@ -208,15 +219,15 @@ public class Action
 	 * @param _command entry from console
 	 * @param parameters integer parameters from console
 	 */
-	public void commandPerform(String _command, int[] parameters) {
+	public void commandPerform(String _command, double [] parameters) {
 		boolean accept = false; //is the command accepted
 		//boolean disp = false;
 		final String command = _command.toLowerCase();
 		final int comLen = command.length();
 		/* int is a special case meaning
 		 * no command and just parameters */
-		if (comLen >= JamConsole.INTS_ONLY.length()) {
-			if (command.equals(JamConsole.INTS_ONLY)) {
+		if (comLen >= JamConsole.NUMBERS_ONLY.length()) {
+			if (command.equals(JamConsole.NUMBERS_ONLY)) {
 				if (DISPLAY.equals(inCommand)) {
 					display(parameters);
 					return;
@@ -283,6 +294,12 @@ public class Action
 			linear();
 		} else if (LOG.equals(inCommand)) {
 			log();
+		} else if (SCALE.equals(inCommand)){
+			if (currentPlot.getLimits().getScale()==Limits.ScaleType.LINEAR){
+				log();
+			} else {
+				linear();
+			}
 		} else if (AUTO.equals(inCommand)) {
 			auto();
 		} else if (RANGE.equals(inCommand)) {
@@ -294,7 +311,9 @@ public class Action
 			gotoChannel();
 		} else if (NETAREA.equals(inCommand)) {
 			netArea();
-		} else {
+		} else if (REBIN.equals(inCommand)){
+			 rebin();
+		}else {
 			done();
 			textOut.errorOutln(
 				getClass().getName()
@@ -373,18 +392,22 @@ public class Action
 	 *
 	 * @param parameters the integers
 	 */
-	public void integerChannel(int[] parameters) {
+	public void integerChannel(double [] parameters) {
 		final int numPar = parameters.length;
 		/* FIXME we should be better organized so this if is not here
 		 * so range is not a special case */
 		if ((commandPresent)) {
 			if (RANGE.equals(inCommand)) {
 				for (int i = 0;(i < numPar) && (i < 2); i++) {
-					cursor.y = parameters[i];
+					cursor.y = (int)parameters[i];
 					cursorCount = parameters[i];
 					doCommand();
 				}
 				return;
+			} else if (REBIN.equals(inCommand)){
+				if (numPar > 0){
+					parameter=parameters;
+				}
 			}
 		}
 		/* we have a 1 d plot */
@@ -393,7 +416,7 @@ public class Action
 				final int loopMax = Math.min(numPar, 2);
 				for (int i = 0; i < loopMax; i++) {
 					//check for out of bounds
-					setCursor(closestInsidePoint(new Point(parameters[i], 0)));
+					setCursor(closestInsidePoint(new Point((int)parameters[i], 0)));
 					if (!energyEx) {
 						cursorCount = currentPlot.getCount(cursor);
 					}
@@ -402,7 +425,7 @@ public class Action
 			} else { //no command so get channel
 				if (numPar > 0) {
 					/* check for out of bounds */
-					setCursor(closestInsidePoint(new Point(parameters[0], 0)));
+					setCursor(closestInsidePoint(new Point((int)parameters[0], 0)));
 					synchronized (this) {
 						cursorCount = currentPlot.getCount(cursor);
 					}
@@ -420,7 +443,7 @@ public class Action
 						/* check for out of bounds */
 						cursor =
 							closestInsidePoint(
-								new Point(parameters[i - 1], parameters[i]));
+								new Point((int)parameters[i - 1], (int)parameters[i]));
 						cursorCount = currentPlot.getCount(cursor);
 						doCommand();
 					}
@@ -429,7 +452,7 @@ public class Action
 				if (numPar > 1) {
 					cursor =
 						closestInsidePoint(
-							new Point(parameters[0], parameters[1]));
+							new Point((int)parameters[0], (int)parameters[1]));
 					cursorCount = currentPlot.getCount(cursor);
 					currentPlot.markChannel(cursor);
 					textOut.messageOutln(
@@ -491,7 +514,7 @@ public class Action
 	 * @param hist the first element of which is the number 
 	 * of the hist to display
 	 */
-	private void display(int[] hist) {
+	private void display(double [] hist) {
 		if (!commandPresent) {
 			init();
 			textOut.messageOut(
@@ -499,7 +522,7 @@ public class Action
 				MessageHandler.NEW);
 		}
 		if (hist.length > 0) {
-			final int num = hist[0];
+			final int num = (int)hist[0];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
 				JamStatus.instance().setCurrentHistogramName(h.getName());
@@ -516,7 +539,7 @@ public class Action
 			}
 			if (hist.length > 1){
 				int newlen=hist.length-1;
-				int [] pass=new int[newlen];
+				double [] pass=new double[newlen];
 				System.arraycopy(hist,1,pass,0,newlen);
 				overlay(pass);
 			} else {
@@ -525,7 +548,7 @@ public class Action
 		}
 	}
 	
-	private void overlay(int[] hist) {
+	private void overlay(double [] hist) {
 		if (!commandPresent) {
 			init();
 			textOut.messageOut(
@@ -533,7 +556,7 @@ public class Action
 				MessageHandler.NEW);
 		}
 		if (hist.length > 0) {
-			final int num = hist[0];
+			final int num = (int)hist[0];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
 				display.overlayHistogram(Histogram.getHistogram(num));
@@ -567,6 +590,29 @@ public class Action
 	}
 
 	/**
+	 * Set the range for the counts scale.
+	 */
+	private void rebin() {
+		if (!commandPresent) {
+			init();
+			textOut.messageOut("Rebin ", MessageHandler.NEW);
+		} else {
+			final double binWidth = parameter[0];
+			if (binWidth >= 1.0  && binWidth < currentPlot.getHistogram().getSizeX()){
+				currentPlot.setBinWidth(binWidth);
+				textOut.messageOut(String.valueOf(binWidth), MessageHandler.END);
+				currentPlot.repaint();
+				done();
+			} else {
+				textOut.messageOut(String.valueOf(binWidth), MessageHandler.END);
+				textOut.warningOutln("Rebin command ignored. Bin value must be \u2264 1.0 and smaller than the histogram.");
+				done();
+			}
+		}
+	}
+
+
+	/**
 	 * @return the counts in the last channel clicked
 	 */
 	private double getCursorCounts() {
@@ -578,6 +624,8 @@ public class Action
 		}
 		return rval;
 	}
+	
+	private double [] parameter;
 
 	/**
 	 * Calculate the area and centroid for a region
@@ -951,7 +999,6 @@ public class Action
 	private void init() {
 		synchronized (this) {
 			commandPresent = true;
-			//clicks.retainAll(empty);
 			clicks.clear();
 		}
 	}
@@ -965,7 +1012,6 @@ public class Action
 			mousePressed = false;
 			inCommand = null;
 			clicks.clear();
-			//clicks.retainAll(empty);
 		}
 	}
 
