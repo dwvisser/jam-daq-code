@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.control.ScalerZeroControl;
+import jam.data.control.ScalerZero;
 
 /**
  * Show the zero scalers dialog.
@@ -12,6 +12,6 @@ final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd {
 	
 	ShowDialogZeroScalersCmd(){
 		putValue(NAME,"Zero Scalers\u2026");
-		dataControl=new ScalerZeroControl();
+		dataControl=new ScalerZero();
 	}
 }

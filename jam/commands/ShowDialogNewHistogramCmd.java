@@ -1,5 +1,5 @@
 package jam.commands;
-import jam.data.control.HistogramControl;
+import jam.data.control.HistogramNew;
 
 /**
  * Show the histogram dialog
@@ -9,12 +9,12 @@ import jam.data.control.HistogramControl;
  */
 final class ShowDialogNewHistogramCmd extends AbstractCommand {
 	
-	final private HistogramControl histogramControl;
+	final private HistogramNew histogramControl;
 
 	ShowDialogNewHistogramCmd(){
 		super();
 		putValue(NAME, "New\u2026");
-		histogramControl= new HistogramControl(status.getFrame(), msghdlr);
+		histogramControl= new HistogramNew(msghdlr);
 	}
 	
 	/**

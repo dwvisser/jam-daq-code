@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.control.HistogramZeroControl;
+import jam.data.control.HistogramZero;
 
 /**
  * Show the zero histograms dialog
@@ -13,7 +13,7 @@ public class ShowDialogZeroHistogram extends AbstractShowDataControlCmd {
 	ShowDialogZeroHistogram() {
 		putValue(NAME, "Zero\u2026");
 		//Super class member
-		dataControl= new HistogramZeroControl(status.getFrame(), msghdlr);		
+		dataControl= new HistogramZero(msghdlr);		
 	}
 	
 
