@@ -70,7 +70,7 @@ public final class JamMain extends JFrame implements Observer {
 	private final String classname;
 	private RunState runState = RunState.NO_ACQ;
 
-	private JamMain(final boolean showGUI) {
+	JamMain(final boolean showGUI) {
 		super("Jam");
 		setLookAndFeel();
 		final int titleDisplayTime = 10000; //milliseconds
@@ -143,11 +143,6 @@ public final class JamMain extends JFrame implements Observer {
 		SwingUtilities.invokeLater(showWindow);
 	}
 	
-	JamMain(Script s){
-		this(false);
-		s.setJamCommand(jamCommand);
-	}
-
 	private void exit(){
 		final JButton temp=new JButton(CommandManager.getInstance().getAction(
 		CommandNames.EXIT));

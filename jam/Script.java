@@ -55,7 +55,8 @@ public final class Script implements Observer {
 	public Script(){
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		jam=new JamMain(this);
+		jam=new JamMain(false);
+		initFields();
 		base=new File(System.getProperty("user.dir"));
 	}
 	
@@ -191,10 +192,13 @@ public final class Script implements Observer {
 		(new HistogramZero(null)).zeroAll();
 	}
 		
-	void setJamCommand(JamCommand jc){
-		sso=jc.getSetupSortOff();
-		sc=jc.getSortControl();
-		hdfio=new HDFIO(JamStatus.instance().getFrame(),null);
+		
+	private static final JamStatus status=JamStatus.instance();
+	
+	private void initFields(){
+		sso=SetupSortOff.getSingletonInstance();
+		sc=SortControl.getSingletonInstance();
+		hdfio=new HDFIO(status.getFrame(),null);
 	}
 	
 	/**
