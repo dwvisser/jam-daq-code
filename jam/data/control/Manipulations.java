@@ -73,7 +73,6 @@ Observer {
         pfrom1.add(cfrom1);
         pfrom1.add(new JLabel("x"));
         ttimes1 = new JTextField("1.0",8);
-        ttimes1.setBackground(Color.white);
         pfrom1.add(ttimes1);
 
 		//Operation Panel
@@ -111,7 +110,6 @@ Observer {
         cfrom2.addItem("1DHISTOGRAM2");
         cfrom2.addItemListener(this);
         ttimes2 = new JTextField("1.0",8);
-        ttimes2.setBackground(Color.white);
         pfrom2.add(cfrom2);
         pfrom2.add(new JLabel("x"));
         pfrom2.add(ttimes2);
@@ -128,7 +126,6 @@ Observer {
         cto.addItem("New Histogram");
         cto.addItemListener(this);
         ttextto = new JTextField("new",20);
-        ttextto.setForeground(Color.black);
         pto.add(cto);
         lname=new JLabel("Name");
         pto.add(lname);
@@ -260,15 +257,8 @@ Observer {
      * A second histogram is needed
      */
     private void setInput2(boolean state){
-        if (state) {
-            cfrom2.setEnabled(false);
-            ttimes2.setBackground(Color.lightGray);
-            ttimes2.setEnabled(false);
-        } else {
-            cfrom2.setEnabled(true);
-            ttimes2.setBackground(Color.white);
-            ttimes2.setEnabled(true);
-        }
+            cfrom2.setEnabled(!state);
+            ttimes2.setEnabled(!state);
     }
 
     /**
@@ -288,11 +278,6 @@ Observer {
      * Set dialog box for new histogram to be created
      */
     private void setUseNewHist(boolean state){
-        if (state) {
-            ttextto.setBackground(Color.white);
-        } else {
-            ttextto.setBackground(Color.lightGray);
-        }
         lname.setEnabled(state);
         ttextto.setEnabled(state);
     }

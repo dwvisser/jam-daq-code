@@ -1,5 +1,3 @@
-/*
- */
 package jam.data.control;
 import jam.global.*;
 import jam.data.*;
@@ -103,23 +101,19 @@ Observer {
 
         JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
         text1 = new JTextField("0.0",8);
-        text1.setBackground(Color.white);
         pinfields.add(text1);
         label2 = new JLabel("");			//set by setUILabels
         pinfields.add(label2);
         text2 = new JTextField("1.0",8);
-        text2.setBackground(Color.white);
         pinfields.add(text2);
         pEntries.add(pinfields);
 
         JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
         text3 = new JTextField("0.0",8);
         poutfields.add(text3);
-        text3.setBackground(Color.white);
         label4 = new JLabel("");			//set by setUILabels
         poutfields.add(label4);
         text4 = new JTextField("1.0",8);
-        text4.setBackground(Color.white);
         poutfields.add(text4);
         pEntries.add(poutfields);
 
@@ -134,7 +128,6 @@ Observer {
         lname = new JLabel("Name");
         pto.add(lname);
         ttextto = new JTextField("new",20);
-        ttextto.setForeground(Color.black);
         pto.add(ttextto);
         pEntries.add(pto);
 
@@ -308,15 +301,10 @@ Observer {
     }
 
     /**
-     * set dialog box for a new histogram to
-     * be writtern out.
+     * Set dialog box for a new histogram to
+     * be written out.
      */
     private void setUseNewHist(boolean state){
-        if (state) {
-            ttextto.setBackground(Color.white);
-        } else {
-            ttextto.setBackground(Color.lightGray);
-        }
         lname.setEnabled(state);
         ttextto.setEnabled(state);
     }

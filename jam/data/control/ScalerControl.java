@@ -219,7 +219,6 @@ public final class ScalerControl extends DataControl implements ActionListener, 
                 textScaler[count] =new JTextField("  ");
                 textScaler[count].setColumns(12);
                 textScaler[count].setEditable(false);
-                textScaler[count].setBackground(Color.white);
                 textScaler[count].setText( String.valueOf(currentScaler.getValue()) );
                 ps[count].add(labelScaler[count]);
                 ps[count].add(textScaler[count]);

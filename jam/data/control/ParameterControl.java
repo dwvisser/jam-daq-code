@@ -119,8 +119,6 @@ public final class ParameterControl
 				textParam[count] = new JTextField("");
 				textParam[count].setColumns(10);
 				textParam[count].setEditable(true);
-				textParam[count].setBackground(Color.white);
-				textParam[count].setForeground(Color.black);
 				pParam[count].add(textParam[count]);
 				count++;
 			}
