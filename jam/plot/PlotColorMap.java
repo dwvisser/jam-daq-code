@@ -42,14 +42,14 @@ class PlotColorMap {
     static void setColorMap(int mode){
         if (mode==BLACK_ON_WHITE){
             colorMode=mode;
-            background=Color.white;
-            foreground=Color.darkGray;
-            hist=Color.black;
-            overlay=Color.magenta;
-            gateDraw=Color.blue;
-            gateShow=Color.red;
-            mark=Color.red;
-            area=Color.green;
+            background=Color.WHITE;
+            foreground=Color.DARK_GRAY;
+            hist=Color.BLACK;
+            overlay=Color.MAGENTA;
+            gateDraw=Color.GREEN;
+            gateShow=Color.RED;
+            mark=Color.RED;
+            area=Color.GREEN;
             fitTotal=Color.BLUE;
             fitSignal=Color.DARK_GRAY;
             fitBackground=Color.GREEN;
@@ -58,14 +58,14 @@ class PlotColorMap {
             peakLabel=Color.BLUE;
         } else if (mode==WHITE_ON_BLACK){
             colorMode=mode;
-            background=Color.black;
-            foreground=Color.lightGray;
-            hist=Color.white;
-            overlay=Color.orange;
-            gateDraw=Color.cyan;
-            gateShow=Color.yellow;
-            mark=Color.yellow;
-            area=Color.green;
+            background=Color.BLACK;
+            foreground=Color.LIGHT_GRAY;
+            hist=Color.WHITE;
+            overlay=Color.ORANGE;
+            gateShow=Color.RED;
+            gateDraw=Color.GREEN;
+            mark=Color.YELLOW;
+            area=Color.GREEN;
 			fitTotal=Color.CYAN;
 			fitSignal=Color.LIGHT_GRAY;
 			fitBackground=Color.GREEN;
@@ -74,9 +74,9 @@ class PlotColorMap {
             colorScale=colorScaleWonB;
         } else if (mode==PRINT){
             colorMode=mode;
-            background=Color.white;
-            foreground=Color.black;
-            hist=Color.black;
+            background=Color.WHITE;
+            foreground=Color.BLACK;
+            hist=Color.BLACK;
             overlay=new Color(59, 59, 59);
             gateDraw=new Color(59, 59, 59);
             gateShow=new Color(59, 59, 59);
