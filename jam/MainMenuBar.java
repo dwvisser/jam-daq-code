@@ -9,6 +9,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.plot.Display;
+import jam.plot.PlotPrefs;
 import jam.util.ScalerScan;
 import jam.util.YaleCAENgetScalers;
 
@@ -17,13 +18,11 @@ import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 
 /**
  *
@@ -74,7 +73,6 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		Broadcaster.getSingletonInstance().addObserver(this);
 		console = status.getMessageHandler();
 		display = d;
-		
 		add(getFileMenu());
 		add(getSetupMenu());
 		add(getControlMenu());
@@ -83,8 +81,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		add(getScalerMenu());		
 		add(getPreferencesMenu(jamCommand));										
 		add(getFitMenu());				
-		add(getHelp());
-				
+		add(getHelp());	
 	}
 
 	private JMenu getFileMenu() {
@@ -206,16 +203,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	
 	private JMenu getPreferencesMenu(JamCommand jamCommand) {
 		final JMenu mPrefer = new JMenu("Preferences");
-		final JCheckBoxMenuItem ignoreZero =
-			new JCheckBoxMenuItem("Ignore zero channel on autoscale", true);
-		ignoreZero.setEnabled(true);
-		ignoreZero.addItemListener(jamCommand);
-		mPrefer.add(ignoreZero);
-		final JCheckBoxMenuItem ignoreFull =
-			new JCheckBoxMenuItem("Ignore max channel on autoscale", true);
-		ignoreFull.setEnabled(true);
-		ignoreFull.addItemListener(jamCommand);
-		mPrefer.add(ignoreFull);
+		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_ZERO));
+		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));
 		final JCheckBoxMenuItem autoOnExpand =
 			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
 		autoOnExpand.setEnabled(true);
@@ -236,47 +225,16 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 			}
 		});
 		mPrefer.add(noFill2d);
-		final JCheckBoxMenuItem gradientColorScale =
-			new JCheckBoxMenuItem(
-				"Use gradient color scale",
-				JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE));
-		gradientColorScale.setToolTipText(
-			"Check to use a continuous gradient color scale on 2d histogram plots.");
-		gradientColorScale.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent ie) {
-				final boolean state = ie.getStateChange() == ItemEvent.SELECTED;
-				JamProperties.setProperty(JamProperties.GRADIENT_SCALE, state);
-				display.setPreference(
-					Display.Preferences.CONTINUOUS_2D_LOG,
-					state);
-			}
-		});
-		mPrefer.add(gradientColorScale);
+		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
 		mPrefer.addSeparator();
-		final JCheckBoxMenuItem autoPeakFind =
-			new JCheckBoxMenuItem("Automatic peak find", true);
-		autoPeakFind.setEnabled(true);
-		autoPeakFind.addItemListener(jamCommand);
-		mPrefer.add(autoPeakFind);
+		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
 		final JMenuItem peakFindPrefs =
 			new JMenuItem("Peak Find Properties\u2026");
 		peakFindPrefs.setActionCommand("peakfind");
 		peakFindPrefs.addActionListener(jamCommand);
 		mPrefer.add(peakFindPrefs);
 		mPrefer.addSeparator();
-		final ButtonGroup colorScheme = new ButtonGroup();
-		final JRadioButtonMenuItem whiteOnBlack =
-			new JRadioButtonMenuItem("Black Background", false);
-		whiteOnBlack.setEnabled(true);
-		whiteOnBlack.addActionListener(jamCommand);
-		colorScheme.add(whiteOnBlack);
-		mPrefer.add(whiteOnBlack);
-		final JRadioButtonMenuItem blackOnWhite =
-			new JRadioButtonMenuItem("White Background", true);
-		blackOnWhite.setEnabled(true);
-		blackOnWhite.addActionListener(jamCommand);
-		colorScheme.add(blackOnWhite);
-		mPrefer.add(blackOnWhite);
+		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
 		final JCheckBoxMenuItem verboseVMEReply =
 			new JCheckBoxMenuItem("Verbose front end", false);
@@ -300,10 +258,12 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(debugVME);
 		return mPrefer;
 	}
+	
 	/**
-	 * Helper method
-	 * @param name
-	 * @return
+	 * Produce a menu item that invokes the action given by the
+	 * lookup table in <code>jam.commands.CommandManager</code>
+	 * @param name name of the command  
+	 * @return JMenuItem that invokes the associated action
 	 */	
 	private final JMenuItem getMenuItem(String name) {
 		return new JMenuItem(commands.getAction(name));
