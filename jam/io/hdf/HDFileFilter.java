@@ -1,18 +1,23 @@
 package jam.io.hdf;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 import javax.swing.filechooser.FileFilter;
-import java.io.*;
 
 /**
  * Filters only HDF files for file dialogs.
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  */
-public class HDFileFilter extends FileFilter implements HDFconstants {
+public class HDFileFilter extends FileFilter implements HDFconstants, 
+java.io.FileFilter {
     
-    boolean option=true;
+    final boolean option;
     
     public HDFileFilter(boolean showDirectories){
+    	super();
 		option=showDirectories;
     }
     
