@@ -541,7 +541,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * counts before refreshing.
 	 */
 	final void autoCounts() {
-		//FIXME KBS copyCounts();
+		Histogram plotHist=getHistogram();
+		copyCounts(plotHist);
 		plotLimits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
 			plotLimits.setMaximumCounts(110 * findMaximumCounts() / 100);
