@@ -164,7 +164,7 @@ class Plot1d extends Plot {
 					0,
 					this.fitSignals[sig],
 					0,
-					signals[sig].length);
+					length);
 				for (int bin = 0; bin < length; bin++) {
 					fitTotal[bin] += signals[sig][bin];
 				}
@@ -319,26 +319,21 @@ class Plot1d extends Plot {
 			if (fitBackground != null){
 				g.setColor(PlotColorMap.fitBackground);
 				graph.drawLine(fitChannels,fitBackground);
-				fitBackground=null;
 			}
 			if (fitResiduals != null){
 				g.setColor(PlotColorMap.fitResidual);
 				graph.drawLine(fitChannels,fitResiduals);
-				fitResiduals=null;
 			}
 			if (fitSignals != null){
 				g.setColor(PlotColorMap.fitSignal);
 				for (int sig=0; sig<fitSignals.length; sig++){
 					graph.drawLine(fitChannels,fitSignals[sig]);					
 				}
-				fitSignals=null;
 			}
 			if (fitTotal != null){
 				g.setColor(PlotColorMap.fitTotal);
 				graph.drawLine(fitChannels,fitTotal);
-				fitTotal=null;
 			}
-			fitChannels=null;
 		}
 	}
 
