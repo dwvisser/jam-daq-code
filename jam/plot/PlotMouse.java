@@ -25,7 +25,7 @@ public class PlotMouse extends MouseAdapter {
 	 * mouse events.
 	 *
 	 */
-	public PlotMouse(PlotGraphics plotGraphics, Action a) {
+	PlotMouse(PlotGraphics plotGraphics, Action a) {
 		this.pg = plotGraphics;
 		action=a;
 		listenersList = new ArrayList();
@@ -37,7 +37,7 @@ public class PlotMouse extends MouseAdapter {
 	 * (have method plot
 	 *
 	 */
-	public void addListener(PlotMouseListener listener) {
+	void addListener(PlotMouseListener listener) {
 		listenersList.add(listener);
 	}
 	
@@ -45,7 +45,7 @@ public class PlotMouse extends MouseAdapter {
 	 * Remove a class that was called if a PlotMouse event occured.
 	 * returns true if it could remove this listener
 	 */
-	public boolean removeListener(PlotMouseListener listener) {
+	boolean removeListener(PlotMouseListener listener) {
 		return listenersList.remove(listener);
 	}
 	

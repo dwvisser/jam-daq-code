@@ -39,7 +39,7 @@ class PlotColorMap {
         setColorMap(mode);
     }
 
-    public static void setColorMap(int mode){
+    static void setColorMap(int mode){
         if (mode==BLACK_ON_WHITE){
             colorMode=mode;
             background=Color.white;
@@ -96,14 +96,14 @@ class PlotColorMap {
     /**
      * color scale
      */
-    public static Color [] getColorScale(){
+    static Color [] getColorScale(){
         return colorScale;
     }
     
     /**
      * Number of colors
      */
-    public static int getNumberColors() {
+    static int getNumberColors() {
         return NUMBER_COLORS;
     }
     
