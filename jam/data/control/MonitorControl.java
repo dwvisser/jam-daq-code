@@ -133,7 +133,7 @@ public final class MonitorControl
 				configured = false;
 				/* stop monitor thread if running */
 				if (loopThread != null){
-					loopThread.setState(GoodThread.STOP);
+					loopThread.setState(GoodThread.State.STOP);
 				}
 			}
 		});
