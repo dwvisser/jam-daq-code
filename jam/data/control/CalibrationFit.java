@@ -312,10 +312,8 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      * Open a file to read
      */
     private File openFile(String msg, int state) throws Exception {
-        
-        File fileIn=null;
+        File fileIn=null;//default return value
         FileDialog fd =new FileDialog(frame, msg, state);
-        
         String extension=".cal";
         if ( (fileName)!=null){//use previous file and directory as default
             fd.setFile(fileName);
@@ -332,11 +330,10 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         if(fileName!=null) {
             fileName=FileUtilities.setExtension(fileName,extension,FileUtilities.FORCE);
             fileIn = new File(directoryName ,fileName);
-        } else {
-            fileIn=null;
-        }
+        } //else leave it null
         return fileIn;
     }
+    
     /**
      *  Process window events
      *  If the window is active check that the histogram been displayed
