@@ -1,7 +1,7 @@
 package jam.plot.color;
 
+import jam.plot.Constants;
 import jam.plot.Scale;
-import jam.plot.Tickmarks;
 
 import java.awt.Color;
 
@@ -164,7 +164,7 @@ public class DiscreteColorScale implements ColorScale {
 		/* make display range 10% less than total range */
 		final int range = 100 * (upperLimit - lowerLimit) / 120;
 		int colorStep = 1;
-		for (int i = 1; i < Tickmarks.MAXIMUM_COUNTS; i *= 10) {
+		for (int i = 1; i < Constants.MAXIMUM_COUNTS; i *= 10) {
 			colorStep = i;
 			if ((colorStep * numberColors) >= range)
 				break;
