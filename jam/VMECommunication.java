@@ -318,7 +318,6 @@ FrontEndCommunication {
      * stream.
      * 
      * @param seconds the interval between scaler blocks
-     * @throws JamException if there's a problem
      */
      public void sendScalerInterval(int seconds) {
         final String message= seconds+"\n\0";
@@ -330,7 +329,6 @@ FrontEndCommunication {
      * the VME crate.
      *
      * @param message   string to send
-     * @throws JamException if there's a problem
      */
     private void sendToVME(String message) {
         sendToVME(VMECommunication.OK_MESSAGE, message);
@@ -571,7 +569,7 @@ FrontEndCommunication {
      * status.
      *
      * @param status to be checked
-     * @returns true if valid, false if not
+     * @return true if valid, false if not
      */
     private boolean validStatus(int status) {
         return (status==OK_MESSAGE || status==ERROR || status==SCALER ||
@@ -579,6 +577,9 @@ FrontEndCommunication {
         	status==INTERVAL);
     }
     
+    /**
+     * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
+     */
 	public void preferenceChange(PreferenceChangeEvent pce){
 		final String key=pce.getKey();
 		final String newValue=pce.getNewValue();
