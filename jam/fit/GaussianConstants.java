@@ -6,7 +6,7 @@ package jam.fit;
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-interface GaussianConstants {
+public interface GaussianConstants {
 	/**
 	 * Coefficient for proper normalization of gaussians.
 	 */
