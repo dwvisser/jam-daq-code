@@ -3,6 +3,7 @@ import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.GateComboBoxModel;
+import jam.plot.Display;
 import jam.global.*;
 import java.util.*;
 import java.awt.*;
@@ -57,6 +58,7 @@ WindowListener,Observer  {
     final private JComboBox cadd;
 
     private final JamStatus status;
+    private final Display display;
 
     /**
      * Creates an instance of the GateControl class.
@@ -66,11 +68,12 @@ WindowListener,Observer  {
      * @param mh the console for text output
      */
     public GateControl(Frame f, Broadcaster bro,  
-    MessageHandler mh){
+    MessageHandler mh, Display d){
         super();
         this.frame=f;
         this.broadcaster=bro;
         this.messageHandler=mh;
+        display=d;
         status = JamStatus.instance();
         dgate=new JDialog(frame,"Gate setting <none>",false);
         dgate.setResizable(false);
@@ -592,6 +595,7 @@ WindowListener,Observer  {
                     printPoints(gatePoly2d);
                 }
                 broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
+                display.displayGate(currentGate);
             }
         } catch (NumberFormatException ne) {
             throw new DataException("Invalid input not a number [GateSet]");
