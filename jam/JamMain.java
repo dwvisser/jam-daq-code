@@ -10,9 +10,9 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.Display;
-import jam.ui.SelectionToolbar;
+import jam.ui.Console;
+import jam.ui.MainMenuBar;
 import jam.ui.SelectionTree;
-import jam.ui.StatusBar;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -60,7 +60,7 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * Message output and text input.
 	 */
-	private transient final JamConsole console;
+	private transient final Console console;
 
 
 	private RunState runState = RunState.NO_ACQ;
@@ -85,7 +85,7 @@ public final class JamMain extends JFrame implements Observer {
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
 		/* Ouput/Input text console */
-		console = new JamConsole();
+		console = new Console();
 		console.messageOutln("Welcome to Jam v" + Version.getInstance().getName());
 		/* histogram displayer */
 		display = new Display(console);
@@ -94,9 +94,7 @@ public final class JamMain extends JFrame implements Observer {
 		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
-		/* Main menu bar */
-		final MainMenuBar menus = new MainMenuBar();
-		setJMenuBar(menus.menubar);
+		setJMenuBar(MainMenuBar.getMenuBar());
 		/* Histogram selection menu bar */
 		/*final SelectionToolbar selectBar = new SelectionToolbar();
 		contents.add(selectBar, BorderLayout.NORTH); */
@@ -107,7 +105,7 @@ public final class JamMain extends JFrame implements Observer {
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
 		splitTree.setResizeWeight(0.1);
 		contents.add(splitTree, BorderLayout.CENTER);	
-		contents.add(StatusBar.getInstance().getComponent(),BorderLayout.SOUTH);
+		//contents.add(StatusBar.getInstance().getComponent(),BorderLayout.SOUTH);
 		/**/
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -124,7 +122,7 @@ public final class JamMain extends JFrame implements Observer {
 		new InitialHistograms();
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
-		selectTree.loadTree();
+		//selectTree.loadTree();
 		//selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
 	}
@@ -188,12 +186,7 @@ public final class JamMain extends JFrame implements Observer {
 	 * Set the mode for sorting data, adjusting title and menu items as
 	 * appropriate.
 	 * 
-	 * @exception JamException
-	 *                sends a message to the console if there is an
-	 *                inappropriate call
 	 * @see jam.global.SortMode
-	 * @param mode
-	 *            the new mode for Jam to be in
 	 */
 	private void sortModeChanged() {
 		final StringBuffer title = new StringBuffer("Jam - ");
@@ -285,6 +278,9 @@ public final class JamMain extends JFrame implements Observer {
 		}
 	}
 
+	/**
+	 * @see Observer#update(java.util.Observable, java.lang.Object)
+	 */
 	public void update(Observable event, Object param) {
 		final BroadcastEvent beParam = (BroadcastEvent) param;
 		final BroadcastEvent.Command command = beParam.getCommand();
