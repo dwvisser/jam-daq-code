@@ -196,15 +196,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	public abstract String doFit() throws FitException;
 
 	/**
-	 * Calculates function value for a specific channel.  Uses whatever the current values are for the parameters in 
-	 * <code>parameters</code>.
-	 *
-	 * @param	channel channel to evaluate fit function at
-	 * @return	double containing evaluation 
-	 */
-	public abstract double calculate(int channel);
-
-	/**
 	 * Creates user interface dialog box.
 	 *
 	 * @param	frame	    controlling frame
@@ -361,7 +352,8 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				cOption[i] =
 					new JCheckBox(parName, parameter.getBooleanValue());
 				cOption[i].addItemListener(this);
-				west.add(cOption[i]);
+				middle.add(cOption[i]);
+				west.add(new JPanel());
 			}
 			/* Take care of options. */
 			if (parameter.isKnown()) {
@@ -745,19 +737,34 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Draw the fit with the values in the fields.
 	 */
 	private void drawFit() throws FitException {
+		double [][] signals=null;
+		double [] residuals=null;
+		double [] background=null;
 		setParamValues();
-		int numChannel = (display.getHistogram()).getSizeX();
-		double[] evaluated = new double[numChannel];
-		double[] residuals = new double[numChannel];
-		for (int i = 0; i < numChannel; i++) {
-			evaluated[i] = calculate(i);
-			residuals[i] = counts[i] - evaluated[i];
+		int numChannel = upperLimit-lowerLimit+1;
+		//double[] evaluated = new double[numChannel];
+		if (getNumberOfSignals()>0){
+			signals=new double[getNumberOfSignals()][numChannel];
+			for (int sig=0; sig<signals.length; sig++){
+				for (int i=0; i<numChannel; i++){
+					signals[sig][i]=calculateSignal(sig,i+lowerLimit);
+				}
+			}
 		}
-		if (residualOption) {
-			display.displayFit(evaluated, residuals, lowerLimit, upperLimit);
-		} else {
-			display.displayFit(evaluated, lowerLimit, upperLimit);
+		if (this.residualOption){		
+			residuals = new double[numChannel];
+			for (int i = 0; i < numChannel; i++) {
+				int chan=i+lowerLimit;
+				residuals[i] = counts[chan] - calculate(chan);
+			}
 		}
+		if (this.hasBackground()){
+			background = new double[numChannel];
+			for (int i=0; i<numChannel; i++){
+				background[i]=this.calculateBackground(i+lowerLimit);
+			}
+		}
+		display.displayFit(signals,background,residuals,lowerLimit);
 	}
 
 	/**
@@ -973,4 +980,38 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		out = pos + sigfig - 1;
 		return out;
 	}
+	
+	/**
+	 * Returns the number of signals modelled by the fit.
+	 * 
+	 * @return the number of signals modelled by the fit
+	 */
+	abstract int getNumberOfSignals();
+	
+	/**
+	 * Returns the evaluation of a signal at one particular channel.
+	 * Should return zero if the given signal doesn't exist.
+	 *
+	 * @return
+	 */
+	abstract double calculateSignal(int signal, int channel);
+	
+	/**
+	 * 
+	 * @return whether fit function has a background component
+	 */
+	abstract boolean hasBackground();
+	
+	abstract double calculateBackground(int channel);
+	
+	/**
+	 * Calculates function value for a specific channel.  Uses whatever the current values are for the parameters in 
+	 * <code>parameters</code>.
+	 *
+	 * @param	channel channel to evaluate fit function at
+	 * @return	double containing evaluation 
+	 */
+	public abstract double calculate(int channel);
+	
+
 }
