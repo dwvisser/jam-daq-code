@@ -1,7 +1,3 @@
-/*
- * Created on Oct 4, 2004
- *
- */
 package jam.plot;
 
 
@@ -11,6 +7,7 @@ import java.awt.Point;
  * Abstraction of a histogram channel on the display.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 2004-10-04
  */
 public final class Bin {
 	/**
@@ -78,8 +75,14 @@ public final class Bin {
 		setChannel(p);
 	}
 	
-	
-	public static Bin copy(Bin c){
+	/**
+	 * Create a new <code>Bin</code> with contents identical to the
+	 * given <code>Bin</code>.
+	 * 
+	 * @param c original 
+	 * @return copy of the original
+	 */
+	static Bin copy(Bin c){
 		return Factory.create(c.getPoint());
 	}
 	
@@ -103,10 +106,18 @@ public final class Bin {
 		return new Point(channel);
 	}
 	
+	/**
+	 * Gets the x-coordinate of this bin.
+	 * @return the x-channel
+	 */
 	public synchronized int getX(){
 		return channel.x;
 	}
 	
+	/**
+	 * Gets the y-coordinate of this bin.
+	 * @return the y-channel
+	 */
 	public synchronized int getY(){
 		return channel.y;
 	}
@@ -128,7 +139,7 @@ public final class Bin {
 		return rval;
 	}
 	
-	public synchronized Bin closestInsideBin() {
+	synchronized Bin closestInsideBin() {
 		int x=channel.x;
 		int y=channel.y;
 		final PlotContainer currentPlot = display.getPlot();
@@ -143,9 +154,5 @@ public final class Bin {
 			y = currentPlot.getSizeY() - 1;
 		}
 		return Factory.create(x,y);
-	}
-	
-	public synchronized void shiftInsidePlot(){
-		setChannel(closestInsideBin());
-	}
+	}	
 }
