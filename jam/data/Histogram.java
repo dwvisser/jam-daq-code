@@ -85,8 +85,6 @@ public final class Histogram implements Serializable {
 		listByDim[0]=new ArrayList();
 		listByDim[1]=new ArrayList();
 	}
-	/* used for automatically assigning histogram number */
-	private static int lastNumber = 0;
 
 	/**
 	 * gates that belong to this histogram
@@ -221,10 +219,9 @@ public final class Histogram implements Serializable {
 					+ "' defined with unknown type: "
 					+ type);
 		}
-		//add to static lists
+		/* add to static lists */
 		sortedNameMap.put(name, this);
 		histogramList.add(this);
-		//sortedNumberMap.put(new Integer(number),this);
 		listByDim[getDimensionality()-1].add(this);
 	}
 	
@@ -475,7 +472,6 @@ public final class Histogram implements Serializable {
 		sortedNumberMap.clear();
 		listByDim[0].clear();
 		listByDim[1].clear();
-		lastNumber=0;
 		System.gc();
 	}
 
@@ -665,29 +661,10 @@ public final class Histogram implements Serializable {
 	}
 	
 	private void assignNewNumber(){
-		/*boolean unique = false;
-		lastNumber++;
-		//assign number
-		NEWTRY : while (!unique) {
-			//loop for all histograms
-			final Iterator allHistograms = histogramList.iterator();
-			while (allHistograms.hasNext()) {
-				if (lastNumber
-					== ((Histogram) allHistograms.next()).getNumber()) {
-					lastNumber++;
-					continue NEWTRY;
-				}
-			}
-			unique = true;
-		}
-		number = lastNumber;*/
-		Integer inum=new Integer(lastNumber);
-		do {		
-			lastNumber++;
-			inum=new Integer(lastNumber);
-		} while (sortedNumberMap.containsKey(inum));
-		number=lastNumber;
-		sortedNumberMap.put(inum,this);
+		final int last=sortedNumberMap.isEmpty() ? 0 : 
+		((Integer)sortedNumberMap.lastKey()).intValue();		
+		number=last+1;
+		sortedNumberMap.put(new Integer(number),this);
 	}
 	
 	/**
