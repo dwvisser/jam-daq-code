@@ -10,6 +10,9 @@ package jam.sort;
  */
 class RingFullException extends Exception {
 
+    /**
+     * @see Exception#Exception(java.lang.String)
+     */
 	public RingFullException(String msg) {
 		super(msg);
 	}

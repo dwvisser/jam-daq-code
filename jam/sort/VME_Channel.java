@@ -8,7 +8,7 @@ package jam.sort;
  */
 public class VME_Channel{
 
-    private final int slot, baseAddress, channel, threshold, type, arrayIndex;
+    private final int slot, baseAddress, channel, threshold, type;
     public static final int EVENT_DATA = 349;
     public static final int SCALER_DATA = 987;
 
@@ -16,13 +16,15 @@ public class VME_Channel{
      * Creates an event parameter.  V775/V785 TDC's/ADC's can have
      * base addresses from 0x20000000-0xe0ff0000.  
      *
+     * @param map the map this channel belongs to
+     * @param slot the slot the module occupies in the VME crate
      * @param parameterNumber integer from 0 to 2047 indicating the event stream parameter number to be assigned by the VME
      * @param baseAddress 24-bit base address of ADC or TDC module ()
      * @param channel integer from 0 to 31 indicating channel in ADC or TDC
      * @param threshold integer from 0 to 4095 indicating lower threshold for recording the value
+     * @throws SortException if passed invalid values
      */
-    VME_Channel(VME_Map map, int slot, int baseAddress, int channel, int threshold,
-    int arrayIndex) throws SortException {
+    VME_Channel(VME_Map map, int slot, int baseAddress, int channel, int threshold) throws SortException {
         if (channel >= 0 && channel < 32) {
             this.channel=channel;
         } else {
@@ -50,7 +52,6 @@ public class VME_Channel{
             throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
             + " threshold = "+threshold);
         }
-        this.arrayIndex=arrayIndex;
         type=EVENT_DATA;
     }
 

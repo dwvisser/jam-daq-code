@@ -31,6 +31,10 @@ public class NetDaemonTest extends TestCase {
 		super.tearDown();
 	}
 
+	/**
+	 * JUnit test.
+	 *
+	 */
 	public void testSetEmptyBefore(){
 		nd.setEmptyBefore(true);
 	}

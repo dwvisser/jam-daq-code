@@ -201,7 +201,7 @@ public class CamacCommands {
         return eventSize;
     }
     
-    /**
+    /* non-javadoc:
      * Used internally to package the parts of a command into a byte array.
      */
     private int [] cnaf(int paramId, int crate, int number, int address, int function, int data){

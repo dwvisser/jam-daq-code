@@ -52,6 +52,7 @@ public final class RingBuffer {
 	/**
 	 * Copies the passed array into the ring buffer.
 	 * 
+	 * @param inBuffer incoming data
 	 * @exception RingFullException
 	 *                thrown when the ring is too full to be written to
 	 */
@@ -78,6 +79,11 @@ public final class RingBuffer {
 		}
 	}
 
+	/**
+	 * Clear the buffer. This is a quick operation, since it just
+	 * involves resetting the put and get pointers.
+	 *
+	 */
 	public synchronized void clear() {
 		posPut = 0;
 		posGet = 0;
@@ -86,6 +92,8 @@ public final class RingBuffer {
 	/**
 	 * Passes back a copy of the current buffer in the given
 	 * <code>byte</code> array.
+	 * 
+	 * @param out array to copy the next buffer into
 	 */
 	public synchronized void getBuffer(final byte[] out) {
 		while (isEmpty()) {
@@ -122,18 +130,38 @@ public final class RingBuffer {
 		return posPut - posGet + 1 > NUMBER_BUFFERS;
 	}
 
+	/**
+	 * Get the number of buffers available to have data put in them.
+	 * @return the number of available buffers
+	 */
 	public synchronized int getAvailableBuffers() {
 		return NUMBER_BUFFERS - getUsedBuffers();
 	}
 
+	/**
+	 * Gets whether the ring buffer is close to filling, defined as approximately
+	 * 97% full.
+	 * 
+	 * @return <code>true</code> if the ring buffer is close to filling
+	 */
 	public synchronized boolean isCloseToFull() {
 		return getAvailableBuffers() < CLOSE_TO_CAPACITY;
 	}
 
+	/**
+	 * Gets the number of buffers filled with data.
+	 * @return the number of used buffers
+	 */
 	public synchronized int getUsedBuffers() {
 		return posPut - posGet;
 	}
 
+	/**
+	 * Allocates a fresh buffer array of the correct size, 
+	 * for use by clients of this class.
+	 * 
+	 * @return a fresh byte array equal in size to one of the buffers
+	 */
 	public static byte[] freshBuffer() {
 		return new byte[BUFFER_SIZE];
 	}

@@ -72,6 +72,10 @@ public class RingBufferTest extends TestCase {
 		assertTrue(ring.isEmpty());
 	}
 	
+	/**
+	 * JUnit test.
+	 *
+	 */
 	public void testGetAvailableBuffers(){
 		System.out.println("Number of buffers: "+RingBuffer.NUMBER_BUFFERS);
 		assertEquals(RingBuffer.NUMBER_BUFFERS,ring.getAvailableBuffers());
