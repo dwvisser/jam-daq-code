@@ -128,31 +128,7 @@ public final class StringUtilities {
 			temp.append(' ');
 		}
 		return temp.substring(0, length);
-	}
-	
-	/**
-	 * Remove extension from file name
-	 * @param fileNameIn file name in 
-	 * @return fileName without extension
-	 */
-	public String removeExtensionFileName(String fileNameIn) {
-		String fileName;
-		int index;
-		index =fileNameIn.lastIndexOf(".");
-		//Extension 3 or less characters, index -1 if not found
-		if (index>0) {
-			if(index>=fileNameIn.length()-4) {
-				fileName =fileNameIn.substring(0, index);
-			} else {
-				fileName =fileNameIn;
-			}
-		} else {
-			fileName=fileNameIn;
-		}
-			
-		return fileName;
-	}
-	
+	}	
 	
 	/**
 	 * Creates a <code>String</code> from the given US-ASCII byte array.

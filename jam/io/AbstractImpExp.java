@@ -1,6 +1,7 @@
 package jam.io;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.util.FileUtilities;
 import jam.data.Group;
 import jam.data.Histogram;
 
@@ -145,6 +146,10 @@ public abstract class AbstractImpExp {
         try {
             final File inFile = (file == null) ? getFileOpen(msg) : file;
             if (inFile != null) { // if Open file was not canceled
+            	//Create group
+            	String groupName = FileUtilities.removeExtensionFileName(inFile.getName());
+            	importGroup =Group.createGroup(groupName, Group.Type.FILE);
+            	
                 setLastFile(inFile);
                 final FileInputStream inStream = new FileInputStream(inFile);
                 final BufferedInputStream inBuffStream = new BufferedInputStream(

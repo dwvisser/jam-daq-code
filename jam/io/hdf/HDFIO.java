@@ -11,6 +11,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
+import jam.util.FileUtilities;
 import jam.util.StringUtilities;
 import jam.util.SwingWorker;
 
@@ -700,7 +701,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             inHDF.readFile();
             AbstractData.interpretBytesAll();
             asyncMonitor.increment();          
-            final String fileName = stringUtil.removeExtensionFileName(infile.getName());
+            final String fileName = FileUtilities.removeExtensionFileName(infile.getName());
             if (hdfToJam.hasVGroupRootGroup()) {
             	convertHDFToJam(mode, existingGroupList, histAttributeList, fileName);
             } else {

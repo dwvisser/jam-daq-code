@@ -66,4 +66,28 @@ public class FileUtilities {
         }
         return rval;
     }
+	
+	/**
+	 * Remove extension from file name
+	 * @param fileNameIn file name in 
+	 * @return fileName without extension
+	 */
+	public static String removeExtensionFileName(String fileNameIn) {
+		String fileName;
+		int index;
+		index =fileNameIn.lastIndexOf(".");
+		//Extension 3 or less characters, index -1 if not found
+		if (index>0) {
+			if(index>=fileNameIn.length()-4) {
+				fileName =fileNameIn.substring(0, index);
+			} else {
+				fileName =fileNameIn;
+			}
+		} else {
+			fileName=fileNameIn;
+		}
+			
+		return fileName;
+	}
+	
 }
