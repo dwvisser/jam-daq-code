@@ -49,21 +49,24 @@ public class HistogramControl extends DataControl implements ActionListener {
         Container dzc = dialogZero.getContentPane();
         dialogZero.setResizable(false);
         //dialogZero.setSize(350, 100);
-        dzc.setLayout(new GridLayout(1,0));
+        dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
+        JPanel pButton = new JPanel(new GridLayout(1,0,5,5));
         dialogZero.setLocation(20,50);
         JButton one =new JButton("Displayed");
         one.setActionCommand("onezero");
         one.addActionListener(this);
-        dzc.add(one);
+        pButton.add(one);
         JButton all =new JButton("   All   ");
         all.setActionCommand("allzero");
         all.addActionListener(this);
-        dzc.add(all);
+        pButton.add(all);
         JButton cancel=new JButton(" Cancel ");
-        dzc.add(cancel);
         cancel.setActionCommand("cancelzero");
         cancel.addActionListener(this);
+        pButton.add(cancel);
+        dzc.add(pButton);
         dialogZero.pack();
+
         //dialog box New Histogram
         dialogNew =new JDialog (frame,"New Histogram ",false);
         dialogNew.setForeground(Color.black);
@@ -147,9 +150,12 @@ public class HistogramControl extends DataControl implements ActionListener {
 
 
         // panel for buttons
-        JPanel pb= new JPanel();
-        pb.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-        cdialogNew.add(pb);
+        JPanel pbOuter= new JPanel();
+        pbOuter.setLayout(new FlowLayout(FlowLayout.CENTER));
+        cdialogNew.add(pbOuter);
+
+        JPanel pb = new JPanel(new GridLayout(1,0,5,5));
+        pbOuter.add(pb);
 
         JButton bok  =   new JButton("OK");
         bok.setActionCommand("oknew");
