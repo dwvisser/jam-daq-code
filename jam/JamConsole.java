@@ -1,7 +1,11 @@
 package jam;
 import jam.global.CommandListener;
 import jam.global.MessageHandler;
-import java.awt.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -9,13 +13,24 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.*;
 
-import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 /**
  * Class Console displays a output of commands and error messages
@@ -307,7 +322,6 @@ public class JamConsole
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(String _inString) {
-
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		final String inString = _inString.trim();
 		final StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
@@ -315,16 +329,14 @@ public class JamConsole
 		String [] parameters;
 		String command;
 		int countParam = 0;
-				
-		if (inLine.hasMoreTokens()) {//check at least something was entered			
-			
+		if (inLine.hasMoreTokens()) {//check at least something was entered
 			command = inLine.nextToken();
 			//try to see if first token is a number
 			try {
-				double cmdNumber=getNumber(command);
+				getNumber(command);//can throw the exception
 				/* if we got this far, first token is a number 
-				 *  command is NUMBER_ONLY and params starts with
-				 *  first token*/
+				 * command is NUMBER_ONLY and params starts with
+				 * first token */
 				parameters=new String[numberInWords];
 				parameters[0]=command;
 				countParam++;
@@ -334,20 +346,13 @@ public class JamConsole
 				parameters = new String[numberInWords - 1];
 				countParam = 0;
 			}
-			//Load parameter tokens
+			/* Load parameter tokens */
 			while (inLine.hasMoreTokens()) {
 				parameters[countParam] = inLine.nextToken();
 				countParam++;
-			}
-			
-			//perform command
+			}			
+			/* perform command */
 			notifyListeners(command, parameters);
-			
-			//if (currentListener != null) {				
-			//	currentListener.performCommand(command, parameters);
-			//} else {
-			//	warningOutln("No current Listener for commands [JamConsole");
-			//}
 		}
 	}
 	
