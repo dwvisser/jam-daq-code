@@ -195,15 +195,13 @@ class SetupSortOff  implements ItemListener {
 				sortChoice.setSelectedIndex(0);
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
-		});
-       
+		});       
 		final JPanel pChooserArea =new JPanel(new BorderLayout());
 		final JPanel pChooserLabels=new JPanel(verticalGrid);
 		pChooserArea.add(pChooserLabels,BorderLayout.WEST);
 		final JPanel pChoosers=new JPanel(verticalGrid);
 		pChooserArea.add(pChoosers,BorderLayout.CENTER);
 		pCenter.add(pChooserArea);
-
         pChooserLabels.add(new JLabel("Sort Routine",JLabel.RIGHT),
         BorderLayout.WEST);
         final Vector v=getSortClasses(sortDirectory);
@@ -225,6 +223,7 @@ class SetupSortOff  implements ItemListener {
         	} 
         	notDone = (!match) && it.hasNext();
         }
+		setChooserDefault(useDefaultPath);
         pChoosers.add(sortChoice);
         pChooserLabels.add(new JLabel("Event input stream",JLabel.RIGHT));
         Set lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",
@@ -283,7 +282,6 @@ class SetupSortOff  implements ItemListener {
         ctape.setEnabled(false);
         ctape.setToolTipText("Not implemented.");
         eventMode.add(ctape);
-        //ctape.addItemListener(this);
         cdisk=new JRadioButton("Events from Disk", true);
         cdisk.addItemListener(new ItemListener(){
         	public void itemStateChanged(ItemEvent ie){

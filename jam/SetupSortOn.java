@@ -278,6 +278,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			}
 			notDone = (!match) & it.hasNext();
 		}
+		setChooserDefault(useDefaultPath);
 		pChoosers.add(sortChoice);
 
 		pChooserLabels.add(new JLabel("Event input stream", JLabel.RIGHT));
