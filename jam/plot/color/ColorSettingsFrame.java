@@ -1,12 +1,5 @@
 package jam.plot.color;
 
-/**
- * Dialog for setting the gradient color scale parameters.
- * 
- * @author Eric Lingerfelt
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
- * @version 2004-11-08
- */
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -32,6 +25,13 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * Dialog for setting the gradient color scale parameters.
+ * 
+ * @author Eric Lingerfelt
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @version 2004-11-08
+ */
 public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		ColorPrefs {
 
