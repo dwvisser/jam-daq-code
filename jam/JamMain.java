@@ -251,12 +251,19 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		} catch (JamException je) {
 			System.err.println("We should not be here, [JamMain]");
 		}
-		this.pack();
-		setChoosersToFirstItems();
-		this.setVisible(true);
-		//print out where config files were read from
-		jamProperties.setMessageHandler(console);
-		jamProperties.outputMessages(console);
+		/* The pack() call and everything after it here should be executed in the 
+		 * event dispatch thread. */
+		Runnable showWindow=new Runnable(){
+			public void run(){ 
+				pack();
+				setChoosersToFirstItems();
+				show();
+				/* print out where config files were read from */
+				jamProperties.setMessageHandler(console);
+				jamProperties.outputMessages(console);
+			}
+		};
+		SwingUtilities.invokeLater(showWindow);
 	}
 
 	/**
