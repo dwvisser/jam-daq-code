@@ -40,11 +40,6 @@ public final class JamMain extends JFrame {
 	static public final int OFFLINE_DISK = 3;
 
 	/**
-	 * Sort Mode--Set to sort offline data from tape.
-	 */
-	//static public final int OFFLINE_TAPE = 4;
-
-	/**
 	 * Sort Mode--Acting as a client to a remote Jam process.
 	 */
 	static public final int REMOTE = 5;
