@@ -599,7 +599,7 @@ AcquisitionStatus, Observer {
      * @return  <code>void</code>
      * @since Version 0.5
      */
-    public void addToolbarSelect() {
+    private void addToolbarSelect() {
         //create default models
         noHistComboBoxModel= new DefaultComboBoxModel();
         noHistComboBoxModel.addElement("NO HISTOGRAMS");
@@ -1041,7 +1041,7 @@ AcquisitionStatus, Observer {
      * Selects first items in histogram and gate choosers.  Default priveleges
      * allows JamCommand to call this as well.
      */
-    void setChoosersToFirstItems(){
+    private void setChoosersToFirstItems(){
         histogramChooser.setSelectedIndex(0);
         gateChooser.setSelectedIndex(0);
     }
@@ -1068,6 +1068,11 @@ AcquisitionStatus, Observer {
      */
     public static void main(String args[]) {
         System.out.println("Jam release version "+JAM_VERSION);
+        try{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+        	System.err.println(e);
+        }
         new JamMain();
     }
 }
