@@ -11,6 +11,7 @@ import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.Display;
 import jam.ui.SelectionToolbar;
+import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -97,13 +98,25 @@ public final class JamMain extends JFrame implements Observer {
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.5);
 		/* fraction of resize space that goes to display */
+		
 		contents.add(splitCenter, BorderLayout.CENTER);
+		
 		/* Main menu bar */
 		final MainMenuBar menus = new MainMenuBar();
 		setJMenuBar(menus.menubar);
 		/* Histogram selection menu bar */
 		selectBar = new SelectionToolbar();
 		contents.add(selectBar, BorderLayout.NORTH);
+		
+		//FIXME KBS for selection tree		
+		/* Histogram selection tree */
+		//SelectionTree selectTree = new SelectionTree();
+		//contents.add(selectTree, BorderLayout.WEST);
+		//final JSplitPane splitTree = new JSplitPane(
+		//		JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
+		//splitTree.setResizeWeight(0.5);
+		//contents.add(splitTree, BorderLayout.CENTER);		
+		
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -121,6 +134,9 @@ public final class JamMain extends JFrame implements Observer {
 		status.setSortMode(SortMode.NO_SORT);
 		selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
+		
+		//FIXME KBS for selection tree
+		//selectTree.refresh();
 	}
 
 	/**
