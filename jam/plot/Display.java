@@ -219,6 +219,16 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		return getPlot().getHistogram();
 	}
 	/**
+	 * Overlay a histogram
+	 * @param hist histogram to overlay
+	 */
+	public void overlayHistogram(Histogram hist){
+		int num=hist.getNumber();
+		overlayHistogram(num);
+		
+	}
+	
+	/**
 	 * Overlay a histogram.
 	 * 
 	 * @param num the number of the hist to overlay
@@ -235,11 +245,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 					"You may only overlay 1D histograms.");
 		}
 		currentPlot.overlayHistograms(num);		
-	}
-	public void overlayHistogram(Histogram hist){
-		int num=hist.getNumber();
-		overlayHistogram(num);
-		
 	}
 	/**
 	 * Remove all overlays.
@@ -341,8 +346,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 
 	public void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
-		getPlot().displayFit(signals, background, residuals, ll);
-	}
+		currentPlot.displayFit(signals, background, residuals, ll);
+	} 
 	
 	/**
 	 * Set a plot as the current plot
