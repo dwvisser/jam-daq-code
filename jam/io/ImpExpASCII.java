@@ -42,15 +42,10 @@ public class ImpExpASCII extends AbstractImpExp {
 	/**
 	 * maximum number of channels per histogram
 	 */
-	static final int MAX_SIZE_HIST = 8192;
-
-	/**
-	 * @see AbstractImpExp#AbstractImpExp()
-	 */
-	public ImpExpASCII() {
-		super();
-	}
+	static final int MAX_CHANNELS = 8192;
 	
+	private boolean line1isTitle=false;
+
 	private static final String [] EXTS={"dat","txt"};
 	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter(EXTS, 
 	"Text file");
@@ -67,13 +62,8 @@ public class ImpExpASCII extends AbstractImpExp {
 		return FILTER.getDescription();
 	}
 
-	/**
-	 * Open a file with ASCII data.
-	 *
-	 * @exception   ImpExpException	    all exceptions given to <code>ImpExpException</code> go to the msgHandler
-	 */
-	public boolean openFile(File f) throws ImpExpException {
-		return openFile(f, "Import text file ");
+	public boolean openFile(File file) throws ImpExpException {
+		return openFile(file, "Import text file ");
 	}
 
 	/**
@@ -107,12 +97,12 @@ public class ImpExpASCII extends AbstractImpExp {
 		double[][] counts2d;
 
 		try {
-			String titleHist = this.getHistTitle();
+			final String titleHist = getHistTitle();
 			//also determines whether 1st line is title
 			String nameHist = getFileName(getLastFile());
 			nameHist = nameHist.substring(0, nameHist.indexOf('.'));
-			int rows = getNumberOfRows();
-			int cols = getNumberOfColumns();
+			final int rows = getNumberOfRows();
+			final int cols = getNumberOfColumns();
 			switch (cols) {
 				case 0 :
 					return;
@@ -140,185 +130,184 @@ public class ImpExpASCII extends AbstractImpExp {
 		}
 	}
 
-	private void readHistY(
-		InputStream in,
-		String name,
-		String title,
-		double[] counts)
-		throws IOException {
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < counts.length; i++) {
-			st.nextToken();
-			counts[i] = st.nval;
-		}
-		Histogram.createHistogram(counts, name, title);
-	}
+	private void readHistY(InputStream inputStream, String name, String title,
+            double[] counts) throws IOException {
+        final LineNumberReader lnr = new LineNumberReader(
+                new InputStreamReader(inputStream));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < counts.length; i++) {
+            tokens.nextToken();
+            counts[i] = tokens.nval;
+        }
+        Histogram.createHistogram(counts, name, title);
+    }
 
 	private int maxX, maxY;
-	private void getMaxChannelsXY(int rows) throws IOException {
-		maxX = 0;
-		LineNumberReader lnr =
-			new LineNumberReader(new FileReader(getLastFile()));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < rows; i++) {
-			st.nextToken();
-			if (st.nval > maxX) {
-				maxX = (int) st.nval;
-			}
-			st.nextToken();
-		}
-	}
+
+    private void getMaxChannelsXY(int rows) throws IOException {
+        maxX = 0;
+        final LineNumberReader lnr = new LineNumberReader(new FileReader(
+                getLastFile()));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < rows; i++) {
+            tokens.nextToken();
+            if (tokens.nval > maxX) {
+                maxX = (int) tokens.nval;
+            }
+            tokens.nextToken();
+        }
+    }
 
 	private void getMaxChannelsXYZ(int rows) throws IOException {
-		maxX = 0;
-		maxY = 0;
-		LineNumberReader lnr =
-			new LineNumberReader(new FileReader(getLastFile()));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < rows; i++) {
-			st.nextToken();
-			if (st.nval > maxX) {
-				maxX = (int) st.nval;
-			}
-			st.nextToken();
-			if (st.nval > maxY) {
-				maxY = (int) st.nval;
-			}
-			st.nextToken();
-		}
-	}
+        maxX = 0;
+        maxY = 0;
+        final LineNumberReader lnr = new LineNumberReader(new FileReader(
+                getLastFile()));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < rows; i++) {
+            tokens.nextToken();
+            if (tokens.nval > maxX) {
+                maxX = (int) tokens.nval;
+            }
+            tokens.nextToken();
+            if (tokens.nval > maxY) {
+                maxY = (int) tokens.nval;
+            }
+            tokens.nextToken();
+        }
+    }
 
-	private void readHistXY(
-		InputStream in,
-		String name,
-		String title,
-		double[] counts,
-		int rows)
-		throws IOException {
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < rows; i++) {
-			st.nextToken();
-			int channel = (int) st.nval;
-			st.nextToken();
-			counts[channel] = st.nval;
-		}
-		Histogram.createHistogram(counts, name, title);
-	}
+	private void readHistXY(InputStream inputStream, String name, String title,
+            double[] counts, int rows) throws IOException {
+        final LineNumberReader lnr = new LineNumberReader(
+                new InputStreamReader(inputStream));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < rows; i++) {
+            tokens.nextToken();
+            final int channel = (int) tokens.nval;
+            tokens.nextToken();
+            counts[channel] = tokens.nval;
+        }
+        Histogram.createHistogram(counts, name, title);
+    }
 
-	private void readHistXYZ(
-		InputStream in,
-		String name,
-		String title,
-		double[][] counts,
-		int rows)
-		throws IOException {
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < rows; i++) {
-			st.nextToken();
-			int channelX = (int) st.nval;
-			st.nextToken();
-			int channelY = (int) st.nval;
-			st.nextToken();
-			counts[channelX][channelY] = st.nval;
-		}
-		Histogram.createHistogram(counts, name, title);
-	}
+	private void readHistXYZ(InputStream inputStream, String name,
+            String title, double[][] counts, int rows) throws IOException {
+        final LineNumberReader lnr = new LineNumberReader(
+                new InputStreamReader(inputStream));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < rows; i++) {
+            tokens.nextToken();
+            final int channelX = (int) tokens.nval;
+            tokens.nextToken();
+            final int channelY = (int) tokens.nval;
+            tokens.nextToken();
+            counts[channelX][channelY] = tokens.nval;
+        }
+        Histogram.createHistogram(counts, name, title);
+    }
 
-	private void readHistMatrix(
-		InputStream in,
-		String name,
-		String title,
-		double[][] counts)
-		throws IOException {
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
-		for (int i = 0; i < counts.length; i++) {
-			for (int j = 0; j < counts[0].length; j++) {
-				st.nextToken();
-				counts[i][j] = st.nval;
-			}
-		}
-		Histogram.createHistogram(counts, name, title);
-	}
+	private void readHistMatrix(InputStream inputStream, String name,
+            String title, double[][] counts) throws IOException {
+        final LineNumberReader lnr = new LineNumberReader(
+                new InputStreamReader(inputStream));
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final StreamTokenizer tokens = new StreamTokenizer(lnr);
+        tokens.eolIsSignificant(false);
+        for (int i = 0; i < counts.length; i++) {
+            for (int j = 0; j < counts[0].length; j++) {
+                tokens.nextToken();
+                counts[i][j] = tokens.nval;
+            }
+        }
+        Histogram.createHistogram(counts, name, title);
+    }
 	
-	boolean firstLineIsTitle = false;
-	private String getHistTitle() throws IOException {
-		String rval = null;
-		InputStreamReader isr =
-			new InputStreamReader(new FileInputStream(getLastFile()));
-		StreamTokenizer st = new StreamTokenizer(isr);
-		//make a tokenizer for input stream
-		st.eolIsSignificant(true); //Grab end of line markers
-		//read in header lines, header are lines that start with a non-number token
-		if (st.nextToken() == StreamTokenizer.TT_WORD) {
-			rval = st.sval;
-			firstLineIsTitle = true;
-		} else {
-			rval = getFileName(getLastFile());
-			rval = rval.substring(0, rval.indexOf("."));
-		}
-		isr.close();
-		return rval;
-	}
+
+    private String getHistTitle() throws IOException {
+        String rval = null;
+        final InputStreamReader isr = new InputStreamReader(
+                new FileInputStream(getLastFile()));
+        /* Make a tokenizer for input stream. */
+        final StreamTokenizer tokens = new StreamTokenizer(isr);
+        tokens.eolIsSignificant(true); //Grab end of line markers
+        /*
+         * Read in header lines, header are lines that start with a non-number
+         * token.
+         */
+        if (tokens.nextToken() == StreamTokenizer.TT_WORD) {
+            rval = tokens.sval;
+            line1isTitle = true;
+        } else {
+            rval = getFileName(getLastFile());
+            rval = rval.substring(0, rval.indexOf("."));
+        }
+        isr.close();
+        return rval;
+    }
 
 	private int getNumberOfRows() throws IOException {
-		int rval = 0;
-		LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
-		//read in header lines, header are lines that start with a non-number token
-		if (firstLineIsTitle) {
-			lnr.readLine();
-		}
-		while (lnr.readLine() != null) {
-			rval++;
-		}
-		lnr.close();
-		return rval;
-	}
+        int rval = 0;
+        final LineNumberReader lnr = new LineNumberReader(new FileReader(
+                getLastFile()));
+        /*
+         * Read in header lines. Headers are lines that start with a non-number
+         * token.
+         */
+        if (line1isTitle) {
+            lnr.readLine();
+        }
+        while (lnr.readLine() != null) {
+            rval++;
+        }
+        lnr.close();
+        return rval;
+    }
 
-	private int getNumberOfColumns() throws IOException {
-		int rval = 0;
-		LineNumberReader lnr = new LineNumberReader(new FileReader(getLastFile()));
-		//read in header lines, header are lines that start with a non-number token
-		if (this.firstLineIsTitle) {
-			lnr.readLine();
-		}
-		String line = lnr.readLine();
-		lnr.close();
-		if (line != null) {
-			StreamTokenizer st = new StreamTokenizer(new StringReader(line));
-			while (st.nextToken() == StreamTokenizer.TT_NUMBER) {
-				rval++;
-			}
-		}
-		return rval;
-	}
+    private int getNumberOfColumns() throws IOException {
+        int rval = 0;
+        final LineNumberReader lnr = new LineNumberReader(new FileReader(
+                getLastFile()));
+        /*
+         * Read in header lines. Headers are lines that start with a non-number
+         * token.
+         */
+        if (this.line1isTitle) {
+            lnr.readLine();
+        }
+        final String line = lnr.readLine();
+        lnr.close();
+        if (line != null) {
+            final StreamTokenizer tokens = new StreamTokenizer(
+                    new StringReader(line));
+            while (tokens.nextToken() == StreamTokenizer.TT_NUMBER) {
+                rval++;
+            }
+        }
+        return rval;
+    }
 
 	/**
 	 * Write out a data into a ascii text file.
@@ -330,48 +319,58 @@ public class ImpExpASCII extends AbstractImpExp {
 	protected void writeHist(OutputStream buffout, Histogram hist)
 		throws ImpExpException {
 		try {
-			PrintWriter pw = new PrintWriter(buffout);
+			final PrintWriter writer = new PrintWriter(buffout);
 			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-				int[] counts = (int[]) hist.getCounts();
-				for (int i = 0; i < hist.getSizeX(); i++) {
-					//output a row of data  channel counts
-					pw.print(i);
-					pw.print("   ");
-					pw.println(counts[i]);
-				}
+				final int[] counts = (int[]) hist.getCounts();
+				writeHist(writer,counts,hist.getSizeX());
 			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				double[] countsD = (double[]) hist.getCounts();
+				final double[] countsD = (double[]) hist.getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					//output a row of data  channel counts
-					pw.print(i);
-					pw.print("   ");
-					pw.println(countsD[i]);
+					writer.print(i);
+					writer.print("   ");
+					writer.println(countsD[i]);
 				}
 			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
-				int[][] counts = (int[][]) hist.getCounts();
-				for (int x = 0; x < hist.getSizeX(); x++) {
-					for (int y = 0; y < hist.getSizeY(); y++) {
-						pw.print(counts[x][y]);
-						pw.print("\t");
-					}
-					pw.println();
-				}
+				final int[][] counts = (int[][]) hist.getCounts();
+				writeHist(writer,counts,hist.getSizeX(), hist.getSizeY());
 			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
-				double[][] counts = (double[][]) hist.getCounts();
+				final double[][] counts = (double[][]) hist.getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {
-						pw.print(counts[x][y]);
-						pw.print("\t");
+						writer.print(counts[x][y]);
+						writer.print("\t");
 					}
-					pw.println();
+					writer.println();
 				}
 			}
-			pw.flush();
+			writer.flush();
 			buffout.flush();
-			if (msgHandler != null)
+			if (msgHandler != null){
 				msgHandler.messageOut(" . ");
+			}
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
+		}
+	}
+	
+	private void writeHist(PrintWriter writer, int [] counts, int sizeX){
+		for (int i = 0; i < sizeX; i++) {
+			//output a row of data  channel counts
+			writer.print(i);
+			writer.print("   ");
+			writer.println(counts[i]);
+		}
+	}
+
+	private void writeHist(PrintWriter writer, int [][] counts, int sizeX,
+	        int sizeY){
+		for (int x = 0; x < sizeX; x++) {
+			for (int y = 0; y < sizeY; y++) {
+				writer.print(counts[x][y]);
+				writer.print("\t");
+			}
+			writer.println();
 		}
 	}
 	
