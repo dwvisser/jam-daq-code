@@ -133,14 +133,14 @@ public class Histogram implements Serializable {
 	 * @see #TWO_DIM_INT
 	 * @see #ONE_DIM_DOUBLE
 	 * @see #TWO_DIM_DOUBLE
+	 * @throws IllegalArgumentException if an unknown histogram type is given
 	 */
 	public Histogram(
 		String nameIn,
 		int type,
 		int sizeX,
 		int sizeY,
-		String title)
-		throws DataException {
+		String title) {
 		String addition;
 		int prime;
 		Iterator allHistograms;
@@ -232,7 +232,7 @@ public class Histogram implements Serializable {
 				labelY = Y_LABEL_2D;
 			}
 		} else {
-			throw new DataException(
+			throw new IllegalArgumentException(
 				"Error histogram '"
 					+ name
 					+ "' defined with unknown type: "
@@ -251,9 +251,9 @@ public class Histogram implements Serializable {
 	 * @param type  dimensionality of histogram, 1 or 2
 	 * @param size  number of channels, all 2d histograms have square dimensions
 	 * @param title  lengthier title of histogram, displayed on plot
+	 * @throws IllegalArgumentException if an unknown histogram type is given
 	 */
-	public Histogram(String nameIn, int type, int size, String title)
-		throws DataException {
+	public Histogram(String nameIn, int type, int size, String title) {
 		this(nameIn, type, size, size, title);
 	}
 
@@ -267,6 +267,7 @@ public class Histogram implements Serializable {
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param axisLabelX label displayed for x-axis on plot
 	 * @param axisLabelY label displayed for y-axis on plot
+	 * @throws IllegalArgumentException if an unknown histogram type is given
 	 */
 	public Histogram(
 		String name,
@@ -275,8 +276,7 @@ public class Histogram implements Serializable {
 		int sizeY,
 		String title,
 		String axisLabelX,
-		String axisLabelY)
-		throws DataException {
+		String axisLabelY) {
 		this(name, type, sizeX, sizeY, title);
 		this.labelX = axisLabelX;
 		this.labelY = axisLabelY;
@@ -291,6 +291,7 @@ public class Histogram implements Serializable {
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param axisLabelX label displayed for x-axis on plot
 	 * @param axisLabelY label displayed for y-axis on plot
+	 * @throws IllegalArgumentException if an unknown histogram type is given
 	 */
 	public Histogram(
 		String name,
@@ -298,8 +299,7 @@ public class Histogram implements Serializable {
 		int size,
 		String title,
 		String axisLabelX,
-		String axisLabelY)
-		throws DataException {
+		String axisLabelY) {
 		this(name, type, size, size, title);
 		this.labelX = axisLabelX;
 		this.labelY = axisLabelY;
@@ -312,8 +312,7 @@ public class Histogram implements Serializable {
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with
 	 */
-	public Histogram(String name, String title, int[] countsIn)
-		throws DataException {
+	public Histogram(String name, String title, int[] countsIn) {
 		this(name, ONE_DIM_INT, countsIn.length, title);
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
 	}
@@ -325,8 +324,7 @@ public class Histogram implements Serializable {
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with
 	 */
-	public Histogram(String name, String title, double[] countsIn)
-		throws DataException {
+	public Histogram(String name, String title, double[] countsIn) {
 		this(name, ONE_DIM_DOUBLE, countsIn.length, title);
 		System.arraycopy(countsIn, 0, countsDouble, 0, countsIn.length);
 	}
@@ -345,8 +343,7 @@ public class Histogram implements Serializable {
 		String title,
 		String axisLabelX,
 		String axisLabelY,
-		int[] countsIn)
-		throws DataException {
+		int[] countsIn) {
 		this(name, ONE_DIM_INT, countsIn.length, title, axisLabelX, axisLabelY);
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
 	}
@@ -357,10 +354,8 @@ public class Histogram implements Serializable {
 	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with, must be square
-	 * @exception   DataException thrown if non-square array in parameter list
 	 */
-	public Histogram(String name, String title, int[][] countsIn)
-		throws DataException {
+	public Histogram(String name, String title, int[][] countsIn) {
 		this(name, TWO_DIM_INT, countsIn.length, countsIn[0].length, title);
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System.arraycopy(
@@ -378,10 +373,8 @@ public class Histogram implements Serializable {
 	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with, must be square
-	 * @exception   DataException thrown if non-square array in parameter list
 	 */
-	public Histogram(String name, String title, double[][] countsIn)
-		throws DataException {
+	public Histogram(String name, String title, double[][] countsIn) {
 		this(name, TWO_DIM_DOUBLE, countsIn.length, countsIn[0].length, title);
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System.arraycopy(
@@ -402,15 +395,13 @@ public class Histogram implements Serializable {
 	 * @param axisLabelX label displayed for x-axis on plot
 	 * @param axisLabelY label displayed for y-axis on plot
 	 * @param countsIn  array of counts to initialize with
-	 * @exception   DataException thrown if non-square array in parameter list
 	 */
 	public Histogram(
 		String name,
 		String title,
 		String axisLabelX,
 		String axisLabelY,
-		int[][] countsIn)
-		throws DataException {
+		int[][] countsIn) {
 		this(
 			name,
 			TWO_DIM_INT,
@@ -765,11 +756,11 @@ public class Histogram implements Serializable {
 	 * Sets the counts for a <code>Histogram</code> of type <code>ONE_DIM_INT</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @throws UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(int[] countsIn) throws DataException {
+	public void setCounts(int[] countsIn) {
 		if (type != ONE_DIM_INT) {
-			throw new DataException("setCounts(int []) must be called in a Histogram of type ONE_DIM_INT");
+			throw new UnsupportedOperationException("setCounts(int []) must be called in a Histogram of type ONE_DIM_INT");
 		}
 		if (countsIn.length <= sizeX) {
 			System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
@@ -782,11 +773,11 @@ public class Histogram implements Serializable {
 	 * Sets the counts for a <code>Histogram</code> of type <code>ONE_DIM_DOUBLE</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(double[] countsIn) throws DataException {
+	public void setCounts(double[] countsIn) {
 		if (type != ONE_DIM_DOUBLE) {
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"setCounts(double []) must be called in a"
 					+ " Histogram of type ONE_DIM_DOUBLE");
 		}
@@ -801,11 +792,11 @@ public class Histogram implements Serializable {
 	 * Sets the counts for a <code>Histogram</code> of type <code>TWO_DIM_INT</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(int[][] countsIn) throws DataException {
+	public void setCounts(int[][] countsIn) {
 		if (type != TWO_DIM_INT) {
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"setCounts(int {}[]) must be called in a"
 					+ " Histogram of type TWO_DIM_INT");
 		}
@@ -825,11 +816,11 @@ public class Histogram implements Serializable {
 	 * Sets the counts for a <code>Histogram</code> of type <code>TWO_DIM_DOUBLE</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(double[][] countsIn) throws DataException {
+	public void setCounts(double[][] countsIn) {
 		if (type != TWO_DIM_DOUBLE) {
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"setCounts(double {}[]) must be called in a"
 					+ " Histogram of type TWO_DIM_DOUBLE");
 		}
@@ -849,12 +840,12 @@ public class Histogram implements Serializable {
 	 * Must be a histogram of type <code>ONE_DIM_INT</code>.
 	 *
 	 * @param dataWord the channel to be incremented
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void inc(int dataWord) throws DataException {
+	public void inc(int dataWord) {
 		int incCh=dataWord;
 		if (type != ONE_DIM_INT)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"Can only call inc(int) for type ONE_DIM_INT, name=" + name);
 		//check for overflow
 		if (incCh >= sizeX) {
@@ -871,13 +862,13 @@ public class Histogram implements Serializable {
 	 *
 	 * @param dataWordX the x-channel to be incremented
 	 * @param dataWordY the y-channel to be incremented
-	 * @exception DataException thrown if method called for inappropriate type of histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void inc(int dataWordX, int dataWordY) throws DataException {
+	public void inc(int dataWordX, int dataWordY) {
 		int incX=dataWordX;
 		int incY=dataWordY;
 		if (type != TWO_DIM_INT)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"Can only call inc(int,int) for type TWO_DIM_INT, name="
 					+ name);
 		//check for overflow and underflow
@@ -898,9 +889,9 @@ public class Histogram implements Serializable {
 	 * Gets the errors associated with the channel counts, only valid for 1-d histograms.
 	 *
 	 * @return an array of the associated errors for the channel counts
-	 * @exception   DataException      thrown if called on 2-d histogram
+	 * @exception   UnsupportedOperationException      thrown if called on 2-d histogram
 	 */
-	public double[] getErrors() throws DataException {
+	public double[] getErrors() {
 		int length;
 
 		if (type == ONE_DIM_INT) {
@@ -930,7 +921,7 @@ public class Histogram implements Serializable {
 				}
 			}
 		} else { // invalid call if 2-d
-			throw new DataException("Can't call getErrors() for a 2-d histogram");
+			throw new UnsupportedOperationException("Can't call getErrors() for a 2-d histogram");
 		}
 		return errors;
 	}
@@ -939,14 +930,14 @@ public class Histogram implements Serializable {
 	 * Sets the errors associated with channel counts, only valid for 1-d histograms.
 	 *
 	 * @param errors the associated errors for the channel counts
-	 * @exception   DataException      thrown if called on 2-d histogram
+	 * @exception   UnsupportedOperationException      thrown if called on 2-d histogram
 	 */
-	public void setErrors(double[] errors) throws DataException {
+	public void setErrors(double[] errors) {
 		if ((type == ONE_DIM_INT) || (type == ONE_DIM_DOUBLE)) {
 			this.errors = errors;
 			errorsSet = true;
 		} else { // invalid call if 2-d
-			throw new DataException("Cannot set Error for 2-d [Histogram]");
+			throw new UnsupportedOperationException("Cannot set Error for 2-d [Histogram]");
 		}
 	}
 
@@ -995,8 +986,16 @@ public class Histogram implements Serializable {
 		return name;
 	}
 
-	public double[][] findPeaks(double sensitivity, double width, boolean cal)
-		throws DataException {
+	/**
+	 * Attempt to find gaussian peaks.
+	 * 
+	 * @param sensitivity if larger, peaks need to be more significant to be found
+	 * @param width target FWHM of peak
+	 * @param cal whether we return calibrated values
+	 * @return centroids, in channel units or calibrated units, depending on <code>cal</code>
+	 * @throws UnsupportedOperationException if called on a 2d histogram
+	 */
+	public double[][] findPeaks(double sensitivity, double width, boolean cal) {
 		double[] histArray;
 		if (getType() == Histogram.ONE_DIM_DOUBLE) {
 			histArray = countsDouble;
@@ -1007,7 +1006,7 @@ public class Histogram implements Serializable {
 				histArray[i] = temp[i];
 			}
 		} else { //2D
-			throw new DataException("findPeaks() called on 2D hist");
+			throw new UnsupportedOperationException("findPeaks() called on 2D hist");
 		}
 		double[] posn = PeakFinder.getCentroids(histArray, sensitivity, width);
 		double[][] rval = new double[3][posn.length];
