@@ -126,10 +126,6 @@ public class JamConsole
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		textLog.setBackground(Color.white);
-		textLog.setForeground(Color.black);
-		textLog.setText(
-			"" + getTime() + ">Welcome to Jam v" + Version.getName());
 		JScrollPane jsp =
 			new JScrollPane(
 				textLog,
@@ -144,7 +140,6 @@ public class JamConsole
 		numberLines = 1;
 		logFileOn = false;
 		this.setPreferredSize(new Dimension(800, 28+16*NUMBER_LINES_DISPLAY));
-
 	}
 
 	/**
@@ -152,7 +147,7 @@ public class JamConsole
 	 */
 	public void actionPerformed(ActionEvent ae) {
 		parseCommand(textIn.getText());
-		textIn.setText("");
+		textIn.setText(null);
 	}
 
 	/**
@@ -262,7 +257,7 @@ public class JamConsole
 		promptOutln("Warning: " + message, attr_warning);
 	}
 
-	private synchronized void promptOutln(String _message, AttributeSet attr) {
+	private synchronized void promptOutln(final String _message, AttributeSet attr) {
 		String message=new String(_message);
 		/* Dont wait for lock.  
 		 * Output message right away. */
@@ -299,7 +294,7 @@ public class JamConsole
 	 *
 	 */
 	public void setCommandListener(CommandListener msgCommand) {
-		this.currentListener = msgCommand;
+		currentListener = msgCommand;
 	}
 
 	public static final String INTS_ONLY="int";
@@ -351,20 +346,16 @@ public class JamConsole
 	 * @exception   JamException    exceptions that go to the console
 	 */
 	public String setLogFileName(String name) throws JamException {
-		File file;
-		String newName;
-		int i;
-
-		newName = name + ".log";
-		file = new File(newName);
-		//create a unique file, append a number if a log already exits.
-		i = 1;
+		String newName = name + ".log";
+		File file = new File(newName);
+		/* create a unique file, append a number if a 
+		 * log already exits */
+		int i = 1;
 		while (file.exists()) {
 			newName = name + i + ".log";
 			file = new File(newName);
 			i++;
 		}
-		//create a new logFileWriter
 		try {
 			logFileWriter = new BufferedWriter(new FileWriter(file));
 
@@ -422,15 +413,10 @@ public class JamConsole
 	 * get the current time
 	 */
 	private String getTime() {
-		Date date;
-		DateFormat datef;
-		String stime;
-
-		date = new java.util.Date(); //get time
-		datef = DateFormat.getTimeInstance(DateFormat.MEDIUM);
-		//medium time format
+		final Date date = new java.util.Date(); //get time
+		final DateFormat datef = DateFormat.getTimeInstance(DateFormat.MEDIUM);
 		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		stime = datef.format(date); //format time
+		final String stime = datef.format(date); //format time
 		return stime;
 	}
 
@@ -438,14 +424,10 @@ public class JamConsole
 	 * Get the current date and time
 	 */
 	private String getDate() {
-		Date date; //date object
-		DateFormat datef;
-		String stime;
-
-		date = new java.util.Date(); //get time
-		datef = DateFormat.getDateTimeInstance(); //medium date time format
+		final Date date = new java.util.Date(); //get time
+		final DateFormat datef = DateFormat.getDateTimeInstance(); //medium date time format
 		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		stime = datef.format(date); //format time
+		final String stime = datef.format(date); //format time
 		return stime;
 	}
 
