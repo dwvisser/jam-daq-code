@@ -444,12 +444,19 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         		message.append(classname).append("Exception in SortRoutine: ").
 				append(sortName).append(".initialize(); Message= '").
 				append(thrown.getClass().getName()).append(": ").append(thrown.getMessage()).append('\'');
-            throw new JamException(message.toString());
+            throw new JamException(message.toString(),thrown);
+        } catch (OutOfMemoryError thrown) {
+            message.append(classname).append(" attempts to allocate too much memory. ");
+            message.append("Reduce its requirments or start Jam with more available heap space. ");
+            message.append("The current maximum amount of memory available to the JVM is ");
+            final double megabytes=Runtime.getRuntime().maxMemory()/(1024.0*1024.0);
+            message.append(megabytes).append(" MB.");
+            throw new JamException(message.toString(),thrown);
         } catch (Throwable thrown) {
     		message.append("Couldn't load ").append(sortName).
 			append("; You probably ").
 			append("need to re-compile it against the current version of Jam.");
-        	throw new JamException(message.toString());
+        	throw new JamException(message.toString(), thrown);
         }
         /* setup scaler, parameter, monitors, gate, dialog boxes */
         AbstractControl.setupAll();
