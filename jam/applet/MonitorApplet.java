@@ -277,8 +277,6 @@ public class MonitorApplet
 				monitor[i] = (Monitor) monitorList.get(i);
 			}
 			interval = 10;
-			//FIXME
-			//FIXMEinterval=((Monitor)monitorList.elementAt(0)).getInterval();
 			System.out.println("interval " + interval);
 
 		} catch (RemoteException re) {
@@ -326,7 +324,6 @@ public class MonitorApplet
 						"mon value " + i + " " + monitorValues[i]);
 					if (((monitor[i].getAlarm())
 						&& (monitorValues[i]) < monitor[i].getThreshold())) {
-						//FIXME  audioClip=get
 						if (audioOn) {
 							System.out.println("beep for " + i);
 							Toolkit.getDefaultToolkit().beep();

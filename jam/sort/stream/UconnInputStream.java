@@ -149,15 +149,12 @@ public class UconnInputStream extends EventInputStream {
 	 * @exception EventException thrown for errors in event stream
 	 */
 	public boolean readBlockHeader() throws EventException {
-		//XXXSystem.out.println("read block");
-
 		try {
 
 			blockFullSize = dataInput.readInt();
 			blockCurrSize = dataInput.readInt();
 			blockNumber = dataInput.readInt();
 			blockNumEvnt = dataInput.readInt();
-			//XXX
 			System.out.println(
 				"Block fullsize  "
 					+ blockFullSize
@@ -167,13 +164,9 @@ public class UconnInputStream extends EventInputStream {
 					+ blockNumber
 					+ "number event "
 					+ blockNumEvnt);
-
-			//XXXSystem.out.println("Block fullsize  "+blockFullSize+" currsize "+blockCurrSize+ 
-			//		" number "+blockNumber+ "number event "+blockNumEvnt);		  		    
-			//read in scalers
+			/* read in scalers */
 			for (int i = 0; i < NUMBER_SCALERS; i++) {
 				scalerValues[i] = dataInput.readInt() & SCALER_MASK;
-				//XXXSystem.out.println("Scaler  "+i+"  "+scalerValues[i]);					    
 			}
 			Scaler.update(scalerValues);
 			return true;
@@ -199,8 +192,6 @@ public class UconnInputStream extends EventInputStream {
 			eventSize = dataInput.readShort();
 			eventState = dataInput.readShort();
 			eventNumWord = dataInput.readShort();
-			//XXX
-			//event header			
 			System.out.println(
 				"Event id "
 					+ eventId

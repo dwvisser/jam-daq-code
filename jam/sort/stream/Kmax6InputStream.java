@@ -164,6 +164,6 @@ public class Kmax6InputStream extends EventInputStream {
      * @return whether end-of-file
      */
     public synchronized boolean isEndRun(short dataWord){
-        return /*(dataWord==END_RUN_MARKER)*/ false;//FIXME
+        return false;
     }
 }
