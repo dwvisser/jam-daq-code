@@ -308,13 +308,7 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 		}
 		return minCounts;
 	}
-
-	private void setScale(Scale s) {
-		synchronized (this) {
-			scale = s;
-		}
-	}
-
+	
 	private final Rectangle clipBounds = new Rectangle();
 
 	/**
@@ -327,7 +321,6 @@ class Plot2d extends AbstractPlot implements ColorPrefs{
 	protected void paintHistogram(Graphics g) {
 		Histogram plotHist=getHistogram();
 		final Scale scale=plotLimits.getScale();
-		setScale(scale);
 		g.setColor(plotColorMap.getHistogram());
 		g.getClipBounds(clipBounds);
 		final int minX = graph.toDataHorz((int) clipBounds.getMinX());
