@@ -52,7 +52,6 @@ the name of the experiment descriptive.</dd>
 	<dt>HDF Path</dt><dd>the path for storing hdf files</dd>
 	<dt>Event Path</dt><dd>the path for storing events files</dd>
 	<dt>Log file Path</dt><dd>the path for console log files</dd>
-    <dt>Sort sample fraction</dt><dd>1 in this number of events actually gets sorted to a histogram during acquisition. All events still get saved to the disk, if requested.</dd>
     <dt>Events to Disk</dt><dd>Whether Jam should write events out to disk when performing runs. Usually this is what you want. There are some cases where you might not, though. In some environments, the front end acquisition process already stores the events for you. Sometimes, it is desireable to take a series of histograms into HDF files, but the event storage is unnecessary, such as when calibrating detectors.</dd>
 </dl>
 
@@ -67,7 +66,7 @@ end computer to send all data currently stored.</p>
 <em>Begin</em> will open a new event file and start acquisition. 
 The event file will be create in the directory specified in the <a href="../menus/setup.html#online">Setup|Online Sorting...</a>
  dialog box.
-<em>End</em> will stop acquisition, close the event file, 
+<a name="endrun"><em>End</em></a> will stop acquisition, close the event file, 
 and write out a HDF file containing the histograms, gates, and scalers.
 </p>
 <a name="classpath"><h3>Specifying the classpath</h3></a>
