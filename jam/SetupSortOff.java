@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -65,10 +66,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     	/**
     	 * Perform setup tasks when OK or APPLY is clicked.
     	 *
-    	 * @param ae the event created by clicking OK or APPLY
+    	 * @param event the event created by clicking OK or APPLY
     	 */
-    	public void actionPerformed(ActionEvent ae){
-    		doApply(bok.equals(ae.getSource()));
+    	public void actionPerformed(ActionEvent event){
+    		doApply(bok.equals(event.getSource()));
     	}
     }
 
@@ -235,32 +236,14 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         lhs.remove(EventInputStream.class);
         inChooser=new JComboBox(new Vector(lhs));
         inChooser.setToolTipText("Select input event data format.");
-		Iterator iter=lhs.iterator();
-		while (iter.hasNext()) {
-			final Class clazz=(Class)iter.next();
-			final String name=clazz.getName();
-			final boolean match = name.equals(defInStream);
-			if (match){
-				inChooser.setSelectedItem(clazz);
-				break;
-			}
-		}
+		selectName(inChooser, lhs, defInStream);
         pEntry.add(inChooser);
         //Output stream
 		lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",EventOutputStream.class,false));
 		lhs.remove(EventOutputStream.class);
 		outChooser=new JComboBox(new Vector(lhs));
 		outChooser.setToolTipText("Select output event format.");
-		iter=lhs.iterator();
-		while (iter.hasNext()) {
-			final Class clazz=(Class)iter.next();
-			final String name=clazz.getName();
-			final boolean match = name.equals(defOutStream);
-			if (match){
-				outChooser.setSelectedItem(clazz);
-				break;
-			}
-		}
+		selectName(outChooser,lhs,defOutStream);
 		pEntry.add(outChooser);
 		final JPanel pBrowse = new JPanel(new GridLayout(4,1, 0,0));
 		pBrowse.setBorder(new EmptyBorder(0,0,0,10));
@@ -308,6 +291,19 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pack();
     }
+    
+    private void selectName(JComboBox jcb, Collection collection, String defInStream) {
+    	final Iterator iter=collection.iterator();
+		while (iter.hasNext()) {
+			final Class clazz = (Class) iter.next();
+			final String name = clazz.getName();
+			final boolean match = name.equals(defInStream);
+			if (match) {
+				jcb.setSelectedItem(clazz);
+				break;
+			}
+		}
+	}
 
     private void setSortClassPath(File file){
     	if (file.exists()){
@@ -434,12 +430,20 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      * @throws JamException if there's a problem
      */
     private void setupSort() throws SortException, JamException {
+    	final StringBuffer message=new StringBuffer();
+    	final String sortName=sortRoutine.getClass().getName();
         try {
             sortRoutine.initialize();
-        } catch (Exception e) {
-            throw new JamException(classname+"Exception in SortRoutine: "+
-            sortRoutine.getClass().getName()+".initialize(); Message= '"+
-            e.getClass().getName()+": "+e.getMessage()+"'");
+        } catch (Exception thrown) {
+        		message.append(classname).append("Exception in SortRoutine: ").
+				append(sortName).append(".initialize(); Message= '").
+				append(thrown.getClass().getName()).append(": ").append(thrown.getMessage()).append('\'');
+            throw new JamException(message.toString());
+        } catch (Throwable thrown) {
+    		message.append("Couldn't load ").append(sortName).
+			append("; You probably ").
+			append("need to re-compile it against the current version of Jam.");
+        	throw new JamException(message.toString());
         }
         /* setup scaler, parameter, monitors, gate, dialog boxes */
         AbstractControl.setupAll();
