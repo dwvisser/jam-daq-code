@@ -9,10 +9,6 @@ package jam.plot;
  * @see Display
  */
 public interface  Displayable   {
-
-    //FIXME in more then one place
-    int ONE_DIMENSION=1;
-    int TWO_DIMENSION=2;   
     
     /**
      *	@return name of displayable object
