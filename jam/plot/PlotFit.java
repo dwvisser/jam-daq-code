@@ -1,19 +1,18 @@
 package jam.plot;
 import java.awt.Point;
+import jam.fit.MultipleGaussians;
 
 /**
- * Class to simple fits such as area and centroid
+ * Class to perform simple fits such as area and centroid
  */
 class PlotFit {
 
-	static final double SIGMA_TO_FWHM = 2.354;
-	public static final int X_AXIS = 1;
-	public static final int Y_AXIS = 2;
+	private static final double SIGMA_TO_FWHM = MultipleGaussians.SIGMA_TO_FWHM;
 
 	/**
 	 * Get the area for a 1 d histogram
 	 */
-	public double getArea(double[] counts, Point p1, Point p2) {
+	double getArea(double[] counts, Point p1, Point p2) {
 		final int xmin=Math.min(p1.x,p2.x);
 		final int xmax=Math.max(p1.x,p2.x);
 		double area = 0;
@@ -27,7 +26,7 @@ class PlotFit {
 	 * Get the area for a 2 d histogram bounded by the rectangle
 	 * x1, y1, x2, y2
 	 */
-	public double getArea(double[][] counts, Point p1, Point p2) {
+	double getArea(double[][] counts, Point p1, Point p2) {
 		final int xmin=Math.min(p1.x,p2.x);
 		final int xmax=Math.max(p1.x,p2.x);
 		final int ymin=Math.min(p1.y,p2.y);
@@ -44,7 +43,7 @@ class PlotFit {
 	/**
 	 * method to calculate the centroid for a histogram given a bounded area
 	 */
-	public double getCentroid(
+	double getCentroid(
 		double[] counts,
 		Point p1,
 		Point p2) {
@@ -68,71 +67,6 @@ class PlotFit {
 		return centroid;
 	}
 
-	/**
-	 * centroid for 2d not implemented full KBS
-	 */
-	public double getCentroid(
-		double[][] counts,
-		int x1,
-		int y1,
-		int x2,
-		int y2,
-		int axis) {
-
-		int xmin;
-		int xmax;
-		int ymin;
-		int ymax;
-		double area = 0;
-		double weightX = 0;
-		double weightY = 0;
-		double centroid = 0;
-		double centroidX = 0;
-		double centroidY = 0;
-
-		// put limits in right order	
-		if (x1 <= x2) {
-			xmin = x1;
-			xmax = x2;
-		} else {
-			xmin = x2;
-			xmax = x1;
-		}
-		if (y1 < y2) {
-			ymin = y1;
-			ymax = y2;
-		} else {
-			ymin = y2;
-			ymax = y1;
-		}
-		//sum up counts
-		for (int i = xmin; i <= xmax; i++) {
-			for (int j = ymin; j <= ymax; j++) {
-				area += counts[i][j];
-			}
-		}
-		// calculate weights
-		if (area > 0) { // must have more than zero counts
-			for (int i = xmin; i <= xmax; i++) {
-				for (int j = xmin; j <= xmax; j++) {
-					weightX += (double) (i * counts[i][j]);
-					weightY += (double) (j * counts[i][j]);
-				}
-			}
-			centroidX = weightX / ((double) area);
-			centroidY = weightY / ((double) area);
-		} else {
-			centroidX = 0;
-			centroidY = 0;
-		}
-		// decide which centroid to return
-		if (axis == X_AXIS) {
-			centroid = centroidX;
-		} else {
-			centroid = centroidY;
-		}
-		return centroid;
-	}
 
 	/**
 	 * method to calculate the FWHM for a histogram given a bounded area
@@ -140,7 +74,7 @@ class PlotFit {
 	 * So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
 	 */
-	public double getFWHM(double[] counts, Point p1, Point p2) {
+	double getFWHM(double[] counts, Point p1, Point p2) {
 		int xmin=Math.min(p1.x,p2.x);
 		int xmax=Math.max(p1.x,p2.x);
 		int area = 0;
@@ -177,7 +111,7 @@ class PlotFit {
 		return fwhm;
 	}
 
-	public void getNetArea(
+	void getNetArea(
 		double[] netArea,
 		double[] netAreaError,
 		double[] channelBackground,
