@@ -1,5 +1,8 @@
 package jam.io.hdf;
 
+import jam.util.StringUtilities;
+
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -192,7 +195,7 @@ public abstract class DataObject {
 	/**
 	 * Actual bytes stored in HDF file.
 	 */
-	protected byte[] bytes;
+	protected ByteBuffer bytes;
 	
 	private static final byte[] CLEARBYTES=new byte[0];
 
@@ -216,7 +219,7 @@ public abstract class DataObject {
 	static void clearAll() {
 		for (final Iterator it=objectList.iterator(); it.hasNext();){
 			final DataObject dataObject=(DataObject)it.next();
-			dataObject.bytes=CLEARBYTES;
+			dataObject.bytes=ByteBuffer.wrap(CLEARBYTES);
 		}
 		objectList.clear();
 		tagRefMap.clear();
@@ -389,7 +392,7 @@ public abstract class DataObject {
 	    }
 		setTag(tag);
 		setRef(ref);
-		bytes = data;
+		bytes = ByteBuffer.wrap(data);
 		addDataObjectToList(this);
 	}
 
@@ -471,12 +474,37 @@ public abstract class DataObject {
 	/* non-javadoc:
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 */
-	byte[] getBytes()  {
+	ByteBuffer getBytes()  {
 		return bytes;
 	}
 
 	private final Integer getKey(){
 		return calculateKey(tag, ref);
+	}
+	
+	private static final StringUtilities UTIL=StringUtilities.instance();
+	
+	/**
+	 * Utility method for inserting a String as an ASCII array 
+	 * into the data representation.
+	 * 
+	 * @param string to be converted
+	 */
+	protected final void putString(String string){
+	    bytes.put(UTIL.getASCIIarray(string));
+	}
+	
+	/**
+	 * Utility method for getting an ASCII string out of the 
+	 * data representation.
+	 * 
+	 * @param len length of string
+	 * @return the string
+	 */
+	protected final String getString(int len){
+	    final byte [] rval=new byte[len];
+	    bytes.get(rval);
+	    return UTIL.getASCIIstring(rval);
 	}
 	
 	/**

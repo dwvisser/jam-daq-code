@@ -1130,7 +1130,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 */
 	ScientificDataDimension getSDD(Histogram h, byte numberType) throws HDFException {
 		ScientificDataDimension rval=null;//return value
-		final int rank = h.getDimensionality();
+		final short rank = (short)h.getDimensionality();
 		final int sizeX = h.getSizeX();
 		int sizeY=0;
 		if (rank == 2) {//otherwise rank == 1

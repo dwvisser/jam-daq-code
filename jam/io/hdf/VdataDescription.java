@@ -1,12 +1,6 @@
 package jam.io.hdf;
 
-import jam.util.StringUtilities;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,8 +112,8 @@ public final class VdataDescription extends DataObject {
      */
     private final static short VH_VERSION = 3;
 
-    VdataDescription(String name, String classtype, int size,
-            String[] names, short[] types, short[] orders) throws HDFException {
+    VdataDescription(String name, String classtype, int size, String[] names,
+            short[] types, short[] orders) {
         super(DFTAG_VH); //sets tag
         /* Double check dimensionality */
         if ((names.length != types.length) || (names.length != orders.length)) {
@@ -138,56 +132,52 @@ public final class VdataDescription extends DataObject {
         offset = new short[nfields];
         ivsize = 0;
         for (int i = 0; i < nfields; i++) {
-            isize[i]=getIsize(types[i],order[i]);
+            isize[i] = getIsize(types[i], order[i]);
             ivsize += isize[i];
         }
         offset[0] = 0;
         // see p. 6-42 HDF 4.1r2 specs
-        int byteLength = 22 + 10 * nfields + name.length() + dataTypeName.length();
+        int byteLength = 22 + 10 * nfields + name.length()
+                + dataTypeName.length();
         for (int i = 1; i < nfields; i++) {
             offset[i] = (short) (offset[i - 1] + isize[i - 1]);
             byteLength += names[i].length();
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
-        DataOutputStream dos = new DataOutputStream(baos);
-        try {
-            dos.writeShort(interlace);
-            dos.writeInt(nvert);
-            dos.writeShort(ivsize);
-            dos.writeShort(nfields);
-            for (int i = 0; i < nfields; i++) {
-                dos.writeShort(datatypes[i]);
-            }
-            for (int i = 0; i < nfields; i++) {
-                dos.writeShort(isize[i]);
-            }
-            for (int i = 0; i < nfields; i++) {
-                dos.writeShort(offset[i]);
-            }
-            for (int i = 0; i < nfields; i++) {
-                dos.writeShort(order[i]);
-            }
-            for (int i = 0; i < nfields; i++) {
-                dos.writeShort(fldnm[i].length());
-                dos.writeBytes(fldnm[i]);
-            }
-            //write out data number type
-            dos.writeShort(name.length());
-            dos.writeBytes(name);
-            dos.writeShort(dataTypeName.length());
-            dos.writeBytes(dataTypeName);
-            dos.writeShort(0); //no extension
-            dos.writeShort(0); //no extension
-            dos.writeShort(VH_VERSION);
-            dos.writeShort(0); //unused bytes
-            dos.writeByte(0); //unused additional (undocumented) byte
-        } catch (IOException ioe) {
-            throw new HDFException("Creating VDataDescription", ioe);
+        bytes = ByteBuffer.allocate(byteLength);
+        bytes.putShort(interlace);
+        bytes.putInt(nvert);
+        bytes.putShort(ivsize);
+        bytes.putShort(nfields);
+        for (int i = 0; i < nfields; i++) {
+            bytes.putShort(datatypes[i]);
         }
-        bytes = baos.toByteArray();
+        for (int i = 0; i < nfields; i++) {
+            bytes.putShort(isize[i]);
+        }
+        for (int i = 0; i < nfields; i++) {
+            bytes.putShort(offset[i]);
+        }
+        for (int i = 0; i < nfields; i++) {
+            bytes.putShort(order[i]);
+        }
+        for (int i = 0; i < nfields; i++) {
+            bytes.putShort((short) fldnm[i].length());
+            putString(fldnm[i]);
+        }
+        //write out data number type
+        bytes.putShort((short) name.length());
+        putString(name);
+        bytes.putShort((short) dataTypeName.length());
+        putString(dataTypeName);
+        final short short0 = (short) 0;
+        bytes.putShort(short0); //no extension
+        bytes.putShort(short0); //no extension
+        bytes.putShort(VH_VERSION);
+        bytes.putShort(short0); //unused bytes
+        bytes.put((byte) 0); //unused additional (undocumented) byte
     }
-    
-    private short getIsize(short type, short order){
+
+    private short getIsize(short type, short order) {
         final short rval;
         switch (type) {
         case DFNT_INT16:
@@ -206,74 +196,52 @@ public final class VdataDescription extends DataObject {
             rval = (short) (order * 8);
             break;
         default:
-            throw new IllegalArgumentException(
-                    "Unknown Vdata field type: "
-                            + type);
+            throw new IllegalArgumentException("Unknown Vdata field type: "
+                    + type);
         }
         return rval;
     }
-    
-    VdataDescription(){
+
+    VdataDescription() {
         super();
     }
 
     public void interpretBytes() throws HDFException {
-        final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        final DataInputStream dis = new DataInputStream(bais);
-        try {
-            interlace = dis.readShort();
-            nvert = dis.readInt();
-            ivsize = dis.readShort();
-            nfields = dis.readShort();
-            datatypes = new short[nfields];
-            isize = new short[nfields];
-            offset = new short[nfields];
-            order = new short[nfields];
-            fldnm = new String[nfields];
-            for (int i = 0; i < nfields; i++) {
-                datatypes[i] = dis.readShort();
-            }
-            for (int i = 0; i < nfields; i++) {
-                isize[i] = dis.readShort();
-            }
-            for (int i = 0; i < nfields; i++) {
-                offset[i] = dis.readShort();
-            }
-            for (int i = 0; i < nfields; i++) {
-                order[i] = dis.readShort();
-            }
-            final StringUtilities util = StringUtilities.instance();
-            for (int i = 0; i < nfields; i++) {
-                final short len = dis.readShort();
-                /*final byte [] temp = new byte[len];
-                dis.read(temp);*/
-                fldnm[i] = readASCIIstring(dis,len);
-            }
-            /* Write out data number type. */
-            short len = dis.readShort();
-            byte [] temp = new byte[len];
-            dis.read(temp);
-            name = util.getASCIIstring(temp);
-            len = dis.readShort();
-            temp = new byte[len];
-            dis.read(temp);
-            dataTypeName = util.getASCIIstring(temp);
-            dis.readShort(); //no extension
-            dis.readShort(); //no extension
-            dis.readShort(); //should be version(=VH_VERSION)
-            dis.readShort(); //no extension
-        } catch (IOException ioe) {
-            throw new HDFException("Interpret VDataDescription", ioe);
+        bytes.rewind();
+        interlace = bytes.getShort();
+        nvert = bytes.getInt();
+        ivsize = bytes.getShort();
+        nfields = bytes.getShort();
+        datatypes = new short[nfields];
+        isize = new short[nfields];
+        offset = new short[nfields];
+        order = new short[nfields];
+        fldnm = new String[nfields];
+        for (int i = 0; i < nfields; i++) {
+            datatypes[i] = bytes.getShort();
         }
-    }
-    
-    private String readASCIIstring(DataInputStream dataInput, int len)
-    throws IOException {
-        final StringUtilities util = StringUtilities.instance();
-        final byte[] temp=new byte[len];
-        dataInput.read(temp);
-        return util.getASCIIstring(temp);
-        
+        for (int i = 0; i < nfields; i++) {
+            isize[i] = bytes.getShort();
+        }
+        for (int i = 0; i < nfields; i++) {
+            offset[i] = bytes.getShort();
+        }
+        for (int i = 0; i < nfields; i++) {
+            order[i] = bytes.getShort();
+        }
+        for (int i = 0; i < nfields; i++) {
+            final short len = bytes.getShort();
+            fldnm[i] = getString(len);
+        }
+        /* Write out data number type. */
+        short len = bytes.getShort();
+        name = getString(len);
+        len = bytes.getShort();
+        dataTypeName = getString(len);
+        bytes.getShort(); //no extension
+        bytes.getShort(); //no extension
+        bytes.getShort(); //should be version(=VH_VERSION)
+        bytes.getShort(); //no extension
     }
 
     short getNumFields() {
@@ -282,6 +250,7 @@ public final class VdataDescription extends DataObject {
 
     /**
      * Returns the number of rows in the table.
+     * 
      * @return the number of rows in the table
      */
     public int getNumRows() {
@@ -293,9 +262,9 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getDimensions() {
-        final int len=order.length;
-        final short [] rval=new short[len];
-        System.arraycopy(order,0,rval,0,len);
+        final int len = order.length;
+        final short[] rval = new short[len];
+        System.arraycopy(order, 0, rval, 0, len);
         return rval;
     }
 
@@ -304,9 +273,9 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getTypes() {
-        final int len=datatypes.length;
-        final short [] rval=new short[len];
-        System.arraycopy(datatypes,0,rval,0,len);
+        final int len = datatypes.length;
+        final short[] rval = new short[len];
+        System.arraycopy(datatypes, 0, rval, 0, len);
         return rval;
     }
 
@@ -336,9 +305,9 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getDataOffsets() {
-        final int len=offset.length;
-        final short [] rval=new short[len];
-        System.arraycopy(offset,0,rval,0,len);
+        final int len = offset.length;
+        final short[] rval = new short[len];
+        System.arraycopy(offset, 0, rval, 0, len);
         return rval;
     }
 

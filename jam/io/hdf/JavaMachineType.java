@@ -1,9 +1,5 @@
 package jam.io.hdf;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import javax.swing.JOptionPane;
+import java.nio.ByteBuffer;
 
 /**
  * Specifies the format of numbers and chars used by Java.
@@ -24,17 +20,10 @@ final class JavaMachineType extends DataObject {
 	 */
 	private static final short DFMT_SUN = 0x1111;
 
-	JavaMachineType() throws HDFException {
+	JavaMachineType() {
 		super(DFTAG_MT); //sets tag
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
-		DataOutputStream dos = new DataOutputStream(baos);
-		try {
-			dos.writeShort(DFMT_SUN);
-		} catch (IOException ioe) {
-			throw new HDFException(
-					"Creating JavaMachineType.",ioe);
-		}
-		bytes = baos.toByteArray();
+		bytes = ByteBuffer.allocate(2);
+		bytes.putShort(DFMT_SUN);
 	}
 
 	public void interpretBytes() { 

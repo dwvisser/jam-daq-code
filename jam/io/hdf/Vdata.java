@@ -2,12 +2,9 @@ package jam.io.hdf;
 import jam.util.StringUtilities;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-
-import javax.swing.JOptionPane;
+import java.nio.ByteBuffer;
 
 /**
  * Class to represent an HDF <em>Vdata description</em> data object.
@@ -31,6 +28,7 @@ public final class Vdata extends DataObject {
 	private short ivsize;
 	private short[] types;
 	private short[] offsets;
+	private static final String VS_STRING="VS_";
 	
 	Vdata(VdataDescription vdd) {
 		super(DFTAG_VS); //sets tag
@@ -98,12 +96,10 @@ public final class Vdata extends DataObject {
 	}
 	
 	protected void interpretBytes() throws HDFException {
-		int row;
-
 		for (int col = 0; col < nfields; col++) {
 			switch (types[col]) {
 				case VdataDescription.DFNT_INT32 :
-					for (row = 0; row < nvert; row++) {
+					for (int row = 0; row < nvert; row++) {
 						if (order[col] == 1) {
 							cells[col][row] = getInteger(row, col);
 						} else {
@@ -112,7 +108,7 @@ public final class Vdata extends DataObject {
 					}
 					break;
 				case VdataDescription.DFNT_INT16 :
-					for (row = 0; row < nvert; row++) {
+					for (int row = 0; row < nvert; row++) {
 						if (order[col] == 1) {
 							cells[col][row] = getShort(row, col);
 						} else {
@@ -121,7 +117,7 @@ public final class Vdata extends DataObject {
 					}
 					break;
 				case VdataDescription.DFNT_FLT32 :
-					for (row = 0; row < nvert; row++) {
+					for (int row = 0; row < nvert; row++) {
 						if (order[col] == 1) {
 							cells[col][row] = getFloat(row, col);
 						} else {
@@ -130,7 +126,7 @@ public final class Vdata extends DataObject {
 					}
 					break;
 				case VdataDescription.DFNT_DBL64 :
-					for (row = 0; row < nvert; row++) {
+					for (int row = 0; row < nvert; row++) {
 						if (order[col] == 1) {
 							cells[col][row] = getDouble(row, col);
 						} else {
@@ -138,13 +134,11 @@ public final class Vdata extends DataObject {
 						}
 					}
 					break;
-
 				case VdataDescription.DFNT_CHAR8 :
-					for (row = 0; row < nvert; row++) {
+					for (int row = 0; row < nvert; row++) {
 						cells[col][row] = getString(row, col);
 					}
 					break;
-
 				default :
 				throw new IllegalStateException("Unknown data type!");
 			}
@@ -156,21 +150,15 @@ public final class Vdata extends DataObject {
 	 * The workhorse of this method is calls made to the <it>protected</it>
 	 * method <code>getBytes(row,col)</code>.
 	 */
-	void refreshBytes() throws HDFException {
-		final int numBytes = nvert * ivsize;
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
-		final DataOutputStream dos = new DataOutputStream(baos);
-		try {
-			for (int i = 0; i < nvert; i++) {
-				for (int j = 0; j < nfields; j++) {
-					dos.write(this.getBytes(i, j));
-				}
-			}
-		} catch (IOException ioe) {
-			throw new HDFException("Writing VData ", ioe);
-		}
-		bytes = baos.toByteArray();
-	}
+	void refreshBytes() {
+        final int numBytes = nvert * ivsize;
+        bytes = ByteBuffer.allocate(numBytes);
+        for (int i = 0; i < nvert; i++) {
+            for (int j = 0; j < nfields; j++) {
+                bytes.put(getBytes(i, j));
+            }
+        }
+    }
 
 	/* non-javadoc:
 	 * Returns the byte representation for the cell indicated, 
@@ -181,33 +169,28 @@ public final class Vdata extends DataObject {
 	 * @param	col	column in record to retreive from
 	 */
 	private byte[] getBytes(int row, int col) {
-
-		int numBytes;
-		byte[] tempOut;
-		int bOffset;
 		byte[] out = null;
-		int size;
 		if (order[col] == 1) {
 			switch (types[col]) {
 				case VdataDescription.DFNT_INT16 :
-					short shortValue = ((Short) (cells[col][row])).shortValue();
+					final short shortValue = ((Short) (cells[col][row])).shortValue();
 					out = shortToBytes(shortValue);
 					break;
 				case VdataDescription.DFNT_INT32 :
-					int intValue = ((Integer) (cells[col][row])).intValue();
+					final int intValue = ((Integer) (cells[col][row])).intValue();
 					out = intToBytes(intValue);
 					break;
 				case VdataDescription.DFNT_FLT32 :
-					float floatValue = ((Float) (cells[col][row])).floatValue();
+					final float floatValue = ((Float) (cells[col][row])).floatValue();
 					out = floatToBytes(floatValue);
 					break;
 				case VdataDescription.DFNT_DBL64 :
-					double doubleValue =
+					final double doubleValue =
 						((Double) (cells[col][row])).doubleValue();
 					out = doubleToBytes(doubleValue);
 					break;
 				case VdataDescription.DFNT_CHAR8 :
-					char charValue =
+					final char charValue =
 						((Character) (cells[col][row])).charValue();
 					out = charToBytes(charValue);
 					break;
@@ -222,13 +205,13 @@ public final class Vdata extends DataObject {
 		} else { // order > 1
 			switch (types[col]) {
 				case VdataDescription.DFNT_INT16 :
-					size = 2;
-					numBytes = size * order[col];
+					int size = 2;
+					int numBytes = size * order[col];
 					out = new byte[numBytes];
-					tempOut = new byte[size];
-					bOffset = 0;
+					byte [] tempOut = new byte[size];
+					int bOffset = 0;
 					for (int i = 0; i < order[col]; i++) {
-						short shortValue =
+						final short shortValue =
 							((Short) (cells[col][row])).shortValue();
 						tempOut = shortToBytes(shortValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
@@ -242,7 +225,7 @@ public final class Vdata extends DataObject {
 					tempOut = new byte[size];
 					bOffset = 0;
 					for (int i = 0; i < order[col]; i++) {
-						short shortValue =
+						final short shortValue =
 							((Short) (cells[col][row])).shortValue();
 						tempOut = shortToBytes(shortValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
@@ -256,7 +239,7 @@ public final class Vdata extends DataObject {
 					tempOut = new byte[size];
 					bOffset = 0;
 					for (int i = 0; i < order[col]; i++) {
-						float floatValue =
+						final float floatValue =
 							((Float) (cells[col][row])).floatValue();
 						tempOut = floatToBytes(floatValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
@@ -271,7 +254,7 @@ public final class Vdata extends DataObject {
 					tempOut = new byte[size];
 					bOffset = 0;
 					for (int i = 0; i < order[col]; i++) {
-						double doubleValue =
+						final double doubleValue =
 							((Double) (cells[col][row])).doubleValue();
 						tempOut = doubleToBytes(doubleValue);
 						System.arraycopy(tempOut,0,out,bOffset,size);
@@ -282,10 +265,9 @@ public final class Vdata extends DataObject {
 					numBytes = order[col];
 					out = new byte[numBytes];
 					bOffset = 0;
-					String s = (String) (cells[col][row]);
-
+					final String string = (String) (cells[col][row]);
 					for (int i = 0; i < order[col]; i++) {
-						char charValue = s.charAt(i);
+						final char charValue = string.charAt(i);
 						tempOut = charToBytes(charValue);
 						out[bOffset] = tempOut[0];
 						bOffset++;
@@ -322,11 +304,11 @@ public final class Vdata extends DataObject {
 			location = row * ivsize + offsets[col];
 			length = order[col];
 			temp = new byte[length];
-			System.arraycopy(bytes, location, temp, 0, length);
+			System.arraycopy(bytes.array(), location, temp, 0, length);
 			out = StringUtilities.instance().getASCIIstring(temp);
 		} else {
 			throw new IllegalStateException(
-				"VS_"
+				VS_STRING
 					+ getTag()
 					+ "/"
 					+ getRef()
@@ -350,9 +332,8 @@ public final class Vdata extends DataObject {
 	 */
 	public Integer getInteger(int row, int col) throws HDFException {
 		int location;
-		int length = 4;
+		final int length = 4;
 		byte[] temp;
-		int n;
 		ByteArrayInputStream bis;
 		DataInputStream dis;
 
@@ -360,19 +341,19 @@ public final class Vdata extends DataObject {
 		if (types[col] == VdataDescription.DFNT_INT32) {
 			location = row * ivsize + offsets[col];
 			temp = new byte[length];
-			System.arraycopy(bytes, location, temp, 0, length);
+			System.arraycopy(bytes.array(), location, temp, 0, length);
 			bis = new ByteArrayInputStream(temp);
 			dis = new DataInputStream(bis);
-			n = 0;
+			int tempN = 0;
 			try {
-				n = dis.readInt();
+				tempN = dis.readInt();
 			} catch (IOException ioe) {
 				throw new HDFException("VData Read Int ", ioe);
 			}
-			out = new Integer(n);
+			out = new Integer(tempN);
 		} else {
 			throw new IllegalStateException(
-				"VS_"
+				VS_STRING
 					+ getTag()
 					+ "/"
 					+ getRef()
@@ -391,7 +372,7 @@ public final class Vdata extends DataObject {
 			final int location = row * ivsize + offsets[col];
 			final int shortLength = 2;
 			final byte [] temp = new byte[shortLength];
-			System.arraycopy(bytes, location, temp, 0, shortLength);
+			System.arraycopy(bytes.array(), location, temp, 0, shortLength);
 			final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
 			final DataInputStream dis = new DataInputStream(bis);
 			short value = 0;
@@ -404,7 +385,7 @@ public final class Vdata extends DataObject {
 			rval = new Short(value);
 		} else {
 			throw new IllegalStateException(
-				"VS_"
+				VS_STRING
 					+ getTag()
 					+ "/"
 					+ getRef()
@@ -422,9 +403,8 @@ public final class Vdata extends DataObject {
 	 */
 	Float getFloat(int row, int col) throws HDFException {
 		int location;
-		int length = 4;
+		final int length = 4;
 		byte[] temp;
-		float f;
 		ByteArrayInputStream bis;
 		DataInputStream dis;
 
@@ -432,19 +412,19 @@ public final class Vdata extends DataObject {
 		if (types[col] == VdataDescription.DFNT_FLT32) {
 			location = row * ivsize + offsets[col];
 			temp = new byte[length];
-			System.arraycopy(bytes, location, temp, 0, length);
+			System.arraycopy(bytes.array(), location, temp, 0, length);
 			bis = new ByteArrayInputStream(temp);
 			dis = new DataInputStream(bis);
-			f = 0.0f;
+			float tempFloat = 0.0f;
 			try {
-				f = dis.readFloat();
+				tempFloat = dis.readFloat();
 			} catch (IOException ioe) {
 				throw new HDFException("VData Read Float ", ioe);
 			}
-			out = new Float(f);
+			out = new Float(tempFloat);
 		} else {
 			throw new IllegalStateException(
-				"VS_"
+				VS_STRING
 					+ getTag()
 					+ "/"
 					+ getRef()
@@ -462,9 +442,8 @@ public final class Vdata extends DataObject {
 	 */
 	private Double getDouble(int row, int col) throws HDFException {
 		int location;
-		int length = 8;
+		final int length = 8;
 		byte[] temp;
-		double d;
 		ByteArrayInputStream bis;
 		DataInputStream dis;
 
@@ -472,19 +451,19 @@ public final class Vdata extends DataObject {
 		if (types[col] == VdataDescription.DFNT_DBL64) {
 			location = row * ivsize + offsets[col];
 			temp = new byte[length];
-			System.arraycopy(bytes, location, temp, 0, length);
+			System.arraycopy(bytes.array(), location, temp, 0, length);
 			bis = new ByteArrayInputStream(temp);
 			dis = new DataInputStream(bis);
-			d = 0.0;
+			double tempDouble = 0.0;
 			try {
-				d = dis.readDouble();
+				tempDouble = dis.readDouble();
 			} catch (IOException ioe) {
 				throw new HDFException ("VData", ioe);
 			}
-			out = new Double(d);
+			out = new Double(tempDouble);
 		} else {
 			throw new IllegalStateException(
-				"VS_"
+				VS_STRING
 					+ getTag()
 					+ "/"
 					+ getRef()
@@ -500,54 +479,54 @@ public final class Vdata extends DataObject {
 	/* non-javadoc:
 	 * short to array of bytes
 	 */
-	private byte[] shortToBytes(short s) {
+	private byte[] shortToBytes(short num) {
 		final byte[] out = new byte[2];
-		out[0] = (byte) ((s >>> 8) & 0xFF);
-		out[1] = (byte) ((s >>> 0) & 0xFF);
+		out[0] = (byte) ((num >>> 8) & 0xFF);
+		out[1] = (byte) ((num >>> 0) & 0xFF);
 		return out;
 	}
 
 	/* non-javadoc:
 	 * int to array of bytes
 	 */
-	private byte[] intToBytes(int i) {
+	private byte[] intToBytes(int num) {
 		final byte[] out = new byte[4];
-		out[0] = (byte) ((i >>> 24) & 0xFF);
-		out[1] = (byte) ((i >>> 16) & 0xFF);
-		out[2] = (byte) ((i >>> 8) & 0xFF);
-		out[3] = (byte) ((i >>> 0) & 0xFF);
+		out[0] = (byte) ((num >>> 24) & 0xFF);
+		out[1] = (byte) ((num >>> 16) & 0xFF);
+		out[2] = (byte) ((num >>> 8) & 0xFF);
+		out[3] = (byte) ((num >>> 0) & 0xFF);
 		return out;
 	}
 
 	/* non-javadoc:
 	 * long to array of bytes
 	 */
-	private byte[] longToBytes(long l) {
+	private byte[] longToBytes(long num) {
 		final byte[] out = new byte[8];
-		out[0] = (byte) ((l >>> 56) & 0xFF);
-		out[1] = (byte) ((l >>> 48) & 0xFF);
-		out[2] = (byte) ((l >>> 40) & 0xFF);
-		out[3] = (byte) ((l >>> 32) & 0xFF);
-		out[4] = (byte) ((l >>> 24) & 0xFF);
-		out[5] = (byte) ((l >>> 16) & 0xFF);
-		out[6] = (byte) ((l >>> 8) & 0xFF);
-		out[7] = (byte) ((l >>> 0) & 0xFF);
+		out[0] = (byte) ((num >>> 56) & 0xFF);
+		out[1] = (byte) ((num >>> 48) & 0xFF);
+		out[2] = (byte) ((num >>> 40) & 0xFF);
+		out[3] = (byte) ((num >>> 32) & 0xFF);
+		out[4] = (byte) ((num >>> 24) & 0xFF);
+		out[5] = (byte) ((num >>> 16) & 0xFF);
+		out[6] = (byte) ((num >>> 8) & 0xFF);
+		out[7] = (byte) ((num >>> 0) & 0xFF);
 		return out;
 	}
 
-	private byte[] floatToBytes(float f) {
-		final int tempInt = Float.floatToIntBits(f);
+	private byte[] floatToBytes(float num) {
+		final int tempInt = Float.floatToIntBits(num);
 		return intToBytes(tempInt);
 	}
 
-	private byte[] doubleToBytes(double d) {
-		final long tempLong = Double.doubleToLongBits(d);
+	private byte[] doubleToBytes(double num) {
+		final long tempLong = Double.doubleToLongBits(num);
 		return longToBytes(tempLong);
 	}
 
-	private byte[] charToBytes(char c) {
+	private byte[] charToBytes(char character) {
 		final byte out[] = new byte[1];
-		out[0] = (byte) c;
+		out[0] = (byte) character;
 		return out;
 	}
 	

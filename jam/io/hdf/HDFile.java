@@ -71,7 +71,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		while (temp.hasNext()) {
 			final DataObject dataObject = (DataObject) (temp.next());
 			dataObject.setOffset(counter);
-			counter += dataObject.getBytes().length;
+			counter += dataObject.getBytes().capacity();
 		}
 	}
 	
@@ -115,7 +115,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				writeShort(dataObject.getTag());
 				writeShort(dataObject.getRef());
 				writeInt(dataObject.getOffset());
-				writeInt(dataObject.getBytes().length);
+				writeInt(dataObject.getBytes().capacity());
 			}
 		} catch (IOException e) {
 			throw new HDFException(
@@ -139,7 +139,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		boolean foundEmpty = false;
 		writeLoop: while (temp.hasNext()) {
 			final DataObject dataObject = (DataObject) (temp.next());
-			if (dataObject.getBytes().length == 0){
+			if (dataObject.getBytes().capacity() == 0){
 			    foundEmpty=true;
 			    break writeLoop;
 			}
@@ -171,7 +171,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	private void writeDataObject(DataObject data) throws HDFException {
 		try {
 			seek(data.getOffset());
-			write(data.getBytes());
+			write(data.getBytes().array());
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem writing HDF data object.",e);

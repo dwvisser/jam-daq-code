@@ -1,9 +1,4 @@
 package jam.io.hdf;
-import jam.util.StringUtilities;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
@@ -36,42 +31,30 @@ final class DataIDAnnotation extends DataObject {
 	 * @param note  text of annotation
 	 * @exception  HDFException thrown on unrecoverable error 
 	 */
-	DataIDAnnotation(DataObject obj, String note) throws HDFException {
-		super(DFTAG_DIA); //sets tag
-		try {
-			this.object = obj;
-			this.note = note;
-			int byteLength = 4 + note.length();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
-			DataOutputStream dos = new DataOutputStream(baos);
-			dos.writeShort(object.getTag());
-			dos.writeShort(object.getRef());
-			dos.writeBytes(note);
-			bytes = baos.toByteArray();
-		} catch (IOException e) {
-			throw new HDFException("Problem creating DIA.",e);
-		}
-	}
+	DataIDAnnotation(DataObject obj, String note) {
+        super(DFTAG_DIA); //sets tag
+        this.object = obj;
+        this.note = note;
+        int byteLength = 4 + note.length();
+        bytes = ByteBuffer.allocate(byteLength);
+        bytes.putShort(object.getTag());
+        bytes.putShort(object.getRef());
+        putString(note);
+    }
 	
 	DataIDAnnotation(){
 	    super();
 	}
-
-//	void init(byte[] data, short tag, short reference) {
-//		super.init(data, tag,reference);
-//	}
 
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 *
 	 */
 	protected void interpretBytes() {
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        final short tag = buffer.getShort();
-        final short ref = buffer.getShort();
-        final byte[] temp = new byte[buffer.remaining()];
-        buffer.get(temp);
-        note = StringUtilities.instance().getASCIIstring(temp);
+        bytes.position(0);
+        final short tag = bytes.getShort();
+        final short ref = bytes.getShort();
+        note=getString(bytes.remaining());
         object = getObject(tag, ref);
     }
 

@@ -1,146 +1,153 @@
 package jam.io.hdf;
 
+import java.nio.ByteBuffer;
+
 /**
  * Class to represent a 32-bit java int HDF <em>NumberType</em> data object.
- * When constructed with argument <code>NumberType.INT</code>, creates the object indicating
- * <code>int</code> primitives.  When constructed with argument <code>NumberType.DOUBLE</code>,
- * creates the object indicating <code>double</code> primitives.
- *
- * @version	0.5 November 98
- * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @since       JDK1.1
+ * When constructed with argument <code>NumberType.INT</code>, creates the
+ * object indicating <code>int</code> primitives. When constructed with
+ * argument <code>NumberType.DOUBLE</code>, creates the object indicating
+ * <code>double</code> primitives.
+ * 
+ * @version 0.5 November 98
+ * @author <a href="mailto:dale@visser.name">Dale Visser </a>
+ * @since JDK1.1
  */
 final class NumberType extends DataObject {
 
-	/**
-	 * First version of encoding
-	 */
-	private final static byte NT_VERSION = 1;
+    /**
+     * First version of encoding
+     */
+    private final static byte NT_VERSION = 1;
 
-	/**
-	 * Unsigned int 
-	 */
-	private final static byte DFNT_UINT32 = 25;
+    /**
+     * Unsigned int
+     */
+    private final static byte DFNT_UINT32 = 25;
 
-	/**
-	 * int
-	 */
-	private final static byte DFNT_INT32 = 24;
+    /**
+     * int
+     */
+    private final static byte DFNT_INT32 = 24;
 
-	/**
-	 * 64-bit floating point, meant for Java <code>double</code>
-	 */
-	private final static byte DFNT_FLOAT64 = 6;
+    /**
+     * 64-bit floating point, meant for Java <code>double</code>
+     */
+    private final static byte DFNT_FLOAT64 = 6;
 
-	/**
-	 * int width, in bits
-	 */
-	private final static byte INT_WIDTH = 32;
+    /**
+     * int width, in bits
+     */
+    private final static byte INT_WIDTH = 32;
 
-	/**
-	 * double width, in bits
-	 */
-	private final static byte DOUBLEWIDTH = 64;
+    /**
+     * double width, in bits
+     */
+    private final static byte DOUBLEWIDTH = 64;
 
-	/**
-	 * Motorola byte order, (same as Java), 
-	 */
-	private final static byte DFNT_MBO = 1;
+    /**
+     * Motorola byte order, (same as Java),
+     */
+    private final static byte DFNT_MBO = 1;
 
-	private transient byte numberType;
-	
-	/** Code for <code>int</code> number type. */
-	static final byte INT = 0;
+    private transient byte numberType;
 
-	/** Code for <code>double</code> number type. */
-	static final byte DOUBLE = 1;
-	
-	static final byte INT_SIZE = 4;
-	
-	static final byte DOUBLE_SIZE = 8;
-	
-	static NumberType intNT;
-	
-	static NumberType doubleNT;
-	
-	/**
-	 * @return the double number type.
-	 */
-	static NumberType getDoubleType() {
-		return doubleNT;
-	}
+    /** Code for <code>int</code> number type. */
+    static final byte INT = 0;
 
-	/**
-	 * @return the int number type.
-	 */
-	static NumberType getIntType() {
-		return intNT;
-	}
-	
-	/**
-	 * Almost all of Jam's number storage needs are satisfied by the type
-	 * hard-coded into the class <code>NumberType</code>.  This method
-	 * creates the <code>NumberType</code> objects in the file
-	 * that gets referred to repeatedly by the other data elements.
-	 *
-	 * @see jam.io.hdf.NumberType
-	 */	
-	static void createDefaultTypes() {
-			intNT =new NumberType(NumberType.INT); 
-			doubleNT=new NumberType(NumberType.DOUBLE);
-	}
+    /** Code for <code>double</code> number type. */
+    static final byte DOUBLE = 1;
 
-	/**
-	 * @param hdfile HDF file we belong to
-	 * @param type one of <code>INT</code> or <code>DOUBLE</code>, 
-	 * @throws IllegalArgumentException if an invalid type is given
-	 */
-	NumberType(byte type){
-		super(DFTAG_NT);
-		createBytes(type);
-	}
+    static final byte INT_SIZE = 4;
 
-//	NumberType(byte[] data, short tag, short reference) {
-//		super(data, tag, reference);
-//	}
-	
-	NumberType(){
-	    super();
-	}
-	
-	private void createBytes(byte type) {
-		if (type == INT) {
-			bytes = new byte[] { NT_VERSION, DFNT_INT32, INT_WIDTH, DFNT_MBO };
-		} else if (type == DOUBLE) {
-			bytes =
-				new byte[] { NT_VERSION, DFNT_FLOAT64, DOUBLEWIDTH, DFNT_MBO };
-		} else {
-			throw new IllegalArgumentException("Invalid type for NumberType: "+type);
-		}
-	}
-	/**
-	 * Implementation of <code>DataObject</code> abstract method.
-	 *
-	 * @exception HDFException thrown if there is a problem interpreting the bytes
-	 */
-	public void interpretBytes() throws HDFException {
-		switch (bytes[1]) {
-			case DFNT_UINT32 :
-				numberType = INT;
-				break;
-			case DFNT_INT32 :
-				numberType = INT;
-				break;
-			case DFNT_FLOAT64 :
-				numberType = DOUBLE;
-				break;
-			default :
-				throw new HDFException("NumberType.interpretBytes(): Unrecognized number type.");
-		}
-	}
+    static final byte DOUBLE_SIZE = 8;
 
-	byte getType() {
-		return numberType;
-	}
+    static NumberType intNT;
 
+    static NumberType doubleNT;
+
+    /**
+     * @return the double number type.
+     */
+    static NumberType getDoubleType() {
+        return doubleNT;
+    }
+
+    /**
+     * @return the int number type.
+     */
+    static NumberType getIntType() {
+        return intNT;
+    }
+
+    /**
+     * Almost all of Jam's number storage needs are satisfied by the type
+     * hard-coded into the class <code>NumberType</code>. This method creates
+     * the <code>NumberType</code> objects in the file that gets referred to
+     * repeatedly by the other data elements.
+     * 
+     * @see jam.io.hdf.NumberType
+     */
+    static void createDefaultTypes() {
+        intNT = new NumberType(NumberType.INT);
+        doubleNT = new NumberType(NumberType.DOUBLE);
+    }
+
+    /**
+     * @param hdfile
+     *            HDF file we belong to
+     * @param type
+     *            one of <code>INT</code> or <code>DOUBLE</code>,
+     * @throws IllegalArgumentException
+     *             if an invalid type is given
+     */
+    NumberType(byte type) {
+        super(DFTAG_NT);
+        createBytes(type);
+    }
+
+    NumberType() {
+        super();
+    }
+
+    private void createBytes(byte type) {
+        bytes = ByteBuffer.allocate(4);
+        bytes.put(NT_VERSION);
+        if (type == INT) {
+            bytes.put(DFNT_INT32);
+            bytes.put(INT_WIDTH);
+        } else if (type == DOUBLE) {
+            bytes.put(DFNT_FLOAT64);
+            bytes.put(DOUBLEWIDTH);
+        } else {
+            throw new IllegalArgumentException("Invalid type for NumberType: "
+                    + type);
+        }
+        bytes.put(DFNT_MBO);
+    }
+
+    /**
+     * Implementation of <code>DataObject</code> abstract method.
+     */
+    public void interpretBytes() {
+        final byte type = bytes.get(1);
+        switch (type) {
+        case DFNT_UINT32:
+            numberType = INT;
+            break;
+        case DFNT_INT32:
+            numberType = INT;
+            break;
+        case DFNT_FLOAT64:
+            numberType = DOUBLE;
+            break;
+        default:
+            throw new IllegalStateException(
+                    "NumberType.interpretBytes(): Unrecognized number type.");
+        }
+    }
+
+    byte getType() {
+        return numberType;
+    }
 }
