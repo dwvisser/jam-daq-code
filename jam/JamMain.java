@@ -94,6 +94,7 @@ public final class JamMain extends JFrame {
 
 	private JamMain(final boolean showGUI) {
 		super("Jam");
+		setLookAndFeel();
 		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
 		final ClassLoader cl = getClass().getClassLoader();
@@ -330,13 +331,8 @@ public final class JamMain extends JFrame {
 	public RunState getRunState() {
 		return runState;
 	}
-
-	/**
-	 * Main method that is run to start up full Jam process
-	 * 
-	 * @param args not used currently
-	 */
-	public static void main(String args[]) {
+	
+	private void setLookAndFeel(){
 		final String linux = "Linux";
 		final String kunststoff =
 			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
@@ -368,6 +364,14 @@ public final class JamMain extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 			}
 		}
+	}
+
+	/**
+	 * Main method that is run to start up full Jam process
+	 * 
+	 * @param args not used currently
+	 */
+	public static void main(String args[]) {
 		new JamMain(true);
 	}
 }
