@@ -1,5 +1,7 @@
 package jam.data.func;
 
+import java.util.List;
+
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -19,7 +21,10 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
-		return AbstractCalibrationFunction.getListNames().get(index);
+		synchronized (selectSync){
+			Object obj = (String)AbstractCalibrationFunction.getListNames().get(index);
+			return obj;
+		}		
 	}
 
 	/**
@@ -43,6 +48,8 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 				selection=AbstractCalibrationFunction.getListNames().get(0);
 			} else if (anItem instanceof String){
 				selection=anItem;				
+			}else if (anItem instanceof AbstractCalibrationFunction) {
+				selection=((AbstractCalibrationFunction)anItem).getName();				
 			} else {
 				throw new IllegalArgumentException(getClass().getName()+
 				": only CalibrationFunction Strings or null please");

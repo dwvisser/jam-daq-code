@@ -121,8 +121,7 @@ public class CalibrationFit extends AbstractControl {
         comboBoxFunction.setRenderer(new CalibrationListCellRenderer());
 		comboBoxFunction.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
-				final String funcName = (String)comboBoxFunction.getSelectedItem();				
-				selectFunction(funcName);
+				selectionChange();
 			}
 		});
         pChoose.add(comboBoxFunction);
@@ -257,6 +256,12 @@ public class CalibrationFit extends AbstractControl {
 		return pCoeff;
     }
     
+    private void selectionChange() {
+    	if(!isUpdate) {
+    		final String funcName = (String)comboBoxFunction.getSelectedItem();
+    		selectFunction(funcName);
+    	}
+    }
     /*
      * Function selected
      */
