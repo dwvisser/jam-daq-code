@@ -288,6 +288,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 				status.setHistName(null);		
 			}
 			status.setCurrentGateName(null);
+			status.clearOverlays();
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);			
 		}
 	}
