@@ -108,17 +108,6 @@ public class Display
 	private final Plot2d plot2d;
 
 	/**
-	 * Constructor for Applet, no boadcaster
-	 *
-	 * @param mh the class to call if the plot button is pushed.
-	 */
-	/*public Display(Broadcaster b, MessageHandler mh) {
-		this(mh);
-		this.broadcaster = b;
-		action.setBroadcaster(broadcaster);
-	}*/
-
-	/**
 	 * Constructor called by all constructors
 	 *
 	 * @param   mh  the class to call to print out messages
@@ -152,7 +141,8 @@ public class Display
 		plot1d.setIgnoreChFull(true);
 		plot2d.setIgnoreChZero(true);
 		plot2d.setIgnoreChFull(true);
-		this.add(plotswap, BorderLayout.CENTER);
+		add(plotswap, BorderLayout.CENTER);
+		JamStatus.instance().setDisplay(this);
 	}
 
 	/**
