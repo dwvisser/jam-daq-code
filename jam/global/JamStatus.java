@@ -1,6 +1,7 @@
 /*
  */
 package jam.global;
+import javax.swing.JFrame;
 import java.text.*;
 import java.util.*;
 /**
@@ -13,7 +14,7 @@ public  class JamStatus {
     private static AcquisitionStatus acquisitionStatus;
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
-    
+    private static JFrame frame;
     /**
      * The one instance of JamStatus.
      */
@@ -33,6 +34,26 @@ public  class JamStatus {
     	return (_instance==null) ? new JamStatus() : _instance;
     }
     
+    /**
+     * Set the application frame
+     * @param frame
+     */
+    public void setFrame(JFrame f){
+		frame=f;
+    }
+    /**
+     * Get the application frame
+     * @param frame
+     * @return
+     */
+	public JFrame getFrame(){
+		return frame;
+	}
+    
+    /**
+     * Set the acquisition status
+     * @param as
+     */
     public void setAcqisitionStatus(AcquisitionStatus as){
         acquisitionStatus=as;
     }
