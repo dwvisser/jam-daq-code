@@ -228,18 +228,22 @@ class PlotGraphics implements PlotGraphicsLayout {
 			//number of pixels per channel
 		}
 	}
-
+	
+	private static final RenderingHints RH=new RenderingHints(
+	RenderingHints.KEY_ANTIALIASING,
+	RenderingHints.VALUE_ANTIALIAS_OFF);
+	static {
+		RH.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+		RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	}
+	
 	/**
 	 * Update just the graphics object
 	 * @param graph  grapics object
 	 */
 	public void update(Graphics graph) {
-		final RenderingHints rh =
-			new RenderingHints(
-				RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
 		g = (Graphics2D) graph;
-		g.setRenderingHints(rh);
+		g.setRenderingHints(RH);
 		if (fm==null){
 			this.setFont(font);
 		}
