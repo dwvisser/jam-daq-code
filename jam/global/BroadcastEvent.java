@@ -32,13 +32,15 @@ public class BroadcastEvent {
     
     public static final int SORT_MODE_CHANGED=50;
     public static final int RUN_STATE_CHANGED=51;
+    
+    public static final int FIT_NEW=60;
 
     private static final int[] POSSIBLE_CODES = {REFRESH, HISTOGRAM_NEW,
         HISTOGRAM_ADD,HISTOGRAM_SELECT,SCALERS_READ,SCALERS_CLEAR,
         SCALERS_UPDATE,GATE_SELECT,GATE_ADD,GATE_SET_ON,GATE_SET_OFF,
         GATE_SET_SAVE,GATE_SET_POINT,GATE_SET_ADD,GATE_SET_REMOVE,
         COUNTERS_UPDATE,COUNTERS_READ,COUNTERS_ZERO,SORT_MODE_CHANGED,
-        RUN_STATE_CHANGED};
+        RUN_STATE_CHANGED, FIT_NEW};
     
     private final int command;
     private final Object content;
