@@ -39,9 +39,17 @@ public class BroadcastEvent {
     private int command;
     private Object content;
 
-    public BroadcastEvent(int command, Object content) throws GlobalException {
+	/**
+	 * Creates a message to broadcast
+	 *  
+	 * @param command one of the many allowed commands stored in this class
+	 * @param content additional object along for the ride
+	 * @throws IllegalArgumentException if the command is not one 
+	 * from the list of valid commands
+	 */
+    public BroadcastEvent(int command, Object content) {
         if (!isValid(command)) {
-        	throw new GlobalException(getClass().getName()+
+        	throw new IllegalArgumentException(getClass().getName()+
 			"(): invalid command parameter: "+command);
         }
         this.command=command;
