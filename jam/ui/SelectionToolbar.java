@@ -255,8 +255,8 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		try {
 			status.setCurrentGateName(gate.getName());
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
-			if (gate.getType() == Gate.ONE_DIMENSION) {
-				final double area = gate.getArea();
+			final double area = gate.getArea();
+			if (gate.getDimensionality() == 1) {
 				final double centroid = (double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
 				final int lowerLimit = gate.getLimits1d()[0];
 				final int upperLimit = gate.getLimits1d()[1];
@@ -265,7 +265,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 				console.messageOut("  Area = " + area + ", Centroid = "
 						+ centroid, MessageHandler.END);
 			} else {
-				final double area = gate.getArea();
 				console
 						.messageOut("Gate " + gate.getName(),
 								MessageHandler.NEW);
