@@ -75,6 +75,7 @@ public class Scaler {
      * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
      * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
      */
+    //FIXME KBS need to remove all Scaler should belong to groups
     public Scaler(String name, int number) {
     	this(null, name, number);
     }

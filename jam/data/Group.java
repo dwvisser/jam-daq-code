@@ -55,9 +55,6 @@ public class Group {
 
     /** Map of all groups using name */
     private final static Map NAME_MAP = new HashMap();
-
-    /** The current active group for creating histograms */
-    private static Group currentGroup;
     
     /** The sort group, group with sort histogram */
     private static Group sortGroup;
@@ -120,18 +117,6 @@ public class Group {
     public static void clearGroup(Group group){
     	NAME_MAP.remove(group);
     	LIST.remove(group);
-    }
-
-    /**
-     * Set a group as the current group, create the group if it does not already
-     * exist
-     * 
-     * @param groupName
-     */
-    public synchronized static void setCurrentGroup(String groupName) {
-        if (NAME_MAP.containsKey(groupName)) {
-            currentGroup = (Group) (NAME_MAP.get(groupName));
-        }
     }
 
     /**
@@ -200,8 +185,7 @@ public class Group {
         LIST.clear();
         /* Cast needed because of overloaded method. */
         //FIXME KBS
-        //createGroup(WORKING_NAME,Group.Type.TEMP);
-        setCurrentGroup(WORKING_NAME);
+        //createGroup(WORKING_NAME,Group.Type.TEMP);s
         sortGroup=null;
     }
 

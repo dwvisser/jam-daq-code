@@ -1,8 +1,10 @@
 package jam.sort;
 
+import jam.data.Group;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
 import jam.data.Histogram;
+import jam.data.Scaler;
 import jam.global.Beginner;
 import jam.global.Ender;
 import jam.global.Sorter;
@@ -366,7 +368,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	public static HistInt1D createHist1D(int numCh, String name, String title, String labelX,
 			String labelY){
-		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title,labelX,labelY);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh], name,title,labelX,labelY);
 	}
 	
 	/**
@@ -378,7 +381,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */	
 	public static HistInt1D createHist1D(int numCh, String name, String title){
-		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh],name,title);
 	}
 
 	/**
@@ -389,7 +393,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */
 	public static HistInt1D createHist1D(int numCh, String name){
-		return (HistInt1D)Histogram.createHistogram(new int[numCh],name);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh],name);
 	}
 	
 	/**
@@ -405,7 +410,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name, String title, String labelX,
 			String labelY){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title,labelX,labelY);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name,title,labelX,labelY);
 	}
 	
 	/**
@@ -418,7 +424,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name, String title){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name,title);
 	}
 	
 	/**
@@ -430,7 +437,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name);
 	}
 	
 	/**
@@ -445,7 +453,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	public static HistInt2D createHist2D(int chans, String name, String title, String labelX,
 			String labelY){
-		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name,title,labelX,labelY);
+		Group sortGroup = Group.getSortGroup();
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name,title,labelX,labelY);
 	}
 	
 	/**
@@ -457,7 +466,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */
 	public static HistInt2D createHist2D(int chans, String name, String title){
-		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name,title);
+		Group sortGroup = Group.getSortGroup();		
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name,title);
 	}
 	
 	/**
@@ -468,6 +478,20 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @return a newly allocated histogram
 	 */
 	public static HistInt2D createHist2D(int chans, String name){
-		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name);
+		Group sortGroup = Group.getSortGroup();		
+		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chans number of bins along the horizontal and vertical axes
+	 * @param name unique name
+	 * @return a newly allocated histogram
+	 */
+	public static Scaler createScaler(String name, int number){
+		Group sortGroup = Group.getSortGroup();		
+		return new Scaler(sortGroup, name, number);
+	}
+	
 }

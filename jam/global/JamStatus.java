@@ -266,6 +266,8 @@ public final class JamStatus {
 	 */
 	public synchronized void setCurrentHistogram(Histogram hist) {
 		currentHistogram=hist;
+		if (hist!=null)
+			currentGroup = hist.getGroup();
 	}
 	
 	/**

@@ -32,8 +32,9 @@ public class HistogramTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		h1 = Histogram.createHistogram(new int[100],"h1");
-		h2 = Histogram.createHistogram(new int[100][100], "h2");
+		Group group = Group.createGroup("TestHistogramGroup", Group.Type.FILE);
+		h1 = Histogram.createHistogram(group, new int[100],"h1");
+		h2 = Histogram.createHistogram(group, new int[100][100], "h2");
 		g1 = new Gate("g1",h1);
 		g2 = new Gate("g2",h2);
 	}

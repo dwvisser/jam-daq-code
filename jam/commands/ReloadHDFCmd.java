@@ -63,21 +63,27 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 		final boolean sorting = online || offline;
 		setEnabled(sorting);
 	}
-	
+	private void notifyApp() {
+		
+		Histogram firstHist=null;
+		/* Set to sort group. */
+		Group currentGroup = Group.getSortGroup();
+		if (currentGroup!=null)
+			STATUS.setCurrentGroup(currentGroup);
+			/* Set the current histogram to the first opened histogram. */
+			if (currentGroup.getHistogramList().size()>0 ) {
+			firstHist = (Histogram)currentGroup.getHistogramList().get(0);
+		}				
+		STATUS.setCurrentHistogram(firstHist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+
+	}
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */
 	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		Histogram firstHist=null;
-		/* Set to sort group. */
-		STATUS.setCurrentGroup(Group.getSortGroup());
-		/* Set the current histogram to the first opened histogram. */
-		if (STATUS.getCurrentGroup().getHistogramList().size()>0 ) {
-			firstHist = (Histogram)STATUS.getCurrentGroup().getHistogramList().get(0);
-		}				
-		STATUS.setCurrentHistogram(firstHist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		notifyApp();
 	}
 	
 }

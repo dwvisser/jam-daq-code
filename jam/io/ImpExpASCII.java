@@ -143,7 +143,7 @@ public class ImpExpASCII extends AbstractImpExp {
             tokens.nextToken();
             counts[i] = tokens.nval;
         }
-        Histogram.createHistogram(counts, name, title);
+        Histogram.createHistogram(importGroup, counts, name, title);
     }
 
 	private int maxX, maxY;
@@ -204,7 +204,7 @@ public class ImpExpASCII extends AbstractImpExp {
             tokens.nextToken();
             counts[channel] = tokens.nval;
         }
-        Histogram.createHistogram(counts, name, title);
+        Histogram.createHistogram(importGroup, counts, name, title);
     }
 
 	private void readHistXYZ(InputStream inputStream, String name,
@@ -224,7 +224,7 @@ public class ImpExpASCII extends AbstractImpExp {
             tokens.nextToken();
             counts[channelX][channelY] = tokens.nval;
         }
-        Histogram.createHistogram(counts, name, title);
+        Histogram.createHistogram(importGroup, counts, name, title);
     }
 
 	private void readHistMatrix(InputStream inputStream, String name,
@@ -242,7 +242,7 @@ public class ImpExpASCII extends AbstractImpExp {
                 counts[i][j] = tokens.nval;
             }
         }
-        Histogram.createHistogram(counts, name, title);
+        Histogram.createHistogram(importGroup, counts, name, title);
     }
 	
 

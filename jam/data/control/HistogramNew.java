@@ -203,6 +203,7 @@ public class HistogramNew extends AbstractControl {
 	 * Make a new histogram from the field inputs
 	 */
 	private void makeHistogram() {
+		Group histGroup;
 		String groupName = (String)comboGroupModel.getSelectedItem();		
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
@@ -219,11 +220,12 @@ public class HistogramNew extends AbstractControl {
 			array = new double[size][size];
 		}
 		if (null==Group.getGroup(groupName)) {
-			Group.createGroup(groupName, Group.Type.TEMP);
+			histGroup =Group.createGroup(groupName, Group.Type.TEMP);
 		} else {
-			Group.setCurrentGroup(groupName);			
+			histGroup =Group.getGroup(groupName);
+			STATUS.setCurrentGroup(histGroup);			
 		}
-		Histogram hist= Histogram.createHistogram(array, name, title);
+		Histogram hist= Histogram.createHistogram(histGroup, array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		JamStatus.getSingletonInstance().setCurrentHistogram(hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);

@@ -298,7 +298,7 @@ public class ImpExpORNL extends AbstractImpExp {
 				throw new IOException("File uses " + wordCh
 						+ " words/channel, which I don't know how to read.");
 			}
-			final Histogram hist = Histogram.createHistogram(counts2d, name);
+			final Histogram hist = Histogram.createHistogram(importGroup, counts2d, name);
 			hist.setNumber(number);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");
@@ -323,9 +323,9 @@ public class ImpExpORNL extends AbstractImpExp {
 				}
 			} else { //unable to handle data type
 				throw new IOException("File uses " + wordCh
-						+ " words/channel, which I don't know how to read.");
+						+ " words/channel, which can't be read.");
 			}
-			final Histogram hist = Histogram.createHistogram(counts, name);
+			final Histogram hist = Histogram.createHistogram(importGroup, counts, name);
 			hist.setNumber(number);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");

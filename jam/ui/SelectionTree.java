@@ -157,7 +157,7 @@ public class SelectionTree extends JPanel implements Observer {
             }else if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;
-                STATUS.setCurrentGroup(null);         
+                STATUS.setCurrentGroup(hist.getGroup());         
                 STATUS.setCurrentHistogram(hist);
                 STATUS.setCurrentGateName(null);                
                 /* Do we have overlays ? */
@@ -176,7 +176,7 @@ public class SelectionTree extends JPanel implements Observer {
                 final Gate gate = (Gate) firstNode;
                 final Histogram hist = getAssociatedHist(prime);
                 tree.addSelectionPath(pathForDataObject(hist));
-                STATUS.setCurrentGroup(null);    
+                STATUS.setCurrentGroup(hist.getGroup());    
                 STATUS.setCurrentHistogram(hist);
                 STATUS.clearOverlays();
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,

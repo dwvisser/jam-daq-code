@@ -17,21 +17,22 @@ import jam.global.Broadcaster;
 public final class InitialHistograms {
 
 	private transient final Histogram histInitial;
+	private transient final Group groupInitial;
 	
     /**
      * Constructs an instance of this class.
      */
 	public InitialHistograms() {
-		Group initialGroup =Group.createGroup("Initial", Group.Type.FILE);
+		Group group =Group.createGroup("Initial", Group.Type.FILE);
 
 		/* histogram with Jam name 2d */
-		final Histogram histJam2d = Histogram.createHistogram(initialGroup, histNameJam2d(),
+		final Histogram histJam2d = Histogram.createHistogram(group, histNameJam2d(),
 				"Histogram2D", "Jam Name 2D");
 		/* histogram with Jam name */
-		final Histogram histJam1d = Histogram.createHistogram(initialGroup, histNameJam1d(),
+		final Histogram histJam1d = Histogram.createHistogram(group, histNameJam1d(),
 				"Histogram1D", "Jam Name 1D");
 		/* histogram with triangles */
-		Histogram.createHistogram(initialGroup, histTriangle(), "Triangle");
+		Histogram.createHistogram(group, histTriangle(), "Triangle");
 		new Gate("Letter A", histJam1d); //gate
 		new Gate("Letter B", histJam1d); //gate
 		new Gate("Letter C", histJam1d); //gate
@@ -40,8 +41,13 @@ public final class InitialHistograms {
 		new Gate("Area C", histJam2d); //gate 2d
 		Broadcaster.getSingletonInstance().broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		histInitial =histJam2d;
+		groupInitial = group;
 	}
 
+	Group getInitialGroup(){
+		return groupInitial;
+	}
+	
 	Histogram getInitialHist(){
 		return histInitial;
 	}

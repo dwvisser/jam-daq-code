@@ -103,7 +103,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 				if (areaDataType == XSYS1DI4) {
 					String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					counts = unPackData1d(dis, areaSizeX, areaLengthPage);
-					AbstractHist1D hist = (AbstractHist1D)Histogram.createHistogram(counts, areaName, areaTitle);
+					AbstractHist1D hist = (AbstractHist1D)Histogram.createHistogram(importGroup, counts, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 
 					//calibrate histogram if flag set
@@ -118,7 +118,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 					String areaTitle = areaNumber + "  " + areaName + " ";
 					counts2d =
 						unPackData2d(dis, areaSizeX, areaSizeY, areaLengthPage);
-					Histogram hist = Histogram.createHistogram(counts2d, areaName, areaTitle);
+					Histogram hist = Histogram.createHistogram(importGroup, counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 					if (msgHandler != null) {
 						msgHandler.messageOut(" .");
@@ -211,7 +211,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 							buffer,
 							P_SCALER_TITLES + L_SCALER_TITLES * i,
 							L_SCALER_TITLES);
-					new Scaler(scalerTitles[i], i);
+					new Scaler(importGroup, scalerTitles[i], i);
 				}
 			}
 			firstHeader = false;

@@ -1,7 +1,8 @@
 package jam.io;
-import jam.data.Histogram;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.data.Group;
+import jam.data.Histogram;
 
 import java.awt.Frame;
 import java.io.BufferedInputStream;
@@ -60,6 +61,13 @@ public abstract class AbstractImpExp {
 	 * the last file accessed, null goes to users home directory
 	 */
 	protected File lastFile;
+	
+	/**
+	 * Group to import data into
+	 */
+	//FIXME KBS not yet created
+	protected Group importGroup;
+	
 
 	/**
 	 * Default constructor so that it may be launched dynamically

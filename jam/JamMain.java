@@ -117,7 +117,7 @@ public final class JamMain extends JFrame implements Observer {
 		final InitialHistograms initHists = new InitialHistograms();
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
-
+		status.setCurrentGroup(initHists.getInitialGroup());
 		status.setCurrentHistogram(initHists.getInitialHist());
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, initHists.getInitialHist());
 		showMainWindow(showGUI);

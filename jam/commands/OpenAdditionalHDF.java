@@ -85,6 +85,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	}
 
 	private void notifyApp() {
+		Group firstGroup;		
 		Histogram firstHist = null;
 		
 		//Update app status		
@@ -92,16 +93,14 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
 		//Set the current histogram to the first opened histogram
-		Group firstGroup =hdfio.getFirstLoadGroup();
+		firstGroup =hdfio.getFirstLoadGroup();
         if (firstGroup!=null) {
             STATUS.setCurrentGroup(firstGroup);
         }
         /* Set the current histogram to the first opened histogram. */
-        if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {
-            firstHist = (Histogram) STATUS.getCurrentGroup().getHistogramList()
-                    .get(0);
-        }
-		
+        if (firstGroup.getHistogramList().size() > 0) {
+            firstHist = (Histogram) firstGroup.getHistogramList().get(0);
+        }		
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}			

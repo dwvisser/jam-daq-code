@@ -101,7 +101,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 			dis.readInt(); //should read a hex  2000  dec 8192	
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
-			Histogram.createHistogram(counts, nameHist);
+			Histogram.createHistogram(importGroup, counts, nameHist);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");
 			}

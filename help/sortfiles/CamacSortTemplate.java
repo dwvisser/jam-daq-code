@@ -37,12 +37,13 @@ public final class CamacSortTemplate extends SortRoutine {
 	 */
 	public CamacSortTemplate() {
 		super();
+
 		final int hist1d = 1024;
 		/* initialize histograms, gates, and scalers */
 		myHist = createHist1D(hist1d, "detector1", "my detector");
 		myHistGated = createHist1D(hist1d, "detecGated", "my detector gated");
 		myGate = new Gate("detector1", myHist);
-		myScal = new Scaler("scaler1", SCALER_ID);
+		myScal = createScaler("scaler1", SCALER_ID);
 		myParam = new DataParameter("ParamAdjust");
 	}
 

@@ -140,11 +140,16 @@ public final class StringUtilities {
 		int index;
 		index =fileNameIn.lastIndexOf(".");
 		//Extension 3 or less characters, index -1 if not found
-		if(index>=fileNameIn.length()-4) {
-			fileName =fileNameIn.substring(0, index);
+		if (index>0) {
+			if(index>=fileNameIn.length()-4) {
+				fileName =fileNameIn.substring(0, index);
+			} else {
+				fileName =fileNameIn;
+			}
 		} else {
-			fileName =fileNameIn;
+			fileName=fileNameIn;
 		}
+			
 		return fileName;
 	}
 	

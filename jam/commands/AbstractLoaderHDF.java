@@ -71,10 +71,10 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
 	    //execute(null);	//has unhandled exception
 	}	
 	/**
-	 * Called by HDFIO when asynchronized IO is completed  
+	 * Notify the application when the command is done
+	 *
 	 */
-	public void completedIO(String message, String errorMessage) {
-		hdfio.removeListener();
+	private void notifyApp() {
 		Histogram firstHist=null;
 		/*
          * Set to sort group. Set the current histogram to the first opened
@@ -90,6 +90,14 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
 		}					
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		
+	}
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void completedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		notifyApp();
 	}
 	
 }

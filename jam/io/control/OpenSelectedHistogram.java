@@ -240,16 +240,15 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
-
 		//Set the current histogram to the first opened histogram		
 		Group firstGroup =hdfio.getFirstLoadGroup();		
         if (firstGroup!=null) {
             STATUS.setCurrentGroup(firstGroup);
-        }
-        /* Set the current histogram to the first opened histogram. */
-        if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {
-            firstHist = (Histogram) STATUS.getCurrentGroup().getHistogramList()
-                    .get(0);
+
+            /* Set the current histogram to the first opened histogram. */
+            if (firstGroup.getHistogramList().size() > 0) {
+            	firstHist = (Histogram) firstGroup.getHistogramList().get(0);
+            }
         }
 		
 		if (firstHist!=null) {

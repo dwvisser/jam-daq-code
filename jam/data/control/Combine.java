@@ -314,36 +314,39 @@ public class Combine extends AbstractManipulation implements Observer {
 		
 		double[] errOut = hto.getErrors();
 
+		//Use minimun size of both 
+		int numChannels = Math.min(out.length, in1.length);
+		
 		//Do calculation
 		if (cnorm.isSelected()) {
-			for (int i = 0; i < out.length; i++) {
+			for (int i = 0; i < numChannels; i++) {
 				out[i] = fac1 * in1[i];
 				errOut[i] = fac1 * err1[i];				
 			}
 			operation =" Normalized ";
 		} else if (cplus.isSelected()) {
-			for (int i = 0; i < out.length; i++) {
+			for (int i = 0; i < numChannels; i++) {
 				out[i] = fac1 * in1[i] + fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
 						* fac2 * err2[i] * err2[i]);
 			}
 			operation =" Added with ";			
 		} else if (cminus.isSelected()) {
-			for (int i = 0; i < out.length; i++) {
+			for (int i = 0; i < numChannels; i++) {
 				out[i] = fac1 * in1[i] - fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac1 * fac1 * err1[i] * err1[i] + fac2
 						* fac2 * err2[i] * err2[i]);
 			}
 			operation =" Subtracted from ";
 		} else if (ctimes.isSelected()) {
-			for (int i = 0; i < out.length; i++) {
+			for (int i = 0; i < numChannels; i++) {
 				out[i] = fac1 * in1[i] * fac2 * in2[i];
 				errOut[i] = Math.sqrt(fac2 * fac2 * err1[i] * err1[i] + fac1
 						* fac1 * err2[i] * err2[i]);
 			}
 			operation =" Multiplied with ";
 		} else if (cdiv.isSelected()) {
-			for (int i = 0; i < out.length; i++) {
+			for (int i = 0; i < numChannels; i++) {
 				out[i] = fac1 * in1[i] / (fac2 * in2[i]);
 				errOut[i] = in1[i]
 						/ in2[i]

@@ -254,20 +254,6 @@ public abstract class Histogram {
 		return rval;
 	}
 
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Object array, String name,
-			String title, String labelX, String labelY) {
-		return createHistogram(null, array, name, title, labelX, labelY);
-	}
 		
 	/**
 	 * Creates a new histogram, using the given array as the template.
@@ -286,19 +272,6 @@ public abstract class Histogram {
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @return a newly created histogram
-	 */
-	static public Histogram createHistogram(Object array, String name,
-			String title) {
-		return createHistogram(null, array, name, title, null, null);
-	}
-
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
 	 * @param group group to create histogram in
 	 * @param array 1d or 2d int or double array
 	 * @param name unique identifier
@@ -307,18 +280,20 @@ public abstract class Histogram {
 	static public Histogram createHistogram(Group group, Object array, String name) {
 		return createHistogram(group, array, name, name, null, null);
 	}
-	
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
 	 * @param array 1d or 2d int or double array
 	 * @param name unique identifier
+	 * @param title verbose description
 	 * @return a newly created histogram
 	 */
-	static public Histogram createHistogram(Object array, String name) {
-		return createHistogram(null, array, name, name, null, null);
+	/* FIXME KBS now longer used, all create methods must have a group
+	static public Histogram createHistogram(Object array, String name,
+			String title) {
+		return createHistogram(null, array, name, title, null, null);
 	}
-
+	*/
 	
 	/**
 	 * Master constructor invoked by all other constructors.
@@ -346,10 +321,6 @@ public abstract class Histogram {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;		
 		this.title = title;
-		if (group==null) {
-			//FIXME KBS
-			//group = STATUS.getCurrentGroup();
-		}
 		/* Make a unique name in the group */ 
 		final Map groupHistMap =group.getHistogramMap();	
 		final StringUtilities stringUtil = StringUtilities.instance();
