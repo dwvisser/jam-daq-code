@@ -23,19 +23,12 @@ Commandable {
 	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	protected MessageHandler msghdlr;
 	
-	
 	/**
-	 * Constructor
-	 *
+	 * Constructor.
 	 */
 	AbstractCommand(){
 		super();
 		msghdlr=status.getMessageHandler();
-	}
-	
-	public final void init(MessageHandler mh) {
-		msghdlr=mh;
-		initCommand();
 	}
 	
 	/**
@@ -56,7 +49,8 @@ Commandable {
 	}
 	
 	/**
-	 * Perform a command
+	 * Perform a command and log it. This calls 
+	 * <code>execute()</code> with the given parameters.
 	 *
 	 * @param cmdParams the command parameters
 	 */
@@ -71,7 +65,8 @@ Commandable {
 	}
 
 	/**
-	 * Perform a command
+	 * Perform a command and log it. This calls 
+	 * <code>executeParse()</code> with the given parameters.
 	 *
 	 * @param strCmdParams the command parameters as strings
 	 */
@@ -86,7 +81,7 @@ Commandable {
 	}
 	
 	/**
-	 * Log the command
+	 * Log the command, does nothing yet.
 	 *
 	 */
 	public void logCommand() {
@@ -94,7 +89,7 @@ Commandable {
 	}
 	
 	/**
-	 * Log a command error
+	 * Log a command error, does nothing yet.
 	 *
 	 */
 	public void logError(){
@@ -102,7 +97,7 @@ Commandable {
 	}
 	
 	/**
-	 * Execute a command with the given command parameters
+	 * Execute a command with the given command parameters.
 	 * 
 	 * @param cmdParams command parameters
 	 */
@@ -110,7 +105,7 @@ Commandable {
 		
 	
 	/**
-	 * Execute a command with the given command string tokens
+	 * Execute a command with the given command string tokens.
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
