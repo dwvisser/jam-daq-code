@@ -55,6 +55,9 @@ final class SelectionToolbar extends JToolBar implements Observer {
 					 Broadcaster b,
 					 Display d) {
 		super("Selection", JToolBar.HORIZONTAL);
+
+		final int chooserWidth=200;
+
 		classname = getClass().getName() + "--";
 		console = mh;
 		status = js;
@@ -64,7 +67,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		noGateComboBoxModel.addElement("NO GATES");
 		pCenter = new JPanel();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT));
+		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT,5,0));
 		previousLayout=VERTICAL;
 		/* Run status */
 		final Box pRunState = new Box(BoxLayout.X_AXIS);
@@ -76,7 +79,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
-		final int chooserWidth=200;
+
 		Dimension dim=histogramChooser.getPreferredSize();
 		dim.width=chooserWidth;
 		histogramChooser.setPreferredSize(dim);
@@ -128,7 +131,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		addSeparator();
 		add(pCenter);
 	}
-	
+
 	private void histogramsChanged() {
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.repaint();
