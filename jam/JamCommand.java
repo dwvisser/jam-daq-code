@@ -125,20 +125,6 @@ public class JamCommand
 			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
 		} else if ("remote".equals(incommand)) {
 			setupRemote.showRemote();
-		} else if ("project".equals(incommand)) {
-			projection.show();
-		} else if ("manipulate".equals(incommand)) {
-			manipulate.show();
-		} else if ("gainshift".equals(incommand)) {
-			gainshift.show();
-		} else if ("caldisp".equals(incommand)) {
-			calibDisplay.show();
-		} else if ("calfitlin".equals(incommand)) {
-			calibFit.show();
-		} else if ("about".equals(incommand)) {
-			help.showAbout();
-		} else if ("license".equals(incommand)) {
-			help.showLicense();
 		} else if ("peakfind".equals(incommand)) {
 			peakFindDialog.show();
 		} else { //See if it a command class
