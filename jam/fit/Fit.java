@@ -221,9 +221,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	/**
 	 * Creates user interface dialog box.
 	 *
-	 * @param	frame	    controlling frame
-	 * @param	display	    Jam main class
-	 * @param	msgHandler  object to send error messages to
+	 * @param	f	    controlling frame
+	 * @param	d	    Jam main class
+	 * @param	mh  object to send error messages to
 	 * @exception   FitException	    thrown if unrecoverable error occurs during dialog creation
 	 */
 	public void createDialog(
