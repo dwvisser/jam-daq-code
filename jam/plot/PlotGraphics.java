@@ -267,6 +267,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		g = (Graphics2D) graph;
 		g.setRenderingHints(rh);
+		if (fm==null){
+			this.setFont(font);
+		}
 	}
 
 	/**

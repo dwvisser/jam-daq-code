@@ -316,6 +316,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     public void paintHistogram(Graphics g) {
         scale=plotLimits.getScale();
         g.setColor(PlotColorMap.hist);
+		graph.update(g);
         if (JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE)){
         	graph.drawHist2d(counts2d);
 			g.setPaintMode();
