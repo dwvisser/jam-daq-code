@@ -18,14 +18,14 @@ import javax.swing.JOptionPane;
  * @author   Dale Visser
  * @since       JDK1.1
  */
-public final class NumericalDataGroup extends DataObject {
+final class NumericalDataGroup extends DataObject {
 
 	/**
 	 * List of data elements this NDG ties together.
 	 */
-	List elements;
+	private List elements;
 
-	public NumericalDataGroup(HDFile fi) {
+	NumericalDataGroup(HDFile fi) {
 		super(fi, DFTAG_NDG); //sets tag
 		elements = new Vector();
 		try {
@@ -36,7 +36,7 @@ public final class NumericalDataGroup extends DataObject {
 		}
 	}
 
-	public NumericalDataGroup(HDFile hdf, byte[] data, short t, short reference) {
+	NumericalDataGroup(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
 	}
 
@@ -46,23 +46,20 @@ public final class NumericalDataGroup extends DataObject {
 	 * @exception HDFException unrecoverable error
 	 */
 	protected void refreshBytes() throws HDFException {
-		int numBytes;
-		ByteArrayOutputStream baos;
-		DataOutputStream dos;
-
 		try {
-			numBytes = 4 * elements.size();
+			final int numBytes = 4 * elements.size();
 			/* see DFTAG_NDG specification for HDF 4.1r2 */
-			baos = new ByteArrayOutputStream(numBytes);
-			dos = new DataOutputStream(baos);
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
+			final DataOutputStream dos = new DataOutputStream(baos);
 			for (Iterator temp = elements.iterator(); temp.hasNext();) {
-				DataObject ob = (DataObject) (temp.next());
+				final DataObject ob = (DataObject) (temp.next());
 				dos.writeShort(ob.getTag());
 				dos.writeShort(ob.getRef());
 			}
 			bytes = baos.toByteArray();
+			dos.close();
 		} catch (IOException e) {
-			throw new HDFException("Problem processing NDG: " + e.getMessage());
+			throw new HDFException("Problem processing NDG.",e);
 		}
 	}
 
@@ -88,7 +85,7 @@ public final class NumericalDataGroup extends DataObject {
 			}
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting NDG: " + e.getMessage());
+				"Problem interpreting NDG.",e);
 		}
 	}
 
@@ -97,7 +94,7 @@ public final class NumericalDataGroup extends DataObject {
 	 *
 	 * @param  data  data element to be added
 	 */
-	public void addDataObject(DataObject data) {
+	void addDataObject(DataObject data) {
 		elements.add(data);
 		try {
 			refreshBytes();
@@ -107,10 +104,10 @@ public final class NumericalDataGroup extends DataObject {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Passes the internal vector back.
 	 */
-	public List getObjects() {
+	List getObjects() {
 		return elements;
 	}
 }

@@ -16,32 +16,28 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class ScientificDataDimension extends DataObject {
+final class ScientificDataDimension extends DataObject {
 
 	/**
 	 * The number of dimensions
 	 */
-	int rank;
+	private int rank;
 
 	/**
 	 * The size of the dimensions.  I have assumed identical x- and y- dimensions for
 	 * 2-d spectra.
 	 */
-	int sizeX;
-	int sizeY;
-
-	boolean isDouble;
+	private int sizeX;
+	private int sizeY;
 
 	private byte numberType;
 
-	private ScientificDataScales sds;
-
-	public ScientificDataDimension(HDFile fi, Histogram h) {
+	ScientificDataDimension(HDFile fi, Histogram h) {
 		super(fi, DFTAG_SDD); //sets tag
 		rank = h.getDimensionality();
 		sizeX = h.getSizeX();
 		sizeY = h.getSizeY();
-		isDouble = !h.getType().isInteger();
+		final boolean isDouble = !h.getType().isInteger();
 		int byteLength = 6 + 8 * rank; // see p. 6-33 HDF 4.1r2 specs
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -70,10 +66,13 @@ public class ScientificDataDimension extends DataObject {
 			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
-		sds = new ScientificDataScales(this);
+		/* Create new data scales object to go with this.
+		 * A reference variable is not needed.
+		 */
+		new ScientificDataScales(this);
 	}
 
-	public ScientificDataDimension(HDFile hdf, byte[] data, short t, short reference) {
+	ScientificDataDimension(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
 	}
 
@@ -99,24 +98,19 @@ public class ScientificDataDimension extends DataObject {
 		}
 	}
 
-	public int getRank() {
+	int getRank() {
 		return rank;
 	}
 
-	public int getSizeX() {
+	int getSizeX() {
 		return sizeX;
 	}
 
-	public int getSizeY() {
+	int getSizeY() {
 		return sizeY;
 	}
 
-	public byte getType() {
+	byte getType() {
 		return numberType;
 	}
-
-	public ScientificDataScales getSDS() {
-		return sds;
-	}
-
 }

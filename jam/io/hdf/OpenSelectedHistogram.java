@@ -43,7 +43,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken
  *  
  */
-public class OpenSelectedHistogram {
+public final class OpenSelectedHistogram {
 
 	//UI components
 	private JDialog dialog;
@@ -216,19 +216,15 @@ public class OpenSelectedHistogram {
 
 	}
 
-	/**
-	 * Load the histograms in the selected list
-	 *  
+	/* non-javadoc:
+	 * Load the histograms in the selected list.
 	 */
 	private Histogram loadHistograms() {
-
 		Object[] selected = histList.getSelectedValues();
 		Histogram firstHist=null;
 		int i;
-
 		//No histograms selected
 		if (selected.length > 0) {
-			
 			Group.createGroup(fileOpen.getName(), Group.Type.FILE);
 			//Loop for each selected item
 			for (i = 0; i < selected.length; i++) {
@@ -253,7 +249,7 @@ public class OpenSelectedHistogram {
 	 * 
 	 * @return <code>true</code> if successful
 	 */
-	public boolean openFile() {
+	private boolean openFile() {
 		boolean openF = false;
 		final JFileChooser jfile = new JFileChooser(fileOpen);
 		jfile.setFileFilter(new HDFileFilter(true));
@@ -386,10 +382,8 @@ public class OpenSelectedHistogram {
 		return histNames;
 	}
 
-	/**
+	/* non-javadoc: 
 	 * Create a histogram using HistProp
-	 * 
-	 * @param histProp
 	 */
 	private Histogram createHistogram(HistProp histProp) {
 		String fileName = hdfFile.getFile().getName();

@@ -13,20 +13,20 @@ import java.io.IOException;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class ScientificData extends DataObject {
+final class ScientificData extends DataObject {
 
 	/**
 	 * The number of dimensions
 	 */
-	int rank;
+	private int rank;
 
 	/**
 	 * The size of the dimensions.
 	 * //PROBLEM I have assumed identical x- and y- dimensions for
 	 * 2-d spectra. In the process of fixing this.
 	 */
-	int sizeX;
-	int sizeY;
+	private int sizeX;
+	private int sizeY;
 
 	/**
 	 * By default, is STORE which indicates normal mode of operation, where <code>bytes</code> is read in when
@@ -43,67 +43,54 @@ public class ScientificData extends DataObject {
 	private double[] countsD;
 	private int[][] counts2d;
 	private double[][] counts2dD;
-	int byteLength;
+	private int byteLength;
 
 	private byte numberType;
 
-	private static final byte INT = NumberType.INT;
-	private static final byte DOUBLE = NumberType.DOUBLE;
-	private static final byte INT_SIZE = NumberType.INT_SIZE;
-	private static final byte DOUBLE_SIZE = NumberType.DOUBLE_SIZE;
-
-	public ScientificData(HDFile fi, int[] counts) {
+	ScientificData(HDFile fi, int[] counts) {
 		super(fi, DFTAG_SD); //sets tag
-		numberType = INT;
+		numberType = NumberType.INT;
 		inputMode = STORE;
 		rank = 1;
 		sizeX = counts.length;
-		byteLength = INT_SIZE * sizeX; // see p. 6-34 HDF 4.1r2 specs
+		byteLength = NumberType.INT_SIZE * sizeX; // see p. 6-34 HDF 4.1r2 specs
 		this.counts = counts;
 	}
 
-	public ScientificData(HDFile fi, double[] counts) {
+	ScientificData(HDFile fi, double[] counts) {
 		super(fi, DFTAG_SD); //sets tag
-		numberType = DOUBLE;
+		numberType = NumberType.DOUBLE;
 		inputMode = STORE;
 		rank = 1;
 		sizeX = counts.length;
-		byteLength = DOUBLE_SIZE * sizeX; // see p. 6-34 HDF 4.1r2 specs
+		byteLength = NumberType.DOUBLE_SIZE * sizeX; // see p. 6-34 HDF 4.1r2 specs
 		this.countsD = counts;
 	}
 
-	public ScientificData(HDFile fi, int[][] counts2d) {
+	ScientificData(HDFile fi, int[][] counts2d) {
 		super(fi, DFTAG_SD); //sets tag
-		numberType = INT;
+		numberType = NumberType.INT;
 		inputMode = STORE;
 		rank = 2;
 		sizeX = counts2d.length;
 		sizeY = counts2d[0].length;
-		byteLength = INT_SIZE * sizeX * sizeY; // see p. 6-34 HDF 4.1r2 specs
+		byteLength = NumberType.INT_SIZE * sizeX * sizeY; // see p. 6-34 HDF 4.1r2 specs
 		this.counts2d = counts2d;
 	}
 
-	public ScientificData(HDFile fi, double[][] counts2d) {
+	ScientificData(HDFile fi, double[][] counts2d) {
 		super(fi, DFTAG_SD); //sets tag
-		numberType = DOUBLE;
+		numberType = NumberType.DOUBLE;
 		inputMode = STORE;
 		rank = 2;
 		sizeX = counts2d.length;
 		sizeY = counts2d[0].length;
-		byteLength = DOUBLE_SIZE * sizeX * sizeY;
+		byteLength = NumberType.DOUBLE_SIZE * sizeX * sizeY;
 		// see p. 6-34 HDF 4.1r2 specs
 		this.counts2dD = counts2d;
 	}
 
-	public ScientificData(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
-		inputMode = STORE;
-	}
-
-	/**
-	 *
-	 */
-	public ScientificData(
+	ScientificData(
 		HDFile hdf,
 		int offset,
 		int length,
@@ -114,19 +101,19 @@ public class ScientificData extends DataObject {
 	}
 
 	/**
-	 *
+	 * requires associated SDD, NT, NDG records
 	 */
-	public void interpretBytes() { //requires associated SDD, NT, NDG records
+	public void interpretBytes() {
 	}
 
-	/**
+	/* non-javadoc:
 	 * @throws HDFException unrecoverable error
 	 * @throws UnsupportedOperationException if this object doesn't represent 1d int
 	 * @throws IllegalStateException if the input mode isn't recognized
 	 */
 	int[] getData1d(int size) throws HDFException { //assumes int type!
 		final byte[] localBytes;
-		if (numberType != INT || rank != 1) {
+		if (numberType != NumberType.INT || rank != 1) {
 			throw new UnsupportedOperationException("getData1d called on wrong type of SD.");
 		}
 		switch (inputMode) {
@@ -166,7 +153,7 @@ public class ScientificData extends DataObject {
 		int i;
 		byte[] localBytes;
 
-		if (numberType != DOUBLE || rank != 1) {
+		if (numberType != NumberType.DOUBLE || rank != 1) {
 			throw new HDFException(
 				"SD ref#" + getRef() + ": getData1dD() called on wrong type");
 		}
@@ -205,7 +192,7 @@ public class ScientificData extends DataObject {
 	int[][] getData2d(int sizeX, int sizeY) throws HDFException {
 		final byte[] localBytes;
 
-		if (numberType != INT || rank != 2)
+		if (numberType != NumberType.INT || rank != 2)
 			throw new HDFException("getData2d called on wrong type of SD.");
 		switch (inputMode) {
 			case STORE : //read data from internal array
@@ -244,7 +231,7 @@ public class ScientificData extends DataObject {
 	double[][] getData2dD(int sizeX, int sizeY) throws HDFException {
 		final byte[] localBytes;
 
-		if (numberType != DOUBLE || rank != 2) {
+		if (numberType != NumberType.DOUBLE || rank != 2) {
 			throw new HDFException("getData2dD called on wrong type of SD.");
 		}
 		switch (inputMode) {
@@ -294,7 +281,7 @@ public class ScientificData extends DataObject {
 			switch (rank) {
 				case 1 :
 					for (int i = 0; i < sizeX; i++) { // write out data type
-						if (numberType == INT) {
+						if (numberType == NumberType.INT) {
 							dos.writeInt(counts[i]);
 						} else {
 							dos.writeDouble(countsD[i]);
@@ -304,7 +291,7 @@ public class ScientificData extends DataObject {
 				case 2 :
 					for (int i = 0; i < sizeX; i++) { // write out data type
 						for (int j = 0; j < sizeY; j++) {
-							if (numberType == INT) {
+							if (numberType == NumberType.INT) {
 								dos.writeInt(counts2d[i][j]);
 							} else {
 								dos.writeDouble(counts2dD[i][j]);

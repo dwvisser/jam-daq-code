@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class JavaMachineType extends DataObject {
+final class JavaMachineType extends DataObject {
 
 	/**
 	 * BigEndian 32 bit Sun architecture output, not coincidentally the way Sun chose to have
@@ -22,9 +22,9 @@ public class JavaMachineType extends DataObject {
 	 * with IEEE floats.  For alternative DFMT_ values and interpretations, see <code>hdfi.h</code> in the
 	 * HDF4.1r2 source code.  
 	 */
-	private short DFMT_SUN = 0x1111;
+	private static final short DFMT_SUN = 0x1111;
 
-	public JavaMachineType(HDFile fi) {
+	JavaMachineType(HDFile fi) {
 		super(fi, DFTAG_MT); //sets tag
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -35,10 +35,6 @@ public class JavaMachineType extends DataObject {
 			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		bytes = baos.toByteArray();
-	}
-
-	public JavaMachineType(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
 	}
 
 	public void interpretBytes() { 

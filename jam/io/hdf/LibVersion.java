@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class LibVersion extends DataObject {
+final class LibVersion extends DataObject {
 
 	/**
 	 * Major version number
@@ -39,7 +39,7 @@ public class LibVersion extends DataObject {
 	 */
 	private String description;
 	
-	//initializer block
+	/* initializer block */
 	{
 		final StringUtilities su=StringUtilities.instance();
 		description = su.makeLength(
@@ -48,7 +48,7 @@ public class LibVersion extends DataObject {
 		/* DFTAG_VERSION seems to need to be 92(80=92-12) long */ 
 	}
 
-	public LibVersion(HDFile fi) {
+	LibVersion(HDFile fi) {
 		super(fi, DFTAG_VERSION); //sets tag
 		final int byteLength = 12 + description.length(); // 3 ints + string
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -65,7 +65,7 @@ public class LibVersion extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	public LibVersion(HDFile hdf, byte[] data, short t,short reference) {
+	LibVersion(HDFile hdf, byte[] data, short t,short reference) {
 		super(hdf, data, t, reference);
 	}
 	
@@ -88,7 +88,7 @@ public class LibVersion extends DataObject {
 			description = new String(temp);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting VERSION: " + e.getMessage());
+				"Problem interpreting VERSION.",e);
 		}
 	}
 }

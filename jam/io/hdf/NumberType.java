@@ -10,7 +10,7 @@ package jam.io.hdf;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class NumberType extends DataObject {
+final class NumberType extends DataObject {
 
 	/**
 	 * First version of encoding
@@ -48,17 +48,22 @@ public class NumberType extends DataObject {
 	private final static byte DFNT_MBO = 1;
 
 	private byte numberType;
-	static final public byte INT = 0;
-	static final public byte DOUBLE = 1;
-	public static final byte INT_SIZE = 4;
-	public static final byte DOUBLE_SIZE = 8;
+	
+	/** Code for <code>int</code> number type. */
+	static final byte INT = 0;
+
+	/** Code for <code>double</code> number type. */
+	static final byte DOUBLE = 1;
+	
+	static final byte INT_SIZE = 4;
+	static final byte DOUBLE_SIZE = 8;
 
 	/**
 	 * @param fi HDF file we belong to
 	 * @param type one of <code>INT</code> or <code>DOUBLE</code>, 
 	 * @throws IllegalArgumentException if an invalid type is given
 	 */
-	public NumberType(HDFile fi, byte type) {
+	NumberType(HDFile fi, byte type) {
 		super(fi, DFTAG_NT); //sets tag
 		if (type == INT) {
 			bytes = new byte[] { NT_VERSION, DFNT_INT32, IntWidth, DFNT_MBO };
@@ -70,9 +75,8 @@ public class NumberType extends DataObject {
 		}
 	}
 
-	public NumberType(HDFile hdf, byte[] data, short t, short reference) {
+	NumberType(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t,reference);
-		//tag = DFTAG_NT;
 	}
 
 	/**
@@ -96,7 +100,7 @@ public class NumberType extends DataObject {
 		}
 	}
 
-	public byte getType() {
+	byte getType() {
 		return numberType;
 	}
 
