@@ -1,15 +1,38 @@
-/*
- */
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import jam.data.DataException;
+import jam.data.Histogram;
+import jam.data.func.CalibrationFunction;
+import jam.data.func.LinearFunction;
+import jam.data.func.CalibrationComboBoxModel;
+import jam.data.func.CalibrationListCellRenderer;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.util.FileUtilities;
+
+import java.awt.Container;
+import java.awt.FileDialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.text.NumberFormat;
-import jam.global.*;
-import jam.util.*;
-import jam.data.*;
-import jam.data.func.*;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Class to control the histograms
@@ -19,7 +42,7 @@ import javax.swing.*;
  * @author Ken Swartz
  * @version 0.5
  */
-public class CalibrationFit extends DataControl implements ActionListener, ItemListener {
+public class CalibrationFit extends DataControl implements ActionListener, ItemListener{
 
     private static final int NUMBER_POINTS=5;
 
@@ -44,6 +67,9 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     private String directoryName;
     private NumberFormat numFormat;
     private JamStatus status;
+	private JButton bokCal =  new JButton("OK");
+	private JButton bapplyCal = new JButton("Apply");
+	private JButton bcancelCal =new JButton("Cancel");
 
     /**
      * Constructor
@@ -57,32 +83,25 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         status=JamStatus.instance();
         // calibration dialog box
         dialogCalib =new JDialog(frame,"Calibration Fit",false);
-        dialogCalib.setForeground(Color.black);
-        dialogCalib.setBackground(Color.lightGray);
         dialogCalib.setResizable(false);
         dialogCalib.setLocation(30,30);
         Container cdialogCalib=dialogCalib.getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
         //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
-        pChoose.add(new JLabel("FunctionType"));
-        cFunc = new JComboBox();
-        pChoose.add(cFunc);
-        cFunc.addItem("Linear");
-        cFunc.addItem("Polynomial");
-        cFunc.addItem("Sqrt(E)");
-        cFunc.addItemListener(this);
+        pChoose.add(new JLabel("Function: "));
+        cFunc = new JComboBox(new CalibrationComboBoxModel());
+        cFunc.setRenderer(new CalibrationListCellRenderer());
         cFunc.setSelectedIndex(0);
+        pChoose.add(cFunc);
+//        cFunc.addItem("Linear");
+//        cFunc.addItem("Polynomial");
+//        cFunc.addItem("Sqrt(E)");
+        cFunc.addItemListener(this);
         cdialogCalib.add(pChoose);
-        //fuction equation
-        try {
-            calibFunction=new LinearFunction();
-        } catch (DataException de){
-            msghdlr.errorOutln(getClass().getName()+" constructor: "+de.getMessage());
-        }
-        lcalibEq=new JLabel("Function: "+calibFunction.getTitle(), JLabel.CENTER);
+        calibFunction=new LinearFunction();
+        lcalibEq=new JLabel(calibFunction.getTitle(), JLabel.CENTER);
         cdialogCalib.add(lcalibEq);
-        //fields
         pPoint=new JPanel[NUMBER_POINTS];
         tEnergy =new JTextField[NUMBER_POINTS];
         tChannel =new JTextField[NUMBER_POINTS];
@@ -93,14 +112,10 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             pPoint[i].add(new JLabel("Energy"));
             tEnergy[i] =new JTextField(" ");
             tEnergy[i].setColumns(6);
-            tEnergy[i].setForeground(Color.black);
-            tEnergy[i].setBackground(Color.white);
             pPoint[i].add(tEnergy[i]);
             pPoint[i].add(new JLabel("Channel"));
             tChannel[i] =new JTextField(" ");
             tChannel[i].setColumns(6);
-            tChannel[i].setForeground(Color.black);
-            tChannel[i].setBackground(Color.white);
             pPoint[i].add(tChannel[i]);
             cUse[i] =new JCheckBox("use");
             cUse[i].setSelected(true);
@@ -113,15 +128,12 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         pbutton.add(pbCal);
         cdialogCalib.add(pbutton);
 
-        JButton bokCal =  new JButton("OK");
         bokCal.setActionCommand("okcalib");
         bokCal.addActionListener(this);
         pbCal.add(bokCal);
-        JButton bapplyCal = new JButton("Apply");
         bapplyCal.setActionCommand("applycalib");
         bapplyCal.addActionListener(this);
         pbCal.add(bapplyCal);
-        JButton bcancelCal =new JButton("Cancel");
         bcancelCal.setActionCommand("cancelcalib");
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
@@ -131,6 +143,9 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             public void windowClosing(WindowEvent e){
                 dialogCalib.dispose();
             }
+			public void windowActivated(WindowEvent e) {
+				setup();
+			}
         });
 
         //formating enery output
@@ -185,54 +200,36 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      *
      */
     public void itemStateChanged(ItemEvent ie){
-        try {
-            if (ie.getSource()==cFunc) {
-                setFunctionType();//choose the function
-            } else {
-                for(int i=0;i<NUMBER_POINTS;i++){
-                    if(ie.getSource()==cUse[i]){
-                        setFieldActive(i, cUse[i].isSelected());
-                    }
+        if (ie.getSource()==cFunc) {
+            setFunctionType();//choose the function
+        } else {
+            for(int i=0;i<NUMBER_POINTS;i++){
+                if(ie.getSource()==cUse[i]){
+                    setFieldActive(i, cUse[i].isSelected());
                 }
             }
-        } catch (DataException de){
-            msghdlr.errorOutln(de.getMessage());
         }
     }
 
-    private void setFunctionType() throws DataException {
-        Object item = cFunc.getSelectedItem();
-        if(item.equals("Linear")){
-            calibFunction=new LinearFunction();
-        } else if(item.equals("Polynomial")){
-            calibFunction=new PolynomialFunction(4);
-        } else if(item.equals("Sqrt(E)")){
-            calibFunction=new SqrtEnergyFunction();
-        }
-        lcalibEq.setText("Function: "+calibFunction.getTitle());
+    private void setFunctionType() {
+		final Class calClass = (Class)cFunc.getSelectedItem();
+		try {
+			calibFunction = (CalibrationFunction)calClass.newInstance();
+		} catch (Exception e) {
+			msghdlr.errorOutln(getClass().getName()+
+			".setFunctionType(): "+e.toString());            	
+		} 
+        lcalibEq.setText(calibFunction.getTitle());
     }
 
     /**
      *sets fields to be active
      */
     private void setFieldActive(int number, boolean state){
-        if(!state){
-            tChannel[number].setBackground(Color.lightGray);
-            tChannel[number].setEnabled(false);
-            tEnergy[number].setBackground(Color.lightGray);
-            tEnergy[number].setEnabled(false);
-        } else {
-            tChannel[number].setBackground(Color.white);
-            tChannel[number].setEnabled(true);
-            tEnergy[number].setBackground(Color.white);
-            tEnergy[number].setEnabled(true);
-        }
+		tChannel[number].setEnabled(state);
+		tEnergy[number].setEnabled(state);
     }
-    /**
-     * Does nothing made to match other contollers.
-     */
-    public void setup(){
-    }
+
     /**
      * Show histogram calibration dialog box
      */
@@ -253,7 +250,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
 
         Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHist==null){//silently ignore if histogram null
-            System.err.println("Error null histogram [Calibrate]");
+            msghdlr.errorOutln("null histogram [Calibrate]");
         }
         try {
             for(int i=0;i<NUMBER_POINTS;i++){
@@ -335,23 +332,34 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         } //else leave it null
         return fileIn;
     }
+    
 
-    /**
-     *  Process window events
-     *  If the window is active check that the histogram been displayed
-     *  has not changed. If it has cancel the gate setting.
-     */
-    public void windowActivated(WindowEvent e){
-        Histogram  hist=Histogram.getHistogram(status.getCurrentHistogramName());
-        //have we changed histograms
-        if (hist!=currentHistogram){
-            currentHistogram=hist;
-            calibFunction=currentHistogram.getCalibration();
-            setup();
-            //has calib function changed
-        } else if(calibFunction!=currentHistogram.getCalibration()){
-            calibFunction=currentHistogram.getCalibration();
-            setup();
-        }
+    public void setup(){
+		final Histogram hist=Histogram.getHistogram(
+		status.getCurrentHistogramName());
+		if (hist!=currentHistogram){
+			currentHistogram=hist;
+			calibFunction = currentHistogram==null ? null :
+			currentHistogram.getCalibration();
+		} 
+		final boolean histExists = currentHistogram!=null;
+		if(histExists && 
+		calibFunction!=currentHistogram.getCalibration()){
+			calibFunction=currentHistogram.getCalibration();
+			if (calibFunction == null){
+				setFunctionType();
+			}
+		}	 
+		cFunc.setEnabled(histExists);
+		bokCal.setEnabled(histExists);
+		bapplyCal.setEnabled(histExists);
+		bcancelCal.setEnabled(histExists);		
+		for (int i=0; i<NUMBER_POINTS; i++){
+			final boolean enable=histExists && cUse[i].isSelected();
+			tEnergy[i].setEnabled(enable);
+			tChannel[i].setEnabled(enable);
+			cUse[i].setEnabled(histExists);
+		}
     }
+    
 }
