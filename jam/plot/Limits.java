@@ -66,7 +66,7 @@ final class Limits {
      */
     private Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull){
     	if (hist == null) {
-			throw new NullPointerException(
+			throw new IllegalArgumentException(
 					"Can't have null histogram reference in Limits constructor.");
 		}
         histName=hist.getName();
@@ -200,7 +200,7 @@ final class Limits {
 		} else {
 			final Object o = TABLE.get(hist.getName());
 			if (o == null) {
-				final Preferences prefs = PlotPrefs.prefs;
+				final Preferences prefs = PlotPrefs.PREFS;
 				final boolean ignoreZero = prefs.getBoolean(
 						PlotPrefs.AUTO_IGNORE_ZERO, true);
 				final boolean ignoreFull = prefs.getBoolean(
