@@ -20,6 +20,7 @@ import java.util.Observer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
@@ -55,16 +56,10 @@ public final class JamMain extends JFrame implements Observer {
 	private final Display display;
 
 	/**
-	 * Menu command handler.
-	 */
-	private final JamCommand jamCommand;
-
-	/**
 	 * Message output and text input.
 	 */
 	private final JamConsole console;
 	private final Container me;
-	private final MainMenuBar menubar;
 	private final SelectionToolbar selectBar;
 
 	private final String classname;
@@ -104,10 +99,9 @@ public final class JamMain extends JFrame implements Observer {
 		/*fraction of resize space that goes to display*/
 		me.add(splitCenter, BorderLayout.CENTER);
 		/* create user command listener */
-		jamCommand = new JamCommand(this, display, console);
-		menubar = new MainMenuBar(jamCommand, display);
-		this.setJMenuBar(menubar);
-		selectBar = new SelectionToolbar(console, status, display, menubar);
+		final JMenuBar menubar = new MainMenuBar();
+		setJMenuBar(menubar);
+		selectBar = new SelectionToolbar();
 		me.add(selectBar, BorderLayout.NORTH);
 		display.addToolbarAction(); //the left-hand action toolbar
 		/* operations to close window */
