@@ -17,13 +17,9 @@ class Plot1d extends Plot {
 	private double[][] fitSignals;
 	private int areaMark1, areaMark2;
 
-	//FIXME KBS in both PLot1d and Plot2d
+	//FIXME KBS in both Plot1d and Plot2d
 	/*  last pixel point mouse moved to */
 	private final Point lastMovePoint = new Point();
-
-	//FIXME KBS in both PLot1d and Plot2d
-	/** A rectangle in pixel space while marking area*/
-	private final Rectangle recMarking = new Rectangle();
 
 	/**
 	 * Constructor
