@@ -484,17 +484,23 @@ public class HDFIO implements DataIO, JamHDFFields {
         		//use current group
         	}
             
-            getHistograms(mode, message, histogramNames);
+            int numHists=getHistograms(mode, histogramNames);
+            message.append(""+numHists+" histograms");
             pm.setProgress(2);
             pm.setNote("Getting scalers");
-            getScalers(mode, message);
+            int numScalers=getScalers(mode);
+            message.append(", ").append(numScalers).append(" scalers");
             pm.setProgress(3);
             if (mode != FileOpenMode.ADD) {
                 pm.setNote("Getting gates");
-                getGates(mode, message);
+                int numGates=getGates(mode);
+                /* clear if opening and there are histograms in file */
+                message.append(", ").append(numGates+" gates");
+                
                 pm.setProgress(4);
                 pm.setNote("Getting parameters");
-                getParameters(mode, message);
+                int numParams = getParameters(mode);
+                message.append(", "+numParams+" parameters");
                 pm.setProgress(5);
             }
             message.append(')');
@@ -756,9 +762,9 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @throws IllegalStateException
      *             if any histogram apparently has more than 2 dimensions
      */
-    private void getHistograms(FileOpenMode mode, StringBuffer sb, List histogramNames)
+    private int getHistograms(FileOpenMode mode, List histogramNames)
             throws HDFException {
-        
+        int numHists=0;
         /* get list of all VG's in file */
         final List groups = in.ofType(DataObject.DFTAG_VG);
         final VirtualGroup hists = VirtualGroup.ofName(groups,
@@ -766,7 +772,8 @@ public class HDFIO implements DataIO, JamHDFFields {
         /* only the "histograms" VG (only one element) */
         if (hists != null) {
         	//Message 
-            sb.append(hists.getObjects().size()).append(" histograms");        	
+        	numHists =hists.getObjects().size();
+        	
             /* get list of all DIL's in file */
             final List labels = in.ofType(DataObject.DFTAG_DIL);
             /* get list of all DIA's in file */
@@ -852,9 +859,10 @@ public class HDFIO implements DataIO, JamHDFFields {
                 		}
                 	}
                 	*/
-                
+
             }
         }
+        return numHists;        
     }
     
     /* non-javadoc:
@@ -1007,7 +1015,8 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open or reload @throws HDFException thrown if
      * unrecoverable error occurs
      */
-    private void getGates(FileOpenMode mode, StringBuffer sb) {
+    private int getGates(FileOpenMode mode) {
+    	int numGates=0;
         final StringUtilities su = StringUtilities.instance();
         Gate g = null;
         /* get list of all VG's in file */
@@ -1017,8 +1026,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 GATE_SECTION_NAME);
         final List annotations = in.ofType(DataObject.DFTAG_DIA);
         if (gates != null) {
-            /* clear if opening and there are histograms in file */
-            sb.append(", ").append(gates.getObjects().size()).append(" gates");
+        	numGates=gates.getObjects().size();
             final Iterator temp = gates.getObjects().iterator();
             while (temp.hasNext()) {
                 final VirtualGroup currVG = (VirtualGroup) (temp.next());
@@ -1061,6 +1069,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 }
             }
         }
+        return numGates;
     }
 
     /**
@@ -1114,7 +1123,8 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open, reload or add @throws HDFException if there
      * is a problem retrieving scalers
      */
-    private void getScalers(FileOpenMode mode, StringBuffer sb) {
+    private int getScalers(FileOpenMode mode) {
+    	int numScalers =0;
         final VdataDescription VH = VdataDescription.ofName(in
                 .ofType(DataObject.DFTAG_VH), SCALER_SECTION_NAME);
         /* only the "scalers" VH (only one element) in the file */
@@ -1122,8 +1132,8 @@ public class HDFIO implements DataIO, JamHDFFields {
             /* get the VS corresponding to the given VH */
             final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH
                     .getRef()));
-            final int numScalers = VH.getNumRows();
-            sb.append(", ").append(numScalers).append(" scalers");
+            numScalers = VH.getNumRows();
+
             for (int i = 0; i < numScalers; i++) {
                 final Scaler s;
                 final String sname = VS.getString(i, 1);
@@ -1142,6 +1152,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 }
             }
         }
+        return numScalers;
     }
 
     /**
@@ -1152,8 +1163,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */
-    protected void addParameterSection(List parameters)
-            throws HDFException {
+    protected void addParameterSection(List parameters) throws HDFException {
         final short[] types = { VdataDescription.DFNT_CHAR8,
                 VdataDescription.DFNT_FLT32 };
         final short[] orders = new short[2];
@@ -1195,7 +1205,8 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open or reload @throws HDFException if an error
      * occurs reading the parameters
      */
-    private void getParameters(FileOpenMode mode, StringBuffer sb) {
+    private int  getParameters(FileOpenMode mode) {
+    	int numParameters =0;
         final VdataDescription VH = VdataDescription.ofName(in
                 .ofType(DataObject.DFTAG_VH), PARAMETER_SECTION_NAME);
         /* only the "parameters" VH (only one element) in the file */
@@ -1203,8 +1214,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             /* Get corresponding VS for this VH */
             final Vdata VS = (Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH
                     .getRef()));
-            final int numParameters = VH.getNumRows();
-            sb.append(", ").append(numParameters).append(" parameters");
+            numParameters = VH.getNumRows();
             for (int i = 0; i < numParameters; i++) {
                 final String pname = VS.getString(i, 0);
                 /* make if OPEN, retrieve if RELOAD */
@@ -1216,6 +1226,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 }
             }
         }
+        return numParameters;        
     }
 
     /**
