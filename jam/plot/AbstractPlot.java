@@ -322,7 +322,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			for (int i = 0; i < temp.length; i++) {
 				counts[i] = temp[i];
 			}
-		} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 			System.arraycopy((double[]) hist.getCounts(), 0, counts, 0,
 					hist.getSizeX());
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
@@ -332,7 +332,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 					counts2d[i][j] = counts2dInt[i][j];
 				}
 			}
-		} else if (type == Histogram.Type.TWO_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.TWO_D_DOUBLE) {
 			double[][] counts2dDble = (double[][]) hist.getCounts();
 			for (int i = 0; i < hist.getSizeX(); i++) {
 				System.arraycopy(counts2dDble[i], 0, counts2d[i], 0,
