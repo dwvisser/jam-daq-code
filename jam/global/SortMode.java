@@ -6,7 +6,7 @@ package jam.global;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version May 9, 2004
  * @since 1.5.1
- * @see jam.global.JamStatus#setSortMode(SortMode)
+ * @see jam.global.JamStatus#setSortMode(SortMode,String)
  */
 public final class SortMode {
 	static private final int I_NOSORT = 0;
