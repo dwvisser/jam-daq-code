@@ -91,11 +91,20 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void notifyApp(File file) {
+		
+		Histogram firstHist;
+		
 		status.setSortMode(file);
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		
 		//Set the current histogram to the first opened histogram
-		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
+			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		}else{
+			firstHist=null;
+		}
+			
 		status.setCurrentHistogram(firstHist);
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 		status.getFrame().repaint();

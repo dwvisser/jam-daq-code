@@ -1,12 +1,11 @@
 package jam.io.hdf;
 
-import jam.data.AbstractHist1D;
-import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 import jam.global.JamStatus;
+import jam.io.FileOpenMode;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -16,12 +15,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -51,6 +47,8 @@ public final class OpenSelectedHistogram {
 	private JTextField txtFile;
 
 	private JList histList;
+	
+	private DefaultListModel histListModel;
 
 	private JButton bOK;
 
@@ -71,13 +69,10 @@ public final class OpenSelectedHistogram {
 	 */
 	private File fileOpen;
 
-	private HDFile hdfFile;
-
-	/** Hash to store read histograms before loaded */
-	private Map loadedHistograms;
-
+	/** HDF file reader */
+	private HDFIO hdfio;
 	/** Messages output */
-	private MessageHandler console;
+	private MessageHandler msgHandler;
 	/** Broadcaster */
 	private Broadcaster broadcaster;
 
@@ -86,11 +81,14 @@ public final class OpenSelectedHistogram {
 	 * HDF file.
 	 *  
 	 * @param f parent frame
-	 * @param c where to print messages
+	 * @param msgHandler where to print messages
 	 */
-	public OpenSelectedHistogram(Frame f, MessageHandler c) {
+	public OpenSelectedHistogram(Frame f, MessageHandler msgHandler) {
+		
 		frame = f;
-		console = c;
+		this.msgHandler = msgHandler;
+		hdfio = new HDFIO(frame, msgHandler);
+		
 		broadcaster= Broadcaster.getSingletonInstance();
 		dialog = new JDialog(f, "Open Selected Histograms", false);
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
@@ -104,8 +102,8 @@ public final class OpenSelectedHistogram {
 		pFileInd.add(txtFile);
 		container.add(pFileInd, BorderLayout.NORTH);
 		/* Selection list */
-		DefaultListModel listModel = new DefaultListModel();
-		histList = new JList(listModel);
+		histListModel = new DefaultListModel();
+		histList = new JList(histListModel);
 		histList
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
@@ -160,10 +158,11 @@ public final class OpenSelectedHistogram {
 	 *  
 	 */
 	private void doApply() {
-		Histogram firstHist=loadHistograms();
+		String firstHistName=loadHistograms();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		//Histograms.
+		//JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
+		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}
 
 	/**
@@ -173,8 +172,7 @@ public final class OpenSelectedHistogram {
 	private void doCancel() {
 
 		//Clear memory
-		loadedHistograms.clear();
-		loadedHistograms = null;
+		histListModel.clear();
 
 		dialog.dispose();
 	}
@@ -186,62 +184,69 @@ public final class OpenSelectedHistogram {
 	public void open() {
 		openLoadNames();
 	}
-
 	/**
-	 * 
+	 * Load histograms on open 
 	 *  
 	 */
 	private void openLoadNames() {
 		List histNames;
-		try {
-			if (openFile()) {
-				/* Read in histogram names */
-				hdfFile = new HDFile(fileOpen, "r");
-				hdfFile.readObjects();
-				/* Hash to store histograms */
-				loadedHistograms = new HashMap();
-				histNames = readHistograms();
-				hdfFile.close();
-				txtFile.setText(fileOpen.getName());
-				histList.setListData(histNames.toArray());
-				dialog.setVisible(true);
-			}
-		} catch (IOException ioE) {
-			console.messageOut("", MessageHandler.END);
-			console.errorOutln("Error opening file: " + fileOpen.toString());
-		} catch (HDFException hdfE) {
-			console.messageOut("", MessageHandler.END);
-			console.errorOutln("Error reading histograms " + hdfE.toString());
+		if (openFile()) {
+			loadHistNames(fileOpen);
+							
+			txtFile.setText(fileOpen.getAbsolutePath());				
+			dialog.setVisible(true);
 		}
-
 	}
 
-	/* non-javadoc:
+	/**
+	 * Load name of histograms from the selected file
+	 *  
+	 */
+	private void loadHistNames(File fileSelect) {
+		
+		List histAttributes;
+
+		// Read in histogram names attributes		
+		histAttributes= hdfio.readHistogramAttributes(fileSelect);
+		Iterator iter = histAttributes.iterator(); 
+		while (iter.hasNext()) {
+			HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+			histListModel.addElement(histAtt.name);				
+		}
+		
+		histList.clearSelection();
+	}
+
+
+	/** 
 	 * Load the histograms in the selected list.
 	 */
-	private Histogram loadHistograms() {
+	private String loadHistograms() {
+		
+		List histogramNamesSelected=null;
+		String firstHistName=null;
+		int i;		
+		
 		Object[] selected = histList.getSelectedValues();
-		Histogram firstHist=null;
-		int i;
+		
 		//No histograms selected
-		if (selected.length > 0) {
-			Group.createGroup(fileOpen.getName(), Group.Type.FILE);
-			//Loop for each selected item
-			for (i = 0; i < selected.length; i++) {
-				if (loadedHistograms.containsKey(selected[i])) {
-					HistProp histProp = (HistProp) loadedHistograms
-							.get(selected[i]);
-					Histogram hist=createHistogram(histProp);
-					if (i==0)
-						firstHist=hist;
-
-				}
-			}
-		} else {
-			firstHist=null;
-			console.errorOutln("No histograms selected");
+		if (selected.length == 0) {
+			msgHandler.errorOutln("No histograms selected");
+			return null;
 		}
-		return firstHist;
+		
+		//Put selected histograms into a list
+		histogramNamesSelected =new ArrayList();
+		for (i=0; i<selected.length;i++) {
+			histogramNamesSelected.add((String)selected[i]);
+			if (i==0)
+				firstHistName =(String)selected[i];
+		}
+		
+		//Read in histograms
+		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, fileOpen, histogramNamesSelected);
+		
+		return firstHistName;
 	}
 
 	/**
@@ -267,163 +272,4 @@ public final class OpenSelectedHistogram {
 		return openF;
 	}
 
-	/**
-	 * Reads in the histogram and hold them in a tempory array
-	 * 
-	 * @exception HDFException
-	 *                thrown if unrecoverable error occurs
-	 */
-	private List readHistograms() throws HDFException {
-		final ArrayList histNames = new ArrayList();
-		NumericalDataGroup ndg = null;
-		/* I check ndgErr==null to determine if error bars exist */
-		NumericalDataGroup ndgErr = null;
-		/* get list of all VG's in file */
-		final java.util.List groups = hdfFile.ofType(DataObject.DFTAG_VG);
-		final VirtualGroup hists = VirtualGroup.ofName(groups,
-				JamHDFFields.HIST_SECTION_NAME);
-		/* only the "histograms" VG (only one element) */
-		ScientificData sdErr = null;
-		if (hists != null) {
-			/* get list of all DIL's in file */
-			final java.util.List labels = hdfFile.ofType(DataObject.DFTAG_DIL);
-			/* get list of all DIA's in file */
-			final java.util.List annotations = hdfFile
-					.ofType(DataObject.DFTAG_DIA);
-			final Iterator temp = hists.getObjects().iterator();
-			while (temp.hasNext()) {
-				final VirtualGroup current = (VirtualGroup) (temp.next());
-				final java.util.List tempVec = hdfFile.ofType(current
-						.getObjects(), DataObject.DFTAG_NDG);
-				final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
-						.size()];
-				tempVec.toArray(numbers);
-				if (numbers.length == 1) {
-					ndg = numbers[0]; //only one NDG -- the data
-				} else if (numbers.length == 2) {
-					if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
-							numbers[0].getRef()).getLabel().equals(
-							JamHDFFields.ERROR_LABEL)) {
-						ndg = numbers[1];
-						ndgErr = numbers[0];
-					} else {
-						ndg = numbers[0];
-						ndgErr = numbers[1];
-					}
-				} else {
-					throw new HDFException("Invalid number of data groups ("
-							+ numbers.length + ") in NDG.");
-				}
-				final ScientificData sd = (ScientificData) (hdfFile.ofType(ndg
-						.getObjects(), DataObject.DFTAG_SD).get(0));
-				final ScientificDataDimension sdd = (ScientificDataDimension) (hdfFile
-						.ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
-				final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
-						.getTag(), ndg.getRef());
-				final int number = Integer.parseInt(numLabel.getLabel());
-				final byte histNumType = sdd.getType();
-				sd.setNumberType(histNumType);
-				final int histDim = sdd.getRank();
-				sd.setRank(histDim);
-				final int sizeX = sdd.getSizeX();
-				final int sizeY = (histDim == 2) ? sdd.getSizeY() : 0;
-				final DataIDLabel templabel = DataIDLabel.withTagRef(labels,
-						current.getTag(), current.getRef());
-				final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(
-						annotations, current.getTag(), current.getRef());
-				final String name = templabel.getLabel();
-				final String title = tempnote.getNote();
-				if (ndgErr != null) {
-					sdErr = (ScientificData) (hdfFile.ofType(ndgErr
-							.getObjects(), DataObject.DFTAG_SD).get(0));
-					sdErr.setRank(histDim);
-					sdErr.setNumberType(NumberType.DOUBLE);
-					/*
-					 * final ScientificDataDimension sddErr
-					 * =(ScientificDataDimension)(in.ofType(
-					 * ndgErr.getObjects(),DataObject.DFTAG_SDD).get(0));
-					 */
-				}
-				/* read in data */
-				final Object dataArray;
-				if (histDim == 1) {
-					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData1d(sizeX);
-					} else { //DOUBLE
-						dataArray = sd.getData1dD(sizeX);
-					}
-					/*if (ndgErr != null) {
-						histogram.setErrors(sdErr.getData1dD(sizeX));
-					}*/
-				} else { //2d
-					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData2d(sizeX, sizeY);
-					} else {
-						dataArray = sd.getData2dD(sizeX, sizeY);
-					}
-				}
-				/* Add histogram */
-				HistProp histProp = new HistProp();
-				histProp.name = name;
-				histProp.title = title;
-				histProp.number = number;
-				histProp.sizeX = sizeX;
-				histProp.sizeY = sizeY;
-				histProp.histDim = histDim;
-				histProp.histNumType = histNumType;
-				histProp.dataArray = dataArray;
-				if (ndgErr != null){
-					histProp.errorArray=sdErr.getData1dD(sizeX);
-				}
-				loadedHistograms.put(name, histProp);
-				histNames.add(name);
-			}
-		} //hist !=null
-		return histNames;
-	}
-
-	/* non-javadoc: 
-	 * Create a histogram using HistProp
-	 */
-	private Histogram createHistogram(HistProp histProp) {
-		String fileName = hdfFile.getFile().getName();
-		int index = fileName.indexOf(".hdf");
-		if (index > 0){
-			fileName = fileName.substring(0, index);
-		}
-		final String name = histProp.name.trim();
-		final String title = histProp.title;
-		final Histogram hist=Histogram.createHistogram(histProp.dataArray, name, title);
-		if (histProp.histDim == 1) {
-			final AbstractHist1D hist1d=(AbstractHist1D)hist;
-			if (histProp.errorArray != null) {
-				hist1d.setErrors((double[])histProp.errorArray);
-			}
-		}
-		return hist;
-	}
-
-	/**
-	 * Class to hold histogram properties while we decide if we should load them.
-	 *  
-	 */
-	private class HistProp {
-
-		String name;
-
-		String title;
-
-		int number;
-
-		int sizeX;
-
-		int sizeY;
-
-		int histDim;
-
-		byte histNumType;
-
-		Object dataArray; //generic data array
-		Object errorArray;
-	}
 }

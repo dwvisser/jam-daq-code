@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -405,6 +404,20 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
+    	return readFile(mode, infile, null);
+    }
+    /**
+     * Read in an HDF file 
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @param histogramNames
+     * 				names of histograms to read, null if all
+     * @return <code>true</code> if successful
+     */    	
+   public boolean readFile(FileOpenMode mode, File infile, List histogramNames) {    	
         boolean outF = true;
         final int progressRange = mode == FileOpenMode.ADD ? 4 : 6;
         final ProgressMonitor pm = new ProgressMonitor(frame,
@@ -446,7 +459,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         		//use current group
         	}
             
-            getHistograms(mode, message);
+            getHistograms(mode, message, histogramNames);
             pm.setProgress(2);
             pm.setNote("Getting scalers");
             getScalers(mode, message);
@@ -479,6 +492,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         pm.close();
         return outF;
     }
+    
     /** 
      * Read the histograms in 
      * @param infile
@@ -708,12 +722,14 @@ public class HDFIO implements DataIO, JamHDFFields {
      *            whether to open or reload
      * @param sb
      *            summary message under construction
+     * @param histogramNames
+     * 			  names of histograms to read, null if all
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      * @throws IllegalStateException
      *             if any histogram apparently has more than 2 dimensions
      */
-    private void getHistograms(FileOpenMode mode, StringBuffer sb)
+    private void getHistograms(FileOpenMode mode, StringBuffer sb, List histogramNames)
             throws HDFException {
         
         /* get list of all VG's in file */
@@ -722,17 +738,94 @@ public class HDFIO implements DataIO, JamHDFFields {
                 HIST_SECTION_NAME);
         /* only the "histograms" VG (only one element) */
         if (hists != null) {
+        	//Message 
+            sb.append(hists.getObjects().size()).append(" histograms");        	
             /* get list of all DIL's in file */
             final List labels = in.ofType(DataObject.DFTAG_DIL);
             /* get list of all DIA's in file */
             final List annotations = in.ofType(DataObject.DFTAG_DIA);
-            
-            sb.append(hists.getObjects().size()).append(" histograms");
-            
+            //Histogram iterator
             final Iterator temp = hists.getObjects().iterator();            
             while (temp.hasNext()) {
                 final VirtualGroup current = (VirtualGroup) (temp.next());
-            	loadHistogram(mode, labels, annotations, current);
+                
+            	NumericalDataGroup ndg = null;
+                /* I check ndgErr==null to determine if error bars exist */
+                NumericalDataGroup ndgErr = null;
+                /* only the "histograms" VG (only one element) */
+                ScientificData sdErr = null;        
+            	
+                final List tempVec = in.ofType(current.getObjects(),
+                        DataObject.DFTAG_NDG);
+                final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
+                        .size()];
+                tempVec.toArray(numbers);
+                if (numbers.length == 1) {
+                    ndg = numbers[0]; //only one NDG -- the data
+                } else if (numbers.length == 2) {
+                    if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
+                            numbers[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+                        ndg = numbers[1];
+                        ndgErr = numbers[0];
+                    } else {
+                        ndg = numbers[0];
+                        ndgErr = numbers[1];
+                    }
+                } else {
+                    throw new IllegalStateException(
+                            "Invalid number of data groups (" + numbers.length
+                                    + ") in NDG.");
+                }
+                final ScientificData sd = (ScientificData) (in.ofType(ndg
+                        .getObjects(), DataObject.DFTAG_SD).get(0));
+                final ScientificDataDimension sdd = (ScientificDataDimension) (in
+                        .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
+                final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
+                        .getTag(), ndg.getRef());
+                final int number = Integer.parseInt(numLabel.getLabel());
+                final byte histNumType = sdd.getType();
+                sd.setNumberType(histNumType);
+                final int histDim = sdd.getRank();
+                sd.setRank(histDim);
+                final int sizeX = sdd.getSizeX();
+                int sizeY = 0;
+                if (histDim == 2) {
+                    sizeY = sdd.getSizeY();
+                }
+                final DataIDLabel templabel = DataIDLabel.withTagRef(labels,
+                        current.getTag(), current.getRef());
+                final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(
+                        annotations, current.getTag(), current.getRef());
+                final String name = templabel.getLabel();
+                final String title = tempnote.getNote();
+                if (ndgErr != null) {
+                    sdErr = (ScientificData) (in.ofType(ndgErr.getObjects(),
+                            DataObject.DFTAG_SD).get(0));
+                    
+                    sdErr.setRank(histDim);
+                    sdErr.setNumberType(NumberType.DOUBLE);
+                } else {
+                	sdErr=null;
+                }
+                
+                //Given name list check that that the name is in the list
+                if (histogramNames==null || histogramNames.contains(name)) {
+                	
+                	createHistogram(mode, name, title,  number, histNumType, 
+                		       		histDim, sizeX, sizeY, sd, sdErr);
+                } 
+                	/*
+                	Iterator iter = histogramNames.iterator();
+                	while(iter.hasNext()) {
+                		String listName =(String)iter.next();
+                		if (listName.compareTo(name)==0) {
+                        	createHistogram(mode, name, title,  number, histNumType, 
+                		       		histDim, sizeX, sizeY, sd, sdErr);
+                			
+                		}
+                	}
+                	*/
+                
             }
         }
     }
@@ -741,6 +834,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param in
      * @param current
      */
+    
     private void loadHistogram(FileOpenMode mode,  List labels, List annotations, 
     		VirtualGroup current)   throws HDFException {
     	

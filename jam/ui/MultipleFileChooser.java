@@ -1,5 +1,9 @@
 package jam.ui;
 
+import jam.global.MessageHandler;
+import jam.io.ExtensionFileFilter;
+
+import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -12,45 +16,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import jam.data.AbstractHist1D;
-import jam.data.Group;
-import jam.data.Histogram;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
-import jam.io.ExtensionFileFilter;
+import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
+import javax.swing.Box;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.Box;
-
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
 
 
 /**
