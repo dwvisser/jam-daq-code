@@ -8,34 +8,39 @@ package jam;
  */
 public final class Version {
 	/**
-	 * Possible pre-release candidate version types.
+	 * Increments only for changes which impact backward and/or 
+	 * forward compatibility in a big way. 
 	 */
-	static final char beta='\u03b2';
-	static final char alpha='\u03b1';
+	public static final int MAJOR=1;
 	
 	/**
-	 * The main version label.
+	 * Incremented whenever work starts on new features to be
+	 * included in a future release. Normally, these go into 
+	 * a new development branch, so that "subminor" level fixes,
+	 * etc. may go into the current release without committing
+	 * users to the new, untested stuff yet.
 	 */
-	static final String JAM_VERSION = "1.4";
+	public static final int MINOR=5;
 	
 	/**
-	 * Should be empty string if no text for version type is
-	 * desired.
+	 * Incremented every time a bugfix or patch is performed for
+	 * release back to the users. 
 	 */
-	static final String VERSION_TYPE = "M20040419";
+	public static final int SUBMINOR=0;
 	
+	public static final String PLATFORM=System.getProperty("os.name");
+		
+	private static final StringBuffer NAME=new StringBuffer();	
+	static {
+		NAME.append(MAJOR).append('.').append(MINOR).append('.').append(
+		SUBMINOR).append('-').append(PLATFORM);
+	}
+		
 	/**
 	 * @return a string representing the build version of Jam running
 	 */
 	static public String getName(){
-		final StringBuffer rval=new StringBuffer(Version.JAM_VERSION);
-		if (Version.VERSION_TYPE.length()>0){
-			final String leftparen=" (";
-			rval.append(leftparen);
-			rval.append(Version.VERSION_TYPE);
-			rval.append(')');
-		}
-		return rval.toString();
+		return NAME.toString();
 	}
 
 }
