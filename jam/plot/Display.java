@@ -190,29 +190,23 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 			plot.setLayoutType(plotLayout);
 			
 		}
-
 		setPlot(plot);			
-	}
-	/**
-	 * Create a plots
-	 */
-	private void createPlots(int numberPlots) {
-		
-		Plot plotTemp;
-		int numberExistingPlots;
-		int i;
-		
-		numberExistingPlots=plotList.size();
-		
-		for (i=numberExistingPlots;i<numberPlots;i++) {
-			plotTemp= new Plot(action,  graphLayout, this);
-			plotList.add(plotTemp);
-		}
-
 	}
 	
 	/**
-	 * Display a histogram
+	 * Create some plots.
+	 * 
+	 * @param numberPlots the number of plots to create
+	 */
+	private void createPlots(int numberPlots) {
+		for (int i=plotList.size();i<numberPlots;i++) {
+			final Plot plotTemp= new Plot(action,  graphLayout, this);
+			plotList.add(plotTemp);
+		}
+	}
+	
+	/**
+	 * Display a histogram.
 	 */
 	public void displayHistogram() {
 		Histogram hist = status.getCurrentHistogram();
@@ -234,13 +228,14 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		
 	}
 	/**
-	 * Overlay a histogram
-	 * @param num
+	 * Overlay a histogram.
+	 * 
+	 * @param num the number of the hist to overlay
 	 */
 	public void overlayHistogram(int num) {
 		final Histogram h = Histogram.getHistogram(num);
-		//Check we can overlay
-		if (!(getPlot().getType()==Plot.TYPE_1D)) {
+		/* Check we can overlay. */
+		if (!(getPlot().getDimensionality()==1)) {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
@@ -248,12 +243,16 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
-		//Create limits as needed
+		/* Create limits as needed. */
 		if (Limits.getLimits(h) == null) {
 			makeLimits(h);
 		}
 		currentPlot.overlayHistograms(num);		
 	}
+	
+	/**
+	 * Remove all overlays.
+	 */
 	public void removeOverlays() {
 		currentPlot.removeOverlays();
 	}
