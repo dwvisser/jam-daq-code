@@ -68,8 +68,7 @@ public class ViewNew extends JDialog {
 		/* Name field */
 		final JPanel pName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pName);
-		final String space = " ";
-		textName = new JTextField(space);
+		textName = new JTextField("");
 		textName.setColumns(15);
 		pName.add(textName);
 		/* Rows Combo */		
@@ -119,11 +118,21 @@ public class ViewNew extends JDialog {
 	public void showView(){
 		this.show();
 	}
+	/**
+	 * Make a new view
+	 */
 	private void makeView(){
 		String name =textName.getText();
 		int nRows = Integer.parseInt(((String) comboRows.getSelectedItem()).trim());
-		int nCols = Integer.parseInt(((String) comboCols.getSelectedItem()).trim());		
+		int nCols = Integer.parseInt(((String) comboCols.getSelectedItem()).trim());
+		
+		//Check for blank name
+		if (name.trim().equals("")){
+			name ="View "+nRows+"x"+nCols;
+		}
+		
 		new View(name, nRows, nCols);
+		
 		Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 		broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
 	}
