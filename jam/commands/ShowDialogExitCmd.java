@@ -11,6 +11,7 @@ final class ShowDialogExitCmd extends AbstractCommand{
 	
 	protected ShowDialogExitCmd(){
 		super();
+		putValue(NAME,"Exit\u2026");
 	}		
 	
 	/**
