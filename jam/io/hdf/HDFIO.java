@@ -469,7 +469,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                  /* read file into set of DataObject's, set their internal variables */
                 inHDF.readFile();
 
-                asyncMonitor.setNote("Parsing objects");
+                //asyncMonitor.setNote("Parsing objects");
                 asyncMonitor.increment();
                 
                 DataObject.interpretBytesAll();
