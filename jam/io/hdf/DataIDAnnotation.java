@@ -62,16 +62,12 @@ final class DataIDAnnotation extends DataObject {
 	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
 	protected void interpretBytes() throws HDFException {
-		short tag;
-		short ref;
-		byte[] temp;
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bais);
-
+		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bais);
 		try {
-			tag = dis.readShort();
-			ref = dis.readShort();
-			temp = new byte[bytes.length - 4];
+			final short tag = dis.readShort();
+			final short ref = dis.readShort();
+			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
 			note = new String(temp);
 			object = file.getObject(tag, ref);
