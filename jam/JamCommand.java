@@ -160,6 +160,10 @@ public class JamCommand
 		console.addCommandListener(display);
 	}
 	
+	JamCmdManager getCmdManager(){
+		return jamCmdMgr;
+	}
+	
 	/**
 	 * Add observers to the list of classes to be notified of 
 	 * broadcasted events.
