@@ -686,13 +686,13 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	private void updateHist() {
 		final Histogram h = jamStatus.getCurrentHistogram();
 		if (h != null && h.getDimensionality() == 1) {
-			if (h.getType() == Histogram.ONE_DIM_INT) {
+			if (h.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int [] ia = (int[]) h.getCounts();
 				counts = new double[ia.length];
 				for (int j = 0; j < ia.length; j++) {
 					counts[j] = ia[j];
 				}
-			} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
+			} else if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 				counts = (double[]) h.getCounts();
 			}
 			textHistName.setText(h.getName());
@@ -739,13 +739,13 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 */
 	private void getCounts() {
 		final Histogram h = jamStatus.getCurrentHistogram();
-		if (h.getType() == Histogram.ONE_DIM_INT) {
+		if (h.getType() == Histogram.Type.ONE_DIM_INT) {
 			int[] ia = (int[]) h.getCounts();
 			counts = new double[ia.length];
 			for (int j = 0; j < ia.length; j++) {
 				counts[j] = ia[j];
 			}
-		} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
+		} else if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 			counts = (double[]) h.getCounts();
 		}
 		this.errors = h.getErrors();

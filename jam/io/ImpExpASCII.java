@@ -327,7 +327,7 @@ public class ImpExpASCII extends ImpExp {
 		throws ImpExpException {
 		try {
 			PrintWriter pw = new PrintWriter(buffout);
-			if (hist.getType() == Histogram.ONE_DIM_INT) {
+			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
 				int[] counts = (int[]) hist.getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					//output a row of data  channel counts
@@ -335,7 +335,7 @@ public class ImpExpASCII extends ImpExp {
 					pw.print("   ");
 					pw.println(counts[i]);
 				}
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 				double[] countsD = (double[]) hist.getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					//output a row of data  channel counts
@@ -343,7 +343,7 @@ public class ImpExpASCII extends ImpExp {
 					pw.print("   ");
 					pw.println(countsD[i]);
 				}
-			} else if (hist.getType() == Histogram.TWO_DIM_INT) {
+			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
 				int[][] counts = (int[][]) hist.getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {
@@ -352,7 +352,7 @@ public class ImpExpASCII extends ImpExp {
 					}
 					pw.println();
 				}
-			} else if (hist.getType() == Histogram.TWO_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
 				double[][] counts = (double[][]) hist.getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {

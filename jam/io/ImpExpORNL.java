@@ -436,7 +436,6 @@ public class ImpExpORNL extends ImpExp {
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
 		Histogram hist;
-
 		final StringUtilities su = StringUtilities.instance();
 		int diskOffSet = 0;
 		DataOutputStream dosDrr = new DataOutputStream(buffout);
@@ -450,14 +449,12 @@ public class ImpExpORNL extends ImpExp {
 		totalHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
 			hist = ((Histogram) allHists.get(i));
-			if (hist.getType() == Histogram.ONE_DIM_INT) {
-				totalHalfWords = totalHalfWords + 2 * hist.getSizeX();
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-				totalHalfWords = totalHalfWords + 2 * hist.getSizeX();
-			} else if (hist.getType() == Histogram.TWO_DIM_INT) {
-				totalHalfWords = totalHalfWords + 2 * hist.getSizeX()
-						* hist.getSizeY();
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
+			int sizeX = hist.getSizeX();
+			int sizeY = hist.getSizeY(); //will be zero for 1-d
+			final int dim=hist.getDimensionality();
+			if (dim==1) {
+				totalHalfWords = totalHalfWords + 2 * sizeX;
+			} else if (dim == 2) {
 				totalHalfWords = totalHalfWords + 2 * hist.getSizeX()
 						* hist.getSizeY();
 			} else {
@@ -484,7 +481,6 @@ public class ImpExpORNL extends ImpExp {
 			hist = ((Histogram) allHists.get(i));
 			short sizeX = (short) (hist.getSizeX());
 			short sizeY = (short) (hist.getSizeY()); //will be zero for 1-d
-
 			// use data output stream name only 15 char long title 50 char long
 			dosDrr.writeShort((short) (hist.getDimensionality()));
 			dosDrr.writeShort(2); //half-words per channel
@@ -517,17 +513,14 @@ public class ImpExpORNL extends ImpExp {
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			dosDrr.writeFloat(0.0f); //dummy calibration
+			/* subtitle */
 			dosDrr.writeBytes(su.makeLength(hist.getTitle(), 40));
-			//sub-Title
-			if (hist.getType() == Histogram.ONE_DIM_INT) {
-				// increment disk offset for .his file
-				diskOffSet = diskOffSet + 2 * sizeX;
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-				diskOffSet = diskOffSet + 2 * sizeX;
-			} else if (hist.getType() == Histogram.TWO_DIM_INT) {
-				diskOffSet = diskOffSet + 2 * sizeX * sizeY;
-			} else if (hist.getType() == Histogram.TWO_DIM_DOUBLE) {
-				diskOffSet = diskOffSet + 2 * sizeX * sizeY;
+			final int dim=hist.getDimensionality();
+			/* increment disk offset for .his file */
+			if (dim==1) {
+				diskOffSet += 2 * sizeX;
+			} else if (dim==2) {
+				diskOffSet += 2 * sizeX * sizeY;
 			} else {
 				throw new IOException(
 						"Unrecognized histogram type [ImpExpORNL]");
@@ -552,24 +545,24 @@ public class ImpExpORNL extends ImpExp {
 			int sizeX = hist.getSizeX();
 			int sizeY = hist.getSizeY();
 			/* write as determined by type */
-			if (hist.getType() == Histogram.ONE_DIM_INT) {
+			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
 				int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt(countsInt[i]);
 				}
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 				double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt((int) (countsDbl[i] + 0.5));
 				}
-			} else if (hist.getType() == Histogram.TWO_DIM_INT) {
+			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
 				int[][] counts2dInt = (int[][]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {
 						dosHis.writeInt(counts2dInt[j][i]);
 					}
 				}
-			} else if (hist.getType() == Histogram.TWO_DIM_DOUBLE) {
+			} else if (hist.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
 				double[][] counts2dDbl = (double[][]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {

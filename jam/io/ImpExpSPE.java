@@ -130,17 +130,17 @@ public class ImpExpSPE extends ImpExp {
 			while (name.length() < NAME_LENGTH){
 				name.append(' ');
 			}
-			int size = hist.getSizeX();
-			int type = hist.getType();
+			final int size = hist.getSizeX();
+			final Histogram.Type type = hist.getType();
 			/* put data into a float array */
-			float[] countsFlt = new float[size];
-			if (type == Histogram.ONE_DIM_INT) {
-				int[] countsInt = (int[]) hist.getCounts();
+			final float[] countsFlt = new float[size];
+			if (type == Histogram.Type.ONE_DIM_INT) {
+				final int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsInt[i];
 				}
-			} else if (type == Histogram.ONE_DIM_DOUBLE) {
-				double[] countsDbl = (double[]) hist.getCounts();
+			} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+				final double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsDbl[i];
 				}

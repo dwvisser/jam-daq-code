@@ -293,7 +293,7 @@ public class Projections extends DataControl implements ActionListener,
 		cto.addItem(NEW_HIST);
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
-			if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
+			if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 				cto.addItem(h.getName());
 			}
 		}
@@ -349,17 +349,6 @@ public class Projections extends DataControl implements ActionListener,
 	}
 
 	/**
-	 *  
-	 */
-	/*
-	 * private void setFromHist(String name){ hfrom =
-	 * Histogram.getHistogram(name); if (hfrom == null ||
-	 * hfrom.getDimensionality()==1){ tfrom.setText("Need 2D Hist!");
-	 * hfrom=null; bOK.setEnabled(false); bApply.setEnabled(false); } else {
-	 * tfrom.setText(name); bOK.setEnabled(true); bApply.setEnabled(true); } }
-	 */
-
-	/**
 	 * Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
@@ -369,7 +358,7 @@ public class Projections extends DataControl implements ActionListener,
 		int[] limits = new int[2];
 
 		state = (String) cchan.getSelectedItem();
-		if (hfrom.getType() == Histogram.TWO_DIM_DOUBLE) {
+		if (hfrom.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
 			counts2d = (double[][]) hfrom.getCounts();
 		} else {
 			counts2d = intToDouble((int[][]) hfrom.getCounts());
@@ -388,10 +377,10 @@ public class Projections extends DataControl implements ActionListener,
 		if (name.equals(NEW_HIST)) {
 			name = ttextto.getText().trim();
 			if (cdown.isSelected()) {//project down
-				hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom
+				hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
 						.getSizeX(), name);
 			} else {//project across
-				hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom
+				hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
 						.getSizeY(), name);
 			}
 			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);

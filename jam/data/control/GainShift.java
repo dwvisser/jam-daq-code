@@ -270,7 +270,8 @@ public class GainShift extends DataControl implements ActionListener,
 		String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
 		cto.addItem("New Histogram");
-		addChooserHists(cto, Histogram.ONE_DIM_INT, Histogram.ONE_DIM_DOUBLE);
+		addChooserHists(cto, Histogram.Type.ONE_DIM_INT,
+				Histogram.Type.ONE_DIM_DOUBLE);
 		cto.setSelectedItem(lto);
 		if (lto.equals("New Histogram")) {
 			setUseNewHist(true);
@@ -317,7 +318,8 @@ public class GainShift extends DataControl implements ActionListener,
 		}
 	}
 
-	private void addChooserHists(JComboBox c, int type1, int type2) {
+	private void addChooserHists(JComboBox c, Histogram.Type type1,
+			Histogram.Type type2) {
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
 			if (h.getType() == type1 || h.getType() == type2)
@@ -345,7 +347,7 @@ public class GainShift extends DataControl implements ActionListener,
 			getCoefficients();
 		}
 		/* Get input histogram. */
-		final double[] in = (hfrom.getType() == Histogram.ONE_DIM_INT) ? toDoubleArray((int[]) hfrom
+		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? toDoubleArray((int[]) hfrom
 				.getCounts())
 				: (double[]) hfrom.getCounts();
 		final double[] errIn = hfrom.getErrors();
@@ -354,7 +356,7 @@ public class GainShift extends DataControl implements ActionListener,
 		final Histogram hto;
 		if (name.equals("New Histogram")) {
 			name = ttextto.getText().trim();
-			hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom
+			hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
 					.getSizeX(), name);
 			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 			messageHandler
@@ -363,13 +365,13 @@ public class GainShift extends DataControl implements ActionListener,
 			hto = Histogram.getHistogram(name);
 		}
 		hto.setZero();
-		final int countLen = hto.getType() == Histogram.ONE_DIM_INT ? ((int[]) hto
+		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((int[]) hto
 				.getCounts()).length
 				: ((double[]) hto.getCounts()).length;
 		final double[] out = gainShift(in, a1, b1, a2, b2, countLen);
 		final double[] errOut = errorGainShift(errIn, a1, b1, a2, b2, hto
 				.getErrors().length);
-		if (hto.getType() == Histogram.ONE_DIM_INT) {
+		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
 			hto.setCounts(toIntArray(out));
 		} else {
 			hto.setCounts(out);
