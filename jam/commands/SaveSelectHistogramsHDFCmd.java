@@ -9,7 +9,7 @@ import jam.io.control.SaveSelectedHistogram;
  * @author Ken Swartz
  *
  */
-public class SaveSelectHistogramsHDFCmd extends AbstractCommand {
+final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	
 	private  SaveSelectedHistogram saveSelectedDialog;
 	
@@ -21,7 +21,7 @@ public class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	/**
 	 * Show dialog to select histogram
 	 */
-	protected void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(Object[] cmdParams){
 		saveSelectedDialog.show();
 
 	}
@@ -31,8 +31,7 @@ public class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	 */
 	protected void executeParse(String[] cmdTokens)
 			throws CommandListenerException {
-		// TODO Auto-generated method stub
-
+	    execute(null);
 	}
 
 }
