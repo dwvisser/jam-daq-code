@@ -154,6 +154,7 @@ public class SelectionTree extends JPanel implements Observer {
             	final Group group = (Group)firstNode;
             	 //Group.setCurrentGroup(group);
             	 STATUS.setCurrentGroup(group);
+            	 BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT, group);
             }else if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;

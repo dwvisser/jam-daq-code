@@ -101,7 +101,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
         /* Set general status. */
         STATUS.setOpenFile(file);
         AbstractControl.setupAll();
-        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
         /*
          * Set selection of group and histogram. 
          * Set to first group and first histogram 

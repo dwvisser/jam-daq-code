@@ -16,6 +16,13 @@ public final class BroadcastEvent {
 		/** Refresh the display. */
 		public static final Command REFRESH = new Command(1);
 
+		/**
+		 * A Group has been selected.
+		 * 
+		 * @see jam.plot.View
+		 */
+		public static final Command GROUP_SELECT = new Command(5);		
+		
 		/** A new set of histograms has been defined. */
 		public static final Command HISTOGRAM_NEW = new Command(10);
 

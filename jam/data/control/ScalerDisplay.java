@@ -1,8 +1,10 @@
 package jam.data.control;
 
+import jam.data.Group;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -38,6 +40,8 @@ import javax.swing.border.EmptyBorder;
 public final class ScalerDisplay extends AbstractControl implements Observer {
 
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	
+	private final JamStatus status = JamStatus.getSingletonInstance();	
 
 	private JTextField[] textScaler;
 
@@ -104,14 +108,19 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * initializing a sort routine.
 	 */
 	public void doSetup() {
-		int numberScalers = Scaler.getScalerList().size();
+		Group currentGroup = status.getCurrentGroup();
+		if (currentGroup==null)
+			return;
+		
+		List scalerList = currentGroup.getScalerList();
+		int numberScalers =scalerList.size();
 		pScalers.removeAll();
 		if (numberScalers != 0) { // we have some elements in the scaler list
 			/* gui widgets for each scaler */
 			//ps = new JPanel[numberScalers];
 			//labelScaler = new JLabel[numberScalers];
 			textScaler = new JTextField[numberScalers];
-			Iterator enumScaler = Scaler.getScalerList().iterator();
+			Iterator enumScaler = scalerList.iterator();
 			int count = 0;
 			while (enumScaler.hasNext()) {
 				Scaler currentScaler = (Scaler) enumScaler.next();
@@ -172,8 +181,15 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
-			displayScalers();
+		if ( (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) ||
+   		     (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT) ||
+			 (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) ) {
+			doSetup();
+			
+		}
+		
+		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) { 
+				displayScalers();
 		}
 	}
 
@@ -181,8 +197,9 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * Get the values from the Scalers and display them
 	 */
 	public void displayScalers() {
-		final List list = Scaler.getScalerList();
-		final Iterator iter = list.iterator();
+		Group currentGroup = status.getCurrentGroup();
+		List scalerList = currentGroup.getScalerList();		
+		final Iterator iter = scalerList.iterator();
 		int count = 0;
 		while (iter.hasNext()) {
 			final Scaler currentScaler = (Scaler) iter.next();
