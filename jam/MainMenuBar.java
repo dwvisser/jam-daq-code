@@ -203,6 +203,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
 		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
 		mPrefer.addSeparator();
+		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
 		mPrefer.add(getMenuItem(SHOW_PEAK_FIND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
