@@ -48,36 +48,101 @@ import java.util.TreeMap;
 public final class Histogram implements Serializable {
 
 	/**
-	 * Value of histogram type for one dimensional <code>int</code>
-	 * histograms.
+	 * Encapsulates the 4 different types a histogram may have.
 	 * 
-	 * @see #getType()
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
 	 */
-	public static final int ONE_DIM_INT = 1;
+	public static class Type {
+		/**
+		 * Value of histogram type for one dimensional <code>int</code>
+		 * histograms.
+		 * 
+		 * @see #getType()
+		 */
+		public static final Type ONE_DIM_INT = new Type(0);
 
-	/**
-	 * Value of histogram type for two dimensional <code>int</code>
-	 * histograms.
-	 * 
-	 * @see #getType()
-	 */
-	public static final int TWO_DIM_INT = 2;
+		/**
+		 * Value of histogram type for two dimensional <code>int</code>
+		 * histograms.
+		 * 
+		 * @see #getType()
+		 */
+		public static final Type TWO_DIM_INT = new Type(1);
 
-	/**
-	 * Value of histogram type for one dimensional <code>double</code>
-	 * histograms.
-	 * 
-	 * @see #getType()
-	 */
-	public static final int ONE_DIM_DOUBLE = 3;
+		/**
+		 * Value of histogram type for one dimensional <code>double</code>
+		 * histograms.
+		 * 
+		 * @see #getType()
+		 */
+		public static final Type ONE_DIM_DOUBLE = new Type(2);
 
-	/**
-	 * Value of histogram type for two dimensional <code>double</code>
-	 * histograms.
-	 * 
-	 * @see #getType()
-	 */
-	public static final int TWO_DIM_DOUBLE = 4;
+		/**
+		 * Value of histogram type for two dimensional <code>double</code>
+		 * histograms.
+		 * 
+		 * @see #getType()
+		 */
+		public static final Type TWO_DIM_DOUBLE = new Type(3);
+
+		private final int type;
+
+		private final static int[] dim = { 1, 2, 1, 2 };
+
+		private final static boolean[] isInt = { true, true, false, false };
+
+		private final static String[] string = { "1D int", "2D int",
+				"1D double", "2D double" };
+
+		private Type(int i) {
+			type = i;
+		}
+
+		public int getDimensionality() {
+			return dim[type];
+		}
+
+		public boolean isInteger() {
+			return isInt[type];
+		}
+
+		public String toString() {
+			return string[type];
+		}
+
+		/**
+		 * Gives the counts array type of the given object.
+		 * 
+		 * @param o
+		 *            a 1-d or 2-d int or double array
+		 * @return which type the array corresponds to
+		 */
+		private static Type getArrayType(Object o) {
+			final Type rval;
+			final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
+			final Class type = o.getClass();
+			if (!type.isArray()) {
+				throw new IllegalArgumentException(error);
+			}
+			final Class componentA = type.getComponentType();
+			if (componentA.equals(int.class)) {
+				rval = Type.ONE_DIM_INT;
+			} else if (componentA.equals(double.class)) {
+				rval = Type.ONE_DIM_DOUBLE;
+			} else {
+				/* Two-D, componentA assumed to be array. */
+				final Class componentB = componentA.getComponentType();
+				if (componentB.equals(int.class)) {
+					rval = Type.TWO_DIM_INT;
+				} else if (componentB.equals(double.class)) {
+					rval = Type.TWO_DIM_DOUBLE;
+				} else {
+					throw new IllegalArgumentException(error);
+				}
+			}
+			return rval;
+		}
+	}
 
 	/**
 	 * default axis labels
@@ -131,7 +196,7 @@ public final class Histogram implements Serializable {
 
 	private int number; //histogram number
 
-	private int type; //one or two dimension
+	private Type type; //one or two dimension
 
 	private final int sizeX; //size of histogram, for 1d size for 2d x size
 
@@ -182,7 +247,8 @@ public final class Histogram implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	public Histogram(String nameIn, int type, int sizeX, int sizeY, String title) {
+	public Histogram(String nameIn, Type type, int sizeX, int sizeY,
+			String title) {
 		String addition;
 		int prime;
 
@@ -206,7 +272,7 @@ public final class Histogram implements Serializable {
 		gates.clear();
 		assignNewNumber();
 		//allow memory for gates and define sizes
-		if (type == ONE_DIM_INT) {
+		if (type == Type.ONE_DIM_INT) {
 			this.sizeX = sizeX;
 			this.sizeY = 0;
 			counts = new int[sizeX];
@@ -216,7 +282,7 @@ public final class Histogram implements Serializable {
 			if (labelY == null) {
 				labelY = Y_LABEL_1D;
 			}
-		} else if (type == TWO_DIM_INT) {
+		} else if (type == Type.TWO_DIM_INT) {
 			this.sizeX = sizeX;
 			this.sizeY = sizeY;
 			counts2d = new int[sizeX][sizeY];
@@ -226,7 +292,7 @@ public final class Histogram implements Serializable {
 			if (labelY == null) {
 				labelY = Y_LABEL_2D;
 			}
-		} else if (type == ONE_DIM_DOUBLE) {
+		} else if (type == Type.ONE_DIM_DOUBLE) {
 			this.sizeX = sizeX;
 			this.sizeY = 0;
 			countsDouble = new double[sizeX];
@@ -236,7 +302,7 @@ public final class Histogram implements Serializable {
 			if (labelY == null) {
 				labelY = Y_LABEL_1D;
 			}
-		} else if (type == TWO_DIM_DOUBLE) {
+		} else if (type == Type.TWO_DIM_DOUBLE) {
 			this.sizeX = sizeX;
 			this.sizeY = sizeY;
 			counts2dDouble = new double[sizeX][sizeY];
@@ -273,7 +339,7 @@ public final class Histogram implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	public Histogram(String nameIn, int type, int size, String title) {
+	public Histogram(String nameIn, Type type, int size, String title) {
 		this(nameIn, type, size, size, title);
 	}
 
@@ -300,8 +366,8 @@ public final class Histogram implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	public Histogram(String name, int type, int sizeX, int sizeY, String title,
-			String axisLabelX, String axisLabelY) {
+	public Histogram(String name, Type type, int sizeX, int sizeY,
+			String title, String axisLabelX, String axisLabelY) {
 		this(name, type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
@@ -328,7 +394,7 @@ public final class Histogram implements Serializable {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	public Histogram(String name, int type, int size, String title,
+	public Histogram(String name, Type type, int size, String title,
 			String axisLabelX, String axisLabelY) {
 		this(name, type, size, size, title);
 		setLabelX(axisLabelX);
@@ -350,7 +416,7 @@ public final class Histogram implements Serializable {
 	 *            array of counts to initialize with
 	 */
 	public Histogram(String name, String title, int[] countsIn) {
-		this(name, ONE_DIM_INT, countsIn.length, title);
+		this(name, Type.ONE_DIM_INT, countsIn.length, title);
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
 	}
 
@@ -369,7 +435,7 @@ public final class Histogram implements Serializable {
 	 *            array of counts to initialize with
 	 */
 	public Histogram(String name, String title, double[] countsIn) {
-		this(name, ONE_DIM_DOUBLE, countsIn.length, title);
+		this(name, Type.ONE_DIM_DOUBLE, countsIn.length, title);
 		System.arraycopy(countsIn, 0, countsDouble, 0, countsIn.length);
 	}
 
@@ -393,7 +459,8 @@ public final class Histogram implements Serializable {
 	 */
 	public Histogram(String name, String title, String axisLabelX,
 			String axisLabelY, int[] countsIn) {
-		this(name, ONE_DIM_INT, countsIn.length, title, axisLabelX, axisLabelY);
+		this(name, Type.ONE_DIM_INT, countsIn.length, title, axisLabelX,
+				axisLabelY);
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
 	}
 
@@ -412,7 +479,7 @@ public final class Histogram implements Serializable {
 	 *            array of counts to initialize with, must be square
 	 */
 	public Histogram(String name, String title, int[][] countsIn) {
-		this(name, TWO_DIM_INT, countsIn.length, countsIn[0].length, title);
+		this(name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length, title);
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System
 					.arraycopy(countsIn[i], 0, counts2d[i], 0,
@@ -435,7 +502,8 @@ public final class Histogram implements Serializable {
 	 *            array of counts to initialize with, must be square
 	 */
 	public Histogram(String name, String title, double[][] countsIn) {
-		this(name, TWO_DIM_DOUBLE, countsIn.length, countsIn[0].length, title);
+		this(name, Type.TWO_DIM_DOUBLE, countsIn.length, countsIn[0].length,
+				title);
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System.arraycopy(countsIn[i], 0, counts2dDouble[i], 0,
 					countsIn[0].length);
@@ -462,8 +530,8 @@ public final class Histogram implements Serializable {
 	 */
 	public Histogram(String name, String title, String axisLabelX,
 			String axisLabelY, int[][] countsIn) {
-		this(name, TWO_DIM_INT, countsIn.length, countsIn[0].length, title,
-				axisLabelX, axisLabelY);
+		this(name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
+				title, axisLabelX, axisLabelY);
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System
 					.arraycopy(countsIn[i], 0, counts2d[i], 0,
@@ -633,7 +701,7 @@ public final class Histogram implements Serializable {
 	 * @see #ONE_DIM_DOUBLE
 	 * @see #TWO_DIM_DOUBLE
 	 */
-	public int getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -780,53 +848,112 @@ public final class Histogram implements Serializable {
 	 * @return <code>Object</code> which must be cast as indicated above
 	 */
 	public synchronized Object getCounts() {
-		switch (type) {
-		case ONE_DIM_INT:
-			return counts;
-		case TWO_DIM_INT:
-			return counts2d;
-		case ONE_DIM_DOUBLE:
-			return countsDouble;
-		case TWO_DIM_DOUBLE:
-			return counts2dDouble;
-		default:
-			break;
+		Object rval = null;
+		if (type == Type.ONE_DIM_INT) {
+			rval = counts;
+		} else if (type == Type.TWO_DIM_INT) {
+			rval = counts2d;
+		} else if (type == Type.ONE_DIM_DOUBLE) {
+			rval = countsDouble;
+		} else if (type == Type.TWO_DIM_DOUBLE) {
+			rval = counts2dDouble;
+		} else {
+			throw new IllegalStateException("Histogram not a recognized type.");
 		}
-		return null;
+		return rval;
 	}
 
-	//-- set methods
+	/**
+	 * Gets the counts in the specified channel.
+	 * 
+	 * @param channel
+	 *            to get the counts of
+	 * @return counts in the specified channel
+	 * @throws UnsupportedOperationException
+	 *             if not called on a 1-d histogram
+	 */
+	public synchronized double getCounts(int channel) {
+		double rval = 0;
+		if (type == Type.ONE_DIM_INT) {
+			rval = counts[channel];
+		} else if (type == Type.ONE_DIM_DOUBLE) {
+			rval = countsDouble[channel];
+		} else {
+			throw new UnsupportedOperationException(getName()
+					+ ": getCounts(int) cannot be called on a 2-d histogram.");
+		}
+		return rval;
+	}
+
+	/**
+	 * Gets the counts in the specified channel.
+	 * 
+	 * @param chX
+	 *            x-channel
+	 * @param chY
+	 *            y-channel
+	 * @return counts in the specified channel
+	 * @throws UnsupportedOperationException
+	 *             if not called on a 2-d histogram
+	 */
+	public synchronized double getCounts(int chX, int chY) {
+		double rval = 0;
+		if (type == Type.TWO_DIM_INT) {
+			rval = counts2d[chX][chY];
+		} else if (type == Type.TWO_DIM_DOUBLE) {
+			rval = counts2dDouble[chX][chY];
+		} else {
+			throw new UnsupportedOperationException(
+					getName()
+							+ ": getCounts(int,int) cannot be called on a 1-d histogram.");
+		}
+		return rval;
+	}
+
+	/* -- set methods */
 
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
 	public synchronized void setZero() {
-		if (type == ONE_DIM_INT) {
+		if (type == Type.ONE_DIM_INT) {
 			for (int i = 0; i < sizeX; i++) {
 				counts[i] = 0;
 				errors = null;
 			}
-		} else if (type == ONE_DIM_DOUBLE) {
+		} else if (type == Type.ONE_DIM_DOUBLE) {
 			for (int i = 0; i < sizeX; i++) {
 				countsDouble[i] = 0.0;
 				errors = null;
 			}
 
-		} else if (type == TWO_DIM_INT) {
+		} else if (type == Type.TWO_DIM_INT) {
 			for (int i = 0; i < sizeX; i++) {
 				for (int j = 0; j < sizeY; j++) {
 					counts2d[i][j] = 0;
 				}
 			}
 
-		} else if (type == TWO_DIM_DOUBLE) {
+		} else if (type == Type.TWO_DIM_DOUBLE) {
 			for (int i = 0; i < sizeX; i++) {
 				for (int j = 0; j < sizeY; j++) {
 					counts2dDouble[i][j] = 0.0;
 				}
 			}
 		}
+	}
 
+	/**
+	 * Calls setZero() on all histograms.
+	 *
+	 * @see #setZero()
+	 */
+	public synchronized static void setZeroAll() {
+		final Iterator it = getHistogramList().iterator();
+		while (it.hasNext()) {
+			final Histogram h = (Histogram) it.next();
+			h.setZero();
+		}
 	}
 
 	/**
@@ -891,23 +1018,64 @@ public final class Histogram implements Serializable {
 	 *             if countsIn is the wrong type.
 	 */
 	public synchronized void setCounts(Object countsIn) {
-		final int countsType = getArrayType(countsIn);
+		final Type countsType = Type.getArrayType(countsIn);
 		if (type != countsType) {
 			throw new IllegalArgumentException(
 					"The given array is of the wrong type.");
 		}
 		if (getDimensionality() == 1) {
-			final boolean isInt = (type == ONE_DIM_INT);
+			final boolean isInt = (type == Type.ONE_DIM_INT);
 			final Object dest = isInt ? (Object) counts : countsDouble;
 			final int inLength = isInt ? ((int[]) countsIn).length
 					: ((double[]) countsIn).length;
 			System.arraycopy(countsIn, 0, dest, 0, Math.min(inLength, sizeX));
 		} else {
-			if (type == TWO_DIM_INT) {
+			if (type == Type.TWO_DIM_INT) {
 				setCounts((int[][]) countsIn);
-			} else if (type == TWO_DIM_DOUBLE) {
+			} else if (type == Type.TWO_DIM_DOUBLE) {
 				setCounts((double[][]) countsIn);
 			}
+		}
+	}
+
+	/**
+	 * Sets counts in the specified channel.
+	 *  
+	 * @param channel to set counts in
+	 * @param cts counts to set
+	 * @throws UnsupportedOperationException if not called on a
+	 * 1-d histogram
+	 */
+	public synchronized void setCounts(int channel, double cts) {
+		if (type == Type.ONE_DIM_INT) {
+			counts[channel] = (int) cts;
+		} else if (type == Type.ONE_DIM_DOUBLE) {
+			countsDouble[channel] = cts;
+		} else {
+			throw new UnsupportedOperationException(
+					getName()
+							+ ": setCounts(int,double) cannot be called on a 2-d histogram.");
+		}
+	}
+
+	/**
+	 * Set the counts in the specified channel.
+	 * 
+	 * @param chX x-channel
+	 * @param chY y-channel
+	 * @param cts counts to set
+	 * @throws UnsupportedOperationException if not called on a
+	 * 2-d histogram
+	 */
+	public synchronized void setCounts(int chX, int chY, double cts) {
+		if (type == Type.TWO_DIM_INT) {
+			counts2d[chX][chY] = (int) cts;
+		} else if (type == Type.TWO_DIM_DOUBLE) {
+			counts2dDouble[chX][chY] = cts;
+		} else {
+			throw new UnsupportedOperationException(
+					getName()
+							+ ": setCounts(int,int,double) cannot be called on a 1-d histogram.");
 		}
 	}
 
@@ -924,19 +1092,20 @@ public final class Histogram implements Serializable {
 	 * @param countsIn
 	 *            1d or 2d array of <code>int</code>'s or <code>double</code>
 	 *            's, according to this histogram's type
-	 * @throws IllegalArgumentException if the parameter is the wrong type
+	 * @throws IllegalArgumentException
+	 *             if the parameter is the wrong type
 	 */
 	public synchronized void addCounts(Object countsIn) {
-		final int inType = getArrayType(countsIn);
+		final Type inType = Type.getArrayType(countsIn);
 		if (type != inType) {
 			throw new IllegalArgumentException(
 					"addCounts() needs to be called with the appropriate array type.");
 		}
-		if (type == ONE_DIM_INT) {
+		if (type == Type.ONE_DIM_INT) {
 			addCounts((int[]) countsIn);
-		} else if (type == TWO_DIM_INT) {
+		} else if (type == Type.TWO_DIM_INT) {
 			addCounts((int[][]) countsIn);
-		} else if (type == ONE_DIM_DOUBLE) {
+		} else if (type == Type.ONE_DIM_DOUBLE) {
 			addCounts((double[]) countsIn);
 		} else {
 			addCounts((double[][]) countsIn);
@@ -948,39 +1117,6 @@ public final class Histogram implements Serializable {
 		for (int i = max; i >= 0; i--) {
 			counts[i] += countsIn[i];
 		}
-	}
-
-	/**
-	 * Gives the counts array type of the given object.
-	 * 
-	 * @param o
-	 *            a 1-d or 2-d int or double array
-	 * @return which type the array corresponds to
-	 */
-	private static int getArrayType(Object o) {
-		final int rval;
-		final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
-		final Class type = o.getClass();
-		if (!type.isArray()) {
-			throw new IllegalArgumentException(error);
-		}
-		final Class componentA = type.getComponentType();
-		if (componentA.equals(int.class)) {
-			rval = ONE_DIM_INT;
-		} else if (componentA.equals(double.class)) {
-			rval = ONE_DIM_DOUBLE;
-		} else {
-			/* Two-D, componentA assumed to be array. */
-			final Class componentB = componentA.getComponentType();
-			if (componentB.equals(int.class)) {
-				rval = TWO_DIM_INT;
-			} else if (componentB.equals(double.class)) {
-				rval = TWO_DIM_DOUBLE;
-			} else {
-				throw new IllegalArgumentException(error);
-			}
-		}
-		return rval;
 	}
 
 	private synchronized void setCounts(int[][] countsIn) {
@@ -1031,7 +1167,7 @@ public final class Histogram implements Serializable {
 	 */
 	public void inc(int dataWord) {
 		int incCh = dataWord;
-		if (type != ONE_DIM_INT)
+		if (type != Type.ONE_DIM_INT)
 			throw new UnsupportedOperationException(
 					"Can only call inc(int) for type ONE_DIM_INT, name=" + name);
 		//check for overflow
@@ -1060,7 +1196,7 @@ public final class Histogram implements Serializable {
 	public void inc(int dataWordX, int dataWordY) {
 		int incX = dataWordX;
 		int incY = dataWordY;
-		if (type != TWO_DIM_INT)
+		if (type != Type.TWO_DIM_INT)
 			throw new UnsupportedOperationException(
 					"Can only call inc(int,int) for type TWO_DIM_INT, name="
 							+ name);
@@ -1089,7 +1225,7 @@ public final class Histogram implements Serializable {
 	 *                thrown if called on 2-d histogram
 	 */
 	public synchronized double[] getErrors() {
-		if (type == ONE_DIM_INT) {
+		if (type == Type.ONE_DIM_INT) {
 			final int length = counts.length;
 			if (errors == null) {
 				//set errors according to Poisson with error = 1 for zero
@@ -1103,7 +1239,7 @@ public final class Histogram implements Serializable {
 					}
 				}
 			}
-		} else if (type == ONE_DIM_DOUBLE) {
+		} else if (type == Type.ONE_DIM_DOUBLE) {
 			final int length = countsDouble.length;
 			if (errors == null) {
 				//set errors according to Poisson with error = 1 for zero
@@ -1134,7 +1270,7 @@ public final class Histogram implements Serializable {
 	 *                thrown if called on 2-d histogram
 	 */
 	public synchronized void setErrors(double[] errors) {
-		if ((type == ONE_DIM_INT) || (type == ONE_DIM_DOUBLE)) {
+		if (getDimensionality() == 1) {
 			this.errors = errors;
 			errorsSet = true;
 		} else { // invalid call if 2-d
@@ -1149,19 +1285,7 @@ public final class Histogram implements Serializable {
 	 * @return the number of dimensions in this histogram.
 	 */
 	public int getDimensionality() {
-		switch (type) {
-		case ONE_DIM_INT:
-			return 1;
-		case TWO_DIM_INT:
-			return 2;
-		case ONE_DIM_DOUBLE:
-			return 1;
-		case TWO_DIM_DOUBLE:
-			return 2;
-		default:
-			break;
-		}
-		return 0;
+		return type.getDimensionality();
 	}
 
 	/**
@@ -1199,9 +1323,9 @@ public final class Histogram implements Serializable {
 	 */
 	public double[][] findPeaks(double sensitivity, double width, boolean cal) {
 		double[] histArray;
-		if (getType() == Histogram.ONE_DIM_DOUBLE) {
+		if (getType() == Type.ONE_DIM_DOUBLE) {
 			histArray = countsDouble;
-		} else if (getType() == Histogram.ONE_DIM_INT) { //INT type
+		} else if (getType() == Type.ONE_DIM_INT) { //INT type
 			int[] temp = counts;
 			histArray = new double[temp.length];
 			for (int i = 0; i < temp.length; i++) {
