@@ -17,10 +17,6 @@ class Plot1d extends Plot {
 	private double[][] fitSignals;
 	private int areaMark1, areaMark2;
 
-	//FIXME KBS in both Plot1d and Plot2d
-	/*  last pixel point mouse moved to */
-	private final Point lastMovePoint = new Point();
-
 	/**
 	 * Constructor
 	 */
@@ -34,16 +30,16 @@ class Plot1d extends Plot {
 	void overlayHistogram(Histogram hist) {
 		displayingOverlay = true;
 		overlayHist = hist;
-		final int sizex=hist.getSizeX();
+		final int sizex = hist.getSizeX();
 		countsOverlay = new double[sizex];
 		if (hist.getType() == Histogram.ONE_DIM_INT) {
-			final int [] countsInt = (int[]) hist.getCounts();
+			final int[] countsInt = (int[]) hist.getCounts();
 			for (int i = 0; i < hist.getSizeX(); i++) {
 				countsOverlay[i] = countsInt[i];
 			}
 		} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-			final double [] countsDble = (double[]) hist.getCounts();
-			System.arraycopy(countsDble,0,countsOverlay,0,sizex);
+			final double[] countsDble = (double[]) hist.getCounts();
+			System.arraycopy(countsDble, 0, countsOverlay, 0, sizex);
 		}
 		repaint();
 	}
@@ -60,7 +56,7 @@ class Plot1d extends Plot {
 			setSettingGate(true);
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
-				pointsGate.addPoint(pChannel.x,pChannel.y);
+				pointsGate.addPoint(pChannel.x, pChannel.y);
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
 			} else if (mode == GateSetMode.GATE_CANCEL) {
@@ -70,8 +66,8 @@ class Plot1d extends Plot {
 			repaint();
 		}
 	}
-	
-	protected void paintSetGate(Graphics g){
+
+	protected void paintSetGate(Graphics g) {
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
@@ -79,11 +75,10 @@ class Plot1d extends Plot {
 	 * Painting to do if the mouse has moved
 	 * 
 	 */
-	protected void paintMouseMoved(Graphics gc){
-
-		if (markingArea) {
-			paintMarkingArea( gc);
-		}				 
+	protected void paintMouseMoved(Graphics gc) {
+		if (selectingArea) {
+			paintSelectingArea(gc);
+		}
 	}
 
 	/**
@@ -143,11 +138,11 @@ class Plot1d extends Plot {
 		repaint();
 	}
 
-	protected void paintMarkedChannels(Graphics g){
+	protected void paintMarkedChannels(Graphics g) {
 		g.setColor(PlotColorMap.mark);
-		final Iterator it=markedChannels.iterator();
-		while (it.hasNext()){
-			final Point p=(Point)it.next();
+		final Iterator it = markedChannels.iterator();
+		while (it.hasNext()) {
+			final Point p = (Point) it.next();
 			graph.markChannel1d(p.x, counts[p.x]);
 		}
 	}
@@ -157,31 +152,26 @@ class Plot1d extends Plot {
 	 * 
 	 * @param p1 starting data point
 	 */
-	void markingArea(Point p1) {
-		//Copy points, don't construct new rectangles
-		areaStartPoint.x=p1.x;
-		areaStartPoint.y=p1.y;
-		//set initial values out of range so we
-		//know they are initial values
-		lastMovePoint.x=-1;
-		lastMovePoint.y=-1;		
-	}
-	
-	protected void paintMarkingArea(Graphics gc) {
-		Graphics2D g=(Graphics2D)gc;
-		g.setColor(PlotColorMap.area);		
-		//Chech we moved otherwise same point
-		final Point move; 		
-		if (lastMovePoint.x>0) {
-			move=graph.toData(lastMovePoint);
+	/*void initializeSelectingArea(Point p1) {
+		setSelectingArea(true);
+		areaStartPoint.setLocation(p1);
+		lastMovePoint.setLocation(p1);
+	}*/
+
+	protected void paintSelectingArea(Graphics gc) {
+		Graphics2D g = (Graphics2D) gc;
+		g.setColor(PlotColorMap.area);
+		/*final Point move;
+		if (lastMovePoint.x > 0) {
+			move = graph.toData(lastMovePoint);
 		} else {
-			move=areaStartPoint;
-		}
-		graph.markArea1dOutline(areaStartPoint.x, move.x);
+			move = selectionStartPoint;
+		}*/
+		graph.markAreaOutline1d(selectionStartPoint.x, lastMovePoint.x);
 		setMouseMoved(false);
-		
+		clearSelectingAreaClip();
 	}
-	
+
 	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
@@ -202,9 +192,9 @@ class Plot1d extends Plot {
 	}
 
 	protected void paintMarkArea(Graphics g) {
-		final Graphics2D g2=(Graphics2D)g;
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		0.5f));
+		final Graphics2D g2 = (Graphics2D) g;
+		g2.setComposite(
+			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 		g.setColor(PlotColorMap.area);
 		graph.update(g, viewSize, plotLimits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
@@ -215,9 +205,9 @@ class Plot1d extends Plot {
 	 * including title, border, tickmarks, tickmark labels
 	 * and last but not least update the scrollbars
 	 */
-	protected void paintHistogram(Graphics g) { 
+	protected void paintHistogram(Graphics g) {
 		g.setColor(PlotColorMap.hist);
-		graph.drawHist(counts,binWidth);
+		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
 			graph.drawPeakLabels(
 				currentHist.findPeaks(sensitivity, width, pfcal));
@@ -269,20 +259,20 @@ class Plot1d extends Plot {
 	 */
 	protected void paintOverlay(Graphics g) {
 		g.setColor(PlotColorMap.overlay);
-		graph.drawHist(countsOverlay,binWidth);
+		graph.drawHist(countsOverlay, binWidth);
 	}
 
 	/**
 	 * Paint a gate on the give graphics object
 	 */
 	protected void paintGate(Graphics g) {
-		final Graphics2D g2=(Graphics2D)g;
+		final Graphics2D g2 = (Graphics2D) g;
 		final boolean noFillMode =
 			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
 		if (!noFillMode) {
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-			0.5f));
-		} 
+			g2.setComposite(
+				AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+		}
 		g.setColor(PlotColorMap.gateShow);
 		int ll = currentGate.getLimits1d()[0];
 		int ul = currentGate.getLimits1d()[1];
@@ -386,16 +376,68 @@ class Plot1d extends Plot {
 		return (int) Math.round(
 			currentHist.getCalibration().getChannel(energy));
 	}
-	
+
 	/**
 	 * Called when the mouse has moved
 	 */
 	protected void mouseMoved(MouseEvent me) {
-		if (markingArea) {			
-			lastMovePoint.setLocation(me.getX(), me.getY());
+		if (selectingArea) {
+			if (isSelectingAreaClipClear()) {
+				addToSelectClip(selectionStartPoint, lastMovePoint);
+			}
+			lastMovePoint.setLocation(graph.toData(me.getPoint()));
 			setMouseMoved(true);
-			this.repaint();			
-		}			
+			synchronized (selectingAreaClip) {
+				repaint(getClipBounds(selectingAreaClip, false));
+			}
+		}
+	}
+
+	/**
+	 * Add to the selection clip region, using the two 
+	 * given graphics-coordinates points to indicate the corners
+	 * of a rectangular region of channels that needs to be included.
+	 * 
+	 * @param p1 in graphics coordinates
+	 * @param p2 in graphics coordinates
+	 */
+	private final void addToSelectClip(Point p1, Point p2) {
+		synchronized (selectingAreaClip) {
+			selectingAreaClip.add(graph.getRectangleOutline1d(p1.x, p2.x));
+		}
 	}
 	
+	/**
+	 * Given a shape, return the bounding rectangle which includes
+	 * all pixels in the rectangle bounding the given shape, plus
+	 * some extra space given by the plot channels just outside the
+	 * edge of this rectangle.
+	 * 
+	 * @param clipShape the shape we want to cover with a 
+	 * rectangular clip region
+	 * @param shapeInChannelCoords if <code>true</code>, the given shape
+	 * is assumed given in channel coordinates, otherwise it is assumed
+	 * given in graphics coordinates
+	 * @return a bounding rectangle in the graphics coordinates
+	 */
+	private Rectangle getClipBounds(Shape clipShape, boolean shapeInChannelCoords){
+		final Rectangle r=clipShape.getBounds();
+		if (shapeInChannelCoords){//shape is in channel coordinates
+			/* add one more plot channel around the edges */
+			/* now do conversion */
+			r.setBounds(graph.getRectangleOutline1d(r.x-1,(int)r.getMaxX()+1));
+			return r;
+		} else {//shape is in view coordinates
+			/* Recursively call back with a polygon using channel
+			 * coordinates. */
+			final Polygon p=new Polygon();
+			final Point p1=graph.toData(r.getLocation());
+			final Point p2=graph.toData(new Point(r.x+r.width,r.y+r.height));
+			p.addPoint(p1.x,p1.y);
+			p.addPoint(p2.x,p2.y);
+			return getClipBounds(p,true);
+		}
+	}
+
 }
+
