@@ -205,7 +205,6 @@ public abstract class SelectionToolbar extends JToolBar implements Observer {
 			final boolean oneD = hist.getDimensionality() == 1;
 			if ((isOverlaySelected() && oneD) &&
 			    (display.getHistogram()!=null)){
-					//FIXME status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getFullName(), MessageHandler.END);
 					display.overlayHistogram(hist.getNumber());
 			} else {

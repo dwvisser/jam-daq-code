@@ -151,9 +151,8 @@ class Scroller
 				plotLimits.update();
 				updatePlot = true;
 			}
-			//update the plot can't use refresh as it resets count scroller
+			/* update the plot can't use refresh as it resets count scroller */
 			if (updatePlot) {
-				//FIXME KBS plot.copyCounts();
 				plot.getComponent().repaint();
 			}
 		}
