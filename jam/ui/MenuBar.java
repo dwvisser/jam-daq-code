@@ -162,7 +162,7 @@ public final class MenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu getHistogramMenu() {
-		final JMenu histogram = new JMenu("Histogram");
+		final JMenu histogram = new JMenu("Histogram");		
 		histogram.add(getMenuItem(SHOW_NEW_HIST));
 		histogram.add(getMenuItem(SHOW_HIST_ZERO));
 		histogram.add(getMenuItem(DELETE_HISTOGRAM));
@@ -172,6 +172,10 @@ public final class MenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_PROJECT));
 		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
 		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
+
+		histogram.add(getMenuItem(SHOW_NEW_GROUP));
+		histogram.add(getMenuItem(DELETE_GROUP));
+		
 		return histogram;
 	}
 

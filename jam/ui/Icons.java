@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
  */
 class Icons {
 
-	static final ImageIcon STOP, GO, CAUTION, CLEAR, SORT, GROUP, HIST1D,  HIST2D, GATE1D,
+	static final ImageIcon STOP, GO, CAUTION, CLEAR, GROUP_SORT, GROUP_FILE, GROUP_TEMP, HIST1D,  HIST2D, GATE1D,
 			GATE2D, GATE_DEF1D, GATE_DEF2D;
 
 	static {
@@ -22,8 +22,9 @@ class Icons {
 		URL urlGo = LOADER.getResource("jam/ui/go.png");
 		URL urlClear = LOADER.getResource("jam/ui/clear.png");
 		URL urlCaution = LOADER.getResource("jam/ui/caution.png");
-		URL urlSort = LOADER.getResource("jam/ui/sort.png");		
-		URL urlGroup = LOADER.getResource("jam/ui/group.png");
+		URL urlSort = LOADER.getResource("jam/ui/groupsort.png");		
+		URL urlFile = LOADER.getResource("jam/ui/groupfile.png");
+		URL urlTemp = LOADER.getResource("jam/ui/grouptemp.png");		
 		URL urlHist1D = LOADER.getResource("jam/ui/hist1D.png");
 		URL urlGate1D = LOADER.getResource("jam/ui/gate1D.png");
 		URL urlHist2D = LOADER.getResource("jam/ui/hist2D.png");
@@ -36,14 +37,15 @@ class Icons {
 				|| urlGateDef1D == null || urlGateDef2D == null) {
 			JOptionPane.showMessageDialog(null,
 					"Can't load resource: jam/ui/*.png");
-			STOP = GO = CLEAR = CAUTION = SORT = GROUP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = null;
+			STOP = GO = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = null;
 		} else {
 			STOP = new ImageIcon(urlStop);
 			GO = new ImageIcon(urlGo);
 			CAUTION = new ImageIcon(urlCaution);
 			CLEAR = new ImageIcon(urlClear);
-			SORT = new ImageIcon(urlSort);			
-			GROUP = new ImageIcon(urlGroup);
+			GROUP_SORT = new ImageIcon(urlSort);			
+			GROUP_FILE = new ImageIcon(urlFile);
+			GROUP_TEMP = new ImageIcon(urlTemp);
 			HIST1D = new ImageIcon(urlHist1D);
 			HIST2D = new ImageIcon(urlHist2D);
 			GATE1D = new ImageIcon(urlGate1D);

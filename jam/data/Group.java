@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 /**
  * A group of histograms, A node in the tree
@@ -18,10 +18,12 @@ public class Group {
      * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
      */
     public static class Type {
+    	
         final private static int TYPE_FILE = 1;
 
         final private static int TYPE_SORT = 2;
 
+        final private static int TYPE_TEMP = 3;        
         final int type;
 
         private Type(int i) {
@@ -37,6 +39,11 @@ public class Group {
          * Group that comes from a sort routine.
          */
         static public final Type SORT = new Type(TYPE_SORT);
+        /**
+         * Group that is tempory until save
+         */
+        
+        static public final Type TEMP = new Type(TYPE_TEMP);
     }
 
     /** Working group name */
@@ -45,7 +52,7 @@ public class Group {
     private final static List LIST = new ArrayList();
 
     /** Map of all groups using name */
-    private final static Map NAME_MAP = new TreeMap();
+    private final static Map NAME_MAP = new HashMap();
 
     /** The current active group for creating histograms */
     private static Group currentGroup;
@@ -57,7 +64,7 @@ public class Group {
     private final List histogramList = new ArrayList();
 
     /** children of group */
-    private final Map histogramMap = new TreeMap();
+    private final Map histogramMap = new HashMap();
 
     private String name;
 
@@ -85,6 +92,16 @@ public class Group {
         }
 
     }
+    /**
+     * Clear a group, removes it
+     * @param group
+     */
+    public static void clearGroup(Group group){
+
+    	NAME_MAP.remove(group);
+    	LIST.remove(group);
+    	group=null;    	
+    }
 
     /**
      * Set a group as the current group, create the group if it does not already
@@ -96,6 +113,15 @@ public class Group {
         if (NAME_MAP.containsKey(groupName)) {
             currentGroup = (Group) (NAME_MAP.get(groupName));
         }
+    }
+    /**
+     * Sets the "current" group.
+     * 
+     * @param group
+     *            to be "current"
+     */
+    public static void setCurrentGroup(Group group) {
+        currentGroup = group;
     }
 
     /**
@@ -117,15 +143,6 @@ public class Group {
         return sortGroup;
     }
 
-    /**
-     * Sets the "current" group.
-     * 
-     * @param group
-     *            to be "current"
-     */
-    public static void setCurrentGroup(Group group) {
-        currentGroup = group;
-    }
 
     /**
      * Get the current group.
@@ -152,16 +169,6 @@ public class Group {
      */
     public static Map getGroupMap() {
         return Collections.unmodifiableMap(NAME_MAP);
-    }
-    /**
-     * Clear a group, removes it
-     * @param group
-     */
-    public static void clearGroup(Group group){
-
-    	NAME_MAP.remove(group);
-    	LIST.remove(group);
-    	group=null;    	
     }
     /** Clear all groups */
     public static void clearList() {

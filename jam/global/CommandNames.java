@@ -45,6 +45,12 @@ public interface CommandNames {
 	/** Open selected histograms in hdf */ 
 	String OPEN_SELECTED = "opensel";	
 
+	/** Show dialog for defining a new group. */
+	String SHOW_NEW_GROUP="shownewgroup";
+	
+	/** Show dialog for defining a new group. */
+	String DELETE_GROUP="deletegroup";	
+	
 	/** Show dialog for defining a new histogram. */
 	String SHOW_NEW_HIST="shownewhist";
 

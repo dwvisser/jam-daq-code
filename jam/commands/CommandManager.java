@@ -51,6 +51,10 @@ public class CommandManager implements CommandListener, CommandNames {
 
 		CMD_MAP.put(ADD_HDF, AddHDFCmd.class);
 		CMD_MAP.put(RELOAD_HDF, ReloadHDFCmd.class);
+		
+		CMD_MAP.put(SHOW_NEW_GROUP, ShowDialogNewGroup.class);
+		CMD_MAP.put(DELETE_GROUP, DeleteGroup.class);
+		
 		/* Histogram Menu */
 		CMD_MAP.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
 		CMD_MAP.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class);

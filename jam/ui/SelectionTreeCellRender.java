@@ -42,10 +42,12 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
         if (nodeObject instanceof Group) {
         	  Group group = (Group)nodeObject;
         	  if (group.getType()==Group.Type.FILE) {
-        	  	setIcon(Icons.GROUP);
-        	  }else{
-        	  	setIcon(Icons.SORT);        	  	
-        	  }
+        	  	setIcon(Icons.GROUP_FILE);
+        	  }else if (group.getType()==Group.Type.SORT) {
+        	  	setIcon(Icons.GROUP_SORT);        	  	
+        	  } else {
+        	  	setIcon(Icons.GROUP_TEMP);
+        	  }        	  	
         	  setText(group.getName());
         } else if (nodeObject instanceof Histogram) {
             Histogram hist = (Histogram) nodeObject;
