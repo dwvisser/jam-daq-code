@@ -10,7 +10,7 @@ package jam.global;
 public interface CommandNames {
 	
 	/** Open a hdf file */
-	public static final String OPENHDF = "open";
+	public static final String OPEN_HDF = "open";
 	
 	/** clear all data */
 	public static final String NEWCLEAR ="clear";
