@@ -21,11 +21,12 @@
 </tr>
 </table>
 
-<h4>Datagrams sent by Jam for "Setup Online" when the sort routine uses vmeMap</h4>
+<h4>Datagrams sent by Jam for "Setup Online"</h4>
+<h5>case 1: vmeMap used to define parameters in the sort routine</h5>
 <p>In the following table, N is the number of defined parameters, R is the number of TDC's where ranges are specified, baseAddress is the base address of each ADC or TDC given in hexadecimal and prefixed by "0x", unitChannel is the channel within the ADC or TDC to be read, and range is the number to be sent to the range register in the TDC. The quotes around the strings are not actually sent, but a null character is sent immediately after the string.</p>
 
 <p>It is expected that all channels in the ADC's and TDC's <em>other than those defined here</em> will be disabled.</p>
-<hr>
+<br>
 <table>
     <tr><td>Packet#</td><td>integer</td><td>string</td></tr>
     <tr><td>1</td><td>0</td><td>"debug on" or "debug off", depending on user preferences</td></tr>
@@ -42,32 +43,64 @@
     baseAddress(tdcR) range(tdcR)<br>
     "</td></tr>
 </table>
+<h6>Expected VME response</h6>
+<table>
+<tr><td>1</td><td>The debug state in the VME code is enabled or disabled. If enabled, the code should print debugging messages to the terminal and/or send debugging messages to Jam to be printed on Jam's console.</td></tr>
+<tr><td>2</td><td>Similar to the debug state. Enabling verbosity simply asks for more status messages to be printed to the VME terminal and/or sent to Jam for printing on its console. "verbose off" implies a quiet mode where only the most important messages and also any requested messages are communicated.</td></tr>
+<tr><td>3</td><td>All channels in the ADC's and TDC's are disabled, then <em>those defined here</em> will be enabled for conversion. All TDC's with specified ranges will have the given value written to their range register.</td></tr>
+</table>
+<h5>case 2: cnafCommands used to define parameters and CAMAC commands</h5>
+
 <h4>Datagram sent by Jam when "start" or "Begin" is clicked</h4>
 <p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to open an event file, write a header to it, optionally zero the histograms and optionally send a datagram to request the scalers be zeroed, then finally send the packet shown below.</p>
-<hr>
+<br>
 <table>
 <tr><td>integer</td><td>string</td></tr>
 <tr><td>0</td><td>"START"</td>
 </table>
+<h5>Expected VME response</h5>
+<p>All modules which have channels enabled will be set to online mode, so that they'll convert the signals at their inputs when they receive gates. Additionally, the scaler module(s) should have its (their) inhibit state removed so that they can count logic pulses.</p>
 <h4>Datagram sent by Jam to request zeroing of scalers</h4>
-<hr>
 <table>
 <tr><td>integer</td><td>string</td></tr>
 <tr><td>0</td><td>"count zero"</td>
 </table>
+<h5>Expected VME response</h5>
+<p>All channels in the scaler module(s) should be reset to zero counts.</p>
+<h4><a name="readscalers">Datagram sent by Jam to request scaler values</a></h4>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"list scaler"</td>
+</table>
+<h5>Expected VME response</h5>
+<p>A <a href="#vmetohost">VME-to-host datagram</a> with SCALER status, with the 4-byte status word (0x00000002) followed by N+1 4-byte integers. The first integer is N, the number of scaler values to follow. The first scaler value is assumed to belong to the Scaler defined first in the sort routine, the second value to the second defined Scaler, etc., regardless of the number assigned to the Scaler when it's defined.</p>
+<h4>Datagram sent by Jam when "stop" is clicked</h4>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"STOP"</td>
+</table>
+<h5>Expected VME response</h5>
+<p>Take the ADC's and TDC's offline, and raise the inhibit state on the scaler module(s). Completely read the remaining data in the ADC and TDC buffers, sending final buffer(s) with the data. The last buffer should be padded with <a href="CAENformat.html#padding">STOP_PAD</a>.</p>
+<h4>Datagram sent by Jam when "End" is clicked</h4>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"END"</td>
+</table>
+<p>This is followed by a sending a <a href="#readscalers">request for scaler values</a>. When Jam is finished sorting the last data buffer, it closes its event file.</p>
+<h5>Expected VME response</h5>
+<p>Same as stopping, but the last buffer should be padded with <a href="CAENformat.html#padding">END_PAD</a>.</p>
 
-
-<h3>Form of VME-to-host reply datagrams</h3>
+<h3><a name="vmetohost">Form of VME-to-host reply datagrams</a></h3>
 
 <h4>byte 0-3</h4>   
 <dl>
-<dt>0</dt>   
+<dt>0x00000000</dt>   
 <dd>O.K. execution of last command</dd>
-<dt>1</dt>   
+<dt>0x00000001</dt>   
 <dd>Error in execution of last command</dd>
-<dt>2</dt>
+<dt>0x00000002</dt>
 <dd>Scaler reply packet</dd>
-<dt>3</dt>
+<dt>0x00000003</dt>
 <dd>CNAF reply packet</dd>
 </dl>
                                                   
@@ -113,64 +146,42 @@
 <p><a name="note">*</a> - indicates command not yet implemented</p>	
 
 <dl>
-<dt><code>reset</code></dt>
-<dd>Resets VME computor to known state, so it can be loaded, without rebooting.</dd>
-
-<dt><code>setpath [path]</code></dt>
-<dd>Set the path from which the CNAFs are loaded equal to [path].</dd>
-
-<dt><code>loadCNAF init</code></dt>
+<dt><code>cnaf init</code></dt>
 <dd>Load a list of the CNAFs to perform when a CAMAC crate initialization is done.</dd>
 
-<dt><code>loadCNAF event</code></dt>
+<dt><code>cnaf event</code></dt>
 <dd>Load a list of the CNAFs to perform for each event. Installed under interrupt #2 from CBD.</dd>
 
-<dt><code>loadCNAF scaler</code></dt>
+<dt><code>cnaf scaler</code></dt>
 <dd>Load a list of CNAFs to perform to when a scaler read is requested.</dd>
                   
-<dt><code>loadCNAF clear</code></dt>
+<dt><code>cnaf clear</code></dt>
 <dd>Load a list of CNAFs to perform to clear the crate, when a run is started.</dd>
 
-<dt><code>loadCNAF user</code></dt>
-<dd>Load a list of CNAFs to be used by a user specified function. Can be executed with an interrupt.</dd> 
-                  
-<dt><code>run init</code></dt>
-<dd>Initialize the Camac crate and any VME modules that need to be, and execute the init CNAFS.</dd>                                          
+<dt><code>list init</code></dt>
+<dd>Initialize the Camac crate and any VME modules that need to be, and execute the init CNAFS.</dd>
 
-<dt><code>run event</code></dt>
+<dt><code>list event</code></dt>
 <dd>Read an event using the event CNAFs as if a event interrupt had occured. This is useful for debugging.</dd>
                   
-<dt><code>run scaler</code></dt>
+<dt><code>list scaler</code></dt>
 <dd>Read the scaler values, using scaler CNAFs.</dd>
 			
-<dt><code>run clear</code></dt>
+<dt><code>list clear</code></dt>
 <dd>Execute the clear list CNAF, used to clear before a run,
 						usually just zeros the scalers.</dd>
 			
-<dt><code>run user</code></dt>
-<dd>Execute the user specified CNAFs.</dd> 
-
-
-<dt><code>start</code></dt>
+<dt><code>START</code></dt>
 <dd>Start the data acquisition.</dd> 
 
-<dt><code>stop</code></dt>
+<dt><code>STOP</code></dt>
 <dd>Stop the data acquisition, and flush out the data buffer.</dd>
                   
-<dt><code>end</code></dt>
+<dt><code>END</code></dt>
 <dd>Stop data acquisition, flush out data buffer, but making the final characters in the buffers a special end-of-run word: 0xFF03</dd>
 
-<dt><code>flush</code></dt>
+<dt><code>FLUSH</code></dt>
 <dd>Flush out the data buffer and send it.</dd>
-
-<dt><code><a href="vmeprotocol.html#note">*</a>loadRoutine [user]</code></dt>
-<dd>Load a user routine. (This routine could be interrupt driven, for instance.)</dd>
-
-<dt><code><a href="vmeprotocol.html#note">*</a>execute [user]</code></dt>
-<dd>Execute the user routine</dd>
-
-<dt><code>CNAF [cnaf]</code></dt>
-<dd>Read (execute) a CNAF. (This is useful for debugging)</dd>
 
 <dt><code>verbose on</code></dt>
 <dd>Sets mode so VME prints out messages it receives.</dd>
