@@ -6,7 +6,6 @@
 
 package jam.data.peaks;
 import java.util.Vector;
-import jam.data.Histogram;
 
 /**
  * Given sensitivity and width parameters, finds peaks in a given spectrum.
@@ -31,13 +30,6 @@ public class PeakFinder extends Object {
      */
     static final double SIGMA_TO_FWHM = 2.354;
 
-    /** Creates new PeakFinder.
-     * 
-     */
-    public PeakFinder() {
-    	//default constructor
-    }
-    
     /*     
      * Given a spectrum and search parameters, performs a digital filter peak search as
      * specified in V. Hnatowicz et al in Comp Phys Comm 60 (1990) 111-125.  Setting
