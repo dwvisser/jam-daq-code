@@ -143,10 +143,10 @@ public class YaleCAENgetScalers {
 				} catch (Exception e) {
 					strError.append(e.getMessage());
 					rtnState=false;
-				};
+				}
 			}
 		} catch (IOException ioe) {
-			strError.append("Reading file: " + ioe.getMessage());
+			strError.append("Reading file: ").append(ioe.getMessage());
 			rtnState = false;
 		}
 		fileName = events.getName();

@@ -116,8 +116,11 @@ public class VME_Map {
         }
         byte temp2=(byte)(36000/range);
         int actualRange=36000/temp2;
-        messages.append("A range of "+range+" ns requested for TDC with base address "+hexBase+
-            ", "+temp2+" set in register corresponding to a range of "+actualRange+" ns.\n");
+        messages.append("A range of ").append(range).append(
+                " ns requested for TDC with base address ").append(hexBase)
+                .append(", ").append(temp2).append(
+                        " set in register corresponding to a range of ")
+                .append(actualRange).append(" ns.\n");
         final Byte FSR = new Byte(temp2);
         if (V775ranges.containsKey(address)){
         	V775ranges.remove(address);//remove so no double entries
