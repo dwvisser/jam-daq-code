@@ -81,4 +81,7 @@ public interface CommandNames {
 	/** Setup the printing page layout */
 	String PAGE_SETUP="pageSetup";
 	
+	/** User guide */
+	String USER_GUIDE="userguide";
+	
 }
