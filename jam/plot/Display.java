@@ -35,19 +35,18 @@ import javax.swing.JPanel;
  */
 public final class Display extends JPanel implements Observer {
 
+	private static final JamStatus status = JamStatus.instance();
+
+	private static final String KEY1 = "1D Plot";
+
+	private static final String KEY2 = "2D Plot";
+
 	private final MessageHandler msgHandler; //output for messages
 
 	private final Action action; //handles display events
 
-	private Histogram currentHist;
-
-	private Histogram[] overlayHist;
-
 	private final Object plotLock = new Object();
 
-	private Plot currentPlot;
-
-	/* plot panels */
 	private final JPanel plotswap;
 
 	private final CardLayout plotswapLayout;
@@ -55,6 +54,8 @@ public final class Display extends JPanel implements Observer {
 	private final Plot1d plot1d;
 
 	private final Plot2d plot2d;
+
+	private Plot currentPlot;
 
 	private final Toolbar toolbar;
 
@@ -84,12 +85,12 @@ public final class Display extends JPanel implements Observer {
 		plot1d = new Plot1d(action);
 		plot1d.addPlotMouseListener(action);
 		final Scroller scroller1d = new Scroller(plot1d);
-		plotswap.add("OneD", scroller1d);
+		plotswap.add(KEY1, scroller1d);
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d(action);
 		plot2d.addPlotMouseListener(action);
 		final Scroller scroller2d = new Scroller(plot2d);
-		plotswap.add("TwoD", scroller2d);
+		plotswap.add(KEY2, scroller2d);
 		setPlot(plot1d);
 		add(plotswap, BorderLayout.CENTER);
 		JamStatus.instance().setDisplay(this);
@@ -100,17 +101,17 @@ public final class Display extends JPanel implements Observer {
 	/**
 	 * Set the histogram to display
 	 */
-	public void displayHistogram(Histogram hist) {
-		currentHist = hist;
+	public void displayHistogram() {
+		Histogram hist = status.getCurrentHistogram();
 		if (hist != null) {
 			final Limits lim = Limits.getLimits(hist);
 			if (lim == null) { //create a new Limits object for this histogram
-				newHistogram();
+				makeLimits(hist);
 			}
-			showPlot(currentHist); //changes local currentPlot
-			toolbar.setHistogramDimension(currentHist.getDimensionality());
+			showPlot(hist); //changes local currentPlot
+			toolbar.setHistogramDimension(hist.getDimensionality());
 		} else { //we have a null histogram, but display anyway
-			showPlot(currentHist);
+			showPlot(hist);
 		}
 	}
 
@@ -121,6 +122,9 @@ public final class Display extends JPanel implements Observer {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
+		if (Limits.getLimits(h) == null) {
+			makeLimits(h);
+		}
 		overlays.add(h);
 		doOverlay();
 	}
@@ -129,56 +133,22 @@ public final class Display extends JPanel implements Observer {
 		overlays.clear();
 	}
 
-	/**
-	 * Overlay a histogram only works for 1 d
-	 */
-	public void overlayHistograms(List hists) {
-		overlays.clear();
-		overlays.add(hists);
-		doOverlay();
-	}
-
 	private void doOverlay() {
-		if (!(currentPlot instanceof Plot1d)) {
+		if (!(getPlot() instanceof Plot1d)) {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
-		overlayHist = new Histogram[overlays.size()];
-		int i = 0;
-		for (Iterator it = overlays.iterator(); it.hasNext(); i++) {
+		final Iterator it = overlays.iterator();
+		while (it.hasNext()) {
 			final Histogram hist = (Histogram) it.next();
-			if (hist != null) {
-				if (Limits.getLimits(hist) == null) {
-					makeLimits(hist);
-				}
-				/* test to make sure none of the histograms are 2d */
-				if (hist.getDimensionality() == 1) {
-					overlayHist[i] = hist;
-				} else {
-					throw new IllegalStateException(
-							"Display attempted overlay with 2d histogram.");
-				}
-			} else {
+			if (hist == null) {
 				throw new IllegalStateException(
 						"Display attempted overlay with null histogram.");
 			}
 		}
-		plot1d.overlayHistograms(overlayHist);
-	}
-
-	/**
-	 * Get the displayed Histogram.
-	 */
-	public Histogram getHistogram() {
-		return currentHist;
-	}
-
-	/**
-	 * A new histogram not previously displayed is being displayed, so create
-	 * limits for histogram and initialize the limits.
-	 */
-	private void newHistogram() {
-		makeLimits(currentHist);
+		final Histogram[] hists = (Histogram[]) overlays
+				.toArray(new Histogram[overlays.size()]);
+		plot1d.overlayHistograms(hists);
 	}
 
 	private void makeLimits(Histogram h) {
@@ -189,23 +159,23 @@ public final class Display extends JPanel implements Observer {
 				} else {
 					setPlot(plot2d);
 				}
-				new Limits(h, currentPlot.getIgnoreChZero(), currentPlot
-						.getIgnoreChFull());
+				final Plot plot = getPlot();
+				new Limits(h, plot.getIgnoreChZero(), plot.getIgnoreChFull());
 			} catch (IndexOutOfBoundsException e) {
 				msgHandler.errorOutln("Index out of bounds while "
 						+ "creating limits for new histogram [plot.Plot] "
-						+ currentHist.getName());
+						+ h.getName());
 			}
 		}
 	}
 
 	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
-		currentPlot.setRenderForPrinting(rfp, pf);
+		getPlot().setRenderForPrinting(rfp, pf);
 	}
 
 	public ComponentPrintable getComponentPrintable() {
-		return currentPlot.getComponentPrintable(RunInfo.runNumber, JamStatus
-				.instance().getDate());
+		return getPlot().getComponentPrintable(RunInfo.runNumber,
+				JamStatus.instance().getDate());
 	}
 
 	/**
@@ -215,25 +185,25 @@ public final class Display extends JPanel implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final int command = be.getCommand();
 		if (command == BroadcastEvent.REFRESH) {
-			displayHistogram(currentHist);
+			displayHistogram();
 		} else if (command == BroadcastEvent.GATE_SET_ON) {
-			currentPlot.displaySetGate(GateSetMode.GATE_NEW, null, null);
+			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);
 		} else if (command == BroadcastEvent.GATE_SET_OFF) {
-			currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+			getPlot().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
-			currentPlot.repaint();
+			getPlot().repaint();
 		} else if (command == BroadcastEvent.GATE_SET_SAVE) {
-			currentPlot.displaySetGate(GateSetMode.GATE_SAVE, null, null);
+			getPlot().displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
 		} else if (command == BroadcastEvent.GATE_SET_ADD) {
-			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
+			getPlot().displaySetGate(GateSetMode.GATE_CONTINUE,
 					(Bin) be.getContent(), null);
 		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
-			currentPlot.displaySetGate(GateSetMode.GATE_REMOVE, null, null);
+			getPlot().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
 		} else if (command == BroadcastEvent.GATE_SELECT) {
 			Gate gate = (Gate) (be.getContent());
-			currentPlot.displayGate(gate);
+			getPlot().displayGate(gate);
 		}
 	}
 
@@ -242,7 +212,7 @@ public final class Display extends JPanel implements Observer {
 		plot1d.setWidth(width);
 		plot1d.setSensitivity(sensitivity);
 		plot1d.setPeakFindDisplayCal(cal);
-		displayHistogram(currentHist);
+		displayHistogram();
 	}
 
 	public void displayFit(double[][] signals, double[] background,
@@ -252,6 +222,8 @@ public final class Display extends JPanel implements Observer {
 
 	private void setPlot(Plot p) {
 		synchronized (plotLock) {
+			final String key = p instanceof Plot1d ? KEY1 : KEY2;
+			plotswapLayout.show(plotswap, key);
 			currentPlot = p;
 			action.setPlotChanged();
 		}
@@ -272,7 +244,7 @@ public final class Display extends JPanel implements Observer {
 	 * @see #removePlotMouseListener
 	 */
 	public void addPlotMouseListener(PlotMouseListener listener) {
-		currentPlot.addPlotMouseListener(listener);
+		getPlot().addPlotMouseListener(listener);
 	}
 
 	/**
@@ -283,7 +255,7 @@ public final class Display extends JPanel implements Observer {
 	 * @see #addPlotMouseListener
 	 */
 	public void removePlotMouseListener(PlotMouseListener listener) {
-		currentPlot.removePlotMouseListener(listener);
+		getPlot().removePlotMouseListener(listener);
 	}
 
 	/**
@@ -293,34 +265,30 @@ public final class Display extends JPanel implements Observer {
 	 *            the histogram to display
 	 */
 	private void showPlot(Histogram hist) {
-		currentHist = hist;
-		//cancel all previous stuff
-		if (currentPlot != null) {
-			currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+		/* Cancel all previous stuff. */
+		Plot plot = getPlot();
+		if (plot != null) {
+			plot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
 		}
 		if (hist != null) {
-			if ((currentHist.getType() == Histogram.ONE_DIM_INT)
-					|| (currentHist.getType() == Histogram.ONE_DIM_DOUBLE)) {
-				//show plot repaint if last plot was also 1d
-				plotswapLayout.show(plotswap, "OneD");
+			if ((hist.getType() == Histogram.ONE_DIM_INT)
+					|| (hist.getType() == Histogram.ONE_DIM_DOUBLE)) {
+				/* Show plot repaint if last plot was also 1d. */
 				setPlot(plot1d);
-			} else if ((currentHist.getType() == Histogram.TWO_DIM_INT)
-					|| (currentHist.getType() == Histogram.TWO_DIM_DOUBLE)) {
-				//show plot repaint if last plot was also 2d
-				plotswapLayout.show(plotswap, "TwoD");
+			} else if ((hist.getType() == Histogram.TWO_DIM_INT)
+					|| (hist.getType() == Histogram.TWO_DIM_DOUBLE)) {
+				/* Show plot repaint if last plot was also 2d. */
 				setPlot(plot2d);
 			}
-			currentPlot.setSelectingArea(false);
-			currentPlot.setMarkArea(false);
-			currentPlot.setMarkingChannels(false);
+			plot.setSelectingArea(false);
+			plot.setMarkArea(false);
+			plot.setMarkingChannels(false);
 		} else { //null histogram lets be in plot1d
-			plotswapLayout.show(plotswap, "OneD");
 			setPlot(plot1d);
 		}
-		currentPlot.displayHistogram(currentHist);
-		/* only repaint if we did not do a card swap */
-		currentPlot.repaint();
+		plot = getPlot();
+		plot.displayHistogram(hist);
+		plot.repaint();
 	}
-
 }
