@@ -17,7 +17,7 @@ final class SetAutoScaleOnExpand extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale on Expand/Zoom");
 		putValue(SHORT_DESCRIPTION,
 		"Automatically scale counts when the plot's viewport changes.");
-		prefsNode=PlotPrefs.prefs;
+		prefsNode=PlotPrefs.PREFS;
 		key=PlotPrefs.AUTO_ON_EXPAND;
 		defaultState=true;
 	}

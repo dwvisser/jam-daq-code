@@ -17,7 +17,7 @@ final class SetAutoScaleIgnoreFull extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale-Ignore Last Channel");
 		putValue(SHORT_DESCRIPTION,
 		"Ignore the counts in the last channel when autoscaling.");
-		prefsNode=PlotPrefs.prefs;
+		prefsNode=PlotPrefs.PREFS;
 		key=PlotPrefs.AUTO_IGNORE_FULL;
 		defaultState=true;
 	}

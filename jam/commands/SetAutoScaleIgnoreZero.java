@@ -17,7 +17,7 @@ final class SetAutoScaleIgnoreZero extends AbstractSetBooleanPreference {
 		putValue(NAME, "Autoscale-Ignore Zero");
 		putValue(SHORT_DESCRIPTION,
 		"Ignore the counts in channel zero when autoscaling.");
-		prefsNode=PlotPrefs.prefs;
+		prefsNode=PlotPrefs.PREFS;
 		key=PlotPrefs.AUTO_IGNORE_ZERO;
 		defaultState=true;
 	}

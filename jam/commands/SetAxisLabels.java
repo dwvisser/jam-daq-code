@@ -21,7 +21,7 @@ public class SetAxisLabels extends AbstractSetBooleanPreference {
 		putValue(NAME, "Axis Labels Single Plot");
 		putValue(SHORT_DESCRIPTION,
 		"Shows the axis labels and title for tiled plots.");
-		prefsNode=PlotPrefs.prefs;
+		prefsNode=PlotPrefs.PREFS;
 		key=PlotPrefs.DISPLAY_AXIS_LABELS;
 		defaultState=true;
 	}

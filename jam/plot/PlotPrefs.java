@@ -14,13 +14,13 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface PlotPrefs {
-	final Preferences prefs=Preferences.userNodeForPackage(PlotPrefs.class);
-	final String AUTO_IGNORE_ZERO="AutoIgnoreZero";
-	final String AUTO_IGNORE_FULL="AutoIgnoreFull";
-	final String BLACK_BACKGROUND="BlackBackground";
-	final String AUTO_PEAK_FIND = "AutoPeakFind";
-	final String AUTO_ON_EXPAND="AutoOnExpand";
-	final String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
-	final String ENABLE_SCROLLING="EnableScrolling";
-	final String DISPLAY_AXIS_LABELS="DisplayAxisLabels";
+	Preferences PREFS=Preferences.userNodeForPackage(PlotPrefs.class);
+	String AUTO_IGNORE_ZERO="AutoIgnoreZero";
+	String AUTO_IGNORE_FULL="AutoIgnoreFull";
+	String BLACK_BACKGROUND="BlackBackground";
+	String AUTO_PEAK_FIND = "AutoPeakFind";
+	String AUTO_ON_EXPAND="AutoOnExpand";
+	String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
+	String ENABLE_SCROLLING="EnableScrolling";
+	String DISPLAY_AXIS_LABELS="DisplayAxisLabels";
 }

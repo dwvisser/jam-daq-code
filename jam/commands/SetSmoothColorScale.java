@@ -17,7 +17,7 @@ final class SetSmoothColorScale extends AbstractSetBooleanPreference {
 		putValue(NAME, "Use gradient color scale");
 		putValue(SHORT_DESCRIPTION,
 		"Use a continuous rainbow color scale for 2d histograms.");
-		prefsNode=ColorPrefs.colorPrefs;
+		prefsNode=ColorPrefs.COLOR_PREFS;
 		key=ColorPrefs.SMOOTH_COLOR_SCALE;
 		defaultState=false;
 	}
