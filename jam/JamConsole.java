@@ -392,14 +392,15 @@ public class JamConsole
 		String [] parameters;
 		String command;
 		int numParam;
-		int countParam;
+		int countWrd;
 		
 		cmdTokens=parseExpression(_inString);
 		final int numberInWords = cmdTokens.length;
 		
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
-		final String inString = _inString.trim();
-		final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
+		//Remove KBS
+		//final String inString = _inString.trim();
+		//final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
 		//final int numberInWords = inLine.countTokens();
 		
 		
@@ -411,19 +412,19 @@ public class JamConsole
 				command = NUMBERS_ONLY;				 
 				parameters=new String[numberInWords];
 				numParam=numberInWords;
-				countParam=0;				
+				countWrd=0;				
 			} else {
 				/* parameter list to hold one less */
 				command = cmdTokens[0];
 				parameters = new String[numberInWords - 1];
 				numParam=numberInWords - 1;				
-				countParam = 1;
+				countWrd = 1;
 			}
 			/* Load parameter tokens */
 			int i=0;
-			while (countParam<numberInWords) {
-				parameters[i] = cmdTokens[countParam];
-				countParam++;
+			while (countWrd<numberInWords) {
+				parameters[i] = cmdTokens[countWrd];
+				countWrd++;
 				i++;
 			}			
 			/* perform command */
