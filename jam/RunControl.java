@@ -343,9 +343,9 @@ public class RunControl implements Controller, ActionListener {
             //FIXME -- tape option doesn't work right now 15-Sep-2002
             //tapeDaemon.openEventOutputFile(dataFile);
             tapeDaemon.writeHeader();
-        } else {
+        } /*else {
             // ***** send message to front end indicating file ****
-        }
+        }*/
         if (checkHistogramZero.isSelected()) {// should we zero histograms
             histogramControl.zeroAll();
         }
@@ -451,11 +451,12 @@ public class RunControl implements Controller, ActionListener {
             if (device==DISK){
                 diskDaemon.closeEventOutputFile();
                 console.messageOutln("Event file closed "+dataFile.getPath());
-
             } else if(device==TAPE) {
                 tapeDaemon.closeEventOutputFile();
                 console.messageOutln(" Tape record ended");
             } else  if (device ==FRONT_END) {
+            	System.out.println(getClass().getName()+".atWriteEnd()"+
+            	" device=FRONT_END not implemented");
                 // **** send message to indicate end of run file? ****
             } else {
                 System.err.println("Error Should not be [RunControl]");
