@@ -197,6 +197,11 @@ public class FixEventFile {
 		System.out.println("Done with everything.");
 	}
 
+	/**
+	 * Launches the task to fix an event file.
+	 * 
+	 * @param args input file name
+	 */
 	public static void main(String[] args) {
 		if (args.length==0) {
 			System.out.println("Supply an input file argument.");

@@ -13,6 +13,11 @@ public final class Broadcaster extends Observable {
 	
 	static private final Broadcaster INSTANCE=new Broadcaster();
 	
+	/**
+	 * Return the unique instance of this class.
+	 * 
+	 * @return singleton instance of this class
+	 */
 	static public Broadcaster getSingletonInstance(){
 		return INSTANCE;
 	}

@@ -49,16 +49,25 @@ public class YaleCAENgetScalers {
 	private String fileName;
 	private final StringBuffer strError=new StringBuffer();
 
+	/**
+	 * Constructs an object that can scan YaleCAEN event files
+	 * for scaler blocks.
+	 */
 	public YaleCAENgetScalers() {
 		JamStatus js = JamStatus.instance();
 		frame = js.getFrame();
 		console = js.getMessageHandler();
 	}
 
-	public void display() {
+	private void display() {
 		new TextDisplayDialog(frame, fileName, false, strScalerText);
 	}
 	
+	/**
+	 * Scans the given event file for scaler blocks.
+	 * 
+	 * @param events file to scan
+	 */
 	public void processEventFile(final File events){
 		final Runnable r=new Runnable(){
 			public void run(){
@@ -145,7 +154,7 @@ public class YaleCAENgetScalers {
 		return rtnState;
 	}
 
-	public String getErrorTxt() {
+	private String getErrorTxt() {
 		return strError.toString();
 	}
 
