@@ -112,6 +112,7 @@ public class JamCommand
 	private boolean remote;
 
 	private boolean selectEnabled = true; //is selection enabled
+	private JamStatus status;
 
 	/** Constructor for this class.
 	 * @param jamMain The launch class for the Jam application
@@ -130,6 +131,7 @@ public class JamCommand
 		this.console = console;
 		this.msgHandler = console;
 		this.frame = (Frame) jamMain;
+		status = JamStatus.instance();
 		// class to hold run information
 		new RunInfo();
 		//io classes
@@ -221,16 +223,16 @@ public class JamCommand
 				if (overlay) {
 					console.messageOut("Overlay Spectrum ", console.NEW);
 				}
-			} else if (incommand == "selecthistogram") {
+			} else if (selectEnabled && incommand == "selecthistogram") {
 				Object item = ((JComboBox) e.getSource()).getSelectedItem();
-				if (selectEnabled) {
-					if (item instanceof String) {
-						Histogram h = Histogram.getHistogram((String) item);
-						if (h != null) {
-							selectHistogram(h);
-						}
+				//				if (selectEnabled) {
+				if (item instanceof String) {
+					Histogram h = Histogram.getHistogram((String) item);
+					if (h != null) {
+						selectHistogram(h);
 					}
 				}
+				//				}
 			} else if (incommand == "selectgate") {
 				Object item = ((JComboBox) e.getSource()).getSelectedItem();
 				if (selectEnabled && item instanceof String) {
@@ -310,21 +312,17 @@ public class JamCommand
 				selectEnabled = true;
 			} else if (incommand == "saveascii") {
 				impExpASCII.saveFile(
-					Histogram.getHistogram(
-						JamStatus.getCurrentHistogramName()));
+					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if (incommand == "savespe") {
 				impExpSPE.saveFile(
-					Histogram.getHistogram(
-						JamStatus.getCurrentHistogramName()));
+					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if (incommand == "saveornl") {
 				impExpORNL.saveFile(
-					Histogram.getHistogram(
-						JamStatus.getCurrentHistogramName()));
+					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if (incommand == "savexsys") { //FIXME not implemented
 				console.errorOutln("Save xsys file NOT implemented");
 				impExpXSYS.saveFile(
-					Histogram.getHistogram(
-						JamStatus.getCurrentHistogramName()));
+					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if (incommand == "batchexport") {
 				batchexport.show();
 			} else if (incommand == "print") {
@@ -391,14 +389,14 @@ public class JamCommand
 			} else if (incommand.equals("peakfind")) {
 				peakFindDialog.show();
 			} else if (incommand == "start") {
-				if (JamStatus.isOnLine()) {
+				if (status.isOnLine()) {
 					runControl.startAcq();
 				} else {
 					console.errorOutln(
 						"Error: start command given when not in Online mode.");
 				}
 			} else if (incommand == "stop") {
-				if (JamStatus.isOnLine()) {
+				if (status.isOnLine()) {
 					runControl.stopAcq();
 				} else {
 					console.errorOutln(
@@ -465,7 +463,7 @@ public class JamCommand
 	void selectHistogram(Histogram hist) throws GlobalException {
 		if (hist != null) {
 			if (!overlay) {
-				JamStatus.setCurrentHistogramName(hist.getName());
+				status.setCurrentHistogramName(hist.getName());
 				Thread worker = new Thread() {
 					public void run() {
 						try {
@@ -482,8 +480,7 @@ public class JamCommand
 									}
 									display.displayHistogram(
 										Histogram.getHistogram(
-											JamStatus
-												.getCurrentHistogramName()));
+											status.getCurrentHistogramName()));
 									jamMain.gatesChanged();
 								}
 							});
@@ -497,7 +494,7 @@ public class JamCommand
 				};
 				worker.start();
 			} else {
-				JamStatus.setOverlayHistogramName(hist.getName());
+				status.setOverlayHistogramName(hist.getName());
 				console.messageOut(hist.getName(), console.END);
 				display.overlayHistogram(hist);
 				overlay = false;
@@ -523,7 +520,7 @@ public class JamCommand
 		if (gateObject instanceof Gate) {
 			Gate gate = (Gate) gateObject;
 			try {
-				JamStatus.setCurrentGateName(gate.getName());
+				status.setCurrentGateName(gate.getName());
 				broadcaster.broadcast(BroadcastEvent.GATE_SELECT);
 				if (gate.getType() == Gate.ONE_DIMENSION) {
 					area = gate.getArea();
@@ -611,8 +608,7 @@ public class JamCommand
 						+ ".printHistogram(): printPlot pagedpi "
 						+ pagedpi);
 				msgHandler.messageOut(
-					"Printing histogram: "
-						+ JamStatus.getCurrentHistogramName(),
+					"Printing histogram: " + status.getCurrentHistogramName(),
 					MessageHandler.NEW);
 				msgHandler.messageOut(" . ");
 				/* work done by display... */
