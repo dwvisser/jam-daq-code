@@ -123,7 +123,8 @@ public class Histogram implements Serializable {
 	 *
 	 * @param nameIn  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
 	 * @param type  type and dimensionality of data
-	 * @param size  number of channels, all 2d histograms have square dimensions
+	 * @param sizeX  number of channels in x-axis
+	 * @param sizeY number of channels in y-axis
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @see #NAME_LENGTH
 	 * @see #ONE_DIM_INT
@@ -243,7 +244,7 @@ public class Histogram implements Serializable {
 	/**
 	 * Contructor with no number given, but axis labels are given.
 	 *
-	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
+	 * @param nameIn  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
 	 * @param type  dimensionality of histogram, 1 or 2
 	 * @param size  number of channels, all 2d histograms have square dimensions
 	 * @param title  lengthier title of histogram, displayed on plot
@@ -258,7 +259,8 @@ public class Histogram implements Serializable {
 	 *
 	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
 	 * @param type  dimensionality of histogram, 1 or 2
-	 * @param size  number of channels, all 2d histograms have square dimensions
+	 * @param sizeX  number of channels in x-axis
+	 * @param sizeY number of channels in y-axis
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param axisLabelX label displayed for x-axis on plot
 	 * @param axisLabelY label displayed for y-axis on plot
@@ -350,7 +352,6 @@ public class Histogram implements Serializable {
 	 * Create a new 2-d histogram with counts known and automatically give it a number
 	 *
 	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
-	 * @param size  number of channels
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with, must be square
 	 * @exception   DataException thrown if non-square array in parameter list
@@ -372,7 +373,6 @@ public class Histogram implements Serializable {
 	 * Create a new 2-d histogram with counts known and automatically give it a number
 	 *
 	 * @param name  unique name of histogram, should be limited to <code>NAME_LENGTH</code> characters, used in both .jhf and .hdf files as the unique identifier for reloading the histogram
-	 * @param size  number of channels
 	 * @param title  lengthier title of histogram, displayed on plot
 	 * @param countsIn  array of counts to initialize with, must be square
 	 * @exception   DataException thrown if non-square array in parameter list
@@ -476,6 +476,7 @@ public class Histogram implements Serializable {
 		sortedNameMap.clear();
 		histogramList.clear();
 		sortedNumberMap.clear();
+		lastNumber=0;
 		System.gc();
 	}
 
@@ -850,8 +851,8 @@ public class Histogram implements Serializable {
 	 * Increments the counts by one in the given channel.
 	 * Must be a histogram of type <code>TWO_DIM_INT</code>.
 	 *
-	 * @param dataWordX the X-channel to be incremented
-	 * @param dataWordX the X-channel to be incremented
+	 * @param dataWordX the x-channel to be incremented
+	 * @param dataWordY the y-channel to be incremented
 	 * @exception DataException thrown if method called for inappropriate type of histogram
 	 */
 	public void inc(int dataWordX, int dataWordY) throws DataException {
