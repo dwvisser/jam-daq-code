@@ -33,45 +33,162 @@ import java.util.Properties;
  * </ul>
  *
  * @author Ken Swartz
- * @version 0.5 1-17-99
+ * @author Dale Visser
+ * @version 1.4
+ * @since 0.5 17 January 1999
  */
 public class JamProperties {
 
 	static final String FILE_CONFIG = "JamConfig.ini";
 	static final String FILE_USER = "JamUser.ini";
-	static final String DEFAULT_JAM_HOME = /*"/home/jam"*/System.getProperty("user.home");
+	static final String DEFAULT_JAM_HOME = System.getProperty("user.home");
 
+	/**
+	 * Path to search for <code>JamConfig.ini</code>
+	 */
 	public final static String JAM_HOME = "jam.home";
+	
+	/**
+	 * IP address of the socket used to communicate with the
+	 * front end.
+	 * 
+	 * @see jam.FrontEndCommunication
+	 */
 	public final static String HOST_IP = "host.IP";
+	
+	/**
+	 * Port number for sending messages to the front end.
+	 */
 	public final static String HOST_PORT_SEND = "host.portSend";
+	
+	/**
+	 * Port number for recieving messages from the front end.
+	 */
 	public final static String HOST_PORT_RECV = "host.portRecv";
+	
+	/**
+	 * Front end's IP address for communicating with Jam.
+	 */
 	public final static String TARGET_IP = "target.IP";
+	
+	/**
+	 * Front end's port number for communciating with Jam.
+	 */
 	public final static String TARGET_PORT = "target.port";
+	
+	/**
+	 * IP address of the socket used to receive data from
+	 * the front end.
+	 */
 	public final static String HOST_DATA_IP = "host-data.IP";
+	
+	/**
+	 * Port number of the socket used to receive data from 
+	 * the front end.
+	 */
 	public final static String HOST_DATA_PORT_RECV = "host-data.portRecv";
+	
+	/**
+	 * Default experiment name to use when naming data files.
+	 */
 	public final static String EXP_NAME = "exp.name";
+	
+	/**
+	 * Fully qualified name of the default sort routine.
+	 * 
+	 * @see jam.sort.SortRoutine
+	 */
 	public final static String SORT_ROUTINE = "sort.routine";
+	
+	/**
+	 * Path to search for and load sort routines.
+	 */
 	public final static String SORT_CLASSPATH = "sort.classpath";
-	public final static String DEFAULT_SORT_CLASSPATH = "default";	
+	
+	/**
+	 * Set <code>true</code> to default to the classpath used to launch Jam
+	 * instead of a given sort classpath.
+	 */
+	public final static String DEFAULT_SORT_CLASSPATH = "default";
+	
+	/**
+	 * Fully qualified name of the default <code>EventInputStream</code>.
+	 * 
+	 * @see jam.sort.stream.EventInputStream
+	 */	
 	public final static String EVENT_INSTREAM = "event.instream";
+	
+	/**
+	 * Fully qualified name of the default <code>EventOutputStream</code>.
+	 * 
+	 * @see jam.sort.stream.EventOutputStream
+	 */
 	public final static String EVENT_OUTSTREAM = "event.outstream";
+	
+	/**
+	 * Default path to look in for event files to sort offline.
+	 */
 	public final static String EVENT_INPATH = "event.inpath";
+	
+	/**
+	 * Default path to use for writing event files.
+	 */
 	public final static String EVENT_OUTPATH = "event.outpath";
+	
+	/**
+	 * Filename to use when writing a pre-sorted event file.
+	 */
 	public final static String EVENT_OUTFILE = "event.outfile";
+	
+	/**
+	 * Default path for saving HDF files.
+	 * 
+	 * @see jam.io.hdf.HDFIO
+	 */
 	public final static String HIST_PATH = "hist.path";
+	
+	/**
+	 * Default path to a tape device. This will probably never
+	 * be used.
+	 * 
+	 * @deprecated
+	 */
 	public final static String TAPE_DEV = "tape.dev";
+	
+	/**
+	 * Default path to the folder for writing out the console
+	 * log.
+	 */
 	public final static String LOG_PATH = "log.path";
+	
+	/**
+	 * <code>true</code> if the front end should be verbose with it's messages.
+	 * The exact usage of this is up to the front end implementer.
+	 */
 	public final static String FRONTEND_VERBOSE = "frontend.verbose";
+	
+	/**
+	 * <code>true</code> if the front end should output debugging messages.
+	 */
 	public final static String FRONTEND_DEBUG = "frontend.debug";
+	
+	/**
+	 * <code>true</code> if Jam should not fill in gates on 2d
+	 * plots when painting them.
+	 */
 	public final static String NO_FILL_2D = "graph.nofill2d";
+	
+	/**
+	 * <code>true</code> if Jam should use a continuous gradient
+	 * color scale on 2d plots when painting them.
+	 * 
+	 * @see jam.plot.GradientColorScale
+	 */
 	public final static String GRADIENT_SCALE = "graph.gradientScale";
+	
 	private final static String NO_ERRORS="No error messages.";
 	private final static String NO_WARNINGS="No warning messages.";
-	
-	private final static String TRUE="true";
-	private final static String FALSE="false";
-	
-	String END_LINE = System.getProperty("line.separator");
+		
 	private String fileSep = System.getProperty("file.separator");
 	private String userHome = System.getProperty("user.home");
 	private static String os=null;
@@ -109,6 +226,11 @@ public class JamProperties {
 		loadProperties();
 	}
 	
+	/**
+	 * Returns whether we are running on MacOS X.
+	 * 
+	 * @return <code>true</code> if the operating system is MacOS X
+	 */
 	public static boolean isMacOSX(){
 		if (os==null){
 			os=System.getProperty("os.name");
@@ -117,27 +239,25 @@ public class JamProperties {
 		return macosx;
 	}
 	
+	/**
+	 * Set where to print messages.
+	 * 
+	 * @param msgHandler the console
+	 */
 	public void setMessageHandler(MessageHandler msgHandler) {
 		JamProperties.msgHandler = msgHandler;
 	}
 	
 	/**
-	 * get the properties for this Jam process
+	 * @return the properties for this Jam process
 	 */
 	public static Properties getProperties() {
 		return jamProperties;
 	}
 
 	/**
-	 * get a property for this Jam process
-	 */
-	public static String getProperty(String key) {
-		return jamProperties.getProperty(key);
-	}
-
-	/**
-	 * get a String property for this Jam process
-	 * 
+	 * @param key which property to retrieve
+	 * @return the value for the given property
 	 */
 	public static String getPropString(String key) {
 		String rval = "undefined";//default return value
@@ -151,8 +271,7 @@ public class JamProperties {
 	}
 
 	/**
-	 * Get an integer property for this Jam process.
-	 *
+	 * @param key which property to retrieve
 	 * @return the integer value of the property
 	 */
 	public static int getPropInt(String key) {
@@ -313,7 +432,9 @@ public class JamProperties {
 	}
 
 	/**
-	 * Output message from loading propreties
+	 * Request to print output messages to console.
+	 * 
+	 * @param msgHandler the console
 	 */
 	public void outputMessages(MessageHandler msgHandler) {
 		if (loadError != NO_ERRORS) {
@@ -330,41 +451,6 @@ public class JamProperties {
 	}
 
 	/**
-	 * Message about where config was loaded from
-	 */
-	public String configLoadMessage() {
-		return configLoadMessage;
-	}
-
-	/**
-	 * Message about where user was loaded from
-	 */
-	public String userLoadMessage() {
-		return userLoadMessage;
-	}
-
-	/**
-	 * warning message from loading
-	 */
-	public String configLoadWarning() {
-		return configLoadWarning;
-	}
-
-	/**
-	 * warning message from loading
-	 */
-	public String userLoadWarning() {
-		return userLoadWarning;
-	}
-
-	/**
-	 * Error message from loading
-	 */
-	public String loadError() {
-		return loadError;
-	}
-
-	/**
 	 * Load default configuration properties.
 	 */
 	private void loadDefaultConfig() {
@@ -377,7 +463,7 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		setProperty(NO_FILL_2D,isMacOSX());
+		setProperty(NO_FILL_2D,false);
 	}
 
 	/**
@@ -401,6 +487,15 @@ public class JamProperties {
 		jamProperties.setProperty(GRADIENT_SCALE,FALSE);
 	}
 	
+	private static final String TRUE=Boolean.toString(true);
+	private static final String FALSE=Boolean.toString(false);
+	
+	/**
+	 * Set a boolean property.
+	 * 
+	 * @param key the name of the property
+	 * @param val the new value
+	 */
 	static public void setProperty(String key, boolean val){
 		if (val){
 			jamProperties.setProperty(key,TRUE);
@@ -409,6 +504,13 @@ public class JamProperties {
 		}
 	}
 	
+	/**
+	 * Get the value of a boolean property.
+	 * 
+	 * @param key the name of the property
+	 * @return <code>true</code> if equal to 
+	 * <code>Boolean.toString(true)</code>
+	 */
 	static public boolean getBooleanProperty(String key){
 		return jamProperties.getProperty(key).equals(TRUE);
 	} 
