@@ -2,13 +2,9 @@
  */
 package jam.sort;
 import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
-import java.net.*;
 import jam.global.*;
 import jam.sort.stream.*;
-import jam.*;
 
 /**
  * <p>CURRENTLY UNTESTED.  Tape deamon to read and write event data for tapes.
@@ -364,10 +360,8 @@ public class TapeDaemon extends StorageDaemon {
 				fos.write(buffer);
 				//		    counter=counter++;
 			}
-
-			this.yield();
+			yield();
 		} while (true);
-
 	}
 
 	/* private methods, methods needed for tape device */
