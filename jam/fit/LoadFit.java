@@ -1,28 +1,30 @@
 package jam.fit;
 import jam.JamException;
 import jam.JamMain;
-import jam.MainMenuBar;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.plot.Display;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Set;
+
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 
 /**
@@ -41,7 +43,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private final JamMain jamMain;
 	private final Display display;
 	private final MessageHandler msgHandler;
-	private final MainMenuBar menubar;
+	private final JMenu menu;
 
 	private final JDialog dl;
 	private final JComboBox chooseFit;
@@ -54,12 +56,12 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param mh the place to output text
 	 */
 	public LoadFit(JamMain jm, Display d, MessageHandler mh,
-	MainMenuBar mb) {
+	JMenu jmenu) {
 		super();
-		this.jamMain = jm;
-		this.display = d;
-		this.msgHandler = mh;
-		menubar=mb;
+		jamMain = jm;
+		display = d;
+		msgHandler = mh;
+		menu=jmenu;
 		final String dialogName="Load Fit Routine";
 		dl = new JDialog(jamMain, dialogName, false);
 		final Container cp = dl.getContentPane();
@@ -151,7 +153,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			fit.createDialog(jamMain, display, msgHandler);
 			fit.show();
-			menubar.addFit(new AbstractAction(fitNameFront) {
+			menu.add(new AbstractAction(fitNameFront) {
 				public void actionPerformed(ActionEvent ae) {
 					fit.show();
 				}
