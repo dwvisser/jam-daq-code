@@ -33,7 +33,7 @@ Commandable {
 	 * 
 	 * @param msghdlr
 	 */
-	public void init(MessageHandler mh) {
+	public final void init(MessageHandler mh) {
 		msghdlr=mh;
 		initCommand();
 	}
