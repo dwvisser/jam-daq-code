@@ -880,13 +880,16 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		}
 		setBackground(PlotColorMap.getSingletonInstance().getBackground());
 	}
-	//Plot mouse methods
+	
+	/* Plot mouse methods */
+	
 	/**
 	 * Add plot select listener
 	 */
-	void addPlotSelectListener(PlotSelectListener plotSelectListener) {
-		plotMouse.addPlotSelectListener(plotSelectListener);
+	void setPlotSelectListener(PlotSelectListener plotSelectListener) {
+		plotMouse.setPlotSelectListener(plotSelectListener);
 	}
+	
 	/**
 	 * Add a mouse listener.
 	 */
@@ -900,6 +903,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	void removePlotMouseListener(PlotMouseListener listener) {
 		plotMouse.removeListener(listener);
 	}
+	
 	/**
 	 * Remove all plot mouse listeners
 	 *

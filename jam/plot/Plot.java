@@ -114,12 +114,12 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
 		scroller1d = new Scroller(plot1d);
 		add(KEY1, scroller1d);
-		plot1d.addPlotSelectListener(this);
+		plot1d.setPlotSelectListener(this);
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d();
 		scroller2d = new Scroller(plot2d);
 		add(KEY2, scroller2d);
-		plot2d.addPlotSelectListener(this);
+		plot2d.setPlotSelectListener(this);
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(this, KEY1);
 		currentSubPlot = plot1d;
