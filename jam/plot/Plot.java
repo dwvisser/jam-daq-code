@@ -386,39 +386,26 @@ public abstract class Plot extends JPanel {
 	 * Zoom the region viewed.
 	 */
 	public void zoom(int inOut) {
-		int xll = plotLimits.getMinimumX(); // x lower limit
+		int xll = plotLimits.getMinimumX();
 		int xul = plotLimits.getMaximumX();
-		; // x upper limit
 		int yll = plotLimits.getMinimumY();
-		; // y lower limit
 		int yul = plotLimits.getMaximumY();
-		; // y upper limit
 		final int diffX = Math.max(1,(xul - xll)/ZOOM_FACTOR);
-		/*diffX /= ZOOM_FACTOR;
-		if (diffX == 0) {
-			diffX = 1;
-		}*/
 		final int diffY = Math.max(1,(yul - yll)/ZOOM_FACTOR);
-		/*diffY /= ZOOM_FACTOR;
-		if (diffY == 0) {
-			diffY = 1;
-		}*/
-		//zoom in
-		if (inOut == ZOOM_OUT) {
+		if (inOut == ZOOM_OUT) {//zoom out
 			xll = xll - diffX;
 			xul = xul + diffX;
 			yll = yll - diffY;
 			yul = yul + diffY;
-			//zoomout
-		} else if (inOut == ZOOM_IN) {
+		} else if (inOut == ZOOM_IN) {//zoom in
 			xll = xll + diffX;
 			xul = xul - diffX;
 			yll = yll + diffY;
 			yul = yul - diffY;
-		} else {
+		} /*else {
 			System.err.println("Error: should not be here [PLOT]");
-		}
-		// check for beyond extremes and set to extremes
+		}*/
+		/* check if beyond extremes, if so, set to extremes */
 		if ((xll < 0) || (xll > sizeX - 1)) {
 			xll = 0;
 		}
@@ -430,7 +417,6 @@ public abstract class Plot extends JPanel {
 			xll = xul - 1;
 			xul = temp + 1;
 		}
-		// check for beyond extremes and set to extremes
 		if ((yll < 0) || (yll > sizeY - 1)) {
 			yll = 0;
 		}
