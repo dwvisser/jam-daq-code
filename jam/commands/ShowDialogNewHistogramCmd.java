@@ -29,7 +29,7 @@ public class ShowDialogNewHistogramCmd extends AbstractCommand{
 	/**
 	 * Execute the command
 	 */
-	public void executeStrParam(String [] cmdParams){
+	public void executeParse(String [] cmdParams){
 		execute(null);
 	}
 	

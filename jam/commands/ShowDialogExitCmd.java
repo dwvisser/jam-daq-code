@@ -52,7 +52,7 @@ public class ShowDialogExitCmd extends AbstractCommand{
 	/**
 	 * Execute the command
 	 */
-	public void executeStrParam(String [] cmdParams){
+	public void executeParse(String [] cmdParams){
 		
 		if (cmdParams.length!=0) {
 			

@@ -59,7 +59,7 @@ public abstract class AbstractCommand implements Commandable {
 				
 		try {
 			
-			executeStrParam(strCmdParams);
+			executeParse(strCmdParams);
 			logCommand();
 			
 		} catch (Exception e) {
@@ -96,6 +96,6 @@ public abstract class AbstractCommand implements Commandable {
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
-	public abstract	void executeStrParam(String [] cmdTokens);			
+	public abstract	void executeParse(String [] cmdTokens);			
 
 }
