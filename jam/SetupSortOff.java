@@ -559,7 +559,7 @@ class SetupSortOff  implements ItemListener {
      * @throws JamException if there's a problem
      * @throws GlobalException if there's a thread problem
      */
-    private void resetSort() throws JamException,GlobalException {
+    private void resetSort() throws JamException {
         if (sortDaemon != null) {
             sortDaemon.setState(GoodThread.STOP);
             sortDaemon.setSortRoutine(null);
