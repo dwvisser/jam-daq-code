@@ -76,14 +76,16 @@ public class JamCmdManager implements CommandListener {
 	 */
 	public boolean performCommand(String strCmd, Object[] cmdParams)
 		throws CommandException {
-		boolean success=false;
+		boolean validCommand=false;
 		if (createCmd(strCmd)) {
 			if (currentCommand.isEnabled()){
 				currentCommand.performCommand(cmdParams);
-				success= true;
-			}
+			} else {
+				msghdlr.errorOutln("Disabled command \""+strCmd+"\"");
+			}				
+			validCommand= true;
 		}
-		return success;
+		return validCommand;
 	}
 
 	/**
@@ -94,14 +96,16 @@ public class JamCmdManager implements CommandListener {
 	 */
 	public boolean performParseCommand(String strCmd, String[] strCmdParams) 
 		throws CommandListenerException {
-		boolean success=false;
+		boolean validCommand=false;
 		if (createCmd(strCmd)) {
 			if (currentCommand.isEnabled()){
 				currentCommand.performParseCommand(strCmdParams);
-				success=true;
+			} else {
+				msghdlr.errorOutln("Disabled command \""+strCmd+"\"");
 			}
+			validCommand=true;
 		} 
-		return success;
+		return validCommand;
 	}
 	
 	/**
