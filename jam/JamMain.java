@@ -11,11 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- *
- * Main Class for Jam.
- * This class makes the pull down menu and
- *
- * It is implemented by <code>Jam</code>.
+ * Launcher and main window for Jam.
  *
  * @version  0.5 April 98
  * @author   Ken Swartz
@@ -91,25 +87,11 @@ public class JamMain extends JFrame {
 	private final MainMenuBar menubar;
 	private final SelectionToolbar selectBar;
 
-	/**
-	 * Sort mode
-	 * ONLINE or OFFLINE
-	 */
 	private int sortMode;
 	private final String classname;
 	private RunState runState=RunState.NO_ACQ;
-
-	/**
-	 * Name of file if used file|open to read a file
-	 */
 	private String openFileName;
 
-	/**
-	 * Construtor
-	 * create Jam window
-	 * console is used to output log to the user.
-	 *
-	 */
 	private JamMain() {
 		super("Jam");
 		classname=getClass().getName()+"--";
@@ -146,12 +128,10 @@ public class JamMain extends JFrame {
 		console);
 		menubar=new MainMenuBar(this, jamCommand, display,console);
 		this.setJMenuBar(menubar);
-		/* add toolbar (needs jamCommand as item, action listener) */
 		selectBar=new SelectionToolbar(console,status,broadcaster,display);
 		broadcaster.addObserver(selectBar);
 		me.add(selectBar, BorderLayout.NORTH);
-		/* tool bar display (on left side) */
-		display.addToolbarAction();
+		display.addToolbarAction();//the left-hand action toolbar
 		/* operations to close window */
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
@@ -167,17 +147,14 @@ public class JamMain extends JFrame {
 		} catch (DataException de) {
 			console.errorOutln(de.getMessage());
 		}
-		/* setup all other dialog boxes.
-		   data control, gate set, histogram manipulate, project */
-		DataControl.setupAll();
+		DataControl.setupAll();//setup jam.data.control dialog boxes
 		try { //setting no sort does not throw an exception
 			setSortMode(NO_SORT);
 		} catch (JamException je) {
 			console.errorOutln(classname+"Exception while setting sort mode: "+
 			je.getMessage());
 		}
-		/* The pack() call and everything after it here should be executed in the 
-		 * event dispatch thread. */
+		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow=new Runnable(){
 			public void run(){ 
 				pack();
@@ -206,11 +183,10 @@ public class JamMain extends JFrame {
 	}
 
 	/**
-	 * Determines the mode for sorting data
-	 * Enables and disables JMenu items as appropriate.
-	 * Gives the window a title for the sort Mode.
+	 * Set the mode for sorting data, adjusting title and menu items as 
+	 * appropriate.
 	 *
-	 * @exception   JamException    sends a message to the console if 
+	 * @exception JamException sends a message to the console if 
 	 * there is an inappropriate call
 	 * @see #ONLINE_DISK
 	 * @see #ONLINE_TAPE
@@ -245,7 +221,6 @@ public class JamMain extends JFrame {
 		synchronized (this) {
 			sortMode = mode;
 		}
-		//online sort
 		menubar.setSortMode(mode);
 		if (mode == ONLINE_DISK || mode == ONLINE_TAPE) {
 			setRunState(RunState.ACQ_OFF);
@@ -266,8 +241,7 @@ public class JamMain extends JFrame {
 		} else if (mode == REMOTE) { //remote display
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
-			/* read in a file */
-		} else if (mode == FILE) {
+		} else if (mode == FILE) {//just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(openFileName).toString());
 		} else if (mode == NO_SORT) {
@@ -280,10 +254,9 @@ public class JamMain extends JFrame {
 	}
 
 	/**
-	 * Set the jam to be in sort mode file and gives
-	 * it the file Name.
+	 * Sets the sort mode to FILE and gives it the file name.
 	 *
-	 * @exception   JamException    sends a message to the console if 
+	 * @exception JamException sends a message to the console if 
 	 * there is a problem
 	 * @param fileName the file to be sorted?
 	 */
@@ -297,13 +270,7 @@ public class JamMain extends JFrame {
 	/**
 	 * @return the current sort mode.
 	 *
-	 * @see #ONLINE_DISK
-	 * @see #ONLINE_TAPE
-	 * @see #OFFLINE_DISK
-	 * @see #OFFLINE_TAPE
-	 * @see #FILE
-	 * @see #REMOTE
-	 * @see #NO_ACQ
+	 * @see #setSortMode()
 	 */
 	public int getSortMode() {
 		return sortMode;
@@ -342,15 +309,7 @@ public class JamMain extends JFrame {
 	}
 
 	/**
-	 * Gets the current run state of Jam.
-	 *
-	 * @see #NO_SORT
-	 * @see #ACQ_OFF
-	 * @see #ACQ_ON
-	 * @see #RUN_OFF
-	 * @see #RUN_ON
-	 * @see #NO_ACQ
-	 * @return one of the six possible modes
+	 * @return the current run state
 	 */
 	public RunState getRunState() {
 		return runState;
