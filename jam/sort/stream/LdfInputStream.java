@@ -17,7 +17,11 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
     private EventInputStatus status;
     private int parameter;
 
-    private final long DATA=0x4441544100200000L;
+    //private final long DATA=0x4441544100200000L;
+    private final short DA=0x4441;
+    private final short TA=0x5441;
+    private final int REST = 0x00200000;
+    
     //make sure to issue a setConsole() after using this constructor
     //It is here to satisfy the requirements of Class.newInstance()
     /** Called by Jam to create an instance of this input stream.
@@ -56,7 +60,13 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
             if (skip) {
                 boolean stop = false;
                 do {
-                    stop = dataInput.readLong() == DATA;
+                    stop = dataInput.readShort() == DA;
+                    if (stop){
+                        stop=dataInput.readShort() == TA;
+                    }
+                    if (stop){
+                        stop = dataInput.readInt() == REST;
+                    }
                 } while (!stop);
                 skip = false;
             }
@@ -89,7 +99,7 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
     /* non-javadoc:
      * Read an event parameter.
      */
-    private boolean isParameter(short paramWord) throws IOException{
+    private boolean isParameter(short paramWord) {
         boolean parameterSuccess;
         //check special types parameter
         if (paramWord==EVENT_END_MARKER){
@@ -113,13 +123,9 @@ public class LdfInputStream extends EventInputStream implements L002Parameters {
                 status = EventInputStatus.SCALER_VALUE;
             }
         } else {//unknown word
-            parameter=paramWord;
             parameterSuccess=false;
-            for (int i=1; i<=7; i++){
-                dataInput.readByte();
-            }
             skip=true;
-            status=EventInputStatus.UNKNOWN_WORD;
+            status=EventInputStatus.IGNORE;
         }
         return parameterSuccess;
     }
