@@ -240,10 +240,7 @@ public final class Histogram implements Serializable {
 	 * @param title
 	 *            lengthier title of histogram, displayed on plot
 	 * @see #NAME_LENGTH
-	 * @see #ONE_DIM_INT
-	 * @see #TWO_DIM_INT
-	 * @see #ONE_DIM_DOUBLE
-	 * @see #TWO_DIM_DOUBLE
+	 * @see Type
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
@@ -696,10 +693,7 @@ public final class Histogram implements Serializable {
 	 * </ul>
 	 * 
 	 * @return the type
-	 * @see #ONE_DIM_INT
-	 * @see #TWO_DIM_INT
-	 * @see #ONE_DIM_DOUBLE
-	 * @see #TWO_DIM_DOUBLE
+	 * @see Type
 	 */
 	public Type getType() {
 		return type;
@@ -986,24 +980,15 @@ public final class Histogram implements Serializable {
 	 *             if a gate of a different type is given
 	 */
 	public synchronized void addGate(Gate gate) {
-		if (gate.type == Gate.ONE_DIMENSION) {
-			if (gate.histogram.getDimensionality() == 1) {
-				if (!gates.contains(gate)) {
-					gates.add(gate);
-				}
-			} else {
-				throw new UnsupportedOperationException(
-						"Can't add 1-d gate to 2-dim histogram.");
+		if (gate.getDimensionality() == getDimensionality()) {
+			if (!gates.contains(gate)) {
+				gates.add(gate);
 			}
-		} else if (gate.type == Gate.TWO_DIMENSION) {
-			if (gate.histogram.getDimensionality() == 2) {
-				if (!gates.contains(gate)) {
-					gates.add(gate);
-				}
-			} else {
-				throw new UnsupportedOperationException(
-						"Can't add 2-d gate to 1-dim histogram.");
-			}
+		} else {
+			throw new UnsupportedOperationException(
+					"Can't add "+gate.getDimensionality()+
+					"D gate to "+getDimensionality()+
+					"D histogram.");
 		}
 	}
 
