@@ -34,8 +34,8 @@ import javax.swing.SwingUtilities;
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
  * useful information.
  * 
- * @version 0.5 November 98
- * @author Dale Visser
+ * @version 0.5 November 98, January 2005
+ * @author Dale Visser, Ken Swartz
  * @since JDK1.1
  */
 public class HDFIO implements DataIO, JamHDFFields {

@@ -11,10 +11,10 @@ import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 
 /**
- * Class which represents the HDF file on disk.
+ * Class which reads and writes DataObjects to and from
+ * HDF files on disk.
  *
- * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author 	Dale Visser, Ken Swartz
  * @since       JDK1.1
  */
 public final class HDFile extends RandomAccessFile implements HDFconstants {
@@ -191,6 +191,10 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	public void readFile() throws HDFException {
 		List objectList = DataObject.getDataObjectList();
 		try {
+			if (!checkMagicWord()) {
+				throw new HDFException("Not an hdf file");
+			}
+
 			seek(4);
 			boolean doAgain = true;
 			do {
@@ -265,10 +269,21 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			}
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem reading HDF objects.",e);
+				"Problem reading HDF file objects. ",e);
 		}
 	}
 
+	/**
+	 * Checks whether this file contains the HDF magic word 
+	 * at the beginning.
+	 *
+	 * @return <code>true</code> if this file has a valid HDF magic word
+	 */
+	private boolean checkMagicWord() throws IOException {
+		seek(0);
+		int magicInt =readInt();
+		return (magicInt == HDF_HEADER);
+	}
 	
 	/**
 	 * Helper for reading objects
@@ -286,18 +301,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		seek(mark);
 	}
 
-
-	/**
-	 * Checks whether this file contains the HDF magic word 
-	 * at the beginning.
-	 *
-	 * @return <code>true</code> if this file has a valid HDF magic word
-	 */
-	boolean checkMagicWord() {
-		final HDFileFilter filter=new HDFileFilter(false);
-		return filter.accept(file);
-	}
-		
 	/**
 	 * First, calls <code>super.close()</code>, then clears collections of temporary objects used
 	 * to build the file, and then sets their references to
