@@ -20,10 +20,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Observable;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Class to communicate with VME crate using
@@ -371,7 +368,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
             if (numRanges > 0) {
                 Enumeration eb = hRanges.keys();
                 Enumeration er = hRanges.elements();
-                for (  ; eb.hasMoreElements() ;) {
+                while (eb.hasMoreElements()) {
                     int base = ((Integer)eb.nextElement()).intValue();
                     temp += "0x"+Integer.toHexString(base)+" "+er.nextElement()+"\n";
                 }
@@ -438,7 +435,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @parameter listName cnaf list to send
      * @parameter
      */
-    private void sendCNAFList(String listName, Vector cnafList) throws JamException {
+    private void sendCNAFList(String listName, List cnafList) throws JamException {
         int offset;
         int [] cnaf;
 
@@ -465,7 +462,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         //put list of cnaf commands into packet
         for (int i=0; i<cnafList.size(); i++) {
             offset=4+COMMAND_SIZE+4+CNAF_SIZE*i;
-            cnaf=(int [])cnafList.elementAt(i);
+            cnaf=(int [])cnafList.get(i);
             packCNAF(byteMessage,offset,cnaf);
         }
         //add a null character
@@ -632,13 +629,15 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @returns true if valid, false if not
      */
     private boolean validStatus(int status) {
-        if (status==OK) return true;
-        if (status==ERROR) return true;
-        if (status==SCALER) return true;
-        if (status==CNAF) return true;
-        if (status==COUNTER) return true;
-        if (status==VME_ADDRESSES) return true;
-        if (status==SCALER_INTERVAL) return true;
-        return false;
+//        if (status==OK) return true;
+//        if (status==ERROR) return true;
+//        if (status==SCALER) return true;
+//        if (status==CNAF) return true;
+//        if (status==COUNTER) return true;
+//        if (status==VME_ADDRESSES) return true;
+//        if (status==SCALER_INTERVAL) return true;
+        return (status==OK || status==ERROR || status==SCALER ||
+        	status==CNAF || status==COUNTER || status==VME_ADDRESSES ||
+        	status==SCALER_INTERVAL);
     }
 }
