@@ -60,7 +60,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      *             if any histogram apparently has more than 2 dimensions
      * @return number of histograms
      */
-    List findGroups(FileOpenMode mode, List existingGroupNameList) throws HDFException {
+    List findGroups(FileOpenMode mode, List existingGroupList) throws HDFException {
     	final List groupList = new ArrayList();
         /* Get VirtualGroup that is root of all groups */
         final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);
@@ -76,9 +76,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             		//Cast to VirtualGroup and add to list
             		final VirtualGroup currentVGrp = (VirtualGroup)hData;
             		String groupName =readVirtualGroupName(currentVGrp);            		
-            		if (existingGroupNameList!=null && existingGroupNameList.contains(groupName)) {
+            		if (existingGroupList!=null && containsGroup(groupName, existingGroupList)) {
             			groupList.add(currentVGrp);
-            		} else if (existingGroupNameList==null ){
+            		} else if (existingGroupList==null ){
             			groupList.add(currentVGrp);
             		}
             	}
@@ -87,6 +87,20 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return groupList;
     }
     
+    boolean containsGroup(String groupName, List groupList){
+    	boolean inList=false;
+    	
+    	Iterator groupIter =groupList.iterator();
+    	while(groupIter.hasNext()) {
+    		Group group =( Group)groupIter.next();
+			if ( groupName.equals(group.getGroupName()) ) {
+				inList =true;
+				break;
+			}
+    	}
+    	
+    	return inList;
+    }
     /* non-javadoc:
      * Convert a virtual group to a jam data group
      */
