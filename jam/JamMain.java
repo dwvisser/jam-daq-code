@@ -158,7 +158,6 @@ AcquisitionStatus, Observer {
     //fit menu fields
     private JMenu fitting;
     private Hashtable fitterList;
-    private String fitName;
 
     private Container me;
 
