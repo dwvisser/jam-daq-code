@@ -154,6 +154,8 @@ PreferenceChangeListener {
 	
 	protected double binWidth=1.0;
 	
+	private boolean noFillMode;
+	
 	/**
 	 * Dont use 0 ch for auto scale
 	 */
@@ -211,6 +213,7 @@ PreferenceChangeListener {
 		setIgnoreChFull(prefs.getBoolean(AUTO_IGNORE_FULL,true));
 		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO,true));
 		setColorMode(prefs.getBoolean(BLACK_BACKGROUND,false));
+		setNoFillMode(!prefs.getBoolean(HIGHLIGHT_GATE_CHANNELS,true));
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce){
@@ -228,7 +231,17 @@ PreferenceChangeListener {
 			}
 		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)){
 			setColorMode(Boolean.valueOf(newValue).booleanValue());
+		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)){
+			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
 		}
+	}
+	
+	private synchronized void setNoFillMode(boolean bool){
+		noFillMode=bool;
+	}
+	
+	protected synchronized boolean isNoFillMode(){
+		return noFillMode;
 	}
 	
 	private final boolean plotDataExists(){
