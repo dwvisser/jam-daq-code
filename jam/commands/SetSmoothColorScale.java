@@ -3,7 +3,7 @@
  *
  */
 package jam.commands;
-import jam.plot.PlotPrefs;
+import jam.plot.color.ColorPrefs;
 
 /**
  * 
@@ -17,8 +17,8 @@ final class SetSmoothColorScale extends AbstractSetBooleanPreference {
 		putValue(NAME, "Use gradient color scale");
 		putValue(SHORT_DESCRIPTION,
 		"Use a continuous rainbow color scale for 2d histograms.");
-		prefsNode=PlotPrefs.prefs;
-		key=PlotPrefs.SMOOTH_COLOR_SCALE;
+		prefsNode=ColorPrefs.colorPrefs;
+		key=ColorPrefs.SMOOTH_COLOR_SCALE;
 		defaultState=false;
 	}
 }
