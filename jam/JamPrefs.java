@@ -14,7 +14,7 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface JamPrefs {
-	final Preferences prefs=Preferences.userNodeForPackage(JamPrefs.class);
-	final String VERBOSE="verbose";
-	final String DEBUG="debug";
+	Preferences PREFS=Preferences.userNodeForPackage(JamPrefs.class);
+	String VERBOSE="verbose";
+	String DEBUG="debug";
 }
