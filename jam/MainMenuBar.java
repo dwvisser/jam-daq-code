@@ -15,6 +15,7 @@ import jam.io.ImportBanGates;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
 import jam.util.YaleCAENgetScalers;
+import jam.util.ScalerScan;
 
 import java.awt.Event;
 import java.awt.event.ActionEvent;
@@ -282,6 +283,8 @@ public class MainMenuBar extends JMenuBar {
 		file.add(utilities);
 		final YaleCAENgetScalers ycgs=new YaleCAENgetScalers(jamMain,console);
 		utilities.add(new JMenuItem(ycgs.getAction()));
+		final ScalerScan ss=new ScalerScan(jamMain,console);
+		utilities.add(new JMenuItem(ss.getAction()));
 		file.addSeparator();
 		file.add(impHist);
 		final ImpExp ieASCII=new ImpExpASCII(jamMain,console);

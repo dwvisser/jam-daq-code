@@ -22,100 +22,121 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
-import jam.io.hdf.*;
-import java.io.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import jam.io.hdf.DataObject;
+import jam.io.hdf.HDFException;
+import jam.io.hdf.HDFile;
+import jam.io.hdf.JamHDFFields;
+import jam.io.hdf.Vdata;
+import jam.io.hdf.VdataDescription;
+import jam.global.MessageHandler;
+import jam.global.JamProperties;
+
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class ScalerScan
-	extends JFrame
+	extends JDialog
 	implements JamHDFFields, ActionListener {
-	static HDFile in;
-	static final String sep = ",";
-
-	Container container;
-	JTextField runName, path, first, last, out;
-	JLabel JLstatus;
+	//private HDFile in;
+	
+	private static final char TAB = '\t';
+	
+	private final JTextField first, last;
+	private final JProgressBar JLstatus;
+	private final MessageHandler console;
+	private final ScanAction sa;
+	private final Frame frame;
+	
+	private File pathToRuns=new File(JamProperties.getPropString(
+	JamProperties.HIST_PATH));
+	private final JTextField path=new JTextField(
+	pathToRuns.getAbsolutePath());
+	private final JTextField runName= new JTextField(
+	JamProperties.getPropString(JamProperties.EXP_NAME));
 
 	/**
 	 * Constructor.
 	 */
-	public ScalerScan() {
-		super("Scaler Values Scan");
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-			public void windowClosed(WindowEvent e) {
-				System.exit(0);
-			}
-		});
-		container = getContentPane();
-		Box framebox = Box.createVerticalBox();
-		JPanel JPrun = new JPanel();
+	public ScalerScan(Frame f, MessageHandler mh) {
+		super(f, "HDF Scaler Values Scan", false);
+		frame = f;
+		console = mh;
+		sa = new ScanAction();
+		final Container container = getContentPane();
+		final Box framebox = Box.createVerticalBox();
+		final JPanel JPrun = new JPanel();
 		JPrun.setLayout(new BoxLayout(JPrun, BoxLayout.X_AXIS));
-		runName = new JTextField(12);
-		JLabel runlabel = new JLabel("Run Name");
+		final JLabel runlabel = new JLabel("Experiment Name");
 		runlabel.setLabelFor(runName);
 		JPrun.add(runlabel);
 		JPrun.add(Box.createRigidArea(new Dimension(10, 0)));
 		JPrun.add(runName);
-		JPanel JPpath = new JPanel();
+		final JPanel JPpath = new JPanel();
 		JPpath.setLayout(new BoxLayout(JPpath, BoxLayout.X_AXIS));
-		path = new JTextField(30);
-		JButton browse = new JButton("Browse");
+		final JButton browse = new JButton("Browse");
 		browse.setActionCommand("browse");
 		browse.addActionListener(this);
-		JLabel pathlabel = new JLabel("Path");
+		final JLabel pathlabel = new JLabel("Path");
 		pathlabel.setLabelFor(path);
 		JPpath.add(pathlabel);
 		JPpath.add(Box.createRigidArea(new Dimension(10, 0)));
 		JPpath.add(path);
 		JPpath.add(Box.createRigidArea(new Dimension(10, 0)));
 		JPpath.add(browse);
-		JPanel JPfirst = new JPanel();
+		final JPanel JPfirst = new JPanel();
 		JPfirst.setLayout(new BoxLayout(JPfirst, BoxLayout.X_AXIS));
 		first = new JTextField(4);
-		JLabel labelfirst = new JLabel("First Run");
+		final JLabel labelfirst = new JLabel("First Run");
 		labelfirst.setLabelFor(first);
 		JPfirst.add(labelfirst);
 		JPfirst.add(Box.createRigidArea(new Dimension(10, 0)));
 		JPfirst.add(first);
-		JPanel JPlast = new JPanel();
+		final JPanel JPlast = new JPanel();
 		JPlast.setLayout(new BoxLayout(JPlast, BoxLayout.X_AXIS));
 		last = new JTextField(4);
-		JLabel labellast = new JLabel("Last Run");
+		final JLabel labellast = new JLabel("Last Run");
 		labellast.setLabelFor(last);
 		JPlast.add(labellast);
 		JPlast.add(Box.createRigidArea(new Dimension(10, 0)));
 		JPlast.add(last);
 		JPanel JPout = new JPanel();
 		JPout.setLayout(new BoxLayout(JPout, BoxLayout.X_AXIS));
-		out = new JTextField(30);
-		JButton browse2 = new JButton("Browse");
-		browse2.setActionCommand("browse2");
-		browse2.addActionListener(this);
-		JLabel outlabel = new JLabel("Ouput File");
-		outlabel.setLabelFor(out);
-		JPout.add(outlabel);
-		JPout.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPout.add(out);
-		JPout.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPout.add(browse2);
-
 		JPanel JPstatus = new JPanel(new GridLayout(1, 1));
 		JLstatus =
-			new JLabel("Welcome to ScalerScan.  Enter the info on your .hdf files and a report destination.");
+			new JProgressBar(JProgressBar.HORIZONTAL);
+		JLstatus.setString("Welcome to ScalerScan.");
+		JLstatus.setStringPainted(true);
 		JPstatus.add(JLstatus);
-		JPanel JPbuttons = new JPanel();
+		final JPanel JPbuttons = new JPanel();
 		JPbuttons.setLayout(new BoxLayout(JPbuttons, BoxLayout.X_AXIS));
-		JButton apply = new JButton("Execute");
-		apply.setActionCommand("apply");
+		final JButton ok = new JButton(OK);
+		ok.setActionCommand(OK);
+		ok.addActionListener(this);
+		final JButton apply = new JButton(APPLY);
+		apply.setActionCommand(APPLY);
 		apply.addActionListener(this);
-		JButton cancel = new JButton("Quit");
-		cancel.setActionCommand("cancel");
+		final JButton cancel = new JButton(CANCEL);
+		cancel.setActionCommand(CANCEL);
 		cancel.addActionListener(this);
+		JPbuttons.add(ok);
 		JPbuttons.add(apply);
 		JPbuttons.add(cancel);
 		framebox.add(JPrun);
@@ -128,184 +149,188 @@ public class ScalerScan
 		container.add(framebox);
 		pack();
 		setResizable(false);
-		setVisible(true);
 	}
 
+	private static final String OK = "OK";
+	private static final String CANCEL = "Cancel";
+	private static final String APPLY = "Apply";
+
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("apply")) {
-			doIt();
+		final String command = e.getActionCommand();
+		final boolean ok = OK.equals(command);
+		final boolean apply = ok || APPLY.equals(command);
+		final boolean cancel = ok || CANCEL.equals(command);
+		if (apply) {
+			final Runnable r=new Runnable(){
+				public void run(){
+					doIt();
+				}
+			};
+			final Thread t=new Thread(r);
+			t.start();
 		}
-		if (e.getActionCommand().equals("cancel")) {
+		if (cancel) {
 			dispose();
 		}
 		if (e.getActionCommand().equals("browse")) {
-			String temp = getPath();
-			if (temp != null)
-				path.setText(temp);
-		}
-		if (e.getActionCommand().equals("browse2")) {
-			String temp = getOutFile();
-			if (temp != null)
-				out.setText(temp);
+			final File temp = getFile(true);
+			if (temp != null) {
+				path.setText(temp.getAbsolutePath());
+				pathToRuns=temp;
+			}
 		}
 	}
 
-	public String getPath() {
-		JFileChooser chooser = new JFileChooser();
-		//chooser.setFileFilter(new HDFileFilter(true));
-		int returnVal = chooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File temp = chooser.getSelectedFile();
-			String temp2 = temp.getPath();
-			return temp2.substring(0, temp2.lastIndexOf(temp.getName()));
-		} else {
-			return null;
-		}
-	}
-
-	public String getOutFile() {
-		JFileChooser chooser = new JFileChooser();
-		int returnVal = chooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile().getPath();
-		} else {
-			return null;
-		}
+	/**
+	 * Browse for a file or directory.
+	 * 
+	 * @param dir select directories if true, files if false
+	 * @return ref to file of interest, null if none selected
+	 */
+	public File getFile(boolean dir) {
+		final JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(
+			dir ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+		final boolean approved =
+			chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION;
+		return approved ? chooser.getSelectedFile() : null;
 	}
 
 	public void doIt() {
+		final char cr = '\n';
+		final StringBuffer outText = new StringBuffer();
 		try {
-			JLstatus.setText("starting");
-			File outFile = new File(out.getText().trim());
-			if (outFile.createNewFile() && outFile.canWrite()) {
-				FileWriter writer = new FileWriter(outFile);
-				int firstRun = Integer.parseInt(first.getText().trim());
-				int lastRun = Integer.parseInt(last.getText().trim());
-				File f_path = new File(path.getText().trim());
-				if (f_path.exists() && f_path.isDirectory()) {
-					for (int i = firstRun; i <= lastRun; i++) {
-						System.out.println(i);
-						String runText = runName.getText().trim();
-						String filename = runText + i + ".hdf";
-						File infile = new File(f_path, filename);
-						if (infile.exists()) {
-							JLstatus.setText("Processing " + infile.getPath());
-							in = new HDFile(infile, "r");
-							in.seek(0);
-							in.readObjects();
-							//reads file into set of DataObject's, sets their internal variables
-							String temp = "Run";
-							if (i == firstRun) {
-								String[] names = getScalerNames();
-								for (int j = 0; j < names.length; j++)
-									temp = temp + sep + names[j];
-								writer.write(temp + "\n");
+			JLstatus.setString("starting");
+			int firstRun = Integer.parseInt(first.getText().trim());
+			int lastRun = Integer.parseInt(last.getText().trim());
+			JLstatus.setMinimum(firstRun);
+			JLstatus.setMaximum(lastRun);
+			if (pathToRuns.exists() && pathToRuns.isDirectory()) {
+				for (int i = firstRun; i <= lastRun; i++) {
+					String runText = runName.getText().trim();
+					String filename = runText + i + ".hdf";
+					final File infile = new File(pathToRuns, filename);
+					if (infile.exists()) {
+						updateProgressBar("Processing " + infile.getName(),i);
+						final HDFile in = new HDFile(infile, "r");
+						in.seek(0);
+						in.readObjects();
+						//reads file into set of DataObject's, sets their internal variables
+						if (i == firstRun) {
+							outText.append("Run");
+							String[] names = getScalerNames(in);
+							for (int j = 0; j < names.length; j++) {
+								outText.append(TAB).append(names[j]);
 							}
-							temp = i + "";
-							int[] values = getScalerValues();
-							for (int j = 0; j < values.length; j++) {
-								temp = temp + sep + values[j];
-							}
-							writer.write(temp + "\n");
-						} else {
-							System.err.println(
-								infile.getPath()
-									+ " does not exist.  Skipping.");
-							JLstatus.setText(
-								infile.getName()
-									+ " does not exist.  Skipping.");
+							outText.append(cr);
 						}
+						outText.append(i);
+						int[] values = getScalerValues(in);
+						for (int j = 0; j < values.length; j++) {
+							outText.append(TAB).append(values[j]);
+						}
+						outText.append(cr);
+					} else {
+						console.warningOutln(
+							infile.getPath() + " does not exist.  Skipping.");
 					}
-					writer.flush();
-					writer.close();
-					JLstatus.setText("Done.  Results are in "+outFile.getPath());
-				} else {
-					JLstatus.setText(
-						f_path.getPath()
-							+ " either does not exist or is not a directory. Try again.");
 				}
+				updateProgressBar("Done",lastRun);
+				final String title =
+					runName.getText()
+						+ ", runs "
+						+ first.getText()
+						+ " to "
+						+ last.getText();
+				new TextDisplayDialog(frame, title, false, outText.toString());
 			} else {
-				JLstatus.setText(
-					outFile.getPath()
-						+ " either already exists or is not a writable output file.");
+				JLstatus.setString(
+					pathToRuns.getPath()
+						+ " either does not exist or is not a directory. Try again.");
 			}
 		} catch (IOException e) {
-			JLstatus.setText(e.getMessage());
+			console.errorOutln(e.getMessage());
 		} catch (HDFException e) {
-			JLstatus.setText(e.getMessage());
+			console.errorOutln(e.getMessage());
 		}
 	}
 
-	static private String[] getScalerNames() {
-		VdataDescription VH;
-		Vdata VS;
-		int i, numScalers;
-		String[] sname;
-		String temp1, temp2;
-		int tmp;
-
-		//VH=null;
-		VH =
+	private String[] getScalerNames(HDFile in) {
+		String[] sname = null;
+		final VdataDescription VH =
 			VdataDescription.ofName(
 				in.ofType(DataObject.DFTAG_VH),
 				SCALER_SECTION_NAME);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			VS = (Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
-			//corresponding VS
-			numScalers = VH.getNumRows();
+			final Vdata VS =
+				(Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
+			final int numScalers = VH.getNumRows();
 			sname = new String[numScalers];
-			for (i = 0; i < numScalers; i++) {
+			for (int i = 0; i < numScalers; i++) {
 				sname[i] = VS.getString(i, 1);
 				sname[i] = sname[i].trim();
-				while (sname[i].indexOf(' ') != -1) {
-					tmp = sname[i].indexOf(' ');
-					temp1 = sname[i].substring(0, tmp);
-					temp2 = sname[i].substring(tmp + 1);
+				final char sp = ' ';
+				while (sname[i].indexOf(sp) != -1) {
+					final int tmp = sname[i].indexOf(sp);
+					final String temp1 = sname[i].substring(0, tmp);
+					final String temp2 = sname[i].substring(tmp + 1);
 					sname[i] = temp1 + temp2;
-					System.out.println(sname[i]);
 				}
 			}
-			return sname;
 		} else {
-			System.out.println("No Scalers section in HDF file.");
-			return null;
+			console.warningOutln("No Scalers section in HDF file.");
 		}
+		return sname;
 	}
 
-	static private int[] getScalerValues() {
-		VdataDescription VH;
-		Vdata VS;
-		int i, numScalers;
-		int[] values;
-
-		//VH=null;
-		VH =
+	private int[] getScalerValues(HDFile in) {
+		int[] values = null;
+		final VdataDescription VH =
 			VdataDescription.ofName(
 				in.ofType(DataObject.DFTAG_VH),
 				SCALER_SECTION_NAME);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			VS = (Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
+			final Vdata VS =
+				(Vdata) (in.getObject(DataObject.DFTAG_VS, VH.getRef()));
 			//corresponding VS
-			numScalers = VH.getNumRows();
+			final int numScalers = VH.getNumRows();
 			values = new int[numScalers];
-			for (i = 0; i < numScalers; i++) {
+			for (int i = 0; i < numScalers; i++) {
 				values[i] = VS.getInteger(i, 2).intValue();
 			}
-			return values;
 		} else {
-			System.out.println("No Scalers section in HDF file.");
-			return null;
+			console.warningOutln("No Scalers section in HDF file.");
+		}
+		return values;
+	}
+
+	public class ScanAction extends AbstractAction {
+		public ScanAction() {
+			super("Scan HDF files for scaler values...");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			show();
+		}
+	}
+	
+	private void updateProgressBar(final String text, final int value){
+		final Runnable r=new Runnable(){
+			public void run(){
+				JLstatus.setValue(value);
+				JLstatus.setString(text);
+			}
+		};
+		try{
+			SwingUtilities.invokeAndWait(r);
+		} catch (Exception e){
+			console.errorOutln(e.getMessage());
 		}
 	}
 
-	public static void main(String args[]) throws Exception {
-		try{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-		new ScalerScan();
+	public AbstractAction getAction() {
+		return sa;
 	}
 }
