@@ -1,4 +1,5 @@
 package jam.plot;
+import jam.JamConsole;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -113,8 +114,9 @@ public class Display extends JPanel implements CommandListener, Observer {
 	 *
 	 * @param   mh  the class to call to print out messages
 	 */
-	public Display(MessageHandler mh) {
-		msgHandler = mh; //where to send output messages
+	public Display(JamConsole jc) {
+		jc.addCommandListener(this);
+		msgHandler = jc; //where to send output messages
 		action = new Action(this, msgHandler); // display event handler
 		final int size = 420;
 		setPreferredSize(new Dimension(size, size));
@@ -589,15 +591,4 @@ public class Display extends JPanel implements CommandListener, Observer {
 				"</html></body>");
 		return rval.toString();
 	}
-
-	/**
-	 * Set whether the display should auto-scale the counts on a plot when
-	 * the viewport changes.
-	 *
-	 * @param whether true if autoscaling should occur
-	 */
-	public void setAutoOnExpand(boolean whether) {
-		action.setAutoOnExpand(whether);
-	}
-
 }
