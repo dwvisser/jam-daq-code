@@ -267,9 +267,9 @@ public class SelectionTree extends JPanel implements Observer {
                 .getPathCount() - 2)).getUserObject();
     }
     
-    private boolean isHist(TreePath path){
+    /*private boolean isHist(TreePath path){
         return ((DefaultMutableTreeNode) path.getLastPathComponent())
         .getUserObject() instanceof Histogram;
-    }
+    }*/
 
 }
