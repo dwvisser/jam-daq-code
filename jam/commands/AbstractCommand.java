@@ -19,6 +19,7 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	protected final JamStatus status=JamStatus.instance();
 	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	protected MessageHandler msghdlr;
+	protected int mode;
 	
 	/**
 	 * Constructor
@@ -38,7 +39,10 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	public void init(MessageHandler mh) {
 		msghdlr=mh;
 	}
-	
+	/**
+	 * Implentation for interface Action
+	 * 
+	 */
 	public void actionPerformed(ActionEvent ae){
 		try{
 			performCommand(null);
@@ -77,6 +81,21 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 		}
 	}
 
+	/**
+	 * Set the mode for the command, 
+	 * determines if it is enabled
+	 *
+	 */
+	public void setMode(int mode){
+		
+	}
+	/**
+	 * Test the mode to see if the command is
+	 * enabled
+	 */
+	public boolean isEnabled(){
+		return true;
+	}
 	/**
 	 * Log the command
 	 *

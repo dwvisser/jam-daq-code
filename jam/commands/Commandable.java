@@ -11,7 +11,13 @@ import javax.swing.Action;
  *
  */
 public interface Commandable extends Action {
-
+	
+	/** file viewed */
+	public static int FILE=1;
+	/** offline sort */
+	public static int OFFLINE=2;
+	/** online sort */
+	public static int ONLINE=3;
 	/**
 	 * References needed for commands. Commands have null constructors
 	 * so a init method is needed 
@@ -21,7 +27,12 @@ public interface Commandable extends Action {
 	 * @param broadcaster	Change in status messages
 	 */
 	void init(MessageHandler msghdlr);
-	
+
+	/**
+	 * Set the mode, determines if command is enabled
+	 * @param mode
+	 */
+	void setMode(int mode);	
 	/**
 	 * Execute a command with the given command parameters
 	 * 
