@@ -54,13 +54,13 @@ public class JamProperties {
 	public final static String EXP_NAME = "exp.name";
 	public final static String SORT_ROUTINE = "sort.routine";
 	public final static String SORT_CLASSPATH = "sort.classpath";
+	public final static String DEFAULT_SORT_CLASSPATH = "default";	
 	public final static String EVENT_INSTREAM = "event.instream";
 	public final static String EVENT_OUTSTREAM = "event.outstream";
 	public final static String EVENT_INPATH = "event.inpath";
 	public final static String EVENT_OUTPATH = "event.outpath";
 	public final static String EVENT_OUTFILE = "event.outfile";
 	public final static String HIST_PATH = "hist.path";
-	//public final static String CNAF_PATH = "cnaf.path";
 	public final static String CAMAC_PATH = "camac.path";
 	public final static String BROWSER_PATH = "browser.path";
 	public final static String DOCS_PATH = "docs.path";
@@ -379,7 +379,6 @@ public class JamProperties {
 		jamProperties.setProperty(TARGET_PORT,"5002");
 		jamProperties.setProperty(HOST_DATA_IP,"calvin-data");
 		jamProperties.setProperty(HOST_DATA_PORT_RECV,"10205");
-		//jamProperties.setProperty(CNAF_PATH,"JAM/CAMAC/CNAFS");
 		jamProperties.setProperty(DOCS_PATH,(new File(DEFAULT_JAM_HOME,"docs")).getPath());
 		jamProperties.setProperty(EVENT_WRITER,STORE_EVENTS_LOCALLY);
 		jamProperties.setProperty(BROWSER_PATH,"netscape");
@@ -393,7 +392,7 @@ public class JamProperties {
 		jamProperties.setProperty(CAMAC_PATH,(new File(userHome,"camac")).getPath());
 		jamProperties.setProperty(EXP_NAME,"default_");
 		jamProperties.setProperty(SORT_ROUTINE,"jam.sort.Example");
-		jamProperties.setProperty(SORT_CLASSPATH,"default");
+		jamProperties.setProperty(SORT_CLASSPATH,DEFAULT_SORT_CLASSPATH);
 		jamProperties.setProperty(HIST_PATH,(new File(userHome,"spectra")).getPath());
 		jamProperties.setProperty(EVENT_INPATH,(new File(userHome,"events")).getPath());
 		jamProperties.setProperty(EVENT_OUTPATH,(new File(userHome,"presort")).getPath());
