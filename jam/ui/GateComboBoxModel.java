@@ -47,6 +47,13 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 		private Mode(int i) {
 			mode = i;
 		}
+		
+		/**
+		 * @see Object#equals(java.lang.Object)
+		 */
+		public boolean equals(Object object){
+		    return object instanceof Mode ? mode==((Mode)object).mode : false;
+		}
 	}
 
 	private Object selection = null;
