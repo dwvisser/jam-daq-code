@@ -18,7 +18,7 @@
 <maximumMemoryHeap>209715200</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
 <minimumVersion>1.4.2</minimumVersion>
-<skeletonName>Console Wrapper</skeletonName>
+<skeletonName>Windowed Wrapper</skeletonName>
 <skeletonProperties>
 <key>Message</key>
 <value>This program needs Java 1.4.2 or greater to run.
