@@ -1,6 +1,7 @@
 package jam;
 import jam.data.Histogram;
 import jam.data.control.DataControl;
+import jam.data.control.ScalerControl;
 import jam.fit.LoadFit;
 import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
@@ -15,8 +16,8 @@ import jam.io.ImportBanGates;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
-import jam.util.YaleCAENgetScalers;
 import jam.util.ScalerScan;
+import jam.util.YaleCAENgetScalers;
 
 import java.awt.Event;
 import java.awt.event.ActionEvent;
@@ -28,6 +29,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.net.URL;
 
 import javax.help.CSH;
@@ -36,6 +38,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -99,6 +102,65 @@ public class MainMenuBar extends JMenuBar {
 					mess.append(e.getMessage());
 					console.errorOutln(mess.toString());
 				}
+			}
+		}
+	}
+
+	class SaveHDF extends AbstractAction {	
+		SaveHDF(){
+			super("Save (hdf)");
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			final File last=hdfio.lastValidFile();
+			if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
+			MainMenuBar.this,"Replace the existing file?","Save "+last.getName(),
+			JOptionPane.YES_NO_OPTION)){
+				hdfio.writeFile(last);				
+			}			
+		}
+	}
+
+	class SaveAsHDF extends AbstractAction {	
+		SaveAsHDF(){
+			super("Save as (hdf)...");
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			int write = hdfio.writeFile();
+			if (write==JFileChooser.APPROVE_OPTION){
+				setSaveEnabled(true);
+			}
+		}
+	}
+
+	class OpenHDF extends AbstractAction {	
+		OpenHDF(){
+			super("Open(hdf)...");
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
+				jamMain.setSortModeFile(hdfio.getFileNameOpen());
+				DataControl.setupAll();
+				jamCommand.dataChanged();
+				jamMain.repaint();
+				setSaveEnabled(true);
+			}
+		}
+	}
+
+	class ReloadHDF extends AbstractAction {	
+		private final ScalerControl scalerControl;
+		
+		ReloadHDF(){
+			super("Reload(hdf)...");
+			scalerControl=jamCommand.getScalerControl();
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
+				scalerControl.displayScalers();
 			}
 		}
 	}
@@ -169,12 +231,9 @@ public class MainMenuBar extends JMenuBar {
 	}
 	
 	class SaveGatesAction extends AbstractAction {
-		
-		private final HDFIO hdfio;
-		
+
 		SaveGatesAction(){
 			super("Save gates, scalers & parameters as HDF...");
-			hdfio=jamCommand.getHDFIO();
 		}
 		
 		public void actionPerformed(ActionEvent ae){
@@ -187,13 +246,7 @@ public class MainMenuBar extends JMenuBar {
 
 	final private JMenu fitting;
 	final private JMenuItem newClear,
-		openhdf,
-		reloadhdf,
-		saveHDF,
 		impHist,
-		open,
-		reload,
-		save,
 		runacq,
 		sortacq,
 		paramacq,
@@ -211,6 +264,10 @@ public class MainMenuBar extends JMenuBar {
 	final private JMenuItem projectHistogram = new JMenuItem("Projections...");
 	final private JMenuItem manipHistogram = new JMenuItem("Combine...");
 	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
+	final private SaveHDF saveHDF;
+	final private OpenHDF openhdf;
+	final private ReloadHDF reloadhdf;
+	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
 
@@ -239,6 +296,7 @@ public class MainMenuBar extends JMenuBar {
 		MessageHandler c) {
 		super();
 		this.jamCommand=jamCommand;
+		hdfio=jamCommand.getHDFIO();
 		final int ctrl_mask;
 		final boolean macosx=JamProperties.isMacOSX();
 		if (macosx){
@@ -268,13 +326,12 @@ public class MainMenuBar extends JMenuBar {
 		add(file);
 		synchronized (this) {
 			newClear = new JMenuItem("New");
-			openhdf = new JMenuItem("Open(hdf)...");
-			reloadhdf = new JMenuItem("Reload(hdf)...");
-			saveHDF = new JMenuItem("Save(hdf)");
+			newClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+			ctrl_mask));
+			openhdf = new OpenHDF();
+			reloadhdf = new ReloadHDF();
+			saveHDF = new SaveHDF();
 			impHist = new JMenu("Import");
-			open = new JMenuItem("Open(jhf)...");
-			reload = new JMenuItem("Reload(jhf)...");
-			save = new JMenuItem("Save(jhf)");
 			runacq = new JMenuItem("Run...");
 			sortacq = new JMenuItem("Sort...");
 			paramacq = new JMenuItem("Parameters...");
@@ -283,21 +340,16 @@ public class MainMenuBar extends JMenuBar {
 		newClear.setActionCommand("newclear");
 		newClear.addActionListener(jamCommand);
 		file.add(newClear);
-		openhdf.setActionCommand("openhdf");
-		openhdf.addActionListener(jamCommand);
-		file.add(openhdf);
-		reloadhdf.setActionCommand("reloadhdf");
-		reloadhdf.addActionListener(jamCommand);
+		file.add(openhdf).setAccelerator(
+		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
 		reloadhdf.setEnabled(false);
-		file.add(reloadhdf);
-		saveHDF.setActionCommand("savehdf");
+		file.add(reloadhdf).setAccelerator(
+		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
 		saveHDF.setEnabled(false);
-		saveHDF.addActionListener(jamCommand);
 		saveHDF.setEnabled(false);
-		file.add(saveHDF);
-		final JMenuItem saveAsHDF = new JMenuItem("Save as (hdf)...");
-		saveAsHDF.setActionCommand("saveAsHDF");
-		saveAsHDF.addActionListener(jamCommand);
+		file.add(saveHDF).setAccelerator(
+		KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
+		final SaveAsHDF saveAsHDF=new SaveAsHDF();
 		file.add(saveAsHDF); 
 		final JMenuItem special=new JMenu("Special");
 		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram...");
@@ -305,11 +357,7 @@ public class MainMenuBar extends JMenuBar {
 		openSelectdHist.addActionListener(jamCommand);
 		special.add(openSelectdHist);
 		final JMenuItem saveGates=new JMenuItem(new SaveGatesAction());
-		final JMenuItem reloadGates=new JMenuItem("Reload gates only from HDF...");
-		
 		special.add(saveGates);
-		special.add(reloadGates);
-		reloadGates.setEnabled(false);
 		file.add(special);
 		file.addSeparator();
 		final JMenuItem utilities=new JMenu("Utilities");
@@ -355,16 +403,12 @@ public class MainMenuBar extends JMenuBar {
 		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
 		final JMenuItem exit = new JMenuItem("Exit...");
-		exit.setActionCommand("exitShow");
 		exit.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				jm.showExitDialog();
 			}
 		});
-		if (macosx){
-			exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-			ctrl_mask));
-		}
+		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,ctrl_mask));
 		file.add(exit);
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
@@ -613,9 +657,6 @@ public class MainMenuBar extends JMenuBar {
 			paramacq.setEnabled(true);
 			statusacq.setEnabled(true);
 			newClear.setEnabled(false);
-			open.setEnabled(false);
-			save.setEnabled(false);
-			reload.setEnabled(true);
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
@@ -628,9 +669,6 @@ public class MainMenuBar extends JMenuBar {
 			sortacq.setEnabled(true);
 			paramacq.setEnabled(true);
 			statusacq.setEnabled(true);
-			open.setEnabled(false);
-			save.setEnabled(false);
-			reload.setEnabled(true);
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
@@ -645,8 +683,6 @@ public class MainMenuBar extends JMenuBar {
 			paramacq.setEnabled(false);
 			statusacq.setEnabled(false);
 			newClear.setEnabled(false);
-			open.setEnabled(false);
-			reload.setEnabled(false);
 			openhdf.setEnabled(false);
 			reloadhdf.setEnabled(false);
 			impHist.setEnabled(false);
@@ -660,9 +696,6 @@ public class MainMenuBar extends JMenuBar {
 			paramacq.setEnabled(false);
 			statusacq.setEnabled(false);
 			newClear.setEnabled(true);
-			open.setEnabled(true);
-			save.setEnabled(true);
-			reload.setEnabled(false);
 			openhdf.setEnabled(true);
 			saveHDF.setEnabled(true);
 			reloadhdf.setEnabled(false);
@@ -677,8 +710,6 @@ public class MainMenuBar extends JMenuBar {
 			paramacq.setEnabled(false);
 			statusacq.setEnabled(false);
 			newClear.setEnabled(true);
-			open.setEnabled(true);
-			reload.setEnabled(false);
 			openhdf.setEnabled(true);
 			reloadhdf.setEnabled(false);
 			impHist.setEnabled(true);
@@ -693,6 +724,10 @@ public class MainMenuBar extends JMenuBar {
 		iflushacq.setEnabled(acqon);
 		cstartacq.setSelected(acqon);
 		cstopacq.setSelected(acqmode && (!acqon));
+	}
+	
+	void setSaveEnabled(boolean b){
+		saveHDF.setEnabled(b);
 	}
 
 	/**
