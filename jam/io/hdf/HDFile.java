@@ -4,6 +4,7 @@ import java.io.RandomAccessFile;
 import java.io.IOException;
 import java.io.File;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
@@ -476,23 +477,23 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 
-	public List ofType(DataObject in) {
-		return ofType(DataObjects, (short) in.getTag());
-	}
-
 	/**
 	 * Returns a List of <code>DataObject</code>'s of the
 	 * type specified by <code>tag</code>.
 	 */
 	public List ofType(List in, short tagType) {
-		Vector output = new Vector();
+		List output = new ArrayList();
 		for (Iterator temp = in.iterator(); temp.hasNext();) {
 			DataObject ob = (DataObject) (temp.next());
 			if (ob.getTag() == tagType) {
-				output.addElement(ob);
+				output.add(ob);
 			}
 		}
 		return output;
+	}
+
+	public List ofType(DataObject in) {
+		return ofType(DataObjects, (short) in.getTag());
 	}
 
 	public List ofType(short tagType) {
