@@ -97,17 +97,12 @@ public class JamCommand
 		manipulate = new Manipulations(console);
 		gainshift = new GainShift(console);
 		/* acquisition control */
-		runControl =
-			new RunControl((VMECommunication) frontEnd,
-				console);
+		runControl = RunControl.getSingletonInstance();
 		sortControl = new SortControl(console);
 		displayCounters = new DisplayCounters(console);
 		/* setup classes */
 		setupSortOn =
-			new SetupSortOn( 
-				runControl,
-				displayCounters,
-				frontEnd, console);
+			new SetupSortOn(displayCounters,console);
 		setupSortOff =
 			new SetupSortOff(
 				jam,
@@ -162,8 +157,6 @@ public class JamCommand
 				setupRemote.showRemote();
 			} else if ("flush".equals(incommand)) {
 				runControl.flushAcq();
-			} else if ("run".equals(incommand)) {
-				runControl.show();
 			} else if ("sort".equals(incommand)) {
 				sortControl.show();
 			} else if ("status".equals(incommand)) {

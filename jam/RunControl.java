@@ -1,10 +1,9 @@
 package jam;
 
 import jam.data.control.HistogramZero;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.global.RunInfo;
 import jam.io.DataIO;
 import jam.io.hdf.HDFIO;
@@ -22,8 +21,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Date;
 
@@ -54,7 +51,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public class RunControl implements Controller, ActionListener {
+public class RunControl extends JDialog implements Controller, ActionListener {
 
     /** Indicates running to or from disk.
      */
@@ -67,23 +64,17 @@ public class RunControl implements Controller, ActionListener {
 
     final static String EVENT_FILE_EXTENSION=".evn";
     
-    /**
-     * The device writing events: DISK or FRONT_END
-     */
-    
-    private final Frame		jamMain;
     private final DataIO		dataio;
-    private final VMECommunication	vmeComm;
-    private final JamConsole		console;
-    private final JamStatus status = JamStatus.instance();
-    private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-
+    private final FrontEndCommunication	vmeComm;
+    private final MessageHandler		console;
+    private static final JamStatus status = JamStatus.instance();
+	private final Frame		jamMain=status.getFrame();
 	private int device;
 
     /* daemon threads */
-    private NetDaemon		netDaemon;
-    private DiskDaemon		diskDaemon;
-    private SortDaemon		sortDaemon;
+    private NetDaemon netDaemon;
+    private DiskDaemon diskDaemon;
+    private SortDaemon sortDaemon;
 
     /**
      * event file information
@@ -117,12 +108,19 @@ public class RunControl implements Controller, ActionListener {
     /**
      *Run dialog box
      */
-    private final JDialog d;
     private final JButton bbegin;
     private final JButton bend;
     private final JTextField textRunNumber, textRunTitle, textExptName;
     private final JCheckBox checkHistogramZero;
     private final JCheckBox zeroScalers;
+    
+    private static RunControl instance=null;
+    static public RunControl getSingletonInstance(){
+    	if (instance==null){
+    		instance=new RunControl(status.getFrame());
+    	}
+    	return instance;
+    }
 
     /** Creates the run control dialog box.
      * @param jamMain launching point of Jam application
@@ -132,22 +130,18 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    RunControl(VMECommunication vmeComm, JamConsole console){
-        jamMain=status.getFrame();
-        this.vmeComm=vmeComm;
-		this.console=console;
+    private RunControl(Frame f){
+		super(f,"Run",false);
+		console=status.getMessageHandler();
+		vmeComm=status.getFrontEndCommunication();
         this.dataio=new HDFIO(jamMain,console);
         runNumber=100;
-        // dialog box
-        d=new JDialog(jamMain," Run ",false);
-        d.setResizable(false);
-        d.setLocation(20,50);
-        d.setSize(400, 250);
-        Container cp=d.getContentPane();
+        setResizable(false);
+        setLocation(20,50);
+        setSize(400, 250);
+        final Container cp=getContentPane();
         cp.setLayout(new BorderLayout(10,0));
-
-
-		//Labels Panel
+		/* Labels Panel */
         JPanel pLabels= new JPanel(new GridLayout(0,1,5,5));
         pLabels.setBorder(new EmptyBorder(10,10,10,0));
         cp.add(pLabels, BorderLayout.WEST);
@@ -162,7 +156,6 @@ public class RunControl implements Controller, ActionListener {
 
         // panel for text fields
         JPanel pCenter= new JPanel(new GridLayout(0,1,5,5));
-        //Box pCenter= new Box(BoxLayout.Y_AXIS);
         pCenter.setBorder(new EmptyBorder(10,0,10,10));
         cp.add(pCenter, BorderLayout.CENTER);
 
@@ -212,22 +205,8 @@ public class RunControl implements Controller, ActionListener {
         bend.addActionListener(this);
         bend.setEnabled(false);
         pb.add(bend);
-
-        //pack in
-        d.pack();
-
-        d.addWindowListener( new WindowAdapter() {
-            public void windowClosing(WindowEvent e){
-                d.dispose();
-            }
-        });
-    }
-
-    /**
-     * Show RunControl dialog box
-     */
-    public void show(){
-        d.show();
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        pack();
     }
 
     /**
@@ -238,7 +217,7 @@ public class RunControl implements Controller, ActionListener {
         try {
             if (command=="begin") {
                 runTitle=textRunTitle.getText().trim();
-                boolean confirm = (JOptionPane.showConfirmDialog(d,"Is this title OK? :\n"+runTitle,
+                boolean confirm = (JOptionPane.showConfirmDialog(this,"Is this title OK? :\n"+runTitle,
                 "Run Title Confirmation",
                 JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION);
                 if (confirm) {
@@ -283,15 +262,15 @@ public class RunControl implements Controller, ActionListener {
      */
     void startAcq() throws JamException {
         netDaemon.setState(GoodThread.RUN);
-        vmeComm.VMEstart();
+        vmeComm.startAcquisition();
         // if we are in a run, display run number
         if (runOn) {//runOn is true if the current state is a run
-            broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.RUN_ON(runNumber));
+            status.setRunState(RunState.RUN_ON(runNumber));
         	//see stopAcq() for reason for this next line.
         	bend.setEnabled(true);
         	console.messageOutln("Started Acquisition, continuing Run #"+runNumber);
         } else {//just viewing events, not running to disk
-			broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_ON);
+			status.setRunState(RunState.ACQ_ON);
             this.bbegin.setEnabled(false);//don't want to try to begin run while going
         	console.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
         }
@@ -301,10 +280,10 @@ public class RunControl implements Controller, ActionListener {
      * Tells VME to stop acquisition, and suspends the net listener.
      */
     void stopAcq() throws JamException {
-        vmeComm.VMEstop();
+        vmeComm.stopAcquisition();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
-		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_OFF);
+		status.setRunState(RunState.ACQ_OFF);
         //done to avoid "last buffer in this run becomes first and last buffer in
         //next run" problem
         bend.setEnabled(false);
@@ -376,7 +355,7 @@ public class RunControl implements Controller, ActionListener {
         }
         runOn=true;
         netDaemon.setState(GoodThread.RUN);
-        vmeComm.VMEstart();//VME start last because other thread have higher priority
+        vmeComm.startAcquisition();//VME start last because other thread have higher priority
     }
 
     /**
