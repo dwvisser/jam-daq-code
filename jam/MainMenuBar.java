@@ -365,11 +365,11 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		newClear.addActionListener(jamCommand);
 		file.add(newClear);
 		
-		JMenuItem openhdfcmd = new JMenuItem("Open (hdf)...");
-		openhdfcmd.setActionCommand(CommandNames.OPEN_HDF);
-		openhdfcmd.addActionListener(jamCommand);
-		openhdfcmd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
-		file.add(openhdfcmd);
+	
+		openhdf.setActionCommand(CommandNames.OPEN_HDF);
+		openhdf.addActionListener(jamCommand);
+		openhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
+		file.add(openhdf);
 		
 		//Remove KBS
 		//file.add(openhdf).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
