@@ -36,7 +36,7 @@ public abstract class Plot extends JPanel {
 	 * Specifies Zoom direction, zoom in
 	 */
 	public final static int ZOOM_IN = 2;
-	
+
 	/**
 	 * Specifies how much to zoom,
 	 * zoom is 1/ZOOM_FACTOR
@@ -79,7 +79,7 @@ public abstract class Plot extends JPanel {
 	protected PlotMouse plotMouse;
 	//limits for plot
 	protected Limits plotLimits;
-	protected PageFormat pageformat=null;
+	protected PageFormat pageformat = null;
 
 	// histogram related stuff.
 	protected Histogram currentHist; //the currently displayed histogram
@@ -101,7 +101,7 @@ public abstract class Plot extends JPanel {
 
 	//gate stuff
 	protected Gate currentGate;
-	protected final Polygon pointsGate=new Polygon();
+	protected final Polygon pointsGate = new Polygon();
 	boolean settingGate = false;
 
 	//are we display more than a histogram
@@ -109,7 +109,7 @@ public abstract class Plot extends JPanel {
 	protected boolean displayingFit = false;
 	protected boolean displayingOverlay = false;
 	protected boolean markingArea = false;
-	protected GateSetMode gateSetMode=GateSetMode.GATE_CANCEL;
+	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
 
 	//configuration for screen plotting
 	protected Dimension viewSize;
@@ -183,20 +183,20 @@ public abstract class Plot extends JPanel {
 		currentHist = hist;
 	}
 
-	protected void setSettingGate(boolean sg){
-		synchronized(this){
-			settingGate=sg;
+	protected void setSettingGate(boolean sg) {
+		synchronized (this) {
+			settingGate = sg;
 		}
 	}
-	
-	final Polygon mouseMoveClip=new Polygon();
-	protected boolean mouseMoved=false;
-	protected void setMouseMoved(boolean mm){
-		synchronized(this){
-			mouseMoved=mm;
+
+	final Polygon mouseMoveClip = new Polygon();
+	protected boolean mouseMoved = false;
+	protected void setMouseMoved(boolean mm) {
+		synchronized (this) {
+			mouseMoved = mm;
 		}
 	}
-    
+
 	/**
 	 * Set the histogram to plot. If the plot limits are null, make one
 	 * save all neccessary histogram parameters to local variables.
@@ -252,19 +252,14 @@ public abstract class Plot extends JPanel {
 	}
 
 	/**
-	 * Displays a gate on the plot.
-	 *
-	 * @param gate  the gate to be displayed
-	 * @exception DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
-	 */
-	public abstract void displayGate(Gate gate) throws DataException;
-
-	/**
 	 * Show the setting of a gate
 	 * mode are we starting a new gate or continue
 	 * or saving on
 	 */
-	public abstract void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel);
+	public abstract void displaySetGate(
+		GateSetMode mode,
+		Point pChannel,
+		Point pPixel);
 
 	/**
 	 * Copies the counts into the local array--needed by scroller.
@@ -525,16 +520,16 @@ public abstract class Plot extends JPanel {
 		displayingGate = false;
 		displayingFit = false;
 		displayingOverlay = false;
-		markingArea=false;
+		markingArea = false;
 		refresh();
 	}
 
-	void setDisplayingGate(boolean dg){
-		synchronized(this){
-			displayingGate=dg;
+	void setDisplayingGate(boolean dg) {
+		synchronized (this) {
+			displayingGate = dg;
 		}
 	}
-	
+
 	/**
 	 *methods for getting histogram data
 	 */
@@ -554,31 +549,30 @@ public abstract class Plot extends JPanel {
 	 */
 	protected synchronized void paintComponent(Graphics g) {
 		super.paintComponent(g);
-			if (printing) { //output to printer
-				graph.setFont(printFont);
-				PlotColorMap.setColorMap(PlotColorMap.PRINT);
-				graph.setView(pageformat);
-			} else { //output to screen
-				graph.setFont(screenFont);
-				PlotColorMap.setColorMap(colorMode);
-				graph.setView(null);
-			}
-			g.setColor(PlotColorMap.foreground); //color foreground
-			this.setForeground(PlotColorMap.foreground);
-			this.setBackground(PlotColorMap.background);
-			viewSize = getSize();
-			graph.update(g, viewSize, plotLimits);
-			//give graph all pertinent info
-			//draw outline, tickmarks, labels, and title
-		if (this.currentHist !=null){
+		if (printing) { //output to printer
+			graph.setFont(printFont);
+			PlotColorMap.setColorMap(PlotColorMap.PRINT);
+			graph.setView(pageformat);
+		} else { //output to screen
+			graph.setFont(screenFont);
+			PlotColorMap.setColorMap(colorMode);
+			graph.setView(null);
+		}
+		g.setColor(PlotColorMap.foreground); //color foreground
+		this.setForeground(PlotColorMap.foreground);
+		this.setBackground(PlotColorMap.background);
+		viewSize = getSize();
+		graph.update(g, viewSize, plotLimits);
+		//give graph all pertinent info
+		//draw outline, tickmarks, labels, and title
+		if (this.currentHist != null) {
 			paintHeader(g);
 			paintHistogram(g);
-			if (displayingGate) {//are we to display a gate
+			if (displayingGate) { //are we to display a gate
 				try {
 					paintGate(g);
 				} catch (DataException de) {
-					error("Problem while displaying gate: "+
-					de.getMessage());
+					error("Problem while displaying gate: " + de.getMessage());
 				}
 			}
 			if (displayingOverlay) {
@@ -587,23 +581,54 @@ public abstract class Plot extends JPanel {
 			if (displayingFit) {
 				paintFit(g);
 			}
-			if (markingArea){
+			if (markingArea) {
 				paintMarkArea(g);
 			}
-			if (mouseMoved){
+			if (settingGate){
+				paintSetGate(g);
+			}
+			if (mouseMoved) {
 				paintMouseMoved(g);
 			}
 		}
 	}
 
-	void error(String mess){
-		final String plotErrorTitle="Plot Error";
-		JOptionPane.showMessageDialog(this,
-		mess,
-		plotErrorTitle,
-		JOptionPane.ERROR_MESSAGE);
+	void error(String mess) {
+		final String plotErrorTitle = "Plot Error";
+		JOptionPane.showMessageDialog(
+			this,
+			mess,
+			plotErrorTitle,
+			JOptionPane.ERROR_MESSAGE);
 	}
-    
+	
+	/**
+	 * Displays a gate on the plot.
+	 *
+	 * @param gate  the gate to be displayed
+	 * @exception DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
+	 */
+	public void displayGate(Gate gate) throws DataException {
+		if (currentHist != null && currentHist.hasGate(gate)) {
+			setDisplayingGate(true);
+			setCurrentGate(gate);
+			repaint();
+		} else {
+			error(
+				"Can't display '"
+					+ gate
+					+ "' on histogram '"
+					+ currentHist
+					+ "'.");
+		}
+	}
+
+	private void setCurrentGate(Gate g) {
+		synchronized (this) {
+			currentGate = g;
+		}
+	}	
+
 	/**
 	 * paints header for plot to screen and printer
 	 * sets colors and
@@ -619,7 +644,7 @@ public abstract class Plot extends JPanel {
 		}
 		graph.drawBorder();
 	}
-	
+
 	/**
 	 * Method for painting a clicked area.
 	 * 
@@ -643,19 +668,19 @@ public abstract class Plot extends JPanel {
 	 * method overriden for 1 and 2 d for painting fits
 	 */
 	abstract void paintFit(Graphics g);
-	
+
 	/**
 	 * Method for painting segments while setting a gate.
 	 * 
 	 * @param g the graphics context
 	 */
 	abstract void paintSetGate(Graphics g);
-	
+
 	abstract void paintMouseMoved(Graphics g);
 
 	public synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		printing = rfp;
-		pageformat=pf;
+		pageformat = pf;
 	}
 
 	ComponentPrintable getComponentPrintable(int run, String d) {
@@ -696,7 +721,7 @@ public abstract class Plot extends JPanel {
 	 * Set the color mode, color palette
 	 */
 	public final void setColorMode(int cm) {
-		synchronized(this){
+		synchronized (this) {
 			colorMode = cm;
 		}
 		setBackground(PlotColorMap.background);
