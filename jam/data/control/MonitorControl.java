@@ -230,11 +230,11 @@ Runnable  {
         numberMonitors=Monitor.getMonitorList().size();
         if (numberMonitors!=0){// we have monitors in the Monitor list
             sortMonitors=true;
-            Enumeration enumMonitor=Monitor.getMonitorList().elements();
+            Iterator enumMonitor=Monitor.getMonitorList().iterator();
             monitor = new Monitor[numberMonitors];
             int count=0;
-            while(enumMonitor.hasMoreElements()) {//put montitors into the monitor array
-                Monitor currentMonitor=(Monitor)enumMonitor.nextElement();
+            while(enumMonitor.hasNext()) {//put montitors into the monitor array
+                Monitor currentMonitor=(Monitor)enumMonitor.next();
                 monitor[count]=currentMonitor;
                 count++;
             }
