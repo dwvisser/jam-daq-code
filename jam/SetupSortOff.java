@@ -74,7 +74,7 @@ class SetupSortOff  implements ItemListener {
     defaultEventOutStream, defaultEventPath, defaultSpectra;
 
     /* handles we need */
-    final private JamMain jamMain;
+    final private Frame frame;
     final private SortControl sortControl;
     final private DisplayCounters displayCounters;
     final static private Broadcaster broadcaster=Broadcaster.getSingletonInstance();
@@ -106,8 +106,7 @@ class SetupSortOff  implements ItemListener {
     private final JButton bok, bapply, bbrowsef;
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 
-    SetupSortOff(JamMain jm,  SortControl sc,
-    DisplayCounters dc, MessageHandler mh) {
+    SetupSortOff(SortControl sc) {
 
 
 		classname=getClass().getName()+"--";
@@ -127,13 +126,12 @@ class SetupSortOff  implements ItemListener {
         JamProperties.DEFAULT_SORT_CLASSPATH));
         if (!useDefaultPath){
 			sortClassPath=new File(defaultSortPath);
-			//sortClassPath=sortDirectory;
         }
-        this.jamMain=jm;
+        frame=status.getFrame();
         this.sortControl=sc;
-        this.displayCounters=dc;
-        this.msgHandler=mh;
-        d = new JDialog (jamMain,"Setup Offline",false);  //dialog box
+        displayCounters=DisplayCounters.getSingletonInstance();
+        msgHandler=status.getMessageHandler();
+        d = new JDialog (frame,"Setup Offline",false);  //dialog box
         final Container cp=d.getContentPane();
         d.setResizable(false);
         final int posx=20;
@@ -161,10 +159,6 @@ class SetupSortOff  implements ItemListener {
 		pradio.add(defaultPath);
 		pradio.add(specify);
 		pNorth.add(pradio);
-
-		//final JPanel pCenter=new JPanel(new BorderLayout(5,0));
-		//pCenter.setBorder(new EmptyBorder(0,10,10,10));
-		//cp.add(pCenter,BorderLayout.CENTER);
 
 		//Labels
 		final JPanel pLabels = new JPanel(new GridLayout(0,1, 5,5));
@@ -496,7 +490,7 @@ class SetupSortOff  implements ItemListener {
     	File rval=sortClassPath;
         final JFileChooser fd =new JFileChooser(sortClassPath);
         fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        final int option = fd.showOpenDialog(jamMain);
+        final int option = fd.showOpenDialog(frame);
         /* save current values */
         if (option == JFileChooser.APPROVE_OPTION &&
         fd.getSelectedFile() != null){
