@@ -63,15 +63,13 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 	
 	private JTextField txtListFile;
 	
-	private JCheckBox chkBoxAdd;
+	private final JCheckBox chkBoxAdd;
 
 	private final PanelOKApplyCancelButtons okApply;
 		
 	private final MultipleFileChooser multiChooser;
 	
-	private int [] prevSelected=null;
-	
-    private List histAttributesList = new ArrayList();
+    private final List histAttrList = new ArrayList();
     
 	/** HDF file reader */
 	private final HDFIO hdfio;
@@ -161,8 +159,6 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		txtListFile.setColumns(20);
 		txtListFile.setEditable(false);
 		pOption.add(txtListFile);		
-//		chkBoxAdd = new JCheckBox("Sum Histograms");
-//		pOption.add(chkBoxAdd);
 		panel.add(pOption, BorderLayout.NORTH);		
 		hListModel = new DefaultListModel();
 		histList = new JList(hListModel);
@@ -196,35 +192,19 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 	 *
 	 */
 	private void refreshHistList() {	
-		saveSelectedHistograms();
 		final File file =multiChooser.getSelectedFile();
 		hListModel.clear();
 		txtListFile.setText("");
 		if (file!=null){
 			txtListFile.setText(file.getAbsolutePath());
 			if (loadHistNames(file)){
-				updateSelectedHistograms();
+			    checkSelectionIsNone();
 			}
 		}
 	}
-	
-	private void saveSelectedHistograms(){
-		prevSelected = histList.getSelectedIndices();		
-	}
-	
-	private void updateSelectedHistograms() {
-		final ListModel listModel =histList.getModel();		
-		int [] selected = histList.getSelectedIndices();
-		if (prevSelected!=null) {
-			selected=prevSelected;
-		} 
-        /* Non-selected select all */
-		checkSelectionIsNone();
-	}
-
+		
 	private void checkSelectionIsNone() {
 		final ListModel listModel =histList.getModel();	
-		int size =listModel.getSize();
 		int [] selected = histList.getSelectedIndices();
 		selected = histList.getSelectedIndices();
 	    if (selected.length==0) {        	
@@ -235,17 +215,17 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 	    	histList.setSelectedIndices(indexs);
 	    } 
 	}
+	
 	/**
-	 * Check there are histogram in the histogram list
-	 *
-	 */
-	private void checkHistogramsLoaded() {
-		final ListModel listModel =histList.getModel();	
-		int size =listModel.getSize();
-		if (size ==0) {
-			refreshHistList();
-		}		
-	}
+     * Check there are histogram in the histogram list.
+     */
+    private void checkHistogramsLoaded() {
+        final ListModel listModel = histList.getModel();
+        final int size = listModel.getSize();
+        if (size == 0) {
+            refreshHistList();
+        }
+    }
 	
 	/* non-javadoc:
 	 * Load name of histograms from the selected file
@@ -276,55 +256,43 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 	}
 	
 	/**
-     * Load the histograms in the selected list from the selected files
+     * Load the histograms in the selected list from the selected files.
      */
     private void loadFiles() {
-        File file;
         checkHistogramsLoaded();
-        final List selectHistAttributes = createSelectedHistogramNamesList();
-        if (selectHistAttributes.size() == 0) {//No histograms selected
+        final List selectAttrib = createSelectedHistogramNamesList();
+        if (selectAttrib.size() == 0) {//No histograms selected
             msgHandler.errorOutln("No histograms selected");
             return;
         }
-
-        Object [] objFiles = (Object [])multiChooser.getFileList().toArray();
-        File [] files =new File[objFiles.length];
-        for (int i=0;i<objFiles.length; i++) {
-        	files[i] =(File)objFiles[i];
-        }
-        
-    	DataBase.getInstance().clearAllLists();
+        final File[] files = (File[]) multiChooser.getFileList().toArray(
+                new File[0]);
+        DataBase.getInstance().clearAllLists();
         hdfio.setListener(this);
-        
         /* Sum counts */
-        if (chkBoxAdd.isSelected()) {            
-            hdfio.readFile(FileOpenMode.ADD_OPEN_ONE, files, null, selectHistAttributes);
-            STATUS.setSortMode(SortMode.FILE, "Multiple Sum"); 
+        if (chkBoxAdd.isSelected()) {
+            hdfio
+                    .readFile(FileOpenMode.ADD_OPEN_ONE, files, null,
+                            selectAttrib);
+            STATUS.setSortMode(SortMode.FILE, "Multiple Sum");
         } else {
-            hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectHistAttributes);
-            STATUS.setSortMode(SortMode.FILE, "Multiple");            
+            hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectAttrib);
+            STATUS.setSortMode(SortMode.FILE, "Multiple");
         }
     }      
     
     private List createSelectedHistogramNamesList() {
-    	//Set selection to all if none selected
     	checkSelectionIsNone();
-        //final List selectNames = new ArrayList();
         final Object[] selected = histList.getSelectedValues();
-        histAttributesList.clear();
+        histAttrList.clear();
         /* Put selected histograms into a list */
         for (int i = 0; i < selected.length; i++) {
         	//Get name from full name
-        	String histogramFullName = (String)selected[i];
-        	HistogramAttributes histAttributes =HistogramAttributes.getHistogramAttribute(histogramFullName);
-        	histAttributesList.add(histAttributes);
-        	
-        	//String histName = histAttributes.getName();        	
-            //selectNames.add(histName);
-            
+        	final String histFullName = (String)selected[i];
+        	final HistogramAttributes histAttrib =HistogramAttributes.getHistogramAttribute(histFullName);
+        	histAttrList.add(histAttrib);
         }
-        //HistogramAttributes.filterList(histFullNamesList);
-    	return histAttributesList;
+    	return histAttrList;
     }
 
     private void defaultSelection() { 
@@ -340,25 +308,23 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 	    } 
     }
 	private void notifyApp() {
-		//Update app status		
+		/* Update app status. */		
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		
-		//Set the current histogram to the first opened histogram
-		List groupList = Group.getGroupList();
+		/* Set the current histogram to the first opened histogram. */
+		final List groupList = Group.getGroupList();
 		if (groupList.size()>0) {
-			Group firstGroup =(Group)Group.getGroupList().get(0); 
+			final Group firstGroup =(Group)Group.getGroupList().get(0); 
 			STATUS.setCurrentGroup(firstGroup);
-			List histList =firstGroup.getHistogramList();
+			final List histList =firstGroup.getHistogramList();
 			if (histList.size()>0) {
-				Histogram firstHist = (Histogram)histList.get(0);
+				final Histogram firstHist = (Histogram)histList.get(0);
 				if (histList!=null) {
 					STATUS.setCurrentHistogram(firstHist);
 					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 				}
 			}
 		}
-		
 	}			
 	
 	/**
