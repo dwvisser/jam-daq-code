@@ -48,8 +48,8 @@ public class HistogramControl extends DataControl implements ActionListener {
         dialogZero=new JDialog(frame,"Zero Histograms",false);
         Container dzc = dialogZero.getContentPane();
         dialogZero.setResizable(false);
-        dialogZero.setSize(350, 100);
-        dzc.setLayout(new FlowLayout(FlowLayout.CENTER,20,20));
+        //dialogZero.setSize(350, 100);
+        dzc.setLayout(new GridLayout(1,0));
         dialogZero.setLocation(20,50);
         JButton one =new JButton("Displayed");
         one.setActionCommand("onezero");
@@ -63,6 +63,7 @@ public class HistogramControl extends DataControl implements ActionListener {
         dzc.add(cancel);
         cancel.setActionCommand("cancelzero");
         cancel.addActionListener(this);
+        dialogZero.pack();
         //dialog box New Histogram
         dialogNew =new JDialog (frame,"New Histogram ",false);
         dialogNew.setForeground(Color.black);
@@ -209,37 +210,30 @@ public class HistogramControl extends DataControl implements ActionListener {
      *
      */
     public void actionPerformed(ActionEvent ae){
-
         String command=ae.getActionCommand();
         currentHistogram=Histogram.getHistogram(JamStatus.instance().getCurrentHistogramName());
-
         try {
-            //commands for zero histogram
+            /* commands for zero histogram */
             if (command=="onezero") {
                 currentHistogram.setZero();
                 broadcaster.broadcast(BroadcastEvent.REFRESH);
                 msghdlr.messageOutln("Zero Histogram: "+currentHistogram.getTitle());
                 dialogZero.dispose();
-
             } else if (command=="allzero") {
                 zeroAll();
                 dialogZero.dispose();
-
-                //commands for new histogram
+                /* commands for new histogram */
             }else if (command=="oknew"||command=="applynew"){
                 makeHistogram();
                 if (command=="oknew"){
                     dialogNew.dispose();
                 }
-
             } else if (command=="cancelzero") {
                 dialogZero.dispose();
             } else if (command=="cancelnew"){
                 dialogNew.dispose();
-
-
             } else {
-                //just so at least a exception is thrown for now
+                /* just so at least a exception is thrown for now */
                 throw new DataException("Unregonized command [HistogramControl]");
             }
         } catch (DataException je) {
@@ -248,7 +242,6 @@ public class HistogramControl extends DataControl implements ActionListener {
             msghdlr.errorOutln(getClass().getName()+
             ".actionPerformed(): "+ge);
         }
-
     }
 
     /**
