@@ -8,8 +8,7 @@ package jam.sort;
  */
 public class VME_Channel{
 
-    private int slot, baseAddress, channel, threshold, type, arrayIndex;
-    //private Scaler scaler;
+    private final int slot, baseAddress, channel, threshold, type, arrayIndex;
     public static final int EVENT_DATA = 349;
     public static final int SCALER_DATA = 987;
 
@@ -22,7 +21,7 @@ public class VME_Channel{
      * @param channel integer from 0 to 31 indicating channel in ADC or TDC
      * @param threshold integer from 0 to 4095 indicating lower threshold for recording the value
      */
-    VME_Channel(int slot, int baseAddress, int channel, int threshold,
+    VME_Channel(VME_Map map, int slot, int baseAddress, int channel, int threshold,
     int arrayIndex) throws SortException {
         if (channel >= 0 && channel < 32) {
             this.channel=channel;
@@ -44,8 +43,8 @@ public class VME_Channel{
         }
         if (threshold >= 0 && threshold < 4096) {
             int threshNum=(int)Math.round(threshold /16.0);
-            System.err.println("Requested threshold: "+threshold+", truncated to: "+threshNum+
-                ", actual threshold: "+threshNum*16);
+            map.appendMessage("Requested threshold: "+threshold+", truncated to: "+threshNum+
+                ", actual threshold: "+threshNum*16+"\n");
             this.threshold=threshNum;
         } else {
             throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
@@ -54,25 +53,6 @@ public class VME_Channel{
         this.arrayIndex=arrayIndex;
         type=EVENT_DATA;
     }
-
-    /*VME_Channel(int baseAddress, int channel, Scaler scaler)
-    throws SortException {
-        if (parameterNumber >= 2048 && parameterNumber < 4096) {
-            this.parameterNumber=parameterNumber;
-        } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
-            + " Parameter Number = "+parameterNumber);
-        }
-        this.baseAddress=baseAddress;
-        if (channel >= 0 && channel < 16) {
-            this.channel=channel;
-        } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
-            + " channel = "+channel);
-        }
-        this.scaler=scaler;
-        type=SCALER_DATA;
-    }*/
 
     public short getParameterNumber() {
         return (short)(channel+(slot-2)*32);
@@ -97,11 +77,5 @@ public class VME_Channel{
     public int getSlot() {
         return slot;
     }
-
-    /*public Scaler getScaler() throws SortException {
-        if (type==EVENT_DATA) throw new SortException("VME_Channel.getScaler performed on "
-        + "wrong type.");
-        return scaler;
-    }*/
 }
 
