@@ -14,45 +14,34 @@ import jam.data.Histogram;
 
 public class InitialHistograms{
 
-    /** starting histogram */
-    public Histogram histStart;
-    private int sizeX;
-    private int sizeY;
-    private int counts[];
-    private int counts2d[][];
-    private int units[];
-
     public InitialHistograms() throws DataException{
         makehists();
     }
 
     private void makehists() throws DataException{
-        //histogram with Jam name 2d
-        Histogram histJam2d=new Histogram("Histogram2D", "Jam Name 2D",histNameJam2d());    //fake histogram
-        histStart=histJam2d;
-
-        //histogram with Jam name
-        Histogram histJam1d=new Histogram("Histogram1D", "Jam Name 1D", histNameJam1d());
-
-        //histogram with triangles 
+        /* histogram with Jam name 2d */
+        final Histogram histJam2d=new Histogram("Histogram2D", "Jam Name 2D",
+        histNameJam2d());
+		/* histogram with Jam name */
+        final Histogram histJam1d=new Histogram("Histogram1D", "Jam Name 1D", 
+        histNameJam1d());
+        /* histogram with triangles */
         new Histogram("Triangle", "Triangle ",histTriangle());
-
-        new Gate("Letter A ",histJam1d);    //gate
-        new Gate("Letter B ",histJam1d);    //gate
-        new Gate("Letter C ",histJam1d);    //gate
-        new Gate(" Area A ",histJam2d);      //gate 2d
-        new Gate(" Area B ",histJam2d);      //gate 2d
-        new Gate(" Area C ",histJam2d);      //gate 2d
+        new Gate("Letter A",histJam1d);    //gate
+        new Gate("Letter B",histJam1d);    //gate
+        new Gate("Letter C",histJam1d);    //gate
+        new Gate("Area A",histJam2d);      //gate 2d
+        new Gate("Area B",histJam2d);      //gate 2d
+        new Gate("Area C",histJam2d);      //gate 2d
     }
 
     /**
-     * Make a 1 d histogram that says JAM.
+     * @return counts for a 1d histogram that says JAM.
      */
     private int [] histNameJam1d(){
-        sizeX=1024;
+        final int sizeX=1024;
         int startCh;
-        counts = new int [sizeX];
-        units= new int [sizeX];
+        final int[] counts = new int [sizeX];
 
         //Make a J
         for (int i =100;i< 150;i++) {
@@ -98,12 +87,12 @@ public class InitialHistograms{
     }
     
     private int [][] histNameJam2d(){
-        sizeX=256;
-        sizeY=256;
+        final int sizeX=256;
+        final int sizeY=256;
         int startCh;      //start channel for a loop
         int endCh;      //end channel for a loop
         int ch;
-        counts2d = new int [sizeX][sizeY];
+        final int [][] counts2d = new int[sizeX][sizeY];
         //Make a J
         // increment x then y
         for (int i =20;i< 40;i++) {
@@ -174,20 +163,15 @@ public class InitialHistograms{
     }
 
     /**
-     * Make a numer of triangle to display in a 1 D Plot
-     *
+     * @return counds for a 1d histogram of triangles
      */
     private int [] histTriangle(){
-        sizeX=1024;
-        int range;
-        int position;
-        counts = new int [sizeX];
-        units= new int [sizeX];
+        final int sizeX=1024;
+        final int [] counts = new int [sizeX];
         // make a small triangle
-        position=0;
-        range=200;
+        int position=0;
+        int range=200;
         for (int i=position; i<=position+range;i++){
-
             if (i<=(position+range/2)) {
                 counts[i]=i-position;
             } else  {
@@ -197,7 +181,6 @@ public class InitialHistograms{
         position=200;
         range=600;
         for (int i=position; i<=position+range;i++){
-
             if ((i<=position+range/2)) {
                 counts[i]=i-position;
             } else  {
