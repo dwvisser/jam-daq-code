@@ -665,18 +665,18 @@ public abstract class AbstractFit implements PlotMouseListener {
      * Update the name of the displayed histogram in the dialog box.
      */
     private void updateHist() {
-        final Histogram h = STATUS.getCurrentHistogram();
-        if (h != null && h.getDimensionality() == 1) {
-            if (h.getType() == Histogram.Type.ONE_DIM_INT) {
-                final int[] ia = (int[]) h.getCounts();
-                counts = new double[ia.length];
-                for (int j = 0; j < ia.length; j++) {
-                    counts[j] = ia[j];
+        final Histogram histogram = STATUS.getCurrentHistogram();
+        if (histogram != null && histogram.getDimensionality() == 1) {
+            if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
+                final int[] temp = (int[]) histogram.getCounts();
+                counts = new double[temp.length];
+                for (int j = 0; j < temp.length; j++) {
+                    counts[j] = temp[j];
                 }
-            } else if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
-                counts = (double[]) h.getCounts();
+            } else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
+                counts = (double[]) histogram.getCounts();
             }
-            textHistName.setText(h.getFullName());
+            textHistName.setText(histogram.getFullName());
         } else { //2d
             textHistName.setText("Need 1D Hist!");
         }
@@ -719,17 +719,17 @@ public abstract class AbstractFit implements PlotMouseListener {
      * Gets counts from currently displayed <code>Histogram</code>
      */
     private void getCounts() {
-        final AbstractHist1D h = (AbstractHist1D) STATUS.getCurrentHistogram();
-        if (h.getType() == Histogram.Type.ONE_DIM_INT) {
-            int[] ia = (int[]) h.getCounts();
-            counts = new double[ia.length];
-            for (int j = 0; j < ia.length; j++) {
-                counts[j] = ia[j];
+        final AbstractHist1D hist1d = (AbstractHist1D) STATUS.getCurrentHistogram();
+        if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
+            final int[] temp = (int[]) hist1d.getCounts();
+            counts = new double[temp.length];
+            for (int j = 0; j < temp.length; j++) {
+                counts[j] = temp[j];
             }
         } else {
-            counts = (double[]) h.getCounts();
+            counts = (double[]) hist1d.getCounts();
         }
-        this.errors = h.getErrors();
+        errors = hist1d.getErrors();
     }
 
     /*
