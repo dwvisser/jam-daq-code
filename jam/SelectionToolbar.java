@@ -72,10 +72,10 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		previousLayout=VERTICAL;
 		/* Run status */
 		final Box pRunState = new Box(BoxLayout.X_AXIS);
-		pRunState.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
-		lrunState.setForeground(Color.black);
+		lrunState.setForeground(Color.BLACK);
 		pRunState.add(lrunState);
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
