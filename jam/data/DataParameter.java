@@ -32,12 +32,13 @@ public class DataParameter {
 	 * Creates a new parameter with the given name.
 	 * 
 	 * @param name the name for the new parameter used in the dialog box
+     * @throws UnsupportedArgumentException if name >NAME_LENGTH characters
 	 */
-	public DataParameter(String name) throws DataException {
+	public DataParameter(String name)  {
 		StringUtilities su=StringUtilities.instance();
 		//give error if name is too long
 		if (name.length() > NAME_LENGTH) {
-			throw new DataException(
+			throw new IllegalArgumentException(
 				"Parameter name '"
 					+ name
 					+ "' too long "
