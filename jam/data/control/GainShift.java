@@ -33,7 +33,7 @@ Observer {
     private double chan1i,chan2i,chan1f,chan2f,a1,b1,a2,b2;
 
     private Histogram hfrom;
-    
+
     private JamStatus status;
 
     public GainShift(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
@@ -109,6 +109,9 @@ Observer {
         poutfields.add(label4);
         poutfields.add(text4);
         cdgain.add(poutfields);
+        //Buttons
+        JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cdgain.add(pButtons);
         JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
         bOK =new JButton("OK");
         bOK.setActionCommand("ok");
@@ -122,7 +125,8 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
-        cdgain.add(pcontrol);
+        pButtons.add(pcontrol);
+
         dgain.pack();
     }
 
