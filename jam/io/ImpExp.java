@@ -131,19 +131,15 @@ public abstract class ImpExp {
 	 * Opens a file with a specified dialog box title bar and file extension.
 	 * It is usually called by <code>openFile</code> in subclasses of <code>ImpExp</code>.
 	 *
-	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
+	 * @param in the file to open
+	 * @param msg text to go on title bar of dialog box
 	 * @return	whether file was successfully read
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
 	protected boolean openFile(File in, String msg) {
-		File inFile=in;
 		boolean rval=false; //default return value
 		try {
-			/* open file dialog */    		
-			if (in==null){
-				inFile=getFileOpen(msg);
-			}
+			final File inFile = (in==null) ? getFileOpen(msg) : in;
 			if (inFile != null) { // if Open file was  not canceled
 				setLastFile(inFile);
 				FileInputStream inStream = new FileInputStream(inFile);
@@ -158,7 +154,7 @@ public abstract class ImpExp {
 				rval = true;
 			}
 		} catch (IOException ioe) {
-			msgHandler.errorOutln("Problem handling file \""+inFile.getPath()+"\": "+ioe.getMessage());
+			msgHandler.errorOutln("Problem handling file: "+ioe.getMessage());
 		} catch (ImpExpException iee) {
 			msgHandler.errorOutln("Problem while importing or exporting: "+iee.getMessage());
 		}
@@ -171,7 +167,6 @@ public abstract class ImpExp {
 	 * <code>saveFile(Histogram)</code>.
 	 * 
 	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
 	 * @param	    hist	    histogram to be saved
 	 * @see	    #saveFile(Histogram)
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the msgHandler
@@ -216,9 +211,8 @@ public abstract class ImpExp {
 	/**
 	 * Open a file to read from.
 	 *
-	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
-	 * @return			    a <code>File</code> to read from
+	 * @param msg text to go on title bar of dialog box
+	 * @return a <code>File</code> to read from
 	 */
 	protected File getFileOpen(String msg)
 		throws ImpExpException {
@@ -228,9 +222,8 @@ public abstract class ImpExp {
 	/**
 	 * Get a file to save data to.
 	 *
-	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
-	 * @return			    a <code>File</code> to save to
+	 * @param msg text to go on title bar of dialog box
+	 * @return a <code>File</code> to save to
 	*/
 	protected File getFileSave(String msg)
 		throws ImpExpException {
@@ -243,7 +236,6 @@ public abstract class ImpExp {
 	 * Nutshell Java Examples page 162.
 	 *
 	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
 	 * @param	    state	    <code>ImpExp.LOAD</code> or <code>ImpExp.SAVE</code>
 	 * @return			    a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
