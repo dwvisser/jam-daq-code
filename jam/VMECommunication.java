@@ -1,10 +1,7 @@
-/*
- */
 package jam;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.MessageHandler;
@@ -526,10 +523,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         } catch (JamException je){
             console.errorOutln(je.getMessage());
             console.messageOutln("Network receive daemon stopped, need to restart Online [VMECommunication]");
-        } catch (GlobalException ge) {
-            console.errorOutln(getClass().getName()+".run(): "+ge);
-            console.messageOutln("Network receive daemon stopped, need to restart Online.");
-        }
+        } 
     }
 
     /**
