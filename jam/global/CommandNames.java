@@ -64,7 +64,7 @@ public interface CommandNames {
 	String EXIT = "exit";
 	
 	/** Erase the data in memory */
-	String NEW = "new";
+	String CLEAR = "clear";
 	
 	/** Show the parameters dialog. */
 	String PARAMETERS="parameters";

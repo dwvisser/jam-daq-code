@@ -78,7 +78,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		
 		final JMenu file = new JMenu("File");
 		
-		file.add(getMenuItem(NEW));
+		file.add(getMenuItem(CLEAR));
 		file.add(getMenuItem(OPEN_HDF));
 		file.add(getMenuItem(RELOAD_HDF));
 		file.add(getMenuItem(ADD_HDF));

@@ -34,8 +34,6 @@ public class CommandManager implements CommandListener, CommandNames {
 	private static final Map instances=Collections.synchronizedMap(new HashMap());
 	private Commandable currentCommand;
 	
-	
-	
 	/* initializer block for map */
 	static {
 		cmdMap.put(OPEN_HDF, OpenHDFCmd.class);
@@ -62,7 +60,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(STOP, StopAcquisition.class);
 		cmdMap.put(FLUSH, FlushAcquisition.class);
 		cmdMap.put(EXIT, ShowDialogExitCmd.class);
-		cmdMap.put(NEW, FileNewClearCmd.class);
+		cmdMap.put(CLEAR, FileNewClearCmd.class);
 		cmdMap.put(PARAMETERS, ShowDialogParametersCmd.class);
 		cmdMap.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);
 		cmdMap.put(SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
