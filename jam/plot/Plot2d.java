@@ -320,7 +320,7 @@ class Plot2d extends Plot {
 		/* draw labels/ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
-		graph.drawNumber(number,-1);
+		graph.drawNumber(number,new int[0]);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
