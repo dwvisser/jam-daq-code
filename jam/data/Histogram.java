@@ -143,7 +143,6 @@ public class Histogram implements Serializable {
 		int prime;
 		Iterator allHistograms;
 
-		this.number = number;
 		this.type = type;
 		this.title = title;
 		this.errors = null;
