@@ -495,7 +495,7 @@ public class Histogram implements Serializable {
 	 *
 	 * @return the number of this histogram
 	 */
-	public int getNumber() {
+	public final int getNumber() {
 		return number;
 	}
 
