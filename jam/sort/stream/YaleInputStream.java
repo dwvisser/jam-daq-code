@@ -3,9 +3,7 @@ import java.io.*;
 import jam.global.*;
 
 /**
- * This class knows how to handle Oak Ridge tape format.  It extends
- * <code>EventInputStream</code>, adding methods for reading events and returning them
- * as int arrays which the sorter can handle.
+ * This class knows how to handle Oak Ridge tape format.
  *
  * @version	0.5 April 98
  * @author 	Dale Visser, Ken Swartz
@@ -50,10 +48,10 @@ public class YaleInputStream extends EventInputStream implements L002Parameters 
         try {
             while(isParameter(dataInput.readShort())){//could be event or scaler parameter
                 if (status == EventInputStatus.PARTIAL_EVENT) {
-                    if (parameter >= eventSize) {//skip, since array index would be too great for event array
-                        dataInput.readShort();
-                    } else {//read into array
-                        input[parameter]=(int)dataInput.readShort();	//read event word
+                	int tempval=dataInput.readShort();
+                    if (parameter < eventSize) {
+                    	/* only try to store if we won't go outside the array */
+                        input[parameter]=tempval;	//read event word
                     }
                 } else if (status == EventInputStatus.SCALER_VALUE) {
                     dataInput.readInt();//throw away scaler value
@@ -75,8 +73,6 @@ public class YaleInputStream extends EventInputStream implements L002Parameters 
      */
     private boolean isParameter(short paramWord) throws IOException {
         boolean parameterSuccess;
-        //check special types parameter
-        //System.err.println(getClass().getName()+".isParameter("+paramWord+")");
         if (paramWord==EVENT_END_MARKER){
             parameterSuccess=false;
             status=EventInputStatus.EVENT;
@@ -86,15 +82,14 @@ public class YaleInputStream extends EventInputStream implements L002Parameters 
         } else if (paramWord==RUN_END_MARKER){
             parameterSuccess=false;
             status=EventInputStatus.END_RUN;
-            //get parameter value if not special type
         } else if ((paramWord & EVENT_PARAMETER_MARKER) != 0) {
+			/* extract parameter id, too */
             int paramNumber = paramWord & EVENT_PARAMETER_MASK;
             if (paramNumber < 2048) {
                 parameter=(int)paramNumber;//parameter index used in array
                 parameterSuccess=true;
                 status=EventInputStatus.PARTIAL_EVENT;
             } else {// 2048-4095 assumed
-                //dataInput.readShort());//skip scaler value
                 parameterSuccess=true;
                 status = EventInputStatus.SCALER_VALUE;
             }
@@ -103,7 +98,6 @@ public class YaleInputStream extends EventInputStream implements L002Parameters 
             parameterSuccess=false;
             status=EventInputStatus.UNKNOWN_WORD;
         }
-        //System.err.println(getClass().getName()+".isParameter(): status = "+status);
         return parameterSuccess;
     }
 
@@ -165,15 +159,4 @@ public class YaleInputStream extends EventInputStream implements L002Parameters 
     public synchronized boolean isEndRun(short dataWord){
         return (dataWord==RUN_END_MARKER);
     }
-
-    /*protected void setScalerValue(short parameterNumber, int value){
-    Scaler s=(Scaler)scalerTable.get(new Short(parameterNumber));
-    if (s != null) {
-    //System.err.println("Scaler: "+parameterNumber+" set to: "+value);
-    //NOT sure if we should update scaler values this way, though it works.
-    //s.setValue(value);
-    } else {
-    console.warningOutln("Invalid scaler parameter number: "+parameterNumber);
-    }
-    }*/
 }
