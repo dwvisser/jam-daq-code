@@ -245,29 +245,16 @@ public class Display
 				"Display.displayGate() DataException: " + de.getMessage());
 		}
 	}
-
-	/**
-	 * Prints a histogram.
-	 *
-	 * @param gpage
-	 */
-	public void printHistogram(
-		Graphics gpage,
-		Dimension pageSize,
-		int pagedpi) {
-		final int runNumber = RunInfo.runNumber;
-		if (gpage != null) {
-			currentPlot.print(
-				gpage,
-				pageSize,
-				pagedpi,
-				runNumber,
-				JamStatus.instance().getDate());
-		} else {
-			msgHandler.errorOutln("Can't print page, null graphics [Display]");
-		}
+	
+	public void setRenderForPrinting(boolean rfp){
+		currentPlot.setRenderForPrinting(rfp);
 	}
 
+	public ComponentPrintable getComponentPrintable(){
+		return currentPlot.getComponentPrintable(RunInfo.runNumber,
+		JamStatus.instance().getDate());
+	}
+	
 	/**
 	 * Do a command sent in as a message.
 	 */
