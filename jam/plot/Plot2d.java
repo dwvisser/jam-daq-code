@@ -2,6 +2,7 @@ package jam.plot;
 
 import jam.data.DataException;
 import jam.data.Histogram;
+import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.PlotColorMap;
 
@@ -26,7 +27,7 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 
-class Plot2d extends AbstractPlot {
+class Plot2d extends AbstractPlot implements ColorPrefs{
 
 	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
@@ -46,12 +47,13 @@ class Plot2d extends AbstractPlot {
 	 */
 	Plot2d() {
 		super();
-		setSmoothColorScale(prefs.getBoolean(SMOOTH_COLOR_SCALE, true));
+		colorPrefs.addPreferenceChangeListener(this);
+		setSmoothColorScale(prefs.getBoolean(ColorPrefs.SMOOTH_COLOR_SCALE, true));
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
-		if (key.equals(SMOOTH_COLOR_SCALE)) {
+		if (key.equals(ColorPrefs.SMOOTH_COLOR_SCALE)) {
 			setSmoothColorScale(Boolean.valueOf(pce.getNewValue())
 					.booleanValue());
 		} else {
