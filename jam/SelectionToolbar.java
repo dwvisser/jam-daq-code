@@ -74,7 +74,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
-		lrunState.setForeground(Color.BLACK);
 		pRunState.add(lrunState);
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
@@ -214,7 +213,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			} else {
 				status.setOverlayHistogramName(hist.getName());
 				console.messageOut(hist.getName(), MessageHandler.END);
-				display.overlayHistogram(hist);
+				display.addToOverlay(hist);
 				synchronized (this) {
 					overlay = false;
 				}

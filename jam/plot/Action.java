@@ -585,20 +585,22 @@ class Action implements ActionListener, PlotMouseListener {
 		if (!commandPresent) {
 			init();
 			textOut.messageOut(
-				"Overlay histogram number: ",
+				"Overlay histogram numbers: ",
 				MessageHandler.NEW);
 		}
-		if (hist.length > 0) {
-			final int num = (int)hist[0];
+		boolean areHists=hist.length>0;
+		for (int i=0; i<hist.length;i++){
+			final int num = (int)hist[i];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
-				display.overlayHistogram(Histogram.getHistogram(num));
-				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+				display.addToOverlay(Histogram.getHistogram(num));
+				textOut.messageOut(Integer.toString(num)+' ', MessageHandler.CONTINUE);
 			} else {
-				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln(
 					"There is no histogram numbered " + num + ".");
 			}
+		}
+		if (areHists){
 			done();
 		}
 	}

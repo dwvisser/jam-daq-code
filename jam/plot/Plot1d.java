@@ -1,8 +1,16 @@
 package jam.plot;
-import java.awt.*;
-import java.awt.event.*;
-import jam.data.*;
+import jam.data.Histogram;
 import jam.global.JamProperties;
+
+import java.awt.AlphaComposite;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
 /**
@@ -16,6 +24,9 @@ class Plot1d extends Plot {
 	private double[] fitChannels, fitResiduals, fitBackground, fitTotal;
 	private double[][] fitSignals;
 	private int areaMark1, areaMark2;
+	private Histogram [] overlayHists;
+	//overlay histogram stuff
+	private double[][] countsOverlay;
 
 	/**
 	 * Constructor
@@ -25,21 +36,26 @@ class Plot1d extends Plot {
 	}
 
 	/**
-	 * Overlay a second histogram
+	 * Overlay histograms.
 	 */
-	void overlayHistogram(Histogram hist) {
+	void overlayHistogram(Histogram [] hists) {
 		displayingOverlay = true;
-		overlayHist = hist;
-		final int sizex = hist.getSizeX();
-		countsOverlay = new double[sizex];
-		if (hist.getType() == Histogram.ONE_DIM_INT) {
-			final int[] countsInt = (int[]) hist.getCounts();
-			for (int i = 0; i < hist.getSizeX(); i++) {
-				countsOverlay[i] = countsInt[i];
+		overlayHists = hists;
+		final int len=hists.length;
+		countsOverlay=new double[len][];
+		for (int i=0; i<len; i++){
+			final Histogram hOver=hists[i];
+			final int sizex = hOver.getSizeX();
+			countsOverlay[i] = new double[sizex];
+			if (hOver.getType() == Histogram.ONE_DIM_INT) {
+				final int[] countsInt = (int[]) hOver.getCounts();
+				for (int j = 0; j < sizex; j++) {
+					countsOverlay[i][j] = countsInt[j];
+				}
+			} else if (hOver.getType() == Histogram.ONE_DIM_DOUBLE) {
+				final double[] countsDble = (double[]) hOver.getCounts();
+				System.arraycopy(countsDble, 0, countsOverlay[i], 0, sizex);
 			}
-		} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-			final double[] countsDble = (double[]) hist.getCounts();
-			System.arraycopy(countsDble, 0, countsOverlay, 0, sizex);
 		}
 		repaint();
 	}
@@ -213,7 +229,7 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
-		final int nOverlay = displayingOverlay ? overlayHist.getNumber() : -1;
+		final int nOverlay = displayingOverlay ? overlayHists[0].getNumber() : -1;
 		graph.drawNumber(number, nOverlay);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
@@ -255,8 +271,18 @@ class Plot1d extends Plot {
 	 * Draw a overlay of another data set
 	 */
 	protected void paintOverlay(Graphics g) {
-		g.setColor(PlotColorMap.overlay);
-		graph.drawHist(countsOverlay, binWidth);
+		final Graphics2D g2=(Graphics2D)g;
+		g2.setColor(PlotColorMap.overlay);
+		final Composite prev=g2.getComposite();
+		g2.setComposite(
+			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
+		final int len=countsOverlay.length;
+		final ColorScale scale=new GradientColorScale(1,len,Limits.ScaleType.LINEAR);
+		for (int i=0; i<len; i++){
+			g2.setColor(scale.getColor(i));
+			graph.drawHist(countsOverlay[i], binWidth);
+		}
+		g2.setComposite(prev);
 	}
 
 	/**

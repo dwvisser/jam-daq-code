@@ -15,15 +15,19 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.print.PageFormat;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.JOptionPane;
 
 /**
  * This class is a display routine for plots.
@@ -35,9 +39,7 @@ import javax.swing.JOptionPane;
  * @see         java.awt.Graphics
  * @since       JDK1.1
  */
-public class Display
-	extends JPanel
-	implements CommandListener, Observer {
+public class Display extends JPanel implements CommandListener, Observer {
 
 	/**
 	 * Enumeration of the various preference types for displaying
@@ -90,13 +92,10 @@ public class Display
 	}
 
 	private final MessageHandler msgHandler; //output for messages
-	//private Broadcaster broadcaster=Broadcaster.getSingletonInstance(); //broadcaster if needed
 	private final Action action; //handles display events
 
-	//private Displayable currentData;
-	//private Displayable overlayData;
 	private Histogram currentHist;
-	private Histogram overlayHist;
+	private Histogram[] overlayHist;
 
 	private Plot currentPlot;
 	private boolean overlayState = false;
@@ -114,11 +113,11 @@ public class Display
 	 */
 	public Display(MessageHandler mh) {
 		msgHandler = mh; //where to send output messages
-		action = new Action(this, msgHandler);// display event handler
-		final int size=420;
-		setPreferredSize(new Dimension(size,size));
-		final int minsize=400;
-		setMinimumSize(new Dimension(minsize,minsize));
+		action = new Action(this, msgHandler); // display event handler
+		final int size = 420;
+		setPreferredSize(new Dimension(size, size));
+		final int minsize = 400;
+		setMinimumSize(new Dimension(minsize, minsize));
 		setLayout(new BorderLayout());
 		/* setup up middle panel containing plots panel to holds 1d and 2d
 		 * plots and swaps them */
@@ -157,7 +156,7 @@ public class Display
 			}
 			overlayState = false;
 			showPlot(currentHist); //changes local currentPlot
-			final boolean oneD=currentHist.getDimensionality() == 1;
+			final boolean oneD = currentHist.getDimensionality() == 1;
 			bgoto.setEnabled(oneD);
 			brebin.setEnabled(oneD);
 			bnetarea.setEnabled(oneD);
@@ -166,71 +165,49 @@ public class Display
 		}
 	}
 
+	private final List overlays = Collections.synchronizedList(new ArrayList());
+
+	public void addToOverlay(Histogram h) {
+		overlays.add(h);
+		doOverlay();
+	}
+
 	/**
 	 * Overlay a histogram
 	 * only works for 1 d
 	 */
-	public void overlayHistogram(Histogram hist) {
-		if (hist != null) {
-			if (Limits.getLimits(hist) == null) {
-				makeLimits(hist);
-			}
-			/* test to make sure none of the histograms are 2d */
-			if (currentPlot instanceof Plot1d) {
-				if (hist.getDimensionality() == 1) {
-					overlayHist = hist;
-					overlayState = true;
-					plot1d.overlayHistogram(overlayHist);
-				} else {
-					msgHandler.errorOutln("Cannot overlay a 2D histogram.");
-				}
-			} else {
-				msgHandler.errorOutln(
-					"Cannot overlay on top of a 2D histogram.");
-			}
-		} else {
-			msgHandler.errorOutln("Cannot overlay null histogram");
-		}
+	public void overlayHistograms(List hists) {
+		overlays.clear();
+		overlays.add(hists);
+		doOverlay();
 	}
 
-	/**
-	 * Display a <code>Displayable</code> object.
-	 */
-	/*public void displayData(Displayable data) {
-		currentData = data;
-		if (data != null) {
-			if (Limits.getLimits(data) == null) {
-				newHistogram();
-			}
-			overlayState = false;
+	private void doOverlay() {
+		if (!(currentPlot instanceof Plot1d)) {
+			throw new UnsupportedOperationException("Overlay attempted for non-1D histogram.");
 		}
-	}*/
-
-	/**
-	 * Overlay a displayble data
-	 * only works for 1 d
-	 */
-	/*public void overlayData(Displayable data) {
-		if (data != null) {
-			if (Limits.getLimits(data) == null) {
-				newHistogram();
-			}
-			// test to make sure none of the histograms are 2d
-			if (currentPlot instanceof Plot1d) {
-				if (data.getType() == Displayable.ONE_DIMENSION) {
-					overlayData = data;
+		overlayHist = new Histogram[overlays.size()];
+		int i = 0;
+		for (Iterator it = overlays.iterator(); it.hasNext(); i++) {
+			final Histogram hist = (Histogram) it.next();
+			if (hist != null) {
+				if (Limits.getLimits(hist) == null) {
+					makeLimits(hist);
+				}
+				/* test to make sure none of the histograms are 2d */
+				if (hist.getDimensionality() == 1) {
+					overlayHist[i] = hist;
 					overlayState = true;
 				} else {
-					msgHandler.errorOutln("Cannot overlay a 2D histogram.");
+					throw new IllegalStateException(
+					"Display attempted overlay with 2d histogram.");
 				}
 			} else {
-				msgHandler.errorOutln(
-					"Cannot overlay on top of a 2D histogram.");
+				throw new IllegalStateException("Display attempted overlay with null histogram.");
 			}
-		} else {
-			msgHandler.errorOutln("Error tried to overlay null.");
 		}
-	}*/
+		plot1d.overlayHistogram(overlayHist);
+	}
 
 	/**
 	 * Get the displayed Histogram.
@@ -238,13 +215,6 @@ public class Display
 	public Histogram getHistogram() {
 		return currentHist;
 	}
-
-	/**
-	 * Get the displayed data.
-	 */
-	/*public Displayable getData() {
-		return currentData;
-	}*/
 
 	/**
 	 * A new histogram not previously displayed is being displayed, so
@@ -256,7 +226,7 @@ public class Display
 	}
 
 	private void makeLimits(Histogram h) {
-		if (h != null) {//else ignore
+		if (h != null) { //else ignore
 			try {
 				if (h.getDimensionality() == 1) {
 					setPlot(plot1d);
@@ -276,13 +246,14 @@ public class Display
 		}
 	}
 
-	public void setRenderForPrinting(boolean rfp, PageFormat pf){
-		currentPlot.setRenderForPrinting(rfp,pf);
+	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
+		currentPlot.setRenderForPrinting(rfp, pf);
 	}
 
-	public ComponentPrintable getComponentPrintable(){
-		return currentPlot.getComponentPrintable(RunInfo.runNumber,
-		JamStatus.instance().getDate());
+	public ComponentPrintable getComponentPrintable() {
+		return currentPlot.getComponentPrintable(
+			RunInfo.runNumber,
+			JamStatus.instance().getDate());
 	}
 
 	/**
@@ -290,14 +261,15 @@ public class Display
 	 * @param commandIn
 	 * @param cmdParams
 	 */
-	public boolean performParseCommand(String commandIn, String [] cmdParams) throws CommandListenerException{
-		
-		try {		
-		
-			boolean accept =action.commandPerform(commandIn, cmdParams);
+	public boolean performParseCommand(String commandIn, String[] cmdParams)
+		throws CommandListenerException {
+
+		try {
+
+			boolean accept = action.commandPerform(commandIn, cmdParams);
 			return accept;
-		} catch(NumberFormatException e) {
-			throw new CommandListenerException(e.getMessage());		
+		} catch (NumberFormatException e) {
+			throw new CommandListenerException(e.getMessage());
 		}
 	}
 
@@ -321,12 +293,14 @@ public class Display
 			currentPlot.displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
 		} else if (command == BroadcastEvent.GATE_SET_ADD) {
-			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
-			(Point) be.getContent(),null);
+			currentPlot.displaySetGate(
+				GateSetMode.GATE_CONTINUE,
+				(Point) be.getContent(),
+				null);
 		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
 			currentPlot.displaySetGate(GateSetMode.GATE_REMOVE, null, null);
 		} else if (command == BroadcastEvent.GATE_SELECT) {
-			Gate gate =(Gate)(be.getContent());
+			Gate gate = (Gate) (be.getContent());
 			currentPlot.displayGate(gate);
 		}
 	}
@@ -463,9 +437,9 @@ public class Display
 		}
 	}
 
-	private  JButton bnetarea;		//FIXME clean up KBS
-	private  JButton brebin; 		// =new JButton(getHTML("<u>Re</u>bin"));
-	private  JButton bgoto; 		//= new JButton(getHTML("<u>G</u>oto"));
+	private JButton bnetarea; //FIXME clean up KBS
+	private JButton brebin; // =new JButton(getHTML("<u>Re</u>bin"));
+	private JButton bgoto; //= new JButton(getHTML("<u>G</u>oto"));
 
 	/**
 	 * Adds the tool bar the left hand side of the plot.
@@ -473,7 +447,7 @@ public class Display
 	 * @since Version 0.5
 	 */
 	public void addToolbarAction() {
-		Icon iUpdate =loadToolbarIcon("jam/plot/Update.png");
+		Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
 		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
 		Icon iRange = loadToolbarIcon("jam/plot/Range.png");
@@ -481,7 +455,7 @@ public class Display
 
 		Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
 		Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
-		Icon iZoomIn =loadToolbarIcon("jam/plot/ZoomIn.png");
+		Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
 		Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
 		Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 
@@ -489,35 +463,41 @@ public class Display
 		Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
 		Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 
-		final String defaultVal=BorderLayout.NORTH;
-		final String key="toolbarLocation";
-		final java.util.prefs.Preferences helpnode=
-		java.util.prefs.Preferences.userNodeForPackage(getClass());
-		final String location=helpnode.get(key,defaultVal);		
-		final int orientation = (BorderLayout.NORTH.equals(location) || 
-		BorderLayout.SOUTH.equals(location)) ? JToolBar.HORIZONTAL : 
-		JToolBar.VERTICAL;
+		final String defaultVal = BorderLayout.NORTH;
+		final String key = "toolbarLocation";
+		final java.util.prefs.Preferences helpnode =
+			java.util.prefs.Preferences.userNodeForPackage(getClass());
+		final String location = helpnode.get(key, defaultVal);
+		final int orientation =
+			(BorderLayout.NORTH.equals(location)
+				|| BorderLayout.SOUTH.equals(location))
+				? JToolBar.HORIZONTAL
+				: JToolBar.VERTICAL;
 		final JToolBar ptoolbar = new JToolBar("Actions", orientation);
-		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
+		ptoolbar.setToolTipText(
+			"Underlined letters are shortcuts for the console.");
 		add(ptoolbar, location);
-		
+
 		try {
 			ptoolbar.setRollover(true);
 
 			final JButton bupdate = new JButton(iUpdate);
-			bupdate.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
+			bupdate.setToolTipText(
+				getHTML("<u>U</u>pdate display with most current data."));
 			bupdate.setActionCommand(Action.UPDATE);
 			bupdate.addActionListener(action);
 			ptoolbar.add(bupdate);
 
 			final JButton blinear = new JButton(iLinLog);
-			blinear.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
+			blinear.setToolTipText(
+				getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
 			blinear.setActionCommand(Action.SCALE);
 			blinear.addActionListener(action);
 			ptoolbar.add(blinear);
 
 			final JButton bauto = new JButton(iAutoScale);
-			bauto.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
+			bauto.setToolTipText(
+				getHTML("<u>A</u>utomatically set the counts scale."));
 			bauto.setActionCommand(Action.AUTO);
 			bauto.addActionListener(action);
 			ptoolbar.add(bauto);
@@ -529,7 +509,8 @@ public class Display
 			ptoolbar.add(brange);
 
 			brebin = new JButton(iRebin);
-			brebin.setToolTipText(getHTML("<u>Re</u>bin, enter a bin width in the console."));
+			brebin.setToolTipText(
+				getHTML("<u>Re</u>bin, enter a bin width in the console."));
 			brebin.setActionCommand(Action.REBIN);
 			brebin.addActionListener(action);
 			ptoolbar.add(brebin);
@@ -560,7 +541,7 @@ public class Display
 			bzoomout.addActionListener(action);
 			ptoolbar.add(bzoomout);
 
-		    bgoto= new JButton(iGoto);
+			bgoto = new JButton(iGoto);
 			bgoto.setActionCommand(Action.GOTO);
 			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
 			bgoto.addActionListener(action);
@@ -574,7 +555,7 @@ public class Display
 			barea.addActionListener(action);
 			ptoolbar.add(barea);
 
-		    bnetarea= new JButton(iNetArea);
+			bnetarea = new JButton(iNetArea);
 			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
 			bnetarea.setActionCommand(Action.NETAREA);
 			bnetarea.addActionListener(action);
@@ -587,40 +568,46 @@ public class Display
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
 			bcancel.addActionListener(action);
 			ptoolbar.add(bcancel);
-			
+
 			/* Listen for changes in orientation */
-			ptoolbar.addPropertyChangeListener("orientation",new java.beans.PropertyChangeListener() {
-				public void propertyChange(java.beans.PropertyChangeEvent evt) {
+			ptoolbar
+				.addPropertyChangeListener(
+					"orientation",
+					new java.beans.PropertyChangeListener() {
+				public void propertyChange(
+					java.beans.PropertyChangeEvent evt) {
 					/* Get the new orientation */
-					Integer newValue = (Integer)evt.getNewValue();
+					Integer newValue = (Integer) evt.getNewValue();
 					/* place an appropriate value in the user prefs */
-					helpnode.put(key,
-					(newValue.intValue() == JToolBar.HORIZONTAL) ?
-					BorderLayout.NORTH : BorderLayout.WEST);
+					helpnode.put(
+						key,
+						(newValue.intValue() == JToolBar.HORIZONTAL)
+							? BorderLayout.NORTH
+							: BorderLayout.WEST);
 					fitToolbar(ptoolbar);
 				}
-			});			
+			});
 			fitToolbar(ptoolbar);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void fitToolbar(JToolBar tb){
-		final boolean vertical = tb.getOrientation()==JToolBar.VERTICAL;
-		if (vertical){
-			final int height=tb.getPreferredSize().height;
-			final Dimension oldmin=getMinimumSize();
-			if (height>oldmin.height){
-				final Dimension newMin=new Dimension(oldmin.width,height);
-				setMinimumSize(newMin);	
+
+	private void fitToolbar(JToolBar tb) {
+		final boolean vertical = tb.getOrientation() == JToolBar.VERTICAL;
+		if (vertical) {
+			final int height = tb.getPreferredSize().height;
+			final Dimension oldmin = getMinimumSize();
+			if (height > oldmin.height) {
+				final Dimension newMin = new Dimension(oldmin.width, height);
+				setMinimumSize(newMin);
 			}
 		} else {
-			final int width=tb.getPreferredSize().width;
-			final Dimension oldmin=getMinimumSize();
-			if (width>oldmin.width){
-				final Dimension newMin=new Dimension(width,oldmin.height);
-				setMinimumSize(newMin);	
+			final int width = tb.getPreferredSize().width;
+			final Dimension oldmin = getMinimumSize();
+			if (width > oldmin.width) {
+				final Dimension newMin = new Dimension(width, oldmin.height);
+				setMinimumSize(newMin);
 			}
 		}
 	}
@@ -632,19 +619,23 @@ public class Display
 		final Icon toolbarIcon;
 		final ClassLoader cl = this.getClass().getClassLoader();
 		final URL urlResource = cl.getResource(path);
-		if (!(urlResource==null)) {
+		if (!(urlResource == null)) {
 			toolbarIcon = new ImageIcon(urlResource);
-		} else {//instead use path, ugly but lets us see button
-			JOptionPane.showMessageDialog(this,"Can't load resource: "+path,
-			"Missing Icon",JOptionPane.ERROR_MESSAGE);
-			toolbarIcon=null; //FIXME KBS put in default icon here
+		} else { //instead use path, ugly but lets us see button
+			JOptionPane.showMessageDialog(
+				this,
+				"Can't load resource: " + path,
+				"Missing Icon",
+				JOptionPane.ERROR_MESSAGE);
+			toolbarIcon = null; //FIXME KBS put in default icon here
 		}
 		return toolbarIcon;
 	}
 
-	private String getHTML(String body){
-		final StringBuffer rval=new StringBuffer("<html><body>").append(
-		body).append("</html></body>");
+	private String getHTML(String body) {
+		final StringBuffer rval =
+			new StringBuffer("<html><body>").append(body).append(
+				"</html></body>");
 		return rval.toString();
 	}
 
@@ -657,5 +648,5 @@ public class Display
 	public void setAutoOnExpand(boolean whether) {
 		action.setAutoOnExpand(whether);
 	}
-	
+
 }

@@ -100,9 +100,6 @@ abstract class Plot extends JPanel {
 	protected double[] counts;
 	protected double[][] counts2d;
 
-	//overlay histogram stuff
-	protected Histogram overlayHist;
-	protected double[] countsOverlay;
 
 	//gate stuff
 	protected Gate currentGate;
