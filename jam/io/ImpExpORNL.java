@@ -309,7 +309,7 @@ public class ImpExpORNL extends ImpExp {
 		int sizeY = lenParScal2[k];
 		String title = titleDrr[k].trim();
 		try {
-			if (dim[k] == 2) {//Read in 2D histogram	
+			if (type == 2) {//Read in 2D histogram	
 				int [][] counts2d = new int[sizeX][sizeY];
 				fileHis.seek((long) offSet[k] * 2);
 				numByteToRead = sizeX * sizeY * 4;
