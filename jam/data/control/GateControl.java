@@ -410,6 +410,12 @@ WindowListener,Observer  {
     public void showAdd(){
         dadd.show();
     }
+	/**
+	 * Default show dialog, shows new dialog
+	 */
+	public void show() {
+		dnew.show();
+	}
 
     /**
      * Loads the list of gates and

@@ -356,6 +356,13 @@ public final class MonitorControl
 	public void showConfig() {
 		dconfig.show();
 	}
+	/**
+	 * Default show dialog, shows display dialog
+	 */
+	public void show() {
+		ddisp.show();
+	}
+
 
 	/**
 	 * Recall the monitor's parameters

@@ -186,6 +186,14 @@ public final class ScalerControl extends DataControl implements ActionListener, 
     public void showZero(){
         dzero.show();
     }
+	/**
+	 * Default show dialog, shows the display dialog
+	 */
+	public void show() {
+		displayScalers();
+		ddisp.show();
+		
+	}
 
     /**
      * Setup the display dialog box.  Needs to be called if the list of <code>Scaler</code> objects

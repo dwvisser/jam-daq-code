@@ -34,4 +34,11 @@ public abstract class DataControl {
 	 * Setup the current instance of <code>DataControl</code>.
 	 */
 	public abstract void setup();
+	
+
+	/**
+	 * Show the control dialog
+	 */
+	public abstract void show();
+	
 }

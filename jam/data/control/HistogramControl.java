@@ -192,7 +192,12 @@ public class HistogramControl extends DataControl implements ActionListener {
     public void showNew(){
         dialogNew.show();
     }
-
+	/**
+	 * Default show dialog, shows new dialog
+	 */
+	public void show() {
+		dialogNew.show();
+	}
     /**
      * Receive actions from Dialog Boxes
      *

@@ -199,6 +199,12 @@ public class CalibrationFit extends DataControl implements ActionListener {
     public void showLinFit(){
         dialogCalib.show();
     }
+	/**
+	 * Default show dialog, shows calibration dialog
+	 */
+	public void show() {
+		dialogCalib.show();
+	}
 
     /**
      * Call the fitting method of the chosen function to calibrate a histogram
