@@ -143,7 +143,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param file the filename to open
      * @throws JamException if there's a problem
      */
-     public void openFile(String file) throws JamException{
+     public void openFile(String file) {
 		final String OPENFILE="OPENFILE ";//add filename as an argument
         this.VMEsend(OPENFILE+file);
     }
@@ -153,7 +153,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @throws JamException if there's a problem while trying to send 
      * the message
      */
-    public void VMEstart() throws JamException {
+    public void VMEstart() {
 		final String START="START";
         this.VMEsend(START);
     }
@@ -165,7 +165,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @throws JamException if there's a problem while trying to send 
      * the message
      */
-    public void VMEstop() throws JamException {
+    public void VMEstop() {
 		final String STOPACQ="STOP";
         this.VMEsend(STOPACQ);
     }
@@ -177,11 +177,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void end() {
 		final String END="END";
-        try {
-            this.VMEsend(END);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        this.VMEsend(END);
     }
 
     /**
@@ -190,11 +186,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void flush() {
 		final String FLUSH="FLUSH";
-        try {
-            this.VMEsend(FLUSH);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        this.VMEsend(FLUSH);
     }
 
     /**
@@ -204,11 +196,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void readScalers()  {
  	 	final String RUN_SCALER=  "list scaler";
-       	try {
-            this.VMEsend(RUN_SCALER);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        this.VMEsend(RUN_SCALER);
     }
 
     /**
@@ -217,11 +205,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void clearScalers(){
 		final String RUN_CLEAR=  "list clear";
-        try {
-            this.VMEsend(RUN_CLEAR);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        VMEsend(RUN_CLEAR);
     }
 
     /**
@@ -231,11 +215,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void readCounters()  {
  		final String COUNT_READ=  "count read";
-       try {
-            this.VMEsend(COUNT_READ);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        VMEsend(COUNT_READ);
     }
 
     /**
@@ -244,11 +224,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public void zeroCounters() {
  		final String COUNT_ZERO=  "count zero";
-       try {
-            this.VMEsend(COUNT_ZERO);
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        }
+        VMEsend(COUNT_ZERO);
     }
 
     /**
@@ -259,14 +235,10 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
     public void debug(boolean state){
  		final String DEBUG_ON=  "debug on";
 		final String DEBUG_OFF=  "debug off";
-       try {
-            if (state){
-                this.VMEsend(DEBUG_ON);
-            } else {
-                this.VMEsend(DEBUG_OFF);
-            }
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
+        if (state){
+            VMEsend(DEBUG_ON);
+        } else {
+            VMEsend(DEBUG_OFF);
         }
     }
 
@@ -279,14 +251,10 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
     public void verbose(boolean state){
 		final String VERBOSE_ON=  "verbose on";
 		final String VERBOSE_OFF=  "verbose off";
-        try {
-            if (state){
-                this.VMEsend(VERBOSE_ON);
-            } else {
-                this.VMEsend(VERBOSE_OFF);
-            }
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
+        if (state){
+            VMEsend(VERBOSE_ON);
+        } else {
+           VMEsend(VERBOSE_OFF);
         }
     }
 
@@ -315,9 +283,9 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * Send the message specifying how to use ADC's and TDC's.
      *
      * @param vmeMap the map of channels to use and TDC ranges
-     * @throws JamException if there's a problem
+     * @throws IllegalStateException if there are no parameters in the map
      */
-     public void setupVME_Map(VME_Map vmeMap) throws JamException {
+     public void setupVME_Map(VME_Map vmeMap) {
         String temp="";
         final VME_Channel [] eventParams = vmeMap.getEventParameters();
         final Map hRanges = vmeMap.getV775Ranges();
@@ -334,13 +302,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
             numRanges=hRanges.size();
             temp += numRanges+"\n";
             if (numRanges > 0) {
-                /*Enumeration eb = hRanges.keys();
-                Enumeration er = hRanges.elements();*/
                 final Iterator it=hRanges.entrySet().iterator();
-                /*while (eb.hasMoreElements()) {
-                    int base = ((Integer)eb.nextElement()).intValue();
-                    temp += "0x"+Integer.toHexString(base)+" "+er.nextElement()+"\n";
-                }*/
                 while (it.hasNext()){
                 	final Map.Entry next=(Map.Entry)it.next();
                 	final int base = ((Integer)next.getKey()).intValue();
@@ -349,7 +311,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
             }
             temp += "\0";
         } else {
-            throw new JamException (getClass().getName()+".setupVME_Map(): no event parameters in map.");
+            throw new IllegalStateException("No event parameters in map.");
         }
         stringPacketDump(VMECommunication.VME_ADDRESSES,temp);
         VMEsend(VMECommunication.VME_ADDRESSES,temp);
@@ -362,7 +324,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param seconds the interval between scaler blocks
      * @throws JamException if there's a problem
      */
-     public void sendScalerInterval(int seconds) throws JamException {
+     public void sendScalerInterval(int seconds) {
         final String message= seconds+"\n\0";
         stringPacketDump(SCALER_INTERVAL,message);
         VMEsend(SCALER_INTERVAL,message);
@@ -375,7 +337,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param message   string to send
      * @throws JamException if there's a problem
      */
-    private void VMEsend(String message) throws JamException {
+    private void VMEsend(String message) {
         VMEsend(VMECommunication.OK, message);
     }
 
@@ -386,30 +348,30 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      * @param status one of OK, SCALER, ERROR, CNAF, COUNTER, 
      * VME_ADDRESSES or SCALER_INTERVAL
      * @param message string to send
-     * @throws JamException if there's a problem
+     * @throws IllegalArgumentException if an unrecognized status is given
+     * @throws IllegalStateException if we haven't established a connection yet
      */
-    private void VMEsend(int status, String message)  throws JamException {
+    private void VMEsend(int status, String message) {
         final DatagramPacket packetMessage;
         /* byte arrays initialized with zeros by definition */
         final byte [] byteMessage = new byte [message.length()+5];
         if (! validStatus(status)) {
-        	throw new JamException(getClass().getName()+".vmeSend() with invalid status: "+status);
+        	throw new IllegalArgumentException(getClass().getName()+".vmeSend() with invalid status: "+status);
         } 
         byteMessage[3]=(byte) status;//first four bytes interpreted together as this number
         System.arraycopy(message.getBytes(),0,byteMessage,4,message.length());
         byteMessage[byteMessage.length-1]=STRING_NULL;
-        try {//create and send packet
-            packetMessage=new DatagramPacket(byteMessage, byteMessage.length, addressVME, vmePort);
-            if (socketSend != null) {
+		packetMessage=new DatagramPacket(byteMessage, byteMessage.length, addressVME, vmePort);
+		if (socketSend != null) {
+        	try {//create and send packet
                 socketSend.send(packetMessage);
-            } else {
-                console.errorOutln(getClass().getName()+".VMEsend(): "+
-				"Attempted to send a message without a connection. To create a connection, set up online acquisition.");
-            }
-        } catch (IOException e) {
-            console.errorOutln(getClass().getName()+".VMEsend(): "+
+        	} catch (IOException e) {
+            	console.errorOutln(getClass().getName()+".VMEsend(): "+
 				"Jam encountered a network communication error attempting to send a packet.");
-        }
+        	}
+		} else {
+			throw new IllegalStateException("Attempted to send a message without a connection.");
+		}
     }
 
     /**
