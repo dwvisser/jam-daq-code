@@ -197,18 +197,7 @@ final class Plot1d extends AbstractPlot {
 		setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
-	/*FIXME KBS for box zoom in
-	protected void paintSelectingArea(Graphics gc){
-		final Graphics2D g = (Graphics2D) gc;
-		g.setColor(colorMap.getArea());
-		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(selectionStartPoint, Bin.Factory
-					.create(lastMovePoint));
-		}
-		setMouseMoved(false);
-		clearSelectingAreaClip();
-	}
-	*/
+
 	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
