@@ -72,7 +72,7 @@ public class Display
 
 	private final MessageHandler msgHandler; //output for messages
 	private Broadcaster broadcaster; //broadcaster if needed
-	private Action action; //handles display events
+	private final Action action; //handles display events
 
 	private Displayable currentData;
 	private Displayable overlayData;
@@ -80,11 +80,11 @@ public class Display
 	private Histogram overlayHist;
 
 	private Plot currentPlot;
-	boolean overlayState = false;
+	private boolean overlayState = false;
 
-	// plot panels
-	public JPanel plotswap;
-	public CardLayout plotswapLayout;
+	/* plot panels */
+	private final JPanel plotswap;
+	private final CardLayout plotswapLayout;
 	private final Plot1d plot1d;
 	private final Plot2d plot2d;
 
@@ -469,13 +469,22 @@ public class Display
 		final ClassLoader cl = this.getClass().getClassLoader();
 		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
 		add(ptoolbar, BorderLayout.WEST);
-		ptoolbar.setLayout(new GridLayout(0,1));
+		/* tbcontents may seem unnecessary, but it is needed
+		 * for Windows XP systems using the Aqua theme.
+		 * Without an additional JPanel container between the
+		 * buttons and the JToolbar, Windows XP displays the
+		 * buttons without borders, and doesn't enable/disable
+		 * them as expected
+		 */
+		final JPanel tbcontents=new JPanel(new BorderLayout());
+		ptoolbar.add(tbcontents,BorderLayout.CENTER);
+		tbcontents.setLayout(new GridLayout(0,1));
 		final JPanel view=new JPanel(new BorderLayout());
 		final JPanel scale=new JPanel(new BorderLayout());
 		final JPanel inquire=new JPanel(new BorderLayout());
-		ptoolbar.add(scale);
-		ptoolbar.add(view);
-		ptoolbar.add(inquire);
+		tbcontents.add(scale);
+		tbcontents.add(view);
+		tbcontents.add(inquire);
 		try {
 			view.add(new JLabel("View", SwingConstants.CENTER),BorderLayout.NORTH);
 			final JPanel firstPanel=new JPanel(new GridLayout(1,2));
