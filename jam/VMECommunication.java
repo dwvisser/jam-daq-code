@@ -463,14 +463,22 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         for (int i=0; i<cnafList.size(); i++) {
             offset=4+COMMAND_SIZE+4+CNAF_SIZE*i;
             cnaf=(int [])cnafList.get(i);
-            packCNAF(byteMessage,offset,cnaf);
+			byteMessage[offset+0]=(byte)(cnaf[0]&0xFF);        //id
+			byteMessage[offset+1]=(byte)(cnaf[1]&0xFF);        //c
+			byteMessage[offset+2]=(byte)(cnaf[2]&0xFF);        //n
+			byteMessage[offset+3]=(byte)(cnaf[3]&0xFF);        //a
+			byteMessage[offset+4]=(byte)(cnaf[4]&0xFF);        //f
+			byteMessage[offset+5]=(byte)((cnaf[5]>>>24 )&0xFF);      //data byte msb
+			byteMessage[offset+6]=(byte)((cnaf[5]>>>16 )&0xFF);      //data byte 1
+			byteMessage[offset+7]=(byte)((cnaf[5]>>>8)&0xFF);      //data byte 2
+			byteMessage[offset+8]=(byte)((cnaf[5]>>>0)&0xFF);      //data byte lsb
         }
         //add a null character
         byteMessage[byteMessage.length-1]=STRING_NULL;
         sendPacket(byteMessage);//send it
     }
 
-    private void packCNAF(byte [] byteMessage, int offset, int [] cnaf){
+    /*private void packCNAF(byte [] byteMessage, int offset, int [] cnaf){
         byteMessage[offset+0]=(byte)(cnaf[0]&0xFF);        //id
         byteMessage[offset+1]=(byte)(cnaf[1]&0xFF);        //c
         byteMessage[offset+2]=(byte)(cnaf[2]&0xFF);        //n
@@ -480,7 +488,7 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         byteMessage[offset+6]=(byte)((cnaf[5]>>>16 )&0xFF);      //data byte 1
         byteMessage[offset+7]=(byte)((cnaf[5]>>>8)&0xFF);      //data byte 2
         byteMessage[offset+8]=(byte)((cnaf[5]>>>0)&0xFF);      //data byte lsb
-    }
+    }*/
 
     /**
      * send out a packet
