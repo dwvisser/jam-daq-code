@@ -28,29 +28,15 @@ import jam.io.hdf.HDFile;
 import jam.io.hdf.JamHDFFields;
 import jam.io.hdf.Vdata;
 import jam.io.hdf.VdataDescription;
-import jam.global.MessageHandler;
-import jam.global.JamProperties;
+import jam.global.*;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import javax.swing.border.*;
 
 public class ScalerScan
 	extends JDialog
@@ -59,8 +45,8 @@ public class ScalerScan
 	
 	private static final char TAB = '\t';
 	
-	private final JTextField first, last;
-	private final JProgressBar JLstatus;
+	private final JTextField txtFirst, txtLast;
+	//KBS private final JProgressBar pBstatus;
 	private final MessageHandler console;
 	private final ScanAction sa;
 	private final Frame frame;
@@ -68,10 +54,9 @@ public class ScalerScan
 	
 	private File pathToRuns=new File(JamProperties.getPropString(
 	JamProperties.HIST_PATH));
-	private final JTextField path=new JTextField(
-	pathToRuns.getAbsolutePath());
-	private final JTextField runName= new JTextField(
-	JamProperties.getPropString(JamProperties.EXP_NAME));
+	private final JTextField txtPath;
+	private final JTextField txtRunName;
+	
 
 	/**
 	 * Constructor.
@@ -82,74 +67,85 @@ public class ScalerScan
 		console = mh;
 		sa = new ScanAction();
 		final Container container = getContentPane();
-		final Box framebox = Box.createVerticalBox();
-		final JPanel JPrun = new JPanel();
-		JPrun.setLayout(new BoxLayout(JPrun, BoxLayout.X_AXIS));
-		final JLabel runlabel = new JLabel("Experiment Name");
-		runlabel.setLabelFor(runName);
-		JPrun.add(runlabel);
-		JPrun.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPrun.add(runName);
-		final JPanel JPpath = new JPanel();
-		JPpath.setLayout(new BoxLayout(JPpath, BoxLayout.X_AXIS));
-		final JButton browse = new JButton("Browse");
+		container.setLayout(new BorderLayout(10,5));
+		
+		final JPanel pLabels = new JPanel(new GridLayout(0,1,0,5));
+		pLabels.setBorder(new EmptyBorder(10,10,0,0));
+		container.add(pLabels, BorderLayout.WEST);
+	
+		final JLabel runlabel = new JLabel("Experiment Name", JLabel.RIGHT);
+		pLabels.add(runlabel);
+		final JLabel pathlabel = new JLabel("Path", JLabel.RIGHT);
+		pLabels.add(pathlabel);
+		final JLabel labelfirst = new JLabel("First Run", JLabel.RIGHT);
+		pLabels.add(labelfirst);		
+		final JLabel labellast = new JLabel("Last Run", JLabel.RIGHT);
+		pLabels.add(labellast);						
+						
+		final JPanel pEntries = new JPanel(new GridLayout(0,1,5,5));		
+		pEntries.setBorder(new EmptyBorder(10,0,0,5));		
+		container.add(pEntries, BorderLayout.CENTER);		
+		
+		final JPanel pRunName = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+		pEntries.add(pRunName);				
+		txtRunName = new JTextField(10);
+		txtRunName.setText(JamProperties.getPropString(JamProperties.EXP_NAME));
+		pRunName.add(txtRunName);
+				
+		final JPanel pPath = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+		pEntries.add(pPath);
+				
+		txtPath = new JTextField(30);
+		txtPath.setText(pathToRuns.getAbsolutePath());
+		pPath.add(txtPath);		
+			
+		final JButton browse = new JButton("Browse...");
 		browse.setActionCommand("browse");
 		browse.addActionListener(this);
-		final JLabel pathlabel = new JLabel("Path");
-		pathlabel.setLabelFor(path);
-		JPpath.add(pathlabel);
-		JPpath.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPpath.add(path);
-		JPpath.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPpath.add(browse);
-		final JPanel JPfirst = new JPanel();
-		JPfirst.setLayout(new BoxLayout(JPfirst, BoxLayout.X_AXIS));
-		first = new JTextField(4);
-		final JLabel labelfirst = new JLabel("First Run");
-		labelfirst.setLabelFor(first);
-		JPfirst.add(labelfirst);
-		JPfirst.add(Box.createRigidArea(new Dimension(10, 0)));
-		JPfirst.add(first);
-		final JPanel JPlast = new JPanel();
-		JPlast.setLayout(new BoxLayout(JPlast, BoxLayout.X_AXIS));
-		last = new JTextField(4);
-		final JLabel labellast = new JLabel("Last Run");
-		labellast.setLabelFor(last);
-		JPlast.add(labellast);
-		JPlast.add(Box.createRigidArea(new Dimension(10, 0)));
+		pPath.add(browse);
+				
+		final JPanel pFirst = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+		pEntries.add(pFirst);
+		txtFirst = new JTextField(4);
+		pFirst.add(txtFirst);
+		 
+		final JPanel pLast = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+		pEntries.add(pLast);
+		txtLast = new JTextField(4);
+		pLast.add(txtLast);
+		
+		/*FIXME KBS
+		bEntries.add(Box.createRigidArea(new Dimension(0, 10)));
 		JPlast.add(last);
 		JPanel JPout = new JPanel();
 		JPout.setLayout(new BoxLayout(JPout, BoxLayout.X_AXIS));
 		JPanel JPstatus = new JPanel(new GridLayout(1, 1));
-		JLstatus =
+		pBstatus =
 			new JProgressBar(JProgressBar.HORIZONTAL);
-		JLstatus.setString("Welcome to ScalerScan.");
-		JLstatus.setStringPainted(true);
+		pBstatus.setString("Welcome to ScalerScan.");
+		pBstatus.setStringPainted(true);
 		JPstatus.add(JLstatus);
-		final JPanel JPbuttons = new JPanel();
-		JPbuttons.setLayout(new BoxLayout(JPbuttons, BoxLayout.X_AXIS));
+		*/
+		final JPanel pLower = new JPanel();
+		container.add(pLower, BorderLayout.SOUTH);
+		final JPanel pButtons = new JPanel(new GridLayout(1,0,5,5));
+		pLower.add(pButtons);		
 		bOK = new JButton(OK);
 		bOK.setActionCommand(OK);
 		bOK.addActionListener(this);
+		pButtons.add(bOK);
 		bApply = new JButton(APPLY);
 		bApply.setActionCommand(APPLY);
 		bApply.addActionListener(this);
+		pButtons.add(bApply);		
 		bCancel = new JButton(CANCEL);
 		bCancel.setActionCommand(CANCEL);
 		bCancel.addActionListener(this);
-		JPbuttons.add(bOK);
-		JPbuttons.add(bApply);
-		JPbuttons.add(bCancel);
-		framebox.add(JPrun);
-		framebox.add(JPpath);
-		framebox.add(JPfirst);
-		framebox.add(JPlast);
-		framebox.add(JPout);
-		framebox.add(JPstatus);
-		framebox.add(JPbuttons);
-		container.add(framebox);
+		pButtons.add(bCancel);
+		
+		setResizable(false);				
 		pack();
-		setResizable(false);
+		
 	}
 
 	private static final String OK = "OK";
@@ -184,7 +180,7 @@ public class ScalerScan
 		if (e.getActionCommand().equals("browse")) {
 			final File temp = getFile(true);
 			if (temp != null) {
-				path.setText(temp.getAbsolutePath());
+				txtPath.setText(temp.getAbsolutePath());
 				pathToRuns=temp;
 			}
 		}
@@ -209,14 +205,14 @@ public class ScalerScan
 		final char cr = '\n';
 		final StringBuffer outText = new StringBuffer();
 		try {
-			JLstatus.setString("starting");
-			int firstRun = Integer.parseInt(first.getText().trim());
-			int lastRun = Integer.parseInt(last.getText().trim());
-			JLstatus.setMinimum(firstRun);
-			JLstatus.setMaximum(lastRun);
+			//FIXME KBS JLstatus.setString("starting");
+			int firstRun = Integer.parseInt(txtFirst.getText().trim());
+			int lastRun = Integer.parseInt(txtLast.getText().trim());
+			//FIXME KBS JLstatus.setMinimum(firstRun);
+			//FIXME KBS JLstatus.setMaximum(lastRun);
 			if (pathToRuns.exists() && pathToRuns.isDirectory()) {
 				for (int i = firstRun; i <= lastRun; i++) {
-					String runText = runName.getText().trim();
+					String runText = txtRunName.getText().trim();
 					String filename = runText + i + ".hdf";
 					final File infile = new File(pathToRuns, filename);
 					if (infile.exists()) {
@@ -246,16 +242,16 @@ public class ScalerScan
 				}
 				updateProgressBar("Done",lastRun);
 				final String title =
-					runName.getText()
+					txtRunName.getText()
 						+ ", runs "
-						+ first.getText()
+						+ txtFirst.getText()
 						+ " to "
-						+ last.getText();
+						+ txtLast.getText();
 				new TextDisplayDialog(frame, title, false, outText.toString());
 			} else {
-				JLstatus.setString(
-					pathToRuns.getPath()
-						+ " either does not exist or is not a directory. Try again.");
+// FIXME KBS				JLstatus.setString(
+//					pathToRuns.getPath()
+//						+ " either does not exist or is not a directory. Try again.");
 			}
 		} catch (IOException e) {
 			console.errorOutln(e.getMessage());
@@ -328,8 +324,8 @@ public class ScalerScan
 	private void updateProgressBar(final String text, final int value){
 		final Runnable r=new Runnable(){
 			public void run(){
-				JLstatus.setValue(value);
-				JLstatus.setString(text);
+				//KBS JLstatus.setValue(value);
+				//KBS JLstatus.setString(text);
 			}
 		};
 		try{
