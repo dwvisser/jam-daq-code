@@ -977,13 +977,17 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void drawGate1d(int ll, int ul) {
+	void drawGate1d(int ll, int ul, boolean noFillMode) {
 		clipPlot();
 		final int x = toViewHorzLin(ll);
 		final int x2=Math.min(toViewHorzLin(ul+1),viewRight);
 		final int width=x2-x;
 		final int height=viewBottom-viewTop;
-		g.fillRect(x,viewTop,width,height);
+		if (noFillMode){
+			g.drawRect(x,viewTop,width,height);
+		} else {
+			g.fillRect(x,viewTop,width,height);
+		}
 	}
 
 	/**

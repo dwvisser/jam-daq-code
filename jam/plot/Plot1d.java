@@ -1,6 +1,7 @@
 package jam.plot;
 import java.awt.*;
 import jam.data.*;
+import jam.global.JamProperties;
 
 /**
  * Plots a 1-dimensional histogram.
@@ -241,12 +242,16 @@ class Plot1d extends Plot {
 	 */
 	void paintGate(Graphics g) throws DataException {
 		final Graphics2D g2=(Graphics2D)g;
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-		0.5f));
+		final boolean noFillMode =
+			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
+		if (!noFillMode) {
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+			0.5f));
+		} 
 		g.setColor(PlotColorMap.gateShow);
 		int ll = currentGate.getLimits1d()[0];
 		int ul = currentGate.getLimits1d()[1];
-		graph.drawGate1d(ll, ul);
+		graph.drawGate1d(ll, ul, noFillMode);
 	}
 
 	/**
