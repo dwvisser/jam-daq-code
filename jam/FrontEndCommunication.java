@@ -2,12 +2,6 @@
  */
  package jam;
  import java.util.*;
- import java.awt.*;
- import java.awt.event.*;
- import java.io.*;
- import java.net.*;
- import jam.global.*;
- import jam.data.*;
  import jam.sort.*;
  
 /**
