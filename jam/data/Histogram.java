@@ -5,6 +5,7 @@ import jam.util.StringUtilities;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -182,7 +183,7 @@ public abstract class Histogram {
 	 */
 	public static final int NAME_LENGTH = 20;
 
-	private final static Map NAME_MAP = new TreeMap();
+	private final static Map NAME_MAP = new HashMap();
 
 	private final static SortedMap NUMBER_MAP = new TreeMap();
 

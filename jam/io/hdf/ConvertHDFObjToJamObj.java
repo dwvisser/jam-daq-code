@@ -423,7 +423,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      * @param mode whether to open or reload @throws HDFException thrown if
      * unrecoverable error occurs
      */
-    int convertGates(Group currentGroup, FileOpenMode mode) throws HDFException {
+    int convertGatesOriginal(Group currentGroup, FileOpenMode mode) throws HDFException {
         int numGates = 0;
         final StringUtilities util = StringUtilities.instance();
         //Gate gate = null;

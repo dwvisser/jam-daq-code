@@ -1104,7 +1104,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         	hdfToJam.convertScalers(currentGroup, vddScalers, mode);
         }
         if (mode != FileOpenMode.ADD) {
-        	gateCount = hdfToJam.convertGates(currentGroup, mode);
+        	gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
             /* clear if opening and there are histograms in file */
             final VDataDescription vddParam= hdfToJam.findParametersOriginal();
             if (vddParam!=null) {
