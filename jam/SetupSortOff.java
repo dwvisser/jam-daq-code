@@ -119,7 +119,7 @@ class SetupSortOff  implements ItemListener {
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 	
     SetupSortOff(JamMain jm,  SortControl sc,
-    DisplayCounters dc, Broadcaster b, MessageHandler mh ) {
+    DisplayCounters dc, Broadcaster b, MessageHandler mh) {
 		classname=getClass().getName()+"--";
         defaultSortRoutine = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
@@ -479,7 +479,7 @@ class SetupSortOff  implements ItemListener {
         }
         sortDaemon.setup(SortDaemon.OFFLINE, eventInput, 
         sortRoutine.getEventSize());
-        sortDaemon.load(sortRoutine);
+        sortDaemon.setSortRoutine(sortRoutine);
         /* eventInputStream to use get event size from sorting routine */
         eventInput.setEventSize(sortRoutine.getEventSize());
         eventInput.setBufferSize(sortRoutine.BUFFER_SIZE);
@@ -525,11 +525,14 @@ class SetupSortOff  implements ItemListener {
      * @throws JamException if there's a problem
      * @throws GlobalException if there's a thread problem
      */
-    public void resetSort() throws JamException,GlobalException {
+    private void resetSort() throws JamException,GlobalException {
         if (sortDaemon != null) {
             sortDaemon.setState(GoodThread.STOP);
+            sortDaemon.setSortRoutine(null);
         }
-        DataBase.clearAllLists();
+        sortRoutine=null;
+        DataBase.getInstance().clearAllLists();
+        broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
         lockMode(false);
     }
 
