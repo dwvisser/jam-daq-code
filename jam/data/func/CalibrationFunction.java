@@ -16,10 +16,10 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public final static int MAX_NUMBER_TERMS = 5;
 
-	protected String[] labels;
-	protected String title;
+	protected transient String[] labels;
+	protected transient String title;
 	protected double[] coeff;
-	protected String formula=new String();
+	protected transient StringBuffer formula=new StringBuffer();
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
@@ -83,7 +83,7 @@ public abstract class CalibrationFunction implements Function {
 	}
 	
 	public String getFormula(){
-		return formula;
+		return formula.toString();
 	}
 	
 	protected abstract void updateFormula(); 
