@@ -9,10 +9,10 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.SortMode;
+import jam.global.Sorter;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
 
@@ -79,12 +79,12 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 				resetSort();//clear current data areas and kill daemons
 				loadSorter();
 				msgHandler.messageOutln("Loaded sort class '"+
-				sortRoutine.getClass().getName()+
+				sorter.getClass().getName()+
 				"', event instream class '"
 				+eventInput.getClass().getName()+
 				"', and event outstream class '"+
 				eventOutput.getClass().getName()+"'");
-				if (sortRoutine != null) {
+				if (sorter != null) {
 					setupSort();      //create data areas and daemons
 					msgHandler.messageOutln("Daemons and dialogs initialized.");
 				}
@@ -124,7 +124,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     /**
      * User sort routine must extend this abstract class
      */
-    private transient SortRoutine sortRoutine;//the actual sort routine
+    private transient Sorter sorter;//the actual sort routine
     private transient File classPath;//path to base of sort routines' classpath
     private transient Class sortClass;
 
@@ -144,6 +144,12 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     private transient final JComboBox sortChoice, inChooser, outChooser;
 
 	private static SetupSortOff instance=null;
+	
+	/**
+	 * Returns the only instance of this class.
+	 * 
+	 * @return the only instance of this class
+	 */
 	public static SetupSortOff getSingletonInstance(){
 		if (instance==null){
 			instance=new SetupSortOff();
@@ -318,7 +324,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     }
 
 	private Set getSortClasses(File path) {
-		return RTSI.find(path, jam.sort.SortRoutine.class);
+		return RTSI.find(path, Sorter.class);
 	}
 
     /**
@@ -343,8 +349,8 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 		final Vector vector= new Vector();
 		if (isDefault) {
 			final Set set = new LinkedHashSet();
-			set.addAll(RTSI.find("help", SortRoutine.class, true));
-			set.addAll(RTSI.find("sort", SortRoutine.class, true));
+			set.addAll(RTSI.find("help", Sorter.class, true));
+			set.addAll(RTSI.find("sort", Sorter.class, true));
 			vector.addAll(set);
 		} else {
 			vector.addAll(getSortClasses(classPath));
@@ -367,12 +373,12 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         	if (specify.isSelected()){
         		/* we call loadClass() in order to guarantee latest version */
 				synchronized (this){
-					sortRoutine= (SortRoutine)RTSI.loadClass(classPath,
+					sorter= (Sorter)RTSI.loadClass(classPath,
 					sortClass.getName()).newInstance();// create sort class
 				}
         	} else {//use default loader
         		synchronized (this){
-        			sortRoutine=(SortRoutine)sortClass.newInstance();
+        			sorter=(Sorter)sortClass.newInstance();
         		}
         	}
         } catch (InstantiationException ie) {
@@ -431,9 +437,9 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      */
     private void setupSort() throws SortException, JamException {
     	final StringBuffer message=new StringBuffer();
-    	final String sortName=sortRoutine.getClass().getName();
+    	final String sortName=sorter.getClass().getName();
         try {
-            sortRoutine.initialize();
+            sorter.initialize();
         } catch (Exception thrown) {
         		message.append(classname).append("Exception in SortRoutine: ").
 				append(sortName).append(".initialize(); Message= '").
@@ -451,16 +457,15 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);
         }
-        sortDaemon.setup(SortMode.OFFLINE, eventInput,
-        sortRoutine.getEventSize());
-        sortDaemon.setSortRoutine(sortRoutine);
+        sortDaemon.setup(eventInput, sorter.getEventSize());
+        sortDaemon.setSorter(sorter);
         /* eventInputStream to use get event size from sorting routine */
-        eventInput.setEventSize(sortRoutine.getEventSize());
-        eventInput.setBufferSize(sortRoutine.getBufferSize());
+        eventInput.setEventSize(sorter.getEventSize());
+        eventInput.setBufferSize(sorter.getBufferSize());
         /* give sortroutine output stream */
-        eventOutput.setEventSize(sortRoutine.getEventSize());
-        eventOutput.setBufferSize(sortRoutine.getBufferSize());
-		sortRoutine.setEventOutputStream(eventOutput);
+        eventOutput.setEventSize(sorter.getEventSize());
+        eventOutput.setBufferSize(sorter.getBufferSize());
+		sorter.setEventOutputStream(eventOutput);
         /* always setup diskDaemon */
         final DiskDaemon diskDaemon =new DiskDaemon(sortControl,  msgHandler);
         diskDaemon.setupOff(eventInput, eventOutput);
@@ -479,16 +484,13 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      * Resets offline data aquisition.
      * Kills sort daemon. Clears all data areas: histograms, gates,
      * scalers and monitors.
-     *
-     * @throws JamException if there's a problem
-     * @throws GlobalException if there's a thread problem
      */
-    private void resetSort() throws JamException {
+    private void resetSort() {
         if (sortDaemon != null) {
             sortDaemon.setState(GoodThread.STOP);
-            sortDaemon.setSortRoutine(null);
+            sortDaemon.setSorter(null);
         }
-        sortRoutine=null;
+        sorter=null;
         DataBase.getInstance().clearAllLists();
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         lockMode(false);
@@ -519,10 +521,9 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      * Set the title bar to indicate offline sort and wether from tape
      * or disk
      *
-     * @throws JamException if there's a problem
      * @param lock true if the locking the dialog, false if unlocking
      */
-    private void lockMode(boolean lock) throws JamException {
+    private void lockMode(boolean lock) {
     	final boolean notLock=!lock;
     	checkLock.setEnabled(lock);
     	checkLock.setSelected(lock);
@@ -535,7 +536,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass().getName() );
+            STATUS.setSortMode(SortMode.OFFLINE, sorter.getClass().getName() );
             bbrowsef.setEnabled(false);
         } else{
             STATUS.setSortMode(SortMode.NO_SORT,"No Sort");

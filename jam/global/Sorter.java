@@ -1,4 +1,8 @@
 package jam.global; 
+
+import jam.sort.SortException;
+import jam.sort.stream.EventOutputStream;
+
 /**
  * Interface for user-written sort classes.
  *
@@ -45,4 +49,37 @@ package jam.global;
      * @see jam.data.Monitor
      */	
     double monitor(String name);
+    
+	/**
+	 * set the state to write out events
+	 * 
+	 * @param enable
+	 *            true to write out selected events
+	 */
+    void setWriteEnabled(boolean enable);
+    
+	/**
+	 * Returns size of a event.
+	 * 
+	 * @return the size of the events
+	 * @throws SortException
+	 *             when there is no event size yet
+	 */
+	int getEventSize() throws SortException;
+
+	/**
+	 * Gets the buffer size in bytes.
+	 * 
+	 * @return size in bytes of event buffers
+	 */
+	int getBufferSize();
+	
+	/**
+	 * Set the event stream to use to write out events.
+	 * 
+	 * @param out
+	 *            stream to which presorted event output will go
+	 */
+	void setEventOutputStream(EventOutputStream out);
+
 }
