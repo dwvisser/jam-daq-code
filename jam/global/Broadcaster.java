@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Part of a client server to handle message between packages
  * Broadcast events to all listeners.
- * These listeners must have already registerd that they would
+ * These listeners must have already registered that they would
  * like to receive events using Observer.addObserver()
  * 
  * @author Ken Swartz
@@ -22,30 +22,31 @@ public  class Broadcaster extends Observable {
     public synchronized void broadcast(int command, Object param) 
     throws GlobalException {
         Object broadcastEvent=new BroadcastEvent(command, param);
-        setChanged();
-        notifyObservers(broadcastEvent);
+        setChanged();//necessary for next line to work
+        notifyObservers(broadcastEvent);//automatically calls clearChanged()
     }
 
     /** Broad cast an event to all registered observers.
      * @param command code from <CODE>BroadcastEvent</CODE>, I presume
      */
     public synchronized void broadcast(int command) throws GlobalException {
-        Object broadcastEvent=new BroadcastEvent(command, null);
+        /*Object broadcastEvent=new BroadcastEvent(command, null);
         setChanged();
-        notifyObservers(broadcastEvent);
+        notifyObservers(broadcastEvent);*/
+        broadcast(command,null);
     }
     
     /**FIXME not used
      * Refresh observers
      */
-    public synchronized  void refresh(){
+    /*public synchronized  void refresh(){
         setChanged();
         notifyObservers("refresh");
-    }
+    }*/
     
     /**FIXME not used
      * Refresh data base
      */
-    public synchronized  void update(){
-    }
+    /*public synchronized  void update(){
+    }*/
 }
