@@ -34,7 +34,7 @@ public class HDFileFilter extends FileFilter implements HDFconstants {
     }
     
     public String getDescription() {
-		return "Heirarchical Data  Format v4.1r2";
+		return "Hierarchical Data  Format v4.1r2";
     }
     
 }
