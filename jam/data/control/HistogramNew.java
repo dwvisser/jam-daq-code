@@ -1,10 +1,7 @@
-/*
- */
 package jam.data.control;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -39,7 +36,6 @@ import javax.swing.border.EmptyBorder;
 public class HistogramNew extends DataControl implements ActionListener {
 
     private final Frame frame;
-    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
     private final MessageHandler msghdlr;
 
     Histogram currentHistogram;

@@ -1,10 +1,7 @@
-/*
- */
 package jam.data.control;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -40,27 +37,23 @@ import javax.swing.border.EmptyBorder;
 public class Manipulations extends DataControl implements ActionListener, ItemListener, WindowListener,
 Observer {
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+    private final Frame frame;
+    private final MessageHandler messageHandler;
 
     private JComboBox cfrom1,cfrom2,cto;
     private JCheckBox cnorm,cplus,cminus,ctimes,cdiv;
     private JTextField  ttextto,ttimes1,ttimes2;
     private JLabel lname;
 
-    public Manipulations(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
+    public Manipulations(MessageHandler mh){
         super("Manipulate 1-D Histograms",false);
-        this.frame=frame;
-        this.broadcaster=broadcaster;
-        this.messageHandler=messageHandler;
+        frame=status.getFrame();
+        messageHandler=mh;
         setResizable(false);
-
         final int CHOOSER_SIZE=200;
         Dimension dim;
         final int hgap=5;
         final int vgap=5;
-
         //UI
         final Container cdmanip=getContentPane();
         cdmanip.setLayout(new BorderLayout(hgap,vgap));
