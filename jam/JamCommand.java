@@ -1,7 +1,5 @@
 package jam;
 import jam.data.DataBase;
-import jam.data.DataException;
-import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
@@ -34,9 +32,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.print.PrinterJob;
 import java.util.Properties;
-
 import javax.swing.AbstractButton;
-import javax.swing.JComboBox;
 
 /**
  * This class recieves the commands for all the pull
@@ -166,7 +162,7 @@ public class JamCommand
 				runControl,
 				displayCounters,
 				frontEnd,
-				console);
+				console,broadcaster);
 		setupSortOff =
 			new SetupSortOff(
 				jamMain,
@@ -179,7 +175,6 @@ public class JamCommand
 		help = new Help(jamMain, console);
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		//add observers to the list of class to be notified of broadcasted events
-		broadcaster.addObserver(jamMain);
 		broadcaster.addObserver(displayCounters);
 		broadcaster.addObserver(display);
 		broadcaster.addObserver(frontEnd);
@@ -194,10 +189,6 @@ public class JamCommand
 		remote = false;
 	}
 	
-	/*ActionListener getLoadFit(){
-		return loadFit;
-	}*/
-
 	/**
 	 * Receives all the inputs from the pull down menus
 	 * that are <code>ActionEvent</code>'s.
@@ -210,32 +201,7 @@ public class JamCommand
 		final String incommand = e.getActionCommand();
 		boolean selectEnabled = true; //is selection enabled
 		try {
-			if ("overlay".equals(incommand)) {
-				synchronized(this){
-					overlay = jamMain.overlaySelected();
-				}
-				if (overlay) {
-					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
-				}
-			} else if ("selecthistogram".equals(incommand)) {
-				if (selectEnabled) { //nested to avoid missing "selecthistogram"
-					final Object item =
-						((JComboBox) e.getSource()).getSelectedItem();
-					if (item instanceof Histogram) {
-						final Histogram h = (Histogram) item;
-						selectHistogram(h);
-					}
-				}
-			} else if ("selectgate".equals(incommand)) {
-				final Object item =
-					((JComboBox) e.getSource()).getSelectedItem();
-				if (selectEnabled && item instanceof String) {
-					final Gate gate = Gate.getGate((String) item);
-					if (gate != null) {
-						selectGate(gate);
-					}
-				}
-			} else if ("Black Background".equals(incommand)) {
+			if ("Black Background".equals(incommand)) {
 				display.setPreference(
 					Display.Preferences.BLACK_BACKGROUND,
 					true);
@@ -246,13 +212,13 @@ public class JamCommand
 			} else if ("newclear".equals(incommand)) {
 				jamMain.setSortMode(JamMain.NO_SORT);
 				DataBase.clearAllLists();
-				jamMain.dataChanged();
+				dataChanged();
 			} else if ("open".equals(incommand)) {
 				selectEnabled = false;
 				if (histio.readJHFFile()) {
 					jamMain.setSortModeFile(histio.getFileNameOpen());
 					DataControl.setupAll(); //setup all data bases
-					jamMain.dataChanged();
+					dataChanged();
 					jamMain.repaint();
 				}
 				selectEnabled = true;
@@ -261,7 +227,7 @@ public class JamCommand
 				if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
 					jamMain.setSortModeFile(hdfio.getFileNameOpen());
 					DataControl.setupAll();
-					jamMain.dataChanged();
+					dataChanged();
 					jamMain.repaint();
 				}
 				selectEnabled = true;
@@ -285,20 +251,20 @@ public class JamCommand
 				if (impExpASCII.openFile()) {
 					jamMain.setSortModeFile(impExpASCII.getLastFileName());
 					DataControl.setupAll();
-					jamMain.dataChanged();
+					dataChanged();
 				}
 			} else if ("openspe".equals(incommand)) {
 				if (impExpSPE.openFile()) {
 					jamMain.setSortModeFile(impExpSPE.getLastFileName());
 					DataControl.setupAll();
-					jamMain.dataChanged();
+					dataChanged();
 				}
 			} else if ("openornl".equals(incommand)) {
 				selectEnabled = false;
 				if (impExpORNL.openFile()) {
 					jamMain.setSortModeFile(impExpORNL.getLastFileName());
 					DataControl.setupAll();
-					jamMain.dataChanged();
+					dataChanged();
 				}
 				selectEnabled = true;
 			} else if ("openxsys".equals(incommand)) {
@@ -306,7 +272,7 @@ public class JamCommand
 				if (impExpXSYS.openFile()) {
 					jamMain.setSortModeFile(impExpXSYS.getLastFileName());
 					DataControl.setupAll();
-					jamMain.dataChanged();
+					dataChanged();
 				}
 				selectEnabled = true;
 			} else if ("saveascii".equals(incommand)) {
@@ -375,8 +341,6 @@ public class JamCommand
 				monitorControl.showConfig();
 			} else if ("zeroscalers".equals(incommand)) {
 				scalerControl.showZero();
-			//} else if ("loadfit".equals(incommand)) {
-			//	loadFit.showLoad();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
@@ -461,97 +425,6 @@ public class JamCommand
 		}
 	}
 
-	/** 
-	 * A histogram has been selected so tell all
-	 * applicable classes about it.
-	 *
-	 * @param hist The histogram to be selected and displayed
-	 */
-	void selectHistogram(Histogram hist) {
-		if (hist != null) {
-			if (!overlay) {
-				status.setCurrentHistogramName(hist.getName());
-				try {
-					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
-					final Histogram h =
-						Histogram.getHistogram(
-							status.getCurrentHistogramName());
-					display.displayHistogram(h);
-					jamMain.gatesChanged();
-					jamMain.setOverlayEnabled(h.getDimensionality() == 1);
-				} catch (GlobalException ge) {
-					console.errorOutln(
-						getClass().getName() + ".selectHistogram(): " + ge);
-				}
-			} else {
-				status.setOverlayHistogramName(hist.getName());
-				console.messageOut(hist.getName(), MessageHandler.END);
-				display.overlayHistogram(hist);
-				synchronized (this) {
-					overlay = false;
-				}
-				jamMain.deselectOverlay();
-			}
-		} else { //null object passed
-			console.errorOutln(
-				classname + "selectHistogram(Histogram): null argument");
-		}
-	}
-
-	/**
-	 * A gate has been selected. Tell all appropriate classes, like
-	 * Display and JamStatus.
-	 *
-	 * @param gateObject the object, which should be a <code>Gate</code>
-	 * @see jam.data.Gate
-	 */
-	private void selectGate(Object gateObject) {
-		final String methodname = "selectGate(): ";
-		if (gateObject instanceof Gate) {
-			final Gate gate = (Gate) gateObject;
-			try {
-				status.setCurrentGateName(gate.getName());
-				broadcaster.broadcast(BroadcastEvent.GATE_SELECT);
-				if (gate.getType() == Gate.ONE_DIMENSION) {
-					final double area = gate.getArea();
-					final double centroid =
-						(double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
-					final int lowerLimit = gate.getLimits1d()[0];
-					final int upperLimit = gate.getLimits1d()[1];
-					console.messageOut(
-						"Gate: "
-							+ gate.getName()
-							+ ", Ch. "
-							+ lowerLimit
-							+ " to "
-							+ upperLimit,
-						MessageHandler.NEW);
-					console.messageOut(
-						"  Area = " + area + ", Centroid = " + centroid,
-						MessageHandler.END);
-				} else {
-					final double area = gate.getArea();
-					console.messageOut(
-						"Gate " + gate.getName(),
-						MessageHandler.NEW);
-					console.messageOut(", Area = " + area, MessageHandler.END);
-				}
-				display.displayGate(gate);
-			} catch (DataException de) {
-				console.errorOutln(classname + methodname + de.getMessage());
-			} catch (GlobalException ge) {
-				console.errorOutln(classname + methodname + ge.getMessage());
-			}
-		} else {//error not a Gate
-			console.errorOutln(
-				classname
-					+ "problem selecting gate - object instanceof "
-					+ gateObject.getClass().getName()
-					+ ", String rep=\""
-					+ gateObject
-					+ "\"");
-		}
-	}
 
 	/** 
 	 * Sets whether or not we are in remote mode; remote mode not yet
@@ -596,5 +469,9 @@ public class JamCommand
 				console.messageOut("done!", MessageHandler.END);
 			}
 		}
+	}
+	
+	private void dataChanged() throws GlobalException {
+		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
 }
