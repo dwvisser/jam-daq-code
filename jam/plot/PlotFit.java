@@ -8,11 +8,6 @@ class PlotFit {
 	static final double SIGMA_TO_FWHM = 2.354;
 	public static final int X_AXIS = 1;
 	public static final int Y_AXIS = 2;
-	/**
-	 * constructor
-	 */
-	public PlotFit() {
-	}
 
 	/**
 	 * Get the area for a 1 d histogram

@@ -37,12 +37,7 @@ class Tickmarks {
 	// arrays that are returned
 	int[] ticks;
 	int[] thresholds;
-	/**
-	 * Constructor 
-	 */
-	public Tickmarks() {
-		/* does nothing */
-	}
+
 	/**
 	 * Get an array indicating where the Tickmark should be given an
 	 * lower limit, upper limit, and scale (Log or Linear) and  histogram 
