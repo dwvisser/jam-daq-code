@@ -350,7 +350,7 @@ public abstract class AbstractData implements Constants {
 	 */
 	final void setRef(short newref)  {
 		
-		//Check if object exist with old ref
+		//Remove object with old ref
 		final Integer key = calculateKey(tag, ref);
 		if (tagRefMap.containsKey(key)) {
 			tagRefMap.remove(key);
@@ -363,11 +363,12 @@ public abstract class AbstractData implements Constants {
 				//FIXME KBS remove
 				//throw new HDFException("Cannot change reference to existing object");
 			
-			ref = newref;
-			
+			ref = newref;			
 			tagRefMap.put(keyNew, this);
 			
-		 }		
+		 } else {
+			throw new IllegalArgumentException("DataObject not in object table, so cannot change reference");		 	
+		 }
 	}
 	
 	/**

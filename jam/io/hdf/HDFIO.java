@@ -720,7 +720,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             message.append(", ").append(histCount).append(" histograms");    
             message.append(", ").append(gateCount).append(" gates");
             message.append(", ").append(scalerCount).append(" scalers");
-            message.append(", ").append(paramCount).append(" scalers");
+            message.append(", ").append(paramCount).append(" parameters");
             message.append(')');
          } catch (FileNotFoundException e) {
            	uiErrorMsg ="Opening file: " + infile.getPath()+
@@ -1097,7 +1097,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         
         final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
         if (vddScalers!=null) {
-        	hdfToJam.convertScalers(currentGroup, vddScalers, mode);
+        	scalerCount=hdfToJam.convertScalers(currentGroup, vddScalers, mode);
         }
         if (mode != FileOpenMode.ADD) {
         	gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
