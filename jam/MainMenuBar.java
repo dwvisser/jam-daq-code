@@ -1,7 +1,6 @@
 package jam;
 import jam.data.Histogram;
 import jam.data.control.DataControl;
-import jam.data.control.ScalerControl;
 import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -11,7 +10,6 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.global.CommandNames;
-import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpORNL;
@@ -159,6 +157,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		}
 	}
 */
+/* Remove KBS
 	class ReloadHDF extends AbstractAction {	
 		private final ScalerControl scalerControl;
 		
@@ -173,6 +172,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
+	*/
 	/* Remove KBS
 	class AddHDF extends AbstractAction {	
 		AddHDF(){
@@ -281,6 +281,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	
 	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
 	final private JMenuItem addhdf = new JMenuItem("Add counts(hdf)...");
+	final private JMenuItem reloadhdf = new JMenuItem("Reload(hdf)...");
 	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
 	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
 	final private JMenuItem histogramNew = new JMenuItem("New...");
@@ -291,7 +292,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
 
 	//Remove KBS final private OpenHDF openhdf;
-	final private ReloadHDF reloadhdf;
+	//Remove KBS final private ReloadHDF reloadhdf;
 	//Remove KBS
 	//final private AddHDF addHDF=new AddHDF();
 	final private HDFIO hdfio;
@@ -355,7 +356,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		synchronized (this) {
 			newClear = new JMenuItem("New");
 			
-			reloadhdf = new ReloadHDF();
+			//KBS reloadhdf = new ReloadHDF();
 			//KBS saveHDF = new SaveHDF();
 			impHist = new JMenu("Import");
 			runacq = new JMenuItem("Run...");
@@ -377,9 +378,12 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		//Remove KBS
 		//file.add(openhdf).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
 		
+		reloadhdf.setActionCommand(CommandNames.RELOAD_HDF);
+		reloadhdf.addActionListener(jamCommand);
 		reloadhdf.setEnabled(false);
-		file.add(reloadhdf).setAccelerator(
-		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
+		reloadhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));		
+		file.add(reloadhdf);
+
 		
 		addhdf.setActionCommand(CommandNames.ADD_HDF);
 		addhdf.addActionListener(jamCommand);
