@@ -15,29 +15,12 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public SqrtEnergyFunction() throws DataException {
-		super(2);
+		super(NUMBER_TERMS);
 		title = "sqrt(E) = a0+a1*ch";
-		numberTerms = NUMBER_TERMS;
-		coeff = new double[numberTerms];
-		labels = new String[numberTerms];
 		labels[0] = "a(0)";
 		labels[1] = "a(1)";
 	}
 	
-	/**
-	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
-	 * If passed a larger than necessary array, the first elements of the array will be used.
-	 *
-	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
-	 */
-	public void setCoeff(double aIn[]) throws DataException {
-		if (aIn.length == numberTerms) {
-			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
-		} else {
-			throw new DataException("Not the correct number of terms [LinearFunction]");
-		}
-	}
-
 	/**
 	 * Get the calibration value at a specified channel.
 	 * 

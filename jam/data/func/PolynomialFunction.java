@@ -28,25 +28,7 @@ public class PolynomialFunction extends CalibrationFunction {
 			throw new DataException("Number of terms greater than MAX_NUMBER_TERMS [PolynomialFunction]");
 		}
 	}
-	/**
-	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
-	 * If passed a larger than necessary array, the first elements of the array will be used.
-	 *
-	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
-	 */
-	public void setCoeff(double aIn[]) throws DataException {
 
-		if (aIn.length <= numberTerms) {
-			//zero array
-			for (int i = 0; i < coeff.length; i++) {
-				coeff[i] = 0.0;
-			}
-			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
-
-		} else {
-			throw new DataException("Not the correct number of terms [LinearFunction]");
-		}
-	}
 	/**
 	 * Get the calibration value at a specified channel.
 	 * 

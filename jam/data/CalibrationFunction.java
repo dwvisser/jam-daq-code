@@ -16,7 +16,7 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public final static int MAX_NUMBER_TERMS = 5;
 
-	protected int numberTerms;
+	//protected int numberTerms;
 	protected String title;
 	protected String[] labels;
 	protected double[] coeff;
@@ -29,7 +29,9 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public CalibrationFunction(int numberTerms) throws DataException {
 		if (numberTerms < MAX_NUMBER_TERMS) {
-			this.numberTerms = numberTerms;
+			//this.numberTerms = numberTerms;
+			coeff=new double[numberTerms];
+			labels=new String[numberTerms];
 		} else {
 			throw new DataException("Number of terms greater than MAX_NUMBER_TERMS [CalibrationFunction]");
 		}
@@ -43,7 +45,7 @@ public abstract class CalibrationFunction implements Function {
 	 * Number of terms
 	 */
 	public int getNumberTerms() {
-		return numberTerms;
+		return coeff.length;
 	}
 	
 	/**
@@ -102,7 +104,17 @@ public abstract class CalibrationFunction implements Function {
 	 *
 	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
 	 */
-	public abstract void setCoeff(double aIn[]) throws DataException;
+	public void setCoeff(double aIn[]) throws DataException {
+		if (aIn.length <= coeff.length) {
+			//zero array
+			for (int i = 0; i < coeff.length; i++) {
+				coeff[i] = 0.0;
+			}
+			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
+		} else {
+			throw new DataException(getClass().getName()+".setCoeff(double ["+aIn.length+"]): too many terms.");
+		}
+	}
 
 	/**
 	 * Get the calibration value at a specified channel.
