@@ -347,8 +347,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	final SwingWorker worker = new SwingWorker() {
             public Object construct() {
             	try {
-            		asyncReadFileGroup(infile, mode, histNames);
-            		//asyncReadFile(infile, mode, histNames);
+            		//asyncReadFileGroup(infile, mode, histNames);
+            		asyncReadFile(infile, mode, histNames);
             	}catch (Exception e) {
             		uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
             		e.printStackTrace();
@@ -832,7 +832,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     Group.setCurrentGroup(sortName);
                 } // else mode == FileOpenMode.ADD, so use current group
                 hdfToJam.setInFile(inHDF);
-                final int numHists =hdfToJam.convertHistograms(mode, histNames);
+                final int numHists =hdfToJam.convertHistograms(Group.getCurrentGroup(), mode, histNames);
                 message.append(numHists).append(" histograms");
                 final int numScalers = hdfToJam.convertScalers(mode);
                 message.append(", ").append(numScalers).append(" scalers");

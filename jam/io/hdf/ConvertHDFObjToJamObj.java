@@ -98,11 +98,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     	 	DataObject dataObject = (DataObject)histIter.next();
         	//Is a virtual group
         	if ( dataObject.getTag() == DataObject.DFTAG_VG ) {        		
-        		//Cast to VirtualGroup and add to list
+        		//add to list if is a histogram goup
         		final VirtualGroup currentVGroup = (VirtualGroup) dataObject;
-        		if (histogramNames==null) {
-        			histogramList.add(currentVGroup);
-        		} else {
+        		if ( currentVGroup.getName().equals(HIST_TYPE) ) {
         			histogramList.add(currentVGroup);
         		} 
         	}
@@ -125,63 +123,24 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      *             if any histogram apparently has more than 2 dimensions
      * @return number of histograms
      */
-    int convertHistograms(Group group, FileOpenMode mode, List histNames)
-            throws HDFException {
+    int convertHistograms(Group group, FileOpenMode mode, List histNames) throws HDFException {
         int numHists = 0;
-        /* get list of all VG's in file */
-        final List groups = DataObject.ofType(DataObject.DFTAG_VG);
-        final VirtualGroup hists = VirtualGroup.ofName(groups, HIST_SECTION);
+        final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
         /* only the "histograms" VG (only one element) */
         if (hists != null) {
             numHists = hists.getObjects().size();
             /* Histogram iterator */
             final Iterator temp = hists.getObjects().iterator();
             // loop begin
-            objectLoop: while (temp.hasNext()) {
-            	final VirtualGroup currentHistGroup = (VirtualGroup) (temp.next());
-            	convertHist(Group.getCurrentGroup(), currentHistGroup, histNames, mode);
+            while (temp.hasNext()) {
+            	final VirtualGroup currentHistVGroup = (VirtualGroup) (temp.next());
+            	convertHist(group, currentHistVGroup, histNames, mode);
             }
             //after loop
         }
         return numHists;
     }
     
-    /** 
-     * looks for the special Histogram section and reads the data into
-     * memory.
-     * 
-     * @param mode
-     *            whether to open or reload
-     * @param sb
-     *            summary message under construction
-     * @param histNames
-     *            names of histograms to read, null if all
-     * @exception HDFException
-     *                thrown if unrecoverable error occurs
-     * @throws IllegalStateException
-     *             if any histogram apparently has more than 2 dimensions
-     * @return number of histograms
-     */
-    int convertHistograms(FileOpenMode mode, List histNames)
-            throws HDFException {
-        int numHists = 0;
-        /* get list of all VG's in file */
-        final List groups = DataObject.ofType(DataObject.DFTAG_VG);
-        final VirtualGroup hists = VirtualGroup.ofName(groups, HIST_SECTION);
-        /* only the "histograms" VG (only one element) */
-        if (hists != null) {
-            numHists = hists.getObjects().size();
-            /* Histogram iterator */
-            final Iterator temp = hists.getObjects().iterator();
-            // loop begin
-            objectLoop: while (temp.hasNext()) {
-            	final VirtualGroup currentHistGroup = (VirtualGroup) (temp.next());
-            	convertHist(Group.getCurrentGroup(), currentHistGroup, histNames, mode);
-            }
-            //after loop
-        }
-        return numHists;
-    }
     
     Histogram  convertHist(Group group, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
     	Histogram hist =null;
