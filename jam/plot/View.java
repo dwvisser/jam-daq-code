@@ -35,6 +35,8 @@ public final class View {
 	
 	private final static Map viewMap;
 	
+	public static final String SINGLE="Single" ;
+	
 	static {
 		viewNameList= new ArrayList();
 		viewMap = new TreeMap();
@@ -76,6 +78,10 @@ public final class View {
 	
 	public static View getView(String name){
 		return (View)viewMap.get(name);
+	}
+	
+	public static void removeView(String name){
+		viewMap.remove(name);
 	}
 	
 	/**

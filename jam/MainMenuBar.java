@@ -279,6 +279,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private void updateViews(){
 		view.removeAll();	
 		view.add(getMenuItem(SHOW_VIEW_NEW));
+		view.add(getMenuItem(SHOW_VIEW_DELETE));
 		view.addSeparator();		
 		Iterator viewNames =View.getNameIterator(); 
 		while(viewNames.hasNext()){
