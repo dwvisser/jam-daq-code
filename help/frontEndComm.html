@@ -14,10 +14,10 @@
 <td>Bytes</td><td>Item</td>
 </tr> 
 <tr> 
-<td>0-3</td><td>A 4-byte (big endian) signed int indicating the type of packet</td>
+<td>1-4</td><td>A 4-byte (big endian) signed int indicating the type of packet</td>
 </tr>
 <tr>
-<td>4-80</td><td>A NUL ('\0') terminated string command-line-type command. e.g: <code>command arg1 arg2</code></td>
+<td>5+</td><td>Often a NUL ('\0') terminated string command-line-type command, e.g, <code>command arg1 arg2</code>. Whenever this is the case, it will be shown as, e.g., "command arg1 arg2". In other cases, details of the binary format will be given. </td>
 </tr>
 </table>
 
@@ -50,7 +50,40 @@
 <tr><td>3</td><td>All channels in the ADC's and TDC's are disabled, then <em>those defined here</em> will be enabled for conversion. All TDC's with specified ranges will have the given value written to their range register.</td></tr>
 </table>
 <h5>case 2: cnafCommands used to define parameters and CAMAC commands</h5>
+<p>The first two packets are identical to the vmeMap case, i.e., they send the user preference for debug messages and verbosity. Then four CNAF list packets are sent, which have the following format:</p>
+<table>
+    <tr><td>bytes</td><td>contents</td></tr>
+    <tr><td>1-4</td><td>0x00000003 (indicating the CNAF list packet type)</td>
+    <tr><td>5-(5+LEN+1)</td><td>one of "cnaf init", "cnaf event", "cnaf scaler" or "cnaf clear", where LEN+1 is the length of the string plus its NUL termination</td></tr>
+</table>
+    <p>After this, the packet continues by listing the CNAF commands in the following format (where I've restarted the byte counting for simplicity's sake):</p>
+<table>
+    <tr><td>bytes</td><td>contents</td></tr>
+    <tr><td>1-3</td><td>0x000000</td>
+    <tr><td>4</td><td>L (the number of CNAF commands in the list)</td>
+    <tr><td>5</td><td>1<sup>st</sup> crate id</td></tr>
+    <tr><td>6</td><td>1<sup>st</sup> command (C) 1</td></tr>
+    <tr><td>7</td><td>1<sup>st</sup> slot number (N) 1</td></tr>
+    <tr><td>8</td><td>1<sup>st</sup> address (A) 1</td></tr>
+    <tr><td>9</td><td>1<sup>st</sup> function (F) 1</td></tr>
+    <tr><td>10-13</td><td>1<sup>st</sup> 4-byte data to send (zeros if none)</td></tr>
+    <tr><td>...</td><td>...</td></tr>
+    <tr><td>9L-4</td><td>L<sup>th</sup> crate id</td></tr>
+    <tr><td>9L-3</td><td>L<sup>th</sup> command (C)</td></tr>
+    <tr><td>9L-2</td><td>L<sup>th</sup> slot number (N)</td></tr>
+    <tr><td>9L-1</td><td>L<sup>th</sup> address (A)</td></tr>
+    <tr><td>9L</td><td>L<sup>th</sup> function (F)</td></tr>
+    <tr><td>(9L+1)-(9L+4)</td><td>L<sup>th</sup> 4-byte data to send (zeros if none)</td></tr>
+    <tr><td>9L+5</td><td>NUL</td></tr>
+</table>
 
+<p>After the four CNAF list packets have been sent, a final standard command packet is sent:</p>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"list init"</td>
+</table>
+<h6>Expected VME response</h6>
+<p>The expected response to the verbose and debug packets is the same as before. The VME is expected to parse the CNAF list packets and store the results such that it can execute the lists on the CAMAC crate(s) when needed. Finally, the "list init" command packet indicates to the VME to execute the "cnaf init" list of CNAF commands to initialize the CAMAC crate(s) and CAMAC modules.</p>
 <h4>Datagram sent by Jam when "start" or "Begin" is clicked</h4>
 <p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to open an event file, write a header to it, optionally zero the histograms and optionally send a datagram to request the scalers be zeroed, then finally send the packet shown below.</p>
 <br>
@@ -59,28 +92,35 @@
 <tr><td>0</td><td>"START"</td>
 </table>
 <h5>Expected VME response</h5>
-<p>All modules which have channels enabled will be set to online mode, so that they'll convert the signals at their inputs when they receive gates. Additionally, the scaler module(s) should have its (their) inhibit state removed so that they can count logic pulses.</p>
+<p>All modules which have channels enabled will be set to online mode, so that they'll convert the signals at their inputs when they receive gates. Additionally, the scaler module(s) should have its (their) inhibit state removed so that they can count logic pulses. In the vmeMap case, the ADC's and TDC's typically are read out when a master ADC's buffer starts to fill up. In the cnafCommands case, every gate should cause the front end computer to be strobed so it knows to execute the "event" CNAF list to read out the events. In both cases, when the send buffers are almost full, they are padded to the full 8k, and sent to Jam.</p>
+<h4>Datagram sent by Jam to request flush of VME buffer</h4>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"FLUSH"</td>
+</table>
+<h5>Expected VME response</h5>
+<p>Upon receiving this message, the VME should pad out the current send buffer and send it immediately. Of course it should do this between two event readouts, not during an event readout.</p>
 <h4>Datagram sent by Jam to request zeroing of scalers</h4>
 <table>
 <tr><td>integer</td><td>string</td></tr>
-<tr><td>0</td><td>"count zero"</td>
+<tr><td>0</td><td>"list clear"</td>
 </table>
 <h5>Expected VME response</h5>
-<p>All channels in the scaler module(s) should be reset to zero counts.</p>
+<p>All channels in the scaler module(s) should be reset to zero counts. In the cnafCommands case, this includes executing the "clear" list of CNAF commands.</p>
 <h4><a name="readscalers">Datagram sent by Jam to request scaler values</a></h4>
 <table>
 <tr><td>integer</td><td>string</td></tr>
 <tr><td>0</td><td>"list scaler"</td>
 </table>
 <h5>Expected VME response</h5>
-<p>A <a href="#vmetohost">VME-to-host datagram</a> with SCALER status, with the 4-byte status word (0x00000002) followed by N+1 4-byte integers. The first integer is N, the number of scaler values to follow. The first scaler value is assumed to belong to the Scaler defined first in the sort routine, the second value to the second defined Scaler, etc., regardless of the number assigned to the Scaler when it's defined.</p>
+<p>A <a href="#vmetohost">VME-to-host datagram</a> with SCALER status, with the 4-byte status word (0x00000002) followed by N+1 4-byte integers. The first integer is N, the number of scaler values to follow. The first scaler value is assumed to belong to the Scaler defined first in the sort routine, the second value to the second defined Scaler, etc., regardless of the number assigned to the Scaler when it's defined. In the cnafCommands case, it is expected that the scaler readout will be accomplished by the "scale" list of CNAF commands.</p>
 <h4>Datagram sent by Jam when "stop" is clicked</h4>
 <table>
 <tr><td>integer</td><td>string</td></tr>
 <tr><td>0</td><td>"STOP"</td>
 </table>
 <h5>Expected VME response</h5>
-<p>Take the ADC's and TDC's offline, and raise the inhibit state on the scaler module(s). Completely read the remaining data in the ADC and TDC buffers, sending final buffer(s) with the data. The last buffer should be padded with <a href="CAENformat.html#padding">STOP_PAD</a>.</p>
+<p>Take the ADC's and TDC's offline, and raise the inhibit state on the scaler module(s). Completely read the remaining data in the ADC and TDC buffers, sending final buffer(s) with the data. If you're using the Yale-CAEN input stream, the last buffer should be padded with <a href="CAENformat.html#padding">STOP_PAD</a>.</p>
 <h4>Datagram sent by Jam when "End" is clicked</h4>
 <table>
 <tr><td>integer</td><td>string</td></tr>
@@ -88,11 +128,11 @@
 </table>
 <p>This is followed by a sending a <a href="#readscalers">request for scaler values</a>. When Jam is finished sorting the last data buffer, it closes its event file.</p>
 <h5>Expected VME response</h5>
-<p>Same as stopping, but the last buffer should be padded with <a href="CAENformat.html#padding">END_PAD</a>.</p>
+<p>Same as stopping, but in the case of the Yale-CAEN input stream, the last buffer should be padded with <a href="CAENformat.html#padding">END_PAD</a>. The L002InputStream and its variants (including YaleInputStream), use a <a href="L002format.html#padding">different padding scheme</a>.</p>
 
 <h3><a name="vmetohost">Form of VME-to-host reply datagrams</a></h3>
 
-<h4>byte 0-3</h4>   
+<h4>packet type: byte 1-4</h4>   
 <dl>
 <dt>0x00000000</dt>   
 <dd>O.K. execution of last command</dd>
@@ -104,30 +144,30 @@
 <dd>CNAF reply packet</dd>
 </dl>
                                                   
-<h4>Message reply datagram (0 or 1)</h4>			
-<dl><dt>bytes 4-80</dt>
+<h4>Message reply datagram (type 0 or 1)</h4>			
+<dl><dt>bytes 5+</dt>
 <dd>NUL-terminated string containing either a message notifying of successful Host-to-VME call and execution or an error message as appropriate.</dd>
 </dl>
 
-<h4>Scaler reply datagram (2)</h4>
+<h4>Scaler reply datagram (type 2)</h4>
 <table>
 <tr>
 <td>Bytes</td><td>Item</td>
 </tr>
 <tr>
-<td>4-7</td><td>Number of scalers read</td>
+<td>5-8</td><td>Number of scalers read (N)</td>
 </tr>
 <tr>
-<td>8 - 11</td><td>Value of scaler 0</td>
+<td>9-12</td><td>Value of scaler 0</td>
 </tr>
 <tr>
-<td>12 - 15</td><td>Value of scaler 1</td>
+<td>13-16</td><td>Value of scaler 1</td>
 </tr>
 <tr>
-<td>... - ...</td><td>...</td>
+<td>...</td><td>...</td>
 </tr>
 <tr>
-<td>8+nx4 - 11+nx4</td><td>Value of scaler n-1</td>
+<td>(9+4N)-(12+4N)</td><td>Value of scaler n-1</td>
 </tr>
 </table>
 
