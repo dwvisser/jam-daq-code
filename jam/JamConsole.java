@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -38,7 +39,7 @@ public class JamConsole
 	 */
 	private static final String END_LINE = (String) System.getProperty("line.separator");
 
-	private CommandListener currentListener;
+	private java.util.List listenerList;
 
 	private JTextPane textLog; //output text area
 	private Document doc;
@@ -103,6 +104,9 @@ public class JamConsole
 	 */
 	public JamConsole(int linesLog) {
 		maxLines = linesLog;
+		
+		listenerList= new ArrayList();
+		
 		setLayout(new BorderLayout());
 		textLog = new JTextPane();
 		textLog.setToolTipText(
@@ -293,8 +297,8 @@ public class JamConsole
 	 * need to add types
 	 *
 	 */
-	public void setCommandListener(CommandListener msgCommand) {
-		currentListener = msgCommand;
+	public void addCommandListener(CommandListener msgCommand) {
+		listenerList.add(msgCommand);
 	}
 
 	public static final String NUMBERS_ONLY="int";
@@ -303,37 +307,47 @@ public class JamConsole
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(String _inString) {
-		int countParam = 0;
+
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		final String inString = _inString.trim();
 		final StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
 		final int numberInWords = inLine.countTokens();
-		if (inLine.hasMoreTokens()) {//check at least something was entered
-			double [] parameters=new double[numberInWords];
-			String command = inLine.nextToken();
-			try {// try to see if first token is a number
-				parameters[countParam]=getNumber(command);
-				/* if we got this far, first token is a number */
+		String [] parameters;
+		String command;
+		int countParam = 0;
+				
+		if (inLine.hasMoreTokens()) {//check at least something was entered			
+			
+			command = inLine.nextToken();
+			//try to see if first token is a number
+			try {
+				double cmdNumber=getNumber(command);
+				/* if we got this far, first token is a number 
+				 *  command is NUMBER_ONLY and params starts with
+				 *  first token*/
+				parameters=new String[numberInWords];
+				parameters[0]=command;
 				countParam++;
 				command = NUMBERS_ONLY;
 			} catch (NumberFormatException nfe) {
 				/* reset parameter list to hold one less */
-				parameters = new double[numberInWords - 1];
+				parameters = new String[numberInWords - 1];
 				countParam = 0;
 			}
-			try {// rest of tokens must be numbers
-				while (inLine.hasMoreTokens()) {
-					parameters[countParam] = getNumber(inLine.nextToken());
-					countParam++;
-				}
-			} catch (NumberFormatException nfe) {
-				errorOutln("Input not a number");
+			//Load parameter tokens
+			while (inLine.hasMoreTokens()) {
+				parameters[countParam] = inLine.nextToken();
+				countParam++;
 			}
-			if (currentListener != null) {//perform command
-				currentListener.commandPerform(command, parameters);
-			} else {
-				warningOutln("No current Listener for commands [JamConsole");
-			}
+			
+			//perform command
+			notifyListeners(command, parameters);
+			
+			//if (currentListener != null) {				
+			//	currentListener.performCommand(command, parameters);
+			//} else {
+			//	warningOutln("No current Listener for commands [JamConsole");
+			//}
 		}
 	}
 	
@@ -437,6 +451,26 @@ public class JamConsole
 	}
 
 	/**
+	 * 
+	 * @param cmd
+	 * @param params
+	 */
+	private void notifyListeners(String cmd, String [] params){
+		
+		Iterator it =listenerList.iterator();
+		boolean validListenerFound;
+		
+		validListenerFound=false;
+		while(it.hasNext()) {
+			
+			CommandListener cl =(CommandListener)(it.next());
+			validListenerFound |=cl.performCommand(cmd, params);
+		}			
+		if (!validListenerFound)
+			errorOutln("Invalid command "+cmd);
+			
+	}
+	/**
 	 * On a class destruction close log file
 	 */
 	protected void finalize() {
@@ -449,4 +483,5 @@ public class JamConsole
 			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
 }
