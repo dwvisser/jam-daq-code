@@ -105,6 +105,7 @@ class Action implements ActionListener, PlotMouseListener {
 	Action(Display d, MessageHandler mh) {
 		this.display = d;
 		this.textOut = mh;
+		broadcaster=Broadcaster.getSingletonInstance();
 		commandPresent = false;
 		overlayState = false;
 		settingGate = false;
