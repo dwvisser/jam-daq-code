@@ -21,13 +21,7 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private Histogram currentHistogram;
-    private Gate currentGate;
-
-    private int type,chmin,chmax;
-    private Vector gatePoints;	    //number intial points, increment increase
-    private Polygon gatePoly2d;
-    private int numberPoints;
+    private int chmin,chmax;
 
     private JDialog dgain;
     private JComboBox cto;
@@ -256,13 +250,6 @@ Observer {
         }
     }
 
-    private void addChooserHists(JComboBox c, int dimensions){
-        for (Enumeration e=Histogram.getHistogramList().elements();e.hasMoreElements();){
-            Histogram h=(Histogram)e.nextElement();
-            if (h.getType()==dimensions) c.addItem(h.getName());
-        }
-    }
-
     private void addChooserHists(JComboBox c, int type1, int type2){
         for (Enumeration e=Histogram.getHistogramList().elements();e.hasMoreElements();){
             Histogram h=(Histogram)e.nextElement();
@@ -307,7 +294,7 @@ Observer {
         String name;
         double [] in,out;
         double [] errIn,errOut;
-        int i,j;
+        int j;
 
         //get coeff. or channels
         if (cchan.isSelected()) {
@@ -508,7 +495,9 @@ Observer {
         int mlo,mhi;
 
         y2 = new double[npts2];
-        for (m=0;m<y2.length;m++) y2[m] = 0.0;
+        for (m=0;m<y2.length;m++) {
+        	y2[m] = 0.0;
+        }
         for (n=0;n<y1.length;n++) {
             e1lo=a1+b1*(n-0.5);	//energy at lower edge of spec#1 channel
             e1hi=a1+b1*(n+0.5);	//energy at upper edge of spec#1 channel

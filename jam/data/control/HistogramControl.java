@@ -33,7 +33,7 @@ public class HistogramControl extends DataControl implements ActionListener {
     private JCheckBox coneInt,coneDbl,ctwoInt,ctwoDbl;
 
     private String histogramName,histogramTitle;
-    private int histogramNumber,histogramType,histogramSize;
+    private int histogramType,histogramSize;
 
     /**
      * Constructor

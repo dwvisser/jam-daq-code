@@ -24,14 +24,6 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private Histogram currentHistogram;
-    private Gate currentGate;
-
-    private int type;
-    private Vector gatePoints;	    //number intial points, increment increase
-    private Polygon gatePoly2d;
-    private int numberPoints;
-
     private JDialog dproject;
     private JComboBox cto, cchan;
     private JCheckBox cacross,cdown;
@@ -320,7 +312,6 @@ Observer {
         Histogram hto;
         String name,state,typeProj;
         int [][] counts2d;
-        int [] counts;
         int [] limits = new int[2];
 
         state = (String) cchan.getSelectedItem();
@@ -441,14 +432,6 @@ Observer {
             }
         }
         return out;
-    }
-
-    private void increment(int [][] counts2d, int [] counts,int x, int y){
-        if (cdown.isSelected()) {
-            if (x<counts2d.length) counts[x]+=counts2d[x][y];
-        } else {
-            if (y<counts2d[0].length) counts[y]+=counts2d[x][y];
-        }
     }
 
     private int [] getLimits() throws DataException {

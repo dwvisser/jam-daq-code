@@ -270,8 +270,7 @@ Observer  {
         try {
             cancel();      //cancel current state
             currentGate=Gate.getGate(name);
-            if ( currentGate==null) {
-            } else {
+            if ( currentGate != null) {
                 newGate=true;            //setting a new gate
                 numberPoints=0;
                 if (currentHistogram.getDimensionality()==1) {

@@ -29,8 +29,6 @@ public class HistApplet extends Applet implements ActionListener, ItemListener {
     private Button blink;
 
     private URL localPath;
-    private URL fileDisplay;
-    private URL fileURL;
     private String documentHost;
         
     // select panel controls
@@ -167,8 +165,6 @@ public class HistApplet extends Applet implements ActionListener, ItemListener {
 
         String incommand;        
 	String hostName;    
-	String file;
-	URL histogramURL;
 
 	incommand=e.getActionCommand();
 

@@ -114,7 +114,6 @@ public class Histogram implements Serializable {
 	private int counts2d[][]; // array to hold counts for 2d inc
 	private double[] countsDouble; //array to hold counts for 1d double
 	private double[][] counts2dDouble; //array to hold counds for 2d double
-	private int units[];
 
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -142,7 +141,7 @@ public class Histogram implements Serializable {
 		String title)
 		throws DataException {
 		String addition;
-		int prime, index;
+		int prime;
 		Enumeration allHistograms;
 
 		this.number = number;
@@ -861,7 +860,6 @@ public class Histogram implements Serializable {
 	 */
 	public double[] getErrors() throws DataException {
 		int length;
-		double[] countError;
 
 		if (type == ONE_DIM_INT) {
 			length = counts.length;

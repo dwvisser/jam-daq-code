@@ -45,14 +45,12 @@ public class Monitor implements Serializable {
     private static int interval;
 
     private String name;  //name
-    private int number;    //number
     private int type;    //monitor type gate, scaler ...
 
     private double threshold;
     private double maximum;
 
     private boolean alarm;
-    private String alarmMessage;
     private java.applet.AudioClip audioClip;
 
     private Sorter sortClass;
@@ -307,7 +305,4 @@ public class Monitor implements Serializable {
         return audioClip;
     }
 
-    private boolean isValidType(int t) {
-        return (t==SORT || t==GATE || t==SCALER);
-    }
 }

@@ -51,10 +51,7 @@ Runnable  {
     //panel with alarm enable
     private JPanel pal;
     private JCheckBox checkAudio;
-    private JPanel pss;
-    private JButton bstart, bstop;
-
-    private Dimension graphDimension;
+    private JButton bstop;
 
     //array of monitors loaded at setuptime
     private Monitor [] monitor;
@@ -378,7 +375,6 @@ Runnable  {
      */
     void configure() throws DataException {
         double threshold, maximum;
-        boolean alarm;
 
         try {
             //set update interval
@@ -478,8 +474,6 @@ Runnable  {
      *
      */
     public void run (){
-        int value;
-
         try {
             //infinite loop
             while(loopThread!=null){//attempted fix for stop() deprecation

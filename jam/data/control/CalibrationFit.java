@@ -38,7 +38,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     private JComboBox cFunc;
     private JLabel lcalibEq;
     private JPanel pPoint [];
-    private JLabel lcoeff [];
     private JTextField [] tEnergy, tChannel;
     private JCheckBox cUse[];
     
@@ -244,9 +243,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         int numberPoints=0;
         double x[];
         double y[];
-        double slope;
-        double intercept;
-        double functionCoeff [] =new double [2];
         String fitText;
         
         Histogram currentHist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
@@ -305,25 +301,11 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      * Load a list of energies from a file
      */
     private void loadCalib() throws Exception {
-        
-        FileInputStream fis;
-        
         File infile=openFile("Load Calibration Energies", FileDialog.LOAD);
-        if (infile!=null){
-            
-        }
-        
     }
+    
     private void saveCalib() throws Exception{
-        
-        FileOutputStream fos;
-        
         File outfile=openFile("Save Calibration Energies", FileDialog.SAVE);
-        
-        if (outfile!=null){
-            
-        }
-        
     }
     
     /**

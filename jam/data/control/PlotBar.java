@@ -46,7 +46,7 @@ public class PlotBar extends Canvas implements PlotBarLayout {
      */
     public synchronized void paint(Graphics g){
       //overall properties
-      int plotLength, plotWidth, thresholdLine,length,width;
+      int plotLength, thresholdLine,length,width;
       //user custom settings
       double value,threshold,maximum;
       Dimension dim;

@@ -20,13 +20,7 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private Histogram currentHistogram;
-    private Gate currentGate;
-
     private int type,chmin,chmax;
-    private Vector gatePoints;	    //number intial points, increment increase
-    private Polygon gatePoly2d;
-    private int numberPoints;
 
     private JDialog dmanip;
     private JComboBox cfrom1,cfrom2,cto;
@@ -252,17 +246,6 @@ Observer {
     }
 
     /**
-     * add histograms of type type to chooser
-     */
-    private void addChooserHists(JComboBox c, int type){
-        //Histogram h;
-        for (Enumeration e=Histogram.getHistogramList().elements();e.hasMoreElements();){
-            Histogram h=(Histogram)e.nextElement();
-            if (h.getType()==type) c.addItem(h.getName());
-        }
-    }
-
-    /**
      * add histograms of type type1 and type2 to chooser
      */
     private void addChooserHists(JComboBox c, int type1, int type2){
@@ -297,7 +280,7 @@ Observer {
         String name;
         double [] in1,in2,out;
         double [] err1,err2,errOut;
-        int i,j;
+        int i;
 
         try {//read information for first histogram
             fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();

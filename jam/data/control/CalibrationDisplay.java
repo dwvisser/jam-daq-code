@@ -229,7 +229,6 @@ ItemListener, WindowListener {
     private void setCoefficients() throws DataException {
         double coeff [] =new double[numberTerms];
         int i=0;
-        Histogram currentHist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
         CalibrationFunction calibFunction=currentHistogram.getCalibration();
         //silently ignore if histogram null
         if (calibFunction!=null){
