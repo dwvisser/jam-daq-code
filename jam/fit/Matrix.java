@@ -414,7 +414,7 @@ public class Matrix {
 			a1, a2 represent the columns/rows to swap
 		*/
 		Matrix p = new Matrix(this);
-		int i, j;
+		int i;
 		if (c == 'r') {
 			for (i = 0; i < columns; i++) {
 				p.element[a1][i] = this.element[a2][i];
@@ -614,7 +614,7 @@ public class Matrix {
 		Matrix P = new Matrix(rows, columns, 'I');
 		Matrix I = new Matrix(rows, columns, 'I');
 		Matrix A = new Matrix(this);
-		int i, j, k;
+		int i, j;
 		Matrix v;
 
 		for (j = 0; j < columns - 2; j++) {
@@ -949,10 +949,12 @@ public class Matrix {
 		if (hi0 > lo0) {
 			mid = a[(lo0 + hi0) / 2];
 			while (lo <= hi) {
-				while ((lo < hi0) && (a[lo] < mid))
+				while ((lo < hi0) && (a[lo] < mid)){
 					++lo;
-				while ((hi > lo0) && (a[hi] > mid))
+				}
+				while ((hi > lo0) && (a[hi] > mid)){
 					--hi;
+				}
 				if (lo <= hi) {
 					swap(a, lo, hi);
 					swap(index, lo, hi);
