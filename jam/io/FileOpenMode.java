@@ -6,7 +6,7 @@ package jam.io;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version May 3, 2004
  */
-public class FileOpenMode {
+public final class FileOpenMode {
 	
 	private final static int OPEN_VALUE = 0;
 	private final static int OPEN_ADDITIONAL_VALUE=1;	
@@ -29,6 +29,16 @@ public class FileOpenMode {
 	
 	public String toString(){
 	    return names[value];
+	}
+	
+	/**
+	 * Returns whether this is one of the "Open" modes, which means
+	 * that new data objects will get created by Jam from the data
+	 * in the file.
+	 * @return whether this is one of the "Open" modes
+	 */
+	public boolean isOpenMode(){
+	    return value==OPEN_VALUE||value==OPEN_ADDITIONAL_VALUE;
 	}
 	
 	/**
