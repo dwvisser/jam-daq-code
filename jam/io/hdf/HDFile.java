@@ -216,7 +216,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file");
 			}
-			seek(4);
+			seek(HDF_HEADER_NBYTES);
 			boolean doAgain = true;
 			do {
 				final int numDD = readShort(); //number of DD's

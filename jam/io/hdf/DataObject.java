@@ -20,121 +20,22 @@ import java.util.Set;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public abstract class DataObject {
+public abstract class DataObject implements HDFconstants {
 
 	/**
 	 * List of Data Objects in the file.
 	 */
 	private static List objectList=Collections.synchronizedList(new ArrayList());
-	/** Map of Data Objects in file with tag/ref as key */
-	private static Map tagRefMap=Collections.synchronizedMap(new HashMap());
-	/** Reference count, starts at 1 */
-	
-	
+	/** 
+	 * Map of Data Objects in file with tag/ref as key 
+	 */
+	private static Map tagRefMap=Collections.synchronizedMap(new HashMap());	
+	/** 
+	 * Count for references, to make sure references are unique 
+	 *  Reference count, starts at 1
+	 */
 	static short refCount;	
 
-	/**
-	 * Tag for machine type.  
-	 *
-	 * @see JavaMachineType
-	 */
-	public final static short DFTAG_MT = 107;
-
-	/**
-	 * HDF tag for Data identifier annotation
-	 *
-	 * @see DataIDAnnotation
-	 */
-	public final static short DFTAG_DIA = 105;
-
-	/**
-	 * HDF tag for Data identifier label.
-	 *
-	 * @see DataIDLabel
-	 */
-	public final static short DFTAG_DIL = 104;
-
-	/**
-	 * HDF tag for File Identifier.
-	 *
-	 * @see FileIdentifier
-	 */
-	public final static short DFTAG_FID = 100;
-
-	/**
-	 * HDF tag for File Description.
-	 *
-	 * @see FileDescription
-	 */
-	public final static short DFTAG_FD = 101;
-
-	/**
-	 * HDF tag for number type.
-	 *
-	 * @see NumberType
-	 */
-	public final static short DFTAG_NT = 0x006a;
-
-	/**
-	 * HDF tag for Library version number
-	 *
-	 * @see LibVersion
-	 */
-	public final static short DFTAG_VER = 30;
-
-	/**
-	 * HDF tag for Numerical Data Group
-	 *
-	 * @see NumericalDataGroup
-	 */
-	public final static short DFTAG_NDG = 720;
-
-	/**
-	 * HDF tag for Scientific Data
-	 *
-	 * @see ScientificData
-	 */
-	public final static short DFTAG_SD = 702;
-
-	/**
-	 * HDF tag for Scientific data dimension records
-	 *
-	 * @see ScientificDataDimension
-	 */
-	public final static short DFTAG_SDD = 701;
-
-	/**
-	 * HDF tag for Scientific data labels
-	 *
-	 * @see ScientificDataLabel
-	 */
-	public final static short DFTAG_SDL = 704;
-
-	/**
-	 * HDF tag for Scientific data scales
-	 */
-	public final static short DFTAG_SDS = 703;
-
-	/**
-	 * HDF tag for Vgroup
-	 *
-	 * @see VirtualGroup
-	 */
-	public final static short DFTAG_VG = 1965;
-
-	/**
-	 * HDF tag for Vdata description
-	 *
-	 * @see VdataDescription
-	 */
-	public final static short DFTAG_VH = 1962;
-
-	/**
-	 * HDF tag for Vdata
-	 *
-	 * @see Vdata
-	 */
-	public final static short DFTAG_VS = 1963;
 	
 	private static final Set ALL_TYPES = new HashSet(); 
 	static {

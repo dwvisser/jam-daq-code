@@ -120,7 +120,8 @@ final class ScientificData extends DataObject {
 //    		
 //    	}
     }
-
+    //FIXME KBS not used, but perhaps we should instead of 
+    //similar implementation in ConvertHDFObjToJamObj
     Object getData(HDFile infile, int sizeX, int sizeY) throws HDFException {
     	Object rval;
         if ( (rank == 1) && (numberType == NumberType.INT) ) {
