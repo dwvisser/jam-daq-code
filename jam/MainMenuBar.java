@@ -32,7 +32,7 @@ import javax.swing.JMenuItem;
  * @version 1.4
  * @since 30 Dec 2003
  */
-final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
+final class MainMenuBar implements Observer, CommandNames {
 
 	final private JamStatus status = JamStatus.instance();
 
@@ -47,6 +47,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	final private Display display;
 
 	final private MessageHandler console;
+	
+	final JMenuBar menubar=new JMenuBar();
 
 	final private JMenu calHist = new JMenu("Calibrate");
 
@@ -74,16 +76,16 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		Broadcaster.getSingletonInstance().addObserver(this);
 		console = status.getMessageHandler();
 		display = status.getDisplay();
-		add(getFileMenu());
-		add(getSetupMenu());
-		add(getControlMenu());
-		add(getHistogramMenu());
-		add(getGateMenu());
-		add(getScalerMenu());
-		add(getViewMenu());
-		add(getPreferencesMenu());
-		add(getFitMenu());
-		add(getHelp());
+		menubar.add(getFileMenu());
+		menubar.add(getSetupMenu());
+		menubar.add(getControlMenu());
+		menubar.add(getHistogramMenu());
+		menubar.add(getGateMenu());
+		menubar.add(getScalerMenu());
+		menubar.add(getViewMenu());
+		menubar.add(getPreferencesMenu());
+		menubar.add(getFitMenu());
+		menubar.add(getHelp());
 	}
 
 	private JMenu getFileMenu() {
@@ -170,7 +172,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private JMenu getGateMenu() {
 
 		final JMenu gate = new JMenu("Gate");
-		add(gate);
+		menubar.add(gate);
 		gate.add(getMenuItem(SHOW_NEW_GATE));
 		gate.add(getMenuItem(SHOW_ADD_GATE));
 		gate.add(getMenuItem(SHOW_SET_GATE));
@@ -186,7 +188,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 
 	private JMenu getScalerMenu() {
 		final JMenu scalers = new JMenu("Scalers");
-		add(scalers);
+		menubar.add(scalers);
 		scalers.add(getMenuItem(DISPLAY_SCALERS));
 		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
 		scalers.addSeparator();
@@ -196,7 +198,6 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu getFitMenu() {
-
 		fitting.add(getMenuItem(SHOW_FIT_NEW));
 		fitting.addSeparator();
 		return fitting;
@@ -205,7 +206,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private JMenu getHelp() {
 
 		final JMenu helpMenu = new JMenu("Help");
-		add(helpMenu);
+		menubar.add(helpMenu);
 		helpMenu.add(getMenuItem(HELP_ABOUT));
 		helpMenu.add(getMenuItem(USER_GUIDE));
 		helpMenu.add(getMenuItem(HELP_LICENSE));
@@ -281,10 +282,10 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		view.add(getMenuItem(SHOW_VIEW_NEW));
 		view.add(getMenuItem(SHOW_VIEW_DELETE));
 		view.addSeparator();		
-		Iterator viewNames =View.getNameIterator(); 
+		final Iterator viewNames =View.getNameList().iterator(); 
 		while(viewNames.hasNext()){
 			final String name=(String)viewNames.next();
-			JMenuItem viewItem = new JMenuItem(name);
+			final JMenuItem viewItem = new JMenuItem(name);
 			view.add(viewItem);
 			viewItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
