@@ -6,14 +6,13 @@ package jam.sort.stream;
  * @version 0.5
  * @since JDK 1.1
  */
-public class EventException extends Exception{
+public final class EventException extends Exception{
 
-    /**
-     * Constructor with an output message.
-     *
-     * @param msg the message to be output to the user
-     */
-    public EventException(String msg){
-	super(msg);
+    EventException(String msg){
+        super(msg);
+    }
+    
+    EventException(String msg, Throwable thrown){
+        super(msg,thrown);
     }
 }
