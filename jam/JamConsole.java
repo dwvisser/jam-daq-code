@@ -159,21 +159,24 @@ public class JamConsole
 			try {
 				doc.insertString(doc.getLength(), message, attr_normal);
 			} catch (BadLocationException e) {
-				System.err.println(e);
+				JOptionPane.showMessageDialog(this,e.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (part == CONTINUE) {
 			messageFile = messageFile + message;
 			try {
 				doc.insertString(doc.getLength(), message, attr_normal);
 			} catch (BadLocationException e) {
-				System.err.println(e);
+				JOptionPane.showMessageDialog(this,e.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (part == END) {
 			messageFile = messageFile + message + END_LINE;
 			try {
 				doc.insertString(doc.getLength(), message, attr_normal);
 			} catch (BadLocationException e) {
-				System.err.println(e);
+				JOptionPane.showMessageDialog(this,e.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 			trimLog();
 			textLog.setCaretPosition(doc.getLength());
@@ -193,7 +196,7 @@ public class JamConsole
 			msgLock = false;
 			notifyAll();
 		} else {
-			System.err.println("Error not a valid message part [JamConsole]");
+			throw new IllegalArgumentException("Error not a valid message part [JamConsole]");
 		}
 	}
 
@@ -217,7 +220,8 @@ public class JamConsole
 		try {
 			doc.insertString(doc.getLength(), message, attr_normal);
 		} catch (BadLocationException e) {
-			System.err.println(e);
+			JOptionPane.showMessageDialog(this,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
@@ -266,7 +270,8 @@ public class JamConsole
 		try {
 			doc.insertString(doc.getLength(), message, attr);
 		} catch (BadLocationException e) {
-			System.err.println(e);
+			JOptionPane.showMessageDialog(this,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
@@ -402,8 +407,9 @@ public class JamConsole
 			numberLines--;
 			try{
 				doc.remove(0,textLog.getText().indexOf(END_LINE)+END_LINE.length());
-			} catch (BadLocationException ble){
-				System.err.println(ble);
+			} catch (BadLocationException e){
+				JOptionPane.showMessageDialog(this,e.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -439,8 +445,8 @@ public class JamConsole
 				closeLogFile();
 			}
 		} catch (Exception e) {
-			System.err.println(
-				"Error closing log file in finalize [JamConsole]");
+			JOptionPane.showMessageDialog(this,e.getMessage(),
+			getClass().getName(),JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }
