@@ -32,7 +32,10 @@ public interface CommandNames {
 
 	/** Show dialog for defining a new histogram. */
 	String SHOW_NEW_HIST="shownewhist";
-	
+
+	/** Show dialog for defining a new histogram. */
+	String SHOW_HIST_ZERO="showhistzero";
+
 	/** Show dialog for defining a new gate. */
 	String SHOW_NEW_GATE="gateshownew";
 	

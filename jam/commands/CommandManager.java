@@ -40,7 +40,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(ADD_HDF, AddHDFCmd.class);
 		cmdMap.put(RELOAD_HDF, ReloadHDFCmd.class);
 		cmdMap.put(SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
-		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
+		cmdMap.put(SHOW_HIST_ZERO, ShowDialogZeroHistogram.class); 
+		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class); 
 		cmdMap.put(EXIT, ShowDialogExitCmd.class);
 		cmdMap.put(NEW, FileNewClearCmd.class);
 		cmdMap.put(PARAMETERS, ShowDialogParametersCmd.class);
@@ -51,7 +52,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(EXPORT_DAMM, ExportDamm.class);
 		cmdMap.put(EXPORT_SPE, ExportRadware.class);	
 		cmdMap.put(PRINT, Print.class);
-		cmdMap.put(PAGE_SETUP, PageSetupCmd.class);	
+		cmdMap.put(PAGE_SETUP, PageSetupCmd.class);	 
 		cmdMap.put(IMPORT_TEXT, ImportTextFile.class);
 		cmdMap.put(IMPORT_DAMM, ImportDamm.class);
 		cmdMap.put(IMPORT_SPE, ImportRadware.class);

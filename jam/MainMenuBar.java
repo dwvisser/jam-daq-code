@@ -285,16 +285,20 @@ final class MainMenuBar extends JMenuBar implements Observer {
 	
 	private JMenu getHistogramMenu(JamCommand jamCommand){
 		final JMenu histogram = new JMenu("Histogram");
+		
 		final JMenuItem histogramNew=new JMenuItem(commands.getAction(
 		CommandNames.SHOW_NEW_HIST));
 		histogram.add(histogramNew);
-		zeroHistogram.setActionCommand("zerohist");
-		zeroHistogram.addActionListener(jamCommand);
-		histogram.add(zeroHistogram);
+
+		final JMenuItem histogramZero=new JMenuItem(commands.getAction(
+		CommandNames.SHOW_HIST_ZERO));
+		histogram.add(histogramZero);
+		
 		histogram.add(commands.getAction(
 		CommandNames.DELETE_HISTOGRAM)).setAccelerator(KeyStroke.getKeyStroke(
 		KeyEvent.VK_D,CTRL_MASK));
 		histogram.add(calHist);
+		
 		final JMenuItem calibFit = new JMenuItem("Fit\u2026");
 		calibFit.setActionCommand("calfitlin");
 		calibFit.addActionListener(jamCommand);

@@ -201,8 +201,9 @@ public class JamCommand
 				sortControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			} else if ("zerohist".equals(incommand)) {
-				histogramControl.showZero();
+//Remove KBS				
+//			} else if ("zerohist".equals(incommand)) {
+//				histogramControl.showZero();
 			} else if ("project".equals(incommand)) {
 				projection.show();
 			} else if ("manipulate".equals(incommand)) {
