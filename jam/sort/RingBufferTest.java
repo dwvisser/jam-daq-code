@@ -3,11 +3,10 @@ package jam.sort;
 import junit.framework.TestCase;
 
 /**
- * JUnit tests for <code>jam.data.Histogram</data>.
+ * JUnit tests for <code>jam.sort.RingBuffer</data>.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @see Histogram
- * @see AllTests
+ * @see RingBuffer
  */
 public class RingBufferTest extends TestCase {
 
@@ -35,7 +34,7 @@ public class RingBufferTest extends TestCase {
 	/**
 	 * Test for <code>putBuffer()</code>.
 	 *
-	 * @see RingBuffer#putBuffer()
+	 * @see RingBuffer#putBuffer(byte [])
 	 */
 	public void testPut() {
 		for (int i=0; i<RingBuffer.NUMBER_BUFFERS/2; i++){
