@@ -23,7 +23,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final JLabel lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
 	final JComboBox histogramChooser =
 		new JComboBox(new HistogramComboBoxModel());
-	final JToggleButton boverLay = new JToggleButton("Overlay");
+	final JToggleButton boverLay = new JToggleButton(getHTML("<u>O</u>verlay"));
 	final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
 	final MessageHandler console;
 	final JamStatus status;
@@ -62,7 +62,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
-		histogramChooser.setToolTipText("Choose histogram to display.");
+		histogramChooser.setToolTipText(getHTML("<u>D</u>isplay chosen histogram."));
 		histogramChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				final Object item =
@@ -76,7 +76,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(histogramChooser);
-		boverLay.setToolTipText("Click to overlay next histogram chosen.");
+		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				synchronized (this) {
@@ -89,7 +89,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		});
 		pCenter.add(boverLay);
 		gateChooser.setRenderer(new GateListCellRenderer());
-		gateChooser.setToolTipText("Click to choose gate to display.");
+		gateChooser.setToolTipText("Display chosen gate.");
 		gateChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				final Object item =
@@ -151,6 +151,12 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	public void setRunState(RunState rs) {
 		lrunState.setBackground(rs.getColor());
 		lrunState.setText(rs.getLabel());
+	}
+	
+	private String getHTML(String body){
+		final StringBuffer rval=new StringBuffer("<html><body>").append(
+		body).append("</html></body>");
+		return rval.toString();
 	}
 
 	/**

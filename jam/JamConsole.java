@@ -104,6 +104,8 @@ public class JamConsole
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
 		textLog = new JTextPane();
+		textLog.setToolTipText(
+		"After setup, this log is (usually) written to a file, too.");
 		doc = textLog.getStyledDocument();
 		attr_normal = new SimpleAttributeSet();
 		attr_warning = new SimpleAttributeSet();
@@ -118,6 +120,7 @@ public class JamConsole
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
 		textIn = new JTextField();
+		textIn.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(this);
 		newMessage = true;

@@ -272,16 +272,10 @@ public class MainMenuBar extends JMenuBar {
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
 		final JMenuItem saveascii = new JMenuItem(new ExportAction(ieASCII));
-		//saveascii.setActionCommand("saveascii");
-		//saveascii.addActionListener(jamCommand);
 		expHist.add(saveascii);
 		final JMenuItem savespe = new JMenuItem(new ExportAction(ieSpe));
-		//savespe.setActionCommand("savespe");
-		//savespe.addActionListener(jamCommand);
 		expHist.add(savespe);
 		final JMenuItem saveornl = new JMenuItem(new ExportAction(ieHis));
-		//saveornl.setActionCommand("saveornl");
-		//saveornl.addActionListener(jamCommand);
 		expHist.add(saveornl);
 		final JMenuItem batchexport = new JMenuItem("Batch Export...");
 		batchexport.setActionCommand("batchexport");
