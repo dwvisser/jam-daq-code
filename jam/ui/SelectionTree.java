@@ -5,6 +5,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.global.SortMode;
 
 import java.awt.BorderLayout;
@@ -37,7 +38,9 @@ public class SelectionTree extends JPanel implements Observer {
     private final DefaultTreeModel treeModel;
 
     private static final JamStatus STATUS = JamStatus.instance();
-
+    
+    private final MessageHandler MESSAGE_HANDLER;
+    
     private static final Broadcaster BROADCASTER = Broadcaster
             .getSingletonInstance();
 
@@ -51,6 +54,7 @@ public class SelectionTree extends JPanel implements Observer {
      */
     public SelectionTree() {
         super(new BorderLayout());
+        MESSAGE_HANDLER=STATUS.getMessageHandler();
         BROADCASTER.addObserver(this);
         final Dimension dim = getMinimumSize();
         dim.width = 160;
@@ -126,6 +130,7 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private synchronized void select(TreePath[] paths) {
         /* Syncronize events should not fire events */
+    	TreePath [] overlayPaths=null;
         if (!isSyncEvent()) {
             /*
              * Remove so we don't get repeated callbacks while selecting other
@@ -135,6 +140,8 @@ public class SelectionTree extends JPanel implements Observer {
             final TreePath prime = paths[0];
             final Object firstNode = ((DefaultMutableTreeNode) prime
                     .getLastPathComponent()).getUserObject();
+            
+            //Histogram selected
             if (firstNode instanceof Histogram) {
                 final Histogram hist = (Histogram) firstNode;
                 STATUS.setHistName(hist.getName());
@@ -142,16 +149,20 @@ public class SelectionTree extends JPanel implements Observer {
                 
                 //Do we have a overlay
                 if (paths.length>1) {
+                	//System.arraycopy(paths, 1, overlayPaths, 0, paths.length);                	
                 	if (hist.getDimensionality()==1) {
                 		selectOverlay(paths);
                 	}else{
-                		//FIXME KBS error messge "Cannot overlay on a 2 D histogram"
+                		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2 D histograms");
                 	}
+
                 } else {
                 	STATUS.clearOverlays();
                 }
                 
-                BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,hist);                	
+                BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,hist);
+                
+            //Gate selected                
             } else if (firstNode instanceof Gate) {
                 final Gate gate = (Gate) firstNode;
                 final Histogram hist = getAssociatedHist(prime);
@@ -175,7 +186,14 @@ public class SelectionTree extends JPanel implements Observer {
     	DefaultMutableTreeNode overlayNode=null;
     	Object overlayObject=null;
     	Histogram overlayHistogram;
-    
+    	overlayNode=((DefaultMutableTreeNode) paths[0].getLastPathComponent());
+    	/*
+    	if (hist.getDimensionality()==1) {
+    		selectOverlay(paths);
+    	}else{
+    		MESSAGE_HANDLER.errorOutln("Cannot overlay on a 2 D histograms");
+    	}
+    	*/
 		for (int i=1;i<paths.length;i++) {
 			overlayNode=((DefaultMutableTreeNode) paths[i].getLastPathComponent());
 			overlayObject=overlayNode.getUserObject();
@@ -186,7 +204,7 @@ public class SelectionTree extends JPanel implements Observer {
 				STATUS.addOverlayHistogramName(overlayHistogram.getName());
 			}else{                			
 				tree.removeSelectionPath(paths[i]);
-				//FIXME KBS error message "Cannot overlay 2 D histograms"
+				MESSAGE_HANDLER.errorOutln("Cannot overlay 2 D histograms");
 			}
 		} else {
 			//FIXME
@@ -199,30 +217,71 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private void refreshSelection() {
         final Histogram hist = STATUS.getCurrentHistogram();
+        final Gate gate = Gate.getGate(STATUS.getCurrentGateName());
+        final Histogram[] overlayHists=STATUS.getOverlayHistograms();
+        
         final TreePath histTreePath = pathForDataObject(hist);
         tree.setSelectionPath(histTreePath);
-        final Gate gate = Gate.getGate(STATUS.getCurrentGateName());
-        if (gate != null) {
-            final Enumeration nodeEnum = ((DefaultMutableTreeNode) histTreePath
-                    .getLastPathComponent()).breadthFirstEnumeration();
-            while (nodeEnum.hasMoreElements()) {
-                final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
-                        .nextElement();
-                Object obj = currentNode.getUserObject();
-                if (obj instanceof Gate) {
-                    if (obj == gate) {
-                        final TreePath gateTreePath = new TreePath(currentNode.getPath());
-                        tree.addSelectionPath(gateTreePath);
-                        break;
-                    }
-                }
-            } //End loop for all nodes
+
+
+        if (gate != null) {        	
+            refreshGateSelection(gate, histTreePath);        	
             /* Set path */
+        }
+        if (0<overlayHists.length){
+        	refreshOverlaySelection(overlayHists);
         }
         repaint();
         tree.repaint();
     }
+    /**
+     * 
+     * @param gate
+     * @param histTreePath
+     */
+    private void refreshGateSelection(Gate gate, TreePath histTreePath){
+    	DefaultMutableTreeNode currentNode;
+    	Object currentObject;
+    	//Iterage over all nodes below histogram node 
+    	final Enumeration nodeEnum = ((DefaultMutableTreeNode) histTreePath
+                    .getLastPathComponent()).breadthFirstEnumeration();
+        while (nodeEnum.hasMoreElements()) {
+            currentNode = (DefaultMutableTreeNode) nodeEnum.nextElement();
+            currentObject = currentNode.getUserObject();
+            if (currentObject instanceof Gate && currentObject==gate) {
+                final TreePath gateTreePath = new TreePath(currentNode.getPath());
+                tree.addSelectionPath(gateTreePath);
+                break;
+            }
+       } //End loop for all nodes    	
+    }
+    /**
+     * 
+     * @param overlayHists
+     * @param histTreePath
+     */
+    private void refreshOverlaySelection(Histogram [] overlayHists){
+    	DefaultMutableTreeNode currentNode;
+    	Object currentObject;
+    	DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) tree.getModel().getRoot();
+    	//Iterage over all nodes below root node 
+    	final Enumeration nodeEnum = rootNode.breadthFirstEnumeration();
+    	//Loop over nodes
+        while (nodeEnum.hasMoreElements()) {
+            currentNode = (DefaultMutableTreeNode) nodeEnum.nextElement();
+            currentObject = currentNode.getUserObject();
+            if (currentObject instanceof Histogram)
+            	//Loop over histograms
+            	for (int i=0; i<overlayHists.length; i++){
+            		if(currentObject==overlayHists[i]) {
+                        final TreePath gateTreePath = new TreePath(currentNode.getPath());
+                        tree.addSelectionPath(gateTreePath);
+                        break;                        
+            	}//End loop histograms
+            }
+       } //End loop for all nodes    	
 
+    }
     /*
      * non-javadoc: Helper method to get TreePath for a data object
      */
