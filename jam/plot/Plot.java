@@ -46,19 +46,19 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
 	 */
 	static final class Zoom {
-		private static final int in = 1;
+		private static final int INT_IN = 1;
 
-		private static final int out = 2;
+		private static final int INT_OUT = 2;
 
 		/**
 		 * Zoom in.
 		 */
-		public static final Zoom IN = new Zoom(in);
+		public static final Zoom IN = new Zoom(INT_IN);
 
 		/**
 		 * Zoom out.
 		 */
-		public static final Zoom OUT = new Zoom(out);
+		public static final Zoom OUT = new Zoom(INT_OUT);
 
 		private final int direction;
 
@@ -126,7 +126,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		//FIXME KBS tempory test
 		//enableScrolling(false);
 		//Enable prefernce
-		prefs.addPreferenceChangeListener(this);
+		PREFS.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * 
 	 * @return <code>true</code> if this plot contains a histogram
 	 */
-	protected boolean HasHistogram(){
+	protected boolean hasHistogram(){
 		return hasHistogram;
 	}
 
