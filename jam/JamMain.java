@@ -114,8 +114,6 @@ public class JamMain extends JFrame {
 		});
 		/* class to distrute events to all listeners */
 		broadcaster = new Broadcaster();
-		final int posxy=50;
-		this.setLocation(posxy, posxy);
 		this.setResizable(true);
 		me.setLayout(new BorderLayout());
 		console = new JamConsole();
@@ -165,6 +163,9 @@ public class JamMain extends JFrame {
 				pack();
 				selectBar.setChoosersToFirstItems();
 				splitCenter.setResizeWeight(0.5);
+				final int posx=50;
+				final int posy=0;
+				setLocation(posx, posy);
 				show();
 				/* print out where config files were read from */
 				jamProperties.setMessageHandler(console);
