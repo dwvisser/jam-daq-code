@@ -15,7 +15,12 @@ public abstract class DataControl {
 	public DataControl() {
 		controllers.add(this);
 	}
-
+	/**
+	 * Remove self from list of controllers
+	 */
+	public void finalize() {
+		controllers.remove(this);
+	}
 	/**
 	 * Setup all instances of <code>DataControl</code>.
 	 */
