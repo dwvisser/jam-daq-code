@@ -4,8 +4,6 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
