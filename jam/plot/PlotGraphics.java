@@ -777,7 +777,7 @@ class PlotGraphics  {
 		//colorThresholds = new int[numberColors];
 		/*colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
 				numberColors, plotLimits.getScale());*/
-		colors.setColorThresholds(minCount, maxCount);
+		colors.setRange(minCount, maxCount);
 		final int [] colorThresholds=colors.getColorThresholds();
 		final int numberColors = colorThresholds.length;
 		final int textHeight = (fm.getAscent());
@@ -802,16 +802,14 @@ class PlotGraphics  {
 
 	void drawScale2d() {
 		final Scale scale=plotLimits.getScale();
-		final ColorScale colors = new GradientColorScale(minCount, maxCount,
-				scale);
+		final ColorScale colors = GradientColorScale.getScale(scale);
+		colors.setRange(minCount,maxCount);
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
 		setGraphicsFont(font);
 		int textHeight = (fm.getAscent());
-		/*colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
-				numberColors, plotLimits.getScale());*/
 		final DiscreteColorScale dcs=DiscreteColorScale.getScale(scale);
-		dcs.setColorThresholds(lowerLimit,upperLimit);
+		dcs.setRange(lowerLimit,upperLimit);
 		final int [] colorThresholds=dcs.getColorThresholds();
 		final int numberColors=colorThresholds.length;
 		/* lowest threshold for color to be drawn */
@@ -863,7 +861,7 @@ class PlotGraphics  {
 		//colorThresholds = new int[numberColors];
 		/*colorThresholds = tm.getColorThresholds(minCounts, maxCounts,
 				numberColors, plotLimits.getScale());*/
-		colors.setColorThresholds(minCount,maxCount);
+		colors.setRange(minCount,maxCount);
 		/* for each bin */
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
@@ -914,8 +912,9 @@ class PlotGraphics  {
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
 			int maxChanX, int maxChanY) {
-		ColorScale colors = new GradientColorScale(minCount, maxCount,
+		final ColorScale colors = GradientColorScale.getScale(
 				plotLimits.getScale());
+		colors.setRange(minCount,maxCount);
 		/* loop over channels */
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
