@@ -11,7 +11,11 @@ import jam.global.SortMode;
 import jam.plot.Display;
 import jam.plot.PlotPrefs;
 import jam.plot.View;
+import jam.plot.color.ColorPrefs;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,11 +23,6 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
-//FIXME remove when clean
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
 /**
  * 
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
@@ -181,38 +180,6 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private JMenu getViewMenu() {
 		
 		updateViews();
-		//FIXME KBS remove
-		//final JamStatus status = JamStatus.instance();		
-/*		
-		JMenuItem view11 = new JMenuItem("View 1-1");
-		view.add(view11);
-		view11.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				status.getDisplay().setView(1, 1);
-			}
-		});
-		JMenuItem view12 = new JMenuItem("View 2-1");
-		view.add(view12);
-		view12.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				status.getDisplay().setView(2, 1);
-			}
-		});
-		JMenuItem view13 = new JMenuItem("View 3-1");
-		view.add(view13);
-		view13.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				status.getDisplay().setView(3, 1);
-			}
-		});
-		JMenuItem view22 = new JMenuItem("View 2-2");
-		view.add(view22);
-		view22.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				status.getDisplay().setView(2, 2);
-			}
-		});
-*/
 		return view;
 
 	}
@@ -252,7 +219,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_ON_EXPAND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
-		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
+		mPrefer.add(getMenuItem(ColorPrefs.SMOOTH_COLOR_SCALE));
+		mPrefer.add(getMenuItem(SHOW_GRADIENT_SETTINGS));
 		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING));
 		mPrefer.add(getMenuItem(PlotPrefs.DISPLAY_AXIS_LABELS));
 		mPrefer.addSeparator();
