@@ -153,13 +153,13 @@ public class ImpExpORNL extends ImpExp {
 
 			final String fileNameHis =
 				FileUtilities.setExtension(
-					getFileName(lastFile),
+					getFileName(getLastFile()),
 					"*.his",
 					FileUtilities.FORCE);
 			/* open .his file random access, read only */
 			final RandomAccessFile fileHis =
 				new RandomAccessFile(
-					new File(lastFile.getParentFile(), fileNameHis),
+					new File(getLastFile().getParentFile(), fileNameHis),
 					"r");
 			/* read in his file and load spectra */
 			for (int k = 0; k < totalHist; k++) {
@@ -388,20 +388,28 @@ public class ImpExpORNL extends ImpExp {
 	 *
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the msgHandler
 	 */
-	public void writeHist(OutputStream buffout, Histogram hist)
+	public void writeHist(OutputStream ignored, Histogram hist)
 		throws ImpExpException {
 		try {
-			String fileNameHis =
+			final String fileNameHis =
 				FileUtilities.setExtension(
 					getLastFile().getName(),
 					".his",
 					FileUtilities.FORCE);
-			File parent = lastFile.getParentFile();
-			File fileHis = new File(parent, fileNameHis);
-			FileOutputStream fosHis = new FileOutputStream(fileHis);
-			BufferedOutputStream buffoutHis = new BufferedOutputStream(fosHis);
-			msgHandler.messageOut("...");
-			writeDrr(buffout); //write out drr file
+			final String fileNameDRR =
+				FileUtilities.setExtension(
+					getLastFile().getName(),
+					".drr",
+					FileUtilities.FORCE);
+			final File parent = getLastFile().getParentFile();
+			final File fileHis = new File(parent, fileNameHis);
+			final FileOutputStream fosHis = new FileOutputStream(fileHis);
+			final BufferedOutputStream buffoutHis = new BufferedOutputStream(fosHis);
+			msgHandler.messageOut("\u2026");
+			final File fileDRR=new File(parent,fileNameDRR);
+			final FileOutputStream fosDRR=new FileOutputStream(fileDRR);
+			final BufferedOutputStream buffoutDRR=new BufferedOutputStream(fosDRR);
+			writeDrr(buffoutDRR); //write out drr file
 			msgHandler.messageOut(fileHis.getName());
 			writeHis(buffoutHis); //write out his file
 			msgHandler.messageOut(" to " + parent + " ");
@@ -633,7 +641,7 @@ public class ImpExpORNL extends ImpExp {
 				inFile=getFileOpen(msg);
 			}
 			if (inFile != null) { // if Open file was  not canceled
-				lastFile = inFile;
+				setLastFile(inFile);
 				final File f= (inFile.getName().endsWith("his")) ?
 				new File(inFile.getParent(),FileUtilities.setExtension(inFile.getName(),
 				"drr", FileUtilities.FORCE)) : inFile;
