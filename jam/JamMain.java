@@ -95,23 +95,24 @@ AcquisitionStatus, Observer {
      * Run State--Currently acuiring run data.
      */
     public final static int RUN_ON  =4;
+    
     /**
-     *
+     * Configuration information for Jam.
      */
     JamProperties jamProperties;
+    
     /**
-     * Histogram displayer
+     * Overall status of Jam.
      */
+    JamStatus status;
+    
     /**
-     * Overall status of jam
-     */
-    JamStatus jamStatus;
-    /**
-     * Event distributor
+     * Event distributor.
      */
     Broadcaster broadcaster;
+    
     /**
-     * Histogram displayer
+     * Histogram displayer.
      */
     Display display;
 
@@ -194,7 +195,8 @@ AcquisitionStatus, Observer {
         me=this.getContentPane();
         jamProperties=new JamProperties();//class that has properties
         jamProperties.loadProperties();//load properties from file
-        jamStatus=new JamStatus(this);//class that is statically available
+        status=JamStatus.instance();//class that is statically available
+		status.setAcqisitionStatus(this);
         broadcaster=new Broadcaster();//class to distrute events to all listeners
         //Frame layout and add element to frame
         this.setSize(700,700);
@@ -651,12 +653,12 @@ AcquisitionStatus, Observer {
             BroadcastEvent be=(BroadcastEvent)o;
             String lastHistName;
             if(be.getCommand()==BroadcastEvent.HISTOGRAM_NEW){
-                lastHistName=JamStatus.getCurrentHistogramName();
+                lastHistName=status.getCurrentHistogramName();
                 jamCommand.selectHistogram(Histogram.getHistogram(lastHistName));
             } else if (be.getCommand()==BroadcastEvent.HISTOGRAM_ADD) {
                 dataChanged();
             } else if(be.getCommand()==BroadcastEvent.GATE_ADD){
-                lastHistName=JamStatus.getCurrentHistogramName();
+                lastHistName=status.getCurrentHistogramName();
                 jamCommand.selectHistogram(Histogram.getHistogram(lastHistName));
                 gatesChanged();
             }
@@ -692,6 +694,7 @@ AcquisitionStatus, Observer {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ie) {
+                	console.errorOutln(ie.getMessage());
                 }
                 if (gcbm != null) gcbm.changeOccured();
             }
@@ -717,10 +720,10 @@ AcquisitionStatus, Observer {
             String name=((String)histogramChooser.getSelectedItem());
             Histogram h=Histogram.getHistogram(name);
             jamCommand.selectHistogram(h);
-            JamStatus.setCurrentHistogramName(name);
+            status.setCurrentHistogramName(name);
         } else {//no hists in list, don't add listener
             histogramChooser.setModel(noHistComboBoxModel);
-            JamStatus.setCurrentHistogramName("");
+            status.setCurrentHistogramName("");
         }
     }
 
@@ -802,10 +805,10 @@ AcquisitionStatus, Observer {
             setRunState(ACQ_OFF);
             if (mode==ONLINE_DISK){
                 rewindtape.setEnabled(false);
-                this.setTitle("Jam--Online Sorting TO disk");
+                this.setTitle("Jam - Online Sorting TO disk");
             } else {
                 rewindtape.setEnabled(true);
-                this.setTitle("Jam--Online Sorting TO tape)");
+                this.setTitle("Jam - Online Sorting TO tape)");
             }
             //offline sort
         }   else if(mode==OFFLINE_DISK||mode==OFFLINE_TAPE){
@@ -827,10 +830,10 @@ AcquisitionStatus, Observer {
             setRunState(ACQ_OFF);
             if(mode==OFFLINE_DISK){
                 rewindtape.setEnabled(false);
-                this.setTitle("Jam--Offline Sorting FROM disk");
+                this.setTitle("Jam - Offline Sorting FROM disk");
             } else {
                 rewindtape.setEnabled(true);
-                this.setTitle("Jam--Offline Sorting FROM tape");
+                this.setTitle("Jam - Offline Sorting FROM tape");
             }     
         } else if(mode==REMOTE){//remote display
             cstartacq.setEnabled(false);
@@ -848,11 +851,9 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(false);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle("Jam--Remote Mode");
-
-            // read in a file
+            this.setTitle("Jam - Remote Mode");
+            /* read in a file */
         } else if(mode==FILE){
-
             cstartacq.setEnabled(false);
             cstopacq.setEnabled(false);
             iflushacq.setEnabled(false);
@@ -870,7 +871,7 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(true);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle("Jam--"+openFileName);
+            this.setTitle("Jam - "+openFileName);
         }
         if(mode==NO_SORT){
             sortMode=mode;
@@ -889,7 +890,7 @@ AcquisitionStatus, Observer {
             impHist.setEnabled(true);
             rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
-            this.setTitle("Jam--sorting not enabled ");
+            this.setTitle("Jam - sorting not enabled");
         }
     }
 
