@@ -40,8 +40,10 @@ public class BroadcastEvent {
     private Object content;
 
     public BroadcastEvent(int command, Object content) throws GlobalException {
-        if (!isValid(command)) throw new GlobalException(getClass().getName()+
-        "(): invalid command parameter: "+command);
+        if (!isValid(command)) {
+        	throw new GlobalException(getClass().getName()+
+			"(): invalid command parameter: "+command);
+        }
         this.command=command;
         this.content=content;
     }

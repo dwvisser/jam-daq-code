@@ -37,8 +37,10 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
         if (s != RUN && s!=SUSPEND && s!=STOP){
             throw new GlobalException("GoodThread.setState("+s+"), invalid thread state");
         }
-        this.state = s;
-        if (this.state != SUSPEND) this.notify();
+        state = s;
+        if (state != SUSPEND) {
+        	notify();//wake up thread
+        } 
     }
 
     /**
@@ -52,7 +54,7 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
      * @return <code>true</code> if OK to resume, <code>false</code> if state is <code>STOP</code>
      */
     protected synchronized boolean checkState(){
-        while (this.state == SUSPEND) {
+        while (state == SUSPEND) {
             try {
                 wait();
             } catch (InterruptedException ie) {
@@ -62,7 +64,7 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
 				JOptionPane.ERROR_MESSAGE);
             }
         }
-        return (this.state == RUN);
+        return (state == RUN);
     }
 
     public String toString() {
