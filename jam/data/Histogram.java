@@ -363,7 +363,7 @@ public abstract class Histogram {
 	 * @param nameSet contains the existing names
 	 * @return unique name
 	 */
-	protected String  makeUniqueName(String name, Set nameSet) {
+	private final String makeUniqueName(String name, Set nameSet) {
 		final StringUtilities stringUtil = StringUtilities.instance();		
 		String nameTemp = stringUtil.makeLength(name, NAME_LENGTH);
 		boolean warn=name.length()>nameTemp.length();
