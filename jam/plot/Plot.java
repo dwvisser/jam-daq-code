@@ -99,6 +99,7 @@ public abstract class Plot extends JPanel  {
     protected int sizeX;
     protected int sizeY;
     protected int type;
+    protected int number;
     protected String title;
     protected String axisLabelX;
     protected String axisLabelY;
@@ -189,6 +190,7 @@ public abstract class Plot extends JPanel  {
         currentHist=hist;
         if (hist!=null) {
             plotLimits=Limits.getLimits(hist);
+            number=hist.getNumber();
             title=hist.getTitle();
             axisLabelX=hist.getLabelX();
             axisLabelY=hist.getLabelY();
@@ -300,14 +302,14 @@ public abstract class Plot extends JPanel  {
      * @param channelX the x channel to be marked
      * @param channelY the y channel to be marked
      */
-    public abstract void markChannel(int channelX, int ChannelY);
+    public abstract void markChannel(int channelX, int channelY);
     
     /**
      * Mark Area
      * @param minChanX the lower x channel
-     * @param minchanY the lower y channel
+     * @param minChanY the lower y channel
      * @param maxChanX the upper x channel
-     * @param maxchanY the upper y channel
+     * @param maxChanY the upper y channel
      */
     public abstract void markArea(int minChanX, int maxChanX, int minChanY, int maxChanY);
     

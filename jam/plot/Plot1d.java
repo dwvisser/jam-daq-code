@@ -255,6 +255,7 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
+		graph.drawNumber(number);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);

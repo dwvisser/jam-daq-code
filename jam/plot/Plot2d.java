@@ -330,6 +330,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
         //draw labels and ticks after histogram so they are on top
         g.setColor(PlotColorMap.foreground);
         graph.drawTitle(title,PlotGraphics.TOP);
+        graph.drawNumber(number);
         graph.drawTicks(PlotGraphics.BOTTOM);
         graph.drawLabels(PlotGraphics.BOTTOM);
         graph.drawTicks (PlotGraphics.LEFT);

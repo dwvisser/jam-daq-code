@@ -47,11 +47,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 	static final int ONE_DIMENSION = 1;
 	static final int TWO_DIMENSION = 2;
 
-	//static final int LINEAR = 0;
-	//static final int LOG = 1;
-
+	/* fake zero for Log scale  1/2 a count */
 	static final double LOG_FAKE_ZERO = 0.5;
-	//fake zero for Log scale  1/2 a count
 
 	//  current stuff to draw font, and font metrics and colors
 	private Graphics g;
@@ -74,8 +71,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	private Limits plotLimits;
 	/** is the plot 1d or 2d */
 	private int plotType;
-	/** is linear or log */
-	//private int scale;
+
 	/**
 	 * variable for converting pixels to data and data to pixels
 	 */
@@ -293,6 +289,17 @@ class PlotGraphics implements PlotGraphicsLayout {
 				viewMiddle().x - offset / 2,
 				viewTop - TITLE_OFFSET_TOP);
 		}
+	}
+	
+	public void drawNumber(int number){
+		final String s=Integer.toString(number);
+		final int width=fm.stringWidth(s);
+		final int x=this.viewLeft-TITLE_OFFSET_TOP-width;
+		final int y=viewTop - TITLE_OFFSET_TOP;
+		final Color c=g.getColor();
+		g.setColor(Color.BLACK);
+		g.drawString(s,x,y);
+		g.setColor(c);
 	}
 
 	/**
