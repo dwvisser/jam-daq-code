@@ -239,7 +239,7 @@ public class Toolbar extends JToolBar implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
-		action.doCommand(command);
+		action.doCommand(command,false);
 	}
 
 }
