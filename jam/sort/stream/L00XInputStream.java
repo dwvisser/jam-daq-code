@@ -177,17 +177,5 @@ public class L00XInputStream extends EventInputStream implements L002Parameters 
     public synchronized boolean isEndRun(short dataWord){
         return (dataWord==RUN_END_MARKER);
     }
-
-    /*protected void setScalerValue(short parameterNumber, int value){
-    Scaler s=(Scaler)scalerTable.get(new Short(parameterNumber));
-    if (s != null) {
-    //System.err.println("Scaler: "+parameterNumber+" set to: "+value);
-    //NOT sure if we should update scaler values this way, though it works.
-    //s.setValue(value);
-    } else {
-    console.warningOutln("Invalid scaler parameter number: "+parameterNumber);
-    }
-    }*/
-
 }
 
