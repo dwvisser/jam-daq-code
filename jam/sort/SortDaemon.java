@@ -244,8 +244,7 @@ public class SortDaemon extends GoodThread {
             } else if (!sortLoop){
                 //do nothing, let thread end
             } else {//we have unknown status
-                //unrecoverable error should not be here
-                System.err.println("Error Sorter, Unknown eventInput status = "+status);
+                /* unrecoverable error should not be here */
                 throw new SortException("Sorter stopped due to unknown status: "+status);
             }
             yield();
