@@ -158,8 +158,10 @@ public class JamCommand
 		help = new Help(jamMain, console);//Help window
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		addObservers();
-		console.setCommandListener(display);
+		
 		jamCmdMgr = new JamCmdManager(JamStatus.instance(), console, broadcaster);
+		console.addCommandListener(jamCmdMgr);
+		console.addCommandListener(display);
 	}
 	
 	/**
@@ -225,7 +227,7 @@ public class JamCommand
 				paramControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
-			//KBS} else if ("newhist".equals(incommand)) {
+			//KBS} else if ("shownewhist".equals(incommand)) {
 			//	histogramControl.showNew();
 			} else if ("zerohist".equals(incommand)) {
 				histogramControl.showZero();
