@@ -1,15 +1,12 @@
 package jam;
 import jam.data.DataBase;
-import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.SortMode;
-import jam.global.Sorter;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
@@ -19,9 +16,7 @@ import jam.sort.stream.EventOutputStream;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.ItemSelectable;
 import java.awt.Label;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
@@ -29,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -37,17 +31,12 @@ import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -57,10 +46,8 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @version 1.1
  */
-public final class SetupSortOff extends JDialog implements ItemListener {
-	
-	private static final JamStatus STATUS=JamStatus.instance();
-
+public final class SetupSortOff extends AbstractSetup {
+    
     class ApplyActionListener implements ActionListener{
 
     	/**
@@ -78,19 +65,21 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 			if (STATUS.canSetup()) {
 				resetSort();//clear current data areas and kill daemons
 				loadSorter();
+		        loadEventInput();
+		        loadEventOutput();
 				msgHandler.messageOutln("Loaded sort class '"+
-				sorter.getClass().getName()+
+				sortRoutine.getClass().getName()+
 				"', event instream class '"
 				+eventInput.getClass().getName()+
 				"', and event outstream class '"+
 				eventOutput.getClass().getName()+"'");
-				if (sorter != null) {
+				if (sortRoutine != null) {
 					setupSort();      //create data areas and daemons
 					msgHandler.messageOutln("Daemons and dialogs initialized.");
 				}
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				if (dispose) {
-					dispose();
+					dialog.dispose();
 				}
 			} else {
 				throw new JamException(classname+
@@ -107,26 +96,16 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 	private final static String CANCEL="Cancel";
 	private final static String SETUP_LOCKED="Setup Locked";
 
-	private transient final String defSortPath, defSortRout,
+	private transient final String defSortRout,
 	defInStream,
     defOutStream;
 
     /* handles we need */
-    final transient private Frame frame;
     final transient private SortControl sortControl;
     final transient private DisplayCounters dispCount;
     final static private Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
     final transient private MessageHandler msgHandler;
     private transient SortDaemon sortDaemon;
-
-    private transient final String classname;
-
-    /**
-     * User sort routine must extend this abstract class
-     */
-    private transient Sorter sorter;//the actual sort routine
-    private transient File classPath;//path to base of sort routines' classpath
-    private transient Class sortClass;
 
     /** Input stream, how tells how to read an event */
     private transient EventInputStream eventInput;
@@ -134,14 +113,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     /** Output stream, tells how to write an event */
     private transient EventOutputStream eventOutput;
 
-    //private File sortDirectory;
-
     /* dialog box widgets */
-    private transient final JTextField textSortPath;
     private transient final JCheckBox checkLock;
-    private transient final JToggleButton defaultPath,specify;
-    private transient final JButton bok, bapply, bbrowsef;
-    private transient final JComboBox sortChoice, inChooser, outChooser;
+    private transient final JButton bok, bapply;
+    private transient final JComboBox inChooser, outChooser;
 
 	private static SetupSortOff instance=null;
 	
@@ -150,7 +125,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 	 * 
 	 * @return the only instance of this class
 	 */
-	public static SetupSortOff getSingletonInstance(){
+	public static SetupSortOff getInstance(){
 		if (instance==null){
 			instance=new SetupSortOff();
 		}
@@ -158,11 +133,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 	}
 
     private SetupSortOff() {
-		super(STATUS.getFrame(),"Setup Offline",false);  //dialog box
-		classname=getClass().getName()+"--";
+        super("Setup Offline");
         defSortRout = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
-        defSortPath = JamProperties.getPropString(
+        final String defSortPath = JamProperties.getPropString(
         JamProperties.SORT_CLASSPATH);
         defInStream=JamProperties.getPropString(
         JamProperties.EVENT_INSTREAM);
@@ -170,18 +144,14 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         JamProperties.EVENT_OUTSTREAM);
         final boolean useDefault=(defSortPath.equals(
         JamProperties.DEFAULT_SORT_CLASSPATH));
-        if (!useDefault){
-			classPath=new File(defSortPath);
-        }
-        frame=STATUS.getFrame();
         sortControl=SortControl.getInstance();
         dispCount=DisplayCounters.getSingletonInstance();
         msgHandler=STATUS.getMessageHandler();
-        final Container contents=getContentPane();
-        setResizable(false);
+        final Container contents=dialog.getContentPane();
+        dialog.setResizable(false);
         final int posx=20;
         final int posy=50;
-        setLocation(posx,posy);
+        dialog.setLocation(posx,posy);
         contents.setLayout(new BorderLayout(5,5));
 		final int space=5;
 		final LayoutManager verticalGrid=new GridLayout(0,1,space,space);
@@ -189,17 +159,8 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 		contents.add(pNorth,BorderLayout.NORTH);
 		final JPanel pradio=new JPanel(new FlowLayout(FlowLayout.CENTER,space,space));
 		final ButtonGroup pathType=new ButtonGroup();
-		defaultPath=new JRadioButton("Use help.* and sort.* in default classpath",
-		useDefault);
-		specify=new JRadioButton("Specify a classpath",!useDefault);
-		defaultPath.setToolTipText("Don't include your sort routines in the default"+
-		" classpath if you want to be able to edit, recompile and reload them"+
-		" without first quitting Jam.");
-		specify.setToolTipText("Specify a path to load your sort routine from.");
 		pathType.add(defaultPath);
 		pathType.add(specify);
-		defaultPath.addItemListener(this);
-		specify.addItemListener(this);
 		pradio.add(defaultPath);
 		pradio.add(specify);
 		pNorth.add(pradio);
@@ -218,22 +179,8 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 		pEntry.setBorder(new EmptyBorder(2,0,0,0));//down so browse button lines up
 		contents.add(pEntry, BorderLayout.CENTER);
 		/* Path */
-        textSortPath =new JTextField(defSortPath);
-        textSortPath.setToolTipText("Use Browse button to change. \n"+
-        "May fail if classes have unresolvable references."+
-        "\n* use the sort.classpath property in your JamUser.ini "+
-        "file to set this automatically.");
-		textSortPath.setColumns(35);
-		textSortPath.setEditable(false);
         pEntry.add(textSortPath);
         /* Sort class */
-		sortChoice = new JComboBox();
-		sortChoice.setToolTipText("Select sort routine class");
-		sortChoice.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				sortClass = (Class) sortChoice.getSelectedItem();
-			}
-		});
 		selectSortRoutine(defSortRout,useDefault);
  		pEntry.add(sortChoice);
  		/* Input stream */
@@ -254,13 +201,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 		final JPanel pBrowse = new JPanel(new GridLayout(4,1, 0,0));
 		pBrowse.setBorder(new EmptyBorder(0,0,0,10));
 		contents.add(pBrowse, BorderLayout.EAST);
-		bbrowsef = new JButton("Browse...");
 		pBrowse.add(bbrowsef);
-		bbrowsef.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
-				setSortClassPath(getSortPath());
-			}
-		});
 		/* Button Panel */
         final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         final JPanel panelB=new JPanel();
@@ -276,7 +217,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         bapply.addActionListener(aal);
         final JButton bcancel =new JButton(new AbstractAction(CANCEL){
         	public void actionPerformed(ActionEvent event){
-        		dispose();
+        		dialog.dispose();
         	}
         });
         panelB.add(bcancel);
@@ -294,104 +235,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         	}
         });
         panelB.add(checkLock);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        pack();
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.pack();
     }
     
-    private void selectName(JComboBox jcb, Collection collection, String defInStream) {
-    	final Iterator iter=collection.iterator();
-		while (iter.hasNext()) {
-			final Class clazz = (Class) iter.next();
-			final String name = clazz.getName();
-			final boolean match = name.equals(defInStream);
-			if (match) {
-				jcb.setSelectedItem(clazz);
-				break;
-			}
-		}
-	}
-
-    private void setSortClassPath(File file){
-    	if (file.exists()){
-			classPath=file;
-			sortChoice.setModel(new DefaultComboBoxModel(
-			new Vector(getSortClasses(classPath))));
-			if (sortChoice.getModel().getSize()>0){
-				sortChoice.setSelectedIndex(0);
-			}
-			textSortPath.setText(classPath.getAbsolutePath());
-    	}
-    }
-
-	private Set getSortClasses(File path) {
-		return RTSI.find(path, Sorter.class);
-	}
-
-    /**
-     * Choice to unlock setup or
-     * choice between tape and disk.
-     *
-     * @param event the event indicating an item has changed
-     */
-    public void itemStateChanged(ItemEvent event){
-    	final ItemSelectable selectedItem=event.getItemSelectable();
-        if (selectedItem.equals(defaultPath) &&
-        defaultPath.isSelected()){
-        	bbrowsef.setEnabled(false);
-        	setChooserDefault(true);
-        } else if (selectedItem.equals(specify) && specify.isSelected()){
-        	bbrowsef.setEnabled(true);
-        	setChooserDefault(false);
-        }
-    }
-
-	private java.util.List setChooserDefault(boolean isDefault) {
-		final Vector vector= new Vector();
-		if (isDefault) {
-			final Set set = new LinkedHashSet();
-			set.addAll(RTSI.find("help", Sorter.class, true));
-			set.addAll(RTSI.find("sort", Sorter.class, true));
-			vector.addAll(set);
-		} else {
-			vector.addAll(getSortClasses(classPath));
-		}
-		sortChoice.setModel(new DefaultComboBoxModel(vector));
-		return vector;
-	}
-
-    /**
-     * Resolves the String objects into class names and loads the
-     * sorting class and event streams.
-     *
-     * @throws JamException if there's a problem
-     */
-    private void loadSorter() throws JamException {
-    	if (sortClass==null){
-    		sortClass=(Class)sortChoice.getSelectedItem();
-    	}
-        try {
-        	if (specify.isSelected()){
-        		/* we call loadClass() in order to guarantee latest version */
-				synchronized (this){
-					sorter= (Sorter)RTSI.loadClass(classPath,
-					sortClass.getName()).newInstance();// create sort class
-				}
-        	} else {//use default loader
-        		synchronized (this){
-        			sorter=(Sorter)sortClass.newInstance();
-        		}
-        	}
-        } catch (InstantiationException ie) {
-            throw new JamException(classname+
-            "Cannot instantiate sort routine: "+sortClass.getName());
-        } catch (IllegalAccessException iae) {
-            throw new JamException(classname+"Cannot access sort routine: "+
-            sortClass.getName());
-        }
-        loadEventInput();
-        loadEventOutput();
-    }
-
     private void loadEventInput() throws JamException {
         try {//create new event input stream class
             synchronized(this){
@@ -436,43 +283,20 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      * @throws JamException if there's a problem
      */
     private void setupSort() throws SortException, JamException {
-    	final StringBuffer message=new StringBuffer();
-    	final String sortName=sorter.getClass().getName();
-        try {
-            sorter.initialize();
-        } catch (Exception thrown) {
-        		message.append(classname).append("Exception in SortRoutine: ").
-				append(sortName).append(".initialize(); Message= '").
-				append(thrown.getClass().getName()).append(": ").append(thrown.getMessage()).append('\'');
-            throw new JamException(message.toString(),thrown);
-        } catch (OutOfMemoryError thrown) {
-            message.append(classname).append(" attempts to allocate too much memory. ");
-            message.append("Reduce its requirments or start Jam with more available heap space. ");
-            message.append("The current maximum amount of memory available to the JVM is ");
-            final double megabytes=Runtime.getRuntime().maxMemory()/(1024.0*1024.0);
-            message.append(megabytes).append(" MB.");
-            throw new JamException(message.toString(),thrown);
-        } catch (Throwable thrown) {
-    		message.append("Couldn't load ").append(sortName).
-			append("; You probably ").
-			append("need to re-compile it against the current version of Jam.");
-        	throw new JamException(message.toString(), thrown);
-        }
-        /* setup scaler, parameter, monitors, gate, dialog boxes */
-        AbstractControl.setupAll();
+        initializeSorter();
         /* setup sorting */
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);
         }
-        sortDaemon.setup(eventInput, sorter.getEventSize());
-        sortDaemon.setSorter(sorter);
+        sortDaemon.setup(eventInput, sortRoutine.getEventSize());
+        sortDaemon.setSorter(sortRoutine);
         /* eventInputStream to use get event size from sorting routine */
-        eventInput.setEventSize(sorter.getEventSize());
-        eventInput.setBufferSize(sorter.getBufferSize());
+        eventInput.setEventSize(sortRoutine.getEventSize());
+        eventInput.setBufferSize(sortRoutine.getBufferSize());
         /* give sortroutine output stream */
-        eventOutput.setEventSize(sorter.getEventSize());
-        eventOutput.setBufferSize(sorter.getBufferSize());
-		sorter.setEventOutputStream(eventOutput);
+        eventOutput.setEventSize(sortRoutine.getEventSize());
+        eventOutput.setBufferSize(sortRoutine.getBufferSize());
+		sortRoutine.setEventOutputStream(eventOutput);
         /* always setup diskDaemon */
         final DiskDaemon diskDaemon =new DiskDaemon(sortControl,  msgHandler);
         diskDaemon.setupOff(eventInput, eventOutput);
@@ -497,31 +321,12 @@ public final class SetupSortOff extends JDialog implements ItemListener {
             sortDaemon.setState(GoodThread.STOP);
             sortDaemon.setSorter(null);
         }
-        sorter=null;
+        sortRoutine=null;
         DataBase.getInstance().clearAllLists();
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         lockMode(false);
     }
 
-    /**
-     * Browses for the sort file.
-     *
-     * @return the directory to look in for event files
-     */
-    private File getSortPath(){
-    	File rval=classPath;
-        final JFileChooser chooser =new JFileChooser(classPath);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        final int option = chooser.showOpenDialog(frame);
-        /* save current values */
-        if (option == JFileChooser.APPROVE_OPTION &&
-        chooser.getSelectedFile() != null){
-            synchronized (this){
-            	rval=chooser.getSelectedFile();//save current directory
-            }
-        }
-        return rval;
-    }
 
     /**
      * Lock the setup if it is unlocked than the sort is stopped
@@ -543,7 +348,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            STATUS.setSortMode(SortMode.OFFLINE, sorter.getClass().getName() );
+            STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass().getName() );
             bbrowsef.setEnabled(false);
         } else{
             STATUS.setSortMode(SortMode.NO_SORT,"No Sort");

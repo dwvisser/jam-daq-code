@@ -1,7 +1,6 @@
 package jam;
 
 import jam.data.DataBase;
-import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -24,7 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,22 +31,20 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
@@ -67,11 +63,7 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.StorageDaemon
  */
-public final class SetupSortOn {
-
-	private final Frame frame;
-	
-	private final JDialog dialog;
+public final class SetupSortOn extends AbstractSetup {
 
 	private final RunControl runControl;
 
@@ -87,18 +79,14 @@ public final class SetupSortOn {
 	/* stuff for dialog box */
 	private final AbstractButton cdisk; //save events to disk
 
-	private final AbstractButton defaultPath, specify;
-
 	private final AbstractButton clog; //create a log file
 
-	private final AbstractButton bok, bapply, checkLock, bbrowsef, bbrowseh,
+	private final AbstractButton bok, bapply, checkLock, bbrowseh,
 			bbrowsed, bbrowsel;
-
-	private final JComboBox sortChoice;
 
 	private final JComboBox inStreamChooser, outStreamChooser;
 
-	private final JTextField textExpName, textSortPath, textPathHist,
+	private final JTextField textExpName, textPathHist,
 			textPathData;
 
 	private final JTextField textPathLog;
@@ -114,9 +102,7 @@ public final class SetupSortOn {
 
 	private File logDirectory;
 
-	private File sortClassPath;
-
-	private Class sortClass;
+	//private File sortClassPath;
 
 	/* sorting classes */
 	private SortDaemon sortDaemon;
@@ -124,8 +110,6 @@ public final class SetupSortOn {
 	private NetDaemon netDaemon;
 
 	private DiskDaemon diskDaemon;
-
-	private SortRoutine sortRoutine;
 
 	/* streams to read and write events */
 	private EventInputStream eventInputStream;
@@ -139,7 +123,7 @@ public final class SetupSortOn {
 	 * 
 	 * @return the only instance of this class
 	 */
-	public static SetupSortOn getSingletonInstance() {
+	public static SetupSortOn getInstance() {
 		if (instance == null) {
 			throw new IllegalStateException("Object not created yet.");
 		}
@@ -151,7 +135,7 @@ public final class SetupSortOn {
 	 * 
 	 * @param jc the console to use
 	 */
-	public static void createSingletonInstance(Console jc) {
+	public static void createInstance(Console jc) {
 		if (instance == null) {
 			instance = new SetupSortOn(jc);
 		} else {
@@ -160,7 +144,7 @@ public final class SetupSortOn {
 	}
 
 	private SetupSortOn(Console jc) {
-		dialog=new JDialog(STATUS.getFrame(), "Setup Online ", false);
+	    super("Setup Online");
 		final int fileTextColumns = 25;
 		final String defaultName = JamProperties
 				.getPropString(JamProperties.EXP_NAME);
@@ -178,14 +162,10 @@ public final class SetupSortOn {
 		final String defaultLog = JamProperties
 				.getPropString(JamProperties.LOG_PATH);
 		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
-		if (!useDefaultPath) {
-			sortClassPath = new File(defaultSortPath);
-		}
 		runControl = RunControl.getSingletonInstance();
 		displayCounters = DisplayCounters.getSingletonInstance();
 		jamConsole = jc;
 		frontEnd = STATUS.getFrontEndCommunication();
-		frame = STATUS.getFrame();
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
 		final Container dcp = dialog.getContentPane();
@@ -235,51 +215,14 @@ public final class SetupSortOn {
 				noSpace));
 		pEntries.add(pradio);
 		ButtonGroup pathType = new ButtonGroup();
-		defaultPath = new JRadioButton("help.* and sort.* under defaults",
-				useDefaultPath);
-		defaultPath
-				.setToolTipText("Don't include your sort routines in the default classpath if "
-						+ "you want to be able to edit, recompile and reload them without first quitting Jam.");
 		pathType.add(defaultPath);
 		pradio.add(defaultPath);
-		defaultPath.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (defaultPath.isSelected()) {
-					bbrowsef.setEnabled(false);
-					setChooserDefault(true);
-				}
-			}
-		});
-		specify = new JRadioButton("Select classpath", !useDefaultPath);
-		specify
-				.setToolTipText("Specify a classpath to dynamically load your sort routine from.");
 		pathType.add(specify);
 		pradio.add(specify);
-		specify.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (specify.isSelected()) {
-					bbrowsef.setEnabled(true);
-					setChooserDefault(false);
-				}
-			}
-		});
 		/* Class path text */
-		textSortPath = new JTextField(defaultSortPath);
-		textSortPath
-				.setToolTipText("Use Browse button to change. \nMay fail if classes have unresolvable references."
-						+ "\n* use the sort.classpath property in your JamUser.ini file to set this automatically.");
-		textSortPath.setColumns(35);
-		textSortPath.setEditable(false);
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
-		sortChoice = new JComboBox();
-		final java.util.List sortClassList = setChooserDefault(useDefaultPath);
-		sortChoice.setToolTipText("Select a class to be your sort routine.");
-		sortChoice.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				sortClass = (Class) sortChoice.getSelectedItem();
-			}
-		});
+		final List sortClassList = setChooserDefault(useDefaultPath);
 		Iterator it = sortClassList.iterator();
 		while (it.hasNext()) {
 			final Class c = (Class) it.next();
@@ -297,16 +240,7 @@ public final class SetupSortOn {
 		inStreamChooser = new JComboBox(new Vector(lhs));
 		inStreamChooser
 				.setToolTipText("Select the reader for your event data format.");
-		it = lhs.iterator();
-		while (it.hasNext()) {
-			Class c = (Class) it.next();
-			String name = c.getName();
-			boolean match = name.equals(defaultEventInStream);
-			if (match) {
-				inStreamChooser.setSelectedItem(c);
-				break;
-			}
-		}
+		selectName(inStreamChooser,lhs,defaultEventInStream);
 		pEntries.add(inStreamChooser);
 		/* Output stream classes */
 		lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
@@ -315,16 +249,7 @@ public final class SetupSortOn {
 		outStreamChooser = new JComboBox(new Vector(lhs));
 		outStreamChooser
 				.setToolTipText("Select the writer for your output event format.");
-		it = lhs.iterator();
-		while (it.hasNext()) {
-			final Class c = (Class) it.next();
-			final String name = c.getName();
-			boolean match = name.equals(defaultEventOutStream);
-			if (match) {
-				outStreamChooser.setSelectedItem(c);
-				break;
-			}
-		}
+		selectName(outStreamChooser,lhs,defaultEventOutStream);		
 		pEntries.add(outStreamChooser);
 		textPathHist = new JTextField(histDirectory.getPath());
 		textPathHist.setColumns(fileTextColumns);
@@ -376,16 +301,6 @@ public final class SetupSortOn {
 		final Dimension dummyDim = new Dimension(10, 10);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		bbrowsef = new JButton("Browse...");
-		bbrowsef.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				sortClassPath = getSortPath();
-				sortChoice.setModel(new DefaultComboBoxModel(new Vector(
-						getSortClasses(sortClassPath))));
-				sortChoice.setSelectedIndex(0);
-				textSortPath.setText(sortClassPath.getAbsolutePath());
-			}
-		});
 		pBrowse.add(bbrowsef);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
@@ -465,39 +380,6 @@ public final class SetupSortOn {
 		dialog.pack();
 	}
 
-	private java.util.List setChooserDefault(boolean isDefault) {
-		final Set set;
-		if (isDefault) {
-			set = new LinkedHashSet();
-			set.addAll(RTSI.find("help", SortRoutine.class, true));
-			set.addAll(RTSI.find("sort", SortRoutine.class, true));
-		} else {
-			set = getSortClasses(sortClassPath);
-		}
-		final Vector v = new Vector(set);
-		sortChoice.setModel(new DefaultComboBoxModel(v));
-		return v;
-	}
-
-	private Set getSortClasses(File path) {
-		return RTSI.find(path, jam.sort.SortRoutine.class);
-	}
-
-	/* non-javadoc:
-	 * Browses for the sort file.
-	 */
-	private File getSortPath() {
-		JFileChooser fd = new JFileChooser(sortClassPath);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(frame);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			sortClassPath = fd.getSelectedFile(); //save current directory
-		}
-		return sortClassPath;
-	}
-
 	private void apply(boolean dispose) {
 		try {
 			/* lock setup so fields cant be edited */
@@ -560,32 +442,6 @@ public final class SetupSortOn {
 		experimentName = textExpName.getText().trim();
 	}
 
-	/**
-	 * Load and instantize the sort file.
-	 * 
-	 * @throws JamException if there is a problem loading the sorter
-	 */
-	private void loadSorter() throws JamException {
-		if (sortClass == null) {
-			sortClass = (Class) sortChoice.getSelectedItem();
-		}
-		try { // create sort class
-			if (specify.isSelected()) {
-				/* We call loadClass() in order to guarantee latest version. */
-				sortRoutine = (SortRoutine) RTSI.loadClass(sortClassPath,
-						sortClass.getName()).newInstance();
-			} else { //use default loader
-				sortRoutine = (SortRoutine) sortClass.newInstance();
-			}
-		} catch (InstantiationException ie) {
-			throw new JamException("Cannot instantiate sort routine: "
-					+ sortClass.getName());
-		} catch (IllegalAccessException iae) {
-			throw new JamException(" Cannot access sort routine: "
-					+ sortClass.getName());
-		}
-	}
-
 	/* non-javadoc
 	 * Sets up the online sort process. Creates the necessary daemons and link
 	 * pipes between the processes.
@@ -594,26 +450,7 @@ public final class SetupSortOn {
 	 * @author Dale Visser
 	 */
 	private void setupAcq() throws SortException, JamException {
-	    final StringBuffer message = new StringBuffer();
-	    final String sortName=sortRoutine.getClass().getName();
-        try { //allocate data areas
-            sortRoutine.initialize();
-        } catch (Exception thrown) {
-            message.append(getClass().getName()).append("Exception in SortRoutine: ")
-                    .append(sortName).append(".initialize(); Message= '")
-                    .append(thrown.getClass().getName()).append(": ").append(
-                            thrown.getMessage()).append('\'');
-            throw new JamException(message.toString());
-        } catch (Throwable thrown) {
-            message
-                    .append("Couldn't load ")
-                    .append(sortName)
-                    .append("; You probably ")
-                    .append(
-                            "need to re-compile it against the current version of Jam.");
-            throw new JamException(message.toString());
-        }
-		AbstractControl.setupAll();
+	    initializeSorter();
 		/* interprocess buffering between daemons */
 		final RingBuffer sortingRing = new RingBuffer();
 		final RingBuffer storageRing = cdisk.isSelected() ? new RingBuffer()
@@ -726,7 +563,7 @@ public final class SetupSortOn {
 	private File getPath(File f) {
 		final JFileChooser fd = new JFileChooser(f);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = fd.showOpenDialog(frame);
+		final int option = fd.showOpenDialog(STATUS.getFrame());
 		final boolean approval = option == JFileChooser.APPROVE_OPTION;
 		final boolean selected = fd.getSelectedFile() != null;
 		return (approval && selected) ? fd.getSelectedFile() : f;
@@ -758,12 +595,5 @@ public final class SetupSortOn {
 		STATUS.setSortMode(sortMode, name);
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
-	}
-	
-	/**
-	 * @return the dialog
-	 */
-	public JDialog getDialog(){
-	    return dialog;
 	}
 }
