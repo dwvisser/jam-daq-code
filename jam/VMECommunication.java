@@ -313,7 +313,6 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
         } else {
             throw new IllegalStateException("No event parameters in map.");
         }
-        stringPacketDump(VMECommunication.VME_ADDRESSES,temp);
         VMEsend(VMECommunication.VME_ADDRESSES,temp);
     }
 
@@ -326,7 +325,6 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
      public void sendScalerInterval(int seconds) {
         final String message= seconds+"\n\0";
-        stringPacketDump(SCALER_INTERVAL,message);
         VMEsend(SCALER_INTERVAL,message);
     }
 
@@ -575,12 +573,6 @@ class VMECommunication  extends GoodThread implements FrontEndCommunication {
      */
     public int [] getScalers(){
         return scalerValues;
-    }
-
-    private void stringPacketDump(int type, String message) {
-        System.err.println("** PACKET BEGIN (type "+type+") **");
-        System.err.println(message);
-        System.err.println("*****  PACKET END   ******");
     }
 
     /**
