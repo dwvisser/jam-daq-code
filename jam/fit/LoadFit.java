@@ -1,14 +1,15 @@
 package jam.fit;
 import jam.JamException;
-import jam.JamMain;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
+import jam.global.JamStatus;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private static final String APPLY="Apply";
 	private static final String CANCEL="Cancel";
 
-	private final JamMain jamMain;
+	private final Frame jamMain;
 	private final Display display;
 	private final MessageHandler msgHandler;
 	private final JMenu menu;
@@ -55,10 +56,10 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param d the histogram display
 	 * @param mh the place to output text
 	 */
-	public LoadFit(JamMain jm, Display d, MessageHandler mh,
+	public LoadFit(Display d, MessageHandler mh,
 	JMenu jmenu) {
 		super();
-		jamMain = jm;
+		jamMain = JamStatus.instance().getFrame();
 		display = d;
 		msgHandler = mh;
 		menu=jmenu;
