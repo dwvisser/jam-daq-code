@@ -6,7 +6,6 @@ import jam.data.DataException;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -15,8 +14,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
@@ -26,7 +23,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -39,8 +35,8 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Manipulations extends AbstractControl implements PanelOKApplyCancelButtons.Listener,
-		WindowListener, Observer {
+public class Manipulations extends AbstractControl implements WindowListener,
+        Observer {
 
 	private static final String NEW_HIST = "NEW: ";
 	
@@ -182,51 +178,39 @@ public class Manipulations extends AbstractControl implements PanelOKApplyCancel
 				}
 			}
 		});
-
-
 		ttextto = new JTextField("combine", 20);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
 		pto.add(ttextto);
+		/* button panel */
+        final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
+                new PanelOKApplyCancelButtons.Listener() {
+                    public void ok() {
+                        apply();
+                        dispose();
+                    }
 
-		//button panel
-		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(this);
+                    public void apply() {
+                        try {
+                            manipulate();
+                            BROADCASTER
+                                    .broadcast(BroadcastEvent.Command.REFRESH);
+                            STATUS.setCurrentHistogram(hto);
+                            BROADCASTER.broadcast(
+                                    BroadcastEvent.Command.HISTOGRAM_SELECT,
+                                    hto);
+                        } catch (DataException je) {
+                            messageHandler.errorOutln(je.getMessage());
+                        }
+                    }
+
+                    public void cancel() {
+                        dispose();
+                    }
+                });
 		cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);
-		
 		pack();
-	}
-
-	public void ok(){
-		apply();
-		dispose();
-	}
-	
-	public void apply(){
-		try {
-			manipulate();
-			BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-			STATUS.setCurrentHistogram(hto);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
-
-		} catch (DataException je) {
-			messageHandler.errorOutln(je.getMessage());
-		}
-	}
-	
-	public void cancel(){
-		dispose();
-	}
-	
-	/**
-	 * An item state change indicates that a gate has been chosen.
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getSource() == cnorm || ie.getSource() == cplus
-				|| ie.getSource() == cminus || ie.getSource() == ctimes
-				|| ie.getSource() == cdiv) {
-			enableInputWith(!cnorm.isSelected()); 
-		}
 	}
 
 	/**
@@ -234,14 +218,12 @@ public class Manipulations extends AbstractControl implements PanelOKApplyCancel
 	 * broadcast events where there are new histograms or histograms added.
 	 */
 	public void update(Observable observable, Object o) {
-		BroadcastEvent be = (BroadcastEvent) o;
-
-		if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			doSetup();
-		} else if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_ADD) {
+		final BroadcastEvent be = (BroadcastEvent) o;
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command == BroadcastEvent.Command.HISTOGRAM_NEW ||
+		        command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
 		}
-
 	}
 
 	/**
@@ -297,7 +279,7 @@ public class Manipulations extends AbstractControl implements PanelOKApplyCancel
 				}
 			}
 		}
-		//Add Existing hisograms
+		/* Add Existing hisograms */
 		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
 			Group group = (Group)grpiter.next();
 			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
@@ -309,14 +291,6 @@ public class Manipulations extends AbstractControl implements PanelOKApplyCancel
 		}
 
 		comboBox.setSelectedIndex(0);
-		/*
-		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
-			Histogram h = (Histogram) e.next();
-			if ((h.getType() == type1) || (h.getType() == type2)) {
-				c.addItem(h.getFullName());
-			}
-		}
-		*/
 	}
 
 	/* non-javadoc:
