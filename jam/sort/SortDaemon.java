@@ -51,9 +51,7 @@ public class SortDaemon extends GoodThread {
 	 * Used for online only, holds data buffers from network.
 	 */
 	private RingBuffer ringBuffer;
-
-	private byte[] buffer;
-
+	
 	/* event information */ 
 	private int eventSize;
 
@@ -188,11 +186,14 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void sortOnline() throws Exception {
 		final RingInputStream ringInputStream=new RingInputStream();
+		byte[] buffer;
 		while (true) { //loop while acquisition on
-			controller.atSortStart(); //does nothing for online
+			//controller.atSortStart(); //does nothing for online
 			/* Get a new buffer and make an input stream out of it. */
-			if (ringBuffer.halfFull()) {
-				incSortInterval();
+			if (ringBuffer.isHalfFull()) {
+				increaseSortInterval();
+			} else if (ringBuffer.isEmpty()){
+				decreaseSortInterval();
 			}
 			buffer = ringBuffer.getBuffer();
 			ringInputStream.setBuffer(buffer);
@@ -355,7 +356,7 @@ public class SortDaemon extends GoodThread {
 	 * buffers in the ring buffer.
 	 */
 	public boolean caughtUp() {
-		return ringBuffer.empty();
+		return ringBuffer.isEmpty();
 	}
 
 	/**
@@ -425,10 +426,16 @@ public class SortDaemon extends GoodThread {
 
 	private int sortInterval = 1;
 
-	private synchronized void incSortInterval() {
+	private synchronized void increaseSortInterval() {
 		sortInterval++;
 		msgHandler.warningOutln("Sorting ring buffer half-full."
 				+ " Sort interval increased to " + sortInterval + ".");
+	}
+	
+	private synchronized void decreaseSortInterval(){
+		if (sortInterval>1){
+			sortInterval--;
+		}
 	}
 
 	/**
