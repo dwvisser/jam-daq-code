@@ -11,7 +11,10 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -30,9 +33,9 @@ class Plot1d extends Plot {
 
 	private int areaMark1, areaMark2;
 
-	private Histogram[] overlayHists;
+	private List overlayHists;
 
-	private double[][] countsOverlay;
+	private List countsOverlay=Collections.synchronizedList(new ArrayList());
 
 	/**
 	 * Constructor
@@ -45,23 +48,37 @@ class Plot1d extends Plot {
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms(Histogram[] hists) {
+	void overlayHistograms(List hists) {
 		displayingOverlay = true;
 		overlayHists = hists;
-		final int len = hists.length;
-		countsOverlay = new double[len][];
+		final int len = hists.size();
+		final int cos = countsOverlay.size();
+		if (cos > len){
+			countsOverlay.subList(len,cos-1).clear();
+		}
 		for (int i = 0; i < len; i++) {
-			final Histogram hOver = hists[i];
+			final int num=((Integer)hists.get(i)).intValue();
+			final Histogram hOver = Histogram.getHistogram(num);
 			final int sizex = hOver.getSizeX();
-			countsOverlay[i] = new double[sizex];
-			if (hOver.getType() == Histogram.ONE_DIM_INT) {
+			double [] ctOver;
+			if (i<countsOverlay.size()){
+				ctOver=(double [])countsOverlay.get(i);
+				if (ctOver.length != sizex){
+					ctOver=new double[sizex];
+					countsOverlay.set(i,ctOver);
+				}
+			} else {
+				ctOver=new double[sizex];
+				countsOverlay.add(ctOver);
+			}
+			final int type=hOver.getType();
+			if (type == Histogram.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hOver.getCounts();
 				for (int j = 0; j < sizex; j++) {
-					countsOverlay[i][j] = countsInt[j];
+					ctOver[j] = countsInt[j];
 				}
-			} else if (hOver.getType() == Histogram.ONE_DIM_DOUBLE) {
-				final double[] countsDble = (double[]) hOver.getCounts();
-				System.arraycopy(countsDble, 0, countsOverlay[i], 0, sizex);
+			} else if (type == Histogram.ONE_DIM_DOUBLE) {
+				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
 		}
 		repaint();
@@ -234,10 +251,10 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(hist.getTitle(), PlotGraphics.TOP);
-		final int len = displayingOverlay ? overlayHists.length : 0;
+		final int len = displayingOverlay ? overlayHists.size() : 0;
 		final int[] overlays = new int[len];
 		for (int i = 0; i < len; i++) {
-			overlays[i] = overlayHists[i].getNumber();
+			overlays[i] = ((Integer)overlayHists.get(i)).intValue();
 		}
 		graph.drawNumber(hist.getNumber(), overlays);
 		graph.drawTicks(PlotGraphics.BOTTOM);
@@ -287,15 +304,19 @@ class Plot1d extends Plot {
 	 */
 	protected void paintOverlay(Graphics g) {
 		final Graphics2D g2 = (Graphics2D) g;
-		final Composite prev = g2.getComposite();
+		/* I had compositing set here, but apparently, it's too many
+		 * small draws using compositing, causing a slight performance
+		 * issue. 
+		 */
+		/*final Composite prev = g2.getComposite();
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-				0.9f));
-		final int len = countsOverlay.length;
+				0.9f));*/
+		final int len = countsOverlay.size();
 		for (int i = 0; i < len; i++) {
 			g2.setColor(PlotColorMap.overlay[i % PlotColorMap.overlay.length]);
-			graph.drawHist(countsOverlay[i], binWidth);
+			graph.drawHist((double [])countsOverlay.get(i), binWidth);
 		}
-		g2.setComposite(prev);
+		//g2.setComposite(prev);
 	}
 
 	/**
