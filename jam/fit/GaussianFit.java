@@ -98,8 +98,10 @@ public class GaussianFit extends NonLinearFit {
 	public GaussianFit() {
 		super("GaussianFit");
 
-		//background=new Parameter("bg",Parameter.TEXT,"Background: A+B(x-Centroid)+C(x-Centroid)^2");
-		//equation=new Parameter("eq",Parameter.TEXT,"Peak: 2.354*Area/(Sqrt(2 pi)Width)*exp[-2.354^2(x-Centroid)^2/2 Width^2]");
+		Parameter background=new Parameter("Background: ",Parameter.TEXT);
+		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
+		Parameter equation=new Parameter("Peak: ",Parameter.TEXT);
+		equation.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
 		area =
 			new Parameter(
 				AREA,
@@ -128,10 +130,12 @@ public class GaussianFit extends NonLinearFit {
 				Parameter.ESTIMATE);
 		A.setEstimate(true);
 		B = new Parameter("B", Parameter.FIX);
-		B.setFix(true);
+		B.setFixed(true);
 		C = new Parameter("C", Parameter.FIX);
-		C.setFix(true);
+		C.setFixed(true);
 
+		addParameter(equation);
+		addParameter(background);
 		addParameter(area);
 		addParameter(centroid);
 		addParameter(width);

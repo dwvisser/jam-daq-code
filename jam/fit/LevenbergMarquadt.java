@@ -151,7 +151,7 @@ public class LevenbergMarquadt {
 		do { //eliminate non-double parameters
 			type = ((Parameter) (temp.get(j))).getType();
 			if (type == Parameter.DOUBLE) {
-				if (!((Parameter) (temp.get(j))).outputOption) {
+				if (!((Parameter) (temp.get(j))).isOutputOnly()) {
 					temp2[k] = (Parameter) (temp.get(j));
 					k++;
 				}
@@ -278,7 +278,7 @@ public class LevenbergMarquadt {
 			// after execution, tryParameters changed to new
 			j = 0;
 			for (l = 0; l < nPar; l++) {
-				if (!tryParameters[l].isFix()) {
+				if (!tryParameters[l].isFixed()) {
 					//System.out.print(tryParameters[l].getName()+": "+round(tryParameters[l].getDoubleValue(),3));
 					tryParameters[l].setValue(
 						tryParameters[l].getDoubleValue() + da.element[j][0]);
@@ -364,12 +364,12 @@ public class LevenbergMarquadt {
 			//setup workspace for MRQMIN magic
 			j = -1;
 			for (l = 0; l < nPar; l++) {
-				if (!params[l].isFix()) {
+				if (!params[l].isFixed()) {
 					weight = dyda[l] * sig2i;
 					j++;
 					k = -1;
 					for (m = 0; m <= l; m++) {
-						if (!params[m].isFix()) {
+						if (!params[m].isFixed()) {
 							k++;
 							space.element[j][k] =
 								space.element[j][k] + weight * dyda[m];
@@ -424,7 +424,7 @@ public class LevenbergMarquadt {
 		}
 		k = nVar - 1;
 		for (j = nPar - 1; j >= 0; j--) {
-			if (!parameters[j].isFix()) {
+			if (!parameters[j].isFixed()) {
 				for (i = 0; i < nPar; i++) {
 					temp2 = temp.element[i][k];
 					temp.element[i][k] = temp.element[i][j];

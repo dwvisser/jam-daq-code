@@ -212,7 +212,7 @@ public abstract class GaussianFit3 extends NonLinearFit {
 				Parameter.FIX,
 				Parameter.ESTIMATE);
 		area2.setValue(0.0);
-		area2.setFix(true);
+		area2.setFixed(true);
 		centroid2 =
 			new Parameter(
 				CENTROID2,
@@ -228,7 +228,7 @@ public abstract class GaussianFit3 extends NonLinearFit {
 				Parameter.FIX,
 				Parameter.ESTIMATE);
 		area3.setValue(0.0);
-		area3.setFix(true);
+		area3.setFixed(true);
 		centroid3 =
 			new Parameter(
 				CENTROID3,
@@ -245,9 +245,9 @@ public abstract class GaussianFit3 extends NonLinearFit {
 				Parameter.ESTIMATE);
 		A.setEstimate(true);
 		B = new Parameter("B", Parameter.FIX);
-		B.setFix(true);
+		B.setFixed(true);
 		C = new Parameter("C", Parameter.FIX);
-		C.setFix(true);
+		C.setFixed(true);
 
 		//addParameter(numPeaks);
 		addParameter(independentWidths);

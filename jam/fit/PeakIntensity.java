@@ -90,7 +90,7 @@ package jam.fit;
 		HighPeak.setValue(hp);
 		HighChannel.setValue(hc);		
     	s=0.0;sx=0.0;sxx=0.0;sy=0.0;sxy=0.0;syy=0.0;
-    	if (B.isFix()){//flat background
+    	if (B.isFixed()){//flat background
     		for (int i=lc;i<=hc; i++) {
     			sy += counts[i];
     			if (i==lp-1) i = hp;
