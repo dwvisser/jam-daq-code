@@ -59,6 +59,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
 		cmdMap.put(DELETE_HISTOGRAM, DeleteHistogram.class);
 		cmdMap.put(USER_GUIDE, ShowUserGuide.class);	
+		cmdMap.put(OPEN_SELECTED, OpenSelectedHistogram.class);
 	}
 	
 
