@@ -24,7 +24,7 @@ public final class VdataDescription extends DataObject {
     /**
      * Specifies how data records are interlaced in the Vdata record.
      * 
-     * @see #FULL_INTERLACE
+     * @see #INTERLACE
      * @see #NO_INTERLACE
      */
     private short interlace;
@@ -32,13 +32,13 @@ public final class VdataDescription extends DataObject {
     /**
      * Default, records are written with fields adjacent.
      */
-    private final static short FULL_INTERLACE = 0;
+    final static short INTERLACE = 0;
 
     /**
      * Data is written field by field. I.e., field_1 for record 1, record 2,
      * etc., then field_2...
      */
-    private final static short NO_INTERLACE = 1;
+    final static short NO_INTERLACE = 1;
 
     /**
      * Type for <code>short</code>.
@@ -128,7 +128,7 @@ public final class VdataDescription extends DataObject {
             throw new IllegalArgumentException(
                     "VdataDescription(): was not called with all same dimensions!");
         }
-        interlace = FULL_INTERLACE;
+        interlace = INTERLACE;
         fldnm = names;
         datatypes = types;
         order = orders;
@@ -140,36 +140,14 @@ public final class VdataDescription extends DataObject {
         offset = new short[nfields];
         ivsize = 0;
         for (int i = 0; i < nfields; i++) {
-            switch (types[i]) {
-            case DFNT_INT16:
-                isize[i] = (short) (order[i] * 2);
-                break;
-            case DFNT_INT32:
-                isize[i] = (short) (order[i] * 4);
-                break;
-            case DFNT_CHAR8:
-                isize[i] = order[i];
-                break;
-            case DFNT_FLT32:
-                isize[i] = (short) (order[i] * 4);
-                break;
-            case DFNT_DBL64:
-                isize[i] = (short) (order[i] * 8);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        "Unknown Vdata field type!, field: " + i + ", type: "
-                                + types[i]);
-            }
+            isize[i]=getIsize(types[i],order[i]);
             ivsize += isize[i];
         }
         offset[0] = 0;
+        // see p. 6-42 HDF 4.1r2 specs
+        int byteLength = 22 + 10 * nfields + name.length() + dataTypeName.length();
         for (int i = 1; i < nfields; i++) {
             offset[i] = (short) (offset[i - 1] + isize[i - 1]);
-        }
-        int byteLength = 22 + 10 * nfields + name.length() + dataTypeName.length();
-        // see p. 6-42 HDF 4.1r2 specs
-        for (int i = 0; i < nfields; i++) { // see p. 6-42 HDF 4.1r2 specs
             byteLength += names[i].length();
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -206,21 +184,44 @@ public final class VdataDescription extends DataObject {
             dos.writeShort(0); //unused bytes
             dos.writeByte(0); //unused additional (undocumented) byte
         } catch (IOException ioe) {
-        	throw new HDFException("Creating VDataDescription", ioe);
+            throw new HDFException("Creating VDataDescription", ioe);
         }
         bytes = baos.toByteArray();
     }
+    
+    private short getIsize(short type, short order){
+        final short rval;
+        switch (type) {
+        case DFNT_INT16:
+            rval = (short) (order * 2);
+            break;
+        case DFNT_INT32:
+            rval = (short) (order * 4);
+            break;
+        case DFNT_CHAR8:
+            rval = order;
+            break;
+        case DFNT_FLT32:
+            rval = (short) (order * 4);
+            break;
+        case DFNT_DBL64:
+            rval = (short) (order * 8);
+            break;
+        default:
+            throw new IllegalArgumentException(
+                    "Unknown Vdata field type: "
+                            + type);
+        }
+        return rval;
+    }
 
-    VdataDescription(byte[] data, short t, short reference) {
-        super(data, t, reference);
+    VdataDescription(byte[] data, short tag, short reference) {
+        super(data, tag, reference);
     }
 
     public void interpretBytes() throws HDFException {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        DataInputStream dis = new DataInputStream(bais);
-        short len;
-        byte[] temp;
-
+        final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        final DataInputStream dis = new DataInputStream(bais);
         try {
             interlace = dis.readShort();
             nvert = dis.readInt();
@@ -245,14 +246,14 @@ public final class VdataDescription extends DataObject {
             }
             final StringUtilities util = StringUtilities.instance();
             for (int i = 0; i < nfields; i++) {
-                len = dis.readShort();
-                temp = new byte[len];
-                dis.read(temp);
-                fldnm[i] = util.getASCIIstring(temp);
+                final short len = dis.readShort();
+                /*final byte [] temp = new byte[len];
+                dis.read(temp);*/
+                fldnm[i] = readASCIIstring(dis,len);
             }
-            //write out data number type
-            len = dis.readShort();
-            temp = new byte[len];
+            /* Write out data number type. */
+            short len = dis.readShort();
+            byte [] temp = new byte[len];
             dis.read(temp);
             name = util.getASCIIstring(temp);
             len = dis.readShort();
@@ -264,8 +265,17 @@ public final class VdataDescription extends DataObject {
             dis.readShort(); //should be version(=VH_VERSION)
             dis.readShort(); //no extension
         } catch (IOException ioe) {
-        	throw new HDFException("Interpret VDataDescription", ioe);
+            throw new HDFException("Interpret VDataDescription", ioe);
         }
+    }
+    
+    private String readASCIIstring(DataInputStream dataInput, int len)
+    throws IOException {
+        final StringUtilities util = StringUtilities.instance();
+        final byte[] temp=new byte[len];
+        dataInput.read(temp);
+        return util.getASCIIstring(temp);
+        
     }
 
     short getNumFields() {
@@ -285,7 +295,10 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getDimensions() {
-        return order;
+        final int len=order.length;
+        final short [] rval=new short[len];
+        System.arraycopy(order,0,rval,0,len);
+        return rval;
     }
 
     short getRowSize() {
@@ -293,7 +306,10 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getTypes() {
-        return datatypes;
+        final int len=datatypes.length;
+        final short [] rval=new short[len];
+        System.arraycopy(datatypes,0,rval,0,len);
+        return rval;
     }
 
     private String getName() {
@@ -304,16 +320,16 @@ public final class VdataDescription extends DataObject {
      * Returns the <code>VdataDescription</code> with the name specified.
      * Should only be called when the name is expected to be unique.
      * 
-     * @param in
+     * @param list
      *            should contain only VdataDescription objects
      * @param which
      *            type string showing what kind of info is contained
      * @return the data description with the given name
      */
-    static public VdataDescription ofName(List in, String which) {
+    static public VdataDescription ofName(List list, String which) {
         VdataDescription output = null;
-        for (Iterator temp = in.iterator(); temp.hasNext();) {
-            VdataDescription vdd = (VdataDescription) (temp.next());
+        for (final Iterator temp = list.iterator(); temp.hasNext();) {
+            final VdataDescription vdd = (VdataDescription) (temp.next());
             if (vdd.getName().equals(which)) {
                 output = vdd;
             }
@@ -322,12 +338,16 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getDataOffsets() {
-        return offset;
+        final int len=offset.length;
+        final short [] rval=new short[len];
+        System.arraycopy(offset,0,rval,0,len);
+        return rval;
     }
 
-    public String toString(){
-        final char c=':';
-        final String rval = dataTypeName+c+name+c+order.length+" columns";
+    public String toString() {
+        final char colon = ':';
+        final String rval = dataTypeName + colon + name + colon + order.length
+                + " columns";
         return rval;
     }
 }
