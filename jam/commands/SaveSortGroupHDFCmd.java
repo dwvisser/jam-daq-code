@@ -32,7 +32,7 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 		
 		Frame frame =status.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		
+		//Run status has sort group
 		Group sortGroup=null;
 		SortMode mode =status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK ||
@@ -42,7 +42,6 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 			//Find sort group
 			List groupList=Group.getGroupList();
 			Iterator iter =groupList.iterator();
-		
 			while (iter.hasNext()) {
 				Group group=(Group)iter.next();
 				if (group.getType() == Group.Type.SORT) {
@@ -50,6 +49,7 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 					break;
 				}
 			}
+			
 			if (sortGroup!=null) {
 				if (cmdParams == null || cmdParams.length==0) { //No file given		
 			        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
@@ -59,13 +59,15 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 			        if (option == JFileChooser.APPROVE_OPTION
 			                && jfile.getSelectedFile() != null) {
 			            final File file = jfile.getSelectedFile();
-			            //FIMXE need to create a new call
-			            hdfio.writeFile(true, true, true, true, file);
+			            
+			            hdfio.writeFile(file, sortGroup.getHistogramList());
 			        }
 				}else {
-					//hdfio.write
+					File file=(File)cmdParams[0];
+					hdfio.writeFile(file, sortGroup.getHistogramList());
 				}
 			}
+		//No sort group
 		} else {
 			throw new CommandException("Need to be in Sort mode to save sort group.");
 		}
