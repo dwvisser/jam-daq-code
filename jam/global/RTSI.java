@@ -29,11 +29,12 @@ public class RTSI {
 	 * class in the currently loaded packages.
 	 * 
 	 * @param tosubclassname the name of the class to inherit from
+	 * @param recurse whether to recurse into subfolders
 	 */
 	private static void find(String tosubclassname, boolean recurse) {
 		try {
-			Class tosubclass = Class.forName(tosubclassname);
-			Package[] pcks = Package.getPackages();
+			final Class tosubclass = Class.forName(tosubclassname);
+			final Package[] pcks = Package.getPackages();
 			System.out.println("Packages:");
 			for (int i = 0; i < pcks.length; i++) {
 				System.out.println("\t" + pcks[i].getName());
@@ -297,6 +298,8 @@ public class RTSI {
 		}
 		return rval;
 	}
+	
+	static final private String CLASSEXT=".class";
 
 	/**
 	 * Creates own <code>ClassLoader</code> using the given classpath in order to find all classes which are 
@@ -305,17 +308,19 @@ public class RTSI {
 	 * @param tosubclass type we are looking for
 	 * @param classpath string representing the folder at the base of the classpath
 	 * @param file where to start the search
-	 * @param loader the classloader, so we won't keep creating them in recursive calls
-	 * @return an alphabetically ordered set of classes assignable as <code>tosubclass</code>
+	 * @param loader the classloader, so we won't keep creating them in 
+	 * recursive calls
+	 * @return an alphabetically ordered set of classes assignable as 
+	 * <code>tosubclass</code>
 	 */
 	private static SortedSet getClassesRecursively(
 		Class tosubclass,
 		String classpath,
 		File file,
 		ClassLoader loader) {
-		SortedSet rval = new TreeSet();
+		final SortedSet rval = new TreeSet();
 		if (file.isDirectory()) {
-			File[] list = file.listFiles();
+			final File[] list = file.listFiles();
 			for (int i = 0; i < list.length; i++) {
 				rval.addAll(
 					getClassesRecursively(
@@ -325,8 +330,8 @@ public class RTSI {
 						loader));
 			}
 		} else { // we are only interested in .class files 
-			if (file.getName().endsWith(".class")) {
-				String fullpath = file.getPath();
+			if (file.getName().endsWith(CLASSEXT)) {
+				final String fullpath = file.getPath();
 				/* removes the .class extension */
 				String temp = fullpath.substring(0, fullpath.length() - 5);
 				if (temp.startsWith(classpath)) {
@@ -338,8 +343,8 @@ public class RTSI {
 					temp = temp.substring(1);
 				}
 				try {
-					Class c = loader.loadClass(temp);
-					if (canUseClassAs(tosubclass,c)) {
+					final Class cl = loader.loadClass(temp);
+					if (canUseClassAs(tosubclass,cl)) {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
@@ -350,6 +355,15 @@ public class RTSI {
 		return rval;
 	}
 
+	/**
+	 * Given the root of a classpath, find the given class and 
+	 * load it into memory, passing the reference to the Class
+	 * back to the caller.
+	 *
+	 * @param path to search
+	 * @param className fully qualified classname
+	 * @return the object referring to the Class, null if not found
+	 */
 	public static Class loadClass(File path, String className) {
 		Class rval = null;
 		URL url = null;
@@ -363,7 +377,7 @@ public class RTSI {
 		if (url == null) {
 			rval = null;
 		} else {
-			ClassLoader loader = new URLClassLoader(new URL[] { url });
+			final ClassLoader loader = new URLClassLoader(new URL[] { url });
 			try {
 				rval = loader.loadClass(className);
 			} catch (ClassNotFoundException e) {
@@ -373,6 +387,15 @@ public class RTSI {
 		return rval;
 	}
 
+	/**
+	* Find all valid instantiatable subclasses of the given classname.
+	* The first argument is the classname, and it is assumed the whole
+	* classpath will be searched if no other argument is given. If a 
+	* second argument is given, the first argument is the package to 
+	* search.
+	*
+	* @param args the command-line arguments
+	*/
 	public static void main(String[] args) {
 		if (args.length == 2) {
 			find(args[0], args[1], true);
