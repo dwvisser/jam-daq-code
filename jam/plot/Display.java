@@ -48,7 +48,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	/** Array of all avaliable plots */
 	private ArrayList plotList;
 	/** Current plot of plotList */
-	private Plot currentPlot;
+	private PlotContainer currentPlot;
 	/** The layout of the plots */
 	private PlotGraphicsLayout graphLayout;
 	/** Current  view */
@@ -126,27 +126,26 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		gridPanel.revalidate(); 
 		createPlots(numberPlots);
 		updateLayout();		
-		//Set properties for each plot
+		/* Set properties for each plot */
 		gridPanel.removeAll();
-		Plot plot=null;
-		//Set initial states for all plots
+		PlotContainer plotContainer=null;
+		/* Set initial states for all plots */
 		for (int i=0;i<numberPlots;i++){
-			plot =(Plot)plotList.get(i);
-			plot.removeAllPlotMouseListeners();
-			plot.setNumber(i);
-			plot.select(false);
-			plot.reset();
-			plot.removeAllPlotMouseListeners();			
-			gridPanel.add(plot);			
+			plotContainer =(PlotContainer)plotList.get(i);
+			plotContainer.removeAllPlotMouseListeners();
+			plotContainer.setNumber(i);
+			plotContainer.select(false);
+			plotContainer.reset();
+			plotContainer.removeAllPlotMouseListeners();			
+			gridPanel.add(plotContainer.getComponent());			
 			Histogram hist=currentView.getHistogram(i);
-			plot.displayHistogram(hist);
+			plotContainer.displayHistogram(hist);
 		}
 		updateLayout();
 		//Default set to first plot
 		currentPlot=null;
-		plot =(Plot)plotList.get(0);
-		plotSelected(plot);
-		
+		plotContainer =(PlotContainer)plotList.get(0);
+		plotSelected(plotContainer);
 	}
 
 	/**
@@ -160,17 +159,17 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		if (numberPlots==1) {
 			/* Single plot aways has axis showing */
 			if (isAxisLabels) {
-				plotLayout=Plot.LAYOUT_TYPE_LABELS;
+				plotLayout=PlotContainer.LAYOUT_TYPE_LABELS;
 			}else {
-				plotLayout=Plot.LAYOUT_TYPE_NO_LABELS;
+				plotLayout=PlotContainer.LAYOUT_TYPE_NO_LABELS;
 			}			
 			scrollTemp=true;
 		} else {
-			plotLayout=Plot.LAYOUT_TYPE_NO_LABELS_BORDER;
+			plotLayout=PlotContainer.LAYOUT_TYPE_NO_LABELS_BORDER;
 			scrollTemp=isScrolling;
 		}
 		for (int i=0;i<numberPlots;i++){
-			final Plot plot =(Plot)(plotList.get(i));
+			final PlotContainer plot =(PlotContainer)(plotList.get(i));
 			plot.setLayoutType(plotLayout);		
 			plot.enableScrolling(scrollTemp);
 		}
@@ -183,18 +182,19 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	private void createPlots(int numberPlots) {
 		for (int i=plotList.size();i<numberPlots;i++) {
-			final Plot plotTemp= new Plot(graphLayout, this);
+			final PlotContainer plotTemp= new PlotContainer(graphLayout, this);
 			plotList.add(plotTemp);
 		}
 	}
 	
 	/**
 	 * Display a histogram.
+	 * 
+	 * @param hist the histogram to display
 	 */
 	public void displayHistogram(Histogram hist) {
 		if (hist != null) {
 			if (!isOverlay){
-				final Limits lim = Limits.getLimits(hist);
 				currentPlot.removeAllPlotMouseListeners();
 				currentPlot.addPlotMouseListener(action);
 				currentPlot.setMarkArea(false);
@@ -252,6 +252,12 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	public void removeOverlays() {
 		currentPlot.removeOverlays();
 	}
+	
+	/**
+	 * Set whether there are overlays.
+	 * 
+	 * @param overlayState <code>true</code> if we are overlaying other histograms
+	 */
 	public void setOverlay(boolean overlayState){
 		isOverlay=overlayState;
 		if (isOverlay==false)
@@ -259,15 +265,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 	
 	/**
-	 * Handles call back of a plot selected
+	 * @see PlotSelectListener#plotSelected(Object)
 	 */
 	public void plotSelected(Object selectedObject){
-		Plot selectedPlot =(Plot)selectedObject;
+		final PlotContainer selectedPlot =(PlotContainer)selectedObject;
 		if (selectedPlot!=getPlot()) {
 			setPlot(selectedPlot);
-			Histogram hist =selectedPlot.getHistogram();
-		
-			//Tell the framework the current hist
+			final Histogram hist =selectedPlot.getHistogram();
+			/* Tell the framework the current hist */
 			if (hist!=null) {
 				status.setHistName(hist.getName());				 
 			}else{
@@ -277,24 +282,32 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);			
 		}
 	}
+	
 	/**
 	 * Update all the plots
 	 *
 	 */
 	void update(){
-		Iterator iter =plotList.iterator();
-		
+		final Iterator iter =plotList.iterator();
 		while( iter.hasNext()) {
-			Plot p=(Plot)iter.next();
+			PlotContainer p=(PlotContainer)iter.next();
 			p.update();
-		}
-		
+		}	
 	}
 
+	/**
+	 * Prepare to print to a page.
+	 * 
+	 * @param rfp ??
+	 * @param pf page layout
+	 */
 	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		getPlot().setRenderForPrinting(rfp, pf);
 	}
 
+	/**
+	 * @return a printable component
+	 */
 	public ComponentPrintable getComponentPrintable() {
 		return getPlot().getComponentPrintable(RunInfo.runNumber,
 				JamStatus.instance().getDate());
@@ -302,6 +315,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 
 	/**
 	 * Implementation of Observable interface to receive broadcast events.
+	 * 
+	 * @param observable ??
+	 * @param o the message
 	 */
 	public void update(Observable observable, Object o) {
 		final BroadcastEvent be = (BroadcastEvent) o;
@@ -334,6 +350,13 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 	}
 
+	/**
+	 * Set the peak find properties for the plot.
+	 * 
+	 * @param width of peaks to search for
+	 * @param sensitivity how significant the stats should be
+	 * @param cal whether to display channel or energy
+	 */
 	public void setPeakFindProperties(double width, double sensitivity,
 			boolean cal) {
 		synchronized (plotLock) {
@@ -344,6 +367,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		//displayHistogram();
 	}
 
+	/**
+	 * Display a given set of fit curves.
+	 * 
+	 * @param signals individual peak signals
+	 * @param background background function
+	 * @param residuals total fit minus actual counts
+	 * @param ll ??
+	 */
 	public void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
 		currentPlot.displayFit(signals, background, residuals, ll);
@@ -353,7 +384,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * Set a plot as the current plot
 	 * @param p
 	 */
-	private void setPlot(Plot p) {
+	private void setPlot(PlotContainer p) {
 		int i;
 		synchronized (plotLock) {		
 			/* Only do something if the plot has changed */ 
@@ -371,7 +402,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 				}
 				/* Change selected plot */
 				for (i=0;i<plotList.size();i++) {
-					((Plot)plotList.get(i)).select(false);
+					((PlotContainer)plotList.get(i)).select(false);
 				}
 				action.setDefiningGate(false);
 				p.select(true);
@@ -383,7 +414,10 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 	} 
 
-	public Plot getPlot() {
+	/**
+	 * @return the plot currently being displayed
+	 */
+	public PlotContainer getPlot() {
 		synchronized (plotLock) {
 			return currentPlot;
 		}
@@ -413,7 +447,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 
 	/**
-	 * Preferences changed
+	 * @see PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
 	 */
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
