@@ -43,25 +43,27 @@ public final class ImpExpSPE extends AbstractImpExp {
 	 *
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
-	public boolean openFile(File f) throws ImpExpException {
-		return openFile(f, "Import RadWare .spe file ");
+	public boolean openFile(File file) throws ImpExpException {
+		return openFile(file, "Import RadWare .spe file ");
 	}
 
 	/**
-	 * Prompts for file name and saves.
-	 *
-	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
-	 */
-	public void saveFile(Histogram hist) throws ImpExpException {
-		if (hist.getDimensionality() == 2) {
-			if (msgHandler != null)
-				msgHandler.errorOutln(
-					"Cannot write out 2 dimensional spe files");
-		} else {
-			saveFile("Export RadWare .spe file ", hist);
-		}
-
-	}
+     * Prompts for file name and saves.
+     * 
+     * @exception ImpExpException
+     *                all exceptions given to <code>ImpExpException</code>
+     *                display on the MessageHandler
+     */
+    public void saveFile(Histogram hist) throws ImpExpException {
+        if (hist.getDimensionality() == 2) {
+            if (msgHandler != null) {
+                msgHandler
+                        .errorOutln("Cannot write out 2 dimensional spe files");
+            }
+        } else {
+            saveFile("Export RadWare .spe file ", hist);
+        }
+    }
 
 	/**
 	 * Reads in SPE file. We read in size channels but histogram gets defined with
@@ -111,16 +113,10 @@ public final class ImpExpSPE extends AbstractImpExp {
 		}
 	}
 
-	/**
-	 * Write out SPE file. We throw out the last channel as jam has histograms have 
-	 * channel 0 to size which is size channels. We only write out size channels.
-	 *
-	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the msgHandler
-	 */
 	public void writeHist(OutputStream outStream, Histogram hist)
 		throws ImpExpException {
 		try {
-			DataOutputStream dos = new DataOutputStream(outStream);
+			final DataOutputStream dos = new DataOutputStream(outStream);
 			/* get data from histogram */
 			final StringBuffer name = new StringBuffer(hist.getFullName());
 			while (name.length() < NAME_LENGTH){
@@ -129,14 +125,13 @@ public final class ImpExpSPE extends AbstractImpExp {
 			final int size = hist.getSizeX();
 			final Histogram.Type type = hist.getType();
 			/* put data into a float array */
-			final float[] countsFlt = new float[size];
+			final float[] countsFlt;
 			if (type == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hist.getCounts();
-				for (int i = 0; i < size; i++) {
-					countsFlt[i] = countsInt[i];
-				}
+				countsFlt = copyIntToFloat(countsInt, size);
 			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 				final double[] countsDbl = (double[]) hist.getCounts();
+				countsFlt = new float[size];
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsDbl[i];
 				}
@@ -171,6 +166,14 @@ public final class ImpExpSPE extends AbstractImpExp {
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
+	}
+	
+	private float [] copyIntToFloat(int [] countsInt, int size){
+	    final float [] countsFlt=new float[size];
+		for (int i = 0; i < size; i++) {
+			countsFlt[i] = countsInt[i];
+		}
+		return countsFlt;
 	}
 	
 	public boolean canExport(){
