@@ -34,7 +34,7 @@ class AbstractExportFile extends AbstractImportExport {
 				importExport.saveFile(file,h);
 			}
 		} catch (ImpExpException iee) {
-			throw new CommandException(iee.getMessage());
+			throw new CommandException(iee);
 		}
 	}
 
@@ -59,7 +59,7 @@ class AbstractExportFile extends AbstractImportExport {
 				execute(cmdParams);
 			}
 		} catch (CommandException ce) {
-			throw new CommandListenerException(ce.getMessage());
+			throw new CommandListenerException(ce);
 		}
 	}
 }
