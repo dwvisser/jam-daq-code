@@ -259,21 +259,6 @@ public final class JamStatus {
 	public synchronized Histogram getCurrentHistogram(){
 		return Histogram.getHistogram(histName);
 	}
-	/**
-	 * Overlay histogram state
-	 * @param state
-	 */
-	/*public void setOverState(boolean state){
-		overlayState=state;
-	}*/
-	
-	/**
-	 * Overlay histogram state
-	 * @param state
-	 */
-	/*public boolean getOverState(){
-		return overlayState;
-	}*/
 	
 	/**
 	 * Adds an overlay <code>Histogram</code> name.
