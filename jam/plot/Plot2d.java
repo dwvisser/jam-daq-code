@@ -132,7 +132,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
         } else if (mode==GATE_CONTINUE) {
-            pointsGate.addElement(pChannel);
+            pointsGate.add(pChannel);
             //save data point
             lastPoint=pChannel;
             //erase last line
@@ -172,12 +172,12 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 
                 //remove last point
                 if((numberPointsSetGate>=1)) {
-                    pointsGate.removeElement(pointsGate.lastElement());
+                    pointsGate.remove(pointsGate.size()-1);
                     numberPointsSetGate--;
                 }
                 //go back a point
                 if((numberPointsSetGate>=1)) {
-                    lastPoint=(Point)pointsGate.lastElement();
+                    lastPoint=(Point)pointsGate.get(pointsGate.size()-1);
                     //erase last moving line
                     if(needErase) {
                         graphicsSetGate.setXORMode(Color.black);
@@ -185,7 +185,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
                         needErase=false;
                     }
                     //update variables
-                    Point tempP=graph.toViewLin((Point)pointsGate.lastElement());
+                    Point tempP=graph.toViewLin((Point)pointsGate.get(pointsGate.size()-1));
                     lastGateX=tempP.x;
                     lastGateY=tempP.y;
                     lastMoveX=lastGateX;
@@ -202,7 +202,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             settingGate=false;
             numberPointsSetGate=0;
             //draw the finished gate
-            pointsGate.addElement((Point)pointsGate.elementAt(0));
+            pointsGate.add((Point)pointsGate.get(0));
             graphicsSetGate.setPaintMode();
             graphicsSetGate.setColor(PlotColorMap.gateDraw);
             graph.update(graphicsSetGate);        //so graph has all pertinent imfo

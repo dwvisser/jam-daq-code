@@ -84,7 +84,7 @@ class Plot1d extends Plot {
 		if (mode == GATE_NEW) {
 			pointsGate = new Vector(10, 5);
 		} else if (mode == GATE_CONTINUE) {
-			pointsGate.addElement(pChannel);
+			pointsGate.add(pChannel);
 			Graphics g = this.getGraphics();
 			g.setColor(PlotColorMap.gateDraw);
 			graph.update(g); //so graph has all pertinent imfo

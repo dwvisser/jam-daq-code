@@ -7,7 +7,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.PrintGraphics;
-import java.util.Vector;
+import java.util.*;
 import javax.swing.JPanel;
 
 /**
@@ -1133,12 +1133,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void settingGate1d(Vector gatePoints) {
+	public void settingGate1d(List gatePoints) {
 		int numberPoints = gatePoints.size();
 		// size of vector, first element at zero
 		clipPlot();
 		for (int i = 0; i < numberPoints; i++) {
-			Point p = (Point) (gatePoints.elementAt(i));
+			Point p = (Point) (gatePoints.get(i));
 			int x1 = toViewHorzLin(p.x);
 			g.drawLine(x1, viewBottom, x1, viewTop);
 		}
@@ -1151,7 +1151,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void settingGate2d(Vector gatePoints) {
+	public void settingGate2d(List gatePoints) {
 
 		int numberPoints;
 		Point p1;
@@ -1166,8 +1166,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 		clipPlot();
 
 		for (int i = 1; i < numberPoints; i++) {
-			p1 = (Point) (gatePoints.elementAt(i - 1));
-			p2 = (Point) (gatePoints.elementAt(i));
+			p1 = (Point) (gatePoints.get(i - 1));
+			p2 = (Point) (gatePoints.get(i));
 
 			x1 = toViewHorzLin(p1.x);
 			y1 = toViewVertLin(p1.y);
