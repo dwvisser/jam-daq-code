@@ -292,8 +292,10 @@ public final class Monitor {
 	/**
 	 * NOT YET IMPLEMENTED, Sets an <code>AudioClip</code> object to be played
 	 * for alarms if the alarm is enabled. Currently, the plan is to fully
-	 * implement this when the JDK 1.2 <code>javax.media</code> packeage is
+	 * implement this when the JDK 1.2 <code>javax.media</code> package is
 	 * available.
+	 * 
+	 * @param clip sound to play for alarm
 	 */
 	public synchronized void setAudioClip(AudioClip clip) {
 		audioClip = clip;
@@ -312,6 +314,12 @@ public final class Monitor {
 		return audioClip;
 	}
 
+	/**
+	 * Gets whether this monitor value falls within the user-specified
+	 * acceptable range.
+	 * 
+	 * @return <code>true</code> if acceptable
+	 */
 	public synchronized boolean isAcceptable() {
 		return value > maximum || value < threshold;
 	}

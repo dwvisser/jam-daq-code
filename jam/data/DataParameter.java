@@ -38,7 +38,7 @@ public class DataParameter {
 	 * Creates a new parameter with the given name.
 	 * 
 	 * @param name the name for the new parameter used in the dialog box
-     * @throws UnsupportedArgumentException if name >NAME_LENGTH characters
+     * @throws IllegalArgumentException if name >NAME_LENGTH characters
 	 */
 	public DataParameter(String name)  {
 		final StringUtilities stringUtil=StringUtilities.instance();
@@ -119,6 +119,8 @@ public class DataParameter {
 
 	/**
 	 * Returns the name of this parameter.
+	 * 
+	 * @return the name
 	 */
 	public String getName() {
 		return name;

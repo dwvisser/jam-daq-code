@@ -116,8 +116,14 @@ public final class Gate {
 		return Collections.unmodifiableList(LIST);
 	}
 
-	public static List getGateList(int type) {
-		return Collections.unmodifiableList(DIM_LIST[type-1]);
+	/**
+	 * Returns an unmodifiable list of gates with the given dimensionality.
+	 * 
+	 * @param dimensionality of gates
+	 * @return list of gates with the given dimensionality
+	 */
+	public static List getGateList(int dimensionality) {
+		return Collections.unmodifiableList(DIM_LIST[dimensionality-1]);
 	}
 
 	/**
@@ -251,6 +257,7 @@ public final class Gate {
 	/**
 	 * Sets the limits for a 2-d gate, given a <code>Polygon</code>.
 	 *
+	 * @param gatePoly used to define the gate
 	 * @throws UnsupportedOperationException thrown if called for 1d gate
 	 */
 	public void setLimits(Polygon gatePoly) {

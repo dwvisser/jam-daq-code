@@ -11,10 +11,30 @@ package jam.data;
  */
 public abstract class AbstractHist2D extends Histogram {
 
-	protected AbstractHist2D(String nameIn, Type type, int sizeX, int sizeY, String title) {
-		super(nameIn, type, sizeX, sizeY, title);
+    /**
+     * Called by implementing subclasses.
+     * 
+     * @param name unique
+     * @param type of counts
+     * @param sizeX channels along x-axis
+     * @param sizeY chnnels along y-axis
+     * @param title verbose
+     */
+	protected AbstractHist2D(String name, Type type, int sizeX, int sizeY, String title) {
+		super(name, type, sizeX, sizeY, title);
 	}
 
+    /**
+     * Called by implementing subclasses.
+     * 
+     * @param name unique
+     * @param type of counts
+     * @param sizeX channels along x-axis
+     * @param sizeY chnnels along y-axis
+     * @param title verbose
+     * @param axisLabelX x-axis label
+     * @param axisLabelY y-axis label
+     */
 	protected AbstractHist2D(String name, Type type, int sizeX, int sizeY, String title,
 			String axisLabelX, String axisLabelY) {
 		super(name, type, sizeX, sizeY, title, axisLabelX, axisLabelY);

@@ -113,7 +113,7 @@ public final class HistInt1D extends AbstractHist1D {
 	 * number of counts.
 	 * 
 	 * @param channel to change
-	 * @param counts to be in the channel, rounded to <code>int</code>, if
+	 * @param count to be in the channel, rounded to <code>int</code>, if
 	 * necessary
 	 */
 	public synchronized void setCounts(int channel, double count) {
@@ -166,7 +166,7 @@ public final class HistInt1D extends AbstractHist1D {
 					/* set errors according to Poisson with error = 1 */
 					errors[i] = 1.0;
 				} else {
-					errors[i] = Math.sqrt((double) counts[i]);
+					errors[i] = Math.sqrt(counts[i]);
 				}
 			}
 		}
@@ -190,7 +190,7 @@ public final class HistInt1D extends AbstractHist1D {
 	/**
 	 * Adds the given counts to this histogram.
 	 * 
-	 * @param countsIn
+	 * @param add
 	 *            1d array of <code>int</code>'s
 	 * @throws IllegalArgumentException
 	 *             if the parameter is the wrong type

@@ -37,7 +37,7 @@ public class Scaler {
      *
      * @param	name	name of the scaler, which must be <=16 characters
      * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
-     * @throws UnsupportedArgumentException if name > <code>NAME_LENGTH</code> characters
+     * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
      */
     public Scaler(String name, int number) {        
 		final StringUtilities stringUtil=StringUtilities.instance();
