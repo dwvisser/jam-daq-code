@@ -101,13 +101,10 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	private final JPanel panel=new JPanel();
 	
 	/**
-	 * @param graphicsLayout handles graphics details
 	 * @param plotSelect place to send selection messages
 	 */
-	public PlotContainer(PlotGraphicsLayout graphicsLayout,
-			PlotSelectListener plotSelect) {
-		this.plotSelectListener = plotSelect;
-		//isSelected = false;
+	public PlotContainer(PlotSelectListener plotSelect) {
+		plotSelectListener = plotSelect;
 		/*
 		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
 		 */
@@ -214,7 +211,7 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		final Integer value = new Integer(num);
 		synchronized (plotLock) {
 			/* Don't overlay histogram already displayed. */
-			Histogram hist=currentSubPlot.getHistogram();
+			final Histogram hist=currentSubPlot.getHistogram();
 			if (hist!=null && 
 				hist.getNumber() != num && 
 				!overlays.contains(value)) {
