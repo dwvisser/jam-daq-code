@@ -54,6 +54,7 @@ public final class Display extends JPanel implements Observer {
 	private final CardLayout plotswapLayout;
 	private final Plot1d plot1d;
 	private final Plot2d plot2d;
+	private final Toolbar toolbar;
 
 	/**
 	 * Constructor called by all constructors
@@ -87,7 +88,7 @@ public final class Display extends JPanel implements Observer {
 		add(plotswap, BorderLayout.CENTER);
 		JamStatus.instance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
-		addToolbarAction();
+		toolbar=new Toolbar(this,action);
 	}	
 
 	/**
@@ -101,10 +102,7 @@ public final class Display extends JPanel implements Observer {
 				newHistogram();
 			}
 			showPlot(currentHist); //changes local currentPlot
-			final boolean oneD = currentHist.getDimensionality() == 1;
-			bgoto.setEnabled(oneD);
-			brebin.setEnabled(oneD);
-			bnetarea.setEnabled(oneD);
+			toolbar.setHistogramDimension(currentHist.getDimensionality());
 		} else { //we have a null histogram, but display anyway
 			showPlot(currentHist);
 		}
@@ -322,203 +320,5 @@ public final class Display extends JPanel implements Observer {
 		currentPlot.repaint();
 	}
 
-	private JButton bnetarea, brebin, bgoto;
 
-	/**
-	 * Adds the tool bar the left hand side of the plot.
-	 *
-	 * @since Version 0.5
-	 */
-	private void addToolbarAction() {
-		Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
-		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
-		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
-		Icon iRange = loadToolbarIcon("jam/plot/Range.png");
-		Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
-
-		Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
-		Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
-		Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
-		Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
-		Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
-
-		Icon iArea = loadToolbarIcon("jam/plot/Area.png");
-		Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
-		Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
-
-		final String defaultVal = BorderLayout.NORTH;
-		final String key = "toolbarLocation";
-		final java.util.prefs.Preferences helpnode =
-			java.util.prefs.Preferences.userNodeForPackage(getClass());
-		final String location = helpnode.get(key, defaultVal);
-		final int orientation =
-			(BorderLayout.NORTH.equals(location)
-				|| BorderLayout.SOUTH.equals(location))
-				? JToolBar.HORIZONTAL
-				: JToolBar.VERTICAL;
-		final JToolBar ptoolbar = new JToolBar("Actions", orientation);
-		ptoolbar.setToolTipText(
-			"Underlined letters are shortcuts for the console.");
-		add(ptoolbar, location);
-
-		try {
-			ptoolbar.setRollover(true);
-
-			final JButton bupdate = new JButton(iUpdate);
-			bupdate.setToolTipText(
-				getHTML("<u>U</u>pdate display with most current data."));
-			bupdate.setActionCommand(Action.UPDATE);
-			bupdate.addActionListener(action);
-			ptoolbar.add(bupdate);
-
-			final JButton blinear = new JButton(iLinLog);
-			blinear.setToolTipText(
-				getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
-			blinear.setActionCommand(Action.SCALE);
-			blinear.addActionListener(action);
-			ptoolbar.add(blinear);
-
-			final JButton bauto = new JButton(iAutoScale);
-			bauto.setToolTipText(
-				getHTML("<u>A</u>utomatically set the counts scale."));
-			bauto.setActionCommand(Action.AUTO);
-			bauto.addActionListener(action);
-			ptoolbar.add(bauto);
-
-			final JButton brange = new JButton(iRange);
-			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
-			brange.setActionCommand(Action.RANGE);
-			brange.addActionListener(action);
-			ptoolbar.add(brange);
-
-			brebin = new JButton(iRebin);
-			brebin.setToolTipText(
-				getHTML("<u>Re</u>bin, enter a bin width in the console."));
-			brebin.setActionCommand(Action.REBIN);
-			brebin.addActionListener(action);
-			ptoolbar.add(brebin);
-
-			ptoolbar.addSeparator();
-
-			final JButton bexpand = new JButton(iExpand);
-			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
-			bexpand.setActionCommand(Action.EXPAND);
-			bexpand.addActionListener(action);
-			ptoolbar.add(bexpand);
-
-			final JButton bfull = new JButton(iFullScale);
-			bfull.setActionCommand(Action.FULL);
-			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
-			bfull.addActionListener(action);
-			ptoolbar.add(bfull);
-
-			final JButton bzoomin = new JButton(iZoomIn);
-			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
-			bzoomin.setActionCommand(Action.ZOOMIN);
-			bzoomin.addActionListener(action);
-			ptoolbar.add(bzoomin);
-
-			final JButton bzoomout = new JButton(iZoomOut);
-			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
-			bzoomout.setActionCommand(Action.ZOOMOUT);
-			bzoomout.addActionListener(action);
-			ptoolbar.add(bzoomout);
-
-			bgoto = new JButton(iGoto);
-			bgoto.setActionCommand(Action.GOTO);
-			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
-			bgoto.addActionListener(action);
-			ptoolbar.add(bgoto);
-
-			ptoolbar.addSeparator();
-
-			final JButton barea = new JButton(iArea);
-			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
-			barea.setActionCommand(Action.AREA);
-			barea.addActionListener(action);
-			ptoolbar.add(barea);
-
-			bnetarea = new JButton(iNetArea);
-			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
-			bnetarea.setActionCommand(Action.NETAREA);
-			bnetarea.addActionListener(action);
-			ptoolbar.add(bnetarea);
-
-			ptoolbar.addSeparator();
-
-			final JButton bcancel = new JButton(iCancel);
-			bcancel.setActionCommand(Action.CANCEL);
-			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
-			bcancel.addActionListener(action);
-			ptoolbar.add(bcancel);
-
-			/* Listen for changes in orientation */
-			ptoolbar
-				.addPropertyChangeListener(
-					"orientation",
-					new java.beans.PropertyChangeListener() {
-				public void propertyChange(
-					java.beans.PropertyChangeEvent evt) {
-					/* Get the new orientation */
-					Integer newValue = (Integer) evt.getNewValue();
-					/* place an appropriate value in the user prefs */
-					helpnode.put(
-						key,
-						(newValue.intValue() == JToolBar.HORIZONTAL)
-							? BorderLayout.NORTH
-							: BorderLayout.WEST);
-					fitToolbar(ptoolbar);
-				}
-			});
-			fitToolbar(ptoolbar);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void fitToolbar(JToolBar tb) {
-		final boolean vertical = tb.getOrientation() == JToolBar.VERTICAL;
-		if (vertical) {
-			final int height = tb.getPreferredSize().height;
-			final Dimension oldmin = getMinimumSize();
-			if (height > oldmin.height) {
-				final Dimension newMin = new Dimension(oldmin.width, height);
-				setMinimumSize(newMin);
-			}
-		} else {
-			final int width = tb.getPreferredSize().width;
-			final Dimension oldmin = getMinimumSize();
-			if (width > oldmin.width) {
-				final Dimension newMin = new Dimension(width, oldmin.height);
-				setMinimumSize(newMin);
-			}
-		}
-	}
-
-	/**
-	 * Load icons for tool bar
-	 */
-	private Icon loadToolbarIcon(String path) {
-		final Icon toolbarIcon;
-		final ClassLoader cl = this.getClass().getClassLoader();
-		final URL urlResource = cl.getResource(path);
-		if (!(urlResource == null)) {
-			toolbarIcon = new ImageIcon(urlResource);
-		} else { //instead use path, ugly but lets us see button
-			JOptionPane.showMessageDialog(
-				this,
-				"Can't load resource: " + path,
-				"Missing Icon",
-				JOptionPane.ERROR_MESSAGE);
-			toolbarIcon = null; //FIXME KBS put in default icon here
-		}
-		return toolbarIcon;
-	}
-
-	private String getHTML(String body) {
-		final StringBuffer rval =
-			new StringBuffer("<html><body>").append(body).append(
-				"</html></body>");
-		return rval.toString();
-	}
 }
