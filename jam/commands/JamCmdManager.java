@@ -18,7 +18,8 @@ import javax.swing.Action;
  */
 public class JamCmdManager implements CommandListener {
 
-	private final MessageHandler msghdlr;
+	private MessageHandler msghdlr=null;
+	private static JamCmdManager _instance=null;
 
 	private static final Map cmdMap = Collections.synchronizedMap(new HashMap());
 	/* initializer block for map */
@@ -45,16 +46,25 @@ public class JamCmdManager implements CommandListener {
 	private Commandable currentCommand;
 
 	/**
-	 * Constructor
+	 * Constructor private as singleton
 	 *
-	 * @param status
-	 * @param msghdlr
-	 * @param broadcaster
 	 */
-	public JamCmdManager(MessageHandler msghdlr) {
+	private JamCmdManager() {
+	}
+	/**
+	 * Singleton accessor
+	 * @return
+	 */
+	public static JamCmdManager getInstance () {
+		if (_instance==null)
+			_instance=new JamCmdManager();
+			
+		return _instance;
+	}
+	
+	public void setMessageHandler(MessageHandler msghdlr) {
 		this.msghdlr = msghdlr;
 	}
-
 	/**
 	 * Perform command with object parameters
 	 *

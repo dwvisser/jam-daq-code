@@ -155,14 +155,12 @@ public class JamCommand
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		addObservers();
 		
-		jamCmdMgr = new JamCmdManager(console);
+		jamCmdMgr = JamCmdManager.getInstance();
+		jamCmdMgr.setMessageHandler(console); 
 		console.addCommandListener(jamCmdMgr);
 		console.addCommandListener(display);
 	}
 	
-	JamCmdManager getCmdManager(){
-		return jamCmdMgr;
-	}
 	
 	/**
 	 * Add observers to the list of classes to be notified of 

@@ -325,7 +325,8 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		MessageHandler c) {
 		super();
 		this.jamCommand=jamCommand;
-		commands=jamCommand.getCmdManager();
+		//KBS commands=jamCommand.getCmdManager();
+		commands=JamCmdManager.getInstance();
 		hdfio=jamCommand.getHDFIO();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		final int ctrl_mask;
