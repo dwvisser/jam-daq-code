@@ -136,27 +136,25 @@ public class BatchExport extends JDialog implements ActionListener {
 	}
 
 	private void getClasses() {
-		Class temp;
-
-		Set set = RTSI.find("jam.io", ImpExp.class,false);
+		final String here=getClass().getName()+".getClasses(): ";
+		final Set set = RTSI.find("jam.io", ImpExp.class,false);
 		set.remove(ImpExp.class);
 		exportClasses = new ImpExp[set.size()];
 		int i = 0;
 		for (Iterator it = set.iterator(); it.hasNext(); i++) {
-			temp = (Class) it.next();
+			final Class temp = (Class) it.next();
 			try {
 				exportClasses[i] = (ImpExp) temp.newInstance();
 			} catch (InstantiationException e) {
-				System.err.println(e);
+				console.errorOutln(here+e.getMessage());
 			} catch (IllegalAccessException e) {
-				System.err.println(e);
+				console.errorOutln(here+e.getMessage());
 			}
 		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
-		System.out.println(command);
 		if (command.substring(0, 6).equals("format")) {
 			boolean selected = false;
 			for (int i = 0; i < exportChoice.length; i++) {
