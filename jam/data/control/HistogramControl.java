@@ -48,7 +48,6 @@ public class HistogramControl extends DataControl implements ActionListener {
         dialogZero=new JDialog(frame,"Zero Histograms",false);
         Container dzc = dialogZero.getContentPane();
         dialogZero.setResizable(false);
-        //dialogZero.setSize(350, 100);
         dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
         JPanel pButton = new JPanel(new GridLayout(1,0,5,5));
         dialogZero.setLocation(20,50);
@@ -255,13 +254,10 @@ public class HistogramControl extends DataControl implements ActionListener {
      * Loops through the histograms zeroing them in turn
      */
     public void zeroAll() throws GlobalException {
-        Histogram hist;
-        Iterator allHistograms;
-
         msghdlr.messageOut("Zero All", MessageHandler.NEW);
-        allHistograms=Histogram.getHistogramList().iterator();
+        final Iterator allHistograms=Histogram.getHistogramList().iterator();
         while(allHistograms.hasNext()){
-            hist = ( (Histogram) allHistograms.next() );
+            final Histogram hist = ( (Histogram) allHistograms.next() );
             msghdlr.messageOut(" .", MessageHandler.CONTINUE);
             hist.setZero();
         }
