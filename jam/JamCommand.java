@@ -380,8 +380,6 @@ public class JamCommand
 				loadFit.showLoad();
 			} else if (incommand == "about") {
 				help.showAbout();
-			} else if (incommand == "userguide") {
-				help.showUserGuide();
 			} else if (incommand == "jamdoc") {
 				help.showJamDocs();
 			} else if (incommand.equals("license")) {
