@@ -173,7 +173,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
-	
+	/* Remove KBS
 	class AddHDF extends AbstractAction {	
 		AddHDF(){
 			super("Add counts(hdf)...");
@@ -184,7 +184,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			hdfio.readFile(FileOpenMode.ADD);
 		}
 	}
-
+	*/
 	/**
 	 * Action for the File|Page Setup menu item.
 	 * 
@@ -280,6 +280,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private JamCommand jamCommand;
 	
 	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
+	final private JMenuItem addhdf = new JMenuItem("Add counts(hdf)...");
 	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
 	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
 	final private JMenuItem histogramNew = new JMenuItem("New...");
@@ -291,7 +292,8 @@ public class MainMenuBar extends JMenuBar implements Observer {
 
 	//Remove KBS final private OpenHDF openhdf;
 	final private ReloadHDF reloadhdf;
-	final private AddHDF addHDF=new AddHDF();
+	//Remove KBS
+	//final private AddHDF addHDF=new AddHDF();
 	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
@@ -378,7 +380,10 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		reloadhdf.setEnabled(false);
 		file.add(reloadhdf).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
-		file.add(addHDF);
+		
+		addhdf.setActionCommand(CommandNames.ADD_HDF);
+		addhdf.addActionListener(jamCommand);
+		file.add(addhdf);
 		
 		saveHDF.setActionCommand(CommandNames.SAVE_HDF);	
 		saveHDF.addActionListener(jamCommand);	
@@ -707,7 +712,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
-			addHDF.setEnabled(true);
+			addhdf.setEnabled(true);
 		}
 		if (mode == SortMode.OFFLINE) {
 			cstartacq.setEnabled(false);
@@ -720,7 +725,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
-			addHDF.setEnabled(true);
+			addhdf.setEnabled(true);
 			newClear.setEnabled(false);
 		}
 		if (mode == SortMode.REMOTE) { //remote display
@@ -734,7 +739,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			newClear.setEnabled(false);
 			openhdf.setEnabled(false);
 			reloadhdf.setEnabled(false);
-			addHDF.setEnabled(false);
+			addhdf.setEnabled(false);
 			impHist.setEnabled(false);
 		}
 		if (mode == SortMode.FILE) {
@@ -749,7 +754,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			openhdf.setEnabled(true);
 			saveHDF.setEnabled(true);
 			reloadhdf.setEnabled(false);
-			addHDF.setEnabled(true);
+			addhdf.setEnabled(true);
 			impHist.setEnabled(true);
 		}
 		if (mode == SortMode.NO_SORT) {
@@ -763,7 +768,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			newClear.setEnabled(true);
 			openhdf.setEnabled(true);
 			reloadhdf.setEnabled(false);
-			addHDF.setEnabled(false);
+			addhdf.setEnabled(false);
 			impHist.setEnabled(true);
 		}
 	}
