@@ -4,8 +4,6 @@
 package jam.fit;
 
 import java.util.Vector;
-import java.util.Hashtable;
-import java.text.NumberFormat;
 
 /**
  * This abstract class uses LevenbergMarquadt to do non-linear parametric function fitting.
