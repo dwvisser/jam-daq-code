@@ -484,7 +484,7 @@ public class JamProperties {
 		jamProperties.setProperty(EVENT_INSTREAM,
 		"jam.sort.stream.YaleCAEN_InputStream");
 		jamProperties.setProperty(EVENT_OUTSTREAM,"jam.sort.stream.YaleOutputStream");
-		jamProperties.setProperty(GRADIENT_SCALE,FALSE);
+		setProperty(GRADIENT_SCALE,true);
 	}
 	
 	private static final String TRUE=Boolean.toString(true);
