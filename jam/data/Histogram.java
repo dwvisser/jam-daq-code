@@ -803,16 +803,17 @@ public class Histogram implements Serializable {
 	 * @exception DataException thrown if method called for inappropriate type of histogram
 	 */
 	public void inc(int dataWord) throws DataException {
+		int incCh=dataWord;
 		if (type != ONE_DIM_INT)
 			throw new DataException(
 				"Can only call inc(int) for type ONE_DIM_INT, name=" + name);
 		//check for overflow
-		if (dataWord >= sizeX) {
-			dataWord = sizeX - 1;
+		if (incCh >= sizeX) {
+			incCh = sizeX - 1;
 		} else if (dataWord < 0) {
-			dataWord = 0;
+			incCh = 0;
 		}
-		counts[dataWord]++;
+		counts[incCh]++;
 	}
 
 	/**
@@ -824,22 +825,24 @@ public class Histogram implements Serializable {
 	 * @exception DataException thrown if method called for inappropriate type of histogram
 	 */
 	public void inc(int dataWordX, int dataWordY) throws DataException {
+		int incX=dataWordX;
+		int incY=dataWordY;
 		if (type != TWO_DIM_INT)
 			throw new DataException(
 				"Can only call inc(int,int) for type TWO_DIM_INT, name="
 					+ name);
 		//check for overflow and underflow
-		if (dataWordX >= sizeX) {
-			dataWordX = sizeX - 1;
-		} else if (dataWordX < 0) {
-			dataWordX = 0;
+		if (incX >= sizeX) {
+			incX = sizeX - 1;
+		} else if (incX < 0) {
+			incX = 0;
 		}
-		if (dataWordY >= sizeY) {
-			dataWordY = sizeY - 1;
+		if (incY >= sizeY) {
+			incY = sizeY - 1;
 		} else if (dataWordY < 0) {
-			dataWordY = 0;
+			incY = 0;
 		}
-		counts2d[dataWordX][dataWordY]++;
+		counts2d[incX][incY]++;
 	}
 
 	/**
