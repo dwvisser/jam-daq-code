@@ -8,12 +8,12 @@ package jam.global;
  */
 public class BroadcastEvent {
 
-    public static final int REFRESH=1;			//refresh the display
-    public static final int HISTOGRAM_NEW=10;		//a new set of histograms has been defined
-    public static final int HISTOGRAM_ADD=11;		//a histogram has been added
-    public static final int HISTOGRAM_SELECT=12;	//a histogram had been selected
+    public static final int REFRESH=1;//refresh the display
+    public static final int HISTOGRAM_NEW=10;//a new set of histograms has been defined
+    public static final int HISTOGRAM_ADD=11;//a histogram has been added
+    public static final int HISTOGRAM_SELECT=12;//a histogram had been selected
 
-    public static final int SCALERS_READ=20;		//scalers have been read
+    public static final int SCALERS_READ=20;//scalers have been read
     public static final int SCALERS_CLEAR=21;
     public static final int SCALERS_UPDATE=22;
 
