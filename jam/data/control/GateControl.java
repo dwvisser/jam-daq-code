@@ -347,7 +347,6 @@ WindowListener,Observer  {
                     	gatePoints = new ArrayList();
                     }
                     addP.setEnabled(true);
-                    //FIXME
                     removeP.setEnabled(true);
                 }
                 unset.setEnabled(true);
@@ -357,10 +356,8 @@ WindowListener,Observer  {
                 //make fields and buttons active
                 textLower.setText("");
                 textLower.setEditable(true);
-                //textLower.setBackground(Color.white);
                 textUpper.setText("");
                 textUpper.setEditable(true);
-                //textUpper.setBackground(Color.white);
                 save.setEnabled(true);
                 cancel.setEnabled(true);
             }
