@@ -15,7 +15,7 @@ import jam.data.Scaler;
  */
 public class UconnInputStream  extends EventInputStream {
 
-    private final int HEAD_SIZE=5;	    //size of header in 2 byte words
+    static private final int HEAD_SIZE=5;	    //size of header in 2 byte words
     
     private int VSN_TDC=0x4; 
         

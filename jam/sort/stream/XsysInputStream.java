@@ -15,7 +15,7 @@ import jam.global.MessageHandler;
  */
 public class XsysInputStream  extends EventInputStream {
 
-    private final int END_REC=0x0a;
+    static private final int END_REC=0x0a;
     
     int bufferMarker;
     int bufferNumber;
