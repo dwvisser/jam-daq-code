@@ -14,13 +14,29 @@
   <dt>Ignore zero channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the first channel of the histogram when the user clicks <em>Auto</em>.</dd>
   <dt>Ignore max channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the last channel of the histogram when the user clicks <em>Auto</em>.</dd>
   <dt>Autoscale on Expand/Zoom</dt><dd>Enabled by default. When enabled, histogram display is auto-scaled any time the view changes.
+</dl>
+<hr>
+<dl>
   <dt>Disable 2d Gate Fill</dt><dd>Some Mac OSX systems are slow to draw filled in 2d gates. This option directs Jam to draw just the outline instead. The default setting is false, i.e., to highlight all the channels inside 2d gates when they're drawn. Inserting the line
   	<pre>graph.nofill2d=true</pre>
   	in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file will override the default at startup.</dd>
+  <dt>Use gradient color scale</dt><dd>Jam was originally used on systems with limited color availability. Thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, now you may check this option or insert the
+  line 
+  <pre>graph.gradientScale=true</pre> in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file to enable
+  a rainbow gradient for 2-dimensional histogram plots.</dd>
+</dl>
+<hr>
+<dl>  
   <dt>Automatic peak find</dt><dd>Enabled by default. When enabled, peak channels from an automatically applied Gaussian filter are marked.
   <dt>Peak Find Properties...</dt><dd>Opens a dialog for customizing how peaks are found. 'Width' is the Full Width at Half Max (FWHM) searched for. 'Sensitivity' defines how gaussian-like a found peak must be before it is marked. Higher sensitivities mean a peak must be more like a gaussian. A checkbox picks whether peaks are labeled with their channel or their calibrated energy (if available).
+</dl>
+<hr>
+<dl>  
   <dt>Black Background</dt><dd>Sets the display color scheme to white on black.</dd>
   <dt>White Background</dt><dd>Sets the display color scheme to black on white.</dd>
+</dl>
+<hr>
+<dl>  
   <dt>Verbose front end</dt><dd>Sends a command to the front end computer turning on or off 'verbose' mode. In verbose mode, the front end sends status messages which are printed on the console by jam.
   <dt>Debug front end</dt><dd>Sets the 'debug' mode of the front end computer on or off. In verbose mode, the front end computer may print out more messages to its terminal and send more messages to Jam.
 </dl>

@@ -69,6 +69,7 @@ public class JamProperties {
 	public final static String FRONTEND_VERBOSE = "frontend.verbose";
 	public final static String FRONTEND_DEBUG = "frontend.debug";
 	public final static String NO_FILL_2D = "graph.nofill2d";
+	public final static String GRADIENT_SCALE = "graph.gradientScale";
 	private final String NO_ERRORS="No error messages.";
 	private final String NO_WARNINGS="No warning messages.";
 	
@@ -401,6 +402,7 @@ public class JamProperties {
 		jamProperties.setProperty(LOG_PATH,(new File(userHome)).getPath());
 		jamProperties.setProperty(EVENT_INSTREAM,"jam.sort.stream.YaleCAEN_InputStream");
 		jamProperties.setProperty(EVENT_OUTSTREAM,"jam.sort.stream.YaleOutputStream");
+		jamProperties.setProperty(GRADIENT_SCALE,"false");
 	}
 	
 	static public void setProperty(String key, boolean val){

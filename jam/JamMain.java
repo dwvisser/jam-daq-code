@@ -508,6 +508,12 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		ignoreFull.setEnabled(true);
 		ignoreFull.addItemListener(jamCommand);
 		mPrefer.add(ignoreFull);
+		JCheckBoxMenuItem autoOnExpand =
+			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
+		autoOnExpand.setEnabled(true);
+		autoOnExpand.addItemListener(jamCommand);
+		mPrefer.add(autoOnExpand);
+		mPrefer.addSeparator();
 		JCheckBoxMenuItem noFill2d =
 			new JCheckBoxMenuItem(
 				NO_FILL_MENU_TEXT,
@@ -521,11 +527,15 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			}
 		});
 		mPrefer.add(noFill2d);
-		JCheckBoxMenuItem autoOnExpand =
-			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
-		autoOnExpand.setEnabled(true);
-		autoOnExpand.addItemListener(jamCommand);
-		mPrefer.add(autoOnExpand);
+		JCheckBoxMenuItem gradientColorScale = new JCheckBoxMenuItem("Use gradient color scale",JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE));
+		gradientColorScale.setToolTipText("Check to use a continuous gradient color scale on 2d histogram plots.");
+		gradientColorScale.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent ie){
+				JamProperties.setProperty(JamProperties.GRADIENT_SCALE,ie.getStateChange()==ItemEvent.SELECTED);
+			}
+		});
+		mPrefer.add(gradientColorScale);
+		mPrefer.addSeparator();
 		JCheckBoxMenuItem autoPeakFind =
 			new JCheckBoxMenuItem("Automatic peak find", true);
 		autoPeakFind.setEnabled(true);
