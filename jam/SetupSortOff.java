@@ -92,7 +92,7 @@ class SetupSortOff  implements ItemListener {
     /** Output stream, tells how to write an event */
     private EventOutputStream eventOutput;
 
-    private File sortDirectory;
+    //private File sortDirectory;
 
     /* dialog box widgets */
     private final  JDialog d;
@@ -121,8 +121,8 @@ class SetupSortOff  implements ItemListener {
         final boolean useDefaultPath=(defaultSortPath.equals(
         JamProperties.DEFAULT_SORT_CLASSPATH));
         if (!useDefaultPath){
-			sortDirectory=new File(defaultSortPath);
-			sortClassPath=sortDirectory;
+			sortClassPath=new File(defaultSortPath);
+			//sortClassPath=sortDirectory;
         }
         this.jamMain=jm;
         this.sortControl=sc;
@@ -175,11 +175,14 @@ class SetupSortOff  implements ItemListener {
 		pf.add(bbrowsef,BorderLayout.EAST);
 		bbrowsef.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				sortClassPath=getSortPath();
+				/*sortClassPath=getSortPath();
 				sortChoice.setModel(new DefaultComboBoxModel(
 				getSortClasses(sortClassPath)));
-				sortChoice.setSelectedIndex(0);
-				textSortPath.setText(sortClassPath.getAbsolutePath());
+				if (sortChoice.getModel().getSize()>0){
+					sortChoice.setSelectedIndex(0);
+				}
+				textSortPath.setText(sortClassPath.getAbsolutePath());*/
+				setSortClassPath(getSortPath());
 			}
 		});
 		final JPanel pChooserArea =new JPanel(new BorderLayout());
@@ -274,6 +277,18 @@ class SetupSortOff  implements ItemListener {
             }
         } );
         d.pack();
+    }
+    
+    private void setSortClassPath(File f){
+    	if (f.exists()){
+			sortClassPath=f;
+			sortChoice.setModel(new DefaultComboBoxModel(
+			getSortClasses(sortClassPath)));
+			if (sortChoice.getModel().getSize()>0){
+				sortChoice.setSelectedIndex(0);
+			}
+			textSortPath.setText(sortClassPath.getAbsolutePath());
+    	}
     }
 
 	private Vector getSortClasses(File path) {
@@ -457,17 +472,18 @@ class SetupSortOff  implements ItemListener {
      * @return the directory to look in for event files
      */
     private File getSortPath(){
-        final JFileChooser fd =new JFileChooser(sortDirectory);
+    	File rval=sortClassPath;
+        final JFileChooser fd =new JFileChooser(sortClassPath);
         fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         final int option = fd.showOpenDialog(jamMain);
         /* save current values */
         if (option == JFileChooser.APPROVE_OPTION &&
         fd.getSelectedFile() != null){
             synchronized (this){
-            	sortDirectory=fd.getSelectedFile();//save current directory
+            	rval=fd.getSelectedFile();//save current directory
             }
         }
-        return sortDirectory;
+        return rval;
     }
 
     /**
@@ -500,11 +516,12 @@ class SetupSortOff  implements ItemListener {
     
     void setupSort(File classPath, String sortRoutineName,
 	Class inStream, Class outStream){
-		sortClassPath=classPath;
-		sortChoice.setModel(new DefaultComboBoxModel(
-		getSortClasses(sortClassPath)));
-		selectSortRoutine(sortRoutineName, false);
+		/*sortClassPath=classPath;
 		textSortPath.setText(sortClassPath.getAbsolutePath());
+		sortChoice.setModel(new DefaultComboBoxModel(
+		getSortClasses(sortClassPath)));*/
+		setSortClassPath(classPath);
+		selectSortRoutine(sortRoutineName, false);
 		inStreamChooser.setSelectedItem(inStream);
 		outStreamChooser.setSelectedItem(outStream);
 		doApply(false);
