@@ -1,5 +1,6 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.plot.color.PlotColorMap;
 
@@ -85,7 +86,7 @@ class Plot1d extends AbstractPlot {
 				for (int j = 0; j < sizex; j++) {
 					ctOver[j] = countsInt[j];
 				}
-			} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
 		}
@@ -265,7 +266,7 @@ class Plot1d extends AbstractPlot {
 		g.setColor(colorMap.getHistogram());
 		graph.drawHist(counts, binWidth);
 		if (autoPeakFind) {
-			graph.drawPeakLabels(plotHist.findPeaks(sensitivity, width, pfcal));
+			graph.drawPeakLabels(((AbstractHist1D)plotHist).findPeaks(sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
 		g.setColor(colorMap.getForeground());
