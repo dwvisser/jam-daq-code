@@ -1,4 +1,5 @@
 package jam;
+
 import jam.commands.CommandManager;
 import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
@@ -29,10 +30,10 @@ import javax.swing.UIManager;
 
 /**
  * Launcher and main window for Jam.
- *
- * @version  0.5 April 98
- * @author   Ken Swartz
- * @since    JDK1.1
+ * 
+ * @version 0.5 April 98
+ * @author Ken Swartz
+ * @since JDK1.1
  */
 public final class JamMain extends JFrame implements Observer {
 	/**
@@ -43,12 +44,12 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * Overall status of Jam.
 	 */
-	private final JamStatus status=JamStatus.instance();
+	private final JamStatus status = JamStatus.instance();
 
 	/**
 	 * Event distributor.
 	 */
-	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	/**
 	 * Histogram displayer.
@@ -59,18 +60,19 @@ public final class JamMain extends JFrame implements Observer {
 	 * Message output and text input.
 	 */
 	private final JamConsole console;
+
 	private final Container me;
+
 	private final SelectionToolbar selectBar;
+
 	private RunState runState = RunState.NO_ACQ;
 
 	JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
 		setLookAndFeel();
-
-		showSplashScreen(showGUI);								
-				
-		//Application initialization 				
+		showSplashScreen(showGUI);
+		/* Application initialization */
 		jamProperties = new JamProperties(); //class that has properties
 		status.setFrame(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
@@ -82,88 +84,86 @@ public final class JamMain extends JFrame implements Observer {
 				return (status.getSortMode() == SortMode.ONLINE_DISK);
 			}
 		});
-		
 		/* class to distrute events to all listeners */
 		broadcaster.addObserver(this);
-		
-		//Create main window GUI
+		/* Create main window GUI */
 		loadIcon();
 		me = getContentPane();
 		me.setLayout(new BorderLayout());
-		//Ouput/Input text console
+		/* Ouput/Input text console */
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
-		// histogram displayer
+		/* histogram displayer */
 		display = new Display(console);
-		final JSplitPane splitCenter =
-			new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, display, console);
-		splitCenter.setResizeWeight(0.5);			
-		/*fraction of resize space that goes to display*/
+		final JSplitPane splitCenter = new JSplitPane(
+				JSplitPane.VERTICAL_SPLIT, true, display, console);
+		splitCenter.setResizeWeight(0.5);
+		/* fraction of resize space that goes to display */
 		me.add(splitCenter, BorderLayout.CENTER);
-		//Main menu bar
+		/* Main menu bar */
 		final JMenuBar menubar = new MainMenuBar();
 		setJMenuBar(menubar);
-		//Histogram selection menu bar
+		/* Histogram selection menu bar */
 		selectBar = new SelectionToolbar();
 		me.add(selectBar, BorderLayout.NORTH);
-		// operations to close window
+		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				exit();
 			}
+
 			public void windowClosed(WindowEvent e) {
 				exit();
 			}
 		});
-		
-		//Initial histograms and setup
+		/* Initial histograms and setup */
 		new InitialHistograms();
-		DataControl.setupAll(); 	//setup jam.data.control dialog boxes
-		status.setSortMode(SortMode.NO_SORT);				
+		DataControl.setupAll(); //setup jam.data.control dialog boxes
+		status.setSortMode(SortMode.NO_SORT);
 		selectBar.setChoosersToFirstItems();
-		
-		//Show Main window		
 		showMainWindow(showGUI);
-
-		
 	}
 
 	/**
-	 *  Show the splash screen
-	 * @param showGUI to to show splash screen
+	 * Show the splash screen
+	 * 
+	 * @param showGUI
+	 *            to to show splash screen
 	 */
 	private void showSplashScreen(boolean showGUI) {
-		if (showGUI){
+		if (showGUI) {
 			final int titleDisplayTime = 10000; //milliseconds
 			new SplashWindow(this, titleDisplayTime);
 		}
 	}
+
 	/**
-	 * Load the application icon 
+	 * Load the application icon
 	 */
 	private void loadIcon() {
 		final ClassLoader cl = getClass().getClassLoader();
-		setIconImage(
-			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
-		
+		setIconImage((new ImageIcon(cl.getResource("jam/nukeicon.png"))
+				.getImage()));
+
 	}
-	
+
 	/**
 	 * Show the main window
 	 * 
-	 * @param show true to show GUI
+	 * @param show
+	 *            true to show GUI
 	 */
 	private void showMainWindow(final boolean show) {
 		final int posx = 50;
-		final int posy = 0; 
+		final int posy = 0;
 		setLocation(posx, posy);
 		setResizable(true);
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
 				pack();
-				if (show){
+				if (show) {
 					setVisible(true);
 				}
 				/* print out where config files were read from */
@@ -173,32 +173,34 @@ public final class JamMain extends JFrame implements Observer {
 		};
 		SwingUtilities.invokeLater(showWindow);
 	}
-	
-	private void exit(){
-		final JButton temp=new JButton(CommandManager.getInstance().getAction(
-		CommandNames.EXIT));
+
+	private void exit() {
+		final JButton temp = new JButton(CommandManager.getInstance()
+				.getAction(CommandNames.EXIT));
 		temp.doClick();
 	}
 
 	/**
-	 * Set the mode for sorting data, adjusting title and menu items as 
+	 * Set the mode for sorting data, adjusting title and menu items as
 	 * appropriate.
-	 *
-	 * @exception JamException sends a message to the console if 
-	 * there is an inappropriate call
+	 * 
+	 * @exception JamException
+	 *                sends a message to the console if there is an
+	 *                inappropriate call
 	 * @see jam.global.SortMode
-	 * @param mode the new mode for Jam to be in
+	 * @param mode
+	 *            the new mode for Jam to be in
 	 */
 	private void sortModeChanged() {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
-		final SortMode mode=status.getSortMode();
+		final SortMode mode = status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting");
 			if (mode == SortMode.ONLINE_DISK) {
 				title.append(" TO ").append(disk);
-			} 
+			}
 			setTitle(title.toString());
 		} else if (mode == SortMode.OFFLINE) {
 			setRunState(RunState.ACQ_OFF);
@@ -217,25 +219,25 @@ public final class JamMain extends JFrame implements Observer {
 			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
-		} 
+		}
 	}
 
 	/**
-	 *  <p>Sets run state when taking data online.
-	 *  The run state mostly determints the state of control JMenu items.
-	 *  This method uses imformation set by <code>setSortMode()</code>.
-	 *  In addition:</p>
-	 *  <ul>
-	 *  <li>Control JMenu items are enabled and disabled as 
-	 * appropriate.</li>
-	 *  <li>Control JMenu items are states are set and unset as 
-	 * appropriate.</li>
-	 *  <li>The JMenu bar is to show online sort.</li>
-	 *  <li>Updates display status label .</li>
+	 * <p>
+	 * Sets run state when taking data online. The run state mostly determints
+	 * the state of control JMenu items. This method uses imformation set by
+	 * <code>setSortMode()</code>. In addition:
+	 * </p>
+	 * <ul>
+	 * <li>Control JMenu items are enabled and disabled as appropriate.</li>
+	 * <li>Control JMenu items are states are set and unset as appropriate.
+	 * </li>
+	 * <li>The JMenu bar is to show online sort.</li>
+	 * <li>Updates display status label .</li>
 	 * </ul>
-	 *
-	 * @param  rs one of the possible run states
-	 * control dialog box
+	 * 
+	 * @param rs
+	 *            one of the possible run states control dialog box
 	 */
 	private void setRunState(RunState rs) {
 		synchronized (runState) {
@@ -247,15 +249,14 @@ public final class JamMain extends JFrame implements Observer {
 	 * @return the current run state
 	 */
 	private RunState getRunState() {
-		synchronized (runState){
+		synchronized (runState) {
 			return runState;
 		}
 	}
-	
-	private void setLookAndFeel(){
+
+	private void setLookAndFeel() {
 		final String linux = "Linux";
-		final String kunststoff =
-			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
+		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
 		boolean useKunststoff = linux.equals(System.getProperty("os.name"));
 		if (useKunststoff) {
 			try {
@@ -264,42 +265,37 @@ public final class JamMain extends JFrame implements Observer {
 				useKunststoff = false;
 			} catch (Exception e) { //all other exceptions
 				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(
-					null,
-					e.getMessage(),
-					title,
-					JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		if (!useKunststoff) {
 			try {
-				UIManager.setLookAndFeel(
-					UIManager.getSystemLookAndFeelClassName());
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
 			} catch (Exception e) {
 				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(
-					null,
-					e.getMessage(),
-					title,
-					JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
-	
-	public void update(Observable event, Object param){
-		final BroadcastEvent be=(BroadcastEvent)param;
-		final BroadcastEvent.Command command=be.getCommand();
-		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
+
+	public void update(Observable event, Object param) {
+		final BroadcastEvent be = (BroadcastEvent) param;
+		final BroadcastEvent.Command command = be.getCommand();
+		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
-		} else if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
-			setRunState((RunState)be.getContent());
+		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+			setRunState((RunState) be.getContent());
 		}
 	}
 
 	/**
 	 * Main method that is run to start up full Jam process
 	 * 
-	 * @param args not used currently
+	 * @param args
+	 *            not used currently
 	 */
 	public static void main(String args[]) {
 		//RepaintManager.setCurrentManager(new ThreadCheckingRepaintManager());
