@@ -19,7 +19,7 @@ Observer {
 	private final List gateList=Gate.getGateList();
 	
 	public void initCommand(){
-		putValue(NAME,"Add Gate\u2026");
+		putValue(NAME,"Add\u2026");
 		dialog=new GateAdd(msghdlr);
 	}
 

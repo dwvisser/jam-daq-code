@@ -71,19 +71,19 @@ public final class MenuBar implements Observer, CommandNames {
 	private MenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		menubar.add(getFileMenu());
-		menubar.add(getSetupMenu());
-		menubar.add(getControlMenu());
-		menubar.add(getHistogramMenu());
-		menubar.add(getGateMenu());
-		menubar.add(getScalerMenu());
-		menubar.add(getViewMenu());
-		menubar.add(getPreferencesMenu());
-		menubar.add(getFitMenu());
-		menubar.add(getHelp());
+		menubar.add(createFileMenu());
+		menubar.add(createSetupMenu());
+		menubar.add(createControlMenu());
+		menubar.add(createHistogramMenu());
+		menubar.add(createGateMenu());
+		menubar.add(createScalerMenu());
+		menubar.add(createViewMenu());
+		menubar.add(createPreferencesMenu());
+		menubar.add(createFitMenu());
+		menubar.add(createHelp());
 	}
 
-	private JMenu getFileMenu() {
+	private JMenu createFileMenu() {
 
 		final JMenu file = new JMenu("File");
 
@@ -140,7 +140,7 @@ public final class MenuBar implements Observer, CommandNames {
 		return file;
 	}
 
-	private JMenu getSetupMenu() {
+	private JMenu createSetupMenu() {
 		final JMenu setup = new JMenu("Setup");
 		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
 		setup.add(getMenuItem(SHOW_SETUP_OFFLINE));
@@ -148,7 +148,7 @@ public final class MenuBar implements Observer, CommandNames {
 		return setup;
 	}
 
-	private JMenu getControlMenu() {
+	private JMenu createControlMenu() {
 		final JMenu mcontrol = new JMenu("Control");
 		mcontrol.add(getMenuItem(START));
 		mcontrol.add(getMenuItem(STOP));
@@ -161,8 +161,13 @@ public final class MenuBar implements Observer, CommandNames {
 		return mcontrol;
 	}
 
-	private JMenu getHistogramMenu() {
-		final JMenu histogram = new JMenu("Histogram");		
+	private JMenu createHistogramMenu() {
+		final JMenu histogram = new JMenu("Histogram");	
+			final JMenuItem group = new JMenu("Group");
+			histogram.add(group);
+			group.add(getMenuItem(SHOW_NEW_GROUP));
+			group.add(getMenuItem(DELETE_GROUP));
+		
 		histogram.add(getMenuItem(SHOW_NEW_HIST));
 		histogram.add(getMenuItem(SHOW_HIST_ZERO));
 		histogram.add(getMenuItem(DELETE_HISTOGRAM));
@@ -173,13 +178,11 @@ public final class MenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
 		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
 
-		histogram.add(getMenuItem(SHOW_NEW_GROUP));
-		histogram.add(getMenuItem(DELETE_GROUP));
 		
 		return histogram;
 	}
 
-	private JMenu getGateMenu() {
+	private JMenu createGateMenu() {
 
 		final JMenu gate = new JMenu("Gate");
 		menubar.add(gate);
@@ -189,14 +192,14 @@ public final class MenuBar implements Observer, CommandNames {
 		return gate;
 	}
 
-	private JMenu getViewMenu() {
+	private JMenu createViewMenu() {
 		
 		updateViews();
 		return view;
 
 	}
 
-	private JMenu getScalerMenu() {
+	private JMenu createScalerMenu() {
 		final JMenu scalers = new JMenu("Scaler");
 		menubar.add(scalers);
 		scalers.add(getMenuItem(DISPLAY_SCALERS));
@@ -207,13 +210,13 @@ public final class MenuBar implements Observer, CommandNames {
 		return scalers;
 	}
 
-	private JMenu getFitMenu() {
+	private JMenu createFitMenu() {
 		fitting.add(getMenuItem(SHOW_FIT_NEW));
 		fitting.addSeparator();
 		return fitting;
 	}
 
-	private JMenu getHelp() {
+	private JMenu createHelp() {
 
 		final JMenu helpMenu = new JMenu("Help");
 		menubar.add(helpMenu);
@@ -223,7 +226,7 @@ public final class MenuBar implements Observer, CommandNames {
 		return helpMenu;
 	}
 
-	private JMenu getPreferencesMenu() {
+	private JMenu createPreferencesMenu() {
 		final JMenu mPrefer = new JMenu("Preferences");
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_ZERO));
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));

@@ -38,11 +38,9 @@ import javax.swing.border.EmptyBorder;
 public class Manipulations extends AbstractControl implements WindowListener,
         Observer {
 
-	private static final String NEW_HIST = "NEW: ";
+	private final String NEW_HIST = "NEW: ";
 	
 	private final String HIST_WILD_CARD="/.";	
-	
-	private final MessageHandler messageHandler;
 
 	private JComboBox cfrom1, cfrom2, cto;
 
@@ -53,6 +51,8 @@ public class Manipulations extends AbstractControl implements WindowListener,
 	private JLabel lname, lWith;
 	
 	private AbstractHist1D hto;
+	
+	private final MessageHandler messageHandler;	
 	
 	/**
 	 * Construct a new "manipilate histograms" dialog.

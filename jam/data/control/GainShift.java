@@ -7,6 +7,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -39,9 +40,11 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser
  * @version JDK 1.1
  */
-public class GainShift extends AbstractControl implements ActionListener,
-		ItemListener, Observer {
-	private final MessageHandler messageHandler;
+public class GainShift extends AbstractControl implements ItemListener, Observer {
+	
+	private final String NEW_HIST = "NEW: ";
+	
+	private final String HIST_WILD_CARD="/.";	
 
 	private final JComboBox cto;
 
@@ -55,11 +58,15 @@ public class GainShift extends AbstractControl implements ActionListener,
 
 	private final JLabel label1, label2, label3, label4;
 
-	private final JButton bOK, bApply;
+	//private final JButton bOK, bApply;
 
 	private double chan1i, chan2i, chan1f, chan2f, a1, b1, a2, b2;
 
 	private AbstractHist1D hfrom;
+	
+	private AbstractHist1D hto;
+
+	private final MessageHandler messageHandler;	
 
 	/**
 	 * Constructs a gain shift dialog.
@@ -167,7 +174,41 @@ public class GainShift extends AbstractControl implements ActionListener,
 		pto.add(ttextto);
 		pEntries.add(pto);
 
+		/* button panel */
+        final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
+                new PanelOKApplyCancelButtons.Listener() {
+                    public void ok() {
+                        apply();
+                        dispose();
+                    }
+
+                    public void apply() {
+                        try {
+                        	doGainShift();
+                            /*FIXME KBS
+                    		messageHandler.messageOutln("Gain shift " + hfrom.getFullName().trim()
+                    				+ " to " + hto.getFullName() + " " + typeProj);
+                            */
+                            BROADCASTER
+                                    .broadcast(BroadcastEvent.Command.REFRESH);
+                            STATUS.setCurrentHistogram(hto);
+                            BROADCASTER.broadcast(
+                                    BroadcastEvent.Command.HISTOGRAM_SELECT,
+                                    hto);
+                        } catch (DataException je) {
+                            messageHandler.errorOutln(je.getMessage());
+                        }
+                    }
+
+                    public void cancel() {
+                        dispose();
+                    }
+                });
+        cdgain.add(pButtons.getComponent(), BorderLayout.SOUTH);
+		pack();
+		
 		//Buttons panel
+		/*
 		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cdgain.add(pButtons, BorderLayout.SOUTH);
 		JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
@@ -184,17 +225,21 @@ public class GainShift extends AbstractControl implements ActionListener,
 		bCancel.addActionListener(this);
 		pcontrol.add(bCancel);
 		pButtons.add(pcontrol);
+		*/
+		
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfrom = null;
-					bOK.setEnabled(false);
-					bApply.setEnabled(false);
+					pButtons.setButtonsEnabled(false, false, true);
+					//bOK.setEnabled(false);
+					//bApply.setEnabled(false);
 				} else {
 					hfrom = (AbstractHist1D) selected;
-					bOK.setEnabled(true);
-					bApply.setEnabled(true);
+					pButtons.setButtonsEnabled(true, true, true);
+					//bOK.setEnabled(true);
+					//bApply.setEnabled(true);
 				}
 			}
 		});
@@ -203,17 +248,13 @@ public class GainShift extends AbstractControl implements ActionListener,
 		setUILabels(true);
 	}
 
-	private final static String OK = "ok";
-
-	private final static String APPLY = "apply";
-
-	private final static String CANCEL = "cancel";
 
 	/**
 	 * Are we done setting gate and should we save it or has the gate setting
 	 * been canceled.
 	 *  
 	 */
+	/*
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
 		try {
@@ -232,7 +273,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 			messageHandler.errorOutln(je.getMessage());
 		}
 	}
-
+	*/
 	/**
 	 * A item state change indicates that a gate has been chosen.
 	 */
@@ -328,6 +369,36 @@ public class GainShift extends AbstractControl implements ActionListener,
 				c.addItem(h.getFullName());
 		}
 	}
+	/* non-javadoc:
+	 * add histograms of type type1 and type2 to chooser
+	 */
+	private void addChooserHists(JComboBox comboBox, boolean addNew, int histDim) {
+		comboBox.removeAllItems();
+		//Add working group new
+		if(addNew) {
+			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
+			//Add new histograms
+			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
+				Group group = (Group)iter.next();
+				if (group.getType() != Group.Type.SORT &&
+					!Group.WORKING_NAME.equals(group.getName())) {
+					comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
+				}
+			}
+		}
+		/* Add Existing hisograms */
+		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
+			Group group = (Group)grpiter.next();
+			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
+				Histogram hist =(Histogram)histiter.next();
+				if (hist.getType().getDimensionality() == histDim) {
+					comboBox.addItem(hist.getFullName());
+				}
+			}
+		}
+
+		comboBox.setSelectedIndex(0);
+	}
 
 	/* non-javadoc:
 	 * Set dialog box for a new histogram to be written out.
@@ -355,7 +426,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 		final double[] errIn = hfrom.getErrors();
 		/* Get or create output histogram. */
 		String name = (String) cto.getSelectedItem();
-		final AbstractHist1D hto;
+		
 		if (name.equals("New Histogram")) {
 			name = ttextto.getText().trim();
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
