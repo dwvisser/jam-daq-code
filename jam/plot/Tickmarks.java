@@ -21,22 +21,9 @@ class Tickmarks {
 	static final int MAJOR = 0;
 	static final int MINOR = 1;
 
-	//linear scale;
-	private int tickSpace;
-	private int tickMin;
-	private int tickMax;
-
-	//log scale
-	private int decadeMin;
-	private int decadeMax;
-
 	// full number of decades to display		
 	private int countInDecadeMin;
 	private int countInDecadeMax;
-
-	// arrays that are returned
-	int[] ticks;
-	int[] thresholds;
 
 	/**
 	 * Get an array indicating where the Tickmark should be given an
@@ -48,8 +35,7 @@ class Tickmarks {
 		int upperLimit,
 	Limits.ScaleType scale,
 		int type) {
-
-		//linear scale
+		int [] ticks=new int[0];
 		if (scale == Limits.ScaleType.LINEAR) {
 			//for now major and minor are the same
 			if (type == MAJOR) {
@@ -57,69 +43,60 @@ class Tickmarks {
 			} else if (type == MINOR) {
 				ticks = ticksLinear(lowerLimit, upperLimit);
 			}
-
-			// log scale	    
 		} else if (scale == Limits.ScaleType.LOG) {
-
 			if (type == MAJOR) {
 				ticks = ticksLogMajor(lowerLimit, upperLimit);
 			} else if (type == MINOR) {
 				ticks = ticksLog(lowerLimit, upperLimit);
 			}
 
-		} else {
-			ticks = null;
 		}
-
-		return (ticks);
+		return ticks;
 	}
 
 	/** 
-	 * Method for default minor ticks    
-	 *  
+	 * Method for default minor ticks.
 	 */
-	public int[] getTicks(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
-
+	public int[] getTicks(int lowerLimit, int upperLimit, 
+	Limits.ScaleType scale) {
 		return getTicks(lowerLimit, upperLimit, scale, MINOR);
 	}
+	
 	/** 
-	 *
-	 *  figure out ticks for linear scale    
+	 * Figure out ticks for linear scale.    
 	 */
 	private int[] ticksLinear(int lowerLimit, int upperLimit) {
-
-		tickSpace = tickSpace(lowerLimit, upperLimit);
-		tickMin = tickMin(lowerLimit, tickSpace);
-		tickMax = tickMax(upperLimit, tickSpace);
-
+		final int tickSpace = tickSpace(lowerLimit, upperLimit);
+		final int tickMin = tickMin(lowerLimit, tickSpace);
+		final int tickMax = tickMax(upperLimit, tickSpace);
 		int numTicks = (tickMax - tickMin) / tickSpace + 1;
 		int tempTick[] = new int[numTicks];
-
 		for (int i = 0; i < numTicks; i++) {
 			tempTick[i] = tickMin + i * tickSpace;
 		}
-
 		return tempTick;
 	}
+	
 	/** 
-	 *  Tick spacing for linear scale   
+	 *  Tick spacing for linear scale.   
 	 */
 	private int tickSpace(int lowerLimit, int upperLimit) {
-		int range = upperLimit - lowerLimit + 1;
-		//upper and lower the same then 1 channel wide
+		final int range = upperLimit - lowerLimit + 1;
 		int tickSpace = 1;
-
 		//loop trying succesively bigger tick spacing
 		for (int i = 1; i < MAXIMUM_COUNTS; i *= 10) {
 			tickSpace = i;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range)
+			if ((tickSpace * MIN_NUMBER_TICKS) >= range){
 				break;
+			}
 			tickSpace = i * 2;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range)
+			if ((tickSpace * MIN_NUMBER_TICKS) >= range){
 				break;
+			}
 			tickSpace = i * 5;
-			if ((tickSpace * MIN_NUMBER_TICKS) >= range)
+			if ((tickSpace * MIN_NUMBER_TICKS) >= range){
 				break;
+			}
 		}
 		return tickSpace;
 	}
@@ -147,7 +124,6 @@ class Tickmarks {
 	 * Placement of maximum tick for linear         
 	 */
 	private int tickMax(int upperLimit, int tickSpace) {
-
 		int tempTickMax;
 		if ((upperLimit % tickSpace) == 0) { //upper limit is a tick
 			tempTickMax = upperLimit;
@@ -215,29 +191,12 @@ class Tickmarks {
 	 *</table>
 	 */
 	private int[] ticksLog(int lowerLimit, int upperLimit) {
-		int numberTicks;
 		int[] ticks;
-		int decade; // a counter
-		int countTick; // a counter
-		int startTick;
-		// where to start putting ticks takes care of zero minimum
-
-		//check that min points are not zero (cannot take of zero) if so set to 1
-		//find power of min and max values    
-		if (lowerLimit != 0) {
-			decadeMin =
-				(int) (Math.log((double) (lowerLimit)) / Math.log(10.0));
-			//decade of minimum limit	
-		} else {
-			decadeMin = 0;
-		}
-		if (upperLimit != 0) {
-			decadeMax =
-				(int) (Math.log((double) (upperLimit)) / Math.log(10.0));
-			//decade of maximum limits		
-		} else {
-			decadeMax = 0;
-		}
+		/* where to start putting ticks takes care of zero minimum
+         * check that min points are not zero (cannot take of zero) if so set to 1
+		 * find power of min and max values */
+		final int decadeMin = (lowerLimit != 0) ? getDecade(lowerLimit) : 0;    
+		final int decadeMax = (upperLimit != 0) ? getDecade(upperLimit) : 0;
 		//take the power of decadeMin and decadeMax;
 		countInDecadeMin = 1;
 		for (int i = 0; i < decadeMin; i++) {
@@ -248,15 +207,16 @@ class Tickmarks {
 			countInDecadeMax *= 10;
 		}
 		//where to start possibly putting ticks
-		if (lowerLimit != 0) {
+		final int startTick = (lowerLimit != 0) ? lowerLimit : 1;
+		/*if (lowerLimit != 0) {
 			startTick = lowerLimit;
 		} else {
 			startTick = 1;
-		}
+		}*/
 		//count number of ticks
 		//go through the Y scale increase scale by 10 when we pass a new decade	 	 
-		numberTicks = 0;
-		decade = countInDecadeMin;
+		int numberTicks = 0;
+		int decade = countInDecadeMin;
 		for (int i = startTick; i <= upperLimit; i += decade) {
 			numberTicks++;
 			if (i % (decade * 10) == 0) {
@@ -265,7 +225,7 @@ class Tickmarks {
 		}
 		//load tick values
 		ticks = new int[numberTicks];
-		countTick = 0;
+		int countTick = 0;
 		decade = countInDecadeMin;
 		for (int i = startTick; i <= upperLimit; i += decade) {
 			ticks[countTick] = i;
@@ -277,6 +237,12 @@ class Tickmarks {
 		return ticks;
 	}
 	
+	private int getDecade(double x){
+		final double logten=Math.log(10.0);
+		final double rval =Math.log(x)/logten;
+		return (int)rval;
+	}
+	
 	/**
 	 *
 	 *  color scale for 2d plots
@@ -286,21 +252,16 @@ class Tickmarks {
 		int upperLimit,
 		int numberColors,
 	Limits.ScaleType scale) {
-
-		//linear scale
+		int [] thresholds=new int[0];
 		if (scale == Limits.ScaleType.LINEAR) {
 			thresholds =
 				colorThresholdsLin(lowerLimit, upperLimit, numberColors);
-
-			//log scale	    
 		} else if (scale == Limits.ScaleType.LOG) {
 			thresholds =
 				colorThresholdsLog(lowerLimit, upperLimit, numberColors);
 
-		} else {
-			System.err.println("Error in colorthresholds [TickMarks]");
-		}
-		return (thresholds);
+		} 
+		return thresholds;
 	}
 	
 	/**
