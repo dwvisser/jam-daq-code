@@ -74,7 +74,7 @@ public class Histogram implements Serializable {
 	/**
 	 * Maximum number of characters in the histogram name.
 	 */
-	public static final int NAME_LENGTH = 16;
+	public static final int NAME_LENGTH = 20;
 
 	private final static Map sortedNameMap = new TreeMap();
 	private final static SortedMap sortedNumberMap=new TreeMap();
