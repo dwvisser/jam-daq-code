@@ -14,20 +14,44 @@ import java.util.prefs.Preferences;
  * @see java.util.prefs.Preferences
  */
 public interface ColorPrefs {
+    /**
+     * The preferences node for this package.
+     */
 	final Preferences COLOR_PREFS = Preferences
 			.userNodeForPackage(ColorPrefs.class);
 
+	/**
+	 * Centroid for red band.
+	 */
 	final String X0R = "X0R";
 
+	/**
+	 * Centroid for green band.
+	 */
 	final String X0G = "X0G";
 
+	/**
+	 * Centroid for blue band.
+	 */
 	final String X0B = "X0B";
 
+	/**
+	 * Diffuseness of red band.
+	 */
 	final String ARED = "ARED";
 
+	/**
+	 * Diffuseness of green band.
+	 */
 	final String AGREEN = "AGREEN";
 
+	/**
+	 * Diffuseness of blue band.
+	 */
 	final String ABLUE = "ABLUE";
 
+	/**
+	 * Whether to use a continuous gradient or discrete color scale.
+	 */
 	final String SMOOTH_COLOR_SCALE = "ContinuousColorScale";
 }

@@ -35,20 +35,20 @@ import javax.swing.event.ChangeListener;
 public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		ColorPrefs {
 
-	private JComboBox colorSchemeComboBox;
-
 	private final RainbowPanel elementVizRainbowPanel=new RainbowPanel();
 
-	private JPanel colorPanel, buttonPanel, sliderPanel;
-
-	private JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
+	private final JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
 			aBSlider;
 
-	private JTextField x0RField, x0GField, x0BField, aRField, aGField, aBField;
+	private final JTextField x0RField, x0GField, x0BField, aRField, aGField, aBField;
 
 	static private final ColorSettingsFrame CSF = new ColorSettingsFrame();
 
-	static public ColorSettingsFrame getSingletonInstance() {
+	/**
+	 * Returns the only instance of this class.
+	 * @return the only insstance of this class
+	 */
+	static public ColorSettingsFrame getInstance() {
 		return CSF;
 	}
 
@@ -133,13 +133,11 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		aBField = new JTextField(5);
 		aBField.setText(String.valueOf(aB / 100.0));
 		aBField.setEditable(false);
-		final JComponent minAbundLabel = new JLabel("Abundance min : ");
-		final JComponent maxAbundLabel = new JLabel("Abundance max : ");
 		final JComponent colorSchemeLabel = new JLabel(
 				"<html>Choose a<p>color scheme :</html>");
 		final String current="Current";
 		final String rainbow="Rainbow";
-		colorSchemeComboBox = new JComboBox();
+		final JComboBox colorSchemeComboBox = new JComboBox();
 		colorSchemeComboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				final String selection = (String) colorSchemeComboBox
@@ -197,9 +195,9 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(50, 100));
-		colorPanel = new JPanel(new GridBagLayout());
-		buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-		sliderPanel = new JPanel(new GridBagLayout());
+		final JPanel colorPanel = new JPanel(new GridBagLayout());
+		final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		final JPanel sliderPanel = new JPanel(new GridBagLayout());
 		gbc.insets = new Insets(5, 5, 5, 5);
 		setGrid(gbc,0,0,2);
 		sliderPanel.add(redLabel, gbc);
@@ -287,10 +285,6 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		elementVizRainbowPanel.repaint();
 	}
 
-	public static void main(String[] args) {
-		CSF.setVisible(true);
-	}
-	
 	private void apply(){
 		final double x0R = x0RSlider.getValue() / 100.0;
 		final double x0G = x0GSlider.getValue() / 100.0;

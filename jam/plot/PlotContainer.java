@@ -194,8 +194,8 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/**
 	 * Overlay histograms
 	 * 
-	 * @param num
-	 *            the number of the histogram
+	 * @param hists
+	 *            to overlay
 	 */
 	void overlayHistograms(Histogram [] hists) {
 		currentSubPlot.overlayHistograms(hists);

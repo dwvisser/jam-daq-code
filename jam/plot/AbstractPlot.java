@@ -48,7 +48,7 @@ abstract class AbstractPlot implements PlotPrefs,
     	 */
     	protected void paintComponent(Graphics g) {
     		super.paintComponent(g);
-    		PlotColorMap pcm=PlotColorMap.getSingletonInstance();
+    		PlotColorMap pcm=PlotColorMap.getInstance();
     		if (printing) { //output to printer
     			//FIXME KBS font not set
     			//graph.setFont(printFont);
@@ -828,7 +828,7 @@ abstract class AbstractPlot implements PlotPrefs,
      * colors and the size in pixels for a plot.
      */
 	private void paintHeader(Graphics g) {
-		g.setColor(PlotColorMap.getSingletonInstance().getForeground());
+		g.setColor(PlotColorMap.getInstance().getForeground());
 		if (printing) { //output to printer
 			graph.drawDate(date); //date
 			graph.drawRun(runNumber); //run number
@@ -950,7 +950,7 @@ abstract class AbstractPlot implements PlotPrefs,
 			colorMode = cm ? PlotColorMap.W_ON_B
 					: PlotColorMap.B_ON_W;
 		}
-		panel.setBackground(PlotColorMap.getSingletonInstance().getBackground());
+		panel.setBackground(PlotColorMap.getInstance().getBackground());
 	}
 	
 	/* Plot mouse methods */

@@ -49,7 +49,7 @@ final class RainbowPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		graph2d.setRenderingHints(hints);
 		for (int i = 0; i < 100; i++) {
-			graph2d.setColor(getRGB((double) i / 100.0));
+			graph2d.setColor(getRGB(i / 100.0));
 			graph2d.drawLine(0, 100 - i, 50, 100 - i);
 		}
 		graph2d.setColor(Color.black);

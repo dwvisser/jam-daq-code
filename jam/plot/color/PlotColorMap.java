@@ -9,11 +9,21 @@ import java.awt.Color;
 public class PlotColorMap {
 
 	private static final Color DARK_RED=new Color(192,0,0);
+	
+	/**
+	 * Represents screen graphics mode with white background.
+	 */
     public final static int B_ON_W=0;
+	
+	/**
+	 * Represents screen graphics mode with black background.
+	 */
     public final static int W_ON_B=1;
+	
+	/**
+	 * Represents print graphics mode.
+	 */
     public final static int PRINT=5;
-
-    private final static int NUM_COLORS=9;
 
     private transient Color background;
     private transient Color foreground;
@@ -36,10 +46,21 @@ public class PlotColorMap {
         setColorMap(mode);
     }
     
-    static public PlotColorMap getSingletonInstance(){
+    /**
+     * Returns the only instance of this class.
+     * @return the only instance of this class
+     */
+    static public PlotColorMap getInstance(){
     	return MAP;
     }
 
+    /**
+     * Sets the color mappings for the given mode.
+     * @param mode what type of graphics context
+     * @see #B_ON_W
+     * @see #W_ON_B
+     * @see #PRINT
+     */
     public synchronized void setColorMap(int mode){
         if (mode==B_ON_W){
             background=Color.WHITE;
@@ -87,61 +108,106 @@ public class PlotColorMap {
     }
 
     /**
-     * Number of colors
+     * Get the foreground color.
+     * @return foreground color
      */
-    public static int getNumberColors() {
-        return NUM_COLORS;
-    }
-    
-    
     synchronized public Color getForeground(){
     	return foreground;
     }
     
+    /**
+     * Get the background color.
+     * @return background color
+     */
     synchronized public Color getBackground(){
     	return background;
     }
     
+    /**
+     * Returns the gate display color.
+     * @return the gate display color
+     */
     synchronized public Color getGateShow(){
     	return gateShow;
     }
     
+    /**
+     * Returns the gate setting color.
+     * @return the gate setting color
+     */
     synchronized public Color getGateDraw(){
     	return gateDraw;
     }
     
+    /**
+     * Returns the color for marked channels.
+     * @return marked channels color
+     */
     synchronized public Color getMark(){
     	return mark;
     }
     
+    /**
+     * Returns the area highlight color.
+     * @return area highlight color
+     */
     synchronized public Color getArea(){
     	return area;
     }
     
+    /**
+     * Returns the color to draw histogram lines.
+     * @return histogram curve color
+     */
     synchronized public Color getHistogram(){
     	return hist;
     }
     
+    /**
+     * Returns the color used to draw the fit background function.
+     * @return fit background curve color
+     */
     synchronized public Color getFitBackground(){
     	return fitBkgd;
     }
     
+    /**
+     * Returns the color used to draw the fit residuals.
+     * @return fit residuals color
+     */
     synchronized public Color getFitResidual(){
     	return fitResidual;
     }
     
+    /**
+     * Returns the color used to draw the total (signal+background) fit function.
+     * @return fit total curve color
+     */
     synchronized public Color getFitTotal(){
     	return fitTotal;
     }
     
+    /**
+     * Returns the color used to draw the fit signal function.
+     * @return fit signal curve color
+     */
     synchronized public Color getFitSignal(){
     	return fitSignal;
     }
     
+    /**
+     * Returns the color for the index'th overlay curve.
+     * @param index which overlay, counting starts at 0
+     * @return overlay curve color
+     */
     synchronized public Color getOverlay(int index){
     	return OVERLAY[index % OVERLAY.length];
     }
     
+    /**
+     * Returns the color used to label automatically found peaks.
+     * @return peak label color
+     */
     synchronized public Color getPeakLabel(){
     	return peakLabel;
     }

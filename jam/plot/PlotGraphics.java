@@ -60,7 +60,7 @@ final class PlotGraphics {
 	static final double LOG_FAKE_ZERO = 0.5;
 
 	private static final PlotColorMap COLOR_MAP = PlotColorMap
-			.getSingletonInstance();
+			.getInstance();
 
 	PlotGraphicsLayout graphLayout;
 

@@ -142,7 +142,7 @@ public class DiscreteColorScale implements ColorScale {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Linear thresholds for a color in 2d plots.
 	 */
 	private int[] colorThresholdsLin(int lowerLimit, int upperLimit) {
@@ -156,7 +156,7 @@ public class DiscreteColorScale implements ColorScale {
 		return thresholdTemp;
 	}
 
-	/**
+	/* non-javadoc:
 	 * The step in threshold for colors for 2d plot
 	 */
 	private int thresholdStep(int lowerLimit, int upperLimit) {
@@ -178,7 +178,7 @@ public class DiscreteColorScale implements ColorScale {
 		return colorStep;
 	}
 
-	/**
+	/* non-javadoc:
 	 * minimum thresold for linear 2d plot
 	 */
 	private int getThresholdMin(int lowerLimit, int thresholdStep) {
@@ -192,7 +192,7 @@ public class DiscreteColorScale implements ColorScale {
 		return rval;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Color thresholds for a log 2d plot
 	 */
 	private int[] colorThresholdsLog(int lowerLimit, int upperLimit) {

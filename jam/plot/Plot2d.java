@@ -34,7 +34,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	/** areaMark is a rectangle in channel space */
 	private final Rectangle areaMark = new Rectangle();
 	
-	private final PlotColorMap plotColorMap=PlotColorMap.getSingletonInstance();
+	private final PlotColorMap plotColorMap=PlotColorMap.getInstance();
 
 	private boolean smoothColorScale = true;
 

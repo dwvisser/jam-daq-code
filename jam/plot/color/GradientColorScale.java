@@ -68,6 +68,13 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 	private static final GradientColorScale LOG = new GradientColorScale(0,
 			100, Scale.LOG);
 
+	/**
+	 * Returns the appropriate gradient color scale for the given
+	 * scale type.
+	 * 
+	 * @param s type of counts scale
+	 * @return a gradient color scale
+	 */
 	static public synchronized GradientColorScale getScale(Scale s) {
 		return s == Scale.LINEAR ? LINEAR : LOG;
 	}
