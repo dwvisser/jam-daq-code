@@ -130,9 +130,12 @@ public final class HistInt2D extends AbstractHist2D {
 	 *             if countsIn is the wrong type.
 	 */
 	public void setCounts(Object countsIn) {
-		if (Type.getArrayType(countsIn) != getType()) {
-			throw new IllegalArgumentException("Expected array for type "
-					+ getType());
+	    final Type givenType = Type.getArrayType(countsIn);
+	    final Type expectedType = getType();
+		if (givenType != expectedType) {
+			throw new IllegalArgumentException(getName()+": setCounts()"
+			        +" expected array for type "
+					+ expectedType+". Got array for type "+givenType+".");
 		}
 		setCounts((int[][]) countsIn);
 	}
