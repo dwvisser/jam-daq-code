@@ -228,8 +228,13 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
-		final int nOverlay = displayingOverlay ? overlayHists[0].getNumber() : -1;
-		graph.drawNumber(number, nOverlay);
+		//final int nOverlay = displayingOverlay ? overlayHists[0].getNumber() : -1;
+		final int len=displayingOverlay ? overlayHists.length : 0;
+		final int [] overlays=new int[len];
+		for (int i=0; i<len; i++){
+			overlays[i]=overlayHists[i].getNumber();
+		}
+		graph.drawNumber(number, overlays);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
@@ -271,14 +276,12 @@ class Plot1d extends Plot {
 	 */
 	protected void paintOverlay(Graphics g) {
 		final Graphics2D g2=(Graphics2D)g;
-		g2.setColor(PlotColorMap.overlay);
 		final Composite prev=g2.getComposite();
 		g2.setComposite(
 			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f));
 		final int len=countsOverlay.length;
-		final ColorScale scale=new GradientColorScale(1,len,Limits.ScaleType.LINEAR);
 		for (int i=0; i<len; i++){
-			g2.setColor(scale.getColor(i));
+			g2.setColor(PlotColorMap.overlay[i%PlotColorMap.overlay.length]);
 			graph.drawHist(countsOverlay[i], binWidth);
 		}
 		g2.setComposite(prev);
