@@ -13,64 +13,76 @@ import junit.framework.TestCase;
  */
 public class HistogramTest extends TestCase {
 
-	Gate g1, g2; 
-	Histogram h1,h2; 
+    Gate gate1, gate2;
 
-	/**
-	 * Constructor for HistogramTest.
-	 * 
-	 * @param arg0
-	 */
-	public HistogramTest(String arg0) {
-		super(arg0);
-	}
+    Histogram hist1, hist2;
 
-	/**
-	 * Initialize local variables for the tests.
-	 * 
-	 * @see TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {
-		super.setUp();
-		Group group = Group.createGroup("TestHistogramGroup", Group.Type.FILE);
-		h1 = Histogram.createHistogram(group, new int[100],"h1");
-		h2 = Histogram.createHistogram(group, new int[100][100], "h2");
-		g1 = new Gate("g1",h1);
-		g2 = new Gate("g2",h2);
-	}
+    /**
+     * Constructor for HistogramTest.
+     * 
+     * @param arg0
+     */
+    public HistogramTest(String arg0) {
+        super(arg0);
+    }
 
-	/**
-	 * Test for <code>hasGate(Gate)</code>.
-	 *
-	 * @see Histogram#hasGate(Gate)
-	 */
-	public void testHasGate() {
-		assertTrue(h1.hasGate(g1));
-		assertTrue(h2.hasGate(g2));
-		assertTrue(!h1.hasGate(g2));
-		assertTrue(!h2.hasGate(g1));
-	}
-	
-	/**
-	 * Test for <code>getHistogram(String)</code>.
-	 * 
-	 * @see Histogram#getHistogram(String)
-	 */
-	public void testGetHistogram() {
-		assertNotNull("h1 nonexistent here", h1);
-		assertNotNull("Couldn't find histogram named \""+h1.getName()+"\"",Histogram.getHistogram(h1.getName()));
-		assertNotNull("Couldn't find histogram named \""+h2.getName()+"\"",Histogram.getHistogram(h2.getName()));
-		assertNull("Found nonexistent histogram named \"notreal\"",Histogram.getHistogram("notreal"));
-	}
-	
-	/**
-	 * Test for <code>getGates</code>.
-	 *
-	 * @see Histogram#getGates
-	 */
-	public void testGetGates(){
-		List h1List=h1.getGates();
-		assertEquals(h1List.size(),1);
-	}
+    /**
+     * Initialize local variables for the tests.
+     * 
+     * @see TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        final Group group = Group.createGroup("TestHistogramGroup",
+                Group.Type.FILE);
+        hist1 = Histogram.createHistogram(group, new int[100], "h1");
+        hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
+        gate1 = new Gate("g1", hist1);
+        gate2 = new Gate("g2", hist2);
+    }
+
+    /**
+     * Test for <code>hasGate(Gate)</code>.
+     * 
+     * @see Histogram#hasGate(Gate)
+     */
+    public void testHasGate() {
+        assertTrue(hist1.getFullName() + " doesn't have gate "
+                + gate1.getName(), hist1.hasGate(gate1));
+        assertTrue(hist2.getFullName() + " doesn't have gate "
+                + gate2.getName(), hist2.hasGate(gate2));
+        assertTrue(hist1.getFullName() + " has gate " + gate2.getName(), !hist1
+                .hasGate(gate2));
+        assertTrue(hist2.getFullName() + " has gate " + gate1.getName(), !hist2
+                .hasGate(gate1));
+    }
+
+    /**
+     * Test for <code>getHistogram(String)</code>.
+     * 
+     * @see Histogram#getHistogram(String)
+     */
+    public void testGetHistogram() {
+        assertNotNull("h1 nonexistent here", hist1);
+        assertNotNull("Couldn't find histogram named \""
+                + hist1.getUniqueFullName() + "\"", Histogram
+                .getHistogram(hist1.getUniqueFullName()));
+        assertNotNull("Couldn't find histogram named \""
+                + hist2.getUniqueFullName() + "\"", Histogram
+                .getHistogram(hist2.getUniqueFullName()));
+        assertNull("Found nonexistent histogram named \"notreal\"", Histogram
+                .getHistogram("notreal"));
+    }
+
+    /**
+     * Test for <code>getGates</code>.
+     * 
+     * @see Histogram#getGates
+     */
+    public void testGetGates() {
+        final List h1List = hist1.getGates();
+        final int size = h1List.size();
+        assertEquals("List size should be 1, actually is " + size, size, 1);
+    }
 
 }
