@@ -208,12 +208,10 @@ public abstract class DataObject {
 		tagKey=new Short(t);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
-	 *
-	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
-	byte[] getBytes() throws HDFException {
+	byte[] getBytes()  {
 		return bytes;
 	}
 
