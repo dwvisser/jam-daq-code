@@ -9,8 +9,6 @@ import java.awt.event.MouseListener;
 import javax.swing.BoundedRangeModel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * This Class does the scroll bars for one and two Dimensional Plots.
@@ -21,7 +19,7 @@ import javax.swing.event.ChangeListener;
  */
 class Scroller
 	extends JPanel
-	implements AdjustmentListener, ChangeListener, MouseListener {
+	implements AdjustmentListener, MouseListener {
 
 	//which scrollbars to update
 	final static int ALL = 0;
@@ -154,13 +152,6 @@ class Scroller
 		}
 	}
 	
-	/**
-	 * called back when models of scroll bars has changed.
-	 */
-	public void stateChanged(ChangeEvent e) {
-		System.out.println("change event");
-	}
-
 	/**
 	 * update automatically by limits.
 	 *  Update the scroll bars for this plot
