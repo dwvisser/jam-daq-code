@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  */
 public class PanelOKApplyCancelButtons {
 
-	private final Callback callback;
+	private final Listener callback;
 	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
 	
 	/**
@@ -25,7 +25,7 @@ public class PanelOKApplyCancelButtons {
 	 * 
 	 * @param cb object with methods to be called when the buttons get pressed
 	 */
-	public PanelOKApplyCancelButtons(Callback cb) {
+	public PanelOKApplyCancelButtons(Listener cb) {
 		callback=cb;
 		final JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
 		panel.add(pb);
@@ -67,7 +67,7 @@ public class PanelOKApplyCancelButtons {
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public interface Callback {
+	public interface Listener {
 	    
 	    /**
 	     * To be called when the user clicks the OK button.

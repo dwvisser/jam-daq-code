@@ -18,7 +18,7 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  *
  */
-public class GroupNew extends AbstractControl implements PanelOKApplyCancelButtons.Callback {
+public class GroupNew extends AbstractControl implements PanelOKApplyCancelButtons.Listener {
 
 	private final JTextField textName;
 	

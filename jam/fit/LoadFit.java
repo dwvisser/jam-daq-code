@@ -71,8 +71,8 @@ public class LoadFit {
 		dim.width=200;
 		chooseFit.setPreferredSize(dim);
 		pf.add(chooseFit);
-		final PanelOKApplyCancelButtons.Callback callback = new 
-		PanelOKApplyCancelButtons.Callback(){
+		final PanelOKApplyCancelButtons.Listener callback = new 
+		PanelOKApplyCancelButtons.Listener(){
 		    public void ok(){
 		        apply();
 		        dl.dispose();
