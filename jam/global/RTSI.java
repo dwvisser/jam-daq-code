@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -29,12 +30,17 @@ public class RTSI {
 	/**
 	 * Display all the classes inheriting or implementing a given
 	 * class in the currently loaded packages.
+	 * 
 	 * @param tosubclassname the name of the class to inherit from
 	 */
 	public static void find(String tosubclassname) {
 		try {
 			Class tosubclass = Class.forName(tosubclassname);
 			Package[] pcks = Package.getPackages();
+			System.out.println("Packages:");
+			for (int i=0; i<pcks.length; i++){
+				System.out.println("\t"+pcks[i].getName());
+			}
 			for (int i = 0; i < pcks.length; i++) {
 				find(pcks[i].getName(), tosubclass);
 			}
@@ -46,23 +52,31 @@ public class RTSI {
 	/**
 	 * Display all the classes inheriting or implementing a given
 	 * class in a given package.
+	 * 
 	 * @param pckgname the fully qualified name of the package
 	 * @param tosubclass the name of the class to inherit from
 	 */
 	public static void find(String pckname, String tosubclassname) {
 		try {
 			Class tosubclass = Class.forName(tosubclassname);
-			find(pckname, tosubclass);
+			Iterator result=find(pckname, tosubclass).iterator();
+			System.out.println("Find classes assignable as "+tosubclass.getName()+
+			" in \""+pckname+"\"");
+			while (result.hasNext()){
+				System.out.println("\t"+((Class)result.next()).getName());
+			}
 		} catch (ClassNotFoundException ex) {
 			System.err.println("Class " + tosubclassname + " not found!");
 		}
 	}
 
 	/**
-	 * Display all the classes inheriting or implementing a given
+	 * Find all the classes inheriting or implementing a given
 	 * class in a given package.
+	 * 
 	 * @param pckgname the fully qualified name of the package
 	 * @param tosubclass the Class object to inherit from
+	 * @return an unordered list of classes assignable as requested
 	 */
 	public static Set find(String pckgname, Class tosubclass) {
 		// Code from JWhich
