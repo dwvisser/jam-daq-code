@@ -743,22 +743,20 @@ public class Histogram implements Serializable {
 	/**
 	 * Add a <code>Gate</code> to this histogram.
 	 *
-	 * @exception DataException <code>DataException</code> tried to add gate to wrong type of histogram
+	 * @throws UnsupportedOperationException if a gate of a different type is given
 	 */
-	public void addGate(Gate gate) throws DataException {
+	public void addGate(Gate gate) {
 		if (gate.type == Gate.ONE_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 1) {
 				gates.add(gate);
-				//gateComboBoxModel.addElement(gate);
 			} else {
-				throw new DataException("Can't add 1-d gate to 2-dim histogram.");
+				throw new UnsupportedOperationException("Can't add 1-d gate to 2-dim histogram.");
 			}
 		} else if (gate.type == Gate.TWO_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 2) {
 				gates.add(gate);
-				//gateComboBoxModel.addElement(gate);
 			} else {
-				throw new DataException("Can't add 2-d gate to 1-dim histogram.");
+				throw new UnsupportedOperationException("Can't add 2-d gate to 1-dim histogram.");
 			}
 		}
 	}
