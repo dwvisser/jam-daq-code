@@ -254,7 +254,8 @@ public class RunControl implements Controller, ActionListener {
         } else if (storageDaemon == null) {//case if front end is taking care of storing events
             device=FRONT_END;
         } else {
-            System.err.println("Error unknown storageDaemon type [RunControl]");
+           throw new IllegalArgumentException("Unknown storageDaemon type "+
+           storageDaemon.getClass().getName());
         }
         bbegin.setEnabled(true);
     }
@@ -386,7 +387,7 @@ public class RunControl implements Controller, ActionListener {
             try {
                 Thread.sleep(1000);		//sleep 1 second
             } catch(InterruptedException ie){
-                System.err.println(getClass().getName()+".endRun(), Error: Interrupted while"
+                console.errorOutln(getClass().getName()+".endRun(), Error: Interrupted while"
                 +" waiting for sort to finish.");
             }
         } while(!sortDaemon.caughtUp());
