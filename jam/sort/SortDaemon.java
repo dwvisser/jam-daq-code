@@ -232,10 +232,10 @@ public class SortDaemon extends GoodThread {
             //we have reached the end of a buffer
             if (status==EventInputStatus.END_BUFFER) {
                 bufferCount++;
-                this.yield();
+                yield();
             } else if (status==EventInputStatus.END_RUN){
                 bufferCount++;
-                this.yield();
+                yield();
             } else if (status==EventInputStatus.UNKNOWN_WORD){
                 //throw new SortException("Sorter stopped. Unknown word in event stream.");
                 msgHandler.warningOutln("Unknown word in event stream.");
@@ -248,7 +248,7 @@ public class SortDaemon extends GoodThread {
                 System.err.println("Error Sorter, Unknown eventInput status = "+status);
                 throw new SortException("Sorter stopped due to unknown status: "+status);
             }
-            this.yield();
+            yield();
         }//end infinite loop
     }
 
@@ -279,7 +279,7 @@ public class SortDaemon extends GoodThread {
                             atBuffer=false;
                             if (eventCount%COUNT_UPDATE==0){      //exactly divisible by COUNT_UPDATE
                                 updateCounters();
-                                this.yield();
+                                yield();
                             }
                         } //else SCALER_VALUE, assume sort stream took care and move on
                           //or IGNORE which means something ignorable in the event stream
@@ -311,7 +311,7 @@ public class SortDaemon extends GoodThread {
                         //unrecoverable error
                         throw new SortException("Sorter, Unknown eventInput status = "+status);
                     }
-                    this.yield();
+                    yield();
                     //end buffer loop
                 }
                 //end isSortNext loop

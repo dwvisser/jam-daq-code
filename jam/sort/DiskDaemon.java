@@ -134,7 +134,7 @@ public class DiskDaemon extends StorageDaemon {
 				fileCount++;
 				controller.atWriteEnd();
 			}
-			this.yield();
+			yield();
 		}
 		//end loop forever 
 	}
