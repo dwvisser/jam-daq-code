@@ -9,7 +9,7 @@ import java.util.Observer;
 /**
  * Show the new gate dialog
  */
-public class ShowDialogNewGateCmd extends AbstractShowDataControlCmd implements
+public class ShowDialogNewGateCmd extends AbstractShowDialog implements
 Observer {
 
 	private final List histogramList=Histogram.getHistogramList();
@@ -17,7 +17,7 @@ Observer {
 	protected void initCommand(){
 		putValue(NAME, "New\u2026");
 		/* Super class member next line */
-		dataControl= new GateNew(msghdlr);		
+		dialog= new GateNew(msghdlr);		
 	}
 	
 	public void update(Observable observe, Object obj){

@@ -7,14 +7,13 @@ import jam.data.control.HistogramNew;
  * @author Ken
  *
  */
-final class ShowDialogNewHistogramCmd extends AbstractShowDataControlCmd {
+final class ShowDialogNewHistogramCmd extends AbstractShowDialog {
 	
 	/**
 	 * Initialize command
 	 */
 	protected void initCommand(){
 		putValue(NAME, "New\u2026");
-		dataControl= new HistogramNew(msghdlr);
+		dialog= new HistogramNew(msghdlr);
 	}
-	
 }

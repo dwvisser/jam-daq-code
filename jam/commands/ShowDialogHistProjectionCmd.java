@@ -6,11 +6,11 @@ import jam.data.control.Projections;
  * 
  * @author Ken Swartz
  */
-public class ShowDialogHistProjectionCmd extends AbstractShowDataControlCmd {
+public class ShowDialogHistProjectionCmd extends AbstractShowDialog {
 	
 	protected void initCommand(){
 		putValue(NAME,"Projections\u2026");
-		dataControl=new Projections(msghdlr);
+		dialog=new Projections(msghdlr);
 	}
 
 }

@@ -13,14 +13,14 @@ import java.util.Observer;
  * @author Ken Swartz
  *
  */
-final class ShowDialogSetGate extends AbstractShowDataControlCmd implements
+final class ShowDialogSetGate extends AbstractShowDialog implements
 Observer {
 
 	private final List gateList=Gate.getGateList();
 	
 	protected void initCommand(){
 		putValue(NAME,"Set Gate\u2026");
-		dataControl=new GateSet(msghdlr);
+		dialog=new GateSet(msghdlr);
 	}
 
 	public void update(Observable observe, Object obj){

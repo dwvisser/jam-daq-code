@@ -7,12 +7,10 @@ import jam.data.control.Manipulations;
  * 
  * @author Ken Swartz
  */
-public class ShowDialogHistManipulationsCmd
-	extends AbstractShowDataControlCmd {
+public class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
-		protected void initCommand(){
-			putValue(NAME,"Combine\u2026");
-			dataControl=new Manipulations(msghdlr);
-		}
-
+	protected void initCommand() {
+		putValue(NAME, "Combine\u2026");
+		dialog = new Manipulations(msghdlr);
+	}
 }

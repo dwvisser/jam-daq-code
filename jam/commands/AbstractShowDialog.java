@@ -24,4 +24,11 @@ public class AbstractShowDialog
 		throws CommandListenerException {
 		execute(null);
 	}
+	
+	public final void setEnabled(boolean state){
+		super.setEnabled(state);
+		if (!state){
+			dialog.dispose();
+		}
+	}
 }

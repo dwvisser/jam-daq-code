@@ -6,11 +6,11 @@ import jam.data.control.CalibrationDisplay;;
  *
  */
 public class ShowDialogCalibrationDisplayCmd
-	extends AbstractShowDataControlCmd {
+	extends AbstractShowDialog {
 
 		protected void initCommand(){
 			putValue(NAME,"Fit\u2026");			
-			dataControl=new CalibrationDisplay(msghdlr);
+			dialog=new CalibrationDisplay(msghdlr);
 		}
 
 }

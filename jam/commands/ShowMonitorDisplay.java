@@ -14,14 +14,14 @@ import java.util.Observer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowMonitorDisplay extends AbstractShowDataControlCmd implements 
+public class ShowMonitorDisplay extends AbstractShowDialog implements 
 Observer {
 
 	private final List monitorList=Monitor.getMonitorList();
 
 	protected void initCommand(){
 		putValue(NAME,"Display Monitors\u2026");
-		dataControl=MonitorControl.getSingletonInstance(msghdlr).display;
+		dialog=MonitorControl.getSingletonInstance(msghdlr).display;
 	}
 
 	public void update(Observable observe, Object obj){

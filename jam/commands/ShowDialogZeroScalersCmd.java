@@ -13,14 +13,14 @@ import java.util.Observer;
  * @author Ken Swartz
  *
  */
-final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd 
+final class ShowDialogZeroScalersCmd extends AbstractShowDialog 
 implements Observer {
 	
 	private final List scalerList=Scaler.getScalerList();
 	
 	protected void initCommand(){
 		putValue(NAME,"Zero Scalers\u2026");
-		dataControl=new ScalerZero();
+		dialog=new ScalerZero();
 	}
 	
 	public void update(Observable observe, Object obj){

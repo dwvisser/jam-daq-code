@@ -6,11 +6,11 @@ import jam.data.control.CalibrationFit;
  * 
  * Show histgrom Calibartion fit dialgo
  */
-public class ShowDialogCalibrationFitCmd extends AbstractShowDataControlCmd {
+public class ShowDialogCalibrationFitCmd extends AbstractShowDialog {
 
 	protected void initCommand(){
 		putValue(NAME,"Enter Coefficients\u2026");
-		dataControl=new CalibrationFit(msghdlr);
+		dialog=new CalibrationFit(msghdlr);
 	}
 
 }

@@ -6,11 +6,10 @@ import jam.data.control.GainShift;
  * Show the gain shift dialog
  * @author Ken
  */
-public class ShowDialogGainShiftCmd extends AbstractShowDataControlCmd {
+public class ShowDialogGainShiftCmd extends AbstractShowDialog {
 
 	protected void initCommand(){
 		putValue(NAME,"Gain Shift\u2026");
-		dataControl=new GainShift(msghdlr);
+		dialog=new GainShift(msghdlr);
 	}
-
 }

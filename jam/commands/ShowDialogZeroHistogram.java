@@ -13,7 +13,7 @@ import java.util.Observer;
  * @author Ken Swartz
  *
  */
-public class ShowDialogZeroHistogram extends AbstractShowDataControlCmd 
+public class ShowDialogZeroHistogram extends AbstractShowDialog 
 implements Observer {
 
 	private final List histogramList=Histogram.getHistogramList();
@@ -23,7 +23,7 @@ implements Observer {
 	 */
 	protected void initCommand(){
 		putValue(NAME, "Zero\u2026");
-		dataControl= new HistogramZero(msghdlr);
+		dialog= new HistogramZero(msghdlr);
 	}
 
 	public void update(Observable observe, Object obj){
