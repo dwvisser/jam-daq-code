@@ -37,7 +37,7 @@ public class DiskDaemon extends StorageDaemon {
 			throw new SortException("Cannot open input event file, null name [DiskDaemon]");
 		try {
 			fis = new FileInputStream(file);
-			bis = new BufferedInputStream(fis, RECORD_SIZE);
+			bis = new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
 			eventInput.setInputStream(bis);
 			this.inputFile = file;
 			inputFileOpen = true;
@@ -57,7 +57,7 @@ public class DiskDaemon extends StorageDaemon {
 			throw new SortException("Cannot open output event file, file name is null [DiskDaemon]");
 		try {
 			fos = new FileOutputStream(file);
-			bos = new BufferedOutputStream(fos, RECORD_SIZE);
+			bos = new BufferedOutputStream(fos, RingBuffer.BUFFER_SIZE);
 			eventOutput.setOutputStream(bos);
 			this.outputFile = file;
 			outputFileOpen = true;
@@ -118,11 +118,12 @@ public class DiskDaemon extends StorageDaemon {
 	 * until you see a end of run marker, then inform controller
 	 */
 	private void writeLoop() throws IOException {
+		final byte [] buffer=RingBuffer.freshBuffer();
 		/* checkState() waits until state is STOP (return value=false)
 		 * or RUN (return value=true) */	
 		while (checkState()) {
 			//read from pipe and write file
-			buffer = ringBuffer.getBuffer();
+			ringBuffer.getBuffer(buffer);
 			final int bytesIn = buffer.length;
 			bos.write(buffer, 0, bytesIn);
 			bufferCount++;
@@ -230,7 +231,7 @@ public class DiskDaemon extends StorageDaemon {
 	 */
 	public boolean readHeader() throws SortException {
 		final BufferedInputStream headerInputStream =
-			new BufferedInputStream(fis, RECORD_SIZE);
+			new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
 		try {
 			eventInput.setInputStream(headerInputStream);
 			boolean goodHeader = eventInput.readHeader();
