@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import jam.global.MessageHandler;
-import jam.util.StringUtilities;
 import jam.data.*;
 
 import java.awt.*;
@@ -43,7 +42,7 @@ public class OpenSelectedHistogram {
 	private File fileOpen;	
 	private HDFile hdfFile;
 	/** Hash to store read histograms before loaded */
-	private HashMap loadedHistograms;
+	private Map loadedHistograms;
 	/** Append to name to indicate file */
 	private String fileIndicator;
 	/** Messages output */
@@ -66,7 +65,7 @@ public class OpenSelectedHistogram {
 		final JLabel runlabel = new JLabel("File Indicator", JLabel.RIGHT);
 		pFileInd.add(runlabel);
 		txtFileInd = new JTextField(10);
-		txtFileInd.setToolTipText("Text added to histgram name to indicate the file");
+		txtFileInd.setToolTipText("Text added to histgram name to indicate the file of origin");
 		pFileInd.add(txtFileInd);						
 		container.add(pFileInd, BorderLayout.NORTH);				
 
@@ -248,11 +247,9 @@ public class OpenSelectedHistogram {
 		byte histNumType;  
 		Object dataArray;
 		
-		final StringUtilities su = StringUtilities.instance();
 		NumericalDataGroup ndg = null;
 		/* I check ndgErr==null to determine if error bars exist */
 		NumericalDataGroup ndgErr = null;
-		Histogram histogram;
 		/* get list of all VG's in file */
 		final java.util.List groups = hdfFile.ofType(DataObject.DFTAG_VG);
 		final VirtualGroup hists =
@@ -348,9 +345,9 @@ public class OpenSelectedHistogram {
 					} else { //DOUBLE
 						dataArray=sd.getData1dD(sizeX);
 					}
-					if (ndgErr != null) {
-					//FIXME KBS	histogram.setErrors(sdErr.getData1dD(sizeX));
-					}
+//					if (ndgErr != null) {
+//					//FIXME KBS	histogram.setErrors(sdErr.getData1dD(sizeX));
+//					}
 				} else { //2d
 
 					if (histNumType == NumberType.INT) {
@@ -385,8 +382,6 @@ public class OpenSelectedHistogram {
 	 * @param histProp
 	 */
 	private void createHistogram(HistProp histProp){
-		Histogram histogram;
-		
 		//File name without ".hdf"
 		String fileName = hdfFile.getFile().getName();
 		int index=fileName.indexOf(".hdf");
@@ -396,9 +391,6 @@ public class OpenSelectedHistogram {
 		//Unpack to local for convience
 		String name=histProp.name.trim()+fileIndicator;
 		String title="File: "+fileName+" - "+histProp.title;
-		int number=histProp.number;
-		int sizeX=histProp.sizeX;
-		int sizeY=histProp.sizeY;
 		int histDim=histProp.histDim;
 		byte histNumType=histProp.histNumType;  
 		Object dataArray=histProp.dataArray;
@@ -406,10 +398,9 @@ public class OpenSelectedHistogram {
 
 		if (histDim == 1) {
 			if (histNumType == NumberType.INT) {
-				histogram = new Histogram(name, title, (int [])dataArray);
+				new Histogram(name, title, (int [])dataArray);
 			} else { //DOUBLE
-				histogram =
-					new Histogram(
+				new Histogram(
 						name,
 						title,
 					(double [])dataArray);
@@ -418,16 +409,13 @@ public class OpenSelectedHistogram {
 			//	histogram.setErrors(sdErr.getData1dD(sizeX));
 			//}
 		} else { //2d
-			//System.out.println(" x "+sizeY+" channels");
 			if (histNumType == NumberType.INT) {
-				histogram =
-					new Histogram(
+				new Histogram(
 						name,
 						title,
 				(int [][])dataArray);
 			} else {
-				histogram =
-					new Histogram( 
+				new Histogram( 
 						name,
 						title,
 							(double [][])dataArray);

@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import jam.global.MessageHandler;
-import jam.util.StringUtilities;
 import jam.data.*;
 
 import java.awt.*;
@@ -43,7 +42,7 @@ public class OpenSpecialHistogram {
 	private File fileOpen;	
 	private HDFile hdfFile;
 	/** Hash to store read histograms before loaded */
-	private HashMap loadedHistograms;
+	private Map loadedHistograms;
 	/** Append to name to indicate file */
 	private String fileIndicator;
 	/** Messages output */
@@ -65,7 +64,7 @@ public class OpenSpecialHistogram {
 		final JLabel runlabel = new JLabel("File Indicator", JLabel.RIGHT);
 		pFileInd.add(runlabel);
 		txtFileInd = new JTextField(10);
-		txtFileInd.setToolTipText("Text added to histgram name to indicate the file");
+		txtFileInd.setToolTipText("Text added to histgram name to indicate the file of origin");
 		pFileInd.add(txtFileInd);						
 		container.add(pFileInd, BorderLayout.NORTH);				
 
@@ -247,11 +246,9 @@ public class OpenSpecialHistogram {
 		byte histNumType;  
 		Object dataArray;
 		
-		final StringUtilities su = StringUtilities.instance();
 		NumericalDataGroup ndg = null;
 		/* I check ndgErr==null to determine if error bars exist */
 		NumericalDataGroup ndgErr = null;
-		Histogram histogram;
 		/* get list of all VG's in file */
 		final java.util.List groups = hdfFile.ofType(DataObject.DFTAG_VG);
 		final VirtualGroup hists =
@@ -347,9 +344,9 @@ public class OpenSpecialHistogram {
 					} else { //DOUBLE
 						dataArray=sd.getData1dD(sizeX);
 					}
-					if (ndgErr != null) {
-					//FIXME KBS	histogram.setErrors(sdErr.getData1dD(sizeX));
-					}
+//					if (ndgErr != null) {
+//					//FIXME KBS	histogram.setErrors(sdErr.getData1dD(sizeX));
+//					}
 				} else { //2d
 
 					if (histNumType == NumberType.INT) {
@@ -390,8 +387,6 @@ public class OpenSpecialHistogram {
 		String name=histProp.name.trim()+fileIndicator;
 		String title=histProp.title;
 		int number=histProp.number;
-		int sizeX=histProp.sizeX;
-		int sizeY=histProp.sizeY;
 		int histDim=histProp.histDim;
 		byte histNumType=histProp.histNumType;  
 		Object dataArray=histProp.dataArray;
