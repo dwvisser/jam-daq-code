@@ -7,6 +7,7 @@ import java.util.*;
 import jam.global.*;
 import jam.data.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class for projecting 2-D histograms.
@@ -37,76 +38,113 @@ Observer {
         this.messageHandler=messageHandler;
         dmanip=new JDialog(frame,"Manipulate 1-D Histograms",false);
         dmanip.setResizable(false);
+
+        final int CHOOSER_SIZE=200;
+        Dimension dim;
         int rows=5;
         int cols=1;
-        int hgap=10;
-        int vgap=10;
+        int hgap=5;
+        int vgap=5;
+
+        //UI
         Container cdmanip=dmanip.getContentPane();
-        cdmanip.setLayout(new GridLayout(rows,cols,hgap,vgap));
+        cdmanip.setLayout(new BorderLayout(hgap,vgap));
         dmanip.setLocation(20,50);
         dmanip.addWindowListener(this);
+
+		//Labels panel
+        JPanel pLabels = new JPanel(new GridLayout(0,1,hgap,vgap));
+        pLabels.setBorder(new EmptyBorder(10,10,0,0));
+        cdmanip.add(pLabels, BorderLayout.WEST);
+        pLabels.add(new JLabel("From  Histogram", JLabel.RIGHT));
+        pLabels.add(new JLabel("Operation", JLabel.RIGHT));
+        pLabels.add(new JLabel("With histogram", JLabel.RIGHT));
+        pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
+
+		//Entries Panel
+        JPanel pEntries = new JPanel(new GridLayout(0,1,hgap,vgap));
+        pEntries.setBorder(new EmptyBorder(10,0,0,10));
+        cdmanip.add(pEntries, BorderLayout.CENTER);
+
+        //From Panel
         JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pEntries.add(pfrom1);
         cfrom1 = new JComboBox();
+        dim= cfrom1.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cfrom1.setPreferredSize(dim);
+
         cfrom1.addItem("1DHISTOGRAM1");
         cfrom1.addItemListener(this);
-        ttimes1 = new JTextField("1.0",8);
-        ttimes1.setBackground(Color.white);
-        pfrom1.add(new  JLabel("From  Histogram"));
         pfrom1.add(cfrom1);
         pfrom1.add(new JLabel("x"));
+        ttimes1 = new JTextField("1.0",8);
+        ttimes1.setBackground(Color.white);
         pfrom1.add(ttimes1);
-        cdmanip.add(pfrom1);
-        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+		//Operation Panel
+        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pEntries.add(pradio);
         ButtonGroup cbg = new ButtonGroup();
         cnorm = new JCheckBox("Renormalize",true);
         cbg.add(cnorm);
+        pradio.add(cnorm);
         cnorm.addItemListener(this);
         cplus = new JCheckBox("Add",false);
         cbg.add(cplus);
+        pradio.add(cplus);
         cplus.addItemListener(this);
         cminus = new JCheckBox("Subtract",false);
         cbg.add(cminus);
+        pradio.add(cminus);
         cminus.addItemListener(this);
         ctimes = new JCheckBox("Multiply",false);
         cbg.add(ctimes);
+        pradio.add(ctimes);
         ctimes.addItemListener(this);
         cdiv = new JCheckBox("Divide",false);
         cbg.add(cdiv);
-        cdiv.addItemListener(this);
-        pradio.add(cnorm);
-        pradio.add(cplus);
-        pradio.add(cminus);
-        pradio.add(ctimes);
         pradio.add(cdiv);
-        cdmanip.add(pradio);
+        cdiv.addItemListener(this);
+
+		//With panel
         JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pEntries.add(pfrom2);
         cfrom2 = new JComboBox();
+        dim= cfrom2.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cfrom2.setPreferredSize(dim);
         cfrom2.addItem("1DHISTOGRAM2");
         cfrom2.addItemListener(this);
         ttimes2 = new JTextField("1.0",8);
         ttimes2.setBackground(Color.white);
-        pfrom2.add(new JLabel("with  histogram"));
         pfrom2.add(cfrom2);
         pfrom2.add(new JLabel("x"));
         pfrom2.add(ttimes2);
         setInput2(true);
-        cdmanip.add(pfrom2);
-        //to panel
+
+
+        //To panel
         JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pEntries.add(pto);
         cto   = new JComboBox();
+        dim= cto.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cto.setPreferredSize(dim);
         cto.addItem("New Histogram");
         cto.addItemListener(this);
-        ttextto = new JTextField("new",8);
+        ttextto = new JTextField("new",20);
         ttextto.setForeground(Color.black);
-        pto.add(new JLabel("to    histogram"));
         pto.add(cto);
         lname=new JLabel("Name");
         pto.add(lname);
         pto.add(ttextto);
-        cdmanip.add(pto);
+
         //button panel
         JPanel pFlowControl = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
+        cdmanip.add(pFlowControl,  BorderLayout.SOUTH);
+        JPanel pcontrol = new JPanel(new GridLayout(1,0,hgap,vgap));
+        pFlowControl.add(pcontrol);
         JButton bOK =new JButton("OK");
         bOK.setActionCommand("ok");
         bOK.addActionListener(this);
@@ -119,8 +157,7 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
-        pFlowControl.add(pcontrol);
-        cdmanip.add(pFlowControl);
+
 
         dmanip.pack();
     }
