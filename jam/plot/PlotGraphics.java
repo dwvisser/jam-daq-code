@@ -921,7 +921,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 
 	void drawScale2d() {
 		ColorScale colors=new GradientColorScale(minCount,maxCount,plotLimits.getScale());
-		int lowerLimit = Math.max(minCount,1);
+		//int lowerLimit = Math.max(minCount,1);
+		int lowerLimit = minCount;
 		int upperLimit = maxCount;
 		int textHeight = (fm.getAscent());
 		numberColors=PlotColorMap.getNumberColors();
@@ -958,12 +959,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int x1=viewRight+COLOR_SCALE_OFFSET;
 		int x2=x1+COLOR_SCALE_SIZE-1;
 		double level;
+		double lowEnd=Math.max(1.0,lowerLimit);
+		double highEnd=colorThresholds[numberColors-1];
 		for (int row = 0; row < scaleHeight; row++) {
 			int y=viewBottom-row;
 			if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
-				level=lowerLimit+(double)row*(upperLimit-lowerLimit)/scaleHeight;
+				level=lowerLimit+(double)row*(highEnd-lowEnd)/scaleHeight;
 			} else {//log scale
-				level=lowerLimit*Math.pow((double)upperLimit/lowerLimit,(double)row/scaleHeight);
+				level=lowEnd*Math.pow(highEnd/lowEnd,(double)row/scaleHeight);
 			}
 			g.setColor(colors.getColor(level));
 			g.drawLine(x1,y,x2,y);
@@ -1054,11 +1057,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 		for (int j = minY; j <= maxY; j++) {
 			for (int i = minX; i <= maxX; i++) {
 				double count = counts[i][j];
-				//quickly check above lower limit
+				/* quickly check above lower limit */
 				if (count > minCount) {
-					//FIXME must be faster way then going trough all thresholds
 					g.setColor(colors.getColor(count));
-					// inline for speed
+					/* inline for speed */
 					int x = toViewHorzLin(i);
 					int y = toViewVertLin(j);
 					int channelWidth = toViewHorzLin(i + 1) - x;
@@ -1068,7 +1070,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 						y - channelHeight + 1,
 						channelWidth,
 						channelHeight);
-					/* FIXME +1 hack fix, needed why? */
 				} //end of loop for each point
 			}
 		}
