@@ -40,7 +40,7 @@ final class HistDouble1D extends AbstractHist1D {
 	}
 	
 	private void initCounts(double [] countsIn){
-		countsDouble = new double[sizeX];
+		countsDouble = new double[getSizeX()];
 		System.arraycopy(countsIn, 0, countsDouble, 0, countsIn.length);
 	}
 
@@ -91,6 +91,7 @@ final class HistDouble1D extends AbstractHist1D {
 	void clearCounts() {
 		countsDouble = null;
 		unsetErrors();
+		setCalibration(null);
 	}
 
 	/*
@@ -123,7 +124,7 @@ final class HistDouble1D extends AbstractHist1D {
 		}
 		final int inLength = ((double[]) countsIn).length;
 		System.arraycopy(countsIn, 0, countsDouble, 0, Math
-				.min(inLength, sizeX));
+				.min(inLength, getSizeX()));
 	}
 
 	/*
@@ -139,7 +140,7 @@ final class HistDouble1D extends AbstractHist1D {
 	}
 
 	private void addCounts(double[] countsIn) {
-		final int max = Math.min(countsIn.length, sizeX) - 1;
+		final int max = Math.min(countsIn.length, getSizeX()) - 1;
 		for (int i = max; i >= 0; i--) {
 			countsDouble[i] += countsIn[i];
 		}
@@ -151,8 +152,9 @@ final class HistDouble1D extends AbstractHist1D {
 	 * @see jam.data.Histogram#getArea()
 	 */
 	public double getArea() {
+		final int size = getSizeX();
 		double sum = 0.0;
-		for (int i = 0; i < sizeX; i++) {
+		for (int i = 0; i < size; i++) {
 			sum += countsDouble[i];
 		}
 		return sum;

@@ -42,7 +42,7 @@ final class HistDouble2D extends AbstractHist2D {
 	}
 
 	private void initCounts(double [][] countsIn){
-		counts2dD=new double[sizeX][sizeY];
+		counts2dD=new double[getSizeX()][getSizeY()];
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System.arraycopy(countsIn[i], 0, counts2dD[i], 0,
 					countsIn[0].length);
@@ -81,7 +81,8 @@ final class HistDouble2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#setZero()
 	 */
 	public void setZero() {
-		for (int i = 0; i < sizeX; i++) {
+		final int size=getSizeX();
+		for (int i = 0; i < size; i++) {
 			Arrays.fill(counts2dD[i],0);
 		}
 	}
@@ -112,8 +113,10 @@ final class HistDouble2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#getArea()
 	 */
 	public double getArea() {
+		final int size=getSizeX();
 		double sum=0.0;
-		for (int i = 0; i < sizeX; i++) {
+		for (int i = 0; i < size; i++) {
+			final int sizeY=getSizeY();
 			for (int j = 0; j < sizeY; j++) {
 				sum += counts2dD[i][j];
 			}

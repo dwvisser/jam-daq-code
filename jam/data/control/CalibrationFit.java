@@ -1,4 +1,5 @@
 package jam.data.control;
+import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
@@ -43,7 +44,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     private final MessageHandler msghdlr;
 
     //calibrate histogram
-    private Histogram currentHistogram;
+    private AbstractHist1D currentHistogram;
     // calibration function
     private CalibrationFunction calibFunction=new LinearFunction();
 
@@ -161,7 +162,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(STATUS.getHistName());
+        currentHistogram=getCurrentHistogram();
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 if(calibFunction==null){
@@ -193,7 +194,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         double y[];
         String fitText;
 
-        Histogram currentHist=Histogram.getHistogram(STATUS.getHistName());
+        AbstractHist1D currentHist=getCurrentHistogram();
         if (currentHist==null){//silently ignore if histogram null
             msghdlr.errorOutln("null histogram [Calibrate]");
         }
@@ -233,20 +234,32 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
             msghdlr.errorOutln(de.getMessage());
         } 
     }
+    
+	private AbstractHist1D getCurrentHistogram() {
+		final AbstractHist1D rval;
+		final Histogram hist = Histogram.getHistogram(STATUS.getHistName());
+		if (hist != currentHistogram && hist instanceof AbstractHist1D) {
+			rval = (AbstractHist1D) hist;
+		} else {
+			rval=null;
+		}
+		return rval;
+	}
 
     /**
      * cancel the histogram calibration
      *
      */
     private void cancelCalib() {
-        Histogram currentHist=Histogram.getHistogram(STATUS.getHistName());
-        currentHist.setCalibration(null);
+        final AbstractHist1D currentHist=getCurrentHistogram();
+        if (currentHist != null){
+        	currentHist.setCalibration(null);
+        }
         BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
     }
 
     public void doSetup(){
-		final Histogram hist=Histogram.getHistogram(
-		STATUS.getHistName());
+		final AbstractHist1D hist=getCurrentHistogram();
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 

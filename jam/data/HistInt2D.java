@@ -58,7 +58,7 @@ public final class HistInt2D extends AbstractHist2D {
 	}
 	
 	private void initCounts(int [][] countsIn){
-		counts2d=new int[sizeX][sizeY];
+		counts2d=new int[getSizeX()][getSizeY()];
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System
 					.arraycopy(countsIn[i], 0, counts2d[i], 0,
@@ -108,7 +108,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#setZero()
 	 */
 	public void setZero() {
-		for (int i = 0; i < sizeX; i++) {
+		final int size=getSizeX();
+		for (int i = 0; i < size; i++) {
 			Arrays.fill(counts2d[i],0);
 		}
 	}
@@ -145,8 +146,10 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#getArea()
 	 */
 	public double getArea(){
+		final int size=getSizeX();
 		double sum=0.0;
-		for (int i = 0; i < sizeX; i++) {
+		for (int i = 0; i < size; i++) {
+			final int sizeY=getSizeY();
 			for (int j = 0; j < sizeY; j++) {
 				sum += counts2d[i][j];
 			}
@@ -163,8 +166,8 @@ public final class HistInt2D extends AbstractHist2D {
 	}
 
 	private synchronized void addCounts(int[][] countsIn) {
-		final int maxX = Math.min(sizeX, countsIn.length) - 1;
-		final int maxY = Math.min(sizeY, countsIn[0].length) - 1;
+		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
+		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {
 			for (int y = maxY; y >= 0; y--) {
 				counts2d[x][y] += countsIn[x][y];
@@ -173,8 +176,8 @@ public final class HistInt2D extends AbstractHist2D {
 	}
 
 	private synchronized void addCounts(double[][] countsIn) {
-		final int maxX = Math.min(sizeX, countsIn.length) - 1;
-		final int maxY = Math.min(sizeY, countsIn[0].length) - 1;
+		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
+		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {
 			for (int y = maxY; y >= 0; y--) {
 				counts2d[x][y] += countsIn[x][y];
@@ -195,14 +198,16 @@ public final class HistInt2D extends AbstractHist2D {
 	 *                histogram
 	 */
 	public void inc(int dataWordX, int dataWordY) {
+		final int size=getSizeX();
 		int incX = dataWordX;
 		int incY = dataWordY;
 		//check for overflow and underflow
-		if (incX >= sizeX) {
-			incX = sizeX - 1;
+		if (incX >= size) {
+			incX = size - 1;
 		} else if (incX < 0) {
 			incX = 0;
 		}
+		final int sizeY=getSizeY();
 		if (incY >= sizeY) {
 			incY = sizeY - 1;
 		} else if (dataWordY < 0) {

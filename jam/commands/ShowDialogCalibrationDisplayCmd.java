@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.data.control.CalibrationDisplay;
 
@@ -20,8 +21,10 @@ final class ShowDialogCalibrationDisplayCmd
 		}
 
 		protected final void enable() {
-			final Histogram h=Histogram.getHistogram(status.getHistName());
-			setEnabled(h != null && h.isCalibrated());
+			final Histogram hist=Histogram.getHistogram(status.getHistName());
+			final AbstractHist1D h1d=hist !=null && hist instanceof AbstractHist1D ? 
+					(AbstractHist1D)hist : null;
+			setEnabled(h1d != null && h1d.isCalibrated());
 		}
 
 		public void update(Observable observe, Object obj){

@@ -58,7 +58,7 @@ public final class HistInt1D extends AbstractHist1D {
 	}
 	
 	private void initCounts(int [] countsIn){
-		counts=new int[sizeX];
+		counts=new int[getSizeX()];
 		System.arraycopy(countsIn, 0, counts, 0, countsIn.length);		
 	}
 
@@ -80,7 +80,7 @@ public final class HistInt1D extends AbstractHist1D {
 			throw new IllegalArgumentException("Expected array for type "+getType());
 		}
 		final int inLength = ((int[]) countsIn).length;
-		System.arraycopy(countsIn, 0, counts, 0, Math.min(inLength, sizeX));
+		System.arraycopy(countsIn, 0, counts, 0, Math.min(inLength, getSizeX()));
 	}
 
 	public synchronized void setCounts(int channel, double count) {
@@ -88,7 +88,7 @@ public final class HistInt1D extends AbstractHist1D {
 	}
 
 	private synchronized void addCounts(int[] countsIn) {
-		final int max = Math.min(countsIn.length, sizeX) - 1;
+		final int max = Math.min(countsIn.length, getSizeX()) - 1;
 		for (int i = max; i >= 0; i--) {
 			counts[i] += countsIn[i];
 		}
@@ -106,10 +106,11 @@ public final class HistInt1D extends AbstractHist1D {
 	 *                histogram
 	 */
 	public void inc(int dataWord) {
+		final int size=getSizeX();
 		int incCh = dataWord;
 		/* check for overflow */
-		if (incCh >= sizeX) {
-			incCh = sizeX - 1;
+		if (incCh >= size) {
+			incCh = size - 1;
 		} else if (dataWord < 0) {
 			incCh = 0;
 		}
@@ -135,8 +136,9 @@ public final class HistInt1D extends AbstractHist1D {
 	}
 
 	public synchronized double getArea() {
+		final int size=getSizeX();
 		double sum = 0.0;
-		for (int i = 0; i < sizeX; i++) {
+		for (int i = 0; i < size; i++) {
 			sum += counts[i];
 		}
 		return sum;
@@ -152,6 +154,7 @@ public final class HistInt1D extends AbstractHist1D {
 	synchronized void clearCounts(){
 		counts=null;
 		unsetErrors();
+		setCalibration(null);
 	}
 
 }

@@ -1,6 +1,7 @@
 package jam.plot;
 
 import jam.JamConsole;
+import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -322,7 +323,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		//1 Dim Plot
 		if (currentPlot.getDimensionality()==1){
 			binText="Bin " + xch + ":  Counts = "+ numFormat.format(count);
-			if (hist.isCalibrated()) {
+			if (isCalibrated(hist)) {
 				final double energy = currentPlot.getEnergy(xch);
 				binText=binText+"  Energy = "+ numFormat.format(energy);
 			}
@@ -659,7 +660,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			if (currentPlot.getDimensionality() == 1 && hist.isCalibrated()) {
+			if (currentPlot.getDimensionality() == 1 && isCalibrated(hist)) {
 				final String mess = new StringBuffer(intro).append(cal).append(
 						sp).append(en).append(lp).append(sp).toString();
 				textOut.messageOut(mess, MessageHandler.NEW);
@@ -673,7 +674,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				addClick(cursor);
 				StringBuffer output = new StringBuffer();
 				int x = cursor.getX();
-				if (!hist.isCalibrated()) {
+				if (!isCalibrated(hist)) {
 					output.append(ch).append(eq).append(x);
 				} else {
 					if (currentPlot.getDimensionality() == 1) {
@@ -684,7 +685,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 				if (currentPlot.getDimensionality() == 1) {
 					if (!mousePressed) { //FIXME KBS
-						if (hist.isCalibrated()) {
+						if (isCalibrated(hist)) {
 							output = new StringBuffer(en).append(eq).append(x);
 							synchronized (this) {
 								x = currentPlot.getChannel(x);
@@ -889,7 +890,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
 					centroid, centroidError, passClicks, grossArea, currentPlot
 							.getSizeX(), counts);
-			if (hist.isCalibrated()) {
+			if (isCalibrated(hist)) {
 				centroid[0] = currentPlot.getEnergy(centroid[0]);
 				fwhm[0] = currentPlot.getEnergy(fwhm[0]);
 				fwhm[1] = currentPlot.getEnergy(0.0);
@@ -989,5 +990,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	String getCurrentCommand() {
 		return currentCommand;
+	}
+	
+	private static boolean isCalibrated(Histogram hist){
+		return hist != null && hist instanceof AbstractHist1D ?
+			((AbstractHist1D)hist).isCalibrated() : false;
 	}
 }

@@ -1,4 +1,5 @@
 package jam.io;
+import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.Histogram;
 import jam.data.Scaler;
@@ -106,7 +107,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 				if (areaDataType == XSYS1DI4) {
 					String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					counts = unPackData1d(dis, areaSizeX, areaLengthPage);
-					Histogram hist = Histogram.createHistogram(counts, areaName, areaTitle);
+					AbstractHist1D hist = (AbstractHist1D)Histogram.createHistogram(counts, areaName, areaTitle);
 					hist.setNumber(areaNumber);
 
 					//calibrate histogram if flag set
@@ -320,7 +321,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 	/**
 	 * calibrate a historam
 	 */
-	private void calibHist(int[] calibCoef, Histogram hist) {
+	private void calibHist(int[] calibCoef, AbstractHist1D hist) {
 		final double[] calibDble = new double[3];
 		calibDble[0] = calibCoef[0] * 0.0001;
 		calibDble[1] = calibCoef[1] * 0.000001;

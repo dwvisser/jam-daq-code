@@ -424,7 +424,7 @@ class Plot1d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	public double getEnergy(double channel) {
-		Histogram plotHist=getHistogram();
+		final AbstractHist1D plotHist=(AbstractHist1D)getHistogram();
 		return plotHist.getCalibration().getCalculatedEnergy(channel);
 	}
 
@@ -432,7 +432,7 @@ class Plot1d extends AbstractPlot {
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	int getChannel(double energy) {
-		Histogram plotHist=getHistogram();
+		final AbstractHist1D plotHist=(AbstractHist1D)getHistogram();
 		return (int) Math.round(plotHist.getCalibration()
 				.getChannel(energy));
 	}
