@@ -5,10 +5,14 @@ package jam;
 import jam.fit.LoadFit;
 import jam.global.*;
 import jam.plot.Display;
+import java.awt.Event;
 import java.awt.event.*;
 import java.net.URL;
 import javax.help.*;
 import javax.swing.*;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 /**
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
@@ -18,7 +22,73 @@ import javax.swing.*;
  * size and separate responsibilities.
  */
 public class MainMenuBar extends JMenuBar {
+
+	/**
+	 * Action for the File|Print menu item. 
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 * @version Jan 23, 2004
+	 */
+	public class FilePrintAction extends AbstractAction {
+		
+		/**
+		 * Constructor which gives the name to display.
+		 */
+		public FilePrintAction() {
+			super("Print...");
+		}
+
+		/**
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		public void actionPerformed(ActionEvent ae) {
+			PrinterJob pj = PrinterJob.getPrinterJob();
+			ComponentPrintable cp = display.getComponentPrintable();
+			pj.setPrintable(cp, mPageFormat);
+			if (pj.printDialog()) {
+				try {
+					console.messageOut("Printing histogram '" + 
+					JamStatus.instance().getCurrentHistogramName()+"'...",
+					MessageHandler.NEW);
+					display.setRenderForPrinting(true);
+					pj.print();
+					display.setRenderForPrinting(false);
+					console.messageOut("done.", MessageHandler.END);
+				} catch (PrinterException e) {
+					final StringBuffer mess=new StringBuffer(getClass().getName());
+					final String colon=": ";
+					mess.append(colon);
+					mess.append(e.getMessage());
+					console.errorOutln(mess.toString());
+				}
+			}
+		}
+	}
 	
+	/**
+	 * Action for the File|Page Setup menu item.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+	 * @version Jan 23, 2004
+	 */
+	public class FilePageSetupAction extends AbstractAction {
+		
+		/**
+		 * Constructor which gives the name to display.
+		 */
+		public FilePageSetupAction(){
+			super("Page Setup...");
+		}
+		
+		/**
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
+		public void actionPerformed(ActionEvent ae){
+			PrinterJob pj=PrinterJob.getPrinterJob();
+			mPageFormat = pj.pageDialog(mPageFormat);
+		}
+	}
+
 	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
 
 	final private JMenu fitting;
@@ -33,9 +103,15 @@ public class MainMenuBar extends JMenuBar {
 		runacq,
 		sortacq,
 		paramacq,
-		statusacq,iflushacq;
-	final private JCheckBoxMenuItem cstartacq,cstopacq;	
+		statusacq,
+		iflushacq;
+	final private JCheckBoxMenuItem cstartacq, cstopacq;
 	final private LoadFit loadfit;
+	final private Display display;
+	final private JamMain jamMain;
+	final private MessageHandler console;
+
+	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
 
 	/**
 	 * Define and display menu bar.
@@ -55,9 +131,23 @@ public class MainMenuBar extends JMenuBar {
 	 * @author Ken Swartz
 	 * @return the menu bar
 	 */
-	MainMenuBar(final JamMain jm, JamCommand jamCommand, 
-	final Display display, MessageHandler console) {
+	MainMenuBar(
+		final JamMain jm,
+		JamCommand jamCommand,
+		final Display d,
+		MessageHandler c) {
 		super();
+		final int ctrl_mask;
+		final boolean macosx=JamProperties.isMacOSX();
+		if (macosx){
+			ctrl_mask=Event.META_MASK;
+		} else {
+			ctrl_mask=Event.CTRL_MASK;
+		}
+		mPageFormat.setOrientation(PageFormat.LANDSCAPE);
+		console=c;
+		display = d;
+		jamMain=jm;
 		/* load fitting routine */
 		loadfit = new LoadFit(jm, display, console, this);
 		final JMenu file = new JMenu("File");
@@ -150,15 +240,11 @@ public class MainMenuBar extends JMenuBar {
 		saveas.addActionListener(jamCommand);
 		oldJHF.add(saveas);
 		file.addSeparator();
-		final JMenuItem print = new JMenuItem("Print...");
-		print.setActionCommand("print");
-		print.addActionListener(jamCommand);
-		file.add(print);
-		file.addSeparator();
-		final JMenuItem printsetup = new JMenuItem("Print Setup...");
-		printsetup.setActionCommand("printsetup");
-		printsetup.addActionListener(jamCommand);
-		file.add(printsetup);
+		file.add(new FilePrintAction()).setAccelerator(
+		KeyStroke.getKeyStroke(KeyEvent.VK_P, ctrl_mask));
+		file.add(new FilePageSetupAction()).setAccelerator(
+		KeyStroke.getKeyStroke(KeyEvent.VK_P, 
+		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
 		final JMenuItem exit = new JMenuItem("Exit...");
 		exit.setActionCommand("exitShow");
@@ -167,6 +253,10 @@ public class MainMenuBar extends JMenuBar {
 				jm.showExitDialog();
 			}
 		});
+		if (macosx){
+			exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+			ctrl_mask));
+		}
 		file.add(exit);
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
@@ -187,16 +277,13 @@ public class MainMenuBar extends JMenuBar {
 		setup.add(setupRemote);
 		final JMenu mcontrol = new JMenu("Control");
 		add(mcontrol);
-		//final ButtonGroup startstop=new ButtonGroup();
 		cstartacq = new JCheckBoxMenuItem("start", false);
 		cstartacq.setEnabled(false);
 		cstartacq.addActionListener(jamCommand);
-		//startstop.add(cstartacq);
 		mcontrol.add(cstartacq);
 		cstopacq = new JCheckBoxMenuItem("stop", true);
 		cstopacq.setEnabled(false);
 		cstopacq.addActionListener(jamCommand);
-		//startstop.add(cstartacq);
 		mcontrol.add(cstopacq);
 		iflushacq = new JMenuItem("flush");
 		iflushacq.setEnabled(false);
@@ -380,8 +467,8 @@ public class MainMenuBar extends JMenuBar {
 		fitting = new JMenu("Fitting");
 		add(fitting);
 		final JMenuItem loadFit = new JMenuItem("Load Fit...");
-		loadFit.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
+		loadFit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				loadfit.showLoad();
 			}
 		});
@@ -402,7 +489,7 @@ public class MainMenuBar extends JMenuBar {
 		license.setActionCommand("license");
 		license.addActionListener(jamCommand);
 	}
-	
+
 	/**
 	 * Add a fitting routine to the fitting JMenu
 	 * give the name you want to add
@@ -412,10 +499,9 @@ public class MainMenuBar extends JMenuBar {
 	public void addFit(Action action) {
 		fitting.add(new JMenuItem(action));
 	}
-	
-	void setSortMode(int mode){
-		if (mode == JamMain.ONLINE_DISK || 
-		mode == JamMain.ONLINE_TAPE) {
+
+	void setSortMode(int mode) {
+		if (mode == JamMain.ONLINE_DISK || mode == JamMain.ONLINE_TAPE) {
 			cstartacq.setEnabled(true); //enable control JMenu items
 			cstopacq.setEnabled(true);
 			iflushacq.setEnabled(true);
@@ -431,8 +517,7 @@ public class MainMenuBar extends JMenuBar {
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
 		}
-		if (mode == JamMain.OFFLINE_DISK || 
-		mode == JamMain.OFFLINE_TAPE) {
+		if (mode == JamMain.OFFLINE_DISK || mode == JamMain.OFFLINE_TAPE) {
 			cstartacq.setEnabled(false);
 			cstopacq.setEnabled(false);
 			iflushacq.setEnabled(false);
@@ -496,17 +581,17 @@ public class MainMenuBar extends JMenuBar {
 			impHist.setEnabled(true);
 		}
 	}
-	
-	void setRunState(RunState rs){
-		final boolean acqmode=rs.isAcquireMode();
-		final boolean acqon=rs.isAcqOn();
+
+	void setRunState(RunState rs) {
+		final boolean acqmode = rs.isAcquireMode();
+		final boolean acqon = rs.isAcqOn();
 		cstartacq.setEnabled(acqmode);
 		cstopacq.setEnabled(acqmode);
 		iflushacq.setEnabled(acqon);
 		cstartacq.setSelected(acqon);
 		cstopacq.setSelected(acqmode && (!acqon));
 	}
-	
+
 	/**
 	 * Return an ActionListener cabable of displaying the User
 	 * Guide.
@@ -518,21 +603,23 @@ public class MainMenuBar extends JMenuBar {
 		final HelpSet hs;
 		final String helpsetName = "help/jam.hs";
 		try {
-			final URL hsURL = getClass().getClassLoader().getResource(helpsetName);
+			final URL hsURL =
+				getClass().getClassLoader().getResource(helpsetName);
 			hs = new HelpSet(null, hsURL);
 		} catch (Exception ee) {
-			final String message="HelpSet " + helpsetName + " not found";
+			final String message = "HelpSet " + helpsetName + " not found";
 			showErrorMessage(message, ee);
 			return null;
 		}
 		return new CSH.DisplayHelpFromSource(hs.createHelpBroker());
 	}
-	
-	private void showErrorMessage(String title, Exception e){
-		JOptionPane.showMessageDialog(this,e.getMessage(),title,
-		JOptionPane.ERROR_MESSAGE);
+
+	private void showErrorMessage(String title, Exception e) {
+		JOptionPane.showMessageDialog(
+			this,
+			e.getMessage(),
+			title,
+			JOptionPane.ERROR_MESSAGE);
 	}
-
-
 
 }

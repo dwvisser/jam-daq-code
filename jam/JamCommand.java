@@ -21,17 +21,11 @@ import jam.io.ImpExpSPE;
 import jam.io.ImpExpXSYS;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.PrintJob;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
-import java.awt.print.PrinterJob;
-import java.util.Properties;
 import javax.swing.AbstractButton;
 
 /**
@@ -290,10 +284,10 @@ public class JamCommand
 					Histogram.getHistogram(status.getCurrentHistogramName()));
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
-			} else if ("print".equals(incommand)) {
+			/*} else if ("print".equals(incommand)) {
 				printHistogram();
 			} else if ("printsetup".equals(incommand)) {
-				PrinterJob.getPrinterJob();
+				PrinterJob.getPrinterJob();*/
 			} else if ("online".equals(incommand)) {
 				setupSortOn.show();
 			} else if ("offline".equals(incommand)) {
@@ -437,37 +431,6 @@ public class JamCommand
 		synchronized (this) {
 			remoteAccess = ra;
 			remote = on;
-		}
-	}
-
-	/**
-	 * Print a histogram
-	 *
-	 * calls plot to actually draw the histogram
-	 */
-	public void printHistogram() {
-		/* see nutshell java examples pages 75 and 177 */
-		final Toolkit tk = jamMain.getToolkit();
-		final String jobname = "jam_histogram";
-		final Properties printprefs = System.getProperties();
-		printprefs.put("awt.print.orientation", "landscape");
-		final PrintJob pjob = tk.getPrintJob(jamMain, jobname, printprefs);
-		if (pjob != null) { //user cancelled print request
-			final Graphics gpage = pjob.getGraphics();
-			/* cancel pjob=null might not work on windows 95 
-			 * so try graphics object */
-			if (gpage != null) {
-				final Dimension pageSize = pjob.getPageDimension();
-				final int pagedpi = pjob.getPageResolution();
-				console.messageOut(
-					"Printing histogram: " + status.getCurrentHistogramName()+" . ",
-					MessageHandler.NEW);
-				/* work done by display... */
-				display.printHistogram(gpage, pageSize, pagedpi);
-				gpage.dispose();
-				pjob.end();
-				console.messageOut("done!", MessageHandler.END);
-			}
 		}
 	}
 	
