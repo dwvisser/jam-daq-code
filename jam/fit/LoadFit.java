@@ -6,26 +6,23 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.plot.Display;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -37,19 +34,13 @@ import javax.swing.border.EmptyBorder;
  * @version 1.1
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public class LoadFit extends WindowAdapter implements ActionListener {
-
-	private static final String OK="OK";
-	private static final String APPLY="Apply";
-	private static final String CANCEL="Cancel";
+public class LoadFit {
 
 	private final Frame jamMain;
 	private final Display display;
-	private final MessageHandler msgHandler;
 	private final Broadcaster broadcaster;	
 
 	private final JDialog dl;
-	private final JComboBox chooseFit;
 
 	/**
 	 * Create the fit routine loading dialog.
@@ -57,14 +48,10 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	public LoadFit() {
 		super();
 		broadcaster=Broadcaster.getSingletonInstance();		
-						
-		JamStatus jamStatus = JamStatus.getSingletonInstance(); 
-		msgHandler = jamStatus.getMessageHandler();
+		final JamStatus jamStatus = JamStatus.getSingletonInstance(); 
+		final MessageHandler msgHandler = jamStatus.getMessageHandler();
 		jamMain = jamStatus.getFrame();
 		display = jamStatus.getDisplay();
-		
-
-
 		final String dialogName="Load Fit Routine";
 		dl = new JDialog(jamMain, dialogName, false);
 		final Container cp = dl.getContentPane();
@@ -79,39 +66,36 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		pf.setBorder(border);
 		final JLabel lf = new JLabel("Fit class: ", JLabel.RIGHT);
 		pf.add(lf);
-		chooseFit = new JComboBox(this.getFitClasses());
+		final JComboBox chooseFit = new JComboBox(this.getFitClasses());
 		Dimension dim = chooseFit.getPreferredSize();
 		dim.width=200;
 		chooseFit.setPreferredSize(dim);
 		pf.add(chooseFit);
-
-		// panel for buttons
-		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		final JPanel pb = new JPanel();
-		pb.setLayout(new GridLayout(1,0,10,10));
-		pbutton.add(pb);
-		final JButton bok = new JButton(OK);
-		pb.add(bok);
-		bok.setActionCommand(OK);
-		bok.addActionListener(this);
-		final JButton bapply = new JButton(APPLY);
-		pb.add(bapply);
-		bapply.setActionCommand(APPLY);
-		bapply.addActionListener(this);
-		final JButton bcancel = new JButton(CANCEL);
-		pb.add(bcancel);
-		bcancel.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				dl.dispose();
-			}
-		});
+		final PanelOKApplyCancelButtons.Callback callback = new 
+		PanelOKApplyCancelButtons.Callback(){
+		    public void ok(){
+		        apply();
+		        dl.dispose();
+		    }
+		    
+		    public void apply(){
+				final Class fit = (Class)chooseFit.getSelectedItem();
+				try {
+				    makeFit(fit);
+				} catch (JamException je){
+				    msgHandler.errorOutln(je.getMessage());
+				    je.printStackTrace();
+				}
+		    }
+		    
+		    public void cancel(){
+		        dl.dispose();
+		    }
+		};
+		final PanelOKApplyCancelButtons buttons=new PanelOKApplyCancelButtons(callback);
 		cp.add(pf,BorderLayout.CENTER);
-		cp.add(pbutton,BorderLayout.SOUTH);
-		dl.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				dl.dispose();
-			}
-		});
+		cp.add(buttons.getComponent(),BorderLayout.SOUTH);
+		dl.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dl.pack();
 	}
 
@@ -122,32 +106,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		dl.setVisible(true);
 	}
 
-	/**
-	 * Perform an action in the load FitRoutine dialog box.
-	 * Actions are:
-	 * <ul>
-	 * <li>OK</li>
-	 * <li>Apply</li>
-	 * <li>Cancel</li>
-	 * </ul>
-	 *
-	 * @param ae notification ok, apply, or cancel
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		final String command = ae.getActionCommand();
-		try {
-			if (OK.equals(command) || APPLY.equals(command)) {
-				final Class fit = (Class)chooseFit.getSelectedItem();
-				makeFit(fit);
-				if (OK.equals(command)) {
-					dl.dispose();
-				}
-			}
-		} catch (JamException je) {
-			msgHandler.errorOutln(je.getMessage());
-		}
-	}
-
 	private void makeFit(Class fitClass) throws JamException {
 	 	final String fitName=fitClass.getName();
 		try {
@@ -155,7 +113,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			final AbstractFit fit = (AbstractFit) fitClass.newInstance();
 			final int indexPeriod = fitName.lastIndexOf('.');
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
-			fit.createDialog(jamMain, display, msgHandler);
+			fit.createDialog(jamMain, display);
 			fit.show();
 			//Create action for menu
 			final Action fitAction = new AbstractAction(fitNameFront) {
