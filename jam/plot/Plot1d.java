@@ -234,7 +234,7 @@ class Plot1d extends Plot {
 	/**
 	 * Paint a gate on the give graphics object
 	 */
-	void paintGate(Graphics g) throws DataException {
+	void paintGate(Graphics g) {
 		final Graphics2D g2=(Graphics2D)g;
 		final boolean noFillMode =
 			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);

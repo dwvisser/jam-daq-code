@@ -1,7 +1,6 @@
 package jam.plot;
 import java.awt.*;
 import java.awt.event.*;
-import jam.data.*;
 import jam.global.JamProperties;
 import java.util.Iterator;
 
@@ -318,7 +317,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param gc the graphics context to paint to
 	 * @throws DataException if there's a problem painting the gate
 	 */
-	void paintGate(Graphics gc) throws DataException {
+	void paintGate(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
@@ -338,7 +337,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 * @param g the graphics context to paint to
 	 * @throws DataException if there's a problem painting the gate
 	 */
-	void paintPolyGate(Graphics g) throws DataException {
+	void paintPolyGate(Graphics g) {
 		g.setPaintMode();
 		g.setColor(PlotColorMap.gateShow);
 		final Polygon gatePoints = currentGate.getBananaGate();
