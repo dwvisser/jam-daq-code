@@ -224,8 +224,9 @@ public class JamCommand
 				runControl.show();
 			} else if ("sort".equals(incommand)) {
 				sortControl.show();
-			} else if ("parameters".equals(incommand)) {
-				paramControl.show();
+//KBS remove				
+//			} else if ("parameters".equals(incommand)) {
+//				paramControl.show();
 			} else if ("status".equals(incommand)) {
 				displayCounters.show();
 			//KBS} else if ("shownewhist".equals(incommand)) {
@@ -248,14 +249,16 @@ public class JamCommand
 				gateControl.showAdd();
 			} else if ("gateset".equals(incommand)) {
 				gateControl.showSet();
-			} else if ("displayscalers".equals(incommand)) {
-				scalerControl.showDisplay();
+//KBS remove				
+//			} else if ("displayscalers".equals(incommand)) {
+//				scalerControl.showDisplay();
 			} else if ("displaymonitors".equals(incommand)) {
 				monitorControl.showDisplay();
 			} else if ("configmonitors".equals(incommand)) {
 				monitorControl.showConfig();
-			} else if ("zeroscalers".equals(incommand)) {
-				scalerControl.showZero();
+//KBS remove				
+//			} else if ("showzeroscalers".equals(incommand)) {
+//				scalerControl.showZero();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
@@ -281,7 +284,7 @@ public class JamCommand
 				//See if it a command classs				
 				try {
 
-					if( jamCmdMgr.performCommand(incommand, null)) {
+					if(!jamCmdMgr.performCommand(incommand, null)) {
 					
 					console.errorOutln(getClass().getName()
 						+ ": Error unrecognized command \""+ incommand+ "\"");
