@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+	<dict>
+		<key>CFBundleName</key>
+		<string>Jam</string>
+		<key>CFBundleVersion</key>
+		<string>1.4 (Release Candidate 4)</string>
+		<key>CFBundleAllowMixedLocalizations</key>
+		<string>true</string>
+		<key>CFBundleExecutable</key>
+		<string>JavaApplicationStub</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleSignature</key>
+		<string>DWV1</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleIconFile</key>
+		<string>nukeicon.icns</string>
+		<key>CFBundleGetInfoString</key>
+		<string>Jam</string>
+		<key>Java</key>
+		<dict>
+			<key>MainClass</key>
+			<string>jam.JamMain</string>
+			<key>JVMVersion</key>
+			<string>1.4+</string>
+			<key>ClassPath</key>
+			<array>
+				<string>$JAVAROOT/Jam.jar</string>
+				<string>$JAVAROOT/jh.jar</string>
+				<string>$JAVAROOT/jlfgr-1_0.jar</string>
+				<string>$JAVAROOT/junit.jar</string>
+			</array>
+			<key>Properties</key>
+			<dict>
+				<key>com.apple.mrj.application.growbox.intrudes</key>
+				<string>true</string>
+				<key>apple.laf.useScreenMenuBar</key>
+				<string>true</string>
+			</dict>
+		</dict>
+	</dict>
+</plist>
