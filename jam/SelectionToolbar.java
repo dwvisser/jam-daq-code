@@ -46,7 +46,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final JamStatus status;
 	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	final Display display;
-	//private boolean overlay = false;
 	final String classname;
 	final MainMenuBar mbar;
 
@@ -175,7 +174,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		}
 	}
 
-	public void setRunState(RunState rs) {
+	private void setRunState(RunState rs) {
 		lrunState.setBackground(rs.getColor());
 		lrunState.setText(rs.getLabel());
 	}
@@ -243,7 +242,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	 */
 	private void selectGate(Gate gate) {
 		final String methodname = "selectGate(): ";
-		//final Gate gate = (Gate) gateObject;
 		try {
 			status.setCurrentGateName(gate.getName());
 			broadcaster.broadcast(BroadcastEvent.GATE_SELECT,gate);
@@ -271,7 +269,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 					MessageHandler.NEW);
 				console.messageOut(", Area = " + area, MessageHandler.END);
 			}
-			//display.displayGate(gate);
 		} catch (Exception de) {
 			console.errorOutln(classname + methodname + de.getMessage());
 		}
@@ -306,6 +303,9 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		}
 		if (command==BroadcastEvent.HISTOGRAM_SELECT){
 			syncHistChooser();
+		}
+		if (command==BroadcastEvent.RUN_STATE_CHANGED){
+			setRunState((RunState)be.getContent());
 		}
 	}
 

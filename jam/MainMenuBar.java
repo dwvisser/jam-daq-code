@@ -427,7 +427,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		impHist.setEnabled(file);
 	}
 
-	void setRunState(RunState rs) {
+	private void setRunState(RunState rs) {
 		final boolean acqmode = rs.isAcquireMode();
 		final boolean acqon = rs.isAcqOn();
 		iflushacq.setEnabled(acqon);
@@ -447,6 +447,8 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
 			sortModeChanged();
+		} else if (command==BroadcastEvent.RUN_STATE_CHANGED){
+			setRunState((RunState)be.getContent());
 		}
 	}
 }
