@@ -294,7 +294,7 @@ public class Display
 	/**
 	 * Do a command sent in as a message.
 	 */
-	public void commandPerform(String commandIn, int[] parameters) {
+	public void commandPerform(String commandIn, double [] parameters) {
 		action.commandPerform(commandIn, parameters);
 	}
 
@@ -483,15 +483,23 @@ public class Display
 				1,
 				GridBagConstraints.HORIZONTAL,
 				GridBagConstraints.NORTH);
+			final JPanel firstPanel=new JPanel(new GridLayout(1,2));
 			final JButton bupdate = new JButton("Update");
 			bupdate.setToolTipText(
 				"Click to update display with most current data.");
 			bupdate.setActionCommand(Action.UPDATE);
-			//refresh because update is a component method
+			final JButton brebin=new JButton("REbin");
+			brebin.setToolTipText(
+			"After clicking, enter a bin width in the console.");
+			brebin.setActionCommand(Action.REBIN);
 			bupdate.addActionListener(action);
+			brebin.addActionListener(action);
+			firstPanel.add(bupdate);
+			firstPanel.add(brebin);
+			//refresh because update is a component method
 			addComponent(
 				ptoolbar,
-				bupdate,
+				firstPanel,
 				0,
 				GridBagConstraints.RELATIVE,
 				1,
@@ -563,26 +571,13 @@ public class Display
 				1,
 				GridBagConstraints.HORIZONTAL,
 				GridBagConstraints.NORTH);
-			final JButton blinear = new JButton("LInear ");
-			blinear.setToolTipText("Set counts scale to linear.");
-			blinear.setActionCommand(Action.LINEAR);
+			final JButton blinear = new JButton("LInear/LOg");
+			blinear.setToolTipText("Toggle scale type.");
+			blinear.setActionCommand(Action.SCALE);
 			blinear.addActionListener(action);
 			addComponent(
 				ptoolbar,
 				blinear,
-				0,
-				GridBagConstraints.RELATIVE,
-				1,
-				1,
-				GridBagConstraints.HORIZONTAL,
-				GridBagConstraints.NORTH);
-			final JButton blog = new JButton("LOg ");
-			blog.setToolTipText("Set counts scale to log.");
-			blog.setActionCommand(Action.LOG);
-			blog.addActionListener(action);
-			addComponent(
-				ptoolbar,
-				blog,
 				0,
 				GridBagConstraints.RELATIVE,
 				1,
