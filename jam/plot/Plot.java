@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
@@ -155,6 +156,9 @@ abstract class Plot extends JPanel {
 	Action action;
 
 	protected boolean printing = false;
+	
+	protected final Rectangle markingAreaClip=new Rectangle();
+	
 
 	/**
 	 * Constructor
@@ -418,6 +422,7 @@ abstract class Plot extends JPanel {
 		plotLimits.setMaximumX(xul);
 		plotLimits.setMinimumY(yll);
 		plotLimits.setMaximumY(yul);
+		markingAreaClip.setSize(0,0);
 		refresh();
 	}
 
