@@ -126,8 +126,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	JamConsole console;
 	static private final char beta='\u03b2';
 	static private final char alpha='\u03b1';
-	static private final String JAM_VERSION = "1.4"+beta+"3";
-	static private final String VERSION_TYPE = "development";
+	static private final String JAM_VERSION = "1.4";
+	static private final String VERSION_TYPE = "Release Candidate 1";
 
 
 	/**
