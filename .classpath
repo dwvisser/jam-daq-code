@@ -3,6 +3,6 @@
     <classpathentry kind="src" path=""/>
     <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
     <classpathentry kind="lib" path="jlfgr-1_0.jar"/>
-    <classpathentry kind="lib" path="C:/Documents and Settings/dwvisser/My Documents/Java Development/eclipse/plugins/org.junit_3.7.0/junit.jar"/>
+    <classpathentry kind="lib" path="junit.jar"/>
     <classpathentry kind="output" path=""/>
 </classpath>
