@@ -4,7 +4,9 @@ import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.CommandNames;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.plot.PlotPrefs;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,11 +26,13 @@ import javax.swing.Action;
  */
 public class CommandManager implements CommandListener, CommandNames {
 
-	private MessageHandler msghdlr=null;
+	private final JamStatus status=JamStatus.instance();
+	private final MessageHandler msghdlr;
 	private static CommandManager _instance=null;
 	private static final Map cmdMap = Collections.synchronizedMap(new HashMap());
 	private static final Map instances=Collections.synchronizedMap(new HashMap());
 	private Commandable currentCommand;
+	
 	
 	
 	/* initializer block for map */
@@ -84,7 +88,12 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
 		cmdMap.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
 		cmdMap.put(SHOW_FIT_NEW, ShowDialogAddFit.class);
-		
+		cmdMap.put(PlotPrefs.AUTO_IGNORE_ZERO, SetAutoScaleIgnoreZero.class);
+		cmdMap.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
+		cmdMap.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
+		cmdMap.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
+		cmdMap.put(PlotPrefs.SMOOTH_COLOR_SCALE, 
+		SetSmoothColorScale.class);
 	}
 	
 
@@ -93,6 +102,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	 *
 	 */
 	private CommandManager() {
+		msghdlr=status.getMessageHandler();
 	}
 	
 	/**
@@ -104,10 +114,6 @@ public class CommandManager implements CommandListener, CommandNames {
 			_instance=new CommandManager();
 		}		
 		return _instance;
-	}
-	
-	public void setMessageHandler(MessageHandler msghdlr) {
-		this.msghdlr = msghdlr;
 	}
 	
 	/**
