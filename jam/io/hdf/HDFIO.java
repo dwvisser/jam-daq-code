@@ -7,6 +7,7 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.Group;
 import jam.data.Scaler;
+import jam.global.JamProperties;
 import jam.global.MessageHandler;
 import jam.global.JamStatus;
 import jam.io.DataIO;
@@ -16,6 +17,7 @@ import jam.util.StringUtilities;
 
 import java.awt.Frame;
 import java.awt.Polygon;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,7 +100,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         msgHandler = null;
         in = new HDFile(file, "r");
         in.seek(0);
-        in.readObjects();
+        in.readFile();
     }
 
     /**
@@ -282,7 +284,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                         + file.getName());
         } 
         
-    	out.addDefaultDataObjects(file.getPath());
+    	addDefaultDataObjects(file.getPath());
     	
         final int progressRange = hists.size() + gates.size()
                 + scalers.size() + parameters.size();
@@ -333,15 +335,9 @@ public class HDFIO implements DataIO, JamHDFFields {
         msgHandler.messageOut("", MessageHandler.END);
         
         try {                
-
-
             
-            out.setOffsets();
-            
-        	out.writeHeader();            
-            out.writeDataDescriptorBlock();
-            out.writeAllObjects(pm);
-            
+        	out.writeFile(pm);
+        	            
             setProgressNote(pm, "Closing File");
             out.close();
         } catch (HDFException e) {
@@ -442,6 +438,12 @@ public class HDFIO implements DataIO, JamHDFFields {
         final int progressRange = mode == FileOpenMode.ADD ? 4 : 6;
         final ProgressMonitor pm = new ProgressMonitor(frame,
                 "Reading HDF file", "Reading from disk", 0, progressRange);
+        
+        if (!HDFile.isHDFFile(infile)){
+       	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
+       	 return false;
+       }
+
         final StringBuffer message = new StringBuffer();
         try {
             if (mode == FileOpenMode.OPEN) {
@@ -456,18 +458,15 @@ public class HDFIO implements DataIO, JamHDFFields {
                 message.append("Adding histogram counts in ").append(
                         infile.getName()).append(" (");
             }
+            
             synchronized (this) {
                 in = new HDFile(infile, "r");
-            }
-            if (!in.isHDFFile()){
-            	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
-            	 return false;
             }
             
             in.seek(0);
             /* read file into set of DataObject's, set their internal variables */
             pm.setNote("Parsing objects");
-            in.readObjects();
+            in.readFile();
             pm.setProgress(1);
             pm.setNote("Getting histograms");
             
@@ -532,14 +531,15 @@ public class HDFIO implements DataIO, JamHDFFields {
     public List readHistogramAttributes(File infile){
     	final List histAttributes = new ArrayList();
     	try {
+            if (!HDFile.isHDFFile(infile)){
+              	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
+              	 return histAttributes;
+              }
+    		 
 			/* Read in histogram names */
 	    	in = new HDFile(infile, "r");
-            if (!in.isHDFFile()){
-           	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
-           	 return histAttributes;
-           }
 
-	    	in.readObjects();
+	    	in.readFile();
 	    	histAttributes.addAll(loadHistogramAttributes());
 			in.close();
         } catch (HDFException except) {
@@ -664,6 +664,55 @@ public class HDFIO implements DataIO, JamHDFFields {
 		return lstHistAtt;
 	}
 
+	/**
+	 * Add default objects always needed.
+	 * 
+	 * Almost all of Jam's number storage needs are satisfied by the type
+	 * hard-coded into the class <code>NumberType</code>.  This method
+	 * creates the <code>NumberType</code> object in the file
+	 * that gets referred to repeatedly by the other data elements.
+	 *
+	 * @see jam.io.hdf.NumberType
+	 */
+	
+	void addDefaultDataObjects(String fileID) {
+		new LibVersion(); //DataObjects add themselves
+		
+		NumberType.createDefaultTypes();
+		
+		new JavaMachineType();
+		new FileIdentifier(fileID);
+		addFileNote();
+		
+	}			
+	/**
+	 * Add a text note to the file, which includes the state of 
+	 * <code>JamProperties</code>.
+	 *
+	 * @throws IOException if there's a problem writing to the file
+	 * @see jam.global.JamProperties
+	 */
+	void addFileNote() {
+		final String noteAddition=
+			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
+				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
+				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
+				+ "left."
+				+ "All error bars on histogram counts should be considered Poisson, unless a\n"
+				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
+				+ "of that should be taken as the error bars.";
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final String header="Jam Properties at time of save:";
+		try {
+			JamProperties.getProperties().store(baos,header);			
+		} catch (IOException ioe) {
+			throw new RuntimeException("Unable to serialize properties");
+		}
+
+		final String notation = baos.toString()+noteAddition;
+		new FileDescription(notation);
+	}
+	
     /**
      * Adds data objects for the virtual group of histograms.
      * 

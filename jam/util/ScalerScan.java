@@ -203,7 +203,7 @@ public final class ScalerScan implements JamHDFFields {
 						updateProgressBar("Processing " + infile.getName(),i);
 						final HDFile in = new HDFile(infile, "r");
 						in.seek(0);
-						in.readObjects();
+						in.readFile();
 						if (i == firstRun) {
 							outText.append("Run");
 							String[] names = getScalerNames(in);
