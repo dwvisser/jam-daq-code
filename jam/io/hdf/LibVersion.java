@@ -15,17 +15,17 @@ public class LibVersion extends DataObject {
     /**
      * Major version number
      */
-    final private int majorv=4;
+	static final private int majorv=4;
 
     /**
      * Minor version number
      */
-    final private int	minorv	    = 1;		    
+	static final private int	minorv	    = 1;		    
 
     /**
      * release serial number
      */
-    final private int	release    = 2;		    
+	static final private int	release    = 2;		    
 
     /**
      * Descriptive String

@@ -19,7 +19,7 @@ public class MonitorApplet
 	extends Applet
 	implements ActionListener, ItemListener, Runnable {
 
-	private final boolean DEBUG = false;
+	static private final boolean DEBUG = false;
 
 	private Panel pMonitors;
 	private RemoteData remoteData;
