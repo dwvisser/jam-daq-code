@@ -20,7 +20,6 @@ import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -41,26 +40,17 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 
 	private static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
-	final private Action paramAction;
 	final private JamStatus status = JamStatus.instance();
 	final private JMenu fitting = new JMenu("Fitting");
-	;
 	final private JMenuItem impHist = new JMenu("Import");
-	//final private JMenuItem sortacq = new JMenuItem();
-	final private JMenuItem statusacq = new JMenuItem("Buffer Count\u2026");
-	//final private JMenuItem iflushacq = new JMenuItem("flush");
 	final private LoadFit loadfit;
 	final private Display display;
-	final private JamMain jamMain;
 	final private MessageHandler console;
-	//final private JMenuItem zeroHistogram = new JMenuItem("Zero\u2026");
 	final private JMenu calHist = new JMenu("Calibrate");
-
 	final private CommandManager commands = CommandManager.getInstance();
 
 	/**
-	 * Define and display menu bar.
-	 * The menu bar has the following menus: 
+	 * Jam's menu bar. It has the following menus: 
 	 * <ul>
 	 * <li>File</li>
 	 * <li>Setup</li>
@@ -73,32 +63,19 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	 * <li>Help</li>
 	 * </ul>
 	 * 
+	 * @author Dale Visser
 	 * @author Ken Swartz
-	 * @return the menu bar
 	 */
 	MainMenuBar(
-		final JamMain jm,
 		JamCommand jamCommand,
-		final Display d,
-		MessageHandler c) {
+		final Display d) {
 		super();
-		paramAction = commands.getAction(PARAMETERS);
 		Broadcaster.getSingletonInstance().addObserver(this);
-		console = c;
+		console = status.getMessageHandler();
 		display = d;
-		jamMain = jm;
-		/* load fitting routine */
 		add(getFileMenu());
-		final JMenu setup = new JMenu("Setup");
-		add(setup);
-		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
-		setup.add(commands.getAction(SHOW_SETUP_OFFLINE));
-		final JMenuItem setupRemote = new JMenuItem("Remote Hookup\u2026");
-		setupRemote.setActionCommand("remote");
-		setupRemote.addActionListener(jamCommand);
-		setupRemote.setEnabled(false);
-		setup.add(setupRemote);
-		add(getControlMenu(jamCommand));
+		add(getSetupMenu());
+		add(getControlMenu());
 		add(getHistogramMenu());
 		final JMenu gate = new JMenu("Gate");
 		add(gate);
@@ -113,7 +90,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		scalers.add(getMenuItem(DISPLAY_MONITORS));
 		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
 		add(getPreferencesMenu(jamCommand));
-		loadfit = new LoadFit(jm, display, console, fitting);
+		loadfit = new LoadFit(display, console, fitting);
 		add(fitting);
 		final JMenuItem loadFit = new JMenuItem("Load Fit\u2026");
 		loadFit.addActionListener(new ActionListener() {
@@ -152,9 +129,9 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final JMenuItem utilities = new JMenu("Utilities");
 		file.add(utilities);
 		final YaleCAENgetScalers ycgs =
-			new YaleCAENgetScalers(jamMain, console);
+			new YaleCAENgetScalers();
 		utilities.add(new JMenuItem(ycgs.getAction()));
-		final ScalerScan ss = new ScalerScan(jamMain, console);
+		final ScalerScan ss = new ScalerScan();
 		utilities.add(new JMenuItem(ss.getAction()));
 		file.addSeparator();
 		file.add(impHist);
@@ -176,8 +153,18 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		file.add(getMenuItem(EXIT));
 		return file;
 	}
+	
+	private JMenu getSetupMenu(){
+		final JMenu setup = new JMenu("Setup");
+		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
+		setup.add(getMenuItem(SHOW_SETUP_OFFLINE));
+		final JMenuItem setupRemote = new JMenuItem("Remote Hookup\u2026");
+		setupRemote.setEnabled(false);
+		setup.add(setupRemote);
+		return setup;
+	}
 
-	private JMenu getControlMenu(JamCommand jamCommand) {
+	private JMenu getControlMenu() {
 		final JMenu mcontrol = new JMenu("Control");
 		mcontrol.add(getMenuItem(START));
 		mcontrol.add(getMenuItem(STOP));
@@ -185,15 +172,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mcontrol.addSeparator();
 		mcontrol.add(getMenuItem(SHOW_RUN_CONTROL));
 		mcontrol.add(getMenuItem(SHOW_SORT_CONTROL));
-		final JMenuItem paramacq = new JMenuItem(paramAction);
-		paramAction.setEnabled(false);
-		paramacq.setActionCommand("parameters");
-		paramacq.addActionListener(jamCommand);
-		mcontrol.add(paramacq);
-		statusacq.setEnabled(false);
-		statusacq.setActionCommand("status");
-		statusacq.addActionListener(jamCommand);
-		mcontrol.add(statusacq);
+		mcontrol.add(getMenuItem(PARAMETERS));
+		mcontrol.add(getMenuItem(SHOW_BUFFER_COUNT));
 		return mcontrol;
 	}
 
@@ -314,13 +294,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 
 	private void sortModeChanged() {
 		final SortMode mode = status.getSortMode();
-		final boolean online =
-			mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK;
-		final boolean offline = mode == SortMode.OFFLINE;
-		final boolean sorting = online || offline;
 		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
-		paramAction.setEnabled(sorting);
-		statusacq.setEnabled(sorting);
 		impHist.setEnabled(file);
 	}
 
