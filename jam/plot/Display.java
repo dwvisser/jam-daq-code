@@ -291,16 +291,16 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 	
 	/**
-	 * Update all the plots
-	 *
-	 */
-	void update(){
-		final Iterator iter =plotList.iterator();
-		while( iter.hasNext()) {
-			PlotContainer p=(PlotContainer)iter.next();
-			p.update();
-		}	
-	}
+     * Update all the plots.
+     *  
+     */
+    void update() {
+        final Iterator iter = plotList.iterator();
+        while (iter.hasNext()) {
+            final PlotContainer container = (PlotContainer) iter.next();
+            container.update();
+        }
+    }
 
 	/**
 	 * Prepare to print to a page.
@@ -334,54 +334,52 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * Implementation of Observable interface to receive broadcast events.
 	 * 
 	 * @param observable ??
-	 * @param o the message
+	 * @param object the message
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command command = be.getCommand();
-		if (command == BroadcastEvent.Command.REFRESH) {
-			update();
-		}else if (command==BroadcastEvent.Command.HISTOGRAM_NEW){
-			//Clear plots select first plot
-			final int numberPlots=currentView.getNumberHists();
-			PlotContainer plotContainer=null;
-			/* Set initial states for all plots */
-			for (int i=0;i<numberPlots;i++){
-				plotContainer =(PlotContainer)plotList.get(i);
-				plotContainer.removeAllPlotMouseListeners();
-				plotContainer.select(false);
-				plotContainer.reset();						
-				plotContainer.displayHistogram(null);
-			}
-			plotContainer =(PlotContainer)plotList.get(0);
-			plotSelected(plotContainer);						
-			
-		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
-			final Histogram hist = status.getCurrentHistogram();			
-			displayHistogram(hist); 
-			final Histogram []overHists=status.getOverlayHistograms();
-			overlayHistogram(overHists);
-			
-		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
-			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
-			action.setDefiningGate(true);
-		} else if (command == BroadcastEvent.Command.GATE_SET_OFF) {
-			getPlot().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
-			action.setDefiningGate(false);
-			getPlot().repaint();
-		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE) {
-			getPlot().displaySetGate(GateSetMode.GATE_SAVE, null, null);
-			action.setDefiningGate(false);
-		} else if (command == BroadcastEvent.Command.GATE_SET_ADD) {
-			getPlot().displaySetGate(GateSetMode.GATE_CONTINUE,
-					(Bin) be.getContent(), null);
-		} else if (command == BroadcastEvent.Command.GATE_SET_REMOVE) {
-			getPlot().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
-		} else if (command == BroadcastEvent.Command.GATE_SELECT) {
-			Gate gate = (Gate) (be.getContent());
-			getPlot().displayGate(gate);
-		}
-	}
+	public void update(Observable observable, Object object) {
+        final BroadcastEvent be = (BroadcastEvent) object;
+        final BroadcastEvent.Command command = be.getCommand();
+        if (command == BroadcastEvent.Command.REFRESH) {
+            update();
+        } else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
+            //Clear plots select first plot
+            final int numberPlots = currentView.getNumberHists();
+            PlotContainer plotContainer = null;
+            /* Set initial states for all plots */
+            for (int i = 0; i < numberPlots; i++) {
+                plotContainer = (PlotContainer) plotList.get(i);
+                plotContainer.removeAllPlotMouseListeners();
+                plotContainer.select(false);
+                plotContainer.reset();
+                plotContainer.displayHistogram(null);
+            }
+            plotContainer = (PlotContainer) plotList.get(0);
+            plotSelected(plotContainer);
+        } else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+            final Histogram hist = status.getCurrentHistogram();
+            displayHistogram(hist);
+            final Histogram[] overHists = status.getOverlayHistograms();
+            overlayHistogram(overHists);
+        } else if (command == BroadcastEvent.Command.GATE_SET_ON) {
+            getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
+            action.setDefiningGate(true);
+        } else if (command == BroadcastEvent.Command.GATE_SET_OFF) {
+            getPlot().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+            action.setDefiningGate(false);
+            getPlot().repaint();
+        } else if (command == BroadcastEvent.Command.GATE_SET_SAVE) {
+            getPlot().displaySetGate(GateSetMode.GATE_SAVE, null, null);
+            action.setDefiningGate(false);
+        } else if (command == BroadcastEvent.Command.GATE_SET_ADD) {
+            getPlot().displaySetGate(GateSetMode.GATE_CONTINUE,
+                    (Bin) be.getContent(), null);
+        } else if (command == BroadcastEvent.Command.GATE_SET_REMOVE) {
+            getPlot().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
+        } else if (command == BroadcastEvent.Command.GATE_SELECT) {
+            Gate gate = (Gate) (be.getContent());
+            getPlot().displayGate(gate);
+        }
+    }
 
 	/**
 	 * Set the peak find properties for the plot.
