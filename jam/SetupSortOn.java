@@ -492,7 +492,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 					loadNames();
 					if (clog.isSelected()) { //if needed start logging to file
 						logFile =
-							JamProperties.getProperty(JamProperties.LOG_PATH)
+							JamProperties.getPropString(JamProperties.LOG_PATH)
 								+ File.separator
 								+ experimentName;
 						logFile = jamConsole.setLogFileName(logFile);
