@@ -169,7 +169,7 @@ class Plot1d extends Plot {
 	
 	void paintMarkingArea(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
-		g.setColor(Color.GREEN);		
+		g.setColor(PlotColorMap.area);		
 		//Chech we moved otherwise same point
 		final Point move; 		
 		if (lastMovePoint.x>0) {
