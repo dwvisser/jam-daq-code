@@ -6,6 +6,7 @@
  */
 package jam.io.hdf;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,16 +15,25 @@ import java.util.Map;
  * Class to hold histogram properties while we decide if we should load
  * them.
  */
-public class HistogramAttributes {
+public final class HistogramAttributes {
 	
-	static Map mapFullNames = new HashMap();
+	private static final Map FULL_NAMES = Collections.synchronizedMap(new HashMap());
 
+	/**
+	 * Clears all histogram attribute objects from the internal static map.
+	 *
+	 */
 	public static void clear() {
-		mapFullNames.clear();		
+		FULL_NAMES.clear();		
 	}
 	
+	/**
+	 * Retrieves a histogram
+	 * @param fullName
+	 * @return
+	 */
 	public static HistogramAttributes getHistogramAttribute(String fullName){
-		return (HistogramAttributes)mapFullNames.get(fullName);
+		return (HistogramAttributes)FULL_NAMES.get(fullName);
 	}
 	
     private String groupName;
@@ -41,19 +51,14 @@ public class HistogramAttributes {
     private int sizeY;
 
     private int histDim;
-
-    private byte histNumType;
- 	
     HistogramAttributes(String groupName, String name, String title, int number) {        	
         super();
-
         this.groupName=groupName;
         this.name=name;
         this.title=title;
         this.number=number;
         fullName=createFullName(groupName, name);
-        
-        mapFullNames.put(fullName, this);        
+        FULL_NAMES.put(fullName, this);        
     }
 	
     HistogramAttributes() {
@@ -80,33 +85,42 @@ public class HistogramAttributes {
     public String getFullName() {
         return fullName;
     }
-    /**
-     * Title of histogram
-     */
-    String getTitle() {
-    	return name;        	
-    }
-
+    
     /**
      * Full name is <groupName>/<histName.
      * @return the full name of the histogram
-     * 
+     * @param groupNameIn name of group the hist is in
+     * @param nameIn the basic name of the histogram
      */
-    public String createFullName(String groupNameIn, String nameIn) {
-    	String tempFullName;
-    	
-    	if (groupName!=null) { 
-    		if(!groupName.equals("") )
-    			tempFullName=groupNameIn+"/"+nameIn;
-    		else
-    			tempFullName=nameIn;
-    	}else {
-    		tempFullName=nameIn;
-    	}
-    	
-        return tempFullName;
+    private String createFullName(String groupNameIn, String nameIn) {
+        final StringBuffer rval = new StringBuffer();
+        if (groupName != null) {
+            if (!groupName.equals("")) {
+                rval.append(groupNameIn).append('/');
+            }
+        }
+        rval.append(nameIn);
+        return rval.toString();
     }
     
+    String getTitle(){
+        return title;
+    }
     
-           
+    int getHistDim(){
+        return histDim;
+    }
+    
+    int getNumber(){
+        return number;
+    }
+    
+    int getSizeX(){
+        return sizeX;
+    }
+    
+    int getSizeY(){
+        return sizeY;
+    }
+    
 }
