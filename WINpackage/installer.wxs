@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+    <Product Name="Jam" Id="b7c77d4a-510a-4fef-af17-585098aa279f"
+            Version="1.5.0" Manufacturer="http://jam-daq.sf.net/"
+            Language="1033">
+        <Package Id="8ae7c577-d890-4c31-a7f5-5f0374d5d242"
+                Comments="This MSI file installs Jam."
+                Manufacturer="http://jam-daq.sf.net/" InstallerVersion="200"
+                Languages="1033" Compressed="yes"/>
+        <Media Id="1" EmbedCab="yes" Cabinet="Jam.cab"/>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <Directory Id="JamDir" Name="Jam-1_5_0" LongName="Jam 1.5.0">
+                    <Component Id="Source Code"
+                            Guid="9a18623b-01a7-4ffa-8b27-2bee2e01a0e8">
+                        <File Id="src" Name="JamSrc.zip"
+                                DiskId="1" src="JamSrc.zip"/>
+                    </Component>
+                    <Directory Id="lib" Name="lib">
+                        <Component Id="Libraries"
+                                Guid="2a34a883-4f04-4646-af4f-44675e15c15d">
+                            <File Id="jamjar" Name="Jam.jar" DiskId="1" src="lib/Jam.jar" />
+                            <File Id="helpjar" Name="JamHelp.jar" DiskId="1"
+                                    src="lib/JamHelp.jar" />
+                            <File Id="jh" Name="jh.jar" DiskId="1"
+                                    src="lib/jh.jar" />
+                        </Component>
+                    </Directory>
+                    <Directory Id="bin" Name="bin">
+                        <Component Id="Executables"
+                                Guid="14ddb812-f984-4ac7-a63d-01e8706bb21a">
+                            <File Id="Main program" Name="Jam.exe" DiskId="1"
+                                    src="bin/Jam.exe">
+                                <Shortcut Id="Program shortcut"
+                                        Directory="ProgramMenuFolder" Name="Jam"
+                                        LongName="Jam 1.5.0"
+                                        Show="normal"
+                                        WorkingDirectory="TARGETDIR"/>
+                            </File>
+                            <File Id="Help program" Name="JamHelp.exe" DiskId="1"
+                                    src="bin/JamHelp.exe">
+                                <Shortcut Id="Help shortcut"
+                                        Directory="ProgramMenuFolder" Name="JamHelp"
+                                        LongName="Jam 1.5.0 Help"
+                                        Show="normal"
+                                        WorkingDirectory="TARGETDIR"/>
+                            </File>
+                        </Component>
+                    </Directory>
+                </Directory>
+            </Directory>
+            <Directory Id="ProgramMenuFolder" Name="PMFolder"></Directory>
+        </Directory>
+        <Feature Id="DefaultFeature" Level="1">
+            <ComponentRef Id="Source Code"/>
+            <ComponentRef Id="Libraries"/>
+            <ComponentRef Id="Executables"/>
+        </Feature>
+    </Product>
+</Wix>
