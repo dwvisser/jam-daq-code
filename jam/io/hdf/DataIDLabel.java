@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -44,8 +46,8 @@ final class DataIDLabel extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	DataIDLabel(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t, reference);
+	DataIDLabel(HDFile hdf, byte[] data, short tag, short reference) {
+		super(hdf, data, tag, reference);
 	}
 
 	/**
@@ -62,7 +64,7 @@ final class DataIDLabel extends DataObject {
 			final short ref = dis.readShort();
 			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
-			label = new String(temp);
+			label = StringUtilities.instance().getASCIIstring(temp);
 			object = file.getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
@@ -87,9 +89,8 @@ final class DataIDLabel extends DataObject {
 
 	static DataIDLabel withTagRef(List labels, int tag, int ref) {
 		DataIDLabel output=null;
-		DataIDLabel dil;
-		for (Iterator temp = labels.iterator(); temp.hasNext();) {
-			dil = (DataIDLabel) (temp.next());
+		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
+			final DataIDLabel dil = (DataIDLabel) (temp.next());
 			if ((dil.getObject().getTag() == tag)
 				&& (dil.getObject().getRef() == ref)) {
 				output = dil;

@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -242,21 +244,22 @@ public final class VdataDescription extends DataObject {
             for (int i = 0; i < nfields; i++) {
                 order[i] = dis.readShort();
             }
+            final StringUtilities util = StringUtilities.instance();
             for (int i = 0; i < nfields; i++) {
                 len = dis.readShort();
                 temp = new byte[len];
                 dis.read(temp);
-                fldnm[i] = new String(temp);
+                fldnm[i] = util.getASCIIstring(temp);
             }
             //write out data number type
             len = dis.readShort();
             temp = new byte[len];
             dis.read(temp);
-            name = new String(temp);
+            name = util.getASCIIstring(temp);
             len = dis.readShort();
             temp = new byte[len];
             dis.read(temp);
-            dataTypeName = new String(temp);
+            dataTypeName = util.getASCIIstring(temp);
             dis.readShort(); //no extension
             dis.readShort(); //no extension
             dis.readShort(); //should be version(=VH_VERSION)

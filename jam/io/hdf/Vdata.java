@@ -1,4 +1,6 @@
 package jam.io.hdf;
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -318,7 +320,7 @@ public final class Vdata extends DataObject {
 			length = order[col];
 			temp = new byte[length];
 			System.arraycopy(bytes, location, temp, 0, length);
-			out = new String(temp);
+			out = StringUtilities.instance().getASCIIstring(temp);
 		} else {
 			throw new IllegalStateException(
 				"VS_"

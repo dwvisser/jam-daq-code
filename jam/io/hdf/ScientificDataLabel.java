@@ -1,4 +1,6 @@
 package jam.io.hdf;
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -45,7 +47,7 @@ final class ScientificDataLabel extends DataObject {
 			for (i = 0; i < numLabels; i++) {
 				temp = new byte[lengths[i]];
 				bais.read(temp);
-				labels[i] = new String(temp);
+				labels[i] = StringUtilities.instance().getASCIIstring(temp);
 				bais.read(); //skip null
 			}
 		} catch (IOException e) {

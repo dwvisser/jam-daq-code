@@ -1,4 +1,6 @@
 package jam.io.hdf;
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -52,8 +54,8 @@ final class DataIDAnnotation extends DataObject {
 		}
 	}
 
-	DataIDAnnotation(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t,reference);
+	DataIDAnnotation(HDFile hdf, byte[] data, short tag, short reference) {
+		super(hdf, data, tag,reference);
 	}
 
 	/**
@@ -69,7 +71,7 @@ final class DataIDAnnotation extends DataObject {
 			final short ref = dis.readShort();
 			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
-			note = new String(temp);
+			note = StringUtilities.instance().getASCIIstring(temp);
 			object = file.getObject(tag, ref);
 		} catch (IOException e) {
 			throw new HDFException(
@@ -102,8 +104,8 @@ final class DataIDAnnotation extends DataObject {
 		int tag,
 		int ref) {
 		DataIDAnnotation output=null;
-		for (Iterator temp = labels.iterator(); temp.hasNext();) {
-			DataIDAnnotation dia = (DataIDAnnotation) (temp.next());
+		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
+			final DataIDAnnotation dia = (DataIDAnnotation) (temp.next());
 			if ((dia.getObject().getTag() == tag)
 				&& (dia.getObject().getRef() == ref)) {
 				output = dia;

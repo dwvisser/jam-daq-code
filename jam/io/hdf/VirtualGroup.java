@@ -1,5 +1,7 @@
 package jam.io.hdf;
 
+import jam.util.StringUtilities;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -123,11 +125,12 @@ final class VirtualGroup extends DataObject {
 			nameLen = dis.readShort();
 			temp = new byte[nameLen];
 			dis.read(temp);
-			name = new String(temp);
+            final StringUtilities util = StringUtilities.instance();
+			name = util.getASCIIstring(temp);
 			typeLen = dis.readShort();
 			temp = new byte[typeLen];
 			dis.read(temp);
-			type = new String(temp);
+			type = util.getASCIIstring(temp);
 			for (i = 0; i < numItems; i++) {
 				addDataObject(file.getObject(tags[i], refs[i]));
 			}
