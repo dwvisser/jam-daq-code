@@ -8,7 +8,6 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.plot.Display;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -85,7 +84,6 @@ WindowListener,Observer  {
     final private JComboBox cadd;
 
     private final JamStatus status;
-    private final Display display;
 
     /**
      * Creates an instance of the GateControl class.
@@ -94,13 +92,11 @@ WindowListener,Observer  {
      * @param bro ???
      * @param mh the console for text output
      */
-    public GateControl(Frame f, Broadcaster bro,
-    MessageHandler mh, Display d){
+    public GateControl(Frame f, Broadcaster bro, MessageHandler mh){
         super();
         this.frame=f;
         this.broadcaster=bro;
         this.messageHandler=mh;
-        display=d;
         status = JamStatus.instance();
 
         //>>Gate setting dialog
@@ -622,7 +618,7 @@ WindowListener,Observer  {
                     currentGate.getName());
                     printPoints(gatePoly2d);
                 }
-                display.displayGate(currentGate);
+				broadcaster.broadcast(BroadcastEvent.GATE_SELECT, currentGate);
                 cgate.repaint();
                 cadd.repaint();
 				broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
