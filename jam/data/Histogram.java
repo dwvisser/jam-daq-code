@@ -154,14 +154,6 @@ public class Histogram implements Serializable {
 		errorsSet = false;
 		//give error if name is to be truncated
 		String name2 = name = su.makeLength(name, NAME_LENGTH);
-		if (name.length() > NAME_LENGTH) {
-			System.err.println(
-				"Histogram name '"
-					+ name
-					+ "' too long, truncated to '"
-					+ name2
-					+ "'.");
-		}
 		name = name2;
 		//find a name that does not conflict with exiting names
 		prime = 1;

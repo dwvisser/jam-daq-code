@@ -74,14 +74,6 @@ public class Gate implements Serializable {
 		this.histogram = hist;
 		//work out name, and give error message if name is to be truncated
 		String name2 = name = su.makeLength(name, NAME_LENGTH);
-		if (name.length() > NAME_LENGTH) {
-			System.err.println(
-				"Gate name '"
-					+ name
-					+ "' too long, truncated to '"
-					+ name2
-					+ "'.");
-		}
 		name = name2;
 		//add to histogramTable here
 		int prime = 1;
