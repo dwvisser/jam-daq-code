@@ -123,6 +123,7 @@ class Tickmarks {
 		}
 		return tickSpace;
 	}
+	
 	/** 
 	 * Placement of minimum tick for linear         
 	 */
@@ -141,6 +142,7 @@ class Tickmarks {
 		}
 		return tempTickMin;
 	}
+	
 	/** 
 	 * Placement of maximum tick for linear         
 	 */
