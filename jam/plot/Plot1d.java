@@ -81,19 +81,20 @@ final class Plot1d extends AbstractPlot {
 			final double[] ctOver;
 			if (create) {
 				ctOver = new double[sizex];
-				countsOverlay.put(key, ctOver);
 			} else {
 				ctOver = (double[]) value;
 			}
+			
 			final Histogram.Type hoType = hOver.getType();
 			if (hoType == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hOver.getCounts();
 				for (int j = 0; j < sizex; j++) {
 					ctOver[j] = countsInt[j];
 				}
-			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+			} else if (hoType == Histogram.Type.ONE_D_DOUBLE) {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
+			countsOverlay.put(key, ctOver);			
 		}
 		panel.repaint();
 	}
