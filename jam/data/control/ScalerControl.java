@@ -147,13 +147,11 @@ public final class ScalerControl extends DataControl implements ActionListener, 
                 if (status.isOnLine()){
                     zero();
                 } else {
-                    throw new DataException("Can't Zero Scalers not Online");
+                    throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
                 }
             }  else {
-                System.err.println("Error Unregonized command [Scaler Control]");
+                throw new UnsupportedOperationException("Error Unregonized command: "+command);
             }
-        } catch (DataException je){
-            messageHandler.errorOutln(je.getMessage());
         } catch (GlobalException ge) {
             messageHandler.errorOutln(getClass().getName()+
             ".actionPerformed(): "+ge);
