@@ -23,7 +23,6 @@ public class Kmax6InputStream extends EventInputStream {
     int blockNumber;
     int blockNumEvnt;
     int blockEventType;
-    private short eventSize;
     private int countEvent=0;
     private int countWord=0;
     private boolean newBlock=true;
