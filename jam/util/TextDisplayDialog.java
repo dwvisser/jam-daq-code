@@ -45,6 +45,6 @@ public class TextDisplayDialog extends JDialog {
 		screenSize.height-del-y);	
 		setLocation(x,y);
 		setSize(sizex,sizey);
-		show();
+		setVisible(true);
 	}
 }

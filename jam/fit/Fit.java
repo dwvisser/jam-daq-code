@@ -409,7 +409,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 */
 	public void show() {
 		setMouseActive(false);
-		dfit.show();
+		dfit.setVisible(true);
 	}
 	
 	MessageHandler getTextInfo(){

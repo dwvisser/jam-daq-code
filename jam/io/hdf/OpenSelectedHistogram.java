@@ -79,15 +79,11 @@ public class OpenSelectedHistogram {
 	public OpenSelectedHistogram(Frame f, MessageHandler c) {
 		frame = f;
 		console = c;
-
 		dialog = new JDialog(f, "Open Selected Histograms", false);
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
-		//dialog.setLocation(f.getLocation());
-		//Container
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
-
-		//Panel with file indicator
+		/* Panel with file indicator */
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		final JLabel runlabel = new JLabel("File Indicator", JLabel.RIGHT);
 		pFileInd.add(runlabel);
@@ -96,8 +92,7 @@ public class OpenSelectedHistogram {
 				.setToolTipText("Text added to histgram name to indicate the file of origin");
 		pFileInd.add(txtFileInd);
 		container.add(pFileInd, BorderLayout.NORTH);
-
-		//Selection list
+		/* Selection list */
 		DefaultListModel listModel = new DefaultListModel();
 		histList = new JList(listModel);
 		histList
@@ -107,8 +102,7 @@ public class OpenSelectedHistogram {
 		JScrollPane listScrollPane = new JScrollPane(histList);
 		listScrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
 		container.add(listScrollPane, BorderLayout.CENTER);
-
-		//Lower panel with buttons
+		/* Lower panel with buttons */
 		final JPanel pLower = new JPanel();
 		container.add(pLower, BorderLayout.SOUTH);
 		final JPanel pButtons = new JPanel(new GridLayout(1, 0, 5, 5));
@@ -137,10 +131,8 @@ public class OpenSelectedHistogram {
 			}
 		});
 		pButtons.add(bCancel);
-
 		dialog.setResizable(false);
 		dialog.pack();
-
 	}
 
 	/**
@@ -190,16 +182,15 @@ public class OpenSelectedHistogram {
 		ArrayList histNames;
 		try {
 			if (openFile()) {
-				//Read in histogram names
+				/* Read in histogram names */
 				hdfFile = new HDFile(fileOpen, "r");
 				hdfFile.readObjects();
-				//Hash to store histograms
+				/* Hash to store histograms */
 				loadedHistograms = new HashMap();
 				histNames = readHistograms();
-				//readHistograms
 				hdfFile.close();
 				histList.setListData(histNames.toArray());
-				dialog.show();
+				dialog.setVisible(true);
 			}
 		} catch (IOException ioE) {
 			console.messageOut("", MessageHandler.END);

@@ -54,7 +54,7 @@ public class Help extends JDialog {
 		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
 		if (status.isShowGUI() && 
 		!version.equals(helpnode.get(key,defaultVal))){
-			show();
+			setVisible(true);
 			helpnode.put(key,version);
 		}
 	}
@@ -154,7 +154,7 @@ public class Help extends JDialog {
 				}
 			});
 			frame.pack();
-			frame.show();
+			frame.setVisible(true);
 			proxy.doClick();
 		} catch (Exception ee) {
 			JOptionPane.showMessageDialog(null,ee.getMessage(),ee.getClass().getName(),

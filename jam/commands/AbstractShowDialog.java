@@ -21,7 +21,7 @@ public class AbstractShowDialog
 	protected JDialog dialog;
 	
 	protected final void execute(Object[] cmdParams) {
-		dialog.show();
+		dialog.setVisible(true);
 	}
 
 	protected final void executeParse(String[] cmdTokens)

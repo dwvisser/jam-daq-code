@@ -119,7 +119,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * Show the load fit routine dialog box
 	 */
 	public void showLoad() {
-		dl.show();
+		dl.setVisible(true);
 	}
 
 	/**

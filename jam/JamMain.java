@@ -154,20 +154,17 @@ public final class JamMain extends JFrame implements Observer {
 	 * 
 	 * @param show true to show GUI
 	 */
-	private void showMainWindow(boolean show) {
-		
-		final boolean showGUI = show; 
+	private void showMainWindow(final boolean show) {
 		final int posx = 50;
 		final int posy = 0; 
 		setLocation(posx, posy);
 		setResizable(true);
-		
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
 				pack();
-				if (showGUI){
-					show();
+				if (show){
+					setVisible(true);
 				}
 				/* print out where config files were read from */
 				jamProperties.setMessageHandler(console);
@@ -175,8 +172,8 @@ public final class JamMain extends JFrame implements Observer {
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
-		
 	}
+	
 	private void exit(){
 		final JButton temp=new JButton(CommandManager.getInstance().getAction(
 		CommandNames.EXIT));
