@@ -17,6 +17,6 @@ final class ExportDamm extends AbstractExportFile {
 	
 	public void init(MessageHandler mh){
 		super.init(mh);
-		exporter=new ImpExpORNL(status.getFrame(),msghdlr);		
+		importExport=new ImpExpORNL(status.getFrame(),msghdlr);		
 	}
 }

@@ -18,6 +18,6 @@ final class ExportTextFileCmd extends AbstractExportFile {
 	
 	public void init(MessageHandler mh){
 		super.init(mh);
-		exporter=new ImpExpASCII(status.getFrame(),msghdlr);		
+		importExport=new ImpExpASCII(status.getFrame(),msghdlr);		
 	}
 }

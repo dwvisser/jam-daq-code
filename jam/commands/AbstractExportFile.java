@@ -3,7 +3,6 @@ package jam.commands;
 import java.io.File;
 
 import jam.data.Histogram;
-import jam.io.ImpExp;
 import jam.io.ImpExpException;
 import jam.global.CommandListenerException;
 
@@ -12,9 +11,7 @@ import jam.global.CommandListenerException;
  * @author Ken Swartz
  *
  */
-class AbstractExportFile extends AbstractCommand {
-
-	protected ImpExp exporter;
+class AbstractExportFile extends AbstractImportExport {
 
 	AbstractExportFile() {
 		super();
@@ -28,10 +25,10 @@ class AbstractExportFile extends AbstractCommand {
 			final Histogram h=Histogram.getHistogram(
 			status.getCurrentHistogramName());
 			if (cmdParams == null) { //No file given		
-				exporter.saveFile(h);
+				importExport.saveFile(h);
 			} else { //File given
 				File file = (File) cmdParams[0];
-				exporter.saveFile(file,h);
+				importExport.saveFile(file,h);
 			}
 		} catch (ImpExpException iee) {
 			throw new CommandException(iee.getMessage());

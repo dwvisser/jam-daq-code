@@ -22,7 +22,7 @@ final class ExportRadware extends AbstractExportFile implements Observer{
 	
 	public void init(MessageHandler mh){
 		super.init(mh);
-		exporter=new ImpExpSPE(status.getFrame(),msghdlr);		
+		importExport=new ImpExpSPE(status.getFrame(),msghdlr);		
 	}
 	
 	public void update(Observable observe, Object obj){
