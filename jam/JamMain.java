@@ -134,9 +134,11 @@ public final class JamMain extends JFrame {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				//KBS FIXME call jamCmdManager
 				showExitDialog();
 			}
 			public void windowClosed(WindowEvent e) {
+//				KBS FIXME call jamCmdManager
 				showExitDialog();
 			}
 		});
