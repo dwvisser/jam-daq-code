@@ -31,11 +31,11 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
      * To stop, suspend, or restart a GoodThread, call this.
      *
      * @param s <code>STOP, SUSPEND,</code> or <code>RUN</code>
-     * @exception GlobalException thrown for bad argument
+     * @exception IllegalArgumentException thrown for bad argument
      */
-    public synchronized void setState(int s) throws GlobalException {
+    public synchronized void setState(int s) {
         if (s != RUN && s!=SUSPEND && s!=STOP){
-            throw new GlobalException("GoodThread.setState("+s+"), invalid thread state");
+            throw new IllegalArgumentException("GoodThread.setState("+s+"), invalid thread state");
         }
         state = s;
         if (state != SUSPEND) {
