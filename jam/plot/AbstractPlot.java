@@ -190,14 +190,14 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		addMouseListener(plotMouse);
 		//Setup preferences
 		initPrefs();
-		prefs.addPreferenceChangeListener(this);
+		PREFS.addPreferenceChangeListener(this);
 	}
 
 	private final void initPrefs() {
-		setIgnoreChFull(prefs.getBoolean(AUTO_IGNORE_FULL, true));
-		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO, true));
-		setColorMode(prefs.getBoolean(BLACK_BACKGROUND, false));
-		setNoFillMode(!prefs.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
+		setIgnoreChFull(PREFS.getBoolean(AUTO_IGNORE_FULL, true));
+		setIgnoreChZero(PREFS.getBoolean(AUTO_IGNORE_ZERO, true));
+		setColorMode(PREFS.getBoolean(BLACK_BACKGROUND, false));
+		setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
 	} 
 	/**
 	 * Udate layout
@@ -257,9 +257,10 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * Plot has a valid histogram
 	 * @return
 	 */
-	protected boolean HasHistogram(){
+	protected boolean hasHistogram(){
 		return hasHistogram;
 	}
+	
 	private synchronized void setNoFillMode(boolean bool) {
 		noFillMode = bool;
 	}
@@ -875,8 +876,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	private final void setColorMode(boolean cm) {
 		synchronized (this) {
-			colorMode = cm ? PlotColorMap.WHITE_ON_BLACK
-					: PlotColorMap.BLACK_ON_WHITE;
+			colorMode = cm ? PlotColorMap.W_ON_B
+					: PlotColorMap.B_ON_W;
 		}
 		setBackground(PlotColorMap.getSingletonInstance().getBackground());
 	}
