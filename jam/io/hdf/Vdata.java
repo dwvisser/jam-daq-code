@@ -214,7 +214,7 @@ public class Vdata extends DataObject {
 						if (order[col] == 1) {
 							cells[col][row] = getInteger(row, col);
 						} else {
-							cells[col][row] = getIntegers(row, col);
+							cells[col][row] = new Integer[1];
 						}
 					}
 					break;
@@ -223,7 +223,7 @@ public class Vdata extends DataObject {
 						if (order[col] == 1) {
 							cells[col][row] = getShort(row, col);
 						} else {
-							cells[col][row] = getShorts(row, col);
+							cells[col][row] = new Short[1];
 						}
 					}
 					break;
@@ -232,7 +232,7 @@ public class Vdata extends DataObject {
 						if (order[col] == 1) {
 							cells[col][row] = getFloat(row, col);
 						} else {
-							cells[col][row] = getFloats(row, col);
+							cells[col][row] = new Float[1];
 						}
 					}
 					break;
@@ -241,7 +241,7 @@ public class Vdata extends DataObject {
 						if (order[col] == 1) {
 							cells[col][row] = getDouble(row, col);
 						} else {
-							cells[col][row] = getDoubles(row, col);
+							cells[col][row] = new Double[1];
 						}
 					}
 					break;
@@ -504,11 +504,6 @@ public class Vdata extends DataObject {
 	}
 
 	//FIXME 
-	public Integer[] getIntegers(int row, int col) {
-		return new Integer[1];
-	}
-
-	//FIXME 
 	public Short getShort(int row, int col) {
 		int location;
 		int length = 2;
@@ -544,11 +539,6 @@ public class Vdata extends DataObject {
 					+ "): cell not short!");
 		}
 		return out;
-	}
-
-	//FIXME 
-	public Short[] getShorts(int row, int col) {
-		return new Short[1];
 	}
 
 	/**
@@ -591,11 +581,6 @@ public class Vdata extends DataObject {
 		return out;
 	}
 
-	//FIXME 
-	public Float[] getFloats(int row, int col) {
-		return new Float[1];
-	}
-
 	/**
 	 * Get the double in the specified cell.  Of course, there'd better actually be a float there!
 	 */
@@ -634,11 +619,6 @@ public class Vdata extends DataObject {
 					+ "): cell not float!");
 		}
 		return out;
-	}
-
-	//FIXME 
-	public Double[] getDoubles(int row, int col) {
-		return new Double[1];
 	}
 
 	/**
