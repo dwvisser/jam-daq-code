@@ -366,7 +366,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		file.add(openhdf);
 		
 		final JMenuItem reloadhdf = new JMenuItem(commands.getAction(CommandNames.RELOAD_HDF));
-		reloadhdf.setEnabled(false);
 		reloadhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));		
 		file.add(reloadhdf);
 
@@ -375,7 +374,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		file.add(addhdf);
 		
 		final JMenuItem saveHDF  = new JMenuItem(commands.getAction(CommandNames.SAVE_HDF));
-		saveHDF.setEnabled(false);
+		saveHDF.setEnabled(false);	//KBS should not have to set
 		saveHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask|KeyEvent.SHIFT_MASK));
 		file.add(saveHDF);		
 
