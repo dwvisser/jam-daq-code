@@ -86,7 +86,7 @@ public abstract class NonLinearFit extends Fit {
      *
      * @exception   FitException      thrown if unrecoverable error occurs during estimation
      */
-    public abstract void estimate() throws FitException;
+    public abstract void estimate();
 
     /**
      * Evaluates at x for given parameters.
@@ -180,9 +180,8 @@ public abstract class NonLinearFit extends Fit {
      *
      * @param  which  the name of the parameter
      * @param  value  the value to assign
-     * @exception   FitException      thrown if unrecoverable error occurs
      */
-    public void setParameter(String which, double value) throws FitException{
+    public void setParameter(String which, double value) {
         getParameter(which).setValue(value);
     }
 
