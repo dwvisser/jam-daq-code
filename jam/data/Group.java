@@ -61,7 +61,7 @@ public class Group {
     private static Group sortGroup;
 
     /** children of group */
-    private final List histogramList = new ArrayList();
+    private final List histList = new ArrayList();
 
     /** children of group */
     private final Map histogramMap = new HashMap();
@@ -79,19 +79,19 @@ public class Group {
      * @param type
      *            of group
      */
-    public static void createGroup(String groupName, Type type) {
+    public synchronized static void createGroup(String groupName, Type type) {
         if (NAME_MAP.containsKey(groupName)) {
-            currentGroup = (Group) (NAME_MAP.get(groupName));
+            setCurrentGroup(groupName);
         } else {
-            Group group = new Group(groupName, type);
-            currentGroup = group;
+            final Group group = new Group(groupName, type);
+            setCurrentGroup(group);
         }
-        //Only one sort group
+        /* Only one sort group */
         if (type.type==Group.Type.TYPE_SORT) {
         	sortGroup =currentGroup;
         }
-
     }
+    
     /**
      * Clear a group, removes it
      * @param group
@@ -107,7 +107,7 @@ public class Group {
      * 
      * @param groupName
      */
-    public static void setCurrentGroup(String groupName) {
+    public synchronized static void setCurrentGroup(String groupName) {
         if (NAME_MAP.containsKey(groupName)) {
             currentGroup = (Group) (NAME_MAP.get(groupName));
         }
@@ -118,7 +118,7 @@ public class Group {
      * @param group
      *            to be "current"
      */
-    public static void setCurrentGroup(Group group) {
+    public synchronized static void setCurrentGroup(Group group) {
         currentGroup = group;
     }
 
@@ -137,7 +137,7 @@ public class Group {
      * 
      * @return the sort group
      */
-    public static Group getSortGroup() {
+    public synchronized static Group getSortGroup() {
         return sortGroup;
     }
 
@@ -147,7 +147,7 @@ public class Group {
      * 
      * @return the current group
      */
-    public static Group getCurrentGroup() {
+    public synchronized static Group getCurrentGroup() {
         return currentGroup;
     }
 
@@ -174,7 +174,8 @@ public class Group {
     public static void clearList() {
         NAME_MAP.clear();
         LIST.clear();
-        currentGroup = null;
+        /* Cast needed because of overloaded method. */
+        setCurrentGroup((Group)null);
         sortGroup=null;
     }
 
@@ -230,7 +231,7 @@ public class Group {
      * @param hist
      */
     public void addHistogram(Histogram hist) {
-        histogramList.add(hist);
+        histList.add(hist);
         histogramMap.put(hist.getName(), hist);
     }
     /**
@@ -239,7 +240,7 @@ public class Group {
      * @param hist
      */
     public void removeHistogram(Histogram hist) {
-        histogramList.remove(hist);
+        histList.remove(hist);
         histogramMap.remove(hist.getName());
     }
     /**
@@ -254,7 +255,7 @@ public class Group {
      * @return list of histograms in this group
      */
     public List getHistogramList() {
-        return Collections.unmodifiableList(histogramList);
+        return Collections.unmodifiableList(histList);
     }
 
     /**
