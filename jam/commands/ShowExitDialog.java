@@ -12,7 +12,7 @@ import javax.swing.KeyStroke;
  */
 final class ShowExitDialog extends AbstractCommand{
 	
-	private ShowExitDialog(){
+	ShowExitDialog(){
 		super();
 		putValue(NAME,"Exit\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, 
@@ -23,27 +23,20 @@ final class ShowExitDialog extends AbstractCommand{
 	 * Execute the command
 	 */
 	protected void execute(Object [] cmdParams){
-
-		boolean confirm;
+		boolean confirm=true;
 		JFrame frame =status.getFrame();				
-		
-		confirm=true;
 		if (cmdParams!=null) {
 			if ( !((Boolean)cmdParams[0]).booleanValue()) {
 				confirm=false;	
 			} 
 		}			
-		
-		//Confirm exit
-		if (confirm) {				
-		
+		if (confirm) {	//Confirm exit			
 			final int rval =
 				JOptionPane.showConfirmDialog(
 					frame,
 					"Are you sure you want to exit?",
 					"Exit Jam Confirmation",
 					JOptionPane.YES_NO_OPTION);
-					
 			if (rval == JOptionPane.YES_OPTION) {
 				System.exit(0);
 			} else {
