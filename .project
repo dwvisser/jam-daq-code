@@ -15,9 +15,15 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>net.genady.rmi.RMIBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.sourceforge.pmd.eclipse.pmdNature</nature>
+		<nature>net.genady.rmi.RMINature</nature>
 	</natures>
 </projectDescription>
