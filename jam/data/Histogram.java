@@ -640,66 +640,12 @@ public abstract class Histogram {
 	 */
 	public abstract Object getCounts();
 
-	/*
-	 * { Object rval = null; if (type == Type.ONE_DIM_INT) { rval = counts; }
-	 * else if (type == Type.TWO_DIM_INT) { rval = counts2d; } else if (type ==
-	 * Type.ONE_D_DOUBLE) { rval = countsDouble; } else if (type ==
-	 * Type.TWO_D_DOUBLE) { rval = counts2dD; } else { throw new
-	 * IllegalStateException("Histogram not a recognized type."); } return rval; }
-	 */
-
-	/**
-	 * Gets the counts in the specified channel.
-	 * 
-	 * @param channel
-	 *            to get the counts of
-	 * @return counts in the specified channel
-	 * @throws UnsupportedOperationException
-	 *             if not called on a 1-d histogram
-	 */
-	/*
-	 * public abstract double getCounts(int channel); /*{ double rval = 0; if
-	 * (type == Type.ONE_DIM_INT) { rval = counts[channel]; } else if (type ==
-	 * Type.ONE_D_DOUBLE) { rval = countsDouble[channel]; } else { throw new
-	 * UnsupportedOperationException(getName() + ": getCounts(int) cannot be
-	 * called on a 2-d histogram."); } return rval; }
-	 */
-
-	/**
-	 * Gets the counts in the specified channel.
-	 * 
-	 * @param chX
-	 *            x-channel
-	 * @param chY
-	 *            y-channel
-	 * @return counts in the specified channel
-	 * @throws UnsupportedOperationException
-	 *             if not called on a 2-d histogram
-	 */
-	/*
-	 * public abstract double getCounts(int chX, int chY);/* { double rval = 0;
-	 * if (type == Type.TWO_DIM_INT) { rval = counts2d[chX][chY]; } else if
-	 * (type == Type.TWO_D_DOUBLE) { rval = counts2dD[chX][chY]; } else { throw
-	 * new UnsupportedOperationException( getName() + ": getCounts(int,int)
-	 * cannot be called on a 1-d histogram."); } return rval; }
-	 */
-
 	/* -- set methods */
 
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
 	public abstract void setZero();
-
-	/*
-	 * { if (type == Type.ONE_DIM_INT) { for (int i = 0; i < sizeX; i++) {
-	 * counts[i] = 0; errors = null; } } else if (type == Type.ONE_D_DOUBLE) {
-	 * for (int i = 0; i < sizeX; i++) { countsDouble[i] = 0.0; errors = null; } }
-	 * else if (type == Type.TWO_DIM_INT) { for (int i = 0; i < sizeX; i++) {
-	 * for (int j = 0; j < sizeY; j++) { counts2d[i][j] = 0; } } } else if (type ==
-	 * Type.TWO_D_DOUBLE) { for (int i = 0; i < sizeX; i++) { for (int j = 0; j <
-	 * sizeY; j++) { counts2dD[i][j] = 0.0; } } } }
-	 */
 
 	/**
 	 * Calls setZero() on all histograms.
@@ -767,56 +713,6 @@ public abstract class Histogram {
 	 */
 	public abstract void setCounts(Object countsIn);
 
-	/*
-	 * { final Type countsType = Type.getArrayType(countsIn); if (type !=
-	 * countsType) { throw new IllegalArgumentException( "The given array is of
-	 * the wrong type."); } if (getDimensionality() == 1) { final boolean isInt =
-	 * (type == Type.ONE_DIM_INT); final Object dest = isInt ? (Object) counts :
-	 * countsDouble; final int inLength = isInt ? ((int[]) countsIn).length :
-	 * ((double[]) countsIn).length; System.arraycopy(countsIn, 0, dest, 0,
-	 * Math.min(inLength, sizeX)); } else { if (type == Type.TWO_DIM_INT) {
-	 * setCounts((int[][]) countsIn); } else if (type == Type.TWO_D_DOUBLE) {
-	 * setCounts((double[][]) countsIn); } } }
-	 */
-
-	/**
-	 * Sets counts in the specified channel.
-	 * 
-	 * @param channel
-	 *            to set counts in
-	 * @param cts
-	 *            counts to set
-	 * @throws UnsupportedOperationException
-	 *             if not called on a 1-d histogram
-	 */
-	/*
-	 * public synchronized void setCounts(int channel, double cts) { if (type ==
-	 * Type.ONE_DIM_INT) { counts[channel] = (int) cts; } else if (type ==
-	 * Type.ONE_D_DOUBLE) { countsDouble[channel] = cts; } else { throw new
-	 * UnsupportedOperationException( getName() + ": setCounts(int,double)
-	 * cannot be called on a 2-d histogram."); } }
-	 */
-
-	/**
-	 * Set the counts in the specified channel.
-	 * 
-	 * @param chX
-	 *            x-channel
-	 * @param chY
-	 *            y-channel
-	 * @param cts
-	 *            counts to set
-	 * @throws UnsupportedOperationException
-	 *             if not called on a 2-d histogram
-	 */
-	/*
-	 * public synchronized void setCounts(int chX, int chY, double cts) { if
-	 * (type == Type.TWO_DIM_INT) { counts2d[chX][chY] = (int) cts; } else if
-	 * (type == Type.TWO_D_DOUBLE) { counts2dD[chX][chY] = cts; } else { throw
-	 * new UnsupportedOperationException( getName() + ":
-	 * setCounts(int,int,double) cannot be called on a 1-d histogram."); } }
-	 */
-
 	/**
 	 * Adds the given counts to this histogram.
 	 * 
@@ -827,55 +723,6 @@ public abstract class Histogram {
 	 *             if the parameter is the wrong type
 	 */
 	public abstract void addCounts(Object countsIn);
-
-	/*
-	 * { final Type inType = Type.getArrayType(countsIn); if (type != inType) {
-	 * throw new IllegalArgumentException( "addCounts() needs to be called with
-	 * the appropriate array type."); } if (type == Type.ONE_DIM_INT) {
-	 * addCounts((int[]) countsIn); } else if (type == Type.TWO_DIM_INT) {
-	 * addCounts((int[][]) countsIn); } else if (type == Type.ONE_D_DOUBLE) {
-	 * addCounts((double[]) countsIn); } else { addCounts((double[][])
-	 * countsIn); } }
-	 */
-
-	/**
-	 * Gets the errors associated with the channel counts, only valid for 1-d
-	 * histograms.
-	 * 
-	 * @return an array of the associated errors for the channel counts
-	 * @exception UnsupportedOperationException
-	 *                thrown if called on 2-d histogram
-	 */
-	/*
-	 * public synchronized double[] getErrors(); { if (type == Type.ONE_DIM_INT) {
-	 * final int length = counts.length; if (errors == null) { //set errors
-	 * according to Poisson with error = 1 for zero // counts errors = new
-	 * double[length]; for (int i = 0; i < length; i++) { if (counts[i] == 0) {
-	 * errors[i] = 1.0; } else { errors[i] = Math.sqrt((double) counts[i]); } } } }
-	 * else if (type == Type.ONE_D_DOUBLE) { final int length =
-	 * countsDouble.length; if (errors == null) { //set errors according to
-	 * Poisson with error = 1 for zero // counts errors = new double[length];
-	 * for (int i = 0; i < length; i++) { if (countsDouble[i] == 0) { errors[i] =
-	 * 1.0; } else { errors[i] = java.lang.Math.sqrt(countsDouble[i]); } } } }
-	 * else { // invalid call if 2-d throw new UnsupportedOperationException(
-	 * "Can't call getErrors() for a 2-d histogram"); } return errors; }
-	 */
-
-	/**
-	 * Sets the errors associated with channel counts, only valid for 1-d
-	 * histograms.
-	 * 
-	 * @param errors
-	 *            the associated errors for the channel counts
-	 * @exception UnsupportedOperationException
-	 *                thrown if called on 2-d histogram
-	 */
-	/*
-	 * public synchronized void setErrors(double[] errors) { if
-	 * (getDimensionality() == 1) { this.errors = errors; errorsSet = true; }
-	 * else { // invalid call if 2-d throw new UnsupportedOperationException(
-	 * "Cannot set Error for 2-d [Histogram]"); } }
-	 */
 
 	/**
 	 * Returns the number of dimensions in this histogram.
@@ -901,14 +748,4 @@ public abstract class Histogram {
 	 * @return area under the counts in the histogram
 	 */
 	public abstract double getArea();
-	/*
-	 * { double sum = 0.0; if (type == Histogram.Type.ONE_D_DOUBLE) { for (int i =
-	 * 0; i < sizeX; i++) { sum += countsDouble[i]; } } else if (type ==
-	 * Histogram.Type.ONE_DIM_INT) { //1d int for (int i = 0; i < sizeX; i++) {
-	 * sum += counts[i]; } } else if (type == Histogram.Type.TWO_DIM_INT) { for
-	 * (int i = 0; i < sizeX; i++) { for (int j = 0; j < sizeY; j++) { sum +=
-	 * counts2d[i][j]; } } } else { //2d double for (int i = 0; i < sizeX; i++) {
-	 * for (int j = 0; j < sizeY; j++) { sum += counts2dD[i][j]; } } } return
-	 * sum; }
-	 */
 }
