@@ -160,8 +160,24 @@ package jam.fit;
     	return "Done.";
     }
     
-    public double calculate(int x){
-	  return A.getDoubleValue()+B.getDoubleValue()*(x);
+    public double calculate(int channel){
+	  return A.getDoubleValue()+B.getDoubleValue()*(channel);
+    }
+    
+    double calculateBackground(int channel){
+    	return calculate(channel);
+    }
+    
+    boolean hasBackground(){
+    	return true;
+    }
+    
+    int getNumberOfSignals(){
+    	return 0;
+    }
+    
+    double calculateSignal(int signal, int channel){
+    	return 0.0;
     }
     
 }

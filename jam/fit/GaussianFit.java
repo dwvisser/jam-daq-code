@@ -237,6 +237,32 @@ public class GaussianFit extends NonLinearFit {
 				+ p(AREA) / p(WIDTH) * a * exp;
 		return temp;
 	}
+	
+	int getNumberOfSignals(){
+		return 1;
+	}
+	
+	double calculateSignal(int sig, int channel){
+		double rval=0.0;
+		
+		if (sig==0){
+			diff = channel - p(CENTROID);
+			exp = Math.exp(-b * diff * diff / (p(WIDTH) * p(WIDTH)));
+			rval = area.getDoubleValue()/width.getDoubleValue()*a *exp;
+		}
+		return rval;
+	}
+	
+	boolean hasBackground(){
+		return true;
+	}
+	
+	double calculateBackground(int channel){
+		diff = channel - p(CENTROID);
+		return p("A")
+		+ p("B") * diff
+		+ p("C") * diff * diff;
+	}
 
 	/**
 	 * Evaluates derivative with respect to <code>parameterName</code> at <code>x</code>.
