@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.*;
 import jam.global.*;
 import jam.data.*;
-import jam.data.peaks.PeakFinder;
+
 /**
  *  Plots a 1-dimensional histogram.
  *
@@ -305,6 +305,13 @@ class Plot1d extends Plot  {
             }
         }
         return minCounts;
+    }
+    
+    /**
+     * Caller should have checked 'isCalibrated' first.
+     */
+    public double getEnergy(double channel){
+    	return currentHist.getCalibration().getCalculatedEnergy(channel);
     }
 
 }
