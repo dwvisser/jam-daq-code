@@ -8,7 +8,11 @@ import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
+import jam.io.hdf.HDFileFilter;
+import jam.ui.MultipleFileChooser;
+import jam.ui.PanelOKApplyCancelButtons;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -20,12 +24,17 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Class to control the histograms
@@ -38,6 +47,9 @@ import javax.swing.JTextField;
 public class CalibrationFit extends AbstractControl implements ActionListener {
 
     private static final int NUMBER_POINTS=5;
+	private final static int MAX_NUMBER_TERMS = 5;
+	private final static String BLANK_TITLE = " Histogram not calibrated ";
+	private final static String BLANK_LABEL = "    --     ";	
 
     private final MessageHandler msghdlr;
 
@@ -49,10 +61,17 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     //GUI stuff
     private final JComboBox cFunc;
     private final JLabel lcalibEq=new JLabel("Select a function.", JLabel.CENTER);
-    private final JPanel pPoint [];
-    private final JTextField [] tEnergy, tChannel;
-    private final JCheckBox cUse[];
+    private JPanel pPoint [];
+    private JTextField [] tEnergy, tChannel;
+    private JCheckBox cUse[];
+    
+	private JPanel pcoeff[];
+	private JLabel lcoeff[];
+	private JTextField tcoeff[];    
 
+    JRadioButton rbFitPoints;
+    JRadioButton rbSetCoeffs;
+	
     private final NumberFormat numFormat;
 	private final JButton bokCal =  new JButton("OK");
 	private final JButton bapplyCal = new JButton("Apply");
@@ -69,8 +88,14 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         setResizable(false);
         setLocation(30,30);
         final Container cdialogCalib=getContentPane();
-        cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
-        JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
+        cdialogCalib.setLayout(new BorderLayout(5, 5));
+        
+        //Selection panel at the top
+        JPanel pSelection = new JPanel(new GridLayout(0,1,5,5));
+        cdialogCalib.add(pSelection, BorderLayout.NORTH);
+        
+        //Equation chooser
+        JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         pChoose.add(new JLabel("Function: "));
         cFunc = new JComboBox(new CalibrationComboBoxModel());
         cFunc.setRenderer(new CalibrationListCellRenderer());
@@ -88,47 +113,63 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 		});
 		cFunc.setSelectedItem(LinearFunction.class.getName());
         pChoose.add(cFunc);
-        cdialogCalib.add(pChoose);
-        cdialogCalib.add(lcalibEq);
-        pPoint=new JPanel[NUMBER_POINTS];
-        tEnergy =new JTextField[NUMBER_POINTS];
-        tChannel =new JTextField[NUMBER_POINTS];
-        cUse =new JCheckBox[NUMBER_POINTS];
-        for ( int i=0; i<NUMBER_POINTS; i++ ){
-            pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
-            cdialogCalib.add(pPoint[i]);
-            pPoint[i].add(new JLabel("Energy"));
-            tEnergy[i] =new JTextField(" ");
-            tEnergy[i].setColumns(6);
-            pPoint[i].add(tEnergy[i]);
-            pPoint[i].add(new JLabel("Channel"));
-            tChannel[i] =new JTextField(" ");
-            tChannel[i].setColumns(6);
-            pPoint[i].add(tChannel[i]);
-            cUse[i] =new JCheckBox("use");
-            cUse[i].setSelected(true);
-            pPoint[i].add(cUse[i]);
-            //cUse[i].addItemListener(this);
-            final int index=i;//silly, but necessary for anonymous class
-            cUse[i].addItemListener(new ItemListener(){
-				public void itemStateChanged(ItemEvent ie){
-					setFieldActive(index, cUse[index].isSelected());
-				}
-				
-				/**
-				 *sets fields to be active
-				 */
-				private void setFieldActive(int number, boolean state){
-					tChannel[number].setEnabled(state);
-					tEnergy[number].setEnabled(state);
-				}
-            });
-        }
+        pSelection.add(pChoose);
+        
+        //Equation 
+        JPanel pEquation = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        pSelection.add(lcalibEq);        
+        
+        //Fit using points or coeffs 
+        final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        final ButtonGroup fitType=new ButtonGroup();
+        rbFitPoints = new JRadioButton("Fit Points", true);
+        fitType.add(rbFitPoints);        
+        pFitType.add(rbFitPoints);
+        rbSetCoeffs = new JRadioButton("Set Coefficients", false);
+        fitType.add(rbSetCoeffs);
+        pFitType.add(rbSetCoeffs);        
+        pSelection.add(pFitType);
+        
+		//Tabbed panel with fit points an coefficients
+		JTabbedPane tabPane = new JTabbedPane();
+		cdialogCalib.add(tabPane, BorderLayout.CENTER);
+		JPanel ptsPanel = createPointsPanel();
+		tabPane.addTab("Points", null, ptsPanel, "Points and Energy to fit");		
+		JPanel histPanel = creatCoeffPanel();
+		tabPane.addTab("Fit", null, histPanel, "Fit coefficients");		
+		tabPane.addChangeListener(new ChangeListener() {
+	        // This method is called whenever the selected tab changes
+	        public void stateChanged(ChangeEvent evt) {
+	            final JTabbedPane pane = (JTabbedPane)evt.getSource();
+	            //changeSelectedTab(pane.getSelectedIndex());
+	        }
+	    });		
+        
+        
+		/* button panel */
+        final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
+                new PanelOKApplyCancelButtons.DefaultListener(this) {
+
+                    public void apply() {
+                    	/*
+                        try {
+                        	//doFit();
+                        } catch (DataException je) {
+                            //messageHandler.errorOutln(je.getMessage());
+                        }
+                        */
+                    }
+
+                });
+        cdialogCalib.add(pButtons.getComponent(), BorderLayout.SOUTH);
+		pack();
+		
+		/*
         JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel pbCal= new JPanel();
         pbCal.setLayout(new GridLayout(1,0,5,5));
         pbutton.add(pbCal);
-        cdialogCalib.add(pbutton);
+        //cdialogCalib.add(pbutton, BorderLayout.SOUTH);
 
         bokCal.setActionCommand("okcalib");
         bokCal.addActionListener(this);
@@ -148,6 +189,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 				doSetup();
 			}
         });
+        */
         //formating enery output
         numFormat=NumberFormat.getInstance();
         numFormat.setGroupingUsed(false);
@@ -155,6 +197,68 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         numFormat.setMaximumFractionDigits(4);
     }
 
+    //Create panel with the points to fit
+    private JPanel createPointsPanel() {
+    	JPanel pAllPoints = new JPanel(new GridLayout(0, 1, 10,2));
+        pPoint=new JPanel[NUMBER_POINTS];
+        tEnergy =new JTextField[NUMBER_POINTS];
+        tChannel =new JTextField[NUMBER_POINTS];
+        cUse =new JCheckBox[NUMBER_POINTS];
+        for ( int i=0; i<NUMBER_POINTS; i++ ){
+            pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
+            pAllPoints.add(pPoint[i]);
+            pPoint[i].add(new JLabel("Energy"));
+            tEnergy[i] =new JTextField(" ");
+            tEnergy[i].setColumns(6);
+            pPoint[i].add(tEnergy[i]);
+            pPoint[i].add(new JLabel("Channel"));
+            tChannel[i] =new JTextField(" ");
+            tChannel[i].setColumns(6);
+            pPoint[i].add(tChannel[i]);
+            cUse[i] =new JCheckBox("use");
+            cUse[i].setSelected(true);
+            pPoint[i].add(cUse[i]);
+            //cUse[i].addItemListener(this);
+            final int index=i;//silly, but necessary for anonymous class
+            cUse[i].addItemListener(new ItemListener(){
+				public void itemStateChanged(ItemEvent ie){
+					setFieldActive(index, cUse[index].isSelected());
+				}				
+				/**
+				 *sets fields to be active
+				 */
+				private void setFieldActive(int number, boolean state){
+					tChannel[number].setEnabled(state);
+					tEnergy[number].setEnabled(state);
+				}
+            });
+        }
+        return pAllPoints;
+
+    }
+    
+    //Create panel with the coefficients    
+    private JPanel creatCoeffPanel() {    
+    	JPanel pCoeff = new JPanel(new GridLayout(0, 1, 10,2));
+		pcoeff = new JPanel[MAX_NUMBER_TERMS];
+		lcoeff = new JLabel[MAX_NUMBER_TERMS];
+		tcoeff = new JTextField[MAX_NUMBER_TERMS];
+	
+		for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+			pCoeff.add(pcoeff[i]);
+			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
+			pcoeff[i].add(lcoeff[i]);
+			tcoeff[i] = new JTextField(" ");
+			tcoeff[i].setColumns(10);
+			pcoeff[i].add(tcoeff[i]);
+		}
+		return pCoeff;
+    }
+    
+    private void setFitTypePoints(boolean state){
+    	
+    }
     /**
      * Receive actions from Dialog Boxes
      *
@@ -186,6 +290,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
      * Call the fitting method of the chosen function to calibrate a histogram
      */
     private void doCalibration(){
+    	
         double energy [] =new double[NUMBER_POINTS];
         double channel [] =new double[NUMBER_POINTS];
         int numberPoints=0;
@@ -193,6 +298,11 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         double y[];
         String fitText;
 
+        if(calibFunction==null){
+        	msghdlr.errorOutln("Need to choose a function");
+        	return;
+        } 
+        
         AbstractHist1D currentHist=getCurrentHistogram();
         if (currentHist==null){//silently ignore if histogram null
             msghdlr.errorOutln("null histogram [Calibrate]");
