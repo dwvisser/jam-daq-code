@@ -1,7 +1,10 @@
 package jam.plot;
 import jam.data.Histogram;
 
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
@@ -24,7 +27,7 @@ import javax.swing.DefaultBoundedRangeModel;
  * @author Dale Visser
  * @version 1.4
  */
-class Limits {
+final class Limits {
 
     static class ScaleType{
     	/**
@@ -46,21 +49,23 @@ class Limits {
     /** 
      * Lookup table for the display limits for the various histograms.
      */
-    private final static Hashtable TABLE=new Hashtable();
+    private final static Map TABLE=Collections.synchronizedMap(new HashMap());
 
     private static final int INITLO=0;
     private static final int INITHI=100;
     private static final int DEFAULTMAXCOUNTS=5;
 
-	private final Histogram histogram;
+	private final String histName;
 	private final BoundedRangeModel rangeModelX=new DefaultBoundedRangeModel();
 	private final BoundedRangeModel rangeModelY=new DefaultBoundedRangeModel();
 
     private int minimumX,maximumX;
     private int minimumY,maximumY;
     private int minimumCounts,maximumCounts;
-    private int zeroX, sizeX;		//translate to rangemodel min, max
-    private int zeroY, sizeY;		//translate to rangemodel min, max
+    private int zeroX=INITLO;
+    private int sizeX;		//translate to rangemodel min, max
+    private int zeroY=INITLO;
+    private int sizeY;		//translate to rangemodel min, max
     private Limits.ScaleType scale=ScaleType.LINEAR;        // is it in log or linear
     
     /** 
@@ -75,19 +80,30 @@ class Limits {
      * @param ignoreFull ignores the last channel for auto scaling 
      * histogram
      */
-    Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull){
-        histogram=hist;
-        TABLE.put(hist.getName(),this);
+    private Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull){
+    	if (hist == null) {
+			throw new NullPointerException(
+					"Can't have null histogram reference in Limits constructor.");
+		}
+        histName=hist.getName();
+        TABLE.put(histName,this);
         sizeX=hist.getSizeX()-1;
-        zeroX=INITLO;
         sizeY=hist.getSizeY()-1;
-        zeroY=INITLO;
         init(ignoreZero, ignoreFull);//set initial values
         /* update the bounded range models */
         updateModelX();
         updateModelY();
     }
-
+    
+    private Limits(){
+    	histName=null;
+    	sizeX=0;
+    	sizeY=0;
+        updateModelX();
+        updateModelY();
+    }
+    
+    private static final Limits LIMITS_NULL=new Limits();
     
     /**
      * Determines initial limit values, X and Y limits set to 
@@ -99,8 +115,9 @@ class Limits {
      * @param ignoreFull true if the last channel is ignored for
      * auto-scaling
      */
-    private final void init(boolean ignoreZero, 
+    private void init(boolean ignoreZero, 
     boolean ignoreFull) {
+    	final Histogram histogram=Histogram.getHistogram(histName);
 		final int dim=histogram.getDimensionality();
 		final int sizex=histogram.getSizeX();
 		final int sizey=histogram.getSizeY();
@@ -131,12 +148,13 @@ class Limits {
 		setLimitsCounts(INITLO, maxCounts);
     }
     
-    private final int getMaxCounts(int chminX, int chmaxX, int chminY, 
+    private int getMaxCounts(int chminX, int chmaxX, int chminY, 
     int chmaxY) {
 		int maxCounts;
 		
 		final int scaleUp=110;
 		final int scaleBackDown=100;
+		final Histogram histogram=Histogram.getHistogram(histName);
 		final Object counts=histogram.getCounts();
 		if (histogram.getDimensionality()==1){
 			maxCounts=getMaxCounts(counts,chminX,chmaxX);
@@ -148,7 +166,7 @@ class Limits {
 		return maxCounts;
     }
     
-    private final int getMaxCounts(Object counts, int chminX, int chmaxX){
+    private int getMaxCounts(Object counts, int chminX, int chmaxX){
     	int maxCounts=DEFAULTMAXCOUNTS;
     	if (counts instanceof double[]){
     		final double [] countsD=(double [])counts;
@@ -165,7 +183,7 @@ class Limits {
 	}
 
     
-    private final int getMaxCounts(Object counts, int chminX, int chmaxX,
+    private int getMaxCounts(Object counts, int chminX, int chmaxX,
     int chminY, int chmaxY){
    		int maxCounts=DEFAULTMAXCOUNTS;
     	if (counts instanceof double[][]){
@@ -186,21 +204,30 @@ class Limits {
         return maxCounts;
     }
     
-    /** Get the limits for a <code>Histogram</code>.
+    /** 
+     * Get the limits for a <code>Histogram</code>.
      * @param hist Histogram to retrieve the limits for
      * @return display limits for the specified histogram
      */
     static Limits getLimits(Histogram hist) {
-        return (Limits) TABLE.get(hist.getName());
-    }
-
-    /** Get the limits for a <code>Displayable</code> object.
-     * @param data object which implements the Displayable interface
-     * @return the display limits for the displayable object
-     */
-    /*public static Limits getLimits(Displayable data) {
-        return (Limits) TABLE.get(data.getName());
-    }*/
+		final Limits rval;
+		if (hist == null) {
+			rval = LIMITS_NULL;
+		} else {
+			final Object o = TABLE.get(hist.getName());
+			if (o == null) {
+				final Preferences prefs = PlotPrefs.prefs;
+				final boolean ignoreZero = prefs.getBoolean(
+						PlotPrefs.AUTO_IGNORE_ZERO, true);
+				final boolean ignoreFull = prefs.getBoolean(
+						PlotPrefs.AUTO_IGNORE_FULL, true);
+				rval = new Limits(hist, ignoreZero, ignoreFull);
+			} else {
+				rval = (Limits) o;
+			}
+		}
+		return rval;
+	}
 
     /**
      * @return model for scrollbar attached to X-limits
@@ -220,7 +247,7 @@ class Limits {
      * @param minX new minimum x value
      * @param maxX new maximum x value
      */
-    synchronized final void setLimitsX(int minX, int maxX){
+    synchronized void setLimitsX(int minX, int maxX){
         minimumX=minX;
         maximumX=maxX;
         updateModelX();
@@ -248,7 +275,7 @@ class Limits {
      * @param minY minumum Y to display
      * @param maxY maximum Y to display
      */
-    final synchronized void setLimitsY(int minY, int maxY){
+    synchronized void setLimitsY(int minY, int maxY){
         minimumY=minY;
         maximumY=maxY;
         updateModelY();
@@ -280,7 +307,7 @@ class Limits {
      * @param minCounts the lowest count value to display
      * @param maxCounts the highest count value to display
      */
-    private synchronized final void setLimitsCounts(int minCounts, 
+    private synchronized void setLimitsCounts(int minCounts, 
     int maxCounts){
         minimumCounts=minCounts;
         maximumCounts=maxCounts;
@@ -291,7 +318,7 @@ class Limits {
      * 
      * @param minCounts the lowest count value to display
      */
-    final void setMinimumCounts(int minCounts){
+    void setMinimumCounts(int minCounts){
 		synchronized(this){
 			minimumCounts=minCounts;
 		}
@@ -302,7 +329,7 @@ class Limits {
      * 
      * @param maxCounts the highest count value to display
      */
-    final void setMaximumCounts(int maxCounts){
+    void setMaximumCounts(int maxCounts){
         synchronized(this){
 			maximumCounts=maxCounts;
         }
@@ -314,7 +341,7 @@ class Limits {
      * @param s one of <code>Limits.LINEAR</code> or <code>
      * Limits.LOG</code>
      */
-    final void setScale(Limits.ScaleType s){
+    void setScale(Limits.ScaleType s){
     	synchronized(scale){
 			scale=s;
     	}
@@ -353,42 +380,42 @@ class Limits {
     /**
      * @return the lowest x-channel to display
      */
-    int getMinimumX(){
-        return(minimumX);
+    synchronized int getMinimumX(){
+        return minimumX;
     }
 
 	/**
 	 * @return the highest x-channel to display
 	 */
-    int getMaximumX(){
-        return(maximumX);
+    synchronized int getMaximumX(){
+        return maximumX;
     }
 
     /**
      * @return the lowest y-channel to display
      */
-    int getMinimumY(){
+    synchronized int getMinimumY(){
         return minimumY;
     }
 
 	/**
 	 * @return the highest y-channel to display
 	 */
-    int getMaximumY(){
+    synchronized int getMaximumY(){
         return maximumY;
     }
 
     /**
      * @return the minimum count level to be displayed
      */
-    int getMinimumCounts(){
+    synchronized int getMinimumCounts(){
         return minimumCounts;
     }
 
     /**
      * @return the maximum count level to be displayed
      */
-    int getMaximumCounts(){
+    synchronized int getMaximumCounts(){
         return maximumCounts;
     }
 
@@ -398,7 +425,7 @@ class Limits {
      * @return <code>PlotGraphics.LINEAR</code> or <code>
      * PlotGraphics.LOG</code>
      */
-    Limits.ScaleType getScale(){
+    synchronized Limits.ScaleType getScale(){
         return scale;
     }
 
@@ -411,7 +438,7 @@ class Limits {
     	final String xmin="MinX: ";
     	final String xmax=", MaxX: ";
         final StringBuffer temp=new StringBuffer(limitsof);
-        temp.append(histogram.getName());
+        temp.append(histName);
         temp.append(colon);
         temp.append(xmin);
         temp.append(getMinimumX());
