@@ -139,12 +139,13 @@ public class DiskDaemon extends StorageDaemon {
 		//end loop forever 
 	}
 
+	/* implementations of StorageDeamon abstract methods */
+
 	/**
 	 * Need to implement such that sets a variable to stop write loop.
 	 */
-	//implementations of StorageDeamon abstract methods
 	public boolean hasMoreFiles() {
-		return sortFiles.hasMoreElements();
+		return sortFiles.hasNext();
 	}
 
 	/**
@@ -152,7 +153,7 @@ public class DiskDaemon extends StorageDaemon {
 	 */
 	public boolean openEventInputListFile() {
 		boolean goodHeader = false;
-		String fileName = (String) (sortFiles.nextElement());
+		String fileName = (String) (sortFiles.next());
 		// local open file method
 		try {
 			openEventInputFile(new File(fileName));

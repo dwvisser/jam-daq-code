@@ -190,7 +190,6 @@ public class TapeDaemon extends StorageDaemon {
 	public boolean openEventInputListFile() {
 
 		int runNumber = 0;
-		String temp;
 		boolean goodHeader = false;
 		boolean runFound = false;
 
@@ -261,9 +260,9 @@ public class TapeDaemon extends StorageDaemon {
 		int counter = 0;
 
 		while (counter < numberOfRuns) {
-			if (((Integer) sortFilesList.elementAt(counter)).intValue()
+			if (((Integer) sortFilesList.get(counter)).intValue()
 				== runNumber) {
-				sortFilesList.removeElementAt(counter);
+				sortFilesList.remove(counter);
 				System.out.println("   run is in list");
 				return true;
 			}
