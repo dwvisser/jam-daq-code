@@ -14,7 +14,7 @@ import java.util.Hashtable;
  * @see         EventInputStream
  * @since       JDK1.1
  */
-public class YaleCAEN_InputStream extends EventInputStream implements L002Parameters {
+public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parameters {
     
     static final int NUM_V7X5_UNITS=19;//20 slots in a VME crate - 1 controller slot
     static final int NUM_CHANNELS = NUM_V7X5_UNITS*32;
@@ -301,59 +301,7 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
     private boolean isEndBlock(int data){
         return (data & TYPE_MASK) == END_COMPARE;
     }
-    
-    /**
-     * Read in the header
-     * Format of ORNL LOO2 data
-     * Implemented <code>EventInputStream</code> abstract method.
-     *
-     * @exception EventException thrown for unrecoverable errors
-     */
-    public boolean readHeader() throws EventException {
-        byte[] headerStart=new byte[32];	//header key
-        byte[] date=new byte[16];		//date mo/da/yr hr:mn
-        byte[] title=new byte[80];		//title
-        int number;				//header number
-        byte[] reserved1=new byte[8];		//reserved set to 0
-        int numSecHead;				//number of secondary header records
-        int recordLen;				//record length
-        int blckLnImgRec;			//Block line image records
-        int recordLen2;				//record length
-        int eventSize;				//event size, parameters per event
-        int dataRecLen;				//data record length
-        byte[] reserved2=new byte[92];		//reserved set to 0
-        byte[] secHead=new byte[256];
         
-        try {
-            dataInput.readFully(headerStart);		//key
-            dataInput.readFully(date);			//date
-            dataInput.readFully(title);			//title
-            number=dataInput.readInt();
-            dataInput.readFully(reserved1);
-            numSecHead=dataInput.readInt();
-            recordLen=dataInput.readInt();			//header record length
-            blckLnImgRec=dataInput.readInt();
-            recordLen2=dataInput.readInt();			//IMAGE_RECORD_LENGTH
-            eventSize=dataInput.readInt();
-            dataRecLen=dataInput.readInt();			//DATA_RECORD_LENGTH
-            dataInput.readFully(reserved2);
-            //save reads to header variables
-            headerKey=new String(headerStart);
-            headerRunNumber=number;
-            headerTitle=new String(title);
-            headerEventSize=eventSize;
-            headerDate=new String(date);
-            loadRunInfo();
-            //read secondary headers
-            for (int i=0; i<numSecHead; i++) {
-                dataInput.readFully(secHead);
-            }
-            return headerKey.equals(HEADER_START);
-        } catch (IOException ioe) {
-            throw new EventException(getClass().getName()+".readHeader(): IOException "+ioe.getMessage());
-        }
-    }
-    
     private static final short ENDRUN = (short)(END_PAD & 0xffff);
     /**
      * Check for end-of-run word.
