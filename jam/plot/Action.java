@@ -86,8 +86,6 @@ public class Action
 	private final List clicks = new ArrayList();
 	private final Map commandMap;
 	private double countLow, countHigh;
-	/*private final Collection empty =
-		Collections.unmodifiableList(new ArrayList());*/
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -234,11 +232,6 @@ public class Action
 		}
 		final String c1 = command.substring(0, Math.min(1, command.length()));
 		final String c2 = command.substring(0, Math.min(2, command.length()));
-		/*if (command.startsWith("d")) { //display hist by #
-			inCommand = DISPLAY;
-			display(parameters);
-			disp = true;
-		} else */
 		if (commandMap.containsKey(c2)) {
 			inCommand = (String) commandMap.get(c2);
 			accept = true;
@@ -255,7 +248,7 @@ public class Action
 				doCommand();
 				integerChannel(parameters);
 			}
-		} else /*if (!disp)*/ {
+		} else {
 			textOut.errorOutln(
 				getClass().getName()
 					+ ".commandPerform(): Command '"
@@ -509,8 +502,13 @@ public class Action
 			final int num = hist[0];
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
-				display.displayHistogram(Histogram.getHistogram(num));
+				JamStatus.instance().setCurrentHistogramName(h.getName());
 				textOut.messageOut(Integer.toString(num)+" ", MessageHandler.END);
+				try {
+					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+				} catch (GlobalException ge) {
+					textOut.errorOutln(ge.getMessage());
+				}
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
 				textOut.errorOutln(
