@@ -180,7 +180,7 @@ public final class SetupSortOn extends JDialog {
 		final Container dcp = getContentPane();
 		dcp.setLayout(new BorderLayout(5, 5));
 		final int gap = 5;
-		JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
 		final int topInset = 10;
 		final int leftInset = 10;
 		final int noSpace = 0;
@@ -321,23 +321,19 @@ public final class SetupSortOn extends JDialog {
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
 		textPathHist.setEditable(false);
 		pEntries.add(textPathHist);
-
 		textPathData = new JTextField(defaultEvents);
 		textPathData.setColumns(fileTextColumns);
 		textPathData.setToolTipText("Path to save event data.");
 		textPathData.setEditable(false);
 		pEntries.add(textPathData);
-
 		textPathLog = new JTextField(defaultLog);
 		textPathLog.setColumns(fileTextColumns);
 		textPathLog.setToolTipText("Path to save the console log.");
 		textPathLog.setEditable(false);
 		pEntries.add(textPathLog);
-
 		JPanel pSortInterval = new JPanel(new GridLayout(1, 2, 40, 0));
 		pEntries.add(pSortInterval);
 		final Integer one = new Integer(1);
-
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
 		cdisk.addItemListener(new ItemListener() {
@@ -367,7 +363,7 @@ public final class SetupSortOn extends JDialog {
 		JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
 		pBrowse.setBorder(new EmptyBorder(10, 0, 0, 10));
 		dcp.add(pBrowse, BorderLayout.EAST);
-		Dimension dummyDim = new Dimension(10, 10);
+		final Dimension dummyDim = new Dimension(10, 10);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		bbrowsef = new JButton("Browse...");
@@ -384,7 +380,6 @@ public final class SetupSortOn extends JDialog {
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-
 		bbrowseh = new JButton("Browse...");
 		bbrowseh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -393,7 +388,6 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pBrowse.add(bbrowseh);
-
 		bbrowsed = new JButton("Browse...");
 		bbrowsed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -402,7 +396,6 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pBrowse.add(bbrowsed);
-
 		bbrowsel = new JButton("Browse...");
 		bbrowsel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -411,15 +404,12 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pBrowse.add(bbrowsel);
-
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-
-		// panel for buttons
+		/*  panel for buttons */
 		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		dcp.add(pbutton, BorderLayout.SOUTH);
 		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
 		pbutton.add(pb);
-
 		bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -427,7 +417,6 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pb.add(bok);
-
 		bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -435,7 +424,6 @@ public final class SetupSortOn extends JDialog {
 			}
 		});
 		pb.add(bapply);
-
 		JButton bcancel = new JButton("Cancel");
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
@@ -444,7 +432,6 @@ public final class SetupSortOn extends JDialog {
 				dispose();
 			}
 		});
-
 		checkLock = new JCheckBox("Setup Locked", false);
 		checkLock.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent ie) {

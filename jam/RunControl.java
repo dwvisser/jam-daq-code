@@ -258,7 +258,7 @@ public class RunControl extends JDialog implements Controller {
 					beginRun();
 				} catch (SortException se) {
 					console.errorOutln(se.getMessage());
-				} catch (JamException je){
+				} catch (JamException je) {
 					console.errorOutln(je.getMessage());
 				}
 
@@ -269,17 +269,22 @@ public class RunControl extends JDialog implements Controller {
 	/**
 	 * Setup for online acquisition.
 	 * 
-	 * @see jam.SetupSortOn 
-	 * @param exptName name of the current experiment
-	 * @param datapath path to event files
-	 * @param histpath path to HDF files
-	 * @param sd the sorter thread
-	 * @param nd the network communication thread
-	 * @param dd the storage thread
+	 * @see jam.SetupSortOn
+	 * @param exptName
+	 *            name of the current experiment
+	 * @param datapath
+	 *            path to event files
+	 * @param histpath
+	 *            path to HDF files
+	 * @param sd
+	 *            the sorter thread
+	 * @param nd
+	 *            the network communication thread
+	 * @param dd
+	 *            the storage thread
 	 */
-	public void setupOn(String exptName, File datapath,
-			File histpath, SortDaemon sd, NetDaemon nd,
-			DiskDaemon dd) {
+	public void setupOn(String exptName, File datapath, File histpath,
+			SortDaemon sd, NetDaemon nd, DiskDaemon dd) {
 		experimentName = exptName;
 		dataPath = datapath;
 		histFilePath = histpath;
@@ -333,9 +338,10 @@ public class RunControl extends JDialog implements Controller {
 		 * "leftover" buffers DWV 15 Nov 2001
 		 */
 		status.setRunState(RunState.ACQ_OFF);
-		//done to avoid "last buffer in this run becomes first and last buffer
-		// in
-		//next run" problem
+		/*
+		 * done to avoid "last buffer in this run becomes first and last buffer
+		 * in next run" problem
+		 */
 		endAction.setEnabled(false);
 		if (!runOn) {//not running to disk
 			beginAction.setEnabled(true);//since it was disabled during start
@@ -380,10 +386,11 @@ public class RunControl extends JDialog implements Controller {
 		if (device == DISK) {//saving to disk
 			final String dataFileName = experimentName + runNumber
 					+ EVENT_FILE_EXTENSION;
-			dataFile = new File(dataPath,dataFileName);
+			dataFile = new File(dataPath, dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
 				throw new JamException("Event file already exits, File: "
-						+ dataFile.getPath() + ", Jam Cannot overwrite. [RunControl]");
+						+ dataFile.getPath()
+						+ ", Jam Cannot overwrite. [RunControl]");
 			}
 			diskDaemon.openEventOutputFile(dataFile);
 			diskDaemon.writeHeader();
@@ -411,6 +418,7 @@ public class RunControl extends JDialog implements Controller {
 					.messageOutln("Began run, events being written out be front end.");
 		}
 		runOn = true;
+		netDaemon.setEmptyBefore(false);//fresh slate
 		netDaemon.setState(GoodThread.RUN);
 		vmeComm.startAcquisition();//VME start last because other thread have
 		// higher priority
@@ -457,9 +465,9 @@ public class RunControl extends JDialog implements Controller {
 		netDaemon.setState(GoodThread.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
-		final String histFileName =  experimentName + runNumber + ".hdf";
+		final String histFileName = experimentName + runNumber + ".hdf";
 		// only write a histogram file
-		histFile = new File(histFilePath,histFileName);
+		histFile = new File(histFilePath, histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
 		dataio.writeFile(histFile);
