@@ -2,7 +2,6 @@ package jam.sort.stream;
 import java.io.*;
 import java.util.*;
 import jam.global.*;
-import jam.data.Scaler;
 
 /**
  * This class knows how to handle Oak Ridge tape format.  It extends

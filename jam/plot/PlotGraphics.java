@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.PrintGraphics;
 import java.util.Vector;
 import javax.swing.JPanel;
-import jam.util.StringUtilities;
 
 /**
  * Class of a library of methods to draw things for a graph.

@@ -1,6 +1,6 @@
 package jam.sort.stream;
-import java.util.Date;
 import java.io.*;
+
 /** 
  * Stream to write events out 
  *
