@@ -138,8 +138,8 @@ class Plot1d extends Plot {
 	public void markChannel(Point p) {
 		Graphics g = this.getGraphics();
 		g.setColor(PlotColorMap.mark);
+		/* so graph has all pertinent imfo */
 		graph.update(g, viewSize, plotLimits);
-		//so graph has all pertinent imfo
 		graph.markChannel1d(p.x, counts[p.x]);
 		g.dispose();
 	}
@@ -188,11 +188,12 @@ class Plot1d extends Plot {
 				System.err.println(e);
 			}
 		}
-		//draw ticks after histogram so they are on top
+		/* draw ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
-		graph.drawNumber(number);
+		final int nOverlay = displayingOverlay ? overlayHist.getNumber() : -1;
+		graph.drawNumber(number, nOverlay);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);

@@ -271,7 +271,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 	}
 
-	public void drawNumber(int number) {
+	public void drawNumber(int number, int overlayNumber) {
 		final String s = Integer.toString(number);
 		setFont(font);
 		final int width = fm.stringWidth(s);
@@ -280,6 +280,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final Color c = g.getColor();
 		g.setColor(Color.BLACK);
 		g.drawString(s, x, y);
+		if (overlayNumber >= 0){
+			final int x2=x+width;
+			final StringBuffer s2=new StringBuffer(", ").append(overlayNumber);
+			g.setColor(PlotColorMap.overlay);
+			g.drawString(s2.toString(),x2,y);
+		}
 		g.setColor(c);
 	}
 

@@ -294,7 +294,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		/* draw labels/ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
 		graph.drawTitle(title, PlotGraphics.TOP);
-		graph.drawNumber(number);
+		graph.drawNumber(number,-1);
 		graph.drawTicks(PlotGraphics.BOTTOM);
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
@@ -311,13 +311,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		}
 		g.setPaintMode();
 		g.setColor(PlotColorMap.foreground);
-		/*if (settingGate) {
-			graph.settingGate2d(pointsGate);
-			if (pointsGate.npoints > 0) {
-				final Point tempP = graph.toViewLin(lastPoint);
-				setLastGatePoint(tempP);
-			}
-		}*/
 	}
 
 	/**
