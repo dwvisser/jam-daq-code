@@ -356,8 +356,10 @@ class SetupSortOn implements ActionListener, ItemListener {
 		clog.setSelected(true);
 
 		/* panel for buttons */
+		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		dcp.add(pbutton, BorderLayout.SOUTH);
 		JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
-		dcp.add(pb, BorderLayout.SOUTH);
+		pbutton.add(pb);
 
 		bok = new JButton("OK");
 		bok.setActionCommand("ok");
@@ -391,14 +393,14 @@ class SetupSortOn implements ActionListener, ItemListener {
 	}
 
 	private java.util.List setChooserDefault(boolean isDefault) {
-		final Vector v=isDefault ? new Vector() : 
+		final Vector v=isDefault ? new Vector() :
 		(Vector)getSortClasses(sortClassPath);
 		if (isDefault) {
 			Set set = new LinkedHashSet();
 			set.addAll(RTSI.find("help", SortRoutine.class, true));
 			set.addAll(RTSI.find("sort", SortRoutine.class, true));
 			v.addAll(set);
-		} 
+		}
 		sortChoice.setModel(new DefaultComboBoxModel(v));
 		return v;
 	}
@@ -510,6 +512,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		} catch (GlobalException ge) {
 			jamConsole.errorOutln(ge.getMessage());
 			//ge.printStackTrace();
+		} catch (Exception e) {
+			jamConsole.errorOutln(e.getMessage());
 		}
 	}
 
@@ -767,7 +771,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			//tapePathData = textPathData.getText();
 			textPathData.setText(diskPathData);
 		}*/
-		
+
 		textPathData.setEnabled(!mode);
 		this.bbrowsed.setEnabled(!mode);
 	}
