@@ -223,7 +223,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				final int numDD = readShort(); //number of DD's
 				final int nextBlock = readInt();
 				//Just one dd block for now
-				//numberObjctProgressStep=getNumberObjctProgressStep(numDD);
+				numberObjctProgressStep=getNumberObjctProgressStep(numDD);
 				
 				for (int i = 1; i <= numDD; i++) {
 					final short tag = readShort();
@@ -233,10 +233,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					final byte [] bytes = readBytes(offset,length);
 					DataObject.create(bytes,tag,ref,offset,length);
 					
-					//if (countObjct%numberObjctProgressStep==0) {
-						//asyncProgressMonitor.increment();
-					//}
-					
+					if (countObjct%numberObjctProgressStep==0) {
+						if (asyncProgressMonitor!=null)	//FIXME KBS cleanup
+							asyncProgressMonitor.increment();
+					}
+					countObjct++;
 				}
 				if (nextBlock == 0) {
 					doAgain = false;
@@ -244,12 +245,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					seek(nextBlock);
 				}
 			} while (doAgain);
-			
+			/*FIXME KBS remove
 			final Iterator temp = DataObject.getDataObjectList().iterator();
 			while (temp.hasNext()) {
 				final DataObject dataObject = (DataObject) (temp.next());
 				dataObject.interpretBytes();
 			}
+			*/
 			
 		} catch (IOException e) {
 			throw new HDFException(

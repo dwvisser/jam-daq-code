@@ -7,12 +7,16 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
+import jam.data.control.AbstractControl;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
+import jam.util.SwingWorker;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -372,6 +376,32 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * non-javadoc: Asyncronized write
      */
     public void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
+
+    	final SwingWorker worker = new SwingWorker() {
+
+            public Object construct() {
+            	asyncReadFile(mode, infile, histNames);
+            	return null;
+            }
+
+            //Runs on the event-dispatching thread.
+            public void finished() {
+            	//FIXME KBS should move to someplace else or have callback
+            	JamStatus STATUS=JamStatus.getSingletonInstance();            	
+            	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
+            	            	
+        		AbstractControl.setupAll();
+        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        		        			
+        		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);        		
+        		STATUS.setCurrentHistogram(firstHist);
+        		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+        		STATUS.getFrame().repaint();
+            	
+            }
+        };
+        worker.start();     	
+    	//Need to use worker 
     	/*
         final Thread thread = new Thread(new Runnable() {
             public void run() {
@@ -379,8 +409,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         }); 
         thread.start();
-        */
-        asyncReadFile(mode, infile, histNames);
+        */    	
+        //asyncReadFile(mode, infile, histNames);
     }
 
     /**
@@ -396,13 +426,14 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     public boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
         boolean rval = true;
-        final int amountToDo = mode == FileOpenMode.ADD ? 4 : 6;
-        final ProgressMonitor monitor = new ProgressMonitor(frame,
-                "Reading HDF file", "Reading from disk", 0, amountToDo);
+
         if (!HDFile.isHDFFile(infile)) {
             msgHandler.errorOutln(infile + " is not a valid HDF File!");
             rval = false;
         }
+        asyncMonitor.setup("Reading HDF file", "Reading Objects", 
+				STEPS_WRITE_PROGRESS+STEPS_CONVERT_PROGRESS);
+        
         if (rval) {
             final StringBuffer message = new StringBuffer();
             try {
@@ -421,19 +452,20 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             infile.getName()).append(" (");
                 }
 
-                synchronized (this) {
-                    inHDF = new HDFile(infile, "r");
-                }
                 DataObject.clearAll();
+
+                //Read in objects
+                synchronized (this) {
+                    inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE_PROGRESS);
+                }
                 inHDF.seek(0);
-                /*
-                 * read file into set of DataObject's, set their internal
-                 * variables
-                 */
-                monitor.setNote("Parsing objects");
+                 /* read file into set of DataObject's, set their internal variables */
                 inHDF.readFile();
-                monitor.setProgress(1);
-                monitor.setNote("Getting histograms");
+
+                asyncMonitor.setNote("Parsing objects");
+                asyncMonitor.increment();
+                
+                DataObject.interpretBytesAll();
 
                 //Set group
                 if (mode == FileOpenMode.OPEN) {
@@ -446,34 +478,31 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             .getSortName();
                     Group.setCurrentGroup(sortName);
                 } // else mode == FileOpenMode.ADD, so use current group
+                
+                //FIXME takes a long time needs to update progress
                 final int numHists = getHistograms(mode, histNames);
                 message.append(numHists).append(" histograms");
-                monitor.setProgress(2);
-                monitor.setNote("Getting scalers");
                 final int numScalers = getScalers(mode);
                 message.append(", ").append(numScalers).append(" scalers");
-                monitor.setProgress(3);
+
                 if (mode != FileOpenMode.ADD) {
-                    monitor.setNote("Getting gates");
+
                     final int numGates = getGates(mode);
                     /* clear if opening and there are histograms in file */
                     message.append(", ").append(numGates).append(" gates");
 
-                    monitor.setProgress(4);
-                    monitor.setNote("Getting parameters");
                     final int numParams = getParameters(mode);
                     message.append(", ").append(numParams)
                             .append(" parameters");
-                    monitor.setProgress(5);
                 }
                 message.append(')');
-                monitor.setNote("Done");
+                msgHandler.messageOutln(message.toString());
                 inHDF.close();
                 synchronized (this) {
                     /* destroys reference to HDFile (and its DataObject's) */
                     inHDF = null;
                 }
-                msgHandler.messageOutln(message.toString());
+
                 setLastValidFile(infile);
             } catch (HDFException except) {
                 msgHandler.errorOutln(except.toString());
@@ -484,9 +513,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 except.printStackTrace();
                 rval = false;
             }
+
             DataObject.clearAll();
             System.gc();
-            monitor.close();
+            asyncMonitor.close();
         }
         return rval;
     }

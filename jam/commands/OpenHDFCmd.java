@@ -72,7 +72,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 			isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
 		if (isFileRead){//File was read in	
-			notifyApp(HDFIO.getLastValidFile());
+			//snotifyApp(HDFIO.getLastValidFile());
 		}								
 	}
 	

@@ -28,7 +28,7 @@ public class AsyncProgressMonitor {
         final Runnable runner = new Runnable() {
             public void run() {
             	monitor = new ProgressMonitor(frame, message, note, min, max);
-            	monitor.setMillisToPopup(200);
+            	monitor.setMillisToPopup(100);
             }
         };
         try {
