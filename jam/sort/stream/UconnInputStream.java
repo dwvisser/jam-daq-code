@@ -1,8 +1,12 @@
 package jam.sort.stream;
-import java.io.*;
-import java.util.*;
-import jam.global.*;
 import jam.data.Scaler;
+import jam.global.MessageHandler;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 /**
  * This class knows how to handle Uconn Be7.  It extends 
  * EventInputStream, adding methods for reading events and returning them
@@ -309,7 +313,7 @@ public class UconnInputStream extends EventInputStream {
 		}
 
 	}
-	public void setScalerTable(Hashtable table) {
-	}
+//	public void setScalerTable(Hashtable table) {
+//	}
 
 }
