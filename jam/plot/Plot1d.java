@@ -37,7 +37,6 @@ final class Plot1d extends AbstractPlot {
 	private List overlayNumber = Collections.synchronizedList(new ArrayList());
 	
 	private List overlayCounts = Collections.synchronizedList(new ArrayList());
-	//private Map overlayCounts = Collections.synchronizedMap(new HashMap());
 
 	private final PlotColorMap colorMap=PlotColorMap.getInstance();
 
@@ -46,6 +45,11 @@ final class Plot1d extends AbstractPlot {
 	private static double width = 12;
 
 	private static boolean pfcal = true;
+	
+	private static final String X_LABEL_1D = "Channels";
+
+	private static final String Y_LABEL_1D = "Counts";
+
 
 	/**
 	 * Constructor.

@@ -36,6 +36,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	private final PlotColorMap plotColorMap=PlotColorMap.getInstance();
 
 	private boolean smoothScale = true;
+	
+	private static final String X_LABEL_2D = "Channels";
+
+	private static final String Y_LABEL_2D = "Channels"; 
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.

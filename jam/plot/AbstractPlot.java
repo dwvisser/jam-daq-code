@@ -46,9 +46,9 @@ abstract class AbstractPlot implements PlotPrefs,
     	/**
     	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
     	 */
-    	protected void paintComponent(Graphics g) {
-    		super.paintComponent(g);
-    		PlotColorMap pcm=PlotColorMap.getInstance();
+    	protected void paintComponent(Graphics graphics) {
+    		super.paintComponent(graphics);
+    		final PlotColorMap pcm=PlotColorMap.getInstance();
     		if (printing) { //output to printer
     			//FIXME KBS font not set
     			//graph.setFont(printFont);
@@ -60,44 +60,44 @@ abstract class AbstractPlot implements PlotPrefs,
     			graph.setView(null);
     		}
     		final Color foreground=pcm.getForeground();
-    		g.setColor(foreground); //color foreground
+    		graphics.setColor(foreground); //color foreground
     		this.setForeground(foreground);
     		this.setBackground(pcm.getBackground());
     		viewSize = getSize();
-    		graph.update(g, viewSize, plotLimits);
+    		graph.update(graphics, viewSize, plotLimits);
     		/*
     		 * give graph all pertinent info, draw outline, tickmarks, labels, and
     		 * title
     		 */
     		final Histogram plotHist=getHistogram();
     		if (plotHist != null) {
-    			paintHeader(g);
+    			paintHeader(graphics);
     			if (binWidth > plotHist.getSizeX()) {
     				binWidth = 1.0;
     				warning("Bin width > hist size, so setting bin width back to 1.");
     			}
-    			paintHistogram(g);
+    			paintHistogram(graphics);
     			if (displayingGate) { //are we to display a gate
-    				paintGate(g);
+    				paintGate(graphics);
     			}
     			if (displayingOverlay) {
-    				paintOverlay(g);
+    				paintOverlay(graphics);
     			}
     			if (displayingFit) {
-    				paintFit(g);
+    				paintFit(graphics);
     			}
     			if (markArea) {
-    				paintMarkArea(g);
+    				paintMarkArea(graphics);
     			}
     			if (settingGate) {
-    				paintSetGatePoints(g);
+    				paintSetGatePoints(graphics);
     			}
     			if (markingChannels) {
-    				paintMarkedChannels(g);
+    				paintMarkedChannels(graphics);
     			}
     			if (mouseMoved) {
     				/* we handle selecting area or setting gate here */
-    				paintMouseMoved(g);
+    				paintMouseMoved(graphics);
     			}
     		}
     	}
@@ -118,24 +118,15 @@ abstract class AbstractPlot implements PlotPrefs,
 	/**
 	 * Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
 	 */
-	public final static int ZOOM_FACTOR = 10;
+	private final static int ZOOM_FACTOR = 10;
 
-	static final int FULL_SCALE_MIN = 5; //minumum that Counts can be set to
+	private static final int FS_MIN = 5; //minumum that Counts can be set to
 
 	/** Maximum that counts can be set to. */
-	static final int FULL_SCALE_MAX = 1000000;
+	private static final int FS_MAX = 1000000;
 
-	static final String X_LABEL_1D = "Channels";
-
-	static final String Y_LABEL_1D = "Counts";
-
-	static final String X_LABEL_2D = "Channels";
-
-	static final String Y_LABEL_2D = "Channels"; 
-
-	//protected static final String NO_HIST_TITLE = "No Histogram";
 	/** Number of Histogram to plot */
-	protected int plotHistNumber;
+	private int plotHistNum;
 	
 	private Scroller scrollbars;
 
@@ -193,7 +184,8 @@ abstract class AbstractPlot implements PlotPrefs,
 	/** Gate points in plot coordinates (channels). */
 	protected final Polygon pointsGate = new Polygon();
 
-	boolean settingGate = false;
+	/** Currently setting a gate. */
+	protected boolean settingGate = false;
 
 	/** selection start point in plot coordinates */
 	protected Bin selectionStartPoint = Bin.Factory.create();
@@ -311,13 +303,13 @@ abstract class AbstractPlot implements PlotPrefs,
 		plotLimits=Limits.getLimits(hist);
 		if (hist != null) {
 			hasHistogram=true;
-			plotHistNumber=hist.getNumber();			
+			plotHistNum=hist.getNumber();			
 			copyCounts(hist); //copy hist counts
 			/* Limits contains handle to Models */
 			scrollbars.setLimits(plotLimits);
 		} else { //we have a null histogram so fake it
 			hasHistogram=false;
-			plotHistNumber=-1;
+			plotHistNum=-1;
 			counts = new double[100];
 			counts2d = null;			
 			type = Histogram.Type.ONE_DIM_INT;
@@ -996,12 +988,12 @@ abstract class AbstractPlot implements PlotPrefs,
 	void setMaximumCountsConstrained(int maxC) {
 		int temp = maxC;
 		/* Don't go too small. */
-		if (temp < FULL_SCALE_MIN) {
-			temp = FULL_SCALE_MIN;
+		if (temp < FS_MIN) {
+			temp = FS_MIN;
 		}
 		/* Don't go too big. */
-		if (temp > FULL_SCALE_MAX) {
-			temp = FULL_SCALE_MAX;
+		if (temp > FS_MAX) {
+			temp = FS_MAX;
 		}
 		plotLimits.setMaximumCounts(temp);
 	}
@@ -1021,7 +1013,7 @@ abstract class AbstractPlot implements PlotPrefs,
 	}
 
 	synchronized Histogram getHistogram(){
-		return plotHistNumber<0 ?  null : Histogram.getHistogram(plotHistNumber);
+		return plotHistNum<0 ?  null : Histogram.getHistogram(plotHistNum);
 	}
 		
 	/**
