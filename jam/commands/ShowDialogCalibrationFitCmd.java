@@ -14,7 +14,7 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 Observer {
 
 	public void initCommand(){
-		putValue(NAME,"Fit\u2026");
+		putValue(NAME,"Calibration\u2026");
 		dialog=new CalibrationFit(msghdlr);
 		enable();
 	}
