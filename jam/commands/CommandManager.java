@@ -132,7 +132,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @param strCmd	String key indicating the command
 	 * @param cmdParams	Command parameters
 	 */
-	public boolean performCommand(String strCmd, Object[] cmdParams)
+	/*private boolean performCommand(String strCmd, Object[] cmdParams)
 		throws CommandException {
 		boolean validCommand=false;
 		if (createCmd(strCmd)) {
@@ -144,7 +144,7 @@ public class CommandManager implements CommandListener, CommandNames {
 			validCommand= true;
 		}
 		return validCommand;
-	}
+	}*/
 
 	/**
 	 * Perform command with string parameters
@@ -152,12 +152,16 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
 	 */
-	public boolean performParseCommand(String strCmd, String[] strCmdParams) 
-		throws CommandListenerException {
+	public boolean performParseCommand(String strCmd, String[] strCmdParams) {
 		boolean validCommand=false;
 		if (createCmd(strCmd)) {
 			if (currentCommand.isEnabled()){
-				currentCommand.performParseCommand(strCmdParams);
+				try{
+					currentCommand.performParseCommand(strCmdParams);
+				} catch (CommandListenerException cle){
+					msghdlr.errorOutln("Performing command "+strCmd+"; "+
+					cle.getMessage());
+				}
 			} else {
 				msghdlr.errorOutln("Disabled command \""+strCmd+"\"");
 			}
