@@ -21,45 +21,45 @@ import javax.swing.filechooser.FileFilter;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 13, 2004
  */
-public final class ImportBanGates extends ImpExp {
+public final class ImportBanGates extends AbstractImpExp {
 
 	public ImportBanGates(){
 		super();
 	}
 
 	/**
-	 * @see jam.io.ImpExp#openFile(File, String)
+	 * @see jam.io.AbstractImpExp#openFile(File, String)
 	 */
 	public boolean openFile(File f) throws ImpExpException {
 		return openFile(f, "Open BAN file");
 	}
 
 	/**
-	 * @see jam.io.ImpExp#saveFile(jam.data.Histogram)
+	 * @see jam.io.AbstractImpExp#saveFile(jam.data.Histogram)
 	 */
 	public void saveFile(Histogram hist) throws ImpExpException {
 		msgHandler.warningOutln("Save BAN not implemented.");
 	}
 
-	private static final ExtensionFileFilter filter=new ExtensionFileFilter("ban", 
+	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("ban", 
 	"ORNL Banana Gates");
 	protected FileFilter getFileFilter() {
-		return filter;
+		return FILTER;
 	}
 	
 	protected String getDefaultExtension(){
-		return filter.getExtension(0);
+		return FILTER.getExtension(0);
 	}
 
 	/**
-	 * @see jam.io.ImpExp#getFormatDescription()
+	 * @see jam.io.AbstractImpExp#getFormatDescription()
 	 */
 	public String getFormatDescription() {
-		return filter.getDescription();
+		return FILTER.getDescription();
 	}
 
 	/**
-	 * @see jam.io.ImpExp#readData(java.io.InputStream)
+	 * @see jam.io.AbstractImpExp#readData(java.io.InputStream)
 	 */
 	protected void readData(InputStream inStream) throws ImpExpException {
 		final int[] gates;
@@ -140,7 +140,7 @@ public final class ImportBanGates extends ImpExp {
 	}
 
 	/**
-	 * @see jam.io.ImpExp#writeHist(java.io.OutputStream, jam.data.Histogram)
+	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream, jam.data.Histogram)
 	 */
 	protected void writeHist(OutputStream outStream, Histogram hist)
 		throws ImpExpException {

@@ -150,7 +150,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		ButtonGroup optionButtons = new ButtonGroup();
 		final Iterator iter=getClasses().iterator();
 		while (iter.hasNext()) {
-			final ImpExp impExp = (ImpExp) iter.next();
+			final AbstractImpExp impExp = (AbstractImpExp) iter.next();
 			final String desc = impExp.getFormatDescription();
 			final JRadioButton exportChoice = new JRadioButton(desc);
 			exportChoice.setToolTipText("Select to export in " + desc
@@ -196,12 +196,12 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	private List getClasses() {
 		final List rval=new ArrayList();
 		final String here = getClass().getName() + ".getClasses(): ";
-		final Set set = RTSI.find("jam.io", ImpExp.class, false);
-		set.remove(ImpExp.class);
+		final Set set = RTSI.find("jam.io", AbstractImpExp.class, false);
+		set.remove(AbstractImpExp.class);
 		for (Iterator it = set.iterator(); it.hasNext();) {
 			final Class temp = (Class) it.next();
 			try {
-				final ImpExp ie = (ImpExp) temp.newInstance();
+				final AbstractImpExp ie = (AbstractImpExp) temp.newInstance();
 				if (ie.batchExportAllowed()) {
 					rval.add(ie);
 				}
@@ -374,12 +374,12 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	 */
 	private void export() {
 		/* select the format */
-		ImpExp out = null;
+		AbstractImpExp out = null;
 		final Iterator iter = exportMap.keySet().iterator();
 		while (iter.hasNext()) {
 			final AbstractButton button = (AbstractButton) iter.next();
 			if (button.isSelected()) {
-				out = (ImpExp) exportMap.get(button);
+				out = (AbstractImpExp) exportMap.get(button);
 			}
 		}
 		final File dir = new File(txtDirectory.getText().trim());
