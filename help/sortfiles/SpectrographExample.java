@@ -190,14 +190,14 @@ public final class SpectrographExample extends SortRoutine {
 		hSntrCthdGFS.addGate(gSntrCthd);
 		hFrntCthdGFS.addGate(gFrntCthd);
 		/* scalers */
-		sBic = new Scaler("BIC", 0);
-		sClck = new Scaler("Clock", 1);
-		sEvntRaw = new Scaler("Event Raw", 2);
-		sEvntAccpt = new Scaler("Event Accept", 3);
-		sScint = new Scaler(SCINT, 4);
-		sCathode = new Scaler(CATH, 5);
-		sFCLR = new Scaler("FCLR", 6);
-		sNMR = new Scaler("NMR", 14);
+		sBic = createScaler("BIC", 0);
+		sClck = createScaler("Clock", 1);
+		sEvntRaw = createScaler("Event Raw", 2);
+		sEvntAccpt = createScaler("Event Accept", 3);
+		sScint = createScaler(SCINT, 4);
+		sCathode = createScaler(CATH, 5);
+		sFCLR = createScaler("FCLR", 6);
+		sNMR = createScaler("NMR", 14);
 		/* monitors */
 		new Monitor("Beam ", sBic);
 		new Monitor("Clock", sClck);

@@ -45,8 +45,9 @@ public class Scaler {
             throw new IllegalArgumentException("Scale name '"+name+"' too long maximum characters "+NAME_LENGTH);
         }
         name=stringUtil.makeLength(name, NAME_LENGTH);
+        
         if (group==null) {
-        	//FIXME KBS
+        	//FIXME KBS should not reference Status
         	//group = STATUS.getCurrentGroup();
         }
         group.addScaler(this);
@@ -67,17 +68,6 @@ public class Scaler {
         /* Add to list of scalers */
         TABLE.put(name, this);
         LIST.add(this);
-    }
-    /**
-     * Creates a new scaler with an assigned name and number.
-     *
-     * @param	name	name of the scaler, which must be <=16 characters
-     * @param	number	number of scaler, most often the same as the register number in a CAMAC scaler unit
-     * @throws IllegalArgumentException if name > <code>NAME_LENGTH</code> characters
-     */
-    //FIXME KBS need to remove all Scaler should belong to groups
-    public Scaler(String name, int number) {
-    	this(null, name, number);
     }
 
     /**

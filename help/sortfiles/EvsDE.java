@@ -63,13 +63,13 @@ public class EvsDE extends SortRoutine {
 		/* Particle ID gate */
 		gEvsDE = new Gate("PID", hEvsDE);
 		/* Integrated beam current (BIC) */
-		sBeam = new Scaler("Beam", 0);
+		sBeam = createScaler("Beam", 0);
 		/* A clock */
-		sClck = new Scaler("Clock", 1);
+		sClck = createScaler("Clock", 1);
 		/* Total events seen */
-		sEvntRaw = new Scaler("Event Raw", 2);
+		sEvntRaw = createScaler("Event Raw", 2);
 		/* Total events used */
-		sEvntAccpt = new Scaler("Event Accept", 3);
+		sEvntAccpt = createScaler("Event Accept", 3);
 		/* Monitor of rate of the BIC scaler */
 		mBeam = new Monitor("Beam ", sBeam);
 		/* Monitor of the rate of the clock */

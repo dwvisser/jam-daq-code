@@ -79,11 +79,11 @@ public class CI extends SortRoutine {
 		new Monitor("TAC window", gTAC);
 		gGeNaI = new Gate("GeNaI", hGeNaI);
 		/** * SCALER SECTION ** */
-		sClock = new Scaler("Clock", 0);// (name, position in scaler unit)
-		sBeam = new Scaler("Beam", 1);
-		sGe = new Scaler("Ge", 2); //Ge provides trigger
-		sAccept = new Scaler("Ge Accept", 3);
-		sNaI = new Scaler(NAI, 4);
+		sClock = createScaler("Clock", 0);// (name, position in scaler unit)
+		sBeam = createScaler("Beam", 1);
+		sGe = createScaler("Ge", 2); //Ge provides trigger
+		sAccept = createScaler("Ge Accept", 3);
+		sNaI = createScaler(NAI, 4);
 		/** * MONITOR SECTION ** */
 		/*
 		 * Monitors associated with scalers, window will return scaler rate in

@@ -308,11 +308,11 @@ public class MonitorApplet
 		numberMonitors = 3;
 		monitor = new Monitor[numberMonitors];
 		monitorValues = new double[numberMonitors];
-		Scaler scal = new Scaler("ex", 0);
-		monitor[0] = new Monitor("test", scal);
-		monitor[0].setThreshold(10);
-		monitor[1] = new Monitor("help", scal);
-		monitor[2] = new Monitor("damn", scal);
+		//Scaler scal = new Scaler("ex", 0);
+		//monitor[0] = new Monitor("test", scal);
+		//monitor[0].setThreshold(10);
+		//monitor[1] = new Monitor("help", scal);
+		//monitor[2] = new Monitor("damn", scal);
 		interval = 5;
 	}
 	
