@@ -300,7 +300,7 @@ public class Display
 	 * @param commandIn
 	 * @param cmdParams
 	 */
-	public boolean performCommand(String commandIn, String [] cmdParams) {
+	public boolean performParseCommand(String commandIn, String [] cmdParams) {
 		final int numberParams = cmdParams.length;
 		double [] parameters = new double [numberParams];
 		//rest of tokens must be numbers
