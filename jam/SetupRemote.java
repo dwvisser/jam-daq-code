@@ -67,7 +67,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 	private boolean setupLock = false;
 
 	/**
-	 * Construnctor for Jam Applet no dialog box, so we are in an applet
+	 * Constructor for Jam Applet no dialog box, so we are in an applet
 	 */
 	/*FIXME
 	    public SetupRemote(JamApplet jamApplet,  MessageHandler msgHandler){
@@ -263,33 +263,25 @@ public class SetupRemote implements ActionListener, ItemListener {
 	public void snap(String stringURL) throws JamException {
 
 		try {
-			// jam client
-			if (jamMain != null) {
+			if (jamMain != null) {// jam client
 				if (jamMain.canSetSortMode()) {
 					remoteData = (RemoteData) Naming.lookup(stringURL);
 					msgHandler.messageOutln("Remote lookup OK!");
 				} else {
 					throw new JamException("Can't view remotely, sort mode locked [SetupRemote]");
 				}
-
-				//applet
-			} else {
+			} else {//applet
 				remoteData = (RemoteData) Naming.lookup(stringURL);
 			}
-
 		} catch (RemoteException re) {
 			throw new JamException("Remote lookup up failed URL: " + stringURL);
-
 		} catch (java.net.MalformedURLException mue) {
 			throw new JamException(
 				"Remote look up malformed URL: " + stringURL);
-
 		} catch (NotBoundException nbe) {
 			throw new JamException(
 				"Remote look up could not find name " + stringURL);
-
 		}
-
 		try {
 			System.out.println("get hist names");
 			histogramNames = remoteData.getHistogramNames();
@@ -305,7 +297,6 @@ public class SetupRemote implements ActionListener, ItemListener {
 			System.out.println(re.getMessage());
 			throw new JamException("Remote getting histogram list [SetupRemote]");
 		}
-
 	}
 	
 	/**
@@ -316,14 +307,14 @@ public class SetupRemote implements ActionListener, ItemListener {
 	 */
 	public void link(String stringURL) throws JamException {
 		snap(stringURL);
-
 	}
+	
 	/**
-	 *
+	 * Not sure what needs to be done here.
 	 */
 	public void reset() {
-		remoteAccess = null;
-		remoteData = null;
+//		remoteAccess = null;
+//		remoteData = null;
 	}
 	
 	/**
