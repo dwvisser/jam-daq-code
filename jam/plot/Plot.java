@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,7 +32,8 @@ import javax.swing.event.MouseInputAdapter;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-abstract class Plot extends JPanel {
+abstract class Plot extends JPanel implements PlotPrefs, 
+PreferenceChangeListener {
 
 	/**
 	 * Specifies Zoom direction, zoom out
@@ -198,11 +201,37 @@ abstract class Plot extends JPanel {
 		printFont =
 			new Font(fontclass, Font.PLAIN, PlotGraphicsLayout.PRINT_FONT_SIZE);
 		graph = new PlotGraphics(this, viewBorder, screenFont);
-		setColorMode(PlotColorMap.BLACK_ON_WHITE);
 		plotMouse = new PlotMouse(graph, action);
 		addMouseListener(plotMouse);
+		initPrefs();
+		prefs.addPreferenceChangeListener(this);
+	}
+	
+	private final void initPrefs(){
+		setIgnoreChFull(prefs.getBoolean(AUTO_IGNORE_FULL,true));
+		setIgnoreChZero(prefs.getBoolean(AUTO_IGNORE_ZERO,true));
+		setColorMode(prefs.getBoolean(BLACK_BACKGROUND,false));
 	}
 
+	public void preferenceChange(PreferenceChangeEvent pce){
+		final String key=pce.getKey();
+		final String newValue=pce.getNewValue();
+		if (key.equals(PlotPrefs.AUTO_IGNORE_ZERO)){
+			setIgnoreChZero(Boolean.valueOf(newValue).booleanValue());
+			if (currentHist.getCounts() != null){
+				autoCounts();
+			}
+		} else if (key.equals(PlotPrefs.AUTO_IGNORE_FULL)){
+			setIgnoreChFull(Boolean.valueOf(newValue).booleanValue());
+			if (currentHist.getCounts() != null){
+				autoCounts();
+			}
+		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)){
+			setColorMode(Boolean.valueOf(newValue).booleanValue());
+		}
+		repaint();
+	}
+	
 	/**
 	 * add scrollbars
 	 */
@@ -297,31 +326,26 @@ abstract class Plot extends JPanel {
 	/**
 	 * Copies the counts into the local array--needed by scroller.
 	 */
-	void copyCounts() {
-		int[] countsInt;
-		int[][] counts2dInt;
-		double[] countsDble;
-		double[][] counts2dDble;
-
-		//copy counts to local array
+	final void copyCounts() {
 		if (type == ONE_DIM_INT) {
-			countsInt = (int[]) currentHist.getCounts();
-			for (int i = 0; i < currentHist.getSizeX(); i++) {
-				counts[i] = countsInt[i];
+			int [] temp=(int [])currentHist.getCounts();
+			/* NOT System.arraycopy() because of array type difference 
+			 */
+			for (int i =0; i<temp.length; i++){
+				counts[i]=temp[i];
 			}
-			//System.arraycopy(currentHist.getCounts(), 0, counts, 0, currentHist.getSizeX());
 		} else if (type == ONE_DIM_DOUBLE) {
-			countsDble = (double[]) currentHist.getCounts();
-			System.arraycopy(countsDble, 0, counts, 0, currentHist.getSizeX());
+			System.arraycopy((double[]) currentHist.getCounts(), 0, counts, 0,
+			currentHist.getSizeX());
 		} else if (type == TWO_DIM_INT) {
-			counts2dInt = (int[][]) currentHist.getCounts();
+			int [][] counts2dInt = (int[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
 				for (int j = 0; j < currentHist.getSizeY(); j++) {
 					counts2d[i][j] = counts2dInt[i][j];
 				}
 			}
 		} else if (type == TWO_DIM_DOUBLE) {
-			counts2dDble = (double[][]) currentHist.getCounts();
+			double [][] counts2dDble = (double[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
 				System.arraycopy(
 					counts2dDble[i],
@@ -530,7 +554,7 @@ abstract class Plot extends JPanel {
 	 *  Set maximum scale to 110 percent of maximum number of counts in view.
 	 *  Can't call refresh because we need to use the counts before refreshing.
 	 */
-	void autoCounts() {
+	final void autoCounts() {
 		copyCounts();
 		plotLimits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
@@ -540,7 +564,7 @@ abstract class Plot extends JPanel {
 		}
 		/* scroll bars do not always reset on their own */
 		scrollbars.update(Scroller.COUNT);
-		this.repaint();
+		repaint();
 	}
 
 	/**
@@ -813,7 +837,7 @@ abstract class Plot extends JPanel {
 	/**
 	 * ignore channel zero on auto scale
 	 */
-	void setIgnoreChZero(boolean state) {
+	private final void setIgnoreChZero(boolean state) {
 		ignoreChZero = state;
 	}
 
@@ -827,7 +851,7 @@ abstract class Plot extends JPanel {
 	/**
 	 * ignore channel full scale on auto scale
 	 */
-	void setIgnoreChFull(boolean state) {
+	private final void setIgnoreChFull(boolean state) {
 		ignoreChFull = state;
 	}
 
@@ -841,9 +865,10 @@ abstract class Plot extends JPanel {
 	/**
 	 * Set the color mode, color palette
 	 */
-	final void setColorMode(int cm) {
+	private final void setColorMode(boolean cm) {
 		synchronized (this) {
-			colorMode = cm;
+			colorMode = cm ? PlotColorMap.WHITE_ON_BLACK : 
+			PlotColorMap.BLACK_ON_WHITE;
 		}
 		setBackground(PlotColorMap.background);
 	}
