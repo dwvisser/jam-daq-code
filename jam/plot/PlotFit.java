@@ -1,8 +1,6 @@
 package jam.plot;
 import jam.fit.MultipleGaussians;
 
-import java.awt.Point;
-
 /**
  * Class to perform simple fits such as area and centroid
  */
@@ -13,9 +11,11 @@ class PlotFit {
 	/**
 	 * Get the area for a 1 d histogram
 	 */
-	double getArea(double[] counts, Point p1, Point p2) {
-		final int xmin=Math.min(p1.x,p2.x);
-		final int xmax=Math.max(p1.x,p2.x);
+	double getArea(double[] counts, Bin p1, Bin p2) {
+		final int x1=p1.getX();
+		final int x2=p2.getX();
+		final int xmin=Math.min(x1,x2);
+		final int xmax=Math.max(x1,x2);
 		double area = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts	
 			area += counts[i];
@@ -27,11 +27,15 @@ class PlotFit {
 	 * Get the area for a 2 d histogram bounded by the rectangle
 	 * x1, y1, x2, y2
 	 */
-	double getArea(double[][] counts, Point p1, Point p2) {
-		final int xmin=Math.min(p1.x,p2.x);
-		final int xmax=Math.max(p1.x,p2.x);
-		final int ymin=Math.min(p1.y,p2.y);
-		final int ymax=Math.max(p1.y,p2.y);
+	double getArea(double[][] counts, Bin p1, Bin p2) {
+		final int x1=p1.getX();
+		final int x2=p2.getX();
+		final int y1=p1.getY();
+		final int y2=p2.getY();
+		final int xmin=Math.min(x1,x2);
+		final int xmax=Math.max(x1,x2);
+		final int ymin=Math.min(y1,y2);
+		final int ymax=Math.max(y1,y2);
 		double area = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			for (int j = ymin; j <= ymax; j++) {
@@ -46,10 +50,12 @@ class PlotFit {
 	 */
 	double getCentroid(
 		double[] counts,
-		Point p1,
-		Point p2) {
-		final int xmin=Math.min(p1.x,p2.x);
-		final int xmax=Math.max(p1.x,p2.x);
+		Bin p1,
+		Bin p2) {
+		final int x1=p1.getX();
+		final int x2=p2.getX();
+		final int xmin=Math.min(x1,x2);
+		final int xmax=Math.max(x1,x2);
 		double area = 0;
 		double darea;
 		double centroid = 0;
@@ -75,40 +81,38 @@ class PlotFit {
 	 * So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
 	 */
-	double getFWHM(double[] counts, Point p1, Point p2) {
-		int xmin=Math.min(p1.x,p2.x);
-		int xmax=Math.max(p1.x,p2.x);
+	double getFWHM(double[] counts, Bin p1, Bin p2) {
+		final int x1=p1.getX();
+		final int x2=p2.getX();
+		final int xmin=Math.min(x1,x2);
+		final int xmax=Math.max(x1,x2);
 		int area = 0;
-		double darea;
 		double distance;
 		double centroid = 0;
 		double sigma = 0;
 		double variance = 0;
-		double fwhm;
-
-		//sum up counts	
+		double fwhm=0.0;//default
+		/* sum up counts */	
 		for (int i = xmin; i <= xmax; i++) {
 			area += counts[i];
 		}
-		darea = (double) area;
+		double darea = area;
 		// calculate weights and then fwhm must have more than one counts 
 		if (area > 2) {
 			// calculate centroid
 			for (int i = xmin; i <= xmax; i++) {
-				centroid += (double) (i * counts[i]) / darea;
+				centroid += i * counts[i] / darea;
 			}
 			// calculate variance
 			darea = darea - 1.0; //redo weighting
 			for (int i = xmin; i <= xmax; i++) {
-				distance = (double) (i) - centroid;
-				variance += ((double) counts[i] / darea)
+				distance = i - centroid;
+				variance += (counts[i] / darea)
 					* (distance * distance);
 			}
 			sigma = Math.sqrt(variance);
 			fwhm = SIGMA_TO_FWHM * sigma;
-		} else {
-			fwhm = 0.0;
-		}
+		} 
 		return fwhm;
 	}
 
@@ -119,7 +123,7 @@ class PlotFit {
 		double[] fwhm,
 		double[] centroid,
 		double[] centroidError,
-		Point [] clicks,
+		Bin [] clicks,
 		double grossArea,
 		int X,
 		double[] counts) {
@@ -130,12 +134,14 @@ class PlotFit {
 		double area = 0;
 		double variance = 0;
 		double distance = 0;
-		final int x1 = clicks[0].x;
-		final int x2 = clicks[1].x;
-		final int x3 = clicks[2].x;
-		final int x4 = clicks[3].x;
-		final int rx1=Math.min(clicks[4].x,clicks[5].x);
-		final int rx2=Math.max(clicks[4].x,clicks[5].x);
+		final int x1 = clicks[0].getX();
+		final int x2 = clicks[1].getX();
+		final int x3 = clicks[2].getX();
+		final int x4 = clicks[3].getX();
+		final int x5temp=clicks[4].getX();
+		final int x6temp=clicks[5].getX();
+		final int rx1=Math.min(x5temp,x6temp);
+		final int rx2=Math.max(x5temp,x6temp);
 		for (int n = x1; n <= x2; n++) {
 			countsLow += counts[n];
 		}
