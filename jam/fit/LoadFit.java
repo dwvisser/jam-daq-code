@@ -1,6 +1,6 @@
 package jam.fit;
 import jam.*;
-import jam.global.MessageHandler;
+import jam.global.*;
 import jam.plot.Display;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,9 +36,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private Fit fitClass;
 
 	private JDialog dl;
-	//private JTextField textFitFile;
 	private String fitDirectory;
-//	private String fitName;
 	private JComboBox chooseFit;
 
 	public LoadFit(JamMain jamMain, Display display, MessageHandler console) {
@@ -189,20 +187,21 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	}
 	
 	private Object [] getFitClassNames() {
-		Class temp=null;
-		Set set = jam.global.RTSI.find("jam.fit", Fit.class);
-		set.remove(Fit.class);
+		//Class temp=null;
+		Set set = RTSI.find("jam.fit", Fit.class);
+		set.addAll(RTSI.find("fit", Fit.class));
+		Set abstractClasses=new HashSet();
 		for (Iterator it=set.iterator(); it.hasNext(); ){
-			temp=(Class)it.next();
+			Class temp=(Class)it.next();
 			boolean isAbstract = !((temp.getModifiers() & Modifier.ABSTRACT) == 0);
 			if (isAbstract){
-				it.remove();
+				abstractClasses.add(temp);
 			}
 		}
-		int i=0;
-		Vector rval = new Vector(set.size());
-		for (Iterator it = set.iterator(); it.hasNext(); temp = (Class) it.next(),i++) {
-			rval.add(temp.getName());
+		set.removeAll(abstractClasses);
+		Collection rval=new HashSet();
+		for (Iterator i=set.iterator(); i.hasNext(); ) {
+			rval.add(((Class)i.next()).getName());
 		}
 		return rval.toArray();
 	}
