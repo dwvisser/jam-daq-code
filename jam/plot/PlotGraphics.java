@@ -1237,28 +1237,20 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * Mark a channel
 	 * for 2d
 	 */
-	public void markChannel2d(int channelX, int channelY) {
-
-		int x, y;
-		int width, height;
-		String label;
-
-		x = toViewHorzLin(channelX);
-		y = toViewVertLin(channelY);
-		width = toViewHorzLin(channelX + 1) - x;
-		height = y - toViewVertLin(channelY + 1);
-
-		//are we inside plot window
+	public void markChannel2d(Point p) {
+		final int x = toViewHorzLin(p.x);
+		final int y = toViewVertLin(p.y);
+		final int width = toViewHorzLin(p.x + 1) - x;
+		final int height = y - toViewVertLin(p.y + 1);
+		/*are we inside plot window? */
 		if ((x >= viewLeft && x <= viewRight)
-			&& (y >= viewTop && y <= viewBottom)) {
-
+		&& (y >= viewTop && y <= viewBottom)) {
 			g.drawRect(x, y - height + 1, width - 1, height - 1);
 			//+1 need why?
 			//draw label
-			label = "" + channelX + "," + channelY;
+			final String label = "" + p.x + "," + p.y;
 			g.drawString(label, x + width, y - height - MARK_OFFSET);
 		}
-
 	}
 
 	/**
