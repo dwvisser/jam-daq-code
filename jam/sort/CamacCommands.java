@@ -59,7 +59,7 @@ public class CamacCommands {
         //paramId+1 since stream has 1 for first element
         paramId++;
         eventSize++;
-        eventCommands.add(CNAF(paramId, crate, number, address,
+        eventCommands.add(cnaf(paramId, crate, number, address,
         function,  data));
         sortRoutine.setEventSizeMode(SortRoutine.SET_BY_CNAF);
         return (paramId-1);	    
@@ -88,7 +88,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void eventCommand(int crate, int number, int address, int function){
-        eventCommands.add(CNAF(0, crate, number, address, function,  0));
+        eventCommands.add(cnaf(0, crate, number, address, function,  0));
     }
 
     /** Adds the command specified by the arguments to the next position in the
@@ -100,7 +100,7 @@ public class CamacCommands {
      * @param data any data sent with command to module
      */
     public void init(int crate, int number, int address, int function, int data){
-        initCommands.add(CNAF(0, crate,number,address,function, data));
+        initCommands.add(cnaf(0, crate,number,address,function, data));
     }
 
     /**
@@ -113,7 +113,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void init(int crate, int number, int address, int function){
-        initCommands.add(CNAF(0, crate,number,address,function, 0));
+        initCommands.add(cnaf(0, crate,number,address,function, 0));
     }
     /** Adds the command specified by the arguments to the next position in the
      * scaler command list.
@@ -125,7 +125,7 @@ public class CamacCommands {
      * @return number of scaler
      */
     public int scaler(int crate, int number, int address, int function, int data){
-        scalerCommands.add(CNAF(scalerId, crate,number,address,function, data));
+        scalerCommands.add(cnaf(scalerId, crate,number,address,function, data));
         return scalerId++;
     }
 
@@ -150,7 +150,7 @@ public class CamacCommands {
      * @param data any data sent with the command to the module
      */
     public void clear(int crate, int number, int address, int function, int data){
-        clearCommands.add(CNAF(0, crate, number, address, function, data));
+        clearCommands.add(cnaf(0, crate, number, address, function, data));
     }
 
     /**
@@ -163,7 +163,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void clear(int crate, int number, int address, int function){
-        clearCommands.add(CNAF(0, crate,number,address,function, 0));
+        clearCommands.add(cnaf(0, crate,number,address,function, 0));
     }
     
     /** Get the list of init cnafs
@@ -204,7 +204,7 @@ public class CamacCommands {
     /**
      * Used internally to package the parts of a command into a byte array.
      */
-    private int [] CNAF(int paramId, int crate, int number, int address, int function, int data){
+    private int [] cnaf(int paramId, int crate, int number, int address, int function, int data){
         int [] out = new int[6];
         out[0] = paramId;
         out[1] = crate;
