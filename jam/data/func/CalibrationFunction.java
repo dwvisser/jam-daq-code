@@ -38,7 +38,7 @@ public abstract class CalibrationFunction implements Function {
 		}
 	}
 	
-	public CalibrationFunction() throws DataException {
+	public CalibrationFunction() {
 		this(MAX_NUMBER_TERMS);
 	}
 
@@ -100,7 +100,7 @@ public abstract class CalibrationFunction implements Function {
 	 *
 	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
 	 */
-	public void setCoeff(double aIn[]) throws DataException {
+	public void setCoeff(double aIn[]) {
 		if (aIn.length <= coeff.length) {
 			//zero array
 			for (int i = 0; i < coeff.length; i++) {
@@ -108,7 +108,7 @@ public abstract class CalibrationFunction implements Function {
 			}
 			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
 		} else {
-			throw new DataException(getClass().getName()+".setCoeff(double ["+aIn.length+"]): too many terms.");
+			throw new IndexOutOfBoundsException(getClass().getName()+".setCoeff(double ["+aIn.length+"]): too many terms.");
 		}
 	}
 
