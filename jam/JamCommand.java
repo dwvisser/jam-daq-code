@@ -196,14 +196,6 @@ public class JamCommand
 				display.setPreference(
 					Display.Preferences.WHITE_BACKGROUND,
 					true);
-//KBS Remove					
-//			} else if ("newclear".equals(incommand)) {
-//				if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(jamMain,
-//				"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
-//					jamMain.setSortMode(JamMain.NO_SORT);
-//					DataBase.getInstance().clearAllLists();
-//					dataChanged();
-//				}
 			} else if ("openselectedhist".equals(incommand)) {				
 				openSelectedHist.open();
 				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
