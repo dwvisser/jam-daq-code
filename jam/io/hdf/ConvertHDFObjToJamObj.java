@@ -391,13 +391,14 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 
     int convertParameters(Group group, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
     	int numParameters = 0;    	
-    	 final VdataDescription vdd = (VdataDescription) (AbstractHData
-                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
-                .get(0));
-         /* only the "parameters" VH (only one element) in the file */
-         if (vdd != null) {    	 
-         	numParameters =convertParameters(group, vdd, mode);
-         }
+    	List list =AbstractHData.ofType(currVG.getObjects(), AbstractHData.DFTAG_VH);
+    	if (list.size()>0) {
+    		final VdataDescription vdd = (VdataDescription) list.get(0);    	 
+    		/* only the "parameters" VH (only one element) in the file */
+    		if (vdd != null) {    	 
+    			numParameters =convertParameters(group, vdd, mode);
+    		}
+    	}
          return numParameters;
     }
 	
