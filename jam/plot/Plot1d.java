@@ -178,12 +178,8 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.hist);
 		graph.drawHist(counts,binWidth);
 		if (autoPeakFind) {
-			try {
-				graph.drawPeakLabels(
-					currentHist.findPeaks(sensitivity, width, pfcal));
-			} catch (DataException e) {
-				System.err.println(e);
-			}
+			graph.drawPeakLabels(
+				currentHist.findPeaks(sensitivity, width, pfcal));
 		}
 		/* draw ticks after histogram so they are on top */
 		g.setColor(PlotColorMap.foreground);
