@@ -2,6 +2,8 @@ package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -76,10 +78,13 @@ public class OpenSelectedHistogram {
 
 	/** Messages output */
 	private MessageHandler console;
+	/** Broadcaster */
+	private Broadcaster broadcaster;
 
 	public OpenSelectedHistogram(Frame f, MessageHandler c) {
 		frame = f;
 		console = c;
+		broadcaster= Broadcaster.getSingletonInstance();
 		dialog = new JDialog(f, "Open Selected Histograms", false);
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
@@ -152,6 +157,7 @@ public class OpenSelectedHistogram {
 	private void doApply() {
 		createFileIndicator();
 		loadHistograms();
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
 	/**

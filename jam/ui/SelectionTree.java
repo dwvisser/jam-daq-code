@@ -315,10 +315,6 @@ public class SelectionTree extends JPanel implements Observer {
 		}
 		isSyncEvent=false;
 		/*
-			final String lastHistName = status.getHistName();
-			selectHistogram(Histogram.getHistogram(lastHistName));
-			dataChanged();
-			syncHistChooser();			
 		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){
 			setOverlaySelected(false);
 		}
