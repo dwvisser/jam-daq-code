@@ -94,9 +94,12 @@ public class JamMain extends JFrame {
 
 	private JamMain() {
 		super("Jam");
-		classname=getClass().getName()+"--";
 		final int titleDisplayTime=10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
+		final ClassLoader cl=getClass().getClassLoader();
+		setIconImage((new ImageIcon(cl.getResource(
+		"jam/nukeicon.png")).getImage()));
+		classname=getClass().getName()+"--";
 		me = this.getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
 		status = JamStatus.instance(); //class that is statically available
@@ -114,10 +117,9 @@ public class JamMain extends JFrame {
 		final int posxy=50;
 		this.setLocation(posxy, posxy);
 		this.setResizable(true);
-		this.setBackground(Color.lightGray);
-		this.setForeground(Color.black);
 		me.setLayout(new BorderLayout());
 		console = new JamConsole();
+		console.messageOutln("Welcome to Jam v" + Version.getName());
 		me.add(console, BorderLayout.SOUTH);
 		/* histogram displayer (needed by jamCommand) */
 		display = new Display(broadcaster, console);
@@ -321,7 +323,6 @@ public class JamMain extends JFrame {
 	 * @param args not used currently
 	 */
 	public static void main(String args[]) {
-		//System.out.println("Launching Jam v" + getVersion());
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
