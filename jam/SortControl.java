@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -347,7 +346,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		});
 		lastFile = new File(defaultEvents);//default directory
 		//call to private version to avoid breaking if subclassed
-		_setDevice(DISK);//initial mode is from disk
+		setDevice(DISK);//initial mode is from disk
 		writeEvents = false;//don't write out events
 		d.pack();
 	}
@@ -364,30 +363,22 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	public void actionPerformed(ActionEvent ae) {
-
-		String command = ae.getActionCommand();
+		final String command = ae.getActionCommand();
 		try {
 			if (command == "addfile") {
 				addEventFile();
-
 			} else if (command == "addrun") {
 				addRunNumber();
-
 			} else if (command == "addDir") {
 				addDirectory();
-
 			} else if (command == "remove") {
 				removeItem();
-
 			} else if (command == "removeall") {
 				removeAllItems();
-
 			} else if (command == "savelist") {
 				Savelist();
-
 			} else if (command == "loadlist") {
 				Loadlist();
-
 			} else if (command == "addrange") {
 				addRunNumberRange();
 			} else if (command == "removeruns") {
@@ -398,7 +389,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				beginSort();
 			} else if (command == "end") {
 				endSort();
-				lockFields(false);
+				msgHandler.warningOutln(
+				"Ended offline sorting before reading all events.");
+				//lockFields(false);
 			} else if (command == "bfileout") {
 				textOutFile.setText(getOutFile().getPath());
 			}
@@ -444,16 +437,13 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		StorageDaemon fromDaemon,
 		StorageDaemon toDaemon,
 		String devName) {
-
 		this.setupSort = setupSort;
 		this.sortDaemon = sortDaemon;
 		this.dataInpDaemon = fromDaemon;
 		this.dataOutDaemon = toDaemon;
 		this.deviceName = devName;
-
 		textDev.setText(deviceName);
 		bbegin.setEnabled(true);
-
 		if (dataInpDaemon instanceof DiskDaemon) {
 			setDevice(DISK);
 		} else if (dataInpDaemon instanceof TapeDaemon) {
@@ -510,11 +500,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 */
 	public void beginSort()
 		throws SortException, EventException, GlobalException {
-
 		RunInfo.runNumber = 999;
 		RunInfo.runTitle = "Pre-sorted data";
 		RunInfo.runStartTime = new java.util.Date();
-
 		//are we writing out events
 		if (writeEvents) {
 			sortDaemon.setWriteEnabled(true);
@@ -539,39 +527,37 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * stop offline sorting
 	 *
 	 */
-	public void endSort() throws JamException, SortException, GlobalException {
-
+	private void endSort() throws JamException, SortException, GlobalException {
+		sortDaemon.cancelOfflineSorting();
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln(
 				"Closing sort input event file: "
 					+ dataInpDaemon.getEventInputFileName());
 		}
-
 		if (writeEvents) {
 			dataOutDaemon.closeEventOutputFile();
 			msgHandler.messageOutln("Closed pre-sorted file: " + fileOut.getPath());
 		}
-
-		setupSort.resetSort();
-
-		//offline from disk	
+		//setupSort.resetSort();
 		if (device == DISK) {
+			msgHandler.warningOutln(
+				"Stopped sorting from disk before all events were read.");
+		} else {//from tape
 			msgHandler.messageOutln(
-				"Stopped sorting from disk, need to setup again");
-			//offline from tape			    
-		} else {
-			msgHandler.messageOutln(
-				"Stopped sorting from Tape, need to setup again");
+				"Stopped sorting from tape before all events were read.");
 		}
 		jamMain.setRunState(RunState.ACQ_OFF);
 	}
 
 	/**
 	 * Called at the start of a new sort thread by
-	 * the sort thread.
+	 * the sort thread. All it does is suspend the
+	 * <code>SortDaemon</code> thread, to make the
+	 * offline sorting loop wait at its beginning for
+	 * the thread to be resumed when the user requests
+	 * the sort to begin.
 	 */
 	public void atSortStart() throws GlobalException {
-		//jamMain.setRunState(JamMain.ACQ_OFF);
 		sortDaemon.setState(GoodThread.SUSPEND);
 	}
 
@@ -583,18 +569,13 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * @return <code>true</code> if there is a next event file to sort
 	 */
 	public boolean isSortNext() {
-
-		boolean sortNext;
-
+		boolean sortNext = false;
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln(
 				"Could not close file: "
 					+ dataInpDaemon.getEventInputFileName());
 		}
-
-		//sorting from disk
 		if (device == DISK) {
-
 			if (dataInpDaemon.hasMoreFiles()) {
 				if (dataInpDaemon.openEventInputListFile()) {
 					msgHandler.messageOutln(
@@ -613,13 +594,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 							+ dataInpDaemon.getEventInputFileName());
 					sortNext = true; //try next file anyway
 				}
-			} else {
-				sortNext = false;
-			}
-
-			//sorting from tape
-		} else {
-
+			} 
+		} else {//sorting from tape
 			if (dataInpDaemon.hasMoreFiles()) {
 				msgHandler.messageOutln("Looking for runs ...");
 				if (dataInpDaemon.openEventInputListFile()) {
@@ -631,19 +607,16 @@ class SortControl implements Controller, ActionListener, ItemListener {
 							+ " title: "
 							+ RunInfo.runTitle);
 					sortNext = true;
-				} else {
+				} else {//return sortNext=false
 					msgHandler.messageOutln(
 						"Could not find run: "
 							+ dataInpDaemon.getEventInputFileName());
-					sortNext = false; //dont try next run
 				}
-
-			} else {
-				sortNext = false;
 			}
 		}
 		return sortNext;
 	}
+	
 	/**
 	 * Called back by sorter when sort encounters a end-run-marker.
 	 * Tell StorageDaemon to close file. 
@@ -664,7 +637,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 					"Closed pre-sorted file: " + fileOut.getPath());
 			}
 			bbegin.setEnabled(true);
-			Toolkit.getDefaultToolkit().beep();
+			//Toolkit.getDefaultToolkit().beep();
 			lockFields(false);
 		} catch (SortException se) {
 			msgHandler.errorOutln(
@@ -686,7 +659,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * 
 	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
 	 */
-	private void _setDevice(int device) {
+	public final void setDevice(int device) {
 		this.device = device;
 		if (device == TAPE) {
 			centerCardLayout.show(pcenter, TAPERECORDS);
@@ -714,12 +687,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * 
 	 * @ device <code>SortControl.TAPE</code> or <code>SortControl.DISK</code>
 	 */
-	public void setDevice(int device) {
+	//public void setDevice(int device) {
 		/* delegate to private method to allow constructor
 		 * to avoid a call to an overridable method
 		 */
-		_setDevice(device);
-	}
+	/*	_setDevice(device);
+	}*/
 
 	/**
 	 * browse for event files
@@ -939,29 +912,25 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * again when done to unlock fields
 	 */
 	private void lockFields(boolean lock) {
-		if (lock) {
-			setupLock = true;
-			addfile.setEnabled(false);
-			addDir.setEnabled(false);
-			remove.setEnabled(false);
-			loadlist.setEnabled(false);
-			savelist.setEnabled(false);
-			addrun.setEnabled(false);
-			addrange.setEnabled(false);
-			removeruns.setEnabled(false);
-			removeAll.setEnabled(false);
-			loadrunlist.setEnabled(false);
-			saverunlist.setEnabled(false);
-			textInitRecord.setEnabled(false);
-			//textInitRecord.setBackground(Color.lightGray);
-			textFinalRecord.setEnabled(false);
-			//textFinalRecord.setBackground(Color.lightGray);
-			//listEventFiles.setBackground(Color.lightGray);
-			//listTapeRecords.setBackground(Color.lightGray);
-			textOutFile.setEditable(false);
-			//textOutFile.setBackground(Color.lightGray);
-			cout.setEnabled(false);
-		} else {
+		//if (lock) {
+			setupLock = lock;
+			final boolean notLock=!lock;
+			addfile.setEnabled(notLock);
+			addDir.setEnabled(notLock);
+			remove.setEnabled(notLock);
+			loadlist.setEnabled(notLock);
+			savelist.setEnabled(notLock);
+			addrun.setEnabled(notLock);
+			addrange.setEnabled(notLock);
+			removeruns.setEnabled(notLock);
+			removeAll.setEnabled(notLock);
+			loadrunlist.setEnabled(notLock);
+			saverunlist.setEnabled(notLock);
+			textInitRecord.setEnabled(notLock);
+			textFinalRecord.setEnabled(notLock);
+			textOutFile.setEditable(notLock);
+			cout.setEnabled(notLock);
+		/*} else {
 			setupLock = false;
 			addfile.setEnabled(true);
 			addDir.setEnabled(true);
@@ -975,14 +944,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			loadrunlist.setEnabled(true);
 			saverunlist.setEnabled(false);
 			textInitRecord.setEnabled(true);
-			//textInitRecord.setBackground(Color.white);
 			textFinalRecord.setEnabled(true);
-			//textFinalRecord.setBackground(Color.white);
-			//listEventFiles.setBackground(Color.white);
-			//listTapeRecords.setBackground(Color.white);
 			textOutFile.setEditable(true);
-			//textOutFile.setBackground(Color.white);
 			cout.setEnabled(true);
-		}
+		}*/
 	}
 }
