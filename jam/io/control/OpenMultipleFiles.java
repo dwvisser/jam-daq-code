@@ -236,6 +236,7 @@ public class OpenMultipleFiles {
 	 *  
 	 */
 	private void doApply() {
+		defaultSelection();
 		loadFiles();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		//JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
@@ -299,6 +300,7 @@ public class OpenMultipleFiles {
     	//histList.setSelectedIndices(selectedIndexs);
     	
         //Non-selected select all
+		selectedIndexs = histList.getSelectedIndices();
         if (selectedIndexs.length==0) {        	
         	int [] indexs = new int [listModel.getSize()];
         	for (int i=0; i<listModel.getSize(); i++) {
@@ -394,7 +396,7 @@ public class OpenMultipleFiles {
     private List createSelectedHistogramNamesList() {
     	
         final List histogramNamesSelected = new ArrayList();
-        
+                
         Object[] selected = histList.getSelectedValues();        
 
         /* Put selected histograms into a list */
@@ -404,4 +406,18 @@ public class OpenMultipleFiles {
     	return histogramNamesSelected;
     }
 
+    private void defaultSelection() { 
+		ListModel listModel =histList.getModel();
+ 
+	    //Non-selected select all
+		int [] selectedIndexs = histList.getSelectedIndices();
+	    if (selectedIndexs.length==0) {        	
+	    	int [] indexs = new int [listModel.getSize()];
+	    	for (int i=0; i<listModel.getSize(); i++) {
+	    		indexs[i]=i;
+	    	}
+	    	histList.setSelectedIndices(indexs);
+	    } 
+
+    }
 }
