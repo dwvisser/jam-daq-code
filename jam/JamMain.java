@@ -125,7 +125,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 */
 	JamConsole console;
 
-	static public final String JAM_VERSION = "1.4 beta";
+	static public final String JAM_VERSION = "1.4";
 
 	/**
 	 * Program exit dialog box.
@@ -150,7 +150,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	JComboBox gateChooser; // reference needed by command
 
 	//blank combo box models
-	private DefaultComboBoxModel noHistComboBoxModel, noGateComboBoxModel;
+	private DefaultComboBoxModel /*noHistComboBoxModel,*/ noGateComboBoxModel;
 
 	private HistogramComboBoxModel hcbm;
 	private GateComboBoxModel gcbm;
@@ -240,11 +240,11 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			console.errorOutln(de.getMessage());
 		}
 		//setup intial histograms
-		try {
+		/*try {
 			setHistogramModel();
 		} catch (GlobalException ge) {
 			System.err.println("We should not be here, [JamMain]");
-		}
+		}*/
 		setGateModel();
 		//setup all other dialog boxes.
 		//data control, gate set, histogram manipulate, project
@@ -263,8 +263,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	}
 
 	/**
-	 * Define and display menu bar
-	 * Menu bar has
+	 * Define and display menu bar.
+	 * The menu bar has the following menus: 
 	 * <ul>
 	 * <li>File</li>
 	 * <li>Setup</li>
@@ -276,7 +276,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * <li>Fitting </li>
 	 * <li>Help</li>
 	 * </ul>
-	 * Author Ken Swartz
+	 * 
+	 * @author Ken Swartz
 	 */
 	private JMenuBar setupMenu() {
 		JMenuBar menubar = new JMenuBar();
@@ -601,8 +602,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 */
 	private void addToolbarSelect() {
 		//create default models
-		noHistComboBoxModel = new DefaultComboBoxModel();
-		noHistComboBoxModel.addElement("NO HISTOGRAMS");
+		//noHistComboBoxModel = new DefaultComboBoxModel();
+		//noHistComboBoxModel.addElement("NO HISTOGRAMS");
 		noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
 
@@ -626,7 +627,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		//histogram chooser
 		JPanel pCenter = new JPanel(new GridLayout(1, 0));
 		//pHistChoose.add(new JLabel("Histogram",SwingConstants.RIGHT));
-		histogramChooser = new JComboBox(noHistComboBoxModel);
+		hcbm=new HistogramComboBoxModel(jamCommand);
+		histogramChooser = new JComboBox(hcbm);
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.setToolTipText(
@@ -724,30 +726,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		};
 		worker.start();
 		gateChooser.setSelectedIndex(0);
-	}
-
-	/**
-	 * Sets the hist chooser to a use a combobox model
-	 *
-	 * @param   gateList  the list of gates
-	 * @return  <code>void</code>
-	 */
-	private void setHistogramModel() throws GlobalException {
-		hcbm = new HistogramComboBoxModel(jamCommand);
-		//remove listener so we dont create a event while changing models
-		histogramChooser.removeActionListener(jamCommand);
-		//for no histogram set model to no histogram model
-		if (hcbm.getSize() != 0) {
-			histogramChooser.setModel(hcbm);
-			histogramChooser.addActionListener(jamCommand);
-			String name = ((String) histogramChooser.getSelectedItem());
-			Histogram h = Histogram.getHistogram(name);
-			jamCommand.selectHistogram(h);
-			status.setCurrentHistogramName(name);
-		} else { //no hists in list, don't add listener
-			histogramChooser.setModel(noHistComboBoxModel);
-			status.setCurrentHistogramName("");
-		}
 	}
 
 	/**
