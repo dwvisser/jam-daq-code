@@ -12,6 +12,7 @@ import java.net.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.*;
+import java.lang.reflect.Modifier;
 
 /**
  * This utility class is looking for all the classes implementing or 
@@ -79,6 +80,11 @@ public class RTSI {
 			System.err.println("Class " + tosubclassname + " not found!");
 		}
 		System.out.println("done.");
+	}
+
+	public static boolean canUseClassAs(Class tosubclass, Class c){
+		return tosubclass.isAssignableFrom(c)&& 
+		((c.getModifiers()&Modifier.ABSTRACT)==0);
 	}
 
 	public static Set find(
@@ -159,11 +165,10 @@ public class RTSI {
 					String classname =
 						pckgname + "." + fname.substring(0, fname.length() - 6);
 					try {
-						//System.out.println(classname);
 						Class c =
 							ClassLoader.getSystemClassLoader().loadClass(
 								classname);
-						if (tosubclass.isAssignableFrom(c)) {
+						if (canUseClassAs(tosubclass,c)) {
 							rval.add(classname);
 						}
 					} catch (ClassNotFoundException cnfex) {
@@ -209,7 +214,7 @@ public class RTSI {
 						try {
 							/* Try to create an instance of the object */
 							Class c = Class.forName(classname);
-							if (tosubclass.isAssignableFrom(c)) {
+							if (canUseClassAs(tosubclass,c)) {
 								rval.add(classname);
 							}
 						} catch (ClassNotFoundException cnfex) {
@@ -335,7 +340,7 @@ public class RTSI {
 				}
 				try {
 					Class c = loader.loadClass(temp);
-					if (tosubclass.isAssignableFrom(c)) {
+					if (canUseClassAs(tosubclass,c)) {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
