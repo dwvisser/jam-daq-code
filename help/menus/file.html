@@ -16,22 +16,41 @@
   <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2-formatted</a> file, 
   replacing any data currently being viewed.</p>
   
+  <h3>Open Special</h3>
+  <dl>
+  <dt>Open Multiple...</dt>
+  <dd>Same as 'Open Additional Select Histograms...' except multiple files may
+  be opened. Histograms are placed in groups named after each file.</dd>
+  <dt>Open Additional...</dt>
+  <dd>Open a file into it's own group, named after the file.</dd>
+  <dt>Open Additional Select Histograms...</dt>
+  <dd>After selecting an HDF file, you are given a dialog to select histograms 
+  contained in the file. The histograms are opened in a new group named after the file.</dd>
+  </dl>
+  
   <h3><a name="reload">Reload...</a></h3><p>Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</p>
+  
+  <h3>Add Group Counts...</h3>
+  <p>Adds the counts in the specified file to the histograms in the selected group.</p>
   
   <h3><a name="save">Save</a></h3><p>Saves all gates, scalers, and histograms in memory to the current HDF file.</p>
   
   <h3><a name="saveas">Save as...</a></h3><p>Same as save, except the user is prompted with a file dialog to name the file.</p>
-  <h3>Special</h3>
+  
+  <h3>Save Special</h3>
   <dl>
-  <dt>Open Selected Histogram...</dt>
-  <dd>After selecting an HDF file, you are given a dialog to select on histogram 
-  contained in the file. You may type a short <em>File Indicator</em> in the given field
-  to help uniquely identify the histogram once loaded.</dd>
-  <dt>Save gates, scalers and parameters as...</dt>
+  <dt>Save sort group as...</dt>
+  <dd>Saves the one sort group (the group defined by loading a sort routine) as the user-specified HDF file.</dd>
+  <dt>Save select group as...</dt>
+  <dd>Saves the selected group as the user-specified HDF file.</dd>
+  <dt>Save select histograms...</dt>
+  <dd>Saves the selected histograms in the user-specified HDF file. Group identity of the histograms is preserved.</dd>
+  <dt>Save gates and parameters as...</dt>
   <dd>Same as <a href="#saveas">above</a>, except no histograms are saved in order to 
   save disk space, reduce access time, and make it easy to reload gates later on.</dd>
   </dl>
-  <h3>Utilities</h3>
+  
+  <h3>Scaler Utilities</h3>
   <dl>
   <dt><a name="dispscal">Display scaler values from YaleCAEN event file...</a></dt>
   <dd>Gives you a file dialog from which to choose an event file, which <em>must</em>
@@ -46,6 +65,7 @@
   of all the HDF files and constructs a text table just like the 
   <a href="#dispscal">above</a> command.</dt>
   </dl>
+  
   <h3>Import and Export Menus</h3><p>Import spectra from or export them to other data formats.</p>
   <dl>
     <dt>Text File</dt><dd>

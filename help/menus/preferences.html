@@ -19,6 +19,11 @@
   <dt>Highlight Gate Channels</dt><dd>Enabled by default. Disabling this option directs Jam to draw just the boundary instead of filling in the gates.</dd>
   <dt>Use gradient color scale</dt><dd>Enabled by default. Jam was originally used on systems with limited color availability. Now, thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, this option enables
   a rainbow gradient for 2-dimensional histogram plots.</dd>
+  <dt>Adjust color gradient...</dt><dd>Modify the appearance of the color gradient scale</dd>
+  <dt>Plot Scrolling Tiled Plots</dt><dd>When enabled, counts scroll bars are shown on tile view.</dd>
+  <dt>Axis Labels Single Plot</dt><dd>When enabled, full axis labels are shown
+  in the default "Single" plot view.
+  <dt>Invert foreground/background</dt><dd>Disabled by default. Sets the display color scheme to white on black.</dd>
 </dl>
 <hr>
 <dl>  
@@ -26,9 +31,9 @@
   <dt>Peak Find Properties...</dt><dd>Opens a dialog for customizing how peaks are found. 'Width' is the Full Width at Half Max (FWHM) searched for. 'Sensitivity' defines how gaussian-like a found peak must be before it is marked. Higher sensitivities mean a peak must be more like a gaussian. A checkbox picks whether peaks are labeled with their channel or their calibrated energy (if available).
 </dl>
 <hr>
-<dl>  
-  <dt>Invert foreground/background</dt><dd>Disabled by default. Sets the display color scheme to white on black.</dd>
-</dl>
+<dl>
+<dt>Suppress Saving Empty Histograms</dt><dd>When enabled, histograms with no
+counts aren't saved to HDF files.</dd>
 <hr>
 <dl>  
   <dt>Verbose front end</dt><dd>Disabled by default. Sends a command to the front end computer turning on or off 'verbose' mode. In verbose mode, the front end sends status messages which are printed on the console by jam.

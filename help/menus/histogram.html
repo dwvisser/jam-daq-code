@@ -6,15 +6,23 @@
 </HEAD>
 <BODY>
 <h2>Histogram Menu</h2>
-<dl>
-  <dt>New...</dt><dd>The user creates a new histogram and adds it to the drop-down list. <em>Name</em> is a short (up to 16 characters) name for the histogram to go on the dropdown list.  <em>Title</em> is a longer descriptive name for the histogram, which is displayed in the plot panel and on printouts.  <em>Type</em> is either a <code>1</code> or a <code>2</code>, the dimensionality of the histogram.  <em>Size</em> is the number of channels in the histogram, and is usually a power of two. For example, to make a 1024 channel histogram, the user would enter <code>1024</code> in <em>Size</em> and the resulting histogram will have channels numbered 0 thru 1023.</dd>
-  <dt><a name="zero">Zero...</a></dt><dd>Three buttons are on this dialog.  <em>Displayed</em> will zero the currently displayed histogram. <em>All</em> will zero all histograms in memory. <em>Cancel</em> lets one quit the dialog without zeroing anything. <b>Warning: there is no safety feature on this.  Once you click a button, the histogram contents are gone!</b></dd>
-  <dt>Delete...</dt><dd>Completely remove the currently displated histogram.</dd>
-  <dt>Calibrate...</dt><dd>Calibrate the displayed histogram, either by entering coefficients or asking for a fit. Each histogram can store its own calibration function.</dd>
-  <dt>Projections...</dt><dd>Project a 2-d histogram into a 1-d histogram. The entire histogram, a slice, or the contents of a gate may be projected. The destination histogram may be an existing histogram or a new one which you name.</dd>
-  <dt>Combine...</dt><dd>Add, subtract, multiply or divide a pair of 1-d histograms into either a new histogram you name, or an existing histogram. You may also renormalize an existing histogram (into a destination histogram) by multiplying the bin counts by a constant.</dd>
-  <dt>Gain Shift...</dt><dd>Apply a gain shift to the displayed histogram into a user-specified destination histogram. Area is conserved.</dd>
-</dl>
+
+  <h3>Group</h3>
+  <dl>
+  <dt>New Group...</dt>
+  <dd>Create a new group with the given name.</dd>
+  <dt>Rename Group...</dt>
+  <dd>Rename the selected group.</dd>
+  <dt>Delete Group...</dt>
+  <dd>Delete the selected group.</dd>
+  </dl>
+  <h3>New...</h3><p>The user creates a new histogram and adds it to the drop-down list. <em>Name</em> is a short (up to 16 characters) name for the histogram to go on the dropdown list.  <em>Title</em> is a longer descriptive name for the histogram, which is displayed in the plot panel and on printouts.  <em>Type</em> is either a <code>1</code> or a <code>2</code>, the dimensionality of the histogram.  <em>Size</em> is the number of channels in the histogram, and is usually a power of two. For example, to make a 1024 channel histogram, the user would enter <code>1024</code> in <em>Size</em> and the resulting histogram will have channels numbered 0 thru 1023.</p>
+  <h3><a name="zero">Zero...</a></h3><p>Three buttons are on this dialog.  <em>Displayed</em> will zero the currently displayed histogram. <em>All</em> will zero all histograms in memory. <em>Cancel</em> lets one quit the dialog without zeroing anything. <b>Warning: there is no safety feature on this.  Once you click a button, the histogram contents are gone!</b></p>
+  <h3>Delete...</h3><p>Completely remove the currently displated histogram.</p>
+  <h3>Calibrate...</h3><p>Calibrate the displayed histogram, either by entering coefficients or asking for a fit. Each histogram can store its own calibration function.</p>
+  <h3>Projections...</h3><p>Project a 2-d histogram into a 1-d histogram. The entire histogram, a slice, or the contents of a gate may be projected. The destination histogram may be an existing histogram or a new one which you name.</p>
+  <h3>Combine...</h3><p>Add, subtract, multiply or divide a pair of 1-d histograms into either a new histogram you name, or an existing histogram. You may also renormalize an existing histogram (into a destination histogram) by multiplying the bin counts by a constant.</p>
+  <h3>Gain Shift...</h3><p>Apply a gain shift to the displayed histogram into a user-specified destination histogram. Area is conserved.</p>
 <hr>
 <a href="index.html">All Menus</a>
 </body>
