@@ -53,6 +53,8 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 	private Plot currentPlot;
 	/** The layout of the plots */
 	private PlotGraphicsLayout graphLayout;
+	/** Current  view */
+	private View currentView;
 	/** Tool bar with plot controls (zoom...) */
 	private final Toolbar toolbar;
 	
@@ -83,7 +85,8 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		toolbar = new Toolbar(this, action);
 		
 		//Initial view only 1 plot
-		setView(1,1);
+		//setView(1,1);
+		setView(new View("Single", 1,1));
 					
 	}
 	
@@ -107,6 +110,50 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		add(plotGridPanel, BorderLayout.CENTER);		
 		
 	};
+	
+	/**
+	 * Set the view, tiled layout of plots
+	 * 
+	 * @param nPlotrows	number of rows
+	 * @param nPlotcolumns
+	 */
+	public void setView(View viewIn){
+		currentView=viewIn;
+		
+		Plot plot=null;
+		int numberPlots;
+		int plotLayout;
+		int i;
+
+		numberPlots=currentView.getNumberHists();
+		plotGridPanelLayout.setRows(currentView.getRows());
+		plotGridPanelLayout.setColumns(currentView.getColumns());
+		plotGridPanel.setLayout(plotGridPanelLayout);		
+		plotGridPanel.revalidate(); 
+		
+		createPlots(numberPlots);
+
+		//Type of layout
+		if (numberPlots>1)
+			plotLayout=Plot.LAYOUT_TYPE_TILED;
+		else
+			plotLayout=Plot.LAYOUT_TYPE_FULL;
+
+		//Set properties for each plot
+		plotGridPanel.removeAll();
+		for (i=0;i<numberPlots;i++){
+			plot =(Plot)(plotList.get(i));
+			plot.setNumber(i);
+			plotGridPanel.add(plot);			
+			plot.setLayoutType(plotLayout);		
+			Histogram hist=currentView.getHistogram(i);
+			if (hist!=null)
+				plot.displayHistogram(hist);
+		}
+
+		setPlot(plot);			
+	}
+	
 	/**
 	 * Set the view, tiled layout of plots
 	 * 
@@ -169,6 +216,7 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 	 */
 	public void displayHistogram() {
 		Histogram hist = status.getCurrentHistogram();
+		
 		if (hist != null) {
 			final Limits lim = Limits.getLimits(hist);
 			if (lim == null) { //create a new Limits object for this histogram
@@ -179,6 +227,11 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		} else { //we have a null histogram, but display anyway
 			showPlot(hist);
 		}
+		
+		//Add to view
+		currentView.setHistogram(getPlot().getNumber(), hist);
+
+		
 	}
 	/**
 	 * Overlay a histogram
@@ -382,7 +435,7 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		if (hist != null) {
 			plot.displayHistogram(hist);			
 		} 
-
+		
 		plot.repaint();
 		
 	}

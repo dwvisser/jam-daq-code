@@ -10,6 +10,7 @@ import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.plot.Display;
 import jam.plot.PlotPrefs;
+import jam.plot.View;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -22,7 +23,7 @@ import javax.swing.JMenuItem;
 //FIXME remove when clean
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-
+import java.util.Iterator;
 /**
  * 
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
@@ -40,6 +41,9 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 
 	/** Fit menu needed as members so we can add a fit */
 	final private JMenu fitting = new JMenu("Fitting");
+
+	/** Fit menu needed as members so we can add a fit */
+	final private JMenu view = new JMenu("View");
 
 	final private Display display;
 
@@ -175,9 +179,11 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu getViewMenu() {
-		final JamStatus status = JamStatus.instance();
-		final JMenu view = new JMenu("View");
-		add(view);
+		
+		updateViews();
+		
+		//final JamStatus status = JamStatus.instance();		
+/*		
 		JMenuItem view11 = new JMenuItem("View 1-1");
 		view.add(view11);
 		view11.addActionListener(new ActionListener() {
@@ -206,7 +212,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 				status.getDisplay().setView(2, 2);
 			}
 		});
-
+*/
 		return view;
 
 	}
@@ -283,6 +289,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		} else if (command == BroadcastEvent.Command.FIT_NEW) {
 			Action fitAction = (Action) (be.getContent());
 			fitting.add(new JMenuItem(fitAction));
+		} else if (command == BroadcastEvent.Command.VIEW_NEW) {
+			updateViews();
 		}
 	}
 
@@ -297,5 +305,22 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final boolean oneDops = hExists && h.getDimensionality() == 1;
 		calHist.setEnabled(oneDops);
 	}
+	private void updateViews(){
+		view.removeAll();
+		
+		view.add(getMenuItem(SHOW_VIEW_NEW));
+		view.addSeparator();		
 
+		Iterator viewNames =View.getNameIterator(); 
+		while(viewNames.hasNext()){
+			final String name=(String)viewNames.next();
+			JMenuItem viewItem = new JMenuItem(name);
+			view.add(viewItem);
+			viewItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					status.getDisplay().setView(View.getView(name));
+				}
+			});
+		}
+	}	
 }

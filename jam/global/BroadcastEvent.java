@@ -71,7 +71,9 @@ public class BroadcastEvent {
 		public static final Command RUN_STATE_CHANGED = new Command(51);
 
 		public static final Command FIT_NEW = new Command(60);
-
+		
+		public static final Command VIEW_NEW = new Command(70);
+		
 		private final int command;
 
 		private Command(int i) {

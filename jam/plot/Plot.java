@@ -72,6 +72,8 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	private final Plot2d plot2d;
 
 	private AbstractPlot currentSubPlot;
+	
+	private int plotNumber; 
 
 	private boolean isSelected;
 
@@ -210,7 +212,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 
 		return plotType;
 	}
-
+	int getNumber(){
+		return plotNumber;
+	}
+	void setNumber(int numIn){
+		plotNumber=numIn;
+	}
+	
 	Limits getLimits() {
 		return currentSubPlot.getLimits();
 	}
