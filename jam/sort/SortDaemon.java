@@ -258,13 +258,13 @@ public class SortDaemon extends GoodThread {
      *
      * @exception Exception thrown if an unrecoverable error occurs during sorting
      */
-    public  void sortOffline() throws Exception {
+    public void sortOffline() throws Exception {
     	EventInputStatus status; 
     	
         boolean atBuffer=false;    //are we at a buffer word
         controller.atSortStart(); //immediately suspends the thread at next statement
         while(checkState()){//infinite loop
-            controller.atSortStart();//suspends this thread
+            controller.atSortStart();//suspends this thread when we're done sorting all files
             offlineSortingCanceled=false;//after we come out of suspend
             while(!offlineSortingCanceled && controller.isSortNext()) {//loop for each new sort file
                 boolean endSort=false;
