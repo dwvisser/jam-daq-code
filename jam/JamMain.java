@@ -17,7 +17,7 @@ import javax.swing.*;
  * @author   Ken Swartz
  * @since    JDK1.1
  */
-public class JamMain extends JFrame {
+public final class JamMain extends JFrame {
 
 	/**
 	 * Sort Mode--No sort file loaded.
@@ -92,7 +92,7 @@ public class JamMain extends JFrame {
 	private RunState runState = RunState.NO_ACQ;
 	private String openFileName;
 
-	private JamMain() {
+	private JamMain(final boolean showGUI) {
 		super("Jam");
 		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
@@ -167,13 +167,20 @@ public class JamMain extends JFrame {
 				final int posx = 50;
 				final int posy = 0;
 				setLocation(posx, posy);
-				show();
+				if (showGUI){
+					show();
+				}
 				/* print out where config files were read from */
 				jamProperties.setMessageHandler(console);
 				jamProperties.outputMessages(console);
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
+	}
+	
+	JamMain(Script s){
+		this(false);
+		s.setJamCommand(jamCommand);
 	}
 
 	void showExitDialog() {
@@ -361,6 +368,6 @@ public class JamMain extends JFrame {
 					JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		new JamMain();
+		new JamMain(true);
 	}
 }
