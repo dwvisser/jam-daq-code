@@ -5,12 +5,14 @@ package jam;
 import jam.fit.LoadFit;
 import jam.global.*;
 import jam.plot.Display;
+import jam.plot.PlotGraphicsLayout;
 import java.awt.Event;
 import java.awt.event.*;
 import java.net.URL;
 import javax.help.*;
 import javax.swing.*;
 import java.awt.print.PageFormat;
+import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
@@ -47,13 +49,13 @@ public class MainMenuBar extends JMenuBar {
 			pj.setPrintable(cp, mPageFormat);
 			if (pj.printDialog()) {
 				try {
-					console.messageOut("Printing histogram '" + 
-					JamStatus.instance().getCurrentHistogramName()+"'...",
+					console.messageOut("Preparing to send histogram '" + 
+					JamStatus.instance().getCurrentHistogramName()+"' to printer...",
 					MessageHandler.NEW);
-					display.setRenderForPrinting(true);
+					display.setRenderForPrinting(true, mPageFormat);
 					pj.print();
-					display.setRenderForPrinting(false);
-					console.messageOut("done.", MessageHandler.END);
+					console.messageOut("sent.", MessageHandler.END);
+					display.setRenderForPrinting(false, null);
 				} catch (PrinterException e) {
 					final StringBuffer mess=new StringBuffer(getClass().getName());
 					final String colon=": ";
@@ -144,6 +146,18 @@ public class MainMenuBar extends JMenuBar {
 		} else {
 			ctrl_mask=Event.CTRL_MASK;
 		}
+		final double inchesToPica=72.0;
+		final double top=PlotGraphicsLayout.MARGIN_TOP*inchesToPica;
+		final double bottom=mPageFormat.getHeight()-
+		PlotGraphicsLayout.MARGIN_BOTTOM*inchesToPica;
+		final double height=bottom-top;
+		final double left=PlotGraphicsLayout.MARGIN_LEFT*inchesToPica;
+		final double right=mPageFormat.getWidth()-
+		PlotGraphicsLayout.MARGIN_RIGHT*inchesToPica;
+		final double width=right-left;
+		final Paper paper=mPageFormat.getPaper();
+		paper.setImageableArea(top,left,width,height);
+		mPageFormat.setPaper(paper);
 		mPageFormat.setOrientation(PageFormat.LANDSCAPE);
 		console=c;
 		display = d;
