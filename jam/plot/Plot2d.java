@@ -69,8 +69,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		g.setColor(Color.GREEN);		
 		
 		//FIXME KBS some of this should be moved to PlotData.
-		Point areaPointView = new Point();
-		areaPointView=graph.toViewLin(areaStartPoint);
+		final Point areaPointView=graph.toViewLin(areaStartPoint);
 		if (lastMovePoint.x<0) {
 			lastMovePoint.x=areaPointView.x;
 			lastMovePoint.y=areaPointView.y;
