@@ -49,7 +49,7 @@ class Plot1d extends AbstractPlot {
 	 */
 	Plot1d() {
 		super();
-		setPeakFind(prefs.getBoolean(AUTO_PEAK_FIND, true));
+		setPeakFind(PREFS.getBoolean(AUTO_PEAK_FIND, true));
 	}
 	
 	void setOverlayList(List list){
