@@ -3,7 +3,6 @@ package jam.data.control;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.sort.ThreadPriorities;
 
@@ -12,22 +11,21 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 
+import javax.swing.SwingUtilities;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-
+import java.lang.reflect.InvocationTargetException;
 /**
  * Reads and displays the monitors.
  *
@@ -38,33 +36,7 @@ import javax.swing.border.EmptyBorder;
  */
 public final class MonitorControl
 	extends DataControl
-	implements Runnable {
-		
-	private final class Display extends DataControl {
-		public Display(){
-			super("Monitors Disabled", false);
-		}
-		
-		public void setup(){
-			Iterator monitors = Monitor.getMonitorList().iterator();
-			pTitles.removeAll();
-			pBars.removeAll();
-			while (monitors.hasNext()) {
-				Monitor monitor = (Monitor) monitors.next();
-				final JPanel pm = new JPanel();
-				pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-				pTitles.add(pm);
-				final JLabel labelDisp =
-					new JLabel(monitor.getName(), JLabel.RIGHT);
-				pm.add(labelDisp);
-				final PlotBar plotBar = new PlotBar(monitor);
-				pBars.add(plotBar);
-			}
-			pack();
-		}
-	}
-
-	public final DataControl display;
+	implements Runnable {	
 
 	private final MessageHandler msgHandler;
 
@@ -78,10 +50,6 @@ public final class MonitorControl
 	private JLabel labelAlarm;
 
 	private JSpinner spinnerUpdate;
-
-	/* widgets for display */
-	private JPanel pBars, pTitles;
-	private JToggleButton checkAudio;
 
 	//general variables
 	private boolean sortMonitors = false; //have Monitors been added by sort
@@ -193,34 +161,10 @@ public final class MonitorControl
 				configured = false;
 				//stop monitor thread if running
 				stop();
-				display.setTitle("Monitors Disabled");
 			}
 		});
 		pb.add(bcancel);
 
-		//>> dialog box to display Monitors
-		display = new Display();
-		display.setResizable(true);
-		display.setLocation(20, 50);
-		Container cddisp = display.getContentPane();
-		cddisp.setLayout(new BorderLayout());
-
-		//Panel for the bars
-		pBars = new JPanel(new GridLayout(0, 1, 5, 5));
-		pBars.setBorder(new EmptyBorder(10, 0, 10, 0));
-		cddisp.add(pBars, BorderLayout.CENTER);
-		pTitles = new JPanel(new GridLayout(0, 1, 5, 5));
-		pTitles.setBorder(new EmptyBorder(10, 0, 10, 0));
-		cddisp.add(pTitles, BorderLayout.WEST);
-
-		// alarm panel for display dialog
-		final JPanel pal = new JPanel();
-		cddisp.add(pal, BorderLayout.SOUTH);
-		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
-		checkAudio = new JCheckBox("Audio Alarm", true);
-		pal.add(checkAudio);
-
-		display.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		// setup monitors
 		setup();
@@ -291,7 +235,6 @@ public final class MonitorControl
 			textMaximum.setText(String.valueOf(monitor.getMaximum()));
 			checkAlarm.setSelected(monitor.getAlarm());
 		}
-		pBars.repaint();
 	}
 
 	/**
@@ -329,7 +272,6 @@ public final class MonitorControl
 				monitor.setMaximum(maximum);
 				monitor.setAlarm(checkAlarm.isSelected());
 			}
-			pBars.repaint();
 		} catch (NumberFormatException nfe) {
 			msgHandler.errorOutln("Invalid number input [MonitorControl]");
 		}
@@ -349,7 +291,8 @@ public final class MonitorControl
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
-			display.setTitle("Monitors Enabled");
+			broadcaster.broadcast(BroadcastEvent.MONITORS_ENABLED);			
+
 		} else {
 			throw new IllegalStateException(
 				getClass().getName()
@@ -370,8 +313,7 @@ public final class MonitorControl
 			) {
 			((Monitor) it.next()).reset();
 		}
-		pBars.repaint();
-		display.setTitle("Monitors Disabled");
+		broadcaster.broadcast(BroadcastEvent.MONITORS_DISABLED);		
 	}
 
 	/**
@@ -393,21 +335,23 @@ public final class MonitorControl
 					final Monitor monitor = (Monitor) it.next();
 					//update the monitor
 					monitor.update();
-					//If the audio on and are we taking data
-					if (checkAudio.isSelected()
-						&& JamStatus.instance().isAcqOn()
-						&& monitor.getAlarm()
-						&& (!monitor.isAcceptable())) {
-						Toolkit.getDefaultToolkit().beep();
+				} //end loop monitors
+				
+				//Broadcast event on UI thread
+				SwingUtilities.invokeAndWait(new Runnable(){
+					public void run() {
+						broadcaster.broadcast(BroadcastEvent.MONITORS_UPDATE);
 					}
-				}
-				//display monitors
-				pBars.repaint();
-				//end loop monitors
+				});				
+
 				Thread.sleep(waitAfterRepaint);
+				
 			} //infinite loop
 		} catch (InterruptedException ie) {
 			msgHandler.errorOutln("Monitor Interupted ");
-		}
+		} catch ( InvocationTargetException ite) {
+			//KBS FIXME
+			//throw RunTimeException(ite);
+		} 
 	}
 }
