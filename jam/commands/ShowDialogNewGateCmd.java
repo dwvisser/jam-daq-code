@@ -2,10 +2,7 @@ package jam.commands;
 
 import jam.data.control.GateControl;
 /**
- * @author Ken
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * Show the new gate dialog
  */
 public class ShowDialogNewGateCmd extends AbstractShowDataControlCmd {
 
