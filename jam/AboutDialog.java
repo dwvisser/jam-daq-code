@@ -24,7 +24,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class AboutDialog {
     
-    private final JDialog dialog;
+    private transient final JDialog dialog;
     
 	/**
 	 * Constructs the "about" dialog.
@@ -57,7 +57,7 @@ public class AboutDialog {
 		cad.add(pbut, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
+			public void actionPerformed(final ActionEvent event){
 				dialog.dispose();
 			}
 		});
@@ -65,7 +65,7 @@ public class AboutDialog {
 		dialog.pack();
 		/* Receives events for closing the dialog box and closes it. */
 		dialog.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
+			public void windowClosing(final WindowEvent event) {
 				dialog.dispose();
 			}
 		});
