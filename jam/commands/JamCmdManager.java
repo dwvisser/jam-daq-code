@@ -5,17 +5,10 @@ import jam.global.CommandListenerException;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
 import jam.global.MessageHandler;
-import jam.global.BroadcastEvent;
-import jam.global.SortMode;
-import jam.global.JamStatus;
-
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Collections;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 
 
 import javax.swing.Action;
@@ -25,7 +18,7 @@ import javax.swing.Action;
  *
  * @author Ken Swartz
  */
-public class JamCmdManager implements CommandListener, Observer {
+public class JamCmdManager implements CommandListener {
 
 	private MessageHandler msghdlr=null;
 	private static JamCmdManager _instance=null;
@@ -66,29 +59,15 @@ public class JamCmdManager implements CommandListener, Observer {
 	 */
 	public static JamCmdManager getInstance () {
 		if (_instance==null) {
-
 			_instance=new JamCmdManager();
-			Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-			broadcaster.addObserver(_instance);
 		}		
-
 		return _instance;
 	}
 	
 	public void setMessageHandler(MessageHandler msghdlr) {
 		this.msghdlr = msghdlr;
 	}
-	/**
-	 * Implentation of Observer, listens for broadcast events
-	 * 
-	 */
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
-			sortModeChanged();
-		}	
-	}
+	
 	/**
 	 * Perform command with object parameters
 	 *
@@ -135,7 +114,6 @@ public class JamCmdManager implements CommandListener, Observer {
 	 */
 	private boolean createCmd(String strCmd)  {
 		final boolean exists=cmdMap.containsKey(strCmd);
-		//boolean success;
 		if (exists) {
 			final Class cmdClass = (Class)cmdMap.get(strCmd);
 			currentCommand = null;
@@ -146,7 +124,10 @@ public class JamCmdManager implements CommandListener, Observer {
 				try {
 					currentCommand = (Commandable) (cmdClass.newInstance());
 					currentCommand.init(msghdlr);
-					currentCommand.setMode(currentCommandMode());
+					if (currentCommand instanceof Observer){
+						Broadcaster.getSingletonInstance().addObserver(
+						(Observer)currentCommand);
+					}
 				} catch (Exception e) {
 					/* There was a problem resolving the command class or 
 					 * with creating an instance. This should never happen
@@ -159,46 +140,6 @@ public class JamCmdManager implements CommandListener, Observer {
 		return exists;
 	}
 	
-	/**
-	 * The sort mode changed update the commands
-	 *
-	 */
-	private void sortModeChanged(){
-		
-		int cmdMode;
-		
-		cmdMode=currentCommandMode();				
-					
-		Iterator it= (Iterator)((Collection)instances.values()).iterator(); 
-		while(it.hasNext()) {
-			Commandable cmd =(Commandable)it.next();
-			cmd.setMode(cmdMode);
-		}
-		
-		
-	}
-	private int currentCommandMode(){
-		
-		int cmdMode;		
-		JamStatus status =JamStatus.instance();
-		//Convert from SortMode to Commandable static		 
-		//FIXME KBS not all modes taken care of yet
-		//maybe we can do better by just using SortMode??
-		final SortMode mode=status.getSortMode();
-		if ((mode== SortMode.ONLINE_DISK)||(mode==SortMode.ONLINE_NO_DISK)) {		
-			cmdMode=Commandable.ONLINE;
-		}else if (mode == SortMode.OFFLINE) {
-			cmdMode=Commandable.OFFLINE;
-		}else if (mode == SortMode.FILE) {
-			cmdMode=Commandable.FILE;
-		}else {
-		//FIXME KBS have to handle all SorMode's
-			cmdMode=0;
-			//throw new RuntimeException("Invalid sort mode");
-
-		}
-		return cmdMode;
-	}
 	public Action getAction(String strCmd){
 		return createCmd(strCmd) ? currentCommand : null;
 	}

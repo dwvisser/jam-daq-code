@@ -4,20 +4,14 @@ import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
 
 import javax.swing.Action;
+
 /**
  * Interface for a command.
  *  
  * @author Ken Swartz
- *
  */
 public interface Commandable extends Action {
 	
-	/** file viewed */
-	public static int FILE=1;
-	/** offline sort */
-	public static int OFFLINE=2;
-	/** online sort */
-	public static int ONLINE=3;
 	/**
 	 * References needed for commands. Commands have null constructors
 	 * so a init method is needed 
@@ -29,11 +23,6 @@ public interface Commandable extends Action {
 	void init(MessageHandler msghdlr);
 
 	/**
-	 * Set the mode, determines if command is enabled
-	 * @param mode
-	 */
-	void setMode(int mode);	
-	/**
 	 * Execute a command with the given command parameters
 	 * 
 	 * @param cmdParams command parameters
@@ -41,22 +30,9 @@ public interface Commandable extends Action {
 	void performCommand(Object [] cmdParams) throws CommandException;	
 
 	/**
-	 * Execute a command with the given command parameter bitmask
-	 * 
-	 * @param cmdParams command parameters
-	 */
-	//void performCommand(int cmdParams) throws CommandException;	
-	
-	/**
 	 * Execute a command with the given command string tokens
 	 * 
 	 * @param cmdParamTokens command string parameters
 	 */
-	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;
-	
-	/**
-	 * Undo the command
-	 *
-	 */
-	//void undo();
+	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;	
 }

@@ -19,7 +19,6 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	protected final JamStatus status=JamStatus.instance();
 	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	protected MessageHandler msghdlr;
-	protected int mode;
 	
 	/**
 	 * Constructor
@@ -82,20 +81,13 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	}
 
 	/**
-	 * Set the mode for the command, 
-	 * determines if it is enabled
-	 *
+	 * Does nothing here, but is implemented by default so
+	 * individual Commandable's don't have to if they "don't
+	 * care" what the mode is.
 	 */
-	public void setMode(int mode){
-		
+	public void sortModeChanged(){
 	}
-	/**
-	 * Test the mode to see if the command is
-	 * enabled
-	 */
-	public boolean isEnabled(){
-		return true;
-	}
+	
 	/**
 	 * Log the command
 	 *

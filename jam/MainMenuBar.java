@@ -721,7 +721,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		openhdf.setEnabled(file);
 		saveHDF.setEnabled(file);
 		reloadhdf.setEnabled(sorting);
-		commands.setEnabled(CommandNames.ADD_HDF,sorting||file);
 		newClear.setEnabled(file);
 		impHist.setEnabled(file);
 	}
@@ -786,12 +785,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
 			sortModeChanged();
-		}
-		if (command==BroadcastEvent.HISTOGRAM_SELECT){
-			final Histogram h=Histogram.getHistogram(
-			status.getCurrentHistogramName());
-			final boolean oneD=h.getDimensionality()==1;
-			commands.setEnabled(CommandNames.EXPORT_SPE, oneD);
 		}
 	}
 }

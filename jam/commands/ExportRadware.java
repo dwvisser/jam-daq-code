@@ -1,7 +1,11 @@
 package jam.commands;
 
+import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 import jam.io.ImpExpSPE;
+import jam.data.Histogram;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
@@ -9,7 +13,7 @@ import jam.io.ImpExpSPE;
  * 
  * @author Dale Visser
  */
-final class ExportRadware extends AbstractExportFile {
+final class ExportRadware extends AbstractExportFile implements Observer{
 	
 	ExportRadware(){
 		super();
@@ -20,4 +24,15 @@ final class ExportRadware extends AbstractExportFile {
 		super.init(mh);
 		exporter=new ImpExpSPE(status.getFrame(),msghdlr);		
 	}
+	
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.HISTOGRAM_SELECT){
+			final Histogram h=Histogram.getHistogram(
+			status.getCurrentHistogramName());
+			setEnabled(h.getDimensionality()==1);
+		}
+	}
+	
 }
