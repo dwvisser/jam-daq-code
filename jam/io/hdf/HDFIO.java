@@ -1099,12 +1099,12 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	 //Load scalers
 	    	 final List scalerList = hdfToJam.findScalers(currentVGroup);
 	    	 if (!scalerList.isEmpty()) {
-	    	 	hdfToJam.convertScalers(currentGroup, (VirtualGroup)scalerList.get(0), mode);
+	    	 	scalerCount =hdfToJam.convertScalers(currentGroup, (VirtualGroup)scalerList.get(0), mode);
 	    	 } 
 	    	 //Load Parameters
 	    	 final List paramList = hdfToJam.findParameters(currentVGroup);
 	    	 if (!paramList.isEmpty()) {
-	    	 	hdfToJam.convertParameters(currentGroup, (VirtualGroup)paramList.get(0), mode);
+	    	 	paramCount = hdfToJam.convertParameters(currentGroup, (VirtualGroup)paramList.get(0), mode);
 	    	 }	    	  
 	    } //Loop group end
     }
