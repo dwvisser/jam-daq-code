@@ -305,10 +305,29 @@ public class Display
 	}
 
 	/**
-	 * Do a command sent in as a message.
+	 * Perform a command
+	 * @param commandIn
+	 * @param cmdParams
 	 */
-	public void commandPerform(String commandIn, double [] parameters) {
-		action.commandPerform(commandIn, parameters);
+	public boolean performCommand(String commandIn, String [] cmdParams) {
+		
+		int countParam;
+		final int numberParams = cmdParams.length;
+		double [] parameters = new double [numberParams];
+		//rest of tokens must be numbers
+		try {
+			countParam=0;
+			while (countParam<numberParams) {
+				parameters[countParam] = getNumber(cmdParams[countParam]);
+				countParam++;
+			}
+		} catch (NumberFormatException nfe) {
+			msgHandler.errorOutln("Input parameter not a number");
+		}
+		
+		boolean accept =action.commandPerform(commandIn, parameters);
+		return accept;
+				
 	}
 
 	/**
@@ -666,4 +685,15 @@ public class Display
 	public void setAutoOnExpand(boolean whether) {
 		action.setAutoOnExpand(whether);
 	}
+	/**
+	 * Parse a string go a number
+	 * @param s
+	 * @return
+	 * @throws NumberFormatException
+	 */
+	private double getNumber(String s) throws NumberFormatException {
+		return (s.indexOf('.')>=0) ? Double.parseDouble(s) : 
+		Integer.parseInt(s);
+	}
+	
 }
