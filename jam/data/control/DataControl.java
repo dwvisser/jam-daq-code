@@ -16,10 +16,10 @@ public  abstract class DataControl  {
   ParameterControl parameterControl;
   ScalerControl scalerControl;
 
-  private static Vector controllers= new Vector(5);
+  private static List controllers= new Vector(5);
 
   public DataControl() {
-    controllers.addElement(this);
+    controllers.add(this);
   }
 
   /**
@@ -27,7 +27,7 @@ public  abstract class DataControl  {
    */
   public  static void setupAll() {
     for (int i=0; i<controllers.size(); i++) {
-      ((DataControl)controllers.elementAt(i)).setup();
+      ((DataControl)controllers.get(i)).setup();
     }
   }
 
