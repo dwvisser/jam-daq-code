@@ -45,7 +45,7 @@ public abstract class AbstractHist1D extends Histogram {
 		unsetErrors();
 	}
 	
-	private static final double [] EMPTY_DOUBLE=new double[0];
+	private static final double [] EMPTY_DOUBLE=null;
 	
 	/**
 	 * Make it so no error bars are <em>explicitly</em> defined
