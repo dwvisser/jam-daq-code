@@ -11,7 +11,7 @@ import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.Display;
 import jam.ui.Console;
-import jam.ui.MainMenuBar;
+import jam.ui.MenuBar;
 import jam.ui.SelectionTree;
 
 import java.awt.BorderLayout;
@@ -94,7 +94,7 @@ public final class JamMain extends JFrame implements Observer {
 		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
-		setJMenuBar(MainMenuBar.getMenuBar());
+		setJMenuBar(MenuBar.getMenuBar());
 		/* Histogram selection menu bar */
 		/*final SelectionToolbar selectBar = new SelectionToolbar();
 		contents.add(selectBar, BorderLayout.NORTH); */

@@ -31,7 +31,7 @@ import javax.swing.JMenuItem;
  * @version 1.4
  * @since 30 Dec 2003
  */
-public final class MainMenuBar implements Observer, CommandNames {
+public final class MenuBar implements Observer, CommandNames {
 
 	final transient private JamStatus status = JamStatus.instance();
 
@@ -49,7 +49,7 @@ public final class MainMenuBar implements Observer, CommandNames {
 
 	final transient private CommandManager commands = CommandManager.getInstance();
 	
-	private static final MainMenuBar INSTANCE=new MainMenuBar();
+	private static final MenuBar INSTANCE=new MenuBar();
 
 	/**
 	 * Jam's menu bar. It has the following menus:
@@ -68,7 +68,7 @@ public final class MainMenuBar implements Observer, CommandNames {
 	 * @author Dale Visser
 	 * @author Ken Swartz
 	 */
-	private MainMenuBar() {
+	private MenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		menubar.add(getFileMenu());
