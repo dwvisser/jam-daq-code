@@ -58,12 +58,12 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	final File selectedFile = jfile.getSelectedFile();
-				isReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, selectedFile);	        	
+				isReading=hdfio.readFile(FileOpenMode.OPEN_MORE, selectedFile);	        	
 	        } else {
 	        	isReading=false;
 	        }
 		} else {
-			isReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);
+			isReading=hdfio.readFile(FileOpenMode.OPEN_MORE, file);
 		}
 		if (!isReading){//File was read in so no callback	
 			notifyApp();

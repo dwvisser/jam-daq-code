@@ -8,11 +8,11 @@ package jam.io;
  */
 public final class FileOpenMode {
 	
-	private final static int OPEN_VALUE = 0;
-	private final static int OPEN_ADDITIONAL_VALUE=1;	
-	private final static int RELOAD_VALUE = 2;
-	private final static int ADD_VALUE = 3;
-	private final static int ATTRIBUTES_VALUE = 4;
+	private final static int I_OPEN = 0;
+	private final static int I_OPEN_MORE=1;	
+	private final static int I_RELOAD = 2;
+	private final static int I_ADD = 3;
+	private final static int I_ATTRIBUTES = 4;
 	
 	private final static String [] NAMES={"Open", "Open Additional",
 	        "Reload", "Add", "Attributes"
@@ -24,8 +24,13 @@ public final class FileOpenMode {
 		value=mode;
 	}
 	
-	public boolean equals(Object o){
-	    return o instanceof FileOpenMode ? value==((FileOpenMode)o).value : false;
+	public boolean equals(Object object) {
+        return object instanceof FileOpenMode ? value == ((FileOpenMode) object).value
+                : false;
+    }
+	
+	public int hashCode(){
+	    return value;
 	}
 	
 	public String toString(){
@@ -39,34 +44,35 @@ public final class FileOpenMode {
 	 * @return whether this is one of the "Open" modes
 	 */
 	public boolean isOpenMode(){
-	    return value==OPEN_VALUE||value==OPEN_ADDITIONAL_VALUE;
+	    return value==I_OPEN||value==I_OPEN_MORE;
 	}
 	
 	/**
 	 * Mode for deleting the data in memory and replacing them with
 	 * the contents of the file.
 	 */
-	public static final FileOpenMode OPEN=new FileOpenMode(OPEN_VALUE);
+	public static final FileOpenMode OPEN=new FileOpenMode(I_OPEN);
+	
 	/**
 	 * Mode for opening an additional file. 
 	 */
-	public static final FileOpenMode OPEN_ADDITIONAL=new FileOpenMode(OPEN_ADDITIONAL_VALUE);
+	public static final FileOpenMode OPEN_MORE=new FileOpenMode(I_OPEN_MORE);
 	
 	/**
 	 * Mode for replacing the contents of data in memory with any 
 	 * objects in the file representing the same thing.
 	 */
-	public static final FileOpenMode RELOAD=new FileOpenMode(RELOAD_VALUE);
+	public static final FileOpenMode RELOAD=new FileOpenMode(I_RELOAD);
 	
 	/**
 	 * Mode for adding counts in histograms and scalers in the file to the counts
 	 * of the same objects in memory.
 	 */
-	public static final FileOpenMode ADD=new FileOpenMode(ADD_VALUE);
+	public static final FileOpenMode ADD=new FileOpenMode(I_ADD);
 
 	/**
 	 * Mode for reading histogram attributes but not the data
 	 */
-	public static final FileOpenMode ATTRIBUTES=new FileOpenMode(ATTRIBUTES_VALUE);
+	public static final FileOpenMode ATTRIBUTES=new FileOpenMode(I_ATTRIBUTES);
 	
 }
