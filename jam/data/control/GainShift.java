@@ -39,7 +39,7 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser
  * @version JDK 1.1
  */
-public class GainShift extends DataControl implements ActionListener,
+public class GainShift extends AbstractControl implements ActionListener,
 		ItemListener, Observer {
 	private final Frame frame;
 
@@ -69,7 +69,7 @@ public class GainShift extends DataControl implements ActionListener,
 		chan2i = 1.0;
 		chan1f = 0.0;
 		chan2f = 1.0;
-		frame = status.getFrame();
+		frame = STATUS.getFrame();
 		messageHandler = mh;
 
 		final int CHOOSER_SIZE = 200;
@@ -89,7 +89,7 @@ public class GainShift extends DataControl implements ActionListener,
 			}
 
 			public void windowOpened(WindowEvent e) {
-				setup();
+				doSetup();
 			}
 		});
 
@@ -257,7 +257,7 @@ public class GainShift extends DataControl implements ActionListener,
 		final BroadcastEvent.Command com=be.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW ||
 				com == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			setup();
+			doSetup();
 		}
 	}
 
@@ -266,7 +266,7 @@ public class GainShift extends DataControl implements ActionListener,
 	 * if 1 d
 	 *  
 	 */
-	public void setup() {
+	public void doSetup() {
 		String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
 		cto.addItem("New Histogram");
@@ -359,7 +359,7 @@ public class GainShift extends DataControl implements ActionListener,
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 					.getSizeX(), name);*/
 			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New Histogram created: '" + name + "'");
 		} else {

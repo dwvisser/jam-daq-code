@@ -1,7 +1,7 @@
 package jam;
 
 import jam.data.DataBase;
-import jam.data.control.DataControl;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -601,7 +601,7 @@ public final class SetupSortOn extends JDialog {
 					+ ".initialize(); Message= '" + e.getClass().getName()
 					+ ": " + e.getMessage() + "'");
 		}
-		DataControl.setupAll();
+		AbstractControl.setupAll();
 		/* interprocess buffering between daemons */
 		final RingBuffer sortingRing = new RingBuffer();
 		final RingBuffer storageRing = cdisk.isSelected() ? new RingBuffer()

@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.control.DataControl;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
@@ -64,7 +64,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 
 	private void notifyApp(File file) {
 		status.setSortMode(file);
-		DataControl.setupAll();
+		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		status.getFrame().repaint();
 	}			

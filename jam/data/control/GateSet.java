@@ -40,7 +40,7 @@ import javax.swing.border.EmptyBorder;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public class GateSet extends DataControl implements Observer {
+public class GateSet extends AbstractControl implements Observer {
 
 	private static final int ONE_DIMENSION = 1;
 
@@ -78,8 +78,8 @@ public class GateSet extends DataControl implements Observer {
 	 */
 	public GateSet() {
 		super("Gate setting <none>", false);
-		messageHandler = status.getMessageHandler();
-		frame = status.getFrame();
+		messageHandler = STATUS.getMessageHandler();
+		frame = STATUS.getFrame();
 		setResizable(false);
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
@@ -186,7 +186,7 @@ public class GateSet extends DataControl implements Observer {
 			}
 
 			public void windowOpened(WindowEvent e) {
-				setup();
+				doSetup();
 			}
 		});
 		pack();
@@ -220,7 +220,7 @@ public class GateSet extends DataControl implements Observer {
 				removeP.setEnabled(true);
 			}
 			unset.setEnabled(true);
-			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ON);
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ON);
 			//change the title of the dialog
 			setTitle("Gate setting " + currentGate.getName());
 			//make fields and buttons active
@@ -249,7 +249,7 @@ public class GateSet extends DataControl implements Observer {
 		} else if (com == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| com == BroadcastEvent.Command.HISTOGRAM_ADD
 				|| com == BroadcastEvent.Command.GATE_ADD) {
-			setup();
+			doSetup();
 		} else if (com == BroadcastEvent.Command.GATE_SET_POINT) {
 			addPoint((Bin) be.getContent());
 		}
@@ -264,10 +264,10 @@ public class GateSet extends DataControl implements Observer {
 	 * if 1 d
 	 *  
 	 */
-	public void setup() {
+	public void doSetup() {
 		/* get current state */
 		synchronized (this) {
-			currentHistogram = Histogram.getHistogram(status
+			currentHistogram = Histogram.getHistogram(STATUS
 					.getHistName());
 		}
 		if (currentHistogram == null) {
@@ -310,7 +310,7 @@ public class GateSet extends DataControl implements Observer {
 			final int y = Integer.parseInt(textUpper.getText().trim());
 			final Bin p = Bin.Factory.create(x, y);
 			addPoint(p);
-			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_ADD, p);
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ADD, p);
 		} catch (NumberFormatException ne) {
 			messageHandler.errorOutln("Invalid input not a number [GateSet]");
 		}
@@ -322,7 +322,7 @@ public class GateSet extends DataControl implements Observer {
 	private void removePoint() {
 		if (!gatePoints.isEmpty()) {
 			gatePoints.remove(gatePoints.size() - 1);
-			broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
 			if (!gatePoints.isEmpty()) {
 				final Bin lastBin = (Bin) gatePoints.get(gatePoints.size() - 1);
 				textLower.setText(String.valueOf(lastBin.getX()));
@@ -339,7 +339,7 @@ public class GateSet extends DataControl implements Observer {
 		cgate.repaint();
 		messageHandler.messageOutln("Gate UnSet: " + currentGate.getName());
 		cancel();
-		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
+		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}
 
 	/**
@@ -414,9 +414,9 @@ public class GateSet extends DataControl implements Observer {
 							+ currentGate.getName());
 					printPoints(gatePoly2d);
 				}
-				broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, currentGate);
+				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, currentGate);
 				cgate.repaint();
-				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
+				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
 			}
 		} catch (NumberFormatException ne) {
 			messageHandler.errorOutln("Invalid input not a number [GateSet]");
@@ -448,7 +448,7 @@ public class GateSet extends DataControl implements Observer {
 	 */
 	private void cancel() {
 		checkHistogram();
-		broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
+		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 		setTitle("Gate setting <none>");
 		synchronized (this) {
 			newGate = false;
@@ -475,9 +475,9 @@ public class GateSet extends DataControl implements Observer {
 	 */
 	private void checkHistogram() {
 		/* has histogram changed? */
-		if (currentHistogram != Histogram.getHistogram(status
+		if (currentHistogram != Histogram.getHistogram(STATUS
 				.getHistName())) {
-			setup(); //setup chooser list
+			doSetup(); //setup chooser list
 			cancel(); //cancel current gate if was setting
 		}
 	}

@@ -1,8 +1,6 @@
 package jam.data.control;
 
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.JamStatus;
 
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -25,12 +23,10 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 3, 2004
  */
-public class ScalerZero extends DataControl {
+public class ScalerZero extends AbstractControl {
 
-	private static final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-	private static final JamStatus status = JamStatus.instance();
-	private final JCheckBox checkDisabled2;
-	private final JButton bzero2;
+	private transient final JCheckBox disable;
+	private transient final JButton bzero2;
 
 	public ScalerZero() {
 		super("Zero Scalers", true);
@@ -42,27 +38,27 @@ public class ScalerZero extends DataControl {
 		pZero.setBorder(border);
 		bzero2 = new JButton("Zero");
 		bzero2.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				checkDisabled2.setSelected(true);
+			public void actionPerformed(ActionEvent event){
+				disable.setSelected(true);
 				bzero2.setEnabled(false);
 				dispose();
 			}
 		});
 		bzero2.setEnabled(false);
 		pZero.add(bzero2);
-		checkDisabled2 = new JCheckBox("Disable Zero", true);
-		checkDisabled2.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent ie){
-				if(checkDisabled2.isSelected()){
+		disable = new JCheckBox("Disable Zero", true);
+		disable.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent event){
+				if(disable.isSelected()){
 					bzero2.setEnabled(false);
 				} else {
 					bzero2.setEnabled(true);
 				}
 			}
 		});
-		pZero.add(checkDisabled2);
+		pZero.add(disable);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(WindowEvent event) {
 				dispose();
 			}
 		});
@@ -75,17 +71,17 @@ public class ScalerZero extends DataControl {
 	 * the class that will zero the camac crate scalers.
 	 */
 	static void zero() {
-		if (!status.isOnLine()) {
+		if (!STATUS.isOnLine()) {
 			throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
 		}
-		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
-		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
+		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
+		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 	}
 
 	/**
-	 * @see jam.data.control.DataControl#setup()
+	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
-	public void setup() {
+	public void doSetup() {
 		/* nothing to set up */
 	}
 }

@@ -1,6 +1,6 @@
 package jam.commands;
 
-import jam.data.control.DataControl;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.io.ImpExpException;
@@ -29,7 +29,7 @@ class AbstractImportFile extends AbstractImportExport {
 			if (cmdParams == null) { //No file given		
 				if (importExport.openFile(null)) {
 					status.setSortMode(importExport.getLastFile());
-					DataControl.setupAll();
+					AbstractControl.setupAll();
 					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}
 			} else { //File given

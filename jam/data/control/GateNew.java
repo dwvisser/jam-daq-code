@@ -22,7 +22,7 @@ import javax.swing.JTextField;
  * 
  * @author Ken Swartz
  */
-public class GateNew extends DataControl {
+public class GateNew extends AbstractControl {
 
 	/* new gate dialog box */
 	private final JTextField textNew;
@@ -81,9 +81,9 @@ public class GateNew extends DataControl {
 	 */
 	private void makeGate() {
 		final Histogram hist =
-			Histogram.getHistogram(status.getHistName());
+			Histogram.getHistogram(STATUS.getHistName());
 		new Gate(textNew.getText(), hist);
-		broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 		messageHandler.messageOutln(
 			"New gate "
 				+ textNew.getText()
@@ -91,7 +91,7 @@ public class GateNew extends DataControl {
 				+ hist.getName());
 	}
 
-	public void setup() {
+	public void doSetup() {
 		/* nothing needed here */
 	}
 

@@ -28,7 +28,7 @@ import javax.swing.JPanel;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public final class GateAdd extends DataControl {
+public final class GateAdd extends AbstractControl {
 	
 	private Gate currentGateAdd;
 	private final JComboBox cadd;
@@ -103,9 +103,9 @@ public final class GateAdd extends DataControl {
 	private void addGate() {
 		if (currentGateAdd!=null) {
 			final Histogram hist=Histogram.getHistogram(
-			status.getHistName());
+			STATUS.getHistName());
 			hist.addGate(currentGateAdd);
-			broadcaster.broadcast(BroadcastEvent.Command.GATE_ADD);
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			messageHandler.messageOutln("Added gate '"+
 			currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
 		} else {
@@ -120,9 +120,9 @@ public final class GateAdd extends DataControl {
 	}
 
 	/**
-	 * @see jam.data.control.DataControl#setup()
+	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
-	public void setup() {
+	public void doSetup() {
 		cadd.setSelectedIndex(0);
 	}
 

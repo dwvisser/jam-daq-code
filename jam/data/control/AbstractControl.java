@@ -16,43 +16,44 @@ import javax.swing.JDialog;
  *
  * @author Ken Swartz
  */
-public abstract class DataControl extends JDialog implements Observer {
+public abstract class AbstractControl extends JDialog implements Observer {
 	private static List controllers = Collections.synchronizedList(new ArrayList());
-	protected static final JamStatus status=JamStatus.instance();
-	protected static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	protected static final JamStatus STATUS=JamStatus.instance();
+	protected static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Default constructor for implementation classes.
 	 */
-	protected DataControl(String title, boolean modal) {
-		super(status.getFrame(), title, modal);
+	protected AbstractControl(String title, boolean modal) {
+		super(STATUS.getFrame(), title, modal);
 		controllers.add(this);
-		broadcaster.addObserver(this);
+		BROADCASTER.addObserver(this);
 	}
 	
 	/**
 	 * Remove self from list of controllers
 	 */
-	public void finalize() {
+	protected void finalize() throws Throwable {
 		controllers.remove(this);
-		broadcaster.deleteObserver(this);
+		BROADCASTER.deleteObserver(this);
+		super.finalize();
 	}
 	
 	/**
-	 * Setup all instances of <code>DataControl</code>.
+	 * Setup all instances of <code>AbstractControl</code>.
 	 */
 	public static void setupAll() {
 		for (int i = 0; i < controllers.size(); i++) {
-			((DataControl) controllers.get(i)).setup();
+			((AbstractControl) controllers.get(i)).doSetup();
 		}
 	}
 
 	/**
-	 * Setup the current instance of <code>DataControl</code>.
+	 * Setup the current instance of <code>AbstractControl</code>.
 	 */
-	public abstract void setup();
+	public abstract void doSetup();
 
-	public void update(Observable observable, Object o) {
+	public void update(Observable observable, Object object) {
 		/* do-nothing implementation for those subclasses that
 		 * don't care */
 	}

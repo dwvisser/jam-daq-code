@@ -1,6 +1,6 @@
 package jam;
 import jam.data.DataBase;
-import jam.data.control.DataControl;
+import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
@@ -442,7 +442,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
             e.getClass().getName()+": "+e.getMessage()+"'");
         }
         /* setup scaler, parameter, monitors, gate, dialog boxes */
-        DataControl.setupAll();
+        AbstractControl.setupAll();
         /* setup sorting */
         synchronized(this){
         	sortDaemon=new SortDaemon( sortControl,  msgHandler);

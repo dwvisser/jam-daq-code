@@ -35,7 +35,7 @@ import javax.swing.border.EmptyBorder;
  * @since JDK1.1
  */
 
-public final class ScalerDisplay extends DataControl implements Observer {
+public final class ScalerDisplay extends AbstractControl implements Observer {
 
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
@@ -95,7 +95,7 @@ public final class ScalerDisplay extends DataControl implements Observer {
 				displayScalers();
 			}
 		});
-		setup();
+		doSetup();
 	}
 
 	/**
@@ -103,7 +103,7 @@ public final class ScalerDisplay extends DataControl implements Observer {
 	 * <code>Scaler</code> objects changes, such as after opening a file, or
 	 * initializing a sort routine.
 	 */
-	public void setup() {
+	public void doSetup() {
 		int numberScalers = Scaler.getScalerList().size();
 		pScalers.removeAll();
 		if (numberScalers != 0) { // we have some elements in the scaler list
@@ -155,7 +155,7 @@ public final class ScalerDisplay extends DataControl implements Observer {
 	 * Distribute event which will call our update method.
 	 */
 	public void read() {
-		if (status.isOnLine()) {
+		if (STATUS.isOnLine()) {
 			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} else {
 			displayScalers();

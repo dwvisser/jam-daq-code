@@ -27,7 +27,7 @@ import javax.swing.border.EmptyBorder;
  *
  */
 public final class ParameterControl
-	extends DataControl {
+	extends AbstractControl {
 
 	private final Frame frame;
 	private final MessageHandler messageHandler;
@@ -83,14 +83,14 @@ public final class ParameterControl
 				dispose();
 			}
 		});
-		setup();
+		doSetup();
 	}
 
 	/**
 	 * Setup the display dialog box.
 	 *
 	 */
-	public void setup() {
+	public void doSetup() {
 		DataParameter currentParameter;
 		Iterator enumParameter;
 		int numberParameters;

@@ -1,7 +1,7 @@
 package jam;
 
 import jam.commands.CommandManager;
-import jam.data.control.DataControl;
+import jam.data.control.AbstractControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -121,17 +121,17 @@ public final class JamMain extends JFrame implements Observer {
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(WindowEvent event) {
 				exit();
 			}
 
-			public void windowClosed(WindowEvent e) {
+			public void windowClosed(WindowEvent event) {
 				exit();
 			}
 		});
 		/* Initial histograms and setup */
 		new InitialHistograms();
-		DataControl.setupAll(); //setup jam.data.control dialog boxes
+		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT);
 		selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);

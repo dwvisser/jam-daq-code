@@ -36,7 +36,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Manipulations extends DataControl implements ActionListener,
+public class Manipulations extends AbstractControl implements ActionListener,
 		ItemListener, WindowListener, Observer {
 
 	private final Frame frame;
@@ -53,7 +53,7 @@ public class Manipulations extends DataControl implements ActionListener,
 
 	public Manipulations(MessageHandler mh) {
 		super("Manipulate 1-D Histograms", false);
-		frame = status.getFrame();
+		frame = STATUS.getFrame();
 		messageHandler = mh;
 		setResizable(false);
 		final int CHOOSER_SIZE = 200;
@@ -180,7 +180,7 @@ public class Manipulations extends DataControl implements ActionListener,
 		try {
 			if (command == "ok" || command == "apply") {
 				manipulate();
-				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 				if (command == "ok") {
 					dispose();
 				}
@@ -218,9 +218,9 @@ public class Manipulations extends DataControl implements ActionListener,
 		BroadcastEvent be = (BroadcastEvent) o;
 
 		if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			setup();
+			doSetup();
 		} else if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_ADD) {
-			setup();
+			doSetup();
 		}
 
 	}
@@ -230,7 +230,7 @@ public class Manipulations extends DataControl implements ActionListener,
 	 * if 1 d
 	 *  
 	 */
-	public void setup() {
+	public void doSetup() {
 		String lfrom1, lfrom2, lto;
 
 		lfrom1 = (String) cfrom1.getSelectedItem();
@@ -337,7 +337,7 @@ public class Manipulations extends DataControl implements ActionListener,
 					.getSizeX(), name);*/
 			hto = (AbstractHist1D)Histogram.createHistogram(
 					new double[hfrom1.getSizeX()],name);
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New histogram of type double created, name: '"
 							+ name + "'");
@@ -462,7 +462,7 @@ public class Manipulations extends DataControl implements ActionListener,
 	 * removes list of gates when closed only windowClosing used.
 	 */
 	public void windowOpened(WindowEvent e) {
-		setup();
+		doSetup();
 	}
 
 }

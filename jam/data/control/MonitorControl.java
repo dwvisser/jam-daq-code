@@ -37,7 +37,7 @@ import javax.swing.border.EmptyBorder;
  * @since       JDK1.1
  */
 public final class MonitorControl
-	extends DataControl
+	extends AbstractControl
 	implements Runnable {	
 
 	private final MessageHandler msgHandler;
@@ -139,13 +139,13 @@ public final class MonitorControl
 		pb.add(bcancel);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		/* setup monitors */
-		setup();
+		doSetup();
 	}
 
 	/**
 	 * Setup all monitors.
 	 */
-	public void setup() {
+	public void doSetup() {
 		if (!Monitor.getMonitorList().isEmpty()) {
 			sortMonitors = true;
 		}
@@ -264,7 +264,7 @@ public final class MonitorControl
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
-			broadcaster.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);			
+			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);			
 		} else {
 			throw new IllegalStateException(
 				getClass().getName()
@@ -283,7 +283,7 @@ public final class MonitorControl
 			) {
 			((Monitor) it.next()).reset();
 		}
-		broadcaster.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);		
+		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);		
 	}
 
 	/**
@@ -296,7 +296,7 @@ public final class MonitorControl
 				final int waitForResults = 500;
 				final int waitAfterRepaint = interval * 1000 - waitForResults;
 				/* read scalers and wait */
-				broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
+				BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 				Thread.sleep(waitForResults);
 				//loop for each monitor
 				for (Iterator it = Monitor.getMonitorList().iterator();
@@ -308,7 +308,7 @@ public final class MonitorControl
 				/* Broadcast event on UI thread */
 				SwingUtilities.invokeLater(new Runnable(){
 					public void run() {
-						broadcaster.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
+						BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
 					}
 				});
 				Thread.sleep(waitAfterRepaint);

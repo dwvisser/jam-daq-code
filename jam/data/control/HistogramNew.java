@@ -31,7 +31,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @version 0.5
  */
-public class HistogramNew extends DataControl {
+public class HistogramNew extends AbstractControl {
 
 	private final Frame frame;
 
@@ -55,7 +55,7 @@ public class HistogramNew extends DataControl {
 	 */
 	public HistogramNew(MessageHandler msghdlr) {
 		super("New Histogram ", false);
-		frame = status.getFrame();
+		frame = STATUS.getFrame();
 		this.msghdlr = msghdlr;
 		/* dialog box */
 		setResizable(false);
@@ -148,7 +148,7 @@ public class HistogramNew extends DataControl {
 	/**
 	 * Does nothing. It is here to match other contollers.
 	 */
-	public void setup() {
+	public void doSetup() {
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class HistogramNew extends DataControl {
 			array = new double[size][size];
 		}
 		Histogram.createHistogram(array, name, title);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {

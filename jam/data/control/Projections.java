@@ -40,7 +40,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Projections extends DataControl implements Observer {
+public class Projections extends AbstractControl implements Observer {
 
 	private static final String FULL = "Full Histogram";
 
@@ -81,7 +81,7 @@ public class Projections extends DataControl implements Observer {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
-				setup();
+				doSetup();
 			}
 		});
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
@@ -225,7 +225,7 @@ public class Projections extends DataControl implements Observer {
 		BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command com = be.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			setup();
+			doSetup();
 		} else if (com == BroadcastEvent.Command.HISTOGRAM_ADD || 
 				com == BroadcastEvent.Command.GATE_ADD ||
 				com == BroadcastEvent.Command.GATE_SET_OFF ||
@@ -240,7 +240,7 @@ public class Projections extends DataControl implements Observer {
 	 * upper if 1 d
 	 *  
 	 */
-	public void setup() {
+	public void doSetup() {
 		cfrom.setSelectedIndex(0);
 		setUseNewHist(true); //default use new histogram
 		setupToHist(NEW_HIST);//setup "to" histogram

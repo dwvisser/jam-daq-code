@@ -29,7 +29,7 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  * @version 0.5
  */
-public class CalibrationDisplay extends DataControl implements ActionListener,
+public class CalibrationDisplay extends AbstractControl implements ActionListener,
 ItemListener, WindowListener {
 
     private final static int MAX_NUMBER_TERMS=5;
@@ -61,7 +61,7 @@ ItemListener, WindowListener {
      */
     public CalibrationDisplay(MessageHandler mh){
         super("Histogram Calibration",false);
-        frame=status.getFrame();
+        frame=STATUS.getFrame();
         msghdlr=mh;
 
         setResizable(false);
@@ -131,9 +131,9 @@ ItemListener, WindowListener {
     /**
      * setups up the dialog box
      */
-    public void setup() {
+    public void doSetup() {
 		final Histogram hist=Histogram.getHistogram(
-		status.getHistName());
+		STATUS.getHistName());
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 
@@ -182,7 +182,7 @@ ItemListener, WindowListener {
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(status.getHistName());
+        currentHistogram=Histogram.getHistogram(STATUS.getHistName());
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
@@ -192,7 +192,7 @@ ItemListener, WindowListener {
                     dispose();
                 }
             } else if (command=="recalcalib") {
-                setup();
+                doSetup();
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
@@ -242,7 +242,7 @@ ItemListener, WindowListener {
                 msghdlr.errorOutln("Invalid input, coefficient "+
                 calibFunction.getLabels()[i]);
             }
-            setup();
+            doSetup();
         } else {
             msghdlr.errorOutln("Calibration function not defined [CalibrationDisplay]");
         }
@@ -253,7 +253,7 @@ ItemListener, WindowListener {
      *
      */
     private void cancelCalib(){
-        Histogram currentHist=Histogram.getHistogram(status.getHistName());
+        Histogram currentHist=Histogram.getHistogram(STATUS.getHistName());
         currentHist.setCalibration(null);
     }
 
@@ -263,7 +263,7 @@ ItemListener, WindowListener {
      *  has not changed. If it has cancel the gate setting.
      */
     public void windowActivated(WindowEvent e){
-        setup();
+        doSetup();
     }
 
     /**
@@ -310,7 +310,7 @@ ItemListener, WindowListener {
      *  only windowClosing used.
      */
     public void windowOpened(WindowEvent e){
-        setup();
+        doSetup();
     }
 
 }

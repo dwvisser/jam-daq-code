@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 /**
  * Zero histograms dialog
  */
-public class HistogramZero extends DataControl {
+public class HistogramZero extends AbstractControl {
 
 	private final Frame frame;
 	private final MessageHandler msghdlr;
@@ -31,7 +31,7 @@ public class HistogramZero extends DataControl {
 	 */
 	public HistogramZero(MessageHandler mh) {
 		super("Zero Histograms", false);
-		frame = status.getFrame();
+		frame = STATUS.getFrame();
 		msghdlr = mh;
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
@@ -46,7 +46,7 @@ public class HistogramZero extends DataControl {
 					Histogram.getHistogram(
 						JamStatus.instance().getHistName());
 				currentHistogram.setZero();
-				broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 				msghdlr.messageOutln(
 					"Zero Histogram: " + currentHistogram.getTitle());
 				dispose();
@@ -88,11 +88,11 @@ public class HistogramZero extends DataControl {
 			msghdlr.messageOut(" .", MessageHandler.CONTINUE);
 			hist.setZero();
 		}
-		broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 		msghdlr.messageOut(" done!", MessageHandler.END);
 	}
 	
-	public void setup() {
+	public void doSetup() {
 		/* nothing to do */
 	}
 }

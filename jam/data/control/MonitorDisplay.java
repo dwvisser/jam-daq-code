@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  *
  */
-public class MonitorDisplay extends DataControl implements Observer {
+public class MonitorDisplay extends AbstractControl implements Observer {
 
 	private JToggleButton checkAudio;
 	private JPanel pTitles;
@@ -60,9 +60,9 @@ public class MonitorDisplay extends DataControl implements Observer {
 
 	}
 	/** 
-	 * Setup the display of monitors, inherited for DataControl
+	 * Setup the display of monitors, inherited for AbstractControl
 	 */	
-	public void setup(){
+	public void doSetup(){
 		Iterator monitors = Monitor.getMonitorList().iterator();
 		pTitles.removeAll();
 		pBars.removeAll();

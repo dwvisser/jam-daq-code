@@ -35,7 +35,7 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  * @version 0.5
  */
-public class CalibrationFit extends DataControl implements ActionListener {
+public class CalibrationFit extends AbstractControl implements ActionListener {
 
     private static final int NUMBER_POINTS=5;
 
@@ -64,7 +64,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
      */
     public CalibrationFit(MessageHandler mh) {
         super("Calibration Fit",false);
-        frame=status.getFrame();
+        frame=STATUS.getFrame();
         msghdlr=mh;
         setResizable(false);
         setLocation(30,30);
@@ -145,7 +145,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
                 dispose();
             }
 			public void windowActivated(WindowEvent e) {
-				setup();
+				doSetup();
 			}
         });
         //formating enery output
@@ -161,7 +161,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
      */
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(status.getHistName());
+        currentHistogram=Histogram.getHistogram(STATUS.getHistName());
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 if(calibFunction==null){
@@ -193,7 +193,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
         double y[];
         String fitText;
 
-        Histogram currentHist=Histogram.getHistogram(status.getHistName());
+        Histogram currentHist=Histogram.getHistogram(STATUS.getHistName());
         if (currentHist==null){//silently ignore if histogram null
             msghdlr.errorOutln("null histogram [Calibrate]");
         }
@@ -221,7 +221,7 @@ public class CalibrationFit extends DataControl implements ActionListener {
                 calibFunction.fit(x,y);
                 fitText=calibFunction.getFormula();
                 currentHist.setCalibration(calibFunction);
-                broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+                BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" with "+
                 fitText);
             } else {
@@ -239,14 +239,14 @@ public class CalibrationFit extends DataControl implements ActionListener {
      *
      */
     private void cancelCalib() {
-        Histogram currentHist=Histogram.getHistogram(status.getHistName());
+        Histogram currentHist=Histogram.getHistogram(STATUS.getHistName());
         currentHist.setCalibration(null);
-        broadcaster.broadcast(BroadcastEvent.Command.REFRESH);
+        BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
     }
 
-    public void setup(){
+    public void doSetup(){
 		final Histogram hist=Histogram.getHistogram(
-		status.getHistName());
+		STATUS.getHistName());
 		if (hist!=currentHistogram){
 			currentHistogram=hist;
 		} 
