@@ -681,17 +681,12 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Update the name of the displayed histogram in the dialog box.
 	 */
 	private void updateHist() {
-		Histogram h;
-		int[] ia;
-		int j;
-
-		//textHistName.setEditable(true);
-		h = display.getHistogram();
-		if (h.getDimensionality() == 1) {
+		final Histogram h = display.getHistogram();
+		if (h != null && h.getDimensionality() == 1) {
 			if (h.getType() == Histogram.ONE_DIM_INT) {
-				ia = (int[]) h.getCounts();
+				final int [] ia = (int[]) h.getCounts();
 				counts = new double[ia.length];
-				for (j = 0; j < ia.length; j++) {
+				for (int j = 0; j < ia.length; j++) {
 					counts[j] = ia[j];
 				}
 			} else if (h.getType() == Histogram.ONE_DIM_DOUBLE) {
@@ -701,7 +696,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		} else { //2d
 			textHistName.setText("Need 1D Hist!");
 		}
-		//textHistName.setEditable(false);
 	}
 
 	/**
