@@ -12,8 +12,6 @@ import jam.plot.Display;
 import jam.util.ScalerScan;
 import jam.util.YaleCAENgetScalers;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Observable;
@@ -76,32 +74,16 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		Broadcaster.getSingletonInstance().addObserver(this);
 		console = status.getMessageHandler();
 		display = d;
+		
 		add(getFileMenu());
 		add(getSetupMenu());
 		add(getControlMenu());
 		add(getHistogramMenu());
-		final JMenu gate = new JMenu("Gate");
-		add(gate);
-		gate.add(getMenuItem(SHOW_NEW_GATE));
-		gate.add(getMenuItem(SHOW_ADD_GATE));
-		gate.add(getMenuItem(SHOW_SET_GATE));
-		final JMenu scalers = new JMenu("Scalers");
-		add(scalers);
-		scalers.add(getMenuItem(DISPLAY_SCALERS));
-		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
-		scalers.addSeparator();
-		scalers.add(getMenuItem(DISPLAY_MONITORS));
-		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
-		add(getPreferencesMenu(jamCommand));
-		
-		add(getFitMenu());		
-		
-		final JMenu helpMenu = new JMenu("Help");
-		add(helpMenu);
-		helpMenu.add(getMenuItem(HELP_ABOUT));				
-		helpMenu.add(getMenuItem(USER_GUIDE));
-		helpMenu.add(getMenuItem(HELP_LICENSE));
-		
+		add(getGateMenu());				
+		add(getScalerMenu());		
+		add(getPreferencesMenu(jamCommand));										
+		add(getFitMenu());				
+		add(getHelp());
 				
 	}
 
@@ -169,9 +151,6 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return mcontrol;
 	}
 
-	private final JMenuItem getMenuItem(String name) {
-		return new JMenuItem(commands.getAction(name));
-	}
 
 	private JMenu getHistogramMenu() {
 		final JMenu histogram = new JMenu("Histogram");
@@ -186,9 +165,28 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
 		return histogram;
 	}
+	
+	private JMenu getGateMenu() {
 
+		final JMenu gate = new JMenu("Gate");
+		add(gate);
+		gate.add(getMenuItem(SHOW_NEW_GATE));
+		gate.add(getMenuItem(SHOW_ADD_GATE));
+		gate.add(getMenuItem(SHOW_SET_GATE));
+		return gate;
+	}
 
 	
+	private JMenu getScalerMenu() {
+		final JMenu scalers = new JMenu("Scalers");
+		add(scalers);
+		scalers.add(getMenuItem(DISPLAY_SCALERS));
+		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
+		scalers.addSeparator();
+		scalers.add(getMenuItem(DISPLAY_MONITORS));
+		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
+		return scalers;		
+	}	
 	private JMenu getFitMenu() {
 		
 		fitting.add(getMenuItem(SHOW_FIT_NEW));
@@ -196,6 +194,15 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return fitting;
 	}
 	
+	private JMenu getHelp() {
+			
+		final JMenu helpMenu = new JMenu("Help");
+		add(helpMenu);
+		helpMenu.add(getMenuItem(HELP_ABOUT));				
+		helpMenu.add(getMenuItem(USER_GUIDE));
+		helpMenu.add(getMenuItem(HELP_LICENSE));
+		return helpMenu;
+	}		
 	
 	private JMenu getPreferencesMenu(JamCommand jamCommand) {
 		final JMenu mPrefer = new JMenu("Preferences");
@@ -293,7 +300,14 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(debugVME);
 		return mPrefer;
 	}
-	
+	/**
+	 * Helper method
+	 * @param name
+	 * @return
+	 */	
+	private final JMenuItem getMenuItem(String name) {
+		return new JMenuItem(commands.getAction(name));
+	}
 
 	public void update(Observable observe, Object obj) {
 		final BroadcastEvent be = (BroadcastEvent) obj;
