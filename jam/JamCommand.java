@@ -278,7 +278,7 @@ public class JamCommand
 			} else if ("save".equals(incommand)) {
 				histio.writeJHFFile();
 			} else if ("savehdf".equals(incommand)) {
-				hdfio.writeFile(HDFIO.lastValidFile());
+				hdfio.writeFile(hdfio.lastValidFile());
 			} else if ("saveas".equals(incommand)) {
 				histio.writeJHFFile();
 			} else if ("saveAsHDF".equals(incommand)) {
@@ -515,7 +515,7 @@ public class JamCommand
 				status.setCurrentGateName(gate.getName());
 				broadcaster.broadcast(BroadcastEvent.GATE_SELECT);
 				if (gate.getType() == Gate.ONE_DIMENSION) {
-					final int area = gate.getArea();
+					final double area = gate.getArea();
 					final double centroid =
 						(double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
 					final int lowerLimit = gate.getLimits1d()[0];
@@ -532,7 +532,7 @@ public class JamCommand
 						"  Area = " + area + ", Centroid = " + centroid,
 						MessageHandler.END);
 				} else {
-					final int area = gate.getArea();
+					final double area = gate.getArea();
 					console.messageOut(
 						"Gate " + gate.getName(),
 						MessageHandler.NEW);
@@ -544,8 +544,7 @@ public class JamCommand
 			} catch (GlobalException ge) {
 				console.errorOutln(classname + methodname + ge.getMessage());
 			}
-		} else {
-			//error not a Gate
+		} else {//error not a Gate
 			console.errorOutln(
 				classname
 					+ "problem selecting gate - object instanceof "

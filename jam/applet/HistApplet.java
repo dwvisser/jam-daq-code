@@ -212,7 +212,7 @@ public class HistApplet
 
 		Histogram hist;
 		Gate gate;
-		int area;
+		double area;
 		int lowerLimit;
 		int upperLimit;
 
