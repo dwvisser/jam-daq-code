@@ -636,7 +636,8 @@ PreferenceChangeListener {
 	}
 
 	/**
-	 *methods for getting histogram data
+	 * Get histogram counts at the specified point, which is given
+	 * in channel coordinates.
 	 */
 	abstract double getCount(Point p);
 	
