@@ -298,6 +298,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.REFRESH) {
 			displayHistogram();
+		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
+			displayHistogram();
+			removeOverlays();
 		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);

@@ -41,10 +41,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	private final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
 
-	private final JPanel pCenter;
-
-	private int previousLayout;
-
 	private final JComboBox histogramChooser = new JComboBox(
 			new HistogramComboBoxModel());
 
@@ -57,27 +53,31 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 
 	private final JamStatus status;
 
-	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private final Broadcaster broadcaster;
 
 	private final Display display;
-
-	private final String classname;
+	
+	/** Is sync event so don't */
+	private boolean isSync=false;
+	
 
 	public SelectionToolbar() {
 		super("Selection", JToolBar.HORIZONTAL);
 		this.setFloatable(false);
 		final int chooserWidth = 200;
-		classname = getClass().getName() + "--";
+
+		//Global objects
 		status = JamStatus.instance();
+		broadcaster = Broadcaster.getSingletonInstance();
 		console = status.getMessageHandler();
 		display = status.getDisplay();
 		broadcaster.addObserver(this);
 		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
-		pCenter = new JPanel();
+		JPanel pCenter = new JPanel();
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		previousLayout = VERTICAL;
+
 		// Run status 
 		final Box pRunState = new Box(BoxLayout.X_AXIS);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -214,8 +214,10 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	 *            The histogram to be selected and displayed
 	 */
 	private void selectHistogram(Histogram hist) {
+		if (isSync)
+			return;
+		
 		if (hist == null) { 
-			display.displayHistogram();
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		} else {
 			final boolean oneD = hist.getDimensionality() == 1;
@@ -226,12 +228,11 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 					display.overlayHistogram(hist.getNumber());
 			} else {
 				synchronized (status) {
-					setOverlaySelected(false);
-					status.setHistName(hist.getName());
-					display.removeOverlays();
-					display.displayHistogram();
+					status.setHistName(hist.getName());					
 					gatesChanged();
+					setOverlaySelected(false);
 					setOverlayEnabled(oneD);
+					
 					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 				}
 			}
@@ -239,12 +240,14 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	}
 
 	private void syncHistChooser() {
+		isSync=true;
 		final Histogram hist = Histogram.getHistogram(status
 				.getHistName());
 		if (hist != null) {
 			histogramChooser.setSelectedItem(hist);
 			gatesChanged();
 		}
+		isSync=false;
 	}
 
 	/**
@@ -276,6 +279,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 				console.messageOut(", Area = " + area, MessageHandler.END);
 			}
 		} catch (Exception de) {
+			String classname = getClass().getName() + "--";
 			console.errorOutln(classname + methodname + de.getMessage());
 		}
 	}
@@ -297,6 +301,8 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			dataChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			dataChanged();
+		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+			syncHistChooser();			
 		} else if (command == BroadcastEvent.Command.GATE_ADD) {
 			final String lastHistName = status.getHistName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
@@ -305,8 +311,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
 			gateChooser.repaint();
 			histogramChooser.repaint();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			syncHistChooser();
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) be.getContent());
 		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){
