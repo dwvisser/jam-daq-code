@@ -40,7 +40,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	public Object getElementAt(int index) {
 		final String NO_HISTS = "No Histograms";
 		Object rval = NO_HISTS; //default value if no histograms
-		final List list = Histogram.getHistogramList();
+		final List list = getHistogramList();
 		final int size = list.size();
 		if (size > 0) {
 			if (index < 0 || index >= size) {
@@ -53,7 +53,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 			} else {
 				if (numHists() > 0) {
 					rval =
-						((Histogram) Histogram.getHistogramList().get(index))
+						((Histogram) list.get(index))
 							.getName();
 				}
 			}
@@ -94,7 +94,6 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 		synchronized(this){
 			selection = (String) anItem;
 		}
-		//fireContentsChanged(this, -1, -1);
 	}
 
 	/**
@@ -105,7 +104,11 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	private int numHists() {
-		return Histogram.getHistogramList().size();
+		return getHistogramList().size();
+	}
+	
+	private List getHistogramList(){
+		return Histogram.getSortedList(0);
 	}
 
 }
