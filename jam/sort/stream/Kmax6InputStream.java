@@ -4,8 +4,8 @@ import jam.global.*;
 
 /**
  * This class knows how to handle the Kmax data format.  It extends
- * <code>EventInputStream</code>, adding methods for reading events and returning them
- * as int arrays which the sorter can handle.
+ * <code>EventInputStream</code>, adding methods for reading events and
+ * returning them as int arrays which the sorter can handle.
  *
  * @version	0.4 June 2001
  * @author 	Ralph France
@@ -16,7 +16,6 @@ import jam.global.*;
  */
 public class Kmax6InputStream extends EventInputStream {
 
-    //private EventInputStatus status;
     private int parameter;
     int blockFullSize;
     int blockCurrSize;
@@ -62,9 +61,7 @@ public class Kmax6InputStream extends EventInputStream {
      */
     public synchronized EventInputStatus readEvent(int[] input) throws  EventException {
         try {
-            //status=EventInputStatus.ERROR;
-            //if a new block read in block header
-            if (newBlock) {
+            if (newBlock) {//if a new block read in block header
                 if(!readBlockHeader()){
                     return EventInputStatus.END_FILE;
                 }
@@ -103,28 +100,28 @@ public class Kmax6InputStream extends EventInputStream {
             console.errorOutln(e.toString());
             return EventInputStatus.ERROR;
         }
-        //return status ;
     }
 
-    /** Reads a block from the input stream
+    /** 
+     * Reads a block from the input stream
      * Expects the stream to be at the beginning of a block
      * It is up to user to ensure this
-     * @exception EventException thrown for errors in event stream
      * @return whether read is successful or not
+     * @throws EventException thrown for errors in event 
+     * stream
      */
-    public boolean readBlockHeader() throws EventException {
+    private boolean readBlockHeader() throws EventException {
+    	boolean rval;
         try {
             blockEventType=dataInput.readInt();
             blockNumEvnt=dataInput.readInt();
-            //	    System.out.println("Block fullsize  "+blockFullSize+" currsize "+blockCurrSize+
-            //		" number "+blockNumber+ "number event "+blockNumEvnt);
-            return true;
+            rval = true;
         } catch (EOFException eof){
-            System.out.println("end of file readBlockHeader");
-            return false;
+            rval = false;
         } catch (IOException ioe) {
             throw new EventException ("Reading Block header,"+ioe.getMessage()+" [KmaxInputStream]");
         }
+        return rval;
     }
 
     /** Read in the header
