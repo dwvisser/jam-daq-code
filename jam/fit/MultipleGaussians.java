@@ -23,12 +23,12 @@ public class MultipleGaussians extends NonLinearFit {
 	/**
 	 * Coefficient for proper normalization of gaussians.
 	 */
-	private final double a = 2.0 * Math.sqrt(Math.log(2.0) / Math.PI);
+	static private final double a = 2.0 * Math.sqrt(Math.log(2.0) / Math.PI);
 
 	/**
 	 * Factor in exponential terms to properly relate width to sigma.
 	 */
-	private final double b = 4.0 * Math.log(2.0);
+	static private final double b = 4.0 * Math.log(2.0);
 
 	/**
 	 * Ratio of FWHM to sigma for a gaussian.
@@ -93,7 +93,7 @@ public class MultipleGaussians extends NonLinearFit {
 	/**
 	 * different components of channel count
 	 */
-	private double peakSum, bkgdSum;
+	private double peakSum;
 
 	/**
 	 * Class constructor.
