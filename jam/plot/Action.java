@@ -213,24 +213,22 @@ class Action implements ActionListener, PlotMouseListener {
 	}
 
 	/**
-	 * Do a command sent in as a message. Sees if the 
-	 * string is command that plot can understand
-	 * and sets a command string to something that 
-	 * can be interpreted by doCommand(), i.e.,
-	 * expand abbreviations.
+	 * Do a command sent in as a message. Sees if the string is 
+	 * command that plot can understand and sets a command string to
+	 * something that can be interpreted by doCommand(), i.e., expand
+	 * abbreviations.
 	 * 
 	 * @param _command entry from console
 	 * @param parameters integer parameters from console
 	 */
 	boolean commandPerform(String _command, String [] cmdParams) {
 		boolean accept = false; //is the command accepted
-		//boolean disp = false;
+		boolean handleIt=false;
 		final String command = _command.toLowerCase();
-		final double [] parameters;
 		/* int is a special case meaning
 		 * no command and just parameters */
 		if (command.equals(JamConsole.NUMBERS_ONLY)) {
-			parameters=convertParameters(cmdParams);
+			final double [] parameters=convertParameters(cmdParams);
 			if (DISPLAY.equals(inCommand)) {
 				display(parameters);
 				accept = true;
@@ -241,26 +239,14 @@ class Action implements ActionListener, PlotMouseListener {
 				integerChannel(parameters);
 				accept = true;
 			}
-			return accept;
-		}
-		
-		
-		if (commandMap.containsKey(command)) {
+			accept=true;
+		} else if (commandMap.containsKey(command)) {
 			inCommand = (String) commandMap.get(command);
 			accept = true;
+			handleIt=true;
 		}
-		//Remove KBS lead to duplicate of other commands	
-		//final String c1 = command.substring(0, Math.min(1, command.length()));
-		//final String c2 = command.substring(0, Math.min(2, command.length()));
-		//if (commandMap.containsKey(c2)) {
-		//	inCommand = (String) commandMap.get(c2);
-		//	accept = true;
-		//} else if (commandMap.containsKey(c1)) {
-		//	inCommand = (String) commandMap.get(c1);
-		//	accept = true;
-		//}
-		if (accept) {
-			parameters=convertParameters(cmdParams);
+		if (accept && handleIt) {
+			final double [] parameters=convertParameters(cmdParams);
 			if (DISPLAY.equals(inCommand)){
 				display(parameters);
 			} else if (OVERLAY.equals(inCommand)){
@@ -270,17 +256,9 @@ class Action implements ActionListener, PlotMouseListener {
 				integerChannel(parameters);
 			}
 		} 
-		//Remove KBS
-		//else {
-		//	textOut.errorOutln(
-		//		getClass().getName()
-		//			+ ".commandPerform(): Command '"
-		//			+ command
-		//			+ "' not understood.");
-		//}
-		
 		return accept;
 	}
+	
 	/**
 	 * Convert the parameters to doubles
 	 * @param parameters
@@ -497,8 +475,12 @@ class Action implements ActionListener, PlotMouseListener {
 	}
 
 	/**
-	 * update paint the current histogram
-	 *
+	 * Call <code>update()</code> on the current plot, reset the 
+	 * command-line, and broadcast a histogram selection message to 
+	 * force the rest of the GUI to be consistent with the currently 
+	 * selected histogram.
+	 * 
+	 * @see Plot#update()
 	 */
 	private void update() {
 		currentPlot.update();
@@ -564,6 +546,9 @@ class Action implements ActionListener, PlotMouseListener {
 			if (h != null) {
 				JamStatus.instance().setCurrentHistogramName(h.getName());
 				textOut.messageOut(Integer.toString(num)+" ", MessageHandler.END);
+				if (hist.length < 2){
+					display.removeOverlays();
+				}
 				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
@@ -571,8 +556,8 @@ class Action implements ActionListener, PlotMouseListener {
 					"There is no histogram numbered " + num + ".");
 			}
 			if (hist.length > 1){
-				int newlen=hist.length-1;
-				double [] pass=new double[newlen];
+				final int newlen=hist.length-1;
+				final double [] pass=new double[newlen];
 				System.arraycopy(hist,1,pass,0,newlen);
 				overlay(pass);
 			} else {
