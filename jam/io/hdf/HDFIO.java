@@ -123,16 +123,19 @@ public final class HDFIO implements DataIO, JamFileFields {
     /* --------------------- Begin DataIO Interface Methods ------------------ */
 
     public void writeFile(File file) {
-        writeFile(file, null, null, true, true); 
+        final List nullList = null;
+        writeFile(file, nullList, nullList, true, true); 
     }
 
     public void writeFile(File file, Group group) {
     	final List groupList = Collections.singletonList(group);
-        writeFile(file, groupList, null, true, true); 
+    	final List nullList=null;
+        writeFile(file, groupList, nullList, true, true); 
     }
 
     public void writeFile(final File file, List histograms) {
-    	writeFile(file, null, histograms, true, true);    	
+    	final List nullList=null;
+    	writeFile(file, nullList, histograms, true, true);    	
     }
     /**
      * Read in an HDF file.
@@ -227,7 +230,8 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param writeSettings whether to write gates and parameters
      */
     public void writeFile(final File file, boolean writeData, boolean writeSettings) {
-    	writeFile(file, null, null, writeData, writeSettings);    	
+        final List nullList=null;
+    	writeFile(file, nullList, nullList, writeData, writeSettings);    	
     }
     
     /** 
@@ -241,11 +245,14 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param writeData whether to write histograms and scalers
      * @param writeSettings whether to write gates and parameters
      */
-    private void writeFile(final File file, List groups, List histograms,
+    private void writeFile(final File file, final List groups, final List histograms,
             boolean writeData, boolean writeSettings) {
         /* Groups specified determines histograms */
+        final List groupsToUse;
+        final List histsToUse;
         if (groups != null) {
-            histograms = new ArrayList();
+            groupsToUse = groups;
+            histsToUse = new ArrayList();
             final Iterator iterGroup = groups.iterator();
             while (iterGroup.hasNext()) {
                 final Group currGroup = (Group) iterGroup.next();
@@ -253,8 +260,9 @@ public final class HDFIO implements DataIO, JamFileFields {
             }
         } else if (histograms != null) {
             /* Histograms specified determines groups. */
-            groups = new ArrayList();
-            final Iterator iterHist = histograms.iterator();
+            groupsToUse = new ArrayList();
+            histsToUse = histograms;
+            final Iterator iterHist = histsToUse.iterator();
             while (iterHist.hasNext()) {
                 final Histogram hist = (Histogram) iterHist.next();
                 if (!groups.contains(hist.getGroup())) {
@@ -263,8 +271,8 @@ public final class HDFIO implements DataIO, JamFileFields {
             }
         } else {
             /* Neither groups nor histograms specified */
-            groups = Group.getGroupList();
-            histograms = new ArrayList();
+            groupsToUse = Group.getGroupList();
+            histsToUse = new ArrayList();
             final Iterator iterGroup = groups.iterator();
             while (iterGroup.hasNext()) {
                 final Group currGroup = (Group) iterGroup.next();
@@ -272,7 +280,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             }
         }
         if (overWriteExistsConfirm(file)) {
-            spawnAsyncWriteFile(file, groups, histograms, writeData, writeSettings);
+            spawnAsyncWriteFile(file, groupsToUse, histsToUse, writeData, writeSettings);
         }
     }
     
@@ -425,18 +433,17 @@ public final class HDFIO implements DataIO, JamFileFields {
                 		(MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ)*numberFiles);
 
     			try {                
-	            	//Loop for all files
-	        		for (int i=0;i<inFiles.length;i++) {
+            	//Loop for all files
+        		for (int i=0;i<inFiles.length;i++) {
 	        			infile =inFiles[i];
-	            			asyncReadFileGroup(infile, mode, groupNames, histNames);            
-	            			displayMessage();
+            			asyncReadFileGroup(infile, mode, groupNames, histNames);            
+            			displayMessage();
 	        		}
-        		}catch (Exception e) {
-        			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
-        			e.printStackTrace();
-        			asyncMonitor.close();
-        		}
-        		
+            		}catch (Exception e) {
+            			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
+            			e.printStackTrace();
+            			asyncMonitor.close();
+            		}
                 asyncMonitor.close();
             	return null;
             }
@@ -729,7 +736,6 @@ public final class HDFIO implements DataIO, JamFileFields {
         		uiErrorMsg ="Closing file "+infile.getName();
         		rval = false;
         	}    
-
              /* destroys reference to HDFile (and its AbstractHData's) */
              inHDF = null;
         }
