@@ -90,7 +90,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		scalers.add(getMenuItem(DISPLAY_MONITORS));
 		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
 		add(getPreferencesMenu(jamCommand));
-		loadfit = new LoadFit(display, console, fitting);
+		loadfit = new LoadFit(console, fitting);
 		add(fitting);
 		final JMenuItem loadFit = new JMenuItem("Load Fit\u2026");
 		loadFit.addActionListener(new ActionListener() {
