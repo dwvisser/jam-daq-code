@@ -187,12 +187,6 @@ public abstract class StorageDaemon extends GoodThread {
 		byteCount = count;
 	}
 
-	/** abstract methods */
-	/** 
-	 * Set path for a device if needed
-	 */
-	public abstract void setDevice(String dev);
-
 	/**
 	 * Opens a file using the given filename for writing to during online sorting.
 	 * 

@@ -11,7 +11,6 @@ import jam.global.*;
  */
 public class DiskDaemon extends StorageDaemon {
 
-	String device; //not actually used
 	/**
 	 * Constructor for online sorting to write out data.
 	 */
@@ -20,13 +19,6 @@ public class DiskDaemon extends StorageDaemon {
 		setName("Disk I/O for Event Data");
 	}
 	
-	/**
-	 * set the path of the tape device 
-	 */
-	public void setDevice(String dev) {
-		device = dev;
-	}
-
 	/**
 	 * Open file to write events to.
 	 *
@@ -250,5 +242,12 @@ public class DiskDaemon extends StorageDaemon {
 				"[DiskDaemon] Error while writing data to file: "
 					+ ioe.getMessage());
 		}
+	}
+	
+	public boolean caughtUpOnline(){
+		if (ringBuffer == null){
+			throw new IllegalStateException("Should always have a ring buffer here.");
+		}
+		return ringBuffer.empty();
 	}
 }
