@@ -295,7 +295,6 @@ public class Matrix {
 		int rowCounter = 0;
 		int colCounter = 0;
 		String sData = new String(); // will hold each element during parsing
-		Double fl;
 		char sChar;
 		for (j = 0; j < i; j++) {
 			/*	Delimiter syntax:
@@ -313,7 +312,6 @@ public class Matrix {
 				|| (sChar == ';')
 				|| ((int) sChar == 13)
 				|| ((int) sChar == 10)) {
-				fl = new Double(0);
 				// See if the string in sData represents a number...
 				try {
 					// a hack to accomodate JVM 1.1 and higher...
@@ -323,7 +321,6 @@ public class Matrix {
 						testSpace = testSpace && (sData.charAt(ii) == ' ');
 					}
 					if (!testSpace) {
-						fl = new Double(sData);
 						col.addElement(sData);
 					} // append column element as string
 					sData = new String(); // wipe out contents of string
