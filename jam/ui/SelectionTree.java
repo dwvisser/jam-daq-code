@@ -1,22 +1,25 @@
 package jam.ui;
 
-import jam.RunState;
-import jam.data.Histogram;
 import jam.data.Gate;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Display;
 
-//import java.awt.*;
 import java.awt.BorderLayout;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
-import java.util.*;
+import java.util.Observer;
 
-import javax.swing.*;
-import javax.swing.event.*; 
-import javax.swing.tree.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 
 /**
