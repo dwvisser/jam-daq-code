@@ -1,14 +1,39 @@
 package jam.data.control;
+import jam.GateComboBoxModel;
+import jam.GateListCellRenderer;
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.GateComboBoxModel;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.plot.Display;
-import jam.global.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Class to set 1 D and 2 D gates.
@@ -84,31 +109,31 @@ WindowListener,Observer  {
         JPanel pc =new JPanel();
         pc.setLayout(new GridLayout(1,0));
         cgate=new JComboBox(new GateComboBoxModel());
+        cgate.setRenderer(new GateListCellRenderer());
         cgate.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent ae){
-        		selectGate((String)cgate.getSelectedItem());
+        		Object item=cgate.getSelectedItem();
+        		if (item instanceof Gate){
+					selectGate((Gate)item);
+        		}
         	}
         });
         pc.add(cgate);
-        //panel with data fields
+        /* panel with data fields */
         final JPanel pf =new JPanel();
         pf.setLayout(new GridLayout(2,1));
         final JPanel p1= new JPanel(new FlowLayout());
         lLower=new JLabel("lower",Label.RIGHT);
         p1.add(lLower);
         textLower=new JTextField("",4);
-        textLower.setBackground(Color.lightGray);
-        textLower.setForeground(Color.black);
         p1.add(textLower);
         final JPanel p2= new JPanel(new FlowLayout());
         lUpper=new JLabel("upper",Label.RIGHT);
         p2.add(lUpper);
         textUpper=new JTextField("",4);
-        textUpper.setBackground(Color.lightGray);
-        textUpper.setForeground(Color.black);
         p2.add(textUpper);
         pf.add(p1); pf.add(p2);
-        //panel with buttons
+        /* panel with buttons */
         final JPanel pedit =new JPanel();
         pedit.setLayout(new GridLayout(0,1));
         addP = new JButton("Add");
@@ -126,7 +151,7 @@ WindowListener,Observer  {
         unset.addActionListener(this);
         unset.setEnabled(false);
         pedit.add(unset);
-        //panel with buttons
+        /* panel with buttons */
         final Panel pb =new Panel();
         pb.setLayout(new GridLayout(1,0));
         save = new JButton("Save");
@@ -146,24 +171,23 @@ WindowListener,Observer  {
         dgate.addWindowListener(this);
         dgate.pack();
 
-        //new gate dialog box
+        /* new gate dialog box */
         dnew=new JDialog(frame,"New Gate",false);
         final Container cdnew=dnew.getContentPane();
         dnew.setResizable(false);
-        //dnew.setSize(300, 150);
         cdnew.setLayout(new BorderLayout());
         dnew.setLocation(20,50);
 
-        //panel with chooser
+        /* panel with chooser */
         final JPanel ptnew =new JPanel();
         ptnew.setLayout(new GridLayout(1,1));
         cdnew.add(ptnew,BorderLayout.CENTER);
         cdnew.add(new JLabel("Name"),BorderLayout.WEST);
         textNew=new JTextField("",12);
-        textNew.setBackground(Color.white);
+        //textNew.setBackground(Color.white);
         ptnew.add(textNew);
 
-        // panel for buttons
+        /*  panel for buttons */
         final JPanel pbnew= new JPanel();
         pbnew.setLayout(new GridLayout(1,3));
         cdnew.add(pbnew,BorderLayout.SOUTH);
@@ -195,13 +219,13 @@ WindowListener,Observer  {
         ptadd.setLayout(new GridLayout(1,0));
         cdadd.add(ptadd,BorderLayout.CENTER);
 
-		//caddModel = new GateControlComboBoxModel2(this);
         cadd=new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
+        cadd.setRenderer(new GateListCellRenderer());
 		cadd.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				final String selected=(String)cadd.getSelectedItem();
-				if (Gate.getGate(selected) != null){
-					selectGateAdd(selected);
+				final Object item=cadd.getSelectedItem();
+				if (item instanceof Gate){
+					selectGateAdd((Gate)item);
 				}
 			}
 		});
@@ -279,11 +303,11 @@ WindowListener,Observer  {
         }
     }
 
-    void selectGate(String name) {
+    void selectGate(Gate gate) {
         try {
             cancel();      //cancel current state
             synchronized(this){
-            	currentGate=Gate.getGate(name);
+            	currentGate=gate;
             }
             if ( currentGate != null) {
             	synchronized(this){
@@ -315,10 +339,10 @@ WindowListener,Observer  {
                 //make fields and buttons active
                 textLower.setText("");
                 textLower.setEditable(true);
-                textLower.setBackground(Color.white);
+                //textLower.setBackground(Color.white);
                 textUpper.setText("");
                 textUpper.setEditable(true);
-                textUpper.setBackground(Color.white);
+                //textUpper.setBackground(Color.white);
                 save.setEnabled(true);
                 cancel.setEnabled(true);
             }
@@ -328,9 +352,9 @@ WindowListener,Observer  {
         }
     }
 
-    void selectGateAdd(String name) {
+    void selectGateAdd(Gate gate) {
         synchronized (this) {
-        	currentGateAdd=Gate.getGate(name);
+        	currentGateAdd=gate;
         }
     }
 
@@ -510,6 +534,7 @@ WindowListener,Observer  {
 		try{
 			broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
 			messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
+			cgate.repaint();
 			cancel();
 		} catch (GlobalException ge){
 			messageHandler.errorOutln(getClass().getName()+".unset(): "+
@@ -593,6 +618,8 @@ WindowListener,Observer  {
                 }
                 broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
                 display.displayGate(currentGate);
+                cgate.repaint();
+                cadd.repaint();
             }
         } catch (NumberFormatException ne) {
             throw new DataException("Invalid input not a number [GateSet]");
@@ -631,10 +658,10 @@ WindowListener,Observer  {
         }
         textLower.setText(" ");
         textLower.setEditable(false);
-        textLower.setBackground(Color.lightGray);
+        //textLower.setBackground(Color.lightGray);
         textUpper.setText(" ");
         textUpper.setEditable(false);
-        textUpper.setBackground(Color.lightGray);
+        //textUpper.setBackground(Color.lightGray);
         addP.setEnabled(false);
         removeP.setEnabled(false);
         save.setEnabled(false);
