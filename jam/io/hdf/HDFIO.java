@@ -96,6 +96,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
     private final ConvertJamObjToHDFObj jamToHDF;
 
     //FIXME private ConvertHDFObjToJamObj convertHDFToJam;
+    
+    private String uiMessage;
+    private String uiErrorMessage;
 
     /**
      * Class constructor handed references to the main class and message
@@ -224,12 +227,27 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     private void spawnAsyncWriteFile(final File file, final List histograms,
             final List gates, final List scalers, final List parameters) {
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
-                asyncWriteFile(file, histograms, gates, scalers, parameters);
+    	uiMessage="";
+    	uiErrorMessage ="";
+    	final SwingWorker worker = new SwingWorker() {
+
+            public Object construct() {
+            	 asyncWriteFile(file, histograms, gates, scalers, parameters);
+                 System.gc();
+            	return null;
             }
-        });
-        thread.start();
+
+            //Runs on the event-dispatching thread.
+            public void finished() {
+            	if (!uiErrorMessage.equals("")) {
+                    msgHandler.errorOutln(uiErrorMessage);
+            	} else {
+            		msgHandler.messageOutln(uiMessage);
+            	}
+            	
+            }
+        };
+        worker.start();     	    	
     }
 
     /**
@@ -251,11 +269,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
     private void asyncWriteFile(File file, List hists, List gates, List scalers,
             List parameters) {
         final StringBuffer message = new StringBuffer();
-        int progress = 1;
+
         DataObject.clearAll();
         addDefaultDataObjects(file.getPath());
-        final int totalToDo = hists.size() + gates.size() + scalers.size()
-                + parameters.size();
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
         					STEPS_WRITE_PROGRESS+STEPS_CONVERT_PROGRESS);
@@ -299,8 +315,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         asyncMonitor.increment();
         message.append(")");
-        msgHandler.messageOut("", MessageHandler.END);
-        HDFile out;
+        //msgHandler.messageOut("", MessageHandler.END);
+        HDFile out=null;
         try {
             synchronized (this) {
                 out = new HDFile(file, "rw", asyncMonitor, STEPS_WRITE_PROGRESS);
@@ -308,24 +324,30 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
             out.writeFile();
             asyncMonitor.setNote("Closing File");
-            out.close();
+        
         } catch (FileNotFoundException e) {
-            msgHandler.errorOutln("Opening file: " + file.getName());
+        	uiErrorMessage ="Opening file: " + file.getName();
         } catch (HDFException e) {
-            msgHandler.errorOutln("Exception writing to file '"
-                    + file.getName() + "': " + e.toString());
-        } catch (IOException e) {
-            msgHandler.errorOutln("Exception writing to file '"
-                    + file.getName() + "': " + e.toString());
+        	uiErrorMessage = "Exception writing to file '"
+                + file.getName() + "': " + e.toString();       	
+        } finally {
+        	try {
+        		out.close();
+        	}catch (IOException e) {
+            	uiErrorMessage = "Closing file " +file.getName();
+            }
+            
         }
         synchronized (this) {
             DataObject.clearAll();
             out = null; //allows Garbage collector to free up memory
         }
         asyncMonitor.close();
-        outln(message.toString());
+        //outln(message.toString());
+        
         setLastValidFile(file);
-        System.gc();
+        uiMessage =message.toString();
+        
     }
 
     /*
@@ -428,6 +450,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         boolean rval = true;
 
         if (!HDFile.isHDFFile(infile)) {
+			//uiErrorMessage=infile + " is not a valid HDF File!";
             msgHandler.errorOutln(infile + " is not a valid HDF File!");
             rval = false;
         }
