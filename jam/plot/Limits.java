@@ -60,7 +60,7 @@ public class Limits {
     private int minimumCounts,maximumCounts;
     private int zeroX, sizeX;		//translate to rangemodel min, max
     private int zeroY, sizeY;		//translate to rangemodel min, max
-    private Limits.ScaleType scale;        // is it in log or linear
+    private Limits.ScaleType scale=ScaleType.LINEAR;        // is it in log or linear
     
     /**
      * limits with no histogram
@@ -76,7 +76,6 @@ public class Limits {
         maximumY=INITHI;
         minimumCounts=INITLO;
         maximumCounts=DEFAULTMAXCOUNTS;
-        scale=Limits.ScaleType.LINEAR;
         //update the bounded range models
         updateModelX();
         updateModelY();
@@ -221,17 +220,6 @@ public class Limits {
         return maxCounts;
     }
     
-    /*private final int getMaxCounts(int [][] counts2d, int chminX, int chmaxX,
-    int chminY, int chmaxY){
-    	int maxCounts=DEFAULTMAXCOUNTS;
-        for(int i=chminX;i<=chmaxX;i++){
-            for(int j=chminY;j<=chmaxY;j++){
-                maxCounts=Math.max(maxCounts,counts2d[i][j]);
-            }
-        }
-        return maxCounts;
-    }*/
-    
     /** Get the limits for a <code>Histogram</code>.
      * @param hist Histogram to retrieve the limits for
      * @return display limits for the specified histogram
@@ -347,8 +335,10 @@ public class Limits {
      * 
      * @param minCounts the lowest count value to display
      */
-    public synchronized final void setMinimumCounts(int minCounts){
-        minimumCounts=minCounts;
+    public final void setMinimumCounts(int minCounts){
+		synchronized(this){
+			minimumCounts=minCounts;
+		}
     }
 
     /**
@@ -356,8 +346,10 @@ public class Limits {
      * 
      * @param maxCounts the highest count value to display
      */
-    public synchronized final void setMaximumCounts(int maxCounts){
-        maximumCounts=maxCounts;
+    public final void setMaximumCounts(int maxCounts){
+        synchronized(this){
+			maximumCounts=maxCounts;
+        }
     }
 
     /**
@@ -366,8 +358,10 @@ public class Limits {
      * @param s one of <code>Limits.LINEAR</code> or <code>
      * Limits.LOG</code>
      */
-    public synchronized final void setScale(Limits.ScaleType s){
-        scale=s;
+    public final void setScale(Limits.ScaleType s){
+    	synchronized(scale){
+			scale=s;
+    	}
     }
     
     /**
