@@ -316,49 +316,151 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 		return 0.0;
 	}
 	
+	/**
+	 * @see Beginner#begin()
+	 */
 	public void begin(){
 		/* default begin() does nothing */
 	}
 	
+	/**
+	 * @see Ender#end()
+	 */
 	public void end(){
 		/* default end() does nothing */
 	}
 	
+	/**
+	 * Sets the buffer size in bytes to use.
+	 * 
+	 * @param size in bytes of event buffers
+	 */
 	protected void setBufferSize(int size){
 		bufferSize=size;
 	}
 	
+	/**
+	 * Gets the buffer size in bytes.
+	 * 
+	 * @return size in bytes of event buffers
+	 */
 	public int getBufferSize(){
 		return bufferSize;
 	}
 	
+	/**
+	 * Creates a one-dimensional, integer-valued, histogram.
+	 * 
+	 * @param numCh number of bins
+	 * @param name unique name
+	 * @param title verbose title
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt1D createHist1D(int numCh, String name, String title, String labelX,
 			String labelY){
 		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title,labelX,labelY);
 	}
+	
+	/**
+	 * Creates a one-dimensional, integer-valued, histogram.
+	 * 
+	 * @param numCh number of bins
+	 * @param name unique name
+	 * @param title verbose title
+	 * @return a newly allocated histogram
+	 */	
 	public static HistInt1D createHist1D(int numCh, String name, String title){
 		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title);
 	}
+
+	/**
+	 * Creates a one-dimensional, integer-valued, histogram.
+	 * 
+	 * @param numCh number of bins
+	 * @param name unique name
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt1D createHist1D(int numCh, String name){
 		return (HistInt1D)Histogram.createHistogram(new int[numCh],name);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal axis
+	 * @param chY number of bins along the vertical axis
+	 * @param name unique name
+	 * @param title verbose title
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name, String title, String labelX,
 			String labelY){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title,labelX,labelY);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal axis
+	 * @param chY number of bins along the vertical axis
+	 * @param name unique name
+	 * @param title verbose title
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name, String title){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal axis
+	 * @param chY number of bins along the vertical axis
+	 * @param name unique name
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, int chY, String name){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param name unique name
+	 * @param title verbose title
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, String name, String title, String labelX,
 			String labelY){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title,labelX,labelY);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param name unique name
+	 * @param title verbose title
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, String name, String title){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title);
 	}
+	
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param name unique name
+	 * @return a newly allocated histogram
+	 */
 	public static HistInt2D createHist2D(int chX, String name){
 		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name);
 	}

@@ -22,10 +22,20 @@ public final class SortMode {
 		mode=iMode;
 	}
 	
+	/**
+	 * Returns whether this mode represents online data acquisition.
+	 * 
+	 * @return whether this mode represents online data acquisition
+	 */
 	public boolean isOnline(){
 		return mode==I_ON_DISK || mode==I_ON_NODISK;
 	}
 	
+	/**
+	 * Returns whether this mode represents offline sorting.
+	 * 
+	 * @return whether this mode represents offline sorting
+	 */
 	public boolean isOffline(){
 		return mode==I_OFFLINE;
 	}
