@@ -5,7 +5,6 @@ import jam.global.JamProperties;
 import jam.util.YaleCAENgetScalers;
 
 import java.io.File;
-import javax.swing.JFrame;
 import javax.swing.JFileChooser;
 import jam.io.ExtensionFileFilter;
 
@@ -26,10 +25,8 @@ public class OpenScalersYaleCAEN extends AbstractCommand {
 	/**
 	 * 
 	 */
-	protected void execute(Object[] cmdParams) {
-		
-		JFrame frame =status.getFrame();		
-		File file;
+	protected void execute(Object[] cmdParams) {		
+		final File file;
 		if (cmdParams==null) {
 			file = getFile();					
 		} else {
