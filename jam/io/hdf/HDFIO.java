@@ -181,12 +181,12 @@ public class HDFIO implements DataIO,JamHDFFields {
      */
     public void writeFile(boolean wrthis, boolean wrtgate, 
     boolean wrtscalers, boolean wrtparameters, File file) {
-        final java.util.List hist=new ArrayList();
+        java.util.List hist=new ArrayList();
         final java.util.List gate=new ArrayList();
-        final java.util.List scaler=new ArrayList();
-        final java.util.List parameter=new ArrayList();        
+        java.util.List scaler=new ArrayList();
+        java.util.List parameter=new ArrayList();        
         if (wrthis){
-            hist.addAll(Histogram.getHistogramList());
+            hist=Histogram.getHistogramList();
         } 
         if (wrtgate) {
             gate.addAll(Gate.getGateList());
@@ -199,10 +199,10 @@ public class HDFIO implements DataIO,JamHDFFields {
             }
         } 
         if (wrtscalers) {
-            scaler.addAll(Scaler.getScalerList());
+            scaler=Scaler.getScalerList();
         } 
         if (wrtparameters) {
-            parameter.addAll(DataParameter.getParameterList());
+            parameter=DataParameter.getParameterList();
         } 
         writeFile(file, hist, gate, scaler, parameter);
     }
