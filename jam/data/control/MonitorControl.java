@@ -43,15 +43,9 @@ public final class MonitorControl
 	private final MessageHandler msgHandler;
 
 	//widgets for configuration
-	private JPanel pConfig;
-	private JPanel pMonitors;
+	private final JPanel pMonitors;
 
-	private JLabel labelName;
-	private JLabel labelThres;
-	private JLabel labelMax;
-	private JLabel labelAlarm;
-
-	private JSpinner spinnerUpdate;
+	private final JSpinner spinnerUpdate;
 
 	//general variables
 	private boolean sortMonitors = false; //have Monitors been added by sort
@@ -75,43 +69,25 @@ public final class MonitorControl
 		final Container cdconfig = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
-
-		int spacing = 5;
+		final int spacing = 5;
 		cdconfig.setLayout(new GridLayout(0, 1, spacing, spacing));
-		pConfig = new JPanel(new BorderLayout());
+		final JPanel pConfig = new JPanel(new BorderLayout());
 		Border border = new EmptyBorder(5, 10, 0, 10);
 		pConfig.setBorder(border);
 		cdconfig.add(pConfig);
-
 		JPanel pUpper = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pConfig.add(pUpper, BorderLayout.CENTER);
-
-		//Panel to fill in with monitors
+		/* Panel to fill in with monitors */
 		pMonitors = new JPanel(new GridLayout(0, 4, 5, 5));
 		pUpper.add(pMonitors);
-
-		labelName = new JLabel("Name", JLabel.CENTER);
-		labelThres = new JLabel("Threshold", JLabel.CENTER);
-		labelMax = new JLabel("Maximum", JLabel.CENTER);
-		labelAlarm = new JLabel("Alarm", JLabel.LEFT);
-		pMonitors.add(labelName);
-		pMonitors.add(labelThres);
-		pMonitors.add(labelMax);
-		pMonitors.add(labelAlarm);
-
-		//Lower panel has widgets that do not change
+		/* Lower panel has widgets that do not change */
 		final JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
 		pConfig.add(pLower, BorderLayout.SOUTH);
-
-		// panel for update time
+		/* panel for update time */
 		final JPanel pupdate = new JPanel();
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pLower.add(pupdate);
-
-		//panel of update time
-		JLabel lUpdate = new JLabel("Update", JLabel.RIGHT);
-		pupdate.add(lUpdate);
-
+		pupdate.add(new JLabel("Update every", JLabel.RIGHT));
 		final Integer one = new Integer(1);
 		final Integer init = new Integer(1);
 		spinnerUpdate =
@@ -119,17 +95,13 @@ public final class MonitorControl
 		spinnerUpdate.setPreferredSize(new Dimension(50, 
 		spinnerUpdate.getPreferredSize().height));
 		pupdate.add(spinnerUpdate);
-
-		JLabel lunit = new JLabel("sec", JLabel.LEFT);
-		pupdate.add(lunit);
-
-		/// panel for buttons
+		pupdate.add(new JLabel("sec", JLabel.LEFT));
+		/* panel for buttons */
 		final JPanel pbutton =
 			new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pLower.add(pbutton);
 		JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
 		pbutton.add(pb);
-
 		final JButton brecall = new JButton("Recall");
 		brecall.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -137,7 +109,6 @@ public final class MonitorControl
 			}
 		});
 		pb.add(brecall);
-
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -147,7 +118,6 @@ public final class MonitorControl
 			}
 		});
 		pb.add(bok);
-
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -156,23 +126,20 @@ public final class MonitorControl
 			}
 		});
 		pb.add(bapply);
-
 		final JButton bcancel = new JButton("Cancel");
 		bcancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				configured = false;
-				//stop monitor thread if running
+				/* stop monitor thread if running */
 				if (loopThread != null){
 					loopThread.setState(GoodThread.STOP);
 				}
 			}
 		});
 		pb.add(bcancel);
-
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		// setup monitors
+		/* setup monitors */
 		setup();
-
 	}
 
 	/**
@@ -185,19 +152,20 @@ public final class MonitorControl
 		final int cols = 6;
 		/* Clear panel */
 		pMonitors.removeAll();
-		/* Add labels of columns */
-		pMonitors.add(labelName);
-		pMonitors.add(labelThres);
-		pMonitors.add(labelMax);
-		pMonitors.add(labelAlarm);
 		/* for each monitor make a panel with
 		 * label, threshold, maximum, and alarm */
-		Iterator monitors = Monitor.getMonitorList().iterator();
+		final Iterator monitors = Monitor.getMonitorList().iterator();
+		if (monitors.hasNext()){
+			/* Add labels of columns */
+			pMonitors.add(new JLabel("Name", JLabel.CENTER));
+			pMonitors.add(new JLabel("Threshold", JLabel.CENTER));
+			pMonitors.add(new JLabel("Maximum", JLabel.CENTER));
+			pMonitors.add(new JLabel("Alarm", JLabel.LEFT));
+		}
 		while (monitors.hasNext()) {
 			Monitor monitor = (Monitor) monitors.next();
 			final JLabel labelConfig =
 				new JLabel(monitor.getName(), JLabel.CENTER);
-			//labelConfig[i].setText();
 			pMonitors.add(labelConfig);
 			final JTextField textThreshold = new JTextField();
 			textThreshold.setColumns(cols);
