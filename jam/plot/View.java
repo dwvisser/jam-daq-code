@@ -5,7 +5,6 @@ import jam.util.StringUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,6 +20,17 @@ import java.util.TreeMap;
  */
 public final class View {
 
+	private final static List viewNameList;
+	
+	private final static Map viewMap;	
+
+	static {
+		viewNameList= new ArrayList();
+		viewMap = new TreeMap();
+	}
+	
+	public static final View SINGLE=new View("Single", 1,1) ;
+	
 	private final int NAME_LENGTH = 20;
 	
 	private final String name;
@@ -30,17 +40,6 @@ public final class View {
 	private final int nCols;
 	
 	private final String [] histogramNames;
-	
-	private final static List viewNameList;
-	
-	private final static Map viewMap;
-	
-	public static final String SINGLE="Single" ;
-	
-	static {
-		viewNameList= new ArrayList();
-		viewMap = new TreeMap();
-	}
 	
 	public View(String viewName, int rows, int cols){	
 		if (rows < 1) {
@@ -54,34 +53,37 @@ public final class View {
 		String tempName=viewName;
 		nRows=rows;
 		nCols=cols;
-		String addition;
 		StringUtilities su = StringUtilities.instance();
 		int prime;
 		final int numHists=rows*cols;
 		histogramNames= new String[numHists];
 		prime=1;
-		addition="";
 		while (viewMap.containsKey(tempName)) {
-			addition = "[" + prime + "]";
+			final String addition = "[" + prime + "]";
 			tempName = su.makeLength(tempName, NAME_LENGTH - addition.length())
 			       + addition;			
 			prime++;			
 		}
 		name=tempName;
-		viewMap.put(name, this);
+		addView(name,this);
+	}
+	
+	private static synchronized void addView(String name, View view){
+		viewMap.put(name,view);
 		viewNameList.add(name);
 	}
 	
-	public static Iterator getNameIterator(){
-		return Collections.unmodifiableList(viewNameList).iterator();
+	public static List getNameList(){
+		return Collections.unmodifiableList(viewNameList);
 	}
 	
-	public static View getView(String name){
+	public static synchronized View getView(String name){
 		return (View)viewMap.get(name);
 	}
 	
-	public static void removeView(String name){
+	public static synchronized void removeView(String name){
 		viewMap.remove(name);
+		viewNameList.remove(name);
 	}
 	
 	/**
@@ -127,5 +129,9 @@ public final class View {
 	void setHistogram(int num, Histogram histIn){
 		final String name = histIn==null ? null : histIn.getName();
 		histogramNames[num]=name;
+	}
+	
+	public String getName(){
+		return name;
 	}
 }
