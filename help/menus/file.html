@@ -12,35 +12,60 @@
 
 <p>Most commands in this menu access disk files.  All state in the command title what the standard extension to the filename is.</p>
 
-<dl>
-  <dt>New</dt><dd>--Erase histograms, scalers, and gates...start fresh.</dd>
+  <h3>New</h3><p>Erase histograms, scalers, and gates...start fresh.</p>
   
-  <dt>Open(hdf)...</dt><dd>--Enabled if no sort file has been loaded.  Reads in histograms and scalers from an <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2-formatted</a> file, replacing any data currently being viewed.</dd>
+  <h3>Open(hdf)...</h3><p>Enabled if no sort file has been loaded.  
+  Reads in histograms and scalers from an 
+  <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2-formatted</a> file, 
+  replacing any data currently being viewed.</p>
   
-  <dt><a name="reload">Reload(hdf)...</a></dt><dd>--Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</dd>
+  <h3><a name="reload">Reload(hdf)...</a></h3><p>Enabled only if a sort file has been loaded.  Replaces data in Histogram, Gate and Scaler objects with the data in any identically named objects in the file.</p>
   
-  <dt><a name="save"Save(hdf)</a></dt><dd>--Saves all gates, scalers, and histograms in memory to the current HDF file.</dd>
+  <h3><a name="save">Save(hdf)</a></h3><p>Saves all gates, scalers, and histograms in memory to the current HDF file.</p>
   
-  <dt>Save as...(hdf)</dt><dd>--Same as save, except the user is prompted with a file dialog to name the file.</dd>
-  
-  <dt>Import/Export</dt><dd>--import/export spectra from other data formats.</dd>
+  <h3><a name="saveas">Save as...(hdf)</a></h3><p>Same as save, except the user is prompted with a file dialog to name the file.</p>
+  <h3>Special</h3>
+  <dl>
+  <dt>Open Selected Histogram...</dt>
+  <dd>After selecting an HDF file, you are given a dialog to select on histogram 
+  contained in the file. You may type a short <em>File Indicator</em> in the given field
+  to help uniquely identify the histogram once loaded.</dd>
+  <dt>Save gates, scalers and parameters as HDF...</dt>
+  <dd>Same as <a href="#saveas">above</a>, except no histograms are saved in order to 
+  save disk space, reduce access time, and make it easy to reload gates later on.</dd>
+  </dl>
+  <h3>Utilities</h3>
+  <dl>
+  <dt><a name="dispscal">Display scaler values from a YaleCAEN event file...</a></dt>
+  <dd>Gives you a file dialog from which to choose an event file, which <em>must</em>
+  be YaleCAEN formatted for this feature to work. Once selected, the file is scanned 
+  and a dialog is popped up with a tab-delimited text table of all the stored scaler
+  blocks that were in that file. It is possible on most systems to select and copy this
+  text to your favorite external program.</dd>
+  <dt>Scan HDF files for scaler values...</dt>
+  <dd>Gives you a dialog where you must specify the experiment name that was used for
+  the HDF files, the path containing the files, and a range of runs to scan the files
+  for. Clicking OK or Apply then launches a process which reads the scaler values out
+  of all the HDF files and constructs a text table just like the 
+  <a href="#dispscal">above</a> command.</dt>
+  </dl>
+  <h3>Import/Export</h3><p>Import spectra from or export them to other data formats.</p>
   <dl>
     <dt>ASCII...</dt><dd>
     Jam expects ASCII files to have data organized in rows with numbers in those rows separated by "whitespace", i.e., spaces or tabs. Any number representing counts in a bin may be a floating point number, and in fact, the histogram created uses floating point numbers to represent bin counts. If the first line in the file has text not starting with a numeral, the first line will be used to generate the name of the histogram. Otherwise, the filename is used. One- and two-column files are assumed to contain a one-dimensional histogram. The row number (starting at zero) is the channel in one-column files. The format for two-column files is channel number and counts in pairs separated by white space, e.g. <blockquote><code>0 4<br>1 3<br>2 0<br>...<br></code></blockquote>
     Three-column files are assumed to be two-dimensional histograms stored in "x y z" format. Any file with more than 3 columns is assumed to be in matrix form, with tabs between elements and carriage returns between rows. Jam exports 1-d histograms as 2-column ASCII files, and 2-d histograms as matrix-form ASCII files.</dd>
     
-    <dt>ORNL .drr .his ...</dt><dd>--This is a multiple spectrum (1- to multi- dimensional) file format, written by Milner for use at Oak Ridge National Lab.  The files always come in pairs, a <code>filename.drr</code> directory file and a <code>filename.his</code> histogram file.  The <code>filename</code> before the period is the same for both.</dd>
+    <dt>ORNL .drr .his ...</dt><dd>This is a multiple spectrum (1- to multi- dimensional) file format, written by Milner for use at Oak Ridge National Lab.  The files always come in pairs, a <code>filename.drr</code> directory file and a <code>filename.his</code> histogram file.  The <code>filename</code> before the period is the same for both.</dd>
     
-    <dt>Radware .spe</dt><dd>--This is the 1-d histogram format used by the gf2 program.</dd>
+    <dt>Radware .spe</dt><dd>This is the 1-d histogram format used by the gf2 program.</dd>
     
-    <dt>XSYS .dat ...</dt><dd>--Imports spectra (no export capability) using the <span class=acronym>XSYS</span> format. <span class=acronym>XSYS</span> is a data acquistion program written at Triangle Universities Nuclear Laboratory. It has been used at the University of Washington
+    <dt>XSYS .dat ...</dt><dd>Imports spectra (no export capability) using the <span class=acronym>XSYS</span> format. <span class=acronym>XSYS</span> is a data acquistion program written at Triangle Universities Nuclear Laboratory. It has been used at the University of Washington
 Center for Experimental Nuclear Physics and Astrophysics.</dd>
-    <dt>Batch Export...</dt><dd>--A dialog for exporting a list of histograms to a selected folder in one selected format all at once. The filenames are the histgram names plus the default file extension for the selected format.</dd>
-        <dt>JHF Format</dt><dd>--A duplicate set of Save, Save as..., Open... and Reload... commands using a previous file format, which is no longer supported. All work gets saved using the <a href="http://hdf.ncsa.uiuc.edu/hdf4.html">HDF 4.1r2</a> format now.
+    <dt>Batch Export...</dt><dd>A dialog for exporting a list of histograms to a selected folder in one selected format all at once. The filenames are the histgram names plus the default file extension for the selected format.</dd>
 </dl>
-<dt>Print Setup...</dt><dd>--Sets the options in the print dialog box.</dd>
-<dt>Print...</dt><dd>--Brings up the print dialog box, and lets you send the print job.</dd>
-<dt>Exit...</dt><dd>--Exits the program after receiving verification in a final dialog box.</dd>
+<h3>Print Setup...</h3><p>Sets the options in the print dialog box.</p>
+<h3>Print...</h3><p>Brings up the print dialog box, and lets you send the print job.</p>
+<h3>Exit...</h3><p>Exits the program after receiving verification in a final dialog box.</p>
 </dl>
 
 <a href="index.html">Back</a> to Menus.
