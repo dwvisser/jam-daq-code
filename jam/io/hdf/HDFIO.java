@@ -160,7 +160,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         final List scalerList = Scaler.getScalerList();
         final List paramList = DataParameter.getParameterList();
-        asyncWriteFile(file, histList, gateList, scalerList, paramList);
+        spawnAsyncWriteFile(file, histList, gateList, scalerList, paramList);
     }
 
     /**
@@ -211,18 +211,18 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     : EMPTY_LIST;
             final List parameter = wrtparams ? DataParameter.getParameterList()
                     : EMPTY_LIST;
-            asyncWriteFile(file, histList, gateList, scaler, parameter);
+            spawnAsyncWriteFile(file, histList, gateList, scaler, parameter);
         }
     }
 
     /*
      * non-javadoc: Asyncronized write
      */
-    private void asyncWriteFile(final File file, final List histograms,
+    private void spawnAsyncWriteFile(final File file, final List histograms,
             final List gates, final List scalers, final List parameters) {
         final Thread thread = new Thread(new Runnable() {
             public void run() {
-                writeFile(file, histograms, gates, scalers, parameters);
+                asyncWriteFile(file, histograms, gates, scalers, parameters);
             }
         });
         thread.start();
@@ -244,7 +244,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @param parameters
      *            list of <code>Parameter</code> objects to write
      */
-    private void writeFile(File file, List hists, List gates, List scalers,
+    private void asyncWriteFile(File file, List hists, List gates, List scalers,
             List parameters) {
         final StringBuffer message = new StringBuffer();
         int progress = 1;
@@ -351,20 +351,36 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
-        readFile(mode, infile, null);
+    	spawnAsyncReadFile(mode, infile, null);
+        return true;
+    }
+    /**
+     * Read in an HDF file.
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile,List histNames) {
+    	spawnAsyncReadFile(mode, infile, histNames);
         return true;
     }
 
     /*
      * non-javadoc: Asyncronized write
      */
-    public void aareadFile(final FileOpenMode mode, final File infile, final List histNames) {
+    public void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
+    	/*
         final Thread thread = new Thread(new Runnable() {
             public void run() {
-            //	asyncReadFile(mode, infile, histNames);
+            	asyncReadFile(mode, infile, histNames);
             }
-        });
+        }); 
         thread.start();
+        */
+        asyncReadFile(mode, infile, histNames);
     }
 
     /**
@@ -372,13 +388,13 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * 
      * @param infile
      *            file to load
-     * @param mode
+     * @param modes
      *            whether to open or reload
      * @param histNames
      *            names of histograms to read, null if all
      * @return <code>true</code> if successful
      */
-    public boolean readFile(FileOpenMode mode, File infile, List histNames) {
+    public boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
         boolean rval = true;
         final int amountToDo = mode == FileOpenMode.ADD ? 4 : 6;
         final ProgressMonitor monitor = new ProgressMonitor(frame,
