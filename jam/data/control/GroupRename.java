@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.DataException;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
@@ -61,25 +62,32 @@ public class GroupRename extends AbstractControl {
 	}
 	
 	public void show() {
-		currentGroup = STATUS.getCurrentGroup();
-		if (currentGroup==null) {
-			msgHandler.errorOutln("Need to select a group.");			
-		} else {
-			if ( currentGroup.getType() != Group.Type.SORT) {
-				textName.setText(currentGroup.getName());			
-				super.show();
-			}else {
-				msgHandler.errorOutln("Cannot rename sort groups, selected group "+currentGroup.getName()+".");
-			}
-		}
-	}
+        currentGroup = STATUS.getCurrentGroup();
+        if (currentGroup == null) {
+            msgHandler.errorOutln("Need to select a group.");
+        } else {
+            if (currentGroup.getType() == Group.Type.SORT) {
+                msgHandler
+                        .errorOutln("Cannot rename sort groups, selected group "
+                                + currentGroup.getName() + ".");
+            } else {
+                textName.setText(currentGroup.getName());
+                super.show();
+            }
+        }
+    }
+	
 	/**
 	 * Create a new group
 	 *
 	 */
 	private void renameGroup() {
-		currentGroup.setName( textName.getText() );
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-	}
-
+        final String name = textName.getText();
+        try {
+            currentGroup.setName(name);
+            BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        } catch (DataException dataError) {
+            msgHandler.errorOutln("Can't rename to existing name: " + name);
+        }
+    }
 }
