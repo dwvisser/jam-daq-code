@@ -20,7 +20,7 @@ import javax.swing.*;
  */
 public class HDFIO implements DataIO,JamHDFFields {
 
-    private String defaultPath;
+    private final String defaultPath=JamProperties.getPropString(JamProperties.HIST_PATH);
 
     /**
      * last file successfully read from or written to
@@ -37,12 +37,12 @@ public class HDFIO implements DataIO,JamHDFFields {
     /**
      * Parent frame.
      */
-    private Frame frame;
+    private final Frame frame;
 
     /**
      * Where messages get sent (presumably the console).
      */
-    private MessageHandler msgHandler;
+    private final MessageHandler msgHandler;
 
     private VirtualGroup histGroup,gateGroup;
 
@@ -69,27 +69,38 @@ public class HDFIO implements DataIO,JamHDFFields {
     private String fileNameOpen;
 
     /**
-     * Class constructor handed references to the main class and message handler.
-     */
-    public HDFIO(Frame frame,  MessageHandler msgHandler){
-        this.frame=frame;
-        this.msgHandler=msgHandler;
-        defaultPath=JamProperties.getPropString(JamProperties.HIST_PATH);
-        fu=new FileUtilities(frame,defaultPath);
-    }
-
-    /**
-     * Constructor for file read access outside jam.  No frame or message handler given.
+     * Constructor for file read access outside of any GUI context.
+     * 
+     * @param file to read from
+     * @throws HDFException if there's a formatting error
+     * @throws IOException if ther's a problem accessing the file
      */
     public HDFIO(File file) throws HDFException, IOException {
+    	frame=null;
+    	msgHandler=null;
         in = new HDFile(file, "r");
         in.seek(0);
         in.readObjects();//reads file into set of DataObject's, sets their internal variables
     }
 
     /**
-     * Writes out to a specified file all the currently held spectra, gates, scalers,
-     * and parameters.
+     * Class constructor handed references to the main class and 
+     * message handler.
+     *
+     * @param f the parent window
+     * @param mh where to send output
+     */
+    public HDFIO(Frame f,  MessageHandler mh){
+        this.frame=f;
+        this.msgHandler=mh;
+        fu=new FileUtilities(frame,defaultPath);
+    }
+
+    /**
+     * Writes out to a specified file all the currently held spectra, 
+     * gates, scalers, and parameters.
+     *
+     * @param file to write to
      */
     public void writeFile(File file) {
         writeFile(true, true, true, true, file);
@@ -103,7 +114,8 @@ public class HDFIO implements DataIO,JamHDFFields {
     }
 
     /**
-     * Writes out the currently held spectra, gates, and scalers, subject to the options given.
+     * Writes out the currently held spectra, gates, and scalers, 
+     * subject to the options given.
      * (Parameters are always written.)
      *
      * @param  wrthis  if true, Histograms will be written
@@ -115,7 +127,8 @@ public class HDFIO implements DataIO,JamHDFFields {
     }
 
     /**
-     * Writes out the currently held spectra, gates, and scalers, subject to the options given
+     * Writes out the currently held spectra, gates, and scalers, 
+     * subject to the options given
      *.
      * @param  wrthis  if true, Histograms will be written
      * @param  wrtgate  if true, Gates will be written
@@ -124,95 +137,92 @@ public class HDFIO implements DataIO,JamHDFFields {
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers,
     boolean wrtparameters)   {
-        JFileChooser jfile = new JFileChooser(fileSave);
+        final JFileChooser jfile = new JFileChooser(fileSave);
         jfile.setFileFilter(new HDFileFilter(true));
-        int option=jfile.showSaveDialog(frame);
-        // dont do anything if it was cancel
+        final int option=jfile.showSaveDialog(frame);
+        /* don't do anything if it was cancel */
         if (option == JFileChooser.APPROVE_OPTION && jfile.getSelectedFile() != null) {
-            fileSave = jfile.getSelectedFile();
-            writeFile(wrthis, wrtgate, wrtscalers, fileSave);
+            synchronized(this){
+            	fileSave = jfile.getSelectedFile();
+            }
+            writeFile(wrthis, wrtgate, wrtscalers, wrtparameters, fileSave);
         }
     }
 
     /**
-     * Writes out (to a specific file) the currently held spectra, gates, and scalers, subject to the
-     * options given.
-     * Sets separately which data writeFile should actually output.  Not writing histograms
-     * when you are saving tape data can significantly save time when you have many 2-d spectra.
-     * parameters always written
+     * Writes out (to a specific file) the currently held spectra, 
+     * gates, and scalers, subject to the options given.
+     * Sets separately which data writeFile should actually output.  
+     * Not writing histograms when you are saving tape data can 
+     * significantly save time when you have many 2-d spectra.
+     * Any <code>Parameters</code> are always written with this call.
+     *
      * @param  wrthis  if true, Histograms will be written
      * @param  wrtgate  if true, Gates will be written
      * @param  wrtscalers  if true, scaler values will be written
+     * @param file to write to
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, File file) {
         writeFile( wrthis,  wrtgate,  wrtscalers, true, file);
     }
 
     /**
-     * Writes out (to a specific file) the currently held spectra, gates, and scalers, subject to the
-     * options given.
-     * Sets separately which data writeFile should actually output.  Not writing histograms
-     * when you are saving tape data can significantly save time when you have many 2-d spectra.
+     * Writes out (to a specific file) the currently held spectra, 
+     * gates, and scalers, subject to the options given.
+     * Sets separately which data writeFile should actually output.
+     * Not writing histograms when you are saving tape data can 
+     * significantly save time when you have many 2-d spectra.
      *
      * @param  wrthis  if true, Histograms will be written
      * @param  wrtgate  if true, Gates will be written
      * @param  wrtscalers  if true, scaler values will be written
      * @param  wrtparameters if true, parameter values will be written
+     * @param file to write to
      */
-    public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, boolean wrtparameters, File file) {
-        java.util.List hist, gate, scaler, parameter;
-        
-        final boolean writeHistograms=wrthis;
-        final boolean writeGates=wrtgate;
-        final boolean writeScalers=wrtscalers;
-        final boolean writeParameters=wrtparameters;
-        if (writeHistograms){
-            hist = Histogram.getHistogramList();
-        } else {
-            hist=new Vector(0);
-        }
-        if (writeGates) {
-            gate = Gate.getGateList();
-            /* only save those gates which are defined */
-            Vector temp = new Vector(gate.size());
-            for (Iterator enum = gate.iterator() ; enum.hasNext() ;) {
-                Gate g=(Gate)(enum.next());
-                if (g.isDefined()){
-                    temp.addElement(g);
+    public void writeFile(boolean wrthis, boolean wrtgate, 
+    boolean wrtscalers, boolean wrtparameters, File file) {
+        final java.util.List hist=new ArrayList();
+        final java.util.List gate=new ArrayList();
+        final java.util.List scaler=new ArrayList();
+        final java.util.List parameter=new ArrayList();        
+        if (wrthis){
+            hist.addAll(Histogram.getHistogramList());
+        } 
+        if (wrtgate) {
+            gate.addAll(Gate.getGateList());
+            final Iterator enum = gate.iterator();  
+            while (enum.hasNext()) {
+                final Gate g=(Gate)(enum.next());
+                if (!g.isDefined()){
+                    enum.remove();
                 }
             }
-            temp.trimToSize();
-            gate=temp;
-        } else {
-            gate=new Vector(0);
-        }
-        if (writeScalers) {
-            scaler = Scaler.getScalerList();
-        } else {
-            scaler = new Vector(0);
-        }
-        if (writeParameters) {
-            parameter = DataParameter.getParameterList();
-        } else {
-            parameter = new Vector(0);
-        }
+        } 
+        if (wrtscalers) {
+            scaler.addAll(Scaler.getScalerList());
+        } 
+        if (wrtparameters) {
+            parameter.addAll(DataParameter.getParameterList());
+        } 
         writeFile(file, hist, gate, scaler, parameter);
     }
 
     /**
-     * Given separate vectors of the writeable objects, constructs and writes out an HDF file
-     * containing the contents.  Null or empty
+     * Given separate vectors of the writeable objects, constructs and
+     * writes out an HDF file containing the contents.  Null or empty
      * <code>Vector</code> arguments are skipped.
      *
      * @param  file  disk file to write to
-     * @param  spectra  specified list of <code>Histogram</code> objects to write
-     * @param  gates  specified list of <code>Gate</code> objects to write
-     * @param  scalers  specified list of <code>Scaler</code> objects to write
-     * @param  parameters specified list of <code>Parameter</code> objects to write
+     * @param  spectra  list of <code>Histogram</code> objects to write
+     * @param  gates  list of <code>Gate</code> objects to write
+     * @param  scalers  list of <code>Scaler</code> objects to write
+     * @param  parameters list of <code>Parameter</code> objects to write
      */
     private void writeFile(File file, java.util.List spectra, java.util.List gates, java.util.List scalers, java.util.List parameters) {
         try {
-            out = new HDFile(file,"rw");
+        	synchronized(this){
+            	out = new HDFile(file,"rw");
+            }
             msgHandler.messageOut("Save "+file.getName()+": ",MessageHandler.NEW);
             out.addFileID(file.getPath());
             out.addFileNote();
@@ -229,7 +239,8 @@ public class HDFIO implements DataIO,JamHDFFields {
             if (hasContents(spectra)){
                 addHistogramSection();
                 msgHandler.messageOut(spectra.size()+" histograms, ",MessageHandler.CONTINUE);
-                for (Iterator temp = spectra.iterator() ; temp.hasNext() ;) {
+                final Iterator temp = spectra.iterator() ;
+                while (temp.hasNext()) {
                     addHistogram((Histogram)(temp.next()));
                     //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
                 }
@@ -237,9 +248,9 @@ public class HDFIO implements DataIO,JamHDFFields {
             if (hasContents(gates)){
                 addGateSection();
                 msgHandler.messageOut(gates.size()+" gates, ",MessageHandler.CONTINUE);
-                for (Iterator temp = gates.iterator() ; temp.hasNext() ;) {
+                final Iterator temp = gates.iterator() ;
+                while (temp.hasNext()) {
                     addGate((Gate)(temp.next()));
-                    //msgHandler.messageOut(" . ",MessageHandler.CONTINUE);
                 }
             }
             if (hasContents(scalers)){
@@ -258,17 +269,21 @@ public class HDFIO implements DataIO,JamHDFFields {
             msgHandler.messageOut("",MessageHandler.END);
             msgHandler.errorOutln("Exception writing to file '"+file.getName()+"': "+e.toString());
         }
-        out = null; //allows Garbage collector to free up memory
-        System.gc();
+        synchronized (this){
+        	out = null; //allows Garbage collector to free up memory
+        }
+        doCleanup();
         msgHandler.messageOut("done!",MessageHandler.END);
-        lastValidFile = file;
+        synchronized(this){
+        	lastValidFile = file;
+        }
     }
 
     /**
      * Read in an unspecified file by opening up a dialog box.
      *
      * @param  mode  whether to open or reload
-     * @return  <code>true</code> if successful, <code>false</code> if not
+     * @return  <code>true</code> if successful
      */
     public boolean readFile(int mode) {
         boolean outF=false;
@@ -277,7 +292,9 @@ public class HDFIO implements DataIO,JamHDFFields {
         final int option=jfile.showOpenDialog(frame);
         // dont do anything if it was cancel
         if (option == JFileChooser.APPROVE_OPTION && jfile.getSelectedFile() != null) {
-            fileSave = jfile.getSelectedFile();
+        	synchronized(this){
+            	fileSave = jfile.getSelectedFile();
+            }
             outF = readFile(mode, fileSave);
         } else {//dialog didn't return a file
             outF = false;
@@ -290,30 +307,38 @@ public class HDFIO implements DataIO,JamHDFFields {
      *
      * @param  infile  file to load
      * @param  mode  whether to open or reload
-     * @return  <code>true</code> if successful, <code>false</code> if not
+     * @return  <code>true</code> if successful
      */
     public boolean readFile(int mode, File infile) {
         boolean outF = true;
         try {
-            fileNameOpen=infile.getName();
+        	synchronized(this){
+            	fileNameOpen=infile.getName();
+            }
             if (mode==OPEN){
                 msgHandler.messageOut("Open "+fileNameOpen+": ",MessageHandler.NEW);
             } else {//reload
                 msgHandler.messageOut("Reload "+fileNameOpen+": ",MessageHandler.NEW);
             }
-            in = new HDFile(infile, "r");
+            synchronized (this) {
+            	in = new HDFile(infile, "r");
+            }
             in.seek(0);
-            in.readObjects();//reads file into set of DataObject's, sets their internal variables
+            /* read file into set of DataObject's, set their internal variables */
+            in.readObjects();
             getHistograms(mode);
             getScalers(mode);
             getGates(mode);
             getParameters(mode);
             in.close();
-            in = null;  // destroys reference to HDFile (and its DataObject's
-            //  allowing Garbage Collector to free up memory
-            System.gc();
+            synchronized(this){
+            	in = null;  // destroys reference to HDFile (and its DataObject's
+            }
+            doCleanup();
             msgHandler.messageOut("done!",MessageHandler.END);
-            lastValidFile = infile;
+            synchronized(this){
+            	lastValidFile = infile;
+            }
         } catch (HDFException except) {
             msgHandler.messageOut("",MessageHandler.END);
             msgHandler.errorOutln(except.toString());
@@ -325,6 +350,20 @@ public class HDFIO implements DataIO,JamHDFFields {
         }
         return outF;
     }
+    
+	/**
+	 * Create a thread which invokes the garbage collector. 
+	 */
+    private void doCleanup(){
+		final Runnable cleanup=new Runnable(){
+			public void run(){
+				System.gc();
+			}
+		};
+		final Thread runCleanup=new Thread(cleanup,
+		getClass().getName()+" cleanup");
+		runCleanup.start();
+    }
 
 
     /**
@@ -333,13 +372,15 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @see #addHistogram(Histogram)
      */
     protected void addHistogramSection(){
-        histGroup = new VirtualGroup(out, HIST_SECTION_NAME,FILE_SECTION_NAME);
+    	synchronized (this){
+        	histGroup = new VirtualGroup(out, HIST_SECTION_NAME,FILE_SECTION_NAME);
+        }
         new DataIDLabel(histGroup,HIST_SECTION_NAME);
     }
 
     /**
-     * Add the virtual group representing a single histogram, and link it into
-     * the virtual group representing all histograms.
+     * Add the virtual group representing a single histogram, and link
+     * it into the virtual group representing all histograms.
      *
      * @param  h   the histogram to add
      * @see #addHistogramSection()
@@ -413,7 +454,8 @@ public class HDFIO implements DataIO,JamHDFFields {
      */
     protected void getHistograms(int mode) throws HDFException{
         NumericalDataGroup ndg=null;
-        NumericalDataGroup ndgErr=null;//I check for null to determine if error bars exist
+        /* I check ndgErr==null to determine if error bars exist */
+        NumericalDataGroup ndgErr=null;
         Histogram histogram;
         try{
         	/* get list of all VG's in file */
@@ -442,7 +484,6 @@ public class HDFIO implements DataIO,JamHDFFields {
                     final NumericalDataGroup [] numbers = 
                     new NumericalDataGroup[tempVec.size()];
                     tempVec.toArray(numbers);
-                    //System.out.println("numbers has "+numbers.length+" elements");
                     if (numbers.length == 1) {
                         ndg=numbers[0]; //only one NDG -- the data
                     } else if (numbers.length == 2) {
@@ -550,7 +591,9 @@ public class HDFIO implements DataIO,JamHDFFields {
      * @see #addGate(Gate)
      */
     protected void addGateSection(){
-        gateGroup = new VirtualGroup(out,GATE_SECTION_NAME,FILE_SECTION_NAME);
+    	synchronized (this){
+        	gateGroup = new VirtualGroup(out,GATE_SECTION_NAME,FILE_SECTION_NAME);
+        }
         new DataIDLabel(gateGroup,GATE_SECTION_NAME);
     }
 
@@ -684,7 +727,8 @@ public class HDFIO implements DataIO,JamHDFFields {
     /**
      * Adds data objects for the virtual group of scalers.
      *
-     * @exception HDFException thrown if unrecoverable error occurs
+     * @throws HDFException thrown if unrecoverable error occurs
+     * @param scalers the list of scalers
      */
     protected void addScalerSection(java.util.List scalers) throws HDFException{
     	final short [] types = {VdataDescription.DFNT_INT32,

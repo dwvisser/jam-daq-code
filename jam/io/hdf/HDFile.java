@@ -6,8 +6,9 @@ import java.io.File;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.Map;
 import jam.global.MessageHandler;
 import jam.global.JamProperties;
 import jam.data.Histogram;
@@ -24,62 +25,58 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 *  number types automatically thrown into the file
 	 */
-	NumberType intNT, doubleNT;
-
-	/**
-	 * List of objects in the file.
-	 */
-	public List DataObjects;
-
-	/**
-	 * set by calls to SDDexists that have a true result
-	 */
-	public static ScientificDataDimension currentSDD;
-
-	/**
-	 * The size of the DD block.
-	 */
-	int DDblockSize;
-
-	/**
-	 * The offset to the first data object.  This is always 4+DDblockSize.
-	 */
-	int initialOffset;
-
-	/**
-	 * variable for marking position in file
-	 */
-	long mark = 0;
+	private NumberType intNT, doubleNT;
 
 	/**
 	 * Size of the file set in setOffsets()
 	 */
-	int fileSize;
+	private int fileSize;
+
+	/**
+	 * List of objects in the file.
+	 */
+	private final List objectList=new ArrayList();
+	private final Map tagMap=new HashMap();
+	//private final Map listMap=new HashMap();
+	//private final Map refMap=new HashMap();
+
+	/**
+	 * The size of the DD block.
+	 */
+	private int DDblockSize;
+
+	/**
+	 * variable for marking position in file
+	 */
+	private long mark = 0;
 
 	private File file; //File object corresponding to this object
 
 	/**
-	 * Constructor called with a <code>File</code> object, and an access mode.
+	 * Constructor called with a <code>File</code> object, and an access
+	 * mode.
 	 *
-	 * @param	file	file to be accessed
-	 * @param	mode	"r" or "rw"
+	 * @param f file to be accessed
+	 * @param mode "r" or "rw"
 	 * @exception HDFException error with hdf file
 	 * @exception IOException error opening file
 	 */
-	public HDFile(File file, String mode) throws HDFException, IOException {
-		super(file, mode);
-		this.file = file;
-		if (mode == "rw") { //Saving a file
+	public HDFile(File f, String mode) throws HDFException, IOException {
+		super(f, mode);
+		this.file = f;
+		if ("rw".equals(mode)) { //Saving a file
 			writeHeader();
-			DataObjects = new Vector();
 			addVersionNumber();
 		} else { //should be "r" ,i.e., opening a file
-			if (!checkMagicWord())
+			if (!checkMagicWord()){
 				throw new HDFException("Not a valid HDF File!");
-			DataObjects = new Vector();
+			}
 		}
 	}
 
+	/**
+	 * @return the file on disk being accessed
+	 */
 	public File getFile() {
 		return file;
 	}
@@ -92,10 +89,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Writes the unique 4-byte pattern at the head of the file denoting that it is an HDF file.
-	 * @exception HDFException error with writting hdf file
+	 * Writes the unique 4-byte pattern at the head of the file denoting
+	 * that it is an HDF file.
+	 *
+	 * @throws HDFException error with writing hdf file
 	 */
-
 	public void writeHeader() throws HDFException {
 		try {
 			seek(0);
@@ -106,29 +104,32 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Looks at the internal index of data elements and sets the offset fields of
-	 * the <code>DataObject</code>'s. To be run when all data elements have been defined.
+	 * Looks at the internal index of data elements and sets the offset
+	 * fields of the <code>DataObject</code>'s. To be run when all data
+	 * elements have been defined.
 	 */
 	public void setOffsets() {
-		int counter;
-
-		DDblockSize = 2 + 4 + 12 * DataObjects.size();
-		// numDD's + offset to next (always 0 here) + size*12 for
-		// tag/ref/offset/length info
-		initialOffset = DDblockSize + 4; //add in HDF file header
-		counter = initialOffset;
-		for (Iterator temp = DataObjects.iterator(); temp.hasNext();) {
-			DataObject ob = (DataObject) (temp.next());
-			ob.setOffset(counter);
-			//System.out.println("Tag/Ref "+ob.getTag()+"/"+ob.getRef()+" set offset to "
-			//+ob.getOffset());
-			counter = counter + ob.getLength();
+		synchronized (this) {
+			DDblockSize = 2 + 4 + 12 * objectList.size();
+			/* numDD's + offset to next (always 0 here) + size*12 for
+			 * tag/ref/offset/length info */
 		}
-		fileSize = counter;
+		final int initialOffset = DDblockSize + 4; //add in HDF file header
+		int counter = initialOffset;
+		final Iterator temp = objectList.iterator();
+		while (temp.hasNext()) {
+			final DataObject ob = (DataObject) (temp.next());
+			ob.setOffset(counter);
+			counter += ob.getLength();
+		}
+		synchronized (this) {
+			fileSize = counter;
+		}
 	}
 
 	/**
-	 * Given a data object, writes out the appropriate bytes to the file on disk.
+	 * Given a data object, writes out the appropriate bytes to the file
+	 * on disk.
 	 *
 	 * @param	data	HDF data element
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
@@ -144,16 +145,19 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Almost all of Jam's number storage needs are satisfied by the type hard-coded into the class
-	 * <code>NumberType</code>.  This method creates the <code>NumberType</code> object in the file
+	 * Almost all of Jam's number storage needs are satisfied by the type
+	 * hard-coded into the class <code>NumberType</code>.  This method
+	 * creates the <code>NumberType</code> object in the file
 	 * that gets referred to repeatedly by the other data elements.
 	 *
-	 * @exception HDFException thrown if there is an error creating the number types
-	 * @see NumberType
+	 * @see jam.io.hdf.NumberType
+	 * @throws HDFException if the types cannot be created
 	 */
 	public void addNumberTypes() throws HDFException {
-		intNT = new NumberType(this, NumberType.INT);
-		doubleNT = new NumberType(this, NumberType.DOUBLE);
+		synchronized (this){
+			intNT = new NumberType(this, NumberType.INT);
+			doubleNT = new NumberType(this, NumberType.DOUBLE);
+		}
 	}
 
 	/**
@@ -167,61 +171,94 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Easy access to the double number type.
+	 * @return the double number type.
 	 */
 	public NumberType getDoubleType() {
 		return doubleNT;
 	}
 
 	/**
-	 * Easy access to the int number type.
+	 * @return the int number type.
 	 */
 	public NumberType getIntType() {
 		return intNT;
 	}
 
 	/**
-	 * <p>Adds the data object to the file.  The reference number is implicitly assigned at this time
-	 * as the index number in the internal <code>Vector DataObjects</code>.  A typical call should look
-	 * like:</p>
+	 * <p>Adds the data object to the file.  The reference number is 
+	 * implicitly assigned at this time as the index number in the 
+	 * internal <code>Vector objectList</code>.  A typical call should 
+	 * look like:</p>
 	 * <blockquote><code>hdf = new hdfFile(outfile, "rw");<br>
 	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
 	 * <p>Each call causes setOffsets to be called.</p>
 	 *
 	 * @param data data object
-	 * @param useFileDefault	if true, automatically assigns ref number, else lets object decide
+	 * @param useFileDefault	if true, automatically assigns ref number, 
+	 * else lets object assign its own
 	 * @see	#getUniqueRef(DataObject)
 	 * @see	#setOffsets()
 	 */
 	public void addDataObject(DataObject data, boolean useFileDefault) {
-		DataObjects.add(data);
-		if (useFileDefault) {
-			data.setRef(getUniqueRef(data));
+		objectList.add(data);
+		Short tag=new Short(data.getTag());
+		if (!tagMap.containsKey(tag)){
+			tagMap.put(tag,new HashMap());
 		}
+		final Map refMap=(Map)tagMap.get(tag);
+		if (useFileDefault) {
+			data.setRef(getUniqueRef(refMap));
+		}
+		refMap.put(new Short(data.getRef()),data);
 	}
 
 	/**
 	 * The HDF standard
-	 * only requires that for a particular tag type, each instance have a unique ref.  Since our files
-	 * are not expected to contain more than several dozen objects, I take the simplest approach of simply
-	 * assigning the index number + 1 from the DataObjects Vector.
+	 * only requires that for a particular tag type, each instance have a
+	 * unique ref.  Since our files are not expected to contain more than
+	 * several dozen objects, I take the simplest approach of simply
+	 * assigning the index number + 1 from the objectList.
+	 * 
+	 * @return a reference number for the given HDF object
+	 * @param data HDF object needing a unique reference number
 	 */
-	public short getUniqueRef(DataObject data) {
-		return (short) (DataObjects.indexOf(data) + 1);
+	private short getUniqueRef(Map refs) {
+		/* a good guess is the size, almost always new */
+		short rval=(short)refs.size();
+		while (refs.containsKey(new Short(rval))){
+			rval++;
+		}
+		return rval;
+	}
+	
+	void changeRef(DataObject d, short oldref, short newref) {
+		Short tag=new Short(d.getTag());
+		Map refs=(Map)tagMap.get(tag);
+		Short old=new Short(oldref);
+		if (refs.containsKey(old)){
+			refs.remove(old);
+		}
+		/* if old not there, we were just called as the object was being
+		 * added to the file...no worries */
+		Short ref=new Short(newref);
+		if (!refs.containsKey(ref)){
+			refs.put(ref,d);
+		} else {
+			System.err.println("Trying to put: "+newref+
+			"for tag:"+tag+" when one already exists.");
+		}
 	}
 
 	/**
-	 * Returns the existing valid SDD type for the histogram, 
+	 * @return the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.
+	 * @param h that type is needed for
 	 */
-	public ScientificDataDimension getSDD(Histogram h) {
-		byte type;
-		
+	ScientificDataDimension getSDD(Histogram h) {
+		byte type=NumberType.DOUBLE;
 		if (h.getType() == Histogram.ONE_DIM_INT
 			|| h.getType() == Histogram.TWO_DIM_INT) {
 			type = NumberType.INT;
-		} else {
-			type = NumberType.DOUBLE;
 		}
 		return getSDD(h,type);
 	}
@@ -230,23 +267,23 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * Returns the existing valid SDD type for the histogram, 
 	 * creating a new one if necessary.  DOUBLE type
 	 * is explicitly requested, for error bars.
+	 *
+	 * @param h which type is needed for
+	 * @param numtype the number HDF uses to indicate the type
+	 * @return the SDD object representing the histogram size and number 
+	 * type
 	 */
-	public ScientificDataDimension getSDD(Histogram h, byte numtype) {
-		ScientificDataDimension sdd;
-		int rank, sizeX, sizeY;
+	ScientificDataDimension getSDD(Histogram h, byte numtype) {
 		ScientificDataDimension rval=null;//return value
-
-		rank = h.getDimensionality();
-		sizeX = h.getSizeX();
-		if (rank == 2) {
+		final int rank = h.getDimensionality();
+		final int sizeX = h.getSizeX();
+		int sizeY=0;
+		if (rank == 2) {//otherwise rank == 1
 			sizeY = h.getSizeY();
-		} else {
-			sizeY = 0;
-		}
-		for (Iterator temp = ofType(DataObject.DFTAG_SDD).iterator();
-			temp.hasNext();
-			) {
-			sdd = (ScientificDataDimension) temp.next();
+		} 
+		final Iterator temp = ofType(DataObject.DFTAG_SDD).iterator();
+		while (temp.hasNext()) {
+			final ScientificDataDimension sdd = (ScientificDataDimension) temp.next();
 			if (sdd.getType() == numtype && sdd.getSizeX() == sizeX) {
 				if ((rank == 1 && rank == sdd.getRank())
 					|| (rank == 2
@@ -268,17 +305,18 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException unrecoverable errror
 	 */
 	public void writeDataDescriptorBlock() throws HDFException {
-		int DDblockSize;
-
 		try {
-			DDblockSize = 2 + 4 + 12 * DataObjects.size();
+			synchronized(this){
+				DDblockSize = 2 + 4 + 12 * objectList.size();
+			}
 			/* numDD's + offset to next (always 0 here) + size*12 for
 			 * tag/ref/offset/length info */
 			seek(4); //skip header
-			writeShort(DataObjects.size()); //number of DD's
+			writeShort(objectList.size()); //number of DD's
 			writeInt(0); //no additional descriptor block
-			for (Iterator temp = DataObjects.iterator(); temp.hasNext();) {
-				DataObject ob = (DataObject) (temp.next());
+			final Iterator temp = objectList.iterator();
+			while (temp.hasNext()) {
+				final DataObject ob = (DataObject) (temp.next());
 				writeShort(ob.getTag());
 				writeShort(ob.getRef());
 				writeInt(ob.getOffset());
@@ -291,31 +329,30 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Called after all <code>DataObject</code> objects have been created.
+	 * Called after all <code>DataObject</code> objects have been 
+	 * created.
 	 *
 	 * @exception HDFException thrown if err occurs during file write
+	 * @param msg output text area
 	 */
 	public void writeAllObjects(MessageHandler msg) throws HDFException {
-		int size, counter, outbar;
-		double bar, remaining;
-		DataObject ob;
-		
-		size = fileSize;
-		counter = fileSize;
-		outbar = 9;
-		for (Iterator temp = DataObjects.iterator();
-			temp.hasNext();
-			counter -= ob.getLength()) {
-			ob = (DataObject) (temp.next());
-			if (ob.getLength() == 0)
+		final int size = fileSize;
+		int counter = fileSize;
+		int outbar = 9;
+		final Iterator temp = objectList.iterator();
+		while (temp.hasNext()) {
+			final DataObject ob = (DataObject) (temp.next());
+			if (ob.getLength() == 0){
 				throw new HDFException("DataObject with no length encountered, halted writing HDF File");
+			}
 			writeDataObject(ob);
-			remaining = (double) counter / (double) size;
-			bar = (double) outbar / 10.0;
+			final double remaining = (double) counter / (double) size;
+			final double bar = (double) outbar / 10.0;
 			if (remaining < bar) {
 				msg.messageOut(" " + outbar, MessageHandler.CONTINUE);
 				outbar--;
 			}
+			counter -= ob.getLength();
 		}
 	}
 	/**
@@ -323,14 +360,12 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void printDDblock() throws HDFException {
-		int numDD;
-		int nextBlock;
 		try {
 			boolean doAgain = true;
 			seek(4);
 			do {
-				numDD = readShort(); //number of DD's
-				nextBlock = readInt();
+				readShort(); //skip number of DD's
+				final int nextBlock = readInt();
 				if (nextBlock == 0) {
 					doAgain = false;
 				} else {
@@ -347,70 +382,55 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readObjects() throws HDFException {
-		int i;
-		int numDD;
-		int nextBlock;
-		boolean doAgain;
-		short tag;
-		short ref;
-		int offset;
-		int length;
-		byte[] bytes;
-		DataObject ob;
 		try {
 			seek(4);
-			doAgain = true;
+			boolean doAgain = true;
 			do {
-				numDD = readShort(); //number of DD's
-				nextBlock = readInt();
-				//System.out.println(numDD+" data elements, next block: "+nextBlock);
-				//System.out.println("Num. Tag  Ref  Offset  Length");
-				for (i = 1; i <= numDD; i++) {
-					tag = readShort();
-					ref = readShort();
-					offset = readInt();
-					length = readInt();
-					//System.out.println(i+".  "+tag+"  "+ref+"  "+offset+"  "+length);
-					bytes = new byte[length];
+				final int numDD = readShort(); //number of DD's
+				final int nextBlock = readInt();
+				for (int i = 1; i <= numDD; i++) {
+					final short tag = readShort();
+					final short ref = readShort();
+					final int offset = readInt();
+					final int length = readInt();
+					final byte [] bytes = new byte[length];
 					mark();
 					seek(offset);
-					//System.out.println("hdfFile reading at position: "+getFilePointer());
 					read(bytes);
 					reset();
-					//System.out.println("hdfFile.readObjects(): Adding tag/ref: "+tag+"/"+ref);
 					switch (tag) {
 						case DataObject.DFTAG_DIA :
-							new DataIDAnnotation(this, bytes, ref);
+							new DataIDAnnotation(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_DIL :
-							new DataIDLabel(this, bytes, ref);
+							new DataIDLabel(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VERSION :
-							new LibVersion(this, bytes, ref);
+							new LibVersion(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_NT :
-							new NumberType(this, bytes, ref);
+							new NumberType(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_NDG :
-							new NumericalDataGroup(this, bytes, ref);
+							new NumericalDataGroup(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_SD :
-							new ScientificData(this, offset, length, ref);
+							new ScientificData(this, offset, length, tag, ref);
 							break;
 						case DataObject.DFTAG_SDD :
-							new ScientificDataDimension(this, bytes, ref);
+							new ScientificDataDimension(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_SDL :
-							new ScientificDataLabel(this, bytes, ref);
+							new ScientificDataLabel(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VG :
-							new VirtualGroup(this, bytes, ref);
+							new VirtualGroup(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VH :
-							new VdataDescription(this, bytes, ref);
+							new VdataDescription(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_VS :
-							new Vdata(this, bytes, ref);
+							new Vdata(this, bytes, tag, ref);
 							break;
 						case DataObject.DFTAG_MT :
 							break; //do nothing
@@ -430,8 +450,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					seek(nextBlock);
 				}
 			} while (doAgain);
-			for (Iterator temp = DataObjects.iterator(); temp.hasNext();) {
-				ob = (DataObject) (temp.next());
+			final Iterator temp = objectList.iterator();
+			while (temp.hasNext()) {
+				final DataObject ob = (DataObject) (temp.next());
 				ob.interpretBytes();
 			}
 		} catch (IOException e) {
@@ -441,16 +462,18 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Goes through index and returns object with the matching tag and ref.
+	 * @return object in file with the matching tag and ref
+	 * @param t tag of HDF object
+	 * @param r <em>unique</em> reference number in file
 	 */
-	public DataObject getObject(short tag, short ref) {
+	public DataObject getObject(short t, short r) {
 		DataObject match = null;
-		for (Iterator temp = DataObjects.iterator();
-			temp.hasNext();
-			) {
-			DataObject ob = (DataObject) (temp.next());
-			if (tag == ob.getTag() && ref == ob.getRef()) {
-				match = ob;
+		final Short tag=new Short(t);
+		final Short ref=new Short(r);
+		if (tagMap.containsKey(tag)){
+			final Map refMap=(Map)tagMap.get(tag);
+			if (refMap.containsKey(ref)){
+				match=(DataObject)refMap.get(ref);
 			}
 		}
 		return match;
@@ -461,7 +484,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	protected void mark() throws HDFException {
 		try {
-			mark = getFilePointer();
+			synchronized(this){
+				mark = getFilePointer();
+			}
 		} catch (IOException e) {
 			throw new HDFException(e.getMessage());
 		}
@@ -478,13 +503,16 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 
 	/**
-	 * Returns a List of <code>DataObject</code>'s of the
-	 * type specified by <code>tag</code>.
+	 * @return a subset of the given list of <code>DataObject</code>'s of
+	 * the specified type 
+	 * @param in the list to search
+	 * @param tagType the type to return
 	 */
 	public List ofType(List in, short tagType) {
-		List output = new ArrayList();
-		for (Iterator temp = in.iterator(); temp.hasNext();) {
-			DataObject ob = (DataObject) (temp.next());
+		final List output = new ArrayList();
+		final Iterator temp = in.iterator(); 
+		while ( temp.hasNext()) {
+			final DataObject ob = (DataObject) (temp.next());
 			if (ob.getTag() == tagType) {
 				output.add(ob);
 			}
@@ -492,27 +520,46 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return output;
 	}
 
+	/**
+	 * @return a list of all <code>DataObject</code>s in this file of the
+	 * same type as the passed instance
+	 * @param in example of the type to return 
+	 */
 	public List ofType(DataObject in) {
-		return ofType(DataObjects, (short) in.getTag());
+		return ofType(objectList, (short) in.getTag());
 	}
-
+	
+	/**
+	 * @return a list of all <code>DataObject</code>s in this file of the
+	 * given type
+	 * @param tagType the type to return 
+	 */
 	public List ofType(short tagType) {
-		return ofType(DataObjects, tagType);
+		return ofType(objectList, tagType);
 	}
 
+	/**
+	 * Add a file identifier based on the given string.
+	 * 
+	 * @param ID file-id is based on this
+	 */
 	public void addFileID(String ID) {
 		new FileIdentifier(this, ID);
 	}
 
+	/**
+	 * Add a text note to the file, which includes the state of 
+	 * <code>JamProperties</code>.
+	 *
+	 * @throws IOException if there's a problem writing to the file
+	 * @see jam.global.JamProperties
+	 */
 	public void addFileNote() throws IOException {
-		String notation;
-		ByteArrayOutputStream baos;
-
-		baos = new ByteArrayOutputStream();
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JamProperties.getProperties().store(
 			baos,
 			"Jam Properties at time of save:");
-		notation = new String(baos.toByteArray());
+		String notation = new String(baos.toByteArray());
 		notation =
 			"All error bars on histogram counts should be considered Poisson, unless a\n"
 				+ "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
@@ -524,8 +571,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				+ "number from the lower left to the lower right for, and from the lower left to the upper\n"
 				+ "left."
 				+ notation;
-		//The data label stored for 1-d histograms consists of the x-axis label, a carriage\n"+
-		//"return, then the y-axis label."+notation;
 		new FileDescription(this, notation);
 	}
 
@@ -536,7 +581,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @return <code>true</code> if this file has a valid HDF magic word
 	 */
 	public boolean checkMagicWord() {
-		HDFileFilter filter=new HDFileFilter(false);
+		final HDFileFilter filter=new HDFileFilter(false);
 		return filter.accept(this.getFile());
 	}
 }

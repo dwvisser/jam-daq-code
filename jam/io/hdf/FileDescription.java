@@ -11,56 +11,57 @@ import java.io.*;
  */
 public class FileDescription extends DataObject {
 
-    /**
-     * Object being labelled.
-     */
-    DataObject object;
-    
-    String label;
-        
-    public FileDescription(HDFile hdf,String label){
-	super(hdf, DFTAG_FD);//sets tag
-	this.label=label;
-	int byteLength=label.length();
-	ByteArrayOutputStream baos=new ByteArrayOutputStream(byteLength);
-	DataOutputStream dos=new DataOutputStream(baos);
-	try{
-	    dos.writeBytes(label);
-	} catch (IOException ioe) {
-	    System.err.println(ioe);
+	/**
+	 * Object being labelled.
+	 */
+	DataObject object;
+
+	String label;
+
+	public FileDescription(HDFile hdf, String label) {
+		super(hdf, DFTAG_FD); //sets tag
+		this.label = label;
+		int byteLength = label.length();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			dos.writeBytes(label);
+		} catch (IOException ioe) {
+			System.err.println(ioe);
+		}
+		bytes = baos.toByteArray();
 	}
-	bytes=baos.toByteArray();
-    }
-    
-    public FileDescription(HDFile hdf, byte [] data, short reference) {
-	super(hdf,data,reference);
-	tag=DFTAG_FD;
-    }
-    
-    /**
-     * Implementation of <code>DataObject</code> abstract method.
-     *
-     * @exception HDFException thrown if there is a problem interpreting the bytes
-     */
-    public void interpretBytes() throws HDFException {
-	byte [] temp;
-	ByteArrayInputStream bais=new ByteArrayInputStream(bytes);
-	DataInputStream dis=new DataInputStream(bais);
-	
-	try{
-	    temp=new byte[bytes.length];
-	    dis.read(temp);
-	    label=new String(temp);
-	} catch (IOException e) {
-	    throw new HDFException ("Problem interpreting FID: "+e.getMessage());
+
+	public FileDescription(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		//tag=DFTAG_FD;
 	}
-    }
-    
-    /**
-     * Returns the text contained.
-     */
-    public String getText(){
-	return label;
-    }
-        
+
+	/**
+	 * Implementation of <code>DataObject</code> abstract method.
+	 *
+	 * @exception HDFException thrown if there is a problem interpreting the bytes
+	 */
+	public void interpretBytes() throws HDFException {
+		byte[] temp;
+		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		DataInputStream dis = new DataInputStream(bais);
+
+		try {
+			temp = new byte[bytes.length];
+			dis.read(temp);
+			label = new String(temp);
+		} catch (IOException e) {
+			throw new HDFException(
+				"Problem interpreting FID: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Returns the text contained.
+	 */
+	public String getText() {
+		return label;
+	}
+
 }

@@ -43,9 +43,9 @@ public final class VirtualGroup extends DataObject {
 		}
 	}
 
-	public VirtualGroup(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_VG;
+	public VirtualGroup(HDFile hdf, byte[] data, short t, short r) {
+		super(hdf, data, t, r);
+		//tag = DFTAG_VG;
 	}
 
 	/**

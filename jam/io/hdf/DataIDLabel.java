@@ -37,9 +37,9 @@ public class DataIDLabel extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	public DataIDLabel(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_DIL;
+	public DataIDLabel(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		//tag = DFTAG_DIL;
 	}
 
 	/**

@@ -217,9 +217,9 @@ public class VdataDescription extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	public VdataDescription(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_VH;
+	public VdataDescription(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		//tag = DFTAG_VH;
 	}
 
 	public void interpretBytes() {

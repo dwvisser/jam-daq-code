@@ -27,9 +27,9 @@ public final class NumericalDataGroup extends DataObject {
 		}
 	}
 
-	public NumericalDataGroup(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_NDG;
+	public NumericalDataGroup(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		//tag = DFTAG_NDG;
 	}
 
 	/**

@@ -91,24 +91,27 @@ public class ScientificData extends DataObject {
         this.counts2dD=counts2d;
     }
 
-    public ScientificData(HDFile hdf,byte [] data, short reference) {
-        super(hdf,data,reference);
+    public ScientificData(HDFile hdf,byte [] data, short t, short reference) {
+        super(hdf,data,t,reference);
         inputMode = STORE;
-        tag=DFTAG_SD;
+        //tag=DFTAG_SD;
     }
+    
     /**
      *
      */
-    public ScientificData(HDFile hdf, int offset, int length, short reference) {
-        super(hdf, offset,length, reference);
+    public ScientificData(HDFile hdf, int offset, int length, short t, short reference) {
+        super(hdf, offset,length, t, reference);
         inputMode = WAIT_AND_READ;
-        tag=DFTAG_SD;
+        //tag=DFTAG_SD;
     }
+    
     /**
      *
      */
     public void interpretBytes(){//requires associated SDD, NT, NDG records
     }
+    
     /**
      *  @exception HDFException unrecoverable error
      */

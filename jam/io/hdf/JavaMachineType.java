@@ -12,32 +12,32 @@ import java.io.*;
  */
 public class JavaMachineType extends DataObject {
 
-    /**
-     * BigEndian 32 bit Sun architecture output, not coincidentally the way Sun chose to have
-     * Java store things with the DataOutput interface.  Each hexadecimal 1 means Big Endian 32-bit architecture
-     * with IEEE floats.  For alternative DFMT_ values and interpretations, see <code>hdfi.h</code> in the
-     * HDF4.1r2 source code.  
-     */
-    private short DFMT_SUN=0x1111;
+	/**
+	 * BigEndian 32 bit Sun architecture output, not coincidentally the way Sun chose to have
+	 * Java store things with the DataOutput interface.  Each hexadecimal 1 means Big Endian 32-bit architecture
+	 * with IEEE floats.  For alternative DFMT_ values and interpretations, see <code>hdfi.h</code> in the
+	 * HDF4.1r2 source code.  
+	 */
+	private short DFMT_SUN = 0x1111;
 
-    public JavaMachineType(HDFile fi){
-	super(fi, DFTAG_MT);//sets tag
-	ByteArrayOutputStream baos=new ByteArrayOutputStream(4);
-	DataOutputStream dos=new DataOutputStream(baos);
-	try{
-	    dos.writeShort(DFMT_SUN);
-	} catch (IOException ioe) {
-	    System.err.println("JavaMachineType(HDFile) IOException: "+ioe);
+	public JavaMachineType(HDFile fi) {
+		super(fi, DFTAG_MT); //sets tag
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			dos.writeShort(DFMT_SUN);
+		} catch (IOException ioe) {
+			System.err.println("JavaMachineType(HDFile) IOException: " + ioe);
+		}
+		bytes = baos.toByteArray();
 	}
-	bytes=baos.toByteArray();
-    }
-    
-    public JavaMachineType(HDFile hdf,byte [] data, short reference) {
-	super(hdf,data,reference);
-	tag=DFTAG_MT;
-    }
-    
-    public void interpretBytes(){//assumed only JAM hdf files read, so don't bother
-	//System.out.println("MT_"+tag+"/"+ref+".interpretbytes()");
-    }
+
+	public JavaMachineType(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		// = DFTAG_MT;
+	}
+
+	public void interpretBytes() { //assumed only JAM hdf files read, so don't bother
+		//System.out.println("MT_"+tag+"/"+ref+".interpretbytes()");
+	}
 }

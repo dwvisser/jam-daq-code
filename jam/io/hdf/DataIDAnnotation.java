@@ -52,9 +52,8 @@ public class DataIDAnnotation extends DataObject {
 		}
 	}
 
-	public DataIDAnnotation(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_DIA;
+	public DataIDAnnotation(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t,reference);
 	}
 
 	/**

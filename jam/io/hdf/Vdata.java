@@ -47,21 +47,21 @@ public class Vdata extends DataObject {
 		order = description.getDimensions();
 		types = description.getTypes();
 		offsets = description.getDataOffsets();
-		this.ref = (short) description.getRef();
-		//experiment, see if using same ref fixes problem
+		/* undocumented by HDF group--data needs same ref as description */
+		setRef(description.getRef());
 	}
+	
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
-	public Vdata(HDFile hdf, byte[] data, short reference) {
-		super(hdf, data, reference);
-		tag = DFTAG_VS;
+	public Vdata(HDFile hdf, byte[] data, short t, short reference) {
+		super(hdf, data, t, reference);
+		//tag = DFTAG_VS;
 		description = (VdataDescription) (hdf.getObject(DFTAG_VH, reference));
 		description.interpretBytes();
 		nfields = description.getNumFields();
 		nvert = description.getNumRows();
 		cells = new Object[nfields][nvert];
-		//System.out.println("Vdata with "+nfields+" columns and "+nvert+" rows read in.");
 		ivsize = description.getRowSize();
 		order = description.getDimensions();
 		types = description.getTypes();

@@ -60,10 +60,10 @@ public class ScientificDataScales extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	public ScientificDataScales(HDFile hdf, byte[] data, short reference) {
+	/*public ScientificDataScales(HDFile hdf, byte[] data, short reference) {
 		super(hdf, data, reference);
 		tag = DFTAG_SDS;
-	}
+	}*/
 
 	public void interpretBytes() {
 	}
