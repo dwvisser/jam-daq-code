@@ -1,7 +1,6 @@
 package jam;
 import jam.data.control.HistogramControl;
 import jam.data.control.ScalerControl;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.global.RunInfo;
 import jam.io.DataIO;
@@ -223,10 +222,7 @@ public class RunControl implements Controller, ActionListener {
             console.errorOutln(je.getMessage());
         } catch (SortException se) {
             console.errorOutln(se.getMessage());
-        } catch (GlobalException ge) {
-            console.errorOutln(getClass().getName()+".actionPerformed(\""+command+"\"): "+
-            "GlobalException with message \""+ge.getMessage()+"\"");
-        }
+        } 
     }
 
     /**
@@ -262,7 +258,7 @@ public class RunControl implements Controller, ActionListener {
      *
      * @exception   JamException    all exceptions given to <code>JamException</code> go to the console
      */
-    public void startAcq() throws JamException, GlobalException {
+    public void startAcq() throws JamException {
         netDaemon.setState(GoodThread.RUN);
         vmeComm.VMEstart();
         // if we are in a run, display run number
@@ -281,7 +277,7 @@ public class RunControl implements Controller, ActionListener {
     /**
      * Tells VME to stop acquisition, and suspends the net listener.
      */
-    public void stopAcq() throws JamException, GlobalException {
+    public void stopAcq() throws JamException {
         vmeComm.VMEstop();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
@@ -317,7 +313,7 @@ public class RunControl implements Controller, ActionListener {
      *
      * @exception   JamException    all exceptions given to <code>JamException</code> go to the console
      */
-    private void beginRun() throws JamException, SortException, GlobalException  {
+    private void beginRun() throws JamException, SortException  {
         String dataFileName="";
         try {//get run number and title
             runNumber=Integer.parseInt(textRunNumber.getText().trim());
@@ -336,11 +332,7 @@ public class RunControl implements Controller, ActionListener {
             }
             diskDaemon.openEventOutputFile(dataFile);
             diskDaemon.writeHeader();
-        } /*else if (device==TAPE) {//saving to tape
-            //FIXME -- tape option doesn't work right now 15-Sep-2002
-            //tapeDaemon.openEventOutputFile(dataFile);
-            tapeDaemon.writeHeader();
-        } */
+        } 
         if (checkHistogramZero.isSelected()) {// should we zero histograms
             histogramControl.zeroAll();
         }
@@ -374,7 +366,7 @@ public class RunControl implements Controller, ActionListener {
      * sort calls back isEndRun when it sees the end of run marker
      * and write out histogram, gates and scalers if requested
      */
-    private void endRun() throws GlobalException{
+    private void endRun() {
         RunInfo.runEndTime=getTime();
         vmeComm.end();			    //stop Acq. flush buffer
         vmeComm.readScalers();		    //read scalers

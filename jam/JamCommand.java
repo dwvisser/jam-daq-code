@@ -296,16 +296,7 @@ public class JamCommand
 			console.errorOutln("JamException: " + exc.getMessage());
 		} catch (ImpExpException iee) {
 			console.errorOutln("ImpExpException: " + iee.getMessage());
-		} catch (GlobalException ge) {
-			console.errorOutln(
-				getClass().getName()
-					+ ".actionPerformed(\""
-					+ incommand
-					+ "\"): "
-					+ "GlobalException with message \""
-					+ ge.getMessage()
-					+ "\"");
-		}
+		} 
 	}
 
 	/** 
@@ -364,7 +355,7 @@ public class JamCommand
 		}
 	}
 	
-	void dataChanged() throws GlobalException {
+	void dataChanged() {
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
 	

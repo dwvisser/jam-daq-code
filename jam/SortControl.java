@@ -247,9 +247,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			msgHandler.errorOutln(ee.getMessage());
 		} catch (JamException je) {
 			msgHandler.errorOutln(je.getMessage());
-		} catch (GlobalException ge) {
-			msgHandler.errorOutln(ge.getMessage());
-		}
+		} 
 	}
 
 	/**
@@ -306,7 +304,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * sorting is done
 	 */
 	public void beginSort()
-		throws JamException, SortException, EventException, GlobalException {
+		throws JamException, SortException, EventException {
 		loadNames();
 		lockFields(true);
 		RunInfo.runNumber = 999;
@@ -331,7 +329,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	private void endSort()
-		throws JamException, SortException, GlobalException {
+		throws JamException, SortException {
 		sortDaemon.cancelOfflineSorting();
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln(
@@ -356,7 +354,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * the thread to be resumed when the user requests
 	 * the sort to begin.
 	 */
-	public void atSortStart() throws GlobalException {
+	public void atSortStart() {
 		sortDaemon.setState(GoodThread.SUSPEND);
 	}
 
