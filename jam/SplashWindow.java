@@ -86,7 +86,6 @@ class SplashWindow extends JWindow {
 		cp.add(west,BorderLayout.WEST);
 		cp.add(center,BorderLayout.CENTER);
 		cp.add(east,BorderLayout.EAST);
-		//setSize(400, 300);
 		pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension labelSize = getSize();

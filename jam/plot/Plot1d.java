@@ -77,8 +77,10 @@ class Plot1d extends Plot {
 	}
 
 	/**
-	 * Show the making of a gate
-	 *
+	 * Show the making of a gate, point by point.
+	 * 
+	 * @param mode GATE_NEW, GATE_CONTINUE, GATE_SAVE or GATE_CANCEL
+	 * @param pChannel channel coordinates of clicked channel
 	 */
 	public void displaySetGate(int mode, Point pChannel, Point pPixel) {
 		if (mode == GATE_NEW) {
@@ -96,41 +98,6 @@ class Plot1d extends Plot {
 			pointsGate = null;
 		}
 	}
-
-	/**
-	 * display a fit as a a line graph
-	 *
-	 * @param channel the channels of the fit
-	 * @param countsdl  the counts of the fit
-	 */
-	/*public void displayFit(double [] countsdl, int lowerLimit, int upperLimit) {
-	    displayFit(countsdl, null, lowerLimit, upperLimit);
-	}*/
-
-	/**
-	 * display a fit as a a line graph
-	 * with residual
-	 */
-	/*public void displayFit(double [] countsdl, double [] residual, int lowerLimit, int upperLimit){
-	    int length,i,j;
-	
-	    displayingFit=true;
-	    length = upperLimit - lowerLimit + 1;
-	    fitChan = new double [length];
-	    fitFunc = new double [length];
-	    for (i = lowerLimit, j=0; j < length; i++,j++) {
-	        fitChan[j]=i+0.5;
-	    }
-	    System.arraycopy(countsdl, lowerLimit, fitFunc,   0, length);
-	    if(residual!=null) {
-	        fitResd = new double [length];
-	        System.arraycopy(residual, lowerLimit, fitResd,   0, length);
-	    }
-	    Graphics g=this.getGraphics();
-	    graph.update(g,viewSize,plotLimits);  //so graph has all pertinent imfo
-	    paintFit(g);
-	    g.dispose();
-	}*/
 
 	/**
 	 * Displays a fit, starting
