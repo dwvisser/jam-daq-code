@@ -16,7 +16,7 @@ interface HDFconstants{
     /**
      * Number of bytes in hdf header word.
      */
-    int HDF_HEADER_NBYTES=4;
+    int HEADER_BYTES=4;
 
 	/**
 	 * Tag for No Data.  

@@ -148,7 +148,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	private synchronized void writeDataDescriptorBlock() throws HDFException {
 		final List objectList = AbstractHData.getDataObjectList();
 		try {
-			seek(HDF_HEADER_NBYTES); //skip header
+			seek(HEADER_BYTES); //skip header
 			writeShort(objectList.size()); //number of DD's
 			writeInt(0); //no additional descriptor block
 			final Iterator temp = objectList.iterator();
@@ -230,7 +230,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				numObjSteps=getNumberObjctProgressStep(countHDFOjects(), FRACTION_TIME_READ_ALL);
 			
 			
-			seek(HDF_HEADER_NBYTES);
+			seek(HEADER_BYTES);
 			boolean hasNextBlock = true;
 			while (hasNextBlock) {
 				final int numDD = readShort(); //number of DD's
@@ -305,7 +305,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		
 		int numberObjects =0;
 		
-		seek(HDF_HEADER_NBYTES);
+		seek(HEADER_BYTES);
 		
 		boolean hasNextBlock = true;
 		while(hasNextBlock) {
