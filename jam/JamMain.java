@@ -179,8 +179,9 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		broadcaster = new Broadcaster();
 		//class to distrute events to all listeners
 		//Frame layout and add element to frame
-		this.setSize(700, 700);
-		this.setLocation(50, 50);
+		//this.setSize(700, 700);
+		final int posxy=50;
+		this.setLocation(posxy, posxy);
 		this.setResizable(true);
 		this.setBackground(Color.lightGray);
 		this.setForeground(Color.black);
@@ -571,7 +572,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			debugVME.isSelected());
 		debugVME.addItemListener(jamCommand);
 		mPrefer.add(debugVME);
-		final JMenu fitting = new JMenu("Fitting");
+		fitting = new JMenu("Fitting");
 		menubar.add(fitting);
 		final JMenuItem loadFit = new JMenuItem("Load Fit...");
 		loadFit.setActionCommand("loadfit");
@@ -982,11 +983,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 *
 	 * @param name the name of the fit routine added
 	 */
-	public void addFit(String name) {
-		final JMenuItem fitItem = new JMenuItem(name + "...");
-		fitItem.setActionCommand(name);
-		fitItem.addActionListener(jamCommand.getLoadFit());
-		fitting.add(fitItem);
+	public void addFit(Action action) {
+		fitting.add(new JMenuItem(action));
 	}
 
 	/**

@@ -1,79 +1,88 @@
 package jam.fit;
-import jam.*;
-import jam.global.*;
+import jam.JamException;
+import jam.JamMain;
+import jam.global.MessageHandler;
+import jam.global.RTSI;
 import jam.plot.Display;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.*;
-import java.lang.reflect.Modifier;
-
-import javax.swing.*;
+import java.util.Set;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * Load a fit routine..
  * Draw the fit routines interface window
  *
+ * @version 1.1
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
 public class LoadFit extends WindowAdapter implements ActionListener {
 
-	final static String DEFAULT_FIT = "jam.fit.GaussianFit";
+	private static final String OK="OK";
+	private static final String APPLY="Apply";
+	private static final String CANCEL="Cancel";
 
-	private JamMain jamMain;
-	private Display display;
-	private MessageHandler msgHandler;
+	private final JamMain jamMain;
+	private final Display display;
+	private final MessageHandler msgHandler;
 
-	/** 
-	 * list of the fitting classes added to the menu
+	private final JDialog dl;
+	private final JComboBox chooseFit;
+	
+	/**
+	 * Create the fit routine loading dialog.
+	 *
+	 * @param jm the main window
+	 * @param d the histogram display
+	 * @param mh the place to output text
 	 */
-	private Hashtable fitList = new Hashtable(3);
-
-	/** 
-	 * current fit class 
-	 */
-	private Fit fitClass;
-
-	private JDialog dl;
-	private String fitDirectory;
-	private JComboBox chooseFit;
-
-	public LoadFit(JamMain jamMain, Display display, MessageHandler console) {
-		this.jamMain = jamMain;
-		this.display = display;
-		this.msgHandler = console;
-		//dialog box loading a fit class
-		dl = new JDialog(jamMain, "Load Fit class ", false);
-		Container cp = dl.getContentPane();
-		dl.setForeground(Color.black);
-		dl.setBackground(Color.lightGray);
+	public LoadFit(JamMain jm, Display d, MessageHandler mh) {
+		super();
+		this.jamMain = jm;
+		this.display = d;
+		this.msgHandler = mh;
+		final String dialogName="Load Fit Routine";
+		dl = new JDialog(jamMain, dialogName, false);
+		final Container cp = dl.getContentPane();
 		dl.setResizable(false);
-		dl.setLocation(20, 50);
-		dl.setSize(400, 150);
+		final int posx=20;
+		final int posy=50;
+		dl.setLocation(posx, posy);
 		cp.setLayout(new BorderLayout());
-		// panel for fit file
-		JPanel pf = new JPanel();
+		final JPanel pf = new JPanel();// panel for fit file
 		pf.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JLabel lf = new JLabel("Pick a Fit class: ", Label.RIGHT);
+		final JLabel lf = new JLabel("Pick a Fit class: ", JLabel.RIGHT);
 		pf.add(lf);
-		chooseFit = new JComboBox(this.getFitClassNames());
+		chooseFit = new JComboBox(this.getFitClasses());
 		pf.add(chooseFit);
-		// panel for buttons 				
-		JPanel pb = new JPanel();
+		final JPanel pb = new JPanel();// panel for buttons 
 		pb.setLayout(new GridLayout(1,0));
-		JButton bok = new JButton("OK");
+		final JButton bok = new JButton(OK);
 		pb.add(bok);
-		bok.setActionCommand("ok");
+		bok.setActionCommand(OK);
 		bok.addActionListener(this);
-		JButton bapply = new JButton("Apply");
+		final JButton bapply = new JButton(APPLY);
 		pb.add(bapply);
-		bapply.setActionCommand("apply");
+		bapply.setActionCommand(APPLY);
 		bapply.addActionListener(this);
-		JButton bcancel = new JButton("Cancel");
+		final JButton bcancel = new JButton(CANCEL);
 		pb.add(bcancel);
-		bcancel.setActionCommand("cancel");
-		bcancel.addActionListener(this);
+		bcancel.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				dl.dispose();
+			}
+		});
 		cp.add(pf,BorderLayout.CENTER);
 		cp.add(pb,BorderLayout.SOUTH);
 		dl.addWindowListener(new WindowAdapter() {
@@ -98,111 +107,54 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * <li>OK</li>
 	 * <li>Apply</li>
 	 * <li>Cancel</li>
-	 * <li>Browse</li>
 	 * </ul>
+	 *
+	 * @param ae notification ok, apply, or cancel 
 	 */
 	public void actionPerformed(ActionEvent ae) {
-		String command = ae.getActionCommand();
-		String fitName;
+		final String command = ae.getActionCommand();
 		try {
-			if (command == "ok" || command == "apply") {
-				fitName = (String)chooseFit.getSelectedItem();
-				makeFit(fitName);
-				if (command == "ok") {
+			if (OK.equals(command) || APPLY.equals(command)) {
+				final Class fit = (Class)chooseFit.getSelectedItem();
+				makeFit(fit);
+				if (OK.equals(command)) {
 					dl.dispose();
 				}
-			} else if (command == "cancel") {
-				dl.dispose();
-			} else {
-				showFitDialog(command);
 			}
 		} catch (JamException je) {
 			msgHandler.errorOutln(je.getMessage());
 		}
 	}
 	
-	/**
-	 * Show a loaded fit dialog box
-	 */
-	public void showFitDialog(String fitName) {
-		((Fit) fitList.get(fitName)).show();
-	}
-
-	/**
-	  * Is the Browse for the fit class file 
-	  * which showed be in ../jam/fit subdirectory
-	  * part of the <code>sort</code> Package
-	  *
-	  * @author Ken Swartz
-	  */
-	private String getFitFile() {
-		String msg = "Load Fit file";
-		int state = FileDialog.LOAD;
-		FileDialog fd = new FileDialog(jamMain, msg, state);
-		fd.setFile("*.class");
-		if (fitDirectory != null) {
-			fd.setDirectory(fitDirectory);
-		}
-		fd.show();
-		//save current values
-		fitDirectory = fd.getDirectory(); //save current directory
-		String fitName = fd.getFile();
-		fd.dispose();
-		return fitName;
-	}
-
-	/**
-	 * Load a fit routine.
-	 */
-	private void makeFit(String _fitName) throws JamException {
-		int indexPeriod;
-
+	private void makeFit(Class fitClass) throws JamException {
+	 	final String fitName=fitClass.getName();
 		try {
-			// create fit class
-			fitClass = (Fit) Class.forName(_fitName).newInstance();
-		} catch (ClassNotFoundException ce) {
-			fitClass = null;
-			throw new JamException(" Fit Class not found : " + _fitName);
+			final Fit fit = (Fit) fitClass.newInstance();
+			final int indexPeriod = fitName.lastIndexOf('.');
+			final String fitNameFront = fitName.substring(indexPeriod + 1);
+			fit.createDialog(jamMain, display, msgHandler);
+			fit.show();
+			jamMain.addFit(new AbstractAction(fitNameFront) {
+				public void actionPerformed(ActionEvent ae) {
+					fit.show();
+				}
+			});
 		} catch (InstantiationException ie) {
-			fitClass = null;
-			throw new JamException(" Fit Class cannot instantize: " + _fitName);
+			throw new JamException(" Fit Class cannot instantize: " + fitName);
 		} catch (IllegalAccessException iae) {
-			fitClass = null;
-			throw new JamException(" Fit Class cannot Access: " + _fitName);
-		}
-		//add fit function to menu
-		indexPeriod = _fitName.lastIndexOf(".");
-		String fitNameFront = _fitName.substring(indexPeriod + 1);
-		fitList.put(fitNameFront, fitClass);
-		jamMain.addFit(fitNameFront);
-		try {
-			fitClass.createDialog((Frame) jamMain, display, msgHandler);
+			throw new JamException(" Fit Class cannot Access: " + fitName);
 		} catch (FitException fe) {
-			fitClass = null;
 			fe.printStackTrace();
 			throw new JamException(
 				"FitException during makeFit(): " + fe.getMessage());
 		}
-		fitClass.show();
 	}
 	
-	private Object [] getFitClassNames() {
-		//Class temp=null;
-		Set set = RTSI.find("jam.fit", Fit.class,false);
-		set.addAll(RTSI.find("fit", Fit.class,false));
-		Set abstractClasses=new HashSet();
-		for (Iterator it=set.iterator(); it.hasNext(); ){
-			Class temp=(Class)it.next();
-			boolean isAbstract = !((temp.getModifiers() & Modifier.ABSTRACT) == 0);
-			if (isAbstract){
-				abstractClasses.add(temp);
-			}
-		}
-		set.removeAll(abstractClasses);
-		Collection rval=new HashSet();
-		for (Iterator i=set.iterator(); i.hasNext(); ) {
-			rval.add(((Class)i.next()).getName());
-		}
-		return rval.toArray();
+	private Object [] getFitClasses() {
+		final String package1="jam.fit";
+		final String package2="fit";
+		final Set set = RTSI.find(package1, Fit.class,false);
+		set.addAll(RTSI.find(package2, Fit.class,false));
+		return set.toArray();
 	}
 }
