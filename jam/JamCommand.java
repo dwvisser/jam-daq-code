@@ -223,16 +223,16 @@ public class JamCommand
 				if (overlay) {
 					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
 				}
-			} else if (selectEnabled && incommand == "selecthistogram") {
-				Object item = ((JComboBox) e.getSource()).getSelectedItem();
-				//				if (selectEnabled) {
-				if (item instanceof String) {
-					Histogram h = Histogram.getHistogram((String) item);
-					if (h != null) {
-						selectHistogram(h);
+			} else if (incommand == "selecthistogram") {
+				if (selectEnabled) { //nested to avoid missing "selecthistogram"
+					Object item = ((JComboBox) e.getSource()).getSelectedItem();
+					if (item instanceof String) {
+						Histogram h = Histogram.getHistogram((String) item);
+						if (h != null) {
+							selectHistogram(h);
+						}
 					}
 				}
-				//				}
 			} else if (incommand == "selectgate") {
 				Object item = ((JComboBox) e.getSource()).getSelectedItem();
 				if (selectEnabled && item instanceof String) {
@@ -456,7 +456,7 @@ public class JamCommand
 				JamProperties.NO_FILL_2D,
 				item.isSelected());
 		}
-			
+
 	}
 
 	/** A histogram has been selected so tell all
