@@ -8,7 +8,6 @@ import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-import jam.io.hdf.HDFIO.HistogramAttributes;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -163,9 +162,11 @@ public final class OpenSelectedHistogram {
 	private void doApply() {
 		String firstHistName=loadHistograms();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		//Histograms.
-		//JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
-		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		Histogram hist = Histogram.getHistogram(firstHistName);
+		if (hist!=null) {
+			JamStatus.getSingletonInstance().setCurrentHistogram(hist);
+			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+		}
 	}
 
 	/**

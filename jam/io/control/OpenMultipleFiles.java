@@ -3,12 +3,9 @@ package jam.io.control;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.io.ExtensionFileFilter;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
-import jam.io.hdf.HDFIO.HistogramAttributes;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
@@ -23,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -103,6 +99,7 @@ public class OpenMultipleFiles {
 		container.add(tabPane, BorderLayout.CENTER);
 		
 		multipleFileChooser = new MultipleFileChooser(frame, msgHandler);
+		multipleFileChooser.setFileExtension("hdf");
 		//multipleFileChooser.activeListSaveLoadButtons(true);				
 		tabPane.addTab("Files", null, multipleFileChooser, "Select Files to open");
 		

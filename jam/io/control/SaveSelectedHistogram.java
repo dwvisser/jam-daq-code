@@ -3,10 +3,8 @@ package jam.io.control;
 import jam.data.Histogram;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
-import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -125,9 +123,6 @@ public class SaveSelectedHistogram {
 	private void doSave() {
 		saveHistListToFile();
 		dialog.dispose();
-		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		//JamStatus.getSingletonInstance().setCurrentHistogram(firstHist);
-		//broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
 	}
 
 	/**
