@@ -25,9 +25,6 @@ public abstract class AbstractSortControl {
 	private File pathLog;	
 	private int sortSample;
 
-	//private NetDaemon netDaemon;
-	//private DiskDaemon diskDaemon;
-	
 	/**
 	 * Sets the sort class
 	 * @param sorter

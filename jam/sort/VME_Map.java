@@ -11,47 +11,55 @@ import java.util.Map;
  */
 public class VME_Map {
 
-    private final List eventParameters= new ArrayList();//contains all event parameters
-    private int indexCounter = 0;//counter for array assignments of parameter ID's
+    private final List eventParams= new ArrayList();//contains all event parameters
     private final SortRoutine sortRoutine;
     private int interval=1;//interval in milliseconds for the VME to insert scalers into the event stream
     private final Map V775ranges=new HashMap();
-    private int maxParameterNumber = 0;
+    private int maxParamNum = 0;
     private final StringBuffer messages=new StringBuffer();
 
     /**
      * Constructs a new VME map for the given <code>SortRoutine</code>.
      * 
-     * @param sr the owner of this map
+     * @param sorter the owner of this map
      */
-    VME_Map(SortRoutine sr) {
-        sortRoutine = sr;
+    VME_Map(SortRoutine sorter) {
+        sortRoutine = sorter;
         messages.append(sortRoutine.getClass().getName());
         messages.append(": \n");
     }
 
     /**
-     * Creates and adds an event parameter to the list of event parameters.  V785 ADC's can have
-     * base addresses from 0x20000000-0x2FFF0000.  V775 TDC's can have base addresses from
-     * 0x30000000-0x3FFF0000.
-     *
-     * @param slot slot in which the unit resides in the VME bus
-     * @param baseAddress 24-bit base address of ADC or TDC module ()
-     * @param channel integer from 0 to 31 indicating channel in ADC or TDC
-     * @param threshold integer from 0 to 4095 indicating lower threshold for recording the value
-     * @return index in event array passed to <code>Sorter</code> containing this parameter's data
-     * @throws SortException if there's a problem defining the parameter
+     * Creates and adds an event parameter to the list of event parameters. V785
+     * ADC's can have base addresses from 0x20000000-0x2FFF0000. V775 TDC's can
+     * have base addresses from 0x30000000-0x3FFF0000.
+     * 
+     * @param slot
+     *            slot in which the unit resides in the VME bus
+     * @param baseAddress
+     *            24-bit base address of ADC or TDC module ()
+     * @param channel
+     *            integer from 0 to 31 indicating channel in ADC or TDC
+     * @param threshold
+     *            integer from 0 to 4095 indicating lower threshold for
+     *            recording the value
+     * @return index in event array passed to <code>Sorter</code> containing
+     *         this parameter's data
+     * @throws SortException
+     *             if there's a problem defining the parameter
      */
-    public int eventParameter(int slot, int baseAddress,
-    int channel, int threshold) throws SortException {
-        VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
-        channel, threshold);
-        eventParameters.add(vmec);
-        indexCounter++;
-        sortRoutine.setEventSizeMode(SortRoutine.SET_BY_VME_MAP);
-        int parameterNumber = vmec.getParameterNumber();//ADC's and TDC's in slots 2-7
-        if (parameterNumber > maxParameterNumber) maxParameterNumber = parameterNumber;
-        return parameterNumber;
+    public int eventParameter(int slot, int baseAddress, int channel,
+            int threshold) throws SortException {
+        final VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
+                channel, threshold);
+        eventParams.add(vmec);
+        sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.VME_MAP);
+        final int paramNumber = vmec.getParameterNumber();//ADC's and TDC's in
+                                                          // slots 2-7
+        if (paramNumber > maxParamNum) {
+            maxParamNum = paramNumber;
+        }
+        return paramNumber;
     }
 
     /**
@@ -81,16 +89,7 @@ public class VME_Map {
      * @return number of parameters per event
      */
     public int getEventSize(){
-        return maxParameterNumber+1;
-    }
-
-    VME_Channel [] convertToArray(List vmeVec) {
-        Object [] temp = vmeVec.toArray();
-        VME_Channel [] rval = new VME_Channel[temp.length];
-        for (int i=0; i< temp.length; i++) {
-            rval[i] = (VME_Channel)(temp[i]);
-        }
-        return rval;
+        return maxParamNum+1;
     }
 
     /**
@@ -98,7 +97,9 @@ public class VME_Map {
      * @return an array of the VME channels defined for this map
      */
     public VME_Channel [] getEventParameters(){
-        return convertToArray(eventParameters);
+        final VME_Channel [] rval = new VME_Channel[0];
+        eventParams.toArray(rval);
+        return rval;
     }
 
     /**
@@ -109,13 +110,13 @@ public class VME_Map {
      * @throws SortException for an invalid given range
      */
     public void setV775Range(int baseAddress, int range) throws SortException {
-        String hexBase = "0x"+Integer.toHexString(baseAddress);
+        final String hexBase = "0x"+Integer.toHexString(baseAddress);
         final Integer address=new Integer(baseAddress);
         if (range < 141 || range > 1200) {
             throw new SortException("Requested invalid TDC range: "+range+" ns, must be 141 to 1200 ns.");
         }
-        byte temp2=(byte)(36000/range);
-        int actualRange=36000/temp2;
+        final byte temp2=(byte)(36000/range);
+        final int actualRange=36000/temp2;
         messages.append("A range of ").append(range).append(
                 " ns requested for TDC with base address ").append(hexBase)
                 .append(", ").append(temp2).append(
@@ -143,7 +144,7 @@ public class VME_Map {
         return V775ranges;
     }
     
-    void appendMessage(String s){
-    	messages.append(s);
+    void appendMessage(String string){
+    	messages.append(string);
     }
 }

@@ -401,10 +401,10 @@ public final class SetupSortOn extends AbstractSetup {
 							+ " and "
 							+ outStream.getClass().getName());
 					jamConsole.messageOutln("Communications and processing daemons successfully initiated.");
-					if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
+					if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.CNAF) {
 						setupCamac(); //set the camac crate
 						jamConsole.messageOutln("CAMAC command lists sent.");
-					} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
+					} else if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.VME_MAP) {
 						setupVMEmap();
 						jamConsole.messageOutln("VME map sent.");
 					}

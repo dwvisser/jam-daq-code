@@ -10,6 +10,7 @@ public class VME_Channel{
 
     private final int slot, baseAddress, channel, threshold;
     private final Type type;
+    private static final String S_INVALID = ".VMEChannel(): Invalid";
     
     /**
      * Encapsulates whether a parameter is an event paramter
@@ -25,8 +26,12 @@ public class VME_Channel{
             type=param;
         }
         
-        public boolean equals(Object o){
-            return o instanceof Type ? ((Type)o).type==type : false;
+        public boolean equals(Object object){
+            return object instanceof Type ? ((Type)object).type==type : false;
+        }
+        
+        public int hashCode(){
+            return type;
         }
         
         /**
@@ -56,19 +61,19 @@ public class VME_Channel{
         if (channel >= 0 && channel < 32) {
             this.channel=channel;
         } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
+            throw new SortException(getClass().getName()+S_INVALID
             + " channel = "+channel);
         }
         if (slot >=2 && slot <= 20) {//valid slots for ADC's and TDC's
             this.slot = slot;
         } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
+            throw new SortException(getClass().getName()+S_INVALID
             + " slot = "+slot);
         }
         if (baseAddress < 0x20000000  || baseAddress > 0xe0ff0000) {//highest hex digit must = 2 or 3
             this.baseAddress=baseAddress;
         } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
+            throw new SortException(getClass().getName()+S_INVALID
             + " base address = 0x"+Integer.toHexString(baseAddress));
         }
         if (threshold >= 0 && threshold < 4096) {
@@ -77,7 +82,7 @@ public class VME_Channel{
                 ", actual threshold: "+threshNum*16+"\n");
             this.threshold=threshNum;
         } else {
-            throw new SortException(getClass().getName()+".VMEChannel(): Invalid"
+            throw new SortException(getClass().getName()+S_INVALID
             + " threshold = "+threshold);
         }
         type=Type.EVENT;

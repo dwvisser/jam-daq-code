@@ -23,10 +23,10 @@ import java.util.List;
  * @see jam.sort.SortRoutine#cnafCommands
  */
 public class CamacCommands {
-    private final List eventCommands=new ArrayList();
+    private final List eventCmds=new ArrayList();
     private final List initCommands=new ArrayList();
-	private final List scalerCommands=new ArrayList();
-	private final List clearCommands=new ArrayList();
+	private final List scalerCmds=new ArrayList();
+	private final List clearCmds=new ArrayList();
 	private final SortRoutine sortRoutine;
     private int eventSize=0;
     private int paramId=0;
@@ -36,11 +36,11 @@ public class CamacCommands {
      * <p>The various lists of CNAF commands are initialized by the 
      * constructor and initially contain no commands.</p>
      * 
-     * @param sr <code>SortRoutine</code> to which this object belongs
+     * @param sorter <code>SortRoutine</code> to which this object belongs
      * @see jam.sort.SortRoutine#cnafCommands
      */
-    public CamacCommands(SortRoutine sr) {
-        sortRoutine = sr;
+    public CamacCommands(SortRoutine sorter) {
+        sortRoutine = sorter;
     }
     
     /** Adds the command specified by the arguments to the next position in the
@@ -59,9 +59,9 @@ public class CamacCommands {
         //paramId+1 since stream has 1 for first element
         paramId++;
         eventSize++;
-        eventCommands.add(cnaf(paramId, crate, number, address,
+        eventCmds.add(cnaf(paramId, crate, number, address,
         function,  data));
-        sortRoutine.setEventSizeMode(SortRoutine.SET_BY_CNAF);
+        sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.CNAF);
         return (paramId-1);	    
     }
 
@@ -88,7 +88,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void eventCommand(int crate, int number, int address, int function){
-        eventCommands.add(cnaf(0, crate, number, address, function,  0));
+        eventCmds.add(cnaf(0, crate, number, address, function,  0));
     }
 
     /** Adds the command specified by the arguments to the next position in the
@@ -125,7 +125,7 @@ public class CamacCommands {
      * @return number of scaler
      */
     public int scaler(int crate, int number, int address, int function, int data){
-        scalerCommands.add(cnaf(scalerId, crate,number,address,function, data));
+        scalerCmds.add(cnaf(scalerId, crate,number,address,function, data));
         return scalerId++;
     }
 
@@ -150,7 +150,7 @@ public class CamacCommands {
      * @param data any data sent with the command to the module
      */
     public void clear(int crate, int number, int address, int function, int data){
-        clearCommands.add(cnaf(0, crate, number, address, function, data));
+        clearCmds.add(cnaf(0, crate, number, address, function, data));
     }
 
     /**
@@ -163,7 +163,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void clear(int crate, int number, int address, int function){
-        clearCommands.add(cnaf(0, crate,number,address,function, 0));
+        clearCmds.add(cnaf(0, crate,number,address,function, 0));
     }
     
     /** Get the list of init cnafs
@@ -177,21 +177,21 @@ public class CamacCommands {
      * @return list of event CNAF commands
      */
     public List getEventCommands(){
-        return Collections.unmodifiableList(eventCommands);
+        return Collections.unmodifiableList(eventCmds);
     }
     
     /** Get the list of scaler cnafs
      * @return list of scaler read CNAF commands
      */
     public List getScalerCommands(){
-        return Collections.unmodifiableList(scalerCommands);
+        return Collections.unmodifiableList(scalerCmds);
     }
     
     /** Get the list of clear cnafs
      * @return list of "clear" CNAF commands
      */
     public List getClearCommands(){
-        return Collections.unmodifiableList(clearCommands);
+        return Collections.unmodifiableList(clearCmds);
     }
     
     /** Get the event size for the default stream
