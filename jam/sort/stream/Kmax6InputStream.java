@@ -89,7 +89,7 @@ public class Kmax6InputStream extends EventInputStream {
                 }
                 return EventInputStatus.ERROR;
             } else {
-                throw new Exception (getClass().getName()+": Block Event Type >5: "+blockEventType);
+                throw new IllegalStateException (getClass().getName()+": Block Event Type >5: "+blockEventType);
             }
             // we got to the end of a file or stream
         } catch (EOFException e){
@@ -149,11 +149,11 @@ public class Kmax6InputStream extends EventInputStream {
             eventSize=eventsze[4];				//SRQ event size is wanted
             dataInput.readFully(headerEnd);
             //save reads to header variables
-            headerKey=new String("unknown");
+            headerKey="unknown";
             headerRunNumber=0;
-            headerTitle=new String("unknown");
+            headerTitle=headerKey;
             headerEventSize=eventSize;
-            headerDate=new String("unknown");
+            headerDate=headerKey;
             return true;
         } catch (IOException ioe) {
             throw new EventException("Reading event header from IOException "+ioe.getMessage()+" [KmaxInputStream]");
