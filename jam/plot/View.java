@@ -1,8 +1,6 @@
 /*
  * Created on Nov 3, 2004
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package jam.plot;
 
@@ -10,31 +8,28 @@ import jam.data.Histogram;
 import jam.util.StringUtilities;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.TreeMap;
 
 
 /**
- * @author ken
+ * @author Ken Swartz
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class View {
 
 	private final int NAME_LENGTH = 20;
 	
-	private String name;
+	private final String name;
 	
-	private int nRows;
+	private final int nRows;
 	
-	private int nCols;
+	private final int nCols;
 	
-	private int numHists;
-	
-	private String [] histogramNames;
+	private final String [] histogramNames;
 	
 	private final static List viewNameList;
 	
@@ -45,37 +40,40 @@ public class View {
 		viewMap = new TreeMap();
 	}
 	
-	public View(String name, int nRows, int nCols){		
-		this.name=name;
-		this.nRows=nRows;
-		this.nCols=nCols;
-				
-
+	public View(String viewName, int rows, int cols){	
+		if (rows < 1) {
+			throw new IllegalArgumentException("Can't have a view with " + rows
+					+ " rows.");
+		}
+		if (cols < 1) {
+			throw new IllegalArgumentException("Can't have a view with " + cols
+					+ " columns.");
+		}
+		String tempName=viewName;
+		nRows=rows;
+		nCols=cols;
 		String addition;
 		StringUtilities su = StringUtilities.instance();
 		int prime;
-		
-		numHists=nRows*nCols;
-		
+		final int numHists=rows*cols;
 		histogramNames= new String[numHists];
-		
 		prime=1;
 		addition="";
-		while (viewMap.containsKey(name)) {
+		while (viewMap.containsKey(tempName)) {
 			addition = "[" + prime + "]";
-			name = su.makeLength(name, NAME_LENGTH - addition.length())
+			tempName = su.makeLength(tempName, NAME_LENGTH - addition.length())
 			       + addition;			
 			prime++;			
 		}
-		
+		name=tempName;
 		viewMap.put(name, this);
 		viewNameList.add(name);
-		
 	}
 	
 	public static Iterator getNameIterator(){
-		return viewNameList.iterator();
+		return Collections.unmodifiableList(viewNameList).iterator();
 	}
+	
 	public static View getView(String name){
 		return (View)viewMap.get(name);
 	}
@@ -87,35 +85,40 @@ public class View {
 	int getRows(){
 		return nRows;
 	}
+	
 	/**
 	 * Get the number of columns
-	 * @return rows
+	 * @return columns
 	 */
 	int getColumns(){
-		return nRows;
-	}
-	/**
-	 * Get the number of plots
-	 * @return rows
-	 */
-	int getNumberHists(){
-		return numHists;
-	}
-	/**
-	 * Get the number of plots
-	 * @return rows
-	 */
-	Histogram getHistogram(int num){
-		
-		return Histogram.getHistogram(histogramNames[num]);
-	}
-	/**
-	 * Get the number of plots
-	 * @return rows
-	 */
-	void setHistogram( int num, Histogram histIn){
-		histogramNames[num]=histIn.getName();
-
+		return nCols;
 	}
 	
+	/**
+	 * Get the number of histogram plots.
+	 * @return the number of plots
+	 */
+	int getNumberHists(){
+		return histogramNames.length;
+	}
+	
+	/**
+	 * Returns the histogram associatied with the given plot.
+	 * 
+	 * @param num which plot
+	 * @return histogram for the given plot
+	 */
+	Histogram getHistogram(int num){
+		return Histogram.getHistogram(histogramNames[num]);
+	}
+	
+	/**
+	 * Associates the given histogram with the given plot.
+	 * 
+	 * @param num which plot
+	 * @param histIn the Histogram
+	 */
+	void setHistogram(int num, Histogram histIn){
+		histogramNames[num]=histIn.getName();
+	}
 }
