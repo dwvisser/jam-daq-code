@@ -28,44 +28,38 @@ class SetupSortOff  implements ItemListener {
     	 * @param ae the event created by clicking OK or APPLY
     	 */
     	public void actionPerformed(ActionEvent ae){
-    		try{
-                if (jamMain.canSetSortMode()) {
-                    resetSort();//clear current data areas and kill daemons
-                    //loadNames();
-                    loadSorter();
-                    msgHandler.messageOutln("Loaded sort class '"+
-                    sortRoutine.getClass().getName()+
-                    "', event instream class '"
-                    +eventInput.getClass().getName()+
-                    "', and event outstream class '"+
-                    eventOutput.getClass().getName()+"'");
-                    if (sortRoutine != null) {
-                        setupSort();      //create data areas and daemons
-                        msgHandler.messageOutln("Daemons and dialogs initialized.");
-                    }
-					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
-                    if (bok.equals(ae.getSource())){
-                    	d.dispose();
-                    }
-                } else {
-                    throw new JamException(classname+
-                    "Can't set up sorting, mode locked.");
-                }
-        	} catch (Exception ex){
-            	msgHandler.errorOutln(ex.getMessage());
-            }
+    		doApply(bok.equals(ae.getSource()));
     	}
     }
+    
+    private void doApply(boolean dispose){
+		try{
+			if (jamMain.canSetSortMode()) {
+				resetSort();//clear current data areas and kill daemons
+				loadSorter();
+				msgHandler.messageOutln("Loaded sort class '"+
+				sortRoutine.getClass().getName()+
+				"', event instream class '"
+				+eventInput.getClass().getName()+
+				"', and event outstream class '"+
+				eventOutput.getClass().getName()+"'");
+				if (sortRoutine != null) {
+					setupSort();      //create data areas and daemons
+					msgHandler.messageOutln("Daemons and dialogs initialized.");
+				}
+				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
+				if (dispose) {
+					d.dispose();
+				}
+			} else {
+				throw new JamException(classname+
+				"Can't set up sorting, mode locked.");
+			}
+		} catch (Exception ex){
+			msgHandler.errorOutln(ex.getMessage());
+		}
+    }
 
-    /**
-     * Use for mode when sorting from disk.
-     */
-    //public static final int DISK=0;
-
-    /**
-     * Use for mode when sorting from tape.
-     */
-    //public static final int TAPE=1;
 	private final static String OK="OK";
 	private final static String Apply="Apply";
 	private final static String Cancel="Cancel";
@@ -73,7 +67,7 @@ class SetupSortOff  implements ItemListener {
 
 	private final String defaultSortPath, defaultSortRoutine,
 	defaultEventInStream,
-    defaultEventOutStream, defaultEventPath, defaultSpectra/*, defaultTape*/;
+    defaultEventOutStream, defaultEventPath, defaultSpectra;
 
     /* handles we need */
     final private JamMain jamMain;
@@ -100,21 +94,11 @@ class SetupSortOff  implements ItemListener {
 
     private File sortDirectory;
 
-    /**
-     * Indicates event source: from DISK or TAPE.
-     */
-    //private int mode;
-
-    /**
-     * The path to the tape device.
-     */
-    //private String tapeDevice;
-
     /* dialog box widgets */
     private final  JDialog d;
-    private final JTextField textSortPath;//, textDev;
+    private final JTextField textSortPath;
     private final JCheckBox checkLock;
-    private final JToggleButton /*ctape, cdisk,*/defaultPath,specify;
+    private final JToggleButton defaultPath,specify;
     private final JButton bok, bapply, bbrowsef;
     private final JComboBox sortChoice, inStreamChooser, outStreamChooser;
 
@@ -133,7 +117,6 @@ class SetupSortOff  implements ItemListener {
         defaultEventPath =JamProperties.getPropString(
         JamProperties.EVENT_INPATH);
         defaultSpectra=JamProperties.getPropString(JamProperties.HIST_PATH);
-        //defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
 
         final boolean useDefaultPath=(defaultSortPath.equals(
         JamProperties.DEFAULT_SORT_CLASSPATH));
@@ -207,24 +190,14 @@ class SetupSortOff  implements ItemListener {
 		pCenter.add(pChooserArea);
         pChooserLabels.add(new JLabel("Sort Routine",JLabel.RIGHT),
         BorderLayout.WEST);
-        //final Vector v=getSortClasses(sortDirectory);
 		sortChoice = new JComboBox();
-		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
 		sortChoice.setToolTipText("Select a class to be your sort routine.");
 		sortChoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				sortClass = (Class) sortChoice.getSelectedItem();
 			}
 		});
-		Iterator it = sortClassList.iterator();
-		while (it.hasNext()) {
-			Class c = (Class) it.next();
-			String name = c.getName();
-			if (name.equals(defaultSortRoutine)) {
-				sortChoice.setSelectedItem(c);
-				break;
-			}
-		}
+		selectSortRoutine(defaultSortRoutine,useDefaultPath);
         pChoosers.add(sortChoice);
         pChooserLabels.add(new JLabel("Event input stream",JLabel.RIGHT));
         Set lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",
@@ -232,8 +205,7 @@ class SetupSortOff  implements ItemListener {
         lhs.remove(EventInputStream.class);
         inStreamChooser=new JComboBox(new Vector(lhs));
         inStreamChooser.setToolTipText("Select your input event data format.");
-		it=lhs.iterator();
-		//notDone=it.hasNext();
+		Iterator it=lhs.iterator();
 		while (it.hasNext()) {
 			final Class cl=(Class)it.next();
 			final String name=cl.getName();
@@ -242,7 +214,6 @@ class SetupSortOff  implements ItemListener {
 				inStreamChooser.setSelectedItem(cl);
 				break;
 			}
-			//notDone = (!match) && it.hasNext();
 		}
         pChoosers.add(inStreamChooser);
 
@@ -254,7 +225,6 @@ class SetupSortOff  implements ItemListener {
 		outStreamChooser=new JComboBox(new Vector(lhs));
 		outStreamChooser.setToolTipText("Select your output event format.");
 		it=lhs.iterator();
-		//notDone=it.hasNext();
 		while (it.hasNext()) {
 			final Class cl=(Class)it.next();
 			final String name=cl.getName();
@@ -263,42 +233,8 @@ class SetupSortOff  implements ItemListener {
 				outStreamChooser.setSelectedItem(cl);
 				break;
 			}
-			//notDone = (!match) && it.hasNext();
 		}
 		pChoosers.add(outStreamChooser);
-        //final JPanel pselect=new JPanel();
-        /*
-        pselect.setLayout(new FlowLayout(FlowLayout.CENTER,space,space));
-        pChooserArea.add(pselect,BorderLayout.SOUTH);
-        pselect.add(new JLabel("Tape Device:"));
-        textDev=new JTextField(defaultTape);
-        textDev.setColumns(12);
-        pselect.add(textDev);
-        final ButtonGroup eventMode = new ButtonGroup();
-        ctape=new JRadioButton("Events from Tape", false);
-        ctape.addItemListener(new ItemListener(){
-        	public void itemStateChanged(ItemEvent ie){
-        		if (ctape.isSelected()){
-        			setMode(TAPE);
-        		}
-        	}
-        });
-        ctape.setEnabled(false);
-        ctape.setToolTipText("Not implemented.");
-        eventMode.add(ctape);
-        cdisk=new JRadioButton("Events from Disk", true);
-        cdisk.addItemListener(new ItemListener(){
-        	public void itemStateChanged(ItemEvent ie){
-        		if (cdisk.isSelected()){
-        			setMode(DISK);
-        		}
-        	}
-        });
-        cdisk.setToolTipText("The only option for now.");
-        eventMode.add(cdisk);
-        pselect.add(ctape);
-        pselect.add(cdisk);
-        */
         final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         final JPanel pb=new JPanel();
         pb.setLayout(new GridLayout(1,0,space,space));
@@ -337,7 +273,6 @@ class SetupSortOff  implements ItemListener {
                 d.dispose();
             }
         } );
-		//sortControl.setDevice(SortControl.DISK);
         d.pack();
     }
 
@@ -382,16 +317,6 @@ class SetupSortOff  implements ItemListener {
 		sortChoice.setModel(new DefaultComboBoxModel(v));
 		return v;
 	}
-
-    /**
-     * Loads the names of objects entered in the dialog box into
-     * String objects.
-     */
-    /*private void loadNames() {
-        synchronized (this){
-        	tapeDevice=textDev.getText();
-        }
-    }*/
 
     /**
      * Resolves the String objects into class names and loads the
@@ -467,7 +392,6 @@ class SetupSortOff  implements ItemListener {
      * @throws JamException if there's a problem
      */
     private void setupSort() throws SortException, JamException {
-        String deviceName;
         try {
             sortRoutine.initialize();
         } catch (Exception e) {
@@ -495,21 +419,8 @@ class SetupSortOff  implements ItemListener {
         final DiskDaemon diskDaemon =new DiskDaemon(sortControl,  msgHandler);
         diskDaemon.setupOff(eventInput, eventOutput);
         StorageDaemon storageDaemon=diskDaemon;
-        /* setup source of data tape */
-        /*if(mode==TAPE){
-            final TapeDaemon tapeDaemon = new TapeDaemon(sortControl,
-            msgHandler);
-            tapeDaemon.setDevice(tapeDevice);
-            tapeDaemon.setupOff(eventInput, eventOutput);
-            deviceName=tapeDevice;
-            storageDaemon=tapeDaemon;
-        } else {*/
-            deviceName="Disk";
-            //storageDaemon=diskDaemon;
-        //}
         /* tell run control about all, disk always to device */
-        sortControl.setup(sortDaemon, storageDaemon,
-        diskDaemon, deviceName);
+        sortControl.setup(sortDaemon, storageDaemon, diskDaemon);
         /* tell status to setup */
         displayCounters.setupOff(sortDaemon, storageDaemon);
         /* tell sortDaemon to update status */
@@ -539,30 +450,6 @@ class SetupSortOff  implements ItemListener {
         broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
         lockMode(false);
     }
-
-    /**
-     * Sets the mode for reading from either tape or disk.
-     *
-     * @param m either DISK or TAPE
-     * @see #DISK
-     * @see #TAPE
-     */
-    /*private void setMode(int m) {
-        if (m==TAPE) {
-        	synchronized (this) {
-            	this.mode=TAPE;
-            }
-            sortControl.setDevice(SortControl.TAPE);
-            //textDev.setEditable(true);
-        }
-        if (m==DISK) {
-            synchronized (this) {
-            	this.mode=DISK;
-            }
-            sortControl.setDevice(SortControl.DISK);
-            //textDev.setEditable(false);
-        }
-    }*/
 
     /**
      * Browses for the sort file.
@@ -597,22 +484,42 @@ class SetupSortOff  implements ItemListener {
     	checkLock.setSelected(lock);
     	inStreamChooser.setEnabled(notLock);
     	outStreamChooser.setEnabled(notLock);
-    	//cdisk.setEnabled(notLock);
     	bok.setEnabled(notLock);
     	bapply.setEnabled(notLock);
     	specify.setEnabled(notLock);
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            //if (mode==DISK) {
-                jamMain.setSortMode(JamMain.OFFLINE_DISK);
-            /*} else {
-                jamMain.setSortMode(JamMain.OFFLINE_TAPE);
-            }*/
+            jamMain.setSortMode(JamMain.OFFLINE_DISK);
             bbrowsef.setEnabled(false);
         } else{
             jamMain.setSortMode(JamMain.NO_SORT);
             bbrowsef.setEnabled(specify.isSelected());
         }
     }
+    
+    void setupSort(File classPath, String sortRoutineName,
+	Class inStream, Class outStream){
+		sortClassPath=classPath;
+		sortChoice.setModel(new DefaultComboBoxModel(
+		getSortClasses(sortClassPath)));
+		selectSortRoutine(sortRoutineName, false);
+		textSortPath.setText(sortClassPath.getAbsolutePath());
+		inStreamChooser.setSelectedItem(inStream);
+		outStreamChooser.setSelectedItem(outStream);
+		doApply(false);
+	}
+	
+	private final void selectSortRoutine(String srName, boolean useDefaultPath){
+		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
+		Iterator it = sortClassList.iterator();
+		while (it.hasNext()) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			if (name.equals(srName)) {
+				sortChoice.setSelectedItem(c);
+				break;
+			}
+		}
+	}
 }
