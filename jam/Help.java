@@ -13,6 +13,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import java.io.*;
 
+import javax.help.*;
+
 /**
  * Help shows the program about
  *
@@ -29,6 +31,15 @@ class Help implements ActionListener {
 	private JDialog aboutD;
 	private JDialog licenseD;
 
+	private final String LOCAL_USERGUIDE_PATH = "docs/jam_manual/index.html";
+	private final String INET_USERGUIDE_URL =
+		"http://jam-daq.sourceforge.net/jam_manual/index.html";
+
+	private final String LOCAL_API_PATH = "docs/API/index.html";
+	private final String INET_API_URL =
+		"http://jam-daq.sourceforge.net/API/index.html";
+
+	private final String LOCAL_ACK_PATH = "acknowledgements.html";
 	/**
 	 * Constructor
 	 */
@@ -55,7 +66,8 @@ class Help implements ActionListener {
 			new JLabel(
 				"Ken Swartz, Dale Visser, and John Baris",
 				JLabel.CENTER));
-		pcenter.add(new JLabel("http://jam-daq.sourceforge.net/", JLabel.CENTER));
+		pcenter.add(
+			new JLabel("http://jam-daq.sourceforge.net/", JLabel.CENTER));
 		JPanel pbut = new JPanel(new GridLayout(1, 0));
 		cad.add(pbut, BorderLayout.SOUTH);
 		JButton bok = new JButton("OK");
@@ -94,34 +106,10 @@ class Help implements ActionListener {
 	}
 
 	/**
-	 * Display the user guide using a browser
-	 */
-	public void showUserGuide() throws JamException {
-		String cmd = browser + " " + docsPath + "/jam_manual/index.html";
-		try {
-			Runtime.getRuntime().exec(cmd);
-		} catch (Exception e) {
-			throw new JamException(
-				"Unable to start browser using "
-					+ browser
-					+ ", set in JamConfig.ini [Help]");
-
-		}
-	}
-
-	/**
 	 * Display the jam documents using a browser
 	 */
 	public void showJamDocs() throws JamException {
-		String cmd = browser + " " + docsPath + "/API/index.html";
-		try {
-			Runtime.getRuntime().exec(cmd);
-		} catch (Exception e) {
-			throw new JamException(
-				"Unable to start browser using "
-					+ browser
-					+ ", set in JamConfig.ini [Help]");
-		}
+		//new Browser("Jam API", this.LOCAL_API_PATH, this.INET_API_URL);
 	}
 
 	private void createLicenseDialog() {
@@ -141,18 +129,18 @@ class Help implements ActionListener {
 			getClass().getClassLoader().getResourceAsStream("license.txt");
 		Reader reader = new InputStreamReader(license_in);
 		String text = "";
-		int length=0;
-		char [] textarray = new char[2000];
+		int length = 0;
+		char[] textarray = new char[2000];
 		try {
 			length = reader.read(textarray);
 		} catch (IOException e) {
 			System.err.println(e);
 		}
-		text = new String(textarray,0,length);
+		text = new String(textarray, 0, length);
 		System.out.println(text);
 
 		JTextArea textarea = new JTextArea(text);
-		center.add(new JScrollPane(textarea));		
+		center.add(new JScrollPane(textarea));
 		contents.add(center, BorderLayout.CENTER);
 		JPanel south = new JPanel(new GridLayout(1, 0));
 		contents.add(south, BorderLayout.SOUTH);
@@ -170,10 +158,9 @@ class Help implements ActionListener {
 	}
 
 	/**
-	 * Method showLicense.
+	 * Show Jam's open source license text.
 	 */
 	public void showLicense() {
 		licenseD.show();
 	}
-
 }
