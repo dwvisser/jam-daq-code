@@ -18,13 +18,13 @@ import javax.swing.tree.TreeCellRenderer;
 public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 		TreeCellRenderer {
 
+	private Color defaultBackgroundColor;
 	public SelectionTreeCellRender(){
-	//	setBackgroundSelectionColor(Color.GRAY);
-	//	setBackground(Color.GRAY);
-		
-		setTextSelectionColor(Color.RED);
-		
-	//	setTextSelectionColor(Color.GRAY); 
+		defaultBackgroundColor = getBackgroundSelectionColor();
+		//	setBackgroundSelectionColor(Color.GRAY);
+		//	setBackground(Color.GRAY);		
+		//setTextSelectionColor(Color.RED);
+	 
 	}
 	
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -46,6 +46,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 		Object nodeObject =((DefaultMutableTreeNode)value).getUserObject();
 		if (nodeObject instanceof Histogram){
 			Histogram hist =(Histogram)nodeObject;
+			setBackgroundSelectionColor(defaultBackgroundColor);
 			if (hist.getDimensionality()==1){
 				setIcon(Icons.HIST1D);			
 			}else{
@@ -56,7 +57,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 
 		}else if (nodeObject instanceof Gate) {
 			Gate gate =(Gate)nodeObject;
-
+			setBackgroundSelectionColor(Color.CYAN);
 			setText( gate.getName() );
 			if (gate.getDimensionality()==1){
 				if (gate.isDefined()){

@@ -68,14 +68,17 @@ public class SelectionTree extends JPanel implements Observer {
 		dim.width=160;
 		//setMinimumSize(dim);
 		setPreferredSize(dim);
-		 setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 		
-		 treeModel= new DefaultTreeModel(new DefaultMutableTreeNode("No Data") );
+		//Default blank model
+		treeModel= new DefaultTreeModel(new DefaultMutableTreeNode("No Data") );
 		 	
-		 dataTree = new JTree(treeModel);
-		 dataTree.setCellRenderer(new SelectionTreeCellRender());
-		 dataTree.addTreeSelectionListener(new TreeSelectionListener(){
-	 	    public void valueChanged(TreeSelectionEvent e) {
+		dataTree = new JTree(treeModel);
+		dataTree.getSelectionModel().setSelectionMode( TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		//dataTree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION);
+		dataTree.setCellRenderer(new SelectionTreeCellRender());
+		dataTree.addTreeSelectionListener(new TreeSelectionListener(){
+			public void valueChanged(TreeSelectionEvent e) {
 	 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					dataTree.getLastSelectedPathComponent();
 	 	        if (node == null) 
@@ -142,14 +145,22 @@ public class SelectionTree extends JPanel implements Observer {
 		//Syncronize events should not fire events
 		if (isSyncEvent)
 			return;
-		
-		if (nodeObject instanceof Histogram) {			
+
+		if (nodeObject instanceof Histogram) {
+			//dataTree.clearSelection();
 			Histogram hist =(Histogram)nodeObject;
 				status.setHistName(hist.getName());
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		} else if (nodeObject instanceof Gate) {
-			Gate gate =(Gate)nodeObject;			
-			Histogram hist =gate.getHistogram();
+			Gate gate =(Gate)nodeObject;
+			Histogram hist =gate.getHistogram(); 
+			
+			TreePath [] selectTreePaths = new TreePath [2];
+			selectTreePaths[0]= pathForDataObject(hist);
+			selectTreePaths[1]= pathForDataObject(gate);
+			dataTree.clearSelection();
+			dataTree.setSelectionPaths(selectTreePaths);
+			
 			//Change selected histogram if needed
 			if (hist!=status.getCurrentHistogram()) {
 				status.setHistName(hist.getName());
@@ -161,7 +172,27 @@ public class SelectionTree extends JPanel implements Observer {
 			
 		}
 	}	
-
+	/**
+	 * Helper method to get TreePath for a data object
+	 * @param ojc
+	 * @return
+	 */
+	private TreePath pathForDataObject(Object dataObject){
+		
+		DefaultMutableTreeNode loopNode;
+		TreePath treePath=null;
+		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
+		while(nodeEnum.hasMoreElements()){
+			loopNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
+			Object obj=loopNode.getUserObject();
+			if (dataObject==obj){
+				treePath = new TreePath(loopNode.getPath());			
+				break;
+			}
+			
+		}
+		return treePath;
+	}
 	/**
 	 * Refresh the selected node
 	 *
@@ -170,9 +201,7 @@ public class SelectionTree extends JPanel implements Observer {
 		
 		DefaultMutableTreeNode currentNode;
 		Histogram hist = status.getCurrentHistogram();
-		
-		//if (rootNode==null)
-	//		return;
+		Gate gate = Gate.getGate(status.getCurrentGateName());
 		
 		//Loop through all nodes to find select histogram
 		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
@@ -183,12 +212,18 @@ public class SelectionTree extends JPanel implements Observer {
 			Object obj=currentNode.getUserObject();
 			if (obj instanceof Histogram) {
 				if (obj==hist){
-					TreeNode []tnpath=currentNode.getPath();
-					TreePath tp = new TreePath(tnpath);
+					TreePath tp = new TreePath(currentNode.getPath());
+					//dataTree.setSelectionPath(tp);
+					break;
+				}
+			} else if (obj instanceof Gate){
+				if (obj==gate){
+					TreePath tp = new TreePath(currentNode.getPath());
 					dataTree.setSelectionPath(tp);
 					break;
 				}
-			}	
+				
+			}
 		}		
 		repaint();
 		dataTree.repaint();
@@ -217,7 +252,7 @@ public class SelectionTree extends JPanel implements Observer {
 			loadTree();
 		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
-			refreshSelection();
+			//refreshSelection();
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			loadTree();
 		}
