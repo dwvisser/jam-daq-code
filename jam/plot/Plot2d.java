@@ -1,6 +1,5 @@
 package jam.plot;
 
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -36,7 +35,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	
 	private final PlotColorMap plotColorMap=PlotColorMap.getInstance();
 
-	private boolean smoothColorScale = true;
+	private boolean smoothScale = true;
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
@@ -63,19 +62,19 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	}
 
 	private synchronized void setSmoothColorScale(boolean bool) {
-		smoothColorScale = bool;
+		smoothScale = bool;
 	}
 
 	private synchronized boolean getSmoothColorScale() {
-		return smoothColorScale;
+		return smoothScale;
 	}
 
-	protected void paintMarkedChannels(Graphics g) {
-		g.setColor(plotColorMap.getMark());
-		final Iterator it = markedChannels.iterator();
-		while (it.hasNext()) {
-			final Bin p = (Bin) it.next();
-			graph.markChannel2d(p);
+	protected void paintMarkedChannels(Graphics graphics) {
+		graphics.setColor(plotColorMap.getMark());
+		final Iterator iterator = markedChannels.iterator();
+		while (iterator.hasNext()) {
+			final Bin bin = (Bin) iterator.next();
+			graph.markChannel2d(bin);
 		}
 	}
 
