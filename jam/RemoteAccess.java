@@ -32,7 +32,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException if there's a problem
 	 */
 	public String getTestString() throws RemoteException {
-		String message = "Remote from jam";
+		final String message = "Remote from jam";
 		return message;
 	}
 	
@@ -57,8 +57,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException if there's a problem
 	 */
 	public String[] getHistogramNames() throws RemoteException {
-		List hists = Histogram.getHistogramList();
-		String[] names = new String[hists.size()];
+		final List hists = Histogram.getHistogramList();
+		final String[] names = new String[hists.size()];
 		for (int i = 0; i < hists.size(); i++) {
 			names[i] = ((Histogram) hists.get(i)).getFullName();
 		}
@@ -88,9 +88,9 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException if there's a problem
 	 */
 	public String[] getGateNames(String histName) throws RemoteException {
-		Histogram hist = Histogram.getHistogram(histName);
-		Gate[] gates = (Gate [])hist.getGates().toArray(new Gate[0]);
-		String[] names = new String[gates.length];
+		final Histogram hist = Histogram.getHistogram(histName);
+		final Gate[] gates = (Gate [])hist.getGates().toArray(new Gate[0]);
+		final String[] names = new String[gates.length];
 		for (int i = 0; i < gates.length; i++) {
 			names[i] = gates[i].getName();
 		}
@@ -127,7 +127,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @throws RemoteException if there's a problem
 	 */
 	public double[] getMonitorValues() throws RemoteException {
-		List monitors = Monitor.getMonitorList();
+		final List monitors = Monitor.getMonitorList();
 		double values[] = new double[monitors.size()];
 		for (int i = 0; i < monitors.size(); i++) {
 			values[i] = ((Monitor) monitors.get(i)).getValue();
