@@ -593,14 +593,25 @@ public final class SetupSortOn {
 	 * @author Dale Visser
 	 */
 	private void setupAcq() throws SortException, JamException {
-		try { //allocate data areas
-			sortRoutine.initialize();
-		} catch (Exception e) {
-			throw new JamException("Exception in SortRoutine: "
-					+ sortRoutine.getClass().getName()
-					+ ".initialize(); Message= '" + e.getClass().getName()
-					+ ": " + e.getMessage() + "'");
-		}
+	    final StringBuffer message = new StringBuffer();
+	    final String sortName=sortRoutine.getClass().getName();
+        try { //allocate data areas
+            sortRoutine.initialize();
+        } catch (Exception thrown) {
+            message.append(getClass().getName()).append("Exception in SortRoutine: ")
+                    .append(sortName).append(".initialize(); Message= '")
+                    .append(thrown.getClass().getName()).append(": ").append(
+                            thrown.getMessage()).append('\'');
+            throw new JamException(message.toString());
+        } catch (Throwable thrown) {
+            message
+                    .append("Couldn't load ")
+                    .append(sortName)
+                    .append("; You probably ")
+                    .append(
+                            "need to re-compile it against the current version of Jam.");
+            throw new JamException(message.toString());
+        }
 		AbstractControl.setupAll();
 		/* interprocess buffering between daemons */
 		final RingBuffer sortingRing = new RingBuffer();
