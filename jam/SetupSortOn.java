@@ -761,8 +761,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 	private void setupVME_Map() throws JamException, SortException {
 		frontEnd.setup();
-		frontEnd.setupVME_Map(sortRoutine.getVME_Map());
 		VME_Map map = sortRoutine.getVME_Map();
+		frontEnd.setupVME_Map(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}
 
