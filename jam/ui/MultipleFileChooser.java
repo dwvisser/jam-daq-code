@@ -2,7 +2,6 @@ package jam.ui;
 
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
-import jam.io.hdf.HDFileFilter;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -54,10 +53,8 @@ public final class MultipleFileChooser extends JPanel {
 	
 	private FileFilter fileFilter;
 	
-	private String fileExtension="*";
-	
 	/** Main Frame */
-	Frame frame;
+	private final Frame frame;
 	/** Messages output */
 	private MessageHandler msgHandler;
 	
@@ -145,23 +142,22 @@ public final class MultipleFileChooser extends JPanel {
 
 	/**
 	 * Sets the file filter to browse for
-	 * @param extension
+	 * @param filter type to browse for
 	 */
 	public void setFileFilter(FileFilter filter) {
 		fileFilter=filter;
 	}
+	
 	/**
 	 * Sets the file extension to browse for, creates a default
 	 * file filter
-	 * @param extension
+	 * @param extension file extension
+	 * @param extensionName label for file type
 	 */
 	public void setFileFilter(String extensionName, String extension) {
-		
-		String [] extensions = {extension};
-		
+		final String [] extensions = {extension};
 		fileFilter =new ExtensionFileFilter(extensions ,
 						extensionName+"(*."+extension+")");
-
 	}
 
 	/**
