@@ -386,7 +386,7 @@ class SetupSortOff  implements ItemListener {
     	if (f.exists()){
 			sortClassPath=f;
 			sortChoice.setModel(new DefaultComboBoxModel(
-			getSortClasses(sortClassPath)));
+			new Vector(getSortClasses(sortClassPath))));
 			if (sortChoice.getModel().getSize()>0){
 				sortChoice.setSelectedIndex(0);
 			}
@@ -394,8 +394,8 @@ class SetupSortOff  implements ItemListener {
     	}
     }
 
-	private Vector getSortClasses(File path) {
-		return new Vector(RTSI.find(path, jam.sort.SortRoutine.class));
+	private Set getSortClasses(File path) {
+		return RTSI.find(path, jam.sort.SortRoutine.class);
 	}
 
     /**
@@ -424,13 +424,14 @@ class SetupSortOff  implements ItemListener {
     }
 
 	private java.util.List setChooserDefault(boolean isDefault) {
-		final Vector v=isDefault ? new Vector() :
-		(Vector)getSortClasses(sortClassPath);
+		final Vector v= new Vector();
 		if (isDefault) {
-			Set set = new LinkedHashSet();
+			final Set set = new LinkedHashSet();
 			set.addAll(RTSI.find("help", SortRoutine.class, true));
 			set.addAll(RTSI.find("sort", SortRoutine.class, true));
 			v.addAll(set);
+		} else {
+			v.addAll(getSortClasses(sortClassPath));
 		}
 		sortChoice.setModel(new DefaultComboBoxModel(v));
 		return v;
