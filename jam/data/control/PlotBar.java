@@ -46,7 +46,7 @@ public class PlotBar extends Canvas implements PlotBarLayout {
      */
     public synchronized void paint(Graphics g){
       //overall properties
-      int plotLength, thresholdLine,length,width;
+      int plotLength, thresholdLine,length;
       //user custom settings
       double value,threshold,maximum;
       Dimension dim;
@@ -58,7 +58,6 @@ public class PlotBar extends Canvas implements PlotBarLayout {
 
       //orientation of plot and size
       length=dim.width-2*BORDER_END;
-      width=dim.height;
 
       //make sure input OK
       if(maximum>0){
