@@ -79,7 +79,7 @@ public class HDFIO implements DataIO, JamHDFFields {
     /**
      * <code>HDFile</code> object to write out to.
      */
-    private HDFile out;
+    //private HDFile out;
 
     /**
      * <code>HDFile<code> object to read from.
@@ -254,9 +254,10 @@ public class HDFIO implements DataIO, JamHDFFields {
      *            list of <code>Scaler</code> objects to write
      * @param parameters
      *            list of <code>Parameter</code> objects to write
+     * @throws HDFException if there's a problem creating data ojbects
      */
     private void writeFile(File file, List hists, List gates, List scalers,
-            List parameters)  throws HDFException {
+            List parameters) throws HDFException {
         final StringBuffer message = new StringBuffer();
         int progress = 1;
     	DataObject.clearAll();
@@ -306,13 +307,12 @@ public class HDFIO implements DataIO, JamHDFFields {
                 + file.getName() + "': " + e.toString());
         }   
         msgHandler.messageOut("", MessageHandler.END);
-
+        HDFile out;
         try {
             synchronized (this) {
             	out = new HDFile(file, "rw");
             }            
-        	out.writeFile(monitor);
-        	            
+        	out.writeFile(monitor);    
             setProgressNote(monitor, "Closing File");
             out.close();
         } catch (FileNotFoundException e) {
@@ -505,9 +505,11 @@ public class HDFIO implements DataIO, JamHDFFields {
                 setLastValidFile(infile);
             } catch (HDFException except) {
                 msgHandler.errorOutln(except.toString());
+                except.printStackTrace();
                 rval = false;
             } catch (IOException except) {
                 msgHandler.errorOutln(except.toString());
+                except.printStackTrace();
                 rval = false;
             }
             DataObject.clearAll();
