@@ -61,8 +61,6 @@ public class Kmax6InputStream extends EventInputStream {
      * @return status resulting after read attempt
      */
     public synchronized EventInputStatus readEvent(int[] input) throws  EventException {
-        int badEvent;		//header padding
-
         try {
             //status=EventInputStatus.ERROR;
             //if a new block read in block header
@@ -88,7 +86,7 @@ public class Kmax6InputStream extends EventInputStream {
             } else  if (blockEventType <5) {
                 for (parameter=0;parameter<eventsze[blockEventType-1];
                 parameter++) {
-                    badEvent=dataInput.readInt();
+                    dataInput.readInt();//header padding
                 }
                 return EventInputStatus.ERROR;
             } else {
