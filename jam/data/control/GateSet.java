@@ -81,8 +81,8 @@ public class GateSet extends AbstractControl implements Observer {
         contents.setLayout(new BorderLayout());
         setLocation(20, 50);
         /* panel with chooser */
-        JPanel pc = new JPanel();
-        pc.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JPanel pChooser = new JPanel();
+        pChooser.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
         cgate = new JComboBox(new GateComboBoxModel());
         Dimension dimset = cgate.getPreferredSize();
         dimset.width = 200;
@@ -96,32 +96,30 @@ public class GateSet extends AbstractControl implements Observer {
                 }
             }
         });
-        pc.add(cgate);
+        pChooser.add(cgate);
         // panel with data fields
-        final JPanel pf = new JPanel();
-        pf.setLayout(new GridLayout(2, 1));
-        final JPanel p1 = new JPanel(new FlowLayout());
+        final JPanel pFields = new JPanel();
+        pFields.setLayout(new GridLayout(2, 1));
+        final JPanel panel1 = new JPanel(new FlowLayout());
         lLower = new JLabel("lower", Label.RIGHT);
-        p1.add(lLower);
+        panel1.add(lLower);
         textLower = new JTextField("", 4);
-        p1.add(textLower);
-        final JPanel p2 = new JPanel(new FlowLayout());
+        panel1.add(textLower);
+        final JPanel panel2 = new JPanel(new FlowLayout());
         lUpper = new JLabel("upper", Label.RIGHT);
-        p2.add(lUpper);
+        panel2.add(lUpper);
         textUpper = new JTextField("", 4);
-        p2.add(textUpper);
-        pf.add(p1);
-        pf.add(p2);
-
-        // panel with buttons add remove buttons
+        panel2.add(textUpper);
+        pFields.add(panel1);
+        pFields.add(panel2);
+        /* panel with buttons add remove buttons */
         final JPanel pedit = new JPanel();
         pedit.setLayout(new GridLayout(3, 1, 5, 5));
         Border border = new EmptyBorder(0, 0, 10, 30);
         pedit.setBorder(border);
-
         addP = new JButton("Add");
         addP.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 addPoint();
             }
         });
@@ -129,7 +127,7 @@ public class GateSet extends AbstractControl implements Observer {
         pedit.add(addP);
         removeP = new JButton("Remove");
         removeP.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 removePoint();
             }
         });
@@ -137,7 +135,7 @@ public class GateSet extends AbstractControl implements Observer {
         pedit.add(removeP);
         unset = new JButton("Unset");
         unset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 unset();
             }
         });
@@ -146,41 +144,41 @@ public class GateSet extends AbstractControl implements Observer {
 
         // panel with OK, Cancel buttons
         final JPanel pokcancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        final Panel pb = new Panel();
-        pb.setLayout(new GridLayout(1, 0, 5, 5));
-        pokcancel.add(pb);
+        final Panel pButtons = new Panel();
+        pButtons.setLayout(new GridLayout(1, 0, 5, 5));
+        pokcancel.add(pButtons);
         save = new JButton("Save");
         save.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 save();
             }
         });
         save.setEnabled(false);
-        pb.add(save);
+        pButtons.add(save);
         cancel = new JButton("Cancel");
         cancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 cancel();
             }
         });
         cancel.setEnabled(false);
-        pb.add(cancel);
+        pButtons.add(cancel);
 
-        contents.add(pc, BorderLayout.NORTH);
-        contents.add(pf, BorderLayout.CENTER);
+        contents.add(pChooser, BorderLayout.NORTH);
+        contents.add(pFields, BorderLayout.CENTER);
         contents.add(pedit, BorderLayout.EAST);
         contents.add(pokcancel, BorderLayout.SOUTH);
         addWindowListener(new WindowAdapter() {
-            public void windowActivated(WindowEvent e) {
+            public void windowActivated(WindowEvent windowEvent) {
                 checkHistogram();
             }
 
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(WindowEvent windowEvent) {
                 cancel();
                 dispose();
             }
 
-            public void windowOpened(WindowEvent e) {
+            public void windowOpened(WindowEvent windowEvent) {
                 doSetup();
             }
         });
@@ -387,12 +385,12 @@ public class GateSet extends AbstractControl implements Observer {
         try { //check fields are numbers
             if (currentGate != null) {
                 if (type == ONE_DIMENSION) {
-                    final int x1 = Integer.parseInt(textLower.getText());
-                    final int x2 = Integer.parseInt(textUpper.getText());
-                    currentGate.setLimits(x1, x2);
+                    final int lim1 = Integer.parseInt(textLower.getText());
+                    final int lim2 = Integer.parseInt(textUpper.getText());
+                    currentGate.setLimits(lim1, lim2);
                     messageHandler.messageOutln("Gate Set "
-                            + currentGate.getName() + " Limits=" + x1 + ","
-                            + x2);
+                            + currentGate.getName() + " Limits=" + lim1 + ","
+                            + lim2);
                 } else if (type == TWO_DIMENSION) {
                     /* complete gate, adding a last point = first point */
                     gatePoints.add(gatePoints.get(0));
