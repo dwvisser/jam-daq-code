@@ -1,6 +1,7 @@
 package jam.fit;
 import jam.JamException;
 import jam.JamMain;
+import jam.MainMenuBar; 
 import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.plot.Display;
@@ -36,6 +37,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private final JamMain jamMain;
 	private final Display display;
 	private final MessageHandler msgHandler;
+	private final MainMenuBar menubar;
 
 	private final JDialog dl;
 	private final JComboBox chooseFit;
@@ -47,11 +49,13 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param d the histogram display
 	 * @param mh the place to output text
 	 */
-	public LoadFit(JamMain jm, Display d, MessageHandler mh) {
+	public LoadFit(JamMain jm, Display d, MessageHandler mh, 
+	MainMenuBar mb) {
 		super();
 		this.jamMain = jm;
 		this.display = d;
 		this.msgHandler = mh;
+		menubar=mb;
 		final String dialogName="Load Fit Routine";
 		dl = new JDialog(jamMain, dialogName, false);
 		final Container cp = dl.getContentPane();
@@ -134,7 +138,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			final String fitNameFront = fitName.substring(indexPeriod + 1);
 			fit.createDialog(jamMain, display, msgHandler);
 			fit.show();
-			jamMain.addFit(new AbstractAction(fitNameFront) {
+			menubar.addFit(new AbstractAction(fitNameFront) {
 				public void actionPerformed(ActionEvent ae) {
 					fit.show();
 				}

@@ -14,7 +14,6 @@ import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
-import jam.fit.LoadFit;
 import jam.global.*;
 import jam.io.HistogramIO;
 import jam.io.ImpExpASCII;
@@ -80,7 +79,7 @@ public class JamCommand
 	// fix this
 	/** The "load fit" dialog box.
 	 */
-	private final LoadFit loadFit;
+	//private final LoadFit loadFit;
 
 	//control of data objects
 	private final HistogramControl histogramControl;
@@ -117,7 +116,8 @@ public class JamCommand
 	 * communications
 	 * @param jc the text input and output area
 	 */
-	public JamCommand(JamMain jm, Display d, Broadcaster b, JamConsole jc) {
+	public JamCommand(JamMain jm, Display d, Broadcaster b, 
+	JamConsole jc) {
 		super();
 		classname = getClass().getName() + " - ";
 		this.jamMain = jm;
@@ -159,8 +159,6 @@ public class JamCommand
 				console);
 		sortControl = new SortControl(jamMain, console);
 		displayCounters = new DisplayCounters(jamMain, broadcaster, console);
-		//load fitting routine
-		loadFit = new LoadFit(jamMain, display, console);
 		//setup classes
 		setupSortOn =
 			new SetupSortOn(
@@ -196,9 +194,9 @@ public class JamCommand
 		remote = false;
 	}
 	
-	ActionListener getLoadFit(){
+	/*ActionListener getLoadFit(){
 		return loadFit;
-	}
+	}*/
 
 	/**
 	 * Receives all the inputs from the pull down menus
@@ -377,8 +375,8 @@ public class JamCommand
 				monitorControl.showConfig();
 			} else if ("zeroscalers".equals(incommand)) {
 				scalerControl.showZero();
-			} else if ("loadfit".equals(incommand)) {
-				loadFit.showLoad();
+			//} else if ("loadfit".equals(incommand)) {
+			//	loadFit.showLoad();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
