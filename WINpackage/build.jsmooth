@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <jsmoothproject>
-	<JVMSearchPath>registry</JVMSearchPath>
-	<JVMSearchPath>javahome</JVMSearchPath>
-	<JVMSearchPath>jrepath</JVMSearchPath>
-	<JVMSearchPath>jdkpath</JVMSearchPath>
-	<JVMSearchPath>exepath</JVMSearchPath>
-	<JVMSearchPath>jview</JVMSearchPath>
-	<arguments></arguments>
-	<classPath>lib\Jam.jar</classPath>
-	<classPath>lib\jh.jar</classPath>
-	<classPath>lib\jlfgr-1_0.jar</classPath>
-	<classPath>lib\junit.jar</classPath>
-        <classPath>lib\kunststoff.jar</classPath>
-	<embeddedJar>false</embeddedJar>
-	<executableName>bin\Jam.exe</executableName>
-	<iconLocation>nukeicon.ico</iconLocation>
-	<initialMemoryHeap>80M</initialMemoryHeap>
-        <maximumMemoryHeap>180M</maximumMemoryHeap>
-	<mainClassName>jam.JamMain</mainClassName>
-	<minimumVersion>1.4.2</minimumVersion>
-	<skeletonName>Console Wrapper</skeletonName>
-	<skeletonProperties>
-		<key>Message</key>
-		<value>This program needs Java 1.4.2 or later to run.
-		Please download it at http://www.java.com</value>
-	</skeletonProperties>
-	<skeletonProperties>
-		<key>PressKey</key>
-		<value>1</value>
-	</skeletonProperties>
+<JVMSearchPath>registry</JVMSearchPath>
+<JVMSearchPath>javahome</JVMSearchPath>
+<JVMSearchPath>jrepath</JVMSearchPath>
+<JVMSearchPath>jdkpath</JVMSearchPath>
+<JVMSearchPath>exepath</JVMSearchPath>
+<JVMSearchPath>jview</JVMSearchPath>
+<arguments></arguments>
+<classPath>lib\Jam.jar</classPath>
+<classPath>lib\JamAPI.jar</classPath>
+<classPath>lib\jh.jar</classPath>
+<classPath>lib\jlfgr-1_0.jar</classPath>
+<classPath>lib\kunststoff.jar</classPath>
+<embeddedJar>false</embeddedJar>
+<executableName>bin\Jam.exe</executableName>
+<iconLocation>nukeicon.ico</iconLocation>
+<initialMemoryHeap>83886080</initialMemoryHeap>
+<mainClassName>jam.JamMain</mainClassName>
+<maximumMemoryHeap>209715200</maximumMemoryHeap>
+<maximumVersion></maximumVersion>
+<minimumVersion>1.4.2</minimumVersion>
+<skeletonName>Console Wrapper</skeletonName>
+<skeletonProperties>
+<key>Message</key>
+<value>This program needs Java 1.4.2 or greater to run.
+Please download it at http://www.java.com</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>PressKey</key>
+<value>0</value>
+</skeletonProperties>
+<skeletonProperties>
+<key>Debug</key>
+<value>0</value>
+</skeletonProperties>
 </jsmoothproject>
