@@ -1,13 +1,10 @@
 package jam.data.func;
 
-import jam.data.control.CalibrationFit;
 import java.awt.Component;
-import java.net.URL;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 
@@ -20,27 +17,6 @@ import javax.swing.UIManager;
  */
 public class CalibrationListCellRenderer
 	extends DefaultListCellRenderer {
-
-	//private static final ImageIcon LINE_ICON;
-	//private static final ImageIcon POLY_ICON;
-	//private static final ImageIcon SQRT_ICON;
-
-	static{
-		/*FIXME KBS remove
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-		URL urlLine=loader.getResource("jam/data/func/line.png");
-		URL urlPoly =loader.getResource("jam/data/func/poly.png");
-		URL urlSqrt =loader.getResource("jam/data/func/sqrt.png");
-		if (urlLine==null || urlPoly==null || urlSqrt==null) {
-			JOptionPane.showMessageDialog(null, "Can't load resource: jam/(stop|go|clear).png");
-			LINE_ICON=POLY_ICON=SQRT_ICON=null;
-		} else {
-			LINE_ICON=new ImageIcon(urlLine);
-			POLY_ICON=new ImageIcon(urlPoly);
-			SQRT_ICON=new ImageIcon(urlSqrt);
-		}
-		*/
-	}
 
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a red
@@ -63,30 +39,15 @@ public class CalibrationListCellRenderer
 			setForeground(list.getForeground());
 		}
 		
-		setText(value.toString());
-		ImageIcon icon= CalibrationFunction.getIcon(value.toString());
-		setIcon(icon);
-		/* FIXME KBS remove
- 		if (value==null){
+		if (value!=null) {
+			setText(value.toString());
+			ImageIcon icon= CalibrationFunction.getIcon(value.toString());
+			setIcon(icon);
+		} else {
 			setText("null");
 			setIcon(null);
-		} else if (value.equals(CalibrationFit.NOT_CALIBRATED)){
-			setText("Not Calibrated");
-			setIcon(null);				
-		} else if (value.equals(LinearFunction.getName())){
-			setIcon(LINE_ICON);
-			setText("Linear");
-		} else if (value.equals(PolynomialFunction.getName())){
-			setIcon(POLY_ICON);
-			setText("Polynomial");
-		} else if (value.equals(SqrtEnergyFunction.getName())){
-			setIcon(SQRT_ICON);
-			setText("Linear in Square Root");
-		} else {
-			setIcon(null);
-			setText("Can't find name");
 		}
-		*/
+		
 		setBorder(
 			(cellHasFocus)
 				? UIManager.getBorder("List.focusCellHighlightBorder")

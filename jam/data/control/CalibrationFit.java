@@ -131,9 +131,8 @@ public class CalibrationFit extends AbstractControl {
         comboBoxFunction.setRenderer(new CalibrationListCellRenderer());
 		comboBoxFunction.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
-				final String calClass = (String)comboBoxFunction.getSelectedItem();
-				
-				selectFunction(calClass);
+				final String funcName = (String)comboBoxFunction.getSelectedItem();				
+				selectFunction(funcName);
 			}
 		});
         pChoose.add(comboBoxFunction);
@@ -275,6 +274,10 @@ public class CalibrationFit extends AbstractControl {
      */
     private void selectFunction(String funcName){
     	Class calClass;
+    	
+    	//if (isUpdate)
+    	//	return;
+    	
 		try {
 			calibrationFunction = getCurrentCalibrationFunction();
 			if (!funcName.equals(NOT_CALIBRATED)) {
@@ -318,10 +321,7 @@ public class CalibrationFit extends AbstractControl {
     private void updateSelection() {
     	
     	String name=null;   
-    	
-    	if (isUpdate)
-    		return;
-    	
+    	    	
     	calibrationFunction=getCurrentCalibrationFunction();
     			
 		//Select name 
@@ -340,22 +340,20 @@ public class CalibrationFit extends AbstractControl {
 		
 		isUpdate=true;
     	comboBoxFunction.setSelectedItem(name);    	
-    	
 		isUpdate=false;
     	updateFields(calibrationFunction);
     }
 
     public void doSetup(){
 
-    	CalibrationFunction hcf=null;
     	boolean histIs1d;
     	String name=null;
     	String title=null;
     	
     	//Get histogram status
-    	hcf=getCurrentCalibrationFunction();
+    	calibrationFunction=getCurrentCalibrationFunction();
 		
-    	updateFields(hcf);
+    	updateFields(calibrationFunction);
     }
     
     private void doApplyCalib(){

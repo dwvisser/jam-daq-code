@@ -1,6 +1,5 @@
 package jam.data.func;
 
-import jam.data.control.CalibrationFit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,14 +15,6 @@ import javax.swing.DefaultComboBoxModel;
  */
 public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		
-	//private List LIST=CalibrationFunction.getNames();
-	/*
-	static {
-		LIST.add(CalibrationFit.NOT_CALIBRATED);
-		LIST.add(LinearFunction.getName());
-		LIST.add(SqrtEnergyFunction.getName());
-	}
-	*/
 	private transient Object selection;
 	private transient final Object selectSync=new Object();
 
@@ -52,16 +43,14 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public void setSelectedItem(Object anItem) {
 		synchronized (selectSync){
-			Object name=null;
 			if (anItem==null){
 				selection=CalibrationFunction.getListNames().get(0);
 			} else if (anItem instanceof String){
-				name=anItem;				
+				selection=anItem;				
 			} else {
 				throw new IllegalArgumentException(getClass().getName()+
 				": only CalibrationFunction Strings or null please");
 			}
-			selection=name;
 		}
 			//FIXME KBS
 			/*
