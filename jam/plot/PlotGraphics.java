@@ -280,7 +280,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final int x = this.viewLeft - TITLE_OFFSET_TOP - width;
 		final int y = viewTop - TITLE_OFFSET_TOP;
 		final Color c = g.getColor();
-		g.setColor(Color.BLACK);
+		g.setColor(PlotColorMap.foreground);
 		g.drawString(s, x, y);
 		if (overlayNumber >= 0){
 			final int x2=x+width;
@@ -1164,7 +1164,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
 		setFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
-		g.setColor(Color.blue);
+		g.setColor(PlotColorMap.peakLabel);
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
 			int x2 = x1;
