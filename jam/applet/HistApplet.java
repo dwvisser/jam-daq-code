@@ -1,4 +1,5 @@
 package jam.applet;
+import jam.InitialHistograms;
 import jam.JamException;
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -124,7 +125,7 @@ public class HistApplet
 		textHost.setText("rmi://" + documentHost + "/" + expname);
 		Histogram.clearList();
 		try {
-			new jam.InitialHistograms();//load initial histograms
+			new InitialHistograms();//load initial histograms
 			setHistogramList(Histogram.getHistogramList());
 			//display.setPreference(Display.JamPrefs.WHITE_BACKGROUND, true);
 		} catch (Exception e) {
