@@ -141,14 +141,7 @@ public final class JamMain extends JFrame {
 		});
 		new InitialHistograms();
 		DataControl.setupAll(); //setup jam.data.control dialog boxes
-		try { //setting no sort does not throw an exception
-			setSortMode(NO_SORT);
-		} catch (JamException je) {
-			console.errorOutln(
-				classname
-					+ "Exception while setting sort mode: "
-					+ je.getMessage());
-		}
+		setSortMode(NO_SORT);
 		/* Important to initially display in the AWT/Swing thread. */
 		final Runnable showWindow = new Runnable() {
 			public void run() {
@@ -202,7 +195,7 @@ public final class JamMain extends JFrame {
 	 * @see #NO_SORT
 	 * @param mode the new mode for Jam to be in
 	 */
-	public void setSortMode(int mode) throws JamException {
+	public void setSortMode(int mode) {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
 		if (!((mode == NO_SORT) || (mode == FILE))) {
@@ -219,7 +212,7 @@ public final class JamMain extends JFrame {
 				error = false;
 			}
 			if (error) {
-				throw new JamException(etext.toString());
+				throw new UnsupportedOperationException(etext.toString());
 			}
 		}
 		synchronized (this) {
@@ -231,18 +224,14 @@ public final class JamMain extends JFrame {
 			title.append("Online Sorting");
 			if (mode == ONLINE_DISK) {
 				title.append(" TO ").append(disk);
-			} /*else {
-							this.setTitle(title.append(tape).toString());
-						}*/
+			} 
 			setTitle(title.toString());
 		} else if (mode == OFFLINE_DISK) {
 			setRunState(RunState.ACQ_OFF);
 			title.append("Offline Sorting");
 			if (mode == OFFLINE_DISK) {
 				title.append(" FROM ").append(disk);
-			} /*else {
-							this.setTitle(title.append(tape).toString());
-						}*/
+			}
 			this.setTitle(title.toString());
 		} else if (mode == REMOTE) { //remote display
 			setRunState(RunState.NO_ACQ);
@@ -266,7 +255,7 @@ public final class JamMain extends JFrame {
 	 * there is a problem
 	 * @param fileName the file to be sorted?
 	 */
-	public void setSortModeFile(String fileName) throws JamException {
+	public void setSortModeFile(String fileName) {
 		synchronized (this) {
 			this.openFileName = fileName;
 		}
