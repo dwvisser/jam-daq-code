@@ -6,7 +6,6 @@ import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
-import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -31,7 +30,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.net.URL;
 import java.util.Observable;
@@ -63,78 +61,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 
 	private final JamStatus status=JamStatus.instance();
 
-	/**
-	 * Action for the File|Print menu item. 
-	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
-	 * @version Jan 23, 2004
-	 */
-	public class FilePrintAction extends AbstractAction {
-		
-		/**
-		 * Constructor which gives the name to display.
-		 */
-		public FilePrintAction() {
-			super("Print\u2026");
-		}
-		
-		private boolean firstTime=true;
-
-		/**
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		public void actionPerformed(ActionEvent ae) {
-			if (firstTime){
-				console.warningOutln("On some systems, it will be necessary to first "+
-				"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");
-				firstTime=false;
-			}
-			PrinterJob pj = PrinterJob.getPrinterJob();
-			ComponentPrintable cp = display.getComponentPrintable();
-			pj.setPrintable(cp, mPageFormat);
-			if (pj.printDialog()) {
-				console.messageOut("Preparing to send histogram '" + 
-				JamStatus.instance().getCurrentHistogramName()+"' to printer\u2026",
-				MessageHandler.NEW);
-				try {
-					display.setRenderForPrinting(true, mPageFormat);
-					pj.print();
-					console.messageOut("sent.", MessageHandler.END);
-					display.setRenderForPrinting(false, null);
-				} catch (PrinterException e) {
-					final StringBuffer mess=new StringBuffer(getClass().getName());
-					final String colon=": ";
-					mess.append(colon);
-					mess.append(e.getMessage());
-					console.errorOutln(mess.toString());
-				}
-			}
-		}
-	}
-	/**
-	 * Action for the File|Page Setup menu item.
-	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
-	 * @version Jan 23, 2004
-	 */
-	public class FilePageSetupAction extends AbstractAction {
-		
-		/**
-		 * Constructor which gives the name to display.
-		 */
-		public FilePageSetupAction(){
-			super("Page Setup\u2026");
-		}
-		
-		/**
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		public void actionPerformed(ActionEvent ae){
-			PrinterJob pj=PrinterJob.getPrinterJob();
-			mPageFormat = pj.pageDialog(mPageFormat);
-		}
-	}
-	
 	class ImportAction extends AbstractAction {
 		
 		private final ImpExp impexp;
@@ -156,38 +82,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			}
 		}
 	}
-
-	/*class ExportAction extends AbstractAction {
-		
-		private final ImpExp impexp;
-		
-		ExportAction(ImpExp ie){
-			super(ie.getFormatDescription());
-			impexp=ie;
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			try {
-				impexp.saveFile(Histogram.getHistogram(
-				JamStatus.instance().getCurrentHistogramName()));
-			} catch (Exception e){
-				console.errorOutln(e.getMessage());
-			}
-		}
-	}*/
-	
-	/*KBS remove
-	class SaveGatesAction extends AbstractAction {
-
-		SaveGatesAction(){
-			super("Save gates, scalers & parameters as HDF\u2026");
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			hdfio.writeFile(false,true,true,true);
-		}
-	}
-	*/
 
 	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
@@ -352,9 +246,9 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		batchexport.addActionListener(jamCommand);
 		expHist.add(batchexport);
 		file.addSeparator();
-		file.add(new FilePrintAction()).setAccelerator(
+		file.add(commands.getAction(CommandNames.PRINT)).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_P, ctrl_mask));
-		file.add(new FilePageSetupAction()).setAccelerator(
+		file.add(commands.getAction(CommandNames.PAGE_SETUP)).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_P, 
 		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
