@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import jam.global.*;
 import java.util.Hashtable;
+import javax.swing.JOptionPane;
 
 /**
  * A general-purpose <code>InputStream</code> of experiment events that can be sorted.
@@ -241,8 +242,30 @@ public abstract class EventInputStream {
      */
     abstract public boolean isEndRun(short word);
     
-    public void setScalerTable(Hashtable table) {
-        scalerTable = table;
+    protected final void showErrorMessage(Exception e){
+    	final String cname=getClass().getName();
+    	if (console==null){
+    		JOptionPane.showMessageDialog(null,e.getMessage(),cname,
+    		JOptionPane.ERROR_MESSAGE);
+    	} else {
+    		console.errorOutln(cname+"--"+e.getMessage());
+    	}
     }
+    
+	protected final void showWarningMessage(String s){
+		final String cname=getClass().getName();
+		if (console==null){
+			JOptionPane.showMessageDialog(null,s,cname,
+			JOptionPane.WARNING_MESSAGE);
+		} else {
+			console.errorOutln(cname+"--"+s);
+		}
+	}
+	
+	protected final void showMessage(String s){
+		if (console!=null){
+			console.messageOutln(s);
+		}
+	}
     
 }
