@@ -9,6 +9,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+
 /**
  * <code>NetDeamon</code> receives packets from the network
  * and sends the data data into one or two pipes.
@@ -21,8 +24,6 @@ import java.net.UnknownHostException;
  * @since JDK 1.1
  */
 public  class NetDaemon extends GoodThread {
-    
-    public final static int BUFFER_SIZE=8*1024;	//8 kBytes
     
     private final MessageHandler msgHandler;
     private final DatagramSocket dataSocket;
@@ -47,11 +48,6 @@ public  class NetDaemon extends GoodThread {
      *set if we sorting data
      */
     private boolean sorterOn=true;
-    
-    /**
-     * sample interval to sort data
-     */
-    //private int sortInterval=1;//sort every buffer
     
     /**
      * number of packets counter
@@ -86,7 +82,7 @@ public  class NetDaemon extends GoodThread {
         }
         setPriority(ThreadPriorities.NET);
         setDaemon(true);//the user doesn't interact with this thread
-        setName("UDP/IP Data Buffer Receiver");
+        setName("UDP Data Receiver");
     }
     
     /**
@@ -107,7 +103,22 @@ public  class NetDaemon extends GoodThread {
         }
     }
     
-    /**
+	private boolean emptyBefore=false;
+	private synchronized void setEmptyBefore(boolean state){
+		if (!emptyBefore && state){
+			final Object[] options=new Object[1];
+			options[0]=endAction;
+			JOptionPane.showInputDialog(null,"The ring buffer has ","Ring Buffer Full",
+					JOptionPane.WARNING_MESSAGE,null,options,options[0]);
+		}
+		emptyBefore=state;
+	}
+	
+	private synchronized boolean isEmptyBefore(){
+		return emptyBefore;
+	}
+
+	/**
      * Runs in an infinite loop receiving data from the local net
      * and stuffing it into a couple of pipes.
      *
@@ -118,24 +129,24 @@ public  class NetDaemon extends GoodThread {
         if (dataSocket==null) {
             throw new SortException("Could not start netDeamon, socket null {NetDaemon]");
         }
-		final byte [] bufferOut=new byte[BUFFER_SIZE];
+		final byte [] bufferOut=RingBuffer.freshBuffer();
 		final DatagramPacket dataIn = new DatagramPacket(bufferOut, bufferOut.length);
         while(this.checkState()){//loop as long as state is RUN
-            //wait for packet
+            /* wait for packet */
             dataSocket.receive(dataIn);
             if (checkState()) {
                 dataIn.getData();//data goes to bufferOut
                 packetCount++;
-                //put buffer into to sorting ring with sample fraction
+                /* Put buffer into to sorting ring with sample fraction */
                 if( sorterOn ){
                     try {
                         sortingRing.putBuffer(bufferOut);
                     } catch (RingFullException rfe){
                         notSortCount++;
-                        msgHandler.errorOutln("Sorting Buffer "+rfe.getMessage());
+                        setEmptyBefore(true);
                     }
                 }
-                //put buffer into to storage ring
+                /* put buffer into to storage ring */
                 if(writerOn){
                     try {
                         storageRing.putBuffer(bufferOut);
@@ -205,5 +216,10 @@ public  class NetDaemon extends GoodThread {
     		notStorCount=0;
     		notSortCount=0;
     	}
+    }
+    
+    private Action endAction;
+    public void setEndRunAction(Action a){
+    	endAction=a;
     }
 }
