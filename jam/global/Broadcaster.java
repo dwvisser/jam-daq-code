@@ -5,7 +5,7 @@ import java.util.*;
  * Part of a client server to handle message between packages
  * Broadcast events to all listeners.
  * These listeners must have already registered that they would
- * like to receive events using Observer.addObserver()
+ * like to receive events using Broadcaster.addObserver()
  * 
  * @author Ken Swartz
  */
