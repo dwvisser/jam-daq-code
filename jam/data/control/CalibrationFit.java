@@ -426,11 +426,13 @@ public class CalibrationFit extends AbstractControl {
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getFullName().trim()+" with "+
                 fitText);
             } else {
-                msghdlr.errorOutln("Need at least 2 points [Calibrate]");
+                msghdlr.errorOutln("Need at least 2 points");
             }
         } catch (NumberFormatException nfe){
-            msghdlr.errorOutln("Invalid input, not a number [Calibrate]");
+        	currentHistogram.setCalibration(null);	//Make sure hisogram no longer has calibration
+            msghdlr.errorOutln("Invalid input, not a number");
         } catch (DataException de) {
+        	currentHistogram.setCalibration(null); //Make sure hisogram no longer has calibration       	
             msghdlr.errorOutln(de.getMessage());
         } 
     }

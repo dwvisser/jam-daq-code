@@ -6,7 +6,6 @@ import jam.data.DataParameter;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
-import jam.data.AbstractHist1D;
 import jam.data.Scaler;
 import jam.data.func.CalibrationFunction;
 import jam.io.FileOpenMode;
@@ -136,75 +135,81 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     
     
     Object  convertHist(Group group, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    	
     	Object retValue  =null;
     	Histogram hist;
-    	HistogramAttributes histAttributes;
-    	
-            final NumericalDataGroup ndg;
-            /* I check ndgErr==null to determine if error bars exist */
-            NumericalDataGroup ndgErr = null;
-            /* only the "histograms" VG (only one element) */
-            final List tempVec = AbstractData.ofType(histGroup.getObjects(),
-                    AbstractData.DFTAG_NDG);
-            final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
-            if (dataGroups.length == 1) {
-                ndg = dataGroups[0]; //only one NDG -- the data
-            } else if (dataGroups.length == 2) {
-                if (DataIDLabel.withTagRef(AbstractData.DFTAG_NDG,
-                        dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-                    ndg = dataGroups[1];
-                    ndgErr = dataGroups[0];
-                } else {
-                    ndg = dataGroups[0];
-                    ndgErr = dataGroups[1];
-                }
+    	HistogramAttributes histAttributes;    	
+        final NumericalDataGroup ndg;
+        NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
+        
+        final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
+        final String name = templabel.getLabel();            
+        final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
+        final String title = tempnote.getNote();
+        
+        /* only the "histograms" VG (only one element) */
+        final List tempVec = AbstractData.ofType(histGroup.getObjects(),
+                AbstractData.DFTAG_NDG);
+        final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
+        if (dataGroups.length == 1) {
+            ndg = dataGroups[0]; //only one NDG -- the data
+        } else if (dataGroups.length == 2) {
+            if (DataIDLabel.withTagRef(AbstractData.DFTAG_NDG,
+                    dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+                ndg = dataGroups[1];
+                ndgErr = dataGroups[0];
             } else {
-            	throw new HDFException( "Invalid number of data groups (" + dataGroups.length
-                        + ") in VirtualGroup.");
+                ndg = dataGroups[0];
+                ndgErr = dataGroups[1];
             }
-            final ScientificData sciData = (ScientificData) (AbstractData
-                    .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
-            final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
-                    .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
-            final byte histNumType = sdd.getType();
-            sciData.setNumberType(histNumType);
-            final int histDim = sdd.getRank();
-            sciData.setRank(histDim);
-            final int sizeX = sdd.getSizeX();
-            final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
-
-            final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
-            final int number = Integer.parseInt(numLabel.getLabel());            
-            final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
-            final String name = templabel.getLabel();            
-            final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
-            final String title = tempnote.getNote();
-            
-            final ScientificData sdErr = produceErrorData(ndgErr, histDim);
-            
-    		//FIXME KBS remove
-            //Group.setCurrentGroup(group);
-            
-            /* Given name list check that that the name is in the list. */
-            if (histNames == null || histNames.contains(name)) {
-                if (mode.isOpenMode()) {
-                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
-                	Object histErrData =null;
-                    if (sdErr != null) {
-                    	histErrData = sdErr.getData1dD(inHDF, sizeX);
-                    }
-                    retValue=openHistogram(group, name, title, number, histData, histErrData);
-                } else if (mode == FileOpenMode.RELOAD) {
-                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
-                	retValue=reloadHistogram(group, name, histData);
-                } else if  (mode == FileOpenMode.RELOAD) {
-                	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
-                	retValue=addHistogram(group, name, histData);
-                } else if (mode==FileOpenMode.ATTRIBUTES) {
-                	retValue=attributesHistogram(group, name, title, number);
+        } else {
+        	if (mode == FileOpenMode.RELOAD) {
+        		retValue = group.getHistogram(STRING_UTIL.makeLength(name,
+                    Histogram.NAME_LENGTH));
+        	} else {
+        		retValue=null; //no histogram data
+        	}
+        	return retValue; 
+        	//FIXME KBS rem no longer the case
+        	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
+            //        + ") in VirtualGroup.");
+        }
+        final ScientificData sciData = (ScientificData) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
+        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
+        final byte histNumType = sdd.getType();
+        sciData.setNumberType(histNumType);
+        final int histDim = sdd.getRank();
+        sciData.setRank(histDim);
+        final int sizeX = sdd.getSizeX();
+        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
+        
+        final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
+        final int number = Integer.parseInt(numLabel.getLabel());            
+        
+        final ScientificData sdErr = produceErrorData(ndgErr, histDim);
+                    
+        /* Given name list check that that the name is in the list. */
+        if (histNames == null || histNames.contains(name)) {
+            if (mode.isOpenMode()) {
+            	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
+            	Object histErrData =null;
+                if (sdErr != null) {
+                	histErrData = sdErr.getData1dD(inHDF, sizeX);
                 }
-                	
+                retValue=openHistogram(group, name, title, number, histData, histErrData);
+            } else if (mode == FileOpenMode.RELOAD) {
+            	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
+            	retValue=reloadHistogram(group, name, histData);
+            } else if  (mode == FileOpenMode.RELOAD) {
+            	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
+            	retValue=addHistogram(group, name, histData);
+            } else if (mode==FileOpenMode.ATTRIBUTES) {
+            	retValue=attributesHistogram(group, name, title, number);
             }
+            	
+        }
             return retValue;
     }
     

@@ -964,8 +964,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	 while (histIter.hasNext()) {
 	    	 	VirtualGroup histVGroup = (VirtualGroup)histIter.next();
 	    	 	Histogram hist =(Histogram)hdfToJam.convertHist(currentGroup, histVGroup,  null, mode);
-	    	 	//Load gates if not add
-                if (mode != FileOpenMode.ADD) {
+	    	 	//Load gates and calibration if not add
+	    	 	if (hist!=null && mode != FileOpenMode.ADD) {
                 	List gateList = hdfToJam.findGates(histVGroup, hist.getType());
                 	gateCount = gateList.size();
                 	//Loop over gates
@@ -974,15 +974,15 @@ public final class HDFIO implements DataIO, JamFileFields {
        	    	 		VirtualGroup gateVGroup = (VirtualGroup)gateIter.next();
        	    	 		hdfToJam.convertGate(hist, gateVGroup, mode);
        	    	 	}                	                	
-                }
-                //Load calibration 
-                VDataDescription vddCalibration = hdfToJam.findCalibration(histVGroup);
-                if (vddCalibration!=null)
-                	hdfToJam.convertCalibration(hist, vddCalibration);
-                	
+	                
+	                //Load calibration 
+	                VDataDescription vddCalibration = hdfToJam.findCalibration(histVGroup);
+	                if (vddCalibration!=null) {
+	                	hdfToJam.convertCalibration(hist, vddCalibration);
+	                }
+	    	 	} //End Load gates and calibration
                 
-                
-	    	 }
+	    	 } //Loop Histogram end
 	    	 //Load scalers
 	    	 List scalerList = hdfToJam.findScalers(currentVGroup);
 	    	 //Has scalers
@@ -997,7 +997,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	 	hdfToJam.convertParameters(currentGroup, (VirtualGroup)parameterList.get(0), mode);
 	    	 }
 	    	  
-	    }
+	    } //Loop group end
 	    
     }
     
