@@ -21,7 +21,6 @@ import javax.swing.JFrame;
 public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
-	private static String histName = "";
 	private static Histogram currentHistogram;
 	private static Set overlayNames=new HashSet();	
 	private static String gateName;
@@ -235,9 +234,9 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets the current <code>Histogram</code> name.
+	 * Sets the current <code>Histogram</code>.
 	 * 
-	 * @param name the current histogram name
+	 * @param hist the current histogram 
 	 */
 	public synchronized void setCurrentHistogram(Histogram hist) {
 		currentHistogram=hist;
