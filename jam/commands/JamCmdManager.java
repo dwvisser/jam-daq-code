@@ -8,7 +8,7 @@ import jam.global.*;
  * 
  * @author Ken Swartz
  */
-public class JamCmdManager {
+public class JamCmdManager implements CommandListener {
 	
 	private JamStatus status;
 	private Broadcaster broadcaster;
@@ -31,8 +31,8 @@ public class JamCmdManager {
 			
 		//Commands to add to manager 
 		//could be read from a file
-		cmdMap.put("newhist", "ShowDialogNewHistogramCmd");
-		
+		cmdMap.put("shownewhist", "ShowDialogNewHistogramCmd");
+		cmdMap.put("exit", "ShowDialogExitCmd");
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class JamCmdManager {
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
 	 */
-	public boolean performCommandStrParam(String strCmd,  String [] strCmdParams) {
+	public boolean performCommand(String strCmd,  String [] strCmdParams) {
 		
 		Commandable command =createCmd(strCmd);		
 		if(command!=null) {
@@ -89,9 +89,16 @@ public class JamCmdManager {
 			command = (Commandable)(cmdClass.newInstance() );
 			command.init(status, msghdlr, broadcaster);
 			
-		} catch (Exception e) {
+		} catch (ClassNotFoundException cnfe) {
+			command=null; 
+			//could not find class 
+		} catch (InstantiationException ie) {
+			command=null; 
 			//could not create class
-			msghdlr.errorOutln("Could not create command "+strCmd);
+		} catch (IllegalAccessException iae) {
+			command=null; 			
+			//could not create class
+			//msghdlr.errorOutln("Could not create command "+strCmd);
 			
 		}
 		
