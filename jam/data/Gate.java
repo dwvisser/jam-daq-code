@@ -83,7 +83,7 @@ public class Gate implements Serializable {
             prime++;
         }
         this.name=name;
-        unsetLimits();
+        _unsetLimits();
         gateTable.put(name,this);
         gateList.add(this);
         try {//register ourselves with the histogram we belong to
@@ -307,7 +307,7 @@ public class Gate implements Serializable {
      * "Removes" the gate's limits, so that it will 
      * return false for all calls to <code>inGate()</code>.
      */
-    public void unsetLimits(){
+    private void _unsetLimits(){
         isSet=false;
         if(histogram.getDimensionality()==1) {
             type=ONE_DIMENSION;
@@ -322,6 +322,17 @@ public class Gate implements Serializable {
             insideGate=new boolean[sizeX][sizeY];
             bananaGate=null;
         }        
+    }
+    
+	/**
+	 * "Removes" the gate's limits, so that it will 
+	 * return false for all calls to <code>inGate()</code>.
+	 */
+    public void unsetLimits(){
+		/* delegate to private method to allow constructor
+		 * to avoid a call to an overridable method
+		 */
+    	_unsetLimits();
     }
 
     /**
