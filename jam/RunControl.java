@@ -271,9 +271,10 @@ public class RunControl implements Controller, ActionListener {
         	//see stopAcq() for reason for this next line.
         	bend.setEnabled(true);
         	console.messageOutln("Started Acquisition, continuing Run #"+runNumber);
-        } else {
+        } else {//just viewing events, not running to disk
             jamMain.setRunState(JamMain.ACQ_ON);
-        	console.messageOutln("Started Acquisition");
+            this.bbegin.setEnabled(false);//don't want to try to begin run while going
+        	console.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
         }
     }
 
@@ -290,6 +291,9 @@ public class RunControl implements Controller, ActionListener {
         //done to avoid "last buffer in this run becomes first and last buffer in 
         //next run" problem
         bend.setEnabled(false);
+        if (!runOn) {//not running to disk
+        	bbegin.setEnabled(true);//since it was disabled during start
+        }
         console.warningOutln("Stopped Acquisition...if you are doing a run, "+
         "you will need to start again before clicking \"End Run\".");
     }
