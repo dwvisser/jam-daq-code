@@ -39,7 +39,6 @@ public final class MonitorControl
 	private JLabel labelMax;
 	private JLabel labelAlarm;
 
-	private JPanel[] pc; //panel for configurations
 	private JLabel[] labelConfig;
 	private JTextField[] textThreshold;
 	private JTextField[] textMaximum;
