@@ -91,8 +91,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		toolbar = new Toolbar(this, action);		
 		initPrefs();
 		/* Initial view only 1 plot */
-		setView(new View("Single", 1,1));
-					
+		setView(View.SINGLE);
 	}
 	
 	private final void initPrefs() {
