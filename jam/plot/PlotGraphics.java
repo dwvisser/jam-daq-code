@@ -992,45 +992,55 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @param x1 first clicked channel point
 	 * @param x2 second clicked channel point
 	 */
-	void markArea1dOutline(int x1, int x2){
-		int xv1;
-		int xv2;
-		int x;
-		int width;		
+	Rectangle getRectangleOutline1d(int x1, int x2){
+		final int x;
+		final int width;		
 		
-		clipPlot();
-
 		if (x1<x2) {
-			xv1 = toViewHorzLin(x1);
+			final int xv1 = toViewHorzLin(x1);
 			//pixel before next channel
-			xv2 = toViewHorzLin(x2+1)-1;			
+			final int xv2 = toViewHorzLin(x2+1)-1;			
 			x=xv1+1;
 			width=xv2-xv1;
 		}else if (x1>x2){
 			//pixel before next channel
-			xv1 = toViewHorzLin(x1+1)-1;
-			xv2 = toViewHorzLin(x2);			
+			final int xv1 = toViewHorzLin(x1+1)-1;
+			final int xv2 = toViewHorzLin(x2);			
 			x=xv2+1;
-			width=xv1-xv2;
-			
+			width=xv1-xv2;	
 		//so both at the same point shows something	
 		} else{
-			xv1 = toViewHorzLin(x1);
+			final int xv1 = toViewHorzLin(x1);
 			//pixel before next channel
-			xv2 = toViewHorzLin(x2+1)-1;			
+			final int xv2 = toViewHorzLin(x2+1)-1;			
 			x=xv1;
 			//At least 1 wide
 			width=Math.max(xv2-xv1,1);
 		} 	
 		//Full plot vertically
 		final int height=viewBottom-viewTop;
-		g.drawRect(x,viewTop,width,height);					
-		
+		//g.drawRect(x,viewTop,width,height);
+		return new Rectangle(x,viewTop,width,height);					
 	}
+	
+	void markAreaOutline1d(int x1, int x2){
+		clipPlot();
+		g.draw(getRectangleOutline1d(x1,x2));
+	}
+	
+	Rectangle getRectangleOutline2d(Rectangle channels){
+		final int highX=(int)channels.getMaxX();
+		final int highY=(int)channels.getMaxY();
+		return getRectangleOutline2d(channels.getLocation(),new Point(highX,highY));
+	}	
 	
 	/**
 	 * Returns the rectangle that includes the box of plot 
-	 * coordinates indicated by the given paint coordinates.
+	 * coordinates indicated by the given plot coordinates.
+	 * 
+	 * @param p1 in plot coordinates
+	 * @param p2 in plot coordinates
+	 * @return in graphics coordinates
 	 */
 	Rectangle getRectangleOutline2d(Point p1, Point p2){
 		final int x1=p1.x;
@@ -1085,6 +1095,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 		return new Rectangle(x,y,width,height);					
 	}
 	
+	/**
+	 * Mark an area whose corners are indicated by the given points.
+	 * 
+	 * @param p1 in plot coordinates
+	 * @param p2 in plot coordinates
+	 */
 	void markArea2dOutline(Point p1, Point p2){
 		clipPlot();				
 		g.draw(getRectangleOutline2d(p1,p2));		
@@ -1170,19 +1186,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * for 2d
 	 */
 	void markChannel2d(Point p) {
-		final int x = toViewHorzLin(p.x);
-		final int y = toViewVertLin(p.y);
-		final int width = toViewHorzLin(p.x + 1) - x;
-		final int height = y - toViewVertLin(p.y + 1);
-		/*are we inside plot window? */
-		if ((x >= viewLeft && x <= viewRight)
-			&& (y >= viewTop && y <= viewBottom)) {
-			g.drawRect(x, y - height + 1, width - 1, height - 1);
-			//+1 need why?
-			//draw label
-			final String label = "" + p.x + "," + p.y;
-			g.drawString(label, x + width, y - height - MARK_OFFSET);
-		}
+		final Rectangle r=getRectangleOutline2d(p,p);
+		final String label = "" + p.x + "," + p.y;
+		g.draw(r);
+		g.drawString(label, (int)r.getMaxX()+MARK_OFFSET, r.y - MARK_OFFSET);		
 	}
 
 	/**
@@ -1226,38 +1233,13 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/**
 	 * Mark an area in a 2d plot.
 	 * 
-	 * @param lowChanX lower limit in X
-	 * @param highChanX upper limit in X
-	 * @param lowChanY lower limit in Y
-	 * @param highChanY upper limit in Y
+	 * @param r rectangle in graphics coordinates
 	 */
-	void markArea2d(
-		Rectangle r) {
+	void markArea2d(Rectangle r) {
+		clipPlot();
 		g.fill(r);
 	}
 	
-	Rectangle get2dAreaMark(
-	int lowChanX,
-	int highChanX,
-	int lowChanY,
-	int highChanY) {
-		final int x1 = toViewHorzLin(lowChanX);
-		final int x2 = toViewHorzLin(highChanX + 1);
-		final int y1 = toViewVertLin(lowChanY);
-		final int y2 = toViewVertLin(highChanY + 1);
-		final int width = x2 - x1 - 1;
-		final int height = y1 - y2 - 1;
-		return new Rectangle(x1, y2 + 1, width, height);		
-	}
-	
-	Rectangle get2dAreaMark(Rectangle channels){
-		final int lowX=(int)channels.getMinX();
-		final int lowY=(int)channels.getMinY();
-		final int highX=(int)channels.getMaxX();
-		final int highY=(int)channels.getMaxY();
-		return get2dAreaMark(lowX,highX,lowY,highY);
-	}
-
 	/**
 	 * Draw a line in data co-ordinates
 	 *
