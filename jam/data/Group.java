@@ -2,6 +2,7 @@
 package jam.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,20 +47,46 @@ public class Group {
 		}
 	}	
 	
+	/**
+	 * Returns the group with the given name.
+	 * @param name of group
+	 * @return the group
+	 */
 	public static Group getGroup(String name){
 		return (Group)( NAME_MAP.get(name) );
 	}
+	
+	/**
+	 * Sets the "current" group.
+	 * 
+	 * @param group to be "current"
+	 */
 	public static void setCurrentGroup(Group group){
 		currentGroup=group;
 	}
+	
+	/**
+	 * Get the current group.
+	 * @return the current group
+	 */
 	public static Group getCurrentGroup(){
 		return currentGroup;
 	}
+	
+	/**
+	 * Gets a list of all groups.
+	 * @return list of all groups
+	 */
 	public static List getGroupList(){
-		return LIST;
+		return Collections.unmodifiableList(LIST);
 	}
+	
+	/**
+	 * Gets a map of groups keyed by name.
+	 * @return map of groups keyed by name
+	 */
 	public static Map getGroupMap(){
-		return NAME_MAP;
+		return Collections.unmodifiableMap(NAME_MAP);
 	}
 
 	/** Clear all groups */
@@ -68,16 +95,17 @@ public class Group {
 		LIST.clear();
 		currentGroup=null;
 	}
+	
 	/**
 	 * Constructor
-	 * @param name
+	 * @param name of the group
 	 */
 	public Group(String name){
 		this.name=name;
-		
 		LIST.add(this);
 		NAME_MAP.put(name, this);
 	}
+	
 	/**
 	 * Add a histogram to the group
 	 * @param hist
@@ -87,15 +115,25 @@ public class Group {
 		histogramMap.put(hist.getName(),  hist);
 	}
  
-
+	/**
+	 * @return the name of this group
+	 */
 	public String getName(){
 		return name;
 	}
+	
+	/**
+	 * @return list of histograms in this group
+	 */
 	public List getHistogramList(){
-		return histogramList;
+		return Collections.unmodifiableList(histogramList);
 	}
+	
+	/**
+	 * @return map of histograms in this group keyed by name
+	 */
 	public Map getHistogramMap(){
-		return histogramMap;
+		return Collections.unmodifiableMap(histogramMap);
 	}
 
 	public String toString(){
