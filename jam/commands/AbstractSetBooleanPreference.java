@@ -31,7 +31,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	private final ImageIcon checkMark=new ImageIcon(cl.getResource(
 	"jam/commands/checkmark.png"));
 	private final ImageIcon clear=new ImageIcon(cl.getResource(
-	"jam/clear.png"));
+	"jam/ui/clear.png"));
 	
 	/**
 	 * Set to <code>true</code> here. Set differently in 
