@@ -1,5 +1,7 @@
 package jam.commands;
 
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
@@ -18,6 +20,10 @@ import javax.swing.KeyStroke;
  */
 final class ReloadHDFCmd extends LoaderHDF implements Observer {
 	
+	ReloadHDFCmd(){
+		super();
+	}
+		
 	public void initCommand(){
 		putValue(NAME,"Reload\u2026");
 		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
@@ -42,4 +48,24 @@ final class ReloadHDFCmd extends LoaderHDF implements Observer {
 		final boolean sorting = online || offline;
 		setEnabled(sorting);
 	}
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void CompletedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		
+		Histogram firstHist;
+		//Set to sort group
+		Group.setCurrentGroup((Group)Group.getSortGroup());
+
+		//Set the current histogram to the first opened histogram
+		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
+			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		}else{
+			firstHist=null;
+		}					
+		STATUS.setCurrentHistogram(firstHist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+	}
+	
 }

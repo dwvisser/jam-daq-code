@@ -4,6 +4,8 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
@@ -24,11 +26,17 @@ import javax.swing.KeyStroke;
  * @author Ken Swartz
  *
  */
-final class OpenHDFCmd extends AbstractCommand implements Observer {
+final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncListener {
+	
+	private File file=null;
+	private final HDFIO hdfio;
 	
 	OpenHDFCmd(){
 		putValue(NAME,"Open\u2026");
 		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_O, CTRL_MASK));
+		Frame frame= STATUS.getFrame();
+		hdfio = new HDFIO(frame, msghdlr);		
+		
 	}
 
 	/* 
@@ -36,26 +44,15 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	 */
 	protected void execute(final Object[] cmdParams) {
 		readHDFFile(cmdParams);
-		//FIXME KBS remove thread in HDFIO
-		/*
-		//Run in another thread
-		final Runnable r=new Runnable(){
-			public void run(){
-				readHDFFile(cmdParams);
-			}
-		};
-		final Thread t=new Thread(r);
-		t.run();
-		*/
 	}
 	/**
 	 * Read in a HDF file
 	 * @param cmdParams
 	 */ 
 	private void readHDFFile(Object[] cmdParams) {
-		Frame frame= STATUS.getFrame();
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
-		File file=null;
+		Frame frame= STATUS.getFrame();		
+		hdfio.setListener(this);
+
 		final boolean isFileRead;
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
@@ -98,20 +95,25 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 		
 		Histogram firstHist;
 		
+		//Set general status 
 		STATUS.setSortMode(file);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
+		//Set selection of group and histogram
+		
+		//Set to first group
+		if (Group.getGroupList().size()>0 ) {
+			Group.setCurrentGroup((Group)Group.getGroupList().get(0));
+		}
 		//Set the current histogram to the first opened histogram
 		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
 			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
 		}else{
 			firstHist=null;
-		}
-			
+		}			
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-		STATUS.getFrame().repaint();
 	}			
 	
 	public void update(Observable observe, Object obj){
@@ -125,5 +127,13 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	private void enable(){
 		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);		
+	}
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void CompletedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		notifyApp(file);		
+		file=null;
 	}
 }

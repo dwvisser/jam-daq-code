@@ -6,8 +6,12 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
+import jam.global.JamProperties;
 import jam.util.StringUtilities;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,6 +30,116 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 	ConvertJamObjToHDFObj() {
 		super();
 	}
+	
+    /*
+     * non-javadoc: Add default objects always needed.
+     * 
+     * Almost all of Jam's number storage needs are satisfied by the type
+     * hard-coded into the class <code> NumberType </code> . This method creates
+     * the <code> NumberType </code> object in the file that gets referred to
+     * repeatedly by the other data elements. LibVersion Adds data element
+     * giving version of HDF libraries to use (4.1r2).
+     * 
+     * @see jam.io.hdf.NumberType
+     */
+    void addDefaultDataObjects(String fileID) {
+        new LibVersion(); //DataObjects add themselves
+        NumberType.createDefaultTypes();
+        new JavaMachineType();
+        new FileIdentifier(fileID);
+        addFileNote();
+    }
+
+    /**
+     * Add a text note to the file, which includes the state of
+     * <code>JamProperties</code>.
+     * 
+     * @see jam.global.JamProperties
+     */
+    void addFileNote() {
+        final String noteAddition = "\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
+                + "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
+                + "number from the lower left to the lower right for, and from the lower left to the upper\n"
+                + "left."
+                + "All error bars on histogram counts should be considered Poisson, unless a\n"
+                + "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
+                + "of that should be taken as the error bars.";
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final String header = "Jam Properties at time of save:";
+        try {
+            JamProperties.getProperties().store(baos, header);
+        } catch (IOException ioe) {
+            throw new UndeclaredThrowableException(ioe,
+                    "Unable to serialize properties.");
+        }
+        final String notation = baos.toString() + noteAddition;
+        new FileDescription(notation);
+    }
+
+
+    /**
+     * Adds data objects for the virtual group of groups
+     */
+    VirtualGroup addGroupSection() {
+    	VirtualGroup virtualGroup;
+       	virtualGroup = new VirtualGroup(GROUP_SECTION, FILE_SECTION);
+        new DataIDLabel(virtualGroup, GROUP_SECTION);
+        return  virtualGroup;
+    }
+    
+    /**
+     * Adds data objects for the virtual group of histograms.
+     */
+    VirtualGroup addHistogramSection() {
+       	VirtualGroup allHists = new VirtualGroup(HIST_SECTION, FILE_SECTION);
+        new DataIDLabel(allHists, HIST_SECTION);
+        return allHists;
+    }
+
+
+    /**
+     * Adds data objects for the virtual group of gates.
+     */
+     VirtualGroup addGateSection() {
+
+     	VirtualGroup   allGates = new VirtualGroup(GATE_SECTION, FILE_SECTION);
+        new DataIDLabel(allGates, GATE_SECTION);
+        return allGates;
+    }
+
+    /**
+     * Adds data objects for the virtual group of scalers.
+     */
+   VirtualGroup addScalerSection() {
+
+    	final VirtualGroup scalerGroup = new VirtualGroup(
+            SCALER_SECT, FILE_SECTION);
+    	new DataIDLabel(scalerGroup, SCALER_SECT);
+    	return scalerGroup;
+    }
+
+    /**
+     * Adds data objects for the virtual group of scalers.
+     */
+    VirtualGroup addScalers() {
+
+    	final VirtualGroup scalerGroup = new VirtualGroup(
+            SCALER_SECT, FILE_SECTION);
+    	new DataIDLabel(scalerGroup, SCALER_SECT);
+    	return scalerGroup;
+    }
+    
+    /* non-javadoc:
+     * Adds data objects for the virtual group of parameters.
+     */
+    VirtualGroup addParameterSection() {
+
+    	final VirtualGroup paramGroup = new VirtualGroup(
+            PARAMETERS, FILE_SECTION);
+    	new DataIDLabel(paramGroup, PARAMETERS);
+    	
+    	return paramGroup;
+    }
 	
     /* non-javadoc:
      * Adds data objects for the virtual group of histograms.

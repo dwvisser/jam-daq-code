@@ -19,10 +19,16 @@ import javax.swing.JFileChooser;
  * @author Ken Swartz
  *
  */
-public class OpenAdditionalHDF extends AbstractCommand {
+public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncListener {
 
+	private File file=null;
+	final HDFIO	hdfio;		
+	
+	
 	OpenAdditionalHDF(){
 		putValue(NAME,"Open Additional\u2026");
+		Frame frame= STATUS.getFrame();
+		hdfio = new HDFIO(frame, msghdlr);				
 	}
 
 	/* 
@@ -30,16 +36,6 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	 */
 	protected void execute(final Object[] cmdParams) {
 		readAdditionalHDFFile(cmdParams);
-		//FIXME KBS remove thread in HDFIO 
-		/*
-		final Runnable r=new Runnable(){
-			public void run(){
-				readAdditionalHDFFile(cmdParams);
-			}
-		};
-		final Thread t=new Thread(r);
-		t.run();
-		*/
 	}
 
 	/**
@@ -47,9 +43,8 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	 * @param cmdParams
 	 */ 
 	private void readAdditionalHDFFile(Object[] cmdParams) {
-		Frame frame= STATUS.getFrame();
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
-		File file=null;
+		Frame frame= STATUS.getFrame();		
+		hdfio.setListener(this);
 		final boolean isFileRead;
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
@@ -89,14 +84,25 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	}
 
 	private void notifyApp(File file) {
+		//Update app status
 		STATUS.setSortMode(file);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		
+		//FIXME KBS need a way to get first addtional readin histogram
 		//Set the current histogram to the first opened histogram
 		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-		STATUS.getFrame().repaint();
 	}			
 
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void CompletedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		notifyApp(file);
+		file=null;		
+	}
+	
 }

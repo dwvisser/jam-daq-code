@@ -1,5 +1,8 @@
 package jam.commands;
 
+import jam.data.Group;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -15,21 +18,21 @@ import javax.swing.JFileChooser;
  * 
  * @author Ken Swartz
  */
-abstract class LoaderHDF extends AbstractCommand implements Observer {
+abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.AsyncListener {
     
+	final HDFIO	hdfio;	
     /**
      * Mode under which to do the loading.
      */
     protected FileOpenMode fileOpenMode;
 
+    LoaderHDF() {
+    	Frame frame= STATUS.getFrame();    	
+    	hdfio = new HDFIO(frame, msghdlr);    	
+    }
+    
 	protected final void execute(final Object[] cmdParams) {
-		final Runnable r=new Runnable(){
-			public void run(){
-				addHDFFile(cmdParams); 			 	
-			}
-		};
-		final Thread t=new Thread(r);
-		t.run();
+		addHDFFile(cmdParams);
 	}
 
 	/**
@@ -38,8 +41,8 @@ abstract class LoaderHDF extends AbstractCommand implements Observer {
 	 * @param cmdParams a file reference or null
 	 */ 
 	protected final void addHDFFile(final Object[] cmdParams) {		
-		Frame frame= STATUS.getFrame();
-		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
+		Frame frame= STATUS.getFrame();	
+		hdfio.setListener(this);
 		File file=null;
 		if (cmdParams!=null) {
 			file =(File)cmdParams[0];
@@ -62,4 +65,23 @@ abstract class LoaderHDF extends AbstractCommand implements Observer {
 	protected final void executeParse(String[] cmdTokens) {
 	    execute(null);
 	}	
+	/**
+	 * Called by HDFIO when asynchronized IO is completed  
+	 */
+	public void CompletedIO(String message, String errorMessage) {
+		hdfio.removeListener();
+		
+		Histogram firstHist;
+		
+		//Set to sort group
+		//Set the current histogram to the first opened histogram
+		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
+			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+		}else{
+			firstHist=null;
+		}					
+		STATUS.setCurrentHistogram(firstHist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+	}
+	
 }

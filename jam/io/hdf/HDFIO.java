@@ -17,11 +17,9 @@ import jam.io.FileOpenMode;
 import jam.util.SwingWorker;
 
 import java.awt.Frame;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -79,15 +77,15 @@ public final class HDFIO implements DataIO, JamHDFFields {
     /**
      * Where messages get sent (presumably the console).
      */
-    private final MessageHandler msgHandler;
-
-    private VirtualGroup allHists, allGates;
+    private final MessageHandler msgHandler; 
 
     /**
      * <code>HDFile<code> object to read from.
      */
     private HDFile inHDF;
 
+    AsyncListener asyncListener;
+	
     private final ConvertJamObjToHDFObj jamToHDF;
 
     private ConvertHDFObjToJamObj hdfToJam;
@@ -370,18 +368,26 @@ public final class HDFIO implements DataIO, JamHDFFields {
             	} else {
                     msgHandler.errorOutln(uiErrorMsg);
             	}
-            	//FIXME KBS should move to someplace else or have callback
-            	JamStatus STATUS=JamStatus.getSingletonInstance();  
-            	STATUS.setSortMode(infile);
-            	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();  	            	
-        		AbstractControl.setupAll();
+            	if (asyncListener!=null) {
+            		asyncListener.CompletedIO(uiMessage, uiErrorMsg);
+            	}
+            	/*
+            	//FIXME KBS delete when read hist lists cases are handled
+            	 * 
+            	JamStatus STATUS=JamStatus.getSingletonInstance();
+            	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
+            	//Set overall status
+            	STATUS.setSortMode(infile);  	            	
+        		AbstractControl.setupAll();        		
         		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        		
         		//Set first group as current group
         		Group.setCurrentGroup((Group)Group.getGroupList().get(0));
         		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);        		
         		STATUS.setCurrentHistogram(firstHist);
         		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
         		STATUS.getFrame().repaint();
+        		*/
             }
         };
         worker.start();     	
@@ -415,7 +421,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         parameterCount=0;
         
         AbstractHData.clearAll();
-        addDefaultDataObjects(file.getPath());
+        jamToHDF.addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
         					MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
@@ -483,15 +489,16 @@ public final class HDFIO implements DataIO, JamHDFFields {
             List parameters) {
     	
         final StringBuffer message = new StringBuffer();
+        VirtualGroup allHists, allGates;
 
         AbstractHData.clearAll();
-        addDefaultDataObjects(file.getPath());
+        jamToHDF.addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
         		MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
         message.append("Saved ").append(file.getName()).append(" (");
         if (hasContents(hists)) {
-            addHistogramSection();
+        	allHists=jamToHDF.addHistogramSection();
             message.append(hists.size()).append(" histograms");
             final Iterator iter = hists.iterator();
             while (iter.hasNext()) {
@@ -501,7 +508,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         }
         if (hasContents(gates)) {
-            addGateSection();
+        	allGates=jamToHDF.addGateSection();
             message.append(", ").append(gates.size()).append(" gates");
             final Iterator iter = gates.iterator();
             while (iter.hasNext()) {
@@ -519,12 +526,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         }
         if (hasContents(scalers)) {
-        	 final VirtualGroup vgScaler = addScalerSection();
+        	 final VirtualGroup vgScaler = jamToHDF.addScalerSection();
         	 vgScaler.addDataObject(jamToHDF.convertScalers(scalers));            
             message.append(", ").append(scalers.size()).append(" scalers");            
         }
         if (hasContents(parameters)) {
-        	final VirtualGroup vgParams = addParameterSection();
+        	final VirtualGroup vgParams = jamToHDF.addParameterSection();
             vgParams.addDataObject(jamToHDF.convertParameters(parameters));
             message.append(", ").append(parameters.size()).append(" parameters");
         }
@@ -561,8 +568,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         uiMessage =message.toString();
         
     }
-    
-
+     
     /**
      * Read in an HDF file
      * 
@@ -803,11 +809,11 @@ public final class HDFIO implements DataIO, JamHDFFields {
     
     private void convertJamToHDF(List groups, boolean wrtdata, boolean wrtsetting) {
     	
-        VirtualGroup virtualGroupGroups= addGroupSection();
-        VirtualGroup globalVirtualGroupHistogram= addHistogramSection();
-        VirtualGroup globalVirtualGroupGate = addGateSection();
-        VirtualGroup globalVirtualGroupScaler = addScalerSection();
-        VirtualGroup globalVirtualGroupParameter = addParameterSection();
+        VirtualGroup virtualGroupGroups= jamToHDF.addGroupSection();
+        VirtualGroup globalVirtualGroupHistogram= jamToHDF.addHistogramSection();
+        VirtualGroup globalVirtualGroupGate = jamToHDF.addGateSection();
+        VirtualGroup globalVirtualGroupScaler = jamToHDF.addScalerSection();
+        VirtualGroup globalVirtualGroupParameter = jamToHDF.addParameterSection();
         
         /* Loop for all groups */
         final Iterator groupsIter = groups.iterator(); 
@@ -850,7 +856,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             if (wrtdata) {
 	            final List scalerList = group.getScalerList();
 	            if (scalerList.size()>0) {
-		            final VirtualGroup virtualGroupScalers = addScalerSection();
+		            final VirtualGroup virtualGroupScalers = jamToHDF.addScalerSection();
 		            virtualGroupGroup.addDataObject(virtualGroupScalers);                        
 		            final VdataDescription scalerDataDescription =jamToHDF.convertScalers(scalerList);
 		            virtualGroupScalers.addDataObject(scalerDataDescription);
@@ -866,7 +872,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             if (wrtsetting) {
             	final List parameterList =DataParameter.getParameterList();
             	if (parameterList.size()>0) {
-		            final VirtualGroup virtualGroupParameters = addParameterSection();
+		            final VirtualGroup virtualGroupParameters = jamToHDF.addParameterSection();
 		            virtualGroupGroup.addDataObject(virtualGroupParameters); 
 		            if (group==Group.getSortGroup()) {            	 
 		            	final VdataDescription parameterDataDescription =jamToHDF.convertParameters(parameterList);
@@ -1144,118 +1150,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         return lstHistAtt;
     }
 
-    /*
-     * non-javadoc: Add default objects always needed.
-     * 
-     * Almost all of Jam's number storage needs are satisfied by the type
-     * hard-coded into the class <code> NumberType </code> . This method creates
-     * the <code> NumberType </code> object in the file that gets referred to
-     * repeatedly by the other data elements. LibVersion Adds data element
-     * giving version of HDF libraries to use (4.1r2).
-     * 
-     * @see jam.io.hdf.NumberType
-     */
-    private void addDefaultDataObjects(String fileID) {
-        new LibVersion(); //DataObjects add themselves
-        NumberType.createDefaultTypes();
-        new JavaMachineType();
-        new FileIdentifier(fileID);
-        addFileNote();
-    }
-
-    /**
-     * Add a text note to the file, which includes the state of
-     * <code>JamProperties</code>.
-     * 
-     * @see jam.global.JamProperties
-     */
-    private void addFileNote() {
-        final String noteAddition = "\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
-                + "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
-                + "number from the lower left to the lower right for, and from the lower left to the upper\n"
-                + "left."
-                + "All error bars on histogram counts should be considered Poisson, unless a\n"
-                + "Numerical Data Group labelled 'Errors' is present, in which case the contents\n"
-                + "of that should be taken as the error bars.";
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final String header = "Jam Properties at time of save:";
-        try {
-            JamProperties.getProperties().store(baos, header);
-        } catch (IOException ioe) {
-            throw new UndeclaredThrowableException(ioe,
-                    "Unable to serialize properties.");
-        }
-        final String notation = baos.toString() + noteAddition;
-        new FileDescription(notation);
-    }
-
-
-    /**
-     * Adds data objects for the virtual group of groups
-     */
-    private VirtualGroup addGroupSection() {
-    	VirtualGroup virtualGroup;
-       	virtualGroup = new VirtualGroup(GROUP_SECTION, FILE_SECTION);
-        new DataIDLabel(virtualGroup, GROUP_SECTION);
-        return  virtualGroup;
-    }
-    
-    /**
-     * Adds data objects for the virtual group of histograms.
-     */
-    private VirtualGroup addHistogramSection() {
-        synchronized (this) {
-            allHists = new VirtualGroup(HIST_SECTION, FILE_SECTION);
-        }
-        new DataIDLabel(allHists, HIST_SECTION);
-        return allHists;
-    }
-
-
-    /**
-     * Adds data objects for the virtual group of gates.
-     */
-    private VirtualGroup addGateSection() {
-        synchronized (this) {
-            allGates = new VirtualGroup(GATE_SECTION, FILE_SECTION);
-        }
-        new DataIDLabel(allGates, GATE_SECTION);
-        return allGates;
-    }
-
-    /**
-     * Adds data objects for the virtual group of scalers.
-     */
-    private VirtualGroup addScalerSection() {
-
-    	final VirtualGroup scalerGroup = new VirtualGroup(
-            SCALER_SECT, FILE_SECTION);
-    	new DataIDLabel(scalerGroup, SCALER_SECT);
-    	return scalerGroup;
-    }
-
-    /**
-     * Adds data objects for the virtual group of scalers.
-     */
-    private VirtualGroup addScalers() {
-
-    	final VirtualGroup scalerGroup = new VirtualGroup(
-            SCALER_SECT, FILE_SECTION);
-    	new DataIDLabel(scalerGroup, SCALER_SECT);
-    	return scalerGroup;
-    }
-    
-    /* non-javadoc:
-     * Adds data objects for the virtual group of parameters.
-     */
-    private VirtualGroup addParameterSection() {
-
-    	final VirtualGroup paramGroup = new VirtualGroup(
-            PARAMETERS, FILE_SECTION);
-    	new DataIDLabel(paramGroup, PARAMETERS);
-    	
-    	return paramGroup;
-    }
     /**
      * Determines whether a <code>List</code> passed to it
      * <ol>
@@ -1291,6 +1185,20 @@ public final class HDFIO implements DataIO, JamHDFFields {
             lastGoodFile = file;
             PREFS.put(LFILE_KEY, file.getAbsolutePath());
         }
+    }
+
+    public void setListener(AsyncListener listener){
+    	asyncListener=listener;
+    }
+    public void removeListener(){
+    	asyncListener=null;
+   
+    }
+	/**
+	 * Interface to be called when asynchronized IO is completed  
+	 */
+    public interface AsyncListener {
+    	public void CompletedIO(String message, String errorMessage);
     }
 
     //static HistogramAttributes create(){
