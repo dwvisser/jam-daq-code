@@ -1,6 +1,5 @@
 package jam.sort;
 
-import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.Beginner;
 import jam.global.Ender;
@@ -87,16 +86,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * constant to define a 1d histogram type double
 	 */
 	protected final static Histogram.Type HIST_2D_DBL = Histogram.Type.TWO_DIM_DOUBLE;
-
-	/**
-	 * constant used to define a 1 d gate
-	 */
-	protected final static int GATE_1D = Gate.ONE_DIMENSION;
-
-	/**
-	 * constant used to define a 2 d gate
-	 */
-	protected final static int GATE_2D = Gate.TWO_DIMENSION;
 
 	/**
 	 * Indicates that the parameter count hasn't been set by any means.
