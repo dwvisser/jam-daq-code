@@ -50,22 +50,15 @@ final class MainMenuBar extends JMenuBar implements Observer {
 	final private JamStatus status=JamStatus.instance();
 	final private JMenu fitting=new JMenu("Fitting");;
 	final private JMenuItem impHist= new JMenu("Import");
-	//final private JMenuItem runacq = new JMenuItem();
 	final private JMenuItem sortacq = new JMenuItem("Sort\u2026");
 	final private JMenuItem statusacq = new JMenuItem("Buffer Count\u2026");
-	final private JMenuItem iflushacq = new JMenuItem("flush");
-	final private JCheckBoxMenuItem cstartacq= new JCheckBoxMenuItem("start", false);
-	final private JCheckBoxMenuItem cstopacq = new JCheckBoxMenuItem("stop", true);
+	//final private JMenuItem iflushacq = new JMenuItem("flush");
 	final private LoadFit loadfit;
 	final private Display display;
 	final private JamMain jamMain;
 	final private MessageHandler console;
 	final private JMenuItem zeroHistogram = new JMenuItem("Zero\u2026");
 	final private JMenu calHist = new JMenu("Calibrate");
-//Remove KBS	
-//	final private JMenuItem projectHistogram = new JMenuItem("Projections\u2026");
-//	final private JMenuItem manipHistogram = new JMenuItem("Combine\u2026");
-//	final private JMenuItem gainShift = new JMenuItem("Gain Shift\u2026");
 
 	final private CommandManager commands=CommandManager.getInstance();
 	
@@ -102,10 +95,8 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		add(getFileMenu());
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
-		final JMenuItem setupOnline = new JMenuItem("Online sorting\u2026");
-		setupOnline.setActionCommand("online");
-		setupOnline.addActionListener(jamCommand);
-		setup.add(setupOnline);
+		setup.add(new JMenuItem(commands.getAction(
+		CommandNames.SHOW_SETUP_ONLINE)));
 		setup.addSeparator();
 		final JMenuItem setupOffline = new JMenuItem("Offline sorting\u2026");
 		setupOffline.setActionCommand("offline");
@@ -118,7 +109,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		setupRemote.setEnabled(false);
 		setup.add(setupRemote);
 		add(getControlMenu(jamCommand));
-		add(getHistogramMenu(jamCommand));
+		add(getHistogramMenu());
 		final JMenu gate = new JMenu("Gate");
 		add(gate);
 		final JMenuItem gateNew = new JMenuItem(commands.getAction(
@@ -249,19 +240,12 @@ final class MainMenuBar extends JMenuBar implements Observer {
 	
 	private JMenu getControlMenu(JamCommand jamCommand){
 		final JMenu mcontrol = new JMenu("Control");
-		cstartacq.setEnabled(false);
-		cstartacq.addActionListener(jamCommand);
-		mcontrol.add(cstartacq);
-		cstopacq.setEnabled(false);
-		cstopacq.addActionListener(jamCommand);
-		mcontrol.add(cstopacq);
-		iflushacq.setEnabled(false);
-		iflushacq.addActionListener(jamCommand);
-		mcontrol.add(iflushacq);
+		mcontrol.add(new JMenuItem(commands.getAction(CommandNames.START)));
+		mcontrol.add(new JMenuItem(commands.getAction(CommandNames.STOP)));
+		mcontrol.add(new JMenuItem(commands.getAction(CommandNames.FLUSH)));
 		mcontrol.addSeparator();
 		final JMenuItem runacq=new JMenuItem(commands.getAction(
 		CommandNames.SHOW_RUN_CONTROL));
-		//runacq.setEnabled(false);
 		mcontrol.add(runacq);
 		sortacq.setEnabled(false);
 		sortacq.setActionCommand("sort");
@@ -279,7 +263,7 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		return mcontrol;
 	}
 	
-	private JMenu getHistogramMenu(JamCommand jamCommand){
+	private JMenu getHistogramMenu(){
 		final JMenu histogram = new JMenu("Histogram");
 		
 		final JMenuItem histogramNew=new JMenuItem(commands.getAction(
@@ -423,23 +407,12 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		final boolean offline = mode == SortMode.OFFLINE;
 		final boolean sorting = online || offline;
 		final boolean file = mode==SortMode.FILE || mode==SortMode.NO_SORT;
-		cstartacq.setEnabled(online);
-		cstopacq.setEnabled(online);
-		iflushacq.setEnabled(online);
 		sortacq.setEnabled(offline);
 		paramAction.setEnabled(sorting);
 		statusacq.setEnabled(sorting);
 		impHist.setEnabled(file);
 	}
 
-	private void setRunState(RunState rs) {
-		final boolean acqmode = rs.isAcquireMode();
-		final boolean acqon = rs.isAcqOn();
-		iflushacq.setEnabled(acqon);
-		cstartacq.setSelected(acqon);
-		cstopacq.setSelected(acqmode && (!acqon));
-	}
-	
 	void adjustHistogramItems(Histogram h){
 		final boolean hExists = h!= null;
 		final boolean oneDops = hExists && h.getDimensionality()==1;
@@ -452,8 +425,6 @@ final class MainMenuBar extends JMenuBar implements Observer {
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
 			sortModeChanged();
-		} else if (command==BroadcastEvent.RUN_STATE_CHANGED){
-			setRunState((RunState)be.getContent());
-		}
+		} 
 	}
 }
