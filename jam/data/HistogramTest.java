@@ -1,6 +1,7 @@
 package jam.data;
 
 import junit.framework.TestCase;
+import java.util.List;
 
 /**
  * JUnit tests for <code>jam.data.Histogram</data>.
@@ -66,8 +67,8 @@ public class HistogramTest extends TestCase {
 	 * @see Histogram#getGates
 	 */
 	public void testGetGates(){
-		Gate [] h1List=h1.getGates();
-		assertEquals(h1List.length,1);
+		List h1List=h1.getGates();
+		assertEquals(h1List.size(),1);
 	}
 
 }
