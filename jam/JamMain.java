@@ -125,7 +125,7 @@ AcquisitionStatus, Observer {
      */
     JamConsole console;
 
-    static public final String JAM_VERSION = "1.3.3";
+    static public final String JAM_VERSION = "1.4 alpha";
     
     /**
      * Program exit dialog box.
