@@ -240,11 +240,11 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
-		//FIXME KBS need a way to get first addtional readin histogram
-		//Set the current histogram to the first opened histogram
-        if (Group.getGroupList().size() > 0) {
-        	Group currentGroup =(Group) Group.getGroupList().get(0);
-            STATUS.setCurrentGroup(currentGroup);
+
+		//Set the current histogram to the first opened histogram		
+		Group firstGroup =hdfio.getFirstLoadGroup();		
+        if (firstGroup!=null) {
+            STATUS.setCurrentGroup(firstGroup);
         }
         /* Set the current histogram to the first opened histogram. */
         if (STATUS.getCurrentGroup().getHistogramList().size() > 0) {

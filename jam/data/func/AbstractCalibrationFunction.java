@@ -244,9 +244,14 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return the input point channels
 	 */
 	public double [] getPtsChannel() {
-	    final int len=ptsChannel.length;
-	    final double [] rval=new double[len];
-	    System.arraycopy(ptsChannel,0,rval,0,len);
+	    final double [] rval;		
+		if (ptsChannel!=null) {
+			final int len=ptsChannel.length;
+			rval=new double[len];
+			System.arraycopy(ptsChannel,0,rval,0,len);
+		} else {
+			rval=null;
+		}
 		return rval;		
 	}
 	
@@ -255,10 +260,15 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return the input point energies
 	 */
 	public double [] getPtsEnergy() {
-	    final int len=ptsEnergy.length;
-	    final double [] rval = new double[len];
-	    System.arraycopy(ptsEnergy,0,rval,0,len);
-		return rval;		
+		final double [] rval;		
+		if (ptsEnergy!=null) {
+		    final int len=ptsEnergy.length;
+		    rval = new double[len];
+		    System.arraycopy(ptsEnergy,0,rval,0,len);
+		} else {
+			rval=null;
+		}
+		return rval;				
 	}
 	
 	/**

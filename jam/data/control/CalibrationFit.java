@@ -331,7 +331,7 @@ public class CalibrationFit extends AbstractControl {
 		
 		isUpdate=true;
 		//FIXME KBS 
-    	//comboBoxFunction.setSelectedItem(name);    	
+    	comboBoxFunction.setSelectedItem(name);    	
 		isUpdate=false;
     	updateFields(calibrationFunction, isCalPts );
     }

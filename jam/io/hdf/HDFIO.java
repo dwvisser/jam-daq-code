@@ -102,6 +102,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     private int gateCount=0;
     private int scalerCount=0;
     private int paramCount=0;
+    private Group firstLoadedGroup;
 
     /**
      * Class constructor handed references to the main class and message
@@ -437,6 +438,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             	int numberFiles = inFiles.length;
                 asyncMonitor.setup("Reading HDF file", "Reading Objects", 
                 		(MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_READ)*numberFiles);
+                firstLoadedGroup =null;
 
     			try {                
             	//Loop for all files
@@ -1031,6 +1033,10 @@ public final class HDFIO implements DataIO, JamFileFields {
 		        //Find histograms				
 				//histList = currentGroup.getHistogramList(); 
 	    	}
+	    	//Keep track of first loaded group
+	    	if (firstLoadedGroup==null)
+	    		firstLoadedGroup =currentGroup;
+	    	
 	        //Find histograms
 	    	histList =hdfToJam.findHistograms(currentVGroup, null);
 	    	histCount = histList.size();
@@ -1085,6 +1091,11 @@ public final class HDFIO implements DataIO, JamFileFields {
             status.setCurrentGroup(Group.getGroup(sortName));
             currentGroup=status.getCurrentGroup();
         } // else mode == FileOpenMode.ADD, so use current group
+        
+    	//Keep track of first loaded group
+    	if (firstLoadedGroup==null)
+    		firstLoadedGroup =currentGroup;
+
         groupCount=0;
         histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histNames);
         final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
@@ -1206,7 +1217,9 @@ public final class HDFIO implements DataIO, JamFileFields {
             PREFS.put(LFILE_KEY, file.getAbsolutePath());
         }
     }
-
+    public Group getFirstLoadGroup() {
+    	return firstLoadedGroup;
+    }
     /**
      * Set the listener.
      * @param listener the new listener
