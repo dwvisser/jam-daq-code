@@ -1,5 +1,6 @@
 package jam;
 import jam.global.CommandListener;
+import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
@@ -465,14 +466,22 @@ public class JamConsole
 		Iterator it =listenerList.iterator();
 		boolean validListenerFound;
 		
-		validListenerFound=false;
-		while(it.hasNext()) {
+		try { 
+		
+			validListenerFound=false;
+			while(it.hasNext()) {
 			
-			CommandListener cl =(CommandListener)(it.next());
-			validListenerFound |=cl.performCommand(cmd, params);
-		}			
-		if (!validListenerFound)
-			errorOutln("Invalid command "+cmd);
+				CommandListener cl =(CommandListener)(it.next());
+				validListenerFound |=cl.performParseCommand(cmd, params);
+			}			
+			if (!validListenerFound)
+				errorOutln("Invalid command "+cmd);
+				
+		} catch (CommandListenerException cle){
+			
+			
+			errorOutln("Performing command command "+cmd);					
+		}
 			
 	}
 	/**

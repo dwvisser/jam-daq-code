@@ -277,13 +277,19 @@ public class JamCommand
 				}
 			} else {
 				
-				if(!jamCmdMgr.performCommand(incommand, null)){
-				
+				//See if it a command classs				
+				try {
+
+					if( jamCmdMgr.performCommand(incommand, null)) {
+					
 					console.errorOutln(getClass().getName()
-						+ ": Error unrecognized command \""
-						+ incommand
-						+ "\"");
-				}						
+						+ ": Error unrecognized command \""+ incommand+ "\"");
+					}
+				} catch (CommandException ce) {
+					console.errorOutln(getClass().getName()
+							+ ": Error performing command \""+ incommand + "\"");
+				}
+											
 			}
 		} catch (JamException exc) {
 			console.errorOutln("JamException: " + exc.getMessage());
