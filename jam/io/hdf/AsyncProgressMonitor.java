@@ -16,7 +16,7 @@ public class AsyncProgressMonitor {
 
     private ProgressMonitor monitor;
     private final Component frame;
-    private final int min=0;
+    private static final int MIN=0;
     private int count;
             
     AsyncProgressMonitor(Component frame){
@@ -27,7 +27,7 @@ public class AsyncProgressMonitor {
     	count =0;
         final Runnable runner = new Runnable() {
             public void run() {
-            	monitor = new ProgressMonitor(frame, message, note, min, max);
+            	monitor = new ProgressMonitor(frame, message, note, MIN, max);
             	monitor.setMillisToPopup(100);
             }
         };
