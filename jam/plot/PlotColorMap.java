@@ -96,12 +96,14 @@ class PlotColorMap {
     public static Color [] getColorScale(){
         return colorScale;
     }
+    
     /**
      * Number of colors
      */
     public static int getNumberColors() {
         return NUMBER_COLORS;
     }
+    
     private static Color [] colorScaleBonW= {
         new Color(0, 0, 127),  //0
         new Color(0, 0, 255),  //1
@@ -111,7 +113,6 @@ class PlotColorMap {
         new Color(255,0,0 ),  //5
         new Color(255,128,0 ),  //6
         new Color(255,255,0 ),  //7
-        //new Color(255, 255, 255 ),  //8
         new Color(0  , 0  , 0 )  //9
     };
 
@@ -125,7 +126,6 @@ class PlotColorMap {
         new Color(255,128,0 ),  //6
         new Color(255,255,0 ),  //7
         new Color(255, 255, 255 ),  //8
-        //new Color(0  , 0  , 0 )  //9
     };
 
 
@@ -140,20 +140,5 @@ class PlotColorMap {
         new Color(255,128,0 ),  //6
         new Color(255,255,0 ),  //7
         new Color(255, 255, 255 ),  //8
-        //new Color(0  , 0  , 0 )  //9
-
-
-
-        /*new Color(234, 234, 234 ),  //0
-        new Color(212,212,212 ),  //1
-        new Color(190,190,190 ),  //2
-        new Color(168,168,168 ),  //3
-        new Color(146,146,146 ),  //4
-        new Color(124, 124,124 ),  //5
-        new Color(102, 102, 102 ),  //6
-        new Color(80, 80, 80),  //7
-        new Color(59, 59, 59),  //8
-        new Color(1, 1,   1)  //9*/
-    };
-
+    };    
 }
