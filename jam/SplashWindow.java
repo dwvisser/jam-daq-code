@@ -58,8 +58,12 @@ class SplashWindow extends JWindow {
 		JPanel west = new JPanel(new FlowLayout());
 		west.setBackground(Color.white);
 		west.setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.black));
-		west.add(new JLabel(new 
-			ImageIcon(cl.getResource("jam/nukeicon.gif"))));
+		ImageIcon nukeicon=new 
+		ImageIcon(cl.getResource("jam/nukeicon.png"));
+		final int sizexy=80;
+		nukeicon.setImage(nukeicon.getImage().getScaledInstance(
+		sizexy,sizexy,Image.SCALE_SMOOTH));
+		west.add(new JLabel(nukeicon));
 		JPanel center = new JPanel(new GridLayout(0,1));
 		center.setBackground(Color.white);
 		center.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
