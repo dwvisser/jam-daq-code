@@ -251,7 +251,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * 
      * @param file
      *            disk file to write to
-     * @param spectra
+     * @param hists
      *            list of <code>Histogram</code> objects to write
      * @param gates
      *            list of <code>Gate</code> objects to write
@@ -260,21 +260,25 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param parameters
      *            list of <code>Parameter</code> objects to write
      */
-    private void writeFile(File file, List spectra, List gates, List scalers,
+    private void writeFile(File file, List hists, List gates, List scalers,
             List parameters) {
+    	
+        final StringBuffer message = new StringBuffer();
+        int progress = 1;
+        
         if (file.exists()) {
             /*
              * At this point, we've confirmed overwrite with the user.
              */
             file.delete();
         } 
-        final int progressRange = spectra.size() + gates.size()
+        final int progressRange = hists.size() + gates.size()
                 + scalers.size() + parameters.size();
-        int progress = 1;
+
         final ProgressMonitor pm = new ProgressMonitor(frame,
                 "Saving HDF file", "Building file buffer", progress,
                 progressRange);
-        final StringBuffer message = new StringBuffer();
+
         try {
             synchronized (this) {
                 out = new HDFile(file, "rw");
@@ -292,10 +296,10 @@ public class HDFIO implements DataIO, JamHDFFields {
                     + file.getName() + "': " + e.toString());
         }
         try {
-            if (hasContents(spectra)) {
+            if (hasContents(hists)) {
                 addHistogramSection();
-                message.append(spectra.size()).append(" histograms");
-                final Iterator temp = spectra.iterator();
+                message.append(hists.size()).append(" histograms");
+                final Iterator temp = hists.iterator();
                 while (temp.hasNext()) {
                     addHistogram((Histogram) (temp.next()));
                     progress++;
