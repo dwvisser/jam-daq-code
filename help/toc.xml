@@ -7,6 +7,7 @@
    <tocitem text="Jam Data Acquisition Help">
       <tocitem text="Notice" target="notice" />
       <tocitem text="Acknowledgements" target="ack" />
+      <tocitem text="Join the Team" target="contrib" />
       <tocitem text="Configuration Files" target="configure" > 
           <tocitem text="System Configuration" target="jamconfig" />
           <tocitem text="Session Configuration" target="jamuser" />
