@@ -161,10 +161,11 @@ public class JamConsole
 	 * Outputs the string as a message to the console, which has more than one part,
 	 * so message can continued by a subsequent call.
 	 *
-	 * @param message the message to be output
+	 * @param _message the message to be output
 	 * @param part one of NEW, CONTINUE, or END
 	 */
-	public synchronized void messageOut(String message, int part) {
+	public synchronized void messageOut(String _message, int part) {
+		String message=new String(_message);
 		if (part == NEW) {
 			msgLock = true;
 			messageFile = getDate() + ">" + message;
@@ -218,9 +219,10 @@ public class JamConsole
 	/**
 	 * Output a message with a carriage return.
 	 *
-	 * @param message the message to be printed to the console
+	 * @param _message the message to be printed to the console
 	 */
-	public synchronized void messageOutln(String message) {
+	public synchronized void messageOutln(String _message) {
+		String message=new String(_message);
 		msgLock = true;
 		messageFile = getDate() + ">" + message + END_LINE;
 		message = END_LINE + getTime() + ">" + message;
@@ -262,8 +264,10 @@ public class JamConsole
 		promptOutln("Warning: " + message, attr_warning);
 	}
 
-	private synchronized void promptOutln(String message, AttributeSet attr) {
-		//dont wait for lock out put message right away
+	private synchronized void promptOutln(String _message, AttributeSet attr) {
+		String message=new String(_message);
+		/* Dont wait for lock.  
+		 * Output message right away. */
 		if (msgLock) { //if locked add extra returns
 			messageFile = END_LINE + getDate() + ">" + message + END_LINE;
 			message = END_LINE + getTime() + ">" + message + END_LINE;
@@ -278,7 +282,7 @@ public class JamConsole
 		}
 		trimLog();
 		textLog.setCaretPosition(textLog.getText().length());
-		//beep
+		/* beep */
 		Toolkit.getDefaultToolkit().beep();
 		if (logFileOn) { //if file logging on write to file
 			try {
@@ -303,7 +307,7 @@ public class JamConsole
 	/**
 	 * Parses the command and issues it to the current listener.
 	 */
-	private void parseCommand(String inString) {
+	private void parseCommand(String _inString) {
 		StringTokenizer inLine; //the input line
 		String[] inWords; //the words in the in line
 		int numberInWords; //number words in inputline
@@ -313,7 +317,7 @@ public class JamConsole
 		int commandLen = 0;
 		int countParam = 0;
 		//make string tokenizer use spaces, commas, and returns as delimiters
-		inString = inString.trim();
+		String inString = _inString.trim();
 		inLine = new StringTokenizer(inString, " ,END_LINE");
 		numberInWords = inLine.countTokens();
 		inWords = new String[numberInWords];
