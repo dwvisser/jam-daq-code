@@ -6,7 +6,7 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
@@ -948,7 +948,7 @@ public final class HDFIO implements DataIO, JamFileFields {
                     
                     //Add calibrations
                     if ((writeData||wrtSettings) && hist.getDimensionality()==1) { 
-                    	final CalibrationFunction calFunc = ((AbstractHist1D)hist).getCalibration();
+                    	final AbstractCalibrationFunction calFunc = ((AbstractHist1D)hist).getCalibration();
                     	if (calFunc!=null) {
                     		final VDataDescription calibDD=jamToHDF.convertCalibration(calFunc);
                     		histVGroup.add(calibDD);

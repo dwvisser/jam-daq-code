@@ -3,7 +3,7 @@
  */
 package jam.data;
 
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.data.peaks.PeakFinder;
 
 /**
@@ -17,7 +17,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 * The calibration function. Set to <code>null</code> if there
 	 * is none.
 	 */
-	protected transient CalibrationFunction calibFunc;
+	protected transient AbstractCalibrationFunction calibFunc;
 	
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -162,7 +162,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 *            new energy calibration for this histogram
 	 */
 	
-	public synchronized void setCalibration(CalibrationFunction calibFunc) {
+	public synchronized void setCalibration(AbstractCalibrationFunction calibFunc) {
 		this.calibFunc = calibFunc;
 	}
 
@@ -172,7 +172,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 * 
 	 * @return the calibration function for this histogram
 	 */
-	public synchronized CalibrationFunction getCalibration() {
+	public synchronized AbstractCalibrationFunction getCalibration() {
 		return calibFunc;
 	}
 

@@ -3,7 +3,7 @@ import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.PolynomialFunction;
 
 import java.io.DataInputStream;
@@ -315,7 +315,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		calibDble[0] = calibCoef[0] * 0.0001;
 		calibDble[1] = calibCoef[1] * 0.000001;
 		calibDble[2] = calibCoef[2] * 0.00000001;
-		final CalibrationFunction calibFunc = new PolynomialFunction(3);
+		final AbstractCalibrationFunction calibFunc = new PolynomialFunction(3);
 		calibFunc.setCoeff(calibDble);
 		hist.setCalibration(calibFunc);
 	}

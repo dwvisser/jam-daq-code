@@ -23,14 +23,14 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
-		return CalibrationFunction.getListNames().get(index);
+		return AbstractCalibrationFunction.getListNames().get(index);
 	}
 
 	/**
 	 * @return number of list elements in chooser.
 	 */
 	public int getSize() {
-		int size=CalibrationFunction.getListNames().size();
+		int size=AbstractCalibrationFunction.getListNames().size();
 		return size;
 	}
 
@@ -44,7 +44,7 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	public void setSelectedItem(Object anItem) {
 		synchronized (selectSync){
 			if (anItem==null){
-				selection=CalibrationFunction.getListNames().get(0);
+				selection=AbstractCalibrationFunction.getListNames().get(0);
 			} else if (anItem instanceof String){
 				selection=anItem;				
 			} else {

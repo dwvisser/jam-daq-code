@@ -41,7 +41,7 @@ public class CalibrationListCellRenderer
 		
 		if (value!=null) {
 			setText(value.toString());
-			ImageIcon icon= CalibrationFunction.getIcon(value.toString());
+			ImageIcon icon= AbstractCalibrationFunction.getIcon(value.toString());
 			setIcon(icon);
 		} else {
 			setText("null");

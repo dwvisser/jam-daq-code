@@ -6,7 +6,7 @@ import jam.data.DataException;
  * A polynomial histogram calibration function of up to 4th order, where energy
  * is a polynomial in the channel minus some offset.
  */
-public class PolynomialOffsetFunction extends CalibrationFunction {
+public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object of the specified
@@ -19,7 +19,7 @@ public class PolynomialOffsetFunction extends CalibrationFunction {
 	 */
 	public PolynomialOffsetFunction(int numberTerms) {
 		super(PolynomialOffsetFunction.class, "Polynomial Offset", numberTerms);
-		if (numberTerms < MAX_NUMBER_TERMS) {
+		if (numberTerms < MAX_TERMS) {
 			title = "E = a0+a1*(ch-x0)+a2*(ch-x0)^2+ ...";
 			coeff = new double[numberTerms];
 			labels = new String[numberTerms];

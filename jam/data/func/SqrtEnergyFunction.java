@@ -6,7 +6,7 @@ import jam.data.DataException;
  * magnetic spectometer.
  *  
  */
-public class SqrtEnergyFunction extends CalibrationFunction {
+public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 
 	private static final int NUMBER_TERMS = 2;
 	

@@ -4,7 +4,7 @@ import jam.data.DataException;
 /**
  * A polynomial histogram calibration function of up to 4th order.
  */
-public class PolynomialFunction extends CalibrationFunction {
+public class PolynomialFunction extends AbstractCalibrationFunction {
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object of the specified 

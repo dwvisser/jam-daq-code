@@ -3,7 +3,7 @@ package jam.data.control;
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.global.MessageHandler;
 
@@ -145,7 +145,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		setCurrentHistogram();
 		final boolean hist1d = currentHistogram != null
 				&& currentHistogram.getDimensionality() == 1;
-		CalibrationFunction hcf = null;
+		AbstractCalibrationFunction hcf = null;
 		if (hist1d) {
 			hcf = currentHistogram.getCalibration();
 			final String name = hcf == null ? null : hcf.getClass().getName();
@@ -224,12 +224,12 @@ public class CalibrationDisplay extends AbstractControl implements
 	 *  
 	 */
 	public void itemStateChanged(ItemEvent ie) {
-		CalibrationFunction calibFunction = null;
+		AbstractCalibrationFunction calibFunction = null;
 		if (ie.getSource() == cFunc) {
 			try {
 				final Class calClass = Class.forName((String) cFunc
 						.getSelectedItem());
-				calibFunction = (CalibrationFunction) calClass.newInstance();
+				calibFunction = (AbstractCalibrationFunction) calClass.newInstance();
 			} catch (Exception e) {
 				msghdlr.errorOutln(getClass().getName()
 						+ ".itemStateChanged(): " + ie.toString());
@@ -247,7 +247,7 @@ public class CalibrationDisplay extends AbstractControl implements
 	private void setCoefficients() {
 		double coeff[] = new double[numberTerms];
 		int i = 0;
-		CalibrationFunction calibFunction = currentHistogram.getCalibration();
+		AbstractCalibrationFunction calibFunction = currentHistogram.getCalibration();
 		/* silently ignore if histogram null */
 		if (calibFunction != null) {
 			try {

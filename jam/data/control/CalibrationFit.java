@@ -3,7 +3,7 @@ import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.data.func.CalibrationComboBoxModel;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
 import jam.data.func.PolynomialFunction;
@@ -55,8 +55,8 @@ public class CalibrationFit extends AbstractControl {
 	static {
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
 		
-		CalibrationFunction linearFunc=new LinearFunction();
-		CalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
+		AbstractCalibrationFunction linearFunc=new LinearFunction();
+		AbstractCalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
 		//CalibrationFunction polyFunc=new PolynomialFunction(2);
 		
 		//Load icons
@@ -64,8 +64,8 @@ public class CalibrationFit extends AbstractControl {
 		URL urlSqrtE =loader.getResource("jam/data/func/sqrt.png");
 		//URL urlPoly =loader.getResource("jam/data/func/poly.png");
 		if (urlLine!=null && urlSqrtE!=null) {
-			CalibrationFunction.setIcon(linearFunc.getName(), new ImageIcon(urlLine));
-			CalibrationFunction.setIcon(sqrtEFunc.getName(), new ImageIcon(urlSqrtE));
+			AbstractCalibrationFunction.setIcon(linearFunc.getName(), new ImageIcon(urlLine));
+			AbstractCalibrationFunction.setIcon(sqrtEFunc.getName(), new ImageIcon(urlSqrtE));
 			//CalibrationFunction.setIcon(polyFunc.getName(), new ImageIcon(urlPoly));
 		} else {
 			JOptionPane.showMessageDialog(null, "Can't load resource function icons");
@@ -73,7 +73,7 @@ public class CalibrationFit extends AbstractControl {
 	}
 	    
     // calibration function
-    private CalibrationFunction calibrationFunction=null;
+    private AbstractCalibrationFunction calibrationFunction=null;
 
     //GUI stuff
     //Tabbed for fit type
@@ -263,24 +263,18 @@ public class CalibrationFit extends AbstractControl {
 		return pCoeff;
     }
     
-    /** 
+    /* 
      * Function selected
-     * 
-     * @param calClass
      */
     private void selectFunction(String funcName){
     	Class calClass;
-    	
-    	//if (isUpdate)
-    	//	return;
-    	
 		try {
 			calibrationFunction = getCurrentCalibrationFunction();
-			if (!funcName.equals(CalibrationFunction.NOT_CALIBRATED)) {
-				calClass = (Class)CalibrationFunction.getMapFunctions().get(funcName);
+			if (!funcName.equals(AbstractCalibrationFunction.NOT_CALIB)) {
+				calClass = (Class)AbstractCalibrationFunction.getMapFunctions().get(funcName);
 				boolean change = calClass.isInstance(calibrationFunction);
 				if ( calibrationFunction==null || !change ) {
-					calibrationFunction = (CalibrationFunction)calClass.newInstance();
+					calibrationFunction = (AbstractCalibrationFunction)calClass.newInstance();
 				}
 			}else {
 				calibrationFunction=null;
@@ -331,7 +325,7 @@ public class CalibrationFit extends AbstractControl {
 				rbSetCoeffs.setSelected(true);
 			}			
 		} else {
-			name=CalibrationFunction.NOT_CALIBRATED;
+			name=AbstractCalibrationFunction.NOT_CALIB;
 			rbFitPoints.setSelected(true);
 		}		
 		
@@ -472,7 +466,7 @@ public class CalibrationFit extends AbstractControl {
 	 * appropricate depending of if there is a calibration
 	 * or what type it is. 
 	 */
-	public void updateFields(CalibrationFunction hcf, boolean isCalPts) {
+	public void updateFields(AbstractCalibrationFunction hcf, boolean isCalPts) {
 		
 		boolean hasCalibration;
 		String title;
@@ -580,8 +574,8 @@ public class CalibrationFit extends AbstractControl {
 		}
 		return rval;
 	}
-	private CalibrationFunction getCurrentCalibrationFunction() {	
-		CalibrationFunction hcf;
+	private AbstractCalibrationFunction getCurrentCalibrationFunction() {	
+		AbstractCalibrationFunction hcf;
 		//Get histogram status
 		AbstractHist1D currentHistogram=getCurrentHistogram();
 		if (currentHistogram!=null) {

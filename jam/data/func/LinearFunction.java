@@ -4,7 +4,7 @@ import jam.data.DataException;
 /**
  * A linear histogram calibration function, that is, E = a0 + a1 * channel.
  */
-public class LinearFunction extends CalibrationFunction {
+public class LinearFunction extends AbstractCalibrationFunction {
 
 	private static final int NUMBER_TERMS = 2;
 	

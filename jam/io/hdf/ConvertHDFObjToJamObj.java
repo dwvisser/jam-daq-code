@@ -7,7 +7,7 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
@@ -342,8 +342,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         }
         return vddCalibration;        		
 	}
-    CalibrationFunction convertCalibration(Histogram hist, VDataDescription vdd) throws HDFException {
-        final CalibrationFunction calibrationFunction;
+    AbstractCalibrationFunction convertCalibration(Histogram hist, VDataDescription vdd) throws HDFException {
+        final AbstractCalibrationFunction calibrationFunction;
         final VData data = (VData) (AbstractData.getObject(
                 AbstractData.DFTAG_VS, vdd.getRef()));
         
@@ -387,14 +387,14 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     	return calibrationFunction;
     }
 	
-    private CalibrationFunction makeCalibration(Histogram hist, String funcName ) throws HDFException {
+    private AbstractCalibrationFunction makeCalibration(Histogram hist, String funcName ) throws HDFException {
     	Class calClass;
-    	Map calMap= CalibrationFunction.getMapFunctions();
-    	CalibrationFunction calibrationFunction=null;    	
+    	final Map calMap= AbstractCalibrationFunction.getMapFunctions();
+    	AbstractCalibrationFunction calibrationFunction=null;    	
 		try {
-	    	if (CalibrationFunction.getMapFunctions().containsKey(funcName)) {
-	    		calClass = (Class)CalibrationFunction.getMapFunctions().get(funcName);
-				calibrationFunction = (CalibrationFunction)calClass.newInstance();	    	 
+	    	if (calMap.containsKey(funcName)) {
+	    		calClass = (Class)calMap.get(funcName);
+				calibrationFunction = (AbstractCalibrationFunction)calClass.newInstance();	    	 
 	    	}	    		
 		} catch (InstantiationException e) {		
 			throw new HDFException("Cannot create calibration  "+funcName);			

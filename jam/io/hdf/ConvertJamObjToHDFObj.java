@@ -6,7 +6,7 @@ import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
-import jam.data.func.CalibrationFunction;
+import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamProperties;
 import jam.util.StringUtilities;
 
@@ -241,7 +241,7 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */	
-    VDataDescription convertCalibration(CalibrationFunction calibrationFunction) {	
+    VDataDescription convertCalibration(AbstractCalibrationFunction calibrationFunction) {	
         String calibrationType;
         String[] columnNames;        
         int size;
