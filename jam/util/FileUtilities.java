@@ -103,29 +103,30 @@ public class FileUtilities {
 		String extension,
 		int mode)
 		throws UtilException {
-		String ext;
-		int index;
+		String extNoPeriod = extension;
+		String rval=fileName;
 
 		if (mode == NO_CHANGE)
 			return fileName;
 		if (mode != FORCE && mode != APPEND_ONLY && mode != NO_CHANGE) {
 			throw new UtilException("Invalid call to setExtension().");
 		}
-		index = extension.indexOf(".");
-		if (index == -1) { //no period occurs in extension
-			ext = extension;
-		} else { //strip up to and including period
-			ext = extension.substring(index + 1);
+		int index = extension.indexOf('.');
+		if (index >= 0) { //period occurs in extension
+			//ext = extension;
+		//} else { //strip up to and including period
+			extNoPeriod = extension.substring(index + 1);
 		}
-		index = fileName.indexOf(".");
-		if (index == -1) { //no period occurs in fileName
-			return fileName + "." + ext;
-		} else { //strip extension
+		index = fileName.indexOf('.');
+		if (index >= 0) { //period occurs in filename
 			if (mode == FORCE) {
-				return fileName.substring(0, index + 1) + ext;
-			} else {
+				rval = fileName.substring(0, index + 1) + extNoPeriod;
+			} /*else {
 				return fileName;
-			}
+			}*/
+		} else { //add period
+			rval = fileName + '.' + extNoPeriod;
 		}
+		return rval;
 	}
 }
