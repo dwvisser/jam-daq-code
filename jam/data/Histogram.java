@@ -75,18 +75,17 @@ public class Histogram implements Serializable {
 	 */
 	public static final int NAME_LENGTH = 16;
 
-	private static Hashtable histogramTable = new Hashtable(37);
-	//should be an prime number
+	private static Map sortedNameMap = new TreeMap();
+	private static SortedMap sortedNumberMap=new TreeMap();
+	/* histogramList is ordered by the creation of the histograms */
 	private static List histogramList = new Vector(37);
-	//private static DefaultComboBoxModel hcbm=new DefaultComboBoxModel();
+	/* used for automatically assigning histogram number */
 	private static int lastNumber = 0;
-	//used for automatically assigning histogram number
 
 	/**
 	 * gates that belong to this histogram
 	 */
 	List gates = new Vector(1);
-	//DefaultComboBoxModel gateComboBoxModel=new DefaultComboBoxModel();
 
 	/**
 	 * Set to true if errors are set explicitly.  Put in place so as not to waste disk
@@ -162,7 +161,7 @@ public class Histogram implements Serializable {
 		name = name2;
 		//find a name that does not conflict with exiting names
 		prime = 1;
-		while (histogramTable.containsKey(name)) {
+		while (sortedNameMap.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
 				StringUtilities.makeLength(
@@ -192,34 +191,42 @@ public class Histogram implements Serializable {
 			this.sizeX = sizeX;
 			this.sizeY = 0;
 			counts = new int[sizeX];
-			if (labelX == null)
+			if (labelX == null){
 				labelX = X_LABEL_1D;
-			if (labelY == null)
+			}
+			if (labelY == null){
 				labelY = Y_LABEL_1D;
+			}
 		} else if (type == TWO_DIM_INT) {
 			this.sizeX = sizeX;
 			this.sizeY = sizeY;
 			counts2d = new int[sizeX][sizeY];
-			if (labelX == null)
+			if (labelX == null){
 				labelX = X_LABEL_2D;
-			if (labelY == null)
+			}
+			if (labelY == null){
 				labelY = Y_LABEL_2D;
+			}
 		} else if (type == ONE_DIM_DOUBLE) {
 			this.sizeX = sizeX;
 			this.sizeY = 0;
 			countsDouble = new double[sizeX];
-			if (labelX == null)
+			if (labelX == null){
 				labelX = X_LABEL_1D;
-			if (labelY == null)
+			}
+			if (labelY == null){
 				labelY = Y_LABEL_1D;
+			}
 		} else if (type == TWO_DIM_DOUBLE) {
 			this.sizeX = sizeX;
 			this.sizeY = sizeY;
 			counts2dDouble = new double[sizeX][sizeY];
-			if (labelX == null)
+			if (labelX == null){
 				labelX = X_LABEL_2D;
-			if (labelY == null)
+			}
+			if (labelY == null){
 				labelY = Y_LABEL_2D;
+			}
 		} else {
 			throw new DataException(
 				"Error histogram '"
@@ -228,8 +235,9 @@ public class Histogram implements Serializable {
 					+ type);
 		}
 		//add to static lists
-		histogramTable.put(name, this);
+		sortedNameMap.put(name, this);
 		histogramList.add(this);
+		sortedNumberMap.put(new Integer(number),this);
 	}
 
 	/**
@@ -426,14 +434,13 @@ public class Histogram implements Serializable {
 	 * @param inHistList must contain all histogram objects
 	 */
 	public static void setHistogramList(List inHistList) {
-		histogramTable.clear(); //clear current lists
-		histogramList.clear(); //clear current lists
+		clearList();
 		Iterator allHistograms = inHistList.iterator();
 		while (allHistograms.hasNext()) { //loop for all histograms
 			Histogram hist = (Histogram) allHistograms.next();
-			String name = hist.getName();
-			histogramTable.put(name, hist);
+			sortedNameMap.put(hist.getName(), hist);
 			histogramList.add(hist);
+			sortedNumberMap.put(new Integer(hist.getNumber()),hist);
 		}
 	}
 
@@ -445,13 +452,30 @@ public class Histogram implements Serializable {
 	public static List getHistogramList() {
 		return histogramList;
 	}
+	
+	/**
+	 * @param any int type indicates sorted by number
+	 * @return list of all histograms sorted by number
+	 */
+	public static List getSortedList(int any){
+		return new ArrayList(sortedNumberMap.values());
+	}
+
+	/**
+	 * @param any String type indicates sorted by name
+	 * @return list of all histograms sorted by number
+	 */
+	public static List getSortedList(String any){
+		return new ArrayList(sortedNameMap.values());
+	}
 
 	/**
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
-		histogramTable.clear();
+		sortedNameMap.clear();
 		histogramList.clear();
+		sortedNumberMap.clear();
 		System.gc();
 	}
 
@@ -464,9 +488,13 @@ public class Histogram implements Serializable {
 		Histogram rval=null;//default return value
 		if (name != null) {
 			/* get() will return null if key not in table */
-			rval = (Histogram)histogramTable.get(name);
+			rval = (Histogram)sortedNameMap.get(name);
 		}
 		return rval;
+	}
+	
+	public static Histogram getHistogram(int num){
+		return (Histogram)sortedNumberMap.get(new Integer(num));
 	}
 
 	/* instantized methods */
@@ -599,10 +627,12 @@ public class Histogram implements Serializable {
 	/**
 	 * Sets the number of this histogram.
 	 *
-	 * @param number the desired number for the histogram
+	 * @param n the desired number for the histogram
 	 */
-	public void setNumber(int number) {
-		this.number = number;
+	public void setNumber(int n) {
+		sortedNumberMap.remove(new Integer(number));
+		number = n;
+		sortedNumberMap.put(new Integer(n),this);
 	}
 
 	/**
