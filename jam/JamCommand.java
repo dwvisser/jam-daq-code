@@ -367,4 +367,20 @@ public class JamCommand
 	void dataChanged() throws GlobalException {
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
+	
+	HDFIO getHDFIO(){
+		return hdfio;
+	}
+	
+	HistogramControl getHistogramControl(){
+		return histogramControl;
+	}
+	
+	SetupSortOff getSetupSortOff(){
+		return setupSortOff;
+	}
+	
+	SortControl getSortControl(){
+		return sortControl;
+	}
 }
