@@ -12,6 +12,7 @@ import jam.io.ImpExpORNL;
 import jam.io.ImpExpSPE;
 import jam.io.ImpExpXSYS;
 import jam.io.ImportBanGates;
+import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
 import jam.util.YaleCAENgetScalers;
@@ -166,6 +167,20 @@ public class MainMenuBar extends JMenuBar {
 			}
 		}
 	}
+	
+	class SaveGatesAction extends AbstractAction {
+		
+		private final HDFIO hdfio;
+		
+		SaveGatesAction(){
+			super("Save gates, scalers & parameters as HDF...");
+			hdfio=jamCommand.getHDFIO();
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			hdfio.writeFile(false,true,true,true);
+		}
+	}
 
 
 	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
@@ -278,8 +293,15 @@ public class MainMenuBar extends JMenuBar {
 		saveAsHDF.setActionCommand("saveAsHDF");
 		saveAsHDF.addActionListener(jamCommand);
 		file.add(saveAsHDF);
+		final JMenuItem special=new JMenu("Special");
+		final JMenuItem saveGates=new JMenuItem(new SaveGatesAction());
+		final JMenuItem reloadGates=new JMenuItem("Reload gates only from HDF...");
+		special.add(saveGates);
+		special.add(reloadGates);
+		reloadGates.setEnabled(false);
+		file.add(special);
 		file.addSeparator();
-		JMenuItem utilities=new JMenu("Utilities");
+		final JMenuItem utilities=new JMenu("Utilities");
 		file.add(utilities);
 		final YaleCAENgetScalers ycgs=new YaleCAENgetScalers(jamMain,console);
 		utilities.add(new JMenuItem(ycgs.getAction()));
