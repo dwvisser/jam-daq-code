@@ -1,9 +1,12 @@
 package jam.data.control;
+import jam.data.DataException;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.GateComboBoxModel;
+import jam.global.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import jam.global.*;
-import jam.data.*;
 import javax.swing.*;
 
 /**
@@ -12,85 +15,92 @@ import javax.swing.*;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public class GateControl extends DataControl implements ActionListener, WindowListener,
-Observer  {
+public class GateControl extends DataControl implements ActionListener, 
+WindowListener,Observer  {
 
     static final int ONE_DIMENSION=1;
     static final int TWO_DIMENSION=2;
     static final int NONE=-1;
 
-    private Frame frame;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+    private boolean newGate=false;//a gate has been chosen
+    private final Frame frame;
+    private final Broadcaster broadcaster;
+    private final MessageHandler messageHandler;
 
     private Histogram currentHistogram;
     private Gate currentGate;
     private Gate currentGateAdd;
 
     private int type;
-    private java.util.List gatePoints;      //number intial points, increment increase
-    private Polygon gatePoly2d;
+    private java.util.List gatePoints;//number intial points, increment increase
     private int numberPoints;
 
     /* set gate dialog box */
-    private JDialog dgate;
-    private JComboBox cgate;
-    private GateControlComboBoxModel cgateModel;
-    private JLabel lLower;
-    private JTextField textLower;
-    private JLabel lUpper;
-    private JTextField textUpper;
-    private JButton addP;
-    private JButton removeP;
-    private JButton unset;
-    private JButton save;
-    private JButton cancel;
+    private final JDialog dgate;
+    final private JComboBox cgate;
+    /*private GateComboBoxModel cgateModel;*/
+    private final JLabel lLower;
+    private final JTextField textLower;
+    private final JLabel lUpper;
+    private final JTextField textUpper;
+    private final JButton addP;
+    private final JButton removeP;
+    private final JButton unset;
+    private final JButton save;
+    private final JButton cancel;
 
     /* new gate dialog box */
-    private JDialog dnew;
-    private JTextField textNew;
-	private GateControlComboBoxModel2 caddModel;
+    private final JDialog dnew;
+    private final JTextField textNew;
+	//private GateControlComboBoxModel2 caddModel;
 	
     /* add gate dialog box */
-    private JDialog dadd;
-    private JComboBox cadd;
+    private final JDialog dadd;
+    final private JComboBox cadd;
 
-    boolean newGate=false;//a gate has been chosen
     
-    private JamStatus status;
+    private final JamStatus status;
 
     /**
+     * Creates an instance of the GateControl class.
      *
+     * @param f the frame that GateControl's dialogs are children of
+     * @param bro ???
+     * @param mh the console for text output
      */
-    public GateControl(Frame frame, Broadcaster broadcaster,  MessageHandler messageHandler){
+    public GateControl(Frame f, Broadcaster bro,  
+    MessageHandler mh){
         super();
-        this.frame=frame;
-        this.broadcaster=broadcaster;
-        this.messageHandler=messageHandler;
+        this.frame=f;
+        this.broadcaster=bro;
+        this.messageHandler=mh;
         status = JamStatus.instance();
         dgate=new JDialog(frame,"Gate setting <none>",false);
         dgate.setResizable(false);
-        //dgate.setSize(300, 250);
-        Container contents=dgate.getContentPane();
+        final Container contents=dgate.getContentPane();
         contents.setLayout(new BorderLayout());
         dgate.setLocation(20,50);
         //panel with chooser
         JPanel pc =new JPanel();
         pc.setLayout(new GridLayout(1,0));
-        cgateModel = new GateControlComboBoxModel(this);
-        cgate=new JComboBox(cgateModel);
+        cgate=new JComboBox(new GateComboBoxModel());
+        cgate.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent ae){
+        		selectGate((String)cgate.getSelectedItem());
+        	}
+        });
         pc.add(cgate);
         //panel with data fields
-        JPanel pf =new JPanel();
+        final JPanel pf =new JPanel();
         pf.setLayout(new GridLayout(2,1));
-        JPanel p1= new JPanel(new FlowLayout());
+        final JPanel p1= new JPanel(new FlowLayout());
         lLower=new JLabel("lower",Label.RIGHT);
         p1.add(lLower);
         textLower=new JTextField("",4);
         textLower.setBackground(Color.lightGray);
         textLower.setForeground(Color.black);
         p1.add(textLower);
-        JPanel p2= new JPanel(new FlowLayout());
+        final JPanel p2= new JPanel(new FlowLayout());
         lUpper=new JLabel("upper",Label.RIGHT);
         p2.add(lUpper);
         textUpper=new JTextField("",4);
@@ -99,7 +109,7 @@ Observer  {
         p2.add(textUpper);
         pf.add(p1); pf.add(p2);
         //panel with buttons
-        JPanel pedit =new JPanel();
+        final JPanel pedit =new JPanel();
         pedit.setLayout(new GridLayout(0,1));
         addP = new JButton("Add");
         addP.setActionCommand("add");
@@ -117,7 +127,7 @@ Observer  {
         unset.setEnabled(false);
         pedit.add(unset);
         //panel with buttons
-        Panel pb =new Panel();
+        final Panel pb =new Panel();
         pb.setLayout(new GridLayout(1,0));
         save = new JButton("Save");
         save.setActionCommand("save");
@@ -138,40 +148,37 @@ Observer  {
 
         //new gate dialog box
         dnew=new JDialog(frame,"New Gate",false);
-        Container cdnew=dnew.getContentPane();
+        final Container cdnew=dnew.getContentPane();
         dnew.setResizable(false);
         //dnew.setSize(300, 150);
         cdnew.setLayout(new BorderLayout());
         dnew.setLocation(20,50);
 
         //panel with chooser
-        JPanel ptnew =new JPanel();
+        final JPanel ptnew =new JPanel();
         ptnew.setLayout(new GridLayout(1,1));
         cdnew.add(ptnew,BorderLayout.CENTER);
-
-        JLabel lnew =new JLabel("Name");
-        cdnew.add(lnew,BorderLayout.WEST);
-
+        cdnew.add(new JLabel("Name"),BorderLayout.WEST);
         textNew=new JTextField("",12);
         textNew.setBackground(Color.white);
         ptnew.add(textNew);
 
         // panel for buttons
-        JPanel pbnew= new JPanel();
+        final JPanel pbnew= new JPanel();
         pbnew.setLayout(new GridLayout(1,3));
         cdnew.add(pbnew,BorderLayout.SOUTH);
 
-        JButton bok  =   new JButton("OK");
+        final JButton bok  =   new JButton("OK");
         bok.setActionCommand("oknew");
         bok.addActionListener(this);
         pbnew.add(bok);
 
-        JButton bapply = new JButton("Apply");
+        final JButton bapply = new JButton("Apply");
         bapply.setActionCommand("applynew");
         bapply.addActionListener(this);
         pbnew.add(bapply);
 
-        JButton bcancel =new JButton("Cancel");
+        final JButton bcancel =new JButton("Cancel");
         bcancel.setActionCommand("cancelnew");
         bcancel.addActionListener(this);
         pbnew.add(bcancel);
@@ -179,36 +186,44 @@ Observer  {
 
         //add gate dialog box
         dadd=new JDialog(frame,"Add Gate",false);
-        Container cdadd=dadd.getContentPane();
+        final Container cdadd=dadd.getContentPane();
         dadd.setResizable(false);
         dadd.setLocation(20,50);
 
         //panel with chooser
-        JPanel ptadd =new JPanel();
+        final JPanel ptadd =new JPanel();
         ptadd.setLayout(new GridLayout(1,0));
         cdadd.add(ptadd,BorderLayout.CENTER);
 
-		caddModel = new GateControlComboBoxModel2(this);
-        cadd=new JComboBox(caddModel);
+		//caddModel = new GateControlComboBoxModel2(this);
+        cadd=new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
+		cadd.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				final String selected=(String)cadd.getSelectedItem();
+				if (Gate.getGate(selected) != null){
+					selectGateAdd(selected);
+				}
+			}
+		});
         
         ptadd.add(cadd);
 
         // panel for buttons
-        JPanel pbadd= new JPanel();
+        final JPanel pbadd= new JPanel();
         pbadd.setLayout(new GridLayout(1,0));
         cdadd.add(pbadd,BorderLayout.SOUTH);
 
-        JButton bokadd  =   new JButton("OK");
+        final JButton bokadd  =   new JButton("OK");
         bokadd.setActionCommand("okadd");
         bokadd.addActionListener(this);
         pbadd.add(bokadd);
 
-        JButton bapplyadd = new JButton("Apply");
+        final JButton bapplyadd = new JButton("Apply");
         bapplyadd.setActionCommand("applyadd");
         bapplyadd.addActionListener(this);
         pbadd.add(bapplyadd);
 
-        JButton bcanceladd =new JButton("Cancel");
+        final JButton bcanceladd =new JButton("Cancel");
         bcanceladd.setActionCommand("canceladd");
         bcanceladd.addActionListener(this);
         pbadd.add(bcanceladd);
@@ -218,45 +233,43 @@ Observer  {
 
     }
     /**
-     * Are we done setting gate and should we save it
-     * or has the gate setting been canceled.
+     * Respond to user action.
      *
+     * @param e event caused by user
      */
     public void actionPerformed(ActionEvent e){
-
-        String command=e.getActionCommand();
-
+        final String command=e.getActionCommand();
         try {
-            if (command=="save"){
+            if ("save".equals(command)){
                 save();
-            } else if(command=="cancel") {
+            } else if("cancel".equals(command)) {
                 cancel();
-            } else if(command=="add") {
+            } else if("add".equals(command)) {
                 addPoint();
-            } else if(command=="remove") {
+            } else if("remove".equals(command)) {
                 removePoint();
-            } else if(command.equals("unset")){
+            } else if("unset".equals(command)){
             	unset();
             //commands for new dialog box
-            } else if((command=="oknew")|| (command=="applynew")){
+            } else if(("oknew".equals(command))|| "applynew".equals(command)){
                 makeGate();
-                if (command=="oknew"){
+                if ("oknew".equals(command)){
                     dnew.dispose();
                 }
-            } else if  (command=="cancelnew"){
+            } else if  ("cancelnew".equals(command)){
                 dnew.dispose();
-
-                //commands for add dialog box
-            } else if((command=="okadd")|| (command=="applyadd")){
+            /* commands for add dialog box */
+            } else if(("okadd".equals(command))|| ("applyadd".equals(command))){
                 addGate();
-                if (command=="okadd"){
+                if ("okadd".equals(command)){
                     dadd.dispose();
                 }
-            } else if  (command=="canceladd"){
+            } else if  ("canceladd".equals(command)){
                 dadd.dispose();
             } else  {
-
-                System.err.println(" Error Not a recognized command [GateControl]");
+				messageHandler.errorOutln(getClass().getName()+
+				".actionPerformed(): '"+command+
+				"' not a recognized command.");
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
@@ -269,20 +282,28 @@ Observer  {
     void selectGate(String name) {
         try {
             cancel();      //cancel current state
-            currentGate=Gate.getGate(name);
+            synchronized(this){
+            	currentGate=Gate.getGate(name);
+            }
             if ( currentGate != null) {
-                newGate=true;            //setting a new gate
-                numberPoints=0;
+            	synchronized(this){
+                	newGate=true;//setting a new gate
+                	numberPoints=0;
+                }
                 if (currentHistogram.getDimensionality()==1) {
-                    type=ONE_DIMENSION;
                     lLower.setText("lower");
                     lUpper.setText("upper");
-                    gatePoints = new ArrayList(2);
+                    synchronized (this) {
+                    	type=ONE_DIMENSION;
+                    	gatePoints = new ArrayList(2);
+                    }
                 } else {
-                    type=TWO_DIMENSION;
                     lLower.setText("x");
                     lUpper.setText("y");
-                    gatePoints = new ArrayList();
+                    synchronized (this) {
+                    	type=TWO_DIMENSION;
+                    	gatePoints = new ArrayList();
+                    }
                     addP.setEnabled(true);
                     //FIXME
                     removeP.setEnabled(true);
@@ -308,15 +329,20 @@ Observer  {
     }
 
     void selectGateAdd(String name) {
-        currentGateAdd=Gate.getGate(name);
+        synchronized (this) {
+        	currentGateAdd=Gate.getGate(name);
+        }
     }
 
     /**
-     *Implementation of Observable interface
-     * To receive broadcast events
+     * Implementation of Observable interface
+     * To receive broadcast events.
+     *
+     * @param observable the event sender
+     * @param o the message
      */
     public void update(Observable observable, Object o){
-        BroadcastEvent be=(BroadcastEvent)o;
+        final BroadcastEvent be=(BroadcastEvent)o;
         try {
             if(be.getCommand()==BroadcastEvent.HISTOGRAM_SELECT){
                 cancel();
@@ -363,76 +389,99 @@ Observer  {
      */
     public void setup(){
         String typeGate="gate";
-        cgateModel.changeOccured();
-        caddModel.changeOccured();
         /* get current state */
-        currentHistogram = Histogram.getHistogram(status.getCurrentHistogramName());
+        synchronized(this){
+        	currentHistogram = Histogram.getHistogram(
+        	status.getCurrentHistogramName());
+        }
         if (currentHistogram == null) {
             /* There are many normal situations with no current histogram. */
-            type=NONE;//undefined type
+            synchronized(this){
+            	type=NONE;//undefined type
+            }
         } else if ((currentHistogram.getType()==Histogram.ONE_DIM_INT)||
         (currentHistogram.getType()==Histogram.ONE_DIM_DOUBLE)) {
-            type=Gate.ONE_DIMENSION;
+            synchronized (this) {
+            	type=Gate.ONE_DIMENSION;
+            }
             typeGate="gate 1-D";
         } else if ((currentHistogram.getType()==Histogram.TWO_DIM_INT)||
         (currentHistogram.getType()==Histogram.TWO_DIM_DOUBLE)) {
-            type=Gate.TWO_DIMENSION;
+            synchronized (this) {
+            	type=Gate.TWO_DIMENSION;
+            }
             typeGate="gate 2-D";
         } else {
-            System.err.println("GateControl undefined histogram type ");
-            type=NONE;
+            messageHandler.errorOutln(getClass().getName()+
+            ".setup(): undefined histogram type.");
+            synchronized(this){
+            	type=NONE;
+            }
         }
         cgate.setSelectedIndex(0);
         cadd.setSelectedIndex(0);
         //change labels depending if we have a one or two D histogram
-        if (currentHistogram != null && currentHistogram.getDimensionality()==1) {
-            type=ONE_DIMENSION;
+        if (currentHistogram != null && 
+        currentHistogram.getDimensionality()==1) {
+            synchronized(this){
+            	type=ONE_DIMENSION;
+            }
             lLower.setText(" lower");
             lUpper.setText(" upper");
         } else {
-            type=TWO_DIMENSION;
+            synchronized(this){
+            	type=TWO_DIMENSION;
+            }
             lLower.setText("  x  ");
             lUpper.setText("  y  ");
         }
     }
 
     /**
-     * make a new gate
+     * Make a new gate, and add it to the current histogram.
+     * 
+     * @throws GlobalException if there's a problem
      */
     private void makeGate() throws GlobalException {
-        Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
+        final Histogram hist=Histogram.getHistogram(
+        status.getCurrentHistogramName());
         new Gate(textNew.getText(),hist);
         broadcaster.broadcast(BroadcastEvent.GATE_ADD);
-        messageHandler.messageOutln("New gate "+textNew.getText()+" created for histogram "+hist.getName());
+        messageHandler.messageOutln("New gate "+textNew.getText()+
+        " created for histogram "+hist.getName());
     }
 
     /**
-     * Add a gate
+     * Add a gate.
      *
+     * @throws DataException if there's a problem
+     * @throws GlobalException if there's a problem
      */
     private void addGate() throws DataException,GlobalException {
         if(currentGateAdd!=null) {
-            Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
+            final Histogram hist=Histogram.getHistogram(
+            status.getCurrentHistogramName());
             hist.addGate(currentGateAdd);
             broadcaster.broadcast(BroadcastEvent.GATE_ADD);
-            messageHandler.messageOutln("Added gate '"+currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
+            messageHandler.messageOutln("Added gate '"+
+            currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
         } else {
             messageHandler.errorOutln("Need to choose a gate to add ");
         }
     }
 
     /**
-     * add a point from the text field
+     * Add a point from the text fields.
+     * 
+     * @throws DataException if there's a problem with the 
+     * number format
+     * @throws GlobalException if there's additional problems
      */
     private void addPoint() throws DataException,GlobalException {
-        int x;
-        int y;
-        Point p;
-
         try {
-            x=Integer.parseInt(textLower.getText().trim());
-            y=Integer.parseInt(textUpper.getText().trim());
-            p=new Point(x,y);
+            final int x=Integer.parseInt(textLower.getText().trim());
+            final int y=Integer.parseInt(textUpper.getText().trim());
+            final Point p=new Point(x,y);
             addPoint(p);
             broadcaster.broadcast(BroadcastEvent.GATE_SET_ADD, p);
         } catch (NumberFormatException ne) {
@@ -441,15 +490,17 @@ Observer  {
     }
     /**
      * remove a point in setting a 2d gate
+     *
+     * @throws GlobalException if there's a problem
      */
     private void removePoint() throws GlobalException {
         if(!gatePoints.isEmpty()) {
             gatePoints.remove(gatePoints.size()-1);
             broadcaster.broadcast(BroadcastEvent.GATE_SET_REMOVE);
             if(!gatePoints.isEmpty()) {
-            	Point lastPoint=(Point)gatePoints.get(gatePoints.size()-1);
-                textLower.setText(""+lastPoint.x);
-                textUpper.setText(""+lastPoint.y);
+            	final Point lastPoint=(Point)gatePoints.get(gatePoints.size()-1);
+                textLower.setText(String.valueOf(lastPoint.x));
+                textUpper.setText(String.valueOf(lastPoint.y));
             } else {
                 textLower.setText("");
                 textUpper.setText("");
@@ -464,53 +515,64 @@ Observer  {
     
     /**
      * Add a point to the gate
-     * when we are setting a new gate,
+     * when we are setting a new gate.
+     *
+     * @param pChannel the point corresponding to the channel to add
      */
     private void addPoint(Point pChannel){
-
-        if (newGate) {    //do nothing if no gate choicen
-
+        if (newGate) {    //do nothing if no gate chosen
             if (type==ONE_DIMENSION){
                 if (numberPoints==0) {
-                    numberPoints=1;
+                    synchronized(this){
+                    	numberPoints=1;
+                    }
                     gatePoints.add(pChannel);
-                    textLower.setText(""+pChannel.x);
+                    textLower.setText(String.valueOf(pChannel.x));
                 } else if (numberPoints==1) {
-                    numberPoints=0;
+                    synchronized(this){
+                    	numberPoints=0;
+                    }
                     gatePoints.add(pChannel);
-                    textUpper.setText(""+pChannel.x);
+                    textUpper.setText(String.valueOf(pChannel.x));
                 } else {
-                    System.err.println("Error: setting 1 d gate should not be here [GateControl]");
+                    messageHandler.errorOutln(getClass().getName()+
+                    ".addPoint(): setting 1 d gate should not be here.");
                 }
-
             } else if (type==TWO_DIMENSION){
                 gatePoints.add(pChannel);
-                textLower.setText(""+pChannel.x);
-                textUpper.setText(""+pChannel.y);
+                textLower.setText(String.valueOf(pChannel.x));
+                textUpper.setText(String.valueOf(pChannel.y));
             }
         } else {
-            //should not be here
-            System.err.println("Error: Gatesetter no new gate for plotMousePressed [GateControl]");
+            messageHandler.errorOutln(getClass().getName()+
+            ".addPoint(Point): an expected condition was not true. "+
+            "Contact the developer.");
         }
-
     }
 
     /**
      * Save the gate value.
+     *
+     * @throws DataException if there's a problem
+     * @throws GlobalException if there's a problem
      */
     private void save() throws DataException, GlobalException {
-        int x1,x2,pointX,pointY;
+        final int x1,x2;
+        int pointX,pointY;
+    	Polygon gatePoly2d;
 
-        gatePoly2d= new Polygon();
+        synchronized(this){
+        	gatePoly2d= new Polygon();
+        }
         checkHistogram();    //check we have same histogram
-        //check fields are numbers
-        try {
+        try {//check fields are numbers
             if (currentGate!=null) {
                 if (type==ONE_DIMENSION) {
                     x1=Integer.parseInt(textLower.getText());
                     x2=Integer.parseInt(textUpper.getText());
                     currentGate.setLimits(x1, x2);
-                    messageHandler.messageOutln("Gate Set "+currentGate.getName()+" Limits="+x1+","+x2);
+                    messageHandler.messageOutln("Gate Set "+
+                    currentGate.getName()+" Limits="+x1+","+x2);
                 } else if (type==TWO_DIMENSION) {
                     /* complete gate, adding a last point = first point */
                     gatePoints.add(gatePoints.get(0));
@@ -521,7 +583,8 @@ Observer  {
                         gatePoly2d.addPoint(pointX,pointY);
                     }
                     currentGate.setLimits(gatePoly2d);
-                    messageHandler.messageOutln("Gate Set "+currentGate.getName());
+                    messageHandler.messageOutln("Gate Set "+
+                    currentGate.getName());
                     printPoints(gatePoly2d);
                 }
                 broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
@@ -533,28 +596,34 @@ Observer  {
     }
 
     /**
-     * output the list of gate points
+     * Output the list of gate points to the console.
+     *
+     * @param poly the points defining the gate
      */
-    private void printPoints(Polygon gatePoly2d){
-        int x[]=gatePoly2d.xpoints;
-        int y[]=gatePoly2d.ypoints;
+    private void printPoints(Polygon poly){
+        final int x[]=poly.xpoints;
+        final int y[]=poly.ypoints;
         messageHandler.messageOut("Gate points: ",MessageHandler.NEW);
-        for (int i=0; i<gatePoly2d.npoints; i++){
+        for (int i=0; i<poly.npoints; i++){
             messageHandler.messageOut("["+x[i]+","+y[i]+"] ");
         }
         messageHandler.messageOut("",MessageHandler.END);
     }
 
     /**
-     *  Cancel the setting of the gate and
-     * disable editting of all fields
+     * Cancel the setting of the gate and
+     * disable editting of all fields.
+     *
+     * @throws GlobalException if there's a problem
      */
     private void cancel() throws GlobalException {
         checkHistogram();
         broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
         dgate.setTitle("Gate setting <none>");
-        newGate=false;
-        gatePoints=null;
+        synchronized(this){
+        	newGate=false;
+        	gatePoints=null;
+        }
         textLower.setText(" ");
         textLower.setEditable(false);
         textLower.setBackground(Color.lightGray);
@@ -574,23 +643,25 @@ Observer  {
      * If so, cancel and make the plot's current histogram
      * our current histogram.
      *
-     * @Author Ken Swartz
+     * @author Ken Swartz
+     * @throws GlobalException if there's a problem
      */
     private void checkHistogram() throws GlobalException {
-        //has histogram changed
-        if(currentHistogram != Histogram.getHistogram(status.getCurrentHistogramName())) {
-            //setup chooser list
-            setup();
-            //cancel current gate if was setting
-            cancel();
+        /* has histogram changed? */
+        if(currentHistogram != 
+        Histogram.getHistogram(status.getCurrentHistogramName())) {
+            setup();//setup chooser list
+            cancel();//cancel current gate if was setting
         }
     }
 
     /**
-     *  Process window events
-     *  If the window is active check that the histogram been displayed
-     *  has not changed. If it has cancel the gate setting.
+     * Process window events.
+     * If the window is active check that the histogram been 
+     * displayed has not changed. If it has cancel the gate 
+     * setting.
      *
+     * @param e event causing window to be activated
      */
     public void windowActivated(WindowEvent e) {
         try {
@@ -602,13 +673,13 @@ Observer  {
     }
 
     /**
-     * Window Events
-     *  windowClosing only one used.
+     * @param e event telling of window closing
      */
     public void windowClosing(WindowEvent e){
-        if(e.getSource()==dnew) {
+    	final Object source=e.getSource();
+        if(source.equals(dnew)) {
             dnew.dispose();
-        } else if(e.getSource()==dgate)  {
+        } else if(source.equals(dgate))  {
             try {
                 cancel();
             } catch (GlobalException ge) {
@@ -616,46 +687,41 @@ Observer  {
                 ".windowClosing(): "+ge);
             }
             dgate.dispose();
-        } else if (e.getSource()==dadd) {
+        } else if (source.equals(dadd)) {
             dadd.dispose();
         }
     }
 
     /**
-     * Does nothing
-     *  only windowClosing used.
+     * @param e event causing window to be closed
      */
     public void windowClosed(WindowEvent e){
         /* does nothing for now */
     }
 
     /**
-     * Does nothing
-     *  only windowClosing used.
+     * @param e event causing window to be deactivated
      */
     public void windowDeactivated(WindowEvent e){
         /* does nothing for now */
     }
 
     /**
-     * Does nothing
-     *  only windowClosing used.
+     * @param e event causing window to be de-iconified
      */
     public void windowDeiconified(WindowEvent e){
         /* does nothing for now */
     }
 
     /**
-     * Does nothing
-     *  only windowClosing used.
+     * @param e event causing window to be iconified
      */
     public void windowIconified(WindowEvent e){
         /* does nothing for now */
     }
 
     /**
-     * removes list of gates when closed
-     *  only windowClosing used.
+     * @param e event causing window to be opened
      */
     public void windowOpened(WindowEvent e){
         setup();

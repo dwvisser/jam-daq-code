@@ -1,42 +1,49 @@
 package jam;
-import javax.swing.*;
 import jam.data.Histogram;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  * This class takes care of properly displaying the histogram chooser
  * in Jam's main window.
  * 
- * @author Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 1.4.2 RC3
  */
 public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private String selection = null;
-	private String NO_HISTS = "No Histograms";
 	private JamCommand jc;
 	private int lastSize=0;
 	private Object [] lastValue;
 
+	/**
+	 * Create a data model for any JComboBox wishing to display the available
+	 * histograms.
+	 */
 	public HistogramComboBoxModel(JamCommand jc) {
 		super();
 		this.jc = jc;
 	}
 
 	/**
-	 * Needs to be called after every action that changes the list of histograms.
-	 * Utility method added so that JamMain could notify when things have changed.
+	 * Needs to be called after every action that changes the list of 
+	 * histograms. Utility method added so that JamMain could notify 
+	 * when things have changed.
 	 */
 	void changeOccured() {
 		fireContentsChanged(this, 0, getSize());
 	}
 
 	/**
-	 * Returns the individual list elements in the histogram chooser.
+	 * @return the list element at the specified index
+	 * @param index the index of the element to get
 	 */
 	public Object getElementAt(int index) {
+		final String NO_HISTS = "No Histograms";
 		Object rval = NO_HISTS; //default value if no histograms
-		List list = Histogram.getHistogramList();
-		int size = list.size();
+		final List list = Histogram.getHistogramList();
+		final int size = list.size();
 		if (size > 0) {
 			if (index < 0 || index >= size) {
 				System.err.println(
@@ -53,34 +60,48 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 				}
 			}
 		}
-		if (lastValue[index]==null){
-			lastValue[index]=rval;
-		} else if (!lastValue[index].equals(rval)){
+		if (lastValue[index]!=null){
+			if (!lastValue[index].equals(rval)){
+				changeOccured();
+			}
+		} else {
+			synchronized (this){
+				lastValue[index]=rval;
+			}
+		}
+		return rval;
+	}
+
+	/**
+	 * @return the number of list elements in the chooser
+	 */
+	public int getSize() {
+		final int rval = Math.max(1, numHists());
+		if (rval != lastSize){
+			synchronized (this){
+				lastSize=rval;
+				lastValue=new Object[rval];
+			}
 			changeOccured();
 		}
 		return rval;
 	}
 
 	/**
-	 * Returns the number of list elements in the chooser.
+	 * Set the selected item in the list.
+	 * 
+	 * @param anItem the item to select
 	 */
-	public int getSize() {
-		int rval = Math.max(1, numHists());
-		if (rval != lastSize){
-			lastSize=rval;
-			lastValue=new Object[rval];
-			changeOccured();
-		}
-		return rval;
-	}
-
-	//for ComboBoxModel interface
 	public void setSelectedItem(Object anItem) {
-		selection = (String) anItem;
-		fireContentsChanged(this, -1, -1);
+		synchronized(this){
+			selection = (String) anItem;
+		}
+		//fireContentsChanged(this, -1, -1);
 	}
 
-	//for ComboBoxModel interface
+	/**
+	 * @return the selected item
+	 */
 	public Object getSelectedItem() {
 		return selection;
 	}
