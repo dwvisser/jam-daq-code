@@ -340,18 +340,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void drawTicks(int side, int type) {
-		//type in future will be major or minor
-		drawTicks(side);
-	}
-
-	/**
-	 * Draws the tickmarks on for a plot
-	 *
-	 * @param side
-	 * @return  <code>void</code>
-	 * @since Version 0.5
-	 */
 	public void drawTicks(int side) {
 		final int ll, ul;
 		Limits.ScaleType scale = Limits.ScaleType.LINEAR;
