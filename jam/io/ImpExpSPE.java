@@ -19,14 +19,10 @@ import javax.swing.filechooser.FileFilter;
  */
 public final class ImpExpSPE extends AbstractImpExp {
 
-	static final int NAME_LENGTH = 8;
-	static final int MAX_SIZE = 8192;
-	static final int MAGIC_WORD = 24;
+	private static final int NAME_LENGTH = 8;
+	private static final int MAX_SIZE = 8192;
+	private static final int MAGIC_WORD = 24;
 
-	public ImpExpSPE() {
-		super();
-	}
-	
 	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("spe", 
 	"Radware gf3");
 	protected FileFilter getFileFilter() {
@@ -100,7 +96,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 				i < size;
 				i++) { //does not read last channel as Jam size
 				countsFloat[i] = dis.readFloat();
-				counts[i] = (double) countsFloat[i];
+				counts[i] = countsFloat[i];
 			}
 			dis.readInt(); //should read a hex  2000  dec 8192	
 			/* parameters of histogram */
@@ -137,7 +133,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 			if (type == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
-					countsFlt[i] = (float) countsInt[i];
+					countsFlt[i] = countsInt[i];
 				}
 			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 				final double[] countsDbl = (double[]) hist.getCounts();
