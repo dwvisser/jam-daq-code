@@ -125,6 +125,8 @@ public final class Gate {
 	public static List getGateList(int dimension) {
 		return Collections.unmodifiableList(DIM_LIST[dimension-1]);
 	}
+	
+	private static final boolean [][] NO_AREA=new boolean[0][0];
 
 	/**
 	 * Clears the list of gates.
@@ -132,7 +134,7 @@ public final class Gate {
 	public static void clearList() {
 		for (final Iterator it=LIST.iterator(); it.hasNext();){
 			final Gate gate=(Gate)it.next();
-			gate.insideGate=null;
+			gate.insideGate=NO_AREA;
 			gate.bananaGate.reset();
 		}
 		LIST.clear();
