@@ -30,13 +30,22 @@ public class LibVersion extends DataObject {
 	/**
 	 * Descriptive String
 	 */
-	String description;
+	private String description;
+	
+	//initializer block
+	{
+		final StringUtilities su=StringUtilities.instance();
+		description = su.makeLength(
+			"HDF 4.1r2 compliant. 12/31/98 Dale Visser",
+			80);
+		/* DFTAG_VERSION seems to need to be 92(80=92-12) long */ 
+	}
 
 	public LibVersion(HDFile fi) {
 		super(fi, DFTAG_VERSION); //sets tag
-		int byteLength = 12 + description.length(); // 3 ints + string
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
-		DataOutputStream dos = new DataOutputStream(baos);
+		final int byteLength = 12 + description.length(); // 3 ints + string
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
+		final DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			dos.writeInt(majorv);
 			dos.writeInt(minorv);
@@ -46,22 +55,12 @@ public class LibVersion extends DataObject {
 			System.err.println(ioe);
 		}
 		bytes = baos.toByteArray();
-		initDescription();
 	}
 
 	public LibVersion(HDFile hdf, byte[] data, short t,short reference) {
 		super(hdf, data, t, reference);
-		initDescription();
 	}
 	
-	final void initDescription(){
-		final StringUtilities su=StringUtilities.instance();
-		su.makeLength(
-			"HDF 4.1r2 compliant. 12/31/98 Dale Visser",
-			80);
-		/* DFTAG_VERSION seems to need to be 92(80=92-12) long */ 
-	}
-
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 *
