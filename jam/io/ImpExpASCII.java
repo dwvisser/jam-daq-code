@@ -44,6 +44,9 @@ public class ImpExpASCII extends AbstractImpExp {
 	 */
 	static final int MAX_SIZE_HIST = 8192;
 
+	/**
+	 * @see AbstractImpExp#AbstractImpExp()
+	 */
 	public ImpExpASCII() {
 		super();
 	}

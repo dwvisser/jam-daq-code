@@ -73,6 +73,11 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 
 	private File lastListFile = null;
 
+	/**
+	 * Constructs a new batch histogram exporter.
+	 * 
+	 * @param mh console to print messages to
+	 */
 	public BatchExport(MessageHandler mh) {
 		super(JamStatus.instance().getFrame(), "Batch Histogram Export");
 		console = mh;
