@@ -7,14 +7,14 @@ import javax.swing.DefaultComboBoxModel;
 
 /**
  * Used anywhere a JComboBox is used to select from the available 
- * gates.
+ * calibration functions.
  *
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
 public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		
-	public static final List LIST=new ArrayList();
+	private static final List LIST=new ArrayList();
 	static {
 		LIST.add(LinearFunction.class.getName());
 		LIST.add(SqrtEnergyFunction.class.getName());
