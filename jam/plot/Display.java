@@ -273,22 +273,20 @@ public class Display
 		if (command == BroadcastEvent.REFRESH) {
 			displayHistogram(currentHist);
 		} else if (command == BroadcastEvent.GATE_SET_ON) {
-			currentPlot.displaySetGate(Plot.GATE_NEW, null, null);
+			currentPlot.displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);
 		} else if (command == BroadcastEvent.GATE_SET_OFF) {
-			currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
+			currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
 			currentPlot.repaint();
 		} else if (command == BroadcastEvent.GATE_SET_SAVE) {
-			currentPlot.displaySetGate(Plot.GATE_SAVE, null, null);
+			currentPlot.displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
 		} else if (command == BroadcastEvent.GATE_SET_ADD) {
-			currentPlot.displaySetGate(
-				Plot.GATE_CONTINUE,
-				(Point) be.getContent(),
-				null);
+			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
+			(Point) be.getContent(),null);
 		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
-			currentPlot.displaySetGate(Plot.GATE_REMOVE, null, null);
+			currentPlot.displaySetGate(GateSetMode.GATE_REMOVE, null, null);
 		}
 	}
 
@@ -391,7 +389,7 @@ public class Display
 		boolean doRepaint = false;
 		//cancel all previous stuff
 		if (currentPlot != null) {
-			currentPlot.displaySetGate(Plot.GATE_CANCEL, null, null);
+			currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
 			action.setDefiningGate(false);
 		}
 		if (hist != null) {
