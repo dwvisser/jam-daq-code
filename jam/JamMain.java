@@ -73,7 +73,6 @@ public final class JamMain extends JFrame implements Observer {
 		setLookAndFeel();
 		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
-		//status.addSortModeListener(this);
 		final ClassLoader cl = getClass().getClassLoader();
 		setIconImage(
 			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
@@ -115,13 +114,9 @@ public final class JamMain extends JFrame implements Observer {
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				jamCommand.actionPerformed(new ActionEvent(this, 0,  "exit"));
-				//KBS Remove 
-				//showExitDialog();
 			}
 			public void windowClosed(WindowEvent e) {
 				jamCommand.actionPerformed(new ActionEvent(this, 0, "exit"));
-				//KBS Remove
-				//showExitDialog();
 			}
 		});
 		new InitialHistograms();
