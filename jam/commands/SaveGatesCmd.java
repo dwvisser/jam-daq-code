@@ -14,7 +14,7 @@ import java.io.File;
 final class SaveGatesCmd extends AbstractCommand implements Commandable {
 
 	public void initCommand() {
-		putValue(NAME, "Save gates, scalers & parameters as HDF\u2026");
+		putValue(NAME, "Save gates, scalers & parameters as\u2026");
 	}
 
 	/**
