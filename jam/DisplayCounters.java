@@ -3,7 +3,6 @@ package jam;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.StorageDaemon;
@@ -36,65 +35,61 @@ public final class DisplayCounters extends JDialog implements Observer {
 	/**
 	 * We are sorting online when the internal mode variable equals this.
 	 */
-	public static final int ONLINE = 1;
+	//public static final int ONLINE = 1;
 
 	/**
 	 * We are sorting offline when the internal mode variable equals this.
 	 */
-	public static final int OFFLINE = 2;
+	//public static final int OFFLINE = 2;
 
 	//stuff for dialog box
-	private JPanel pCenter;
+	private transient final JPanel pCenter;
 
-	private SortDaemon sortDaemon;
+	private transient SortDaemon sortDaemon;
 
-	private NetDaemon netDaemon;
+	private transient NetDaemon netDaemon;
 
-	private StorageDaemon storageDaemon;
+	private transient StorageDaemon storeDaemon;
 
-	private int mode;
+	private transient final Broadcaster broadcaster;
 
-	private final Broadcaster broadcaster;
+	private transient final JTextField textFileRead = new JTextField();
 
-	private final MessageHandler messageHandler;
+	private transient final JTextField textBuffSent = new JTextField();
 
-	//text fields
-	private final JTextField textFileRead = new JTextField();
+	private transient final JTextField textBuffRecv = new JTextField();
 
-	private final JTextField textBuffSent = new JTextField();
+	private transient final JTextField textBuffSort = new JTextField();
 
-	private final JTextField textBuffRecv = new JTextField();
+	private transient final JTextField textBuffWrit = new JTextField();
 
-	private final JTextField textBuffSort = new JTextField();
+	private transient final JTextField textEvntSent = new JTextField();
 
-	private final JTextField textBuffWrit = new JTextField();
+	private transient final JTextField textEvntRecv = new JTextField();
 
-	private final JTextField textEvntSent = new JTextField();
-
-	private final JTextField textEvntRecv = new JTextField();
-
-	private final JTextField textEvntSort = new JTextField();
+	private transient final JTextField textEvntSort = new JTextField();
 	
-	private final JTextField textSortSample = new JTextField();
-	private final JPanel pSortSample=new JPanel();
+	private transient final JTextField sortSample = new JTextField();
+	
+	private transient final JPanel pSortSample=new JPanel();
 
-	private final JPanel pFileRead = new JPanel();
+	private transient final JPanel pFileRead = new JPanel();
 
-	private final JPanel pBuffSent = new JPanel();
+	private transient final JPanel pBuffSent = new JPanel();
 
-	private final JPanel pBuffRecv = new JPanel();
+	private transient final JPanel pBuffRecv = new JPanel();
 
-	private final JPanel pBuffWrit = new JPanel();
+	private transient final JPanel pBuffWrit = new JPanel();
 
-	private final JPanel pBuffSort = new JPanel();
+	private transient final JPanel pBuffSort = new JPanel();
 
-	private final JPanel pEvntSent = new JPanel();
+	private transient final JPanel pEvntSent = new JPanel();
 
-	private final JPanel pEvntSort = new JPanel();
+	private transient final JPanel pEvntSort = new JPanel();
 
-	private final JPanel pEvntRecv = new JPanel();
+	private transient final JPanel pEvntRecv = new JPanel();
 
-	private JPanel pButton;
+	private transient JPanel pButton;
 
 	static private DisplayCounters instance = null;
 
@@ -105,7 +100,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 		return instance;
 	}
 
-	private final static JamStatus status = JamStatus.instance();
+	private final static JamStatus STATUS = JamStatus.instance();
 
 	/**
 	 * @param jm
@@ -116,7 +111,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 	 *            where to print console output
 	 */
 	private DisplayCounters() {
-		super(status.getFrame(), "Buffer Counters", false);
+		super(STATUS.getFrame(), "Buffer Counters", false);
 		final int xpos = 20;
 		final int ypos = 50;
 		final int maingap = 10;
@@ -124,14 +119,13 @@ public final class DisplayCounters extends JDialog implements Observer {
 		final int vgap = 10;
 		broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
-		messageHandler = status.getMessageHandler();
 		setResizable(false);
 		setLocation(xpos, ypos);
-		final Container cd = getContentPane();
-		cd.setLayout(new BorderLayout(maingap, maingap));
+		final Container contents = getContentPane();
+		contents.setLayout(new BorderLayout(maingap, maingap));
 		/* Center Panels */
 		pCenter = new JPanel(new GridLayout(0, 1, hgap, vgap));
-		cd.add(pCenter, BorderLayout.CENTER);
+		contents.add(pCenter, BorderLayout.CENTER);
 		pCenter.setBorder(new EmptyBorder(20, 10, 0, 10));
 		/* Individual counter panels. */
 		newPanel(pBuffSent, "Packets sent", textBuffSent);
@@ -142,14 +136,14 @@ public final class DisplayCounters extends JDialog implements Observer {
 		newPanel(pEvntRecv, "Events received", textEvntRecv);
 		newPanel(pEvntSort, "Events sorted", textEvntSort);
 		newPanel(pFileRead, "Files read", textFileRead);
-		newPanel(pSortSample, "Current sampling fraction", textSortSample);
+		newPanel(pSortSample, "Current sampling fraction", sortSample);
 		/* panel for buttons */
 		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cd.add(pButton, BorderLayout.SOUTH);
-		JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
-		pButton.add(pb);
-		pb.add(getUpdateButton());
-		pb.add(getClearButton());
+		contents.add(pButton, BorderLayout.SOUTH);
+		final JPanel tempPanel = new JPanel(new GridLayout(1, 0, 5, 5));
+		pButton.add(tempPanel);
+		tempPanel.add(getUpdateButton());
+		tempPanel.add(getClearButton());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
@@ -170,14 +164,14 @@ public final class DisplayCounters extends JDialog implements Observer {
 	private JButton getUpdateButton() {
 		final JButton bupdate = new JButton("Update");
 		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				if (mode == ONLINE) {
+			public void actionPerformed(ActionEvent event) {
+				if (STATUS.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 					textBuffRecv.setText(String.valueOf(netDaemon
 							.getPacketCount()));
 					textBuffSort.setText(String.valueOf(sortDaemon
 							.getBufferCount()));
-					textBuffWrit.setText(String.valueOf(storageDaemon
+					textBuffWrit.setText(String.valueOf(storeDaemon
 							.getBufferCount()));
 					textEvntRecv.setText(String.valueOf(sortDaemon
 							.getEventCount()));
@@ -189,7 +183,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 							.getSortedCount()));
 					textBuffSort.setText(String.valueOf(sortDaemon
 							.getBufferCount()));
-					textFileRead.setText(String.valueOf(storageDaemon
+					textFileRead.setText(String.valueOf(storeDaemon
 							.getFileCount()));
 				}
 			}
@@ -200,9 +194,9 @@ public final class DisplayCounters extends JDialog implements Observer {
 	private JButton getClearButton() {
 		final JButton bclear = new JButton("Clear");
 		bclear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(ActionEvent event) {
 				final String space = " ";
-				if (mode == ONLINE) {
+				if (STATUS.getSortMode().isOnline()) {
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_ZERO);
 					textBuffSort.setText(space);
 					sortDaemon.setBufferCount(0);
@@ -222,10 +216,10 @@ public final class DisplayCounters extends JDialog implements Observer {
 					textBuffRecv.setText(String.valueOf(netDaemon
 							.getPacketCount()));
 					textBuffWrit.setText(space);
-					storageDaemon.setBufferCount(0);
-					textBuffWrit.setText(String.valueOf(storageDaemon
+					storeDaemon.setBufferCount(0);
+					textBuffWrit.setText(String.valueOf(storeDaemon
 							.getBufferCount()));
-					textSortSample.setText(space);
+					sortSample.setText(space);
 					broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_READ);
 
 				} else { //offline
@@ -239,8 +233,8 @@ public final class DisplayCounters extends JDialog implements Observer {
 					textEvntSort.setText(String.valueOf(sortDaemon
 							.getEventCount()));
 					textFileRead.setText(space);
-					storageDaemon.setFileCount(0);
-					textFileRead.setText(String.valueOf(storageDaemon
+					storeDaemon.setFileCount(0);
+					textFileRead.setText(String.valueOf(storeDaemon
 							.getFileCount()));
 				}
 			}
@@ -251,19 +245,19 @@ public final class DisplayCounters extends JDialog implements Observer {
 	/**
 	 * Setup for online
 	 * 
-	 * @param nd
+	 * @param net
 	 *            network process
 	 * @param sod
 	 *            sorting process
 	 * @param std
 	 *            event record storage process
 	 */
-	public void setupOn(NetDaemon nd, SortDaemon sod, StorageDaemon std) {
+	public void setupOn(NetDaemon net, SortDaemon sod, StorageDaemon std) {
 		synchronized (this) {
-			mode = ONLINE;
-			netDaemon = nd;
+			//mode = ONLINE;
+			netDaemon = net;
 			sortDaemon = sod;
-			storageDaemon = std;
+			storeDaemon = std;
 		}
 		setTitle("Online Buffer Count");
 		pCenter.removeAll();
@@ -288,9 +282,9 @@ public final class DisplayCounters extends JDialog implements Observer {
 	 */
 	public void setupOff(SortDaemon sod, StorageDaemon std) {
 		synchronized (this) {
-			mode = OFFLINE;
+			//mode = OFFLINE;
 			sortDaemon = sod;
-			storageDaemon = std;
+			storeDaemon = std;
 		}
 		setTitle("Offline Buffer Count");
 		pCenter.removeAll();
@@ -305,24 +299,24 @@ public final class DisplayCounters extends JDialog implements Observer {
 	 * 
 	 * @param observable
 	 *            the observed object
-	 * @param o
+	 * @param object
 	 *            the communicated event
 	 */
-	public void update(Observable observable, Object o) {
-		final int NUMBER_COUNTERS = 3;
-		final int INDEX_CNT_EVNT = 1;
-		final int INDEX_CNT_BUFF = 2;
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command command = be.getCommand();
-		int vmeCounters[] = new int[NUMBER_COUNTERS];
+	public void update(Observable observable, Object object) {
+		final int numCounters = 3;
+		final int iEventCount = 1;
+		final int iBufferCt = 2;
+		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command command = event.getCommand();
+		int vmeCounters[] = new int[numCounters];
 		if (command == BroadcastEvent.Command.COUNTERS_UPDATE) {
-			if (mode == ONLINE) {
+			if (STATUS.getSortMode().isOnline()) {
 				/* update remote fields */
-				vmeCounters = (int[]) be.getContent();
+				vmeCounters = (int[]) event.getContent();
 				textBuffSent.setText(String
-						.valueOf(vmeCounters[INDEX_CNT_BUFF]));
+						.valueOf(vmeCounters[iBufferCt]));
 				textEvntSent.setText(String
-						.valueOf(vmeCounters[INDEX_CNT_EVNT]));
+						.valueOf(vmeCounters[iEventCount]));
 				updateSample();
 			} else {
 				/* update fields used in OFFLINE mode */
@@ -330,7 +324,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 						.valueOf(sortDaemon.getBufferCount()));
 				textEvntSort.setText(String
 						.valueOf(sortDaemon.getSortedCount()));
-				textFileRead.setText(String.valueOf(storageDaemon
+				textFileRead.setText(String.valueOf(storeDaemon
 						.getFileCount()));
 			}
 		}
@@ -338,11 +332,11 @@ public final class DisplayCounters extends JDialog implements Observer {
 	
 	private void updateSample(){
 		final int sample=sortDaemon.getSortInterval();
-		final StringBuffer sb=new StringBuffer();
+		final StringBuffer buffer=new StringBuffer();
 		if (sample>1){
-			sb.append("1/");
+			buffer.append("1/");
 		}
-		sb.append(sample);
-		textSortSample.setText(sb.toString());		
+		buffer.append(sample);
+		sortSample.setText(buffer.toString());		
 	}
 }
