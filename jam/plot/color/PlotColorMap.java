@@ -1,11 +1,10 @@
 package jam.plot.color;
 import java.awt.Color;
 /**
- * Color map for display
- * The possible colors are
+ * Color map for display.
  *
- *@author Ken Swartz and Dale Visser
- *
+ * @author Ken Swartz
+ * @author Dale Visser
  */
 public class PlotColorMap {
 
@@ -16,9 +15,8 @@ public class PlotColorMap {
 
     private final static int NUMBER_COLORS=9;
 
-    static int colorMode;
+    int colorMode;
 
-    private Color colorScale[]=new Color [NUMBER_COLORS];
     private Color background;
     private Color foreground;
     private Color hist;
@@ -58,7 +56,6 @@ public class PlotColorMap {
             fitSignal=Color.DARK_GRAY;
             fitBackground=Color.GREEN;
             fitResidual=Color.RED;
-            colorScale=colorScaleBonW;
             peakLabel=Color.BLUE;
         } else if (mode==WHITE_ON_BLACK){
             colorMode=mode;
@@ -74,7 +71,6 @@ public class PlotColorMap {
 			fitBackground=Color.GREEN;
 			fitResidual=Color.RED;
 			peakLabel=Color.CYAN;
-            colorScale=colorScaleWonB;
         } else if (mode==PRINT){
             colorMode=mode;
             background=Color.WHITE;
@@ -89,19 +85,12 @@ public class PlotColorMap {
 			fitBackground=Color.GREEN;
 			fitResidual=Color.RED;
 			peakLabel=Color.BLUE;
-            colorScale=colorScaleGray;
         } else {
             throw new IllegalArgumentException("PlotGraphicsColorMap.setColorMap("+mode+"): Invalid Color Mode!");
         }
+        DiscreteColorScale.setColors(mode);
     }
 
-    /**
-     * color scale
-     */
-    public synchronized Color [] getColorScale(){
-        return colorScale;
-    }
-    
     /**
      * Number of colors
      */
@@ -109,43 +98,6 @@ public class PlotColorMap {
         return NUMBER_COLORS;
     }
     
-    private static final Color [] colorScaleBonW= {
-        new Color(0, 0, 127),  //0
-        new Color(0, 0, 255),  //1
-        new Color(128, 0, 255 ),  //2
-        new Color(255, 0,255 ),  //3
-        new Color(255,0,128  ),  //4
-        new Color(255,0,0 ),  //5
-        new Color(255,128,0 ),  //6
-        new Color(255,255,0 ),  //7
-        new Color(0  , 0  , 0 )  //9
-    };
-
-    private static final Color [] colorScaleWonB= {
-        new Color(0, 0, 127),  //0
-        new Color(0, 0, 255),  //1
-        new Color(128, 0, 255 ),  //2
-        new Color(255, 0,255 ),  //3
-        new Color(255,0,128  ),  //4
-        new Color(255,0,0 ),  //5
-        new Color(255,128,0 ),  //6
-        new Color(255,255,0 ),  //7
-        new Color(255, 255, 255 ),  //8
-    };
-
-
-    //color map for printing
-    private static Color [] colorScaleGray= {
-        new Color(0, 127, 0),  //0
-        new Color(0, 0, 255),  //1
-        new Color(128, 0, 255 ),  //2
-        new Color(255, 0,255 ),  //3
-        new Color(255,0,128  ),  //4
-        new Color(255,0,0 ),  //5
-        new Color(255,128,0 ),  //6
-        new Color(255,255,0 ),  //7
-        new Color(255, 255, 255 ),  //8
-    };   
     
     synchronized public Color getForeground(){
     	return foreground;

@@ -2,6 +2,7 @@ package jam.plot;
 
 import jam.data.DataException;
 import jam.data.Histogram;
+import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.PlotColorMap;
 
 import java.awt.AlphaComposite;
@@ -12,8 +13,8 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -323,24 +324,25 @@ class Plot2d extends AbstractPlot {
 	 */ 
 	protected void paintHistogram(Graphics g) {
 		Histogram plotHist=getHistogram();
-		setScale(plotLimits.getScale());
+		final Scale scale=plotLimits.getScale();
+		setScale(scale);
 		g.setColor(plotColorMap.getHistogram());
 		g.getClipBounds(clipBounds);
 		final int minX = graph.toDataHorz((int) clipBounds.getMinX());
 		final int maxX = graph.toDataHorz((int) clipBounds.getMaxX());
 		final int minY = graph.toDataVert((int) clipBounds.getMaxY());
 		final int maxY = graph.toDataVert((int) clipBounds.getMinY());
+		final DiscreteColorScale dcs=DiscreteColorScale.getScale(scale);
 		if (getSmoothColorScale()) {
 			graph.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			g.setPaintMode();
 			g.setColor(plotColorMap.getForeground());
 			graph.drawScale2d();
 		} else {
-			graph.drawHist2d(counts2d, minX, minY, maxX, maxY, plotColorMap
-					.getColorScale());
+			graph.drawHist2d(counts2d, minX, minY, maxX, maxY, dcs);
 			g.setPaintMode();
 			g.setColor(plotColorMap.getForeground());
-			graph.drawScale2d(plotColorMap.getColorScale());
+			graph.drawScale2d(dcs);
 		}
 		/* draw labels/ticks after histogram so they are on top */
 		g.setColor(plotColorMap.getForeground());
