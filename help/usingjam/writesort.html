@@ -17,7 +17,21 @@
     <li><i>The monitor section (optional): </i>This section can be used to calculate the
 return value of certain Monitor objects.</li>
 </ol>
-
+<p>In addition, there are two methods (i.e., subroutines)
+that some users may wish to include:</p>
+<ol>
+<li><i>begin():</i> If your sort routine is declared to implement the 
+<code>jam.global.Beginner</code> interface, Jam will know
+to call this routine during online acquisition when the user 
+clicks on <a href="online.html#beginrun">Begin</a>. If the 
+<em>Zero Histograms</em> checkbox is selected, 
+the histograms are zeroed <em>after</em> <code>begin()</code> is
+called.</li>
+<li><i>end():</i> If your sort routine is declared to implement the 
+<code>jam.global.Ender</code> interface, Jam will know
+to call this routine during online acquisition when the user 
+clicks on <a href="online.html#endrun">End</a>. <code>end()</code> is only called
+after Jam has had a chance to sort all events from the run.</li>
 <h3>Syntax</h3>
 
 <p>You must follow a certain format to create
