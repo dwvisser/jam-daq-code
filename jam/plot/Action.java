@@ -45,8 +45,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements ActionListener, PlotMouseListener,
-		PreferenceChangeListener {
+class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	static final String HELP = "help";
 
@@ -83,35 +82,33 @@ class Action implements ActionListener, PlotMouseListener,
 	static final String REBIN = "rebin";
 
 	static final String SCALE = "scale";
+	
+	static final String CURSOR = "cursor";	
 
-	private static final JamStatus status = JamStatus.instance();
-
+	
 	/**  Variable to indicate mouse was pressed */
 	private boolean mousePressed;
 	/** Accessed by Display. */
 	private boolean settingGate;
-
+	/** Output text to */
 	private final MessageHandler textOut;
-
+	/** Plot displayer */
 	private final Display display;
-	
+	/** Class that parses commands */
 	private final ParseCommand parseCommand;
-
-	private Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	private final PlotFit inquire;
 
 	private final NumberFormat numFormat;
 
-	//current state
+	/*current command*/
 	private String inCommand;
-
+	/** The last command */
 	private String lastCommand;
-
+	/** Is there a command present */
 	private boolean commandPresent;
 
 	private boolean overlayState;
-
 	/**
 	 * Used by the GoTo action to let the code know to check for a calibration.
 	 */
@@ -125,7 +122,12 @@ class Action implements ActionListener, PlotMouseListener,
 	
 	private int countLow, countHigh;
 	/*reference auto scale on expand */ 
-	private boolean autoOnExpand = true;	
+	private boolean autoOnExpand = true;
+	
+	private static final JamStatus status = JamStatus.instance();
+	
+	private Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -172,22 +174,6 @@ class Action implements ActionListener, PlotMouseListener,
 	}
 
 	/**
-	 * Routine called by pressing a button on the action toolbar.
-	 * 
-	 * @param e
-	 *            the event created by the button press
-	 */
-	public void actionPerformed(ActionEvent e) {
-		final String com = e.getActionCommand();
-		/* cancel previous command if command has changed */
-		if (com != lastCommand) {
-			done();
-		}
-		inCommand = com;
-		doCommand(inCommand);
-	}
-
-	/**
 	 * Routine called back by mouse a mouse clicks on plot
 	 * 
 	 * @param pChannel
@@ -195,11 +181,13 @@ class Action implements ActionListener, PlotMouseListener,
 	 */
 	public synchronized void plotMousePressed(Bin pChannel, Point pPixel) {
 		/* check that a histogram is defined */
-		final Plot currentPlot = display.getPlot();
 		final Histogram hist = status.getCurrentHistogram();
 		if (hist == null) {
 			return;
 		}
+		
+		final Plot currentPlot = display.getPlot();
+		
 		/* cursor position and counts for that channel */
 		cursor.setChannel(pChannel);
 		/* there is a command currently being processed */
@@ -214,6 +202,7 @@ class Action implements ActionListener, PlotMouseListener,
 						pChannel);
 				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 						pPixel);
+			//Display the channel, default behaviour
 			} else {
 				channelDisplay(cursor, hist, currentPlot);
 			}
@@ -223,16 +212,28 @@ class Action implements ActionListener, PlotMouseListener,
 	 * Sort the input command and do command.
 	 */
 	synchronized void doCommand(String inCommand) {
-		//FIXME KBS copy to member field for now
+		
+
+		//Not a cursor command so its a "real" command
+		if (!inCommand.equals(CURSOR)) {
+			//cancel previous command if command has changed
+			// and its not a cursor command			
+			if (inCommand != lastCommand) {
+				done();
+			}
+			lastCommand = inCommand;	
+		//Cursor command use last command
+		} else {
+			inCommand=lastCommand;
+		}
+					
+		//FIXME KBS copy to member field for now		
 		this.inCommand=inCommand;
-		lastCommand = inCommand;
+
 		/* check that a histogram is defined */
 		if (status.getCurrentHistogram() != null) {
 			if (CANCEL.equals(inCommand)) {
-				textOut.messageOutln();
-				done();
-			//} else if (HELP.equals(inCommand)) {
-			//	help();
+				cancel();
 			} else if (UPDATE.equals(inCommand)) {
 				update();
 			} else if (EXPAND.equals(inCommand)) {
@@ -248,11 +249,7 @@ class Action implements ActionListener, PlotMouseListener,
 			} else if (LOG.equals(inCommand)) {
 				log();
 			} else if (SCALE.equals(inCommand)) {
-				if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
-					log();
-				} else {
-					linear();
-				}
+				changeScale();
 			} else if (AUTO.equals(inCommand)) {
 				auto();
 			} else if (RANGE.equals(inCommand)) {
@@ -266,10 +263,11 @@ class Action implements ActionListener, PlotMouseListener,
 				netArea();
 			} else if (REBIN.equals(inCommand)) {
 				rebin();
+			//} else if (HELP.equals(inCommand)) {
+			//	help();
 			} else {
 				done();
-				textOut.errorOutln(getClass().getName() + ".doCommand() '"
-						+ inCommand + "' not recognized.");
+				textOut.errorOutln("Plot command not recognized.");
 			}
 		}
 	}
@@ -293,10 +291,15 @@ class Action implements ActionListener, PlotMouseListener,
 			if (RANGE.equals(inCommand)) {
 				synchronized (cursor) {
 					final int len = Math.min(numPar, 2);
-					for (int i = 0; i < len; i++) {
-						rangeList.add(new Integer((int) parameters[i]));
+					if (len>=2)
+						cursor.setChannel((int) parameters[0], (int) parameters[1]);
+					else if (len==1)
+						cursor.setChannel((int) parameters[0], 0);
+					//for (int i = 0; i < len; i++) {
+					//	rangeList.add(new Integer((int) parameters[i]));
+
 						doCommand(inCommand);
-					}
+					//}
 				}
 				return;
 			} else if (REBIN.equals(inCommand)) {
@@ -822,7 +825,17 @@ class Action implements ActionListener, PlotMouseListener,
 		display.getPlot().setLog();
 		done();
 	}
-
+	/**
+	 * Change the scale for linear to log or
+	 * log to linear
+	 */
+	private void changeScale(){
+		if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
+			log();
+		} else {
+			linear();
+		}
+	}
 	/**
 	 * Auto scale the plot.
 	 */
@@ -898,6 +911,14 @@ class Action implements ActionListener, PlotMouseListener,
 			auto();
 			done();
 		}
+	}
+	/**
+	 * Cancel current command
+	 *
+	 */
+	private void cancel() {
+		textOut.messageOutln();
+		done();
 	}
 
 	/**

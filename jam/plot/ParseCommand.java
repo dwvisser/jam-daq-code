@@ -18,7 +18,7 @@ import jam.global.MessageHandler;
 public class ParseCommand implements CommandListener{
 
 	
-	Action action;
+	private Action action;
 	
 	private final MessageHandler textOut;
 	
@@ -26,10 +26,15 @@ public class ParseCommand implements CommandListener{
 	
 	private String inCommand;	
 	
+	private final Bin cursor;
+	
 	ParseCommand(Action action, JamConsole jc){
 		this.action=action;
-		textOut=jc;		
+		textOut=jc;
+		
 		commandMap = createCommandMap();
+		
+		cursor =  Bin.Factory.create();
 	}
 	/**
 	 * Parse a plot command
@@ -102,13 +107,19 @@ public class ParseCommand implements CommandListener{
 	 * @param parameters
 	 *            the integers
 	 */
-	/*
+/*
 	void integerChannel(double[] parameters) {
 		final int numPar = parameters.length;
 
 		 // FIXME we should be better organized so range and rebin are not
 		 //special cases
-
+		if (parameters.length==1)		
+			cursor.setChannel((int)parameters[0], 0);
+		else if	(parameters.length>1)
+			cursor.setChannel((int)parameters[0], (int)parameters[1]);
+		
+		action.doCommand(Action.CURSOR);
+		
 		if ((commandPresent)) {
 			if (RANGE.equals(inCommand)) {
 				synchronized (cursor) {
@@ -177,7 +188,7 @@ public class ParseCommand implements CommandListener{
 			}
 		}
 	}
-*/
+	*/
 	/**
 	 * Parse a string go a number
 	 * 

@@ -6,6 +6,8 @@ package jam.plot;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
@@ -21,8 +23,10 @@ import javax.swing.JToolBar;
  * 
  * @author Dale Visser
  */
-public class Toolbar extends JToolBar {
+public class Toolbar extends JToolBar implements ActionListener {
 
+	private Action action;
+	
 	private JButton bnetarea, brebin, bgoto;
 	
 	private static final int orientation;
@@ -48,6 +52,7 @@ public class Toolbar extends JToolBar {
 	 */
 	Toolbar(Container container, Action action) {
 		super("Actions", orientation);
+		this.action=action;
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
 		final Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
@@ -71,85 +76,85 @@ public class Toolbar extends JToolBar {
 			bupdate.setToolTipText(
 				getHTML("<u>U</u>pdate display with most current data."));
 			bupdate.setActionCommand(Action.UPDATE);
-			bupdate.addActionListener(action);
+			bupdate.addActionListener(this);
 			add(bupdate);
 			final JButton blinear = iLinLog==null ?
 					new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
 			blinear.setToolTipText(
 				getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
 			blinear.setActionCommand(Action.SCALE);
-			blinear.addActionListener(action);
+			blinear.addActionListener(this);
 			add(blinear);
 			final JButton bauto = iAutoScale == null ?
 					new JButton(getHTML("<u>A</u>utoscale")) : new JButton(iAutoScale);
 			bauto.setToolTipText(
 				getHTML("<u>A</u>utomatically set the counts scale."));
 			bauto.setActionCommand(Action.AUTO);
-			bauto.addActionListener(action);
+			bauto.addActionListener(this);
 			add(bauto);
 			final JButton brange = iRange == null ? 
 					new JButton(getHTML("<u>Ra</u>nge")) : new JButton(iRange);
 			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
 			brange.setActionCommand(Action.RANGE);
-			brange.addActionListener(action);
+			brange.addActionListener(this);
 			add(brange);
 			brebin = iRebin == null ? 
 					new JButton(getHTML("<u>Re</u>bin")) : new JButton(iRebin);
 			brebin.setToolTipText(
 				getHTML("<u>Re</u>bin, enter a bin width in the console."));
 			brebin.setActionCommand(Action.REBIN);
-			brebin.addActionListener(action);
+			brebin.addActionListener(this);
 			add(brebin);
 			addSeparator();
 			final JButton bexpand = iExpand==null ? 
 					new JButton(getHTML("<u>E</u>xpand")) : new JButton(iExpand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
 			bexpand.setActionCommand(Action.EXPAND);
-			bexpand.addActionListener(action);
+			bexpand.addActionListener(this);
 			add(bexpand);
 			final JButton bfull = iFullScale==null ? 
 				new JButton(getHTML("<u>F</u>ull")) : new JButton(iFullScale);
 			bfull.setActionCommand(Action.FULL);
 			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
-			bfull.addActionListener(action);
+			bfull.addActionListener(this);
 			add(bfull);
 			final JButton bzoomin = iZoomIn==null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>i</u>n")) : new JButton(iZoomIn);
 			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
 			bzoomin.setActionCommand(Action.ZOOMIN);
-			bzoomin.addActionListener(action);
+			bzoomin.addActionListener(this);
 			add(bzoomin);
 			final JButton bzoomout = iZoomOut == null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>o</u>ut")) : new JButton(iZoomOut);
 			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
 			bzoomout.setActionCommand(Action.ZOOMOUT);
-			bzoomout.addActionListener(action);
+			bzoomout.addActionListener(this);
 			add(bzoomout);
 			bgoto = iGoto==null ? 
 					new JButton(getHTML("<u>G</u>oto")) : new JButton(iGoto);
 			bgoto.setActionCommand(Action.GOTO);
 			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
-			bgoto.addActionListener(action);
+			bgoto.addActionListener(this);
 			add(bgoto);
 			addSeparator();
 			final JButton barea = iArea==null ? 
 					new JButton(getHTML("<u>Ar</u>ea")) : new JButton(iArea);
 			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
 			barea.setActionCommand(Action.AREA);
-			barea.addActionListener(action);
+			barea.addActionListener(this);
 			add(barea);
 			bnetarea = iNetArea==null ?
 					new JButton(getHTML("<u>N</u>et Area")) : new JButton(iNetArea);
 			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
 			bnetarea.setActionCommand(Action.NETAREA);
-			bnetarea.addActionListener(action);
+			bnetarea.addActionListener(this);
 			add(bnetarea);
 			addSeparator();
 			final JButton bcancel = iCancel==null ?
 					new JButton(getHTML("<u>C</u>ancel")) : new JButton(iCancel);
 			bcancel.setActionCommand(Action.CANCEL);
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
-			bcancel.addActionListener(action);
+			bcancel.addActionListener(this);
 			add(bcancel);
 			/* Listen for changes in orientation */
 			addPropertyChangeListener(
@@ -226,4 +231,15 @@ public class Toolbar extends JToolBar {
 		brebin.setEnabled(enable);
 		bnetarea.setEnabled(enable);
 	}
+	/**
+	 * Routine called by pressing a button on the action toolbar.
+	 * 
+	 * @param e
+	 *            the event created by the button press
+	 */
+	public void actionPerformed(ActionEvent e) {
+		final String command = e.getActionCommand();
+		action.doCommand(command);
+	}
+
 }
