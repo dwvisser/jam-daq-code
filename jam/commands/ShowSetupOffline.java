@@ -18,7 +18,7 @@ final class ShowSetupOffline extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Offline sorting\u2026");
-		dialog=SetupSortOff.getSingletonInstance();
+		dialog=SetupSortOff.getInstance().getDialog();
 		enable();
 	}
 
