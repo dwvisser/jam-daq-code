@@ -22,31 +22,43 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
+import jam.global.JamProperties;
+import jam.global.MessageHandler;
 import jam.io.hdf.DataObject;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
 import jam.io.hdf.JamHDFFields;
 import jam.io.hdf.Vdata;
 import jam.io.hdf.VdataDescription;
-import jam.global.*;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.ProgressMonitor;
+import javax.swing.border.EmptyBorder;
 
 public class ScalerScan
 	extends JDialog
 	implements JamHDFFields, ActionListener {
-	//private HDFile in;
 	
 	private static final char TAB = '\t';
 	
 	private final JTextField txtFirst, txtLast;
-	//KBS private final JProgressBar pBstatus;
+	private ProgressMonitor pBstatus;
 	private final MessageHandler console;
 	private final ScanAction sa;
 	private final Frame frame;
@@ -114,18 +126,6 @@ public class ScalerScan
 		txtLast = new JTextField(4);
 		pLast.add(txtLast);
 		
-		/*FIXME KBS
-		bEntries.add(Box.createRigidArea(new Dimension(0, 10)));
-		JPlast.add(last);
-		JPanel JPout = new JPanel();
-		JPout.setLayout(new BoxLayout(JPout, BoxLayout.X_AXIS));
-		JPanel JPstatus = new JPanel(new GridLayout(1, 1));
-		pBstatus =
-			new JProgressBar(JProgressBar.HORIZONTAL);
-		pBstatus.setString("Welcome to ScalerScan.");
-		pBstatus.setStringPainted(true);
-		JPstatus.add(JLstatus);
-		*/
 		final JPanel pLower = new JPanel();
 		container.add(pLower, BorderLayout.SOUTH);
 		final JPanel pButtons = new JPanel(new GridLayout(1,0,5,5));
@@ -205,13 +205,12 @@ public class ScalerScan
 		final char cr = '\n';
 		final StringBuffer outText = new StringBuffer();
 		try {
-			//FIXME KBS JLstatus.setString("starting");
 			int firstRun = Integer.parseInt(txtFirst.getText().trim());
 			int lastRun = Integer.parseInt(txtLast.getText().trim());
-			//FIXME KBS JLstatus.setMinimum(firstRun);
-			//FIXME KBS JLstatus.setMaximum(lastRun);
+			pBstatus=new ProgressMonitor(frame, "Scanning HDF Files for scaler values", 
+			"Initializing", firstRun, lastRun);
 			if (pathToRuns.exists() && pathToRuns.isDirectory()) {
-				for (int i = firstRun; i <= lastRun; i++) {
+				for (int i = firstRun; i <= lastRun && !pBstatus.isCanceled(); i++) {
 					String runText = txtRunName.getText().trim();
 					String filename = runText + i + ".hdf";
 					final File infile = new File(pathToRuns, filename);
@@ -220,7 +219,6 @@ public class ScalerScan
 						final HDFile in = new HDFile(infile, "r");
 						in.seek(0);
 						in.readObjects();
-						//reads file into set of DataObject's, sets their internal variables
 						if (i == firstRun) {
 							outText.append("Run");
 							String[] names = getScalerNames(in);
@@ -240,19 +238,17 @@ public class ScalerScan
 							infile.getPath() + " does not exist.  Skipping.");
 					}
 				}
+				if (!pBstatus.isCanceled()){
+					final String title =
+						txtRunName.getText()
+							+ ", runs "
+							+ txtFirst.getText()
+							+ " to "
+							+ txtLast.getText();
+					new TextDisplayDialog(frame, title, false, outText.toString());
+				}
 				updateProgressBar("Done",lastRun);
-				final String title =
-					txtRunName.getText()
-						+ ", runs "
-						+ txtFirst.getText()
-						+ " to "
-						+ txtLast.getText();
-				new TextDisplayDialog(frame, title, false, outText.toString());
-			} else {
-// FIXME KBS				JLstatus.setString(
-//					pathToRuns.getPath()
-//						+ " either does not exist or is not a directory. Try again.");
-			}
+			} 
 		} catch (IOException e) {
 			console.errorOutln(e.getMessage());
 		} catch (HDFException e) {
@@ -322,17 +318,8 @@ public class ScalerScan
 	}
 	
 	private void updateProgressBar(final String text, final int value){
-		final Runnable r=new Runnable(){
-			public void run(){
-				//KBS JLstatus.setValue(value);
-				//KBS JLstatus.setString(text);
-			}
-		};
-		try{
-			SwingUtilities.invokeAndWait(r);
-		} catch (Exception e){
-			console.errorOutln(e.getMessage());
-		}
+		pBstatus.setNote(text);
+		pBstatus.setProgress(value);
 	}
 
 	public AbstractAction getAction() {
