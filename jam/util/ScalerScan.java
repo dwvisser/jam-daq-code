@@ -23,6 +23,7 @@
  **************************************************************/
 package jam.util;
 import jam.global.JamProperties;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.hdf.DataObject;
 import jam.io.hdf.HDFException;
@@ -68,15 +69,15 @@ public class ScalerScan
 	JamProperties.HIST_PATH));
 	private final JTextField txtPath;
 	private final JTextField txtRunName;
-	
+	private final static JamStatus status=JamStatus.instance();
 
 	/**
 	 * Constructor.
 	 */
-	public ScalerScan(Frame f, MessageHandler mh) {
-		super(f, "HDF Scaler Values Scan", false);
-		frame = f;
-		console = mh;
+	public ScalerScan() {
+		super(status.getFrame(), "HDF Scaler Values Scan", false);
+		frame = status.getFrame();
+		console = status.getMessageHandler();
 		sa = new ScanAction();
 		final Container container = getContentPane();
 		container.setLayout(new BorderLayout(10,5));

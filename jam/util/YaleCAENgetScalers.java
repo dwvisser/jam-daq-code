@@ -23,9 +23,11 @@
  **************************************************************/
 package jam.util;
 import jam.global.JamProperties;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -37,16 +39,16 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 public class YaleCAENgetScalers {
 
-	private final JFrame frame;
+	private final Frame frame;
 	private final MessageHandler console;
 
-	public YaleCAENgetScalers(JFrame jf, MessageHandler mh) {
-		frame = jf;
-		console = mh;
+	public YaleCAENgetScalers() {
+		JamStatus js=JamStatus.instance();
+		frame = js.getFrame();
+		console = js.getMessageHandler();
 	}
 
 	/**
