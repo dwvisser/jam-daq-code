@@ -64,7 +64,7 @@ public class FullCheckEventFiles {
 						new BufferedInputStream(new FileInputStream(
 								eventFiles[i])));
 				/* skip header and all but last word of first data buffer */
-				boolean skipSuccess = (((long) initialBytesToSkip) == instream
+				boolean skipSuccess = (initialBytesToSkip == instream
 						.skip(initialBytesToSkip));
 				int bufferNum = 0;
 				if (skipSuccess) {

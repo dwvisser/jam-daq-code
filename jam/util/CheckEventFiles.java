@@ -57,7 +57,7 @@ public class CheckEventFiles {
 
 	private void checkFirstBuffer(File[] eventFiles) {
 		for (int i = 0; i < eventFiles.length; i++) {
-			int bytesToSkip = 256 + 8192 - 4;
+			final int bytesToSkip = 256 + 8192 - 4;
 			System.out.print("Checking File " + eventFiles[i]);
 			try {
 				DataInputStream instream =
@@ -65,8 +65,8 @@ public class CheckEventFiles {
 						new BufferedInputStream(
 							new FileInputStream(eventFiles[i])));
 				/* skip header and all but last word of first data buffer */
-				boolean skipSuccess =
-					(((long) bytesToSkip) == instream.skip(bytesToSkip));
+				final boolean skipSuccess =
+					(bytesToSkip == instream.skip(bytesToSkip));
 				if (skipSuccess) {
 					int word = instream.readInt();
 					String sWord = "0x" + Integer.toHexString(word);
