@@ -456,16 +456,7 @@ public final class Histogram implements Serializable {
 	public static void clearList() {
 		for (Iterator it=histogramList.iterator(); it.hasNext();){ 
 			final Histogram his=(Histogram)it.next();
-			his.gates.clear();
-			his.calibFunc=null;
-			his.counts=null;
-			his.counts2d=null;
-			his.counts2dDouble=null;
-			his.countsDouble=null;
-			his.errors=null;
-			his.labelX=null;
-			his.labelY=null;
-			his.title=null;
+			his.clearInfo();
 		}
 		histogramList.clear();
 		sortedNameMap.clear();
@@ -473,6 +464,33 @@ public final class Histogram implements Serializable {
 		listByDim[0].clear();
 		listByDim[1].clear();
 		System.gc();
+	}
+	
+	public static void deleteHistogram(String histName){
+		Histogram h=getHistogram(histName);
+		if (h != null){
+			h.clearInfo();
+			histogramList.remove(h);
+			sortedNameMap.remove(h.getName());
+			sortedNumberMap.remove(new Integer(h.getNumber()));
+			listByDim[0].remove(h);
+			listByDim[1].remove(h);
+			h=null;
+			System.gc();
+		}
+	}
+	
+	private void clearInfo(){
+		gates.clear();
+		calibFunc=null;
+		counts=null;
+		counts2d=null;
+		counts2dDouble=null;
+		countsDouble=null;
+		errors=null;
+		labelX=null;
+		labelY=null;
+		title=null;
 	}
 
 	/**

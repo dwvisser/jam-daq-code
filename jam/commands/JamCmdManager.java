@@ -56,8 +56,8 @@ public class JamCmdManager implements CommandListener, CommandNames {
 		cmdMap.put(IMPORT_SPE, ImportRadware.class);
 		cmdMap.put(IMPORT_XSYS, ImportXSYS.class);
 		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
-		cmdMap.put(USER_GUIDE, ShowUserGuide.class);		
-	}
+		cmdMap.put(DELETE_HISTOGRAM, DeleteHistogram.class);
+		cmdMap.put(USER_GUIDE, ShowUserGuide.class);	}
 	
 
 	/**

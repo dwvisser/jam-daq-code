@@ -81,6 +81,9 @@ public interface CommandNames {
 	/** Setup the printing page layout */
 	String PAGE_SETUP="pageSetup";
 	
+	/** Delete the displayed histogram */
+	String DELETE_HISTOGRAM="delhist";
+
 	/** User guide */
 	String USER_GUIDE="userguide";
 	
