@@ -123,13 +123,27 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         
         //Fit using points or coeffs 
         final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        final ButtonGroup fitType=new ButtonGroup();
+        final ButtonGroup gFitType=new ButtonGroup();
         rbFitPoints = new JRadioButton("Fit Points", true);
-        //rbFitPoints.addActionListener()
-        fitType.add(rbFitPoints);        
+        rbFitPoints.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent itemEvent) {
+				if (rbFitPoints.isSelected()) {
+					setFitTypePoints(true);
+				}
+			}
+		});
+        gFitType.add(rbFitPoints);        
         pFitType.add(rbFitPoints);
         rbSetCoeffs = new JRadioButton("Set Coefficients", false);
-        fitType.add(rbSetCoeffs);
+        rbSetCoeffs.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent itemEvent) {
+				if (rbSetCoeffs.isSelected()) {
+					setFitTypePoints(false);
+				}
+			}
+		});
+        
+        gFitType.add(rbSetCoeffs);
         pFitType.add(rbSetCoeffs);        
         pSelection.add(pFitType);
         
@@ -260,7 +274,20 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
     }
     
     private void setFitTypePoints(boolean state){
-    	
+    	for (int i =0; i<NUMBER_POINTS; i++) {
+    		tEnergy[i].setEditable(state);
+    		tEnergy[i].setEnabled(state);
+    		tEnergy[i].setText("");    		
+    		tChannel[i].setEditable(state);
+    		tChannel[i].setEnabled(state);
+    		tChannel[i].setText("");
+    		cUse[i].setEnabled(state);    		
+    		cUse[i].setSelected(!state);
+    	}
+    	for (int i =0; i<MAX_NUMBER_TERMS; i++) {
+    		tcoeff[i].setEditable(!state);
+    	}
+		
     }
     /**
      * Receive actions from Dialog Boxes
@@ -411,12 +438,14 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 		bokCal.setEnabled(hist1d);
 		bapplyCal.setEnabled(hist1d);
 		bcancelCal.setEnabled(hist1d);		
+		/*
 		for (int i=0; i<NUMBER_POINTS; i++){
 			final boolean enable=hist1d && cUse[i].isSelected();
 			tEnergy[i].setEnabled(enable);
 			tChannel[i].setEnabled(enable);
 			cUse[i].setEnabled(hist1d);
 		}
+		*/
     }
     
     
