@@ -1,15 +1,16 @@
 package jam;
+import jam.commands.JamCmdManager;
 import jam.data.Histogram;
 import jam.data.control.DataControl;
 import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandNames;
 import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
-import jam.global.CommandNames;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpORNL;
@@ -231,7 +232,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		}
 	}
 
-	class ExportAction extends AbstractAction {
+	/*class ExportAction extends AbstractAction {
 		
 		private final ImpExp impexp;
 		
@@ -248,7 +249,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 				console.errorOutln(e.getMessage());
 			}
 		}
-	}
+	}*/
 	
 	class SaveGatesAction extends AbstractAction {
 
@@ -280,7 +281,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private JamCommand jamCommand;
 	
 	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
-	final private JMenuItem addhdf = new JMenuItem("Add counts(hdf)...");
+	final private JMenuItem addhdf;
 	final private JMenuItem reloadhdf = new JMenuItem("Reload(hdf)...");
 	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
 	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
@@ -298,6 +299,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
+	final private JamCmdManager commands;
 
 	/**
 	 * Define and display menu bar.
@@ -324,6 +326,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		MessageHandler c) {
 		super();
 		this.jamCommand=jamCommand;
+		commands=jamCommand.getCmdManager();
 		hdfio=jamCommand.getHDFIO();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		final int ctrl_mask;
@@ -384,9 +387,9 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		reloadhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));		
 		file.add(reloadhdf);
 
-		
-		addhdf.setActionCommand(CommandNames.ADD_HDF);
-		addhdf.addActionListener(jamCommand);
+		addhdf=new JMenuItem(commands.getAction(CommandNames.ADD_HDF));
+		//addhdf.setActionCommand(CommandNames.ADD_HDF);
+		//addhdf.addActionListener(jamCommand);
 		file.add(addhdf);
 		
 		saveHDF.setActionCommand(CommandNames.SAVE_HDF);	
@@ -435,11 +438,11 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		impHist.add(importBan);
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
-		final JMenuItem saveascii = new JMenuItem(new ExportAction(ieASCII));
+		final JMenuItem saveascii = new JMenuItem(commands.getAction(CommandNames.EXPORT_TEXT));
 		expHist.add(saveascii);
-		final JMenuItem savespe = new JMenuItem(new ExportAction(ieSpe));
+		final JMenuItem savespe = new JMenuItem(commands.getAction(CommandNames.EXPORT_SPE));
 		expHist.add(savespe);
-		final JMenuItem saveornl = new JMenuItem(new ExportAction(ieHis));
+		final JMenuItem saveornl = new JMenuItem(commands.getAction(CommandNames.EXPORT_DAMM));
 		expHist.add(saveornl);
 		final JMenuItem batchexport = new JMenuItem("Batch Export...");
 		batchexport.setActionCommand("batchexport");
