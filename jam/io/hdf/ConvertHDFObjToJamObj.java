@@ -84,20 +84,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 	}
 	
 	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) throws HDFException {
-    	final List histList = new ArrayList();    	
-    	 final Iterator histIter = virtualGroupGroup.getObjects().iterator();
-    	 while (histIter.hasNext()) {
-    	 	AbstractHData hData = (AbstractHData)histIter.next();
-        	//Is a virtual group
-        	if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
-        		//add to list if is a histogram goup
-        		final VirtualGroup currentVGroup = (VirtualGroup) hData;
-        		if ( currentVGroup.getType().equals(HIST_TYPE) ) {
-        			histList.add(currentVGroup);
-        		} 
-        	}
-    	 }
-    	return histList;
+		return findSubGroups(virtualGroupGroup, HIST_TYPE);
     }
     
     /** 
@@ -224,23 +211,9 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 		} else if (histType.getDimensionality()==Histogram.Type.TWO_D) {
 			gateType=GATE_2D_TYPE;
 		} else {
-			throw new HDFException("Unkown Histogram type");
+			throw new HDFException("Unkown Histogram type in finding gates");
 		}
-				
-    	final List histList = new ArrayList();    	
-    	 final Iterator histIter = virtualGroupHistogram.getObjects().iterator();
-    	 while (histIter.hasNext()) {
-    	 	AbstractHData hData = (AbstractHData)histIter.next();
-        	//Is a virtual group
-        	if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
-        		//add to list if is a histogram goup
-        		final VirtualGroup currentVGroup = (VirtualGroup) hData;
-        		if ( currentVGroup.getType().equals(gateType) ) {
-        			histList.add(currentVGroup);
-        		} 
-        	}
-    	 }
-    	return histList;
+		return findSubGroups(virtualGroupHistogram, gateType);				
     }
     
     /*
@@ -330,6 +303,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return hist == null ? null : new Gate(name, hist);
     }
 
+	List findScalers(VirtualGroup virtualGroupGroup) throws HDFException {
+		return findSubGroups(virtualGroupGroup, SCALER_SECT);		
+    }
+
     /*
      * non-javadoc: Retrieve the scalers from the file.
      * 
@@ -337,26 +314,36 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
      * is a problem retrieving scalers
      */
     int convertScalers(FileOpenMode mode) throws HDFException {
-        int numScalers = 0;
+    	int numScalers = 0;
         final VdataDescription vdd = VdataDescription.ofName(AbstractHData
                 .ofType(AbstractHData.DFTAG_VH), SCALER_SECT);
-        /* only the "scalers" VH (only one element) in the file */
         if (vdd != null) {
-            /* get the VS corresponding to the given VH */
-            final Vdata data = (Vdata) (AbstractHData.getObject(
-                    AbstractHData.DFTAG_VS, vdd.getRef()));
-            numScalers = vdd.getNumRows();
-            for (int i = 0; i < numScalers; i++) {
-                final String sname = data.getString(i, 1);
-                final int sNumber = data.getInteger(i, 0).intValue();
-                final Scaler scaler = produceScaler(mode, sNumber, sname);
-                if (scaler != null) {
-                    final int fileValue = data.getInteger(i, 2).intValue();
-                    if (mode == FileOpenMode.ADD) {
-                        scaler.setValue(scaler.getValue() + fileValue);
-                    } else {
-                        scaler.setValue(fileValue);
-                    }
+        	numScalers= convertScalers(vdd, mode);        	
+        }
+        return numScalers;
+    }	
+    /*
+     * non-javadoc: Retrieve the scalers from the file.
+     * 
+     * @param mode whether to open, reload or add @throws HDFException if there
+     * is a problem retrieving scalers
+     */
+    int convertScalers(VdataDescription vdd, FileOpenMode mode) throws HDFException {
+        int numScalers = 0;
+      
+        /* get the VS corresponding to the given VH */
+        final Vdata data = (Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, vdd.getRef()));
+        numScalers = vdd.getNumRows();
+        for (int i = 0; i < numScalers; i++) {
+            final String sname = data.getString(i, 1);
+            final int sNumber = data.getInteger(i, 0).intValue();
+            final Scaler scaler = produceScaler(mode, sNumber, sname);
+            if (scaler != null) {
+                final int fileValue = data.getInteger(i, 2).intValue();
+                if (mode == FileOpenMode.ADD) {
+                    scaler.setValue(scaler.getValue() + fileValue);
+                } else {
+                    scaler.setValue(fileValue);
                 }
             }
         }
@@ -369,6 +356,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
                 .getScaler(name);        
     }
 
+	List findParameters(VirtualGroup virtualGroupGroup) throws HDFException {
+		return findSubGroups(virtualGroupGroup, PARAMETERS);		
+    }
+    
     /*
      * non-javadoc: retrieve the parameters from the file
      * 
@@ -404,6 +395,22 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         return param;
     }
 
+	private List findSubGroups(VirtualGroup virtualGroupGroup, String groupType){
+    	final List groupSubList = new ArrayList();    	
+    	final Iterator iter = virtualGroupGroup.getObjects().iterator();
+   	 	while (iter.hasNext()) {
+   	 		AbstractHData hData = (AbstractHData)iter.next();
+   	 		//Is a virtual group
+   	 		if ( hData.getTag() == AbstractHData.DFTAG_VG ) {        		
+   	 			//add to list if is a scaler goup
+   	 			final VirtualGroup currentVGroup = (VirtualGroup) hData;
+   	 			if ( currentVGroup.getType().equals(groupType) ) {
+   	 				groupSubList.add(currentVGroup);
+   	 			} 
+   	 		}
+       	}
+   	    return groupSubList;   	 		
+   	 }
     
     Histogram openHistogram(Group group, String name, String title, int number, 
             Object histData, Object histErrorData) throws HDFException {
