@@ -20,8 +20,8 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
-import javax.help.HelpSet;
 import javax.help.CSH;
+import javax.help.HelpSet;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -41,6 +42,7 @@ import javax.swing.border.EmptyBorder;
  * @version version 0.5 November 98
  */
 class Help {
+	
 
 	private final Frame frame;
 	private final JDialog aboutD, licenseD;
@@ -163,8 +165,43 @@ class Help {
 		licenseD.show();
 	}
 	
+	private static void setLookAndFeel(){
+		final String linux = "Linux";
+		final String kunststoff =
+			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
+		boolean useKunststoff = linux.equals(System.getProperty("os.name"));
+		if (useKunststoff) {
+			try {
+				UIManager.setLookAndFeel(kunststoff);
+			} catch (ClassNotFoundException e) {
+				useKunststoff = false;
+			} catch (Exception e) { //all other exceptions
+				final String title = "Jam--error setting GUI appearance";
+				JOptionPane.showMessageDialog(
+					null,
+					e.getMessage(),
+					title,
+					JOptionPane.WARNING_MESSAGE);
+			}
+		}
+		if (!useKunststoff) {
+			try {
+				UIManager.setLookAndFeel(
+					UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				final String title = "Error setting GUI appearance";
+				JOptionPane.showMessageDialog(
+					null,
+					e.getMessage(),
+					title,
+					JOptionPane.WARNING_MESSAGE);
+			}
+		}
+	}
+	
 	public static void main(String [] args){
 		final String helpsetName = "help/jam.hs";
+		setLookAndFeel();
 		try {
 			final URL hsURL =
 				ClassLoader.getSystemClassLoader().getResource(helpsetName);
@@ -172,7 +209,6 @@ class Help {
 			final ActionListener al=new CSH.DisplayHelpFromSource(hs.createHelpBroker());
 			final JButton proxy=new JButton("Proxy");
 			proxy.addActionListener(al);
-			proxy.doClick();
 			final JFrame frame=new JFrame("JamHelp");
 			final JButton exit=new JButton("Exit");
 			frame.getContentPane().add(exit,BorderLayout.CENTER);
@@ -183,6 +219,7 @@ class Help {
 			});
 			frame.pack();
 			frame.show();
+			proxy.doClick();
 		} catch (Exception ee) {
 			JOptionPane.showMessageDialog(null,ee.getMessage(),ee.getClass().getName(),
 			JOptionPane.ERROR_MESSAGE);
