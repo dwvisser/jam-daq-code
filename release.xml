@@ -3,9 +3,11 @@
 
     <property name="base.dir" value="." />
     <property name="build.dir" value="${user.home}/jambuild" />
+    <property name="osx.dir" value="${build.dir}/jamosx"></property>
     
     <target name="prepare" depends="clean">
         <mkdir dir="${build.dir}" />
+        <mkdir dir="${osx.dir}" />
     </target>
     
     <target name="clean">
@@ -18,14 +20,14 @@
     		<delete dir="${build.dir}"></delete>
     </target>
     
-    <target name="jar" >
+    <target name="jar" depends="prepare">
         <jar jarfile="${build.dir}/Jam.jar"
             basedir="${base.dir}"
             excludes="*.xml,*.jardesc,*.jar,jam\**\*.java,jam\**\*.html,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
         />    
     </target>
 
-    <target name="srcjar">
+    <target name="srcjar" depends="prepare">
         <jar jarfile="${build.dir}/JamSrc.jar"
             basedir="${base.dir}"
             includes="jam\**\*.java"
@@ -35,10 +37,35 @@
     <target name="copy" depends="prepare">
         <copy todir="${build.dir}" flatten="true" >
             <fileset dir = "${base.dir}"
-                includes="*.jar,*.txt,*.html,help/config/*.ini,jam/nukeicon.gif" >
+                includes="*.jar,*.txt,*.html,help/config/*.ini" >
             </fileset>
         </copy>
     </target>
+    
+    <target name="osxpackage" depends="javadoc,jar,srcjar">
+        <copy todir="${osx.dir}" flatten="true" >
+        	<fileset dir = "${base.dir}"
+                includes="*.txt,*.html,help/config/*.ini" >
+            </fileset>
+        </copy>
+        <copy todir="${osx.dir}" flatten="false" >
+        	<fileset dir = "${base.dir}/OSXpackage"
+        		includes="**/*" >
+        	</fileset>
+        	<fileset dir= "${build.dir}" includes="JamSrc.jar"></fileset>
+        </copy>
+        <copy todir="${osx.dir}/Jam.app/Contents/Resources/Java" >
+        	<fileset dir="${base.dir}" 
+        		includes="*.jar"  >
+        	</fileset>
+        	<fileset dir= "${build.dir}" includes="Jam.jar"></fileset>
+        </copy>
+        <zip basedir="${build.dir}" zipfile="${build.dir}/Jam-version-MacOSX.zip"
+        	includes="jamosx/**/*" >
+        </zip>
+        <delete dir="${osx.dir}" />
+    </target>
+    	
     
     <target name="javadoc">
         <javadoc
@@ -54,6 +81,6 @@
     </target>
 
     
-    <target name="all" depends="copy,javadoc,jar,srcjar" />
+    <target name="all" depends="copy,osxpackage" />
         
 </project>
