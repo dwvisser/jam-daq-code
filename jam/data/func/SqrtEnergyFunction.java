@@ -14,7 +14,7 @@ public class SqrtEnergyFunction extends CalibrationFunction {
 	 *
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
-	public SqrtEnergyFunction() throws DataException {
+	public SqrtEnergyFunction() {
 		super(NUMBER_TERMS);
 		title = "sqrt(E) = a0+a1*ch";
 		labels[0] = "a(0)";

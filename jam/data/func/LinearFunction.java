@@ -14,7 +14,7 @@ public class LinearFunction extends CalibrationFunction {
 	 *
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
-	public LinearFunction() throws DataException {
+	public LinearFunction() {
 		super(NUMBER_TERMS);
 		title = "E = a0+a1*ch";
 		labels[0] = "a(0)";

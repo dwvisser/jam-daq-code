@@ -14,18 +14,18 @@ public class PolynomialFunction extends CalibrationFunction {
 	 * @param numberTerms terms in the polynomial (including a constant term)
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
-	public PolynomialFunction(int numberTerms) throws DataException {
+	public PolynomialFunction(int numberTerms) {
 		super(numberTerms);
-		if (numberTerms < MAX_NUMBER_TERMS) {
-			title = "E = a0+a1*ch+a2*(ch)^2+ ...";
-			coeff = new double[numberTerms];
-			labels = new String[numberTerms];
-			for (int i = 0; i < numberTerms; i++) {
-				labels[0] = "a(" + i + ")";
-			}
-		} else {
-			throw new DataException("Number of terms greater than MAX_NUMBER_TERMS [PolynomialFunction]");
+		title = "E = a0+a1*ch+a2*(ch)^2+ ...";
+		coeff = new double[numberTerms];
+		labels = new String[numberTerms];
+		for (int i = 0; i < numberTerms; i++) {
+			labels[0] = "a(" + i + ")";
 		}
+	}
+	
+	public PolynomialFunction(){
+		this(4);
 	}
 
 	/**
