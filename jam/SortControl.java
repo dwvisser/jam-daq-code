@@ -21,7 +21,7 @@ import javax.swing.border.*;
  */
 class SortControl implements Controller{
 
-	private final JamMain jamMain;
+	private final Frame jamMain;
 	private final MessageHandler msgHandler;
 
 	/* daemon threads */
@@ -61,6 +61,9 @@ class SortControl implements Controller{
 		remove,
 		removeAll,
 		savelist;
+		
+	private final JamStatus status;
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/**
 	  * button to get file brower
@@ -80,9 +83,10 @@ class SortControl implements Controller{
 	String defaultEvents;
 	String defaultOutputFile;
 
-	public SortControl(JamMain jamMain, MessageHandler msgHandler) {
-		this.jamMain = jamMain;
-		this.msgHandler = msgHandler;
+	public SortControl(MessageHandler mh) {
+		msgHandler = mh;
+		status=JamStatus.instance();
+		jamMain = status.getFrame();
 		defaultEvents =
 			JamProperties.getPropString(JamProperties.EVENT_OUTPATH);
 		defaultOutputFile =
@@ -318,7 +322,7 @@ class SortControl implements Controller{
 		bbegin.setEnabled(false);
 		bend.setEnabled(true);
 		sortDaemon.setState(GoodThread.RUN);
-		jamMain.setRunState(RunState.ACQ_ON);
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_ON);
 	}
 
 	/**
@@ -342,7 +346,7 @@ class SortControl implements Controller{
 			msgHandler.messageOutln(
 				"Closed pre-sorted file: " + fileOut.getPath());
 		}
-		jamMain.setRunState(RunState.ACQ_OFF);
+		broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED,RunState.ACQ_OFF);
 		msgHandler.warningOutln(
 			"Ended offline sorting before reading all events.");
 		bend.setEnabled(false);
@@ -405,7 +409,7 @@ class SortControl implements Controller{
 	public void atSortEnd() {
 		try {
 			msgHandler.messageOutln("Sorting all done");
-			jamMain.setRunState(RunState.ACQ_OFF);
+			broadcaster.broadcast(BroadcastEvent.RUN_STATE_CHANGED, RunState.ACQ_OFF);
 			if (!dataInpDaemon.closeEventInputListFile()) {
 				msgHandler.errorOutln("Couldn't close file [SortControl]");
 			}
