@@ -20,8 +20,7 @@ public class Broadcaster extends Observable {
      * @param param a parameter to be wrapped in the <CODE>BroadcastEvent</CODE>
      * object
      */
-    public void broadcast(int command, Object param) 
-    throws GlobalException {
+    public void broadcast(int command, Object param) {
         Object broadcastEvent=new BroadcastEvent(command, param);
         setChanged();//necessary for next line to work
         notifyObservers(broadcastEvent);//automatically calls clearChanged()
@@ -33,7 +32,7 @@ public class Broadcaster extends Observable {
      * 
      * @param command code from <CODE>BroadcastEvent</CODE>, I presume
      */
-    public void broadcast(int command) throws GlobalException {
+    public void broadcast(int command) {
         broadcast(command,null);
     }    
 }
