@@ -93,7 +93,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 *
 	 * @exception ImpExpException  thrown for general problems importing this format
 	 */
-	public void readHist(InputStream buffin) throws ImpExpException {
+	public void readData(InputStream buffin) throws ImpExpException {
 		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
 		DataBase.getInstance().clearAllLists();//clear the data base
@@ -461,5 +461,13 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		outString = String.valueOf(charData);
 		return (outString);
 
+	}
+	
+	public boolean canExport(){
+		return false;
+	}
+	
+	boolean batchExportAllowed(){
+		return false;
 	}
 }

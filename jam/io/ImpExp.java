@@ -1,5 +1,3 @@
-/*
- */
 package jam.io;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
@@ -117,14 +115,14 @@ public abstract class ImpExp {
 	public abstract String getFormatDescription();
 
 	/**
-	 * Reads a histogram from the passed <code>InputStream</code>. The
+	 * Reads data from the passed <code>InputStream</code>. The
 	 * specific implementations <bold>may</bold> use this to read specific 
 	 * formats.
 	 *
 	 * @param	    inStream	    the stream to read the histogram from
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
-	abstract protected void readHist(InputStream inStream)
+	abstract protected void readData(InputStream inStream)
 		throws ImpExpException;
 
 	/**
@@ -162,7 +160,7 @@ public abstract class ImpExp {
 					msg + " " + getFileName(inFile),
 					MessageHandler.NEW);
 				/* implementing class implement following method */
-				readHist(inBuffStream);
+				readData(inBuffStream);
 				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
 				inBuffStream.close();
 				rval = true;
@@ -278,8 +276,6 @@ public abstract class ImpExp {
 		if (option == JFileChooser.APPROVE_OPTION) {
 			file = jfile.getSelectedFile();
 		}
-		/*System.err.println(
-			getClass().getName() + ".getFile() returning " + file);*/
 		return file;
 	}
 
@@ -291,7 +287,6 @@ public abstract class ImpExp {
 	protected String getFileName(File file) {
 		String rval=null;//default return value
 		if (file != null) {
-//			return null;
 			rval = file.getName();
 		}
 		return rval;
@@ -300,4 +295,19 @@ public abstract class ImpExp {
 	public String getLastFileName() {
 		return getFileName(lastFile);
 	}
+	
+	/**
+	 * Returns whether this class can export files to disk.
+	 * 
+	 * @return whether exporting is possible
+	 */
+	public abstract boolean canExport();
+	
+	/**
+	 * Returns whether this class is appropriate to use for
+	 * the batch export dialog.
+	 * 
+	 * @return whether batch export is allowed 
+	 */
+	abstract boolean batchExportAllowed();
 }

@@ -21,7 +21,7 @@ import javax.swing.*;
  */
 public class BatchExport extends JDialog implements ActionListener {
 
-	private ImpExp[] exportClasses;
+	private ImpExp[] exportClasses=new ImpExp[0];
 	private JRadioButton[] exportChoice;
 	private JTextField t_addName, t_directory;
 	private JList l_hists;
@@ -113,7 +113,6 @@ public class BatchExport extends JDialog implements ActionListener {
 						+ ")");
 			exportChoice[i].setToolTipText("Select to export in "
 			+exportClasses[i].getFormatDescription()+" format.");
-			exportChoice[i].setActionCommand("format" + i);
 			exportChoice[i].addActionListener(this);
 			optionButtons.add(exportChoice[i]);
 			options.add(exportChoice[i]);
@@ -139,29 +138,27 @@ public class BatchExport extends JDialog implements ActionListener {
 		final String here=getClass().getName()+".getClasses(): ";
 		final Set set = RTSI.find("jam.io", ImpExp.class,false);
 		set.remove(ImpExp.class);
-		exportClasses = new ImpExp[set.size()];
-		int i = 0;
-		for (Iterator it = set.iterator(); it.hasNext(); i++) {
+		final java.util.List list=new ArrayList();
+		for (Iterator it = set.iterator(); it.hasNext(); ) {
 			final Class temp = (Class) it.next();
 			try {
-				exportClasses[i] = (ImpExp) temp.newInstance();
+				final ImpExp ie=(ImpExp) temp.newInstance();
+				if (ie.batchExportAllowed()){
+					list.add(ie);
+				}
+				//exportClasses[i] = (ImpExp) temp.newInstance();
 			} catch (InstantiationException e) {
 				console.errorOutln(here+e.getMessage());
 			} catch (IllegalAccessException e) {
 				console.errorOutln(here+e.getMessage());
 			}
 		}
+		exportClasses=(ImpExp [])list.toArray(exportClasses);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
-		if (command.substring(0, 6).equals("format")) {
-			boolean selected = false;
-			for (int i = 0; i < exportChoice.length; i++) {
-				selected |= exportChoice[i].isSelected();
-			}
-			b_export.setEnabled(selected);
-		} else if (command.equals("addname")) {
+		if (command.equals("addname")) {
 			addName();
 		} else if (command.equals("cancel")) {
 			dispose();
@@ -180,6 +177,16 @@ public class BatchExport extends JDialog implements ActionListener {
 		} else if (command.equals("addhist")){
 			addHist();
 		}
+		setExportEnable();
+	}
+	
+	private void setExportEnable(){
+		boolean selected = false;
+		for (int i = 0; i < exportChoice.length; i++) {
+			selected |= exportChoice[i].isSelected();
+		}
+		selected &= l_hists.getModel().getSize()>0;
+		b_export.setEnabled(selected);
 	}
 
 	private void addHist(){

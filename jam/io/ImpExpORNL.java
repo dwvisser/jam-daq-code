@@ -130,21 +130,18 @@ public class ImpExpORNL extends ImpExp {
 	 *
 	 * @exception   ImpExpException	    thrown for errors
 	 */
-	public void readHist(InputStream buffin) throws ImpExpException {
-		String fileNameHis;
-		RandomAccessFile fileHis;
-
+	public void readData(InputStream buffin) throws ImpExpException {
 		try {
 			Histogram.clearList(); //clear current list of histograms	
 			readDrr(buffin); //read the drr file
 
-			fileNameHis =
+			final String fileNameHis =
 				FileUtilities.setExtension(
 					getFileName(lastFile),
 					"*.his",
 					FileUtilities.FORCE);
 			/* open .his file random access, read only */	
-			fileHis =
+			final RandomAccessFile fileHis =
 				new RandomAccessFile(
 					new File(lastFile.getParentFile(), fileNameHis),
 					"r");
@@ -605,5 +602,13 @@ public class ImpExpORNL extends ImpExp {
 	private short readShort(DataInput di) throws IOException {
 		di.readFully(tempShort);
 		return byteArrayToShort(tempShort, 0);
+	}
+	
+	public boolean canExport(){
+		return true;
+	}
+	
+	boolean batchExportAllowed(){
+		return false;
 	}
 }

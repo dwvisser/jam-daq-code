@@ -93,7 +93,7 @@ public class ImpExpASCII extends ImpExp {
 	 * @param	    inStream	    the stream to read the histogram from
 	 * @exception   ImpExpException exception related to import/export
 	 */
-	protected void readHist(InputStream inStream) throws ImpExpException {
+	protected void readData(InputStream inStream) throws ImpExpException {
 		double[] counts;
 		double[][] counts2d;
 
@@ -476,5 +476,13 @@ public class ImpExpASCII extends ImpExp {
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
+	}
+	
+	public boolean canExport(){
+		return true;
+	}
+	
+	boolean batchExportAllowed(){
+		return true;
 	}
 }

@@ -71,7 +71,7 @@ public class ImpExpSPE extends ImpExp {
 	 *
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
-	public void readHist(InputStream buffin) throws ImpExpException {
+	public void readData(InputStream buffin) throws ImpExpException {
 		try {
 			final DataInputStream dis = new DataInputStream(buffin);
 			final char[] cName = new char[NAME_LENGTH];
@@ -173,5 +173,13 @@ public class ImpExpSPE extends ImpExp {
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
+	}
+	
+	public boolean canExport(){
+		return true;
+	}
+	
+	boolean batchExportAllowed(){
+		return true;
 	}
 }
