@@ -300,6 +300,14 @@ public class RunControl extends JDialog implements Controller {
 		}
 		beginAction.setEnabled(true);
 	}
+	
+	private synchronized boolean isRunOn(){
+		return runOn;
+	}
+	
+	private synchronized void setRunOn(boolean val){
+		runOn=val;
+	}
 
 	/**
 	 * Starts acquisition of data. Figure out if online or offline an run
@@ -313,7 +321,7 @@ public class RunControl extends JDialog implements Controller {
 		netDaemon.setState(GoodThread.RUN);
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
-		if (runOn) {//runOn is true if the current state is a run
+		if (isRunOn()) {//runOn is true if the current state is a run
 			status.setRunState(RunState.RUN_ON(runNumber));
 			//see stopAcq() for reason for this next line.
 			endAction.setEnabled(true);
@@ -343,7 +351,7 @@ public class RunControl extends JDialog implements Controller {
 		 * in next run" problem
 		 */
 		endAction.setEnabled(false);
-		if (!runOn) {//not running to disk
+		if (!isRunOn()) {//not running to disk
 			beginAction.setEnabled(true);//since it was disabled during start
 		}
 		console.warningOutln("Stopped Acquisition...if you are doing a run, "
@@ -417,7 +425,7 @@ public class RunControl extends JDialog implements Controller {
 			console
 					.messageOutln("Began run, events being written out be front end.");
 		}
-		runOn = true;
+		setRunOn(true);
 		netDaemon.setEmptyBefore(false);//fresh slate
 		netDaemon.setState(GoodThread.RUN);
 		vmeComm.startAcquisition();//VME start last because other thread have
@@ -473,7 +481,7 @@ public class RunControl extends JDialog implements Controller {
 		dataio.writeFile(histFile);
 		runNumber++;//increment run number
 		textRunNumber.setText(Integer.toString(runNumber));
-		runOn = false;
+		setRunOn(false);
 		beginAction.setEnabled(true);//set begin button state for next run
 	}
 
