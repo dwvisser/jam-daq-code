@@ -1,5 +1,6 @@
 package jam.global;
 import jam.JamMain;
+import jam.plot.Display;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -19,6 +20,7 @@ public final class JamStatus {
 	private static String currentHistogramName = "";
 	private static String overlayHistogramName, currentGateName;
 	private static JFrame frame;
+	private static Display display;
 
 	/** For fowarding class */
 	private static JamMain jamMain;
@@ -50,8 +52,16 @@ public final class JamStatus {
 	 * 
 	 * @param f the frame of the current Jam application
 	 */
-	public void setFrame(JFrame f) {
+	public synchronized void setFrame(JFrame f) {
 		frame = f;
+	}
+	
+	public synchronized void setDisplay(Display d){
+		display=d;
+	}
+	
+	public synchronized Display getDisplay(){
+		return display;
 	}
 
 	/**
@@ -59,7 +69,7 @@ public final class JamStatus {
 	 *
 	 * @return the frame of the current Jam application
 	 */
-	public JFrame getFrame() {
+	public synchronized JFrame getFrame() {
 		return frame;
 	}
 
@@ -68,7 +78,7 @@ public final class JamStatus {
 	 * 
 	 * @param jm the frame of the current Jam application
 	 */
-	public void setJamMain(JamMain jm) {
+	public synchronized void setJamMain(JamMain jm) {
 		jamMain = jm;
 	}
 
