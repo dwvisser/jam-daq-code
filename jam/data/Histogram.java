@@ -121,7 +121,6 @@ public final class Histogram implements Serializable {
 	
 	private boolean labelXset=false;
 	private boolean labelYset=false;
-	private boolean numberSet=false;
 	
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -151,14 +150,12 @@ public final class Histogram implements Serializable {
 		String title) {
 		String addition;
 		int prime;
-		Iterator allHistograms;
 
 		StringUtilities su=StringUtilities.instance();
 		this.type = type;
 		this.title = title;
 		this.errors = null;
 		this.name = nameIn;
-		boolean unique = false;
 		errorsSet = false;
 		//give error if name is to be truncated
 		String name2 = name = su.makeLength(name, NAME_LENGTH);
@@ -175,21 +172,7 @@ public final class Histogram implements Serializable {
 			prime++;
 		}
 		gates.clear();
-		lastNumber++;
-		//assign number
-		NEWTRY : while (!unique) {
-			//loop for all histograms
-			allHistograms = histogramList.iterator();
-			while (allHistograms.hasNext()) {
-				if (lastNumber
-					== ((Histogram) allHistograms.next()).getNumber()) {
-					lastNumber++;
-					continue NEWTRY;
-				}
-			}
-			unique = true;
-		}
-		number = lastNumber;
+		assignNewNumber();
 		//allow memory for gates and define sizes
 		if (type == ONE_DIM_INT) {
 			this.sizeX = sizeX;
@@ -241,10 +224,10 @@ public final class Histogram implements Serializable {
 		//add to static lists
 		sortedNameMap.put(name, this);
 		histogramList.add(this);
-		sortedNumberMap.put(new Integer(number),this);
+		//sortedNumberMap.put(new Integer(number),this);
 		listByDim[getDimensionality()-1].add(this);
 	}
-
+	
 	/**
 	 * Contructor with no number given, but axis labels are given.
 	 *
@@ -662,31 +645,51 @@ public final class Histogram implements Serializable {
 	}
 
 	/**
-	 * Sets the number of this histogram.
+	 * Sets the number of this histogram. May have the side effect of
+	 * bumping another histogram with the desired number to a new 
+	 * number.
 	 *
 	 * @param n the desired number for the histogram
-	 * @throws IllegalStateException if number has already been 
-	 * explicitly set
-	 * @throws IllegalArgumentException if another histogram already
-	 * has the number
 	 */
 	public void setNumber(int n) {
-		if (numberSet){
-			throw new IllegalStateException(
-			"Please call setNumber() only once per histogram.");
-		}
 		final Integer newKey=new Integer(n);
 		if (sortedNumberMap.containsKey(newKey)){
 			final Histogram collider=(Histogram)sortedNumberMap.get(newKey);
-			throw new IllegalArgumentException(getName()+ 
-			"can't set number to "+n+". "+collider.getName()+
-			" already uses it.");
+			if (!collider.equals(this)){
+				collider.assignNewNumber();
+			}
 		}
 		sortedNumberMap.remove(new Integer(number));
 		number = n;
 		sortedNumberMap.put(new Integer(n),this);
 	}
-
+	
+	private void assignNewNumber(){
+		/*boolean unique = false;
+		lastNumber++;
+		//assign number
+		NEWTRY : while (!unique) {
+			//loop for all histograms
+			final Iterator allHistograms = histogramList.iterator();
+			while (allHistograms.hasNext()) {
+				if (lastNumber
+					== ((Histogram) allHistograms.next()).getNumber()) {
+					lastNumber++;
+					continue NEWTRY;
+				}
+			}
+			unique = true;
+		}
+		number = lastNumber;*/
+		Integer inum=new Integer(lastNumber);
+		do {		
+			lastNumber++;
+			inum=new Integer(lastNumber);
+		} while (sortedNumberMap.containsKey(inum));
+		number=lastNumber;
+		sortedNumberMap.put(inum,this);
+	}
+	
 	/**
 	 * Returns the counts in the histogram as an array of the appropriate type. It is necessary
 	 * to cast the returned array as follows:
