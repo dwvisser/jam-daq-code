@@ -13,12 +13,10 @@ import java.awt.event.*;
  */
 public class PeakFindDialog extends JDialog implements ActionListener {
 
-	private JamMain jamMain;
-	private MessageHandler console;
-	private Display display;
+	private final MessageHandler console;
+	private final Display display;
 
-	public PeakFindDialog(JamMain jm, Display d, MessageHandler c) {
-		jamMain = jm;
+	public PeakFindDialog(Display d, MessageHandler c) {
 		display = d;
 		console = c;
 		createDialog();
