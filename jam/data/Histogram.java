@@ -236,28 +236,22 @@ public abstract class Histogram {
 	 *             if an unknown histogram type is given
 	 */
 	protected Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {		
-
 		this.type = type;		
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;		
 		this.title = title;
-
-		Group currentGroup = Group.getCurrentGroup();
-		
-		//Make a unique name in the group 
-		Map groupHistMap =currentGroup.getHistogramMap();		
+		final Group currentGroup = Group.getCurrentGroup();
+		/* Make a unique name in the group */ 
+		final Map groupHistMap =currentGroup.getHistogramMap();		
 		name=makeUniqueName(nameIn, groupHistMap);
-		//Create the full histogram name with group name
+		/* Create the full histogram name with group name */
 		String groupName=currentGroup.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
-		
-		//Add to group
+		/* Add to group */
 		currentGroup.addHistogram(this);
-		
 		gates.clear();
 		assignNewNumber();
-		
-		//allow memory for gates and define sizes
+		/* allow memory for gates and define sizes */
 		final boolean oneD = type.getDimensionality() == 1;
 		if (labelX == null) {
 			labelX = oneD ? X_LABEL_1D : X_LABEL_2D;
@@ -349,11 +343,12 @@ public abstract class Histogram {
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
+	
 	/**
 	 * 
 	 * @param name name to make unique
 	 * @param map  Map of all names
-	 * @return
+	 * @return unique name
 	 */
 	protected String  makeUniqueName(String name, Map map ) {
 
