@@ -7,6 +7,7 @@ import jam.global.MessageHandler;
 import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFileFilter;
 
 import java.awt.BorderLayout;
@@ -184,25 +185,35 @@ public final class OpenSelectedHistogram {
 	 *  
 	 */
 	public void open() {
-		if (openFile()) {
-        	loadHistNames(fileOpen);					
-        	txtFile.setText(fileOpen.getAbsolutePath());				
-        	dialog.setVisible(true);
+		if (chooseFile()) {
+        	if (loadHistNames(fileOpen)) {					
+        		txtFile.setText(fileOpen.getAbsolutePath());				
+        		dialog.setVisible(true);
+        	}
         }
 	}
 	
 	/* non-javadoc:
 	 * Load name of histograms from the selected file.
 	 */
-	private void loadHistNames(File fileSelect) {	
-		/* Read in histogram names attributes */		
-		final List histAttributes= hdfio.readHistogramAttributes(fileSelect);
-		final Iterator iter = histAttributes.iterator(); 
-		while (iter.hasNext()) {
-			final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
-			histListModel.addElement(histAtt.getName());				
+	private boolean loadHistNames(File fileSelect) {	
+		boolean loadState;
+		/* Read in histogram names attributes */	
+		try {
+			final List histAttributes= hdfio.readHistogramAttributes(fileSelect);
+			final Iterator iter = histAttributes.iterator(); 
+			while (iter.hasNext()) {
+				final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+				histListModel.addElement(histAtt.getName());				
+			}
+			loadState=true;
+		}catch (HDFException hdfe){
+			msgHandler.errorOutln(hdfe.toString());
+			loadState=false;
 		}
 		histList.clearSelection();
+		
+		return loadState;
 	}
 
 
@@ -235,7 +246,7 @@ public final class OpenSelectedHistogram {
 	 * 
 	 * @return <code>true</code> if successful
 	 */
-	private boolean openFile() {
+	private boolean chooseFile() {
 		boolean openF = false;
 		final JFileChooser jfile = new JFileChooser(fileOpen);
 		jfile.setFileFilter(new HDFileFilter(true));

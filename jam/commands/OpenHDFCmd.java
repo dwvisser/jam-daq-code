@@ -27,7 +27,7 @@ import javax.swing.KeyStroke;
  */
 final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncListener {
 	
-	private File file=null;
+	private String fileName=null;
 	private final HDFIO hdfio;
 	
 	OpenHDFCmd(){
@@ -42,38 +42,41 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
-		readHDFFile(cmdParams);
+		File file=null;
+		if (cmdParams!=null) {
+			file =(File)cmdParams[0];
+		}		
+		//FIXME KBS add parse of parameters
+		readHDFFile(file);
 	}
 	/**
 	 * Read in a HDF file
 	 * @param cmdParams
 	 */ 
-	private void readHDFFile(Object[] cmdParams) {
-		Frame frame= STATUS.getFrame();		
-		hdfio.setListener(this);
+	private void readHDFFile(File file) {
 
-		final boolean isFileRead;
-		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
-		}
+		final boolean isFileReading;		
+
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
-	        final int option = jfile.showOpenDialog(frame);
+	        final int option = jfile.showOpenDialog(STATUS.getFrame());
 	        // dont do anything if it was cancel
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-	        	DataBase.getInstance().clearAllLists();  
-				isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);	        	
+	        	fileName=file.getPath();	//Save for callback
+	        	DataBase.getInstance().clearAllLists();
+	    		hdfio.setListener(this);
+				isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);	        	
 	        } else {
-	        	isFileRead=false;
+	        	isFileReading=false;
 	        }	
 		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.OPEN, file);
+			isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
-		if (isFileRead){//File was read in	
-			//notifyApp(HDFIO.getLastValidFile());
+		if (!isFileReading){//File was not read in so do no call back do notify here	
+			notifyApp("");
 		}								
 	}
 	
@@ -91,12 +94,12 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		}
 	}
 
-	private void notifyApp(File file) {
+	private void notifyApp(String fileName) {
 		
 		Histogram firstHist;
-		
+ 
 		//Set general status 
-		STATUS.setSortMode(file);
+		STATUS.setSortMode(SortMode.FILE, fileName);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
@@ -133,7 +136,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	 */
 	public void CompletedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		notifyApp(file);
-		file=null;
+		notifyApp(fileName);
+		fileName=null;
 	}
 }

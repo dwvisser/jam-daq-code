@@ -9,6 +9,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.ui.MultipleFileChooser;
@@ -191,9 +192,10 @@ public class OpenMultipleFiles {
 		txtListFile.setText("");
 		if (file!=null){
 			txtListFile.setText(file.getAbsolutePath());
-			loadHistNames(file);
+			if (loadHistNames(file)){
+				updateSelectedHistograms();
+			}
 		}
-		updateSelectedHistograms();
 	}
 	
 	private void saveSelectedHistograms(){
@@ -222,14 +224,28 @@ public class OpenMultipleFiles {
 	 * Load name of histograms from the selected file
 	 *  
 	 */
-	private void loadHistNames(File fileSelect) {
-		/* Read in histogram names attributes */		
-		final List attrList= hdfio.readHistogramAttributes(fileSelect);
-		final Iterator iter = attrList.iterator(); 
-		while (iter.hasNext()) {
-			final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
-			hListModel.addElement(histAtt.getName());				
+	private boolean loadHistNames(File fileSelect) {
+		boolean loadState;
+		/* Read in histogram names attributes */	
+		try {
+
+			/* Read in histogram names attributes */		
+			final List attrList= hdfio.readHistogramAttributes(fileSelect);
+			final Iterator iter = attrList.iterator(); 
+			while (iter.hasNext()) {
+				final HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
+				hListModel.addElement(histAtt.getName());				
+			}
+		
+			loadState=true;
+		}catch (HDFException hdfe){
+			msgHandler.errorOutln(hdfe.toString());
+			loadState=false;
 		}
+		histList.clearSelection();
+		
+		return loadState;
+		
 	}
 	
 	/**

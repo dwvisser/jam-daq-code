@@ -250,8 +250,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
-    	readFile(mode, infile, null, null);
-        return true;
+    	return readFile(mode, infile, null, null);
+
     }
 
     /**
@@ -264,8 +264,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile, Group group) {
-    	readFile(mode, infile, group, null);
-        return true;
+    	return readFile(mode, infile, group, null);
     }
     /**
      * Read in an HDF file.
@@ -658,6 +657,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
              /* destroys reference to HDFile (and its AbstractHData's) */
              inHDF = null;
         }
+        
         AbstractHData.clearAll();
         setLastValidFile(infile);
             
@@ -797,36 +797,46 @@ public final class HDFIO implements DataIO, JamHDFFields {
      *            to read from
      * @return list of attributes
      */
-    public List readHistogramAttributes(File infile) {
+    public List readHistogramAttributes(File infile) throws HDFException{
     	
         List rval = new ArrayList();
         
-        if (HDFile.isHDFFile(infile)) {
-            
-            try {
-            	
-                AbstractHData.clearAll();
-                
-                /* Read in histogram names */
-                inHDF = new HDFile(infile, "r");
-                inHDF.setLazyLoadData(true);
-                inHDF.readFile();
-                AbstractHData.interpretBytesAll();
-                
-                rval.addAll(loadHistogramAttributes());
-                
-                inHDF.close();
-                
-            } catch (HDFException except) {
-                msgHandler.errorOutln(except.toString());
-            } catch (IOException except) {
-                msgHandler.errorOutln(except.toString());
-            }
-            AbstractHData.clearAll();
-        } else {
-            msgHandler.errorOutln(infile + " is not a valid HDF File!");
+        if (!HDFile.isHDFFile(infile)) {
             rval = Collections.EMPTY_LIST;
+        	throw new HDFException("File:+ "+ infile.getPath()+ "is not an HDF file.");
         }
+        	            
+        try {
+        	
+            AbstractHData.clearAll();
+            
+            /* Read in histogram names */
+            inHDF = new HDFile(infile, "r");
+            inHDF.setLazyLoadData(true);
+            inHDF.readFile();
+            
+            AbstractHData.interpretBytesAll();
+            
+            rval.addAll(loadHistogramAttributes());               
+            
+        } catch (FileNotFoundException e) {
+        	throw new HDFException("Opening file: " + infile.getPath()+
+        			" Cannot find file or file is locked");            	                
+        } catch (HDFException e) {
+        	throw new HDFException("Reading file: '"
+            + infile.getName() + "', Exception " + e.toString());            	                
+        } finally {
+        	try {
+        		inHDF.close();
+
+        	} catch (IOException except) {
+        		//NOP Bury exception
+        	}
+    		inHDF=null;
+    	}
+        
+        AbstractHData.clearAll();
+
         return rval;
     }
     
