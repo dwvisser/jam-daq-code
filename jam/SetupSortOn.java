@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -36,6 +35,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -49,7 +49,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -66,8 +65,7 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.StorageDaemon
  */
-public final class SetupSortOn extends JDialog implements ActionListener,
-		ItemListener {
+public final class SetupSortOn extends JDialog {
 
 	private final Frame frame;
 
@@ -83,19 +81,14 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			.getSingletonInstance();
 
 	/* stuff for dialog box */
-	private final JToggleButton cdisk; //save events to disk
+	private final AbstractButton cdisk; //save events to disk
 
-	private final JToggleButton defaultPath, specify;
+	private final AbstractButton defaultPath, specify;
 
-	private final JCheckBox clog; //create a log file
+	private final AbstractButton clog; //create a log file
 
-	private final JButton bok;
-
-	private final JButton bapply;
-
-	private final JCheckBox checkLock;
-
-	private final JButton bbrowsef, bbrowseh, bbrowsed, bbrowsel;
+	private final AbstractButton bok, bapply, checkLock, bbrowsef, bbrowseh,
+			bbrowsed, bbrowsel;
 
 	private final JComboBox sortChoice;
 
@@ -111,9 +104,11 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	/* strings of data entered */
 	private String experimentName;
 
-	private String histDirectory, dataDirectory;
+	private File histDirectory;
 
-	private String logDirectory;
+	private File dataDirectory;
+
+	private File logDirectory;
 
 	private File sortClassPath;
 
@@ -168,8 +163,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 				.getPropString(JamProperties.EVENT_OUTSTREAM);
 		final String defaultEvents = JamProperties
 				.getPropString(JamProperties.EVENT_OUTPATH);
-		final String defaultSpectra = JamProperties
-				.getPropString(JamProperties.HIST_PATH);
+		histDirectory = new File(JamProperties.getPropString(JamProperties.HIST_PATH));
 		final String defaultLog = JamProperties
 				.getPropString(JamProperties.LOG_PATH);
 		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
@@ -183,10 +177,8 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		frame = status.getFrame();
 		setResizable(false);
 		setLocation(20, 50);
-
 		final Container dcp = getContentPane();
 		dcp.setLayout(new BorderLayout(5, 5));
-
 		final int gap = 5;
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
 		final int topInset = 10;
@@ -217,8 +209,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		/* blank label balances out the grid */
 		final JLabel lssf = new JLabel(/* "Sort sample fraction", JLabel.RIGHT */);
 		pLabels.add(lssf);
-
-		//Entries Panel
+		/* Entries Panel */
 		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
 		pEntries
 				.setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
@@ -228,8 +219,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 				.setToolTipText("Used to name data files. Only 20 characters get written to event files.");
 		textExpName.setColumns(20);
 		pEntries.add(textExpName);
-
-		//Radio buttons for path
+		/* Radio buttons for path */
 		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
 				noSpace));
 		pEntries.add(pradio);
@@ -325,8 +315,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			}
 		}
 		pEntries.add(outStreamChooser);
-
-		textPathHist = new JTextField(defaultSpectra);
+		textPathHist = new JTextField(histDirectory.getPath());
 		textPathHist.setColumns(fileTextColumns);
 		textPathHist
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
@@ -351,13 +340,30 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
-		cdisk.addItemListener(this);
+		cdisk.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				boolean store = cdisk.isSelected();
+				if (!store) {
+					final boolean oops = JOptionPane.showConfirmDialog(
+							SetupSortOn.this,
+							"De-selecting this checkbox means Jam won't store events to disk.\n"
+									+ "Is this what you really want?",
+							"Event Storage Disabled",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
+					if (oops) {
+						cdisk.setSelected(true);
+						store = true;
+					}
+				}
+				textPathData.setEnabled(store);
+				bbrowsed.setEnabled(store);
+			}
+		});
 		pSortInterval.add(cdisk);
 		clog = new JCheckBox("Log Commands", false);
-		clog.addItemListener(this);
 		clog.setSelected(true);
-
-		//Browse panel
+		/* Browse panel */
 		JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
 		pBrowse.setBorder(new EmptyBorder(10, 0, 0, 10));
 		dcp.add(pBrowse, BorderLayout.EAST);
@@ -380,18 +386,30 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 
 		bbrowseh = new JButton("Browse...");
-		bbrowseh.setActionCommand("bhist");
-		bbrowseh.addActionListener(this);
+		bbrowseh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				histDirectory = getPath(histDirectory);
+				textPathHist.setText(histDirectory.getPath());
+			}
+		});
 		pBrowse.add(bbrowseh);
 
 		bbrowsed = new JButton("Browse...");
-		bbrowsed.setActionCommand("bdata");
-		bbrowsed.addActionListener(this);
+		bbrowsed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dataDirectory = getPath(dataDirectory);
+				textPathData.setText(dataDirectory.getPath());
+			}
+		});
 		pBrowse.add(bbrowsed);
 
 		bbrowsel = new JButton("Browse...");
-		bbrowsel.setActionCommand("blog");
-		bbrowsel.addActionListener(this);
+		bbrowsel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logDirectory = getPath(logDirectory);
+				textPathLog.setText(logDirectory.getPath());
+			}
+		});
 		pBrowse.add(bbrowsel);
 
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
@@ -403,22 +421,46 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		pbutton.add(pb);
 
 		bok = new JButton("OK");
-		bok.setActionCommand("ok");
-		bok.addActionListener(this);
+		bok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				apply(true);
+			}
+		});
 		pb.add(bok);
 
 		bapply = new JButton("Apply");
-		bapply.setActionCommand("apply");
-		bapply.addActionListener(this);
+		bapply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				apply(false);
+			}
+		});
 		pb.add(bapply);
 
 		JButton bcancel = new JButton("Cancel");
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
-		bcancel.addActionListener(this);
+		bcancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 
 		checkLock = new JCheckBox("Setup Locked", false);
-		checkLock.addItemListener(this);
+		checkLock.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent ie) {
+				if (!checkLock.isSelected()) {
+					try {
+						/* kill daemons, clear data areas */
+						resetAcq(true);
+						/* unlock sort mode */
+						lockMode(false);
+						jamConsole.closeLogFile();
+					} catch (Exception e) {
+						jamConsole.errorOutln(e.getMessage());
+					}
+				}
+			}
+		});
 		checkLock.setEnabled(false);
 		pb.add(checkLock);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -458,62 +500,48 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		return sortClassPath;
 	}
 
-	public void actionPerformed(ActionEvent ae) {
-		String command = ae.getActionCommand();
+	private void apply(boolean dispose) {
 		try {
-			if (command == "blog") {
-				String logDirectory = getPathLog();
-				textPathLog.setText(logDirectory);
-			} else if (command == "bhist") {
-				histDirectory = getPathHist();
-				textPathHist.setText(histDirectory);
-			} else if (command == "bdata") {
-				dataDirectory = getPathData();
-				textPathData.setText(dataDirectory);
-			} else if (command == "ok" || command == "apply") {
-				//lock setup so fields cant be edited
-				if (status.canSetup()) {
-					loadNames();
-					if (clog.isSelected()) { //if needed start logging to file
-						final String logFile = jamConsole
-								.setLogFileName(logDirectory + experimentName);
-						jamConsole.messageOutln("Logging to file: " + logFile);
-						jamConsole.setLogFileOn(true);
-					} else {
-						jamConsole.setLogFileOn(false);
-					}
-					jamConsole
-							.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
-									+ experimentName);
-					loadSorter(); //load sorting routine
-					if (sortRoutine != null) {
-						resetAcq(false);
-						//Kill all existing Daemons and clear data areas
-						setupAcq(); //create daemons
-						jamConsole.messageOutln("Loaded sort routine "
-								+ sortRoutine.getClass().getName()
-								+ ", input stream "
-								+ eventInputStream.getClass().getName()
-								+ " and output stream "
-								+ eventOutputStream.getClass().getName());
-						if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
-							setupCamac(); //set the camac crate
-						} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
-							setupVME_Map();
-						}
-						lockMode(true);
-						broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-						jamConsole
-								.messageOutln("Setup data network, and Online sort daemons setup");
-					}
-					if (command == "ok") {
-						dispose();
-					}
+			/* lock setup so fields cant be edited */
+			if (status.canSetup()) {
+				loadNames();
+				if (clog.isSelected()) { //if needed start logging to file
+					final String logFile = jamConsole
+							.setLogFileName(logDirectory + experimentName);
+					jamConsole.messageOutln("Logging to file: " + logFile);
+					jamConsole.setLogFileOn(true);
 				} else {
-					throw new JamException("Can't setup sorting, mode locked ");
+					jamConsole.setLogFileOn(false);
 				}
-			} else if (command == "cancel") {
-				dispose();
+				jamConsole
+						.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
+								+ experimentName);
+				loadSorter(); //load sorting routine
+				if (sortRoutine != null) {
+					resetAcq(false);
+					//Kill all existing Daemons and clear data areas
+					setupAcq(); //create daemons
+					jamConsole.messageOutln("Loaded sort routine "
+							+ sortRoutine.getClass().getName()
+							+ ", input stream "
+							+ eventInputStream.getClass().getName()
+							+ " and output stream "
+							+ eventOutputStream.getClass().getName());
+					if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
+						setupCamac(); //set the camac crate
+					} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
+						setupVME_Map();
+					}
+					lockMode(true);
+					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+					jamConsole
+							.messageOutln("Setup data network, and Online sort daemons setup");
+				}
+				if (dispose) {
+					dispose();
+				}
+			} else {
+				throw new JamException("Can't setup sorting, mode locked ");
 			}
 		} catch (SortException je) {
 			jamConsole.errorOutln(je.getMessage());
@@ -524,37 +552,11 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		}
 	}
 
-	public void itemStateChanged(ItemEvent ie) {
-		final ItemSelectable item = ie.getItemSelectable();
-		if (item == checkLock) {
-			if (!checkLock.isSelected()) {
-				try {
-					/* kill daemons, clear data areas */
-					resetAcq(true);
-					/* unlock sort mode */
-					lockMode(false);
-					jamConsole.closeLogFile();
-				} catch (Exception e) {
-					jamConsole.errorOutln(e.getMessage());
-				}
-			}
-		} else if (item == cdisk) {
-			boolean store = cdisk.isSelected();
-			if (!store) {
-				final boolean oops = JOptionPane.showConfirmDialog(this,
-						"De-selecting this checkbox means Jam won't store events to disk.\n"
-								+ "Is this what you really want?",
-						"Event Storage Disabled", JOptionPane.YES_NO_OPTION,
-						JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
-				if (oops) {
-					cdisk.setSelected(true);
-					store = true;
-				}
-			}
-			textPathData.setEnabled(store);
-			bbrowsed.setEnabled(store);
-		}
-	}
+	/*
+	 * public void itemStateChanged(ItemEvent ie) { final ItemSelectable item =
+	 * ie.getItemSelectable(); if (item == checkLock) { } else if (item ==
+	 * cdisk) { } }
+	 */
 
 	/**
 	 * Save the names of the experiment, the sort file and the event and
@@ -563,20 +565,21 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	private void loadNames() throws JamException {
 		final String fileSeparator = System.getProperty("file.separator", "/");
 		experimentName = textExpName.getText().trim();
-		histDirectory = textPathHist.getText().trim() + fileSeparator;
-		dataDirectory = textPathData.getText().trim() + fileSeparator;
-		logDirectory = textPathLog.getText().trim() + fileSeparator;
-		if (!cdisk.isSelected()) {
-			dataDirectory = dataDirectory + fileSeparator;
-		}
+		/*histDirectory = textPathHist.getText().trim() + fileSeparator;
+		dataDirectory = new File(textPathData.getText().trim() + fileSeparator);
+		logDirectory = textPathLog.getText().trim() + fileSeparator;*/
+		/*
+		 * if (!cdisk.isSelected()) { dataDirectory = dataDirectory +
+		 * fileSeparator; }
+		 */
 	}
 
 	/**
 	 * Load and instantize the sort file.
 	 */
 	private void loadSorter() throws JamException {
-		if (sortClass==null){
-			sortClass=(Class)sortChoice.getSelectedItem();
+		if (sortClass == null) {
+			sortClass = (Class) sortChoice.getSelectedItem();
 		}
 		try { // create sort class
 			if (specify.isSelected()) {
@@ -650,11 +653,11 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		}
 		//create sorter daemon
 		sortDaemon = new SortDaemon(runControl, jamConsole);
-		final boolean useDisk=cdisk.isSelected();
+		final boolean useDisk = cdisk.isSelected();
 		final SortMode sortmode = useDisk ? SortMode.ONLINE_DISK
 				: SortMode.ONLINE_NO_DISK;
-		sortDaemon.setup(sortmode, eventInputStream, sortRoutine
-				.getEventSize());
+		sortDaemon
+				.setup(sortmode, eventInputStream, sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
@@ -723,7 +726,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	 * @author Ken Swartz
 	 * @author Dale Visser
 	 */
-	private String getPathHist() {
+	/*private String getPathHist() {
 		JFileChooser fd = new JFileChooser(histDirectory);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int option = fd.showOpenDialog(frame);
@@ -734,7 +737,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			//save current directory
 		}
 		return histDirectory;
-	}
+	}*/
 
 	/**
 	 * Is the Browse for the Path Name where the histogram file to be saved.
@@ -742,7 +745,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	 * @author Ken Swartz
 	 * @author Dale Visser
 	 */
-	private String getPathLog() {
+	/*private String getPathLog() {
 		JFileChooser fd = new JFileChooser(logDirectory);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int option = fd.showOpenDialog(frame);
@@ -753,7 +756,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			//save current directory
 		}
 		return logDirectory;
-	}
+	}*/
 
 	/**
 	 * Is the Browse for the Path Name where the events file will be saved.
@@ -761,17 +764,13 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	 * @author Ken Swartz
 	 * @author Dale Visser
 	 */
-	private String getPathData() {
-		JFileChooser fd = new JFileChooser(dataDirectory);
+	private File getPath(File f) {
+		final JFileChooser fd = new JFileChooser(f);
 		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(frame);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			dataDirectory = fd.getSelectedFile().getPath();
-			//save current directory
-		}
-		return dataDirectory;
+		final int option = fd.showOpenDialog(frame);
+		final boolean approval = option == JFileChooser.APPROVE_OPTION;
+		final boolean selected = fd.getSelectedFile() != null;
+		return (approval && selected) ? fd.getSelectedFile() : f;
 	}
 
 	/**
