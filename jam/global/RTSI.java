@@ -72,44 +72,41 @@ public class RTSI {
 
 	/**
 	 * Find all the classes inheriting or implementing a given
-	 * class in a given package.
+	 * class in a given package (but it does not search any 
+	 * sub-packages).
 	 * 
 	 * @param pckgname the fully qualified name of the package
 	 * @param tosubclass the Class object to inherit from
 	 * @return an unordered list of classes assignable as requested
 	 */
 	public static Set find(String pckgname, Class tosubclass) {
-		// Code from JWhich
-		// ======
-		// Translate the package name into an absolute path
-		HashSet rval=new HashSet();
-
-		String name = new String(pckgname);
+		/* Code from JWhich
+		 * Translate the package name into an absolute path */
+		Set rval=new HashSet();
+		String name = new String(pckgname);//copy
 		if (!name.startsWith("/")) {
 			name = "/" + name;
 		}
 		name = name.replace('.', '/');
 
-		// Get a File object for the package
+		/* Get a File object for the package */
 		URL url = RTSI.class.getResource(name);
-		// URL url = tosubclass.getResource(name);
-		// URL url = ClassLoader.getSystemClassLoader().getResource(name);
-		//System.out.println(name + "->" + url);
+//		System.out.println(name + "->" + url);
 
-		// Happens only if the jar file is not well constructed, i.e.
-		// if the directories do not appear alone in the jar file like here:
-		// 
-		//          meta-inf/
-		//          meta-inf/manifest.mf
-		//          commands/                  <== IMPORTANT
-		//          commands/Command.class
-		//          commands/DoorClose.class
-		//          commands/DoorLock.class
-		//          commands/DoorOpen.class
-		//          commands/LightOff.class
-		//          commands/LightOn.class
-		//          RTSI.class
-		//
+		/* Happens only if the jar file is not well constructed, i.e.
+		 * if the directories do not appear alone in the jar file like here:
+		 * 
+		 *          meta-inf/
+		 *          meta-inf/manifest.mf
+		 *          commands/                  <== IMPORTANT
+		 *          commands/Command.class
+		 *          commands/DoorClose.class
+		 *          commands/DoorLock.class
+		 *          commands/DoorOpen.class
+		 *          commands/LightOff.class
+		 *          commands/LightOn.class
+		 *          RTSI.class
+		 */
 		if (url == null)
 			return rval;
 		
@@ -118,9 +115,6 @@ public class RTSI {
 		String s_file = url.getFile()/*.replaceAll("%20"," ")*/;//replaceAll only works in JDK1.4
 		s_file=replaceURLspaces(s_file);
 		File directory = new File(s_file);
-
-		/* New code
-		 * ====== */
 		if (directory.exists()) {
 			/* Get the list of the files contained 
 			 * in the package */
@@ -134,10 +128,7 @@ public class RTSI {
 					try {
 						// Try to create an instance of the object
 						Class c=Class.forName(pckgname + "." + classname);
-						//System.out.println(classname +" : "+tosubclass.isAssignableFrom(c));
-						//Object o =c.newInstance();
 						if (tosubclass.isAssignableFrom(c)) {
-							//System.out.println(classname);
 							rval.add(c);
 						}
 					} catch (ClassNotFoundException cnfex) {
