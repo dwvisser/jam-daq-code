@@ -19,14 +19,34 @@ import javax.swing.JPanel;
  * @version 0.5
  * @author Ken Swartz
  */
-public final class PlotBar extends JPanel implements PlotBarLayout {
+public final class PlotBar extends JPanel {
+    /**
+     * border area at ends of bars
+     */
+    private static final int BORDER_END=5;
+    
+    /**
+     * border area on sides of bars
+     */
+    private static final int BORDER_SIDE=0;
+    
+    /**
+     * width of bars
+     */
+    private static final int BAR_WIDTH=25;
+    
+    /**
+     * length of bars
+     */
+    private static final int BAR_LENGTH=200;
 
-	protected Dimension pageSize;
 	private Monitor monitor;
 	static final private Dimension MIN_SIZE=new Dimension(BAR_LENGTH,BAR_WIDTH);
 	
 	/**
-	 * Constructor
+	 * Constructs a new bar widget for the given monitor.
+	 * 
+	 * @param m monitor to display status of
 	 */
 	public PlotBar(Monitor m) {
 		setMonitor(m);
@@ -46,7 +66,7 @@ public final class PlotBar extends JPanel implements PlotBarLayout {
 	}
 
 	/**
-	 * get the monitor that is ploted
+	 * @return the monitor that is plotted
 	 */
 	public synchronized Monitor getMonitor() {
 		return monitor;
