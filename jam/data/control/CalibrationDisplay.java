@@ -18,9 +18,9 @@ import javax.swing.*;
 public class CalibrationDisplay extends DataControl implements ActionListener,
 ItemListener, WindowListener {
     
-    private final int MAX_NUMBER_TERMS=5;
-    private final String BLANK_TITLE=" Histogram not calibrated ";
-    private final String BLANK_LABEL="    --     ";
+    private final static int MAX_NUMBER_TERMS=5;
+    private final static String BLANK_TITLE=" Histogram not calibrated ";
+    private final static String BLANK_LABEL="    --     ";
     
     private Frame frame;
     private Broadcaster broadcaster;
