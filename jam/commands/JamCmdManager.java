@@ -1,7 +1,12 @@
 package jam.commands;
 
-import java.util.*;
-import jam.global.*;
+import jam.global.CommandListener;
+import jam.global.CommandListenerException;
+import jam.global.CommandNames;
+import jam.global.MessageHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class to create commands and execute them
@@ -10,12 +15,25 @@ import jam.global.*;
  */
 public class JamCmdManager implements CommandListener {
 
-	private final JamStatus status=JamStatus.instance();
-	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	private final MessageHandler msghdlr;
 
-	private Map cmdMap = new HashMap();
-	private final String COMMAND_PATH="jam.commands.";
+	private static final Map cmdMap = new HashMap();
+	/* initializer block for map */
+	static {
+		cmdMap.put(CommandNames.OPEN_HDF, OpenHDFCmd.class);
+		cmdMap.put(CommandNames.SAVE_HDF, SaveHDFCmd.class);
+		cmdMap.put(CommandNames.SAVE_AS_HDF, SaveAsHDFCmd.class);
+		cmdMap.put(CommandNames.ADD_HDF, AddHDFCmd.class);
+		cmdMap.put(CommandNames.RELOAD_HDF, ReloadHDFCmd.class);
+		cmdMap.put(CommandNames.SHOW_NEW_HIST, ShowDialogNewHistogramCmd.class);
+		cmdMap.put(CommandNames.EXIT, ShowDialogExitCmd.class);
+		cmdMap.put(CommandNames.NEW, FileNewClearCmd.class);
+		cmdMap.put(CommandNames.PARAMETERS, ShowDialogParametersCmd.class);
+		cmdMap.put(CommandNames.DISPLAY_SCALERS, ShowDialogScalersCmd.class);
+		cmdMap.put(CommandNames.SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
+		cmdMap.put(CommandNames.SCALERS, ScalersCmd.class);
+		cmdMap.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);		
+	}
 
 	private Commandable currentCommand;
 
@@ -27,23 +45,7 @@ public class JamCmdManager implements CommandListener {
 	 * @param broadcaster
 	 */
 	public JamCmdManager(MessageHandler msghdlr) {
-		this.msghdlr=msghdlr;
-
-		//Commands to add to manager
-		//could be read from a file
-		cmdMap.put(CommandNames.OPEN_HDF, "OpenHDFCmd");
-		cmdMap.put(CommandNames.SAVE_HDF, "SaveHDFCmd");
-		cmdMap.put(CommandNames.SAVE_AS_HDF, "SaveAsHDFCmd");
-		cmdMap.put(CommandNames.ADD_HDF, "AddHDFCmd");		
-		cmdMap.put(CommandNames.RELOAD_HDF, "ReloadHDFCmd");
-		cmdMap.put("shownewhist", "ShowDialogNewHistogramCmd");
-		cmdMap.put("exit", "ShowDialogExitCmd");
-		cmdMap.put("newclear", "FileNewClearCmd");
-		cmdMap.put("parameters", "ShowDialogParametersCmd");
-		cmdMap.put("displayscalers", "ShowDialogScalersCmd");
-		cmdMap.put("showzeroscalers", "ShowDialogZeroScalersCmd");
-		cmdMap.put("scalers", "ScalersCmd");
-		cmdMap.put("exporttext", "ExportTextFileCmd");
+		this.msghdlr = msghdlr;
 	}
 
 	/**
@@ -52,15 +54,14 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd	String key indicating the command
 	 * @param cmdParams	Command parameters
 	 */
-	public boolean performCommand(String strCmd, Object [] cmdParams) throws CommandException {
-
-
-		if(createCmd(strCmd)) {
+	public boolean performCommand(String strCmd, Object[] cmdParams)
+		throws CommandException {
+		boolean success=false;
+		if (createCmd(strCmd)) {
 			currentCommand.performCommand(cmdParams);
-			return true;
-		} else {
-			return false;
+			success= true;
 		}
+		return success;
 	}
 
 	/**
@@ -69,59 +70,41 @@ public class JamCmdManager implements CommandListener {
 	 * @param strCmd 		String key indicating the command
 	 * @param strCmdParams  Command parameters as strings
 	 */
-	public boolean performParseCommand(String strCmd,  String [] strCmdParams) throws CommandListenerException {
-
+	public boolean performParseCommand(String strCmd, String[] strCmdParams)
+		throws CommandListenerException {
+		boolean success=false;
 		try {
-
 			if (createCmd(strCmd)) {
 				currentCommand.performParseCommand(strCmdParams);
-				return true;
-			} else {
-				return false;
-			}
-
+				success=true;
+			} 
 		} catch (CommandException ce) {
 			throw new CommandListenerException(ce.getMessage());
 		}
-
+		return success;
 	}
+	
 	/**
 	 * Create a command class given a key string
-	 * @param strCmd
-	 * @return
+	 * @param strCmd name of the command
+	 * @return <code>true</code> if successful, <code>false</code> if 
+	 * the given command doesn't exist
 	 */
-	private boolean createCmd (String strCmd) throws CommandException {
-
-
-		String cmdClassName = (String)cmdMap.get(strCmd);
-
-		//No command with given command name
-		if (cmdClassName==null)
-				return false;
-
-		//create a command
-		try {
-			currentCommand=null;
-
-			Class cmdClass =Class.forName(COMMAND_PATH+cmdClassName);
-			currentCommand = (Commandable)(cmdClass.newInstance() );
-			currentCommand.init(status, msghdlr, broadcaster);
-			return true;
-
-		} catch (ClassNotFoundException cnfe) {
-			//could not find class
-			throw new RuntimeException(cnfe);
-
-		} catch (InstantiationException ie) {
-			//could not create class
-			throw new RuntimeException(ie);
-
-		} catch (IllegalAccessException iae) {
-			//could not create class
-			throw new RuntimeException(iae);
+	private boolean createCmd(String strCmd) throws CommandException {
+		final boolean exists=cmdMap.containsKey(strCmd);
+		if (exists) {
+			final Class cmdClass = (Class)cmdMap.get(strCmd);
+			currentCommand = null;
+			try {
+				currentCommand = (Commandable) (cmdClass.newInstance());
+				currentCommand.init(msghdlr);
+			} catch (Exception e) {
+				/* There was a problem resolving the command class or 
+				 * with creating an instance. This should never happen
+				 * if exists==true. */
+				throw new RuntimeException(e);
+			}
 		}
-
+		return exists;
 	}
-
-
 }
