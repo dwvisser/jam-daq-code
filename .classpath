@@ -2,7 +2,6 @@
 <classpath>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="src" path=""/>
-    <classpathentry kind="lib" path="jlfgr-1_0.jar"/>
     <classpathentry kind="lib" path="junit.jar"/>
     <classpathentry kind="lib" path="jh.jar"/>
     <classpathentry kind="lib" path="kunststoff.jar"/>

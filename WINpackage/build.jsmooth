@@ -10,7 +10,6 @@
 <classPath>lib\Jam.jar</classPath>
 <classPath>lib\JamHelp.jar</classPath>
 <classPath>lib\jh.jar</classPath>
-<classPath>lib\jlfgr-1_0.jar</classPath>
 <embeddedJar>false</embeddedJar>
 <executableName>bin\Jam.exe</executableName>
 <iconLocation>nukeicon.ico</iconLocation>
