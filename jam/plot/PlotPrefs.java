@@ -23,4 +23,5 @@ public interface PlotPrefs {
 	final String AUTO_ON_EXPAND="AutoOnExpand";
 	final String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
 	final String ENABLE_SCROLLING="EnableScrolling";
+	final String DISPLAY_AXIS_LABELS="DisplayAxisLabels";
 }

@@ -164,11 +164,12 @@ public interface CommandNames {
 	
 	/** Show the peak find setup.*/
 	String SHOW_PEAK_FIND="showPeakFind";
+
+	/** Show the dialog to add a fit*/
+	String SHOW_FIT_NEW="showfitnew";
 	
 	/** Show dialog to add view */
 	String SHOW_VIEW_NEW="showviewnew";
 	
-	/** Show the dialog to add a fit*/
-	String SHOW_FIT_NEW="showfitnew";
 	
 }
