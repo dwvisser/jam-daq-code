@@ -302,18 +302,17 @@ public abstract class Plot extends JPanel  {
     }
     
     /**
-     * Mark a channel
-     * @param channelX the x channel to be marked
-     * @param channelY the y channel to be marked
+     * Mark a channel on the plot.
+     * 
+     * @param p the channel to mark.
      */
     public abstract void markChannel(Point p);
     
     /**
-     * Mark Area
-     * @param minChanX the lower x channel
-     * @param minChanY the lower y channel
-     * @param maxChanX the upper x channel
-     * @param maxChanY the upper y channel
+     * Mark an area on the plot.
+     * 
+     * @param p1 first corner of rectangle
+     * @param p2 second corner of rectangle
      */
     public abstract void markArea(Point p1, Point p2);
     
@@ -347,7 +346,7 @@ public abstract class Plot extends JPanel  {
             yll=p2.y;
             yul=p1.y;
         }
-        // check for beyond extremes and set to extremes
+        /* check for beyond extremes and set to extremes */
         if ( (yll<0)||(yll>sizeY-1) ) {
             yll=0;
         }
@@ -358,8 +357,6 @@ public abstract class Plot extends JPanel  {
         plotLimits.setMaximumX(xul);
         plotLimits.setMinimumY(yll);
         plotLimits.setMaximumY(yul);
-        //XXX
-        System.err.println("Setting limits X:["+xll+","+xul+"], Y:["+yll+","+yul+"]");
         refresh();
     }
     
@@ -368,8 +365,6 @@ public abstract class Plot extends JPanel  {
      */
     public void zoom(int inOut) {
         int diffX,diffY,temp;
-        
-        System.err.println("zoom()");
         int xll=plotLimits.getMinimumX();     // x lower limit
         int xul=plotLimits.getMaximumX();;    // x upper limit
         int yll=plotLimits.getMinimumY();;    // y lower limit
@@ -426,11 +421,7 @@ public abstract class Plot extends JPanel  {
             yul=temp+1;
         }
         plotLimits.setLimitsX(xll,xul);
-        //plotLimits.setMinimumX(xll);
-        //plotLimits.setMaximumX(xul);
         plotLimits.setLimitsY(yll,yul);
-        //plotLimits.setMinimumY(yll);
-        //plotLimits.setMaximumY(yul);
         refresh();
     }
     
@@ -474,7 +465,7 @@ public abstract class Plot extends JPanel  {
         } else {
             plotLimits.setMaximumCounts(5);
         }
-        //scroll bars do not always reset on their own
+        /* scroll bars do not always reset on their own */
         scrollbars.update(Scroller.COUNT);
         this.repaint();
     }
@@ -499,9 +490,7 @@ public abstract class Plot extends JPanel  {
     void refresh(){
         if(scrollbars!=null){
             scrollbars.update(Scroller.COUNT);
-            //scroll bars do not always reset on their own
-            
-            //and last but not least
+            /* scroll bars do not always reset on their own */
             scrollbars.update(Scroller.ALL);
         }
         copyCounts();
