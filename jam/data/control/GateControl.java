@@ -532,10 +532,10 @@ WindowListener,Observer  {
 	private void unset(){
 		currentGate.unsetLimits();
 		try{
-			broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
-			messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
 			cgate.repaint();
+			messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
 			cancel();
+			broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
 		} catch (GlobalException ge){
 			messageHandler.errorOutln(getClass().getName()+".unset(): "+
 			ge.getMessage());
@@ -616,10 +616,10 @@ WindowListener,Observer  {
                     currentGate.getName());
                     printPoints(gatePoly2d);
                 }
-                broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
                 display.displayGate(currentGate);
                 cgate.repaint();
                 cadd.repaint();
+				broadcaster.broadcast(BroadcastEvent.GATE_SET_SAVE);
             }
         } catch (NumberFormatException ne) {
             throw new DataException("Invalid input not a number [GateSet]");
