@@ -14,6 +14,8 @@ import java.util.TreeMap;
  */
 public class Group {
  
+	final public static int TYPE_FILE=1;
+	final public static int TYPE_SORT=2;
 	/** List of all groups */
 	private final static List LIST = new ArrayList();
 	/** Map of all groups using name*/	
@@ -25,8 +27,9 @@ public class Group {
 	/** children of group */
 	private final Map histogramMap = new TreeMap();	 
 	
-	private String name; 
-
+	private String name;
+	
+	private int type;
 	/** Create a new group */
 	/*
 	public static void createGroup(String name){
@@ -38,12 +41,23 @@ public class Group {
 	 * group if it does not already exist
 	 * @param groupName
 	 */
-	public static void setCurrentGroup(String groupName){
+	public static void createGroup(String groupName, int type){
 		if ( NAME_MAP.containsKey(groupName) ) {
 			currentGroup=(Group)( NAME_MAP.get(groupName) );
 		} else {
-			Group group=new Group(groupName);
+			Group group=new Group(groupName, type);
 			currentGroup=group;
+		}
+
+	}
+
+	/** Set a group as the current group, create the
+	 * group if it does not already exist
+	 * @param groupName
+	 */
+	public static void setCurrentGroup(String groupName){
+		if ( NAME_MAP.containsKey(groupName) ) {
+			currentGroup=(Group)( NAME_MAP.get(groupName) );
 		}
 	}	
 	
@@ -100,8 +114,9 @@ public class Group {
 	 * Constructor
 	 * @param name of the group
 	 */
-	public Group(String name){
+	public Group(String name, int type){
 		this.name=name;
+		this.type=type;
 		LIST.add(this);
 		NAME_MAP.put(name, this);
 	}
@@ -121,7 +136,12 @@ public class Group {
 	public String getName(){
 		return name;
 	}
-	
+	/**
+	 * @return the type of this group
+	 */
+	public int getType(){
+		return type;
+	}
 	/**
 	 * @return list of histograms in this group
 	 */

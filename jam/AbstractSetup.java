@@ -209,7 +209,7 @@ abstract class AbstractSetup {
             sortClass = (Class) sortChoice.getSelectedItem();
         }
         Group.clear();
-        Group.setCurrentGroup(sortClass.getName());
+        Group.createGroup(sortClass.getName(), Group.TYPE_SORT);
         try {        	
             if (specify.isSelected()) {
                 /* we call loadClass() in order to guarantee latest version */

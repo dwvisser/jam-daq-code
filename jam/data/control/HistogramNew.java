@@ -166,7 +166,7 @@ public class HistogramNew extends AbstractControl {
 		} else {
 			array = new double[size][size];
 		}
-		Group.setCurrentGroup("Working");
+		Group.createGroup("Working", Group.TYPE_FILE);
 		Histogram.createHistogram(array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");

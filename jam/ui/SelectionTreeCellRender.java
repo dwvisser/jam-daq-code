@@ -41,7 +41,11 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
         Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
         if (nodeObject instanceof Group) {
         	  Group group = (Group)nodeObject;
-        	  setIcon(Icons.GROUP);
+        	  if (group.getType()==Group.TYPE_FILE) {
+        	  	setIcon(Icons.GROUP);
+        	  }else{
+        	  	setIcon(Icons.SORT);        	  	
+        	  }
         	  setText(group.getName());
         } else if (nodeObject instanceof Histogram) {
             Histogram hist = (Histogram) nodeObject;
