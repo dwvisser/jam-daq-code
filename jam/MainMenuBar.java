@@ -102,15 +102,14 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		fitting.addSeparator();
 		final JMenu helpMenu = new JMenu("Help");
 		add(helpMenu);
-		final JMenuItem about = new JMenuItem("About\u2026");
-		helpMenu.add(about);
-		about.setActionCommand("about");
-		about.addActionListener(jamCommand);
+		helpMenu.add(getMenuItem(HELP_ABOUT));				
 		helpMenu.add(getMenuItem(USER_GUIDE));
 		final JMenuItem license = new JMenuItem("License\u2026");
 		helpMenu.add(license);
 		license.setActionCommand("license");
 		license.addActionListener(jamCommand);
+		
+				
 	}
 
 	private JMenu getFileMenu() {
