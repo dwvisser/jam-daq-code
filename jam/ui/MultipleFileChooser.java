@@ -286,7 +286,7 @@ public final class MultipleFileChooser extends JPanel {
 		
 		final JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(chooserMode);
-		//fd.setMultiSelectionEnabled(true);
+		fd.setMultiSelectionEnabled(true);
 		if (selectFileOnly){
 		    fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
 				"Data Files (*."+fileExtension+")"));
@@ -295,14 +295,11 @@ public final class MultipleFileChooser extends JPanel {
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
-
-		    if (selectFileOnly){
-				/*
+		    if (selectFileOnly){				
 				File [] files =fd.getSelectedFiles();
 		    	for (int i=0; i<files.length;i++ ) {
 		    		listFilesModel.addElement(files[i]);
 		       }
-		       */
 		     addFile(fd.getSelectedFile());
 		    } else {
 				lastFile = fd.getSelectedFile(); //save current directory
