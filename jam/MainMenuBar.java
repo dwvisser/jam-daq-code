@@ -1,7 +1,6 @@
 package jam;
 import jam.commands.CommandManager;
 import jam.data.Histogram;
-import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
@@ -22,6 +21,7 @@ import java.util.Observer;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -41,9 +41,12 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
 	final private JamStatus status = JamStatus.instance();
-	final private JMenu fitting = new JMenu("Fitting");
+	
 	final private JMenuItem impHist = new JMenu("Import");
-	final private LoadFit loadfit;
+	
+	/** Fit menu needed as members so we can add a fit */
+	final private JMenu fitting = new JMenu("Fitting");
+		
 	final private Display display;
 	final private MessageHandler console;
 	final private JMenu calHist = new JMenu("Calibrate");
@@ -90,16 +93,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		scalers.add(getMenuItem(DISPLAY_MONITORS));
 		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
 		add(getPreferencesMenu(jamCommand));
-		loadfit = new LoadFit(console, fitting);
-		add(fitting);
-		final JMenuItem loadFit = new JMenuItem("Load Fit\u2026");
-		loadFit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				loadfit.showLoad();
-			}
-		});
-		fitting.add(loadFit);
-		fitting.addSeparator();
+		
+		add(getFitMenu());		
 		
 		final JMenu helpMenu = new JMenu("Help");
 		add(helpMenu);
@@ -192,6 +187,16 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return histogram;
 	}
 
+
+	
+	private JMenu getFitMenu() {
+		
+		fitting.add(getMenuItem(SHOW_FIT_NEW));
+		fitting.addSeparator();		
+		return fitting;
+	}
+	
+	
 	private JMenu getPreferencesMenu(JamCommand jamCommand) {
 		final JMenu mPrefer = new JMenu("Preferences");
 		final JCheckBoxMenuItem ignoreZero =
@@ -288,7 +293,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(debugVME);
 		return mPrefer;
 	}
-
+	
 	private void sortModeChanged() {
 		final SortMode mode = status.getSortMode();
 		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
@@ -306,6 +311,9 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final int command = be.getCommand();
 		if (command == BroadcastEvent.SORT_MODE_CHANGED) {
 			sortModeChanged();
+		} else if (command == BroadcastEvent.FIT_NEW) {
+			Action fitAction =(Action)(be.getContent());
+			fitting.add(new JMenuItem(fitAction));
 		}
 	}
 }
