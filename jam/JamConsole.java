@@ -314,7 +314,7 @@ public class JamConsole
 		int[] parameters;
 
 		String command = null;
-		int commandLen = 0;
+		//int commandLen = 0;
 		int countParam = 0;
 		//make string tokenizer use spaces, commas, and returns as delimiters
 		String inString = _inString.trim();
@@ -324,7 +324,7 @@ public class JamConsole
 		//check at least something was entered
 		if (inLine.hasMoreTokens()) {
 			command = inLine.nextToken();
-			commandLen = command.length();
+			//commandLen = command.length();
 			// try to see if first token is a number
 			try {
 				parameters = new int[numberInWords];
@@ -332,7 +332,7 @@ public class JamConsole
 				//if we got this far first token is a int
 				countParam++;
 				command = "int";
-				commandLen = 3;
+				//commandLen = 3;
 				//not a number so make command
 			} catch (NumberFormatException nfe) {
 				//new parameter list
