@@ -38,20 +38,6 @@ public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
     }
 
 	/**
-	 * @see jam.sort.stream.EventOutputStream#writeEvent(short[])
-	 */
-	/*public void writeEvent(short[] input) throws EventException {
-		System.err.println(getClass().getName()+": writeEvent() not yet implemented");
-	}*/
-
-	/**
-	 * @see jam.sort.stream.EventOutputStream#writeEvent(int[])
-	 */
-	/*public void writeEvent(int[] input) throws EventException {
-		System.err.println(getClass().getName()+": writeEvent() not yet implemented");
-	}*/
-
-	/**
 	 * @see jam.sort.stream.EventOutputStream#writeHeader()
 	 */
 	public void writeHeader() throws EventException {
@@ -85,13 +71,6 @@ public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
             throw new EventException("Writing header IOException "+io.getMessage()+" [L002OutputStream]");
         }
 	}
-
-	/**
-	 * @see jam.sort.stream.EventOutputStream#writeEndRun()
-	 */
-	/*public void writeEndRun() throws EventException {
-		System.err.println(getClass().getName()+": writeEndRun() not yet implemented");
-	}*/
 
 	/**
 	 * @see jam.sort.stream.EventOutputStream#isEndRun(short)

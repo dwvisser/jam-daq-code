@@ -152,7 +152,6 @@ public class YaleOutputStream extends EventOutputStream implements L002Parameter
      * Checks whether a valid parameter number (should be 1 to 512 according to ORNL documentation).
      */
     protected boolean isValidParameterNumber(short number){
-        //System.out.println("valid param '"+number+"': "+((number>=1 )&& (number <= 512)));
         return ((number>=0 )&& (number < 2048));
     }
 

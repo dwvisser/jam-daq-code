@@ -82,7 +82,6 @@ public class L00XInputStream extends L002HeaderReader implements L002Parameters 
     private boolean isParameter(short paramWord) throws IOException {
         boolean parameterSuccess;
         //check special types parameter
-        //System.err.println(getClass().getName()+".isParameter("+paramWord+")");
         if (paramWord==EVENT_END_MARKER){
             parameterSuccess=false;
             status=EventInputStatus.EVENT;
@@ -100,7 +99,6 @@ public class L00XInputStream extends L002HeaderReader implements L002Parameters 
                 parameterSuccess=true;
                 status=EventInputStatus.PARTIAL_EVENT;
             } else {// 2048-4095 assumed
-                //dataInput.readShort());//skip scaler value
                 parameterSuccess=true;
                 status = EventInputStatus.SCALER_VALUE;
             }
@@ -109,7 +107,6 @@ public class L00XInputStream extends L002HeaderReader implements L002Parameters 
             parameterSuccess=false;
             status=EventInputStatus.UNKNOWN_WORD;
         }
-        //System.err.println(getClass().getName()+".isParameter(): status = "+status);
         return parameterSuccess;
     }
 
