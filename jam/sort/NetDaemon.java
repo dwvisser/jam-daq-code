@@ -23,50 +23,41 @@ public  class NetDaemon extends GoodThread {
     
     public final static int BUFFER_SIZE=8*1024;	//8 kBytes
     
-    MessageHandler msgHandler;
-    /**
-     * Host sending data
-     */
-    private String iNetAddressData;
-    
-    private InetAddress dataAddress;
-    private int dataPort;
-    private DatagramSocket dataSocket;
-    private DatagramPacket dataIn;
-    /**
-     * buffer to recieve data from udp socket
-     */
-    private byte[] packetBuffer;
-    private byte[] bufferOut;
+    private final MessageHandler msgHandler;
+    private final DatagramSocket dataSocket;
     
     /**
      * ring buffers for passing events to sorting
      */
-    private RingBuffer sortingRing;
+    private final RingBuffer sortingRing;
+    
     /**
      * ring buffers for passing events to storage
      */
-    private RingBuffer storageRing;
+    private final RingBuffer storageRing;
+    
     /**
      * set if we want data to be put is writing pipe
      * writting out data
      */
-    private boolean writerOn;
+    private boolean writerOn=false;
+    
     /**
      *set if we sorting data
      */
-    private boolean sorterOn;
+    private boolean sorterOn=true;
+    
     /**
-     *sample inteveral to sort data
+     * sample interval to sort data
      */
-    private int sortInterval;
+    private int sortInterval=1;//sort every buffer
+    
     /**
      * number of packets counter
      */
-    private int packetCount=0;	    //number of packets recieved
-    private int notSortCount=0;	    //number of packest not sorted
-    private int notStorCount=0;
-    private int packetLength;	    //length of packet recieved
+    private int packetCount=0;	    //number of packets received
+    private int notSortCount=0;	    //number of packets not sorted
+    private int notStorCount=0;//number of packets not stored
     
     /**
      * Constructor passed both storage and sorting pipes.
@@ -82,25 +73,16 @@ public  class NetDaemon extends GoodThread {
         this.sortingRing=sortingRing;
         this.storageRing=storageRing;
         this.msgHandler=msgHandler;
-        this.iNetAddressData=host;        
         try {//ceate a port listener
-            dataAddress =InetAddress.getByName(iNetAddressData);
-            dataPort=port;
-            dataSocket=new DatagramSocket(dataPort,dataAddress);            
-            packetBuffer=new byte[BUFFER_SIZE];
-            dataIn = new DatagramPacket(packetBuffer, packetBuffer.length);
+            final InetAddress dataAddress =InetAddress.getByName(host);
+            dataSocket=new DatagramSocket(port,dataAddress);            
         } catch (UnknownHostException e) {
-            throw new SortException(getClass().getName()+": The host, "+iNetAddressData+", is unknown.");
+            throw new SortException(getClass().getName()+": The host, "+host+", is unknown.");
         } catch(BindException be){
-            throw new SortException(getClass().getName()+": Could not bind to data socket.");
+            throw new SortException(getClass().getName()+": Could not bind to data socket. Are other copies of Jam running?");
         } catch (IOException e) {
             throw new SortException(getClass().getName()+": Could not create data socket.");
         }
-        notSortCount=0;
-        notStorCount=0;
-        writerOn=false;
-        sorterOn=true;
-        sortInterval=1;//sort every buffer
         this.setPriority(9);//high priority, normal=5
         this.setDaemon(true);
     }
@@ -131,14 +113,16 @@ public  class NetDaemon extends GoodThread {
         if (dataSocket==null) {
             throw new SortException("Could not start netDeamon, socket null {NetDaemon]");
         }
+		final byte [] bufferOut=new byte[BUFFER_SIZE];
+		final DatagramPacket dataIn = new DatagramPacket(bufferOut, bufferOut.length);
         while(this.checkState()){//loop as long as state is RUN
             //wait for packet
             dataSocket.receive(dataIn);
             if (this.checkState()) {
-                bufferOut=dataIn.getData();
-                packetLength=dataIn.getLength();
+                dataIn.getData();//data goes to bufferOut
+                //FIXME NEVER USED BUT SHOULD BE final int packetLength=dataIn.getLength();
                 packetCount++;
-                //put buffer into to sorting ring with aample fraction
+                //put buffer into to sorting ring with sample fraction
                 if( sorterOn&&((packetCount%sortInterval)==0) ){
                     try {
                         sortingRing.putBuffer(bufferOut);
@@ -177,19 +161,6 @@ public  class NetDaemon extends GoodThread {
     }
     
     /**
-     * Sets whether to write out events to the sorting pipe.
-     *
-     * @param writerOn <code>true</code> if send events, <code>false</code> if not
-     */
-    /*public void setSorting(boolean sorterOn){
-        if(sortingRing!=null){
-            this.sorterOn=writerOn;
-        } else {
-            msgHandler.errorOutln("Cant sort events no ring buffer [NetDaemon]");
-        }
-        
-    }*/
-    /**
      * Closes the network connection.
      */
     public void closeNet() {
@@ -227,7 +198,6 @@ public  class NetDaemon extends GoodThread {
      */
     public int getPacketCount() {
         return packetCount;
-        
     }
     
     /**
@@ -239,20 +209,19 @@ public  class NetDaemon extends GoodThread {
         packetCount=count;
     }
     
-    /**
-     * Network test method dumps data to a
-     * file netttest.dmp
-     * FIXME not finnished
-     */
-/*DEBUG
-    public static void main(String args[]) {
-        try {
-            FileInputStream fis=new FileInputStream("nettest.dmp");
-            NetDaemon net = new NetDaemon(fis);
-            net.start();
-        } catch (IOException) {
-            System.out.println("error in NetDaemon main");
-        }
+    public int getStoredPackets(){
+    	return packetCount-notStorCount;
     }
- */
+    
+    public int getSortedBuffers(){
+    	return packetCount-notSortCount;
+    }
+    
+    public void resetCounters(){
+    	synchronized(sortingRing){
+    		packetCount=0;
+    		notStorCount=0;
+    		notSortCount=0;
+    	}
+    }
 }
