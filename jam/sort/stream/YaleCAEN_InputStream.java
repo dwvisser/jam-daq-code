@@ -138,7 +138,7 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         EventInputStatus rval=EventInputStatus.EVENT;
         int parameter=0;
         int endblock=0;
-        int nscaler = 10;   // defines the number of scaler blocks read before one is written
+        int nscaler = 5;   // defines the number of scaler blocks read before one is written
         boolean writescaler=false;	// whether or not to write scaler values to console
         int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
         try {
@@ -197,8 +197,11 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                 } else if (header==SCALER_BLOCK) {//read and ignore scaler values
                     int numScalers = dataInput.readInt();
                     nscalerblock++;
-                    int check = (nscalerblock/nscaler)*nscaler;
-					if (check==nscalerblock) {
+                    int check = 0;
+                    if (nscaler > 0) {
+                    	check = (nscalerblock/nscaler)*nscaler;
+                    }
+					if ((check==nscalerblock)){
                     	writescaler=true;	
 					}
                     for (int i=0; i<numScalers; i++) {
