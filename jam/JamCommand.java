@@ -476,10 +476,10 @@ public class JamCommand
 												+ ".selectHistogram(): "
 												+ ge);
 									}
-									display.displayHistogram(
-										Histogram.getHistogram(
-											status.getCurrentHistogramName()));
+									Histogram h=Histogram.getHistogram(status.getCurrentHistogramName());
+									display.displayHistogram(h);
 									jamMain.gatesChanged();
+									jamMain.setOverlayEnabled(h.getDimensionality()==1);
 								}
 							});
 						} catch (InterruptedException ie) {

@@ -45,7 +45,7 @@ class Help implements ActionListener {
 		JPanel pcenter = new JPanel(new GridLayout(0, 1));
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
-			new JLabel("Jam version " + JamMain.JAM_VERSION, JLabel.CENTER));
+			new JLabel("Jam v" + JamMain.getVersion(), JLabel.CENTER));
 		pcenter.add(new JLabel("by", JLabel.CENTER));
 		pcenter.add(
 			new JLabel(

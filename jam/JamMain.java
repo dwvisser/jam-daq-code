@@ -124,8 +124,11 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Message output and text input.
 	 */
 	JamConsole console;
+	static private final char beta='\u03b2';
+	static private final char alpha='\u03b1';
+	static private final String JAM_VERSION = "1.4"+beta+"3";
+	static private final String VERSION_TYPE = "development";
 
-	static public final String JAM_VERSION = "1.4";
 
 	/**
 	 * Program exit dialog box.
@@ -611,14 +614,10 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * @since Version 0.5
 	 */
 	private void addToolbarSelect() {
-		//create default models
-		//noHistComboBoxModel = new DefaultComboBoxModel();
-		//noHistComboBoxModel.addElement("NO HISTOGRAMS");
 		noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
 
-		// >>setup select panel
-		//panel with selection and print ect..
+		/* panel with selection and print etc. */
 		pselect = new JPanel(new BorderLayout());
 		pselect.setBackground(Color.lightGray);
 		pselect.setForeground(Color.black);
@@ -636,7 +635,6 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		pRunState.add(lrunState);
 		//histogram chooser
 		JPanel pCenter = new JPanel(new GridLayout(1, 0));
-		//pHistChoose.add(new JLabel("Histogram",SwingConstants.RIGHT));
 		hcbm=new HistogramComboBoxModel(jamCommand);
 		histogramChooser = new JComboBox(hcbm);
 		histogramChooser.setMaximumRowCount(30);
@@ -736,6 +734,10 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		};
 		worker.start();
 		gateChooser.setSelectedIndex(0);
+	}
+	
+	void setOverlayEnabled(boolean state){
+		this.boverLay.setEnabled(state);
 	}
 
 	/**
@@ -1024,6 +1026,14 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 			boverLay.doClick();
 		}
 	}
+	
+	static public String getVersion(){
+		String rval=JAM_VERSION;
+		if (VERSION_TYPE.length()>0){
+			rval += " ("+VERSION_TYPE+")";
+		}
+		return rval;
+	}
 
 	/**
 	 * Selects first items in histogram and gate choosers.  Default priveleges
@@ -1055,7 +1065,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * Main method that is run to start up full Jam process
 	 */
 	public static void main(String args[]) {
-		System.out.println("Jam release version " + JAM_VERSION);
+		System.out.println("Launching Jam v" + getVersion());
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
