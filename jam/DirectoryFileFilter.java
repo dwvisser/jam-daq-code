@@ -11,13 +11,13 @@ import javax.swing.filechooser.FileFilter;
  * @version 1.3
  */
 public class DirectoryFileFilter extends FileFilter {
-    
+	
     /**
      * @return true if the given file is a directory
      * @param f file to check
      */
-     public boolean accept(File f){
-		return f.isDirectory();
+     public boolean accept(File file){
+		return file.isDirectory();
 	}
     
     /**
