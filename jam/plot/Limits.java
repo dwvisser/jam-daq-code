@@ -1,10 +1,8 @@
-/*
- */
 package jam.plot;
 import java.util.Hashtable;
-import jam.global.*;
 import jam.data.Histogram;
 import javax.swing.*;
+
 /**
  * Stores the parameters on how the histograms are to be displayed.  This includes
  * <ul>
@@ -17,7 +15,7 @@ import javax.swing.*;
  * The class contains a <code>static Hashtable</code> referring to all the
  * <code>Limits</code> objects by the associated <code>Histogram</code> object.
  *
- *
+ * @author Ken Swartz
  */
 public class Limits {
 
@@ -329,20 +327,15 @@ public class Limits {
     public void setScale(int s){
         scale=s;
     }
+    
     /**
      * update the values from the model
      */
     public void update(){
-
         minimumX=rangeModelX.getValue();
         maximumX=minimumX+rangeModelX.getExtent();
-
-        //y scroller goes the wrong way.
         minimumY=sizeY-rangeModelY.getValue()-rangeModelY.getExtent();
         maximumY=sizeY-rangeModelY.getValue();
-
-        minimumCounts=minimumCounts;
-        maximumCounts=maximumCounts;
     }
 
     /**
@@ -355,6 +348,7 @@ public class Limits {
         rangeModelX.setRangeProperties(value, extent, zeroX, sizeX, false);
 
     }
+    
     /**
      * update range model Y
      * this updates the scroll bars
