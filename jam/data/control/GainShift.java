@@ -162,23 +162,28 @@ Observer {
         setUILabels(true);
     }
 
+	private final static String OK="ok";
+	private final static String APPLY="apply";
+	private final static String CANCEL="cancel";
+	
+
     /**
      * Are we done setting gate and should we save it
      * or has the gate setting been canceled.
      *
      */
     public void actionPerformed(ActionEvent e){
-
+		final String command=e.getActionCommand();
         try {
-            if (e.getActionCommand()=="ok"||e.getActionCommand()=="apply"){
+            if (OK.equals(command)||APPLY.equals(command)){
                 doGainShift();
-                if (e.getActionCommand()=="ok") {
+                if (OK.equals(command)) {
                     cancel();
                 }
-            } else if(e.getActionCommand()=="cancel") {
+            } else if(CANCEL.equals(command)) {
                 cancel();
             } else  {
-                throw new DataException("Not a recognized command {GateControl]");
+                throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );

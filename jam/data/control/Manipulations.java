@@ -162,9 +162,9 @@ Observer {
      *
      */
     public void actionPerformed(ActionEvent e){
-
+		final String command = e.getActionCommand();
         try {
-            if (e.getActionCommand()=="ok"||e.getActionCommand()=="apply"){
+            if (command=="ok"||command=="apply"){
                 manipulate();
                 try {
                     broadcaster.broadcast(BroadcastEvent.REFRESH);
@@ -172,11 +172,11 @@ Observer {
                     messageHandler.errorOutln(getClass().getName()+
                     ".actionPerformed(): "+ge);
                 }
-                if (e.getActionCommand()=="ok") cancel();
-            } else if(e.getActionCommand()=="cancel") {
+                if (command=="ok") cancel();
+            } else if(command=="cancel") {
                 cancel();
             } else  {
-                throw new DataException("Not a recognized command {GateControl]");
+                throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );

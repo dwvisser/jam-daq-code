@@ -234,7 +234,7 @@ public class HistogramControl extends DataControl implements ActionListener {
                 dialogNew.dispose();
             } else {
                 /* just so at least a exception is thrown for now */
-                throw new DataException("Unregonized command [HistogramControl]");
+                throw new UnsupportedOperationException("Unregonized command: "+command);
             }
         } catch (DataException je) {
             msghdlr.errorOutln(je.getMessage());

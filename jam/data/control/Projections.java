@@ -153,17 +153,17 @@ Observer {
      *
      */
     public void actionPerformed(ActionEvent e){
-
+		final String command=e.getActionCommand();
         try {
-            if (e.getActionCommand()=="ok"||e.getActionCommand()=="apply"){
+            if (command=="ok"||command=="apply"){
                 project();
-                if (e.getActionCommand()=="ok") {
+                if (command=="ok") {
                     cancel();
                 }
-            } else if(e.getActionCommand()=="cancel") {
+            } else if(command=="cancel") {
                 cancel();
             } else  {
-                throw new DataException("Not a recognized command {GateControl]");
+                throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
