@@ -110,6 +110,8 @@ class Scroller
 	/**
 	 * Set the Limits that the scroll bars are connected
 	 * to the models in Limits.
+	 * 
+	 * @param limits new limits
 	 */
 	synchronized void setLimits(Limits limits) {
 		plotLimits = limits;
@@ -121,6 +123,8 @@ class Scroller
 
 	/**
 	 * Called when any scrollbar has been changed.
+	 * 
+	 * @param ae adjustment event message
 	 */
 	public synchronized void adjustmentValueChanged(AdjustmentEvent ae) {
 		if (plot.hasHistogram()) {
@@ -155,7 +159,7 @@ class Scroller
 		}
 	}
 	
-	/**
+	/* non-javadoc:
 	 * update automatically by limits.
 	 *  Update the scroll bars for this plot
 	 *  this routine calls updateHorz, updateVert and updateCounts
@@ -179,7 +183,7 @@ class Scroller
 		countChange = false;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Count scrollBar Change of scale using a quadratic function.
 	 * This scrollBar is not quiet smooth and could be improved
 	 * vertical scrollBar change scale use to be a quadratic function

@@ -23,35 +23,31 @@ class PlotMouse extends MouseAdapter {
 	/* Called so a change in select plot can be made */
 	private PlotSelectListener plotSelectListener;
 
-	/**
-	 * Construction, PlotMouseListener belongs to a Plot.
-	 * this plot will now call PlotMouseListener for 
-	 * mouse events.
-	 *
-	 */
+	/*
+     * non-javadoc: Construction, PlotMouseListener belongs to a Plot. this plot
+     * will now call PlotMouseListener for mouse events.
+     */
 	PlotMouse(PlotGraphics plotGraphics) {
 		pg = plotGraphics;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Add listener for plot select  	 
 	 */
 	void setPlotSelectListener(PlotSelectListener plotSelectListener) {
 		this.plotSelectListener=plotSelectListener;
 	}
 	
-	/**
-	 * Add a class, a listener, that will be called if a PlotMouse 
-	 * event occurs. Listener must implement PlotMouseListener
-	 * (have method plot
-	 *
-	 */
+	/*
+     * non-javadoc: Add a class, a listener, that will be called if a PlotMouse
+     * event occurs. Listener must implement PlotMouseListener (have method plot
+     */
 	void addListener(PlotMouseListener listener) {
 		listenersList.add(listener);
 	}
 	
-	/**
-	 * Remove a class that was called if a PlotMouse event occured.
+	/*
+	 * Non-javadoc: Remove a class that was called if a PlotMouse event occured.
 	 * returns true if it could remove this listener
 	 */
 	boolean removeListener(PlotMouseListener listener) {
@@ -67,6 +63,8 @@ class PlotMouse extends MouseAdapter {
 	/**
 	 * A mousePressed event has occured, so call all listeners 
 	 * in the listeners list.
+	 * 
+	 * @param e the mouse-pressed event
 	 */
 	public void mousePressed(MouseEvent e) {
 		final AbstractPlot selectedPlot=(AbstractPlot)e.getSource();
