@@ -446,8 +446,6 @@ FrontEndCommunication {
      * It determines how the packet is to be handled.
      */
     public void run(){
-        int status;          //first int of message tells what type of packet
-
     	final byte[] bufferIn=new byte[MAX_PACKET_SIZE];
         try {
             while (true) {//loop forever receiving packets
@@ -455,13 +453,12 @@ FrontEndCommunication {
                 socketReceive.receive(packetIn);
                 ByteArrayInputStream messageBais = new ByteArrayInputStream(packetIn.getData());
                 DataInput messageDis=new DataInputStream(messageBais);
-                status=messageDis.readInt();
+                final int status=messageDis.readInt();
                 if (status==OK) {
                     console.messageOutln(getClass().getName()+": "+unPackMessage(messageDis));
                 } else if (status==SCALER){
                     unPackScalers(messageDis);
                     Scaler.update(scalerValues);
-                    broadcaster.broadcast(BroadcastEvent.SCALERS_UPDATE);
                 } else if (status==COUNTER){
                     unPackCounters(messageDis);
                     broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE, counterValues);

@@ -1,7 +1,15 @@
 package jam.data;
-import java.util.*;
-import jam.util.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.util.StringUtilities;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing an individual scaler in the experiment.
@@ -90,6 +98,8 @@ public class Scaler implements Serializable  {
         System.gc();
     }
 
+    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+
     /**
      * Update all the scaler values.
      * The value indexs refer to the scaler number.
@@ -97,11 +107,12 @@ public class Scaler implements Serializable  {
      */
     public static void update(int [] inValue){
         /* check we do not try to update mores scalers than there are */
-        int numberScalers=Math.min( inValue.length, scalerList.size() );
+        final int numberScalers=Math.min( inValue.length, scalerList.size() );
         for (int i=0;i<numberScalers;i++){
-            Scaler currentScaler=(Scaler)scalerList.get(i);
+            final Scaler currentScaler=(Scaler)scalerList.get(i);
             currentScaler.setValue(inValue[currentScaler.getNumber()]);
         }
+        broadcaster.broadcast(BroadcastEvent.SCALERS_UPDATE);
     }
 
     /**
