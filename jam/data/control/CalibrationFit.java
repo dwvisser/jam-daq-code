@@ -20,18 +20,18 @@ import javax.swing.*;
  * @version 0.5
  */
 public class CalibrationFit extends DataControl implements ActionListener, ItemListener {
-    
+
     private static final int NUMBER_POINTS=5;
-    
+
     private Frame frame;
     private Broadcaster broadcaster;
     private MessageHandler msghdlr;
-    
+
     //calibrate histogram
     private Histogram currentHistogram;
     // calibration function
     private CalibrationFunction calibFunction;
-    
+
     //GUI stuff
     private JDialog dialogCalib;
     private JComboBox cFunc;
@@ -39,12 +39,12 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     private JPanel pPoint [];
     private JTextField [] tEnergy, tChannel;
     private JCheckBox cUse[];
-    
+
     private String fileName;
     private String directoryName;
     private NumberFormat numFormat;
     private JamStatus status;
-    
+
     /**
      * Constructor
      */
@@ -107,9 +107,12 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             pPoint[i].add(cUse[i]);
             cUse[i].addItemListener(this);
         }
+        JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel pbCal= new JPanel();
-        pbCal.setLayout(new GridLayout(1,0));
-        cdialogCalib.add(pbCal);
+        pbCal.setLayout(new GridLayout(1,0,5,5));
+        pbutton.add(pbCal);
+        cdialogCalib.add(pbutton);
+
         JButton bokCal =  new JButton("OK");
         bokCal.setActionCommand("okcalib");
         bokCal.addActionListener(this);
@@ -123,18 +126,20 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
         dialogCalib.pack();
+
         dialogCalib.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
                 dialogCalib.dispose();
             }
         });
+
         //formating enery output
         numFormat=NumberFormat.getInstance();
         numFormat.setGroupingUsed(false);
         numFormat.setMinimumFractionDigits(4);
         numFormat.setMaximumFractionDigits(4);
     }
-    
+
     /**
      * Receive actions from Dialog Boxes
      *
@@ -174,7 +179,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             ".actionPerformed(): "+ge);
         }
     }
-    
+
     /**
      * A item state change indicates that a gate has been choicen
      *
@@ -182,7 +187,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     public void itemStateChanged(ItemEvent ie){
         try {
             if (ie.getSource()==cFunc) {
-                setFunctionType();//choose the function                
+                setFunctionType();//choose the function
             } else {
                 for(int i=0;i<NUMBER_POINTS;i++){
                     if(ie.getSource()==cUse[i]){
@@ -194,7 +199,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             msghdlr.errorOutln(de.getMessage());
         }
     }
-    
+
     private void setFunctionType() throws DataException {
         Object item = cFunc.getSelectedItem();
         if(item.equals("Linear")){
@@ -206,7 +211,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         }
         lcalibEq.setText("Function: "+calibFunction.getTitle());
     }
-    
+
     /**
      *sets fields to be active
      */
@@ -234,7 +239,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     public void showLinFit(){
         dialogCalib.show();
     }
-    
+
     /**
      * Call the fitting method of the chosen function to calibrate a histogram
      */
@@ -245,7 +250,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         double x[];
         double y[];
         String fitText;
-        
+
         Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHist==null){//silently ignore if histogram null
             System.err.println("Error null histogram [Calibrate]");
@@ -288,7 +293,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
             ".doCalibration(): "+ge);
         }
     }
-    
+
     /**
      * cancel the histogram calibration
      *
@@ -304,7 +309,7 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
     private void loadCalib() throws Exception {
         openFile("Load Calibration Energies", FileDialog.LOAD);
     }
-    
+
     /**
      * Open a file to read
      */
@@ -330,23 +335,23 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         } //else leave it null
         return fileIn;
     }
-    
+
     /**
      *  Process window events
      *  If the window is active check that the histogram been displayed
      *  has not changed. If it has cancel the gate setting.
      */
-    public void windowActivated(WindowEvent e){        
+    public void windowActivated(WindowEvent e){
         Histogram  hist=Histogram.getHistogram(status.getCurrentHistogramName());
         //have we changed histograms
         if (hist!=currentHistogram){
             currentHistogram=hist;
             calibFunction=currentHistogram.getCalibration();
-            setup();            
+            setup();
             //has calib function changed
         } else if(calibFunction!=currentHistogram.getCalibration()){
             calibFunction=currentHistogram.getCalibration();
-            setup();            
-        }        
-    }    
+            setup();
+        }
+    }
 }

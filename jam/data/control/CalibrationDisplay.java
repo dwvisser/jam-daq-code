@@ -17,31 +17,30 @@ import javax.swing.*;
  */
 public class CalibrationDisplay extends DataControl implements ActionListener,
 ItemListener, WindowListener {
-    
+
     private final static int MAX_NUMBER_TERMS=5;
     private final static String BLANK_TITLE=" Histogram not calibrated ";
     private final static String BLANK_LABEL="    --     ";
-    
+
     private Frame frame;
     private Broadcaster broadcaster;
     private MessageHandler msghdlr;
-    
+
     private JDialog dialogCalib;
     private JComboBox cFunc;
     private JLabel lcalibEq;
-    private JPanel pbCal;
     private JPanel pcoeff [];
     private JLabel lcoeff [];
     private JTextField tcoeff[];
-    
+
     private Histogram currentHistogram;
-    
+
     //calibrate histogram
     private CalibrationFunction calibFunction;
     int numberTerms;
     private NumberFormat numFormat;
     private JamStatus status;
-    
+
     /**
      * Constructor
      */
@@ -51,7 +50,7 @@ ItemListener, WindowListener {
         this.broadcaster=broadcaster;
         this.msghdlr=msghdlr;
         status=JamStatus.instance();
-        
+
         dialogCalib =new JDialog(frame,"Histogram Calibration",false);
         dialogCalib.setForeground(Color.black);
         dialogCalib.setBackground(Color.lightGray);
@@ -61,7 +60,7 @@ ItemListener, WindowListener {
         Container cdialogCalib = dialogCalib.getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
         dialogCalib.addWindowListener(this);
-        
+
         //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
         pChoose.add(new JLabel("FunctionType"));
@@ -72,7 +71,7 @@ ItemListener, WindowListener {
         cFunc.addItem("Sqrt(E)");
         cFunc.addItemListener(this);
         cdialogCalib.add(pChoose);
-        
+
         //fuction equation
         try {
             calibFunction=new LinearFunction();
@@ -81,11 +80,11 @@ ItemListener, WindowListener {
         }
         lcalibEq=new JLabel("Function: "+calibFunction.getTitle(), JLabel.CENTER);
         cdialogCalib.add(lcalibEq);
-        
+
         pcoeff=new JPanel[MAX_NUMBER_TERMS];
         lcoeff=new JLabel[MAX_NUMBER_TERMS];
         tcoeff =new JTextField[MAX_NUMBER_TERMS];
-        
+
         for (int i=0; i<MAX_NUMBER_TERMS; i++ )	{
             pcoeff[i]=new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
             cdialogCalib.add(pcoeff[i]);
@@ -98,43 +97,46 @@ ItemListener, WindowListener {
             tcoeff[i].setEditable(false);
             pcoeff[i].add(tcoeff[i]);
         }
-        
-        pbCal= new JPanel(new GridLayout(1,0,5,5));
-        cdialogCalib.add(pbCal);
-        
+
+        JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cdialogCalib.add(pbutton);
+        JPanel pbCal= new JPanel(new GridLayout(1,0,5,5));
+        pbutton.add(pbCal);
+
+
         JButton bRecal =  new JButton("Recall");
         bRecal.setActionCommand("recalcalib");
         bRecal.addActionListener(this);
         pbCal.add(bRecal);
-        
+
         JButton bokCal =  new JButton("OK");
         bokCal.setActionCommand("okcalib");
         bokCal.addActionListener(this);
         pbCal.add(bokCal);
-        
+
         JButton bapplyCal = new JButton("Apply");
         bapplyCal.setActionCommand("applycalib");
         bapplyCal.addActionListener(this);
         pbCal.add(bapplyCal);
-        
+
         JButton bcancelCal =new JButton("Cancel");
         bcancelCal.setActionCommand("cancelcalib");
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
-        
+
         dialogCalib.pack();
-        
+
         //formating  output
         numFormat=NumberFormat.getInstance();
         numFormat.setGroupingUsed(false);
         numFormat.setMinimumFractionDigits(2);
         numFormat.setMaximumFractionDigits(5);
     }
-    
+
     /**
      * setups up the dialog box
      */
-    public void setup() {        
+    public void setup() {
         if (calibFunction!=null) {
             numberTerms=calibFunction.getNumberTerms();
             lcalibEq.setText("Function: "+calibFunction.getTitle());
@@ -151,55 +153,55 @@ ItemListener, WindowListener {
                 tcoeff[i].setText(" ");
                 tcoeff[i].setBackground(Color.lightGray);
                 tcoeff[i].setEditable(false);
-            }                        
+            }
         } else {// histogram not calibrated
             lcalibEq.setText(BLANK_TITLE);
             for ( int i=0; i<MAX_NUMBER_TERMS; i++ ){
                 lcoeff[i].setText(BLANK_LABEL);
                 tcoeff[i].setText(" ");
                 tcoeff[i].setBackground(Color.lightGray);
-                tcoeff[i].setEditable(false);                
+                tcoeff[i].setEditable(false);
             }
         }
     }
-    
+
     /**
      * Show histogram calibration dialog box
      */
     public void show(){
         dialogCalib.show();
     }
-    
+
     /**
      * Receive actions from Dialog Boxes
      *
      */
-    public void actionPerformed(ActionEvent ae){        
+    public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
-        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());        
-        try {            
+        currentHistogram=Histogram.getHistogram(status.getCurrentHistogramName());
+        try {
             //commands for calibration
             if ((command=="okcalib")||(command=="applycalib")) {
                 setCoefficients();
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" ");
                 if (command=="okcalib") {
                     dialogCalib.dispose();
-                }                
+                }
             } else if (command=="recalcalib") {
-                getCalibration();                
+                getCalibration();
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
-                dialogCalib.dispose();                                
+                dialogCalib.dispose();
             } else {
                 //just so at least a exception is thrown for now
                 throw new DataException("Unregonized command [HistogramControl]");
             }
         } catch (DataException je) {
             msghdlr.errorOutln(je.getMessage());
-        }        
+        }
     }
-    
+
     /**
      * A item state change indicates that a gate has been choicen
      *
@@ -223,7 +225,7 @@ ItemListener, WindowListener {
             msghdlr.errorOutln(de.getMessage());
         }
     }
-    
+
     /**
      * set the calibration coefficients for a histogram
      */
@@ -249,13 +251,13 @@ ItemListener, WindowListener {
             msghdlr.errorOutln("Calibration function not defined [CalibrationDisplay]");
         }
     }
-    
+
     /**
      *
      */
     private void getCalibration() {
         double coeff [];
-        
+
         setup();
         if (calibFunction!=null) {
             coeff=calibFunction.getCoeff();
@@ -266,7 +268,7 @@ ItemListener, WindowListener {
             msghdlr.errorOutln("Calibration not set [HistogramControl]");
         }
     }
-    
+
     /**
      * cancel the histogram calibration
      *
@@ -275,7 +277,7 @@ ItemListener, WindowListener {
         Histogram currentHist=Histogram.getHistogram(status.getCurrentHistogramName());
         currentHist.setCalibration(null);
     }
-    
+
     /**
      *  Process window events
      *  If the window is active check that the histogram been displayed
@@ -294,7 +296,7 @@ ItemListener, WindowListener {
             setup();
         }
     }
-    
+
     /**
      * Window Events
      *  windowClosing only one used.
@@ -302,7 +304,7 @@ ItemListener, WindowListener {
     public void windowClosing(WindowEvent e){
         dialogCalib.dispose();
     }
-    
+
     /**
      * Does nothing
      *  only windowClosing used.
@@ -317,7 +319,7 @@ ItemListener, WindowListener {
     public void windowDeactivated(WindowEvent e){
         /* does nothing for now */
     }
-    
+
     /**
      * Does nothing
      *  only windowClosing used.
@@ -325,7 +327,7 @@ ItemListener, WindowListener {
     public void windowDeiconified(WindowEvent e){
         /* does nothing for now */
     }
-    
+
     /**
      * Does nothing
      *  only windowClosing used.
@@ -333,7 +335,7 @@ ItemListener, WindowListener {
     public void windowIconified(WindowEvent e){
         /* does nothing for now */
     }
-    
+
     /**
      * removes list of gates when closed
      *  only windowClosing used.
@@ -341,5 +343,5 @@ ItemListener, WindowListener {
     public void windowOpened(WindowEvent e){
         setup();
     }
-    
+
 }
