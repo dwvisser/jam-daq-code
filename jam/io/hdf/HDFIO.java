@@ -703,7 +703,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				VdataDescription.DFNT_INT32 };
 		final short[] orders = { 1, 1 };
 		final String name = g.getName();
-		if (g.getType() == Gate.ONE_DIMENSION) {
+		if (g.getDimensionality() == 1) {
 			names = GATE_1D_NAMES;
 		} else { //2d
 			gateType = GATE_2D_TYPE_NAME;
@@ -719,7 +719,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		final Vdata data = new Vdata(out, desc);
 		vg.addDataObject(desc); //add vData description to gate VG
 		vg.addDataObject(data); //add vData to gate VG
-		if (g.getType() == 1) {
+		if (g.getDimensionality() == 1) {
 			data.addInteger(0, 0, g.getLimits1d()[0]);
 			data.addInteger(1, 0, g.getLimits1d()[1]);
 		} else { //2d
@@ -783,7 +783,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 								.getGate(su.makeLength(gname, Gate.NAME_LENGTH));
 					}
 					if (g != null) {
-						if (g.getType() == Gate.ONE_DIMENSION) { //1-d gate
+						if (g.getDimensionality() == 1) { //1-d gate
 							g.setLimits(VS.getInteger(0, 0).intValue(), VS
 									.getInteger(0, 1).intValue());
 						} else { //2-d gate
@@ -819,9 +819,9 @@ public class HDFIO implements DataIO, JamHDFFields {
 		final int size = scalers.size();
 		orders[0] = 1; //number
 		orders[1] = 0; //name ... loop below picks longest name for dimension
-		final Iterator enum = scalers.iterator();
-		while (enum.hasNext()) {
-			final int dimtest = ((Scaler) (enum.next())).getName().length();
+		final Iterator iter = scalers.iterator();
+		while (iter.hasNext()) {
+			final int dimtest = ((Scaler) (iter.next())).getName().length();
 			if (dimtest > orders[1]) {
 				orders[1] = (short) dimtest;
 			}
@@ -902,16 +902,15 @@ public class HDFIO implements DataIO, JamHDFFields {
 		final int size = parameters.size();
 		/* set order values */
 		orders[0] = 0; //name ... loop below picks longest name for dimension
-		final Iterator enum = parameters.iterator();
-		while (enum.hasNext()) {
-			final int lenMax = ((DataParameter) (enum.next())).getName()
+		final Iterator iter = parameters.iterator();
+		while (iter.hasNext()) {
+			final int lenMax = ((DataParameter) (iter.next())).getName()
 					.length();
 			if (lenMax > orders[0]) {
 				orders[0] = (short) lenMax;
 			}
 		}
 		orders[1] = 1; //value
-
 		final VirtualGroup parameterGroup = new VirtualGroup(out,
 				PARAMETER_SECTION_NAME, FILE_SECTION_NAME);
 		new DataIDLabel(parameterGroup, PARAMETER_SECTION_NAME);
@@ -923,7 +922,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 		final Vdata data = new Vdata(out, desc);
 		parameterGroup.addDataObject(desc); //add vData description to gate VG
 		parameterGroup.addDataObject(data); //add vData to gate VG
-
 		for (int i = 0; i < size; i++) {
 			final StringUtilities su = StringUtilities.instance();
 			final DataParameter p = (DataParameter) (parameters.get(i));
