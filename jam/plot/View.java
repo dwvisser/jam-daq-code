@@ -119,7 +119,7 @@ public class View {
 	 * @param histIn the Histogram
 	 */
 	void setHistogram(int num, Histogram histIn){
-		if (histIn!=null)
-			histogramNames[num]=histIn.getName();
+		final String name = histIn==null ? null : histIn.getName();
+		histogramNames[num]=name;
 	}
 }
