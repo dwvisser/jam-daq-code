@@ -118,12 +118,12 @@ public class PanelOKApplyCancelButtons {
 	        parent = window; 
 	    }
 	    
-	    public final void doOK(){
+	    public void doOK(){
 	        apply();
 	        cancel();
 	    }
 	    
-	    public final void cancel(){
+	    public void cancel(){
 	        parent.dispose();
 	    }
 	}

@@ -72,7 +72,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 
     JRadioButton rbFitPoints;
     JRadioButton rbSetCoeffs;
-	
+	int numberTerms;
     private final NumberFormat numFormat;
 	private final JButton bokCal =  new JButton("OK");
 	private final JButton bapplyCal = new JButton("Apply");
@@ -154,15 +154,15 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 new PanelOKApplyCancelButtons.DefaultListener(this) {
 
                     public void apply() {
-                    	/*
-                        try {
-                        	//doFit();
-                        } catch (DataException je) {
-                            //messageHandler.errorOutln(je.getMessage());
+                        if(calibFunction==null){
+                            msghdlr.errorOutln("Need to choose a function [CalibrationFit]");
+                        } else {
+                            doCalibration();
                         }
-                        */
                     }
-
+                    public void cancel() {
+                    	cancelCalib();
+                    }
                 });
         cdialogCalib.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		pack();
@@ -346,6 +346,31 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
             msghdlr.errorOutln(de.getMessage());
         } 
     }
+    
+	/**
+	 * set the calibration coefficients for a histogram
+	 */
+	private void setCoefficients() {
+		double coeff[] = new double[numberTerms];
+		int i = 0;
+		CalibrationFunction calibFunction = currentHistogram.getCalibration();
+		/* silently ignore if histogram null */
+		if (calibFunction != null) {
+			try {
+				for (i = 0; i < numberTerms; i++) {
+					coeff[i] = (new Double(tcoeff[i].getText())).doubleValue();
+				}
+				calibFunction.setCoeff(coeff);
+			} catch (NumberFormatException nfe) {
+				msghdlr.errorOutln("Invalid input, coefficient "
+						+ calibFunction.getLabels()[i]);
+			}
+			doSetup();
+		} else {
+			msghdlr
+					.errorOutln("Calibration function not defined [CalibrationDisplay]");
+		}
+	}
     
 	private AbstractHist1D getCurrentHistogram() {
 		final AbstractHist1D rval;
