@@ -1,22 +1,39 @@
-/*
- * Created on Dec 31, 2003
- */
 package jam;
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.GlobalException;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.plot.Display;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 /**
  * The selection tool bar the at the top of the plot.
  *
  * @version 1.4
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author Ken Swartz
+ * @since 31 December 2003
  */
 final class SelectionToolbar extends JToolBar implements Observer {
 
@@ -26,8 +43,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final JComboBox histogramChooser = new JComboBox(new HistogramComboBoxModel());
 	final JToggleButton boverLay = new JToggleButton(getHTML("<u>O</u>verlay"));
 	final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
-	//final layoutHorz;
-	//final layoutVert;
 	final MessageHandler console;
 	final JamStatus status;
 	final Broadcaster broadcaster;
@@ -39,46 +54,31 @@ final class SelectionToolbar extends JToolBar implements Observer {
 					 JamStatus js,
 					 Broadcaster b,
 					 Display d) {
-
 		super("Selection", JToolBar.HORIZONTAL);
-
-		Dimension dim;
-
 		classname = getClass().getName() + "--";
 		console = mh;
 		status = js;
 		broadcaster = b;
 		display = d;
 		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
-
 		noGateComboBoxModel.addElement("NO GATES");
-		/* panel with selection and print etc. */
-		//setLayout(new BorderLayout());
-
 		pCenter = new JPanel();
-
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT));
 		previousLayout=VERTICAL;
-
-		//Run status
-		final JPanel pRunState = new JPanel(new GridLayout(1, 1));
-		pRunState.setBorder(
-			BorderFactory.createTitledBorder(
-				new LineBorder(Color.black, 1),
-				"Status",
-				TitledBorder.CENTER,
-				TitledBorder.TOP));
+		/* Run status */
+		final Box pRunState = new Box(BoxLayout.X_AXIS);
+		pRunState.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
 		lrunState.setForeground(Color.black);
 		pRunState.add(lrunState);
-
-
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
-		dim=histogramChooser.getPreferredSize();
-		dim.width=200;
+		final int chooserWidth=200;
+		Dimension dim=histogramChooser.getPreferredSize();
+		dim.width=chooserWidth;
 		histogramChooser.setPreferredSize(dim);
 		histogramChooser.setToolTipText(getHTML("<u>D</u>isplay chosen histogram."));
 		histogramChooser.addActionListener(new ActionListener() {
@@ -94,7 +94,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(histogramChooser);
-
 		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -107,13 +106,10 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(boverLay);
-
-
 		gateChooser.setRenderer(new GateListCellRenderer());
 		dim=gateChooser.getPreferredSize();
-		dim.width=200;
+		dim.width=chooserWidth;
 		gateChooser.setPreferredSize(dim);
-
 		gateChooser.setToolTipText("Display chosen gate.");
 		gateChooser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -128,46 +124,11 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(gateChooser);
-
 		add(pRunState);
 		addSeparator();
 		add(pCenter);
-
-		//Size changed redo layout
-		addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
-			//KBS FIX redoes layout when selection made
-			//redoLayout();
-			}
-		});
-
-
-//		add(histogramChooser);
-//		add(gateChooser);
-//		add(boverLay);
-//		add(pCenter);
-
-		//add(pRunState, BorderLayout.WEST);
-
 	}
-
-	private void redoLayout(){
-		//
-		if (previousLayout==getOrientation())
-			return;
-
-		if((getOrientation()==HORIZONTAL)) {
-			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			pCenter.setLayout(new BoxLayout(pCenter, BoxLayout.Y_AXIS));
-			pCenter.add(Box.createVerticalGlue());
-			previousLayout=HORIZONTAL;
-		} else if((getOrientation()==VERTICAL)){
-			setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-			pCenter.setLayout(new FlowLayout(FlowLayout.LEFT));
-			previousLayout=VERTICAL;
-		}
-
-	}
+	
 	private void histogramsChanged() {
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.repaint();
