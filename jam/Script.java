@@ -1,7 +1,10 @@
 package jam;
+import jam.data.control.HistogramControl;
+import jam.global.GlobalException;
+import jam.global.GoodThread;
+import jam.io.hdf.HDFIO;
+
 import java.io.File;
-import jam.global.*;
-import jam.data.control.*;
 
 /**
  * Class which exposes an API for scripting offline sorting sessions.
@@ -12,39 +15,31 @@ import jam.data.control.*;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Apr 5, 2004
  */
-public abstract class Script extends GoodThread {
+public final class Script extends GoodThread {
 	
-	private final JamMain jam;
+	private JamMain jam;
+	private final File base;
 	
-	protected Script(){
+	public Script(){
 		super();
 		jam=new JamMain(this);
-		try{
-			this.setState(GoodThread.RUN);
-			System.out.println("End of script.");
-		} catch (GlobalException e){
-			System.err.println("Error starting script thread: "+e.getMessage());
-		}
+		base=new File(System.getProperty("user.dir"));
 	}
 	
-	public final void run(){
-		if (checkState()){
-			runScript();
-		}
+	public final File defineFile(String fname){
+		return new File(base,fname);
 	}
 
-	/**
-	 * Person writing script should put all statements in this 
-	 * method.
-	 */
-	protected abstract void runScript();
-
-	protected final void setupOffline(File classPath, String sortRoutineName,
-	Class inStream, Class outStream){
+	public  void setupOffline(final File classPath, 
+	final String sortRoutineName, final Class inStream, final Class outStream){
 		sso.setupSort(classPath, sortRoutineName, inStream, outStream);
+		System.out.println("Setup online sorting:");
+		System.out.println("\t"+classPath+": "+sortRoutineName);
+		System.out.println("\tin: "+inStream);
+		System.out.println("\tout: "+outStream);
 	}
 	
-	protected final void addEventFile(File fileOrDir){
+	public  void addEventFile(File fileOrDir){
 		sc.addEventFile(fileOrDir);
 		if (fileOrDir.isFile()){
 			System.out.println("Added event file to sort: "+fileOrDir.getName());
@@ -55,7 +50,7 @@ public abstract class Script extends GoodThread {
 		}
 	}
 	
-	protected final void loadFileList(File list){
+	public  void loadFileList(File list){
 		try {
 			sc.readList(list);
 		} catch (JamException e){
@@ -64,13 +59,13 @@ public abstract class Script extends GoodThread {
 		}
 	}
 	
-	protected final void setEventOutput(File eventsOut){
-		setEventOutput(eventsOut);
+	public  void setEventOutput(File eventsOut){
+		sc.setEventOutput(eventsOut);
 		System.out.println("Set file for pre-sorted events"+
 		eventsOut.getAbsolutePath());
 	}
 	
-	protected final void zeroHistograms(){
+	public  void zeroHistograms(){
 		try {
 			histCtrl.zeroAll();
 			System.out.println("Zeroed histograms.");
@@ -83,24 +78,49 @@ public abstract class Script extends GoodThread {
 	private HistogramControl histCtrl;
 	private SetupSortOff sso;
 	private SortControl sc;
+	private HDFIO hdfio;
 	
-	final void setJamCommand(JamCommand jc){
+	 void setJamCommand(JamCommand jc){
 		histCtrl=jc.getHistogramControl();
 		sso=jc.getSetupSortOff();
 		sc=jc.getSortControl();
+		hdfio=jc.getHDFIO();
 	}
 	
-	protected final void beginSort(){
+	public void beginSort(){
+		try{
+			sc.beginSort();
+			System.out.println("Began sort. Waiting for finish...");
+			final Object lock=new Object();
+			synchronized (lock) {
+				final long ms=2500;//wait time in milliseconds
+				while (jam.getRunState() != RunState.ACQ_OFF){
+					lock.wait(ms);
+				}
+			}
+			System.out.println("Reached end of sort.");
+		} catch (InterruptedException e) {
+			System.err.println("Interrupted while waiting for sort to finish.");
+		} catch (Exception e){
+			System.err.println("Error while beginning sort: "+e.getMessage());
+		}
 	}
 	
-	protected final void saveHDF(File hdf){
+	public void loadHDF(File hdf){
+		hdfio.readFile(HDFIO.RELOAD, hdf);
+		System.out.println("Loaded HDF file: "+hdf);
 	}
 	
-	protected final void showJam(){
+	public void saveHDF(File hdf){
+		hdfio.writeFile(hdf);
+		System.out.println("Saved HDF file: "+hdf);
+	}
+	
+	public  void showJam(){
 		jam.setVisible(true);
 	}
 	
-	protected final void hideJam(){
+	public  void hideJam(){
 		jam.setVisible(false);
 	}
 	
