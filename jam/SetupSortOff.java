@@ -45,13 +45,11 @@ class SetupSortOff  implements ActionListener, ItemListener {
     
 
     /** Input stream, how tells how to read an event */
-    Class eventInputClass;
     EventInputStream eventInput;
 
     /** Output stream, tells how to write an event */
     EventOutputStream eventOutput;
 
-    String eventFile, eventOutFile;
     File sortDirectory, eventDirectory;
 
     /**
@@ -68,11 +66,11 @@ class SetupSortOff  implements ActionListener, ItemListener {
 
     // dialog box widgets
     private JDialog d;
-    private JTextField textSortPath, textEventOutFile, textDev;
+    private JTextField textSortPath, textDev;
     private JCheckBox checkLock;
     private JToggleButton ctape, cdisk,defaultPath,specify;
     private JButton bok, bapply,bbrowsef;
-    private JComboBox sortChoice, inStreamChooser;
+    private JComboBox sortChoice, inStreamChooser, outStreamChooser;
 
     public SetupSortOff(JamMain jamMain,  SortControl sortControl,
     DisplayCounters displayCounters, Broadcaster broadcaster,
@@ -100,12 +98,14 @@ class SetupSortOff  implements ActionListener, ItemListener {
         d.setForeground(Color.black);
         d.setBackground(Color.lightGray);
 
-        d.setResizable(true);
+        d.setResizable(false);
         d.setLocation(20,50);
-        //d.setSize(550, 250);
-        cp.setLayout(new GridLayout(0, 1, 5,5));
+        cp.setLayout(new BorderLayout());
 
-		JPanel pradio=new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
+		LayoutManager verticalGrid=new GridLayout(0,1,5,5);
+		JPanel pNorth=new JPanel(verticalGrid);
+		cp.add(pNorth,BorderLayout.NORTH);
+		JPanel pradio=new JPanel(new FlowLayout(FlowLayout.CENTER,5,5));
 		ButtonGroup pathType=new ButtonGroup();
 		defaultPath=new JRadioButton("Use help.* and sort.* in default classpath",useDefaultPath);
 		specify=new JRadioButton("Specify a classpath",!useDefaultPath);
@@ -118,16 +118,15 @@ class SetupSortOff  implements ActionListener, ItemListener {
 		specify.addItemListener(this);
 		pradio.add(defaultPath);
 		pradio.add(specify);
-		cp.add(pradio);
+		pNorth.add(pradio);
 		
+		JPanel pCenter=new JPanel(new BorderLayout());
+		cp.add(pCenter,BorderLayout.CENTER);
+		JPanel pf = new JPanel(new BorderLayout());
+		pCenter.add(pf,BorderLayout.NORTH);
 
-        JPanel pf = new JPanel();
-        pf.setLayout(new FlowLayout(FlowLayout.RIGHT,5,5));
-        cp.add(pf);
-
-        JLabel lf=new JLabel("", JLabel.LEFT);
-        lf.setText("Sort classpath");
-        pf.add(lf);
+        JLabel lf=new JLabel("Sort classpath", JLabel.RIGHT);
+        pf.add(lf,BorderLayout.WEST);
         textSortPath =new JTextField(defaultSortPath);
         textSortPath.setToolTipText("Use Browse button to change. \nMay fail if classes have unresolvable references."+
         "\n* use the sort.classpath property in your JamUser.ini file to set this automatically.");
@@ -135,22 +134,30 @@ class SetupSortOff  implements ActionListener, ItemListener {
 		textSortPath.setBackground(Color.gray);
 		textSortPath.setForeground(Color.black);
 		textSortPath.setEditable(false);
-        pf.add(textSortPath);
-
-        bbrowsef = new JButton("Browse");
-        pf.add(bbrowsef);
-        bbrowsef.addActionListener(new ActionListener(){
+        pf.add(textSortPath,BorderLayout.CENTER);
+		bbrowsef = new JButton("Browse");
+		pf.add(bbrowsef,BorderLayout.EAST);
+		bbrowsef.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				sortClassPath=getSortPath();
 				sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
-        });
-        JPanel psortChoice=new JPanel();
-        psortChoice.setLayout(new GridLayout(1,2,5,5));
-        psortChoice.add(new JLabel("Sort Routine",JLabel.RIGHT));
+		});
+       
+
+
+		JPanel pChooserArea =new JPanel(new BorderLayout());
+		JPanel pChooserLabels=new JPanel(verticalGrid);
+		pChooserArea.add(pChooserLabels,BorderLayout.WEST);
+		JPanel pChoosers=new JPanel(verticalGrid);
+		pChooserArea.add(pChoosers,BorderLayout.CENTER);
+		pCenter.add(pChooserArea);
+
+        pChooserLabels.add(new JLabel("Sort Routine",JLabel.RIGHT),BorderLayout.WEST);
         Vector v=getSortClasses(sortDirectory);
         sortChoice=new JComboBox(v);
+        sortChoice.setToolTipText("Select a class to be your sort routine.");
         sortChoice.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				sortClass=(Class)sortChoice.getSelectedItem();
@@ -168,18 +175,14 @@ class SetupSortOff  implements ActionListener, ItemListener {
         	} 
         	notDone = (!match) & it.hasNext();
         }
-        psortChoice.add(sortChoice);
-        cp.add(psortChoice);
+        pChoosers.add(sortChoice);
         
-        JPanel ph= new JPanel(new GridLayout(1,2,5,5));
-        cp.add(ph);
-
-        JLabel lh=new JLabel("Event input stream",JLabel.RIGHT);
-        ph.add(lh);
+        pChooserLabels.add(new JLabel("Event input stream",JLabel.RIGHT));
 
         Set lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",EventInputStream.class,false));
         lhs.remove(EventInputStream.class);
         inStreamChooser=new JComboBox(new Vector(lhs));
+        inStreamChooser.setToolTipText("Select the reader for your event data format.");
 		it=lhs.iterator();
 		notDone=it.hasNext();
 		while (notDone) {
@@ -191,30 +194,30 @@ class SetupSortOff  implements ActionListener, ItemListener {
 			} 
 			notDone = (!match) & it.hasNext();
 		}
-        ph.add(inStreamChooser);
+        pChoosers.add(inStreamChooser);
 
-        JPanel pout = new JPanel();
-        pout.setLayout(new FlowLayout(FlowLayout.RIGHT,5,5));
-        cp.add(pout);
+        pChooserLabels.add(new JLabel("Event output stream",Label.RIGHT));
 
-        JLabel lout=new JLabel("",Label.LEFT);
-        lout.setText("Event output stream (.class)");
-        pout.add(lout);
-
-        textEventOutFile =new JTextField(defaultEventOutStream);
-        textEventOutFile.setColumns(35);
-        textEventOutFile.setBackground(Color.white);
-        textEventOutFile.setForeground(Color.black);
-        pout.add(textEventOutFile);
-
-        JButton bbrowseout = new JButton("Browse");
-        pout.add(bbrowseout);
-        bbrowseout.setActionCommand("boutstream");
-        bbrowseout.addActionListener(this);
+		lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",EventOutputStream.class,false));
+		lhs.remove(EventOutputStream.class);
+		outStreamChooser=new JComboBox(new Vector(lhs));
+		outStreamChooser.setToolTipText("Select the writer for your output event format.");
+		it=lhs.iterator();
+		notDone=it.hasNext();
+		while (notDone) {
+			Class c=(Class)it.next();
+			String name=c.getName();
+			boolean match = name.equals(defaultEventOutStream);
+			if (match){
+				outStreamChooser.setSelectedItem(c);
+			} 
+			notDone = (!match) & it.hasNext();
+		}
+		pChoosers.add(outStreamChooser);
 
         JPanel pselect=new JPanel();
         pselect.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-        cp.add(pselect);
+        pChooserArea.add(pselect,BorderLayout.SOUTH);
         JLabel ltd=new JLabel("Tape Device:");
         pselect.add(ltd);
         textDev=new JTextField(defaultTape);
@@ -236,8 +239,8 @@ class SetupSortOff  implements ActionListener, ItemListener {
         pselect.add(cdisk);
 
         JPanel pb=new JPanel();
-        pb.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-        cp.add(pb);
+        pb.setLayout(new GridLayout(1,0,5,5));
+        cp.add(pb,BorderLayout.SOUTH);
 
         bok  =   new JButton("OK");
         pb.add(bok);
@@ -289,16 +292,14 @@ class SetupSortOff  implements ActionListener, ItemListener {
     public void actionPerformed(ActionEvent ae){
         String command=ae.getActionCommand();
         try {
-            if (command=="boutstream") {
-                textEventOutFile.setText(getEventStream());//note side effect: eventDirectory gets set
-            } else if (command=="ok"||command=="apply"){
+            if (command=="ok"||command=="apply"){
                 if (jamMain.canSetSortMode()) {
                     resetSort();//clear current data areas and kill daemons
                     loadNames();
                     loadSorter();
                     msgHandler.messageOutln("Loaded sort class '"+sortRoutine.getClass().getName()+
                     "', event instream class '"
-                    +eventInput.getClass().getName()+"', and event outstream class '"+eventOutFile+"'");
+                    +eventInput.getClass().getName()+"', and event outstream class '"+eventOutput.getClass().getName()+"'");
                     if (sortRoutine != null) {
                         setupSort();      //create data areas and daemons
                         msgHandler.messageOutln("Offline sorting setup");
@@ -369,7 +370,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
      * Loads the names of objects entered in the dialog box into String objects.
      */
     private void loadNames() throws JamException {
-        eventOutFile=textEventOutFile.getText().trim();
         tapeDevice=textDev.getText();
     }
 
@@ -384,9 +384,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
         	} else {//use default loader
         		sortRoutine=(SortRoutine)sortClass.newInstance();
         	}
-        //} catch (ClassNotFoundException ce) {
-//            sortClass=null;
-            //throw new JamException("Cannot find sort class: "+sortClassName+" [SetupSortOn]");
         } catch (InstantiationException ie) {
 //            sortClass=null;
             throw new JamException("Cannot instantize sort file: "+sortClassName);
@@ -397,10 +394,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
         try {//create new event input stream class
             eventInput= (EventInputStream) ((Class)inStreamChooser.getSelectedItem()).newInstance();
             eventInput.setConsole(msgHandler);
-        /*} catch (ClassNotFoundException ce) {
-//            eventInput=null;
-            throw new JamException("Cannot find event input stream: "+inStreamChooser.getSelectedItem()+
-            " [SetupSortOn]");*/
         } catch (InstantiationException ie) {
 //            eventInput=null;
             ie.printStackTrace();
@@ -410,17 +403,13 @@ class SetupSortOff  implements ActionListener, ItemListener {
             throw new JamException(" Cannot access event input stream: "+inStreamChooser.getSelectedItem());
         }
         try {//create new event output stream class
-            eventOutput = (EventOutputStream) Class.forName(eventOutFile).newInstance();
-        } catch (ClassNotFoundException ce) {
-//            eventInput=null;
-            throw new JamException("Cannot find event output stream class: "+eventOutFile+
-            " [SetupSortOn]");
+            eventOutput = (EventOutputStream) ((Class)outStreamChooser.getSelectedItem()).newInstance();
         } catch (InstantiationException ie) {
 //            eventInput=null;
-            throw new JamException("Cannot instantize event output stream file: "+eventOutFile);
+            throw new JamException("Cannot instantize event output stream: "+eventOutput.getClass().getName());
         } catch (IllegalAccessException iae) {
 //            eventInput=null;
-            throw new JamException(" Cannot access event output stream file: "+eventOutFile);
+            throw new JamException(" Cannot access event output stream: "+eventOutput.getClass().getName());
         }
     }
 
@@ -520,23 +509,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
         }
         return sortDirectory;
     }
-
-    /**
-     * Browses for the event stream.
-     */
-    private String getEventStream(){
-    String [] types = new String [] {"class"};
-        JFileChooser fd =new JFileChooser(eventDirectory);
-        fd.setFileFilter(new ExtensionFileFilter(types,"Java .class files"));
-        int option = fd.showOpenDialog(jamMain);
-        //save current values
-        if (option == JFileChooser.APPROVE_OPTION && fd.getSelectedFile() != null){
-            eventDirectory=fd.getSelectedFile();//save current directory
-            eventFile=fd.getSelectedFile().getName();
-        }
-        return eventFile;
-    }
-
+	
     /**
      * Lock the setup if it is unlocked than the sort is stopped
      * Set the title bar to indicate offline sort and wether from tape
@@ -555,8 +528,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
             //textEventFile.setEditable(false);
             //textEventFile.setBackground(Color.lightGray);
             inStreamChooser.setEnabled(false);
-            textEventOutFile.setEditable(false);
-            textEventOutFile.setBackground(Color.lightGray);
+            outStreamChooser.setEnabled(false);
             textDev.setEditable(false);
             textDev.setBackground(Color.lightGray);
             cdisk.setEnabled(false);
@@ -574,8 +546,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
             //textEventFile.setEditable(true);
             //textEventFile.setBackground(Color.white);
             inStreamChooser.setEnabled(true);
-            textEventOutFile.setEditable(true);
-            textEventOutFile.setBackground(Color.white);
+            outStreamChooser.setEnabled(true);
             textDev.setEditable(true);
             textDev.setBackground(Color.white);
             cdisk.setEnabled(true);
