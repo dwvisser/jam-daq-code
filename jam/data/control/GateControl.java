@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -41,7 +42,7 @@ import javax.swing.JTextField;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public class GateControl extends DataControl implements ActionListener, 
+public class GateControl extends DataControl implements ActionListener,
 WindowListener,Observer  {
 
     static final int ONE_DIMENSION=1;
@@ -77,7 +78,7 @@ WindowListener,Observer  {
     /* new gate dialog box */
     private final JDialog dnew;
     private final JTextField textNew;
-	
+
     /* add gate dialog box */
     private final JDialog dadd;
     final private JComboBox cadd;
@@ -92,7 +93,7 @@ WindowListener,Observer  {
      * @param bro ???
      * @param mh the console for text output
      */
-    public GateControl(Frame f, Broadcaster bro,  
+    public GateControl(Frame f, Broadcaster bro,
     MessageHandler mh, Display d){
         super();
         this.frame=f;
@@ -175,22 +176,26 @@ WindowListener,Observer  {
         dnew=new JDialog(frame,"New Gate",false);
         final Container cdnew=dnew.getContentPane();
         dnew.setResizable(false);
-        cdnew.setLayout(new BorderLayout());
+        cdnew.setLayout(new BorderLayout(5,5));
         dnew.setLocation(20,50);
 
         /* panel with chooser */
         final JPanel ptnew =new JPanel();
-        ptnew.setLayout(new GridLayout(1,1));
+        //ptnew.setLayout(new GridLayout(1,1,5,5));
+        ptnew.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
         cdnew.add(ptnew,BorderLayout.CENTER);
-        cdnew.add(new JLabel("Name"),BorderLayout.WEST);
-        textNew=new JTextField("",12);
+        ptnew.add(new JLabel("Name"));
+        textNew=new JTextField("",20);
         //textNew.setBackground(Color.white);
         ptnew.add(textNew);
 
         /*  panel for buttons */
+        final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cdnew.add(pbutton,BorderLayout.SOUTH);
+
         final JPanel pbnew= new JPanel();
-        pbnew.setLayout(new GridLayout(1,3));
-        cdnew.add(pbnew,BorderLayout.SOUTH);
+        pbnew.setLayout(new GridLayout(1,0,5,5));
+        pbutton.add(pbnew,BorderLayout.SOUTH);
 
         final JButton bok  =   new JButton("OK");
         bok.setActionCommand("oknew");
@@ -216,7 +221,8 @@ WindowListener,Observer  {
 
         //panel with chooser
         final JPanel ptadd =new JPanel();
-        ptadd.setLayout(new GridLayout(1,0));
+        //ptadd.setLayout(new GridLayout(1,0));
+        ptadd.setLayout(new FlowLayout(FlowLayout.CENTER));
         cdadd.add(ptadd,BorderLayout.CENTER);
 
         cadd=new JComboBox(new GateComboBoxModel(GateComboBoxModel.Mode.ALL));
@@ -229,13 +235,15 @@ WindowListener,Observer  {
 				}
 			}
 		});
-        
         ptadd.add(cadd);
 
         // panel for buttons
+        final JPanel pbuttonAdd = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cdadd.add(pbuttonAdd,BorderLayout.SOUTH);
+
         final JPanel pbadd= new JPanel();
-        pbadd.setLayout(new GridLayout(1,0));
-        cdadd.add(pbadd,BorderLayout.SOUTH);
+        pbadd.setLayout(new GridLayout(1,0,5,5));
+        pbuttonAdd.add(pbadd);
 
         final JButton bokadd  =   new JButton("OK");
         bokadd.setActionCommand("okadd");
@@ -442,7 +450,7 @@ WindowListener,Observer  {
         cgate.setSelectedIndex(0);
         cadd.setSelectedIndex(0);
         //change labels depending if we have a one or two D histogram
-        if (currentHistogram != null && 
+        if (currentHistogram != null &&
         currentHistogram.getDimensionality()==1) {
             synchronized(this){
             	type=ONE_DIMENSION;
@@ -460,7 +468,7 @@ WindowListener,Observer  {
 
     /**
      * Make a new gate, and add it to the current histogram.
-     * 
+     *
      * @throws GlobalException if there's a problem
      */
     private void makeGate() throws GlobalException {
@@ -493,8 +501,8 @@ WindowListener,Observer  {
 
     /**
      * Add a point from the text fields.
-     * 
-     * @throws DataException if there's a problem with the 
+     *
+     * @throws DataException if there's a problem with the
      * number format
      * @throws GlobalException if there's additional problems
      */
@@ -528,7 +536,7 @@ WindowListener,Observer  {
             }
         }
     }
-    
+
 	private void unset(){
 		currentGate.unsetLimits();
 		try{
@@ -541,7 +549,7 @@ WindowListener,Observer  {
 			ge.getMessage());
 		}
 	}
-    
+
     /**
      * Add a point to the gate
      * when we are setting a new gate.
@@ -668,8 +676,8 @@ WindowListener,Observer  {
         cancel.setEnabled(false);
         unset.setEnabled(false);
     }
-    
-    
+
+
     /**
      * Check that plot's current histogram has not changed.
      * If so, cancel and make the plot's current histogram
@@ -680,7 +688,7 @@ WindowListener,Observer  {
      */
     private void checkHistogram() throws GlobalException {
         /* has histogram changed? */
-        if(currentHistogram != 
+        if(currentHistogram !=
         Histogram.getHistogram(status.getCurrentHistogramName())) {
             setup();//setup chooser list
             cancel();//cancel current gate if was setting
@@ -689,8 +697,8 @@ WindowListener,Observer  {
 
     /**
      * Process window events.
-     * If the window is active check that the histogram been 
-     * displayed has not changed. If it has cancel the gate 
+     * If the window is active check that the histogram been
+     * displayed has not changed. If it has cancel the gate
      * setting.
      *
      * @param e event causing window to be activated
