@@ -1270,7 +1270,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * creating a new one if necessary.
 	 * @param h that type is needed for
 	 */
-	ScientificDataDimension getSDD(Histogram h) {
+	ScientificDataDimension getSDD(Histogram h) throws HDFException {
 		byte type=NumberType.DOUBLE;
 		if (h.getType().isInteger()) {
 			type = NumberType.INT;
@@ -1288,7 +1288,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @return the SDD object representing the histogram size and number 
 	 * type
 	 */
-	ScientificDataDimension getSDD(Histogram h, byte numtype) {
+	ScientificDataDimension getSDD(Histogram h, byte numberType) throws HDFException {
 		ScientificDataDimension rval=null;//return value
 		final int rank = h.getDimensionality();
 		final int sizeX = h.getSizeX();
@@ -1296,23 +1296,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		if (rank == 2) {//otherwise rank == 1
 			sizeY = h.getSizeY();
 		} 
-		final Iterator temp = DataObject.ofType(DataObject.DFTAG_SDD).iterator();
-		while (temp.hasNext()) {
-			final ScientificDataDimension sdd = (ScientificDataDimension) temp.next();
-			if (sdd.getType() == numtype && sdd.getSizeX() == sizeX) {
-				if ((rank == 1 && rank == sdd.getRank())
-					|| (rank == 2
-						&& rank == sdd.getRank()
-						&& sdd.getSizeY() == sizeY)) {
-					rval = sdd;
-					break;//for quicker execution
-				}
-			}
-		}
-		if (rval==null){
-			rval = new ScientificDataDimension(h);
-		}
-		return rval;
+		return ScientificDataDimension.getSDD(rank, sizeX, sizeY, numberType);
 	}
     
     /**

@@ -1,13 +1,11 @@
 package jam.io.hdf;
-import jam.data.Histogram;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import javax.swing.JOptionPane;
+import java.util.Iterator;
 
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
@@ -31,13 +29,47 @@ final class ScientificDataDimension extends DataObject {
 	private int sizeY;
 
 	private byte numberType;
-
-	ScientificDataDimension(Histogram h) {
+	
+	static ScientificDataDimension getSDD(int rank, int sizeX, int sizeY, byte numberType) throws HDFException  {
+		ScientificDataDimension rval=null;//return value
+		final Iterator temp = DataObject.ofType(DataObject.DFTAG_SDD).iterator();
+		while (temp.hasNext()) {
+			final ScientificDataDimension sdd = (ScientificDataDimension) temp.next();
+			if ( (sdd.getRank()==rank) &&
+				 (sdd.getType() == numberType) && 
+				 (sdd.getSizeX() == sizeX) && 
+				 (sdd.getSizeY() == sizeY)) {
+					rval = sdd;
+					break;//for quicker execution
+			}
+		}
+		if (rval==null){
+			rval = new ScientificDataDimension(rank, sizeX, sizeY, numberType);
+		}
+		return rval;
+	}
+	
+	/*	FIXME KBS remove
+	 *  ScientificDataDimension(Histogram h) throws HDFException {
+			super(DFTAG_SDD); //sets tag
+			rank = h.getDimensionality();
+			sizeX = h.getSizeX();
+			sizeY = h.getSizeY();
+			if (h.getType().isInteger()) {
+				numberType = NumberType.INT;
+			} else {
+				numberType = NumberType.DOUBLE;			
+			}
+			ScientificDataDimension(rank, sizeX, sizeY, numberType);
+		}
+	*/	
+	
+	ScientificDataDimension(int rank, int sizeX, int sizeY, byte numberType) throws HDFException {
 		super(DFTAG_SDD); //sets tag
-		rank = h.getDimensionality();
-		sizeX = h.getSizeX();
-		sizeY = h.getSizeY();
-		final boolean isDouble = !h.getType().isInteger();
+		this.rank=rank;
+		this.sizeX=sizeX;
+		this.sizeY=sizeY;
+		this.numberType=numberType;
 		int byteLength = 6 + 8 * rank; // see p. 6-33 HDF 4.1r2 specs
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -48,12 +80,10 @@ final class ScientificDataDimension extends DataObject {
 			if (rank == 2)
 				dos.writeInt(sizeY);
 			//write out data number type
-			if (isDouble) {
-				numberType = NumberType.DOUBLE;
+			if (numberType== NumberType.DOUBLE) {
 				dos.writeShort(NumberType.getDoubleType().getTag());
 				dos.writeShort(NumberType.getDoubleType().getRef());
 			} else {
-				numberType = NumberType.INT;
 				dos.writeShort(NumberType.getIntType().getTag());
 				dos.writeShort(NumberType.getIntType().getRef());
 			}
@@ -62,8 +92,7 @@ final class ScientificDataDimension extends DataObject {
 				dos.writeShort(NumberType.getIntType().getRef());
 			}
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("Creating ScientificDataDimension", ioe);
 		}
 		bytes = baos.toByteArray();
 		/* Create new data scales object to go with this.
@@ -76,7 +105,7 @@ final class ScientificDataDimension extends DataObject {
 		super(data, t, reference);
 	}
 
-	public void interpretBytes() {
+	public void interpretBytes() throws HDFException {
 		short numberTag, numberRef;
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bais);
@@ -93,8 +122,7 @@ final class ScientificDataDimension extends DataObject {
 				((NumberType) getObject(numberTag, numberRef)).getType();
 			/* We don't bother reading the scales */
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("interpretBytes ScientificDataDimension", ioe);
 		}
 	}
 
