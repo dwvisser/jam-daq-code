@@ -22,7 +22,8 @@ class PlotColorMap {
     static Color background;
     static Color foreground;
     static Color hist;
-    static Color overlay;
+    static final Color [] overlay={Color.RED, Color.GREEN, Color.BLUE,
+    Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE, DARK_RED};
     static Color gateDraw;
     static Color gateShow;
     static Color fitTotal;
@@ -43,7 +44,6 @@ class PlotColorMap {
             background=Color.WHITE;
             foreground=Color.DARK_GRAY;
             hist=Color.BLACK;
-            overlay=DARK_RED;
             gateDraw=Color.GREEN;
             gateShow=Color.RED;
             mark=Color.RED;
@@ -59,7 +59,6 @@ class PlotColorMap {
             background=Color.BLACK;
             foreground=Color.LIGHT_GRAY;
             hist=Color.WHITE;
-            overlay=Color.ORANGE;
             gateShow=Color.RED;
             gateDraw=Color.GREEN;
             mark=Color.YELLOW;
@@ -75,7 +74,6 @@ class PlotColorMap {
             background=Color.WHITE;
             foreground=Color.BLACK;
             hist=Color.BLACK;
-            overlay=DARK_RED;
             gateDraw=new Color(59, 59, 59);
             gateShow=new Color(59, 59, 59);
             mark=new Color(102, 102, 102 );
