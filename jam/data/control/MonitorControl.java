@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.sort.ThreadPriorities;
 
@@ -15,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 
-import javax.swing.SwingUtilities;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -23,9 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import java.lang.reflect.InvocationTargetException;
+
 /**
  * Reads and displays the monitors.
  *
@@ -60,16 +61,16 @@ public final class MonitorControl
 	
 	private static MonitorControl mc=null;
 	
-	static public MonitorControl getSingletonInstance(MessageHandler mh){
+	static public MonitorControl getSingletonInstance(){
 		if (mc==null){
-			mc=new MonitorControl(mh);
+			mc=new MonitorControl();
 		}
 		return mc;
 	}
 
-	MonitorControl(MessageHandler mh) {
-		super("Monitors Setup ", false);
-		msgHandler = mh;
+	MonitorControl() {
+		super("Monitors Setup", false);
+		msgHandler = JamStatus.instance().getMessageHandler();
 		final Container cdconfig = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
@@ -140,7 +141,7 @@ public final class MonitorControl
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				configure();
-				start();
+				startLoopThread();
 				dispose();
 			}
 		});
@@ -150,7 +151,7 @@ public final class MonitorControl
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				configure();
-				start();
+				startLoopThread();
 			}
 		});
 		pb.add(bapply);
@@ -160,7 +161,9 @@ public final class MonitorControl
 			public void actionPerformed(ActionEvent ae) {
 				configured = false;
 				//stop monitor thread if running
-				stop();
+				if (loopThread != null){
+					loopThread.setState(GoodThread.STOP);
+				}
 			}
 		});
 		pb.add(bcancel);
@@ -283,16 +286,16 @@ public final class MonitorControl
 	 *
 	 * @throws IllegalStateException if the monitors aren't configured yet
 	 */
-	private void start() {
+	private void startLoopThread() {
 		if (configured) {
 			if (loopThread == null) {
-				loopThread = new GoodThread(this);
+				loopThread = new GoodThread(this);//defaults to RUN state
 				loopThread.setPriority(ThreadPriorities.MESSAGING);
+				loopThread.setName("Monitor Thread");
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
 			broadcaster.broadcast(BroadcastEvent.MONITORS_ENABLED);			
-
 		} else {
 			throw new IllegalStateException(
 				getClass().getName()
@@ -304,10 +307,8 @@ public final class MonitorControl
 	/**
 	 * Stop monitors interval updating loop
 	 */
-	private void stop() {
-		if (loopThread != null) {
-			loopThread = null;
-		}
+	private void loopThreadStopped() {
+		loopThread = null;
 		for (Iterator it = Monitor.getMonitorList().iterator();
 			it.hasNext();
 			) {
@@ -321,8 +322,8 @@ public final class MonitorControl
 	 *
 	 */
 	public void run() {
-		try { //infinite loop
-			while (loopThread != null) { //attempted fix for stop() deprecation
+		try { 
+			while (loopThread.checkState()) { //loop until stopped
 				final int waitForResults = 500;
 				final int waitAfterRepaint = interval * 1000 - waitForResults;
 				/* read scalers and wait */
@@ -333,25 +334,19 @@ public final class MonitorControl
 					it.hasNext();
 					) {
 					final Monitor monitor = (Monitor) it.next();
-					//update the monitor
-					monitor.update();
+					monitor.update();//update the monitor
 				} //end loop monitors
-				
-				//Broadcast event on UI thread
-				SwingUtilities.invokeAndWait(new Runnable(){
+				/* Broadcast event on UI thread */
+				SwingUtilities.invokeLater(new Runnable(){
 					public void run() {
 						broadcaster.broadcast(BroadcastEvent.MONITORS_UPDATE);
 					}
-				});				
-
+				});
 				Thread.sleep(waitAfterRepaint);
-				
-			} //infinite loop
+			} //loop until stopped
 		} catch (InterruptedException ie) {
-			msgHandler.errorOutln("Monitor Interupted ");
-		} catch ( InvocationTargetException ite) {
-			//KBS FIXME
-			//throw RunTimeException(ite);
+			msgHandler.errorOutln("Monitor Interupted");
 		} 
+		loopThreadStopped();
 	}
 }
