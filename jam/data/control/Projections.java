@@ -34,6 +34,8 @@ Observer {
 
     private Histogram hfrom;
     private JamStatus status;
+    private final JLabel channels=new JLabel("Channels");
+    private final JLabel and = new JLabel("and");
 
     public Projections(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
         super();
@@ -91,9 +93,7 @@ Observer {
 		//Channels panel
         JPanel pchannel = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         tlim1 = new JTextField(5);
-        tlim1.setForeground(Color.black);
         tlim2 = new JTextField(5);
-        tlim2.setForeground(Color.black);
         cchan = new JComboBox();
         dim= cchan.getPreferredSize();
         dim.width=CHOOSER_SIZE;
@@ -103,9 +103,9 @@ Observer {
         cchan.addItemListener(this);
         pchannel.add(cchan);
         setUseLimits(false);
-        pchannel.add(new JLabel("Channels"));
+        pchannel.add(channels);
         pchannel.add(tlim1);
-        pchannel.add(new JLabel("and"));
+        pchannel.add(and);
         pchannel.add(tlim2);
         pEntries.add(pchannel);
 
@@ -122,7 +122,6 @@ Observer {
         lname=new JLabel("Name");
         ptextto.add(lname);
         ttextto = new JTextField("projection",20);
-        ttextto.setForeground(Color.black);
         setUseNewHist(false);
         ptextto.add(ttextto);
         pEntries.add(ptextto);
@@ -257,7 +256,7 @@ Observer {
         cto.addItem(NEW_HIST);
         for (Iterator e=Histogram.getHistogramList().iterator();e.hasNext();){
             Histogram h=(Histogram)e.next();
-            if ((h.getType()==Histogram.ONE_DIM_INT)||(h.getType()==Histogram.ONE_DIM_DOUBLE)){
+            if (h.getType()==Histogram.ONE_DIM_DOUBLE){
                 cto.addItem(h.getName());
             }
         }
@@ -297,26 +296,19 @@ Observer {
     private void setUseNewHist(boolean state){
         lname.setEnabled(state);
         ttextto.setEnabled(state);
-        if (state) {
-            ttextto.setBackground(Color.white);
-        } else {
-            ttextto.setBackground(Color.lightGray);
-        }
+        ttextto.setEditable(state);
     }
 
     /**
      * setup if using limits
      */
     private void setUseLimits(boolean state){
-        if (state) {
-            tlim1.setBackground(Color.white);
-            tlim2.setBackground(Color.white);
-        } else {
-            tlim1.setBackground(Color.lightGray);
-            tlim2.setBackground(Color.lightGray);
-        }
         tlim1.setEnabled(state);
         tlim2.setEnabled(state);
+        tlim1.setEditable(state);
+        tlim2.setEditable(state);
+        channels.setEnabled(state);
+        and.setEnabled(state);
     }
 
     /**
@@ -379,18 +371,22 @@ Observer {
         if (cdown.isSelected()) {
             if (state.equals(FULL)||state.equals(BETWEEN)){
                 typeProj="counts between Y channels "+limits[0]+" and "+limits[1];
-                hto.setCounts(projectX(counts2d,((double [])hto.getCounts()).length,limits[0],limits[1]));
+                hto.setCounts(projectX(counts2d,/*((double [])hto.getCounts()).length*/
+                hto.getSizeX(),limits[0],limits[1]));
             } else {
                 typeProj="using gate "+state;
-                hto.setCounts(projectX(counts2d,((double [])hto.getCounts()).length,Gate.getGate(state)));
+                hto.setCounts(projectX(counts2d,/*((double [])hto.getCounts()).length*/
+                hto.getSizeX(),Gate.getGate(state)));
             }
         } else { // cacross is true
             if (state.equals(FULL)||state.equals(BETWEEN)){
                 typeProj="counts between X channels "+limits[0]+" and "+limits[1];
-                hto.setCounts(projectY(counts2d,((double [])hto.getCounts()).length,limits[0],limits[1]));
+                hto.setCounts(projectY(counts2d,/*((double [])hto.getCounts()).length*/
+                hto.getSizeX(),limits[0],limits[1]));
             } else {
                 typeProj="using gate "+state.trim();
-                hto.setCounts(projectY(counts2d,((double [])hto.getCounts()).length,Gate.getGate(state)));
+                hto.setCounts(projectY(counts2d,/*((double [])hto.getCounts()).length*/
+                hto.getSizeX(),Gate.getGate(state)));
             }
         }
         messageHandler.messageOutln("Project "+hfrom.getName().trim()+" to "+ name.trim()+" "+typeProj);
