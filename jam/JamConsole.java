@@ -555,7 +555,7 @@ public class JamConsole
 			if (!validListenerFound){
 				final StringBuffer sb=new StringBuffer("\"");
 				sb.append(cmd).append("\" is an invalid command. ");
-				final String [] offer=CommandManager.getInstance().getSimilarCommnands(cmd);
+				final String [] offer=CommandManager.getInstance().getSimilarCommnands(cmd,true);
 				if (offer.length>0){
 					sb.append("Maybe you meant ");
 					if (offer.length>1){
