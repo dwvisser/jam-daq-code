@@ -4,6 +4,7 @@ import jam.data.control.HistogramZero;
 import jam.global.GoodThread;
 import jam.global.RunInfo;
 import jam.io.DataIO;
+import jam.io.hdf.HDFIO;
 import jam.sort.Controller;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
@@ -125,11 +126,11 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    RunControl(JamMain jamMain, VMECommunication vmeComm, DataIO dataio, JamConsole console){
+    RunControl(JamMain jamMain, VMECommunication vmeComm, JamConsole console){
         this.jamMain=jamMain;
         this.vmeComm=vmeComm;
-        this.dataio=dataio;
-        this.console=console;
+		this.console=console;
+        this.dataio=new HDFIO(jamMain,console);
         runNumber=100;
         // dialog box
         d=new JDialog(jamMain," Run ",false);
