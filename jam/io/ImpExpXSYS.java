@@ -4,9 +4,7 @@ import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.CalibrationFunction;
 import jam.data.func.PolynomialFunction;
-import jam.global.MessageHandler;
 
-import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -56,13 +54,6 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	int[][] counts2d;
 	boolean firstHeader;
 
-	/**
-	 * Constructor
-	 */
-	public ImpExpXSYS(Frame frame, MessageHandler msgHandler) {
-		super(frame, msgHandler);
-	}
-	
 	public ImpExpXSYS(){
 		super();
 	}

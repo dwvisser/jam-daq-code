@@ -2,9 +2,7 @@ package jam.io;
 
 import jam.data.Gate;
 import jam.data.Histogram;
-import jam.global.MessageHandler;
 
-import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +21,8 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ImportBanGates extends ImpExp {
 
-	public ImportBanGates(Frame jm, MessageHandler c){
-		super(jm,c);
-	}
-	
 	public ImportBanGates(){
-		//nada
+		super();
 	}
 
 	/**

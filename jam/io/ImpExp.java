@@ -1,5 +1,6 @@
 package jam.io;
 import jam.data.Histogram;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.Frame;
@@ -38,6 +39,8 @@ public abstract class ImpExp {
 	 */
 	private static final int LOAD = 137;
 	private static final int SAVE = 314;
+	
+	private static final JamStatus status=JamStatus.instance();
 
 	/**
 	 * so the programmer may set display options
@@ -59,24 +62,13 @@ public abstract class ImpExp {
 	System.getProperty("user.dir")));
 
 	/**
-	 * Class constructor.
-	 *
-	 * @param	frame	the <bold>jam</bold> display frame
-	 * @param	msgHandler	the <bold>jam</bold> msgHandler
-	 *
-	 * @see	jam.global.MessageHandler
-	 */
-	public ImpExp(Frame frame, MessageHandler msgHandler) {
-		this.frame = frame;
-		this.msgHandler = msgHandler;
-	}
-	
-	/**
 	 * Default constructor so that it may be launched dynamically
 	 * for batch exports.
 	 */
 	public ImpExp(){
-		this(null, null);
+		super();
+		frame=status.getFrame();
+		msgHandler=status.getMessageHandler();
 	}
 
 	/**

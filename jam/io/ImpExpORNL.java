@@ -4,7 +4,6 @@ import jam.global.MessageHandler;
 import jam.util.FileUtilities;
 import jam.util.StringUtilities;
 
-import java.awt.Frame;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
@@ -94,15 +93,7 @@ public class ImpExpORNL extends ImpExp {
 
 	private int[] iDnumber; //ID list
 
-	//private byte[] tempInt = new byte[4];
 	private byte[] tempShort = new byte[2];
-
-	/**
-	 * Constructor
-	 */
-	public ImpExpORNL(Frame frame, MessageHandler msgHandler) {
-		super(frame, msgHandler);
-	}
 
 	public ImpExpORNL() {
 		super();

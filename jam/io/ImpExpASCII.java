@@ -1,8 +1,6 @@
 package jam.io;
 import jam.data.Histogram;
-import jam.global.MessageHandler;
 
-import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -45,18 +43,6 @@ public class ImpExpASCII extends ImpExp {
 	 * maximum number of channels per histogram
 	 */
 	static final int MAX_SIZE_HIST = 8192;
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param	frame	the <bold>jam</bold> display frame
-	 * @param	msgHandler the <bold>jam</bold> msgHandler
-	 *
-	 * @see	jam.global.MessageHandler
-	 */
-	public ImpExpASCII(Frame frame, MessageHandler msgHandler) {
-		super(frame, msgHandler);
-	}
 
 	public ImpExpASCII() {
 		super();

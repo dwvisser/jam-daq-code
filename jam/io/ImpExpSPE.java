@@ -1,8 +1,6 @@
 package jam.io;
 import jam.data.Histogram;
-import jam.global.MessageHandler;
 
-import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,11 +22,6 @@ public class ImpExpSPE extends ImpExp {
 	static final int NAME_LENGTH = 8;
 	static final int MAX_SIZE = 8192;
 	static final int MAGIC_WORD = 24;
-
-	public ImpExpSPE(Frame frame, MessageHandler msgHandler) {
-		super(frame, msgHandler);
-
-	}
 
 	public ImpExpSPE() {
 		super();
