@@ -36,6 +36,11 @@ public class JamCmdManager implements CommandListener {
 		cmdMap.put("shownewhist", "ShowDialogNewHistogramCmd");
 		cmdMap.put("exit", "ShowDialogExitCmd");
 		cmdMap.put("newclear", "FileNewClearCmd");
+		cmdMap.put("parameters", "ShowDialogParametersCmd");
+		cmdMap.put("displayscalers", "ShowDialogScalersCmd");
+		cmdMap.put("showzeroscalers", "ShowDialogZeroScalersCmd");
+		cmdMap.put("scalers", "ScalersCmd");
+		
 	}
 	
 	/**

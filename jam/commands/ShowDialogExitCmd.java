@@ -49,6 +49,7 @@ public class ShowDialogExitCmd extends AbstractCommand{
 		}
 	}
 	
+	
 	/**
 	 * Execute the command
 	 */

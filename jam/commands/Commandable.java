@@ -21,12 +21,20 @@ public interface Commandable {
 	 * @param broadcaster	Change in status messages
 	 */
 	void init(JamStatus status, MessageHandler msghdlr, Broadcaster broadcaster);
+	
 	/**
 	 * Execute a command with the given command parameters
 	 * 
 	 * @param cmdParams command parameters
 	 */
 	void performCommand(Object [] cmdParams) throws CommandException;	
+
+	/**
+	 * Execute a command with the given command parameter bitmask
+	 * 
+	 * @param cmdParams command parameters
+	 */
+	//void performCommand(int cmdParams) throws CommandException;	
 	
 	/**
 	 * Execute a command with the given command string tokens

@@ -26,6 +26,10 @@ public class NewHistogramCmd extends AbstractCommand {
 		new Histogram(name, type, sizeX, sizeY, title);		
 	}
 	
+	public void performCommand(int cmdParams) throws CommandException {
+		execute(null);
+	}
+	
 	/**
 	 * Execute the command
 	 */
