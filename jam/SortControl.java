@@ -236,7 +236,6 @@ class SortControl implements Controller, ActionListener, ItemListener {
 				endSort();
 				msgHandler.warningOutln(
 					"Ended offline sorting before reading all events.");
-				//lockFields(false);
 				bend.setEnabled(false);
 			} else if (command == "bfileout") {
 				textOutFile.setText(getOutFile().getPath());
