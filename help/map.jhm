@@ -11,7 +11,7 @@
       <mapID target="online" url="usingjam/online.html" />
       <mapID target="offline" url="usingjam/offline.html" />
       <mapID target="writesort" url="usingjam/writesort.html" />
-      <mapID target="fitting" url="usingjam/fitting.html" />
+      <mapID target="dofit" url="usingjam/fitting.html" />
       <mapID target="menus" url="menus/index.html" />
       <mapID target="file" url="menus/file.html" />
       <mapID target="setup" url="menus/setup.html" />
@@ -20,7 +20,7 @@
       <mapID target="gate" url="menus/gate.html" />
       <mapID target="scalers" url="menus/scalers.html" />
       <mapID target="preferences" url="menus/preferences.html" />
-      <mapID target="fitting" url="menus/fitting.html" />
+      <mapID target="fitmenu" url="menus/fitting.html" />
       <mapID target="help" url="menus/help.html" />
       <mapID target="l002" url="L002format.html" />
       <mapID target="protocol" url="frontEndComm.html" />
