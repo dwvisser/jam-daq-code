@@ -17,15 +17,20 @@ public class HDFileFilter extends FileFilter implements HDFconstants {
     }
     
     public boolean accept(File f){
-		if (f.isDirectory()) return option;
-		try {
-	    	RandomAccessFile raf=new RandomAccessFile(f,"r");
-	    	int temp=raf.readInt();
-	    	raf.close();
-	   	 	return (temp == HDF_HEADER);
-		} catch (IOException e) {
-	    	return false;
+    	boolean rval=false;//default return value
+		if (f.isDirectory()) {
+			rval = option;
+		} else {
+			try {
+	    		RandomAccessFile raf=new RandomAccessFile(f,"r");
+	    		int temp=raf.readInt();
+	    		raf.close();
+	   	 		rval = (temp == HDF_HEADER);
+			} catch (IOException e) {
+	    		rval = false;
+			}
 		}
+		return rval;
     }
     
     public String getDescription() {
