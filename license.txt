@@ -27,7 +27,7 @@ disclaimers in the documentation and/or other materials provided
 with the distribution. 
 
 Neither the names of the Wright Nuclear Structure Laboratory, 
-Yale Universiy, nor the names of its contributors may be used to 
+Yale University, nor the names of its contributors may be used to 
 endorse or promote products derived from this Software without 
 specific prior written permission. 
 
