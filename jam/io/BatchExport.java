@@ -269,17 +269,15 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	 *
 	 */
 	private void addAllHists() {
-
-		HashSet histSet = new HashSet();
-		
-		for (Iterator e=Histogram.getHistogramList().iterator();e.hasNext();){
-			Histogram h=(Histogram)e.next();
-			if ((h.getType()==Histogram.ONE_DIM_INT)||(h.getType()==Histogram.ONE_DIM_DOUBLE)){				
+		final HashSet histSet = new HashSet();
+		final Iterator it=Histogram.getHistogramList().iterator();
+		while (it.hasNext()){
+			final Histogram h=(Histogram)it.next();
+			if (h.getDimensionality()==1){				
 				histSet.add(h.getName());
 			}
 		}
 		lstHists.setListData(histSet.toArray());
-
 	}
 	
 	/**
@@ -476,18 +474,16 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	 *
 	 */
 	private void setup() {
-
 		cbHist.removeActionListener(this);		
 		cbHist.removeAllItems();
-		for (Iterator e=Histogram.getHistogramList().iterator();e.hasNext();){
-			Histogram h=(Histogram)e.next();
-			if ((h.getType()==Histogram.ONE_DIM_INT)||(h.getType()==Histogram.ONE_DIM_DOUBLE)){				
+		final Iterator it=Histogram.getHistogramList().iterator();
+		while (it.hasNext()){
+			final Histogram h=(Histogram)it.next();
+			if (h.getDimensionality()==1){				
 				cbHist.addItem(h.getName());
 			}
 		}
-
 		cbHist.addActionListener(this);
- 
 	}
 	
 	

@@ -260,12 +260,10 @@ public class GateSet extends DataControl implements Observer {
 			/* There are many normal situations with no current histogram. */
 			setType(NONE); //undefined type
 		} else if (
-			(currentHistogram.getType() == Histogram.ONE_DIM_INT)
-				|| (currentHistogram.getType() == Histogram.ONE_DIM_DOUBLE)) {
+			currentHistogram.getDimensionality()==1) {
 			setType(Gate.ONE_DIMENSION);
 		} else if (
-			(currentHistogram.getType() == Histogram.TWO_DIM_INT)
-				|| (currentHistogram.getType() == Histogram.TWO_DIM_DOUBLE)) {
+			currentHistogram.getDimensionality()==2) {
 			setType(Gate.TWO_DIMENSION);
 		} else {
 			messageHandler.errorOutln(
