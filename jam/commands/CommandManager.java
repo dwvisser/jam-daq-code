@@ -52,6 +52,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
 		cmdMap.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
 		cmdMap.put(SHOW_RUN_CONTROL, ShowRunControl.class); 
+		cmdMap.put(SHOW_SORT_CONTROL, ShowSortControl.class); 
 		cmdMap.put(START, StartAcquisition.class);
 		cmdMap.put(STOP, StopAcquisition.class);
 		cmdMap.put(FLUSH, FlushAcquisition.class);
@@ -78,6 +79,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(DISPLAY_MON_CONFIG, ShowMonitorConfig.class);
 		cmdMap.put(SHOW_BATCH_EXPORT, ShowBatchExport.class);
 		cmdMap.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
+		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
 	}
 	
 

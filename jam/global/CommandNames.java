@@ -82,6 +82,9 @@ public interface CommandNames {
 	String SHOW_RUN_CONTROL="showruncontrol";
 
 	/** Show the dialog for zeroing scalers. */
+	String SHOW_SORT_CONTROL="showsortcontrol";
+
+	/** Show the dialog for zeroing scalers. */
 	String SHOW_ZERO_SCALERS="showzeroscalers";
 	
 	/** Show batch export dialog */
@@ -137,4 +140,7 @@ public interface CommandNames {
 	
 	/** Show the online sorting setup dialog. */
 	String SHOW_SETUP_ONLINE="showsetuponline";
+
+	/** Show the offline sorting setup dialog. */
+	String SHOW_SETUP_OFFLINE="showsetupoffline";
 }
