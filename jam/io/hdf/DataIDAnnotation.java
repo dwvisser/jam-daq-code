@@ -1,11 +1,10 @@
 package jam.io.hdf;
 import jam.util.StringUtilities;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,31 +52,28 @@ final class DataIDAnnotation extends DataObject {
 			throw new HDFException("Problem creating DIA.",e);
 		}
 	}
-
-	DataIDAnnotation(byte[] data, short tag, short reference) {
-		super(data, tag,reference);
+	
+	DataIDAnnotation(){
+	    super();
 	}
+
+//	void init(byte[] data, short tag, short reference) {
+//		super.init(data, tag,reference);
+//	}
 
 	/**
 	 * Implementation of <code>DataObject</code> abstract method.
 	 *
-	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
-	protected void interpretBytes() throws HDFException {
-		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		final DataInputStream dis = new DataInputStream(bais);
-		try {
-			final short tag = dis.readShort();
-			final short ref = dis.readShort();
-			final byte [] temp = new byte[bytes.length - 4];
-			dis.read(temp);
-			note = StringUtilities.instance().getASCIIstring(temp);
-			object = getObject(tag, ref);
-		} catch (IOException e) {
-			throw new HDFException(
-				"Problem interpreting DIA.", e);
-		}
-	}
+	protected void interpretBytes() {
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final short tag = buffer.getShort();
+        final short ref = buffer.getShort();
+        final byte[] temp = new byte[buffer.remaining()];
+        buffer.get(temp);
+        note = StringUtilities.instance().getASCIIstring(temp);
+        object = getObject(tag, ref);
+    }
 
 	String getNote() {
 		return note;
