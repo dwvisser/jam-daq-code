@@ -15,22 +15,21 @@ import javax.swing.*;
  *
  */
 public final class ParameterControl
-	extends DataControl
-	implements ActionListener, ItemListener {
+	extends DataControl {
 
-	private Frame frame;
-	private Broadcaster broadcaster;
-	private MessageHandler messageHandler;
+	private final Frame frame;
+	private final Broadcaster broadcaster;
+	private final MessageHandler messageHandler;
 
 	//dialog box
-	private JDialog ddisp;
+	private final JDialog ddisp;
 
 	//widgets for each parameter
 	private JPanel[] pParam;
 	private JLabel[] labelParam;
 	private JTextField[] textParam;
 
-	private JPanel pButton;
+	private final JPanel pButton;
 
 
 	public ParameterControl(
@@ -52,12 +51,18 @@ public final class ParameterControl
 		JPanel pbut = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButton.add(pbut);
 		JButton bread = new JButton("Read");
-		bread.setActionCommand("read");
-		bread.addActionListener(this);
+		bread.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				read();
+			}
+		});
 		pbut.add(bread);
 		JButton bset = new JButton("Set");
-		bset.setActionCommand("set");
-		bset.addActionListener(this);
+		bset.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				set();
+			}
+		});
 		pbut.add(bset);
 		ddisp.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -67,40 +72,6 @@ public final class ParameterControl
 		setup();
 	}
 
-	/**
-	 * Action set parameters
-	 *
-	 */
-	public void actionPerformed(ActionEvent ae) {
-
-		String command = ae.getActionCommand();
-
-		try {
-			if (command == "set") {
-				set();
-
-			} else if (command == "read") {
-				read();
-
-			} else {
-				System.err.println(
-					"Error Unregonized command [ParameterControl]");
-				throw new DataException("Logic Error");
-			}
-		} catch (DataException je) {
-			messageHandler.errorOutln(je.getMessage());
-		}
-	}
-	/**
-	 * Does nothing for right now
-	 *
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		/* not used so far
-		if (ie.getItemSelectable()==checkDisabled) {
-		}
-		*/
-	}
 	/**
 	 * Show the Display dialog box
 	 *
@@ -198,12 +169,11 @@ public final class ParameterControl
 					"Not a valid number, null parameter [ParameterControl]");
 			}
 		}
-
 	}
+	
 	/**
 	 * Read the values from the Parameter Objects
-	 * and display them
-	 *
+	 * and display them.
 	 */
 	public void read() {
 		if (DataParameter.getParameterList().size() != 0) {
@@ -219,5 +189,4 @@ public final class ParameterControl
 			}
 		}
 	}
-
 }
