@@ -958,11 +958,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    Iterator groupIter =groupVirtualGroups.iterator();
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
-	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, fileName);
-	    	//FIXME KBS remove
-	    	//if (mode==FileOpenMode.OPEN_MORE) {
-	    	//	appendFileName(currentGroup, fileName);
-	    	//}
+	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, fileName, mode);
 	        //Find histograms
 	    	List histList =hdfToJam.findHistograms(currentVGroup, histNames);
 	    	histCount = histList.size();
@@ -1066,7 +1062,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    Iterator groupIter =groupVirtualGroups.iterator();
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
-	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, null);
+	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, null, mode);
 	        //Find histograms
 	    	List histList =hdfToJam.findHistograms(currentVGroup, null);
 	    	histCount = histList.size();

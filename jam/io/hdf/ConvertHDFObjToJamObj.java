@@ -90,9 +90,13 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     /* non-javadoc:
      * Convert a virtual group to a jam data group
      */
-	Group convertGroup(VirtualGroup virtualGroup, String fileName){
+	Group convertGroup(VirtualGroup virtualGroup, String fileName, FileOpenMode mode){
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
+		//Don't use file name for group name for open
+    	if (mode==FileOpenMode.OPEN) {
+    		fileName=null;
+    	}
 		return Group.createGroup(dataIDLabel.getLabel(), Group.Type.FILE, fileName);
 	}
 	

@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import java.awt.FontMetrics;
 import java.util.Iterator;
 
 import javax.swing.JComboBox;
@@ -18,6 +19,10 @@ import jam.global.BroadcastEvent;
  */
 public abstract class AbstractManipulation extends AbstractControl {
 
+	final int CHOOSER_SIZE = 200;
+	final int CHOOSER_CHAR_LENGTH = 35;
+	final int NEW_NAME_LENGTH=15;
+	
 	/** String to prepend to new histogram group in combobox */ 
 	final static String NEW_HIST = "NEW: ";
 	
@@ -148,6 +153,22 @@ public abstract class AbstractManipulation extends AbstractControl {
 		}
 		return rval;
 	}
-	
-	
+	/**
+	 * Get the mean character width in pixels
+	 * @param fm
+	 * @return
+	 */
+	int getMeanCharWidth(FontMetrics fm) {
+		
+		final double NUMBER_WIDTHS =256; 
+		double sum =0;
+		int meanWidth;
+		
+		int[] widths =fm.getWidths(); 
+		for (int i=0;i<NUMBER_WIDTHS; i++){
+			sum+=widths[i];		
+		}
+		
+		return meanWidth =(int)Math.round(sum/NUMBER_WIDTHS); 
+	}
 }

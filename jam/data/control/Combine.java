@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -60,10 +61,10 @@ public class Combine extends AbstractManipulation implements Observer {
 		super("Manipulate 1-D Histograms", false);
 		messageHandler = mh;
 		setResizable(false);
-		final int CHOOSER_SIZE = 200;
 		Dimension dim;
 		final int hgap = 5;
 		final int vgap = 5;
+		int meanCharWidth;
 		//UI
 		final Container cdmanip = getContentPane();
 		cdmanip.setLayout(new BorderLayout(hgap, vgap));
@@ -88,8 +89,9 @@ public class Combine extends AbstractManipulation implements Observer {
 		JPanel pfrom1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom1);
 		cfrom1 = new JComboBox();
+		meanCharWidth= getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
 		dim = cfrom1.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;
 		cfrom1.setPreferredSize(dim);
 
 		cfrom1.addItem("1DHISTOGRAM1");
@@ -152,9 +154,10 @@ public class Combine extends AbstractManipulation implements Observer {
 		JPanel pfrom2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pfrom2);
 		cfrom2 = new JComboBox();
+		meanCharWidth= getMeanCharWidth(cfrom2.getFontMetrics(cfrom2.getFont()));
 		dim = cfrom2.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
-		cfrom2.setPreferredSize(dim);
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;
+		cfrom2.setPreferredSize(dim);		
 		cfrom2.addItem("1DHISTOGRAM2");
 		ttimes2 = new JTextField("1.0", 8);
 		pfrom2.add(cfrom2);
@@ -166,8 +169,9 @@ public class Combine extends AbstractManipulation implements Observer {
 		JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pEntries.add(pto);
 		cto = new JComboBox();
+		meanCharWidth= getMeanCharWidth(cfrom1.getFontMetrics(cfrom1.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;		
 		cto.setPreferredSize(dim);
 		cto.addItem(NEW_HIST);
 		cto.addItemListener(new ItemListener(){
@@ -177,7 +181,7 @@ public class Combine extends AbstractManipulation implements Observer {
 				}
 			}
 		});
-		ttextto = new JTextField("combine", 20);
+		ttextto = new JTextField("combine", NEW_NAME_LENGTH);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);

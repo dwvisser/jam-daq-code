@@ -39,6 +39,44 @@ public final class StringUtilities {
 	 * @param nameSet contains the existing names
 	 * @return unique name
 	 */
+	public String makeUniqueName(String name, Set nameSet) {
+		
+		String nameTemp = name.trim();
+		boolean isUnique=false;
+		int prime = 1;
+		boolean copyFound;
+		
+		/* find a name that does not conflict with existing names */
+		while(!isUnique) {
+			copyFound=false;
+			Iterator nameIter = nameSet.iterator();
+			while (nameIter.hasNext()){
+				String nameNext=(String)nameIter.next();
+				if (nameTemp.compareTo(nameNext)==0) {
+					copyFound=true;
+					break;
+				}
+			}
+			if (copyFound) { 
+				final String nameAddition = "[" + prime + "]";
+				nameTemp = name+nameAddition;
+				prime++;				
+			} else {
+				isUnique=true;
+			}
+		}
+		
+		return nameTemp;
+	}
+	
+	/**
+	 * Make a unique name out of the given name that differs from
+	 * names in the given set.
+	 * 
+	 * @param name name to make unique
+	 * @param nameSet contains the existing names
+	 * @return unique name
+	 */
 	public String makeUniqueName(String name, Set nameSet, int nameLength) {
 		
 		String nameTemp = makeLength(name, nameLength);

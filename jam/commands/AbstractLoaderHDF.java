@@ -80,7 +80,9 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
          * histogram.
          */
 		if (loadGroup.getHistogramList().size()>0 ) {
-			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
+			Group group =Group.getCurrentGroup();
+			if (group!=null)
+			firstHist = (Histogram)group.getHistogramList().get(0);
 		}					
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);

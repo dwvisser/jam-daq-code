@@ -78,9 +78,9 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		chan2f = 1.0;
 		messageHandler = mh;
 
-		final int CHOOSER_SIZE = 200;
 		int hgap = 5;
 		int vgap = 10;
+		int meanCharWidth;
 		Dimension dim;
 
 		//UI Layout
@@ -120,9 +120,11 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		//tfrom = new JTextField("1DHISTOGRAM", 20);
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.ONE_D));
+		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cfrom.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
 		cfrom.setPreferredSize(dim);
+		
 		cfrom.setEditable(false);
 		pfrom.add(cfrom);
 		pEntries.add(pfrom);
@@ -159,15 +161,16 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 
 		JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
 		cto = new JComboBox();
+		meanCharWidth= getMeanCharWidth(cto.getFontMetrics(cto.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
-		cto.setPreferredSize(dim);
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
+		cto.setPreferredSize(dim);		
 		cto.addItem("New Histogram");
 		cto.addItemListener(this);
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
-		ttextto = new JTextField("gainshift", 20);
+		ttextto = new JTextField("gainshift", NEW_NAME_LENGTH);
 		pto.add(ttextto);
 		pEntries.add(pto);
 

@@ -73,11 +73,14 @@ public class Group {
     /** children scalers of group */
     private final List scalerList = new ArrayList();
     
+    /** Name of group */
     private String name;
-
-    private Type type;
     /** Name of file that group belongs to */
     private String fileName;
+    /** Name of file and group canotated */
+    private String fullName;
+    /** Type of group, file or sort */
+    private Type type;
     /**
      * Set a group as the current group, create the group if it does not already
      * exist
@@ -232,11 +235,25 @@ public class Group {
     public Group(String name, Type type, String fileName) {
 
         final StringUtilities stringUtil = StringUtilities.instance();
-        String uniqueName= stringUtil.makeUniqueName(name, NAME_MAP.keySet(), NAME_LENGTH);
+        
+        String tempFullName="GROUP";
+        
+        if (fileName!=null && name!=null) {
+        	tempFullName =fileName+"/"+name;
+        }else if (fileName!=null) {
+        	tempFullName =fileName;
+        }else if (name!=null) {
+        	tempFullName =name;
+        }
+		
+        
+        String uniqueName= stringUtil.makeUniqueName(tempFullName, NAME_MAP.keySet());
         
         this.type = type;
-        this.name =uniqueName;
+        this.name = name;
         this.fileName=fileName;
+        this.fullName =uniqueName;
+
         
         LIST.add(this);
         NAME_MAP.put(uniqueName, this);
@@ -256,13 +273,16 @@ public class Group {
      * @return the name of this group
      */
     public String getName() {
-		String fullName;
-    	if (fileName!=null) {
-    		fullName=fileName+"("+name+")";
+    	return fullName;
+    	/*
+		String tempFullName;
+    	if (tempFullName!=null) {
+    		tempFullName=fileName+"("+name+")";
     	} else {
-    		fullName=name;
+    		tempFullName=name;
     	}
-        return fullName;
+        return tempFullName;
+        */
     }
 
     /**

@@ -86,7 +86,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 
 	private void notifyApp() {
 		//Update app status
-		STATUS.setOpenFile(file);
+		
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		

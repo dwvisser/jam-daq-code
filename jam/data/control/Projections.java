@@ -65,10 +65,12 @@ public class Projections extends AbstractManipulation implements Observer {
 		super("Project 2D Histogram", false);
 		console = msgHandler;
 		setResizable(false);
-		final int CHOOSER_SIZE = 200;
+	
 		Dimension dim;
 		final int hgap = 5;
 		final int vgap = 10;
+		int meanCharWidth;
+		
 		final Container cdproject = getContentPane();
 		cdproject.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
@@ -93,8 +95,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
+		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cfrom.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
 		cfrom.setPreferredSize(dim);
 		cfrom.setEditable(false);
 		phist.add(cfrom);
@@ -115,6 +118,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		tlim1 = new JTextField(5);
 		tlim2 = new JTextField(5);
 		cchan = new JComboBox();
+		
 		dim = cchan.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cchan.setPreferredSize(dim);
@@ -139,8 +143,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* To histogram */
 		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cto = new JComboBox();
+		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
+		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
 		cto.setPreferredSize(dim);
 		cto.addItem("1DHISTOGRAM");
 		cto.addItemListener(new ItemListener(){
@@ -153,7 +158,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		ptextto.add(cto);
 		lname = new JLabel("Name");
 		ptextto.add(lname);
-		ttextto = new JTextField("projection", 20);
+		ttextto = new JTextField("projection", NEW_NAME_LENGTH);
 		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
