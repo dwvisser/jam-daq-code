@@ -325,6 +325,11 @@ public class JamConsole extends JPanel implements MessageHandler {
 		msgLock = false;
 		notifyAll();
 	}
+	
+	private final String EMPTY="";
+	public synchronized void messageOutln(){
+		messageOutln(EMPTY);
+	}
 
 	/**
 	 * Writes an error message to the console immediately.

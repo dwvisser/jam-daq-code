@@ -163,9 +163,14 @@ public class FitConsole
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
-		//unlock text area and notify others they can use it
+		/* unlock text area and notify others they can use it */
 		msgLock = false;
 		notifyAll();
+	}
+	
+	private static final String EMPTY="";
+	public void messageOutln(){
+		messageOutln(EMPTY);
 	}
 
 	/**

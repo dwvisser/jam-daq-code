@@ -29,6 +29,11 @@ public interface MessageHandler {
      * Output a full message
      */
     public void messageOutln(String message);
+    
+    /**
+     * Output carriage return.
+     */
+    public void messageOutln();
 
     /**
      * Output a waring message
