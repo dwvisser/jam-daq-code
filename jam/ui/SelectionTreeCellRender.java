@@ -6,7 +6,6 @@ import jam.data.Histogram;
 import java.awt.Color;
 import java.awt.Component;
 
-import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -18,11 +17,6 @@ import javax.swing.tree.TreeCellRenderer;
  */
 public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 		TreeCellRenderer {
-	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-	private static final ImageIcon gateDefinedIcon1D =
-		new ImageIcon(cl.getResource("jam/ui/gateDefined1D.png"));
-	private static final ImageIcon gateDefinedIcon2D =
-		new ImageIcon(cl.getResource("jam/ui/gateDefined2D.png"));
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
@@ -53,13 +47,13 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 			setText( gate.getName() );
 			if (gate.getDimensionality()==1){
 				if (gate.isDefined()){
-					setIcon(gateDefinedIcon1D);					
+					setIcon(Icons.GATE_DEF1D);					
 				}else {
 					setIcon(Icons.GATE1D);
 				}
 			}else{
 				if (gate.isDefined()){
-					setIcon(gateDefinedIcon2D);					
+					setIcon(Icons.GATE_DEF2D);					
 				}else {
 					setIcon(Icons.GATE2D);
 				}
