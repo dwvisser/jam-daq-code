@@ -264,7 +264,6 @@ public class HistApplet
 						JamConsole.NEW);
 					console.messageOut(", Area = " + area, JamConsole.END);
 				}
-				display.displayGate(gate);
 			}
 		}
 	}
