@@ -1,11 +1,9 @@
 package jam.commands;
 
 import jam.global.CommandListenerException;
-import jam.global.JamStatus;
 
 import jam.fit.LoadFit;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 /**
  * Command to add fit
  * @author Ken Swartz
@@ -13,24 +11,19 @@ import javax.swing.JMenu;
  */
 public class ShowDialogAddFit extends AbstractCommand {
 	
-	private JMenu fittingMenu;
+	private LoadFit loadfit;
 
 	protected void initCommand(){
 		putValue(NAME, "Load Fit\u2026");
 		JFrame frame = status.getFrame();
-		//JMenu fittingMenu = frame.getMenuBar().getFitMenu();		
-		//dialog = new AboutDialog(JamStatus.instance().getFrame());		
+		loadfit = new LoadFit(msghdlr);		
 	}
 	
-	/* (non-Javadoc)
-	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
+	/* * 
+	 *  Execute command
 	 */
-	protected void execute(Object[] cmdParams) {		
-
-		final LoadFit loadfit;		
-		loadfit = new LoadFit(msghdlr, fittingMenu);		
+	protected void execute(Object[] cmdParams) {				
 		loadfit.showLoad();
-
 	}
 
 	/* (non-Javadoc)
