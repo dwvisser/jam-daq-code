@@ -14,36 +14,28 @@ import javax.swing.DefaultComboBoxModel;
  */
 public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		
-	public static final List list=new ArrayList();
+	public static final List LIST=new ArrayList();
 	static {
-		list.add(LinearFunction.class.getName());
-		list.add(SqrtEnergyFunction.class.getName());
+		LIST.add(LinearFunction.class.getName());
+		LIST.add(SqrtEnergyFunction.class.getName());
 	}
 	
-	private Object selection;
-	private final Object selectionSync=new Object();
-
-	/**
-	 * Create the default model that shows gates for the currently
-	 * displayed histogram.
-	 */
-	public CalibrationComboBoxModel() {
-		super();
-	}
+	private transient Object selection;
+	private transient final Object selectSync=new Object();
 
 	/**
 	 * @return list element at the specified index
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
-		return list.get(index);
+		return LIST.get(index);
 	}
 
 	/**
 	 * @return number of list elements in chooser.
 	 */
 	public int getSize() {
-		return list.size();
+		return LIST.size();
 	}
 
 	/**
@@ -56,18 +48,18 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	public void setSelectedItem(Object anItem) {
 			final Object name;
 			if (anItem==null){
-				name=list.get(0);
+				name=LIST.get(0);
 			} else if (anItem instanceof String){
 				name=anItem;
 			} else {
 				throw new IllegalArgumentException(getClass().getName()+
 				": only Strings or null please");
 			}
-			for (Iterator it=list.iterator(); it.hasNext(); ){
-				final Object cl=it.next();
-				if (name.equals(cl)){
-					synchronized (selectionSync) {
-						selection = cl;
+			for (Iterator it=LIST.iterator(); it.hasNext(); ){
+				final Object clazz=it.next();
+				if (name.equals(clazz)){
+					synchronized (selectSync) {
+						selection = clazz;
 					}					
 				}
 			}
@@ -77,7 +69,7 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 * @return the currently selected item
 	 */
 	public Object getSelectedItem() {
-		synchronized (selectionSync){
+		synchronized (selectSync){
 			return selection;
 		}
 	}
