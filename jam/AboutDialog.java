@@ -24,17 +24,12 @@ import javax.swing.border.EmptyBorder;
  */
 public class AboutDialog extends JDialog {
 	
-	final String HOME_URL="http://jam-daq.sourceforge.net/";
+	static final String HOME_URL="http://jam-daq.sourceforge.net/";
 	private final static int POS_X=20;
 	private final static int POS_Y=50;
-		
-	
+
 	public AboutDialog(Frame frame) {
 		super(frame, "About Jam", false);
-		
-		
-				
-					
 		final Container cad = this.getContentPane();
 		this.setResizable(false);
 		this.setLocation(POS_X, POS_Y);
@@ -56,20 +51,17 @@ public class AboutDialog extends JDialog {
 		cad.add(pbut, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent event){
 				dispose();
 			}
 		});
 		pbut.add(bok);
-		this.pack();
+		pack();
 		/* Receives events for closing the dialog box and closes it. */
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent event) {
 				dispose();
 			}
 		});
-
 	}
-	
-
 }
