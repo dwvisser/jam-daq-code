@@ -44,6 +44,7 @@ public class JamConsole
 	private Document doc;
 	private SimpleAttributeSet attr_normal, attr_warning, attr_error;
 	private JTextField textIn; //input text field
+	private final JScrollPane jsp;
 
 	/**
 	 * Private.
@@ -113,7 +114,7 @@ public class JamConsole
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		JScrollPane jsp =
+		jsp =
 			new JScrollPane(
 				textLog,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -176,7 +177,9 @@ public class JamConsole
 			}
 			trimLog();
 			textLog.setCaretPosition(doc.getLength());
-			//if file logging on write to file
+			final JScrollBar scroll=jsp.getVerticalScrollBar();
+			scroll.setValue(scroll.getMaximum());
+			/* if file logging on write to file */
 			if (logFileOn) {
 				try {
 					logFileWriter.write(messageFile, 0, messageFile.length());
