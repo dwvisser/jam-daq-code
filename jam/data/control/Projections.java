@@ -29,6 +29,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -39,8 +40,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser
  */
-public class Projections extends DataControl implements ActionListener,
-		ItemListener, Observer {
+public class Projections extends DataControl implements Observer {
 
 	private static final String FULL = "Full Histogram";
 
@@ -60,33 +60,21 @@ public class Projections extends DataControl implements ActionListener,
 
 	private final JTextField tlim1, tlim2, ttextto;
 
-	private final JLabel lname;
-
-	private final JButton bOK = new JButton("OK");
-
-	private final JButton bApply = new JButton("Apply");
-
-	private Histogram hfrom;
+	private String hfromname;
 
 	private JamStatus status;
 
-	private final JLabel channels = new JLabel("Channels");
-
-	private final JLabel and = new JLabel("and");
-
-	public Projections(MessageHandler messageHandler) {
+	public Projections(MessageHandler mh) {
 		super("Project 2D Histogram", false);
-		this.messageHandler = messageHandler;
+		messageHandler = mh;
 		status = JamStatus.instance();
 		frame = status.getFrame();
 		broadcaster = Broadcaster.getSingletonInstance();
 		setResizable(false);
-
 		final int CHOOSER_SIZE = 200;
 		Dimension dim;
 		final int hgap = 5;
 		final int vgap = 10;
-
 		final Container cdproject = getContentPane();
 		cdproject.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
@@ -96,7 +84,6 @@ public class Projections extends DataControl implements ActionListener,
 				setup();
 			}
 		});
-
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(20, 10, 0, 0));
 		cdproject.add(pLabels, BorderLayout.WEST);
@@ -104,15 +91,12 @@ public class Projections extends DataControl implements ActionListener,
 		pLabels.add(new JLabel("Direction", JLabel.RIGHT));
 		pLabels.add(new JLabel("Region", JLabel.RIGHT));
 		pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
-
-		//Entries Panel
-		JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
+		/* Entries Panel */
+		final JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pEntries.setBorder(new EmptyBorder(20, 0, 0, 10));
 		cdproject.add(pEntries, BorderLayout.CENTER);
-
-		//From histogram
-		JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		//tfrom = new JTextField("2DHISTOGRAM",20);
+		/* From histogram */
+		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
 		dim = cfrom.getPreferredSize();
@@ -121,10 +105,9 @@ public class Projections extends DataControl implements ActionListener,
 		cfrom.setEditable(false);
 		phist.add(cfrom);
 		pEntries.add(phist);
-
-		//Direction panel
-		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		ButtonGroup cbg = new ButtonGroup();
+		/* Direction panel */
+		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		final ButtonGroup cbg = new ButtonGroup();
 		cacross = new JCheckBox("Across", true);
 		cdown = new JCheckBox("Down", false);
 		cbg.add(cacross);
@@ -132,9 +115,9 @@ public class Projections extends DataControl implements ActionListener,
 		pradio.add(cacross);
 		pradio.add(cdown);
 		pEntries.add(pradio);
-
-		//Channels panel
-		JPanel pchannel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		/* Channels panel */
+		final JPanel pchannel = new JPanel(
+				new FlowLayout(FlowLayout.LEFT, 5, 0));
 		tlim1 = new JTextField(5);
 		tlim2 = new JTextField(5);
 		cchan = new JComboBox();
@@ -143,57 +126,90 @@ public class Projections extends DataControl implements ActionListener,
 		cchan.setPreferredSize(dim);
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
-		cchan.addItemListener(this);
+		cchan.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				if (cchan.getSelectedItem() != null) {
+					setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
+				}
+			}
+		});
 		pchannel.add(cchan);
 		setUseLimits(false);
+		final JComponent channels = new JLabel("Channels");
 		pchannel.add(channels);
 		pchannel.add(tlim1);
+		final JComponent and = new JLabel("and");
 		pchannel.add(and);
 		pchannel.add(tlim2);
 		pEntries.add(pchannel);
-
-		//To histogram
-		JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		/* To histogram */
+		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cto = new JComboBox();
 		dim = cto.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cto.setPreferredSize(dim);
 		cto.addItem("1DHISTOGRAM");
-		cto.addItemListener(this);
+		cto.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				if (cto.getSelectedItem() != null) {
+					setUseNewHist(cto.getSelectedItem().equals(NEW_HIST));
+				}
+			}
+		});
 		ptextto.add(cto);
-		lname = new JLabel("Name");
+		final JComponent lname = new JLabel("Name");
 		ptextto.add(lname);
 		ttextto = new JTextField("projection", 20);
 		setUseNewHist(false);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
-
-		//Buttons panel
-		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		/* Buttons panel */
+		final JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cdproject.add(pButtons, BorderLayout.SOUTH);
-		JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
+		final JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtons.add(pcontrol);
-		bOK.setActionCommand("ok");
-		bOK.addActionListener(this);
+		final JButton bOK = new JButton("OK");
+		final JButton bApply = new JButton("Apply");
+		bOK.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					project();
+					dispose();
+				} catch (DataException de) {
+					messageHandler.errorOutln(de.getMessage());
+				}
+			}
+		});
 		pcontrol.add(bOK);
-		bApply.setActionCommand("apply");
-		bApply.addActionListener(this);
+		bApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					project();
+				} catch (DataException de) {
+					messageHandler.errorOutln(de.getMessage());
+				}
+			}
+		});
 		pcontrol.add(bApply);
 		JButton bCancel = new JButton("Cancel");
-		bCancel.setActionCommand("cancel");
-		bCancel.addActionListener(this);
+		bCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		pcontrol.add(bCancel);
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
-					hfrom = null;
+					hfromname = null;
 					bOK.setEnabled(false);
 					bApply.setEnabled(false);
 				} else {
-					hfrom = (Histogram) selected;
+					hfromname = ((Histogram) selected).getName();
 					bOK.setEnabled(true);
 					bApply.setEnabled(true);
+					setupCuts(FULL);
 				}
 			}
 		});
@@ -202,58 +218,20 @@ public class Projections extends DataControl implements ActionListener,
 	}
 
 	/**
-	 * Are we done setting gate and should we save it or has the gate setting
-	 * been canceled.
-	 *  
-	 */
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		try {
-			if (command == "ok" || command == "apply") {
-				project();
-				if (command == "ok") {
-					dispose();
-				}
-			} else if (command == "cancel") {
-				dispose();
-			} else {
-				throw new UnsupportedOperationException(
-						"Not a recognized command: " + command);
-			}
-		} catch (DataException je) {
-			messageHandler.errorOutln(je.getMessage());
-		}
-	}
-
-	/**
-	 * A item state change indicates that a gate has been choicen
-	 *  
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getSource() == cto) {
-			if (cto.getSelectedItem() != null) {
-				setUseNewHist(cto.getSelectedItem().equals(NEW_HIST));
-			}
-		} else if (ie.getSource() == cchan) {
-			if (cchan.getSelectedItem() != null) {
-				setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
-			}
-		}
-	}
-
-	/**
 	 * Implementation of Observable interface Listners for broadcast events.
 	 * Broadcast events: histograms new and histogram added
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) {
+		final BroadcastEvent.Command com = be.getCommand();
+		if (com == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			setup();
-		} else if (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_ADD) {
+		} else if (com == BroadcastEvent.Command.HISTOGRAM_ADD || 
+				com == BroadcastEvent.Command.GATE_ADD ||
+				com == BroadcastEvent.Command.GATE_SET_OFF ||
+				com == BroadcastEvent.Command.GATE_SET_SAVE) {
 			setupAdd();
-		} else if (be.getCommand() == BroadcastEvent.Command.GATE_ADD) {
-			setupAdd();
-		}
+		} 
 	}
 
 	/**
@@ -273,16 +251,12 @@ public class Projections extends DataControl implements ActionListener,
 	 * a new histogram or gate has been added to the database
 	 */
 	private void setupAdd() {
-
-		String lastCut = (String) cchan.getSelectedItem();
-		String lastHist = (String) cto.getSelectedItem();
-
-		//setup up to histogram
+		final String lastCut = (String) cchan.getSelectedItem();
+		final String lastHist = (String) cto.getSelectedItem();
+		/* setup to histogram */
 		setupToHist(lastHist);
-
-		//setup channels
+		/* setup channels */
 		setupCuts(lastCut);
-
 	}
 
 	/**
@@ -306,17 +280,18 @@ public class Projections extends DataControl implements ActionListener,
 	 */
 	private void setupCuts(String newSelect) {
 		cchan.removeAllItems();
-		//add default options
+		/* add default options */
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
-		//add gates to chooser
+		/* add gates to chooser */
+		final Histogram hfrom=Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
-			final java.util.List g = hfrom.getGates();
-			for (Iterator it = g.iterator(); it.hasNext();) {
-				//for (int i = 0;i < len;i++){
-				//final Gate gate=(Gate)g.get(i);
+			final Iterator it = hfrom.getGates().iterator();
+			while (it.hasNext()) {
 				final Gate gate = (Gate) it.next();
-				cchan.addItem(gate.getName());
+				if (gate.isDefined()){
+					cchan.addItem(gate.getName());
+				}
 			}
 		}
 		cchan.setSelectedItem(newSelect);
@@ -331,7 +306,6 @@ public class Projections extends DataControl implements ActionListener,
 	 * setup if using a new histogram
 	 */
 	private void setUseNewHist(boolean state) {
-		lname.setEnabled(state);
 		ttextto.setEnabled(state);
 		ttextto.setEditable(state);
 	}
@@ -344,36 +318,36 @@ public class Projections extends DataControl implements ActionListener,
 		tlim2.setEnabled(state);
 		tlim1.setEditable(state);
 		tlim2.setEditable(state);
-		channels.setEnabled(state);
-		and.setEnabled(state);
 	}
 
 	/**
 	 * Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
-		Histogram hto;
-		String name, state, typeProj;
-		double[][] counts2d;
-		int[] limits = new int[2];
-
-		state = (String) cchan.getSelectedItem();
+		final String state = (String) cchan.getSelectedItem();
+		final double[][] counts2d;
+		final Histogram hfrom=Histogram.getHistogram(hfromname);
 		if (hfrom.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
 			counts2d = (double[][]) hfrom.getCounts();
 		} else {
 			counts2d = intToDouble((int[][]) hfrom.getCounts());
 		}
-		name = (String) cto.getSelectedItem();
+		String name = (String) cto.getSelectedItem();
+		final int[] limits;
 		if (state.equals(BETWEEN)) {
 			limits = getLimits();
-		} else if (state.equals(FULL)) {
-			limits[0] = 0;
-			if (cdown.isSelected()) {
-				limits[1] = counts2d[0].length - 1;
-			} else {
-				limits[1] = counts2d.length - 1;
+		} else {
+			limits = new int[2];
+			if (state.equals(FULL)) {
+				limits[0] = 0;
+				if (cdown.isSelected()) {
+					limits[1] = counts2d[0].length - 1;
+				} else {
+					limits[1] = counts2d.length - 1;
+				}
 			}
 		}
+		final Histogram hto;
 		if (name.equals(NEW_HIST)) {
 			name = ttextto.getText().trim();
 			if (cdown.isSelected()) {//project down
@@ -390,6 +364,7 @@ public class Projections extends DataControl implements ActionListener,
 			hto = Histogram.getHistogram(name);
 
 		}
+		final String typeProj;
 		if (cdown.isSelected()) {
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
 				typeProj = "counts between Y channels " + limits[0] + " and "
@@ -405,18 +380,12 @@ public class Projections extends DataControl implements ActionListener,
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
 				typeProj = "counts between X channels " + limits[0] + " and "
 						+ limits[1];
-				hto.setCounts(projectY(counts2d,/*
-												 * ((double
-												 * [])hto.getCounts()).length
-												 */
-				hto.getSizeX(), limits[0], limits[1]));
+				hto.setCounts(projectY(counts2d, hto.getSizeX(), limits[0],
+						limits[1]));
 			} else {
 				typeProj = "using gate " + state.trim();
-				hto.setCounts(projectY(counts2d,/*
-												 * ((double
-												 * [])hto.getCounts()).length
-												 */
-				hto.getSizeX(), Gate.getGate(state)));
+				hto.setCounts(projectY(counts2d, hto.getSizeX(), Gate
+						.getGate(state)));
 			}
 		}
 		messageHandler.messageOutln("Project " + hfrom.getName().trim()
@@ -437,7 +406,7 @@ public class Projections extends DataControl implements ActionListener,
 		final double[] out = new double[outLength];
 		int ll = Math.max(0, _ll);
 		int ul = Math.min(inArray[0].length - 1, _ul);
-		final int xul=Math.min(inArray.length,outLength);
+		final int xul = Math.min(inArray.length, outLength);
 		for (int i = 0; i < xul; i++) {
 			for (int j = ll; j <= ul; j++) {
 				out[i] += inArray[i][j];
@@ -450,7 +419,7 @@ public class Projections extends DataControl implements ActionListener,
 		double[] out = new double[outLength];
 		int ll = Math.max(0, _ll);
 		int ul = Math.min(inArray.length - 1, _ul);
-		final int yul=Math.min(inArray[0].length,outLength);
+		final int yul = Math.min(inArray[0].length, outLength);
 		for (int i = ll; i <= ul; i++) {
 			for (int j = 0; j < yul; j++) {
 				out[j] += inArray[i][j];
