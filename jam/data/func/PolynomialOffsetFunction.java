@@ -1,6 +1,5 @@
   package jam.data.func;
   import jam.data.*;  
-  import jam.global.Function;
   
 /**
  * A polynomial function that can be use to calibrate a histogram.  Most often used to define energy
