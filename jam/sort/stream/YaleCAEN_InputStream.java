@@ -134,8 +134,6 @@ public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parame
         EventInputStatus rval=EventInputStatus.EVENT;
         int parameter=0;
         int endblock=0;
-        int nscaler = 5;   // defines the number of scaler blocks read before one is written
-        boolean writescaler=false;	// whether or not to write scaler values to console
         int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
         try {
             /* internal_status may also be in a "flush" mode in which case
@@ -187,35 +185,9 @@ public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parame
                 } else if (header==SCALER_BLOCK) {//read and ignore scaler values
                     int numScalers = dataInput.readInt();
                     nscalerblock++;
-                    int check = 0;
-                    if (nscaler > 0) {
-                    	check = (nscalerblock/nscaler)*nscaler;
-                    }
-					if ((check==nscalerblock)){
-                    	writescaler=true;	
-					}
                     for (int i=0; i<numScalers; i++) {
                     	tval[i]=dataInput.readInt();
                     }
-					if(writescaler){
-						System.out.println("scaler block "+nscalerblock+": "+tval[0]+						","+tval[1]+
-						","+tval[2]+
-						","+tval[3]+
-						","+tval[4]+
-						","+tval[5]+
-						","+tval[6]+
-						","+tval[7]+
-						","+tval[8]+
-						","+tval[9]+
-						","+tval[10]+
-						","+tval[11]+
-						","+tval[12]+
-						","+tval[13]+
-						","+tval[14]+
-						","+tval[15]							
-							);
-					}                   	
-					writescaler=false;
                     rval=EventInputStatus.SCALER_VALUE;
                     internal_status=BufferStatus.SCALER;
                 } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon
@@ -229,7 +201,7 @@ public class YaleCAEN_InputStream extends L002HeaderReader implements L002Parame
                     internal_status = BufferStatus.FIFO_FLUSH;
                 } else if (header==END_PAD) {
                     internal_status = BufferStatus.FIFO_ENDRUN_FLUSH;
-                    System.out.println("Scaler blocks in file ="+nscalerblock);
+                    showMessage("Scaler blocks in file ="+nscalerblock);
                     nscalerblock=0;
                 } else {
                     /* using IGNORE since UNKNOWN WORD causes annoying beeps */
