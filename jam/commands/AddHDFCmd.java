@@ -23,15 +23,16 @@ final class AddHDFCmd extends LoaderHDF implements Observer {
 	
 	protected final void execute(final Object[] cmdParams) {
 		File file=null;
-		Group loadGroup;
+		Group loadGroup =Group.getCurrentGroup();
 		
-		/*FIXME KBS parse correctly
+		//Parse commad parameters if given
 		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
-			//loadGroup=(Group)cmdParams[1];
-		} 	
-		*/
-		
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];
+			if (cmdParams.length>1)
+				loadGroup=(Group)cmdParams[1];
+		}		
+				
 		loadGroup =Group.getCurrentGroup();
 		loadHDFFile(file, loadGroup);
 	}

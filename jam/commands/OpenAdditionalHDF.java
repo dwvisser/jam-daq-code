@@ -22,8 +22,7 @@ import javax.swing.JFileChooser;
 public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncListener {
 
 	private File file=null;
-	final HDFIO	hdfio;		
-	
+	final HDFIO	hdfio;			
 	
 	OpenAdditionalHDF(){
 		putValue(NAME,"Open Additional\u2026");
@@ -35,20 +34,24 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(final Object[] cmdParams) {
-		readAdditionalHDFFile(cmdParams);
+		File file =null;
+		
+		if (cmdParams!=null) {
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];
+		}
+		
+		readAdditionalHDFFile(file);
 	}
 
 	/**
 	 * Read in a HDF file
 	 * @param cmdParams
 	 */ 
-	private void readAdditionalHDFFile(Object[] cmdParams) {
+	private void readAdditionalHDFFile(File file) {
 		Frame frame= STATUS.getFrame();		
 		hdfio.setListener(this);
-		final boolean isFileRead;
-		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
-		} 	
+		final boolean isFileReading;
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
@@ -57,15 +60,15 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-				isFileRead=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);	        	
+				isFileReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);	        	
 	        } else {
-	        	isFileRead=false;
+	        	isFileReading=false;
 	        }
 		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);
+			isFileReading=hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file);
 		}
-		if (isFileRead){//File was read in	
-			notifyApp(HDFIO.getLastValidFile());
+		if (!isFileReading){//File was read in so no callback	
+			notifyApp();
 		}								
 	}
 	
@@ -83,9 +86,9 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 		}
 	}
 
-	private void notifyApp(File file) {
+	private void notifyApp() {
 		//Update app status
-		STATUS.setSortMode(file);
+		STATUS.setOpenFile(file);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
@@ -101,7 +104,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	 */
 	public void CompletedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		notifyApp(file);
+		notifyApp();
 		file=null;		
 	}
 	

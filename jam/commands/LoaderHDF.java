@@ -39,26 +39,34 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 	 * @param cmdParams a file reference or null
 	 */ 
 	protected final void loadHDFFile(File file, Group loadGroup) {		
-		Frame frame= STATUS.getFrame();	
-		hdfio.setListener(this);
+		this.loadGroup=loadGroup;			
+		final boolean isFileReading;		
 
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
-	        final int option = jfile.showOpenDialog(frame);
+	        final int option = jfile.showOpenDialog(STATUS.getFrame());
 	        /* Don't do anything if it was cancel. */
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-				hdfio.readFile(fileOpenMode, file, loadGroup, null);	        	
-	        } 
+	    		hdfio.setListener(this);
+	    		isFileReading=hdfio.readFile(fileOpenMode, file, loadGroup, null);	        	
+	        } else{
+	        	isFileReading=false;
+	        }	        	
 		} else {
-			hdfio.readFile(fileOpenMode, file,  loadGroup, null);
+			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup, null);
 		}		
+		//File was not read in so no call back do notify here	
+		if (isFileReading){
+			
+		}
 	}
 	
 	protected final void executeParse(String[] cmdTokens) {
-	    //execute(null);	//FIXME KBS has unhandled exception
+		//LATER KBS needs to be implemented
+	    //execute(null);	//has unhandled exception
 	}	
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
@@ -70,7 +78,7 @@ abstract class LoaderHDF extends AbstractCommand implements Observer, HDFIO.Asyn
 		
 		//Set to sort group
 		//Set the current histogram to the first opened histogram
-		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
+		if (loadGroup.getHistogramList().size()>0 ) {
 			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
 		}else{
 			firstHist=null;

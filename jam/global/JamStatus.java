@@ -154,10 +154,13 @@ public final class JamStatus {
 	 *  
 	 * @param file the file just loaded or saved
 	 */
-	public void setSortMode(File file) {
+	public void setOpenFile(File file) {
 		synchronized (sortMode) {
 			openFile = file;
-			setSortMode(SortMode.FILE, file.getName());
+			String fileName="";			
+			if (file!=null)
+				fileName=file.getName();
+			setSortMode(SortMode.FILE, fileName);
 		}
 	}
 	/**

@@ -27,7 +27,7 @@ import javax.swing.KeyStroke;
  */
 final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncListener {
 	
-	private String fileName=null;
+	private File openFile=null;
 	private final HDFIO hdfio;
 	
 	OpenHDFCmd(){
@@ -44,9 +44,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	protected void execute(final Object[] cmdParams) {
 		File file=null;
 		if (cmdParams!=null) {
-			file =(File)cmdParams[0];
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];			
 		}		
-		//FIXME KBS add parse of parameters
 		readHDFFile(file);
 	}
 	/**
@@ -65,7 +65,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
 	        	file = jfile.getSelectedFile();
-	        	fileName=file.getPath();	//Save for callback
+	        	openFile=file;	//Save for callback
 	        	DataBase.getInstance().clearAllLists();
 	    		hdfio.setListener(this);
 				isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);	        	
@@ -75,8 +75,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		} else {
 			isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
-		if (!isFileReading){//File was not read in so do no call back do notify here	
-			notifyApp("");
+		//File was not read in so no call back do notify here		
+		if (!isFileReading){	
+			notifyApp(null);
 		}								
 	}
 	
@@ -94,12 +95,12 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		}
 	}
 
-	private void notifyApp(String fileName) {
+	private void notifyApp(File file) {
 		
 		Histogram firstHist;
  
 		//Set general status 
-		STATUS.setSortMode(SortMode.FILE, fileName);
+		STATUS.setOpenFile(file);
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
@@ -136,7 +137,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	 */
 	public void CompletedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		notifyApp(fileName);
-		fileName=null;
+		notifyApp(openFile);
+		openFile=null;
 	}
 }

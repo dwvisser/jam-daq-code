@@ -28,7 +28,7 @@ class AbstractImportFile extends AbstractImportExport {
 		try {
 			if (cmdParams == null) { //No file given		
 				if (importExport.openFile(null)) {
-					STATUS.setSortMode(importExport.getLastFile());
+					STATUS.setOpenFile(importExport.getLastFile());
 					AbstractControl.setupAll();
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				}

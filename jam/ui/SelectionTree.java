@@ -99,7 +99,10 @@ public class SelectionTree extends JPanel implements Observer {
         final SortMode sortMode = STATUS.getSortMode();
         final DefaultMutableTreeNode rootNode;
         if (sortMode == SortMode.FILE) {
-            rootNode = new DefaultMutableTreeNode("File: "+STATUS.getOpenFile());
+        	String fileName ="";
+        	if (STATUS.getOpenFile()!=null)
+        		fileName =STATUS.getOpenFile().getPath();				
+        	rootNode = new DefaultMutableTreeNode("File: "+fileName);
         } else if (sortMode == SortMode.OFFLINE) {
             rootNode = new DefaultMutableTreeNode("Offline Sort");
         } else if ((sortMode == SortMode.ONLINE_DISK)
