@@ -1,6 +1,9 @@
 package jam;
+import jam.data.Histogram;
+import jam.data.control.DataControl;
 import jam.fit.LoadFit;
 import jam.global.*;
+import jam.io.*;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
 import java.awt.Event;
@@ -96,6 +99,48 @@ public class MainMenuBar extends JMenuBar {
 			mPageFormat = pj.pageDialog(mPageFormat);
 		}
 	}
+	
+	class ImportAction extends AbstractAction {
+		
+		private final ImpExp impexp;
+		
+		ImportAction(ImpExp ie){
+			super(ie.getFormatDescription());
+			impexp=ie;
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			try {
+				if (impexp.openFile()) {
+					jamMain.setSortModeFile(impexp.getLastFileName());
+					DataControl.setupAll();
+					jamCommand.dataChanged();
+				}
+			} catch (Exception e){
+				console.errorOutln(e.getMessage());
+			}
+		}
+	}
+
+	class ExportAction extends AbstractAction {
+		
+		private final ImpExp impexp;
+		
+		ExportAction(ImpExp ie){
+			super(ie.getFormatDescription());
+			impexp=ie;
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			try {
+				impexp.saveFile(Histogram.getHistogram(
+				JamStatus.instance().getCurrentHistogramName()));
+			} catch (Exception e){
+				console.errorOutln(e.getMessage());
+			}
+		}
+	}
+
 
 	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
 
@@ -118,6 +163,7 @@ public class MainMenuBar extends JMenuBar {
 	final private Display display;
 	final private JamMain jamMain;
 	final private MessageHandler console;
+	final private JamCommand jamCommand;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
 
@@ -145,6 +191,7 @@ public class MainMenuBar extends JMenuBar {
 		final Display d,
 		MessageHandler c) {
 		super();
+		this.jamCommand=jamCommand;
 		final int ctrl_mask;
 		final boolean macosx=JamProperties.isMacOSX();
 		if (macosx){
@@ -207,35 +254,34 @@ public class MainMenuBar extends JMenuBar {
 		file.add(saveAsHDF);
 		file.addSeparator();
 		file.add(impHist);
-		final JMenuItem openascii = new JMenuItem("Import ASCII...");
-		openascii.setActionCommand("openascii");
-		openascii.addActionListener(jamCommand);
+		final ImpExp ieASCII=new ImpExpASCII(jamMain,console);
+		final JMenuItem openascii = new JMenuItem(new ImportAction(ieASCII));
 		impHist.add(openascii);
-		final JMenuItem openspe = new JMenuItem("Import RADWARE .spe ...");
-		openspe.setActionCommand("openspe");
-		openspe.addActionListener(jamCommand);
+		final ImpExp ieSpe=new ImpExpSPE(jamMain,console);
+		final JMenuItem openspe = new JMenuItem(new ImportAction(ieSpe));
 		impHist.add(openspe);
-		final JMenuItem openornl = new JMenuItem("Import ORNL .drr .his ...");
-		openornl.setActionCommand("openornl");
-		openornl.addActionListener(jamCommand);
+		final ImpExp ieHis=new ImpExpORNL(jamMain,console);
+		final JMenuItem openornl = new JMenuItem(new ImportAction(ieHis));
 		impHist.add(openornl);
-		final JMenuItem openxsys = new JMenuItem("Import XSYS .dat ...");
-		openxsys.setActionCommand("openxsys");
-		openxsys.addActionListener(jamCommand);
+		final ImpExp ieXsys = new ImpExpXSYS(jamMain,console);
+		final JMenuItem openxsys = new JMenuItem(new ImportAction(ieXsys));
 		impHist.add(openxsys);
+		final JMenuItem importBan = new JMenuItem(new ImportAction(
+		new ImportBanGates(jamMain,console)));
+		impHist.add(importBan);
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
-		final JMenuItem saveascii = new JMenuItem("Export ASCII...");
-		saveascii.setActionCommand("saveascii");
-		saveascii.addActionListener(jamCommand);
+		final JMenuItem saveascii = new JMenuItem(new ExportAction(ieASCII));
+		//saveascii.setActionCommand("saveascii");
+		//saveascii.addActionListener(jamCommand);
 		expHist.add(saveascii);
-		final JMenuItem savespe = new JMenuItem("Export RADWARE .spe ...");
-		savespe.setActionCommand("savespe");
-		savespe.addActionListener(jamCommand);
+		final JMenuItem savespe = new JMenuItem(new ExportAction(ieSpe));
+		//savespe.setActionCommand("savespe");
+		//savespe.addActionListener(jamCommand);
 		expHist.add(savespe);
-		final JMenuItem saveornl = new JMenuItem("Export ORNL .drr .his  ...");
-		saveornl.setActionCommand("saveornl");
-		saveornl.addActionListener(jamCommand);
+		final JMenuItem saveornl = new JMenuItem(new ExportAction(ieHis));
+		//saveornl.setActionCommand("saveornl");
+		//saveornl.addActionListener(jamCommand);
 		expHist.add(saveornl);
 		final JMenuItem batchexport = new JMenuItem("Batch Export...");
 		batchexport.setActionCommand("batchexport");
