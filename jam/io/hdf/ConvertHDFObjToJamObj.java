@@ -1,17 +1,12 @@
-/*
- * Created on Feb 15, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package jam.io.hdf;
 
 /**
- * @author ken
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Ken Swartz
+ * @version 15 Feb 2005
  */
 public class ConvertHDFObjToJamObj {
-
+    
+    ConvertHDFObjToJamObj(){
+        super();
+    }
 }
