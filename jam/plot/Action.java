@@ -379,7 +379,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			if (hist.length > 1) {
 				if (h.getDimensionality() != 1) {
 					textOut
-							.errorOutln(h.getName().trim()
+							.errorOutln(h.getFullName().trim()
 									+ " is not 1D, so you may not overlay other histograms.");
 				} else {
 					final int newlen = hist.length - 1;
@@ -409,7 +409,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final Histogram h = Histogram.getHistogram(num);
 			if (h != null) {
 				if (h.getDimensionality() != 1) {
-					textOut.errorOutln(h.getName().trim()
+					textOut.errorOutln(h.getFullName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
 				} else if (display.getPlot().getDimensionality() != 1) {
 					textOut
@@ -744,7 +744,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			final String name = STATUS.getCurrentHistogram().getName().trim();
+			final String name = STATUS.getCurrentHistogram().getFullName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
@@ -804,7 +804,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			final String name = hist.getName().trim();
+			final String name = hist.getFullName().trim();
 			textOut
 					.messageOut(
 							"Net Area fit for "

@@ -110,7 +110,7 @@ public final class GateAdd extends AbstractControl {
 			hist.addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			messageHandler.messageOutln("Added gate '"+
-			currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
+			currentGateAdd.getName().trim()+"' to histogram '"+hist.getFullName()+"'");
 		} else {
 			messageHandler.errorOutln("Need to choose a gate to add ");
 		}

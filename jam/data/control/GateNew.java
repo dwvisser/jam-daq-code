@@ -92,7 +92,7 @@ public class GateNew extends AbstractControl {
 			"New gate "
 				+ textNew.getText()
 				+ " created for histogram "
-				+ hist.getName());
+				+ hist.getFullName());
 	}
 
 	public void doSetup() {

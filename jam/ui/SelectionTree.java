@@ -199,7 +199,7 @@ public class SelectionTree extends JPanel implements Observer {
             if (overlayObject instanceof Histogram) {
                 overlayHistogram = (Histogram) (overlayObject);
                 if (overlayHistogram.getDimensionality() == 1) {
-                    STATUS.addOverlayHistogramName(overlayHistogram.getName());
+                    STATUS.addOverlayHistogramName(overlayHistogram.getUniqueFullName());
                 } else {
                     tree.removeSelectionPath(paths[i]);
                     MESSAGE_HANDLER.errorOutln("Cannot overlay 2D histograms.");

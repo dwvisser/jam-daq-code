@@ -40,7 +40,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		String name =hist.getFullName();
 		if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 		"Delete "+name.trim()+"?","Delete histogram",JOptionPane.YES_NO_OPTION)){
-			Histogram.deleteHistogram(name);
+			Histogram.deleteHistogram(hist.getUniqueFullName());
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		}
 		

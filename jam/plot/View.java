@@ -151,7 +151,7 @@ public final class View {
 	 * @param histIn the Histogram
 	 */
 	void setHistogram(int num, Histogram histIn){
-		final String name = histIn==null ? null : histIn.getName();
+		final String name = histIn==null ? null : histIn.getUniqueFullName();
 		histogramNames[num]=name;
 	}
 	

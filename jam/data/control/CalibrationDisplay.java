@@ -200,7 +200,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		if ((command == "okcalib") || (command == "applycalib")) {
 			setCoefficients();
 			msghdlr.messageOutln("Calibrated histogram "
-					+ currentHistogram.getName().trim() + " with "
+					+ currentHistogram.getFullName().trim() + " with "
 					+ currentHistogram.getCalibration().getFormula());
 			if (command == "okcalib") {
 				dispose();
@@ -210,7 +210,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		} else if (command == "cancelcalib") {
 			cancelCalib();
 			msghdlr.messageOutln("Uncalibrated histogram "
-					+ currentHistogram.getName());
+					+ currentHistogram.getFullName());
 			dispose();
 		} else {
 			//just so at least a exception is thrown for now

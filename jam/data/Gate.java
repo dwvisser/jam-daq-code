@@ -60,7 +60,7 @@ public final class Gate {
 	 */
 	public Gate(String name, Histogram hist) {
 		final StringUtilities stringUtil=StringUtilities.instance();
-		histName = hist.getFullName();
+		histName = hist.getUniqueFullName();
 		//work out name, and give error message if name is to be truncated
 		String name2 = name = stringUtil.makeLength(name, NAME_LENGTH);
 		name = name2;

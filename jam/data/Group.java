@@ -166,7 +166,7 @@ public class Group {
      */
     public void addHistogram(Histogram hist) {
         histogramList.add(hist);
-        histogramMap.put(hist.getName(), hist);
+        histogramMap.put(hist.getUniqueFullName(), hist);
     }
 
     /**

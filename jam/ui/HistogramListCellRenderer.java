@@ -50,7 +50,7 @@ public class HistogramListCellRenderer
 		}
 		if (value instanceof Histogram) {
 			final Histogram histogram = (Histogram) value;
-			final String name = histogram.getName();
+			final String name = histogram.getFullName();
 			final int dimension = histogram.getDimensionality();
 			final List gates = histogram.getGates();
 			final boolean hasGates = gates.size() > 0;

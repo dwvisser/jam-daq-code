@@ -174,7 +174,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 }
             } else if (command=="cancelcalib") {
                 cancelCalib();
-                msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
+                msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getFullName());
                 dispose();
             } else {
                 //just so at least a exception is thrown for now
@@ -222,7 +222,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 fitText=calibFunction.getFormula();
                 currentHist.setCalibration(calibFunction);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-                msghdlr.messageOutln("Calibrated histogram "+currentHist.getName().trim()+" with "+
+                msghdlr.messageOutln("Calibrated histogram "+currentHist.getFullName().trim()+" with "+
                 fitText);
             } else {
                 msghdlr.errorOutln("Need at least 2 points [Calibrate]");

@@ -204,7 +204,7 @@ public class Projections extends AbstractControl implements Observer {
 					bOK.setEnabled(false);
 					bApply.setEnabled(false);
 				} else {
-					hfromname = ((Histogram) selected).getName();
+					hfromname = ((Histogram) selected).getFullName();
 					bOK.setEnabled(true);
 					bApply.setEnabled(true);
 					setupCuts(FULL);
@@ -266,7 +266,7 @@ public class Projections extends AbstractControl implements Observer {
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
 			if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				cto.addItem(h.getName());
+				cto.addItem(h.getFullName());
 			}
 		}
 		cto.setSelectedItem(newSelect);
@@ -389,7 +389,7 @@ public class Projections extends AbstractControl implements Observer {
 						.getGate(state)));
 			}
 		}
-		messageHandler.messageOutln("Project " + hfrom.getName().trim()
+		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
 				+ " to " + name.trim() + " " + typeProj);
 	}
 

@@ -275,7 +275,7 @@ public class Manipulations extends AbstractControl implements ActionListener,
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
 			if ((h.getType() == type1) || (h.getType() == type2)) {
-				c.addItem(h.getName());
+				c.addItem(h.getFullName());
 			}
 		}
 	}

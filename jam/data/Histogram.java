@@ -436,7 +436,7 @@ public abstract class Histogram {
 		final Iterator iter = inHistList.iterator();
 		while (iter.hasNext()) { //loop for all histograms
 			Histogram hist = (Histogram) iter.next();
-			NAME_MAP.put(hist.getName(), hist);
+			NAME_MAP.put(hist.getUniqueFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(new Integer(hist.getNumber()), hist);
 		}
@@ -504,7 +504,7 @@ public abstract class Histogram {
 			if (histogram != null) {
 				histogram.clearInfo();
 				LIST.remove(histogram);
-				NAME_MAP.remove(histogram.getFullName());
+				NAME_MAP.remove(histogram.getUniqueFullName());
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
@@ -574,25 +574,26 @@ public abstract class Histogram {
 	 * @return the name of this histogram
 	 */
 	public String getName() {
-		//FIXME change to name
-		//return name;
-		return uniqueFullName;
-	}
-	/**
-	 * Returns the histogram  name not resolved.
-	 * 
-	 * @return the name of this histogram
-	 */
-	public String getNameUnresolved() {
 		return name;
 	}
 	/**
-	 * Returns the histogram unique full name.
+	 * Returns the histogram full name that
+	 * resolves it. (could change if multiple
+	 * histograms have the same name)
 	 * 
 	 * @return the name of this histogram
 	 */
-	
 	public String getFullName() {
+		//FIXME need to get name if no name collision
+		return uniqueFullName;
+	}
+	/**
+	 * Returns the histogram unique full name.
+	 * Does not vary so use this name for hashs.
+	 * 
+	 * @return the name of this histogram
+	 */
+	public String getUniqueFullName() {
 		return uniqueFullName;
 	}
 

@@ -42,7 +42,7 @@ final class Print extends AbstractPrintingCommand {
 		final ComponentPrintable cp = display.getComponentPrintable();
 		pj.setPrintable(cp, mPageFormat);
 		if (pj.printDialog()) {
-			String name =status.getCurrentHistogram().getName();
+			String name =status.getCurrentHistogram().getFullName();
 			msghdlr.messageOut("Preparing to send histogram '" + 
 					name+"' to printer\u2026",
 			MessageHandler.NEW);

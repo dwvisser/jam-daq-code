@@ -8,6 +8,7 @@ import jam.data.Histogram;
 import jam.data.Group;
 import jam.data.Scaler;
 import jam.global.MessageHandler;
+import jam.global.JamStatus;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
@@ -386,6 +387,8 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (mode == FileOpenMode.OPEN) {
                 message.append("Opened ").append(infile.getName()).append(" (");
                 DataBase.getInstance().clearAllLists();
+            }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
+                message.append("Opened Additional ").append(infile.getName()).append(" (");
             } else if (mode == FileOpenMode.RELOAD) {
                 message.append("Reloaded ").append(infile.getName()).append(
                         " (");
@@ -408,11 +411,12 @@ public class HDFIO implements DataIO, JamHDFFields {
             	Group.clear();
             	Group.createGroup(infile.getName(), Group.Type.FILE);
             }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
-            	Group.setCurrentGroup(infile.getName());
+            	Group.createGroup(infile.getName(), Group.Type.FILE);
         	} else if (mode == FileOpenMode.RELOAD) {
-            	Group.setCurrentGroup(infile.getName());
-        	} else { //ADD
-            	Group.setCurrentGroup(infile.getName());
+        		String sortName = JamStatus.getSingletonInstance().getSortName();
+        		Group.setCurrentGroup(sortName);
+        	} else if (mode ==FileOpenMode.ADD) {
+        		//use current group
         	}
             
             getHistograms(mode, message);
@@ -616,7 +620,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                     sdErr.setRank(histDim);
                     sdErr.setNumberType(NumberType.DOUBLE);
                 }
-                if (mode == FileOpenMode.OPEN) {
+                if (mode == FileOpenMode.OPEN || mode == FileOpenMode.OPEN_ADDITIONAL) {
                     if (histDim == 1) {
                         if (histNumType == NumberType.INT) {
                             histogram = Histogram.createHistogram(sd
@@ -658,7 +662,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                             }
                         }
                     }
-                } else { //ADD
+                } else if (mode == FileOpenMode.ADD) { 
                     histogram = Histogram.getHistogram(su.makeLength(name,
                             Histogram.NAME_LENGTH));
                     if (histogram != null) {

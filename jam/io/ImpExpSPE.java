@@ -126,7 +126,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 		try {
 			DataOutputStream dos = new DataOutputStream(outStream);
 			/* get data from histogram */
-			final StringBuffer name = new StringBuffer(hist.getName());
+			final StringBuffer name = new StringBuffer(hist.getFullName());
 			while (name.length() < NAME_LENGTH){
 				name.append(' ');
 			}

@@ -678,7 +678,7 @@ public abstract class AbstractFit implements PlotMouseListener {
             } else if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
                 counts = (double[]) h.getCounts();
             }
-            textHistName.setText(h.getName());
+            textHistName.setText(h.getFullName());
         } else { //2d
             textHistName.setText("Need 1D Hist!");
         }

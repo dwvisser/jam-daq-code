@@ -284,7 +284,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		while (it.hasNext()) {
 			final Histogram h = (Histogram) it.next();
 			if (h.getDimensionality() == 1) {
-				histSet.add(h.getName());
+				histSet.add(h.getFullName());
 			}
 		}
 		lstHists.setListData(histSet.toArray());
@@ -399,7 +399,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 					hist[i] = Histogram.getHistogram((String) lm
 							.getElementAt(i));
 					files[i] = new File(dir, FileUtilities.setExtension(hist[i]
-							.getName().trim(), out.getDefaultExtension(),
+							.getFullName().trim(), out.getDefaultExtension(),
 							FileUtilities.APPEND_ONLY));
 					already |= files[i].exists();
 				}
@@ -460,7 +460,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 		while (it.hasNext()) {
 			final Histogram h = (Histogram) it.next();
 			if (h.getDimensionality() == 1) {
-				cbHist.addItem(h.getName());
+				cbHist.addItem(h.getFullName());
 			}
 		}
 		cbHist.addActionListener(this);
