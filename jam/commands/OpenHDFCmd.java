@@ -28,7 +28,7 @@ final class OpenHDFCmd extends AbstractCommand {
 			isFileRead=hdfio.readFile(FileOpenMode.OPEN, (File)cmdParams[0]);
 		}	
 		if (isFileRead){//File was read in	
-			notifyApp(hdfio.getFileOpen());
+			notifyApp(HDFIO.getLastValidFile());
 		}		
 	}
 
