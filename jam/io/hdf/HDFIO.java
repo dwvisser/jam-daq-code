@@ -74,7 +74,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private final MessageHandler msgHandler;
 
-    private VirtualGroup histGroup, gateGroup;
+    private VirtualGroup allHistogramsGroup, allGatesGroup;
 
     /**
      * <code>HDFile</code> object to write out to.
@@ -86,23 +86,8 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private HDFile inHDF;
 
-    /**
-     * Constructor for file read access outside of any GUI context.
-     * 
-     * @param file
-     *            to read from
-     * @throws HDFException
-     *             if there's a formatting error
-     * @throws IOException
-     *             if ther's a problem accessing the file
-     */
-    public HDFIO(File file) throws HDFException, IOException {
-        frame = null;
-        msgHandler = null;
-        inHDF = new HDFile(file, "r");
-        inHDF.seek(0);
-        inHDF.readFile();
-    }
+    private ConvertJamObjToHDFObj convertJamToHDF;
+    private ConvertHDFObjToJamObj convertHDFToJam;
 
     /**
      * Class constructor handed references to the main class and message
@@ -116,6 +101,8 @@ public class HDFIO implements DataIO, JamHDFFields {
     public HDFIO(Frame parent, MessageHandler console) {
         frame = parent;
         msgHandler = console;
+        convertJamToHDF = new ConvertJamObjToHDFObj();
+		convertHDFToJam = new ConvertHDFObjToJamObj(); 
     }
 
     /**
@@ -272,9 +259,12 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (hasContents(hists)) {
                 addHistogramSection();
                 message.append(hists.size()).append(" histograms");
-                final Iterator temp = hists.iterator();
-                while (temp.hasNext()) {
-                    addHistogram((Histogram) (temp.next()));
+                final Iterator iter = hists.iterator();
+                while (iter.hasNext()) {
+                	Histogram hist =(Histogram)iter.next();
+                	VirtualGroup histVGroup = convertJamToHDF.convertHistogram(hist);
+                	allHistogramsGroup.addDataObject(histVGroup);
+                	//addHistogram((Histogram) (temp.next()));
                     progress++;
                     setProgress(monitor, progress);
                 }
@@ -282,21 +272,26 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (hasContents(gates)) {   
                 addGateSection();
                 message.append(", ").append(gates.size()).append(" gates");
-                final Iterator temp = gates.iterator();
-                while (temp.hasNext()) {
-                    addGate((Gate) (temp.next()));
+                final Iterator iter = gates.iterator();
+                while (iter.hasNext()) {
+                	Gate gate = (Gate)iter.next();
+                	VirtualGroup gateVGroup = convertJamToHDF.convertGate(gate);
+                	allGatesGroup.addDataObject(gateVGroup); 
+                    //addGate((Gate) (temp.next()));
                     progress++;
                     setProgress(monitor, progress);
                 }
             }
             if (hasContents(scalers)) {
-                addScalerSection(scalers);
+            	VirtualGroup scalerVGroup =convertJamToHDF.convertScalers(scalers);
+                //addScalerSection(scalers);
                 message.append(", ").append(scalers.size()).append(" scalers");
                 progress += scalers.size();
                 setProgress(monitor, progress);
             }
             if (hasContents(parameters)) {
-                addParameterSection(parameters);
+            	VirtualGroup parameterVGroup =convertJamToHDF.convertParameters(parameters);
+                //addParameterSection(parameters);
                 message.append(", ").append(parameters.size()).append(" parameters");
                 progress += parameters.size();
                 setProgress(monitor, progress);
@@ -352,49 +347,6 @@ public class HDFIO implements DataIO, JamHDFFields {
         return writeConfirm;                
     }
 
-    
-    private void setProgressNote(final ProgressMonitor monitor, final String note) {
-        final Runnable runner = new Runnable() {
-            public void run() {
-                monitor.setNote(note);
-            }
-        };
-        try {
-        	SwingUtilities.invokeAndWait(runner);
-        } catch(Exception e) {
-        	e.printStackTrace();
-        }
-    }
-
-    private void setProgress(final ProgressMonitor monitor, final int value) {
-        final Runnable runner = new Runnable() {
-            public void run() {
-                monitor.setProgress(value);
-            }
-        };
-        try {
-        	SwingUtilities.invokeAndWait(runner);
-    	} catch(Exception e) {
-    		e.printStackTrace();
-    	}
-
-    }
-
-    private void outln(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                msgHandler.messageOutln(msg);
-            }
-        });
-    }
-
-    private void outerr(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                msgHandler.errorOutln(msg);
-            }
-        });
-    }
 
     /**
      * Read in an HDF file.
@@ -720,10 +672,10 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     protected void addHistogramSection()  throws HDFException {
         synchronized (this) {
-            histGroup = new VirtualGroup(HIST_SECTION_NAME,
+            allHistogramsGroup = new VirtualGroup(HIST_SECTION_NAME,
                     FILE_SECTION_NAME);
         }
-        new DataIDLabel(histGroup, HIST_SECTION_NAME);
+        new DataIDLabel(allHistogramsGroup, HIST_SECTION_NAME);
     }
 
     /**
@@ -740,7 +692,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         ScientificData sciData;
         final VirtualGroup temp = new VirtualGroup(hist.getName(),
                 HIST_TYPE_NAME);
-        histGroup.addDataObject(temp); //add to Histogram section vGroup
+        allHistogramsGroup.addDataObject(temp); //add to Histogram section vGroup
         new DataIDLabel(temp, hist.getName());
         /* vGroup label is Histogram name */
         new DataIDAnnotation(temp, hist.getTitle());
@@ -995,10 +947,10 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     protected void addGateSection()  throws HDFException {
         synchronized (this) {
-            gateGroup = new VirtualGroup(GATE_SECTION_NAME,
+            allGatesGroup = new VirtualGroup(GATE_SECTION_NAME,
                     FILE_SECTION_NAME);
         }
-        new DataIDLabel(gateGroup, GATE_SECTION_NAME);
+        new DataIDLabel(allGatesGroup, GATE_SECTION_NAME);
     }
 
     /**
@@ -1031,12 +983,13 @@ public class HDFIO implements DataIO, JamHDFFields {
         }
         /* get the VG for the current gate */
         final VirtualGroup vg = new VirtualGroup(name, gateType);
-        gateGroup.addDataObject(vg); //add to Gate section vGroup
+        allGatesGroup.addDataObject(vg); //add to Gate section vGroup
         final VdataDescription desc = new VdataDescription(name, gateType,
                 size, names, types, orders);
         final Vdata data = new Vdata(desc);
-        vg.addDataObject(desc); //add vData description to gate VG
         vg.addDataObject(data); //add vData to gate VG
+        vg.addDataObject(desc); //add vData description to gate VG
+
         if (g.getDimensionality() == 1) {
             data.addInteger(0, 0, g.getLimits1d()[0]);
             data.addInteger(1, 0, g.getLimits1d()[1]);
@@ -1345,6 +1298,50 @@ public class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
+    
+    private void setProgressNote(final ProgressMonitor monitor, final String note) {
+        final Runnable runner = new Runnable() {
+            public void run() {
+                monitor.setNote(note);
+            }
+        };
+        try {
+        	SwingUtilities.invokeAndWait(runner);
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
+    }
+
+    private void setProgress(final ProgressMonitor monitor, final int value) {
+        final Runnable runner = new Runnable() {
+            public void run() {
+                monitor.setProgress(value);
+            }
+        };
+        try {
+        	SwingUtilities.invokeAndWait(runner);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+
+    }
+
+    private void outln(final String msg) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                msgHandler.messageOutln(msg);
+            }
+        });
+    }
+
+    private void outerr(final String msg) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                msgHandler.errorOutln(msg);
+            }
+        });
+    }
+    
 	/**
 	 * Class to hold histogram properties while we decide if we should load them.
 	 *  
