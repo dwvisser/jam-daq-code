@@ -39,59 +39,7 @@ import javax.swing.JToolBar;
  * @see         java.awt.Graphics
  * @since       JDK1.1
  */
-public class Display extends JPanel implements Observer {
-
-	/**
-	 * Enumeration of the various preference types for displaying
-	 * histograms.
-	 *
-	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
-	 * @see #AUTO_IGNORE_ZERO
-	 * @see #AUTO_IGNORE_FULL
-	 * @see #WHITE_BACKGROUND
-	 * @see #BLACK_BACKGROUND
-	 * @see #AUTO_PEAK_FIND
-	 * @see #CONTINUOUS_2D_LOG
-	 */
-	static public class JamPrefs {
-		private int type;
-
-		/**
-		 * If true, ignore channel 0 when autoscaling the plot.
-		 */
-		static public JamPrefs AUTO_IGNORE_ZERO = new JamPrefs(0);
-
-		/**
-		 * If true, ignore the last channel when autoscaling the plot.
-		 */
-		static public JamPrefs AUTO_IGNORE_FULL = new JamPrefs(1);
-
-		/**
-		 * If true, use black-on-white for displaying the plot.
-		 */
-		static public JamPrefs WHITE_BACKGROUND = new JamPrefs(2);
-
-		/**
-		 * If true, use white-on-black for displaying the plot.
-		 */
-		static public JamPrefs BLACK_BACKGROUND = new JamPrefs(3);
-
-		/**
-		 * If true, automatically find peaks and display their centroids.
-		 */
-		static public JamPrefs AUTO_PEAK_FIND = new JamPrefs(4);
-
-		/**
-		 * If true, show a continuous gradient color scale on 2d plots.
-		 */
-		static public JamPrefs CONTINUOUS_2D_LOG = new JamPrefs(5);
-
-		private JamPrefs(int type) {
-			this.type = type;
-		}
-	}
-	
-		
+public final class Display extends JPanel implements Observer {
 
 	private final MessageHandler msgHandler; //output for messages
 	private final Action action; //handles display events
@@ -139,8 +87,8 @@ public class Display extends JPanel implements Observer {
 		add(plotswap, BorderLayout.CENTER);
 		JamStatus.instance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
-	}
-	
+		addToolbarAction();
+	}	
 
 	/**
 	 * Set the histogram to display
@@ -381,7 +329,7 @@ public class Display extends JPanel implements Observer {
 	 *
 	 * @since Version 0.5
 	 */
-	public void addToolbarAction() {
+	private void addToolbarAction() {
 		Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
 		Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
