@@ -167,6 +167,9 @@ public class Display extends JPanel implements CommandListener, Observer {
 	private final List overlays = Collections.synchronizedList(new ArrayList());
 
 	public void addToOverlay(Histogram h) {
+		if (h.getDimensionality() != 1){
+			throw new IllegalArgumentException("You may only overlay 1D histograms.");
+		}
 		overlays.add(h);
 		doOverlay();
 	}
@@ -265,10 +268,8 @@ public class Display extends JPanel implements CommandListener, Observer {
 	 */
 	public boolean performParseCommand(String commandIn, String[] cmdParams)
 		throws CommandListenerException {
-
 		try {
-
-			boolean accept = action.commandPerform(commandIn, cmdParams);
+			final boolean accept = action.commandPerform(commandIn, cmdParams);
 			return accept;
 		} catch (NumberFormatException e) {
 			throw new CommandListenerException(e.getMessage());
@@ -354,16 +355,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 		plot1d.displayFit(signals, background, residuals, ll);
 	}
 
-	/**
-	 * The current Plot either Plot1d or Plot2d
-	 *
-	 * @return  <code>void</code>
-	 * @since Version 0.5
-	 */
-	/*public Plot getPlot() {
-		return currentPlot;
-	}*/
-
 	private synchronized final void setPlot(Plot p) {
 		currentPlot = p;
 		action.setPlot(p);
@@ -399,7 +390,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 	 */
 	private void showPlot(Histogram hist) {
 		currentHist = hist;
-		boolean doRepaint = false;
 		//cancel all previous stuff
 		if (currentPlot != null) {
 			currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
@@ -410,18 +400,12 @@ public class Display extends JPanel implements CommandListener, Observer {
 				|| (currentHist.getType() == Histogram.ONE_DIM_DOUBLE)) {
 				//show plot repaint if last plot was also 1d
 				plotswapLayout.show(plotswap, "OneD");
-				if (currentPlot == plot1d) {
-					doRepaint = true;
-				}
 				setPlot(plot1d);
 			} else if (
 				(currentHist.getType() == Histogram.TWO_DIM_INT)
 					|| (currentHist.getType() == Histogram.TWO_DIM_DOUBLE)) {
 				//show plot repaint if last plot was also 2d
 				plotswapLayout.show(plotswap, "TwoD");
-				if (currentPlot == plot2d) {
-					doRepaint = true;
-				}
 				setPlot(plot2d);
 			}
 			currentPlot.setSelectingArea(false);
@@ -430,18 +414,13 @@ public class Display extends JPanel implements CommandListener, Observer {
 		} else { //null histogram lets be in plot1d
 			plotswapLayout.show(plotswap, "OneD");
 			setPlot(plot1d);
-			doRepaint = true;
 		}
 		currentPlot.displayHistogram(currentHist);
 		/* only repaint if we did not do a card swap */
-		if (doRepaint) {
-			currentPlot.repaint();
-		}
+		currentPlot.repaint();
 	}
 
-	private JButton bnetarea; //FIXME clean up KBS
-	private JButton brebin; // =new JButton(getHTML("<u>Re</u>bin"));
-	private JButton bgoto; //= new JButton(getHTML("<u>G</u>oto"));
+	private JButton bnetarea, brebin, bgoto;
 
 	/**
 	 * Adds the tool bar the left hand side of the plot.
