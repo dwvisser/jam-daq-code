@@ -25,7 +25,7 @@ public class ExtensionFileFilter extends FileFilter {
 	 * Creates and file filter for a certain extension and using a specific description. 
 	 *
 	 * @param ext The extension without the period
-	 * @param dexcr A short description of the file type
+	 * @param descr A short description of the file type
 	 */    
     public ExtensionFileFilter(String ext, String descr) {
 		this(new String[] {ext}, descr);
@@ -34,8 +34,8 @@ public class ExtensionFileFilter extends FileFilter {
 	/**
 	 * Creates and file filter for a list of extensions and using a specific description. 
 	 *
-	 * @param ext The extensions without the period
-	 * @param dexcr A short description of the file type
+	 * @param exts The extensions without the period
+	 * @param descr A short description of the file type
 	 */    
     public ExtensionFileFilter(String [] exts, String descr){
     	//clone and lowercase the extensions

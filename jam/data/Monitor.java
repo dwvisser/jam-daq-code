@@ -248,7 +248,7 @@ public class Monitor implements Serializable {
      * Sets the maximum value, which is the maximum value for a monitor to have without
      * <code>MonitorControl</code> issuing a warning beep.
      *
-     * @param inThreshold the new maximum
+     * @param inMaximum the new maximum
      * @see jam.data.control.MonitorControl
      */
     public void setMaximum(double inMaximum){

@@ -204,7 +204,7 @@ public class MonitorApplet
 	 * Recieves the inputs from the pull down menus
 	 * that are choice changes
 	 *
-	 * @param  e    Action event from pull down menus
+	 * @param ie event from pull down menus
 	 * @since Version 0.5
 	 */
 	public void itemStateChanged(ItemEvent ie) {

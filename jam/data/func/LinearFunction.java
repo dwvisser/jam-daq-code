@@ -34,8 +34,8 @@ public class LinearFunction extends CalibrationFunction {
 	/**
 	 * Get the calibration value at a specified channel.
 	 * 
-	 * @param	channel	value at which to get calibration
-	 * @return	calibration value of the channel
+	 * @param energy physical value
+	 * @return channel corresponding to <code>energy</code>
 	 */
 	public double getChannel(double energy) {
 		return ((energy - coeff[0]) / coeff[1]);

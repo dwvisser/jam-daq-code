@@ -78,11 +78,11 @@ public class Multiplet extends Vector {
      * @param min minimum area to retain the peak
      * @return number of peaks remaining
      */
-    public int removeAreaGreaterThan(double max){
+    public int removeAreaGreaterThan(double min){
         Multiplet large=new Multiplet();
         for (int p=0; p<size(); p++){
             Peak peak=getPeak(p);
-            if (peak.getArea() > max) large.addPeak(peak);
+            if (peak.getArea() > min) large.addPeak(peak);
         }
         removeAll(large);//remove any peaks in small from this multiplet
         return size();

@@ -426,7 +426,8 @@ public class ImpExpASCII extends ImpExp {
 	/**
 	 * Write out a data into a ascii text file.
 	 *
-	 * @param	    outStream	    the stream to write the histogram to
+	 * @param	    buffout	    the stream to write the histogram to
+	 * @param hist the histogram to write
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
 	protected void writeHist(OutputStream buffout, Histogram hist)

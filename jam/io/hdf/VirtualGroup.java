@@ -176,7 +176,7 @@ public final class VirtualGroup extends DataObject {
 	 * unique.
 	 *
 	 * @param in should contain only VirtualGroup objects
-	 * @param groupType	type string showing what kind of info is contained
+	 * @param groupName name of the desired group
 	 */
 	static public VirtualGroup ofName(List in, String groupName) {
 		VirtualGroup output = null;

@@ -187,8 +187,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
 	 * <p>Each call causes setOffsets to be called.</p>
 	 *
-	 * @param	data	data object
-	 * @param boolean	useFileDefault	if true, automatically assigns ref number, else lets object decide
+	 * @param data data object
+	 * @param useFileDefault	if true, automatically assigns ref number, else lets object decide
 	 * @see	#getUniqueRef(DataObject)
 	 * @see	#setOffsets()
 	 */

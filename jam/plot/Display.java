@@ -78,7 +78,6 @@ Observer {
     /**
      * Constructor called by all constructors
      *
-     * @param   broadcaster  the class to call to broadcast events
      * @param   msgHandler  the class to call to print out messages
      */
     public Display(MessageHandler msgHandler){

@@ -206,7 +206,7 @@ public class HistApplet
 	 * Recieves the inputs from the pull down menus
 	 * that are choice changes
 	 *
-	 * @param  e    Action event from pull down menus
+	 * @param ie event from pull down menus
 	 * @since Version 0.5
 	 */
 	public void itemStateChanged(ItemEvent ie) {
@@ -393,7 +393,7 @@ public class HistApplet
 	/**
 	 * Sets the chooser to the current list of gates
 	 *
-	 * @param   gateList  the list of gates
+	 * @param   gates  the list of gates
 	 * @return  <code>void</code> 
 	 */
 	public void setGateList(Gate[] gates) {

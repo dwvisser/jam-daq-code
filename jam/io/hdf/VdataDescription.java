@@ -308,7 +308,7 @@ public class VdataDescription extends DataObject {
 	 * unique.
 	 *
 	 * @param in should contain only VdataDescription objects
-	 * @param groupType	type string showing what kind of info is contained
+	 * @param which type string showing what kind of info is contained
 	 */
 	static public VdataDescription ofName(List in, String which) {
 		VdataDescription output = null;

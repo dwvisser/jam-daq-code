@@ -132,9 +132,9 @@ public class HDFIO implements DataIO,JamHDFFields {
      * Writes out the currently held spectra, gates, and scalers, subject to the options given.
      * (Parameters are always written.)
      *
-     * @param  his  if true, Histograms will be written
-     * @param  gate  if true, Gates will be written
-     * @param  scalers  if true, scaler values will be written
+     * @param  wrthis  if true, Histograms will be written
+     * @param  wrtgate  if true, Gates will be written
+     * @param  wrtscalers  if true, scaler values will be written
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers)   {
         writeFile( wrthis,  wrtgate,  wrtscalers, true);
@@ -143,10 +143,10 @@ public class HDFIO implements DataIO,JamHDFFields {
     /**
      * Writes out the currently held spectra, gates, and scalers, subject to the options given
      *.
-     * @param  his  if true, Histograms will be written
-     * @param  gate  if true, Gates will be written
-     * @param  scalers  if true, scaler values will be written
-     * @param  parameters if true, parameter values will be written
+     * @param  wrthis  if true, Histograms will be written
+     * @param  wrtgate  if true, Gates will be written
+     * @param  wrtscalers  if true, scaler values will be written
+     * @param  wrtparameters if true, parameter values will be written
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers,
     boolean wrtparameters)   {
@@ -166,9 +166,9 @@ public class HDFIO implements DataIO,JamHDFFields {
      * Sets separately which data writeFile should actually output.  Not writing histograms
      * when you are saving tape data can significantly save time when you have many 2-d spectra.
      * parameters always written
-     * @param  his  if true, Histograms will be written
-     * @param  gate  if true, Gates will be written
-     * @param  scalers  if true, scaler values will be written
+     * @param  wrthis  if true, Histograms will be written
+     * @param  wrtgate  if true, Gates will be written
+     * @param  wrtscalers  if true, scaler values will be written
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, File file) {
         writeFile( wrthis,  wrtgate,  wrtscalers, true, file);
@@ -180,10 +180,10 @@ public class HDFIO implements DataIO,JamHDFFields {
      * Sets separately which data writeFile should actually output.  Not writing histograms
      * when you are saving tape data can significantly save time when you have many 2-d spectra.
      *
-     * @param  his  if true, Histograms will be written
-     * @param  gate  if true, Gates will be written
-     * @param  scalers  if true, scaler values will be written
-     * @param  parameters if true, parameter values will be written
+     * @param  wrthis  if true, Histograms will be written
+     * @param  wrtgate  if true, Gates will be written
+     * @param  wrtscalers  if true, scaler values will be written
+     * @param  wrtparameters if true, parameter values will be written
      */
     public void writeFile(boolean wrthis, boolean wrtgate, boolean wrtscalers, boolean wrtparameters, File file) {
         java.util.List hist, gate, scaler, parameter;

@@ -8,11 +8,10 @@ import jam.data.*;
 public class PolynomialFunction extends CalibrationFunction {
 
 	/**
-	 * Creates a new <code>CalibrationFunction</code> object of the specified type.  If passed <code>
-	 * LINEAR</code>, the function is a line.  If passed <code>POLYNOMIAL</code>, it is a polynomial
-	 * of order <code>POLY_NUM_TERMS - 1<code>.
+	 * Creates a new <code>CalibrationFunction</code> object of the specified 
+	 * polynomial order. 
 	 *
-	 * @param	type	one of <code>LINEAR</code> or <code>POLYNOMIAL</code>
+	 * @param numberTerms terms in the polynomial (including a constant term)
 	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public PolynomialFunction(int numberTerms) throws DataException {

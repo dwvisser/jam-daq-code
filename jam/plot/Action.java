@@ -73,8 +73,8 @@ public class Action
 	/**
 	 * Master constructor has no broadcaster
 	 * 
-	 * @param Display
-	 * @param messageHandler
+	 * @param display the histogram displayer
+	 * @param messageHandler the message area of the Jam window
 	 */
 	public Action(Display display, MessageHandler messageHandler) {
 		this.display = display;

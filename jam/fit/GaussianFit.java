@@ -267,7 +267,7 @@ public class GaussianFit extends NonLinearFit {
 	/**
 	 * Evaluates derivative with respect to <code>parameterName</code> at <code>x</code>.
 	 *
-	 * @param   parameterName   the name of the parameter to differentiate with respect to
+	 * @param   parName   the name of the parameter to differentiate with respect to
 	 * @param   x		value to evalueate at
 	 * @return			df(<code>x</code>)/d(<code>parameterName</code>) at x
 	 */

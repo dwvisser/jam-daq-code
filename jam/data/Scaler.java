@@ -70,7 +70,7 @@ public class Scaler implements Serializable  {
      * Sets the list of scalers.
      * Used for remote setting of scaler values.
      *
-     * @param the new list of all scalers
+     * @param inScalerList the new list of all scalers
      */
     public static void setScalerList(List inScalerList){
         clearList();
