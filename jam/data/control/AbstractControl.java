@@ -18,11 +18,22 @@ import javax.swing.JDialog;
  */
 public abstract class AbstractControl extends JDialog implements Observer {
 	private static List controllers = Collections.synchronizedList(new ArrayList());
+	
+	/**
+	 * Reference to instance of JamStatus.
+	 */
 	protected static final JamStatus STATUS=JamStatus.instance();
+	
+	/**
+	 * Reference to instance of Broadcaster.
+	 */
 	protected static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Default constructor for implementation classes.
+	 * 
+	 * @param title title of dialog
+	 * @param modal whether dialog is modal
 	 */
 	protected AbstractControl(String title, boolean modal) {
 		super(STATUS.getFrame(), title, modal);

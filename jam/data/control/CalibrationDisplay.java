@@ -9,7 +9,6 @@ import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,8 +39,6 @@ public class CalibrationDisplay extends AbstractControl implements
 
 	private final static String BLANK_LABEL = "    --     ";
 
-	private final Frame frame;
-
 	private final MessageHandler msghdlr;
 
 	private final JComboBox cFunc = new JComboBox(
@@ -71,13 +68,13 @@ public class CalibrationDisplay extends AbstractControl implements
 	JButton bRecal = new JButton("Recall");
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
+	 * @param mh where to put messages
 	 */
 	public CalibrationDisplay(MessageHandler mh) {
 		super("Histogram Calibration", false);
-		frame = STATUS.getFrame();
 		msghdlr = mh;
-
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogCalib = getContentPane();
@@ -150,7 +147,7 @@ public class CalibrationDisplay extends AbstractControl implements
 				&& currentHistogram.getDimensionality() == 1;
 		CalibrationFunction hcf = null;
 		if (hist1d) {
-			hcf = ((AbstractHist1D) currentHistogram).getCalibration();
+			hcf = currentHistogram.getCalibration();
 			final String name = hcf == null ? null : hcf.getClass().getName();
 			cFunc.setSelectedItem(name);
 		}
