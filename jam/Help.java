@@ -1,11 +1,13 @@
 package jam;
-import jam.global.JamProperties;
+
 import jam.global.MessageHandler;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -13,16 +15,17 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 import java.io.*;
+import java.util.prefs.Preferences;
 
 /**
  * Help shows the program about
  *
  * @author Ken Swartz
+ * @author Dale Visser
  * @version version 0.5 November 98
  */
 class Help {
 
-	private String jamHome;
 	private final Frame frame;
 	private final JDialog aboutD, licenseD;
 	private final MessageHandler messageHandler;
@@ -37,8 +40,6 @@ class Help {
 		final String url="http://jam-daq.sourceforge.net/";
 		this.frame = f;
 		messageHandler=mh;
-		jamHome = JamProperties.getPropString(JamProperties.JAM_HOME);
-
 		aboutD = new JDialog(frame, "About Jam", false);
 		final Container cad = aboutD.getContentPane();
 		aboutD.setResizable(false);
@@ -65,7 +66,7 @@ class Help {
 		});
 		pbut.add(bok);
 		aboutD.pack();
-		/* Recieves events for closing the dialog box and closes it. */
+		/* Receives events for closing the dialog box and closes it. */
 		aboutD.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				aboutD.dispose();
@@ -76,9 +77,17 @@ class Help {
 			new JDialog(
 				frame,
 				"University of Illinois/NCSA Open Source License",
-				false);
+				true);
 		}
 		layoutLicenseDialog();
+		final String defaultVal="notseen";
+		final String version=Version.getName();
+		final String key="license";
+		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
+		if (!version.equals(helpnode.get(key,defaultVal))){
+			showLicense();
+			helpnode.put(key,version);
+		}
 	}
 
 	/**
@@ -93,8 +102,7 @@ class Help {
 		final Container contents = licenseD.getContentPane();
 		licenseD.setForeground(Color.black);
 		licenseD.setBackground(Color.lightGray);
-		licenseD.setResizable(false);
-		licenseD.setLocation(posx, posy);
+		licenseD.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
 		final InputStream license_in =
@@ -108,8 +116,6 @@ class Help {
 			messageHandler.errorOutln(getClass().getName()+hyphen+e.getMessage());
 		}
 		final String text = new String(textarray, 0, length);
-		System.out.println(text);
-
 		center.add(new JScrollPane(new JTextArea(text)));
 		contents.add(center, BorderLayout.CENTER);
 		final JPanel south = new JPanel(new GridLayout(1, 0));
@@ -122,6 +128,9 @@ class Help {
 		});
 		south.add(bok);
 		licenseD.pack();
+		final Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
+		licenseD.setSize(licenseD.getWidth(),screen.height/2);
+		licenseD.setLocation(posx,screen.height/4);
 		/* Recieves events for closing the dialog box and closes it. */
 		aboutD.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -133,7 +142,7 @@ class Help {
 	/**
 	 * Show Jam's open source license text.
 	 */
-	public void showLicense() {
+	public final void showLicense() {
 		licenseD.show();
 	}
 }
