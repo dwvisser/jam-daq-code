@@ -1,0 +1,189 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>Jam Download</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+
+<h1>Jam Manual</h1>
+<H2>Jam Configuration</H2>
+There are two files that jam reads when starting up. One file to obtain the properties of the current system and the other get the user preferences. 
+These files are <code>JamConfig.ini</code> and <code>JamUser.ini</code>. If these files do not exist jam resorts to its
+build in default setup. This default setup is sufficient for offline 
+sorting but not for online data taking. Jam first read in <code>JamConfig.ini</code> and then <code>JamUser.ini</code> so 
+properties in <code>JamConfig.ini</code> can be overridden by 
+<code>JamUser.ini</code>.
+
+<UL>
+<LI><code>JamConfig.ini</code>
+This file tells jam what IP address, ports and to use to communicate with the front-end
+  computer. And can give the default sort class and input streams.
+Only one copy of this file should be needed per system.
+The <code>JamConfig.ini</code> file should reside in the jam home directory 
+defined by the property <code>jam.home</code>. <code>JamConfig.ini</code>
+also give the default user properties, those that will be overridden if the
+user defines them in her <code>JamUser.ini</code> file.
+(The property <code>jam.home</code> is set by the <code>-D</code> option in the java command. See jam.ksh for more
+  information.)
+
+For example:
+<blockquote><code>java -Djam.home=/home/user/jam jam.Jamdisp</code></blockquote>
+
+<LI><code>JamUser.ini</code>
+This file is a user defined file and tells jam what the default sort 
+class, startup directories for opening files opening, etc., should be.
+The <code>JamUser.ini</code> file should be in the user home directory. 
+</UL>
+ 
+<h3>Example JamConfig.ini file</h3>
+Included in your download.
+
+<blockquote><code>
+!Configuration file for Jam
+<BR>host.IP=hobbes
+<BR>host.portSend=5003
+<BR>host.portRecv=5002
+<BR>target.IP=calvin
+<BR>target.port=5002
+<BR>host-data.IP=calvin-data
+<BR>host-data.portRecv=10205
+<BR>sort.class=sort.Test 
+<BR>event.inpath=/home/jam 
+<BR>event.outpath=/home/jam 
+<BR>event.instream=jam.sort.L002InputStream
+<BR>event.outstream=jam.sort.L002OutputStream
+<BR>tape.dev=/dev/rmt/0
+<BR>browser.path=/usr/local/netscape
+<BR>docs.path=docs
+<BR>camac.path=/JAM/CAMAC/CNAFS
+</code>
+</blockquote>
+<p><a href="JamConfig.ini">Download</a> it if you like.
+
+<h3>Parameter definitions</h3>
+<p>For the follow explanation the host is the computer Jam runs on, while the target is the computer in the VME crate.</p>
+
+<DL>
+<DT> 
+host.IP
+<DD>
+IP address of the socket to used to communticate with the VME crate
+<DT> 
+host.portSend
+<DD>
+socket send port number used to communicate with the VME crate
+<DT>
+host.portRecv
+<DD>
+socket receive port number used to communicate with the VME crate
+<DT>
+target.IP
+<DD>
+IP address of the socket on the VME computer that is used to communicate with the host
+<DT>
+target.port
+<DD>
+socket receive port number on the VME computer that is used to communicate with the host
+<DT>
+host-data.IP
+<DD>
+IP address of the socket to used to receive data from VME crate
+<DT>
+host-data.portRecv 
+<DD>
+socket receive port number used to receive data from the VME crate
+<DT>
+sort.class
+<DD>
+default class jam will use for sorting
+<DT>
+event.instream
+<DD>
+default event data input stream jam will use for sorting data (offline)
+<DT>
+event.outstream
+<DD>
+default event data output stream jam will use for sorting data (offline)
+<DT>
+event.inpath
+<DD>
+default event input data files path
+<DT>
+event.outpath
+<DD>
+default event ouput data file path
+<DT>
+hist.path
+<DD>
+default path jam will use for saving and opening histogram files
+<DT>
+browser.path
+<DD>
+path to browser java will use to open help files
+<DT>
+docs.path
+<DD>
+path to jam help documentation
+<DT>
+tape.dev
+<DD>
+the default tape device
+<DT>
+camac.path (no longer used)
+<DD>
+the path jam will write the camac cnafs to and from which the VME target
+computor will read them.</dd>
+</dl>
+<h3>Example JamUser.ini file</h3>
+NOTE: Properties listed in <code>JamUser.ini</code> will always override those
+listed in <code>JamConfig.ini</code>.
+
+Include with your download.
+
+<blockquote><code>
+!Initialization file for Jam
+<BR>camac.path=/home/jam/camac
+<BR>exp.name=test
+<BR>sort.path=/home/jam 
+<BR>event.path=/home/jam 
+<BR>hist.path=/home/jam
+</code>
+</blockquote>
+<p><a href="JamUser.ini">Download</a> it if you like.
+
+<h3>Parameter definitions</h3>
+<p>The host is the computer Jam runs on, while the target is the computer in the VME crate.</p>
+
+<DL>
+<DT>
+camac.path
+<DD>
+default path jam will use for saving and opening camac CNAF files
+<DT>
+exp.name
+<DD>
+default name experimental name jam will use (online)
+<DT>
+sort.file
+<DD>
+default sort file jam will load
+<DT>
+hist.path
+<DD>
+default path jam will use for saving and opening histogram files
+<DT>
+event.path
+<DD>
+default path jam will use for saving and opening event files
+<DT>
+</dl>
+
+<HR WIDTH="50%">
+<address>Last modified 12/4/98<br>
+</address>
+
+</BODY>
+</HTML>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>jam Manual--Front End Protocol</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+<h1>Jam User Manual</h1>
+<H2>Front End Protocol</H2>
+<h3>Notes</h3>
+<dl>
+<dt>6/16/98 KBS</dt>
+<dd>Added Reset to list of commands.<dd>
+
+<dt>4/27/98 DWV</dt>
+<dd>Added a command to the protocol indicating end-of-run, distinct from just
+stopping acquisition temporarily.</dd>
+
+<dt>4/8/98 JB</dt>
+<dd>This file describes the communication in the jam data acquisition program between the host (SUN) computer and the VME computer. The communication is done using udp sockets, udp sockets were chosen for their ease of use. The communication is expected to be realiable, not warranting the over head of tcp 
+sockets. There are replies to requests making it easy to verify that communication and execution is occuring. The udp packets are 1024 bytes long.</dd>
+</dl>
+<h3>Form of host-to-VME Command datagrams</h3>
+<table>
+<tr>
+<td>Bytes</td><td>Item</td>
+</tr> 
+<tr> 
+<td>0-3</td><td>An int undefined / reserved for future use </td>
+</tr>
+<tr>
+<td>4-80</td><td>A NUL ('\0') terminated string command-line-type command. e.g: <code>command arg1 arg2</code></td>
+</tr>
+</table>
+
+<p>Note: Commands and arguments <em>are</em> case-sensitive.</p>
+
+
+<h3>Form of VME-to-host reply datagrams</h3>
+
+<h4>byte 0-3</h4>   
+<dl>
+<dt>0</dt>   
+<dd>O.K. execution of last command</dd>
+<dt>1</dt>   
+<dd>Error in execution of last command</dd>
+<dt>2</dt>
+<dd>Scaler reply packet</dd>
+<dt>3</dt>
+<dd>CNAF reply packet</dd>
+</dl>
+                                                  
+<h4>Message reply datagram (0 or 1)</h4>			
+<dl><dt>bytes 4-80</dt>
+<dd>NUL-terminated string containing either a message notifying of successful Host-to-VME call and execution or an error message as appropriate.</dd>
+</dl>
+
+<h4>Scaler reply datagram (2)</h4>
+<table>
+<tr>
+<td>Bytes</td><td>Item</td>
+</tr>
+<tr>
+<td>4-7</td><td>Number of scalers read</td>
+</tr>
+<tr>
+<td>8 - 11</td><td>Value of scaler 0</td>
+</tr>
+<tr>
+<td>12 - 15</td><td>Value of scaler 1</td>
+</tr>
+<tr>
+<td>... - ...</td><td>...</td>
+</tr>
+<tr>
+<td>8+nx4 - 11+nx4</td><td>Value of scaler n-1</td>
+</tr>
+</table>
+
+<h4>CNAF reply datagram (3)</h4>
+<table>
+<tr>
+<td>Bytes</td><td>Item</td>
+</tr>
+<tr>
+<td>4-7</td><td>n  Read value</td>
+</tr>
+</table>
+         	
+<h2>Commands</h2>
+<p><a name="note">*</a> - not yet implemented</p>	
+
+<dl>
+<dt><code>reset</code></dt>
+<dd>Resets VME computor to known state, so it can be loaded, without rebooting.</dd>
+
+<dt><code>setpath [path]</code></dt>
+<dd>Set the path from which the CNAFs are loaded equal to [path].</dd>
+
+<dt><code>loadCNAF init</code></dt>
+<dd>Load a list of the CNAFs to perform when a CAMAC crate initialization is done.</dd>
+
+<dt><code>loadCNAF event</code></dt>
+<dd>Load a list of the CNAFs to perform for each event. Installed under interrupt #2 from CBD.</dd>
+
+<dt><code>loadCNAF scaler</code></dt>
+<dd>Load a list of CNAFs to perform to when a scaler read is requested.</dd>
+                  
+<dt><code>loadCNAF clear</code></dt>
+<dd>Load a list of CNAFs to perform to clear the crate, when a run is started.</dd>
+
+<dt><code>loadCNAF user</code></dt>
+<dd>Load a list of CNAFs to be used by a user specified function. Can be executed with an interrupt.</dd> 
+                  
+<dt><code>run init</code></dt>
+<dd>Initialize the Camac crate and any VME modules that need to be, and execute the init CNAFS.</dd>                                          
+
+<dt><code>run event</code></dt>
+<dd>Read an event using the event CNAFs as if a event interrupt had occured. This is useful for debugging.</dd>
+                  
+<dt><code>run scaler</code></dt>
+<dd>Read the scaler values, using scaler CNAFs.</dd>
+			
+<dt><code>run clear</code></dt>
+<dd>Execute the clear list CNAF, used to clear before a run,
+						usually just zeros the scalers.</dd>
+			
+<dt><code>run user</code></dt>
+<dd>Execute the user specified CNAFs.</dd> 
+
+
+<dt><code>start</code></dt>
+<dd>Start the data acquisition.</dd> 
+
+<dt><code>stop</code></dt>
+<dd>Stop the data acquisition, and flush out the data buffer.</dd>
+                  
+<dt><code>end</code></dt>
+<dd>Stop data acquisition, flush out data buffer, but making the final characters in the buffers a special end-of-run word: 0xFF03</dd>
+
+<dt><code>flush</code></dt>
+<dd>Flush out the data buffer and send it.</dd>
+
+<dt><code><a href="vmeprotocol.html#note">*</a>loadRoutine [user]</code></dt>
+<dd>Load a user routine. (This routine could be interupt driven.</dd>
+
+<dt><code><a href="vmeprotocol.html#note">*</a>execute [user]</code></dt>
+<dd>Execute the user routine</dd>
+
+<dt><code>CNAF [cnaf]</code></dt>
+<dd>Read (execute) a CNAF. (This is useful for debugging)</dd>
+
+<dt><code>verbose on</code></dt>
+<dd>Sets mode so VME prints out messages it receives.</dd>
+
+<dt><code>verbose off</code></dt>
+<dd>Sets mode so VME does NOT print out messages it receives.</dd>
+
+<dt><code>debug on</code></dt>
+<dd>Sets mode to debugging, this gives trace print-outs
+                  for debugging.</dd>
+						
+<dt><code>debug off</code></dt>
+<dd>Sets mode to NOT debugging, see debug.</dd>
+</dl>
+</BODY>
+</HTML>

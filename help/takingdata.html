@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>Jam Online Sorting</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+<a name="top"><h1></a>Jam User Manual</h1>
+<H2>Online Sorting</H2>
+
+<p>Setting up Jam to take data takes only a few easy steps:</p>
+
+<OL>
+<LI><A HREF="sortfile.html">Write</a> a sort routine. 
+This is done before Jam is started. In a sort routine, all the histogram and 
+gates are defined, and you write the procedure to process each event. You will need a editor and Java compiler for this. The best approach, however, is to use an
+  <a href="http://links.javalobby.org/Developer_Tools/IDE/index.html">
+  integrated development environment</a>, such as <a href="http://www.eclipse.org/">Eclipse</a>.
+</LI>
+
+<LI>Start up Jam and make sure that the <span class=acronym>VME</span> 
+computer (with the <a href="http://www.windriver.com/"> VxWorks</a> operating system) is and running.</LI>
+
+
+<LI><A HREF="#sorting">Setup</a> the sorting. Tell Jam which sorting
+routine to use, how to name the event and histograms files and the 
+paths to use to write out the data and histograms files. 
+</LI>
+<LI><A HREF="#acquisition">Starting</a> the acquisition. 
+There are two ways to take data, just acquisition and run mode.
+</LI>
+
+</OL>
+
+
+<A NAME="sorting"><H3>Setup Online Sorting</H3></A>
+
+<p>To set up online sorting you need to open the <span CLASS=jammenu>Setup|Online</span> 
+dialog box. There are four text fields you need to fill in. 
+<span class=jamfield>Experiment Name</span> is used to name the data files. 
+The event data and histogram files are named with the name of the experiment with the run number 
+appended, e.g. <code>AlphaTest100.hdf</code> and <code>AlphaTest100.evn</code>. It is best to make 
+the name of the experiment descriptive. <span class=jamfield>Sort File (.class)</span> is a sort routine that was written by the experimenter. There is no need to add the <code>.class</code> extension. <span class=jamfield>Path for Histograms</span> and <span class=jamfield>Path for Events</span> are the absolute paths for storage of histograms and events.</p>
+
+<H3>Starting and stopping the acquistion system</H3>
+<p>To start and stop the data acquisition without saving the events, 
+use the menu items <span CLASS=jammenu>Control|start</span> and <span CLASS=jammenu>Control|stop</span>. 
+
+<H3>Running: taking event data</H3>
+To save the event data you need to begin a run. Open the <span class=jammenu>Control|Run...</span> dialog box to do this.
+<span class=jambutton>Begin</span> will open a new event file and start acquisition. 
+The event file will be create in the directory specified in the <span class=jammenu>Setup|Online</span>
+ dialog box.
+<span class=jambutton>End</span> will stop acquisition, close the event file, 
+and write out a HDF file which if the appropriate boxes are checked, will contain the histogram, gates, and scalers.
+<p><a href="#top"><img border="0" src="../images/DD00046_.gif" width="29" height="32">Top
+of Page</a> &nbsp;</p>
+<hr>
+<p>Page Last Updated <!--webbot bot="Timestamp" S-Type="REGENERATED"
+S-Format="%d %B, %Y %I:%M:%S %p" startspan -->17 January, 2003 03:33:54 PM<!--webbot bot="Timestamp" endspan i-checksum="53371" -->
+</p>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<html>
+
+    <head>
+	<title>Jam Packages</title>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+    </head>
+
+<body>
+<h1>Jam User Manual</h1>
+<h2>Jam Packages</h2>
+<p>The Jam code is divided into several interrelated packages. Brief
+descriptions with links to more details are listed below.</p>
+<dl>
+
+<dt> <a href="../API/jam/package-summary.html"> jam</a></dt><dd> This package is the only package which can access all the other packages. It contains
+  <a href="../API/jam/JamMain.html">JamMain</a>, which has the main() method where execution of the program starts, and instantiates objects of all classes necessary for Jam to run. It contains classes that create the frame and which call the appropriate class for clicked menu items.</dd>
+    <dt> <a href="../API/jam/global/package-summary.html"> jam.global</a></dt><dd> This package has the global class, which has flags and variables that need to be accessed throughout Jam. It also has the broadcaster, a class that can be used to send data between classes without having a handle to the target class.</dd>
+
+    <dt> <a href="../API/jam/data/package-summary.html"> jam.data</a></dt><dd> This package is the object database for Jam. It has the Histogram, Gate, etc. classes.</dd>
+
+        <dt> <a href="../API/jam/data/control/package-summary.html"> jam.data.control</a></dt><dd> This package has classes that are used to manipulate objects in the object database. Classes in this package are able to display dialog boxes where the user can input responses.</dd>
+
+    <dt> <a href="../API/jam/sort/package-summary.html"> jam.sort</a></dt><dd> This package has the classes that sort the event data. It has the thread classes that are started up at setup time and run in the background. There are classes to receive the data over the networks, sort the data, and write it out to disk or tape. The actual sorting is performed by a user-supplied subclass of SortRoutine, which is called by the sort daemon.</dd>
+
+        <dt> <a href="../API/jam/sort/stream/package-summary.html"> jam.sort.stream</a></dt><dd> The package of event input and output streams. These are classes that are used to read and write different event streams.</dd>
+
+    <dt> <a href="../API/jam/io/package-summary.html"> jam.io</a></dt><dd> This package contains the Import and Export interfaces. Implementations include
+  <a href="http://radware.phy.ornl.gov/"> Radware</a> .spe files, ORNL .his/.drr files, XSYS files, and one-dimensional ASCII files.</dd>
+
+        <dt> <a href="../API/jam/io/hdf/package-summary.html"> jam.io.hdf</a></dt><dd>  Classes for saving / loading data in the
+  <a href="http://hdf.ncsa.uiuc.edu/hdf4.html"> Hierarchical Data Format</a> (HDF). HDF was developed at the National Center for Supercomputing Applications as a standard library for storage of scientific data
+  .  The implementation here is only a limited subset of HDF, but is pure Java to preserve portability of Jam.</dd>
+
+    <dt> <a href="../API/jam/plot/package-summary.html"> jam.plot</a></dt><dd> Classes for plotting histograms, and gates, and fitting data.</dd>
+
+    <dt> <a href="../API/jam/fit/package-summary.html"> jam.fit</a></dt><dd> Classes for the fitting of data.</dd>
+
+    <dt> <a href="../API/jam/util/package-summary.html"> jam.util</a></dt><dd> Classes that contain utility classes used throughout Jam.</dd>
+
+
+</dl>
+<a href="jampackages.html#top">Back</a> to top.
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>Sample Sort Routines</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+
+<H1>Jam User Manual</H1>
+<H2>Camac Commands</h2>
+To perform a camac command.
+<H3>Methods</H3>
+<dl>
+<dt>
+init(c, n, a, f)</dt>
+<dd>
+Initialization cnafs.
+<dt>
+event(c, n, a, f)</dt>
+<dd>
+Event cnafs.
+
+<dt>
+scaler(c, n, a, f)</dt>
+<dd>
+Read scaler cnafs.
+
+<dt>
+clear(c, n, a, f)</dt>
+<dd>
+Clear scaler cnafs.
+
+</dl>
+<ul>
+<LI><A HREF="#camac">Setup</a> the <span class=acronym>CAMAC</span> crate. 
+Define all the cnafs that need to be performed to initalize and read the <span class=acronym>adc</span>'s.</LI>
+
+<A NAME="camac"><H3>Camac</H3></A>
+To set up the camac crate you need to enter the list of <span class=acronym>CNAF</span>'s that
+have to be performed. Go to the <span class=jammenu>Setup|Camac</span> dialog box where the list can be entered.
+
+The lists are:
+
+<p><span class=jammenu>INIT</span>--
+The list that gets performed at startup time. Here is where you should put all the module initialization and setup commands.</p>
+
+<p><span class=jammenu>EVENT</span>--The list that gets performed for every event. These read the <span class=acronym>ADC</span>'s and <span class=acronym>TDC</span>'s for every event.</p>
+
+<p><span class=jammenu>SCALER</span>--The list that get performed when the scalers are to be read. You can also read an <span class=acronym>ADC</span> here, although it would only be read when the scalers are.</p>
+
+<p><span class=jammenu>CLEAR</span>--The list that gets performed at a scaler's clear. It can also be used to clear other modules at the same time as clearing scalers.</p>
+
+<p><span class=jammenu>USER</span>--The list that gets performed at a user input. There is currently now way to perform this list currently, but it would a way to do at list of <span class=acronym>CNAF</span>'s at the push of a button.</p>
+
+</BODY>
+</HTML>

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+   <TITLE>Fitting Spectra in Jam</TITLE>
+   <LINK REL=STYLESHEET TYPE="text/css" HREF="../manualstyle.css" TITLE="Manual Style">
+<meta name="Microsoft Border" content="none, default">
+</HEAD>
+<BODY>
+<h1>Jam User Manual</h1>
+<H2>Fitting Spectra</H2>
+
+<p>Right now there is only one fitting routine available in <span
+class=jam>jam</span>, called <code>GaussianFit</code>.  This fit routine can fit
+a single Gaussian peak with a quadratic polynomial background.  In order to use
+it, first go to the <span class=jammenu>Fitting</span> menu and load it via the <span class=jammenu>Load Fit...</span> dialog.</p>
+
+<p>You will be presented with a dialog box which has spaces for the fit
+parameters, their fit errors, and options.  Clicking <span class=jambutton>Get
+Mouse</span> will allow you to enter the needed channels.  Clicking <span class=jambutton>Do Fit</span> calls methods in
+<a href="../../API/jam/fit/NonLinearFit.html">NonLinearFit</a>
+to find a best fit for the selected peak.   <code>NonLinearFit</code> uses the
+Levenberg-Marquadt
+method of seeking a minimum chi-square statistic for a fit.  This method
+requires the parameters to be reasonably well guessed, so that they are already
+near the (hopefully global) minimum.</p>
+
+<p>  In the case of <code>GaussianFit</code>, a
+method called <code>estimate()</code> takes care of some of the work of guessing
+parameters by pre-calculating area, width, and background level.  Clicking <span
+class=jambutton>Draw Fit</span>  will draw a curve for the presently entered
+parameter values in the dialog box. After fitting, the program automatically draws its best fit.</p>
+
+<p>It is possible to write your own fit routines for <span class=jam>jam</span>.
+ All you need to do is extend the abstract class <a href="../../API/jam/fit/NonLinearFit.html">NonLinearFit</a>
+by implementing the methods <code>estimate()</code>, <code>valueAt()</code>, and
+<code>derivative()</code>.  Your constructor will define your parameters, which
+are instances of the <a href="../../API/jam/fit/Parameter.html">Parameter</a> 
+class.</p>
+
+<hr>
+<address>Last modified 3/19/99
+<BR>
+
+</BODY>
+</HTML>

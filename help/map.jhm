@@ -1,0 +1,16 @@
+   <?xml version='1.0' encoding='ISO-8859-1' ?>
+   <!DOCTYPE map
+     PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
+            "http://java.sun.com/products/javahelp/map_1_0.dtd">
+
+   <map version="1.0">
+      <mapID target="configure" url="install/config.html" />
+      <mapID target="online" url="takingdata.html" />
+      <mapID target="offline" url="sortingdata.html" />
+      <mapID target="remote" url="remoteviewdata.html" />
+      <mapID target="writesort" url="sortfile.html" />
+      <mapID target="menus" url="menus.html" />
+      <mapID target="l002" url="eventformat.html" />
+      <mapID target="fitting" url="fitting/index.html" />
+      <mapID target="protocol" url="VMEprotocol.html" />
+   </map>
