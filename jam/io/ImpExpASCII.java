@@ -112,12 +112,12 @@ public class ImpExpASCII extends ImpExp {
 					break;
 				case 2 :
 					getMaxChannelsXY(rows);
-					counts = new double[maxX];
+					counts = new double[maxX+1];
 					readHistXY(inStream, nameHist, titleHist, counts, rows);
 					break;
 				case 3 :
 					getMaxChannelsXYZ(rows);
-					counts2d = new double[maxX][maxY];
+					counts2d = new double[maxX+1][maxY+1];
 					readHistXYZ(inStream, nameHist, titleHist, counts2d, rows);
 					break;
 				default :// >=4 cases
@@ -281,7 +281,7 @@ public class ImpExpASCII extends ImpExp {
 		int rval = 0;
 		LineNumberReader lnr = new LineNumberReader(new FileReader(lastFile));
 		//read in header lines, header are lines that start with a non-number token
-		if (this.firstLineIsTitle) {
+		if (firstLineIsTitle) {
 			lnr.readLine();
 		}
 		while (lnr.readLine() != null) {
