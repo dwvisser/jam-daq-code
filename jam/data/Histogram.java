@@ -75,17 +75,17 @@ public class Histogram implements Serializable {
 	 */
 	public static final int NAME_LENGTH = 16;
 
-	private static Map sortedNameMap = new TreeMap();
-	private static SortedMap sortedNumberMap=new TreeMap();
+	private final static Map sortedNameMap = new TreeMap();
+	private final static SortedMap sortedNumberMap=new TreeMap();
 	/* histogramList is ordered by the creation of the histograms */
-	private static List histogramList = new Vector(37);
+	private final static List histogramList = new ArrayList();
 	/* used for automatically assigning histogram number */
 	private static int lastNumber = 0;
 
 	/**
 	 * gates that belong to this histogram
 	 */
-	List gates = new Vector(1);
+	final List gates = new ArrayList();
 
 	/**
 	 * Set to true if errors are set explicitly.  Put in place so as not to waste disk
@@ -104,15 +104,16 @@ public class Histogram implements Serializable {
 	private int number; //histogram number
 	private int type; //one or two dimension
 
-	private int sizeX; //size of histogram, for 1d size for 2d x size
-	private int sizeY; //size used for 2d histograms y size
+	private final int sizeX; //size of histogram, for 1d size for 2d x size
+	private final int sizeY; //size used for 2d histograms y size
 	private String labelX; //x axis label
 	private String labelY; //y axis label
 	private int counts[]; // array to hold counts for 1d int
 	private int counts2d[][]; // array to hold counts for 2d inc
 	private double[] countsDouble; //array to hold counts for 1d double
 	private double[][] counts2dDouble; //array to hold counds for 2d double
-
+	
+	
 	/**
 	 * Array which contains the errors in the channel counts.
 	 */
@@ -451,29 +452,42 @@ public class Histogram implements Serializable {
 	 * @return all histograms
 	 */
 	public static List getHistogramList() {
-		return histogramList;
+		return Collections.unmodifiableList(histogramList);
 	}
 	
 	/**
 	 * @return list of all histograms sorted by number
 	 */
-	public static List getListSortedByNumber(){
-		return new ArrayList(sortedNumberMap.values());
+	public static Collection getListSortedByNumber(){
+		return Collections.unmodifiableCollection(sortedNumberMap.values());
 	}
 
 	/**
 	 * @return list of all histograms sorted by name
 	 */
-	public static List getListSortedByName(){
-		return new ArrayList(sortedNameMap.values());
+	public static Collection getListSortedByName(){
+		return Collections.unmodifiableCollection(sortedNameMap.values());
 	}
 
 	/**
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
-		sortedNameMap.clear();
+		for (Iterator it=histogramList.iterator(); it.hasNext();){ 
+			final Histogram his=(Histogram)it.next();
+			his.gates.clear();
+			his.calibFunc=null;
+			his.counts=null;
+			his.counts2d=null;
+			his.counts2dDouble=null;
+			his.countsDouble=null;
+			his.errors=null;
+			his.labelX=null;
+			his.labelY=null;
+			his.title=null;
+		}
 		histogramList.clear();
+		sortedNameMap.clear();
 		sortedNumberMap.clear();
 		lastNumber=0;
 		System.gc();
@@ -701,8 +715,8 @@ public class Histogram implements Serializable {
 	 *
 	 * @return the list of gates that belong to this histogram
 	 */
-	public Gate[] getGates() {
-		return (Gate [])(gates.toArray(new Gate[0]));
+	public List getGates() {
+		return Collections.unmodifiableList(gates);
 	}
 
 	/**
