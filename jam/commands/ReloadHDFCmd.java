@@ -32,7 +32,13 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 	 */
 	protected void execute(Object[] cmdParams) {			
 		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);
-		hdfio.readFile(FileOpenMode.RELOAD);		
+		final Runnable r=new Runnable(){
+			public void run(){
+				hdfio.readFile(FileOpenMode.RELOAD);				
+			}
+		};
+		final Thread t=new Thread(r);
+		t.run();
 	}
 
 	/* (non-Javadoc)

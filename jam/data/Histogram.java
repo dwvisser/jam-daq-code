@@ -945,7 +945,7 @@ public final class Histogram implements Serializable {
 
 	/**
 	 * Calls setZero() on all histograms.
-	 *
+	 * 
 	 * @see #setZero()
 	 */
 	public synchronized static void setZeroAll() {
@@ -1040,11 +1040,13 @@ public final class Histogram implements Serializable {
 
 	/**
 	 * Sets counts in the specified channel.
-	 *  
-	 * @param channel to set counts in
-	 * @param cts counts to set
-	 * @throws UnsupportedOperationException if not called on a
-	 * 1-d histogram
+	 * 
+	 * @param channel
+	 *            to set counts in
+	 * @param cts
+	 *            counts to set
+	 * @throws UnsupportedOperationException
+	 *             if not called on a 1-d histogram
 	 */
 	public synchronized void setCounts(int channel, double cts) {
 		if (type == Type.ONE_DIM_INT) {
@@ -1061,11 +1063,14 @@ public final class Histogram implements Serializable {
 	/**
 	 * Set the counts in the specified channel.
 	 * 
-	 * @param chX x-channel
-	 * @param chY y-channel
-	 * @param cts counts to set
-	 * @throws UnsupportedOperationException if not called on a
-	 * 2-d histogram
+	 * @param chX
+	 *            x-channel
+	 * @param chY
+	 *            y-channel
+	 * @param cts
+	 *            counts to set
+	 * @throws UnsupportedOperationException
+	 *             if not called on a 2-d histogram
 	 */
 	public synchronized void setCounts(int chX, int chY, double cts) {
 		if (type == Type.TWO_DIM_INT) {
@@ -1351,5 +1356,31 @@ public final class Histogram implements Serializable {
 			}
 		}
 		return rval;
+	}
+
+	public double getArea() {
+		double sum = 0.0;
+		if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+			for (int i = 0; i < sizeX; i++) {
+				sum += countsDouble[i];
+			}
+		} else if (type == Histogram.Type.ONE_DIM_INT) { //1d int
+			for (int i = 0; i < sizeX; i++) {
+				sum += counts[i];
+			}
+		} else if (type == Histogram.Type.TWO_DIM_INT) {
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					sum += counts2d[i][j];
+				}
+			}
+		} else { //2d double
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					sum += counts2dDouble[i][j];
+				}
+			}
+		}
+		return sum;
 	}
 }

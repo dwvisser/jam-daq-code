@@ -25,8 +25,13 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 	protected void execute(Object[] cmdParams) {
 		JFrame frame = status.getFrame();				
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);
-		hdfio.readFile(FileOpenMode.ADD);
-
+		final Runnable r=new Runnable(){
+			public void run(){
+				hdfio.readFile(FileOpenMode.ADD);				
+			}
+		};
+		final Thread t=new Thread(r);
+		t.run();
 	}
 
 	protected void executeParse(String[] cmdTokens)

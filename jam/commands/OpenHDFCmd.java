@@ -29,18 +29,23 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	/* 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
-		final boolean isFileRead; 
-		
-		final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);		
-		if ( cmdParams==null) {//No file given									
-			isFileRead=hdfio.readFile(FileOpenMode.OPEN);//opens file dialog
-		} else {
-			isFileRead=hdfio.readFile(FileOpenMode.OPEN, (File)cmdParams[0]);
-		}	
-		if (isFileRead){//File was read in	
-			notifyApp(HDFIO.getLastValidFile());
-		}		
+	protected void execute(final Object[] cmdParams) {
+		final Runnable r=new Runnable(){
+			public void run(){
+				final boolean isFileRead; 
+				final HDFIO	hdfio = new HDFIO(status.getFrame(), msghdlr);		
+				if (cmdParams==null) {//No file given									
+					isFileRead=hdfio.readFile(FileOpenMode.OPEN);//opens file dialog
+				} else {
+					isFileRead=hdfio.readFile(FileOpenMode.OPEN, (File)cmdParams[0]);
+				}	
+				if (isFileRead){//File was read in	
+					notifyApp(HDFIO.getLastValidFile());
+				}						
+			}
+		};
+		final Thread t=new Thread(r);
+		t.run();
 	}
 
 	/* (non-Javadoc)

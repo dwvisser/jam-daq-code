@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.ProgressMonitor;
+
 /**
  * Class which represents the HDF file on disk.
  *
@@ -334,10 +336,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException thrown if err occurs during file write
 	 * @param msg output text area
 	 */
-	public void writeAllObjects(MessageHandler msg) throws HDFException {
-		final int size = fileSize;
-		int counter = fileSize;
-		int outbar = 9;
+	void writeAllObjects(MessageHandler msg, ProgressMonitor pm) throws HDFException {
+		pm.setMaximum(objectList.size());
+		int progress=1;
+		pm.setProgress(progress);
+		pm.setNote("Writing to disk");
 		final Iterator temp = objectList.iterator();
 		while (temp.hasNext()) {
 			final DataObject ob = (DataObject) (temp.next());
@@ -345,15 +348,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 				throw new HDFException("DataObject with no length encountered, halted writing HDF File");
 			}
 			writeDataObject(ob);
-			final double remaining = (double) counter / (double) size;
-			final double bar = (double) outbar / 10.0;
-			if (remaining < bar) {
-				msg.messageOut(" " + outbar, MessageHandler.CONTINUE);
-				outbar--;
-			}
-			counter -= ob.getLength();
+			progress++;
+			pm.setProgress(progress);
 		}
 	}
+	
 	/**
 	 *
 	 *  @exception HDFException unrecoverable error
