@@ -58,7 +58,7 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	private JButton bapply;
 	private JCheckBox checkLock;
 	
-	private static final JamStatus status=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 
 	private int mode; //mode server, snap or link
 	RemoteData remoteData;
@@ -84,8 +84,8 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	 * Constructor for Jam Application creates dialog box, we are in an application
 	 */
 	public SetupRemote() {
-		super(status.getFrame(),"Remote Hookup ", false);
-		msgHandler = status.getMessageHandler();
+		super(STATUS.getFrame(),"Remote Hookup ", false);
+		msgHandler = STATUS.getMessageHandler();
 		//create dialog box
 		setResizable(false);
 		setLocation(20, 50);
@@ -253,7 +253,7 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	public void snap(String stringURL) throws JamException {
 
 		try {
-				if (status.canSetup()) {
+				if (STATUS.canSetup()) {
 					remoteData = (RemoteData) Naming.lookup(stringURL);
 					msgHandler.messageOutln("Remote lookup OK!");
 				} else {
@@ -310,11 +310,11 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 
 		if (active) {
 			if ((mode != SERVER) && (!inApplet)) {
-				status.setSortMode(SortMode.REMOTE);
+				STATUS.setSortMode(SortMode.REMOTE);
 			}
 		} else {
 			if ((mode != SERVER) && (!inApplet)) {
-				status.setSortMode(SortMode.NO_SORT);
+				STATUS.setSortMode(SortMode.NO_SORT);
 			}
 		}
 	}

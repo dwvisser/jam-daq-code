@@ -194,12 +194,12 @@ public final class Script implements Observer {
 	}
 		
 		
-	private static final JamStatus status=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 	
 	private void initFields(){
 		sso=SetupSortOff.getSingletonInstance();
 		sc=SortControl.getSingletonInstance();
-		hdfio=new HDFIO(status.getFrame(),null);
+		hdfio=new HDFIO(STATUS.getFrame(),null);
 	}
 	
 	/**
@@ -313,7 +313,7 @@ public final class Script implements Observer {
 	 */
 	public  void showJam(){
 		jam.setVisible(true);
-		status.setShowGUI(true);
+		STATUS.setShowGUI(true);
 	}
 	
 	/**

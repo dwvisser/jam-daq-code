@@ -79,9 +79,9 @@ public class RunControl extends JDialog implements Controller {
 
 	private final MessageHandler console;
 
-	private static final JamStatus status = JamStatus.instance();
+	private static final JamStatus STATUS = JamStatus.instance();
 
-	private final Frame jamMain = status.getFrame();
+	private final Frame jamMain = STATUS.getFrame();
 
 	private int device;
 
@@ -133,7 +133,7 @@ public class RunControl extends JDialog implements Controller {
 
 	static public RunControl getSingletonInstance() {
 		if (instance == null) {
-			instance = new RunControl(status.getFrame());
+			instance = new RunControl(STATUS.getFrame());
 		}
 		return instance;
 	}
@@ -155,8 +155,8 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	private RunControl(Frame f) {
 		super(f, "Run", false);
-		console = status.getMessageHandler();
-		vmeComm = status.getFrontEndCommunication();
+		console = STATUS.getMessageHandler();
+		vmeComm = STATUS.getFrontEndCommunication();
 		this.dataio = new HDFIO(jamMain, console);
 		runNumber = 100;
 		setResizable(false);
@@ -322,13 +322,13 @@ public class RunControl extends JDialog implements Controller {
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {//runOn is true if the current state is a run
-			status.setRunState(RunState.RUN_ON(runNumber));
+			STATUS.setRunState(RunState.runOnline(runNumber));
 			//see stopAcq() for reason for this next line.
 			endAction.setEnabled(true);
 			console.messageOutln("Started Acquisition, continuing Run #"
 					+ runNumber);
 		} else {//just viewing events, not running to disk
-			status.setRunState(RunState.ACQ_ON);
+			STATUS.setRunState(RunState.ACQ_ON);
 			beginAction.setEnabled(false);//don't want to try to begin run
 			// while going
 			console
@@ -345,7 +345,7 @@ public class RunControl extends JDialog implements Controller {
 		 * Commented out next line to see if this stops our problem of
 		 * "leftover" buffers DWV 15 Nov 2001
 		 */
-		status.setRunState(RunState.ACQ_OFF);
+		STATUS.setRunState(RunState.ACQ_OFF);
 		/*
 		 * done to avoid "last buffer in this run becomes first and last buffer
 		 * in next run" problem
@@ -417,7 +417,7 @@ public class RunControl extends JDialog implements Controller {
 		// enable end button, display run number
 		endAction.setEnabled(true);
 		beginAction.setEnabled(false);
-		status.setRunState(RunState.RUN_ON(runNumber));
+		STATUS.setRunState(RunState.runOnline(runNumber));
 		if (device == DISK) {
 			console.messageOutln("Began run " + runNumber
 					+ ", events being written to file: " + dataFile.getPath());
@@ -445,7 +445,7 @@ public class RunControl extends JDialog implements Controller {
 		vmeComm.end(); //stop Acq. flush buffer
 		vmeComm.readScalers(); //read scalers
 		endAction.setEnabled(false); //toggle button states
-		status.setRunState(RunState.ACQ_OFF);
+		STATUS.setRunState(RunState.ACQ_OFF);
 		console.messageOutln("Ending run " + runNumber
 				+ ", waiting for sorting to finish.");
 		int numSeconds = 0;
