@@ -227,13 +227,10 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	}
 
 	private void syncHistChooser(){
-		Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
+		final Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
 		if (hist != null){
-			if (!hist.equals(histogramChooser.getSelectedItem())){
-				histogramChooser.setSelectedItem(hist);
-				//histogramChooser.repaint();
-				gatesChanged();
-			}
+			histogramChooser.setSelectedItem(hist);
+			gatesChanged();
 		}
 	}
 
