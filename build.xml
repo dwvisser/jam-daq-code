@@ -107,7 +107,7 @@
             packagenames="jam.*"
             sourcepath="${copy.dir}"
             classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
-            	doctitle="Jam: Java-based Data Acquisition Management for Nuclear Physics"
+            	doctitle="Jam ${MAJOR}.${MINOR}.${SUBMINOR}: Java-based Data Acquisition Management for Nuclear Physics"
         	docletpath="${base.dir}/NDoclet.jar"
         	doclet="ndoclet.NDoclet"
         />
