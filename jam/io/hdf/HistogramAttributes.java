@@ -95,10 +95,14 @@ public class HistogramAttributes {
     public String createFullName(String groupNameIn, String nameIn) {
     	String tempFullName;
     	
-    	if (groupName!=null ||  !groupName.equals("") )
-    		tempFullName=groupNameIn+"/"+nameIn;
-    	else
+    	if (groupName!=null) { 
+    		if(!groupName.equals("") )
+    			tempFullName=groupNameIn+"/"+nameIn;
+    		else
+    			tempFullName=nameIn;
+    	}else {
     		tempFullName=nameIn;
+    	}
     	
         return tempFullName;
     }
