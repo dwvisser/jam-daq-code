@@ -38,7 +38,6 @@ public class L003InputStream
 	 */
 	public L003InputStream(MessageHandler console) {
 		super(console);
-		System.out.println("L003InputStream");
 	}
 
 	/** 
@@ -48,7 +47,6 @@ public class L003InputStream
 	 */
 	public L003InputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
-		System.out.println("L003InputStream eventSize: " + eventSize);
 	}
 
 	/**
