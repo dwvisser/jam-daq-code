@@ -18,20 +18,17 @@ import javax.swing.ImageIcon;
 public abstract class CalibrationFunction implements Function {
 
 	public final static String NOT_CALIBRATED ="Not Calibrated";	
-	private static final Map  mapFunctions =new HashMap();	
-	private static final List names =new ArrayList();	
-	private static final Map  mapIcons =new HashMap();
+	private static final Map  FUNCTIONS =new HashMap();	
+	private static final List NAMES =new ArrayList();	
+	private static final Map  ICONS =new HashMap();
 
 	static {
 		CalibrationFunction.clearAll();
-		//Not calibrated
 		addFunction(NOT_CALIBRATED, null);		
 		CalibrationFunction linearFunc=new LinearFunction();
 		addFunction(linearFunc.getName(), linearFunc.getClass());
 		CalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
 		addFunction(sqrtEFunc.getName(), sqrtEFunc.getClass());
-		//CalibrationFunction polyFunc=new PolynomialFunction(2);
-		
 	}
 	
 	/**
@@ -81,29 +78,29 @@ public abstract class CalibrationFunction implements Function {
 	protected transient StringBuffer formula=new StringBuffer();
 
 	public static List getListNames() {
-		return names;
+		return NAMES;
 	}
 	public static Map getMapFunctions() {
-		return mapFunctions;
+		return FUNCTIONS;
 	}	
 	public static void clearAll(){
-		mapFunctions.clear();
-		mapIcons.clear();
-		names.clear();
+		FUNCTIONS.clear();
+		ICONS.clear();
+		NAMES.clear();
 	}
 	public static void addFunction(String name, Class funcClass) {
 		//Only add once
-		if (!mapFunctions.containsKey(name)){
-			mapFunctions.put(name, funcClass);
-			names.add(name);
+		if (!FUNCTIONS.containsKey(name)){
+			FUNCTIONS.put(name, funcClass);
+			NAMES.add(name);
 		}		
 	}
 	public static void setIcon(String name, ImageIcon icon){
-		mapIcons.put(name, icon);
+		ICONS.put(name, icon);
 	}
 
 	public static ImageIcon getIcon(String name){
-		return (ImageIcon)mapIcons.get(name);
+		return (ImageIcon)ICONS.get(name);
 	}
 		
 
