@@ -21,25 +21,25 @@ public class UconnInputStream extends EventInputStream {
 
 	static private final int HEAD_SIZE = 5; //size of header in 2 byte words
 
-	private int VSN_TDC = 0x4;
+	static final private int VSN_TDC = 0x4;
 
-	private int VSN_MARKER = 0x8000;
-	private int VSN_MASK = 0xFF;
+	static final private int VSN_MARKER = 0x8000;
+	static final private int VSN_MASK = 0xFF;
 
-	private int ADC_DATA_MASK = 0xFFF;
-	private int ADC_CHAN_SHFT = 12;
-	private int ADC_CHAN_MASK = 0x07;
-	private int ADC_OFFSET = 8; //how much to offset data for each vsn
+	static final private int ADC_DATA_MASK = 0xFFF;
+	static final private int ADC_CHAN_SHFT = 12;
+	static final private int ADC_CHAN_MASK = 0x07;
+	static final private int ADC_OFFSET = 8; //how much to offset data for each vsn
 
-	private int TDC_DATA_MASK = 0x3FF;
-	private int TDC_CHAN_SHFT = 10;
+	static final private int TDC_DATA_MASK = 0x3FF;
+	static final private int TDC_CHAN_SHFT = 10;
 
-	private int TDC_CHAN_MASK = 0x1F;
-	private int TDC_OFFSET = 32; //how much to offset data for each vsn
+	static final private int TDC_CHAN_MASK = 0x1F;
+	static final private int TDC_OFFSET = 32; //how much to offset data for each vsn
 
-	private int SCALER_MASK = 0x00ffffff;
+	static final private int SCALER_MASK = 0x00ffffff;
 
-	private int NUMBER_SCALERS = 12;
+	static final private int NUMBER_SCALERS = 12;
 
 	int blockFullSize;
 	int blockCurrSize;
