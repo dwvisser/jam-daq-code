@@ -21,11 +21,11 @@ public class GateListCellRenderer
 
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
 	private static final ImageIcon stopIcon =
-		new ImageIcon(cl.getResource("stop.png"));
+		new ImageIcon(cl.getResource("jam/stop.png"));
 	private static final ImageIcon goIcon =
-		new ImageIcon(cl.getResource("go.png"));
+		new ImageIcon(cl.getResource("jam/go.png"));
 	private static final ImageIcon clearIcon = 
-	new ImageIcon(cl.getResource("clear.png"));
+	new ImageIcon(cl.getResource("jam/clear.png"));
 	
 	/**
 	 * Creates a new <code>HistogramListCellRenderer</code>.
