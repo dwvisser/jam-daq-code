@@ -9,6 +9,7 @@ import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.StorageDaemon;
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -32,25 +33,29 @@ import javax.swing.JTextField;
  *
  * @author Ken Swartz
  * @version 05 newest done 9-98
- *
  */
 class DisplayCounters implements Observer, ActionListener {
 
+    /**
+     * We are sorting online when the internal mode variable equals this.
+     */
     public static final int ONLINE=1;
+    
+     /**
+     * We are sorting offline when the internal mode variable equals this.
+     */
+   
     public static final int OFFLINE=2;
-    private static int NUMBER_COUNTERS=3;
-    private static int INDEX_CNT_EVNT=1;
-    private static int INDEX_CNT_BUFF=2;
 
     //stuff for dialog box
     private JDialog d;
-    private JamMain jamMain;
+    private Frame jamMain;
 
-    SortDaemon sortDaemon;
-    NetDaemon netDaemon;
-    StorageDaemon storageDaemon;
-    Broadcaster broadcaster;
-    MessageHandler messageHandler;
+    private SortDaemon sortDaemon;
+    private NetDaemon netDaemon;
+    private StorageDaemon storageDaemon;
+    private Broadcaster broadcaster;
+    private MessageHandler messageHandler;
 
     private int mode;
 
@@ -63,8 +68,13 @@ class DisplayCounters implements Observer, ActionListener {
 
     /**
      * Constructor
+     * 
+     * @param jamMain the main window
+     * @param broadcaster the broadcaster I receive broadcast events 
+     * from?
+     * @param msgHandler where to print console output
      */
-    public DisplayCounters(JamMain jamMain , Broadcaster broadcaster, 
+    DisplayCounters(Frame jamMain , Broadcaster broadcaster, 
     MessageHandler msgHandler ){
         this.jamMain=jamMain;
         this.broadcaster=broadcaster;
@@ -74,10 +84,10 @@ class DisplayCounters implements Observer, ActionListener {
         d.setBackground(Color.lightGray);
         d.setResizable(false);
         d.setLocation(20,50);
-        Container cd=d.getContentPane();
+        final Container cd=d.getContentPane();
         cd.setLayout(new GridLayout(0,1,10,10));
         pBuffSent= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lps=new JLabel("Packets sent",JLabel.RIGHT);
+        final JLabel lps=new JLabel("Packets sent",JLabel.RIGHT);
         pBuffSent.add(lps);
         textBuffSent =new JTextField("");
         textBuffSent.setColumns(8);
@@ -85,48 +95,42 @@ class DisplayCounters implements Observer, ActionListener {
         textBuffSent.setForeground(Color.black);
         pBuffSent.add(textBuffSent);
         pBuffRecv= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lpr=new JLabel("Packets received", JLabel.RIGHT);
-        pBuffRecv.add(lpr);
+        pBuffRecv.add(new JLabel("Packets received", JLabel.RIGHT));
         textBuffRecv =new JTextField("");
         textBuffRecv.setColumns(8);
         textBuffRecv.setBackground(Color.white);
         textBuffRecv.setForeground(Color.black);
         pBuffRecv.add(textBuffRecv);
         pBuffSort= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lsb=new JLabel("Buffers sorted", JLabel.RIGHT);
-        pBuffSort.add(lsb);
+        pBuffSort.add(new JLabel("Buffers sorted", JLabel.RIGHT));
         textBuffSort =new JTextField("");
         textBuffSort.setColumns(8);
         textBuffSort.setBackground(Color.white);
         textBuffSort.setForeground(Color.black);
         pBuffSort.add(textBuffSort);
         pBuffWrit= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lw=new JLabel("Buffers written", JLabel.RIGHT);
-        pBuffWrit.add(lw);
+        pBuffWrit.add(new JLabel("Buffers written", JLabel.RIGHT));
         textBuffWrit =new JTextField("");
         textBuffWrit.setColumns(8);
         textBuffWrit.setBackground(Color.white);
         textBuffWrit.setForeground(Color.black);
         pBuffWrit.add(textBuffWrit);
         pEvntSent= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel les=new JLabel("Events sent", JLabel.RIGHT);
-        pEvntSent.add(les);
+        pEvntSent.add(new JLabel("Events sent", JLabel.RIGHT));
         textEvntSent =new JTextField("");
         textEvntSent.setColumns(8);
         textEvntSent.setBackground(Color.white);
         textEvntSent.setForeground(Color.black);
         pEvntSent.add(textEvntSent);
         pEvntSort= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lst=new JLabel("Events sorted", JLabel.RIGHT);
-        pEvntSort.add(lst);
+        pEvntSort.add(new JLabel("Events sorted", JLabel.RIGHT));
         textEvntSort =new JTextField("");
         textEvntSort.setColumns(8);
         textEvntSort.setBackground(Color.white);
         textEvntSort.setForeground(Color.black);
         pEvntSort.add(textEvntSort);
         pFileRead= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        JLabel lf=new JLabel("Files read", JLabel.RIGHT);
-        pFileRead.add(lf);
+        pFileRead.add(new JLabel("Files read", JLabel.RIGHT));
         textFileRead =new JTextField("");
         textFileRead.setColumns(8);
         textFileRead.setBackground(Color.white);
@@ -134,11 +138,11 @@ class DisplayCounters implements Observer, ActionListener {
         pFileRead.add(textFileRead);
         // panel for buttons
         pButton= new JPanel(new GridLayout(1,0,5,5));
-        JButton bupdate =  new JButton("Update");
+        final JButton bupdate =  new JButton("Update");
         bupdate.setActionCommand("update");
         bupdate.addActionListener(this);
         pButton.add(bupdate);
-        JButton bclear = new JButton("Clear");
+        final JButton bclear = new JButton("Clear");
         bclear.setActionCommand("clear");
         bclear.addActionListener(this);
         pButton.add(bclear);
@@ -160,23 +164,25 @@ class DisplayCounters implements Observer, ActionListener {
     
     /**
      * Receives events from this dialog box.
+     * 
+     * @param ae the received event
      */
     public void actionPerformed(ActionEvent ae){
-        String command=ae.getActionCommand();
+        final String command=ae.getActionCommand();
         try {
             if (command=="update") {
                 //offline
                 if(mode==ONLINE){
                     broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
-                    textEvntSort.setText(""+sortDaemon.getEventCount());
-                    textBuffSort.setText(""+sortDaemon.getBufferCount());
-                    textBuffRecv.setText(""+netDaemon.getPacketCount());
-                    textBuffWrit.setText(""+storageDaemon.getBufferCount());
+                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
+                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
+                    textBuffRecv.setText(String.valueOf(netDaemon.getPacketCount()));
+                    textBuffWrit.setText(String.valueOf(storageDaemon.getBufferCount()));
                     //offline
                 } else {
-                    textEvntSort.setText(""+sortDaemon.getEventCount());
-                    textBuffSort.setText(""+sortDaemon.getBufferCount());
-                    textFileRead.setText(""+storageDaemon.getFileCount());
+                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
+                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
+                    textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
                 }
                 //do we need to blank all fields before zeroing and reading
             } else  if (command=="clear"){
@@ -185,30 +191,30 @@ class DisplayCounters implements Observer, ActionListener {
                     broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
                     textBuffSort.setText(" ");
                     sortDaemon.setBufferCount(0);
-                    textBuffSort.setText(""+sortDaemon.getBufferCount());
+                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
                     textEvntSent.setText(" ");
                     sortDaemon.setEventCount(0);
-                    textEvntSort.setText(""+sortDaemon.getEventCount());
+                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
                     textBuffSent.setText(" ");		//value update method
                     textEvntSent.setText(" ");		//value update method
                     textBuffRecv.setText(" ");
                     netDaemon.setPacketCount(0);
-                    textBuffRecv.setText(""+netDaemon.getPacketCount());
+                    textBuffRecv.setText(String.valueOf(netDaemon.getPacketCount()));
                     textBuffWrit.setText(" ");
                     storageDaemon.setBufferCount(0);
-                    textBuffWrit.setText(""+storageDaemon.getBufferCount());
+                    textBuffWrit.setText(String.valueOf(storageDaemon.getBufferCount()));
                     broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
                     //offline
                 } else {
                     textBuffSort.setText(" ");
                     sortDaemon.setBufferCount(0);
-                    textBuffSort.setText(""+sortDaemon.getBufferCount());
+                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
                     textEvntSent.setText(" ");
                     sortDaemon.setEventCount(0);
-                    textEvntSort.setText(""+sortDaemon.getEventCount());
+                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
                     textFileRead.setText(" ");
                     storageDaemon.setFileCount(0);
-                    textFileRead.setText(""+storageDaemon.getFileCount());
+                    textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
                 }
             }
         } catch (GlobalException ge) {
@@ -218,16 +224,22 @@ class DisplayCounters implements Observer, ActionListener {
     }
 
     /**
-     * setup for online
+     * Setup for online
+     * 
+     * @param netDaemon network process
+     * @param sortDaemon sorting process
+     * @param storageDaemon event record storage process
      */
     public void setupOn(	NetDaemon netDaemon, SortDaemon sortDaemon,
     StorageDaemon storageDaemon) {
-        mode=ONLINE;
-        this.netDaemon=netDaemon;
-        this.sortDaemon=sortDaemon;
-        this.storageDaemon=storageDaemon;
-        // make dialog box
-        Container cd=d.getContentPane();
+        synchronized(this){
+        	mode=ONLINE;
+        	this.netDaemon=netDaemon;
+        	this.sortDaemon=sortDaemon;
+        	this.storageDaemon=storageDaemon;
+        }
+        /* make dialog box */
+        final Container cd=d.getContentPane();
         cd.removeAll();
         d.setTitle("Online Buffer Count");
         cd.add(pBuffSent);
@@ -241,13 +253,18 @@ class DisplayCounters implements Observer, ActionListener {
     }
 
     /**
-     * setup for offline
+     * Setup the dialog for offline sorting.
+     *
+     * @param sortDaemon the sorting process
+     * @param storageDaemon the event record storage process
      */
     public void setupOff(SortDaemon sortDaemon, StorageDaemon storageDaemon){
-        mode=OFFLINE;
-        this.sortDaemon=sortDaemon;
-        this.storageDaemon=storageDaemon;
-        Container cd=d.getContentPane();
+    	synchronized(this){
+        	mode=OFFLINE;
+       	 	this.sortDaemon=sortDaemon;
+        	this.storageDaemon=storageDaemon;
+        }
+        final Container cd=d.getContentPane();
         cd.removeAll();
         d.setTitle("Offline Buffer Count");
         cd.add(pFileRead);
@@ -258,13 +275,18 @@ class DisplayCounters implements Observer, ActionListener {
     }
 
     /**
-     * update counters
+     * Receive a broadcast event in order to update counters.
      *
      * @author Ken Swartz
+     * @param observable the observed object
+     * @param o the communicated event
      */
     public void update(Observable observable, Object o){
-        BroadcastEvent be=(BroadcastEvent)o;
-        int command=be.getCommand();
+       final int NUMBER_COUNTERS=3;
+       final int INDEX_CNT_EVNT=1;
+       final int INDEX_CNT_BUFF=2;
+       final BroadcastEvent be=(BroadcastEvent)o;
+       final int command=be.getCommand();
         int vmeCounters []=new int [NUMBER_COUNTERS];
 
         if(command==BroadcastEvent.COUNTERS_UPDATE){
@@ -272,14 +294,14 @@ class DisplayCounters implements Observer, ActionListener {
             //online only update remote fields
             if(mode==ONLINE){
                 vmeCounters=(int [])be.getContent();
-                textBuffSent.setText(""+vmeCounters[INDEX_CNT_BUFF]);
-                textEvntSent.setText(""+vmeCounters[INDEX_CNT_EVNT]);
+                textBuffSent.setText(String.valueOf(vmeCounters[INDEX_CNT_BUFF]));
+                textEvntSent.setText(String.valueOf(vmeCounters[INDEX_CNT_EVNT]));
 
                 //off line we have to update all fields
             } else {
-                textBuffSort.setText(""+sortDaemon.getBufferCount());
-                textEvntSort.setText(""+sortDaemon.getEventCount());
-                textFileRead.setText(""+storageDaemon.getFileCount());
+                textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
+                textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
+                textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
             }
         }
     }
