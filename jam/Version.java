@@ -24,7 +24,7 @@ public final class Version {
 	 * Should be empty string if no text for version type is
 	 * desired.
 	 */
-	static final String VERSION_TYPE = "Release Candidate 5";
+	static final String VERSION_TYPE = "Release Candidate 6";
 	
 	/**
 	 * @return a string representing the build version of Jam running
