@@ -21,14 +21,14 @@ public final class Vdata extends DataObject {
 	/**
 	 * The vector of fields.  Contains the useful java representations of the objects.
 	 */
-	private Object[][] cells;
+	private final Object[][] cells;
 
-	private int nvert;
-	private short[] order;
-	private short nfields;
-	private short ivsize;
-	private short[] types;
-	private short[] offsets;
+	private final int nvert;
+	private final short[] order;
+	private final short nfields;
+	private final short ivsize;
+	private final short[] types;
+	private final short[] offsets;
 	
 	Vdata(HDFile fi, VdataDescription vdd) {
 		super(fi, DFTAG_VS); //sets tag
@@ -548,6 +548,9 @@ public final class Vdata extends DataObject {
 		final byte out[] = new byte[1];
 		out[0] = (byte) c;
 		return out;
-
+	}
+	
+	public String toString(){
+	    return "Data:"+description.toString();
 	}
 }
