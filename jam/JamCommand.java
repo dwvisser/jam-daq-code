@@ -18,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
 
 import javax.swing.AbstractButton;
 
@@ -34,21 +33,18 @@ import javax.swing.AbstractButton;
  */
 
 public class JamCommand
-	extends MouseAdapter
 	implements ActionListener, ItemListener {
-		
+
 	static final int MESSAGE_SCALER = 1; //alert scaler class
 	private final String classname;
 
 	private final Display display;
 	private final JamConsole console;
 
-	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	/* control classes */
-	private RunControl runControl;
 	private SortControl sortControl;
-	private DisplayCounters displayCounters;
 	private final GateSet gateControl;
 	private final ParameterControl paramControl;
 	private final CalibrationDisplay calibDisplay;
@@ -60,7 +56,6 @@ public class JamCommand
 	private final PeakFindDialog peakFindDialog;
 
 	/* classes to set up acquisition and sorting */
-	private final SetupSortOn setupSortOn;
 	private final SetupSortOff setupSortOff;
 	private final SetupRemote setupRemote;
 
@@ -70,8 +65,8 @@ public class JamCommand
 	private final JamStatus status;
 
 	private CommandManager jamCmdMgr;
-	private RemoteAccess remoteAccess=null;
-	private boolean remote=false;
+	private RemoteAccess remoteAccess = null;
+	private boolean remote = false;
 
 	/** Constructor for this class.
 	 * @param jm The launch class for the Jam application
@@ -97,39 +92,28 @@ public class JamCommand
 		manipulate = new Manipulations(console);
 		gainshift = new GainShift(console);
 		/* acquisition control */
-		runControl = RunControl.getSingletonInstance();
 		sortControl = new SortControl(console);
-		displayCounters = new DisplayCounters(console);
-		/* setup classes */
-		setupSortOn =
-			new SetupSortOn(displayCounters,console);
 		setupSortOff =
-			new SetupSortOff(
-				jam,
-				sortControl,
-				displayCounters,
-				console);
+			new SetupSortOff(sortControl);
 		setupRemote = new SetupRemote(jam, console);
-		help = new Help(jam, console);//Help window
+		help = new Help(jam, console); //Help window
 		peakFindDialog = new PeakFindDialog(display, console);
-		addObservers();		
+		addObservers();
 		jamCmdMgr = CommandManager.getInstance();
-		jamCmdMgr.setMessageHandler(console); 
+		jamCmdMgr.setMessageHandler(console);
 		console.addCommandListener(jamCmdMgr);
 		console.addCommandListener(display);
 	}
-	
-	
+
 	/**
 	 * Add observers to the list of classes to be notified of 
 	 * broadcasted events.
 	 */
-	private final void addObservers(){
-		broadcaster.addObserver(displayCounters);
+	private final void addObservers() {
 		broadcaster.addObserver(display);
 		broadcaster.addObserver(frontEnd);
 	}
-	
+
 	/**
 	 * Receives all the inputs from the pull down menus
 	 * that are <code>ActionEvent</code>'s.
@@ -140,73 +124,53 @@ public class JamCommand
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String incommand = e.getActionCommand();
-		try {
-			if ("Black Background".equals(incommand)) {
-				display.setPreference(
-					Display.Preferences.BLACK_BACKGROUND,
-					true);
-			} else if ("White Background".equals(incommand)) {
-				display.setPreference(
-					Display.Preferences.WHITE_BACKGROUND,
-					true);
-			} else if ("online".equals(incommand)) {
-				setupSortOn.show();
-			} else if ("offline".equals(incommand)) {
-				setupSortOff.show();
-			} else if ("remote".equals(incommand)) {
-				setupRemote.showRemote();
-			} else if ("flush".equals(incommand)) {
-				runControl.flushAcq();
-			} else if ("sort".equals(incommand)) {
-				sortControl.show();
-			} else if ("status".equals(incommand)) {
-				displayCounters.show();
-			} else if ("project".equals(incommand)) {
-				projection.show();
-			} else if ("manipulate".equals(incommand)) {
-				manipulate.show();
-			} else if ("gainshift".equals(incommand)) {
-				gainshift.show();
-			} else if ("caldisp".equals(incommand)) {
-				calibDisplay.show();
-			} else if ("calfitlin".equals(incommand)) {
-				calibFit.show();
-			} else if ("about".equals(incommand)) {
-				help.showAbout();
-			} else if ("license".equals(incommand)) {
-				help.showLicense();
-			} else if ("peakfind".equals(incommand)) {
-				peakFindDialog.show();
-			} else if ("start".equals(incommand)) {
-				if (status.isOnLine()) {
-					runControl.startAcq();
-				} else {
+		if ("Black Background".equals(incommand)) {
+			display.setPreference(Display.Preferences.BLACK_BACKGROUND, true);
+		} else if ("White Background".equals(incommand)) {
+			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
+		} else if ("offline".equals(incommand)) {
+			setupSortOff.show();
+		} else if ("remote".equals(incommand)) {
+			setupRemote.showRemote();
+		} else if ("sort".equals(incommand)) {
+			sortControl.show();
+		} else if ("status".equals(incommand)) {
+			DisplayCounters.getSingletonInstance().show();
+		} else if ("project".equals(incommand)) {
+			projection.show();
+		} else if ("manipulate".equals(incommand)) {
+			manipulate.show();
+		} else if ("gainshift".equals(incommand)) {
+			gainshift.show();
+		} else if ("caldisp".equals(incommand)) {
+			calibDisplay.show();
+		} else if ("calfitlin".equals(incommand)) {
+			calibFit.show();
+		} else if ("about".equals(incommand)) {
+			help.showAbout();
+		} else if ("license".equals(incommand)) {
+			help.showLicense();
+		} else if ("peakfind".equals(incommand)) {
+			peakFindDialog.show();
+		} else { //See if it a command class
+			try {
+				if (!jamCmdMgr.performCommand(incommand, null)) {
 					console.errorOutln(
-						"Error: start command given when not in Online mode.");
+						getClass().getName()
+							+ ": Error unrecognized command \""
+							+ incommand
+							+ "\"");
 				}
-			} else if ("stop".equals(incommand)) {
-				if (status.isOnLine()) {
-					runControl.stopAcq();
-				} else {
-					console.errorOutln(
-						"Error: stop command given when not in Online mode.");
-				}
-			} else {//See if it a command class
-				try {
-					if(!jamCmdMgr.performCommand(incommand, null)) {
-					console.errorOutln(getClass().getName()
-						+ ": Error unrecognized command \""+ incommand+ "\"");
-					}
-				} catch (CommandException ce) {
-					console.errorOutln(getClass().getName()
-							+ ": Error performing command \""+ incommand + "\"");
-				}						
+			} catch (CommandException ce) {
+				console.errorOutln(
+					getClass().getName()
+						+ ": Error performing command \""
+						+ incommand
+						+ "\"");
 			}
-		} catch (JamException exc) {
-			console.errorOutln("JamException: " + exc.getMessage());
-		} 
+		}
 	}
-	
+
 	/** 
 	 * Recieves the inputs from the pull down menus that are selectable 
 	 * checkboxes.
@@ -248,7 +212,6 @@ public class JamCommand
 		}
 	}
 
-
 	/** 
 	 * Sets whether or not we are in remote mode; remote mode not yet
 	 * implemented.
@@ -262,12 +225,12 @@ public class JamCommand
 			remote = on;
 		}
 	}
-	
-	SetupSortOff getSetupSortOff(){
+
+	SetupSortOff getSetupSortOff() {
 		return setupSortOff;
 	}
-	
-	SortControl getSortControl(){
+
+	SortControl getSortControl() {
 		return sortControl;
 	}
 }
