@@ -110,62 +110,89 @@ public final class HDFIO implements DataIO, JamHDFFields {
         jamToHDF = new ConvertJamObjToHDFObj();
         hdfToJam = new ConvertHDFObjToJamObj();
     }
+    
+    /* --------------------- Begin DataIO Interface Methods ------------------ */
 
-    /**
-     * Writes out to a specified file all the currently held spectra, gates,
-     * scalers, and parameters.
-     * 
-     * @param file
-     *            to write to
-     */
     public void writeFile(File file) {
         writeFile(file, null, null, true, true); 
     }
 
-    /**
-     * Writes out to a specified file all the currently held spectra, gates,
-     * scalers, and parameters.
-     * 
-     * @param file
-     *            to write to
-     */
     public void writeFile(File file, Group group) {
-    	List groupList = new ArrayList();
-		groupList.add(group);
+    	final List groupList = Collections.singletonList(group);
         writeFile(file, groupList, null, true, true); 
     }
 
-    /**
-     * 
-     * @param file
-     * @param histograms
-     * @param wrtdata
-     * @param wrtsettings
-     */
     public void writeFile(final File file, List histograms) {
-    	
     	writeFile(file, null, histograms, true, true);    	
     }
+    
+    public boolean readFile(FileOpenMode mode, File infile) {
+    	return readFile(mode, infile, null, null);
+    }
 
-    /**
-     * 
-     * @param file
-     * @param histograms
-     * @param wrtdata
-     * @param wrtsettings
-     */
-    public void writeFile(final File file, boolean wrtdata, boolean wrtsettings) {
-    	
-    	writeFile(file, null, null, wrtdata, wrtsettings);    	
+    //FIXME KBS old write remove when new writes tested
+    public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
+            boolean wrtparams, final File file) {
+        if (overWriteExistsConfirm(file)) {
+            /* Histogram list */
+            final List tempHist = wrthist ? Histogram.getHistogramList()
+                    : EMPTY_LIST;
+            final Iterator iter = tempHist.iterator();
+            final List histList = new ArrayList();
+            while (iter.hasNext()) {
+                final Histogram hist = (Histogram) iter.next();
+                if (hist.getArea() > 0) {
+                    histList.add(hist);
+                }
+            }
+            /* Gate list */
+            final List gateList = new ArrayList();
+            if (wrtgate) {
+                gateList.addAll(Gate.getGateList());
+            }
+            final Iterator gateIterator = gateList.iterator();
+            while (gateIterator.hasNext()) {
+                final Gate gate = (Gate) (gateIterator.next());
+                if (!gate.isDefined()) {
+                    gateIterator.remove();
+                }
+            }
+            final List scaler = wrtscalers ? Scaler.getScalerList()
+                    : EMPTY_LIST;
+            final List parameter = wrtparams ? DataParameter.getParameterList()
+                    : EMPTY_LIST;
+            spawnAsyncWriteFile(file, histList, gateList, scaler, parameter);
+        }
     }
     
+    /* --------------------- End DataIO Interface Methods ------------------ */
+
+    /**
+     * Write out an HDF file, specifying whether scalers and parameters should
+     * be included.
+     * 
+     * @param file to write to
+     * @param writeScalers whether to write scalers
+     * @param writeParams whether to write parameters
+     */
+    public void writeFile(final File file, boolean writeScalers, boolean writeParams) {
+    	writeFile(file, null, null, writeScalers, writeParams);    	
+    }
+    
+    //FIXME private method below is unused
     /** 
      * Create list of groups and histograms to write out.
      * Use selected groups to create list of histograms or
      * use selected histograms to create list of gates 
+     * 
+     * @param file to write to
+     * @param groups if given, groups to write
+     * @param histograms to write if groups not given
+     * @param writeScalers whether to write scalers
+     * @param writeParams whether to write parameters
      */
     private void writeFile(final File file, List groups, List histograms,
-            boolean wrtdata, boolean wrtsettings) {
+            boolean writeScalers, boolean writeParams) {
         /* Groups specified determines histograms */
         if (groups != null) {
             histograms = new ArrayList();
@@ -184,8 +211,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     groups.add(hist.getGroup());
                 }
             }
-            //Neither groups nor histograms specified
         } else {
+            /* Neither groups nor histograms specified */
             groups = Group.getGroupList();
             histograms = new ArrayList();
             final Iterator iterGroup = groups.iterator();
@@ -195,7 +222,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         }
         if (overWriteExistsConfirm(file)) {
-            spawnAsyncWriteFile(file, groups, histograms, wrtdata, wrtsettings);
+            spawnAsyncWriteFile(file, groups, histograms, writeScalers, writeParams);
         }
     }
     
@@ -242,74 +269,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         spawnAsyncWriteFile(file, histList, gateList, scalerList, paramList);
     }
 
-    
-    /**
-     * Writes out (to a specific file) the currently held spectra, gates, and
-     * scalers, subject to the options given. Sets separately which data
-     * writeFile should actually output. Not writing histograms when you are
-     * saving tape data can significantly save time when you have many 2-d
-     * spectra.
-     * 
-     * @param wrthist
-     *            if true, Histograms will be written
-     * @param wrtgate
-     *            if true, Gates will be written
-     * @param wrtscalers
-     *            if true, scaler values will be written
-     * @param wrtparams
-     *            if true, parameter values will be written
-     * @param file
-     *            to write to
-     */
-    //FIXME KBS old write remove when new writes tested
-    public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
-            boolean wrtparams, final File file) {
-        if (overWriteExistsConfirm(file)) {
-            /* Histogram list */
-            final List tempHist = wrthist ? Histogram.getHistogramList()
-                    : EMPTY_LIST;
-            final Iterator iter = tempHist.iterator();
-            final List histList = new ArrayList();
-            while (iter.hasNext()) {
-                final Histogram hist = (Histogram) iter.next();
-                if (hist.getArea() > 0) {
-                    histList.add(hist);
-                }
-            }
-            /* Gate list */
-            final List gateList = new ArrayList();
-            if (wrtgate) {
-                gateList.addAll(Gate.getGateList());
-            }
-            final Iterator gateIterator = gateList.iterator();
-            while (gateIterator.hasNext()) {
-                final Gate gate = (Gate) (gateIterator.next());
-                if (!gate.isDefined()) {
-                    gateIterator.remove();
-                }
-            }
-            final List scaler = wrtscalers ? Scaler.getScalerList()
-                    : EMPTY_LIST;
-            final List parameter = wrtparams ? DataParameter.getParameterList()
-                    : EMPTY_LIST;
-            spawnAsyncWriteFile(file, histList, gateList, scaler, parameter);
-        }
-    }
-
-    /**
-     * Read in an HDF file.
-     * 
-     * @param infile
-     *            file to load
-     * @param mode
-     *            whether to open or reload
-     * @return <code>true</code> if successful
-     */
-    public boolean readFile(FileOpenMode mode, File infile) {
-    	return readFile(mode, infile, null, null);
-
-    }
-
     /**
      * Read in an HDF file.
      * 
@@ -350,28 +309,27 @@ public final class HDFIO implements DataIO, JamHDFFields {
     /*
      * non-javadoc: Asyncronized write
      */
-    private void spawnAsyncWriteFile(final File file, final List groups, final List histograms, final boolean wrtdata, final boolean wrtsettings) {
-    	uiMessage="";
-    	uiErrorMsg ="";
-    	final SwingWorker worker = new SwingWorker() {
-
+    private void spawnAsyncWriteFile(final File file, final List groups,
+            final List histograms, final boolean writeScalers,
+            final boolean writeParams) {
+        uiMessage = "";
+        uiErrorMsg = "";
+        final SwingWorker worker = new SwingWorker() {
             public Object construct() {
-            	 asyncWriteFile(file, groups, histograms, wrtdata, wrtsettings);
-                 System.gc();
-            	return null;
+                asyncWriteFile(file, groups, histograms, writeScalers, writeParams);
+                System.gc();
+                return null;
             }
 
-            //Runs on the event-dispatching thread.
             public void finished() {
-            	if (!uiErrorMsg.equals("")) {
+                if (!uiErrorMsg.equals("")) {
                     msgHandler.errorOutln(uiErrorMsg);
-            	} else {
-            		msgHandler.messageOutln(uiMessage);
-            	}
-            	
+                } else {
+                    msgHandler.messageOutln(uiMessage);
+                }
             }
         };
-        worker.start();     	    	
+        worker.start();
     }
 
     /*
@@ -466,72 +424,58 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * 
      * @param file
      *            disk file to write to
-     * @param hists
+     * @param histograms
      *            list of <code>Histogram</code> objects to write
-     * @param gates
-     *            list of <code>Gate</code> objects to write
-     * @param scalers
-     *            list of <code>Scaler</code> objects to write
-     * @param parameters
-     *            list of <code>Parameter</code> objects to write
+     * @param groups
+     *            list of <code>Group</code>'s to write
+     * @param writeScalers whether to write out scalers
+     * @param writeParams whether to write out parameters
      */
-    synchronized private void asyncWriteFile(File file, List groups, List histograms, boolean wrtdata, boolean wrtsetting) {
-    	
+    synchronized private void asyncWriteFile(File file, List groups,
+            List histograms, boolean writeScalers, boolean writeParams) {
         final StringBuffer message = new StringBuffer();
-        //reset all counters
-        groupCount=0;
-        histCount=0;
-        gateCount=0;
-        scalerCount=0;
-        parameterCount=0;
-        
+        /* reset all counters */
+        groupCount = 0;
+        histCount = 0;
+        gateCount = 0;
+        scalerCount = 0;
+        parameterCount = 0;
         AbstractHData.clearAll();
         jamToHDF.addDefaultDataObjects(file.getPath());
-        
-        asyncMonitor.setup("Saving HDF file", "Converting Objects", 
-        					MONITOR_STEPS_READ_WRITE+MONITOR_STEPS_OVERHEAD_WRITE);
-        
-        convertJamToHDF(groups, histograms, wrtdata, wrtsetting);
-        
+        asyncMonitor.setup("Saving HDF file", "Converting Objects",
+                MONITOR_STEPS_READ_WRITE + MONITOR_STEPS_OVERHEAD_WRITE);
+        convertJamToHDF(groups, histograms, writeScalers, writeParams);
         message.append("Saved ").append(file.getName()).append(" (");
         message.append(groupCount).append(" groups");
-        message.append(", ").append(histCount).append(" histograms");     
+        message.append(", ").append(histCount).append(" histograms");
         message.append(", ").append(gateCount).append(" gates");
         message.append(", ").append(scalerCount).append(" scalers");
         message.append(", ").append(parameterCount).append(" parameters");
         message.append(")");
-        
         asyncMonitor.increment();
-        
-        HDFile out=null;
+        HDFile out = null;
         try {
-
             out = new HDFile(file, "rw", asyncMonitor, MONITOR_STEPS_READ_WRITE);
             asyncMonitor.setNote("Writing Data Objects");
-
             out.writeFile();
             asyncMonitor.setNote("Closing File");
-        
         } catch (FileNotFoundException e) {
-        	uiErrorMsg ="Opening file: " + file.getName();
+            uiErrorMsg = "Opening file: " + file.getName();
         } catch (HDFException e) {
-        	uiErrorMsg = "Exception writing to file '"
-                + file.getName() + "': " + e.toString();       	
+            uiErrorMsg = "Exception writing to file '" + file.getName() + "': "
+                    + e.toString();
         } finally {
-        	try {
-        		out.close();
-        	}catch (IOException e) {
-            	uiErrorMsg = "Closing file " +file.getName();
+            try {
+                out.close();
+            } catch (IOException e) {
+                uiErrorMsg = "Closing file " + file.getName();
             }
-            asyncMonitor.close();            
+            asyncMonitor.close();
         }
-
         AbstractHData.clearAll();
         out = null; //allows Garbage collector to free up memory
-     
         setLastValidFile(file);
-        uiMessage =message.toString();
-        
+        uiMessage = message.toString();
     }
     
     /**
@@ -570,7 +514,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final Histogram hist = (Histogram) iter.next();
                 final VirtualGroup histVGroup = jamToHDF.addHistogramGroup(hist);
                 jamToHDF.convertHistogram(histVGroup, hist);
-                allHists.addDataObject(histVGroup);
+                allHists.add(histVGroup);
             }
         }
         if (hasContents(gates)) {
@@ -580,25 +524,25 @@ public final class HDFIO implements DataIO, JamHDFFields {
             while (iter.hasNext()) {
                 final Gate gate = (Gate) iter.next();
                 final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
-                allGates.addDataObject(gateVGroup);
+                allGates.add(gateVGroup);
                 // add Histogram links...
                 final VirtualGroup hist = VirtualGroup.ofName(AbstractHData
                         .ofType(AbstractHData.DFTAG_VG), gate.getHistogram().getName());
                 if (hist != null) {
                     //reference the Gate in the Histogram group
-                    hist.addDataObject(gateVGroup);
+                    hist.add(gateVGroup);
                 } 
                 
             }
         }
         if (hasContents(scalers)) {
         	 final VirtualGroup vgScaler = jamToHDF.addScalerSection();
-        	 vgScaler.addDataObject(jamToHDF.convertScalers(scalers));            
+        	 vgScaler.add(jamToHDF.convertScalers(scalers));            
             message.append(", ").append(scalers.size()).append(" scalers");            
         }
         if (hasContents(parameters)) {
         	final VirtualGroup vgParams = jamToHDF.addParameterSection();
-            vgParams.addDataObject(jamToHDF.convertParameters(parameters));
+            vgParams.add(jamToHDF.convertParameters(parameters));
             message.append(", ").append(parameters.size()).append(" parameters");
         }
         asyncMonitor.increment();
@@ -889,98 +833,91 @@ public final class HDFIO implements DataIO, JamHDFFields {
         } finally {
         	try {
         		inHDF.close();
-
         	} catch (IOException except) {
         		//NOP Bury exception
         	}
     		inHDF=null;
     	}
-        
         AbstractHData.clearAll();
-
         return rval;
     }
     
-    private void convertJamToHDF(List groups, List histogramList, boolean wrtdata, boolean wrtsetting) {
-    	
-        VirtualGroup globalVirtualGroupGroups= jamToHDF.addGroupSection();
-        VirtualGroup globalVirtualGroupHistogram= jamToHDF.addHistogramSection();
-        VirtualGroup globalVirtualGroupGate = jamToHDF.addGateSection();
-        VirtualGroup globalVirtualGroupScaler = jamToHDF.addScalerSection();
-        VirtualGroup globalVirtualGroupParameter = jamToHDF.addParameterSection();
-        
+    private void convertJamToHDF(List groups, List histList,
+            boolean writeScalers, boolean writeParams) {
+        final VirtualGroup globalGroups = jamToHDF.addGroupSection();
+        final VirtualGroup globalHists = jamToHDF.addHistogramSection();
+        final VirtualGroup globalGates = jamToHDF.addGateSection();
+        final VirtualGroup globalScaler = jamToHDF.addScalerSection();
+        final VirtualGroup globalParams = jamToHDF.addParameterSection();
         /* Loop for all groups */
-        final Iterator groupsIter = groups.iterator(); 
-        while(groupsIter.hasNext()){
-        	Group group = (Group)groupsIter.next();
-        	VirtualGroup virtualGroupGroup = jamToHDF.convertGroup(group);
-        	globalVirtualGroupGroups.addDataObject(virtualGroupGroup);
-        	
-        	//Histograms 
-        	//virtualGroupGroup.addDataObject(virtualGroupHists);
-            //Loop for all histograms
+        final Iterator groupsIter = groups.iterator();
+        while (groupsIter.hasNext()) {
+            final Group group = (Group) groupsIter.next();
+            final VirtualGroup vgGroup = jamToHDF.convertGroup(group);
+            globalGroups.add(vgGroup);
+            /* Loop for all histograms */
             final Iterator histsIter = group.getHistogramList().iterator();
             while (histsIter.hasNext()) {
                 final Histogram hist = (Histogram) histsIter.next();
                 //Histogram is in histogram list
-                if (histogramList.contains(hist)) {
-	                final VirtualGroup histVGroup =jamToHDF.addHistogramGroup(hist);
-	            	virtualGroupGroup.addDataObject(histVGroup);
-	            	//backward compatible
-	            	globalVirtualGroupHistogram.addDataObject(histVGroup);	            	
-	               	if (wrtdata) {
-	               		jamToHDF.convertHistogram(histVGroup, hist);
-	               		histCount++;
-	               	}
-
-                
-	                //Loop for all gates
-	                final Iterator gatesIter = hist.getGates().iterator();
-	                while (gatesIter.hasNext()) {
-	                    final Gate gate = (Gate) gatesIter.next();
-	                    if(wrtsetting && gate.isDefined()){
-	                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
-	                    	histVGroup.addDataObject(gateVGroup);
-	                    	//backward compatiable
-	                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
-	                    	gateCount++;
-	                	}
-	                } //end loop gates
-                }                
+                if (histList.contains(hist)) {
+                    final VirtualGroup histVGroup = jamToHDF
+                            .addHistogramGroup(hist);
+                    vgGroup.add(histVGroup);
+                    //backward compatible
+                    globalHists.add(histVGroup);
+                    if (writeScalers) {
+                        jamToHDF.convertHistogram(histVGroup, hist);
+                        histCount++;
+                    }
+                    /* Loop for all gates */
+                    final Iterator gatesIter = hist.getGates().iterator();
+                    while (gatesIter.hasNext()) {
+                        final Gate gate = (Gate) gatesIter.next();
+                        if (writeParams && gate.isDefined()) {
+                            final VirtualGroup gateVGroup = jamToHDF
+                                    .convertGate(gate);
+                            histVGroup.add(gateVGroup);
+                            //backward compatiable
+                            globalGates.add(gateVGroup);
+                            gateCount++;
+                        }
+                    } //end loop gates
+                }
             } //end loop histograms
-
-            //Convert all scalers
-            if (wrtdata) {
-	            final List scalerList = group.getScalerList();
-	            if (scalerList.size()>0) {
-		            final VirtualGroup virtualGroupScalers = jamToHDF.addScalerSection();
-		            virtualGroupGroup.addDataObject(virtualGroupScalers);                        
-		            final VdataDescription scalerDataDescription =jamToHDF.convertScalers(scalerList);
-		            virtualGroupScalers.addDataObject(scalerDataDescription);
-		            if (group==Group.getSortGroup()) {    
-		            	//backward compatiable
-		            	globalVirtualGroupScaler.addDataObject(scalerDataDescription);	
-		            }
-	            }
-	            scalerCount=scalerList.size();
+            /* Convert all scalers */
+            if (writeScalers) {
+                final List scalerList = group.getScalerList();
+                if (scalerList.size() > 0) {
+                    final VirtualGroup vgScalers = jamToHDF.addScalerSection();
+                    vgGroup.add(vgScalers);
+                    final VdataDescription vddScalers = jamToHDF
+                            .convertScalers(scalerList);
+                    vgScalers.add(vddScalers);
+                    if (group == Group.getSortGroup()) {
+                        /* here for backwards compatibility */
+                        globalScaler.add(vddScalers);
+                    }
+                }
+                scalerCount = scalerList.size();
             }
-
-            //Convert all parameters
-            if (wrtsetting) {
-            	final List parameterList =DataParameter.getParameterList();
-            	if (parameterList.size()>0) {
-		            final VirtualGroup virtualGroupParameters = jamToHDF.addParameterSection();
-		            virtualGroupGroup.addDataObject(virtualGroupParameters); 
-		            if (group==Group.getSortGroup()) {            	 
-		            	final VdataDescription parameterDataDescription =jamToHDF.convertParameters(parameterList);
-		            	virtualGroupParameters.addDataObject(parameterDataDescription);
-		            	//Backward compatiable
-		            	globalVirtualGroupParameter.addDataObject(parameterDataDescription); 
-		                parameterCount=parameterList.size();;
-		            }
-            	}
+            /* Convert all parameters */
+            if (writeParams) {
+                final List paramList = DataParameter.getParameterList();
+                if (paramList.size() > 0) {
+                    final VirtualGroup vgParams = jamToHDF
+                            .addParameterSection();
+                    vgGroup.add(vgParams);
+                    if (group == Group.getSortGroup()) {
+                        final VdataDescription vddParams = jamToHDF
+                                .convertParameters(paramList);
+                        vgParams.add(vddParams);
+                        /* Backwards compatible */
+                        globalParams.add(vddParams);
+                        parameterCount = paramList.size();
+                    }
+                }
             }
-
             groupCount++;
         }
     }
