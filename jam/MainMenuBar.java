@@ -75,7 +75,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		 * Constructor which gives the name to display.
 		 */
 		public FilePrintAction() {
-			super("Print...");
+			super("Print\u2026");
 		}
 		
 		private boolean firstTime=true;
@@ -86,7 +86,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		public void actionPerformed(ActionEvent ae) {
 			if (firstTime){
 				console.warningOutln("On some systems, it will be necessary to first "+
-				"use 'Page Setup...' for your hardcopy to have correct size and margins.");
+				"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");
 				firstTime=false;
 			}
 			PrinterJob pj = PrinterJob.getPrinterJob();
@@ -94,7 +94,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			pj.setPrintable(cp, mPageFormat);
 			if (pj.printDialog()) {
 				console.messageOut("Preparing to send histogram '" + 
-				JamStatus.instance().getCurrentHistogramName()+"' to printer...",
+				JamStatus.instance().getCurrentHistogramName()+"' to printer\u2026",
 				MessageHandler.NEW);
 				try {
 					display.setRenderForPrinting(true, mPageFormat);
@@ -198,7 +198,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		 * Constructor which gives the name to display.
 		 */
 		public FilePageSetupAction(){
-			super("Page Setup...");
+			super("Page Setup\u2026");
 		}
 		
 		/**
@@ -254,7 +254,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	class SaveGatesAction extends AbstractAction {
 
 		SaveGatesAction(){
-			super("Save gates, scalers & parameters as HDF...");
+			super("Save gates, scalers & parameters as HDF\u2026");
 		}
 		
 		public void actionPerformed(ActionEvent ae){
@@ -266,8 +266,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
 	final private JMenu fitting;
-	final private JMenuItem newClear,
-		impHist,
+	final private JMenuItem impHist,
 		runacq,
 		sortacq,
 		paramacq,
@@ -280,16 +279,12 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private MessageHandler console;
 	final private JamCommand jamCommand;
 	
-	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
-	final private JMenuItem reloadhdf = new JMenuItem("Reload(hdf)...");
-	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
-	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
-	final private JMenuItem histogramNew = new JMenuItem("New...");
-	final private JMenuItem zeroHistogram = new JMenuItem("Zero...");
+	final private JMenuItem histogramNew = new JMenuItem("New\u2026");
+	final private JMenuItem zeroHistogram = new JMenuItem("Zero\u2026");
 	final private JMenu calHist = new JMenu("Calibrate");
-	final private JMenuItem projectHistogram = new JMenuItem("Projections...");
-	final private JMenuItem manipHistogram = new JMenuItem("Combine...");
-	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
+	final private JMenuItem projectHistogram = new JMenuItem("Projections\u2026");
+	final private JMenuItem manipHistogram = new JMenuItem("Combine\u2026");
+	final private JMenuItem gainShift = new JMenuItem("Gain Shift\u2026");
 
 	//Remove KBS final private OpenHDF openhdf;
 	//Remove KBS final private ReloadHDF reloadhdf;
@@ -356,33 +351,21 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		loadfit = new LoadFit(jm, display, console, this);
 		final JMenu file = new JMenu("File");
 		add(file);
-		synchronized (this) {
-			newClear = new JMenuItem("New");
-			
-			//KBS reloadhdf = new ReloadHDF();
-			//KBS saveHDF = new SaveHDF();
-			impHist = new JMenu("Import");
-			runacq = new JMenuItem("Run...");
-			sortacq = new JMenuItem("Sort...");
-			paramacq = new JMenuItem("Parameters...");
-			statusacq = new JMenuItem("Buffer Count...");
-		}
-		newClear.setActionCommand("newclear");
+		final JMenuItem newClear = new JMenuItem(commands.getAction(CommandNames.NEW));
+		impHist = new JMenu("Import");
+		runacq = new JMenuItem("Run\u2026");
+		sortacq = new JMenuItem("Sort\u2026");
+		paramacq = new JMenuItem("Parameters\u2026");
+		statusacq = new JMenuItem("Buffer Count\u2026");
 		newClear.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,ctrl_mask));		
-		newClear.addActionListener(jamCommand);
 		file.add(newClear);
 		
 	
-		openhdf.setActionCommand(CommandNames.OPEN_HDF);
-		openhdf.addActionListener(jamCommand);
+		final JMenuItem openhdf = new JMenuItem(commands.getAction(CommandNames.OPEN_HDF));
 		openhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
 		file.add(openhdf);
 		
-		//Remove KBS
-		//file.add(openhdf).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask));
-		
-		reloadhdf.setActionCommand(CommandNames.RELOAD_HDF);
-		reloadhdf.addActionListener(jamCommand);
+		final JMenuItem reloadhdf = new JMenuItem(commands.getAction(CommandNames.RELOAD_HDF));
 		reloadhdf.setEnabled(false);
 		reloadhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));		
 		file.add(reloadhdf);
@@ -391,20 +374,18 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		CommandNames.ADD_HDF));
 		file.add(addhdf);
 		
-		saveHDF.setActionCommand(CommandNames.SAVE_HDF);	
-		saveHDF.addActionListener(jamCommand);	
+		final JMenuItem saveHDF  = new JMenuItem(commands.getAction(CommandNames.SAVE_HDF));
 		saveHDF.setEnabled(false);
-		saveHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
+		saveHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask|KeyEvent.SHIFT_MASK));
 		file.add(saveHDF);		
 
-		saveAsHDF.setActionCommand(CommandNames.SAVE_AS_HDF);	
-		saveAsHDF.addActionListener(jamCommand);	
-		//saveAsHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
+		final JMenuItem saveAsHDF  = new JMenuItem(commands.getAction(CommandNames.SAVE_AS_HDF));
+		saveAsHDF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ctrl_mask));
 		file.add(saveAsHDF);		
 
 		 
 		final JMenuItem special=new JMenu("Special");
-		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram...");
+		final JMenuItem openSelectdHist =new JMenuItem("Open Selected Histogram\u2026");
 		openSelectdHist.setActionCommand("openselectedhist");		
 		openSelectdHist.addActionListener(jamCommand);
 		special.add(openSelectdHist);
@@ -443,7 +424,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		expHist.add(savespe);
 		final JMenuItem saveornl = new JMenuItem(commands.getAction(CommandNames.EXPORT_DAMM));
 		expHist.add(saveornl);
-		final JMenuItem batchexport = new JMenuItem("Batch Export...");
+		final JMenuItem batchexport = new JMenuItem("Batch Export\u2026");
 		batchexport.setActionCommand("batchexport");
 		batchexport.addActionListener(jamCommand);
 		expHist.add(batchexport);
@@ -454,7 +435,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		KeyStroke.getKeyStroke(KeyEvent.VK_P, 
 		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
-		final JMenuItem exit = new JMenuItem("Exit...");
+		final JMenuItem exit = new JMenuItem("Exit\u2026");
 		/*
 		exit.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -469,17 +450,17 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
-		final JMenuItem setupOnline = new JMenuItem("Online sorting...");
+		final JMenuItem setupOnline = new JMenuItem("Online sorting\u2026");
 		setupOnline.setActionCommand("online");
 		setupOnline.addActionListener(jamCommand);
 		setup.add(setupOnline);
 		setup.addSeparator();
-		final JMenuItem setupOffline = new JMenuItem("Offline sorting...");
+		final JMenuItem setupOffline = new JMenuItem("Offline sorting\u2026");
 		setupOffline.setActionCommand("offline");
 		setupOffline.addActionListener(jamCommand);
 		setup.add(setupOffline);
 		setup.addSeparator();
-		final JMenuItem setupRemote = new JMenuItem("Remote Hookup...");
+		final JMenuItem setupRemote = new JMenuItem("Remote Hookup\u2026");
 		setupRemote.setActionCommand("remote");
 		setupRemote.addActionListener(jamCommand);
 		setupRemote.setEnabled(false);
@@ -524,11 +505,11 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		zeroHistogram.addActionListener(jamCommand);
 		histogram.add(zeroHistogram);
 		histogram.add(calHist);
-		final JMenuItem calibFit = new JMenuItem("Fit...");
+		final JMenuItem calibFit = new JMenuItem("Fit\u2026");
 		calibFit.setActionCommand("calfitlin");
 		calibFit.addActionListener(jamCommand);
 		calHist.add(calibFit);
-		final JMenuItem calibFunc = new JMenuItem("Enter Coefficients...");
+		final JMenuItem calibFunc = new JMenuItem("Enter Coefficients\u2026");
 		calibFunc.setActionCommand("caldisp");
 		calibFunc.addActionListener(jamCommand);
 		calHist.add(calibFunc);
@@ -543,34 +524,34 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		histogram.add(gainShift);
 		final JMenu gate = new JMenu("Gate");
 		add(gate);
-		final JMenuItem gateNew = new JMenuItem("New Gate...");
+		final JMenuItem gateNew = new JMenuItem("New Gate\u2026");
 		gateNew.setActionCommand("gatenew");
 		gateNew.addActionListener(jamCommand);
 		gate.add(gateNew);
-		final JMenuItem gateAdd = new JMenuItem("Add Gate...");
+		final JMenuItem gateAdd = new JMenuItem("Add Gate\u2026");
 		gateAdd.setActionCommand("gateadd");
 		gateAdd.addActionListener(jamCommand);
 		gate.add(gateAdd);
-		final JMenuItem gateSet = new JMenuItem("Set Gate...");
+		final JMenuItem gateSet = new JMenuItem("Set Gate\u2026");
 		gateSet.setActionCommand("gateset");
 		gateSet.addActionListener(jamCommand);
 		gate.add(gateSet);
 		final JMenu scalers = new JMenu("Scalers");
 		add(scalers);
-		final JMenuItem showScalers = new JMenuItem("Display Scalers...");
+		final JMenuItem showScalers = new JMenuItem("Display Scalers\u2026");
 		showScalers.setActionCommand("displayscalers");
 		showScalers.addActionListener(jamCommand);
 		scalers.add(showScalers);
-		final JMenuItem clearScalers = new JMenuItem("Zero Scalers...");
+		final JMenuItem clearScalers = new JMenuItem("Zero Scalers\u2026");
 		scalers.add(clearScalers);
 		clearScalers.setActionCommand("showzeroscalers");
 		clearScalers.addActionListener(jamCommand);
 		scalers.addSeparator();
-		final JMenuItem showMonitors = new JMenuItem("Display Monitors...");
+		final JMenuItem showMonitors = new JMenuItem("Display Monitors\u2026");
 		showMonitors.setActionCommand("displaymonitors");
 		showMonitors.addActionListener(jamCommand);
 		scalers.add(showMonitors);
-		final JMenuItem configMonitors = new JMenuItem("Configure Monitors...");
+		final JMenuItem configMonitors = new JMenuItem("Configure Monitors\u2026");
 		configMonitors.setActionCommand("configmonitors");
 		configMonitors.addActionListener(jamCommand);
 		scalers.add(configMonitors);
@@ -629,7 +610,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		autoPeakFind.addItemListener(jamCommand);
 		mPrefer.add(autoPeakFind);
 		final JMenuItem peakFindPrefs =
-			new JMenuItem("Peak Find Properties...");
+			new JMenuItem("Peak Find Properties\u2026");
 		peakFindPrefs.setActionCommand("peakfind");
 		peakFindPrefs.addActionListener(jamCommand);
 		mPrefer.add(peakFindPrefs);
@@ -670,7 +651,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		mPrefer.add(debugVME);
 		fitting = new JMenu("Fitting");
 		add(fitting);
-		final JMenuItem loadFit = new JMenuItem("Load Fit...");
+		final JMenuItem loadFit = new JMenuItem("Load Fit\u2026");
 		loadFit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				loadfit.showLoad();
@@ -680,15 +661,15 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		fitting.addSeparator();
 		final JMenu helpMenu = new JMenu("Help");
 		add(helpMenu);
-		final JMenuItem about = new JMenuItem("About...");
+		final JMenuItem about = new JMenuItem("About\u2026");
 		helpMenu.add(about);
 		about.setActionCommand("about");
 		about.addActionListener(jamCommand);
-		final JMenuItem userG = new JMenuItem("User Guide...");
+		final JMenuItem userG = new JMenuItem("User Guide\u2026");
 		helpMenu.add(userG);
 		userG.setActionCommand("userguide");
 		userG.addActionListener(getUserGuideListener());
-		final JMenuItem license = new JMenuItem("License...");
+		final JMenuItem license = new JMenuItem("License\u2026");
 		helpMenu.add(license);
 		license.setActionCommand("license");
 		license.addActionListener(jamCommand);
@@ -718,10 +699,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		sortacq.setEnabled(offline);
 		paramacq.setEnabled(sorting);
 		statusacq.setEnabled(sorting);
-		openhdf.setEnabled(file);
-		saveHDF.setEnabled(file);
-		reloadhdf.setEnabled(sorting);
-		newClear.setEnabled(file);
 		impHist.setEnabled(file);
 	}
 
@@ -733,10 +710,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		cstopacq.setSelected(acqmode && (!acqon));
 	}
 	
-	void setSaveEnabled(boolean b){
-		saveHDF.setEnabled(b);
-	}
-
 	/**
 	 * Return an ActionListener cabable of displaying the User
 	 * Guide.
