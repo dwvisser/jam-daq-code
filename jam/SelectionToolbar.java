@@ -36,31 +36,26 @@ import javax.swing.SwingConstants;
  */
 final class SelectionToolbar extends JToolBar implements Observer {
 
-	final JLabel lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
-	final JPanel pCenter;
+	private final JLabel lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
+	private final JPanel pCenter;
 	private int previousLayout;
-	final JComboBox histogramChooser = new JComboBox(new HistogramComboBoxModel());
-	final JToggleButton boverLay = new JToggleButton(getHTML("<u>O</u>verlay"));
-	final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
-	final MessageHandler console;
-	final JamStatus status;
+	private final JComboBox histogramChooser = new JComboBox(new HistogramComboBoxModel());
+	private final JToggleButton boverLay = new JToggleButton(getHTML("<u>O</u>verlay"));
+	private final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
+	private final MessageHandler console;
+	private final JamStatus status;
 	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-	final Display display;
-	final String classname;
-	final MainMenuBar mbar;
+	private final Display display;
+	private final String classname;
 
-	SelectionToolbar(MessageHandler mh,
-					 JamStatus js,
-					 Display d,
-					 MainMenuBar mmb) {
+	SelectionToolbar() {
 		super("Selection", JToolBar.HORIZONTAL);
 		this.setFloatable(false);
 		final int chooserWidth=200;
 		classname = getClass().getName() + "--";
-		console = mh;
-		status = js;
-		display = d;
-		mbar=mmb;
+		status = JamStatus.instance();
+		console = status.getMessageHandler();
+		display = status.getDisplay();
 		broadcaster.addObserver(this);
 		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
