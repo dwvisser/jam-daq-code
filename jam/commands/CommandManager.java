@@ -83,6 +83,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
 		cmdMap.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
 		cmdMap.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
+		cmdMap.put(SHOW_FIT_NEW, ShowDialogAddFit.class);
+		
 	}
 	
 

@@ -152,4 +152,8 @@ public interface CommandNames {
 
 	/** Show the dialog eith event and buffer counts.*/
 	String SHOW_BUFFER_COUNT="showcounters";
+	
+	/** Show the dialog to add a fit*/
+	String SHOW_FIT_NEW="showfitnew";
+	
 }
