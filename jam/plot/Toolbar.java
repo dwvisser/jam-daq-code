@@ -33,7 +33,7 @@ class Toolbar extends JToolBar implements ActionListener {
 	
 	private final Action action;
 	
-	private JButton bnetarea, brebin, bgoto;
+	private JButton boverlay, bnetarea, brebin, bgoto;
 	private JComboBox comboBinRatio;
 	
 	private static final int ORIENTATION;
@@ -43,7 +43,7 @@ class Toolbar extends JToolBar implements ActionListener {
 	final Icon iRebin;
 	/** Is a syncronize event, so don't fire events */
 	private boolean isSyncEvent;
-	
+	 
 	static {
 		final String defaultVal = BorderLayout.NORTH;
 		KEY = "toolbarLocation";
@@ -70,6 +70,7 @@ class Toolbar extends JToolBar implements ActionListener {
 		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
+		final Icon iOverlay = loadToolbarIcon("jam/plot/Overlay.png");
 		final Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
 		final Icon iRange = loadToolbarIcon("jam/plot/Range.png");
 		 iRebin = loadToolbarIcon("jam/plot/Rebin.png");
@@ -112,6 +113,15 @@ class Toolbar extends JToolBar implements ActionListener {
 			bauto.setActionCommand(Action.AUTO);
 			bauto.addActionListener(this);
 			add(bauto);
+			
+			boverlay = iOverlay == null ?
+					new JButton(getHTML("<u>O</u>verlay")) : new JButton(iOverlay);
+			boverlay.setToolTipText(
+				getHTML("<u>O</u>verlay a histogram."));
+			boverlay.setActionCommand(Action.OVERLAY);
+			boverlay.addActionListener(this);
+			add(boverlay);
+			
 			final JButton brange = iRange == null ? 
 					new JButton(getHTML("<u>Ra</u>nge")) : new JButton(iRange);
 			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
@@ -296,9 +306,10 @@ class Toolbar extends JToolBar implements ActionListener {
 
 	void setHistogramProperties(int dimension, double binWidth){
 
-		final boolean enable = dimension==1;
-		bgoto.setEnabled(enable);
-		bnetarea.setEnabled(enable);
+		final boolean enable1D = dimension==1;
+		boverlay.setEnabled(enable1D);
+		bgoto.setEnabled(enable1D);
+		bnetarea.setEnabled(enable1D);
 		isSyncEvent=true;
 			//Convert double to int string
 			String strBinWidth = new Integer( new Double(binWidth).intValue()).toString();
@@ -307,7 +318,7 @@ class Toolbar extends JToolBar implements ActionListener {
 				if (strBinWidth.equals(REBIN_RATIOS[i]))
 					comboBinRatio.setSelectedIndex(i);
 			}
-			comboBinRatio.setEnabled(enable);
+			comboBinRatio.setEnabled(enable1D);
 		isSyncEvent=false;			
 	}
 	/**

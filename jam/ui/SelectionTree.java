@@ -14,15 +14,19 @@ import java.awt.Dimension;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Enumeration;
 import java.util.Observer;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 
 /**
@@ -33,7 +37,7 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class SelectionTree extends JPanel implements Observer {
 
-	JTree histTree;
+	JTree dataTree;
 	
 	DefaultTreeModel treeModel;
 	
@@ -68,12 +72,12 @@ public class SelectionTree extends JPanel implements Observer {
 		
 		 treeModel= new DefaultTreeModel(new DefaultMutableTreeNode("No Data") );
 		 	
-		 histTree = new JTree(treeModel);
-		 histTree.setCellRenderer(new SelectionTreeCellRender());
-		 histTree.addTreeSelectionListener(new TreeSelectionListener(){
+		 dataTree = new JTree(treeModel);
+		 dataTree.setCellRenderer(new SelectionTreeCellRender());
+		 dataTree.addTreeSelectionListener(new TreeSelectionListener(){
 	 	    public void valueChanged(TreeSelectionEvent e) {
 	 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					histTree.getLastSelectedPathComponent();
+					dataTree.getLastSelectedPathComponent();
 	 	        if (node == null) 
 	 	        	return;
 	 	        Object nodeInfo = node.getUserObject();
@@ -81,9 +85,7 @@ public class SelectionTree extends JPanel implements Observer {
 	 	    }		 			 	
 		 });
 		 
-		 this.add(new JScrollPane(histTree), BorderLayout.CENTER);
-		 
-		//createHistTree();
+		 this.add(new JScrollPane(dataTree), BorderLayout.CENTER);
  
 	}	
 	/**
@@ -135,24 +137,51 @@ public class SelectionTree extends JPanel implements Observer {
 	public void reload(){
 		loadTree();
 		repaint();
-		histTree.repaint();
+		dataTree.repaint();
 	}
 
 	public void refresh(){
 		repaint();
-		histTree.repaint();
+		dataTree.repaint();
 	}
-	
+	/**
+	 * Refresh the selected node
+	 *
+	 */
 	private void refreshSelection(){
+		
+		DefaultMutableTreeNode currentNode;
 		Histogram hist = status.getCurrentHistogram();
 		
+		if (rootNode==null)
+			return;
+		
+		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
+		while(nodeEnum.hasMoreElements()){
+			currentNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
+			TreeNode [] tnp=currentNode.getPath();
+			
+			Object obj=currentNode.getUserObject();
+			if (obj instanceof Histogram) {
+				if (obj==hist){
+					TreeNode []tnpath=currentNode.getPath();
+					TreePath tp = new TreePath(tnpath);
+					dataTree.setSelectionPath(tp);
+					//break;
+				}
+			}	
+		}
+		//Walk Tree
+		//TreePath tp = new TreePath(); 
+		//tp.
+		//dataTree.get
 		//Loop through nodes and set appropriate node to selected
 		//Object rootNode =treeModel.getRoot();
 		//DefaultMutableTreeModel root =(DefaultMutableTreeModel)treeModel.getRoot();		
 		//TreeSelectionModel tsm =histTree.getSelectionModel();
 		
 		repaint();
-		histTree.repaint();
+		dataTree.repaint();
 	}
 	
 	private void selection(Object nodeObject){
@@ -193,7 +222,9 @@ public class SelectionTree extends JPanel implements Observer {
 		final BroadcastEvent.Command command = be.getCommand();
 		
 		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			refreshSelection();					
+			isSyncEvent=true;
+			refreshSelection();
+			isSyncEvent=false;
 		}else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			loadTree();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {

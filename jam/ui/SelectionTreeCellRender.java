@@ -18,17 +18,30 @@ import javax.swing.tree.TreeCellRenderer;
 public class SelectionTreeCellRender extends DefaultTreeCellRenderer implements
 		TreeCellRenderer {
 
+	public SelectionTreeCellRender(){
+	//	setBackgroundSelectionColor(Color.GRAY);
+	//	setBackground(Color.GRAY);
+		
+		setTextSelectionColor(Color.RED);
+		
+	//	setTextSelectionColor(Color.GRAY); 
+	}
+	
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
+		
+			super.getTreeCellRendererComponent(tree, value, selected,
+                						expanded, leaf, row, hasFocus);
+		
 		if (selected) {
-			setBackground(Color.BLUE);
-			setForeground(getTextSelectionColor());
-			setForeground(Color.BLUE);			
+			//setBackground(getBackgroundSelectionColor());
+			//setForeground(getTextSelectionColor());
+			//setForeground(Color.BLUE);			
 		} else {
-			setBackground(getBackgroundNonSelectionColor());
-			setForeground(getTextNonSelectionColor());
-			setForeground(Color.BLACK);	
+			//setBackground(getBackgroundNonSelectionColor());
+			//setForeground(getTextNonSelectionColor());
+			//setForeground(Color.BLACK);	
 		}
 		Object nodeObject =((DefaultMutableTreeNode)value).getUserObject();
 		if (nodeObject instanceof Histogram){
