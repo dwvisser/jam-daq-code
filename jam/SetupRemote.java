@@ -25,7 +25,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnknownHostException;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Class to make this process into a remote server for Jam or
@@ -61,8 +61,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 	RemoteAccess remoteAccess;
 
 	private String[] histogramNames;
-	private Vector histogramList;
-	private Vector gateList;
+	private List histogramList, gateList;
 	private boolean inApplet; //are we running in a applet
 
 	private boolean setupLock = false;
@@ -302,20 +301,13 @@ public class SetupRemote implements ActionListener, ItemListener {
 			//load gate list
 			gateList = remoteData.getGateList();
 			Gate.setGateList(gateList);
-
-			// jam client
-			if (jamMain != null) {
-				//jamMain.setHistogramList(histogramList);
-				//applet
-			} else {
-				//FIXME    jamApplet.setHistogramList(histogramList);
-			}
 		} catch (RemoteException re) {
 			System.out.println(re.getMessage());
 			throw new JamException("Remote getting histogram list [SetupRemote]");
 		}
 
 	}
+	
 	/**
 	 * Link to a jam process
 	 * for now just calls snap
@@ -332,8 +324,8 @@ public class SetupRemote implements ActionListener, ItemListener {
 	public void reset() {
 		remoteAccess = null;
 		remoteData = null;
-
 	}
+	
 	/**
 	 *
 	 */
