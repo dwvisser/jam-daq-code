@@ -154,7 +154,6 @@ public class RunControl implements Controller, ActionListener {
 		final JPanel pRunNumber = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
 		pCenter.add(pRunNumber);
         textRunNumber =new JTextField("");
-        textRunNumber.setBackground(Color.white);
         textRunNumber.setColumns(3);
         textRunNumber.setText(Integer.toString(runNumber));
         pRunNumber.add(textRunNumber);
@@ -163,7 +162,6 @@ public class RunControl implements Controller, ActionListener {
 		pCenter.add(pRunTitle);
         textRunTitle =new JTextField("");
         textRunTitle.setColumns(40);
-        textRunTitle.setBackground(Color.white);
         pRunTitle.add(textRunTitle);
 
 		//Zero Panel
@@ -180,14 +178,14 @@ public class RunControl implements Controller, ActionListener {
         JPanel pb= new JPanel(new GridLayout(1,0,50,5));
         pButtons.add(pb);
         bbegin	=   new JButton("Begin");
-        bbegin.setBackground(Color.green);
+        bbegin.setBackground(Color.GREEN);
         bbegin.setActionCommand("begin");
         bbegin.addActionListener(this);
         bbegin.setEnabled(false);
         pb.add(bbegin);
 
         bend = new JButton("End");
-        bend.setBackground(Color.red);
+        bend.setBackground(Color.RED);
         bend.setActionCommand("end");
         bend.addActionListener(this);
         bend.setEnabled(false);
