@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -445,12 +446,13 @@ public class ImpExpORNL extends ImpExp {
 		dosDrr.writeInt(totalHist); //number of histograms
 		dosDrr.writeInt(totalHalfWords); //total number of 16 bit words
 		dosDrr.writeInt(0); //space nothing defined
-		dosDrr.writeInt(98); //date year FIXME (date and time)
-		dosDrr.writeInt(5); //date month
-		dosDrr.writeInt(11); //date day
-		dosDrr.writeInt(0); //time
-		dosDrr.writeInt(0); //time
-		dosDrr.writeInt(0); //time
+		Calendar calendar=Calendar.getInstance();
+		dosDrr.writeInt(calendar.get(Calendar.YEAR)); //date year (date and time)
+		dosDrr.writeInt(calendar.get(Calendar.MONTH+1)); // month
+		dosDrr.writeInt(calendar.get(Calendar.DAY_OF_MONTH)); //date day
+		dosDrr.writeInt(calendar.get(Calendar.HOUR_OF_DAY)); //time
+		dosDrr.writeInt(calendar.get(Calendar.MINUTE)); //time
+		dosDrr.writeInt(calendar.get(Calendar.SECOND)); //time
 		dosDrr.writeBytes(su.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (int i = 0; i < allHists.size(); i++) {
