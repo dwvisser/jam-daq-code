@@ -31,6 +31,7 @@ import jam.io.hdf.HDFile;
 import jam.io.hdf.JamHDFFields;
 import jam.io.hdf.Vdata;
 import jam.io.hdf.VdataDescription;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -56,9 +57,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public class ScalerScan
-	extends JDialog
-	implements JamHDFFields, ActionListener {
+public final class ScalerScan implements JamHDFFields {
 	
 	private static final char TAB = '\t';
 	
@@ -66,22 +65,22 @@ public class ScalerScan
 	private ProgressMonitor pBstatus;
 	private final MessageHandler console;
 	private final Frame frame;
-	private final JButton bOK, bApply, bCancel;
+	private final JDialog dialog;
 	
 	private File pathToRuns=new File(JamProperties.getPropString(
 	JamProperties.HIST_PATH));
 	private final JTextField txtPath;
 	private final JTextField txtRunName;
 	private final static JamStatus STATUS=JamStatus.getSingletonInstance();
-
+	private final PanelOKApplyCancelButtons buttons;
 	/**
 	 * Constructor.
 	 */
 	public ScalerScan() {
-		super(STATUS.getFrame(), "HDF Scaler Values Scan", false);
+		dialog = new JDialog(STATUS.getFrame(), "HDF Scaler Values Scan", false);
 		frame = STATUS.getFrame();
 		console = STATUS.getMessageHandler();
-		final Container container = getContentPane();
+		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10,5));
 		
 		final JPanel pLabels = new JPanel(new GridLayout(0,1,0,5));
@@ -116,7 +115,18 @@ public class ScalerScan
 			
 		final JButton browse = new JButton("Browse...");
 		browse.setActionCommand("browse");
-		browse.addActionListener(this);
+		browse.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				final String command = e.getActionCommand();
+				if (command.equals("browse")) {
+					final File temp = getFile(true);
+					if (temp != null) {
+						txtPath.setText(temp.getAbsolutePath());
+						pathToRuns=temp;
+					}
+				}
+			}
+		});
 		pPath.add(browse);
 				
 		final JPanel pFirst = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
@@ -127,67 +137,39 @@ public class ScalerScan
 		final JPanel pLast = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
 		pEntries.add(pLast);
 		txtLast = new JTextField(4);
-		pLast.add(txtLast);
-		
-		final JPanel pLower = new JPanel();
-		container.add(pLower, BorderLayout.SOUTH);
-		final JPanel pButtons = new JPanel(new GridLayout(1,0,5,5));
-		pLower.add(pButtons);		
-		bOK = new JButton(OK);
-		bOK.setActionCommand(OK);
-		bOK.addActionListener(this);
-		pButtons.add(bOK);
-		bApply = new JButton(APPLY);
-		bApply.setActionCommand(APPLY);
-		bApply.addActionListener(this);
-		pButtons.add(bApply);		
-		bCancel = new JButton(CANCEL);
-		bCancel.setActionCommand(CANCEL);
-		bCancel.addActionListener(this);
-		pButtons.add(bCancel);
-		
-		setResizable(false);				
-		pack();
-		
+		pLast.add(txtLast);		
+		buttons = new PanelOKApplyCancelButtons(new
+		        PanelOKApplyCancelButtons.Listener(){
+		    public void ok(){
+		        apply();
+		        dialog.dispose();
+		    }
+		    
+		    public void apply(){
+				setButtonsEnable(false);
+				final Runnable r=new Runnable(){
+					public void run(){
+						doIt();
+						setButtonsEnable(true);
+					}
+				};
+				final Thread t=new Thread(r);
+				t.start();		        
+		    }
+		    
+		    public void cancel(){
+		        dialog.dispose();
+		    }
+		});
+		container.add(buttons.getComponent(), BorderLayout.SOUTH);
+		dialog.setResizable(false);				
+		dialog.pack();
 	}
 
-	private static final String OK = "OK";
-	private static final String CANCEL = "Cancel";
-	private static final String APPLY = "Apply";
-	
-	private final void setButtonsEnable(boolean b){
-		bOK.setEnabled(b);
-		bApply.setEnabled(b);
-		bCancel.setEnabled(b);
+	private void setButtonsEnable(boolean b){
+		buttons.setButtonsEnabled(b,b,b);
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		final boolean ok = OK.equals(command);
-		final boolean apply = ok || APPLY.equals(command);
-		final boolean cancel = ok || CANCEL.equals(command);
-		if (apply) {
-			setButtonsEnable(false);
-			final Runnable r=new Runnable(){
-				public void run(){
-					doIt();
-					setButtonsEnable(true);
-				}
-			};
-			final Thread t=new Thread(r);
-			t.start();
-		}
-		if (cancel) {
-			dispose();
-		}
-		if (e.getActionCommand().equals("browse")) {
-			final File temp = getFile(true);
-			if (temp != null) {
-				txtPath.setText(temp.getAbsolutePath());
-				pathToRuns=temp;
-			}
-		}
-	}
 
 	/**
 	 * Browse for a file or directory.
@@ -195,12 +177,12 @@ public class ScalerScan
 	 * @param dir select directories if true, files if false
 	 * @return ref to file of interest, null if none selected
 	 */
-	public File getFile(boolean dir) {
+	private File getFile(boolean dir) {
 		final JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(
 			dir ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
 		final boolean approved =
-			chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION;
+			chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION;
 		return approved ? chooser.getSelectedFile() : null;
 	}
 
@@ -313,6 +295,14 @@ public class ScalerScan
 	private void updateProgressBar(final String text, final int value){
 		pBstatus.setNote(text);
 		pBstatus.setProgress(value);
+	}
+	
+	/**
+	 * Returns the dialog.
+	 * @return the dialog
+	 */
+	public JDialog getDialog(){
+	    return dialog;
 	}
 	
 }

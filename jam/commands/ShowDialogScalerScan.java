@@ -9,6 +9,6 @@ final class ShowDialogScalerScan extends AbstractShowDialog {
 
 	public void initCommand() {
 		putValue(NAME, "Scan HDF files for scalers\u2026");
-		dialog = new ScalerScan();
+		dialog = (new ScalerScan()).getDialog();
 	}
 }
