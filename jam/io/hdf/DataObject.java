@@ -169,7 +169,7 @@ public abstract class DataObject {
 	 * Clear the lists of all data objects
 	 * @return
 	 */	
-	static void clear() {
+	static void clearAll() {
 	
 		for (Iterator it=objectList.iterator(); it.hasNext();){
 			DataObject ob=(DataObject)it.next();

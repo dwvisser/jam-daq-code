@@ -55,7 +55,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public HDFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
-		DataObject.clear();
 		this.file = file;
 		//FIXME KBS remove
 		//addNumberTypes();
@@ -384,7 +383,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void close() throws IOException{
 		super.close();
-		DataObject.clear();
+		DataObject.clearAll();
 	}
 
 	/**

@@ -275,6 +275,7 @@ public class HDFIO implements DataIO, JamHDFFields {
              */
             file.delete();
         } 
+
         try {
             synchronized (this) {
             	out = new HDFile(file, "rw");
@@ -284,6 +285,8 @@ public class HDFIO implements DataIO, JamHDFFields {
                         + file.getName());
         } 
         
+    	DataObject.clearAll();        
+    	
     	addDefaultDataObjects(file.getPath());
     	
         final int progressRange = hists.size() + gates.size()
@@ -352,7 +355,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         pm.close();
 
         synchronized (this) {
-        	DataObject.clear();
+        	DataObject.clearAll();
             out = null; //allows Garbage collector to free up memory
         }
         outln(message.toString());
@@ -462,7 +465,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             synchronized (this) {
                 in = new HDFile(infile, "r");
             }
-            
+            DataObject.clearAll();
             in.seek(0);
             /* read file into set of DataObject's, set their internal variables */
             pm.setNote("Parsing objects");
@@ -536,9 +539,10 @@ public class HDFIO implements DataIO, JamHDFFields {
               	 return histAttributes;
               }
     		 
+            DataObject.clearAll();
 			/* Read in histogram names */
 	    	in = new HDFile(infile, "r");
-
+	    	
 	    	in.readFile();
 	    	histAttributes.addAll(loadHistogramAttributes());
 			in.close();
