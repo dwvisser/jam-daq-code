@@ -34,7 +34,7 @@ public abstract class AbstractData implements Constants {
 	 * Count for references, to make sure references are unique 
 	 *  Reference count, starts at 1
 	 */
-	static short refCount;	
+	static short refCount=1;	
 
 	
 	private static final Set ALL_TYPES = new HashSet(); 
@@ -126,7 +126,7 @@ public abstract class AbstractData implements Constants {
 		}
 		objectList.clear();
 		tagRefMap.clear();
-		refCount =0;		
+		refCount =1;		
 	}
 	
 	/**

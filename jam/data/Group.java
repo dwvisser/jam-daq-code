@@ -50,6 +50,9 @@ public class Group {
 
     /** Working group name */
     public final static String WORKING_NAME = "Working";
+    /** Default group name */
+    public final static String DEFAULT_NAME = "Default";
+    
     /** List of all groups */
     private final static List LIST = new ArrayList();
 

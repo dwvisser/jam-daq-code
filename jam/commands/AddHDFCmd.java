@@ -15,14 +15,15 @@ import java.util.Observable;
  */
 final class AddHDFCmd extends AbstractLoaderHDF {
 
+	 
 	public void initCommand(){
-		putValue(NAME,"Add counts\u2026");
+		putValue(NAME,"Add Group Counts\u2026");
 		fileOpenMode=FileOpenMode.ADD;
 	}
 	
 	protected final void execute(final Object[] cmdParams) {
         File file = null;
-        Group loadGroup = STATUS.getCurrentGroup();
+        loadGroup = STATUS.getCurrentGroup();
         //Parse commad parameters if given
         if (cmdParams != null) {
             if (cmdParams.length > 0) {

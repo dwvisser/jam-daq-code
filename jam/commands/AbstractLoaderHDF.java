@@ -60,10 +60,6 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
 		} else {
 			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup);
 		}		
-		/* File was not read in so no call back do notify here */
-		//FIXME add statements inside if clause:
-//		if (isFileReading){	
-//		}
 	}
 	
 	protected final void executeParse(String[] cmdTokens) {
