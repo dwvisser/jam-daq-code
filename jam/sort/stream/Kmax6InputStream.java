@@ -26,8 +26,6 @@ public class Kmax6InputStream extends EventInputStream {
     int blockNumEvnt;
     int blockEventType;
     private short eventSize;
-    private short eventState;
-    private short eventNumWord;
     private int countEvent=0;
     private int countWord=0;
     private boolean newBlock=true;
@@ -64,10 +62,7 @@ public class Kmax6InputStream extends EventInputStream {
      * @return status resulting after read attempt
      */
     public synchronized EventInputStatus readEvent(int[] input) throws  EventException {
-        boolean newEvent=true;
-        //byte [] eventArray=new byte[100];
         int badEvent;		//header padding
-        long numSkip;
 
         try {
             //status=EventInputStatus.ERROR;

@@ -29,8 +29,6 @@ public class UconnInputStream  extends EventInputStream {
     
     private int TDC_DATA_MASK=0x3FF;
     private int TDC_CHAN_SHFT=10;        
-//XXX    private int TDC_DATA_MASK=0x1FF;
-//    private int TDC_CHAN_SHFT=9;        
 
     private int TDC_CHAN_MASK=0x1F;
     private int TDC_OFFSET=32;		//how much to offset data for each vsn
@@ -38,7 +36,6 @@ public class UconnInputStream  extends EventInputStream {
     private int SCALER_MASK=0x00ffffff;				    			        
     				
     private int NUMBER_SCALERS=12;
-    private int MAX_NUMBER=100;
 
     int blockFullSize;
     int blockCurrSize;
@@ -69,9 +66,6 @@ public class UconnInputStream  extends EventInputStream {
      */
     public UconnInputStream(MessageHandler console, String fileName){   
 		super(console);     
-		//File file;
-		//FileInputStream fis;
-		//DataInputStream dis;
 		try {
 	    	File file = new File(fileName);
 	    	if (!file.exists()){
@@ -80,7 +74,6 @@ public class UconnInputStream  extends EventInputStream {
 	    	System.out.println("Constructor file "+fileName);	
 	    	FileInputStream fis =new FileInputStream(file);	
 	    	setInputStream(fis);
-	    	DataInputStream dis=new DataInputStream(fis);
 		} catch (Exception e){
 	    	System.out.println("Error Test Constructor "+e.getMessage());
 		}	     	    
@@ -96,8 +89,6 @@ public class UconnInputStream  extends EventInputStream {
     public synchronized EventInputStatus readEvent(int[] input) throws  EventException {
     
 	EventInputStatus status;
-	boolean newEvent=true;
-	byte [] eventArray=new byte[100];
 	long numSkip;
 				
 	try {
@@ -216,7 +207,6 @@ public class UconnInputStream  extends EventInputStream {
 	int vsn=0;
 	int chan;
 	int data;
-	int wordCount=0;
     
 	//while there are words left in the event
 	for(int i=0;i<eventNumWord;i++){
@@ -280,57 +270,11 @@ public class UconnInputStream  extends EventInputStream {
 	/* no end run marker */
 	return false;
     }
-    /**
-     * debuggin routine
-     */
-    private void buffdump() throws IOException {
-	int temp;
-	int vsn=0;
-	    for(int i=0; i<1000; i++){	    
-		temp=dataInput.readShort()&0xffff;
-		temp=temp&0xffff;
-		System.out.print(" word "+i+"  "+temp+"  "+(temp&0x8000));			    				
-		if((temp&0x8000)!=0) {
-		    System.out.println(" vsn "+(temp&0x00ff));			    		
-		    vsn=temp&0x00ff;
-		} else {
-		    if (vsn<4) {
-			System.out.println(" chan "+((temp>>12)&0x0007)+" data "+(temp&0xfff));			    				
-		    } else {
-			System.out.println(" chan "+((temp>>10)&0x001f)+" data "+(temp&0x3ff));			    						    			
-		    }		
-		}		    	
-	    }		    	    			
-    }   
-    /**
-     * debuggin routine
-     */
-    private void buffdumpNum() throws IOException {
-	int temp;
-	int vsn=0;
-	    for(int i=0; i<eventNumWord; i++){	    
-		temp=dataInput.readShort()&0xffff;
-		temp=temp&0xffff;
-		System.out.print(" word "+i+"  "+temp+"  "+(temp&0x8000));			    				
-		if((temp&0x8000)!=0) {
-		    System.out.println(" vsn "+(temp&0x00ff));			    		
-		    vsn=temp&0x00ff;
-		} else {
-		    if (vsn<4) {
-			System.out.println(" chan "+((temp>>12)&0x0007)+" data "+(temp&0xfff));			    				
-		    } else {
-			System.out.println(" chan "+((temp>>10)&0x001f)+" data "+(temp&0x3ff));			    						    			
-		    }		
-		}		    	
-	    }		    	    			
-    }   
     
     /**
      * Main method that is run to start up full Jam process
      */
     public static void main(String args[]) {
-	int [] event =new int[100];	
-	    
 	try {
 	    System.out.println("Test Uconn Input Stream");
 	    System.out.println("Input file "+args[0]);	

@@ -20,7 +20,7 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private int type,chmin,chmax;
+    private int chmax;
 
     private JDialog dmanip;
     private JComboBox cfrom1,cfrom2,cto;

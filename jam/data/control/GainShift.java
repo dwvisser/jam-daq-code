@@ -21,8 +21,6 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private int chmin,chmax;
-
     private JDialog dgain;
     private JComboBox cto;
     private JTextField tfrom;
@@ -294,7 +292,6 @@ Observer {
         String name;
         double [] in,out;
         double [] errIn,errOut;
-        int j;
 
         //get coeff. or channels
         if (cchan.isSelected()) {

@@ -17,11 +17,6 @@ public class XsysInputStream  extends EventInputStream {
 
     private final int END_REC=0x0a;
     
-    private boolean atHeader;
-    
-    
-    private int parameter;
-    private int eventValue;
     int bufferMarker;
     int bufferNumber;
 	        

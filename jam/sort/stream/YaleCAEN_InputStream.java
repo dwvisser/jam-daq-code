@@ -192,7 +192,9 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     }
                 } else if (header==SCALER_BLOCK) {//read and ignore scaler values
                     int numScalers = dataInput.readInt();
-                    for (int i=0; i<numScalers; i++) dataInput.readInt();
+                    for (int i=0; i<numScalers; i++) {
+                    	dataInput.readInt();
+                    }
                     rval=EventInputStatus.SCALER_VALUE;
                     internal_status=BufferStatus.SCALER;
                 } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon

@@ -51,7 +51,6 @@ Runnable  {
     //panel with alarm enable
     private JPanel pal;
     private JCheckBox checkAudio;
-    private JButton bstop;
 
     //array of monitors loaded at setuptime
     private Monitor [] monitor;

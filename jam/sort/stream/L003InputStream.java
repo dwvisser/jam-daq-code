@@ -16,12 +16,9 @@ import jam.global.MessageHandler;
  */
 public class L003InputStream  extends EventInputStream implements L003Parameters {
 
-
     int recordByteCounter=0;	    //FIXME
     int tapeByteCounter=0;
 
-    private boolean atHeader;
-    
     private EventInputStatus status;
     private int parameter;
     private int eventValue;

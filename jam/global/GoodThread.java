@@ -45,8 +45,8 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
     /**
      * Should be called frequently by the thread's <code>run()</code> method.
      * Code in the run() method will decide what to do for a <code>STOP</code>
-     * state.  If the state is <code>SUSPEND</code>, <code>checkState()</code> takes care
-     * of suspending the thread, and it takes a call to <code>setState(int)</code>
+     * state.  If the state is <code>SUSPEND</code>, <code>checkState()</code> takes 
+     * care of suspending the thread, and it takes a call to <code>setState(int)</code>
      * with either <code>STOP</code> or <code>RUN</code> to get the thread out of
      * <code>checkState()</code>.
      *
@@ -57,6 +57,7 @@ private static final String [] modes = {"RUN","SUSPEND","STOP","SPECIAL"};
             try {
                 wait();
             } catch (InterruptedException ie) {
+            	System.err.println("GoodThread interrupted while suspended: "+ie);
             }
         }
         return (this.state == RUN);

@@ -301,11 +301,11 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
      * Load a list of energies from a file
      */
     private void loadCalib() throws Exception {
-        File infile=openFile("Load Calibration Energies", FileDialog.LOAD);
+        openFile("Load Calibration Energies", FileDialog.LOAD);
     }
     
     private void saveCalib() throws Exception{
-        File outfile=openFile("Save Calibration Energies", FileDialog.SAVE);
+        openFile("Save Calibration Energies", FileDialog.SAVE);
     }
     
     /**
