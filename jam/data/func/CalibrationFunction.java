@@ -72,7 +72,7 @@ public abstract class CalibrationFunction implements Function {
 	 *
 	 * @param	x	value at which to get calibration
 	 * @return	calibration value of the argument
-	 * @see #getValue(int)
+	 * @see #getValue(double)
 	 */
 	public double getValue(int x) {
 		return getValue((double) x);
