@@ -24,9 +24,9 @@ public class GateListCellRenderer
 
 	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
 
-	private static ImageIcon stopIcon;
-	private static ImageIcon goIcon;
-	private static ImageIcon clearIcon;
+	private static final ImageIcon stopIcon;
+	private static final ImageIcon goIcon;
+	private static final ImageIcon clearIcon;
 
 	static{
 		URL urlStop=cl.getResource("jam/stop.png");
@@ -34,7 +34,11 @@ public class GateListCellRenderer
 		URL urlClear =cl.getResource("jam/clear.png");
 		if (urlStop==null || urlGo==null || urlClear==null) {
 			JOptionPane.showMessageDialog(null, "Can't load resource: jam/(stop|go|clear).png");
-			System.exit(0);
+			stopIcon=goIcon=clearIcon=null;
+		} else {
+			stopIcon=new ImageIcon(urlStop);
+			goIcon=new ImageIcon(urlGo);
+			clearIcon=new ImageIcon(urlClear);
 		}
 	}
 
