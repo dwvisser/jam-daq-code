@@ -41,11 +41,11 @@ final class Plot1d extends AbstractPlot {
 	
 	private final PlotColorMap colorMap=PlotColorMap.getSingletonInstance();
 
-	private double sensitivity = 3;
+	private static double sensitivity = 3;
 
-	private double width = 12;
+	private static double width = 12;
 
-	private boolean pfcal = true;
+	private static boolean pfcal = true;
 
 	/**ss
 	 * Constructor.
@@ -293,9 +293,9 @@ final class Plot1d extends AbstractPlot {
 		}
 	}
 
-	private boolean autoPeakFind = true;
+	private static boolean autoPeakFind = true;
 
-	private void setPeakFind(boolean which) {
+	private static void setPeakFind(boolean which) {
 		autoPeakFind = which;
 	}
 
@@ -526,27 +526,25 @@ final class Plot1d extends AbstractPlot {
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
 	private Rectangle getClipBounds(Shape clipShape,
-			boolean shapeInChannelCoords) {
-		final Rectangle r = clipShape.getBounds();
-		if (shapeInChannelCoords) {//shape is in channel coordinates
-			/* add one more plot channel around the edges */
-			/* now do conversion */
-			r.setBounds(graph.getRectangleOutline1d(r.x - 2,
-					(int) r.getMaxX() + 2));
-			return r;
-		} else {//shape is in view coordinates
-			/*
-			 * Recursively call back with a polygon using channel coordinates.
-			 */
-			final Polygon p = new Polygon();
-			final Bin c1 = graph.toData(r.getLocation());
-			final Bin c2 = graph
-					.toData(new Point(r.x + r.width, r.y + r.height));
-			p.addPoint(c1.getX(), c1.getY());
-			p.addPoint(c2.getX(), c2.getY());
-			return getClipBounds(p, true);
-		}
-	}
+            boolean shapeInChannelCoords) {
+        final Rectangle r = clipShape.getBounds();
+        if (shapeInChannelCoords) {//shape is in channel coordinates
+            /* add one more plot channel around the edges */
+            /* now do conversion */
+            r.setBounds(graph.getRectangleOutline1d(r.x - 2,
+                    (int) r.getMaxX() + 2));
+        }
+        /*
+         * Shape is in view coordinates. Recursively call back with a polygon
+         * using channel coordinates.
+         */
+        final Polygon p = new Polygon();
+        final Bin c1 = graph.toData(r.getLocation());
+        final Bin c2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
+        p.addPoint(c1.getX(), c1.getY());
+        p.addPoint(c2.getX(), c2.getY());
+        return getClipBounds(p, true);
+    }
 
 	/**
 	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
@@ -563,6 +561,20 @@ final class Plot1d extends AbstractPlot {
 				panel.repaint();
 			}
 		});
+	}
+	
+	/* Preferences */
+	
+	static void setSensitivity(double val) {
+	    sensitivity = val;
+	}
+
+	static void setWidth(double val) {
+		width = val;
+	}
+
+	static void setPeakFindDisplayCal(boolean which) {
+		pfcal = which;
 	}
 
 }

@@ -124,10 +124,6 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
-		//FIXME KBS temporary test
-		//enableScrolling(false);
-		//Enable prefernce
-		//PREFS.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -288,12 +284,12 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/**
 	 * @return currently selected subplot
 	 */
-	AbstractPlot getPlot() {
+	private AbstractPlot getPlot() {
 		synchronized (plotLock) {
 			return currentSubPlot;
 		}
 	}
-
+	
 	void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
 		getPlot().displayFit(signals, background, residuals, ll);
@@ -461,23 +457,6 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	void reset() {
 		plot1d.reset();
 		plot2d.reset();
-	}
-
-	/* Preferences */
-	
-	void setSensitivity(double val) {
-		//FIXME KBS
-		//sensitivity = val;
-	}
-
-	void setWidth(double val) {
-		//FIXME KBS
-		//width = val;
-	}
-
-	void setPeakFindDisplayCal(boolean which) {
-		//FIXME KBS
-		//pfcal = which;
 	}
 	
 	void repaint(){

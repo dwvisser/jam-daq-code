@@ -194,25 +194,20 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param hist the histogram to display
 	 */
 	public void displayHistogram(Histogram hist) {
-		if (hist != null) {
-			//FIXME KBS remove
-			//if (!isOverlay){
-				currentPlot.removeAllPlotMouseListeners();
-				currentPlot.addPlotMouseListener(action);
-				currentPlot.setMarkArea(false);
-				currentPlot.setMarkingChannels(false);
-				currentPlot.displayHistogram(hist);			 
-				toolbar.setHistogramProperties(hist.getDimensionality(), currentPlot.getBinWidth());
-			//}else{
-			//	overlayHistogram(hist);
-			//}
-				
-		}
-		/* Add to view */
-		currentPlot.repaint();
-		currentView.setHistogram(getPlot().getNumber(), hist);
-
-	}
+        if (hist != null) {
+            currentPlot.removeAllPlotMouseListeners();
+            currentPlot.addPlotMouseListener(action);
+            currentPlot.setMarkArea(false);
+            currentPlot.setMarkingChannels(false);
+            currentPlot.displayHistogram(hist);
+            toolbar.setHistogramProperties(hist.getDimensionality(),
+                    currentPlot.getBinWidth());
+        }
+        /* Add to view */
+        currentPlot.repaint();
+        currentView.setHistogram(getPlot().getNumber(), hist);
+    }
+	
 	/**
 	 * Get the current select histogram
 	 * @return histogram
@@ -220,11 +215,12 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	public Histogram getHistogram(){
 		return getPlot().getHistogram();
 	}
+	
 	/**
 	 * Overlay a histogram
-	 * @param hist histogram to overlay
+	 * @param hists histogram to overlay
 	 */
-	public void overlayHistogram(Histogram [] hists){
+	private void overlayHistogram(Histogram [] hists){
 		if (hists.length>0) {
 			for (int i=0;i<hists.length; i++) {
 				int num=hists[0].getNumber();		
@@ -381,12 +377,10 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void setPeakFindProperties(double width, double sensitivity,
 			boolean cal) {
-		synchronized (plotLock) {
-			currentPlot.setWidth(width);
-			currentPlot.setSensitivity(sensitivity);
-			currentPlot.setPeakFindDisplayCal(cal);
-		}
-		//displayHistogram();
+	    Plot1d.setWidth(width);
+	    Plot1d.setSensitivity(sensitivity);
+	    Plot1d.setPeakFindDisplayCal(cal);
+		getPlot().repaint();
 	}
 
 	/**
