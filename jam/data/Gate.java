@@ -205,13 +205,13 @@ public class Gate implements Serializable {
 	 * Returns the limits for a <code>Gate</code> of type <code>ONE_DIMENSION</code>
 	 *
 	 * @return a 2-element array with the hi- and lo- limits of the gate
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException if called for 1d gate
 	 */
-	public int[] getLimits1d() throws DataException {
+	public int[] getLimits1d() {
 
 		int[] bounds = new int[2];
 		if (type != ONE_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"getLimits1d(): can only be called for gates"
 					+ " of type ONE_DIMENSION");
 		bounds[0] = lowerLimit;
@@ -224,11 +224,11 @@ public class Gate implements Serializable {
 	 * boolean array to quickly mask when sorting.
 	 *
 	 * @return	a 2-d array of <code>boolean</code>'s which are true for channels inside the gate
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException thrown if called for 1d gate
 	 */
-	public boolean[][] getLimits2d() throws DataException {
+	public boolean[][] getLimits2d() {
 		if (type != TWO_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException (
 				"getLimits2d(): can only be called for gates"
 					+ " of type TWO_DIMENSION");
 		return insideGate;
@@ -238,11 +238,11 @@ public class Gate implements Serializable {
 	 * Returns the <code>Polygon</code> object corresponding to a 2-d gate.
 	 *
 	 * @return the gate
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException if called for 1d gate
 	 */
-	public Polygon getBananaGate() throws DataException {
+	public Polygon getBananaGate() {
 		if (type != TWO_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException (
 				"getBananaGate can only be called for gates"
 					+ " of type TWO_DIMENSION");
 		return bananaGate;
@@ -253,11 +253,11 @@ public class Gate implements Serializable {
 	 *
 	 * @param ll lower channel limit
 	 * @param ul upper channel limit
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException if called for 2d gate
 	 */
-	public void setLimits(int ll, int ul) throws DataException {
+	public void setLimits(int ll, int ul) {
 		if (type != ONE_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"setLimits(int,int): can only be called for gates"
 					+ " of type ONE_DIMENSION");
 		if (ll <= ul) {
@@ -271,42 +271,17 @@ public class Gate implements Serializable {
 	}
 
 	/**
-	 * Sets the limits for a 2-d gate, given a set of coodinates for points.
-	 *
-	 * @param gatePoints a <code>Vector</code> of <code>Point</code> objects
-	 * @exception DataException thrown if called for wrong type of gate
-	 */
-	/*public void setLimits(List gatePoints) throws DataException {
-		int pointX;
-		int pointY;
-		Polygon gatePoly = new Polygon();
-		;
-
-		if (type != TWO_DIMENSION)
-			throw new DataException(
-				"setLimits(Vector): can only be called for gates"
-					+ " of type TWO_DIMENSION");
-		//make a plolygon from points
-		for (int i = 0; i < gatePoints.size(); i++) {
-			pointX = ((Point) gatePoints.get(i)).x;
-			pointY = ((Point) gatePoints.get(i)).y;
-			gatePoly.addPoint(pointX, pointY);
-		}
-		setLimits(gatePoly);
-	}*/
-
-	/**
 	 * Sets the limits for a 2-d gate, given a <code>Polygon</code>.
 	 *
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException thrown if called for 1d gate
 	 */
-	public void setLimits(Polygon gatePoly) throws DataException {
+	public void setLimits(Polygon gatePoly) {
 		bananaGate.reset();
 		for (int i=0; i<gatePoly.npoints; i++){
 			bananaGate.addPoint(gatePoly.xpoints[i],gatePoly.ypoints[i]);
 		}
 		if (type != TWO_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"setLimits(Polygon): can only be called for gates"
 					+ " of type TWO_DIMENSION");
 		//set points true if in plolygon
@@ -352,11 +327,11 @@ public class Gate implements Serializable {
 	 *
 	 * @param channel channel of interest to check
 	 * @return <code>true</code> if channel is inside gate, <code>false</code> if not.
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException thrown if called for 2d gate
 	 */
-	public boolean inGate(int channel) throws DataException {
+	public boolean inGate(int channel) {
 		if (type != ONE_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"inGate(int): can only be called for gates"
 					+ " of type ONE_DIMENSION");
 		return (isSet && (channel >= lowerLimit) && (channel <= upperLimit));
@@ -368,12 +343,12 @@ public class Gate implements Serializable {
 	 * @param channelX x-channel of interest
 	 * @param channelY y-channel of interest
 	 * @return <code>true</code> if channel is inside gate, <code>false</code> if not.
-	 * @exception DataException thrown if called for wrong type of gate
+	 * @throws UnsupportedOperationException thrown if called for 1d gate
 	 */
-	public boolean inGate(int channelX, int channelY) throws DataException {
+	public boolean inGate(int channelX, int channelY) {
 		boolean inside = false; //default value if not all conditions are met
 		if (type != TWO_DIMENSION)
-			throw new DataException(
+			throw new UnsupportedOperationException(
 				"inGate(int,int): can only be called for gates"
 					+ " of type TWO_DIMENSION");
 		if (isSet) {
