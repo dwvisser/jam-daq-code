@@ -4,16 +4,8 @@ import jam.data.Histogram;
 import jam.global.MessageHandler;
 import jam.util.*;
 import java.awt.Frame;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.nio.ByteOrder;
 import java.util.*;
 
 /**
@@ -34,23 +26,13 @@ public class ImpExpORNL extends ImpExp {
 	 * sequence of ASCII encoded characters to begin <code>drr</code> file.
 	 */
 	static final String SIGNATURE = "HHIRFDIR0001";
-	/** big endian order */
-	private final int BIG_ENDIAN = 1;
-	/** little endian order */
-	private final int LITTLE_ENDIAN = 0;
-	/** byte order either BIG_ENDIAN or LITTLE_ENDIAN */
-	private int byteOrder = BIG_ENDIAN;
+	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
-	/**
-	 *
-	 */
-//	List HistogramRecords;
-	
 	/** 
 	 * input steam for drr file 
 	 */
 	private DataInputStream disDrr;
-	
+
 	/**
 	 *  Stuff read in for every drr file
 	 */
@@ -101,7 +83,7 @@ public class ImpExpORNL extends ImpExp {
 
 	int[] iDnumber; //ID list
 
-	private byte[] tempInt = new byte[4];
+	//private byte[] tempInt = new byte[4];
 	private byte[] tempShort = new byte[2];
 
 	/**
@@ -109,20 +91,20 @@ public class ImpExpORNL extends ImpExp {
 	 */
 	public ImpExpORNL(Frame frame, MessageHandler msgHandler) {
 		super(frame, msgHandler);
-//		HistogramRecords = new Vector();
+		//		HistogramRecords = new Vector();
 	}
 
-	public ImpExpORNL(){
+	public ImpExpORNL() {
 		super();
 	}
 
-    public String getFileExtension(){
-    	return ".drr";
-    }
-    
-    public String getFormatDescription(){
-    	return "Oak Ridge DAMM";
-    }
+	public String getFileExtension() {
+		return ".drr";
+	}
+
+	public String getFormatDescription() {
+		return "Oak Ridge DAMM";
+	}
 
 	/**
 	 * Open a file which was written using ORNL .drr and .his format. 
@@ -161,7 +143,10 @@ public class ImpExpORNL extends ImpExp {
 					getFileName(lastFile),
 					"*.his",
 					FileUtilities.FORCE);
-			fileHis = new RandomAccessFile(new File(lastFile.getParentFile(),fileNameHis), "r");
+			fileHis =
+				new RandomAccessFile(
+					new File(lastFile.getParentFile(), fileNameHis),
+					"r");
 			//open .his file random access, read only	
 
 			//read in his file and load spectra	    
@@ -205,7 +190,17 @@ public class ImpExpORNL extends ImpExp {
 					+ "'.");
 		}
 		disDrr.read(totalHistByte); //number of histograms
-		checkByteOrder(totalHistByte);
+		byteOrder=ByteOrder.nativeOrder();//assume file was created locally
+		msgHandler.messageOut(", native byte order: "+byteOrder+", ");
+		if (!isCorrectByteOrder(byteArrayToInt(totalHistByte,0))){
+			if (byteOrder==ByteOrder.BIG_ENDIAN){
+				byteOrder = ByteOrder.LITTLE_ENDIAN;
+			} else {
+				byteOrder = ByteOrder.BIG_ENDIAN;
+			}
+		}
+		msgHandler.messageOut("file byte order: "+byteOrder+", ");
+		//checkByteOrder(totalHistByte);
 		totalHist = byteArrayToInt(totalHistByte, 0); //number of histograms
 
 		totalHalfWords = readInt(disDrr); //total number of 16 bit words
@@ -298,20 +293,29 @@ public class ImpExpORNL extends ImpExp {
 		//read in id list
 		for (int i = 0; i < totalHist; i++) {
 			iDnumber[i] = readInt(disDrr); // Id number 
+			//System.out.println(iDnumber[i]);
 		}
 
 		disDrr.close();
 	}
+	
+	private boolean isCorrectByteOrder(int numHists){
+		return numHists >=0 && numHists <= 8000;
+	}
+
 	/**
 	 * check the byte order by checking total number of histogram int
 	 */
-	private void checkByteOrder(byte[] i) {
+	/*private void checkByteOrder(byte[] i) {
 		if ((i[0] == 0) && (i[1] == 0)) {
-			byteOrder = BIG_ENDIAN;
+			byteOrder = ByteOrder.BIG_ENDIAN;
 		} else {
-			byteOrder = LITTLE_ENDIAN;
+			byteOrder = ByteOrder.LITTLE_ENDIAN;
 		}
-	}
+		msgHandler.messageOut(", "+byteOrder+" format, ", 
+		MessageHandler.CONTINUE);
+	}*/
+
 	/**
 	 * Read in a histogram
 	 *
@@ -335,7 +339,7 @@ public class ImpExpORNL extends ImpExp {
 		int[][] counts2d;
 
 		//copy to histogram variables
-		name = "" + iDnumber[k] + " " + titleDrr[k].trim();
+		name = iDnumber[k] + " " + titleDrr[k].trim();
 		number = iDnumber[k];
 		type = dim[k];
 		wordCh = chSize[k];
@@ -379,7 +383,8 @@ public class ImpExpORNL extends ImpExp {
 
 				hist = new Histogram(name, title, counts2d);
 				hist.setNumber(number);
-				if (msgHandler != null) msgHandler.messageOut(" .");
+				if (msgHandler != null)
+					msgHandler.messageOut(" .");
 
 				//Read in 1D Histogram		
 			} else {
@@ -411,13 +416,15 @@ public class ImpExpORNL extends ImpExp {
 				}
 				hist = new Histogram(name, title, counts);
 				hist.setNumber(number);
-				if (msgHandler != null) msgHandler.messageOut(" .");
+				if (msgHandler != null)
+					msgHandler.messageOut(" .");
 
 			}
 
 			//error creating histogram	    
 		} catch (DataException de) {
-			if (msgHandler != null) msgHandler.errorOutln(name + ": " + de.getMessage());
+			if (msgHandler != null)
+				msgHandler.errorOutln(name + ": " + de.getMessage());
 		}
 	}
 
@@ -628,7 +635,8 @@ public class ImpExpORNL extends ImpExp {
 			} else {
 				System.err.println("Unrecognized histogram type [ImpExpORNL]");
 			}
-			if (msgHandler != null) msgHandler.messageOut(". ");
+			if (msgHandler != null)
+				msgHandler.messageOut(". ");
 		}
 
 		dosHis.flush();
@@ -639,20 +647,26 @@ public class ImpExpORNL extends ImpExp {
 	 * Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
-		int rval;//return value
-		if (byteOrder == BIG_ENDIAN) {
-			rval = (
-				((array[offset] & 0xFF) << 24)
-					+ ((array[offset + 1] & 0xFF) << 16)
-					+ ((array[offset + 2] & 0xFF) << 8)
-					+ ((array[offset + 3] & 0xFF)));
-		} else {
-			rval = (
-				((array[offset] & 0xFF) << 0)
-					+ ((array[offset + 1] & 0xFF) << 8)
-					+ ((array[offset + 2] & 0xFF) << 16)
-					+ ((array[offset + 3] & 0xFF) << 24));
+		int rval;
+
+		byte a = array[offset];
+		byte b = array[offset + 1];
+		byte c = array[offset + 2];
+		byte d = array[offset + 3];
+		if (byteOrder == ByteOrder.BIG_ENDIAN) {
+			rval =
+				((a & 0xFF) << 24)
+					| ((b & 0xFF) << 16)
+					| ((c & 0xFF) << 8)
+					| (d & 0xFF);
+		} else { //LITTLE_ENDIAN
+			rval =
+				(a & 0xFF)
+					| ((b & 0xFF) << 8)
+					| ((c & 0xFF) << 16)
+					| ((d & 0xFF) << 24);
 		}
+		//System.out.println("a,b,c,d: "+a+","+b+","+c+","+d+": "+rval);
 		return rval;
 	}
 
@@ -660,18 +674,21 @@ public class ImpExpORNL extends ImpExp {
 	 * Get a short from an array of byes
 	 */
 	private short byteArrayToShort(byte[] array, int offset) {
-		short rval;//return value
-		if (byteOrder == BIG_ENDIAN) {
-			rval = (short)
-				(((array[offset] & 0xFF) << 8) + ((array[offset + 1] & 0xFF)));
-		} else {
-			rval = (short)
-				(((array[offset] & 0xFF)) + ((array[offset + 1] & 0xFF) << 8));
+		short rval; //return value
+		if (byteOrder == ByteOrder.BIG_ENDIAN) {
+			rval =
+				(short) (((array[offset] & 0xFF) << 8)
+					+ ((array[offset + 1] & 0xFF)));
+		} else { //byteOrder is LITTLE_ENDIAN
+			rval =
+				(short) (((array[offset] & 0xFF))
+					+ ((array[offset + 1] & 0xFF) << 8));
 		}
 		return rval;
 	}
 
 	private int readInt(DataInput di) throws IOException {
+		byte[] tempInt = new byte[4];
 		di.readFully(tempInt);
 		return byteArrayToInt(tempInt, 0);
 	}
