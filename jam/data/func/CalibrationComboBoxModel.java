@@ -1,20 +1,22 @@
 package jam.data.func;
 
-import java.util.List;
-
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.ComboBoxModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  * Used anywhere a JComboBox is used to select from the available 
  * calibration functions.
  *
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @author Ken Swartz
  * @version 1.4.2 RC 3
  */
-public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
+public final class CalibrationComboBoxModel implements ComboBoxModel {
 		
 	private transient Object selection;
 	private transient final Object selectSync=new Object();
+	private ListDataListener listener;
 
 	/**
 	 * @return list element at the specified index
@@ -44,17 +46,24 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public void setSelectedItem(Object anItem) {
 		synchronized (selectSync){
+			String selectionNew;
 			if (anItem==null){
-				selection=AbstractCalibrationFunction.getListNames().get(0);
+				selectionNew=(String)AbstractCalibrationFunction.getListNames().get(0);
 			} else if (anItem instanceof String){
-				selection=anItem;				
+				selectionNew=(String)anItem;				
 			}else if (anItem instanceof AbstractCalibrationFunction) {
-				selection=((AbstractCalibrationFunction)anItem).getName();				
+				selectionNew=((AbstractCalibrationFunction)anItem).getName();				
 			} else {
 				throw new IllegalArgumentException(getClass().getName()+
-				": only CalibrationFunction Strings or null please");
+				": only AbstractCalibrationFunction, Strings or null");
 			}
-		}
+
+			if (!selectionNew.equals(selection)) {
+				selection=selectionNew;
+				ListDataEvent lde= new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED,  0, getSize());
+				listener.contentsChanged(lde);				
+			} 
+		}		
 	}
 
 	/**
@@ -64,6 +73,14 @@ public final class CalibrationComboBoxModel extends DefaultComboBoxModel {
 		synchronized (selectSync){
 			return selection;
 		}
+	}
+	
+	public void addListDataListener(ListDataListener l) {
+		listener=l;
+	}
+	
+	public void removeListDataListener(ListDataListener l) {
+		listener=null;
 	}
 
 }

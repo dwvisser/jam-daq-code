@@ -257,8 +257,8 @@ public class CalibrationFit extends AbstractControl {
     }
     
     private void selectionChange() {
+		final String funcName = (String)comboBoxFunction.getSelectedItem();    	
     	if(!isUpdate) {
-    		final String funcName = (String)comboBoxFunction.getSelectedItem();
     		selectFunction(funcName);
     	}
     }
@@ -321,8 +321,8 @@ public class CalibrationFit extends AbstractControl {
                 rbSetCoeffs.setSelected(true);
             }
         }
+        //Change isUpdate state so we dont loop on item Change event
         isUpdate = true;
-        //FIXME KBS 
         comboBoxFunction.setSelectedItem(name);
         isUpdate = false;
         updateFields(calibrationFunction, isCalPts);
