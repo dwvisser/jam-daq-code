@@ -1,13 +1,15 @@
 /*
  */
 package jam.data.control;
+import jam.global.*;
+import jam.data.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import jam.global.*;
-import jam.data.*;
 import java.text.NumberFormat;
 import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class for adjusting the gain of 1d spectra.
@@ -46,72 +48,100 @@ Observer {
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
         status=JamStatus.instance();
+
+        final int CHOOSER_SIZE=200;
+        int hgap=5;
+        int vgap=10;
+		Dimension dim;
+
+        //UI Layout
         dgain=new JDialog(frame,"Gain Shift 1-D Histogram",false);
         dgain.setResizable(false);
-        int rows=6;
-        int cols=1;
-        int hgap=10;
-        int vgap=10;
         Container cdgain=dgain.getContentPane();
-        cdgain.setLayout(new GridLayout(rows,cols,hgap,vgap));
+        cdgain.setLayout(new BorderLayout(hgap, vgap));
+
         dgain.setLocation(20,50);
         dgain.addWindowListener(this);
-        JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        tfrom = new JTextField("1DHISTOGRAM", 16);
+
+		//Labels panel
+        JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap,vgap));
+        pLabels.setBorder(new EmptyBorder(20, 10,0, 0));
+        cdgain.add(pLabels, BorderLayout.WEST);
+        pLabels.add(new JLabel("Shift histogram", JLabel.RIGHT));
+        pLabels.add(new JLabel("Using" , JLabel.RIGHT));
+        label1 = new  JLabel("", JLabel.RIGHT);		//set by setUILabels
+        pLabels.add(label1);
+        label3 = new JLabel("", JLabel.RIGHT);		//set by setUILabels
+        pLabels.add(label3);
+        pLabels.add(new JLabel("To  histogram", JLabel.RIGHT));
+
+		//Entries Panel
+        JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap,vgap));
+        pEntries.setBorder(new EmptyBorder(20, 0, 0, 10));
+        cdgain.add(pEntries, BorderLayout.CENTER);
+
+        JPanel pfrom = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
+        tfrom = new JTextField("1DHISTOGRAM", 20);
+        dim= tfrom.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        tfrom.setPreferredSize(dim);
         tfrom.setEditable(false);
-        pfrom.add(new JLabel("Shift from"));
         pfrom.add(tfrom);
-        cdgain.add(pfrom);
-        JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        pto.add(new JLabel("to  histogram"));
+        pEntries.add(pfrom);
+
+        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
+        ButtonGroup cbg = new ButtonGroup();
+        cchan = new JCheckBox("Channels",false);
+        cbg.add(cchan);
+        cchan.addItemListener(this);
+        ccoeff = new JCheckBox("Coeffiecients",true);
+        cbg.add(ccoeff);
+        ccoeff.addItemListener(this);
+        pradio.add(cchan);
+        pradio.add(ccoeff);
+        pEntries.add(pradio);
+
+        JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
+        text1 = new JTextField("0.0",8);
+        text1.setBackground(Color.white);
+        pinfields.add(text1);
+        label2 = new JLabel("");			//set by setUILabels
+        pinfields.add(label2);
+        text2 = new JTextField("1.0",8);
+        text2.setBackground(Color.white);
+        pinfields.add(text2);
+        pEntries.add(pinfields);
+
+        JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
+        text3 = new JTextField("0.0",8);
+        poutfields.add(text3);
+        text3.setBackground(Color.white);
+        label4 = new JLabel("");			//set by setUILabels
+        poutfields.add(label4);
+        text4 = new JTextField("1.0",8);
+        text4.setBackground(Color.white);
+        poutfields.add(text4);
+        pEntries.add(poutfields);
+
+        JPanel pto = new JPanel(new FlowLayout(FlowLayout.LEFT,10,0));
         cto   = new JComboBox();
+        dim= cto.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cto.setPreferredSize(dim);
         cto.addItem("New Histogram");
         cto.addItemListener(this);
         pto.add(cto);
         lname = new JLabel("Name");
         pto.add(lname);
-        ttextto = new JTextField("new",8);
+        ttextto = new JTextField("new",20);
         ttextto.setForeground(Color.black);
         pto.add(ttextto);
-        cdgain.add(pto);
-        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        ButtonGroup cbg = new ButtonGroup();
-        cchan = new JCheckBox("Using Channels",false);
-        cbg.add(cchan);
-        cchan.addItemListener(this);
-        ccoeff = new JCheckBox("Using Coeffiecients",true);
-        cbg.add(ccoeff);
-        ccoeff.addItemListener(this);
-        pradio.add(cchan);
-        pradio.add(ccoeff);
-        cdgain.add(pradio);
-        JPanel pinfields = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        label1 = new JLabel("Input Gain = a1");
-        text1 = new JTextField("0.0",8);
-        text1.setBackground(Color.white);
-        label2 = new JLabel(" + b1 * ");
-        text2 = new JTextField("1.0",8);
-        text2.setBackground(Color.white);
-        pinfields.add(label1);
-        pinfields.add(text1);
-        pinfields.add(label2);
-        pinfields.add(text2);
-        cdgain.add(pinfields);
-        JPanel poutfields = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        label3 = new JLabel("Output Gain = a2");
-        text3 = new JTextField("0.0",8);
-        text3.setBackground(Color.white);
-        label4 = new JLabel(" + b2 * ");
-        text4 = new JTextField("1.0",8);
-        text4.setBackground(Color.white);
-        poutfields.add(label3);
-        poutfields.add(text3);
-        poutfields.add(label4);
-        poutfields.add(text4);
-        cdgain.add(poutfields);
-        //Buttons
+        pEntries.add(pto);
+
+
+        //Buttons panel
         JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        cdgain.add(pButtons);
+        cdgain.add(pButtons, BorderLayout.SOUTH);
         JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
         bOK =new JButton("OK");
         bOK.setActionCommand("ok");
@@ -128,6 +158,8 @@ Observer {
         pButtons.add(pcontrol);
 
         dgain.pack();
+
+        setUILabels(true);
     }
 
     /**
@@ -225,16 +257,31 @@ Observer {
         dgain.dispose();
     }
 
+	/**
+	 * Change the label in the UI depending on the gain shift type
+	 */
+	private void setUILabels(boolean state) {
+
+        if (state) {
+            label1.setText("Input Gain");
+            label2.setText("+ channel x");
+            label3.setText("Output Gain");
+            label4.setText("+ channel x");
+        } else {
+            label1.setText("Map Channel");
+            label2.setText("to");
+            label3.setText("Map Channel");
+            label4.setText("to");
+        }
+
+	}
     /**
      *
      */
     private void setUseCoeff(boolean state) throws DataException{
 
         if (state) {
-            label1.setText("Input Gain: ");
-            label2.setText("+ channel x");
-            label3.setText("Output Gain");
-            label4.setText("+ channel x");
+			setUILabels(state);
             getChannels();
             calculateCoefficients();
             text1.setText(format(a1));
@@ -242,10 +289,7 @@ Observer {
             text3.setText(format(a2));
             text4.setText(format(b2));
         } else {
-            label1.setText("Map Channel");
-            label2.setText("to");
-            label3.setText("Map Channel");
-            label4.setText("to");
+			setUILabels(state);
             getCoefficients();
             calculateChannels();
             text1.setText(format(chan1i));
@@ -344,7 +388,7 @@ Observer {
         }
         hto.setErrors(errOut);
 
-        messageHandler.messageOutln("GainShift "+hfrom.getName()+" to "+ name);
+        //messageHandler.messageOutln("GainShift "+hfrom.getName()+" to "+ name);
         messageHandler.messageOutln("Initial gain: "+format(a1)+" + "+format(b1)+" x ch; Final gain: "+
         format(a2)+" + "+format(b2) + " x ch");
     }
