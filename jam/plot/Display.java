@@ -110,7 +110,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	private void createGridPanel()
 	{
 		//Create main panel with tool bar 
-		final int size = 420;
+		final int size = 400;
 		setPreferredSize(new Dimension(size, size));
 		final int minsize = 400;
 		setMinimumSize(new Dimension(minsize, minsize));

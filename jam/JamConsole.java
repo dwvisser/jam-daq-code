@@ -184,7 +184,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 		final int lineHeight = textLog.getFontMetrics(textLog.getFont())
 				.getHeight();
 		final int logHeight = lineHeight * defaultLines;
-		textLog.setPreferredSize(new Dimension(700, logHeight));
+		textLog.setPreferredSize(new Dimension(600, logHeight));
 		addCommandListener(CommandManager.getInstance());
 	}
 
