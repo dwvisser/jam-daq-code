@@ -12,13 +12,9 @@ import java.util.*;
  */
 public  class Broadcaster extends Observable {
 
-    /**
-     * Constructor.  No initialization code inside, as it's not necessary.
-     */
-    public Broadcaster (){
-    }
-
-    /** Broadcast an event to all registered observers.
+    /** 
+     * Broadcast an event to all registered observers.
+     * 
      * @param command an <CODE>int</CODE> from <CODE>BroadcastEvent</CODE>
      * @param param a parameter to be wrapped in the <CODE>BroadcastEvent</CODE>
      * object
