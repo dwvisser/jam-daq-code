@@ -1,5 +1,7 @@
 package jam.util;
 
+import java.io.File;
+
 /**
  * Utility class for file dialogs.
  * 
@@ -89,5 +91,4 @@ public class FileUtilities {
 			
 		return fileName;
 	}
-	
 }

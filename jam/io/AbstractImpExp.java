@@ -52,7 +52,7 @@ public abstract class AbstractImpExp {
 	/**
 	 * to be used for printing messages to the <bold>jam</bold> msgHandler
 	 */
-	protected final MessageHandler msgHandler;
+	protected  MessageHandler msgHandler;
 
 	private static final Object LASTFILE_MON=new Object();
 	private final String lastFileKey;
@@ -83,6 +83,12 @@ public abstract class AbstractImpExp {
 		msgHandler=STATUS.getMessageHandler();
 	}
 
+	/**
+	 *Don't output messages to msgHandler 
+	 */ 
+	public void setSilent() {
+		msgHandler=null;
+	}
 	/**
 	 * Opens a file for reading. Subclasses generally should call <code>openFile(msg,ext)</code>
 	 * which is already implemented in <code>ImpExp</code>.
