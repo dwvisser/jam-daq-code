@@ -72,23 +72,10 @@ public class ImpExpSPE extends ImpExp {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public void readHist(InputStream buffin) throws ImpExpException {
-
 		try {
-			DataInputStream dis = new DataInputStream(buffin);
-
-			int magicInt;
-			char[] cName = new char[NAME_LENGTH];
-			int size;
-			float countsFloat[];
-			double counts[];
-			int tempInt;
-
-			String nameHist;
-			int typeHist;
-			String titleHist;
-
-			magicInt = dis.readInt();
-
+			final DataInputStream dis = new DataInputStream(buffin);
+			final char[] cName = new char[NAME_LENGTH];
+			final int magicInt = dis.readInt();
 			if (magicInt != MAGIC_WORD) { //magic word, int 24, hex 18, or ^X
 				throw new ImpExpException(
 					"Not a Spe File, incorrect magic word, word = "
@@ -99,25 +86,23 @@ public class ImpExpSPE extends ImpExp {
 			for (int i = 0; i < NAME_LENGTH; i++) {
 				cName[i] = (char) dis.readByte();
 			}
-			size = dis.readInt(); //IDIM1
-			tempInt = dis.readInt(); //should read in a 1, IDIM2
-			tempInt = dis.readInt(); //should read in a 1, IRED1
-			tempInt = dis.readInt(); //should read in a 1, IRED2
-			tempInt = dis.readInt(); //should read a hex  0018  dec 24 
-			tempInt = dis.readInt(); //should read a hex  2000  dec 8192	
-			counts = new double[size];
-			countsFloat = new float[size];
+			final int size = dis.readInt(); //IDIM1
+			dis.readInt(); //should read in a 1, IDIM2
+			dis.readInt(); //should read in a 1, IRED1
+			dis.readInt(); //should read in a 1, IRED2
+			dis.readInt(); //should read a hex  0018  dec 24 
+			dis.readInt(); //should read a hex  2000  dec 8192	
+			final double [] counts = new double[size];
+			final float [] countsFloat = new float[size];
 			for (int i = 0;
 				i < size;
 				i++) { //does not read last channel as Jam size
 				countsFloat[i] = dis.readFloat();
 				counts[i] = (double) countsFloat[i];
 			}
-			tempInt = dis.readInt(); //should read a hex  2000  dec 8192	
+			dis.readInt(); //should read a hex  2000  dec 8192	
 			/* parameters of histogram */
-			nameHist = String.valueOf(cName);
-			typeHist = Histogram.ONE_DIM_DOUBLE;
-			titleHist = String.valueOf(cName);
+			final String nameHist = String.valueOf(cName);
 			new Histogram(nameHist, nameHist, counts);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");

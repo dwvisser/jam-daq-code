@@ -94,27 +94,17 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 * @exception ImpExpException  thrown for general problems importing this format
 	 */
 	public void readHist(InputStream buffin) throws ImpExpException {
-
-		DataInputStream dis;
-
-		String areaTitle;
-		int areaSize;
-		Histogram hist;
-
-		dis = new DataInputStream(buffin);
+		final DataInputStream dis = new DataInputStream(buffin);
 		firstHeader = true;
-
-		//clear the data base			
-		DataBase.clearAllLists();
+		DataBase.clearAllLists();//clear the data base
 		try {
 			//read in data until end of file	
 			while (unPackHeaderXSYS(buffin)) {
-
 				//histogram 1d int 4 words		
 				if (areaDataType == XSYS1DI4) {
-					areaTitle = "" + areaNumber + "  " + areaName + " ";
+					String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					counts = unPackData1d(dis, areaSizeX, areaLengthPage);
-					hist = new Histogram(areaName, areaTitle, counts);
+					Histogram hist = new Histogram(areaName, areaTitle, counts);
 					hist.setNumber(areaNumber);
 
 					//calibrate histogram if flag set
@@ -126,18 +116,17 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 
 					//histogram 2d int 4 words		
 				} else if (areaDataType == XSYS2DI4) {
-					areaSize = Math.max(areaSizeX, areaSizeY);
-					areaTitle = "" + areaNumber + "  " + areaName + " ";
+					String areaTitle = areaNumber + "  " + areaName + " ";
 					counts2d =
 						unPackData2d(dis, areaSizeX, areaSizeY, areaLengthPage);
-					hist = new Histogram(areaName, areaTitle, counts2d);
+					Histogram hist = new Histogram(areaName, areaTitle, counts2d);
 					hist.setNumber(areaNumber);
 					if (msgHandler != null) msgHandler.messageOut(" .");
 					//dot indicating a spectrum read
 
 					//histogram 1d double words
 				} else if (areaDataType == XSYS1DR4) {
-					areaTitle = "" + areaNumber + "  " + areaName + " ";
+					//String areaTitle = "" + areaNumber + "  " + areaName + " ";
 					unPackUnknown(buffin, areaLengthPage);
 					//FIXME unPackData1dR(buffin,  areaLengthPage);		    		
 					//FIXMEhist = new Histogram(areaName, areaTitle, counts2d);
