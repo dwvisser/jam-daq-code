@@ -446,10 +446,17 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		helpMenu.add(about);
 		about.setActionCommand("about");
 		about.addActionListener(jamCommand);
+		
+		/*
+		final JMenuItem userG =new JMenuItem(
+					commands.getAction(CommandNames.USER_GUIDE));
+		helpMenu.add(userG);
+		*/					
 		final JMenuItem userG = new JMenuItem("User Guide\u2026");
 		helpMenu.add(userG);
 		userG.setActionCommand("userguide");
 		userG.addActionListener(getUserGuideListener());
+
 		final JMenuItem license = new JMenuItem("License\u2026");
 		helpMenu.add(license);
 		license.setActionCommand("license");
