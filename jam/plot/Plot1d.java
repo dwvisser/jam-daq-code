@@ -173,9 +173,9 @@ class Plot1d extends Plot {
 	 * including title, border, tickmarks, tickmark labels
 	 * and last but not least update the scrollbars
 	 */
-	void paintHistogram(Graphics g) {
+	void paintHistogram(Graphics g) { 
 		g.setColor(PlotColorMap.hist);
-		graph.drawHist(counts);
+		graph.drawHist(counts,binWidth);
 		if (autoPeakFind) {
 			try {
 				graph.drawPeakLabels(
@@ -230,7 +230,7 @@ class Plot1d extends Plot {
 	 */
 	void paintOverlay(Graphics g) {
 		g.setColor(PlotColorMap.overlay);
-		graph.drawHist(countsOverlay);
+		graph.drawHist(countsOverlay,binWidth);
 	}
 
 	/**
