@@ -327,7 +327,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 			getCoefficients();
 		}
 		/* Get input histogram. */
-		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? toDoubleArray((int[]) hfrom
+		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? intToDoubleArray((int[]) hfrom
 				.getCounts())
 				: (double[]) hfrom.getCounts();
 		final double[] errIn = hfrom.getErrors();
@@ -355,7 +355,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		final double[] errOut = errorGainShift(errIn, a1, b1, a2, b2, hto
 				.getErrors().length);
 		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
-			hto.setCounts(toIntArray(out));
+			hto.setCounts(doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}
@@ -592,27 +592,6 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		return y2;
 	}
 
-	/* non-javadoc:
-	 * Converts int array to double array
-	 */
-	private double[] toDoubleArray(int[] in) {
-		final double[] out = new double[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = in[i];
-		}
-		return out;
-	}
-
-	/* non-javadoc:
-	 * Converts double array to int array
-	 */
-	private int[] toIntArray(double[] in) {
-		final int[] out = new int[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = (int) Math.round(in[i]);
-		}
-		return out;
-	}
 
 	/*
 	 * format a number

@@ -362,7 +362,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		
 		/* cast to int array if needed */
 		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
-			hto.setCounts(toIntArray(out));
+			hto.setCounts(doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}
@@ -381,32 +381,11 @@ public class Combine extends AbstractManipulation implements Observer {
 	private double [] doubleCountsArray(Histogram hist) {
 		double [] dCounts;
 		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-			dCounts = toDoubleArray((int[]) hist.getCounts());
+			dCounts = intToDoubleArray((int[]) hist.getCounts());
 		} else {
 			dCounts = (double[]) hist.getCounts();
 		}
 		return dCounts;
-	}
-	/* non-javadoc:
-	 * Converts int array to double array
-	 */
-	private double[] toDoubleArray(int[] in) {
-		final double[] out = new double[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = in[i];
-		}
-		return out;
-	}
-
-	/* non-javadoc:
-	 * Converts double array to int array
-	 */
-	private int[] toIntArray(double[] in) {
-		final int[] out = new int[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = (int) Math.round(in[i]);
-		}
-		return out;
 	}
 
 	boolean validateFactors() throws DataException {

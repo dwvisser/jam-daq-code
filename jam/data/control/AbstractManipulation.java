@@ -84,14 +84,21 @@ public abstract class AbstractManipulation extends AbstractControl {
 			}
 		}
 		
-		//FIXME Throws error on setup offline
-		//comboBox.setSelectedIndex(0);
+		if (0<comboBox.getItemCount()) {			
+			comboBox.setSelectedIndex(0);
+		}
 	}
-	
+	/*
+	 * Is the histogram name one of a new histogram
+	 */
 	boolean isNewHistogram(String name){
 		return name.startsWith(NEW_HIST);
 	}
-	
+	/*
+	 * Get the group name from the combobox string
+	 * @param name The name in the combobox 
+	 * @return	the group name
+	 */
 	String parseGroupName(String name){
 		
 		StringBuffer sb = new StringBuffer(name);
@@ -99,7 +106,9 @@ public abstract class AbstractManipulation extends AbstractControl {
 		return groupName;
 
 	}
-	
+	/*
+	 * Create a new histogram given a group, name and size 
+	 */
 	Histogram createNewHistogram(String name, String histName, int size) {
 
 		Histogram hist;
@@ -117,5 +126,40 @@ public abstract class AbstractManipulation extends AbstractControl {
 
 	}
 
+	/* non-javadoc:
+	 * Converts int array to double array
+	 */
+	protected double[] intToDoubleArray(int[] in) {
+		final double[] out = new double[in.length];
+		for (int i = 0; i < in.length; i++) {
+			out[i] = in[i];
+		}
+		return out;
+	}
+
+	/* non-javadoc:
+	 * Converts double array to int array
+	 */
+	protected int[] doubleToIntArray(double[] in) {
+		final int[] out = new int[in.length];
+		for (int i = 0; i < in.length; i++) {
+			out[i] = (int) Math.round(in[i]);
+		}
+		return out;
+	}
+	
+	/*
+	 * Convert int 2 dim array to double 2 dim array
+	 */
+	protected double[][] intToDouble2DArray(int[][] in) {
+		double[][] rval = new double[in.length][in[0].length];
+		for (int i = 0; i < in.length; i++) {
+			for (int j = 0; j < in[0].length; j++) {
+				rval[i][j] = in[i][j];
+			}
+		}
+		return rval;
+	}
+	
 	
 }

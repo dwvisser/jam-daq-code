@@ -27,7 +27,6 @@ import java.util.Observer;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -54,7 +53,7 @@ public class Projections extends AbstractManipulation implements Observer {
 
 	private final JTextField tlim1, tlim2, ttextto;
 
-	private final JLabel lname;
+	private final JLabel lname, lChannels, lAnd;
 	
 	private String hfromname;
 	
@@ -135,11 +134,11 @@ public class Projections extends AbstractManipulation implements Observer {
 		});
 		pchannel.add(cchan);
 		setUseLimits(false);
-		final JComponent channels = new JLabel("Channels");
-		pchannel.add(channels);
+		lChannels = new JLabel("Channels");
+		pchannel.add(lChannels);
 		pchannel.add(tlim1);
-		final JComponent and = new JLabel("and");
-		pchannel.add(and);
+		lAnd = new JLabel("and");
+		pchannel.add(lAnd);
 		pchannel.add(tlim2);
 		pEntries.add(pchannel);
 		/* To histogram */
@@ -288,19 +287,26 @@ public class Projections extends AbstractManipulation implements Observer {
 		tlim2.setEnabled(state);
 		tlim1.setEditable(state);
 		tlim2.setEditable(state);
+		//FIXME KBS 
+		//lChannels.setEnabled(state);
+		//lAnd.setEnabled(state);
 	}
 
 	/* non-javadoc:
 	 * Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
-		final String state = (String) cchan.getSelectedItem();
+		final String typeProj;
+		double [] countsDouble=null;
 		final double[][] counts2d;
+		
+		final String state = (String) cchan.getSelectedItem();
+
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
 		if (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) {
 			counts2d = (double[][]) hfrom.getCounts();
 		} else {
-			counts2d = intToDouble((int[][]) hfrom.getCounts());
+			counts2d = intToDouble2DArray((int[][]) hfrom.getCounts());
 		}
 		String name = (String) cto.getSelectedItem();
 		final int[] limits;
@@ -331,43 +337,45 @@ public class Projections extends AbstractManipulation implements Observer {
 
 		}
 		
-		final String typeProj;
+		
 		if (cdown.isSelected()) {
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
 				typeProj = "counts between Y channels " + limits[0] + " and "
 						+ limits[1];
-				hto.setCounts(projectX(counts2d, hto.getSizeX(), limits[0],
-						limits[1]));
+				countsDouble= projectX(counts2d, hto.getSizeX(), limits[0],
+						limits[1]);
 			} else {
 				typeProj = "using gate " + state;
-				hto.setCounts(projectX(counts2d, hto.getSizeX(), Gate
-						.getGate(state)));
+				countsDouble= projectX(counts2d, hto.getSizeX(), Gate
+						.getGate(state));
 			}
 		} else { // cacross is true
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
 				typeProj = "counts between X channels " + limits[0] + " and "
 						+ limits[1];
-				hto.setCounts(projectY(counts2d, hto.getSizeX(), limits[0],
-						limits[1]));
+				countsDouble = projectY(counts2d, hto.getSizeX(), limits[0],
+						limits[1]);
+				
 			} else {
 				typeProj = "using gate " + state.trim();
-				hto.setCounts(projectY(counts2d, hto.getSizeX(), Gate
-						.getGate(state)));
+				countsDouble= projectY(counts2d, hto.getSizeX(), Gate
+						.getGate(state));
 			}
 		}
+		
+		if(hto.getType() ==Histogram.Type.ONE_D_DOUBLE) {
+			hto.setCounts(countsDouble);
+		} else if (hto.getType() ==Histogram.Type.ONE_DIM_INT) {
+			hto.setCounts(doubleToIntArray(countsDouble));
+		} else {
+			throw new DataException(
+			"Need to project to 1 dimension histogram");
+		}
+			
 		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
 				+ " to " + hto.getFullName() + " " + typeProj);
 	}
 
-	private double[][] intToDouble(int[][] in) {
-		double[][] rval = new double[in.length][in[0].length];
-		for (int i = 0; i < in.length; i++) {
-			for (int j = 0; j < in[0].length; j++) {
-				rval[i][j] = in[i][j];
-			}
-		}
-		return rval;
-	}
 
 	double[] projectX(double[][] inArray, int outLength, int _ll, int _ul) {
 		final double[] out = new double[outLength];
@@ -439,7 +447,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			}
 		} catch (NumberFormatException ne) {
 			throw new DataException(
-					"Invalid channel not a valid number [Projections]");
+					"Invalid channel not a valid numbers");
 		}
 		return out;
 	}
