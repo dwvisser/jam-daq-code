@@ -279,7 +279,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 			final Object content = be.getContent();
 			final Histogram h = content == null ? status.getCurrentHistogram()
 					: (Histogram) content;
-			adjustHistogramItems((Histogram) be.getContent());
+			adjustHistogramItems(h);
 		} else if (command == BroadcastEvent.Command.FIT_NEW) {
 			Action fitAction = (Action) (be.getContent());
 			fitting.add(new JMenuItem(fitAction));
