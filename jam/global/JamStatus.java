@@ -140,7 +140,7 @@ public final class JamStatus {
 	 * Sets <code>FILE</code> sort mode, and stores the given file as
 	 * the last file accessed.
 	 *  
-	 * @param file the file just loaded
+	 * @param file the file just loaded or saved
 	 */
 	public void setSortMode(File file) {
 		synchronized (sortMode) {
@@ -152,12 +152,19 @@ public final class JamStatus {
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
 
+	/**
+	 * @return the current sort mode
+	 */
 	public SortMode getSortMode() {
 		synchronized (sortMode) {
 			return sortMode;
 		}
 	}
 	
+	/**
+	 * @return the most recent file corresponding to the currently
+	 * loaded data
+	 */
 	public File getOpenFile(){
 		synchronized(sortMode){
 			return openFile;
