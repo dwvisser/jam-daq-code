@@ -145,14 +145,20 @@ public interface CommandNames {
 	String FLUSH="flush";
 	
 	/** Show the online sorting setup dialog. */
-	String SHOW_SETUP_ONLINE="showsetuponline";
+	String SHOW_SETUP_ONLINE="showSetupOnline";
 
 	/** Show the offline sorting setup dialog. */
-	String SHOW_SETUP_OFFLINE="showsetupoffline";
+	String SHOW_SETUP_OFFLINE="showSetupOffline";
+
+	/** Show the offline sorting setup dialog. */
+	String SHOW_SETUP_REMOTE="showSetupRemote";
 
 	/** Show the dialog eith event and buffer counts.*/
-	String SHOW_BUFFER_COUNT="showcounters";
+	String SHOW_BUFFER_COUNT="showCounters";
 	
+	/** Show the peak find setup.*/
+	String SHOW_PEAK_FIND="showPeakFind";
+
 	/** Show the dialog to add a fit*/
 	String SHOW_FIT_NEW="showfitnew";
 	

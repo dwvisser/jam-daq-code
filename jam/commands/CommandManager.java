@@ -99,6 +99,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
 		cmdMap.put(JamPrefs.VERBOSE, SetVerbose.class);
 		cmdMap.put(JamPrefs.DEBUG, SetDebug.class);
+		cmdMap.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);
+		cmdMap.put(SHOW_SETUP_REMOTE, ShowSetupRemote.class);
 	}
 	
 

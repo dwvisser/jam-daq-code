@@ -60,20 +60,18 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	 * @author Dale Visser
 	 * @author Ken Swartz
 	 */
-	MainMenuBar(
-		JamCommand jamCommand,
-		final Display d) {
+	MainMenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		console = status.getMessageHandler();
-		display = d;
+		display = status.getDisplay();
 		add(getFileMenu());
 		add(getSetupMenu());
 		add(getControlMenu());
 		add(getHistogramMenu());
 		add(getGateMenu());				
 		add(getScalerMenu());		
-		add(getPreferencesMenu(jamCommand));										
+		add(getPreferencesMenu());										
 		add(getFitMenu());				
 		add(getHelp());	
 	}
@@ -123,9 +121,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final JMenu setup = new JMenu("Setup");
 		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
 		setup.add(getMenuItem(SHOW_SETUP_OFFLINE));
-		final JMenuItem setupRemote = new JMenuItem("Remote Hookup\u2026");
-		setupRemote.setEnabled(false);
-		setup.add(setupRemote);
+		setup.add(getMenuItem(SHOW_SETUP_REMOTE));
 		return setup;
 	}
 
@@ -195,7 +191,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return helpMenu;
 	}		
 	
-	private JMenu getPreferencesMenu(JamCommand jamCommand) {
+	private JMenu getPreferencesMenu() {
 		final JMenu mPrefer = new JMenu("Preferences");
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_ZERO));
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));
@@ -204,12 +200,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
 		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
 		mPrefer.addSeparator();
-		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
-		final JMenuItem peakFindPrefs =
-			new JMenuItem("Peak Find Properties\u2026");
-		peakFindPrefs.setActionCommand("peakfind");
-		peakFindPrefs.addActionListener(jamCommand);
-		mPrefer.add(peakFindPrefs);
+		mPrefer.add(getMenuItem(SHOW_PEAK_FIND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
