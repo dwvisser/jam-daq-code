@@ -55,4 +55,9 @@ public final class StringUtilities {
 	    final CharBuffer charBuffer = ASCII.decode(buffer);
 	    return charBuffer.toString();
 	}	
+	
+	public byte [] getASCIIarray(String input){
+	    final ByteBuffer buffer = ASCII.encode(input);
+	    return buffer.array();
+	}
 }
