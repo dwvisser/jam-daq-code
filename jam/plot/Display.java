@@ -354,6 +354,9 @@ public class Display
 			(Point) be.getContent(),null);
 		} else if (command == BroadcastEvent.GATE_SET_REMOVE) {
 			currentPlot.displaySetGate(GateSetMode.GATE_REMOVE, null, null);
+		} else if (command == BroadcastEvent.GATE_SELECT) {
+			Gate gate =(Gate)(be.getContent());
+			currentPlot.displayGate(gate);
 		}
 	}
 
