@@ -174,7 +174,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 			classPath=new File(defSortPath);
         }
         frame=STATUS.getFrame();
-        sortControl=SortControl.getSingletonInstance();
+        sortControl=SortControl.getInstance();
         dispCount=DisplayCounters.getSingletonInstance();
         msgHandler=STATUS.getMessageHandler();
         final Container contents=getContentPane();

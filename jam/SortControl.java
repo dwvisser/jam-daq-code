@@ -70,8 +70,6 @@ public final class SortControl extends JDialog implements Controller {
 
 	private File outDirectory; //directory we last output files to.
 
-	private boolean setupLock;
-
 	private boolean writeEvents;
 
 	/**
@@ -104,7 +102,11 @@ public final class SortControl extends JDialog implements Controller {
 
 	private static SortControl instance = null;
 
-	public static SortControl getSingletonInstance() {
+	/**
+	 * 
+	 * @return the only instance of this class
+	 */
+	public static SortControl getInstance() {
 		if (instance == null) {
 			instance = new SortControl();
 		}
@@ -279,8 +281,11 @@ public final class SortControl extends JDialog implements Controller {
 	}
 
 	/**
-	 * Setup up called by SetupSortOff
+	 * Setup up called by SetupSortOff.
 	 *  
+	 * @param sortDaemon the sorting process
+	 * @param fromDaemon the process feeding data from storage
+	 * @param toDaemon the process that accepts data for storage
 	 */
 	public void setup(SortDaemon sortDaemon, StorageDaemon fromDaemon,
 			StorageDaemon toDaemon) {
@@ -584,9 +589,10 @@ public final class SortControl extends JDialog implements Controller {
 		return numFiles;
 	}
 
-	/**
-	 * Is the Browse for the File Output Name
-	 *  
+	/* non-javadoc:
+	 * Is the Browse for the output file.
+	 * 
+	 * @return oubput file
 	 */
 	private File getOutFile() {
 		File rval = new File(textOutFile.getText().trim()); //default return
@@ -611,12 +617,11 @@ public final class SortControl extends JDialog implements Controller {
 		setWriteEvents(true);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Lock the file and record input list while sorting This method is called
 	 * when sorting is actived to lock fields again when done to unlock fields
 	 */
 	private void lockFields(boolean lock) {
-		setupLock = lock;
 		final boolean notLock = !lock;
 		addfile.setEnabled(notLock);
 		addDir.setEnabled(notLock);

@@ -198,7 +198,7 @@ public final class Script implements Observer {
 	
 	private void initFields(){
 		sso=SetupSortOff.getSingletonInstance();
-		sortControl=SortControl.getSingletonInstance();
+		sortControl=SortControl.getInstance();
 		hdfio=new HDFIO(STATUS.getFrame(),null);
 	}
 	
