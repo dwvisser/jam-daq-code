@@ -27,7 +27,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 		super();
 	}
 	
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of histograms.
      */
     VirtualGroup convertGroup(Group group) {
@@ -291,7 +291,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 		int maxLength =0;
 	    final Iterator iter = dataList.iterator();
 	    while (iter.hasNext()) {
-	    	String name =((DataParameter)iter.next()).getName();
+	    	final String name =((DataParameter)iter.next()).getName();
 	        final int len = name.length();
 	        if (len >maxLength) {
 	        	maxLength =len;
@@ -303,7 +303,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 		int maxLength =0;
 	    final Iterator iter = dataList.iterator();
 	    while (iter.hasNext()) {
-	    	String name =((Scaler)iter.next()).getName();
+	    	final String name =((Scaler)iter.next()).getName();
 	        final int len = name.length();
 	        if (len >maxLength) {
 	        	maxLength =len;
