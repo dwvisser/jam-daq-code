@@ -236,9 +236,9 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets the current <code>Histogram</code>.
+	 * Sets the current <code>Group</code>.
 	 * 
-	 * @param hist the current histogram 
+	 * @param group the current group 
 	 */
 	public synchronized void setCurrentGroup(Group group) {
 		currentGroup=group;

@@ -148,7 +148,7 @@ public class Group {
 
 	/**
 	 *  Test if Group is a valid Group
-	 * @param hist
+	 * @param group the group to test
 	 * @return <code>true</code> if this group remains in the name mapping
 	 */
 	public static boolean isValid(Group group){
