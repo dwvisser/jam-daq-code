@@ -142,7 +142,7 @@ AcquisitionStatus, Observer {
 
     //menu items for Control menu
     private JCheckBoxMenuItem cstartacq,cstopacq;
-    private JMenuItem rewindtape,runacq,sortacq,statusacq,paramacq,iflushacq;
+    private JMenuItem runacq,sortacq,statusacq,paramacq,iflushacq;
 
     // select panel controls
     public JPanel pselect;
@@ -396,6 +396,7 @@ AcquisitionStatus, Observer {
         JMenuItem setupRemote = new JMenuItem ("Remote Hookup...");
         setupRemote.setActionCommand("remote");
         setupRemote.addActionListener(jamCommand);
+        setupRemote.setEnabled(false);
         setup.add(setupRemote);
         JMenu mcontrol = new JMenu("Control");
         menubar.add(mcontrol);
@@ -432,11 +433,6 @@ AcquisitionStatus, Observer {
         statusacq.setActionCommand("status");
         statusacq.addActionListener(jamCommand);
         mcontrol.add(statusacq);
-        rewindtape = new JMenuItem("Rewind Tape");
-        rewindtape.setEnabled(false);
-        rewindtape.setActionCommand("rewindtape");
-        rewindtape.addActionListener(jamCommand);
-        mcontrol.add(rewindtape);
         JMenu histogram = new JMenu("Histogram");
         menubar.add(histogram);
         JMenuItem histogramNew = new JMenuItem("New Histogram...");
@@ -520,7 +516,7 @@ AcquisitionStatus, Observer {
 		autoPeakFind.setEnabled(true);
 		autoPeakFind.addItemListener(jamCommand);
 		mPrefer.add(autoPeakFind);
-		JMenuItem peakFindPrefs =new JMenuItem("Peak Find Properties");
+		JMenuItem peakFindPrefs =new JMenuItem("Peak Find Properties...");
 		peakFindPrefs.setActionCommand("peakfind");
 		peakFindPrefs.addActionListener(jamCommand);	
 		mPrefer.add(peakFindPrefs);
@@ -562,19 +558,14 @@ AcquisitionStatus, Observer {
         helpMenu.add(about);
         about.setActionCommand("about");
         about.addActionListener(jamCommand);
-        JMenuItem license=new JMenuItem("License...");
-        helpMenu.add(license);
-        license.setActionCommand("license");
-        license.addActionListener(jamCommand);
         JMenuItem userG= new JMenuItem("User Guide...");
         helpMenu.add(userG);
         userG.setActionCommand("userguide");
         userG.addActionListener(getUserGuideListener());
-        JMenuItem jamDoc= new JMenuItem("Jam Code...");
-        helpMenu.add(jamDoc);
-        jamDoc.setEnabled(false);//until I get it working
-        jamDoc.setActionCommand("jamdoc");
-        jamDoc.addActionListener(jamCommand);
+        JMenuItem license=new JMenuItem("License...");
+        helpMenu.add(license);
+        license.setActionCommand("license");
+        license.addActionListener(jamCommand);
         return menubar;
     }
     
@@ -807,10 +798,8 @@ AcquisitionStatus, Observer {
             //impHist.setEnabled(false);
             setRunState(ACQ_OFF);
             if (mode==ONLINE_DISK){
-                rewindtape.setEnabled(false);
                 this.setTitle("Jam - Online Sorting TO disk");
             } else {
-                rewindtape.setEnabled(true);
                 this.setTitle("Jam - Online Sorting TO tape)");
             }
             //offline sort
@@ -832,10 +821,8 @@ AcquisitionStatus, Observer {
             //impHist.setEnabled(false);
             setRunState(ACQ_OFF);
             if(mode==OFFLINE_DISK){
-                rewindtape.setEnabled(false);
                 this.setTitle("Jam - Offline Sorting FROM disk");
             } else {
-                rewindtape.setEnabled(true);
                 this.setTitle("Jam - Offline Sorting FROM tape");
             }     
         } else if(mode==REMOTE){//remote display
@@ -852,7 +839,6 @@ AcquisitionStatus, Observer {
             openhdf.setEnabled(false);
             reloadhdf.setEnabled(false);
             impHist.setEnabled(false);
-            rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
             this.setTitle("Jam - Remote Mode");
             /* read in a file */
@@ -872,7 +858,6 @@ AcquisitionStatus, Observer {
             saveHDF.setEnabled(true);
             reloadhdf.setEnabled(false);
             impHist.setEnabled(true);
-            rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
             this.setTitle("Jam - "+openFileName);
         }
@@ -891,7 +876,6 @@ AcquisitionStatus, Observer {
             openhdf.setEnabled(true);
             reloadhdf.setEnabled(false);
             impHist.setEnabled(true);
-            rewindtape.setEnabled(false);
             setRunState(NO_ACQ);
             this.setTitle("Jam - sorting not enabled");
         }
@@ -1034,14 +1018,6 @@ AcquisitionStatus, Observer {
         fitItem.setActionCommand(name);
         fitItem.addActionListener(jamCommand.loadFit);
         fitting.add(fitItem);
-    }
-
-    /**
-     * FIXME
-     * enables rewind JMenu item
-     */
-    public void setRewindEnabled (boolean mode){
-        rewindtape.setEnabled(mode);
     }
 
     public boolean overlaySelected(){
