@@ -116,9 +116,9 @@ public final class VdataDescription extends DataObject {
             short[] types, short[] orders) {
         super(DFTAG_VH); //sets tag
         /* Double check dimensionality */
-        if ((names.length != types.length) || (names.length != orders.length)) {
+        if (names.length==0 || (names.length != types.length) || (names.length != orders.length)) {
             throw new IllegalArgumentException(
-                    "VdataDescription(): was not called with all same dimensions!");
+                    "All array parameters must have same length != 0.");
         }
         interlace = INTERLACE;
         fldnm = names;
@@ -132,16 +132,17 @@ public final class VdataDescription extends DataObject {
         offset = new short[nfields];
         ivsize = 0;
         for (int i = 0; i < nfields; i++) {
-            isize[i] = getIsize(types[i], order[i]);
+            isize[i] = getColumnByteLength(types[i], order[i]);
             ivsize += isize[i];
         }
         offset[0] = 0;
         // see p. 6-42 HDF 4.1r2 specs
-        int byteLength = 22 + 10 * nfields + name.length()
+        int byteLength = 23 + 10 * nfields + name.length()
                 + dataTypeName.length();
+        byteLength += fldnm[0].length();
         for (int i = 1; i < nfields; i++) {
             offset[i] = (short) (offset[i - 1] + isize[i - 1]);
-            byteLength += names[i].length();
+            byteLength += fldnm[i].length();
         }
         bytes = ByteBuffer.allocate(byteLength);
         bytes.putShort(interlace);
@@ -177,7 +178,10 @@ public final class VdataDescription extends DataObject {
         bytes.put((byte) 0); //unused additional (undocumented) byte
     }
 
-    private short getIsize(short type, short order) {
+    /* given a data type and column length, return the
+     * number of bytes needed for storage
+     */
+    static short getColumnByteLength(short type, short order) {
         final short rval;
         switch (type) {
         case DFNT_INT16:
