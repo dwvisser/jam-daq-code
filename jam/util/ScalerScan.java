@@ -270,7 +270,7 @@ public final class ScalerScan implements JamHDFFields {
 		return sname;
 	}
 
-	private int[] getScalerValues(HDFile in) {
+	private int[] getScalerValues(HDFile in) throws HDFException {
 		int[] values = null;
 		final VdataDescription VH =
 			VdataDescription.ofName(

@@ -1062,7 +1062,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open or reload @throws HDFException thrown if
      * unrecoverable error occurs
      */
-    private int getGates(FileOpenMode mode) {
+    private int getGates(FileOpenMode mode) throws HDFException {
     	int numGates=0;
         final StringUtilities su = StringUtilities.instance();
         Gate g = null;
@@ -1170,7 +1170,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open, reload or add @throws HDFException if there
      * is a problem retrieving scalers
      */
-    private int getScalers(FileOpenMode mode) {
+    private int getScalers(FileOpenMode mode) throws HDFException {
     	int numScalers =0;
         final VdataDescription VH = VdataDescription.ofName(DataObject
                 .ofType(DataObject.DFTAG_VH), SCALER_SECTION_NAME);
@@ -1252,7 +1252,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param mode whether to open or reload @throws HDFException if an error
      * occurs reading the parameters
      */
-    private int  getParameters(FileOpenMode mode) {
+    private int  getParameters(FileOpenMode mode) throws HDFException {
     	int numParameters =0;
         final VdataDescription VH = VdataDescription.ofName(DataObject
                 .ofType(DataObject.DFTAG_VH), PARAMETER_SECTION_NAME);

@@ -344,7 +344,7 @@ public final class Vdata extends DataObject {
 	 * @return <code>Integer</code> residing at cell
 	 * @throws IllegalStateException if cell doesn't contain an <code>Integer</code>
 	 */
-	public Integer getInteger(int row, int col) {
+	public Integer getInteger(int row, int col) throws HDFException {
 		int location;
 		int length = 4;
 		byte[] temp;
@@ -363,8 +363,7 @@ public final class Vdata extends DataObject {
 			try {
 				n = dis.readInt();
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(null,ioe.getMessage(),
-				getClass().getName(),JOptionPane.ERROR_MESSAGE);
+				throw new HDFException("VData Read Int ", ioe);
 			}
 			out = new Integer(n);
 		} else {
@@ -382,7 +381,7 @@ public final class Vdata extends DataObject {
 		return out;
 	}
 	
-	private Short getShort(int row, int col) {
+	private Short getShort(int row, int col) throws HDFException {
 		Short rval = null;
 		if (types[col] == VdataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
@@ -396,8 +395,7 @@ public final class Vdata extends DataObject {
 				value = dis.readShort();
 				dis.close();
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(null,ioe.getMessage(),
-				getClass().getName(),JOptionPane.ERROR_MESSAGE);
+				throw new HDFException("VData Read Short ", ioe);
 			}
 			rval = new Short(value);
 		} else {
@@ -418,7 +416,7 @@ public final class Vdata extends DataObject {
 	/* non-javadoc:
 	 * Get the float in the specified cell.  Of course, there'd better actually be a float there!
 	 */
-	Float getFloat(int row, int col) {
+	Float getFloat(int row, int col) throws HDFException {
 		int location;
 		int length = 4;
 		byte[] temp;
@@ -437,8 +435,7 @@ public final class Vdata extends DataObject {
 			try {
 				f = dis.readFloat();
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(null,ioe.getMessage(),
-				getClass().getName(),JOptionPane.ERROR_MESSAGE);
+				throw new HDFException("VData Read Float ", ioe);
 			}
 			out = new Float(f);
 		} else {
