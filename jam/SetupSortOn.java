@@ -43,7 +43,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 	File eventDirectory;
 
 	//strings of data entered
-	String experimentName, sortFile, eventInFile, eventOutFile;
+	String experimentName; 
+	//eventOutFile;
 	File sortDirectory;
 	String histDirectory, dataDirectory;
 	String logDirectory;
@@ -52,12 +53,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	String eventFile;
 
 	//text fields
-	private JTextField textExpName,
-		textSortPath,
-		textEventInStream,
-		textPathHist,
-		textPathData,
-		textEventOutStream;
+	private JTextField textExpName, textSortPath, textPathHist, textPathData;
 	private JTextField textPathLog;
 
 	/**
@@ -73,7 +69,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private JButton bok;
 	private JButton bapply;
 	private JCheckBox checkLock;
-	private JButton bbrowsef;
+	private JButton bbrowsef,bbrowseh,bbrowsed,bbrowsel;
 
 	//browse ?
 	private String diskPathData;
@@ -83,6 +79,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private JComboBox sortChoice;
 	private File sortClassPath;
 	private Class sortClass;
+
+	//streams GUI
+	JComboBox inStreamChooser, outStreamChooser;
 
 	//sorting classes
 	SortDaemon sortDaemon;
@@ -173,38 +172,21 @@ class SetupSortOn implements ActionListener, ItemListener {
 		d.setResizable(false);
 		d.setLocation(20, 50);
 		Container dcp = d.getContentPane();
-		dcp.setLayout(new GridLayout(0, 1, 5, 5));
+		dcp.setLayout(new BorderLayout());
 		//panel for experiment name
 		JPanel pn = new JPanel();
-		pn.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		dcp.add(pn);
+		pn.setLayout(new BorderLayout());
+		dcp.add(pn,BorderLayout.NORTH);
 
-		JLabel ln = new JLabel("        Experiment Name", Label.RIGHT);
-		pn.add(ln);
+		JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
+		pn.add(ln,BorderLayout.WEST);
 
 		textExpName = new JTextField(defaultName);
+		textExpName.setToolTipText("Used to name data files. Only the first 20 characters get recorded in event file headers.");
 		textExpName.setColumns(20);
 		textExpName.setBackground(Color.white);
-		pn.add(textExpName);
-		pn.add(new Label("              "));
+		pn.add(textExpName,BorderLayout.CENTER);
 
-		// panel for sort file
-		/*JPanel pf= new JPanel();
-		pf.setLayout(new FlowLayout(FlowLayout.RIGHT,5,5));
-		dcp.add(pf);
-		
-		JLabel lf=new JLabel("Sort file (.class)",Label.RIGHT);
-		pf.add(lf);
-		
-		textSortFile =new JTextField(defaultSort);
-		textSortFile.setColumns(FILE_TEXT_COLUMNS);
-		textSortFile.setBackground(Color.white);
-		pf.add(textSortFile);
-		
-		JButton bbrowsef = new JButton(" Browse ");
-		pf.add(bbrowsef);
-		bbrowsef.setActionCommand("bsort");
-		bbrowsef.addActionListener(this);*/
 		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		ButtonGroup pathType = new ButtonGroup();
 		defaultPath =
@@ -237,8 +219,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		});
 		pradio.add(defaultPath);
 		pradio.add(specify);
-		//pNorth.add(pradio);
-		dcp.add(pradio);
+		pn.add(pradio,BorderLayout.SOUTH);
 
 		JPanel pCenter = new JPanel(new BorderLayout());
 		dcp.add(pCenter, BorderLayout.CENTER);
@@ -252,9 +233,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 			"Use Browse button to change. \nMay fail if classes have unresolvable references."
 				+ "\n* use the sort.classpath property in your JamUser.ini file to set this automatically.");
 		textSortPath.setColumns(35);
-		/*textSortPath.setBackground(Color.gray);
-		textSortPath.setForeground(Color.black);
-		textSortPath.setEditable(false);*/
 		textSortPath.setEnabled(false);
 		pf.add(textSortPath, BorderLayout.CENTER);
 		bbrowsef = new JButton("Browse");
@@ -299,117 +277,124 @@ class SetupSortOn implements ActionListener, ItemListener {
 		}
 		pChoosers.add(sortChoice);
 
-		// panel input stream
-		JPanel pin = new JPanel();
-		pin.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(pin);
+		pChooserLabels.add(new JLabel("Event input stream", JLabel.RIGHT));
 
-		pin.add(new JLabel("Event input stream (.class)", JLabel.LEFT));
+		Set lhs =
+			new LinkedHashSet(
+				RTSI.find("jam.sort.stream", EventInputStream.class, false));
+		lhs.remove(EventInputStream.class);
+		inStreamChooser = new JComboBox(new Vector(lhs));
+		inStreamChooser.setToolTipText(
+			"Select the reader for your event data format.");
+		it = lhs.iterator();
+		notDone = it.hasNext();
+		while (notDone) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			boolean match = name.equals(defaultEventInStream);
+			if (match) {
+				inStreamChooser.setSelectedItem(c);
+			}
+			notDone = (!match) & it.hasNext();
+		}
+		pChoosers.add(inStreamChooser);
 
-		textEventInStream = new JTextField(defaultEventInStream);
-		textEventInStream.setColumns(FILE_TEXT_COLUMNS);
-		textEventInStream.setBackground(Color.white);
-		textEventInStream.setForeground(Color.black);
-		pin.add(textEventInStream);
+		pChooserLabels.add(new JLabel("Event output stream", Label.RIGHT));
 
-		JButton bbrowsein = new JButton("Browse");
-		pin.add(bbrowsein);
-		bbrowsein.setActionCommand("binstream");
-		bbrowsein.addActionListener(this);
+		lhs =
+			new LinkedHashSet(
+				RTSI.find("jam.sort.stream", EventOutputStream.class, false));
+		lhs.remove(EventOutputStream.class);
+		outStreamChooser = new JComboBox(new Vector(lhs));
+		outStreamChooser.setToolTipText(
+			"Select the writer for your output event format.");
+		it = lhs.iterator();
+		notDone = it.hasNext();
+		while (notDone) {
+			Class c = (Class) it.next();
+			String name = c.getName();
+			boolean match = name.equals(defaultEventOutStream);
+			if (match) {
+				outStreamChooser.setSelectedItem(c);
+			}
+			notDone = (!match) & it.hasNext();
+		}
+		pChoosers.add(outStreamChooser);
 
-		JPanel pout = new JPanel();
-		pout.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(pout);
+		JPanel pPathArea = new JPanel(new BorderLayout());
+		JPanel pPathLabels = new JPanel(verticalGrid);
+		JPanel pPathFields = new JPanel(verticalGrid);
+		JPanel pPathButtons = new JPanel(verticalGrid);
+		pPathArea.add(pPathLabels, BorderLayout.WEST);
+		pPathArea.add(pPathFields, BorderLayout.CENTER);
+		pPathArea.add(pPathButtons, BorderLayout.EAST);
+		pCenter.add(pPathArea, BorderLayout.SOUTH);
 
-		JLabel lout = new JLabel("", Label.LEFT);
-		lout.setText("Event output stream (.class)");
-		pout.add(lout);
-
-		textEventOutStream = new JTextField(defaultEventOutStream);
-		textEventOutStream.setColumns(FILE_TEXT_COLUMNS);
-		textEventOutStream.setBackground(Color.white);
-		textEventOutStream.setForeground(Color.black);
-		pout.add(textEventOutStream);
-
-		JButton bbrowseout = new JButton("Browse");
-		pout.add(bbrowseout);
-		bbrowseout.setActionCommand("boutstream");
-		bbrowseout.addActionListener(this);
-
-		// panel histogram path
-		JPanel ph = new JPanel();
-		ph.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(ph);
-
-		JLabel lh = new JLabel("Path for Histograms", Label.RIGHT);
-		ph.add(lh);
+		JLabel ltemp=new JLabel("HDF path", JLabel.RIGHT);
+		pPathLabels.add(ltemp);		
 
 		textPathHist = new JTextField(defaultSpectra);
 		textPathHist.setColumns(FILE_TEXT_COLUMNS);
 		textPathHist.setBackground(Color.white);
-		ph.add(textPathHist);
+		textPathHist.setToolTipText("Path for storing HDF summary (spectra, gates, & scalers) files at the end of each run.");
+		pPathFields.add(textPathHist);
 
-		JButton bbrowseh = new JButton(" Browse ");
-		ph.add(bbrowseh);
+		bbrowseh = new JButton("Browse");
+		pPathButtons.add(bbrowseh);
 		bbrowseh.setActionCommand("bhist");
 		bbrowseh.addActionListener(this);
 
-		// panel data path
-		JPanel pd = new JPanel();
-		pd.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(pd);
-
-		JLabel ld = new JLabel("Path for Events", Label.RIGHT);
-		pd.add(ld);
+		ltemp=new JLabel("Event path", JLabel.RIGHT);
+		pPathLabels.add(ltemp);
 
 		textPathData = new JTextField(defaultEvents);
 		textPathData.setColumns(FILE_TEXT_COLUMNS);
 		textPathData.setBackground(Color.white);
-		pd.add(textPathData);
-
-		JButton bbrowsed = new JButton(" Browse ");
-		pd.add(bbrowsed);
+		textPathData.setToolTipText("Path to store event data in.");
+		pPathFields.add(textPathData);
+		
+		bbrowsed = new JButton("Browse");
+		pPathButtons.add(bbrowsed);
 		bbrowsed.setActionCommand("bdata");
 		bbrowsed.addActionListener(this);
 
-		// panel log path
-		JPanel pl = new JPanel();
-		pl.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(pl);
-
-		JLabel ll = new JLabel("Path for Log Files", Label.RIGHT);
-		pl.add(ll);
+		ltemp=new JLabel("Log file path", JLabel.RIGHT);
+		pPathLabels.add(ltemp);
 
 		textPathLog = new JTextField(defaultLog);
 		textPathLog.setColumns(FILE_TEXT_COLUMNS);
 		textPathLog.setBackground(Color.white);
-		pl.add(textPathLog);
+		textPathLog.setToolTipText("Path to store the console log in.");
+		pPathFields.add(textPathLog);
 
-		JButton bbrowsel = new JButton(" Browse ");
-		pl.add(bbrowsel);
+		bbrowsel = new JButton("Browse");
+		pPathButtons.add(bbrowsel);
 		bbrowsel.setActionCommand("blog");
 		bbrowsel.addActionListener(this);
 
-		// panel for storage mode
 		JPanel pt = new JPanel();
-		pt.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		dcp.add(pt);
+		pt.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		pPathArea.add(pt,BorderLayout.SOUTH);
 
 		textSortInterval = new JTextField("1");
+		textSortInterval.setToolTipText("Sort every n'th event. 1 means sort all events.");
 		textSortInterval.setColumns(3);
 		textSortInterval.setBackground(Color.white);
 		pt.add(textSortInterval);
 
-		JLabel lsi = new JLabel("Sort Sample ", Label.LEFT);
+		JLabel lsi = new JLabel("Sort Sample", JLabel.LEFT);
 		pt.add(lsi);
 
 		ButtonGroup eventMode = new ButtonGroup();
 		ctape = new JRadioButton("Events to Tape", false);
+		ctape.setToolTipText("Send events to tape, not implemented.");
+		ctape.setEnabled(false);
 		eventMode.add(ctape);
 		ctape.addItemListener(this);
 		pt.add(ctape);
 
 		cdisk = new JRadioButton("Events to Disk", true);
+		cdisk.setToolTipText("Send events to disk.");
 		eventMode.add(cdisk);
 		cdisk.addItemListener(this);
 		pt.add(cdisk);
@@ -417,24 +402,24 @@ class SetupSortOn implements ActionListener, ItemListener {
 		clog = new JCheckBox("Log Commands", false);
 		clog.addItemListener(this);
 		clog.setSelected(true);
-		pt.add(clog);
+		/* for the time being, don't bother with this option */
+		//pt.add(clog);
 
 		// panel for buttons
-		JPanel pb = new JPanel();
-		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		dcp.add(pb);
+		JPanel pb = new JPanel(new GridLayout(1,4,5,5));
+		dcp.add(pb,BorderLayout.SOUTH);
 
-		bok = new JButton("   OK   ");
+		bok = new JButton("OK");
 		bok.setActionCommand("ok");
 		bok.addActionListener(this);
 		pb.add(bok);
 
-		bapply = new JButton(" Apply  ");
+		bapply = new JButton("Apply");
 		bapply.setActionCommand("apply");
 		bapply.addActionListener(this);
 		pb.add(bapply);
 
-		JButton bcancel = new JButton(" Cancel ");
+		JButton bcancel = new JButton("Cancel");
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
@@ -509,25 +494,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 	public void actionPerformed(ActionEvent ae) {
 		String command = ae.getActionCommand();
 		try {
-			if (command == "bsort") {
-				sortFile = getSortFile();
-				//textSortFile.setText(sortDirectory+sortFile);
-				if (sortFile.endsWith(".class")) {
-					sortFile =
-						sortFile.substring(0, sortFile.lastIndexOf(".class"));
-				}
-				//textSortFile.setText("sort."+sortFile);
-			} else if (command == "blog") {
+			if (command == "blog") {
 				String logDirectory = getPathLog();
 				textPathLog.setText(logDirectory);
-			} else if (command == "binstream") {
-				//eventDirectory=getEventStream();
-				textEventInStream.setText(getEventStream());
-				//note side effect: eventDirectory gets set
-			} else if (command == "boutstream") {
-				//eventDirectory=getEventStream();
-				textEventOutStream.setText(getEventStream());
-				//note side effect: eventDirectory gets set
 			} else if (command == "bhist") {
 				histDirectory = getPathHist();
 				textPathHist.setText(histDirectory);
@@ -553,12 +522,17 @@ class SetupSortOn implements ActionListener, ItemListener {
 						"Setup Online Data Acquisition,  Experiment Name: "
 							+ experimentName);
 					loadSorter(); //load sorting routine
-					jamConsole.messageOutln(
-						"Loaded sort class: " + sortFile + ".class");
 					if (sortRoutine != null) {
 						resetAcq();
 						//Kill all existing Daemons and clear data areas
 						setupAcq(); //create daemons
+						jamConsole.messageOutln(
+							"Loaded sort routine "
+								+ sortRoutine.getClass().getName()
+								+ ", input stream "
+								+ eventInputStream.getClass().getName()
+								+ " and output stream "
+								+ eventOutputStream.getClass().getName());
 						if (sortRoutine.getEventSizeMode()
 							== SortRoutine.SET_BY_CNAF) {
 							setupCamac(); //set the camac crate
@@ -624,9 +598,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 */
 	private void loadNames() throws JamException {
 		experimentName = textExpName.getText().trim();
-		//sortFile=textSortFile.getText().trim();
-		eventInFile = textEventInStream.getText().trim();
-		eventOutFile = textEventOutStream.getText().trim();
 		histDirectory = textPathHist.getText().trim() + separator;
 		dataDirectory = textPathData.getText().trim() + separator;
 		logDirectory = textPathLog.getText().trim() + separator;
@@ -645,18 +616,24 @@ class SetupSortOn implements ActionListener, ItemListener {
 	 */
 	private void loadSorter() throws JamException {
 		try { // create sort class
-			if (specify.isSelected()){
+			if (specify.isSelected()) {
 				/* we call loadClass() in order to guarantee latest version */
-				sortRoutine= (SortRoutine)RTSI.loadClass(sortClassPath,sortClass.getName()).newInstance();// create sort class
-			} else {//use default loader
-				sortRoutine=(SortRoutine)sortClass.newInstance();
+				sortRoutine =
+					(SortRoutine) RTSI
+						.loadClass(sortClassPath, sortClass.getName())
+						.newInstance();
+				// create sort class
+			} else { //use default loader
+				sortRoutine = (SortRoutine) sortClass.newInstance();
 			}
 		} catch (InstantiationException ie) {
 			//            sortClass=null;
-			throw new JamException("Cannot instantize sort file: " + sortFile);
+			throw new JamException(
+				"Cannot instantiate sort routine: " + sortClass.getName());
 		} catch (IllegalAccessException iae) {
 			//            sortClass=null;
-			throw new JamException(" Cannot access sort file: " + sortFile);
+			throw new JamException(
+				" Cannot access sort routine: " + sortClass.getName());
 		}
 	}
 
@@ -688,52 +665,42 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//typical setup of event streams
 		try { //create new event input stream class
 			eventInputStream =
-				(EventInputStream) Class.forName(eventInFile).newInstance();
+				(EventInputStream) ((Class) inStreamChooser.getSelectedItem())
+					.newInstance();
 			eventInputStream.setConsole(msgHandler);
-		} catch (ClassNotFoundException ce) {
-			//            eventInputStream=null;
-			throw new JamException(
-				getClass().getName()
-					+ ": can't find EventInputStream class: "
-					+ eventInFile);
 		} catch (InstantiationException ie) {
 			//            eventInputStream=null;
 			ie.printStackTrace();
 			throw new JamException(
 				getClass().getName()
-					+ ": can't instantiate EventInputStream class: "
-					+ eventInFile);
+					+ ": can't instantiate EventInputStream: "
+					+ inStreamChooser.getSelectedItem());
 		} catch (IllegalAccessException iae) {
 			//            eventInputStream=null;
 			throw new JamException(
 				getClass().getName()
-					+ ": illegal access to EventInputStream class: "
-					+ eventInFile);
+					+ ": illegal access to EventInputStream: "
+					+ inStreamChooser.getSelectedItem());
 		}
-		//eventOutputStream = new L002OutputStream(sortClass.getEventSize());
 		try { //create new event input stream class
 			eventOutputStream =
-				(EventOutputStream) Class.forName(eventOutFile).newInstance();
+				(EventOutputStream) ((Class) outStreamChooser
+					.getSelectedItem())
+					.newInstance();
 			eventOutputStream.setEventSize(sortRoutine.getEventSize());
-		} catch (ClassNotFoundException ce) {
-			//            eventOutputStream=null;
-			throw new JamException(
-				getClass().getName()
-					+ ": can't find EventOutputStream class: "
-					+ eventInFile);
 		} catch (InstantiationException ie) {
 			//            eventOutputStream=null;
 			ie.printStackTrace();
 			throw new JamException(
 				getClass().getName()
 					+ ": can't instantiate EventOutputStream class: "
-					+ eventInFile);
+					+ outStreamChooser.getSelectedItem());
 		} catch (IllegalAccessException iae) {
 			//            eventOutputStream=null;
 			throw new JamException(
 				getClass().getName()
 					+ ": illegal access to EventOutputStream class: "
-					+ eventInFile);
+					+ outStreamChooser.getSelectedItem());
 		}
 		//create sorter daemon
 		sortDaemon = new SortDaemon(runControl, msgHandler);
@@ -797,7 +764,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 		frontEnd.setupVME_Map(sortRoutine.getVME_Map());
 		VME_Map map = sortRoutine.getVME_Map();
 		frontEnd.sendScalerInterval(map.getScalerInterval());
-		/*eventInputStream.setScalerTable(map.getScalerTable());*/
 	}
 
 	/**
@@ -841,28 +807,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 			tapePathData = textPathData.getText();
 			textPathData.setText(diskPathData);
 		}
-	}
-
-	/**
-	 * Is the Browse for the sort class file
-	 * which showed be in ../jam/sort subdirectory
-	 * part of the <code>sort</code> Package
-	 *
-	 * @author Ken Swartz
-	 * @author Dale Visser
-	 */
-	private String getSortFile() {
-		String[] types = new String[] { "class" };
-		JFileChooser fd = new JFileChooser(sortDirectory);
-		fd.setFileFilter(new ExtensionFileFilter(types, "Java .class files"));
-		int option = fd.showOpenDialog(jamMain);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-			&& fd.getSelectedFile() != null) {
-			sortDirectory = fd.getSelectedFile(); //save current directory
-			sortFile = fd.getSelectedFile().getName();
-		}
-		return sortFile;
 	}
 
 	/**
@@ -939,41 +883,41 @@ class SetupSortOn implements ActionListener, ItemListener {
 			}
 			checkLock.setSelected(true);
 			checkLock.setEnabled(true);
-			textExpName.setEditable(false);
-			textExpName.setBackground(Color.lightGray);
-			textEventInStream.setEditable(false);
-			textEventInStream.setBackground(Color.lightGray);
-			textEventOutStream.setEditable(false);
-			textEventOutStream.setBackground(Color.lightGray);
-			textPathHist.setEditable(false);
-			textPathHist.setBackground(Color.lightGray);
-			textPathData.setEditable(false);
-			textPathData.setBackground(Color.lightGray);
-			textPathLog.setEditable(false);
-			textPathLog.setBackground(Color.lightGray);
-			textSortInterval.setEditable(false);
-			textSortInterval.setBackground(Color.lightGray);
+			textExpName.setEnabled(false);
+			inStreamChooser.setEnabled(false);
+			outStreamChooser.setEnabled(false);
+			textPathHist.setEnabled(false);
+			textPathData.setEnabled(false);
+			textPathLog.setEnabled(false);
+			textSortInterval.setEnabled(false);
 			bok.setEnabled(false);
 			bapply.setEnabled(false);
+			bbrowsef.setEnabled(false);
+			bbrowseh.setEnabled(false);
+			bbrowsed.setEnabled(false);
+			bbrowsel.setEnabled(false);
+			sortChoice.setEnabled(false);
+			specify.setEnabled(false);
+			defaultPath.setEnabled(false);
 		} else {
 			jamMain.setSortMode(JamMain.NO_ACQ);
 			checkLock.setEnabled(false);
-			textExpName.setEditable(true);
-			textExpName.setBackground(Color.white);
-			textEventInStream.setEditable(true);
-			textEventInStream.setBackground(Color.white);
-			textEventOutStream.setEditable(true);
-			textEventOutStream.setBackground(Color.white);
-			textPathHist.setEditable(true);
-			textPathHist.setBackground(Color.white);
-			textPathData.setEditable(true);
-			textPathData.setBackground(Color.white);
-			textPathLog.setEditable(true);
-			textPathLog.setBackground(Color.white);
-			textSortInterval.setEditable(true);
-			textSortInterval.setBackground(Color.white);
+			textExpName.setEnabled(true);
+			inStreamChooser.setEnabled(true);
+			outStreamChooser.setEnabled(true);
+			textPathHist.setEnabled(true);
+			textPathData.setEnabled(true);
+			textPathLog.setEnabled(true);
+			specify.setEnabled(true);
+			defaultPath.setEnabled(true);
+			textSortInterval.setEnabled(true);
 			bok.setEnabled(true);
 			bapply.setEnabled(true);
+			bbrowsef.setEnabled(specify.isSelected());
+			bbrowseh.setEnabled(true);
+			bbrowsed.setEnabled(true);
+			bbrowsel.setEnabled(true);
+			sortChoice.setEnabled(true);
 		}
 	}
 
