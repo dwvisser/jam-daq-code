@@ -39,19 +39,26 @@ public class MainMenuBar extends JMenuBar {
 		public FilePrintAction() {
 			super("Print...");
 		}
+		
+		private boolean firstTime=true;
 
 		/**
 		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 		 */
 		public void actionPerformed(ActionEvent ae) {
+			if (firstTime){
+				console.warningOutln("On some systems, it will be necessary to first "+
+				"use 'Page Setup...' for your hardcopy to have correct size and margins.");
+				firstTime=false;
+			}
 			PrinterJob pj = PrinterJob.getPrinterJob();
 			ComponentPrintable cp = display.getComponentPrintable();
 			pj.setPrintable(cp, mPageFormat);
 			if (pj.printDialog()) {
+				console.messageOut("Preparing to send histogram '" + 
+				JamStatus.instance().getCurrentHistogramName()+"' to printer...",
+				MessageHandler.NEW);
 				try {
-					console.messageOut("Preparing to send histogram '" + 
-					JamStatus.instance().getCurrentHistogramName()+"' to printer...",
-					MessageHandler.NEW);
 					display.setRenderForPrinting(true, mPageFormat);
 					pj.print();
 					console.messageOut("sent.", MessageHandler.END);
