@@ -21,6 +21,8 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.help.*;
+import java.net.*;
 
 /**
  *
@@ -126,7 +128,7 @@ AcquisitionStatus, Observer {
      */
     JamConsole console;
 
-    static public final String JAM_VERSION = "1.4 alpha";
+    static public final String JAM_VERSION = "1.4 beta";
     
     /**
      * Program exit dialog box.
@@ -567,9 +569,10 @@ AcquisitionStatus, Observer {
         JMenuItem userG= new JMenuItem("User Guide...");
         helpMenu.add(userG);
         userG.setActionCommand("userguide");
-        userG.addActionListener(jamCommand);
+        userG.addActionListener(getUserGuideListener());
         JMenuItem jamDoc= new JMenuItem("Jam Code...");
         helpMenu.add(jamDoc);
+        jamDoc.setEnabled(false);//until I get it working
         jamDoc.setActionCommand("jamdoc");
         jamDoc.addActionListener(jamCommand);
         return menubar;
@@ -1060,6 +1063,22 @@ AcquisitionStatus, Observer {
         gateChooser.setSelectedIndex(0);
     }
 
+	/**
+	 * Return an ActionListener cabable of displaying the User
+	 * Guide.
+	 */
+	private ActionListener getUserGuideListener() {
+		HelpSet hs;
+		String helpsetName="help/jam.hs";
+		try {
+			URL hsURL = getClass().getClassLoader().getResource(helpsetName);
+			hs = new HelpSet(null, hsURL);
+		} catch (Exception ee) {
+			System.out.println("HelpSet " + helpsetName + " not found");
+			return null;
+		}
+		 return new CSH.DisplayHelpFromSource(hs.createHelpBroker());
+	}
 
     /**
      * Main method that is run to start up full Jam process
