@@ -22,7 +22,7 @@ import java.io.*;
  */
 class Help {
 
-	private String browser, jamHome, docsPath;
+	private String jamHome;
 	private final Frame frame;
 	private final JDialog aboutD, licenseD;
 	private final MessageHandler messageHandler;
@@ -37,9 +37,7 @@ class Help {
 		final String url="http://jam-daq.sourceforge.net/";
 		this.frame = f;
 		messageHandler=mh;
-		browser = JamProperties.getPropString(JamProperties.BROWSER_PATH);
 		jamHome = JamProperties.getPropString(JamProperties.JAM_HOME);
-		docsPath = JamProperties.getPropString(JamProperties.DOCS_PATH);
 
 		aboutD = new JDialog(frame, "About Jam", false);
 		final Container cad = aboutD.getContentPane();
