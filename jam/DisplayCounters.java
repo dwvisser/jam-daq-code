@@ -1,5 +1,3 @@
-/*
- */
 package jam;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -8,10 +6,9 @@ import jam.global.MessageHandler;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.StorageDaemon;
-import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,275 +31,290 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  * @version 05 newest done 9-98
  */
-class DisplayCounters implements Observer, ActionListener {
+class DisplayCounters implements Observer {
 
-    /**
-     * We are sorting online when the internal mode variable equals this.
-     */
-    public static final int ONLINE=1;
-    
-     /**
-     * We are sorting offline when the internal mode variable equals this.
-     */
-   
-    public static final int OFFLINE=2;
+	/**
+	 * We are sorting online when the internal mode variable equals 
+	 * this.
+	 */
+	public static final int ONLINE = 1;
 
-    //stuff for dialog box
-    private JDialog d;
-    private Frame jamMain;
+	/**
+	* We are sorting offline when the internal mode variable equals 
+	* this.
+	*/
+	public static final int OFFLINE = 2;
 
-    private SortDaemon sortDaemon;
-    private NetDaemon netDaemon;
-    private StorageDaemon storageDaemon;
-    private Broadcaster broadcaster;
-    private MessageHandler messageHandler;
+	//stuff for dialog box
+	private JDialog d;
+	private SortDaemon sortDaemon;
+	private NetDaemon netDaemon;
+	private StorageDaemon storageDaemon;
+	private int mode;
+	private final Frame jamMain;
+	private final Broadcaster broadcaster;
+	private final MessageHandler messageHandler;
+	private static final String hyphen=" - ";
 
-    private int mode;
+	//text fields
+	private JTextField textFileRead,
+		textBuffSent,
+		textBuffRecv,
+		textBuffSort,
+		textBuffWrit,
+		textEvntSent,
+		textEvntSort;
+	private JPanel pFileRead,
+		pBuffSent,
+		pBuffRecv,
+		pBuffWrit,
+		pBuffSort,
+		pEvntSent,
+		pEvntSort,
+		pButton;
 
-    //text fields
-    private JTextField textFileRead, textBuffSent, textBuffRecv, textBuffSort, 
-    textBuffWrit,textEvntSent, textEvntSort;
-    private JPanel pFileRead, pBuffSent, pBuffRecv, pBuffWrit, pBuffSort, 
-    pEvntSent,pEvntSort, pButton;
+	/**
+	 * @param jm the main window
+	 * @param b to broadcast counter "read" and "zero" requests
+	 * @param mh where to print console output
+	 */
+	DisplayCounters(Frame jm, Broadcaster b, MessageHandler mh) {
+		final int xpos = 20;
+		final int ypos = 50;
+		final int flowgap = 5;
+		final int maingap = 10;
+		this.jamMain = jm;
+		this.broadcaster = b;
+		this.messageHandler = mh;
+		d = new JDialog(jamMain, "Buffer Counters", false);
+		d.setResizable(false);
+		d.setLocation(xpos, ypos);
+		final Container cd = d.getContentPane();
+		cd.setLayout(new GridLayout(0, 1, maingap, maingap));
+		pBuffSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffSent.add(new JLabel("Packets sent", JLabel.RIGHT));
+		textBuffSent = newTextField();
+		pBuffSent.add(textBuffSent);
+		pBuffRecv = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffRecv.add(new JLabel("Packets received", JLabel.RIGHT));
+		textBuffRecv = newTextField();
+		pBuffRecv.add(textBuffRecv);
+		pBuffSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffSort.add(new JLabel("Buffers sorted", JLabel.RIGHT));
+		textBuffSort = newTextField();
+		pBuffSort.add(textBuffSort);
+		pBuffWrit = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pBuffWrit.add(new JLabel("Buffers written", JLabel.RIGHT));
+		textBuffWrit = newTextField();
+		pBuffWrit.add(textBuffWrit);
+		pEvntSent = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pEvntSent.add(new JLabel("Events sent", JLabel.RIGHT));
+		textEvntSent = newTextField();
+		pEvntSent.add(textEvntSent);
+		pEvntSort = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pEvntSort.add(new JLabel("Events sorted", JLabel.RIGHT));
+		textEvntSort = newTextField();
+		pEvntSort.add(textEvntSort);
+		pFileRead = new JPanel(new FlowLayout(FlowLayout.RIGHT, flowgap, flowgap));
+		pFileRead.add(new JLabel("Files read", JLabel.RIGHT));
+		textFileRead = newTextField();
+		pFileRead.add(textFileRead);
+		/* panel for buttons */
+		pButton = new JPanel(new GridLayout(1, 0, flowgap, flowgap));
+		pButton.add(getUpdateButton());
+		pButton.add(getClearButton());
+		/*Recieves events for closing the dialog box and closes it. */
+		d.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				d.dispose();
+			}
+		});
+	}
 
+	private JTextField newTextField(){
+		final String emptyString="";
+		final int cols =8;
+		final JTextField rval=new JTextField(emptyString);
+		rval.setColumns(cols);
+		rval.setEditable(false);
+		return rval;
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param jamMain the main window
-     * @param broadcaster the broadcaster I receive broadcast events 
-     * from?
-     * @param msgHandler where to print console output
-     */
-    DisplayCounters(Frame jamMain , Broadcaster broadcaster, 
-    MessageHandler msgHandler ){
-        this.jamMain=jamMain;
-        this.broadcaster=broadcaster;
-        this.messageHandler=msgHandler;
-        d =new JDialog (jamMain, "Buffer Counters",false);
-        d.setForeground(Color.black);
-        d.setBackground(Color.lightGray);
-        d.setResizable(false);
-        d.setLocation(20,50);
-        final Container cd=d.getContentPane();
-        cd.setLayout(new GridLayout(0,1,10,10));
-        pBuffSent= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        final JLabel lps=new JLabel("Packets sent",JLabel.RIGHT);
-        pBuffSent.add(lps);
-        textBuffSent =new JTextField("");
-        textBuffSent.setColumns(8);
-        textBuffSent.setBackground(Color.white);
-        textBuffSent.setForeground(Color.black);
-        pBuffSent.add(textBuffSent);
-        pBuffRecv= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pBuffRecv.add(new JLabel("Packets received", JLabel.RIGHT));
-        textBuffRecv =new JTextField("");
-        textBuffRecv.setColumns(8);
-        textBuffRecv.setBackground(Color.white);
-        textBuffRecv.setForeground(Color.black);
-        pBuffRecv.add(textBuffRecv);
-        pBuffSort= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pBuffSort.add(new JLabel("Buffers sorted", JLabel.RIGHT));
-        textBuffSort =new JTextField("");
-        textBuffSort.setColumns(8);
-        textBuffSort.setBackground(Color.white);
-        textBuffSort.setForeground(Color.black);
-        pBuffSort.add(textBuffSort);
-        pBuffWrit= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pBuffWrit.add(new JLabel("Buffers written", JLabel.RIGHT));
-        textBuffWrit =new JTextField("");
-        textBuffWrit.setColumns(8);
-        textBuffWrit.setBackground(Color.white);
-        textBuffWrit.setForeground(Color.black);
-        pBuffWrit.add(textBuffWrit);
-        pEvntSent= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pEvntSent.add(new JLabel("Events sent", JLabel.RIGHT));
-        textEvntSent =new JTextField("");
-        textEvntSent.setColumns(8);
-        textEvntSent.setBackground(Color.white);
-        textEvntSent.setForeground(Color.black);
-        pEvntSent.add(textEvntSent);
-        pEvntSort= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pEvntSort.add(new JLabel("Events sorted", JLabel.RIGHT));
-        textEvntSort =new JTextField("");
-        textEvntSort.setColumns(8);
-        textEvntSort.setBackground(Color.white);
-        textEvntSort.setForeground(Color.black);
-        pEvntSort.add(textEvntSort);
-        pFileRead= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
-        pFileRead.add(new JLabel("Files read", JLabel.RIGHT));
-        textFileRead =new JTextField("");
-        textFileRead.setColumns(8);
-        textFileRead.setBackground(Color.white);
-        textFileRead.setForeground(Color.black);
-        pFileRead.add(textFileRead);
-        // panel for buttons
-        pButton= new JPanel(new GridLayout(1,0,5,5));
-        final JButton bupdate =  new JButton("Update");
-        bupdate.setActionCommand("update");
-        bupdate.addActionListener(this);
-        pButton.add(bupdate);
-        final JButton bclear = new JButton("Clear");
-        bclear.setActionCommand("clear");
-        bclear.addActionListener(this);
-        pButton.add(bclear);
+	private JButton getUpdateButton() {
+		final JButton bupdate = new JButton("Update");
+		bupdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				try {
+					if (mode == ONLINE) {
+						broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
+						textEvntSort.setText(
+							String.valueOf(sortDaemon.getEventCount()));
+						textBuffSort.setText(
+							String.valueOf(sortDaemon.getBufferCount()));
+						textBuffRecv.setText(
+							String.valueOf(netDaemon.getPacketCount()));
+						textBuffWrit.setText(
+							String.valueOf(storageDaemon.getBufferCount()));
+					} else { //offline
+						textEvntSort.setText(
+							String.valueOf(sortDaemon.getEventCount()));
+						textBuffSort.setText(
+							String.valueOf(sortDaemon.getBufferCount()));
+						textFileRead.setText(
+							String.valueOf(storageDaemon.getFileCount()));
+					}
+				} catch (GlobalException ge) {
+					messageHandler.errorOutln(
+						getClass().getName() + hyphen + ge);
+				}
+			}
+		});
+		return bupdate;
+	}
 
-        //Recieves events for closing the dialog box and closes it.
-        d.addWindowListener( new WindowAdapter() {
-            public void windowClosing(WindowEvent e){
-                d.dispose();
-            }
-        });
-    }
+	private JButton getClearButton() {
+		final JButton bclear = new JButton("Clear");
+		bclear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				final String space=" ";
+				try {
+					if (mode == ONLINE) {
+						broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
+						textBuffSort.setText(space);
+						sortDaemon.setBufferCount(0);
+						textBuffSort.setText(
+							String.valueOf(sortDaemon.getBufferCount()));
+						textEvntSent.setText(space);
+						sortDaemon.setEventCount(0);
+						textEvntSort.setText(
+							String.valueOf(sortDaemon.getEventCount()));
+						textBuffSent.setText(space); //value update method
+						textEvntSent.setText(space); //value update method
+						textBuffRecv.setText(space);
+						netDaemon.setPacketCount(0);
+						textBuffRecv.setText(
+							String.valueOf(netDaemon.getPacketCount()));
+						textBuffWrit.setText(space);
+						storageDaemon.setBufferCount(0);
+						textBuffWrit.setText(
+							String.valueOf(storageDaemon.getBufferCount()));
+						broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
 
-    /**
-     * Show online sorting dialog Box
-     */
-    public void show(){
-        d.show();
-    }
-    
-    /**
-     * Receives events from this dialog box.
-     * 
-     * @param ae the received event
-     */
-    public void actionPerformed(ActionEvent ae){
-        final String command=ae.getActionCommand();
-        try {
-            if (command=="update") {
-                //offline
-                if(mode==ONLINE){
-                    broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
-                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
-                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
-                    textBuffRecv.setText(String.valueOf(netDaemon.getPacketCount()));
-                    textBuffWrit.setText(String.valueOf(storageDaemon.getBufferCount()));
-                    //offline
-                } else {
-                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
-                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
-                    textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
-                }
-                //do we need to blank all fields before zeroing and reading
-            } else  if (command=="clear"){
-                //online
-                if(mode==ONLINE){
-                    broadcaster.broadcast(BroadcastEvent.COUNTERS_ZERO);
-                    textBuffSort.setText(" ");
-                    sortDaemon.setBufferCount(0);
-                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
-                    textEvntSent.setText(" ");
-                    sortDaemon.setEventCount(0);
-                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
-                    textBuffSent.setText(" ");		//value update method
-                    textEvntSent.setText(" ");		//value update method
-                    textBuffRecv.setText(" ");
-                    netDaemon.setPacketCount(0);
-                    textBuffRecv.setText(String.valueOf(netDaemon.getPacketCount()));
-                    textBuffWrit.setText(" ");
-                    storageDaemon.setBufferCount(0);
-                    textBuffWrit.setText(String.valueOf(storageDaemon.getBufferCount()));
-                    broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
-                    //offline
-                } else {
-                    textBuffSort.setText(" ");
-                    sortDaemon.setBufferCount(0);
-                    textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
-                    textEvntSent.setText(" ");
-                    sortDaemon.setEventCount(0);
-                    textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
-                    textFileRead.setText(" ");
-                    storageDaemon.setFileCount(0);
-                    textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
-                }
-            }
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
-    }
+					} else { //offline
+						textBuffSort.setText(space);
+						sortDaemon.setBufferCount(0);
+						textBuffSort.setText(
+							String.valueOf(sortDaemon.getBufferCount()));
+						textEvntSent.setText(space);
+						sortDaemon.setEventCount(0);
+						textEvntSort.setText(
+							String.valueOf(sortDaemon.getEventCount()));
+						textFileRead.setText(space);
+						storageDaemon.setFileCount(0);
+						textFileRead.setText(
+							String.valueOf(storageDaemon.getFileCount()));
+					}
+				} catch (GlobalException ge) {
+					messageHandler.errorOutln(
+						getClass().getName() + hyphen + ge);
+				}
 
-    /**
-     * Setup for online
-     * 
-     * @param netDaemon network process
-     * @param sortDaemon sorting process
-     * @param storageDaemon event record storage process
-     */
-    public void setupOn(	NetDaemon netDaemon, SortDaemon sortDaemon,
-    StorageDaemon storageDaemon) {
-        synchronized(this){
-        	mode=ONLINE;
-        	this.netDaemon=netDaemon;
-        	this.sortDaemon=sortDaemon;
-        	this.storageDaemon=storageDaemon;
-        }
-        /* make dialog box */
-        final Container cd=d.getContentPane();
-        cd.removeAll();
-        d.setTitle("Online Buffer Count");
-        cd.add(pBuffSent);
-        cd.add(pBuffRecv);
-        cd.add(pBuffSort);
-        cd.add(pBuffWrit);
-        cd.add(pEvntSent);
-        cd.add(pEvntSort);
-        cd.add(pButton);
-        d.pack();
-    }
+			}
+		});
+		return bclear;
+	}
 
-    /**
-     * Setup the dialog for offline sorting.
-     *
-     * @param sortDaemon the sorting process
-     * @param storageDaemon the event record storage process
-     */
-    public void setupOff(SortDaemon sortDaemon, StorageDaemon storageDaemon){
-    	synchronized(this){
-        	mode=OFFLINE;
-       	 	this.sortDaemon=sortDaemon;
-        	this.storageDaemon=storageDaemon;
-        }
-        final Container cd=d.getContentPane();
-        cd.removeAll();
-        d.setTitle("Offline Buffer Count");
-        cd.add(pFileRead);
-        cd.add(pBuffSort);
-        cd.add(pEvntSort);
-        cd.add(pButton);
-        d.pack();
-    }
+	/**
+	 * Show online sorting dialog Box
+	 */
+	public void show() {
+		d.show();
+	}
 
-    /**
-     * Receive a broadcast event in order to update counters.
-     *
-     * @author Ken Swartz
-     * @param observable the observed object
-     * @param o the communicated event
-     */
-    public void update(Observable observable, Object o){
-       final int NUMBER_COUNTERS=3;
-       final int INDEX_CNT_EVNT=1;
-       final int INDEX_CNT_BUFF=2;
-       final BroadcastEvent be=(BroadcastEvent)o;
-       final int command=be.getCommand();
-        int vmeCounters []=new int [NUMBER_COUNTERS];
+	/**
+	 * Setup for online
+	 * 
+	 * @param nd network process
+	 * @param sod sorting process
+	 * @param std event record storage process
+	 */
+	public void setupOn(NetDaemon nd, SortDaemon sod, StorageDaemon std) {
+		synchronized (this) {
+			mode = ONLINE;
+			this.netDaemon = nd;
+			this.sortDaemon = sod;
+			this.storageDaemon = std;
+		}
+		/* make dialog box */
+		final Container cd = d.getContentPane();
+		cd.removeAll();
+		d.setTitle("Online Buffer Count");
+		cd.add(pBuffSent);
+		cd.add(pBuffRecv);
+		cd.add(pBuffSort);
+		cd.add(pBuffWrit);
+		cd.add(pEvntSent);
+		cd.add(pEvntSort);
+		cd.add(pButton);
+		d.pack();
+	}
 
-        if(command==BroadcastEvent.COUNTERS_UPDATE){
+	/**
+	 * Setup the dialog for offline sorting.
+	 *
+	 * @param sod the sorting process
+	 * @param std the event record storage process
+	 */
+	public void setupOff(SortDaemon sod, StorageDaemon std) {
+		synchronized (this) {
+			mode = OFFLINE;
+			this.sortDaemon = sod;
+			this.storageDaemon = std;
+		}
+		final Container cd = d.getContentPane();
+		cd.removeAll();
+		d.setTitle("Offline Buffer Count");
+		cd.add(pFileRead);
+		cd.add(pBuffSort);
+		cd.add(pEvntSort);
+		cd.add(pButton);
+		d.pack();
+	}
 
-            //online only update remote fields
-            if(mode==ONLINE){
-                vmeCounters=(int [])be.getContent();
-                textBuffSent.setText(String.valueOf(vmeCounters[INDEX_CNT_BUFF]));
-                textEvntSent.setText(String.valueOf(vmeCounters[INDEX_CNT_EVNT]));
+	/**
+	 * Receive a broadcast event in order to update counters.
+	 *
+	 * @author Ken Swartz
+	 * @param observable the observed object
+	 * @param o the communicated event
+	 */
+	public void update(Observable observable, Object o) {
+		final int NUMBER_COUNTERS = 3;
+		final int INDEX_CNT_EVNT = 1;
+		final int INDEX_CNT_BUFF = 2;
+		final BroadcastEvent be = (BroadcastEvent) o;
+		final int command = be.getCommand();
+		int vmeCounters[] = new int[NUMBER_COUNTERS];
 
-                //off line we have to update all fields
-            } else {
-                textBuffSort.setText(String.valueOf(sortDaemon.getBufferCount()));
-                textEvntSort.setText(String.valueOf(sortDaemon.getEventCount()));
-                textFileRead.setText(String.valueOf(storageDaemon.getFileCount()));
-            }
-        }
-    }
+		if (command == BroadcastEvent.COUNTERS_UPDATE) {
+
+			//online only update remote fields
+			if (mode == ONLINE) {
+				vmeCounters = (int[]) be.getContent();
+				textBuffSent.setText(
+					String.valueOf(vmeCounters[INDEX_CNT_BUFF]));
+				textEvntSent.setText(
+					String.valueOf(vmeCounters[INDEX_CNT_EVNT]));
+
+				//off line we have to update all fields
+			} else {
+				textBuffSort.setText(
+					String.valueOf(sortDaemon.getBufferCount()));
+				textEvntSort.setText(
+					String.valueOf(sortDaemon.getEventCount()));
+				textFileRead.setText(
+					String.valueOf(storageDaemon.getFileCount()));
+			}
+		}
+	}
 }
