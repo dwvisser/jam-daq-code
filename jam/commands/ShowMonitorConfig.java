@@ -25,6 +25,6 @@ Observer {
 	}
 
 	public void update(Observable observe, Object obj){
-		setEnabled(!monitorList.isEmpty());
+		//setEnabled(!monitorList.isEmpty());
 	}	
 }

@@ -3,7 +3,7 @@
  */
 package jam.commands;
 import jam.data.Monitor;
-import jam.data.control.MonitorControl;
+import jam.data.control.MonitorDisplay;
 
 import java.util.List;
 import java.util.Observable;
@@ -21,7 +21,7 @@ Observer {
 
 	protected void initCommand(){
 		putValue(NAME,"Display Monitors\u2026");
-		dialog=MonitorControl.getSingletonInstance(msghdlr).display;
+		dialog=new MonitorDisplay();
 	}
 
 	public void update(Observable observe, Object obj){
