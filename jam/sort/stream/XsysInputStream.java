@@ -1,7 +1,7 @@
 package jam.sort.stream;
-import java.io.*;
-import java.util.*;
 import jam.global.MessageHandler;
+
+import java.io.IOException;
 
 /**
  * This class knows how to handle Xsys event data format .  It extends 
@@ -69,7 +69,6 @@ public class XsysInputStream extends EventInputStream {
 			}
 		} catch (IOException io) {
 			status = EventInputStatus.ERROR;
-			System.out.println("IO exception in xsysread event ");
 			throw new EventException(
 				"Reading Event from IOException "
 					+ io.getMessage()
@@ -113,7 +112,7 @@ public class XsysInputStream extends EventInputStream {
 
 	}
 
-	public void setScalerTable(Hashtable table) {
-	}
+//	public void setScalerTable(Hashtable table) {
+//	}
 
 }
