@@ -48,20 +48,16 @@ public class DataIDLabel extends DataObject {
 	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
 	public void interpretBytes() throws HDFException {
-		short tag;
-		short ref;
-		byte[] temp;
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bais);
+		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bais);
 
 		try {
-			tag = dis.readShort();
-			ref = dis.readShort();
-			temp = new byte[bytes.length - 4];
+			final short tag = dis.readShort();
+			final short ref = dis.readShort();
+			final byte [] temp = new byte[bytes.length - 4];
 			dis.read(temp);
 			label = new String(temp);
 			object = file.getObject(tag, ref);
-			//System.out.println("DIA_"+this.tag+"/"+this.ref+".interpretBytes() : "+tag+"/"+ref+" : "+label);
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem interpreting DIL: " + e.getMessage());

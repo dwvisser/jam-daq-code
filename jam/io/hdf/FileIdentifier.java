@@ -43,15 +43,13 @@ public class FileIdentifier extends DataObject {
 	 * @exception HDFException thrown if there is a problem interpreting the bytes
 	 */
 	public void interpretBytes() throws HDFException {
-		byte[] temp;
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bais);
 
 		try {
-			temp = new byte[bytes.length];
+			final byte [] temp = new byte[bytes.length];
 			dis.read(temp);
 			label = new String(temp);
-			//System.out.println("FID_"+this.tag+"/"+this.ref+".interpretBytes() : "+label);
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem interpreting FID: " + e.getMessage());
