@@ -390,7 +390,7 @@ public class BatchExport extends JDialog implements ActionListener, Observer {
 	}
 	
 	private File getFile(File dir, AbstractImpExp impExp, Histogram hist) {
-        return new File(dir, FileUtilities.setExtension(hist.getFullName()
+        return new File(dir, FileUtilities.changeExtension(hist.getFullName()
                 .trim(), impExp.getDefaultExtension(), FileUtilities.APPEND_ONLY));
     }
 

@@ -37,6 +37,7 @@ import javax.swing.SwingUtilities;
  */
 public final class HDFIO implements DataIO, JamFileFields {
 
+	private static String HDF_FILE_EXTENSION ="hdf";
     /**
      * Last file successfully read from or written to for all instances of
      * HDFIO.
@@ -249,8 +250,14 @@ public final class HDFIO implements DataIO, JamFileFields {
                 histsToUse.addAll(currGroup.getHistogramList());
             }
         }
-        if (overWriteExistsConfirm(file)) {
-            spawnAsyncWriteFile(file, groupsToUse, histsToUse, writeData, wrtSettings);
+        //Append .hdf to file name
+        String path =file.getParent();        
+        String fileName = FileUtilities.changeExtension(file.getName(), HDF_FILE_EXTENSION, FileUtilities.APPEND_ONLY);
+        String fileFullName = path+File.separator+fileName;        
+        File appendFile = new File(fileFullName);
+        
+        if (overWriteExistsConfirm(appendFile)) {
+            spawnAsyncWriteFile(appendFile, groupsToUse, histsToUse, writeData, wrtSettings);
         }
     }
     

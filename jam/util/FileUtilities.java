@@ -39,7 +39,7 @@ public class FileUtilities {
 	  * @see #FORCE
 	  * @see #NO_CHANGE
 	  */
-	public static String setExtension(
+	public static String changeExtension(
 		String fileName,
 		String extension,
 		int mode) {

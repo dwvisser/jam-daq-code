@@ -126,7 +126,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		try {
 			Histogram.clearList(); //clear current list of histograms
 			readDrr(buffin); //read the drr file
-			final String fileNameHis = FileUtilities.setExtension(
+			final String fileNameHis = FileUtilities.changeExtension(
 					getFileName(getLastFile()), "*.his", FileUtilities.FORCE);
 			/* open .his file random access, read only */
 			final RandomAccessFile fileHis = new RandomAccessFile(new File(
@@ -343,9 +343,9 @@ public class ImpExpORNL extends AbstractImpExp {
 	public void writeHist(OutputStream ignored, Histogram hist)
 			throws ImpExpException {
 		try {
-			final String fileNameHis = FileUtilities.setExtension(getLastFile()
+			final String fileNameHis = FileUtilities.changeExtension(getLastFile()
 					.getName(), ".his", FileUtilities.FORCE);
-			final String fileNameDRR = FileUtilities.setExtension(getLastFile()
+			final String fileNameDRR = FileUtilities.changeExtension(getLastFile()
 					.getName(), ".drr", FileUtilities.FORCE);
 			final File parent = getLastFile().getParentFile();
 			final File fileHis = new File(parent, fileNameHis);
@@ -585,7 +585,7 @@ public class ImpExpORNL extends AbstractImpExp {
 			if (inFile != null) { // if Open file was not canceled
 				setLastFile(inFile);
 				final File drrFile = (inFile.getName().endsWith("his")) ? new File(
-						inFile.getParent(), FileUtilities.setExtension(inFile
+						inFile.getParent(), FileUtilities.changeExtension(inFile
 								.getName(), "drr", FileUtilities.FORCE))
 						: inFile;
 				final FileInputStream inStream = new FileInputStream(drrFile);
