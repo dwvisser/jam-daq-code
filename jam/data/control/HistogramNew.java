@@ -8,24 +8,21 @@ import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Panel;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Iterator;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -177,26 +174,22 @@ public class HistogramNew extends AbstractControl {
 		doSetup();
 		super.show();
 	}
+	
 	/**
-	 * Does nothing. It is here to match other contollers.
+	 * Initializes chooser properly.
 	 */
 	public void doSetup() {
-		boolean workingDefined =false;
 		comboGroupModel.removeAllElements();
-		Iterator iter = Group.getGroupList().iterator();
-		
-		//Add working group first
+		Iterator iter = Group.getGroupList().iterator();		
+		/* Add working group first */
 		comboGroupModel.addElement( Group.WORKING_NAME);
 		while(iter.hasNext()) {
 			Group group =(Group)iter.next();
-			//Don't add sort group or working group that was already added
+			/* Don't add sort group or working group that was already added */
 			if (group.getType()!=Group.Type.SORT && 
 				!Group.WORKING_NAME.equals(group.getName()) ){
-				
 				comboGroupModel.addElement( group.getName() );
-				
 			}			
-			
 		}
 	}
 
