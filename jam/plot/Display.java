@@ -81,7 +81,6 @@ Observer {
             action=new Action(this, msgHandler);
             setSize(500,500);
             this.setLayout(new BorderLayout());
-            PlotColorMap colorMap = new PlotColorMap(PlotColorMap.WHITE_ON_BLACK);
             //setup up middle panel containing plots panel to holds 1d and 2d plots and swaps them
             plotswap=new JPanel();
             plotswapLayout=new CardLayout();
