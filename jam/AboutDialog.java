@@ -39,7 +39,7 @@ public class AboutDialog extends JDialog {
 		pcenter.setBorder(border);
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
-			new JLabel("Jam v" + Version.getName(), JLabel.CENTER));
+			new JLabel("Jam v" + Version.getInstance().getName(), JLabel.CENTER));
 		pcenter.add(new JLabel("by", JLabel.CENTER));
 		pcenter.add(
 			new JLabel(

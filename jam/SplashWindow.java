@@ -28,33 +28,28 @@ import javax.swing.SwingUtilities;
  */
 class SplashWindow extends JWindow {
 
-	private URL urlNukeIcon;
-	private URL urlOSIGif;
+	private transient URL urlNukeIcon;
+	private transient URL urlOSIGif;
 	/**
 	 * Creates the splash window which will exist for as long
 	 * as the specified wait time in milliseconds.
 	 *
-	 * @param f parent frame
+	 * @param frame parent frame
 	 * @param waitTime time in milliseconds after which the window disappears
 	 */
-	public SplashWindow(Frame f, int waitTime) {
-		super(f);
-
-		//load resources
+	public SplashWindow(Frame frame, int waitTime) {
+		super(frame);
 		ClassLoader cl = this.getClass().getClassLoader();
 		urlNukeIcon= cl.getResource("jam/nukeicon.png");
 		if (urlNukeIcon==null) {
-			JOptionPane.showMessageDialog(f, "Can't load resource: jam/nukeicon.png");
+			JOptionPane.showMessageDialog(frame, "Can't load resource: jam/nukeicon.png");
 			System.exit(0);
 		}
-
 		urlOSIGif = cl.getResource("jam/OSI.png");
 		if (urlOSIGif==null) {
-			JOptionPane.showMessageDialog(f, "Can't load resource: jam/OSI.gif");
+			JOptionPane.showMessageDialog(frame, "Can't load resource: jam/OSI.gif");
 			System.exit(0);
 		}
-
-
 		drawWindow();
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -87,8 +82,7 @@ class SplashWindow extends JWindow {
 	}
 
 	private void drawWindow() {
-
-		Container cp = getContentPane();
+		final Container contents = getContentPane();
 		JPanel west = new JPanel(new FlowLayout());
 		west.setBackground(Color.white);
 		west.setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.black));
@@ -115,15 +109,15 @@ class SplashWindow extends JWindow {
 		osi.setToolTipText("Open Source Initiative. See http://www.opensource.org/");
 		east.add(osi);
 		JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel versionLabel = new JLabel("v. " + Version.getName(),SwingConstants.RIGHT);
+		JLabel versionLabel = new JLabel("v. " + Version.getInstance().getName(),SwingConstants.RIGHT);
 		panelSouth.add(versionLabel);
 		panelSouth.setBackground(Color.cyan);
 		panelSouth.setBorder(
 			BorderFactory.createMatteBorder(0, 1, 1, 1, Color.black));
-		cp.add(panelSouth, BorderLayout.SOUTH);
-		cp.add(west,BorderLayout.WEST);
-		cp.add(center,BorderLayout.CENTER);
-		cp.add(east,BorderLayout.EAST);
+		contents.add(panelSouth, BorderLayout.SOUTH);
+		contents.add(west,BorderLayout.WEST);
+		contents.add(center,BorderLayout.CENTER);
+		contents.add(east,BorderLayout.EAST);
 		pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension labelSize = getSize();

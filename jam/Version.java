@@ -15,7 +15,7 @@ public final class Version {
 	 * Increments only for changes which impact backward and/or 
 	 * forward compatibility in a big way. 
 	 */
-	public static final String MAJOR="@MAJOR@";
+	private static final String MAJOR="@MAJOR@";
 	
 	/**
 	 * Incremented whenever work starts on new features to be
@@ -24,26 +24,36 @@ public final class Version {
 	 * etc. may go into the current release without committing
 	 * users to the new, untested stuff yet.
 	 */
-	public static final String MINOR="@MINOR@";
+	private static final String MINOR="@MINOR@";
 	
 	/**
 	 * Incremented every time a bugfix or patch is performed for
 	 * release back to the users. 
 	 */
-	public static final String RELEASE="@RELEASE@";
+	private static final String RELEASE="@RELEASE@";
 	
-	public static final String PLATFORM=System.getProperty("os.name");
+	private static final String PLATFORM=System.getProperty("os.name");
 		
 	private static final StringBuffer NAME=new StringBuffer();	
 	static {
 		NAME.append(MAJOR).append('.').append(MINOR).append('.').append(
 		RELEASE).append('-').append(PLATFORM);
 	}
+	
+	private static final Version INSTANCE=new Version();
+	
+	private Version(){
+		//nothing to do;
+	}
+	
+	static public Version getInstance(){
+		return INSTANCE;
+	}
 		
 	/**
 	 * @return a string representing the build version of Jam running
 	 */
-	static public String getName(){
+	public String getName(){
 		return NAME.toString();
 	}
 	

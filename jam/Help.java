@@ -49,7 +49,7 @@ public class Help extends JDialog {
 		true);
 		layoutLicenseDialog();
 		final String defaultVal="notseen";
-		final String version=Version.getName();
+		final String version=Version.getInstance().getName();
 		final String key="license";
 		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
 		if (STATUS.isShowGUI() && 
