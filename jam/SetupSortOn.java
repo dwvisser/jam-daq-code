@@ -56,8 +56,9 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 	/**
 	 * Whether to handle event writing or delegate to front end.
+	 * For now, leaving true always. Nobody does otherwise yet.
 	 */
-	boolean storeEventsLocally;
+	private static final boolean STORE_EVENTS_LOCAL=true;
 
 	//buttons and check boxes
 	private JToggleButton ctape, cdisk; //save events to tape, disk
@@ -643,7 +644,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		DataControl.setupAll();
 		//interprocess buffering between daemons
 		sortingRing = new RingBuffer();
-		if (storeEventsLocally)
+		if (STORE_EVENTS_LOCAL)
 			storageRing = new RingBuffer();
 		//typical setup of event streams
 		try { //create new event input stream class
@@ -694,7 +695,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
-		if (storeEventsLocally) { // don't create storage daemon otherwise
+		if (STORE_EVENTS_LOCAL) { // don't create storage daemon otherwise
 			if (tapeMode) {
 				tapeDaemon = new TapeDaemon(runControl, msgHandler);
 				tapeDaemon.setDevice(dataDirectory);
@@ -727,7 +728,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//tell status
 		displayCounters.setupOn(netDaemon, sortDaemon, storageDaemon);
 		//startup daemons
-		if (storeEventsLocally){
+		if (STORE_EVENTS_LOCAL){
 			storageDaemon.start();
 		}
 		sortDaemon.start();
