@@ -21,43 +21,39 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	}
 	
 	protected void execute(Object[] cmdParams) throws CommandException {
-		
 		File file=null;
 		Group group=STATUS.getCurrentGroup();
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
-				file =(File)cmdParams[0];	
-			if (cmdParams.length>1)
-				group =(Group)cmdParams[1];		
+			if (cmdParams.length>0){
+				file =(File)cmdParams[0];
+			}
+			if (cmdParams.length>1){
+				group =(Group)cmdParams[1];
+			}
 		}		
 		saveGroup(file, group);		
-
 	}
 
-	private void saveGroup (File file, Group group) {
-
+	private void saveGroup (final File file, Group group) {
 		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
-		
-		if (group!=null) {
+		if (group==null) {
+			msghdlr.errorOutln("Need to select a group.");
+		} else {
 			if (file== null) { //No file given		
 		        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 		        jfile.setFileFilter(new HDFileFilter(true));
-		        int option = jfile.showSaveDialog(STATUS.getFrame());
+		        final int option = jfile.showSaveDialog(STATUS.getFrame());
 		        /* don't do anything if it was cancel */
 		        if (option == JFileChooser.APPROVE_OPTION
 		                && jfile.getSelectedFile() != null) {
-		            file = jfile.getSelectedFile();
-		            hdfio.writeFile(file, group);
+		            hdfio.writeFile(jfile.getSelectedFile(), group);
 		        }
 			}else {
 				hdfio.writeFile(file, group);
 			}
-		} else {
-			msghdlr.errorOutln("Need to select a group.");
-		}
-			
-		
+		} 
 	}
+	
 	protected void executeParse(String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub

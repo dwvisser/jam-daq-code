@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.data.Group;
 import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
@@ -16,7 +15,7 @@ import javax.swing.JFileChooser;
  * @author Ken Swartz
  *
  */
-final class SaveGatesCmd extends AbstractCommand implements Commandable {
+final class SaveGatesCmd extends AbstractCommand {
 
 	public void initCommand() {
 		putValue(NAME, "Save gates & parameters as\u2026");
@@ -34,32 +33,32 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	protected void execute(Object[] cmdParams) {
 		File file=null;
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
-				file =(File)cmdParams[0];			
+			if (cmdParams.length>0){
+				file =(File)cmdParams[0];
+			}
 		}		
 		saveGates(file);
 		
 	}
-	private void saveGates(File file) {
-		Frame frame= STATUS.getFrame();
-		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		
-		if (file == null) { //No file given		
-	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-	        jfile.setFileFilter(new HDFileFilter(true));
-	        int option = jfile.showSaveDialog(frame);
-	        /* don't do anything if it was cancel */
-	        if (option == JFileChooser.APPROVE_OPTION
-	                && jfile.getSelectedFile() != null) {
-	           file = jfile.getSelectedFile();
-	            hdfio.writeFile(file, false, true);
-	        }
-		
-		} else { //File name given	
-			hdfio.writeFile(file, false, true);
-		}
-
-	}
+	
+	private void saveGates(final File file) {
+        final Frame frame = STATUS.getFrame();
+        final HDFIO hdfio = new HDFIO(frame, msghdlr);
+        if (file == null) { //No file given
+            final JFileChooser jfile = new JFileChooser(HDFIO
+                    .getLastValidFile());
+            jfile.setFileFilter(new HDFileFilter(true));
+            final int option = jfile.showSaveDialog(frame);
+            /* don't do anything if it was cancel */
+            if (option == JFileChooser.APPROVE_OPTION
+                    && jfile.getSelectedFile() != null) {
+                hdfio.writeFile(jfile.getSelectedFile(), false, true);
+            }
+        } else { //File name given
+            hdfio.writeFile(file, false, true);
+        }
+    }
+	
 	/**
 	 * Save to an hdf file.
 	 * 

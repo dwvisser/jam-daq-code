@@ -6,7 +6,6 @@ import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
-import java.awt.Frame;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
@@ -32,44 +31,43 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 		
 		File file=null;
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
-				file =(File)cmdParams[0];			
+			if (cmdParams.length>0){
+				file =(File)cmdParams[0];
+			}
 		}		
 		saveSortGroup(file);
 		
 	}
 
-	private void saveSortGroup (File file) {
-
-		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
-		
-		final SortMode mode =STATUS.getSortMode();
-		if (mode == SortMode.ONLINE_DISK ||
-			mode == SortMode.ON_NO_DISK ||
-		  	mode == SortMode.OFFLINE ) {
-			/* find sort group */
-			final Group sortGroup=Group.getSortGroup();
-			if (sortGroup!=null) {
-				if (file==null) { //No file given		
-			        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-			        jfile.setFileFilter(new HDFileFilter(true));
-			        final int option = jfile.showSaveDialog(STATUS.getFrame());
-			        /* don't do anything if it was cancel */
-			        if (option == JFileChooser.APPROVE_OPTION
-			                && jfile.getSelectedFile() != null) {
-			            file = jfile.getSelectedFile();
-			            hdfio.writeFile(file, sortGroup);
-			        }
-				}else {
-					hdfio.writeFile(file, sortGroup);
-				}
-			}
-		} else {//No sort group
-			throw new IllegalStateException("Need to be in a sort mode to save sort group.");
-		}
-
-		
-	}
+	private void saveSortGroup(final File file) {
+        final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+        final SortMode mode = STATUS.getSortMode();
+        if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
+                || mode == SortMode.OFFLINE) {
+            /* find sort group */
+            final Group sortGroup = Group.getSortGroup();
+            if (sortGroup != null) {
+                if (file == null) { //No file given
+                    final JFileChooser jfile = new JFileChooser(HDFIO
+                            .getLastValidFile());
+                    jfile.setFileFilter(new HDFileFilter(true));
+                    final int option = jfile.showSaveDialog(STATUS.getFrame());
+                    /* don't do anything if it was cancel */
+                    if (option == JFileChooser.APPROVE_OPTION
+                            && jfile.getSelectedFile() != null) {
+                        final File selectedFile = jfile.getSelectedFile();
+                        hdfio.writeFile(selectedFile, sortGroup);
+                    }
+                } else {
+                    hdfio.writeFile(file, sortGroup);
+                }
+            }
+        } else {//No sort group
+            throw new IllegalStateException(
+                    "Need to be in a sort mode to save sort group.");
+        }
+    }
+	
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
@@ -78,8 +76,8 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 	
 	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}

@@ -1,6 +1,5 @@
 package jam.commands;
 
-import jam.data.Group;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
@@ -15,7 +14,7 @@ import javax.swing.KeyStroke;
  * 
  * @author Ken Swartz
  */
-final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
+final class SaveAsHDFCmd extends AbstractCommand {
 
 	public void initCommand() {
 		putValue(NAME, "Save as\u2026");
@@ -37,31 +36,31 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 		
 		File file=null;
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
-				file =(File)cmdParams[0];			
+			if (cmdParams.length>0){
+				file =(File)cmdParams[0];
+			}
 		}		
 		saveHDFFile(file);
 	}
 	
-	private void saveHDFFile(File file) {
-	
+	private void saveHDFFile(final File file) {
 	final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
-	
 		if (file == null) { //No file given		
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
-	        int option = jfile.showSaveDialog(STATUS.getFrame());
+	        final int option = jfile.showSaveDialog(STATUS.getFrame());
 	        /* don't do anything if it was cancel */
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	            file = jfile.getSelectedFile();
-	           hdfio.writeFile(file);
+	           final File selectedFile = jfile.getSelectedFile();
+	           hdfio.writeFile(selectedFile);
 	
 	        }
 		} else { //File name given	
 			hdfio.writeFile(file);
 		}
 	}
+	
 	/**
 	 * Save to an hdf file.
 	 * 
