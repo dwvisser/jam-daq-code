@@ -1,12 +1,10 @@
-/*
- * Created on Dec 30, 2003
- */
 package jam;
 
 /**
  * Constants representing which version of Jam this is.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
+ * @version 30 Dec 2003
  */
 public final class Version {
 	/**
@@ -24,7 +22,7 @@ public final class Version {
 	 * Should be empty string if no text for version type is
 	 * desired.
 	 */
-	static final String VERSION_TYPE = "M20040325";
+	static final String VERSION_TYPE = "M20040406";
 	
 	/**
 	 * @return a string representing the build version of Jam running
