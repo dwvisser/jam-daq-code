@@ -4,6 +4,7 @@ import jam.commands.CommandManager;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandListener;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -39,7 +40,8 @@ import javax.swing.JOptionPane;
  * @version 0.5
  */
 
-class Action implements ActionListener, PlotMouseListener, PreferenceChangeListener {
+class Action implements ActionListener, PlotMouseListener, 
+PreferenceChangeListener, CommandListener {
 
 	static final String HELP = "help";
 	static final String EXPAND = "expand";
@@ -103,11 +105,12 @@ class Action implements ActionListener, PlotMouseListener, PreferenceChangeListe
 	 * Master constructor has no broadcaster.
 	 * 
 	 * @param d the histogram displayer
-	 * @param mh the message area of the Jam window
+	 * @param jc Jam's console component
 	 */
-	Action(Display d, MessageHandler mh) {
-		this.display = d;
-		this.textOut = mh;
+	Action(Display d, JamConsole jc) {
+		display = d;
+		textOut = jc;
+		jc.addCommandListener(this);
 		broadcaster=Broadcaster.getSingletonInstance();
 		commandPresent = false;
 		overlayState = false;
@@ -215,16 +218,7 @@ class Action implements ActionListener, PlotMouseListener, PreferenceChangeListe
 		return rval;
 	}
 
-	/**
-	 * Do a command sent in as a message. Sees if the string is 
-	 * command that plot can understand and sets a command string to
-	 * something that can be interpreted by doCommand(), i.e., expand
-	 * abbreviations.
-	 * 
-	 * @param _command entry from console
-	 * @param parameters integer parameters from console
-	 */
-	boolean commandPerform(String _command, String [] cmdParams) {
+	public boolean performParseCommand(String _command, String [] cmdParams) {
 		boolean accept = false; //is the command accepted
 		boolean handleIt=false;
 		final String command = _command.toLowerCase();

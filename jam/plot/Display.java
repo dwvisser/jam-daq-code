@@ -4,7 +4,6 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandListener;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -40,7 +39,7 @@ import javax.swing.JToolBar;
  * @see         java.awt.Graphics
  * @since       JDK1.1
  */
-public class Display extends JPanel implements CommandListener, Observer {
+public class Display extends JPanel implements Observer {
 
 	/**
 	 * Enumeration of the various preference types for displaying
@@ -114,9 +113,8 @@ public class Display extends JPanel implements CommandListener, Observer {
 	 * @param jc the class to call to print out messages
 	 */
 	public Display(JamConsole jc) {
-		jc.addCommandListener(this);
 		msgHandler = jc; //where to send output messages
-		action = new Action(this, msgHandler); // display event handler
+		action = new Action(this, jc); // display event handler
 		final int size = 420;
 		setPreferredSize(new Dimension(size, size));
 		final int minsize = 400;
@@ -259,10 +257,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 		return currentPlot.getComponentPrintable(
 			RunInfo.runNumber,
 			JamStatus.instance().getDate());
-	}
-
-	public boolean performParseCommand(String commandIn, String[] cmdParams) {
-		return action.commandPerform(commandIn, cmdParams);
 	}
 
 	/**
