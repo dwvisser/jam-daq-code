@@ -11,8 +11,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputAdapter;
 
 /**
  * Abstract class for displayed plots.
@@ -30,7 +29,7 @@ import javax.swing.SwingUtilities;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-public abstract class Plot extends JPanel implements MouseMotionListener, MouseListener {
+abstract class Plot extends JPanel {
 
 	/**
 	 * Specifies Zoom direction, zoom out
@@ -160,7 +159,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Constructor
 	 */
-	public Plot(Action a) {
+	protected Plot(Action a) {
 		super(false);
 		final String fontclass = "Serif";
 		action = a;
@@ -181,10 +180,9 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 		printFont =
 			new Font(fontclass, Font.PLAIN, PlotGraphicsLayout.PRINT_FONT_SIZE);
 		graph = new PlotGraphics(this, viewBorder, screenFont);
-		this.setColorMode(PlotColorMap.BLACK_ON_WHITE);
+		setColorMode(PlotColorMap.BLACK_ON_WHITE);
 		plotMouse = new PlotMouse(graph, action);
-		this.addMouseListener(plotMouse);
-		//plot now calls this class for mouse pressed
+		addMouseListener(plotMouse);
 	}
 
 	/**
@@ -197,7 +195,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Set current histogram, doing nothing else--this is a hack to let scroll bars work.
 	 */
-	public void setHistogram(Histogram hist) {
+	private synchronized void setHistogram(Histogram hist) {
 		currentHist = hist;
 	}
 
@@ -218,8 +216,8 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * save all neccessary histogram parameters to local variables.
 	 * Allows general use of data set.
 	 */
-	public void displayHistogram(Histogram hist) {
-		currentHist = hist;
+	void displayHistogram(Histogram hist) {
+		setHistogram(hist);
 		if (hist != null) {
 			plotLimits = Limits.getLimits(hist);
 			number = hist.getNumber();
@@ -273,7 +271,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * mode are we starting a new gate or continue
 	 * or saving on
 	 */
-	public abstract void displaySetGate(
+	abstract void displaySetGate(
 		GateSetMode mode,
 		Point pChannel,
 		Point pPixel);
@@ -320,7 +318,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * get the histogram the is ploted
 	 */
-	public Histogram getHistogram() {
+	synchronized Histogram getHistogram() {
 		return currentHist;
 	}
 
@@ -337,7 +335,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 *
 	 * @param p graphics coordinates on the plot where the channel is
 	 */
-	public final void markChannel(Point p) {
+	final void markChannel(Point p) {
 		markingChannels=true;
 		markedChannels.add(p);
 		repaint();
@@ -355,15 +353,14 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * 
 	 * @param p1 starting points (corner for 2d)
 	 */
-	public abstract void markingArea(Point p1);
+	abstract void markingArea(Point p1);
 
 	synchronized void setMarkingArea(boolean tf){
 		markingArea=tf;
 		if (markingArea) {
-			this.addMouseMotionListener(this);
+			addMouseMotionListener(mouseInputAdapter);
 		} else {
-			this.removeMouseMotionListener(this);
-			//Remove any left over lines
+			removeMouseMotionListener(mouseInputAdapter);
 			repaint();
 		}							
 	}
@@ -374,7 +371,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * @param p1 first corner of rectangle
 	 * @param p2 second corner of rectangle
 	 */
-	public abstract void markArea(Point p1, Point p2);
+	abstract void markArea(Point p1, Point p2);
 	
 	synchronized void setMarkArea(boolean tf){
 		markArea=tf;
@@ -383,7 +380,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 *Expand the region viewed.
 	 */
-	public void expand(Point p1, Point p2) {
+	void expand(Point p1, Point p2) {
 		int xll; // x lower limit
 		int xul; // x upper limit
 		int yll; // y lower limit
@@ -427,7 +424,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Zoom the region viewed.
 	 */
-	public void zoom(int inOut) {
+	void zoom(int inOut) {
 		int xll = plotLimits.getMinimumX();
 		int xul = plotLimits.getMaximumX();
 		int yll = plotLimits.getMinimumY();
@@ -476,7 +473,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * set full range X
 	 */
-	public void setFull() {
+	void setFull() {
 		plotLimits.setMinimumX(0);
 		plotLimits.setMaximumX(sizeX - 1);
 		plotLimits.setMinimumY(0);
@@ -487,7 +484,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Set the scale to linear scale
 	 */
-	public void setLinear() {
+	void setLinear() {
 		plotLimits.setScale(Limits.ScaleType.LINEAR);
 		refresh();
 	}
@@ -495,17 +492,17 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Set the scale to log scale
 	 */
-	public void setLog() {
+	void setLog() {
 		plotLimits.setScale(Limits.ScaleType.LOG);
 		repaint();
 	}
 
 	/**
-	 *  auto scale Counts scale
-	 *  set maximim scale to 110 percent of maximum number of counts in view
-	 *  cant call refresh as we need the counts before refreshing
+	 *  Autoscale the counts scale.
+	 *  Set maximum scale to 110 percent of maximum number of counts in view.
+	 *  Can't call refresh because we need to use the counts before refreshing.
 	 */
-	public void autoCounts() {
+	void autoCounts() {
 		copyCounts();
 		plotLimits.setMinimumCounts(110 * findMinimumCounts() / 100);
 		if (findMaximumCounts() > 5) {
@@ -549,7 +546,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * Updated the display, resetting so that fits, gates and 
 	 * overlays are no longer shown.
 	 */
-	public void update() {
+	void update() {
 		displayingGate = false;
 		displayingFit = false;
 		displayingOverlay = false;
@@ -565,22 +562,24 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 		}
 	}
 	
-	public synchronized void setBinWidth(double x){
+	synchronized void setBinWidth(double x){
 		binWidth=x;
 	}
 
 	/**
 	 *methods for getting histogram data
 	 */
-	public abstract double getCount(Point p);
+	abstract double getCount(Point p);
+	
 	/**
 	 * Find the maximum number of counts in the region of interest
 	 */
-	public abstract int findMaximumCounts();
+	protected abstract int findMaximumCounts();
+	
 	/**
 	 * Find the minimum number of counts in the region of interest
 	 */
-	public abstract int findMinimumCounts();
+	protected abstract int findMinimumCounts();
 
 	/**
 	 * Routine that draws the histograms.
@@ -671,9 +670,9 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * Displays a gate on the plot.
 	 *
 	 * @param gate  the gate to be displayed
-	 * @exception DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
+	 * @throws DataException thrown if there is an unrecoverable errer accessing the <code>Gate</code>
 	 */
-	public void displayGate(Gate gate) {
+	void displayGate(Gate gate) {
 		if (currentHist != null && currentHist.hasGate(gate)) {
 			setDisplayingGate(true);
 			setCurrentGate(gate);
@@ -695,11 +694,8 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	}	
 
 	/**
-	 * paints header for plot to screen and printer
-	 * sets colors and
-	 * the size in pixels for a plot
-	 *
-	 *
+	 * Paints header for plot to screen and printer.
+	 * Also sets colors and the size in pixels for a plot.
 	 */
 	protected void paintHeader(Graphics g) {
 		g.setColor(PlotColorMap.foreground);
@@ -716,50 +712,52 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract void paintMarkingArea(Graphics g);
+	abstract protected void paintMarkingArea(Graphics g);
 
 	/**
 	 * Method for painting a clicked area.
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract void paintMarkArea(Graphics g);
+	abstract protected void paintMarkArea(Graphics g);
 	
 	/**
 	 * Method for painting a clicked channel.
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract void paintMarkedChannels(Graphics g);
+	abstract protected void paintMarkedChannels(Graphics g);
 
 	/**
 	 * method overriden for 1 and 2 d plots
 	 */
-	abstract void paintHistogram(Graphics g);
+	abstract protected void paintHistogram(Graphics g);
 
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
-	abstract void paintGate(Graphics g);
+	abstract protected void paintGate(Graphics g);
+	
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
-	abstract void paintOverlay(Graphics g);
+	abstract protected void paintOverlay(Graphics g);
+	
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
-	abstract void paintFit(Graphics g);
+	abstract protected void paintFit(Graphics g);
 
 	/**
 	 * Method for painting segments while setting a gate.
 	 * 
 	 * @param g the graphics context
 	 */
-	abstract void paintSetGate(Graphics g);
+	abstract protected void paintSetGate(Graphics g);
 
-	abstract void paintMouseMoved(Graphics g);
+	abstract protected void paintMouseMoved(Graphics g);
 
-	public synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
+	synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		printing = rfp;
 		pageformat = pf;
 	}
@@ -801,7 +799,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	/**
 	 * Set the color mode, color palette
 	 */
-	public final void setColorMode(int cm) {
+	final void setColorMode(int cm) {
 		synchronized (this) {
 			colorMode = cm;
 		}
@@ -809,17 +807,16 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	}
 
 	/**
-	 * add a mouselistener that outputs channel
+	 * Add a mouse listener.
 	 */
-	public void addPlotMouseListener(PlotMouseListener listener) {
+	void addPlotMouseListener(PlotMouseListener listener) {
 		plotMouse.addListener(listener);
 	}
 
 	/**
-	 * remove mouselistener that outputs channel
-	 * FIXME return type
+	 * Remove a mouse listener.
 	 */
-	public void removePlotMouseListener(PlotMouseListener listener) {
+	void removePlotMouseListener(PlotMouseListener listener) {
 		plotMouse.removeListener(listener);
 	}
 
@@ -910,57 +907,23 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * 
 	 * @param me created when the mouse is moved
 	 */
-	public void mouseMoved(MouseEvent me) {	
-	}
-	/**
-	 * Not used.
-	 * 
-	 * @param me created when the mouse is dragged across the plot
-	 * with the button down
-	 */
-	public void mouseDragged(MouseEvent me) {
-	}
-
-	/**
-	 * Not used.
-	 * 
-	 * @param me created when the mouse button is pressed on the plot
-	 */
-	public void mousePressed(MouseEvent me) {
-	}
-
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse is clicked on the plot
-	 */
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse pointer enters the plot
-	 */
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse is released
-	 */
-	public void mouseReleased(MouseEvent e) {
-	}
-	/**
-	 * Undo last temporary line drawn.
-	 * 
-	 * @param e created when mouse exits the plot
-	 */	
-	public void mouseExited(MouseEvent e) {
-		setMouseMoved(false);
-		repaint();
-	}
+	abstract protected void mouseMoved(MouseEvent me);
+	
+	protected final MouseInputAdapter mouseInputAdapter=new MouseInputAdapter(){
+		/**
+		 * Undo last temporary line drawn.
+		 * 
+		 * @param e created when mouse exits the plot
+		 */	
+		public void mouseExited(MouseEvent e) {
+			setMouseMoved(false);
+			repaint();
+		}
+		
+		public void mouseMoved(MouseEvent e) {
+			Plot.this.mouseMoved(e);
+		}
+	};
 	
 	
 }
