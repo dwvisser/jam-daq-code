@@ -274,9 +274,9 @@ public class GateSet extends DataControl implements Observer {
 			/* There are many normal situations with no current histogram. */
 			setType(NONE); //undefined type
 		} else if (currentHistogram.getDimensionality() == 1) {
-			setType(Gate.ONE_DIMENSION);
+			setType(1);
 		} else if (currentHistogram.getDimensionality() == 2) {
-			setType(Gate.TWO_DIMENSION);
+			setType(2);
 		} else {
 			messageHandler.errorOutln(getClass().getName()
 					+ ".setup(): undefined histogram type.");
