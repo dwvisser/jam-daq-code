@@ -319,7 +319,9 @@ public final class JamMain extends JFrame {
 	 * @return the current run state
 	 */
 	public RunState getRunState() {
-		return runState;
+		synchronized (this){
+			return runState;
+		}
 	}
 	
 	private void setLookAndFeel(){
