@@ -27,10 +27,6 @@ Observer {
     private JTextField  ttextto,ttimes1,ttimes2;
     private JLabel lname;
 
-    //private Histogram hfrom;
-    //private Histogram hto;
-    //private String typeProj;
-
     public Manipulations(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
         super();
         this.frame=frame;
@@ -41,10 +37,8 @@ Observer {
 
         final int CHOOSER_SIZE=200;
         Dimension dim;
-        int rows=5;
-        int cols=1;
-        int hgap=5;
-        int vgap=5;
+        final int hgap=5;
+        final int vgap=5;
 
         //UI
         Container cdmanip=dmanip.getContentPane();
