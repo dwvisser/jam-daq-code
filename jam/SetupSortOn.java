@@ -13,7 +13,6 @@ import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
-import jam.sort.StorageDaemon;
 import jam.sort.VME_Map;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
@@ -109,7 +108,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private SortDaemon sortDaemon;
 	private NetDaemon netDaemon;
 	private DiskDaemon diskDaemon;
-	private StorageDaemon storageDaemon;
+	//private StorageDaemon storageDaemon;
 	private SortRoutine sortRoutine;
 
 	/* streams to read and write events */
@@ -697,10 +696,10 @@ class SetupSortOn implements ActionListener, ItemListener {
 		//create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
 			diskDaemon = new DiskDaemon(runControl, msgHandler);
-			storageDaemon = diskDaemon;
+			//storageDaemon = diskDaemon;
 			//}
-			storageDaemon.setupOn(eventInputStream, eventOutputStream);
-			storageDaemon.setRingBuffer(storageRing);
+			diskDaemon.setupOn(eventInputStream, eventOutputStream);
+			diskDaemon.setRingBuffer(storageRing);
 		}
 		//create net daemon
 		netDaemon =
@@ -719,12 +718,12 @@ class SetupSortOn implements ActionListener, ItemListener {
 			histDirectory,
 			sortDaemon,
 			netDaemon,
-			storageDaemon);
+			diskDaemon);
 		//tell status
-		displayCounters.setupOn(netDaemon, sortDaemon, storageDaemon);
+		displayCounters.setupOn(netDaemon, sortDaemon, diskDaemon);
 		//startup daemons
 		if (cdisk.isSelected()) {
-			storageDaemon.start();
+			diskDaemon.start();
 		}
 		sortDaemon.start();
 		netDaemon.start();
