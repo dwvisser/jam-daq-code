@@ -23,8 +23,8 @@ public class ScientificDataScales extends DataObject {
 
 	private byte numberType;
 
-	private static final byte TRUE = 1;
-	private static final byte FALSE = 0;
+	static final byte TRUE = 1;
+	static final byte FALSE = 0;
 
 	private ScientificDataDimension sdd;
 
