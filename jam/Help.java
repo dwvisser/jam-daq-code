@@ -1,5 +1,6 @@
 package jam;
 import jam.global.JamProperties;
+import jam.global.MessageHandler;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -19,30 +20,33 @@ import java.io.*;
  * @author Ken Swartz
  * @version version 0.5 November 98
  */
-class Help implements ActionListener {
+class Help {
 
 	private String browser, jamHome, docsPath;
-	private Frame frame;
-	private JDialog aboutD, licenseD;
+	private final Frame frame;
+	private final JDialog aboutD, licenseD;
+	private final MessageHandler messageHandler;
+	private final static int posx=20;
+	private final static int posy=50;
 
 	/**
-	 * Constructor
+	 * @param f the parent frame, i.e. the main Jam Window
+	 * @param mh for outputting error messages
 	 */
-	public Help(Frame frame) {
-		this.frame = frame;
+	Help(Frame f, MessageHandler mh) {
+		final String url="http://jam-daq.sourceforge.net/";
+		this.frame = f;
+		messageHandler=mh;
 		browser = JamProperties.getPropString(JamProperties.BROWSER_PATH);
 		jamHome = JamProperties.getPropString(JamProperties.JAM_HOME);
 		docsPath = JamProperties.getPropString(JamProperties.DOCS_PATH);
 
 		aboutD = new JDialog(frame, "About Jam", false);
-		Container cad = aboutD.getContentPane();
-		aboutD.setForeground(Color.black);
-		aboutD.setBackground(Color.lightGray);
+		final Container cad = aboutD.getContentPane();
 		aboutD.setResizable(false);
-		aboutD.setLocation(20, 50);
-		//aboutD.setSize(300, 275);
+		aboutD.setLocation(posx, posy);
 		cad.setLayout(new BorderLayout());
-		JPanel pcenter = new JPanel(new GridLayout(0, 1));
+		final JPanel pcenter = new JPanel(new GridLayout(0, 1));
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
 			new JLabel("Jam v" + JamMain.getVersion(), JLabel.CENTER));
@@ -52,89 +56,75 @@ class Help implements ActionListener {
 				"Ken Swartz, Dale Visser, and John Baris",
 				JLabel.CENTER));
 		pcenter.add(
-			new JLabel("http://jam-daq.sourceforge.net/", JLabel.CENTER));
-		JPanel pbut = new JPanel(new GridLayout(1, 0));
+			new JLabel(url, JLabel.CENTER));
+		final JPanel pbut = new JPanel(new GridLayout(1, 0));
 		cad.add(pbut, BorderLayout.SOUTH);
-		JButton bok = new JButton("OK");
-		bok.setActionCommand("ok");
-		bok.addActionListener(this);
+		final JButton bok = new JButton("OK");
+		bok.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				aboutD.dispose();
+			}
+		});
 		pbut.add(bok);
 		aboutD.pack();
-		//Recieves events for closing the dialog box and closes it.
+		/* Recieves events for closing the dialog box and closes it. */
 		aboutD.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				aboutD.dispose();
 			}
 		});
-
-		createLicenseDialog();
-
-	}
-
-	/**
-	 * Recieves events from this dialog box.
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		String command = ae.getActionCommand();
-		if (command == "ok") {
-			aboutD.dispose();
-		} else if (command.equals("l_ok")) {
-			licenseD.dispose();
+		synchronized (this) {
+			licenseD =
+			new JDialog(
+				frame,
+				"University of Illinois/NCSA Open Source License",
+				false);
 		}
+		layoutLicenseDialog();
 	}
 
 	/**
-	 * show the about dialog box
+	 * Show the "About Jam" dialog box.
 	 */
 	public void showAbout() {
 		aboutD.show();
 	}
 
-	/**
-	 * Display the jam documents using a browser
-	 */
-	public void showJamDocs() throws JamException {
-		//new Browser("Jam API", this.LOCAL_API_PATH, this.INET_API_URL);
-	}
-
-	private void createLicenseDialog() {
-		licenseD =
-			new JDialog(
-				frame,
-				"University of Illinois/NCSA Open Source License",
-				false);
-		Container contents = licenseD.getContentPane();
+	private void layoutLicenseDialog() {
+		final String hyphen = " - ";
+		final Container contents = licenseD.getContentPane();
 		licenseD.setForeground(Color.black);
 		licenseD.setBackground(Color.lightGray);
 		licenseD.setResizable(false);
-		licenseD.setLocation(20, 50);
+		licenseD.setLocation(posx, posy);
 		contents.setLayout(new BorderLayout());
-		JPanel center = new JPanel(new GridLayout(0, 1));
-		InputStream license_in =
+		final JPanel center = new JPanel(new GridLayout(0, 1));
+		final InputStream license_in =
 			getClass().getClassLoader().getResourceAsStream("license.txt");
-		Reader reader = new InputStreamReader(license_in);
-		String text = "";
+		final Reader reader = new InputStreamReader(license_in);
 		int length = 0;
-		char[] textarray = new char[2000];
+		final char [] textarray=new char[2000];
 		try {
 			length = reader.read(textarray);
 		} catch (IOException e) {
-			System.err.println(e);
+			messageHandler.errorOutln(getClass().getName()+hyphen+e.getMessage());
 		}
-		text = new String(textarray, 0, length);
+		final String text = new String(textarray, 0, length);
 		System.out.println(text);
 
-		JTextArea textarea = new JTextArea(text);
-		center.add(new JScrollPane(textarea));
+		center.add(new JScrollPane(new JTextArea(text)));
 		contents.add(center, BorderLayout.CENTER);
-		JPanel south = new JPanel(new GridLayout(1, 0));
+		final JPanel south = new JPanel(new GridLayout(1, 0));
 		contents.add(south, BorderLayout.SOUTH);
-		JButton bok = new JButton("OK");
-		bok.setActionCommand("l_ok");
-		bok.addActionListener(this);
+		final JButton bok = new JButton("OK");
+		bok.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				licenseD.dispose();
+			}
+		});
 		south.add(bok);
 		licenseD.pack();
-		//Recieves events for closing the dialog box and closes it.
+		/* Recieves events for closing the dialog box and closes it. */
 		aboutD.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				aboutD.dispose();
