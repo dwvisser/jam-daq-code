@@ -247,7 +247,7 @@ public abstract class Histogram {
 		final Map groupHistMap =currentGroup.getHistogramMap();		
 		name=makeUniqueName(nameIn, groupHistMap);
 		/* Create the full histogram name with group name */
-		final String groupName=currentGroup.getName();		
+		groupName=currentGroup.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
 		/* Add to group */
 		currentGroup.addHistogram(this);
@@ -541,11 +541,19 @@ public abstract class Histogram {
 	 *            name of histogram to retrieve
 	 * @return the histogram with the given name, null if name doesn't exist.
 	 */
-	public static Histogram getHistogram(String name) {
-		Histogram rval = null;//default return value
+	public static Histogram getHistogram(final String name) {
+		final Histogram rval;//default return value
 		if (name != null) {
+		    final String refer;
+		    if (name.indexOf('/')<0){
+		        refer = Group.getCurrentGroup().getName()+'/'+name;
+		    } else {
+		        refer=name;
+		    }
 			/* get() will return null if key not in table */
-			rval = (Histogram) NAME_MAP.get(name);
+			rval = (Histogram) NAME_MAP.get(refer);
+		} else {
+		    rval =null;
 		}
 		return rval;
 	}
