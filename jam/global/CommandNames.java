@@ -12,6 +12,9 @@ public interface CommandNames {
 	/** Open a hdf file */
 	String OPEN_HDF = "open";
 	
+	/** Open an additional hdf file */
+	String OPEN_ADDITIONAL_HDF = "openadditional";
+	
 	/** Reload hdf file */
 	String RELOAD_HDF = "reload";
 

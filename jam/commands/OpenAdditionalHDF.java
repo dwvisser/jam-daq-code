@@ -22,8 +22,7 @@ import javax.swing.KeyStroke;
 public class OpenAdditionalHDF extends AbstractCommand implements Observer{
 
 	OpenAdditionalHDF(){
-		putValue(NAME,"Open Additionals\u2026");
-		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_O, CTRL_MASK));
+		putValue(NAME,"Open Additional\u2026");
 	}
 
 	/* 
