@@ -49,8 +49,10 @@ public class SelectionTree extends JPanel implements Observer {
 	
 	DefaultTreeModel treeModel;
 	
+	/**Root node of the tree */
 	DefaultMutableTreeNode rootNode;
-	TreeSelectionListener treeSelectionListener;
+	
+	TreeSelectionListener treeSelectionListener=null;
 	
 	private final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
@@ -99,17 +101,6 @@ public class SelectionTree extends JPanel implements Observer {
 		//dataTree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION);
 		dataTree.setCellRenderer(new SelectionTreeCellRender());
 		
-		//Tree selection Listener
-		treeSelectionListener =new TreeSelectionListener(){
-			public void valueChanged(TreeSelectionEvent e) {
-	 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					dataTree.getLastSelectedPathComponent();
-	 	        if (node == null) 
-	 	        	return;
-	 	        Object nodeInfo = node.getUserObject();
-		 	    selection(nodeInfo);		 	        
-	 	    }		 			 	
-		 };
 		 
 		addSelectionListener();
 		 
@@ -117,6 +108,19 @@ public class SelectionTree extends JPanel implements Observer {
  
 	}
 	private void addSelectionListener(){
+		//Tree selection Listener
+		if (treeSelectionListener==null){
+			treeSelectionListener =new TreeSelectionListener(){
+				public void valueChanged(TreeSelectionEvent e) {
+		 	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						dataTree.getLastSelectedPathComponent();
+		 	        if (node == null) 
+		 	        	return;
+		 	        Object nodeInfo = node.getUserObject();
+			 	    selection(nodeInfo);		 	        
+		 	    }		 			 	
+			 };
+		}
 		dataTree.addTreeSelectionListener(treeSelectionListener);
 	}
 	private void removeSelectionListener(){
@@ -197,10 +201,10 @@ public class SelectionTree extends JPanel implements Observer {
 			dataTree.setSelectionPaths(selectTreePaths);
 			
 			//Change selected histogram if needed
-			if (hist!=status.getCurrentHistogram()) {
+			//if (hist!=status.getCurrentHistogram()) {
 				status.setHistName(hist.getName());
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
-			}
+			//}
 			status.setCurrentGateName(gate.getName());
 			broadcaster.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			
@@ -208,27 +212,6 @@ public class SelectionTree extends JPanel implements Observer {
 		//Re add listener now that we have set selection
 		addSelectionListener();
 	}	
-	/**
-	 * Helper method to get TreePath for a data object
-	 * @param ojc
-	 * @return
-	 */
-	private TreePath pathForDataObject(Object dataObject){
-		
-		DefaultMutableTreeNode loopNode;
-		TreePath treePath=null;
-		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
-		while(nodeEnum.hasMoreElements()){
-			loopNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
-			Object obj=loopNode.getUserObject();
-			if (dataObject==obj){
-				treePath = new TreePath(loopNode.getPath());			
-				break;
-			}
-			
-		}
-		return treePath;
-	}
 	/**
 	 * Refresh the selected node
 	 *
@@ -280,6 +263,28 @@ public class SelectionTree extends JPanel implements Observer {
 		repaint();
 		dataTree.repaint();
 	}
+	/**
+	 * Helper method to get TreePath for a data object
+	 * @param ojc
+	 * @return
+	 */
+	private TreePath pathForDataObject(Object dataObject){
+		
+		DefaultMutableTreeNode loopNode;
+		TreePath treePath=null;
+		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
+		while(nodeEnum.hasMoreElements()){
+			loopNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
+			Object obj=loopNode.getUserObject();
+			if (dataObject==obj){
+				treePath = new TreePath(loopNode.getPath());			
+				break;
+			}
+			
+		}
+		return treePath;
+	}
+	
 	/**
 	 * Implementation of Observable interface.
 	 * 
