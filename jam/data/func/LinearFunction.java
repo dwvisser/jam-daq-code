@@ -2,8 +2,7 @@ package jam.data.func;
 import jam.data.DataException;
 
 /**
- * A polynomial function that can be use to calibrate a histogram.  Most often used to define energy
- * calibrations of spectra.
+ * A linear histogram calibration function, that is, E = a0 + a1 * channel.
  */
 public class LinearFunction extends CalibrationFunction {
 
