@@ -31,7 +31,9 @@ public class ParseCommand implements CommandListener{
 		textOut=jc;		
 		commandMap = createCommandMap();
 	}
-	
+	/**
+	 * Parse a plot command
+	 */
 	public boolean performParseCommand(String _command, String[] cmdParams) {
 		boolean accept = false; //is the command accepted
 		boolean handleIt = false;

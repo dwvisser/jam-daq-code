@@ -4,7 +4,6 @@ import jam.JamConsole;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandListener;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -47,7 +46,7 @@ import java.util.prefs.PreferenceChangeListener;
  */
 
 class Action implements ActionListener, PlotMouseListener,
-		PreferenceChangeListener, CommandListener {
+		PreferenceChangeListener {
 
 	static final String HELP = "help";
 
@@ -87,16 +86,9 @@ class Action implements ActionListener, PlotMouseListener,
 
 	private static final JamStatus status = JamStatus.instance();
 
-	private boolean autoOnExpand = true;
-
-	/**
-	 * Variable to indicate mouse was pressed
-	 */
+	/**  Variable to indicate mouse was pressed */
 	private boolean mousePressed;
-
-	/**
-	 * Accessed by Display.
-	 */
+	/** Accessed by Display. */
 	private boolean settingGate;
 
 	private final MessageHandler textOut;
@@ -132,7 +124,8 @@ class Action implements ActionListener, PlotMouseListener,
 	private final List rangeList = Collections.synchronizedList(new ArrayList());
 	
 	private int countLow, countHigh;
-
+	/*reference auto scale on expand */ 
+	private boolean autoOnExpand = true;	
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -146,9 +139,10 @@ class Action implements ActionListener, PlotMouseListener,
 		textOut = jc;
 		
 		parseCommand= new ParseCommand(this, jc);
+		jc.addCommandListener(parseCommand);
 		
 		cursor = Bin.Factory.create();
-		jc.addCommandListener(this);
+		
 		commandPresent = false;
 		overlayState = false;
 		settingGate = false;
@@ -210,55 +204,21 @@ class Action implements ActionListener, PlotMouseListener,
 		cursor.setChannel(pChannel);
 		/* there is a command currently being processed */
 		if (commandPresent) {
-			if (RANGE.equals(inCommand)) {
-				rangeList.add(new Integer((int) cursor.getCounts()));
-			}
+			//Do the command
 			doCommand(inCommand);
 		} else {
-			/*
-			 * no command being processed check if gate is being set
-			 */
+
+			//No command being processed check if gate is being set
 			if (settingGate) {
 				broadcaster.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
 						pChannel);
 				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 						pPixel);
 			} else {
-				/* output counts for the channel */
-				final double count;
-				final String coord;
-				final int xch;
-				synchronized (cursor) {
-					xch = cursor.getX();
-					count = cursor.getCounts();
-					coord = cursor.getCoordString();
-				}
-				currentPlot.markChannel(cursor);
-				if (hist.isCalibrated()) {
-					final Plot plot = (Plot) currentPlot;
-					final double energy = plot.getEnergy(xch);
-					textOut.messageOutln("Bin " + xch + ":  Counts = "
-							+ numFormat.format(count) + "  Energy = "
-							+ numFormat.format(energy));
-				} else {
-					textOut.messageOutln("Bin " + xch + ":  Counts = "
-							+ numFormat.format(count));
-				}
-				done();
+				channelDisplay(cursor, hist, currentPlot);
 			}
 		}
 	}
-	
-	/**
-	 * perform a command input as a string
-	 */
-	public boolean performParseCommand(String _command, String[] cmdParams) {
-
-		//Foward call to parser class		
-		return parseCommand.performParseCommand(_command, cmdParams);
-	}
-
-	
 	/**
 	 * Sort the input command and do command.
 	 */
@@ -399,6 +359,38 @@ class Action implements ActionListener, PlotMouseListener,
 	}
 
 	/**
+	 * Display the counts at cursor
+	 * 
+	 * @param cursor
+	 * @param hist
+	 * @param currentPlot
+	 */
+	private void channelDisplay(Bin cursor, Histogram hist, Plot currentPlot){
+		/* output counts for the channel */
+		final double count;
+		final String coord;
+		final int xch;
+		synchronized (cursor) {
+			xch = cursor.getX();
+			count = cursor.getCounts();
+			coord = cursor.getCoordString();
+		}
+		currentPlot.markChannel(cursor);
+		if (hist.isCalibrated()) {
+			final Plot plot = (Plot) currentPlot;
+			final double energy = plot.getEnergy(xch);
+			textOut.messageOutln("Bin " + xch + ":  Counts = "
+					+ numFormat.format(count) + "  Energy = "
+					+ numFormat.format(energy));
+		} else {
+			textOut.messageOutln("Bin " + xch + ":  Counts = "
+					+ numFormat.format(count));
+		}
+		done();
+
+	}
+	
+	/**
 	 * Call <code>update()</code> on the current plot, reset the command-line,
 	 * and broadcast a histogram selection message to force the rest of the GUI
 	 * to be consistent with the currently selected histogram.
@@ -522,11 +514,17 @@ class Action implements ActionListener, PlotMouseListener,
 		if (!commandPresent) {
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
-		} else if (rangeList.size() == 1) {
-			countLow = ((Integer) rangeList.get(0)).intValue();
-			textOut.messageOut(String.valueOf(countLow) + " to ");
+		} else if (clicks.size() == 0) {
+			countLow=(int)cursor.getCounts();
+			clicks.add(cursor);
+			//FIXME remove 
+			//countLow = ((Integer) rangeList.get(0)).intValue();
+			textOut.messageOut(""+countLow + " to ");
 		} else {
-			countHigh = ((Integer) rangeList.get(1)).intValue();
+			countHigh=(int)cursor.getCounts();
+			clicks.add(cursor);
+			//FIXME remove 
+			//countHigh = ((Integer) rangeList.get(1)).intValue();
 			display.getPlot().setRange(countLow, countHigh);
 			textOut.messageOut(String.valueOf(countHigh), MessageHandler.END);
 			done();
