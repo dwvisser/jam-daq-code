@@ -93,7 +93,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	
 	private final void initPrefs() {
 		PREFS.addPreferenceChangeListener(this);
-		isScrolling=PREFS.getBoolean(ENABLE_SCROLLING, true);
+		isScrolling=PREFS.getBoolean(ENABLE_SCROLLING_TILED, false);
 		isAxisLabels=PREFS.getBoolean(DISPLAY_AXIS_LABELS, true);
 	}
 		
@@ -482,7 +482,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 
-		if (key.equals(PlotPrefs.ENABLE_SCROLLING)){
+		if (key.equals(PlotPrefs.ENABLE_SCROLLING_TILED)){
 			isScrolling=Boolean.valueOf(newValue).booleanValue();
 		} else if (key.equals(PlotPrefs.DISPLAY_AXIS_LABELS)){		
 			isAxisLabels=Boolean.valueOf(newValue).booleanValue();

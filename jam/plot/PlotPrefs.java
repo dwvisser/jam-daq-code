@@ -55,7 +55,7 @@ public interface PlotPrefs {
 	/**
 	 * Preference for whether to show scroll bars.
 	 */
-	String ENABLE_SCROLLING="EnableScrolling";
+	String ENABLE_SCROLLING_TILED="EnableScrollingTiled";
 	
 	/**
 	 * Preference for whether to draw axis labels.
