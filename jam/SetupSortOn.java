@@ -377,7 +377,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		pPathArea.add(pt,BorderLayout.SOUTH);
 
 		textSortInterval = new JTextField("1");
-		textSortInterval.setToolTipText("Sort every n'th event. 1 means sort all events.");
+		textSortInterval.setToolTipText("Sort every n'th buffer. 1 means sort all events.");
 		textSortInterval.setColumns(3);
 		textSortInterval.setBackground(Color.white);
 		pt.add(textSortInterval);
