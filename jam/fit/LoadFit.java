@@ -165,14 +165,10 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 			}; 
 			broadcaster.broadcast(BroadcastEvent.Command.FIT_NEW, fitAction);
 		} catch (InstantiationException ie) {
-			throw new JamException(" Fit Class cannot instantize: " + fitName);
+			throw new JamException(" Fit Class cannot instantize: " + fitName, ie);
 		} catch (IllegalAccessException iae) {
-			throw new JamException(" Fit Class cannot Access: " + fitName);
-		} catch (FitException fe) {
-			fe.printStackTrace();
-			throw new JamException(
-				"FitException during makeFit(): " + fe.getMessage());
-		}
+			throw new JamException(" Fit Class cannot Access: " + fitName, iae);
+		} 
 	}
 
 	private Object [] getFitClasses() {

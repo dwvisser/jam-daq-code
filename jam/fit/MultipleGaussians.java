@@ -37,19 +37,19 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 
 	private Parameter independentWidths;
 
-	public static final String INDEP_WIDTH =
+	private static final String INDEP_WIDTH =
 		"Vary Widths Independently (not yet implemented)";
-	public static final String WIDTH_ESTIMATE = "Estimated width";
+	private static final String WIDTH_ESTIMATE = "Estimated width";
 
 	private Parameter numPeaks;
 	int npeak; //for local calculations
 
-	public static final String NUM_PEAKS = "# Peaks to Fit";
+	private static final String NUM_PEAKS = "# Peaks to Fit";
 
 	private static final int POSSIBLE_PEAKS = 5;
-	public static String[] sArea = new String[POSSIBLE_PEAKS];
-	public static String[] sWidth = new String[POSSIBLE_PEAKS];
-	public static String[] sCentroid = new String[POSSIBLE_PEAKS];
+	private static final String[] sArea = new String[POSSIBLE_PEAKS];
+	private static final String[] sWidth = new String[POSSIBLE_PEAKS];
+	private static final String[] sCentroid = new String[POSSIBLE_PEAKS];
 
 	private Parameter widthEstimate;
 	private Parameter[] area = new Parameter[POSSIBLE_PEAKS];
@@ -82,12 +82,9 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 
 	/**
 	 * Class constructor.
-	 *
-	 * @exception   FitException	    thrown if unrecoverable error occurs during instantiation
 	 */
-	public MultipleGaussians() throws FitException {
+	public MultipleGaussians() {
 		super("MultipleGaussians");
-
 		Parameter background = new Parameter("Background: ", Parameter.TEXT);
 		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
 		Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
@@ -149,8 +146,6 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 
 	/**
 	 * If so requested, estimates A, Area, and Width.
-	 *
-	 * @exception   FitException	    thrown if unrecoverable error occurs during estimation
 	 */
 	public void estimate()  {
 		/* First, sort clickable mouse entries */
@@ -197,7 +192,7 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 				int imax =
 					Math.min((int) (dCentroid[i] + rangeOffset), _maxCH);
 				for (int j = imin; j <= imax; j++) {
-					dArea[i] += (double) counts[j] - backLevel;
+					dArea[i] += counts[j] - backLevel;
 				}
 				dArea[i] *= 1.3144;
 				//inverse of area under fwhm standard normal

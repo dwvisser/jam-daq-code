@@ -20,7 +20,7 @@ package jam.fit;
  * <dt>(NO_)KNOWN</dt><dd>input only, not varied by routine</dd>
  * </dl>
  */
-public final class Parameter {
+final class Parameter {
 
 	/* used to determine the type */ 
 	private final static int TYPE_MASK = 7;
@@ -33,29 +33,29 @@ public final class Parameter {
 	/**
 		 * Parameter is an integer number, e.g., a histogram channel number.
 		 */
-	public final static int INT = 1;
+	final static int INT = 1;
 
 	/**
 		 * Parameter is a boolean value...displayed as a checkbox.
 		 */
-	public final static int BOOLEAN = 2;
+	final static int BOOLEAN = 2;
 
 	/**
 	 * Parameter is simply a text box.
 	 */
-	public final static int TEXT = 4;
+	final static int TEXT = 4;
 
 	/* Options */
-	public final static int FIX = 16;
-	public final static int NO_FIX = 0; //default    
-	public final static int ESTIMATE = 32;
-	public final static int NO_ESTIMATE = 0; //default            
-	public final static int MOUSE = 64;
-	public final static int NO_MOUSE = 0; //default
-	public final static int OUTPUT = 128;
-	public final static int NO_OUTPUT = 0; //default
-	public final static int KNOWN = 256;
-	public final static int NO_KNOWN = 0; //default
+	final static int FIX = 16;
+	final static int NO_FIX = 0; //default    
+	final static int ESTIMATE = 32;
+	final static int NO_ESTIMATE = 0; //default            
+	final static int MOUSE = 64;
+	final static int NO_MOUSE = 0; //default
+	final static int OUTPUT = 128;
+	final static int NO_OUTPUT = 0; //default
+	final static int KNOWN = 256;
+	final static int NO_KNOWN = 0; //default
 
 	/* *
 	 * type contains the parameter type.  Its value is available via getType().
@@ -72,8 +72,6 @@ public final class Parameter {
 	
 	/* whether there is an error bar */
 	private boolean errorOption = true;
-	/* whether an estimation routine is provided */
-	private boolean estimateOption = false;
 	/* whether the parameter has been fixed */
 	private boolean fixOption = false;
 	/* whether the parameter can be set by clicking */
@@ -105,7 +103,7 @@ public final class Parameter {
 	 */
 	protected boolean estimate;
 
-	public Parameter(
+	Parameter(
 		String name,
 		int options) { //default variable parameter instance
 		this.name = name;
@@ -126,9 +124,9 @@ public final class Parameter {
 		if ((options & Parameter.FIX) != 0) {
 			fixOption = true;
 		}
-		if ((options & Parameter.ESTIMATE) != 0) {
+		/*if ((options & Parameter.ESTIMATE) != 0) {
 			estimateOption = true;
-		}
+		}*/
 		if ((options & Parameter.MOUSE) != 0) {
 			mouseOption = true;
 		}
@@ -142,15 +140,15 @@ public final class Parameter {
 
 	}
 
-	public Parameter(String name, int option1, int option2) {
+	Parameter(String name, int option1, int option2) {
 		this(name, option1 | option2);
 	}
 
-	public Parameter(String name, int option1, int option2, int option3) {
+	Parameter(String name, int option1, int option2, int option3) {
 		this(name, option1 | option2 | option3);
 	}
 
-	public Parameter(
+	Parameter(
 		String name,
 		int option1,
 		int option2,
@@ -159,7 +157,7 @@ public final class Parameter {
 		this(name, option1 | option2 | option3 | option4);
 	}
 
-	public Parameter(
+	Parameter(
 		String name,
 		int option1,
 		int option2,
@@ -169,7 +167,7 @@ public final class Parameter {
 		this(name, option1 | option2 | option3 | option4 | option5);
 	}
 
-	public Parameter(
+	Parameter(
 		String name,
 		int option1,
 		int option2,
@@ -182,47 +180,47 @@ public final class Parameter {
 
 	//END OF CONSTRUCTORS
 
-	public String getName() {
+	String getName() {
 		return name;
 	}
 	
-	public int getType() {
+	int getType() {
 		return type;
 	}
 
-	public synchronized void setFixed(boolean state) {
+	synchronized void setFixed(boolean state) {
 		this.fix = state;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Tells whether the parameter is currently fixed.
 	 */
-	public synchronized boolean isFixed() {
+	synchronized boolean isFixed() {
 		return fix;
 	}
 	
-	public boolean canBeFixed(){
-		return this.fixOption;
+	boolean canBeFixed(){
+		return fixOption;
 	}
 	
-	public boolean hasErrorBar(){
-		return this.errorOption;
+	boolean hasErrorBar(){
+		return errorOption;
 	}
 
-	public synchronized void setEstimate(boolean state) {
+	synchronized void setEstimate(boolean state) {
 		estimate = state;
 	}
 
-	public synchronized boolean isEstimate() {
+	synchronized boolean isEstimate() {
 		return (fix ? false : estimate);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Set the floating point value.
 	 *
 	 * @throws UnsupportedOperationException if this is not a DOUBLE parameter
 	 */
-	public synchronized void setValue(double value) {
+	synchronized void setValue(double value) {
 		if (type == DOUBLE) {
 			valueDbl = value;
 		} else {
@@ -231,13 +229,13 @@ public final class Parameter {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Set the floating point value.
 	 *
 	 * @throws UnsupportedOperationException if this is not a DOUBLE parameter with
 	 * error bar
 	 */
-	public synchronized void setValue(double value, double error) {
+	synchronized void setValue(double value, double error) {
 		if (errorOption){
 			valueDbl = value;
 			errorDbl = error;
@@ -247,12 +245,12 @@ public final class Parameter {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Set the floating point value.
 	 *
 	 * @throws UnsupportedOperationException if this is not an INT parameter
 	 */
-	public synchronized void setValue(int value) {
+	synchronized void setValue(int value) {
 	if (type == INT){
 		valueInt = value;
 	} else {
@@ -261,73 +259,74 @@ public final class Parameter {
 	}
 	}
 
-	public synchronized void setValue(String text) {
+	synchronized void setValue(String text) {
 		valueTxt = text;
 	}
 	
-	public synchronized void setValue(boolean flag) {
+	synchronized void setValue(boolean flag) {
 		valueBln = flag;
 	}
 
-	public synchronized void setError(double err) {
+	synchronized void setError(double err) {
 		errorDbl = err;
 	}
 
-	public synchronized double getDoubleValue() {
+	synchronized double getDoubleValue() {
 		return valueDbl;
 	}
 
-	public synchronized int getIntValue() {
+	synchronized int getIntValue() {
 		return valueInt;
 	}
 
-	public synchronized boolean getBooleanValue() {
+	synchronized boolean getBooleanValue() {
 		return valueBln;
 	}
 
-	public synchronized double getDoubleError() {
+	synchronized double getDoubleError() {
 		return errorDbl;
 	}
 
-	public boolean isBoolean() {
+	boolean isBoolean() {
 		return (type == BOOLEAN);
 	}
 
-	public boolean isNumberField() {
+	boolean isNumberField() {
 		return (type == INT || type == DOUBLE);
 	}
 	
-	public boolean isDouble(){
+	boolean isDouble(){
 		return type==DOUBLE;
 	}
-	public boolean isInteger(){
+	
+	boolean isInteger(){
 		return type==INT;
 	}
 	
-	public synchronized String getText(){
+	synchronized String getText(){
 		return valueTxt;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Returns true if the parameter is represented by a text field in the dialog box.
 	 */
-	public boolean isText() {
+	boolean isText() {
 		return (type == TEXT);
 	}
 
-	public boolean canBeEstimated() {
+	boolean canBeEstimated() {
 		return ((options & ESTIMATE) != 0);
 	}
 	
-	public boolean isKnown(){
+	boolean isKnown(){
 		return knownOption;
 	}
 	
-	public boolean isOutputOnly(){
+	boolean isOutputOnly(){
 		return outputOption;
 	}
 	
-	public boolean isMouseClickable(){
+	boolean isMouseClickable(){
 		return mouseOption;
 	}
 }

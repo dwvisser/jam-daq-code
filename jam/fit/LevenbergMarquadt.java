@@ -17,7 +17,7 @@ import java.util.Vector;
  * @see	NonLinearFit
  * @see GaussianFit
  */
-public class LevenbergMarquadt {
+final class LevenbergMarquadt {
 
 	/**
 	 * <code>int</code> used when calling to calculate the first iteration
@@ -171,10 +171,11 @@ public class LevenbergMarquadt {
 	 * Sets the histogram values and the boundaries for the fit.
 	 * 
 	 * @param	counts	    the counts in the histogram to fit
+	 * @param errors error bars on the histogram bin counts
 	 * @param	minChannel  the lower limit of the fit
 	 * @param	maxChannel  the upper limit of the fit
 	 */
-	public void setup(
+	void setup(
 		double[] counts,
 		double[] errors,
 		int minChannel,
@@ -312,22 +313,18 @@ public class LevenbergMarquadt {
 	 *
 	 * @param	params	array of parameters to calculate from
 	 */
-	private void calculate(Parameter[] params) throws FitException {
-
+	private void calculate(Parameter[] params) {
 		int i, j, k, l, m;
 		double sig2i; //1 over sigma squared
 		double weight;
-
 		double y, dy;
 		double[] dyda = new double[nPar];
-
-		//set parameter values in funk
+		/* set parameter values in funk */
 		for (i = 0; i < params.length; i++) {
 			nonLinFit.setParameter(
 				params[i].getName(),
 				params[i].getDoubleValue());
 		}
-
 		if (iterationCount == 0) {
 			messages.messageOut("Iteration ChiSq/dof ",MessageHandler.NEW);
 			for (i = 0; i < params.length; i++) {
@@ -335,30 +332,26 @@ public class LevenbergMarquadt {
 			}
 			messages.messageOut("",MessageHandler.END);
 		}
-
-		//initialize space and vec (matrix and vector in Numerical Recipes in C 15.5)
+		/* initialize space and vec (matrix and vector in Numerical Recipes in C 15.5) */
 		for (j = 0; j < nVar; j++) {
 			for (k = 0; k <= j; k++) {
 				space.element[j][k] = 0.0;
 			}
 			vec.element[j][0] = 0.0;
 		}
-
-		//initialize chiSq
+		/* initialize chiSq */
 		chiSq = 0.0;
-
-		//Summation loop over all data channels
+		/* Summation loop over all data channels */
 		for (i = minChannel; i <= maxChannel; i++) {
-			y = nonLinFit.valueAt((double) i);
+			y = nonLinFit.valueAt(i);
 			for (j = 0; j < nPar; j++) {
-				dyda[j] = nonLinFit.derivative((double) i, params[j].getName());
+				dyda[j] = nonLinFit.derivative(i, params[j].getName());
 			}
 			sig2i = 1.0 / (errors[i] * errors[i]);
 			dy = data[i] - y;
-
-			//and find chi squared
+			/* and find chi squared */
 			chiSq = chiSq + dy * dy * sig2i;
-			//setup workspace for MRQMIN magic
+			/* setup workspace for MRQMIN magic */
 			j = -1;
 			for (l = 0; l < nPar; l++) {
 				if (!params[l].isFixed()) {
@@ -376,7 +369,7 @@ public class LevenbergMarquadt {
 				}
 			}
 		}
-		//debug message
+		/* debug message */
 		messages.messageOut(iterationCount + " ",MessageHandler.NEW);
 		messages.messageOut(round(chiSq / dof, 3) + " ");
 		for (i = 0; i < params.length; i++) {
@@ -389,8 +382,7 @@ public class LevenbergMarquadt {
 					+ " ");
 		}
 		messages.messageOut("",MessageHandler.END);
-
-		//fill in the symmetric side
+		/* fill in the symmetric side */
 		for (j = 1; j < nVar; j++) {
 			for (k = 0; k < j; k++) {
 				space.element[k][j] = space.element[j][k];
@@ -472,7 +464,7 @@ public class LevenbergMarquadt {
 		return out;
 	}
 
-	public int getDegreesOfFreedom() {
+	int getDegreesOfFreedom() {
 		return dof;
 	}
 

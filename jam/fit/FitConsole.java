@@ -35,7 +35,7 @@ public class FitConsole
 	/**
 	 * End of line character(s).
 	 */
-	private static final String END_LINE = (String) System.getProperty("line.separator");
+	private static final String END_LINE = System.getProperty("line.separator");
 
 	private final JTextPane textLog; //output text area
 	private final Document doc;
@@ -203,8 +203,6 @@ public class FitConsole
 		Toolkit.getDefaultToolkit().beep();
 	}
 
-	public static final String NUMBERS_ONLY="int";
-	
 	/**
 	 * Trim the text on screen Log so it does not get too long
 	 */

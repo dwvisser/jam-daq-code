@@ -65,6 +65,8 @@ public abstract class NonLinearFit extends AbstractFit {
     /**
      * Class constructor.  This is still an abstract class.  Specific subclass constructors
      * will call this before executing their own constructors.
+     * 
+     * @param name of the fit function
      */
     public NonLinearFit(String name){
         super(name);
@@ -79,14 +81,6 @@ public abstract class NonLinearFit extends AbstractFit {
         Parameter.MOUSE);
         addParameter(hi);
     }
-
-    /**
-     * Estimate parameters for which the user requests estimation. Unnecessary to implement, but very useful since
-     * good guesses are usually needed to find the fit.
-     *
-     * @exception   FitException      thrown if unrecoverable error occurs during estimation
-     */
-    public abstract void estimate();
 
     /**
      * Evaluates at x for given parameters.
@@ -186,16 +180,6 @@ public abstract class NonLinearFit extends AbstractFit {
     }
 
     /**
-     * Allows access to parameters by name for modification.
-     *
-     * @param  which  the name of the parameter
-     * @return    the <code>Parameter</code> object
-     */
-    public Parameter getParameter(String which){
-        return (Parameter)(parameterTable.get(which));
-    }
-
-    /**
      * Calculate function value for specific channel in the histogram.
      *
      * @param  channel  the channel to evaluate the function at
@@ -204,7 +188,7 @@ public abstract class NonLinearFit extends AbstractFit {
     public double calculate(int channel){
         double rval=0.0;
         if (channel>=minCH&&channel<=maxCH){
-            rval=valueAt((double)channel);
+            rval=valueAt(channel);
         }
         return rval;
     }

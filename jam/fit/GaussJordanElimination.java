@@ -1,6 +1,6 @@
 package jam.fit;
 
-class GaussJordanElimination {
+final class GaussJordanElimination {
 
 	private Matrix inputMatrix; // n by n
 	private Matrix inputVectors; // n by m
@@ -29,7 +29,7 @@ class GaussJordanElimination {
 		pivot = new int[rows];
 	}
 
-	public void go() throws Exception {
+	void go() throws Exception {
 		clearPivot();
 		findPivots();
 	}
@@ -100,7 +100,7 @@ class GaussJordanElimination {
 				}
 			}
 		}
-		//Now unscramble the permuted columns.
+		/* Now unscramble the permuted columns. */
 		for (l = rows - 1; l >= 0; l--) {
 			if (rowIndex[l] != columnIndex[l]) {
 				inputMatrix.permute(rowIndex[l], columnIndex[l], 'r');
@@ -108,10 +108,11 @@ class GaussJordanElimination {
 		}
 	}
 
-	public Matrix getMatrix() {
+	Matrix getMatrix() {
 		return inputMatrix;
 	}
-	public Matrix getVectors() {
+	
+	Matrix getVectors() {
 		return inputVectors;
 	}
 }
