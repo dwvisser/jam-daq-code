@@ -135,11 +135,13 @@ public final class VirtualGroup extends DataObject {
 	 * Adds the data element to the vGroup.
 	 *
 	 * @param	data	data element to be added
-	 * @exception   HDFException	    thrown if unrecoverable error occurs
+	 * @throws   IllegalArgumentException if <code>data==null</code>
+	 * @throws HDFException if the data is unreadable somehow
 	 */
 	public void addDataObject(DataObject data) throws HDFException {
-		if (data == null)
-			throw new HDFException("Can't add null to vGroup.");
+		if (data == null){
+			throw new IllegalArgumentException("Can't add null to vGroup.");
+		}
 		elements.add(data);
 		refreshBytes();
 	}
