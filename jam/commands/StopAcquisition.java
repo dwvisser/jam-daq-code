@@ -10,6 +10,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
+ * Stop data acquisition.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 7, 2004
@@ -25,28 +26,19 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 		enable();
 	}
 	
-	/**
-	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
-	 */
 	protected void execute(Object[] cmdParams) {
 		control.stopAcq();
 	}
 
-	/**
-	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
-	 */
 	protected void executeParse(String[] cmdTokens) {
 		execute(null);
 	}
 
-	/**
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-	 */
 	public void update(Observable o, Object arg) {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK);

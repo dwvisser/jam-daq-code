@@ -25,6 +25,7 @@ public interface Commandable extends Action {
 	 * Execute a command with the given command parameters.
 	 * 
 	 * @param cmdParams command parameters
+	 * @throws CommandException if an error occurs
 	 */
 	void performCommand(Object [] cmdParams) throws CommandException;	
 
@@ -32,9 +33,13 @@ public interface Commandable extends Action {
 	 * Execute a command with the given command string tokens
 	 * 
 	 * @param cmdParamTokens command string parameters
+	 * @throws CommandListenerException if an error occurs
 	 */
 	void performParseCommand(String [] cmdParamTokens) throws CommandListenerException;
 	
+	/**
+	 * The platform-specific mask for invoking commands from the keyboard.
+	 */
 	int CTRL_MASK =
 		JamProperties.isMacOSX() ? Event.META_MASK : Event.CTRL_MASK;
 		

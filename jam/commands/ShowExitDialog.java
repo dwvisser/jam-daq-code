@@ -4,15 +4,15 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+
 /**
- * Show the histogram dialog
+ * Show the exit dialog.
  * 
  * @author Ken Swartz
- *
  */
-final class ShowDialogExitCmd extends AbstractCommand{
+final class ShowExitDialog extends AbstractCommand{
 	
-	protected ShowDialogExitCmd(){
+	private ShowExitDialog(){
 		super();
 		putValue(NAME,"Exit\u2026");
 		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, 

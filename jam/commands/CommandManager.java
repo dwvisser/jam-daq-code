@@ -61,7 +61,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(START, StartAcquisition.class);
 		CMD_MAP.put(STOP, StopAcquisition.class);
 		CMD_MAP.put(FLUSH, FlushAcquisition.class);
-		CMD_MAP.put(EXIT, ShowDialogExitCmd.class);
+		CMD_MAP.put(EXIT, ShowExitDialog.class);
 		CMD_MAP.put(CLEAR, FileNewClearCmd.class);
 		CMD_MAP.put(PARAMETERS, ShowDialogParametersCmd.class);
 		CMD_MAP.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);

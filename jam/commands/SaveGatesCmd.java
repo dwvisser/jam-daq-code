@@ -38,7 +38,7 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	/**
 	 * Save to an hdf file.
 	 * 
-	 * @param cmdParams empty array or <code>null</code> to use a 
+	 * @param cmdTokens empty array or <code>null</code> to use a 
 	 * file dialog, or the name of a <code>File</code> as the first
 	 * element
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
@@ -50,7 +50,7 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 			execute(null);
 		} else {
 			final Object[] cmdParams = new Object[1];
-			final File file = new File((String) cmdTokens[0]);
+			final File file = new File(cmdTokens[0]);
 			cmdParams[0] = file;
 			execute(cmdParams);
 		}

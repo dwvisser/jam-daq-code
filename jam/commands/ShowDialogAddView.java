@@ -46,7 +46,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 
 		private final JComboBox comboCols;
 
-		public ViewNew() {
+		private ViewNew() {
 			setTitle("New View");
 			setModal(false);
 			final Container cdnew = getContentPane();

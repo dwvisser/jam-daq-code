@@ -25,7 +25,7 @@ final class ShowRunControl extends AbstractShowDialog implements Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK);

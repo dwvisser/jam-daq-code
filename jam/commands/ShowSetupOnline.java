@@ -22,7 +22,7 @@ final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(!(mode == SortMode.OFFLINE || 
 		mode == SortMode.REMOTE));

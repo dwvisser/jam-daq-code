@@ -21,7 +21,7 @@ final class ShowSetupRemote extends AbstractShowDialog implements Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		setEnabled(false);
 	}
 

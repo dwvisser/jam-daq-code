@@ -1,6 +1,3 @@
-/*
- * Created on Jun 4, 2004
- */
 package jam.commands;
 
 import jam.SortControl;
@@ -10,9 +7,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
+ * Show the sort control dialog.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 4, 2004
+ * @version 2004-06-04
  */
 final class ShowSortControl extends AbstractShowDialog implements Observer {
 	
@@ -22,7 +20,7 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode == SortMode.OFFLINE);
 	}

@@ -57,7 +57,7 @@ final class ReloadHDFCmd extends AbstractCommand implements Observer {
 		}
 	}
 	
-	protected void enable(){
+	private void enable(){
 		final SortMode mode=status.getSortMode();
 		final boolean online = mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK;

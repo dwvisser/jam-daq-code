@@ -8,8 +8,9 @@ import java.util.Observable;
 import java.util.Observer;
 ;
 /**
+ * Shows the histogram calibration dialog.
+ * 
  * @author Ken Swartz
- *
  */
 final class ShowDialogCalibrationDisplayCmd
 	extends AbstractShowDialog implements Observer {
@@ -20,7 +21,7 @@ final class ShowDialogCalibrationDisplayCmd
 			enable();
 		}
 
-		protected final void enable() {
+		private void enable() {
 			final Histogram hist=Histogram.getHistogram(status.getHistName());
 			final AbstractHist1D h1d=hist !=null && hist instanceof AbstractHist1D ? 
 					(AbstractHist1D)hist : null;

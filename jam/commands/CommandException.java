@@ -1,6 +1,4 @@
-/*
- */
- package jam.commands;
+package jam.commands;
 /**
  * Exception thrown when an error occurs in 
  * the <code>jam.commands</code> package. 
@@ -9,11 +7,17 @@
  */ 
 public class CommandException extends Exception {
 
-    public CommandException(String errorMessage) {
-		super(errorMessage);
+    /**
+     * @see Exception#Exception(java.lang.String)
+     */
+    public CommandException(String message) {
+		super(message);
     }
     
-	public CommandException(Exception e) {
-		super(e);
+    /**
+     * @see Exception#Exception(java.lang.Throwable)
+     */
+	public CommandException(Throwable thrown) {
+		super(thrown);
 	}
 }

@@ -19,7 +19,7 @@ Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private void enable() {
 		final Histogram h=Histogram.getHistogram(status.getHistName());
 		setEnabled(h !=null && h.getDimensionality()==1);
 	}

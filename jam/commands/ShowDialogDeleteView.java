@@ -47,7 +47,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 		private final AbstractButton bok=new JButton("OK");
 		private final AbstractButton bapply=new JButton("Apply");
 
-		public ViewDelete() {
+		private ViewDelete() {
 			setTitle("Delete View");
 			setModal(false);
 			final Container cdnew = getContentPane();

@@ -20,9 +20,23 @@ import javax.swing.AbstractAction;
 public abstract class AbstractCommand extends AbstractAction implements 
 Commandable {
 
-	protected final JamStatus status=JamStatus.instance();
-	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-	protected MessageHandler msghdlr;
+    /**
+     * Reference to <code>JamStatus</code> singleton available to 
+     * all implementing classes.
+     */
+	protected static final JamStatus status=JamStatus.instance();
+	
+    /**
+     * Reference to <code>Broadcaster</code> singleton available to 
+     * all implementing classes.
+     */	
+	protected static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	
+    /**
+     * Reference to global <code>MessageHandler</code> available to 
+     * all implementing classes.
+     */	
+	protected final MessageHandler msghdlr;
 	
 	/**
 	 * Constructor.
@@ -101,6 +115,7 @@ Commandable {
 	 * Execute a command with the given command parameters.
 	 * 
 	 * @param cmdParams command parameters
+	 * @throws CommandException if an error occurs
 	 */
 	protected abstract void execute(Object [] cmdParams) throws CommandException;
 		
@@ -109,6 +124,7 @@ Commandable {
 	 * Execute a command with the given command string tokens.
 	 * 
 	 * @param cmdTokens command parameters as string
+	 * @throws CommandListenerException if an error occurs
 	 */
 	protected abstract void executeParse(String [] cmdTokens) throws CommandListenerException;
 }

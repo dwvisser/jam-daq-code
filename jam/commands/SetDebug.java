@@ -1,7 +1,3 @@
-/*
- * Created on Jun 11, 2004
- *
- */
 package jam.commands;
 import jam.JamPrefs;
 import jam.global.SortMode;
@@ -10,9 +6,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
+ * Sets/unsets debug preference.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @version Jun 11, 2004
+ * @version 2004-06-11
  */
 final class SetDebug extends AbstractSetBooleanPreference implements 
 Observer {
@@ -28,7 +25,7 @@ Observer {
 		enable();
 	}
 
-	protected final void enable() {
+	private final void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK);

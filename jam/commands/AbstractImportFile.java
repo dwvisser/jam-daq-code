@@ -45,7 +45,7 @@ class AbstractImportFile extends AbstractImportExport {
 	 * Loads the given file, or opens a load dialog if given 
 	 * <code>null</code>.
 	 * 
-	 * @param cmdParams 0- or 1-element array with a file
+	 * @param cmdTokens 0- or 1-element array with a file
 	 * reference
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 * @see java.io.File

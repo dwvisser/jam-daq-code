@@ -70,7 +70,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 		}
 	}
 
-	protected void enable() {
+	private void enable() {
 		final SortMode mode = status.getSortMode();
 		final boolean file = status.getOpenFile() != null;
 		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));

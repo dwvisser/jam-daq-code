@@ -9,8 +9,8 @@ import jam.global.BroadcastEvent;
  */
 final class ScalersCmd extends AbstractCommand {
 
-	protected static final int READ =1;
-	protected static final int ZERO =2;
+	private static final int READ =1;
+	private static final int ZERO =2;
 
 	protected void execute(Object[] cmdParams) {
 		final int param =((Integer)cmdParams[0]).intValue();

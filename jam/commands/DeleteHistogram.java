@@ -45,10 +45,6 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		
 	}
 	
-	/** 
-	 * Execute command
-	 * @see jam.commands.AbstractCommand#executeStrParam(java.lang.String[])
-	 */
 	protected void executeParse(String[] cmdTokens) {
 		execute(null);		
 	}
@@ -59,7 +55,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	
 	private final List histogramList=Histogram.getHistogramList();
 
-	protected final void enable() {
+	private final void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled((!histogramList.isEmpty()) && 
 		(mode==SortMode.FILE || mode==SortMode.NO_SORT));

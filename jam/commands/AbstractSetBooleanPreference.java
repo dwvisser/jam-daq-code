@@ -26,7 +26,12 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	 * Name of the preference must be defined in full implementations.
 	 */
 	protected String key;
+	
+	/**
+	 * Placeholder for the previous/next state.
+	 */
 	protected boolean state;
+	
 	private final ImageIcon checkMark, clear;
 	
 	{

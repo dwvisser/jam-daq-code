@@ -49,7 +49,6 @@ public class MonitorApplet
 
 	private TextField textError;
 
-	private URL localPath;
 	private String documentHost;
 	private String expname;
 	private String hostName;
@@ -129,8 +128,8 @@ public class MonitorApplet
 
 		//where did we come from, set host url
 		//setup applet document path
-		localPath = this.getDocumentBase();
-		documentHost = this.getDocumentBase().getHost();
+		final URL localPath = this.getDocumentBase();
+		documentHost = localPath.getHost();
 		if (documentHost == null) {
 			documentHost = "hostname";
 		}
@@ -263,7 +262,7 @@ public class MonitorApplet
 		pMonitors.add(pal);
 
 	}
-	/**
+	/* non-javadco:
 	 * link to host with rmi
 	 */
 	private void link(String stringURL) {
