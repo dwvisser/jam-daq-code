@@ -308,7 +308,7 @@ public class RunControl extends JDialog implements Controller {
 	 * appropriate method.
 	 */
 	public void startAcq() {
-		netDaemon.setState(GoodThread.RUN);
+		netDaemon.setState(GoodThread.State.RUN);
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {//runOn is true if the current state is a run
@@ -418,7 +418,7 @@ public class RunControl extends JDialog implements Controller {
 		}
 		setRunOn(true);
 		netDaemon.setEmptyBefore(false);//fresh slate
-		netDaemon.setState(GoodThread.RUN);
+		netDaemon.setState(GoodThread.State.RUN);
 		vmeComm.startAcquisition();//VME start last because other thread have
 		// higher priority
 	}
@@ -461,7 +461,7 @@ public class RunControl extends JDialog implements Controller {
 			}
 		} while (!sortDaemon.caughtUp() && !storageCaughtUp());
 		diskDaemon.resetReachedRunEnd();
-		netDaemon.setState(GoodThread.SUSPEND);
+		netDaemon.setState(GoodThread.State.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
 		final String histFileName = exptName + runNumber + ".hdf";

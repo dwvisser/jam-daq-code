@@ -346,7 +346,7 @@ public final class SortControl extends JDialog implements Controller {
 		msgHandler.messageOutln("Starting sorting from Disk");
 		beginAction.setEnabled(false);
 		haltAction.setEnabled(true);
-		sortDaemon.setState(GoodThread.RUN);
+		sortDaemon.setState(GoodThread.State.RUN);
 		STATUS.setRunState(RunState.ACQ_ON);
 	}
 
@@ -383,7 +383,7 @@ public final class SortControl extends JDialog implements Controller {
 	 * user requests the sort to begin.
 	 */
 	public void atSortStart() {
-		sortDaemon.setState(GoodThread.SUSPEND);
+		sortDaemon.setState(GoodThread.State.SUSPEND);
 	}
 
 	/**

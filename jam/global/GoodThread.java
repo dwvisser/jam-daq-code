@@ -44,10 +44,6 @@ public class GoodThread extends Thread {
 		public static final State STOP=new State(2);
 	}
 
-    public static final State RUN = State.RUN;
-    public static final State SUSPEND = State.SUSPEND;
-    public static final State STOP = State.STOP;
-
     private transient State state = State.RUN;
     private transient final Object stateLock=new Object();
 
@@ -62,6 +58,8 @@ public class GoodThread extends Thread {
 	/**
 	 * Simply calls the superclass's constructor of the same signature.
 	 * We start with the state equal to <code>RUN</code>.
+	 * 
+	 * @param runnable code to execute in thread
 	 */
     public GoodThread(Runnable runnable){
         super(runnable);

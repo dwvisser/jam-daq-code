@@ -320,7 +320,7 @@ public final class SetupSortOff extends AbstractSetup {
      */
     private void resetSort() {
         if (sortDaemon != null) {
-            sortDaemon.setState(GoodThread.STOP);
+            sortDaemon.setState(GoodThread.State.STOP);
             sortDaemon.setSorter(null);
         }
         sortRoutine=null;

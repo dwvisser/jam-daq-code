@@ -533,16 +533,16 @@ public final class SetupSortOn extends AbstractSetup {
 	 */
 	private void resetAcq(boolean killSort) {
 		if (diskDaemon != null) {
-			diskDaemon.setState(GoodThread.STOP);
+			diskDaemon.setState(GoodThread.State.STOP);
 		}
 		if (sortDaemon != null) {
 			sortDaemon.setSorter(null);
 			//make sure sorter Daemon does not have a handle to sortClass
-			sortDaemon.setState(GoodThread.STOP);
+			sortDaemon.setState(GoodThread.State.STOP);
 			//this line should be sufficient but above line is needed
 		}
 		if (netDaemon != null) {
-			netDaemon.setState(GoodThread.STOP);
+			netDaemon.setState(GoodThread.State.STOP);
 			netDaemon.closeNet();
 		}
 		if (killSort) {
