@@ -161,7 +161,7 @@ public class ImpExpORNL extends ImpExp {
 					getFileName(lastFile),
 					"*.his",
 					FileUtilities.FORCE);
-			fileHis = new RandomAccessFile(fileNameHis, "r");
+			fileHis = new RandomAccessFile(new File(lastFile.getParentFile(),fileNameHis), "r");
 			//open .his file random access, read only	
 
 			//read in his file and load spectra	    
