@@ -69,7 +69,7 @@ class SplashWindow extends JWindow {
 		center.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
 		center.add(new JLabel(
 				"Jam: Data Acquisition for Nuclear Physics"));
-		center.add(new JLabel("Copyright (c) 2002 Yale University"));
+		center.add(new JLabel("\u00a9 2002 Yale University"));
 		center.add(new JLabel("University of Illinois/NCSA Open Source License"));
 		
 		center.add(new JLabel("See Help|License... for license text."));
