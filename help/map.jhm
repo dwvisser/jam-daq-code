@@ -18,7 +18,8 @@
    <mapID target="control" url="menus/control.html" />
    <mapID target="histogram" url="menus/histogram.html" />
    <mapID target="gate" url="menus/gate.html" />
-   <mapID target="scalers" url="menus/scalers.html" />
+   <mapID target="scaler" url="menus/scaler.html" />
+   <mapID target="view" url="menus/view.html" />
    <mapID target="preferences" url="menus/preferences.html" />
    <mapID target="fitmenu" url="menus/fitting.html" />
    <mapID target="help" url="menus/help.html" />

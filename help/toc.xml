@@ -22,15 +22,16 @@
        <tocitem text="Using the Console" target="console" />
    </tocitem>
    <tocitem text="Menus" target="menus" >
-   	  <tocitem text="File Menu" target="file" />
-   	  <tocitem text="Setup Menu" target="setup" />
-   	  <tocitem text="Control Menu" target="control" />
-   	  <tocitem text="Histogram Menu" target="histogram" />
-   	  <tocitem text="Gate Menu" target="gate" />
-   	  <tocitem text="Scalers Menu" target="scalers" />
-   	  <tocitem text="Preferences Menu" target="preferences" />
-   	  <tocitem text="Fitting Menu" target="fitmenu" />
-   	  <tocitem text="Help Menu" target="help" />
+   	  <tocitem text="File" target="file" />
+   	  <tocitem text="Setup" target="setup" />
+   	  <tocitem text="Control" target="control" />
+   	  <tocitem text="Histogram" target="histogram" />
+   	  <tocitem text="Gate" target="gate" />
+   	  <tocitem text="Scaler" target="scaler" />
+	<tocitem text="View" target="view" />
+   	  <tocitem text="Preferences" target="preferences" />
+   	  <tocitem text="Fitting" target="fitmenu" />
+   	  <tocitem text="Help" target="help" />
    </tocitem>
    <tocitem text="Technical Reference" >
    	<tocitem text="L002 Event Format" target="l002" />
