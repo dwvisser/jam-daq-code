@@ -294,7 +294,7 @@ public class HDFIO implements DataIO, JamHDFFields {
         try {
             if (hasContents(spectra)) {
                 addHistogramSection();
-                message.append(spectra.size()).append(" histograms, ");
+                message.append(spectra.size()).append(" histograms");
                 final Iterator temp = spectra.iterator();
                 while (temp.hasNext()) {
                     addHistogram((Histogram) (temp.next()));
@@ -304,7 +304,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             if (hasContents(gates)) {
                 addGateSection();
-                message.append(gates.size()).append(" gates, ");
+                message.append(", "+gates.size()).append(" gates");
                 final Iterator temp = gates.iterator();
                 while (temp.hasNext()) {
                     addGate((Gate) (temp.next()));
@@ -314,16 +314,17 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             if (hasContents(scalers)) {
                 addScalerSection(scalers);
-                message.append(scalers.size()).append(" scalers, ");
+                message.append(", "+scalers.size()).append(" scalers");
                 progress += scalers.size();
                 setProgress(pm, progress);
             }
             if (hasContents(parameters)) {
                 addParameterSection(parameters);
-                message.append(parameters.size()).append(" parameters)");
+                message.append(", "+parameters.size()).append(" parameters");
                 progress += parameters.size();
                 setProgress(pm, progress);
             }
+            message.append(")");            
             out.setOffsets();
             out.writeDataDescriptorBlock();
             out.writeAllObjects(pm);
@@ -362,7 +363,12 @@ public class HDFIO implements DataIO, JamHDFFields {
                 pm.setNote(note);
             }
         };
-        SwingUtilities.invokeLater(runner);
+        try {
+        	//frame.repaint();
+        	SwingUtilities.invokeAndWait(runner);
+        } catch(Exception e) {
+        	//Bury exception
+        }
     }
 
     private void setProgress(final ProgressMonitor pm, final int value) {
@@ -371,7 +377,12 @@ public class HDFIO implements DataIO, JamHDFFields {
                 pm.setProgress(value);
             }
         };
-        SwingUtilities.invokeLater(runner);
+        try {
+        	SwingUtilities.invokeAndWait(runner);
+    	} catch(Exception e) {
+    		//Bury exception
+    	}
+
     }
 
     private void outln(final String msg) {

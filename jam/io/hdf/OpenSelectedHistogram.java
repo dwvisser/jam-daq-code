@@ -109,7 +109,7 @@ public final class OpenSelectedHistogram {
 		histList
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
-		histList.setVisibleRowCount(5);
+		histList.setVisibleRowCount(10);
 		JScrollPane listScrollPane = new JScrollPane(histList);
 		listScrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
 		container.add(listScrollPane, BorderLayout.CENTER);
