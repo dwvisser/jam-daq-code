@@ -119,6 +119,9 @@ public final class Histogram implements Serializable {
 	private double[] countsDouble; //array to hold counts for 1d double
 	private double[][] counts2dDouble; //array to hold counds for 2d double
 	
+	private boolean labelXset=false;
+	private boolean labelYset=false;
+	private boolean numberSet=false;
 	
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -276,8 +279,8 @@ public final class Histogram implements Serializable {
 		String axisLabelX,
 		String axisLabelY) {
 		this(name, type, sizeX, sizeY, title);
-		this.labelX = axisLabelX;
-		this.labelY = axisLabelY;
+		setLabelX(axisLabelX);
+		setLabelY(axisLabelY);
 	}
 
 	/**
@@ -299,8 +302,8 @@ public final class Histogram implements Serializable {
 		String axisLabelX,
 		String axisLabelY) {
 		this(name, type, size, size, title);
-		this.labelX = axisLabelX;
-		this.labelY = axisLabelY;
+		setLabelX(axisLabelX);
+		setLabelY(axisLabelY);
 	}
 
 	/**
@@ -584,18 +587,32 @@ public final class Histogram implements Serializable {
 	 * Sets the X-axis label
 	 *
 	 * @param label new label for X-axis
+	 * @throws IllegalStateException if x-axis label has already been 
+	 * explicitly set
 	 */
 	public void setLabelX(String label) {
+		if (labelXset){
+			throw new IllegalStateException(
+			"Please call setLabelX() only once per histogram.");
+		}
 		labelX = label;
+		labelXset=true;
 	}
 
 	/**
 	 * Sets the Y-axis label
 	 *
 	 * @param label new label for Y-axis
+	 * @throws IllegalStateException if y-axis label has already been 
+	 * explicitly set
 	 */
 	public void setLabelY(String label) {
+		if (labelYset){
+			throw new IllegalStateException(
+			"Please call setLabelY() only once per histogram.");
+		}
 		labelY = label;
+		labelYset=true;
 	}
 
 	/**
@@ -621,7 +638,7 @@ public final class Histogram implements Serializable {
 	 *
 	 * @param calibFunc new energy calibration for this histogram
 	 */
-	public void setCalibration(CalibrationFunction calibFunc) {
+	public synchronized void setCalibration(CalibrationFunction calibFunc) {
 		this.calibFunc = calibFunc;
 	}
 
@@ -630,7 +647,7 @@ public final class Histogram implements Serializable {
 	 *
 	 * @return the calibration function for this histogram
 	 */
-	public CalibrationFunction getCalibration() {
+	public synchronized CalibrationFunction getCalibration() {
 		return calibFunc;
 	}
 
@@ -640,7 +657,7 @@ public final class Histogram implements Serializable {
 	 * @return <code>true</code> if a calibration function has been defined, <code>false</code> if not
 	 * @see #setCalibration(CalibrationFunction)
 	 */
-	public boolean isCalibrated() {
+	public synchronized boolean isCalibrated() {
 		return (calibFunc != null);
 	}
 
@@ -648,8 +665,23 @@ public final class Histogram implements Serializable {
 	 * Sets the number of this histogram.
 	 *
 	 * @param n the desired number for the histogram
+	 * @throws IllegalStateException if number has already been 
+	 * explicitly set
+	 * @throws IllegalArgumentException if another histogram already
+	 * has the number
 	 */
 	public void setNumber(int n) {
+		if (numberSet){
+			throw new IllegalStateException(
+			"Please call setNumber() only once per histogram.");
+		}
+		final Integer newKey=new Integer(n);
+		if (sortedNumberMap.containsKey(newKey)){
+			final Histogram collider=(Histogram)sortedNumberMap.get(newKey);
+			throw new IllegalArgumentException(getName()+ 
+			"can't set number to "+n+". "+collider.getName()+
+			" already uses it.");
+		}
 		sortedNumberMap.remove(new Integer(number));
 		number = n;
 		sortedNumberMap.put(new Integer(n),this);
@@ -667,7 +699,7 @@ public final class Histogram implements Serializable {
 	 *
 	 * @return <code>Object</code> which must be cast as indicated above
 	 */
-	public Object getCounts() {
+	public synchronized Object getCounts() {
 		switch (type) {
 			case ONE_DIM_INT :
 				return counts;
@@ -688,7 +720,7 @@ public final class Histogram implements Serializable {
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
-	public void setZero() {
+	public synchronized void setZero() {
 		if (type == ONE_DIM_INT) {
 			for (int i = 0; i < sizeX; i++) {
 				counts[i] = 0;
@@ -728,7 +760,7 @@ public final class Histogram implements Serializable {
 	/**
 	 * Returns whether this histogram has the given gate.
 	 */
-	public boolean hasGate(Gate gate) {
+	public synchronized boolean hasGate(Gate gate) {
 		boolean rval=false;//default return value
 		for (int i = 0; i < gates.size(); i++) {
 			if ((Gate) gates.get(i) == gate){
@@ -744,7 +776,7 @@ public final class Histogram implements Serializable {
 	 *
 	 * @throws UnsupportedOperationException if a gate of a different type is given
 	 */
-	public void addGate(Gate gate) {
+	public synchronized void addGate(Gate gate) {
 		if (gate.type == Gate.ONE_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 1) {
 				gates.add(gate);
@@ -766,7 +798,7 @@ public final class Histogram implements Serializable {
 	 * @param countsIn the array of counts to set into the histogram
 	 * @throws UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(int[] countsIn) {
+	public synchronized void setCounts(int[] countsIn) {
 		if (type != ONE_DIM_INT) {
 			throw new UnsupportedOperationException("setCounts(int []) must be called in a Histogram of type ONE_DIM_INT");
 		}
@@ -778,12 +810,44 @@ public final class Histogram implements Serializable {
 	}
 
 	/**
+	 * Sets the counts for a <code>Histogram</code> of type <code>ONE_DIM_INT</code>.
+	 *
+	 * @param countsIn the array of counts to add to the histogram
+	 * @throws UnsupportedOperationException thrown if method called for inappropriate type of histogram
+	 */
+	public synchronized void addCounts(int[] countsIn) {
+		if (type != ONE_DIM_INT) {
+			throw new UnsupportedOperationException("addCounts(int []) must be called in a Histogram of type ONE_DIM_INT");
+		}
+		final int max=Math.min(countsIn.length,sizeX)-1;
+		for (int i=max; i>=0; i--){
+			counts[i] += countsIn[i];
+		}
+	}
+
+	/**
+	 * Sets the counts for a <code>Histogram</code> of type <code>ONE_DIM_DOUBLE</code>.
+	 *
+	 * @param countsIn the array of counts to add to the histogram
+	 * @throws UnsupportedOperationException thrown if method called for inappropriate type of histogram
+	 */
+	public synchronized void addCounts(double[] countsIn) {
+		if (type != ONE_DIM_DOUBLE) {
+			throw new UnsupportedOperationException("addCounts(double []) must be called in a Histogram of type ONE_DIM_DOUBLE");
+		}
+		final int max=Math.min(countsIn.length,sizeX)-1;
+		for (int i=max; i>=0; i--){
+			counts[i] += countsIn[i];
+		}
+	}
+
+	/**
 	 * Sets the counts for a <code>Histogram</code> of type <code>ONE_DIM_DOUBLE</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
 	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(double[] countsIn) {
+	public synchronized void setCounts(double[] countsIn) {
 		if (type != ONE_DIM_DOUBLE) {
 			throw new UnsupportedOperationException(
 				"setCounts(double []) must be called in a"
@@ -802,10 +866,10 @@ public final class Histogram implements Serializable {
 	 * @param countsIn the array of counts to set into the histogram
 	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(int[][] countsIn) {
+	public synchronized void setCounts(int[][] countsIn) {
 		if (type != TWO_DIM_INT) {
 			throw new UnsupportedOperationException(
-				"setCounts(int {}[]) must be called in a"
+				"setCounts(int [][]) must be called in a"
 					+ " Histogram of type TWO_DIM_INT");
 		}
 		//we want to copy the primitive types so we loop
@@ -821,15 +885,57 @@ public final class Histogram implements Serializable {
 	}
 
 	/**
+	 * Add the counts for a <code>Histogram</code> of type <code>TWO_DIM_INT</code>.
+	 *
+	 * @param countsIn the array of counts to add to the histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
+	 */
+	public synchronized void addCounts(int[][] countsIn) {
+		if (type != TWO_DIM_INT) {
+			throw new UnsupportedOperationException(
+				"addCounts(int [][]) must be called in a"
+					+ " Histogram of type TWO_DIM_INT");
+		}
+		final int maxX=Math.min(sizeX,countsIn.length)-1;
+		final int maxY=Math.min(sizeY,countsIn[0].length)-1;
+		for (int x=maxX; x>=0; x--) {
+			for (int y=maxY; y>=0; y--){
+				counts2d[x][y] += countsIn[x][y];
+			}
+		}
+	}
+
+	/**
+	 * Add the counts for a <code>Histogram</code> of type <code>TWO_DIM_DOUBLE</code>.
+	 *
+	 * @param countsIn the array of counts to add to the histogram
+	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
+	 */
+	public synchronized void addCounts(double [][] countsIn) {
+		if (type != TWO_DIM_DOUBLE) {
+			throw new UnsupportedOperationException(
+				"setCounts(int [][]) must be called in a"
+					+ " Histogram of type TWO_DIM_DOUBLE");
+		}
+		final int maxX=Math.min(sizeX,countsIn.length)-1;
+		final int maxY=Math.min(sizeY,countsIn[0].length)-1;
+		for (int x=maxX; x>=0; x--) {
+			for (int y=maxY; y>=0; y--){
+				counts2d[x][y] += countsIn[x][y];
+			}
+		}
+	}
+
+	/**
 	 * Sets the counts for a <code>Histogram</code> of type <code>TWO_DIM_DOUBLE</code>.
 	 *
 	 * @param countsIn the array of counts to set into the histogram
 	 * @exception UnsupportedOperationException thrown if method called for inappropriate type of histogram
 	 */
-	public void setCounts(double[][] countsIn) {
+	public synchronized void setCounts(double[][] countsIn) {
 		if (type != TWO_DIM_DOUBLE) {
 			throw new UnsupportedOperationException(
-				"setCounts(double {}[]) must be called in a"
+				"setCounts(double [][]) must be called in a"
 					+ " Histogram of type TWO_DIM_DOUBLE");
 		}
 		//we want to copy the primative types so we loop
@@ -861,7 +967,9 @@ public final class Histogram implements Serializable {
 		} else if (dataWord < 0) {
 			incCh = 0;
 		}
-		counts[incCh]++;
+		synchronized(this) {
+			counts[incCh]++;
+		}
 	}
 
 	/**
@@ -890,7 +998,9 @@ public final class Histogram implements Serializable {
 		} else if (dataWordY < 0) {
 			incY = 0;
 		}
-		counts2d[incX][incY]++;
+		synchronized(this) {
+			counts2d[incX][incY]++;
+		}
 	}
 
 	/**
@@ -899,11 +1009,9 @@ public final class Histogram implements Serializable {
 	 * @return an array of the associated errors for the channel counts
 	 * @exception   UnsupportedOperationException      thrown if called on 2-d histogram
 	 */
-	public double[] getErrors() {
-		int length;
-
+	public synchronized double[] getErrors() {
 		if (type == ONE_DIM_INT) {
-			length = counts.length;
+			final int length = counts.length;
 			if (errors == null) {
 				//set errors according to Poisson with error = 1 for zero counts
 				errors = new double[length];
@@ -916,7 +1024,7 @@ public final class Histogram implements Serializable {
 				}
 			}
 		} else if (type == ONE_DIM_DOUBLE) {
-			length = countsDouble.length;
+			final int length = countsDouble.length;
 			if (errors == null) {
 				//set errors according to Poisson with error = 1 for zero counts
 				errors = new double[length];
@@ -940,7 +1048,7 @@ public final class Histogram implements Serializable {
 	 * @param errors the associated errors for the channel counts
 	 * @exception   UnsupportedOperationException      thrown if called on 2-d histogram
 	 */
-	public void setErrors(double[] errors) {
+	public synchronized void setErrors(double[] errors) {
 		if ((type == ONE_DIM_INT) || (type == ONE_DIM_DOUBLE)) {
 			this.errors = errors;
 			errorsSet = true;
@@ -975,16 +1083,10 @@ public final class Histogram implements Serializable {
 	 *
 	 * @return <code>true</code> if errors have been explicitly set, <code>false</code> if not
 	 */
-	public boolean errorsSet() {
+	public synchronized boolean errorsSet() {
 		return errorsSet;
 	}
 
-	/**
-	 * To be called when the error array has been modified without using <code>setErrors(double [])</code>.
-	 */
-	public void setErrors(boolean in) {
-		errorsSet = in;
-	}
 	/**
 	 * Gives the name of this histogram.
 	 * 
