@@ -205,6 +205,12 @@ public class MainMenuBar extends JMenuBar {
 	final private JamMain jamMain;
 	final private MessageHandler console;
 	final private JamCommand jamCommand;
+	final private JMenuItem histogramNew = new JMenuItem("New...");
+	final private JMenuItem zeroHistogram = new JMenuItem("Zero...");
+	final private JMenu calHist = new JMenu("Calibrate");
+	final private JMenuItem projectHistogram = new JMenuItem("Projections...");
+	final private JMenuItem manipHistogram = new JMenuItem("Combine...");
+	final private JMenuItem gainShift = new JMenuItem("Gain Shift...");
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
 
@@ -423,15 +429,12 @@ public class MainMenuBar extends JMenuBar {
 		mcontrol.add(statusacq);
 		final JMenu histogram = new JMenu("Histogram");
 		add(histogram);
-		final JMenuItem histogramNew = new JMenuItem("New...");
 		histogramNew.setActionCommand("newhist");
 		histogramNew.addActionListener(jamCommand);
 		histogram.add(histogramNew);
-		final JMenuItem zeroHistogram = new JMenuItem("Zero...");
 		zeroHistogram.setActionCommand("zerohist");
 		zeroHistogram.addActionListener(jamCommand);
 		histogram.add(zeroHistogram);
-		final JMenu calHist = new JMenu("Calibrate");
 		histogram.add(calHist);
 		final JMenuItem calibFit = new JMenuItem("Fit...");
 		calibFit.setActionCommand("calfitlin");
@@ -441,15 +444,12 @@ public class MainMenuBar extends JMenuBar {
 		calibFunc.setActionCommand("caldisp");
 		calibFunc.addActionListener(jamCommand);
 		calHist.add(calibFunc);
-		final JMenuItem projectHistogram = new JMenuItem("Projections...");
 		projectHistogram.setActionCommand("project");
 		projectHistogram.addActionListener(jamCommand);
 		histogram.add(projectHistogram);
-		final JMenuItem manipHistogram = new JMenuItem("Combine...");
 		manipHistogram.setActionCommand("manipulate");
 		manipHistogram.addActionListener(jamCommand);
 		histogram.add(manipHistogram);
-		final JMenuItem gainShift = new JMenuItem("Gain Shift...");
 		gainShift.setActionCommand("gainshift");
 		gainShift.addActionListener(jamCommand);
 		histogram.add(gainShift);
@@ -736,6 +736,25 @@ public class MainMenuBar extends JMenuBar {
 			e.getMessage(),
 			title,
 			JOptionPane.ERROR_MESSAGE);
+	}
+	
+	void adjustHistogramItems(Histogram h){
+		final boolean oneDops, twoDops;
+		if (h==null){
+			oneDops=false;
+			twoDops=false;
+		} else if (h.getDimensionality()==1){
+			oneDops=true;
+			twoDops=false;
+		} else {
+			oneDops=false;
+			twoDops=true;
+		}
+		zeroHistogram.setEnabled(h != null);
+		calHist.setEnabled(oneDops);
+		projectHistogram.setEnabled(twoDops);
+		manipHistogram.setEnabled(oneDops);
+		gainShift.setEnabled(oneDops);
 	}
 
 }

@@ -125,7 +125,7 @@ public final class JamMain extends JFrame {
 		jamCommand = new JamCommand(this, display, broadcaster, console);
 		menubar = new MainMenuBar(this, jamCommand, display, console);
 		this.setJMenuBar(menubar);
-		selectBar = new SelectionToolbar(console, status, broadcaster, display);
+		selectBar = new SelectionToolbar(console, status, broadcaster, display, menubar);
 		broadcaster.addObserver(selectBar);
 		me.add(selectBar, BorderLayout.NORTH);
 		display.addToolbarAction(); //the left-hand action toolbar

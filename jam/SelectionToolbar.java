@@ -48,11 +48,13 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final Display display;
 	private boolean overlay = false;
 	final String classname;
+	final MainMenuBar mbar;
 
 	SelectionToolbar(MessageHandler mh,
 					 JamStatus js,
 					 Broadcaster b,
-					 Display d) {
+					 Display d,
+					 MainMenuBar mmb) {
 		super("Selection", JToolBar.HORIZONTAL);
 		this.setFloatable(false);
 		final int chooserWidth=200;
@@ -61,6 +63,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		status = js;
 		broadcaster = b;
 		display = d;
+		mbar=mmb;
 		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
 		pCenter = new JPanel();
@@ -208,6 +211,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 				display.displayHistogram(h);
 				gatesChanged();
 				setOverlayEnabled(h.getDimensionality() == 1);
+				mbar.adjustHistogramItems(h);
 			} else {
 				status.setOverlayHistogramName(hist.getName());
 				console.messageOut(hist.getName(), MessageHandler.END);
@@ -219,6 +223,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		} else { //null object passed
 			display.displayHistogram(null);
+			mbar.adjustHistogramItems(null);
 		}
 	}
 
