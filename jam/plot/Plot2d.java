@@ -78,33 +78,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		graph.markArea2d(areaMark);
 	}
 
-	private void setCurrentGate(Gate g) {
-		synchronized (this) {
-			currentGate = g;
-		}
-	}
-
-	/**
-	 * Display a 2d gate.
-	 *
-	 * @param gate the gate to display
-	 * @throws DataException if there's a problem displaying the gate
-	 */
-	public void displayGate(Gate gate) throws DataException {
-		if (currentHist.hasGate(gate)) {
-			setDisplayingGate(true);
-			setCurrentGate(gate);
-			repaint();
-		} else {
-			error(
-				"Can't display '"
-					+ gate
-					+ "' on histogram '"
-					+ currentHist
-					+ "'.");
-		}
-	}
-
 	private void setLastPoint(Point lp) {
 		synchronized (lastPoint) {
 			lastPoint.setLocation(lp);
@@ -126,7 +99,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		if (mode == GateSetMode.GATE_NEW) {
 			setSettingGate(true);
 			pointsGate.reset();
-			//setNeedErase(false);
 			this.addMouseListener(this);
 			this.addMouseMotionListener(this);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
@@ -172,7 +144,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	}
 
 	void paintSetGate(Graphics g) {
-		g.setPaintMode();
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate2d(pointsGate);
 	}
@@ -337,14 +308,13 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		}
 		g.setPaintMode();
 		g.setColor(PlotColorMap.foreground);
-		if (settingGate) {
+		/*if (settingGate) {
 			graph.settingGate2d(pointsGate);
-			//setNeedErase(false);
 			if (pointsGate.npoints > 0) {
 				final Point tempP = graph.toViewLin(lastPoint);
 				setLastGatePoint(tempP);
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -436,9 +406,6 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 			lastMovePoint.setLocation(me.getX(), me.getY());
 			mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
 			setMouseMoved(true);
-			/*final Rectangle r = mouseMoveClip.getBounds();
-			r.add(r.getMaxX() + 1, r.getMaxY() + 1);
-			r.add(r.getX() - 1, r.getY() - 1);*/
 			this.repaint(getClipBounds(mouseMoveClip,false));
 		}
 	}
