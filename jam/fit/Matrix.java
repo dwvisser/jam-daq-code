@@ -302,16 +302,13 @@ public class Matrix {
 				rows separated by newline or semicolon
 				short rows filled with zeros
 			*/
-			sChar = s.charAt(j);
-			// debug: System.out.println(sChar + " " + (int) sChar + "\r\n");
-
-			// check for a delimiter...
+			sChar = s.charAt(j);			
 			if ((sChar == ' ')
 				|| (sChar == ',')
 				|| ((int) sChar == 9)
 				|| (sChar == ';')
 				|| ((int) sChar == 13)
-				|| ((int) sChar == 10)) {
+				|| ((int) sChar == 10)) {// check for a delimiter...
 				// See if the string in sData represents a number...
 				try {
 					// a hack to accomodate JVM 1.1 and higher...

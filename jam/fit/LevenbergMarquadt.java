@@ -265,7 +265,6 @@ public class LevenbergMarquadt {
 
 		//copy oneda into da, which will be used to alter the parameters for another try
 		da = new Matrix(oneda);
-		//System.out.println(da.toString(3));
 		//expand if last call, otherwise output iterationCount
 		if (lastCall) { //final call (converged presumably) evaluate covariance matrix
 			expandCovarianceMatrix();
@@ -284,11 +283,9 @@ public class LevenbergMarquadt {
 			j = 0;
 			for (l = 0; l < nPar; l++) {
 				if (!tryParameters[l].isFixed()) {
-					//System.out.print(tryParameters[l].getName()+": "+round(tryParameters[l].getDoubleValue(),3));
 					tryParameters[l].setValue(
 						tryParameters[l].getDoubleValue() + da.element[j][0]);
 					j++;
-					//System.out.println(" -> "+round(tryParameters[l].getDoubleValue(),3));
 				}
 			}
 
@@ -296,7 +293,6 @@ public class LevenbergMarquadt {
 			calculate(tryParameters);
 			covar = new Matrix(space);
 			da = new Matrix(vec);
-			//System.out.println("chiSq: old = "+oChiSq+"\n        new = "+chiSq+"\n---");
 			//Did the trial succeed?
 			if (chiSq < oChiSq) { //Success, adopt the new solution.
 				lambda = lambda * 0.1;
@@ -404,7 +400,6 @@ public class LevenbergMarquadt {
 				space.element[k][j] = space.element[j][k];
 			}
 		}
-		//System.out.println("space:\n"+space.toString(3));
 	}
 
 	/**
