@@ -11,7 +11,7 @@ package jam.fit;
  *
  * @see	    NonLinearFit
  */
- public class CalibFit extends Fit {
+ public abstract class CalibFit extends Fit {
     /**
      */
     static final int NUMBER_POINTS=8;
