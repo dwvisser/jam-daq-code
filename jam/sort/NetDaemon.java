@@ -70,6 +70,8 @@ public class NetDaemon extends GoodThread {
 	 *            buffer the events are sent to for storage
 	 * @param msgHandle
 	 *            where messages can be sent to the console
+	 * @param host front end IP address
+	 * @param port port to listen for front end on
 	 * @exception SortException
 	 *                thrown if there's a problem setting up the pipes
 	 */
@@ -117,6 +119,12 @@ public class NetDaemon extends GoodThread {
 
 	private boolean emptyBefore = false;
 
+	/**
+	 * Called when we've definitely lost a buffer we were meant to receive
+	 * due to a full ringbuffer.
+	 * 
+	 * @param state <code>true</code> if we lost a buffer, <code>false</code> to reset
+	 */
 	public synchronized void setEmptyBefore(boolean state) {
 		if (!emptyBefore && state) {
 			final StringBuffer mesg = new StringBuffer();
@@ -235,14 +243,23 @@ public class NetDaemon extends GoodThread {
 		packetCount = count;
 	}
 
-	public int getStoredPackets() {
+	/**
+	 * @return number of buffers received and stored to disk
+	 */
+	public int getStoredBuffers() {
 		return packetCount - notStorCount;
 	}
 
+	/**
+	 * @return number of buffers recieved and sorted
+	 */
 	public int getSortedBuffers() {
 		return packetCount - notSortCount;
 	}
 
+	/**
+	 * Reset all buffer counts.
+	 */
 	public void resetCounters() {
 		synchronized (sortingRing) {
 			packetCount = 0;
@@ -260,5 +277,5 @@ public class NetDaemon extends GoodThread {
 	 */
 	public void setEndRunAction(Action a) {
 		endAction = a;
-	}
+	}	
 }
