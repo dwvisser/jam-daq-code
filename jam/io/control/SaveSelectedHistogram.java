@@ -1,10 +1,9 @@
 package jam.io.control;
 
 import jam.data.Histogram;
+import jam.global.MessageHandler;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
-import jam.global.Broadcaster;
-import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -35,7 +33,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  *
  */
-public class SaveSelectedHistogram {
+public final class SaveSelectedHistogram {
 
 	
 	private Frame frame;
@@ -54,9 +52,7 @@ public class SaveSelectedHistogram {
 	
 	/** Messages output */
 	private MessageHandler console;
-	/** Broadcaster */
-	private Broadcaster broadcaster;
-	
+
 	/**
 	 * Constructs a dialog to save a selection of histograms out of an
 	 * HDF file.
@@ -67,8 +63,6 @@ public class SaveSelectedHistogram {
 	public SaveSelectedHistogram(Frame f, MessageHandler c) {
 		frame = f;
 		console = c;
-		broadcaster= Broadcaster.getSingletonInstance();
-		
 		dialog = new JDialog(f, "Save Selected Histograms", false);
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
@@ -130,27 +124,22 @@ public class SaveSelectedHistogram {
 	 *  
 	 */
 	private void doCancel() {
-
-		//Clear memory
+		/* clear memory */
 		dialog.dispose();
 	}
 	
-	public void loadHistogramList(){
-		int i;
-		List histList= Histogram.getHistogramList();
-		
-		String [] histNames = new String[histList.size()];
-		
-		Iterator histIter=histList.iterator();
-		i=0;
+	private void loadHistogramList(){
+		final List histList= Histogram.getHistogramList();
+		final String [] histNames = new String[histList.size()];
+		final Iterator histIter=histList.iterator();
+		int i=0;
 		while(histIter.hasNext()) {
 			histNames[i]=((Histogram)histIter.next()).getFullName();
 			i++;
 		}
-		
 		listHist.setListData(histNames);
-	
 	}
+	
 	/**
 	 * Save list to file
 	 *
