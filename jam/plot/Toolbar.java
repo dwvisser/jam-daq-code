@@ -34,7 +34,6 @@ class Toolbar extends JToolBar implements ActionListener {
 	private final Action action;
 	
 	private JButton bnetarea, bgoto;
-	private JToggleButton boverlay;
 	private JComboBox comboBinRatio;
 	
 	private static final int ORIENTATION;
@@ -65,24 +64,19 @@ class Toolbar extends JToolBar implements ActionListener {
 	 */
 	Toolbar(Container container, Action action) {
 		super("Actions", ORIENTATION);
-		this.action=action;
-		
+		this.action=action;	
 		isSyncEvent=false;
-		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
-		final Icon iOverlay = loadToolbarIcon("jam/plot/Overlay.png");
 		final Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
 		final Icon iRange = loadToolbarIcon("jam/plot/Range.png");
 		 iRebin = loadToolbarIcon("jam/plot/Rebin.png");
-		
 		final Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
 		final Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
 		final Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
 		final Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
 		//final Icon iZoomVert = loadToolbarIcon("jam/plot/ZoomVert.png");
 		//final Icon iZoomHorz = loadToolbarIcon("jam/plot/ZoomHorz.png");
-		
 		final Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 		final Icon iArea = loadToolbarIcon("jam/plot/Area.png");
 		final Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
@@ -100,14 +94,6 @@ class Toolbar extends JToolBar implements ActionListener {
 			bupdate.setActionCommand(Action.UPDATE);
 			bupdate.addActionListener(this);
 			add(bupdate);
-			
-			boverlay = iOverlay == null ?
-					new JToggleButton(getHTML("<u>O</u>verlay")) : new JToggleButton(iOverlay);
-			boverlay.setToolTipText(
-				getHTML("<u>O</u>verlay a histogram."));
-			boverlay.setActionCommand(Action.OVERLAY_STATE);
-			boverlay.addActionListener(this);
-			add(boverlay);
 			
 			final JButton blinear = iLinLog==null ?
 					new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
@@ -308,27 +294,21 @@ class Toolbar extends JToolBar implements ActionListener {
 	}
 
 	void setHistogramProperties(int dimension, double binWidth){
-
 		final boolean enable1D = dimension==1;
-
 		bgoto.setEnabled(enable1D);
 		bnetarea.setEnabled(enable1D);
-		boverlay.setEnabled(enable1D);
-		if (!enable1D)
-			boverlay.setSelected(false);
-		
 		isSyncEvent=true;
-			//Convert double to int string
-			String strBinWidth = new Integer( new Double(binWidth).intValue()).toString();
+			/* Convert double to int string */
+			final String strBinWidth = new Integer( new Double(binWidth).intValue()).toString();
 			comboBinRatio.setSelectedIndex(0);
 			for (int i=0;i<REBIN_RATIOS.length; i++){
 				if (strBinWidth.equals(REBIN_RATIOS[i]))
 					comboBinRatio.setSelectedIndex(i);
 			}
 			comboBinRatio.setEnabled(enable1D);
-			
 		isSyncEvent=false;			
 	}
+	
 	/**
 	 * Routine called by pressing a button on the action toolbar.
 	 * 
@@ -337,14 +317,9 @@ class Toolbar extends JToolBar implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
-		if (e.getSource()!=boverlay){
-			action.doCommand(command,false);
-		}else {
-			double state[]=new double [1];
-			state[0]=boverlay.isSelected()?1.0:0.0;
-			action.doCommand(command, state, false);
-		}
+		action.doCommand(command,false);
 	}
+	
 	/**
 	 * Called by a combo box rebin selection
 	 * @param rebinIndex
