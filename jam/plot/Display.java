@@ -5,7 +5,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandListener;
-import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -262,19 +261,8 @@ public class Display extends JPanel implements CommandListener, Observer {
 			JamStatus.instance().getDate());
 	}
 
-	/**
-	 * Perform a command
-	 * @param commandIn
-	 * @param cmdParams
-	 */
-	public boolean performParseCommand(String commandIn, String[] cmdParams)
-		throws CommandListenerException {
-		try {
-			final boolean accept = action.commandPerform(commandIn, cmdParams);
-			return accept;
-		} catch (NumberFormatException e) {
-			throw new CommandListenerException(e.getMessage());
-		}
+	public boolean performParseCommand(String commandIn, String[] cmdParams) {
+		return action.commandPerform(commandIn, cmdParams);
 	}
 
 	/**
