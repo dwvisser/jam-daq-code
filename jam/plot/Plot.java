@@ -655,7 +655,7 @@ public abstract class Plot extends JPanel  {
     /**
      * Set the color mode, color palette
      */
-    public void setColorMode(int colorMode){
+    public final void setColorMode(int colorMode){
         this.colorMode=colorMode;
     }
     
