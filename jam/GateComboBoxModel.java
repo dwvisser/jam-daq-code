@@ -86,6 +86,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
+		int i=Math.max(index,0);
 		final String NO_GATES = "No Gates";
 		final String CHOOSE_A_GATE = "Choose a gate";
 		Object rval = NO_GATES; //default value if no gates
@@ -107,8 +108,8 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 				rval = ((Gate) (list.get(index-1))).getName();
 			}
 		}
-		if (lastValue[index] != null) {
-			if (!lastValue[index].equals(rval)) {
+		if (lastValue[i] != null) {
+			if (!lastValue[i].equals(rval)) {
 				changeOccured();
 			}			
 		} else {
