@@ -638,6 +638,7 @@ public class Action
             numberPoints=1;
             if (currentPlot instanceof Plot1d){
 	    currentPlot.markChannel(xyCursor[0][0],xyCursor[0][1]);
+	    textOut.messageOut("Bgd Channel "+xyCursor[0][0]+" to ");
             } else {
 		currentPlot.markChannel(xyCursor[0][0],xyCursor[0][1]);
                 textOut.messageOut(xyCursor[0][0]+","+xyCursor[0][1]+" to ");
@@ -649,6 +650,7 @@ public class Action
             if (currentPlot instanceof Plot1d){
                 currentPlot.markChannel(xyCursor[1][0],xyCursor[1][1]);
 	       	currentPlot.markArea(xyCursor[0][0], xyCursor[1][0], xyCursor[0][0], xyCursor[1][1]);
+	       	textOut.messageOut(""+xyCursor[1][0]);
             }else {                        
                 currentPlot.markChannel(xyCursor[1][0], xyCursor[1][1]);
 		textOut.messageOut(xyCursor[1][0] + "," + xyCursor[1][1],MessageHandler.END );
@@ -661,7 +663,7 @@ public class Action
             if (currentPlot instanceof Plot1d){
                
 		currentPlot.markChannel(xyCursor[2][0], xyCursor[2][1]);
-		textOut.messageOut(" ", MessageHandler.END);
+		textOut.messageOut("  and  "+xyCursor[2][0]+" to ");
 
             } else {
                 textOut.messageOut(""+xyCursor[2][0]+","+xyCursor[2][1] +" to ",MessageHandler.END);             
@@ -677,7 +679,7 @@ public class Action
 		currentPlot.markChannel(xyCursor[3][0], xyCursor[3][1]);
 		currentPlot.markArea(xyCursor[2][0], xyCursor[3][0],
 				     xyCursor[2][1], xyCursor[3][1]);
-
+		textOut.messageOut(""+xyCursor[3][0]);
             } else {
 
                 textOut.messageOut(""+xyCursor[3][0]+","+xyCursor[3][1],MessageHandler.END);               
@@ -693,7 +695,7 @@ else if (numberPoints == 4){
             if (currentPlot instanceof Plot1d){
 
 		currentPlot.markChannel(xyCursor[4][0], xyCursor[4][1]);
-
+		textOut.messageOut(": Peak "+xyCursor[4][0]+" to ");
             } else {
 
                 textOut.messageOut(""+xyCursor[4][0]+","+xyCursor[4][1]+" to ",MessageHandler.END);
@@ -713,7 +715,7 @@ else if (numberPoints == 5){
 		currentPlot.markArea(xyCursor[4][0], xyCursor[5][0],
 				     xyCursor[4][1], xyCursor[5][1]);
 
-
+		textOut.messageOut(""+xyCursor[5][0]+"\n",MessageHandler.END);
             } else {
                 textOut.messageOut(""+xyCursor[5][0]+","+xyCursor[5][1],MessageHandler.END);               
 		currentPlot.markChannel(xyCursor[5][0], xyCursor[5][1]);        
