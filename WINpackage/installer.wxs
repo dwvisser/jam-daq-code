@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-    <Product Name="Jam" Id="8b91c46a-a8fe-4c07-92fd-f7cdb2f539a2"
-            Version="@MAJOR@.@MINOR@.@SUBMINOR@" Manufacturer="http://jam-daq.sf.net/"
+    <Product Name="Jam" Id="@PRODUCT_GUID@"
+            Version="@MAJOR@.@MINOR@.@RELEASE@" Manufacturer="http://jam-daq.sf.net/"
             Language="1033">
-        <Package Id="793ef715-4c63-4cd8-944e-f1a06757037a"
+        <Package Id="@PACKAGE_GUID@"
                 Comments="This MSI file installs Jam."
                 Manufacturer="http://jam-daq.sf.net/" InstallerVersion="200"
                 Languages="1033" Compressed="yes"/>
         <Media Id="1" EmbedCab="yes" Cabinet="Jam.cab"/>
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
-                <Directory Id="JamDir" Name="Jam-@MAJOR@_@MINOR@_@SUBMINOR@" LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@">
-                    <Component Id="Source Code"
-                            Guid="853741a0-c996-4e8d-b19e-349e9c5afd12">
+                <Directory Id="JamDir" Name="Jam" LongName="Jam @MAJOR@.@MINOR@.@RELEASE@">
+                    <Component Id="SourceCode"
+                            Guid="@SOURCE_GUID@">
                         <File Id="src" Name="JamSrc.zip"
                                 DiskId="1" src="JamSrc.zip"/>
                     </Component>
                     <Directory Id="lib" Name="lib">
                         <Component Id="Libraries"
-                                Guid="5f562320-e67b-4ccf-94af-74e7703bdf9a">
+                                Guid="@LIB_GUID@">
                             <File Id="jamjar" Name="Jam.jar" DiskId="1" src="lib/Jam.jar" />
                             <File Id="helpjar" Name="JamHelp.jar" DiskId="1"
                                     src="lib/JamHelp.jar" />
@@ -28,12 +28,12 @@
                     </Directory>
                     <Directory Id="bin" Name="bin">
                         <Component Id="Executables"
-                                Guid="1c4b66fd-55bb-4d34-8a39-9df18c1ff36d">
+                                Guid="@BIN_GUID@">
                             <File Id="Main_program" Name="Jam.exe" DiskId="1"
                                     src="bin/Jam.exe">
                                 <Shortcut Id="Program shortcut"
                                         Directory="ProgramMenuFolder" Name="Jam"
-                                        LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@"
+                                        LongName="Jam @MAJOR@.@MINOR@.@RELEASE@"
                                         Show="normal"
                                         WorkingDirectory="TARGETDIR"/>
                             </File>
@@ -41,7 +41,7 @@
                                     src="bin/JamHelp.exe">
                                 <Shortcut Id="Help shortcut"
                                         Directory="ProgramMenuFolder" Name="JamHelp"
-                                        LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@ Help"
+                                        LongName="Jam @MAJOR@.@MINOR@.@RELEASE@ Help"
                                         Show="normal"
                                         WorkingDirectory="TARGETDIR"/>
                             </File>
@@ -52,7 +52,7 @@
             <Directory Id="ProgramMenuFolder" Name="PMFolder"></Directory>
         </Directory>
         <Feature Id="DefaultFeature" Level="1">
-            <ComponentRef Id="Source Code"/>
+            <ComponentRef Id="SourceCode"/>
             <ComponentRef Id="Libraries"/>
             <ComponentRef Id="Executables"/>
         </Feature>
