@@ -9,6 +9,7 @@ import jam.global.Broadcaster;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,7 +29,7 @@ import javax.swing.SwingConstants;
 public final class StatusBar implements Observer {
 	
 	private final JLabel info=new JLabel();
-	private final JPanel panel=new JPanel();
+	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 	private final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
 
@@ -36,6 +37,7 @@ public final class StatusBar implements Observer {
 
 	private StatusBar(){
 		Broadcaster.getSingletonInstance().addObserver(this);
+		panel.setBorder(BorderFactory.createLoweredBevelBorder());
 		/* Run status */
 		final Box pRunState = new Box(BoxLayout.X_AXIS);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -51,14 +53,27 @@ public final class StatusBar implements Observer {
 		lrunState.setText(rs.getLabel());
 	}
 	
+	/**
+	 * Returns the only instance of this class.
+	 * 
+	 * @return the only instance of this class
+	 */
 	static public StatusBar getInstance(){
 		return INSTANCE;
 	}
 
+	/**
+	 * Returns the displayable component.
+	 * @return the displayable component
+	 */
 	public Component getComponent(){
 		return panel;
 	}
 	
+	/**
+	 * Set the info text to display.
+	 * @param text the text to display
+	 */
 	public void setInfo(CharSequence text){
 		info.setText(text.toString());
 	}
