@@ -1,18 +1,11 @@
 package jam;
 import jam.commands.CommandException;
 import jam.commands.CommandManager;
-import jam.global.Broadcaster;
-import jam.global.JamProperties;
-import jam.global.JamStatus;
-import jam.global.RunInfo;
+import jam.global.MessageHandler;
 import jam.plot.Display;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.AbstractButton;
 
 /**
  * This class recieves the commands for many of the pull
@@ -26,16 +19,12 @@ import javax.swing.AbstractButton;
  */
 
 public class JamCommand
-	implements ActionListener, ItemListener {
+	implements ActionListener {
 
-	private final Display display;
-	private final JamConsole console;
-	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private final MessageHandler console;
 	private final PeakFindDialog peakFindDialog;
 	private final SetupRemote setupRemote;
-	private final FrontEndCommunication frontEnd;
-	private final JamStatus status;
-	private final CommandManager jamCmdMgr;
+	private final CommandManager jamCmdMgr= CommandManager.getInstance();
 	private RemoteAccess remoteAccess = null;
 	private boolean remote = false;
 
@@ -44,22 +33,12 @@ public class JamCommand
 	 * @param d the area where histograms are displayed
 	 * @param jc the text input and output area
 	 */
-	public JamCommand(JamMain jam, Display d, JamConsole jc) {
+	public JamCommand(JamMain jam, Display d, MessageHandler jc) {
 		super();
-		display = d;
 		console = jc;
-		status = JamStatus.instance();
-		/* class to hold run information */
-		new RunInfo();
-		/* communication */
-		frontEnd = new VMECommunication(console);
-		broadcaster.addObserver(frontEnd);
 		/* acquisition control */
 		setupRemote = new SetupRemote(jam, console);
-		peakFindDialog = new PeakFindDialog(display, console);
-		jamCmdMgr = CommandManager.getInstance();
-		console.addCommandListener(jamCmdMgr);
-		console.addCommandListener(display);
+		peakFindDialog = new PeakFindDialog(d, console);
 	}
 
 	/**
@@ -92,35 +71,6 @@ public class JamCommand
 						+ incommand
 						+ "\"");
 			}
-		}
-	}
-
-	/** 
-	 * Recieves the inputs from the pull down menus that are selectable 
-	 * checkboxes.
-	 *
-	 * @param ie event triggered by selecting an item in the menus
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		final AbstractButton item = (AbstractButton) ie.getItem();
-		if ((item == null)) { //catch error
-			console.errorOutln("The selected item is null.");
-		} else {
-			final String text = item.getText();
-			final boolean selected = item.isSelected();
-			if ("Verbose front end".equals(text)) {
-				frontEnd.verbose(selected);
-				JamProperties.setProperty(
-					JamProperties.FRONTEND_VERBOSE,
-					selected);
-			} else if ("Debug front end".equals(text)) {
-				frontEnd.debug(selected);
-				JamProperties.setProperty(
-					JamProperties.FRONTEND_DEBUG,
-					selected);
-			} else if ("Autoscale on Expand/Zoom".equals(text)) {
-				display.setAutoOnExpand(selected);
-			} 
 		}
 	}
 
