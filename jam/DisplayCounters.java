@@ -1,13 +1,27 @@
 package jam;
-import jam.global.*;
-import jam.sort.*;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.sort.NetDaemon;
+import jam.sort.SortDaemon;
+import jam.sort.StorageDaemon;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Displays buffer countesr of sort threads.
@@ -17,7 +31,7 @@ import javax.swing.border.*;
  * @author Ken Swartz
  * @version 05 newest done 9-98
  */
-public final class DisplayCounters implements Observer {
+public final class DisplayCounters extends JDialog implements Observer {
 
 	/**
 	 * We are sorting online when the internal mode variable equals
@@ -32,13 +46,11 @@ public final class DisplayCounters implements Observer {
 	public static final int OFFLINE = 2;
 
 	//stuff for dialog box
-	private JDialog d;
 	private JPanel pCenter;
 	private SortDaemon sortDaemon;
 	private NetDaemon netDaemon;
 	private StorageDaemon storageDaemon;
 	private int mode;
-	private final Frame jamMain;
 	private final Broadcaster broadcaster;
 	private final MessageHandler messageHandler;
 
@@ -59,22 +71,24 @@ public final class DisplayCounters implements Observer {
 		pEvntSort,
 		pButton;
 
-	static private DisplayCounters instance=null;
+	static private DisplayCounters instance = null;
 
-	static public DisplayCounters getSingletonInstance(){
-		if (instance==null){
-			instance=new DisplayCounters(
-			JamStatus.instance().getMessageHandler());
+	static public DisplayCounters getSingletonInstance() {
+		if (instance == null) {
+			instance = new DisplayCounters();
 		}
 		return instance;
 	}
-	
+
+	private final static JamStatus status = JamStatus.instance();
+
 	/**
 	 * @param jm the main window
 	 * @param b to broadcast counter "read" and "zero" requests
 	 * @param mh where to print console output
 	 */
-	private DisplayCounters(MessageHandler mh) {
+	private DisplayCounters() {
+		super(status.getFrame(), "Buffer Counters", false);
 		final int xpos = 20;
 		final int ypos = 50;
 		final int flowgaph = 10;
@@ -83,14 +97,12 @@ public final class DisplayCounters implements Observer {
 		final int hgap = 5;
 		final int vgap = 10;
 
-		jamMain = JamStatus.instance().getFrame();
 		broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
-		messageHandler = mh;
-		d = new JDialog(jamMain, "Buffer Counters", false);
-		d.setResizable(false);
-		d.setLocation(xpos, ypos);
-		final Container cd = d.getContentPane();
+		messageHandler = status.getMessageHandler();
+		setResizable(false);
+		setLocation(xpos, ypos);
+		final Container cd = getContentPane();
 		cd.setLayout(new BorderLayout(maingap, maingap));
 
 		//Center Panels
@@ -141,12 +153,7 @@ public final class DisplayCounters implements Observer {
 		pButton.add(pb);
 		pb.add(getUpdateButton());
 		pb.add(getClearButton());
-		/*Recieves events for closing the dialog box and closes it. */
-		d.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				d.dispose();
-			}
-		});
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
 	private JTextField newTextField() {
@@ -232,13 +239,6 @@ public final class DisplayCounters implements Observer {
 	}
 
 	/**
-	 * Show online sorting dialog Box
-	 */
-	public void show() {
-		d.show();
-	}
-
-	/**
 	 * Setup for online
 	 *
 	 * @param nd network process
@@ -252,7 +252,7 @@ public final class DisplayCounters implements Observer {
 			sortDaemon = sod;
 			storageDaemon = std;
 		}
-		d.setTitle("Online Buffer Count");
+		setTitle("Online Buffer Count");
 		pCenter.removeAll();
 		pCenter.add(pBuffSent);
 		pCenter.add(pBuffRecv);
@@ -260,7 +260,7 @@ public final class DisplayCounters implements Observer {
 		pCenter.add(pBuffWrit);
 		pCenter.add(pEvntSent);
 		pCenter.add(pEvntSort);
-		d.pack();
+		pack();
 	}
 
 	/**
@@ -275,12 +275,12 @@ public final class DisplayCounters implements Observer {
 			sortDaemon = sod;
 			storageDaemon = std;
 		}
-		d.setTitle("Offline Buffer Count");
+		setTitle("Offline Buffer Count");
 		pCenter.removeAll();
 		pCenter.add(pFileRead);
 		pCenter.add(pBuffSort);
 		pCenter.add(pEvntSort);
-		d.pack();
+		pack();
 	}
 
 	/**
