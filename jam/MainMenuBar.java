@@ -112,8 +112,8 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		expHist.add(getMenuItem(SHOW_BATCH_EXPORT));
 		
 		file.addSeparator();
-		file.add(commands.getAction(PRINT));
-		file.add(commands.getAction(PAGE_SETUP));
+		file.add(getMenuItem(PRINT));
+		file.add(getMenuItem(PAGE_SETUP));
 		file.addSeparator();
 		file.add(getMenuItem(EXIT));
 		
@@ -146,7 +146,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		final JMenu histogram = new JMenu("Histogram");
 		histogram.add(getMenuItem(SHOW_NEW_HIST));
 		histogram.add(getMenuItem(SHOW_HIST_ZERO));
-		histogram.add(commands.getAction(DELETE_HISTOGRAM));
+		histogram.add(getMenuItem(DELETE_HISTOGRAM));
 		histogram.add(calHist);
 		calHist.add(getMenuItem(SHOW_HIST_FIT));
 		calHist.add(getMenuItem(SHOW_HIST_DISPLAY_FIT));
