@@ -621,8 +621,8 @@ public class Action
 		double[] channelBackground;
 		netArea = new double[1];
 		netAreaError = new double[1];
-		fwhm = new double[1];
-		centroidError = new double[1];
+		fwhm = new double[2];
+		centroidError = new double[2];
 		centroid = new double[1];
 		channelBackground = new double[currentPlot.getSizeX()];
 
@@ -760,9 +760,15 @@ public class Action
 				Plot1d plot1d=(Plot1d)currentPlot;			
 				centroid[0] = plot1d.getEnergy(centroid[0]);
 				fwhm[0] = plot1d.getEnergy(fwhm[0]);
+				fwhm[1] = plot1d.getEnergy(0.0);
 				centroidError[0] =
 					plot1d.getEnergy(centroidError[0]);
+				centroidError[1] =
+				plot1d.getEnergy(0.0);
+				fwhm[0]=fwhm[0]-fwhm[1];
+				centroidError[0]=centroidError[0]-centroidError[1];
 			}
+		
 			textOut.messageOut(
 				"GrossArea = "
 					+ grossArea
