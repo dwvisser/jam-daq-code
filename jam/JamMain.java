@@ -182,7 +182,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 */
 	boolean remote;
 
-	static final String NO_FILL_2D = "Disable 2d Gate Fill";
+	static final String NO_FILL_MENU_TEXT = "Disable 2d Gate Fill";
 
 	/**
 	 * Construtor
@@ -239,15 +239,9 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		} catch (DataException de) {
 			console.errorOutln(de.getMessage());
 		}
-		//setup intial histograms
-		/*try {
-			setHistogramModel();
-		} catch (GlobalException ge) {
-			System.err.println("We should not be here, [JamMain]");
-		}*/
 		setGateModel();
-		//setup all other dialog boxes.
-		//data control, gate set, histogram manipulate, project
+		/* setup all other dialog boxes.
+		   data control, gate set, histogram manipulate, project */
 		DataControl.setupAll();
 		try { //setting no sort does not throw an exception
 			setSortMode(NO_SORT);
@@ -516,10 +510,16 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		mPrefer.add(ignoreFull);
 		JCheckBoxMenuItem noFill2d =
 			new JCheckBoxMenuItem(
-				NO_FILL_2D,
+				NO_FILL_MENU_TEXT,
 				JamProperties.getBooleanProperty(JamProperties.NO_FILL_2D));
 		noFill2d.setEnabled(true);
-		noFill2d.addItemListener(jamCommand);
+		noFill2d.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent ie){
+				JamProperties.setProperty(
+				JamProperties.NO_FILL_2D,
+				ie.getStateChange()==ItemEvent.SELECTED);
+			}
+		});
 		mPrefer.add(noFill2d);
 		JCheckBoxMenuItem autoOnExpand =
 			new JCheckBoxMenuItem("Autoscale on Expand/Zoom", true);
