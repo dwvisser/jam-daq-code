@@ -305,7 +305,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             out.setOffsets();
             out.writeDataDescriptorBlock();
-            out.writeAllObjects(msgHandler, pm);
+            out.writeAllObjects(pm);
             setProgressNote(pm, "Closing File");
             out.close();
             pm.close();
