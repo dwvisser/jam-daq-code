@@ -35,19 +35,19 @@ final class NumberType extends DataObject {
 	/**
 	 * int width, in bits
 	 */
-	private final static byte IntWidth = 32;
+	private final static byte INT_WIDTH = 32;
 
 	/**
 	 * double width, in bits
 	 */
-	private final static byte DoubleWidth = 64;
+	private final static byte DOUBLEWIDTH = 64;
 
 	/**
 	 * Motorola byte order, (same as Java), 
 	 */
 	private final static byte DFNT_MBO = 1;
 
-	private byte numberType;
+	private transient byte numberType;
 	
 	/** Code for <code>int</code> number type. */
 	static final byte INT = 0;
@@ -59,24 +59,24 @@ final class NumberType extends DataObject {
 	static final byte DOUBLE_SIZE = 8;
 
 	/**
-	 * @param fi HDF file we belong to
+	 * @param hdfile HDF file we belong to
 	 * @param type one of <code>INT</code> or <code>DOUBLE</code>, 
 	 * @throws IllegalArgumentException if an invalid type is given
 	 */
-	NumberType(HDFile fi, byte type) {
-		super(fi, DFTAG_NT); //sets tag
+	NumberType(HDFile hdfile, byte type) {
+		super(hdfile, DFTAG_NT); //sets tag
 		if (type == INT) {
-			bytes = new byte[] { NT_VERSION, DFNT_INT32, IntWidth, DFNT_MBO };
+			bytes = new byte[] { NT_VERSION, DFNT_INT32, INT_WIDTH, DFNT_MBO };
 		} else if (type == DOUBLE) {
 			bytes =
-				new byte[] { NT_VERSION, DFNT_FLOAT64, DoubleWidth, DFNT_MBO };
+				new byte[] { NT_VERSION, DFNT_FLOAT64, DOUBLEWIDTH, DFNT_MBO };
 		} else {
 			throw new IllegalArgumentException("Invalid type for NumberType: "+type);
 		}
 	}
 
-	NumberType(HDFile hdf, byte[] data, short t, short reference) {
-		super(hdf, data, t,reference);
+	NumberType(HDFile hdf, byte[] data, short tag, short reference) {
+		super(hdf, data, tag,reference);
 	}
 
 	/**
