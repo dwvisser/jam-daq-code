@@ -52,26 +52,6 @@ abstract class Plot extends JPanel implements PlotPrefs,
 	 */
 	public final static int ZOOM_FACTOR = 10;
 
-	/**
-	 * Type of histogram being plotted this is 1 dimensional int array
-	 */
-	public final static int ONE_DIM_INT = 1;
-
-	/**
-	 * Type of histogram being plotted this is 1 dimensional double array
-	 */
-	public final static int ONE_DIM_DOUBLE = 2;
-
-	/**
-	 * Type of histogram being plotted this is 2 dimensional int array
-	 */
-	public final static int TWO_DIM_INT = 3;
-
-	/**
-	 * Type of histogram being plotted this is 2 dimensional double array
-	 */
-	public final static int TWO_DIM_DOUBLE = 4;
-
 	static final int FULL_SCALE_MIN = 5; //minumum that Counts can be set to
 
 	/** Maximum that counts can be set to. */
@@ -104,7 +84,7 @@ abstract class Plot extends JPanel implements PlotPrefs,
 
 	protected int sizeY;
 
-	protected int type;
+	protected Histogram.Type type;
 
 	protected Limits.ScaleType scale;
 
@@ -294,33 +274,20 @@ abstract class Plot extends JPanel implements PlotPrefs,
 						"Tried to plot histogram with null Limits.", getClass()
 								.getName(), JOptionPane.ERROR_MESSAGE);
 			}
-			if (hist.getType() == Histogram.ONE_DIM_INT) {
-				type = ONE_DIM_INT;
-				sizeX = hist.getSizeX();
-				sizeY = 0;
-				counts = new double[hist.getSizeX()];
-			} else if (hist.getType() == Histogram.ONE_DIM_DOUBLE) {
-				type = ONE_DIM_DOUBLE;
-				sizeX = hist.getSizeX();
-				sizeY = 0;
-				counts = new double[hist.getSizeX()];
-			} else if (hist.getType() == Histogram.TWO_DIM_INT) {
-				type = TWO_DIM_INT;
-				sizeX = hist.getSizeX();
-				sizeY = hist.getSizeY();
-				counts2d = new double[hist.getSizeX()][hist.getSizeY()];
-			} else if (hist.getType() == Histogram.TWO_DIM_DOUBLE) {
-				type = TWO_DIM_DOUBLE;
-				sizeX = hist.getSizeX();
-				sizeY = hist.getSizeY();
-				counts2d = new double[hist.getSizeX()][hist.getSizeY()];
+			type=hist.getType();
+			sizeX=hist.getSizeX();
+			sizeY=hist.getSizeY();//0 if 1-d
+			if (type.getDimensionality()==1) {
+				counts = new double[sizeX];
+			} else  {//2-d
+				counts2d = new double[sizeX][sizeY];
 			}
 			copyCounts(); //copy hist counts
 			/* Limits contains handle to Models */
 			scrollbars.setLimits(plotLimits);
 		} else { //we have a null histogram so fake it
 			counts = new double[100];
-			type = ONE_DIM_INT;
+			type = Histogram.Type.ONE_DIM_INT;
 			sizeX = 100;
 			counts2d = null;
 		}
@@ -340,7 +307,7 @@ abstract class Plot extends JPanel implements PlotPrefs,
 	 */
 	final void copyCounts() {
 		final Histogram currentHist = status.getCurrentHistogram();
-		if (type == ONE_DIM_INT) {
+		if (type == Histogram.Type.ONE_DIM_INT) {
 			int[] temp = (int[]) currentHist.getCounts();
 			/*
 			 * NOT System.arraycopy() because of array type difference
@@ -348,17 +315,17 @@ abstract class Plot extends JPanel implements PlotPrefs,
 			for (int i = 0; i < temp.length; i++) {
 				counts[i] = temp[i];
 			}
-		} else if (type == ONE_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
 			System.arraycopy((double[]) currentHist.getCounts(), 0, counts, 0,
 					currentHist.getSizeX());
-		} else if (type == TWO_DIM_INT) {
+		} else if (type == Histogram.Type.TWO_DIM_INT) {
 			int[][] counts2dInt = (int[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
 				for (int j = 0; j < currentHist.getSizeY(); j++) {
 					counts2d[i][j] = counts2dInt[i][j];
 				}
 			}
-		} else if (type == TWO_DIM_DOUBLE) {
+		} else if (type == Histogram.Type.TWO_DIM_DOUBLE) {
 			double[][] counts2dDble = (double[][]) currentHist.getCounts();
 			for (int i = 0; i < currentHist.getSizeX(); i++) {
 				System.arraycopy(counts2dDble[i], 0, counts2d[i], 0,

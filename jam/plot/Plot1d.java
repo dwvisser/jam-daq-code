@@ -71,13 +71,13 @@ class Plot1d extends Plot {
 				ctOver=new double[sizex];
 				countsOverlay.add(ctOver);
 			}
-			final int type=hOver.getType();
-			if (type == Histogram.ONE_DIM_INT) {
+			final Histogram.Type hoType=hOver.getType();
+			if (hoType == Histogram.Type.ONE_DIM_INT) {
 				final int[] countsInt = (int[]) hOver.getCounts();
 				for (int j = 0; j < sizex; j++) {
 					ctOver[j] = countsInt[j];
 				}
-			} else if (type == Histogram.ONE_DIM_DOUBLE) {
+			} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
 		}
