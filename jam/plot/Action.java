@@ -36,8 +36,7 @@ import javax.swing.JOptionPane;
  * @version 0.5
  */
 
-public class Action
-	implements ActionListener, PlotMouseListener /*, CommandListener*/ {
+class Action implements ActionListener, PlotMouseListener {
 
 	static final String EXPAND = "expand";
 	static final String ZOOMIN = "zoomin";
@@ -102,7 +101,7 @@ public class Action
 	 * @param d the histogram displayer
 	 * @param mh the message area of the Jam window
 	 */
-	public Action(Display d, MessageHandler mh) {
+	Action(Display d, MessageHandler mh) {
 		this.display = d;
 		this.textOut = mh;
 		commandPresent = false;
@@ -123,7 +122,7 @@ public class Action
 	 *
 	 * @param b the one to add
 	 */
-	public synchronized void setBroadcaster(Broadcaster b) {
+	synchronized void setBroadcaster(Broadcaster b) {
 		broadcaster = b;
 	}
 
@@ -133,7 +132,7 @@ public class Action
 	 *
 	 * @param mp the current plot
 	 */
-	public synchronized void setPlot(Plot mp) {
+	synchronized void setPlot(Plot mp) {
 		currentPlot = mp;
 		settingGate = false;
 		overlayState = false;
@@ -218,7 +217,7 @@ public class Action
 	 * @param _command entry from console
 	 * @param parameters integer parameters from console
 	 */
-	public boolean commandPerform(String _command, double [] parameters) {
+	boolean commandPerform(String _command, double [] parameters) {
 		boolean accept = false; //is the command accepted
 		//boolean disp = false;
 		final String command = _command.toLowerCase();
@@ -387,7 +386,7 @@ public class Action
 	 *
 	 * @param parameters the integers
 	 */
-	public void integerChannel(double [] parameters) {
+	private void integerChannel(double [] parameters) {
 		final int numPar = parameters.length;
 		/* FIXME we should be better organized so this if is not here
 		 * so range is not a special case */
@@ -465,7 +464,7 @@ public class Action
 	 * update paint the current histogram
 	 *
 	 */
-	void update() {
+	private void update() {
 		currentPlot.update();
 		done();
 		/* following to recover the chooser if user just overlayed
@@ -694,7 +693,7 @@ public class Action
 	  * Background subtracted intensity of 
 	  * 1-d plots
 	  */
-	public void netArea() {
+	private void netArea() {
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
 		final double[] fwhm = new double[2];
@@ -858,7 +857,7 @@ public class Action
 	/**
 	 * Zoom in on the histogram
 	 */
-	public void zoomin() {
+	private void zoomin() {
 		currentPlot.zoom(Plot.ZOOM_IN);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -869,7 +868,7 @@ public class Action
 	/**
 	 * Zoom out on the histogram.
 	 */
-	public void zoomout() {
+	private void zoomout() {
 		currentPlot.zoom(Plot.ZOOM_OUT);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -880,7 +879,7 @@ public class Action
 	/**
 	 * Display the full histogram.
 	 */
-	public void full() {
+	private void full() {
 		currentPlot.setFull();
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -1026,7 +1025,7 @@ public class Action
 	 * @param whether <code>true</code> if auto-scale on expand or zoom
 	 * is desired
 	 */
-	public synchronized void setAutoOnExpand(boolean whether) {
+	synchronized void setAutoOnExpand(boolean whether) {
 		autoOnExpand = whether;
 	}
 
