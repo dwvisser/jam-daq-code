@@ -82,9 +82,11 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 
 	/**
 	 * Still needs to be implemented. This would write out a XSYS format file.
+	 * 
+	 * @throws UnsupportedOperationException always
 	 */
 	public void saveFile(Histogram hist) {
-		System.out.println("XSYS export not supported");
+		throw new UnsupportedOperationException("Still not implemented.");
 	}
 
 	/**
@@ -275,21 +277,14 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		int[][] counts;
 		byte tempBuff[];
 		int i;
-		int readlen = 0;
 
 		numberLongWords = areaLengthPage * XSYS_BUFFER_SIZE;
 		areaSize = Math.max(areaSizeX, areaSizeY); //maximum of 2 values
 		counts = new int[areaSize][areaSize];
-
-		tempBuff = new byte[numberLongWords * L_INT];
+		final int bytesToRead=numberLongWords * L_INT;
+		tempBuff = new byte[bytesToRead];
 		//read in data to a tempory buffer	    
-		buffin.readFully(tempBuff, 0, numberLongWords * L_INT);
-		System.out.println(
-			"bytes to read "
-				+ numberLongWords * L_INT
-				+ "  bytes read "
-				+ readlen);
-
+		buffin.readFully(tempBuff, 0, bytesToRead);
 		i = 0;
 		for (channelX = 0; channelX < areaSizeX; channelX++) {
 			for (channelY = 0; channelY < areaSizeY; channelY++) {
