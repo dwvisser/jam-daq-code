@@ -1,7 +1,5 @@
 package jam.fit;
-import jam.fit.NonLinearFit;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.List;
 import java.text.NumberFormat;
 
 /**
@@ -141,29 +139,26 @@ public class LevenbergMarquadt {
 	 * @param	nlf the parent <code>NonLinearFit</code> object creating this
 	 */
 	public LevenbergMarquadt(NonLinearFit nlf) {
-
 		int j, k;
-		Vector temp;
 		int type;
 		boolean done;
+		
 		this.nonLinFit = nlf;
-
-		temp = nonLinFit.getParameters();
+		List temp = nonLinFit.getParameters();
 		Parameter[] temp2 = new Parameter[temp.size()];
 		j = 0;
 		k = 0;
 		do { //eliminate non-double parameters
-			type = ((Parameter) (temp.elementAt(j))).getType();
+			type = ((Parameter) (temp.get(j))).getType();
 			if (type == Parameter.DOUBLE) {
-				if (!((Parameter) (temp.elementAt(j))).outputOption) {
-					temp2[k] = (Parameter) (temp.elementAt(j));
+				if (!((Parameter) (temp.get(j))).outputOption) {
+					temp2[k] = (Parameter) (temp.get(j));
 					k++;
 				}
 			}
 			j++;
 			done = (j == temp.size());
 		} while (!done);
-
 		parameters = new Parameter[k];
 		for (int i = 0; i < parameters.length; i++) {
 			parameters[i] = temp2[i];
