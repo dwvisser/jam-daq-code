@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 
 /**
  * Class which represents the HDF file on disk.
@@ -336,7 +337,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @exception HDFException thrown if err occurs during file write
 	 * @param msg output text area
 	 */
-	void writeAllObjects(MessageHandler msg, ProgressMonitor pm) throws HDFException {
+	void writeAllObjects(MessageHandler msg, final ProgressMonitor pm) throws HDFException {
 		pm.setMaximum(objectList.size());
 		int progress=1;
 		pm.setProgress(progress);
@@ -349,7 +350,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			}
 			writeDataObject(ob);
 			progress++;
-			pm.setProgress(progress);
+			final int value=progress;
+			final Runnable runner=new Runnable(){
+				public void run(){
+					pm.setProgress(value);					
+				}
+			};
+			SwingUtilities.invokeLater(runner);
 		}
 	}
 	
