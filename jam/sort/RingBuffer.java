@@ -1,5 +1,7 @@
 package jam.sort;
 
+import javax.swing.JOptionPane;
+
 /**
  * <code>RingBuffer</code> is a list of buffers which
  * starts repeating after the last buffer is filled.
@@ -59,7 +61,7 @@ public class RingBuffer {
         	final StringBuffer message=new StringBuffer();
         	message.append("Lost a buffer in thread \"");
         	message.append(Thread.currentThread().getName());
-        	message.append("\" when put() was called.");
+        	message.append("\" when putBuffer() called while already full.");
             throw new RingFullException(message.toString());
         }
         System.arraycopy(inBuffer, 0, ringBuffer[posPut&MASK], 0, inBuffer.length);
@@ -87,7 +89,8 @@ public class RingBuffer {
 				 */
                 wait();
             } catch (InterruptedException ie){
-                System.err.println("Error Ring buffer interrupt exception "+ie+"[RingBuffer]");
+                JOptionPane.showMessageDialog(null,ie.getMessage(),
+				getClass().getName(),JOptionPane.ERROR_MESSAGE);
             }
         }
         //&MASK serves to keep index accessed running 0..63,0..63, etc.
