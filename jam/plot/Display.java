@@ -79,26 +79,18 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public Display(JamConsole jc) {		
 		msgHandler = jc; //where to send output messages
-		
-		//Set gobal status
+		/* Set gobal status */
 		JamStatus.instance().setDisplay(this);
 		Broadcaster.getSingletonInstance().addObserver(this);
-		
 		Bin.Factory.init(this);
-		//display event handler
+		/* display event handler */
 		action = new Action(this, jc); 
 		prefs.addPreferenceChangeListener(this);
-		
 		plotList=new ArrayList();		
-		
 		createGridPanel();
-		
 		toolbar = new Toolbar(this, action);		
-
 		initPrefs();
-		
-		//Initial view only 1 plot
-		//setView(1,1);
+		/* Initial view only 1 plot */
 		setView(new View("Single", 1,1));
 					
 	}
@@ -138,35 +130,27 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void setView(View viewIn){
 		currentView=viewIn;
-		
-		Plot plot=null;
-		int plotLayout;
-		int i;
-
 		numberPlots=currentView.getNumberHists();
 		plotGridPanelLayout.setRows(currentView.getRows());
 		plotGridPanelLayout.setColumns(currentView.getColumns());
 		plotGridPanel.setLayout(plotGridPanelLayout);		
 		plotGridPanel.revalidate(); 
-		
 		createPlots(numberPlots);
-
-		//Type of layout
-		updateLayout();
-		
+		updateLayout();		
 		//Set properties for each plot
 		plotGridPanel.removeAll();
-		for (i=0;i<numberPlots;i++){
-			plot =(Plot)(plotList.get(i));
+		Plot plot=null;
+		for (int i=0;i<numberPlots;i++){
+			plot =(Plot)plotList.get(i);
 			plot.removeAllPlotMouseListeners();
 			plot.setNumber(i);
 			plotGridPanel.add(plot);			
 			Histogram hist=currentView.getHistogram(i);
 			plot.displayHistogram(hist);
-				
 		}
-
-		setPlot(plot);			
+		if (plot != null){
+			setPlot(plot);			
+		}
 	}
 
 	/**
@@ -260,13 +244,9 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * Display a histogram.
 	 */
 	public void displayHistogram() {
-		Histogram hist = status.getCurrentHistogram();
-		
+		final Histogram hist = status.getCurrentHistogram();
 		if (hist != null) {
 			final Limits lim = Limits.getLimits(hist);
-			if (lim == null) { //create a new Limits object for this histogram
-				makeLimits(hist);
-			}
 			currentPlot.removeAllPlotMouseListeners();
 			currentPlot.addPlotMouseListener(action);
 			showPlot(hist); //changes local currentPlot
@@ -274,12 +254,10 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		} else { //we have a null histogram, but display anyway
 			showPlot(hist);
 		}
-		
-		//Add to view
+		/* Add to view */
 		currentView.setHistogram(getPlot().getNumber(), hist);
-
-		
 	}
+	
 	/**
 	 * Overlay a histogram.
 	 * 
@@ -295,10 +273,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		if (h.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
-		}
-		/* Create limits as needed. */
-		if (Limits.getLimits(h) == null) {
-			makeLimits(h);
 		}
 		currentPlot.overlayHistograms(num);		
 	}
@@ -337,22 +311,6 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 		
 	}
-	/**
-	 * Create the limits for a histogram
-	 * @param h
-	 */
-	private void makeLimits(Histogram h) {
-		if (h != null) { //else ignore
-			try {
-				final Plot plot = getPlot();
-				new Limits(h, plot.getIgnoreChZero(), plot.getIgnoreChFull());
-			} catch (IndexOutOfBoundsException e) {
-				msgHandler.errorOutln("Index out of bounds while "
-						+ "creating limits for new histogram [plot.Plot] "
-						+ h.getName());
-			}
-		}
-	} 
 
 	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		getPlot().setRenderForPrinting(rfp, pf);
@@ -409,30 +367,24 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param p
 	 */
 	private void setPlot(Plot p) {
-		
 		int i;
 		synchronized (plotLock) {		
-
-			//Only do something if the plot has changed 
+			/* Only do something if the plot has changed */ 
 			if (p!=currentPlot) {
-				//Change plot mouse listener source
+				/* Change plot mouse listener source */
 				if (currentPlot!=null ) {
 					currentPlot.reset();
 					currentPlot.removeAllPlotMouseListeners();
 				}
-				
 				if (p.HasHistogram())
 					p.addPlotMouseListener(action);
-				
-				//Change selected plot
+				/* Change selected plot */
 				for (i=0;i<plotList.size();i++) {
 					((Plot)plotList.get(i)).select(false);
 				}
 				p.select(true);
-				
-				//Cancel all current actions
+				/* Cancel all current actions */
 				action.plotChanged();
-				
 				currentPlot = p;				
 			}			
 		}
