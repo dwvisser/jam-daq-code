@@ -16,6 +16,12 @@ java.io.FileFilter {
     
     final boolean option;
     
+    /**
+     * Constructs a filter for HDF files. It checks the first 4 bytes of the file.
+     * 
+     * @param showDirectories whether to show directories as well
+     * @see HDFconstants#HDF_HEADER
+     */
     public HDFileFilter(boolean showDirectories){
     	super();
 		option=showDirectories;
