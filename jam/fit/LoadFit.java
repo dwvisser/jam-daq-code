@@ -56,13 +56,18 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	 * @param d the histogram display
 	 * @param mh the place to output text
 	 */
-	public LoadFit(Display d, MessageHandler mh,
+	public LoadFit(MessageHandler mh,
 	JMenu jmenu) {
 		super();
-		jamMain = JamStatus.instance().getFrame();
-		display = d;
 		msgHandler = mh;
 		menu=jmenu;
+						
+		JamStatus jamStatus = JamStatus.instance(); 
+		jamMain = jamStatus.getFrame();
+		display = jamStatus.getDisplay();
+		
+
+
 		final String dialogName="Load Fit Routine";
 		dl = new JDialog(jamMain, dialogName, false);
 		final Container cp = dl.getContentPane();
