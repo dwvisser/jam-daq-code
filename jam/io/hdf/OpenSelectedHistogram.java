@@ -267,7 +267,7 @@ public final class OpenSelectedHistogram {
 		return openF;
 	}
 
-	/* non-javadoc:
+	/**
 	 * Reads in the histogram and hold them in a tempory array
 	 * 
 	 * @exception HDFException
