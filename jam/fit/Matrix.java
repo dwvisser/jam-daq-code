@@ -944,14 +944,12 @@ public class Matrix {
 	}
 
 	void qsort(double a[], int index[], int lo0, int hi0) {
-		// Quick Sort algorithm: returns permutaion in index[] vector
-
+		/* Quick Sort algorithm: 
+		 *   returns permutaion in index[] vector */
 		int lo = lo0;
 		int hi = hi0;
-		double mid;
-
 		if (hi0 > lo0) {
-			mid = a[(lo0 + hi0) / 2];
+			double mid = a[(lo0 + hi0) / 2];
 			while (lo <= hi) {
 				while ((lo < hi0) && (a[lo] < mid)) {
 					++lo;
@@ -974,26 +972,23 @@ public class Matrix {
 	}
 
 	private void swap(double a[], int i, int j) {
-		double T;
-		T = a[i];
+		final double temp = a[i];
 		a[i] = a[j];
-		a[j] = T;
+		a[j] = temp;
 	}
 
 	private void swap(int a[], int i, int j) {
-		int T;
-		T = a[i];
+		final int temp = a[i];
 		a[i] = a[j];
-		a[j] = T;
+		a[j] = temp;
 	}
 
 	public void rowMultiply(int row, double factor) {
-		int i;
-
-		for (i = 0; i < this.columns; i++) {
-			this.element[row][i] = this.element[row][i] * factor;
+		for (int i = 0; i < columns; i++) {
+			element[row][i] = element[row][i] * factor;
 		}
 	}
+	
 	//following stuff still needs to be incorporated into Javadoc properly
 	/* Methods (assume A is of class Matrix, e.g., Matrix A = new Matrix()):
 	* A.norm() 	(double) returns the Frobenius norm (Matrix), or Euclidean norm (vector)
