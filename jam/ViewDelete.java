@@ -23,45 +23,44 @@ import javax.swing.JPanel;
 import javax.swing.JDialog;
 import javax.swing.border.EmptyBorder;
 
-
 /**
- *  Delete a vieew
+ * Delete a vieew
  * 
  * @author Ken Swartz
- *
+ *  
  */
 public class ViewDelete extends JDialog {
 
-		
-	private  JComboBox comboNames;
-	
-	private JamStatus status = JamStatus.instance();
-	 
-	private final String CHOOSE_NAME = "Choose Name";
-	
-	public ViewDelete(){
-		 super.setTitle( "Delete View");
-		 super.setModal(true);
+	private final JComboBox comboNames;
+
+	private static final JamStatus status = JamStatus.instance();
+
+	private static final String CHOOSE_NAME = "Choose Name";
+
+	public ViewDelete() {
+		super.setTitle("Delete View");
+		super.setModal(true);
 
 		final Container cdnew = getContentPane();
 		setResizable(false);
 		cdnew.setLayout(new BorderLayout(5, 5));
 		setLocation(20, 50);
 
-		final JPanel pNames = new JPanel(new FlowLayout(FlowLayout.LEFT,20,20));
+		final JPanel pNames = new JPanel(
+				new FlowLayout(FlowLayout.LEFT, 20, 20));
 		pNames.setBorder(new EmptyBorder(0, 10, 0, 10));
 		cdnew.add(pNames, BorderLayout.CENTER);
-		
+
 		final JLabel ln = new JLabel("Name", JLabel.RIGHT);
 		pNames.add(ln);
-		// Name combo 		
+		// Name combo
 		comboNames = new JComboBox();
 		Dimension dim = comboNames.getPreferredSize();
-		dim.width=200;
+		dim.width = 200;
 		comboNames.setPreferredSize(dim);
 		pNames.add(comboNames);
-	
-		/*  panel for buttons */
+
+		/* panel for buttons */
 		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cdnew.add(pbutton, BorderLayout.SOUTH);
 		final JPanel pbnew = new JPanel();
@@ -72,7 +71,7 @@ public class ViewDelete extends JDialog {
 			public void actionPerformed(ActionEvent ae) {
 				deleteView();
 				close();
-				
+
 			}
 		});
 		pbnew.add(bok);
@@ -93,45 +92,36 @@ public class ViewDelete extends JDialog {
 		pack();
 	}
 
-	public void showView(){
+	public void showView() {
 		updateViewNames();
 		this.show();
 	}
-	
+
 	private void updateViewNames() {
-		
-		List namesList = new ArrayList(); 
+		final List namesList = new ArrayList();
 		namesList.add(CHOOSE_NAME);
-		Iterator itr = View.getNameIterator();
-		while (itr.hasNext()) {
-			String name =(String)itr.next();
-			namesList.add(name);
+		namesList.addAll(View.getNameList());
+		comboNames.removeAllItems();
+		final Iterator iter=namesList.iterator();
+		while (iter.hasNext()){
+			comboNames.addItem(iter.next());
 		}
-		String [] names = new String[namesList.size()];
-		for (int i=0; i< names.length; i++)
-		{
-			names[i] = (String)namesList.get(i);
-		}
-		comboNames= new JComboBox(names);
 	}
-	
+
 	/**
-	 * Make a new view
+	 * Make a new view.
 	 */
-	private void deleteView(){
-
-		String name =(String)comboNames.getSelectedItem();
-		
-		if ( name.equals(CHOOSE_NAME) || name.equals(View.SINGLE) ) {
-			View.removeView(name);			
+	private void deleteView() {
+		final String name = (String) comboNames.getSelectedItem();
+		if (!(name.equals(CHOOSE_NAME) || name.equals(View.SINGLE.getName()))) {
+			View.removeView(name);
 		}
-		
-		Broadcaster broadcaster=Broadcaster.getSingletonInstance();
-		broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
-		status.getDisplay().setView( View.getView("Single") );
-
+		Broadcaster.getSingletonInstance().broadcast(
+				BroadcastEvent.Command.VIEW_NEW);
+		status.getDisplay().setView(View.SINGLE);
 	}
-	private void close(){
+
+	private void close() {
 		dispose();
 	}
 }
