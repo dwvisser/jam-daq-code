@@ -99,6 +99,7 @@ public final class JamMain extends JFrame {
 		jamProperties = new JamProperties(); //class that has properties
 		status = JamStatus.instance(); //class that is statically available
 		status.setFrame(this);
+		status.setJamMain(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return runState.isAcqOn();
@@ -201,6 +202,7 @@ public final class JamMain extends JFrame {
 	public void setSortMode(int mode) {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
+		//Check that run state can be changed
 		if (!((mode == NO_SORT) || (mode == FILE))) {
 			boolean error = true;
 			final StringBuffer etext =
