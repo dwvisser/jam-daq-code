@@ -68,7 +68,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		Graphics2D g=(Graphics2D)gc;
 		g.setColor(Color.GREEN);		
 		
-		//FIXME KBS some of this should be probably be moved to PlotData.
+		//FIXME KBS some of this should be moved to PlotData.
 		Point areaPointView = new Point();
 		areaPointView=graph.toViewLin(areaStartPoint);
 		if (lastMovePoint.x<0) {
@@ -103,8 +103,8 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 			final int xul = Math.max(p1.x, p2.x);
 			final int yll = Math.min(p1.y, p2.y);
 			final int yul = Math.max(p1.y, p2.y);
-			final int width=xul-xll+1;
-			final int height=yul-yll+1;
+			final int width=xul-xll;
+			final int height=yul-yll;
 			synchronized (areaMark) {
 				areaMark.setBounds(xll,yll,width,height);
 			}
