@@ -207,7 +207,6 @@ public class OpenSelectedHistogram {
 	/**
 	 * Read in an unspecified file by opening up a dialog box.
 	 *
-	 * @param  mode  whether to open or reload
 	 * @return  <code>true</code> if successful
 	 */
 	public boolean openFile() {
