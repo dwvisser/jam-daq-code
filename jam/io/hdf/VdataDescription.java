@@ -81,7 +81,7 @@ public final class VdataDescription extends DataObject {
     /**
      * Array of types of data.
      */
-    private short[] _type;
+    private short[] datatypes;
 
     /**
      * Size in bytes of field.
@@ -111,7 +111,7 @@ public final class VdataDescription extends DataObject {
     /**
      * Name of Vdata type.
      */
-    private String _class;
+    private String dataTypeName;
 
     /**
      * Version of VFTAG_VH format used.
@@ -128,12 +128,12 @@ public final class VdataDescription extends DataObject {
         }
         interlace = FULL_INTERLACE;
         fldnm = names;
-        _type = types;
+        datatypes = types;
         order = orders;
         nvert = size;
         nfields = (short) (names.length);
         this.name = name;
-        _class = classtype;
+        dataTypeName = classtype;
         isize = new short[nfields];
         offset = new short[nfields];
         ivsize = 0;
@@ -165,7 +165,7 @@ public final class VdataDescription extends DataObject {
         for (int i = 1; i < nfields; i++) {
             offset[i] = (short) (offset[i - 1] + isize[i - 1]);
         }
-        int byteLength = 22 + 10 * nfields + name.length() + _class.length();
+        int byteLength = 22 + 10 * nfields + name.length() + dataTypeName.length();
         // see p. 6-42 HDF 4.1r2 specs
         for (int i = 0; i < nfields; i++) { // see p. 6-42 HDF 4.1r2 specs
             byteLength += names[i].length();
@@ -178,7 +178,7 @@ public final class VdataDescription extends DataObject {
             dos.writeShort(ivsize);
             dos.writeShort(nfields);
             for (int i = 0; i < nfields; i++) {
-                dos.writeShort(_type[i]);
+                dos.writeShort(datatypes[i]);
             }
             for (int i = 0; i < nfields; i++) {
                 dos.writeShort(isize[i]);
@@ -196,8 +196,8 @@ public final class VdataDescription extends DataObject {
             //write out data number type
             dos.writeShort(name.length());
             dos.writeBytes(name);
-            dos.writeShort(_class.length());
-            dos.writeBytes(_class);
+            dos.writeShort(dataTypeName.length());
+            dos.writeBytes(dataTypeName);
             dos.writeShort(0); //no extension
             dos.writeShort(0); //no extension
             dos.writeShort(VH_VERSION);
@@ -225,13 +225,13 @@ public final class VdataDescription extends DataObject {
             nvert = dis.readInt();
             ivsize = dis.readShort();
             nfields = dis.readShort();
-            _type = new short[nfields];
+            datatypes = new short[nfields];
             isize = new short[nfields];
             offset = new short[nfields];
             order = new short[nfields];
             fldnm = new String[nfields];
             for (int i = 0; i < nfields; i++) {
-                _type[i] = dis.readShort();
+                datatypes[i] = dis.readShort();
             }
             for (int i = 0; i < nfields; i++) {
                 isize[i] = dis.readShort();
@@ -256,7 +256,7 @@ public final class VdataDescription extends DataObject {
             len = dis.readShort();
             temp = new byte[len];
             dis.read(temp);
-            _class = new String(temp);
+            dataTypeName = new String(temp);
             dis.readShort(); //no extension
             dis.readShort(); //no extension
             dis.readShort(); //should be version(=VH_VERSION)
@@ -280,7 +280,7 @@ public final class VdataDescription extends DataObject {
     }
 
     short getType(int field) {
-        return _type[field];
+        return datatypes[field];
     }
 
     short[] getDimensions() {
@@ -292,7 +292,7 @@ public final class VdataDescription extends DataObject {
     }
 
     short[] getTypes() {
-        return _type;
+        return datatypes;
     }
 
     private String getName() {
@@ -326,7 +326,7 @@ public final class VdataDescription extends DataObject {
 
     public String toString(){
         final char c=':';
-        final String rval = _class+c+name+c+order.length+" columns";
+        final String rval = dataTypeName+c+name+c+order.length+" columns";
         return rval;
     }
 }
