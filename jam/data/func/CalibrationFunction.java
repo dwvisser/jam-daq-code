@@ -16,16 +16,30 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public final static int MAX_NUMBER_TERMS = 5;
 
+	/**
+	 * Term labels.
+	 */
 	protected transient String[] labels;
+	
+	/**
+	 * Title of calibration function.
+	 */
 	protected transient String title;
+	
+	/**
+	 * Coeffiecient values.
+	 */
 	protected double[] coeff;
+	
+	/**
+	 * The formula for the function.
+	 */
 	protected transient StringBuffer formula=new StringBuffer();
 
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
 	 *
 	 * @param	numberTerms	number of terms in function
-	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public CalibrationFunction(int numberTerms) {
 		if (numberTerms < MAX_NUMBER_TERMS) {
@@ -36,13 +50,9 @@ public abstract class CalibrationFunction implements Function {
 			"--Maximum terms: "+MAX_NUMBER_TERMS+", asked for: "+numberTerms);
 		}
 	}
-	
-	public CalibrationFunction() {
-		this(MAX_NUMBER_TERMS);
-	}
-
+		
 	/**
-	 * Number of terms
+	 * @return Number of terms
 	 */
 	public int getNumberTerms() {
 		return coeff.length;
@@ -67,38 +77,27 @@ public abstract class CalibrationFunction implements Function {
 	}
 	
 	/**
-	 * Get the calibration value for a particular <code>double</code> value. 
-	 * Actually a cast to <code>int</code> is done for now.
-	 *
-	 * @param	x	value at which to get calibration
-	 * @return	calibration value of the argument
-	 * @see #getValue(double)
+	 * 
+	 * @return title of the calibration function
 	 */
-	public double getValue(int x) {
-		return getValue((double) x);
-	}
-	
 	public String getTitle(){
 		return title;
 	}
 	
+	/**
+	 * 
+	 * @return the function formula
+	 */
 	public String getFormula(){
 		return formula.toString();
 	}
 	
-	protected abstract void updateFormula(); 
-	
 	/**
-	 * Added to provide energy calibration for goto button
+	 * Called by setCoeff() to update the formula.
+	 *
 	 */
-	public double getChannel(int y) {
-		return getChannel((double) y);
-	}
-	
-	public double getCalculatedEnergy(double energy) {
-		return getValue((double) energy);
-	}
-	
+	protected abstract void updateFormula(); 
+		
 	/**
 	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
 	 * If passed a larger than necessary array, the first elements of the array will be used.
@@ -126,6 +125,11 @@ public abstract class CalibrationFunction implements Function {
 	 */
 	public abstract double getValue(double channel);
 
+	/**
+	 * Gets the channel for the given energy.
+	 * @param energy to get channel for
+	 * @return channel for the given energy
+	 */
 	public abstract double getChannel(double energy);
 
 	/**
@@ -133,10 +137,9 @@ public abstract class CalibrationFunction implements Function {
 	 * 
 	 * @param x array of x values
 	 * @param y array of y values
+	 * @throws DataException if the fit fails
 	 */
 	public abstract void fit(double[] x, double[] y) throws DataException;
-
-
 
 	/**
 	 * do a linear regression of data points y=a+bx 
@@ -144,6 +147,8 @@ public abstract class CalibrationFunction implements Function {
 	 *
 	 * @param x array of x values
 	 * @param y array of y values
+	 * @throws DataException if regression fails
+	 * @return array where first element is constant, second is slope
 	 */
 	protected double[] linearRegression(double[] x, double[] y)
 		throws DataException {
