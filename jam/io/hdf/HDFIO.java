@@ -3,8 +3,6 @@ import java.io.*;
 import java.util.*;
 import java.awt.*;
 import jam.global.MessageHandler;
-import jam.global.JamProperties;
-import jam.util.FileUtilities;
 import jam.util.StringUtilities;
 import jam.data.*;
 import jam.io.DataIO;
@@ -20,7 +18,7 @@ import javax.swing.*;
  */
 public class HDFIO implements DataIO,JamHDFFields {
 
-    private final String defaultPath=JamProperties.getPropString(JamProperties.HIST_PATH);
+    //private final String defaultPath=JamProperties.getPropString(JamProperties.HIST_PATH);
 
     /**
      * last file successfully read from or written to
@@ -49,7 +47,7 @@ public class HDFIO implements DataIO,JamHDFFields {
     /**
      * Utilty class to handle file dialogs.
      */
-    private FileUtilities fu;
+    //private FileUtilities fu;
 
     /**
      * <code>HDFile</code> object to write out to.
@@ -93,7 +91,7 @@ public class HDFIO implements DataIO,JamHDFFields {
     public HDFIO(Frame f,  MessageHandler mh){
         this.frame=f;
         this.msgHandler=mh;
-        fu=new FileUtilities(frame,defaultPath);
+        //fu=new FileUtilities(frame,defaultPath);
     }
 
     /**
