@@ -258,7 +258,9 @@ public abstract class DataObject {
 	
 	final void setRef(short newref) {
 		if ((haveNotSetRef) || (ref!=newref)){
-			final Short oldref=refKey;
+			final short oldref=ref;
+			final Short oldrefKey=refKey;
+
 			ref = newref;
 			refKey=new Short(newref);
 			/* only call "change" if this isn't the first time */
