@@ -30,8 +30,8 @@ public class JamConsole
 	extends JPanel
 	implements MessageHandler, ActionListener {
 
-	final static int NUMBER_LINES_DISPLAY = 8;
-	final static int NUMBER_LINES_LOG = 100;
+	
+	private final static int NUMBER_LINES_LOG = 100;
 
 	/**
 	 * End of line character(s).
@@ -102,7 +102,7 @@ public class JamConsole
 	 */
 	public JamConsole(int linesLog) {
 		maxLines = linesLog;
-		this.setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
 		textLog = new JTextPane();
 		doc = textLog.getStyledDocument();
 		attr_normal = new SimpleAttributeSet();
@@ -124,6 +124,11 @@ public class JamConsole
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
+		final int defaultNumLines = 5;
+		final int lineHeight = textLog.getFontMetrics(
+		textLog.getFont()).getHeight();
+		final int logHeight=lineHeight*defaultNumLines;
+		textLog.setPreferredSize(new Dimension(700,logHeight));
 	}
 
 	/**
