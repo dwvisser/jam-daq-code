@@ -349,7 +349,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		isCursorCommand = false;
 		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		display.update();
-
+		
+		//Reset rebin to 1
+		final Plot currentPlot = display.getPlot();
+		currentPlot.setBinWidth(1.0);		
+		
 		done();
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
