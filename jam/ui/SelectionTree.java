@@ -80,7 +80,7 @@ public class SelectionTree extends JPanel implements Observer {
 		Dimension dim;
 		dim=getMinimumSize();
 		dim.width=160;
-		//setMinimumSize(dim);
+		//setMaximumSize(dim);
 		setPreferredSize(dim);
 		setLayout(new BorderLayout());
 		

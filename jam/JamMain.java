@@ -96,7 +96,7 @@ public final class JamMain extends JFrame implements Observer {
 		display = new Display(console);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
-		splitCenter.setResizeWeight(0.5);
+		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		
 		contents.add(splitCenter, BorderLayout.CENTER);
@@ -113,7 +113,7 @@ public final class JamMain extends JFrame implements Observer {
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
-		splitTree.setResizeWeight(0.5);
+		splitTree.setResizeWeight(0.1);
 		contents.add(splitTree, BorderLayout.CENTER);		
 		/**/
 		/* operations to close window */
