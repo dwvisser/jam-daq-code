@@ -1,6 +1,7 @@
 package jam.plot;
 
 import jam.plot.color.ColorScale;
+import jam.plot.color.DiscreteColorScale;
 import jam.plot.color.GradientColorScale;
 import jam.plot.color.PlotColorMap;
 
@@ -70,9 +71,9 @@ class PlotGraphics  {
 
 	private FontMetrics fm;
 
-	private int numberColors;
+	//private int numberColors;
 
-	private int[] colorThresholds;
+	//private int[] colorThresholds;
 
 	private Tickmarks tm;
 
@@ -769,16 +770,19 @@ class PlotGraphics  {
 	 * @return <code>void</code>
 	 * @since Version 0.5
 	 */
-	void drawScale2d(Color[] colors) {
-		int lowerLimit = minCount;
-		int upperLimit = maxCount;
-		numberColors = colors.length;
-		colorThresholds = new int[numberColors];
-		colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
-				numberColors, plotLimits.getScale());
-		int textHeight = (fm.getAscent());
+	void drawScale2d(DiscreteColorScale colors) {
+		//int lowerLimit = minCount;
+		//int upperLimit = maxCount;
+		//numberColors = colors.length;
+		//colorThresholds = new int[numberColors];
+		/*colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
+				numberColors, plotLimits.getScale());*/
+		colors.setColorThresholds(minCount, maxCount);
+		final int [] colorThresholds=colors.getColorThresholds();
+		final int numberColors = colorThresholds.length;
+		final int textHeight = (fm.getAscent());
 		/* lowest threshold for color to be drawn */
-		String label = Integer.toString(lowerLimit);
+		String label = Integer.toString(minCount);
 		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
 				+ graphLayout.COLOR_SCALE_LABEL_OFFSET, viewBottom + textHeight / 2);
 		for (int k = 0; k < numberColors; k++) {
@@ -789,7 +793,7 @@ class PlotGraphics  {
 		}
 		/* draw colors on side */
 		for (int k = 0; k < numberColors; k++) {
-			g.setColor(colors[k]);
+			g.setColor(colors.getColorByIndex(k));
 			g.fillRect(viewRight + graphLayout.COLOR_SCALE_OFFSET, //horizontal
 					viewBottom - graphLayout.COLOR_SCALE_SIZE - k * graphLayout.COLOR_SCALE_SIZE, //vertical
 					graphLayout.COLOR_SCALE_SIZE, graphLayout.COLOR_SCALE_SIZE); //size
@@ -797,15 +801,19 @@ class PlotGraphics  {
 	}
 
 	void drawScale2d() {
-		ColorScale colors = new GradientColorScale(minCount, maxCount,
-				plotLimits.getScale());
+		final Scale scale=plotLimits.getScale();
+		final ColorScale colors = new GradientColorScale(minCount, maxCount,
+				scale);
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
 		setGraphicsFont(font);
 		int textHeight = (fm.getAscent());
-		numberColors = PlotColorMap.getNumberColors();
-		colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
-				numberColors, plotLimits.getScale());
+		/*colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
+				numberColors, plotLimits.getScale());*/
+		final DiscreteColorScale dcs=DiscreteColorScale.getScale(scale);
+		dcs.setColorThresholds(lowerLimit,upperLimit);
+		final int [] colorThresholds=dcs.getColorThresholds();
+		final int numberColors=colorThresholds.length;
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
 		g.drawString(label, viewRight + graphLayout.COLOR_SCALE_OFFSET + graphLayout.COLOR_SCALE_SIZE
@@ -850,20 +858,18 @@ class PlotGraphics  {
 	 * @since Version 0.5
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
-			int maxChanX, int maxChanY, Color[] colors) {
-		int minCounts = minCount;
-		int maxCounts = maxCount;
-
-		numberColors = colors.length;
-		colorThresholds = new int[numberColors];
-		colorThresholds = tm.getColorThresholds(minCounts, maxCounts,
-				numberColors, plotLimits.getScale());
-		//for data each point
+			int maxChanX, int maxChanY, DiscreteColorScale colors) {
+		//numberColors = colors.length;
+		//colorThresholds = new int[numberColors];
+		/*colorThresholds = tm.getColorThresholds(minCounts, maxCounts,
+				numberColors, plotLimits.getScale());*/
+		colors.setColorThresholds(minCount,maxCount);
+		/* for each bin */
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
 				final double count = counts[i][j];
-				//quickly check above lower limit
-				if (count > minCounts) {
+				/* quickly check if above lower limit */
+				if (count > minCount) {
 					/*
 					 * Constructing a color lookup array would be faster, but
 					 * this seems to draw fast enough.
@@ -872,24 +878,25 @@ class PlotGraphics  {
 					final int y = toViewVertLin(j);
 					final int channelWidth = toViewHorzLin(i + 1) - x;
 					final int channelHeight = y - toViewVertLin(j + 1);
-					paintChannel: for (int k = 0; k < numberColors; k++) {
-						//check for min counts first as these are most likely
-						if (count <= colorThresholds[k]) {
-							g.setColor(colors[k]);
-							// inline for speed
+					//paintChannel: for (int k = 0; k < numberColors; k++) {
+						/* check for min counts first as these are most likely */
+						//if (count <= colorThresholds[k]) {
+							final Color paint=colors.getColor(count);
+							g.setColor(paint);
+							/* inline for speed */
 							g.fillRect(x, y - channelHeight + 1, channelWidth,
 									channelHeight);
-							break paintChannel;
+							/*break paintChannel;
 						}
-					}
-					// go here on break;
-					//check if greater than all thresholds
-					if (count > colorThresholds[numberColors - 1]) {
+					}*/
+					/* go here on break. */
+					/* check if greater than all thresholds */
+					/*if (count > colorThresholds[numberColors - 1]) {
 						g.setColor(colors[numberColors - 1]);
 						g.fillRect(x, y - channelHeight + 1, channelWidth,
 								channelHeight);
-					}
-					//end of loop for each point
+					}*/
+					/* end of loop for each point */
 				}
 			}
 		}
