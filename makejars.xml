@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Jam Project" default="build">
+
+    <property name="build.dir" value="D:\jambuild" />
+    <property name="base.dir" value="C:\Documents and Settings\dwvisser\My Documents\Java Development\eclipse\workspace\Jam Project" />
+    
+    <target name="prepare">
+        <mkdir dir="${build.dir}" />
+    </target>
+    
+    <target name="jar">
+        <jar jarfile="${build.dir}/Jam.jar"
+            basedir="${base.dir}"
+            excludes="*.xml,*.jardesc,*.jar,jam\**\*.java,jam\**\*.html,.classpath,.project"
+        />    
+    </target>
+
+    <target name="srcjar">
+        <jar jarfile="${build.dir}/JamSrc.jar"
+            basedir="C:\Documents and Settings\dwvisser\My Documents\Java Development\eclipse\workspace\Jam Project"
+            includes="jam\**\*.java"
+        />    
+    </target>
+    
+    <target name="copy" depends="prepare">
+        <copy todir="${build.dir}" flatten="true" >
+            <fileset dir = "${base.dir}"
+                includes="*.jar,*.txt,*.html,help/config/*.ini,jam/nukeicon.gif" >
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="all" depends="copy,jar,srcjar" />
+        
+</project>
