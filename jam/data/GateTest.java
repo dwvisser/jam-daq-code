@@ -38,8 +38,8 @@ public class GateTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		h1 = new Histogram("h1", Histogram.ONE_DIM_INT, 100, "h1");
-		h2 = new Histogram("h2", Histogram.TWO_DIM_INT, 100, "h2");
+		h1 = new Histogram("h1", Histogram.Type.ONE_DIM_INT, 100, "h1");
+		h2 = new Histogram("h2", Histogram.Type.TWO_DIM_INT, 100, "h2");
 		g1 = new Gate("g1", h1);
 		g1.setLimits(10, 50);
 		g2 = new Gate("g2", h2);

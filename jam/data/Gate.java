@@ -367,7 +367,7 @@ public class Gate implements Serializable {
 	public double getArea() {
 		double sum = 0.0;
 		if (type == ONE_DIMENSION) {
-			if (histogram.getType() == Histogram.ONE_DIM_DOUBLE) {
+			if (histogram.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
 				final double[] counts = (double[]) histogram.getCounts();
 				for (int i = lowerLimit; i <= upperLimit; i++) {
 					sum += counts[i];
@@ -379,7 +379,7 @@ public class Gate implements Serializable {
 				}
 			}
 		} else { //2d
-			if (histogram.getType() == Histogram.TWO_DIM_INT) {
+			if (histogram.getType() == Histogram.Type.TWO_DIM_INT) {
 				final int[][] counts2d = (int[][]) histogram.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {
@@ -413,7 +413,7 @@ public class Gate implements Serializable {
 		double centroid = 0.0;
 		double area = 0.0;
 		if (type == ONE_DIMENSION) {
-			if (histogram.getType() == Histogram.ONE_DIM_INT) {
+			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] counts = (int[]) histogram.getCounts();
 				//sum up counts and weight
 				for (int i = lowerLimit; i <= upperLimit; i++) {
