@@ -16,16 +16,16 @@ public class GoodThread extends Thread {
 	 * The possible thread states for a <code>GoodThread</code>.
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public static class State{
-		private final int value;
-		private static final String [] modes = {"RUN","SUSPEND","STOP"};
+	public static class State {
+		private transient final int value;
+		private static final String [] MODES = {"RUN","SUSPEND","STOP"};
 		
 		private State (int val){
 			value=val;
 		}
 		
 		public String toString(){
-			return modes[value];
+			return MODES[value];
 		}
 		
 		/**
@@ -48,8 +48,8 @@ public class GoodThread extends Thread {
     public static final State SUSPEND = State.SUSPEND;
     public static final State STOP = State.STOP;
 
-    private State state = State.RUN;
-    private final Object stateLock=new Object();
+    private transient State state = State.RUN;
+    private transient final Object stateLock=new Object();
 
 	/**
 	 * Simply calls the superclass's constructor of the same signature.
@@ -63,18 +63,18 @@ public class GoodThread extends Thread {
 	 * Simply calls the superclass's constructor of the same signature.
 	 * We start with the state equal to <code>RUN</code>.
 	 */
-    public GoodThread(Runnable r){
-        super(r);
+    public GoodThread(Runnable runnable){
+        super(runnable);
     }
 
     /**
      * To stop, suspend, or restart a GoodThread, call this.
      *
-     * @param s <code>STOP, SUSPEND,</code> or <code>RUN</code>
+     * @param newState <code>STOP, SUSPEND,</code> or <code>RUN</code>
      */
-    public void setState(State s) {
+    public void setState(State newState) {
         synchronized (stateLock){
-			state = s;
+			state = newState;
 			if (state != State.SUSPEND) {
 				stateLock.notifyAll();//wake up thread
 			} 

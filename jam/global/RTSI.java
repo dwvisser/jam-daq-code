@@ -29,10 +29,10 @@ import javax.swing.JOptionPane;
  */
 public class RTSI {
 
-	static final String period = ".";
-	static final String classext = ".class";
-	static final String slash = "/";
-	static final ClassLoader defaultLoader = ClassLoader.getSystemClassLoader();
+	static final String PERIOD = ".";
+	static final String CLASS_EXT = ".class";
+	static final String SLASH = "/";
+	static final ClassLoader DEF_LOADER = ClassLoader.getSystemClassLoader();
 
 	/**
 	 * Display all the classes inheriting or implementing a given
@@ -135,7 +135,7 @@ public class RTSI {
 		final Set rval = new LinkedHashSet(); //preserves order of add()'s
 		try {
 			while (it.hasNext()) {
-				rval.add(defaultLoader.loadClass((String) (it.next())));
+				rval.add(DEF_LOADER.loadClass((String) (it.next())));
 			}
 		} catch (ClassNotFoundException e) {
 			errmessage.append(e.getMessage());
@@ -160,15 +160,15 @@ public class RTSI {
 	 * @return an unordered list of classes assignable as requested
 	 */
 	private static Set findClassNames(
-		String pckgname,
+		final String pckgname,
 		Class tosubclass,
 		boolean recurse) {
 		/* Code from JWhich
 		 * Translate the package name into an absolute path */
 		final SortedSet rval = new TreeSet();
-		String name = new String(pckgname); //copy
-		if (!name.startsWith(slash)) {
-			name = slash + name;
+		String name = pckgname; //copy
+		if (!name.startsWith(SLASH)) {
+			name = SLASH + name;
 		}
 		name = name.replace('.', '/');
 		final URL url = RTSI.class.getResource(name);
@@ -196,13 +196,13 @@ public class RTSI {
 				final File[] files = directory.listFiles();
 				for (int i = 0; i < files.length; i++) {
 					final String fname = files[i].getName();
-					if (fname.endsWith(classext)) {
+					if (fname.endsWith(CLASS_EXT)) {
 						final String classname =
 							filenameToClassname(fname, pckgname);
 						addToCollection(
 							classname,
 							tosubclass,
-							defaultLoader,
+							DEF_LOADER,
 							rval);
 						//} else if (fname.endsWith(".jar")) {
 						/* recursively add the results of the jar file? */
@@ -211,7 +211,7 @@ public class RTSI {
 						if (recurse && files[i].isDirectory()) {
 							rval.addAll(
 								findClassNames(
-									pckgname + period + files[i].getName(),
+									pckgname + PERIOD + files[i].getName(),
 									tosubclass,
 									true));
 						}
@@ -294,7 +294,7 @@ public class RTSI {
 			final ZipEntry entry = (ZipEntry) e.nextElement();
 			final String classname = jarEntryToClassname(entry, starts);
 			if (classname != null) {
-				addToCollection(classname, tosubclass, defaultLoader, rval);
+				addToCollection(classname, tosubclass, DEF_LOADER, rval);
 			}
 		}
 		return rval;
@@ -303,9 +303,9 @@ public class RTSI {
 	private static String jarEntryToClassname(ZipEntry entry, String starts) {
 		final String entryname = entry.getName();
 		String classname = null;
-		if (entryname.startsWith(starts) && entryname.endsWith(classext)) {
+		if (entryname.startsWith(starts) && entryname.endsWith(CLASS_EXT)) {
 			classname =
-				entryname.substring(0, entryname.length() - classext.length());
+				entryname.substring(0, entryname.length() - CLASS_EXT.length());
 			classname = classname.replace('/', '.');
 		}
 		return classname;
@@ -319,7 +319,7 @@ public class RTSI {
 	private static String filenameToClassname(String f, String pckg) {
 		final StringBuffer rval = new StringBuffer(pckg);
 		rval.append('.');
-		rval.append(f.substring(0, f.length() - classext.length()));
+		rval.append(f.substring(0, f.length() - CLASS_EXT.length()));
 		return rval.toString();
 	}
 
@@ -333,12 +333,12 @@ public class RTSI {
 	private static String fileToClassname(File f, String classpath) {
 		final String fullpath = f.getPath();
 		String temp =
-			fullpath.substring(0, fullpath.length() - classext.length());
+			fullpath.substring(0, fullpath.length() - CLASS_EXT.length());
 		if (temp.startsWith(classpath)) {
 			temp = temp.substring(classpath.length(), temp.length());
 		}
 		temp = temp.replace(File.separatorChar, '.');
-		if (temp.startsWith(period)) {
+		if (temp.startsWith(PERIOD)) {
 			temp = temp.substring(1);
 		}
 		return temp;
@@ -356,7 +356,7 @@ public class RTSI {
 	 */
 	public static Set find(File classpath, Class tosubclass) {
 		final Set rval = new LinkedHashSet(); //to guarantee order is preserved
-		ClassLoader loader = defaultLoader;
+		ClassLoader loader = DEF_LOADER;
 		URL url = null;
 		if (classpath != null) {
 			try {
@@ -438,7 +438,7 @@ public class RTSI {
 						loader));
 			}
 		} else { // we are only interested in .class files 
-			if (file.getName().endsWith(classext)) {
+			if (file.getName().endsWith(CLASS_EXT)) {
 				final String temp = fileToClassname(file, classpath);
 				try {
 					final Class cl = loader.loadClass(temp);

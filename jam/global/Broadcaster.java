@@ -11,10 +11,10 @@ import java.util.Observable;
  */
 public final class Broadcaster extends Observable {
 	
-	static private final Broadcaster broadcaster=new Broadcaster();
+	static private final Broadcaster INSTANCE=new Broadcaster();
 	
 	static public Broadcaster getSingletonInstance(){
-		return broadcaster;
+		return INSTANCE;
 	}
 	
 	private Broadcaster(){
@@ -31,9 +31,9 @@ public final class Broadcaster extends Observable {
      * object
      */
     public void broadcast(BroadcastEvent.Command command, Object param) {
-        Object broadcastEvent=new BroadcastEvent(command, param);
+        Object bEvent=new BroadcastEvent(command, param);
         setChanged();//necessary for next line to work
-        notifyObservers(broadcastEvent);//automatically calls clearChanged()
+        notifyObservers(bEvent);//automatically calls clearChanged()
     }
 
     /** 
