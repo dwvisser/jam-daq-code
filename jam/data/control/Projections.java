@@ -126,7 +126,11 @@ Observer {
         pchannel.add(tlim2);
         cdproject.add(pchannel);
 
+		//Buttons panel
+		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		cdproject.add(pButtons);
         JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
+        pButtons.add(pcontrol);
         bOK.setActionCommand("ok");
         bOK.addActionListener(this);
         pcontrol.add(bOK);
@@ -137,7 +141,6 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
-        cdproject.add(pcontrol);
 
         dproject.pack();
     }
@@ -392,7 +395,7 @@ Observer {
         }
         messageHandler.messageOutln("Project "+hfrom.getName().trim()+" to "+ name.trim()+" "+typeProj);
     }
-    
+
     private double [][] intToDouble(int [][] in){
 		double [][] rval = new double[in.length][in[0].length];
 		for (int i=0; i<in.length; i++){
