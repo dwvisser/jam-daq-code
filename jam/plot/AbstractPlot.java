@@ -249,9 +249,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			setColorMode(Boolean.valueOf(newValue).booleanValue());
 		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)) {
 			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
-		}
-			
+		}		
 	}
+	
 	/**
 	 * Plot has a valid histogram
 	 * @return
