@@ -16,11 +16,11 @@ import jam.global.CommandListenerException;
  */
 final class OpenSelectedHistogram extends AbstractCommand {
 	
-	private jam.io.hdf.OpenSelectedHistogram osh;
+	private jam.io.control.OpenSelectedHistogram osh;
 	
 	public void initCommand(){
 		putValue(NAME, "Open Additional Select Histograms\u2026");
-		osh=new jam.io.hdf.OpenSelectedHistogram(status.getFrame(), msghdlr);
+		osh=new jam.io.control.OpenSelectedHistogram(status.getFrame(), msghdlr);
 	}
 
 	/**

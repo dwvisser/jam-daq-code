@@ -1,7 +1,8 @@
-package jam.io.hdf;
+package jam.io.control;
 
 import jam.data.Histogram;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;

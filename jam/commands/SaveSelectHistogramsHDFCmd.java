@@ -1,7 +1,7 @@
 package jam.commands;
 
 import jam.global.CommandListenerException;
-import jam.io.hdf.SaveSelectedHistogram;
+import jam.io.control.SaveSelectedHistogram;
 
 /**
  * Save selected histograms to a file

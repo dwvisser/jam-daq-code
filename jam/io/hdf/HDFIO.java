@@ -1386,7 +1386,12 @@ public class HDFIO implements DataIO, JamHDFFields {
 		byte histNumType;
 
 		Object dataArray; //generic data array
+		
 		Object errorArray;
+		
+		public String getName() {
+			return name;
+		}
 	}
 
 }

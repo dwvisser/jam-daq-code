@@ -1,4 +1,4 @@
-package jam.io.hdf;
+package jam.io.control;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -6,6 +6,9 @@ import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 import jam.global.JamStatus;
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
+import jam.io.hdf.HDFIO.HistogramAttributes;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -211,7 +214,7 @@ public final class OpenSelectedHistogram {
 		Iterator iter = histAttributes.iterator(); 
 		while (iter.hasNext()) {
 			HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
-			histListModel.addElement(histAtt.name);				
+			histListModel.addElement(histAtt.getName());				
 		}
 		
 		histList.clearSelection();

@@ -2,6 +2,7 @@ package jam.commands;
 
 
 import jam.data.Group;
+import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
@@ -9,6 +10,9 @@ import jam.io.hdf.HDFileFilter;
 
 import java.awt.Frame;
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
+
 
 import javax.swing.JFileChooser;
 
@@ -18,7 +22,7 @@ import javax.swing.JFileChooser;
  * @author Ken Swartz
  *
  */
-public class SaveSortGroupHDFCmd extends AbstractCommand {
+public class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 
 	public void initCommand() {
 		putValue(NAME, "Save sort group as\u2026");
@@ -83,6 +87,20 @@ public class SaveSortGroupHDFCmd extends AbstractCommand {
 			throws CommandListenerException {
 		// TODO Auto-generated method stub
 
+	}
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=be.getCommand();
+		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
+			enable();
+		}
+	}
+	
+	private void enable(){
+		final SortMode mode=status.getSortMode();
+		setEnabled(mode==SortMode.OFFLINE 
+				|| mode==SortMode.ONLINE_DISK
+				|| mode==SortMode.ON_NO_DISK);		
 	}
 
 }

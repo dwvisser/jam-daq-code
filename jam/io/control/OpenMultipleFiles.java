@@ -1,4 +1,4 @@
-package jam.io.hdf;
+package jam.io.control;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -7,6 +7,8 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 import jam.io.FileOpenMode;
+import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFIO.HistogramAttributes;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
@@ -276,7 +278,7 @@ public class OpenMultipleFiles {
 		Iterator iter = histAttributes.iterator(); 
 		while (iter.hasNext()) {
 			HDFIO.HistogramAttributes histAtt= (HDFIO.HistogramAttributes)iter.next();
-			histListModel.addElement(histAtt.name);				
+			histListModel.addElement(histAtt.getName());				
 		}
 		
 		histList.clearSelection();
