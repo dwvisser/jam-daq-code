@@ -64,7 +64,7 @@
             <filterset>
     			<filter token="MAJOR" value="1" />
     			<filter token="MINOR" value="5" />
-    			<filter token="SUBMINOR" value="1" />
+    			<filter token="SUBMINOR" value="2" />
             </filterset>
 		</copy>
 		<copy todir="${copy.dir}">
