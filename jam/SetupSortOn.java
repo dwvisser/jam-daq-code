@@ -141,7 +141,6 @@ class SetupSortOn implements ActionListener, ItemListener {
         defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
 		defaultLog = JamProperties.getPropString(JamProperties.LOG_PATH);
 		File f=new File(defaultLog);
-		boolean b=f.exists();
         String storageType = JamProperties.getPropString(JamProperties.EVENT_WRITER);
         if (storageType.equals(JamProperties.STORE_EVENTS_LOCALLY)) {
             storeEventsLocally=true;
@@ -459,9 +458,6 @@ class SetupSortOn implements ActionListener, ItemListener {
                     //unlock sort mode
                     lockMode(false);
                     jamConsole.closeLogFile();
-                } else {
-                    //System.err.println("Error: should not get checkLock true [SetupSortOff]");
-                    //In Swing, it is now possible to get to this point.
                 }
             } else if (ie.getItemSelectable()==ctape) {
                 setTapeMode(ctape.isSelected());
@@ -761,6 +757,8 @@ class SetupSortOn implements ActionListener, ItemListener {
             textPathHist.setBackground(Color.lightGray);
             textPathData.setEditable(false);
             textPathData.setBackground(Color.lightGray);
+            textPathLog.setEditable(false);
+            textPathLog.setBackground(Color.lightGray);
             textSortInterval.setEditable(false);
             textSortInterval.setBackground(Color.lightGray);
             bok.setEnabled(false);
@@ -780,6 +778,8 @@ class SetupSortOn implements ActionListener, ItemListener {
             textPathHist.setBackground(Color.white);
             textPathData.setEditable(true);
             textPathData.setBackground(Color.white);
+            textPathLog.setEditable(true);
+            textPathLog.setBackground(Color.white);
             textSortInterval.setEditable(true);
             textSortInterval.setBackground(Color.white);
             bok.setEnabled(true);
