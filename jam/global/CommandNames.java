@@ -11,6 +11,12 @@ public interface CommandNames {
 	
 	/** Open a hdf file */
 	public static final String OPEN_HDF = "open";
+
+	/** Save to hdf file */
+	public static final String SAVE_HDF = "save";
+	
+	/** Save as to a hdf */ 
+	public static final String SAVE_AS_HDF = "saveas";	
 	
 	/** clear all data */
 	public static final String NEWCLEAR ="clear";

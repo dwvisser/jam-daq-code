@@ -32,6 +32,8 @@ public class JamCmdManager implements CommandListener {
 		//Commands to add to manager
 		//could be read from a file
 		cmdMap.put(CommandNames.OPEN_HDF, "OpenHDFCmd");
+		cmdMap.put(CommandNames.SAVE_HDF, "SaveHDFCmd");
+		cmdMap.put(CommandNames.SAVE_AS_HDF, "SaveAsHDFCmd");
 		cmdMap.put("shownewhist", "ShowDialogNewHistogramCmd");
 		cmdMap.put("exit", "ShowDialogExitCmd");
 		cmdMap.put("newclear", "FileNewClearCmd");
