@@ -144,12 +144,12 @@ class Plot1d extends Plot {
 	}
 
 	/**
-	 * Mark Area
+	 * Mark Area. The y-values are ignored.
+	 * 
 	 * @param minChanX the lower x channel
 	 * @param minchanY the lower y channel
 	 * @param maxChanX the upper x channel
 	 * @param maxchanY the upper y channel
-	 * dont use y values
 	 */
 	public void markArea(Point p1, Point p2) {
 		synchronized (this) {
