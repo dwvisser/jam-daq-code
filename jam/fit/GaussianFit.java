@@ -2,7 +2,6 @@
  *
  */
 package jam.fit;
-import java.util.Vector;
 
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian peak with a background..
@@ -151,7 +150,7 @@ public class GaussianFit extends NonLinearFit {
 
 		orderParameters();
 
-		int i, minCH, maxCH, peakHigh;
+		int i, minCH, maxCH;
 		double area, width, centroid, distance, sigma, variance, backLevel;
 
 		minCH = getParameter(FIT_LOW).getIntValue();
