@@ -179,13 +179,13 @@ class PlotGraphics  {
 		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD, (int) graphLayout.SCREEN_FONT_SIZE);
 		printFont = new Font(graphLayout.FONT_CLASS, Font.PLAIN, graphLayout.PRINT_FONT_SIZE);
 		
-		setFont(screenFont);
+		setGraphicsFont(screenFont);
 	}
 
 	/**
 	 * Set the font used on the plot.
 	 */
-	final synchronized void setFont(Font f) {
+	final synchronized void setGraphicsFont(Font f) {
 		font = f;
 		if (g != null) {
 			g.setFont(f);
@@ -282,7 +282,7 @@ class PlotGraphics  {
 		g = (Graphics2D) graph;
 		g.setRenderingHints(RH);
 		if (fm == null) {
-			setFont(font);
+			setGraphicsFont(font);
 		}
 	}
 
@@ -308,15 +308,15 @@ class PlotGraphics  {
 		
 		yPos=viewTop - graphLayout.TITLE_OFFSET_TOP;
 		if (side == PlotGraphics.TOP) {
-			setFont(font.deriveFont(graphLayout.TITLE_SCREEN_SIZE));
+			setGraphicsFont(font.deriveFont(graphLayout.TITLE_SCREEN_SIZE));
 			g.drawString(title, xPos, yPos);
-			setFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
+			setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
 		}
 	}
 
 	void drawNumber(int number, int[] overlayNumbers) {
 		final String s = Integer.toString(number);
-		setFont(font);
+		setGraphicsFont(font);
 		int width = fm.stringWidth(s);
 		int xNext = this.viewLeft -graphLayout. TITLE_OFFSET_TOP - width;
 		final int y = viewTop - graphLayout.TITLE_OFFSET_TOP;
@@ -796,7 +796,7 @@ class PlotGraphics  {
 				plotLimits.getScale());
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
-		setFont(font);
+		setGraphicsFont(font);
 		int textHeight = (fm.getAscent());
 		numberColors = PlotColorMap.getNumberColors();
 		colorThresholds = tm.getColorThresholds(lowerLimit, upperLimit,
@@ -1188,7 +1188,7 @@ class PlotGraphics  {
 	void drawPeakLabels(double[][] peaks) {
 		int y1; //bottom of line
 		Color initColor = g.getColor();
-		setFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
+		setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
 		g.setColor(PlotColorMap.peakLabel);
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
