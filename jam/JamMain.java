@@ -32,7 +32,7 @@ public class JamMain extends JFrame {
 	/**
 	 * Sort Mode--Set to sort online data to tape.
 	 */
-	static public final int ONLINE_TAPE = 2;
+	static public final int ONLINE_NODISK = 2;
 
 	/**
 	 * Sort Mode--Set to sort offline data from disk.
@@ -42,7 +42,7 @@ public class JamMain extends JFrame {
 	/**
 	 * Sort Mode--Set to sort offline data from tape.
 	 */
-	static public final int OFFLINE_TAPE = 4;
+	//static public final int OFFLINE_TAPE = 4;
 
 	/**
 	 * Sort Mode--Acting as a client to a remote Jam process.
@@ -109,7 +109,7 @@ public class JamMain extends JFrame {
 			}
 			
 			public boolean isOnLine(){
-				return ((sortMode == ONLINE_TAPE) || (sortMode == ONLINE_DISK));
+				return (sortMode == ONLINE_DISK);
 			}
 		});
 		/* class to distrute events to all listeners */
@@ -207,14 +207,13 @@ public class JamMain extends JFrame {
 	public void setSortMode(int mode) throws JamException {
 		final StringBuffer title=new StringBuffer("Jam - ");
 		final String disk="disk";
-		final String tape="tape";
 		if (!((mode == NO_SORT) || (mode == FILE))) {
 			boolean error=true;
 			final StringBuffer etext=new StringBuffer(
 			"Can't setup, setup is locked for ");
-			if (sortMode == ONLINE_DISK || sortMode == ONLINE_TAPE) {
+			if (sortMode == ONLINE_DISK) {
 				etext.append("online");
-			} else if (sortMode == OFFLINE_DISK || sortMode == OFFLINE_TAPE) {
+			} else if (sortMode == OFFLINE_DISK) {
 				etext.append("offline");
 			} else if (sortMode == REMOTE) {
 				etext.append("remote");
@@ -229,22 +228,24 @@ public class JamMain extends JFrame {
 			sortMode = mode;
 		}
 		menubar.setSortMode(mode);
-		if (mode == ONLINE_DISK || mode == ONLINE_TAPE) {
+		if (mode == ONLINE_DISK || mode==ONLINE_NODISK) {
 			setRunState(RunState.ACQ_OFF);
-			title.append("Online Sorting TO ");
+			title.append("Online Sorting");
 			if (mode == ONLINE_DISK) {
-				this.setTitle(title.append(disk).toString());
-			} else {
+				title.append(" TO ").append(disk);
+			} /*else {
 				this.setTitle(title.append(tape).toString());
-			}
-		} else if (mode == OFFLINE_DISK || mode == OFFLINE_TAPE) {
+			}*/
+			setTitle(title.toString());
+		} else if (mode == OFFLINE_DISK) {
 			setRunState(RunState.ACQ_OFF);
-			title.append("Offline Sorting FROM ");
+			title.append("Offline Sorting");
 			if (mode == OFFLINE_DISK) {
-				this.setTitle(title.append(disk).toString());
-			} else {
+				title.append(" FROM ").append(disk);
+			} /*else {
 				this.setTitle(title.append(tape).toString());
-			}
+			}*/
+			this.setTitle(title.toString());
 		} else if (mode == REMOTE) { //remote display
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
