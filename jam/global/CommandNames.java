@@ -116,7 +116,11 @@ public interface CommandNames {
 	
 	/** Import an XSYS file */
 	String IMPORT_XSYS="importxsys";
+	
+	/** Open file with Yale CAEN scalers */
+	String OPEN_SCALERS_YALE_CAEN ="openscalers";
 
+	
 	/** Print the displayed plot */
 	String PRINT="print";
 	

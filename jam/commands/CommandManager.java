@@ -77,6 +77,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(IMPORT_SPE, ImportRadware.class);
 		cmdMap.put(IMPORT_XSYS, ImportXSYS.class);
 		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
+		cmdMap.put(OPEN_SCALERS_YALE_CAEN, OpenScalersYaleCAEN.class);		
+		
 		cmdMap.put(DELETE_HISTOGRAM, DeleteHistogram.class);
 		cmdMap.put(HELP_ABOUT, ShowDialogAbout.class);
 		cmdMap.put(HELP_LICENSE, ShowDialogLicense.class);
