@@ -14,35 +14,23 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public class Vdata extends DataObject {
+public final class Vdata extends DataObject {
 
-	VdataDescription description;
+	private VdataDescription description;
 
 	/**
 	 * The vector of fields.  Contains the useful java representations of the objects.
 	 */
-	Object[][] cells;
+	private Object[][] cells;
 
-	/**
-	 * An <code>order[]</code> size array of objects corresponding to the appropriate primitive type.
-	 * <dl>
-	 * <dt>int</dt><dd>Integer objects</dd>
-	 * <dt>short</dt><dd>Short objects</dd>
-	 * <dt>char</dt><dd>Character objects</dd>
-	 * </dl>
-	 */
-	Object[] data;
-
-	int nvert;
-	short[] order;
-	short nfields;
-	short ivsize;
-	short[] types;
-	short[] offsets;
-	/**
-	 * Constructor
-	 */
-	public Vdata(HDFile fi, VdataDescription vdd) {
+	private int nvert;
+	private short[] order;
+	private short nfields;
+	private short ivsize;
+	private short[] types;
+	private short[] offsets;
+	
+	Vdata(HDFile fi, VdataDescription vdd) {
 		super(fi, DFTAG_VS); //sets tag
 		description = vdd;
 		nfields = description.getNumFields();
@@ -56,10 +44,7 @@ public class Vdata extends DataObject {
 		setRef(description.getRef());
 	}
 	
-	/**
-	 * Constructor.
-	 */
-	public Vdata(HDFile hdf, byte[] data, short t, short reference) {
+	Vdata(HDFile hdf, byte[] data, short t, short reference) {
 		super(hdf, data, t, reference);
 		description = (VdataDescription) (hdf.getObject(DFTAG_VH, reference));
 		description.interpretBytes();
@@ -72,7 +57,7 @@ public class Vdata extends DataObject {
 		offsets = description.getDataOffsets();
 	}
 
-	public void addInteger(int column, int row, int indata) {
+	void addInteger(int column, int row, int indata) {
 		Integer temp;
 
 		if (description.getType(column) == VdataDescription.DFNT_INT32) {
@@ -83,48 +68,7 @@ public class Vdata extends DataObject {
 		}
 	}
 
-	public void addIntegers(int column, int row, int[] indata) {
-		Integer[] temp;
-		int i;
-
-		if (description.getType(column) == VdataDescription.DFNT_INT32) {
-			temp = new Integer[indata.length];
-			for (i = 0; i < indata.length; i++) {
-				temp[i] = new Integer(indata[i]);
-			}
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-
-	public void addShort(int column, int row, short indata) {
-		Short temp;
-
-		if (description.getType(column) == VdataDescription.DFNT_INT16) {
-			temp = new Short(indata);
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-
-	public void addShorts(int column, int row, short[] indata) {
-		Short[] temp;
-		int i;
-
-		if (description.getType(column) == VdataDescription.DFNT_INT16) {
-			temp = new Short[indata.length];
-			for (i = 0; i < indata.length; i++) {
-				temp[i] = new Short(indata[i]);
-			}
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-
-	public void addFloat(int column, int row, float indata) {
+	void addFloat(int column, int row, float indata) {
 		Float temp;
 
 		if (description.getType(column) == VdataDescription.DFNT_FLT32) {
@@ -135,51 +79,7 @@ public class Vdata extends DataObject {
 		}
 	}
 
-	public void addFloats(int column, int row, float[] indata) {
-		Float[] temp;
-		int i;
-
-		if (description.getType(column) == VdataDescription.DFNT_FLT32) {
-			temp = new Float[indata.length];
-			for (i = 0; i < indata.length; i++) {
-				temp[i] = new Float(indata[i]);
-			}
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-	/**
-	 * Add a doubles
-	 */
-	public void addDouble(int column, int row, double indata) {
-		Double temp;
-		if (description.getType(column) == VdataDescription.DFNT_DBL64) {
-			temp = new Double(indata);
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-	/**
-	 * Add an array of doubles
-	 */
-	public void addDoubles(int column, int row, double[] indata) {
-		Double[] temp;
-		int i;
-
-		if (description.getType(column) == VdataDescription.DFNT_DBL64) {
-			temp = new Double[indata.length];
-			for (i = 0; i < indata.length; i++) {
-				temp[i] = new Double(indata[i]);
-			}
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-
-	public void addChars(int column, int row, String indata) {
+	void addChars(int column, int row, String indata) {
 		if (description.getType(column) == VdataDescription.DFNT_CHAR8) {
 			addCell(column, row, indata);
 		} else { //uh oh... not right type
@@ -187,28 +87,11 @@ public class Vdata extends DataObject {
 		}
 	}
 
-	public void addChar(int column, int row, char indata) {
-		Character temp;
-
-		if (description.getType(column) == VdataDescription.DFNT_CHAR8) {
-			temp = new Character(indata);
-			addCell(column, row, temp);
-		} else { //uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column " + column + "!");
-		}
-	}
-
-	public void addCell(int column, int row, Object[] indata) {
+	void addCell(int column, int row, Object indata) {
 		cells[column][row] = indata;
 	}
-
-	public void addCell(int column, int row, Object indata) {
-		cells[column][row] = indata;
-	}
-	/**
-	 *
-	 */
-	public void interpretBytes() {
+	
+	protected void interpretBytes() {
 		int row;
 
 		for (int col = 0; col < nfields; col++) {
@@ -267,7 +150,7 @@ public class Vdata extends DataObject {
 	 * The workhorse of this method is calls made to the <it>protected</it>
 	 * method <code>getBytes(row,col)</code>.
 	 */
-	public void refreshBytes() {
+	void refreshBytes() {
 		final int numBytes = nvert * ivsize;
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
 		final DataOutputStream dos = new DataOutputStream(baos);
@@ -284,7 +167,7 @@ public class Vdata extends DataObject {
 		bytes = baos.toByteArray();
 	}
 
-	/**
+	/* non-javadoc:
 	 * Returns the byte representation for the cell indicated, 
 	 * assuming that an object resides at that cell
 	 * already.
@@ -292,7 +175,7 @@ public class Vdata extends DataObject {
 	 * @param	row	record to retrieve from
 	 * @param	col	column in record to retreive from
 	 */
-	protected byte[] getBytes(int row, int col) {
+	private byte[] getBytes(int row, int col) {
 
 		int numBytes;
 		byte[] tempOut;
@@ -416,7 +299,13 @@ public class Vdata extends DataObject {
 	}
 
 	/**
-	 * Get the String in the specified cell.  Of course, there better actually be a String there!
+	 * Get the <code>String</code> in the specified cell.  Of course, there better actually 
+	 * be an <code>String</code> there!
+	 * 
+	 * @param row of cell
+	 * @param col column of cell
+	 * @return <code>String</code> residing at cell
+	 * @throws IllegalStateException if cell doesn't contain an <code>String</code>
 	 */
 	public String getString(int row, int col) {
 		int location;
@@ -446,7 +335,13 @@ public class Vdata extends DataObject {
 	}
 
 	/**
-	 * Get the Integer in the specified cell.  Of course, there better actually be an Integer there!
+	 * Get the <code>Integer</code> in the specified cell.  Of course, there better actually 
+	 * be an <code>Integer</code> there!
+	 * 
+	 * @param row of cell
+	 * @param col column of cell
+	 * @return <code>Integer</code> residing at cell
+	 * @throws IllegalStateException if cell doesn't contain an <code>Integer</code>
 	 */
 	public Integer getInteger(int row, int col) {
 		int location;
@@ -486,7 +381,7 @@ public class Vdata extends DataObject {
 		return out;
 	}
 	
-	public Short getShort(int row, int col) {
+	private Short getShort(int row, int col) {
 		Short rval = null;
 		if (types[col] == VdataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
@@ -519,10 +414,10 @@ public class Vdata extends DataObject {
 		return rval;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get the float in the specified cell.  Of course, there'd better actually be a float there!
 	 */
-	public Float getFloat(int row, int col) {
+	Float getFloat(int row, int col) {
 		int location;
 		int length = 4;
 		byte[] temp;
@@ -560,10 +455,10 @@ public class Vdata extends DataObject {
 		return out;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get the double in the specified cell.  Of course, there'd better actually be a float there!
 	 */
-	public Double getDouble(int row, int col) {
+	private Double getDouble(int row, int col) {
 		int location;
 		int length = 8;
 		byte[] temp;
@@ -601,48 +496,33 @@ public class Vdata extends DataObject {
 		return out;
 	}
 
-	/**
-	 * Returns the offset in the in the byte array to interpret when constructing the specified cell.
-	 * 
-	 * @param	row	record to seek
-	 * @param	col	element in record to seek
-	 */
-	protected int getCellOffset(int row, int col) {
-		return row * ivsize + offsets[col];
-	}
-
-	/**
+	/* non-javadoc:
 	 * short to array of bytes
 	 */
 	private byte[] shortToBytes(short s) {
-		byte[] out = new byte[2];
-
+		final byte[] out = new byte[2];
 		out[0] = (byte) ((s >>> 8) & 0xFF);
 		out[1] = (byte) ((s >>> 0) & 0xFF);
-
 		return out;
 	}
 
-	/**
+	/* non-javadoc:
 	 * int to array of bytes
 	 */
 	private byte[] intToBytes(int i) {
-		byte[] out = new byte[4];
-
+		final byte[] out = new byte[4];
 		out[0] = (byte) ((i >>> 24) & 0xFF);
 		out[1] = (byte) ((i >>> 16) & 0xFF);
 		out[2] = (byte) ((i >>> 8) & 0xFF);
 		out[3] = (byte) ((i >>> 0) & 0xFF);
-
 		return out;
 	}
 
-	/**
+	/* non-javadoc:
 	 * long to array of bytes
 	 */
 	private byte[] longToBytes(long l) {
-		byte[] out = new byte[8];
-
+		final byte[] out = new byte[8];
 		out[0] = (byte) ((l >>> 56) & 0xFF);
 		out[1] = (byte) ((l >>> 48) & 0xFF);
 		out[2] = (byte) ((l >>> 40) & 0xFF);
@@ -651,40 +531,23 @@ public class Vdata extends DataObject {
 		out[5] = (byte) ((l >>> 16) & 0xFF);
 		out[6] = (byte) ((l >>> 8) & 0xFF);
 		out[7] = (byte) ((l >>> 0) & 0xFF);
-
 		return out;
 	}
 
-	/**
-	 * 
-	 */
 	private byte[] floatToBytes(float f) {
-		int tempInt = Float.floatToIntBits(f);
+		final int tempInt = Float.floatToIntBits(f);
 		return intToBytes(tempInt);
 	}
-	/**
-	 *
-	 */
+
 	private byte[] doubleToBytes(double d) {
-		long tempLong = Double.doubleToLongBits(d);
+		final long tempLong = Double.doubleToLongBits(d);
 		return longToBytes(tempLong);
 	}
-	/**
-	 *
-	 */
+
 	private byte[] charToBytes(char c) {
-		byte out[] = new byte[1];
+		final byte out[] = new byte[1];
 		out[0] = (byte) c;
-		//out = new byte [1];			
-		//numBytes=1;
-		//baos = new ByteArrayOutputStream(numBytes);
-		//dos = new DataOutputStream(baos);
-		//char [] carray = new char[1];
-		//carray [0] = ((Character)(cells[col][row])).charValue();
-		//dos.writeBytes(new String(carray));
-		//out=baos.toByteArray();
 		return out;
 
 	}
-
 }
