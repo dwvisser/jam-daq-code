@@ -629,8 +629,9 @@ abstract class Plot extends JPanel {
 		this.setBackground(PlotColorMap.background);
 		viewSize = getSize();
 		graph.update(g, viewSize, plotLimits);
-		//give graph all pertinent info
-		//draw outline, tickmarks, labels, and title
+		/* give graph all pertinent info, draw outline, tickmarks, 
+		 * labels, and title
+		 */
 		if (this.currentHist != null) {
 			paintHeader(g);
 			if (binWidth > currentHist.getSizeX()){
@@ -648,9 +649,6 @@ abstract class Plot extends JPanel {
 			if (displayingFit) {
 				paintFit(g);
 			}
-			/*if (selectingArea) {
-				paintSelectingArea(g);
-			}*/			
 			if (markArea) {
 				paintMarkArea(g);
 			}
