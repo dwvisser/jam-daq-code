@@ -1,9 +1,6 @@
 package jam.sort;
 import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
-import java.net.*;
 import jam.sort.stream.*;
 import jam.global.*;
 

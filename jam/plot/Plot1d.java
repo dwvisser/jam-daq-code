@@ -1,17 +1,13 @@
-/*
- */
 package jam.plot;
 import java.awt.*;
 import java.util.*;
-import jam.global.*;
 import jam.data.*;
 
 /**
- *  Plots a 1-dimensional histogram.
+ * Plots a 1-dimensional histogram.
  *
  * @see jam.plot.Plot
- *
- * Author Ken Swartz
+ * @author Ken Swartz
  */
 class Plot1d extends Plot  {
 

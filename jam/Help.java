@@ -13,8 +13,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import java.io.*;
 
-import javax.help.*;
-
 /**
  * Help shows the program about
  *

@@ -4,7 +4,6 @@ package jam.data.control;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
 import java.text.NumberFormat;
 import jam.global.*;
 import jam.util.*;

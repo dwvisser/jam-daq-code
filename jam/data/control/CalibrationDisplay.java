@@ -3,7 +3,6 @@
 package jam.data.control;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.text.NumberFormat;
 import jam.global.*;
 import jam.data.*;

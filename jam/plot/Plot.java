@@ -1,11 +1,7 @@
-/*
- */
 package jam.plot;
 import java.awt.*;
 import javax.swing.*;
 import java.util.*;
-import jam.global.*;
-import java.text.*;
 import jam.data.*;
 /**
  * Abstract class for displayed plots.

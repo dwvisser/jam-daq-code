@@ -1,6 +1,4 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 import jam.data.Histogram;
 
@@ -8,7 +6,7 @@ import jam.data.Histogram;
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class ScientificDataDimension extends DataObject {

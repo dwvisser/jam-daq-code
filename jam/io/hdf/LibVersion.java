@@ -1,6 +1,4 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 import jam.util.*;
 
@@ -9,7 +7,7 @@ import jam.util.*;
  * 4.1r2.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class LibVersion extends DataObject {

@@ -1,6 +1,4 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 
 /**
@@ -9,11 +7,10 @@ import java.io.*;
  * encoding of numbers and characters.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class JavaMachineType extends DataObject {
-
 
     /**
      * BigEndian 32 bit Sun architecture output, not coincidentally the way Sun chose to have

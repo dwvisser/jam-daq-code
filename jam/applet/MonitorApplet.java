@@ -5,20 +5,15 @@ import java.applet.Applet;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
 import java.rmi.*;
-import jam.global.*;
-import jam.util.*;
 import jam.data.control.*;
 import jam.data.*;
-import jam.*;
+
 /**
- * An applet to allow remote viewing of Jam Histograms
+ * An applet to allow remote viewing of Jam Monitors.
  *
  * @author Ken Swartz
  * @version 0.5
- *
  */
 public class MonitorApplet
 	extends Applet

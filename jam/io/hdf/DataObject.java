@@ -1,11 +1,10 @@
 package jam.io.hdf;
 
-import java.util.*;
 /**
  * Abstract class to represent a generic HDF data object.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public abstract class DataObject {

@@ -1,5 +1,4 @@
 package jam.sort;
-import java.io.*;
 
 /**
  * <code>RingBuffer</code> is a list of buffers which

@@ -1,6 +1,4 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 
 /**
@@ -8,7 +6,7 @@ import java.io.*;
  * the contents of the file.
  *
  * @version	0.5 December 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class FileDescription extends DataObject {

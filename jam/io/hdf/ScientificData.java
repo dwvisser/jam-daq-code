@@ -1,13 +1,11 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 
 /**
  * Class to represent an HDF <em>Scientific Data</em> data object.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class ScientificData extends DataObject {

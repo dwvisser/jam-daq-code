@@ -3,7 +3,6 @@ import java.applet.Applet;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 import java.rmi.*;
 import jam.global.*;

@@ -1,13 +1,11 @@
 package jam.io.hdf;
-
-import java.util.*;
 import java.io.*;
 
 /**
  * Class to represent an HDF <em>Scientific Data Dimension</em> data object.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
 public class ScientificDataScales extends DataObject {
 

@@ -1,11 +1,9 @@
-/*
- */
 package jam.plot;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
 import jam.global.*;
-import jam.data.*;
+
 /**
  * Class the does the actions on plots. Receives commands from buttons and command
  * line. Performs action by performing command on plot, plot1d and plot2d.

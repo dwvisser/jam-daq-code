@@ -3,7 +3,6 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 import jam.util.*;
-import jam.io.*;
 import jam.global.RunInfo;
 
 /**

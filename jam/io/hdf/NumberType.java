@@ -1,7 +1,5 @@
 package jam.io.hdf;
 
-import java.util.*;
-
 /**
  * Class to represent a 32-bit java int HDF <em>NumberType</em> data object.
  * When constructed with argument <code>NumberType.INT</code>, creates the object indicating
@@ -9,7 +7,7 @@ import java.util.*;
  * creates the object indicating <code>double</code> primitives.
  *
  * @version	0.5 November 98
- * @author 	Dale Visser
+ * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
 public class NumberType extends DataObject {

@@ -1,6 +1,5 @@
 package jam.sort.stream;
 import java.io.*;
-import java.util.*;
 import jam.global.*;
 
 /**

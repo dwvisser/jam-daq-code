@@ -1,9 +1,6 @@
-/*
- */
 package jam.plot;
-import java.util.*;
-import jam.global.*;
 import jam.data.Gate;
+
 /**
  * This interface for the display package 
  * It is implemented by <code>Display</code>.

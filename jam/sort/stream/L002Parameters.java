@@ -1,14 +1,12 @@
 package jam.sort.stream;
-import java.io.*;
-import java.util.*;
+
 /**
- * Parameters for L002 ORNL formatted data 
+ * Parameters for L002 ORNL formatted data. 
  *
  * @version	0.5, 0.9
- * @author 	Dale Visser
+ * @author 	<a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-
 public interface L002Parameters {
 
     //stream markers
