@@ -38,24 +38,24 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 			setMinCounts(min);
 		}
 		logScale = (scale == Scale.LOG);
-		colorPrefs.addPreferenceChangeListener(new PreferenceChangeListener() {
+		COLOR_PREFS.addPreferenceChangeListener(new PreferenceChangeListener() {
 			public void preferenceChange(PreferenceChangeEvent pce) {
 				final String key = pce.getKey();
 				if (!key.equals(ColorPrefs.SMOOTH_COLOR_SCALE)) {
 					final double newValue = Double.parseDouble(pce
 							.getNewValue());
 					if (ColorPrefs.ABLUE.equals(key)) {
-						ABLUE = newValue;
+						blueSpread = newValue;
 					} else if (ColorPrefs.AGREEN.equals(key)) {
-						AGREEN = newValue;
+						greenSpread = newValue;
 					} else if (ColorPrefs.ARED.equals(key)) {
-						ARED = newValue;
+						redSpread = newValue;
 					} else if (ColorPrefs.X0B.equals(key)) {
-						X0B = newValue;
+						blueCenter = newValue;
 					} else if (ColorPrefs.X0R.equals(key)) {
-						X0R = newValue;
+						redCenter = newValue;
 					} else if (ColorPrefs.X0G.equals(key)) {
-						X0G = newValue;
+						greenCenter = newValue;
 					}
 				}
 			}
@@ -115,22 +115,22 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 		return normValue;
 	}
 
-	private double X0R = colorPrefs.getDouble(ColorPrefs.X0R,0.8);
+	private transient double redCenter = COLOR_PREFS.getDouble(ColorPrefs.X0R,0.8);
 
-	private double X0G = colorPrefs.getDouble(ColorPrefs.X0G,0.6);
+	private transient double greenCenter = COLOR_PREFS.getDouble(ColorPrefs.X0G,0.6);
 
-	private double X0B = colorPrefs.getDouble(ColorPrefs.X0B,0.2);
+	private transient double blueCenter = COLOR_PREFS.getDouble(ColorPrefs.X0B,0.2);
 
-	private double ARED = colorPrefs.getDouble(ColorPrefs.ARED,0.25);
+	private transient double redSpread = COLOR_PREFS.getDouble(ColorPrefs.ARED,0.25);
 
-	private double AGREEN = colorPrefs.getDouble(ColorPrefs.AGREEN,0.16);
+	private transient double greenSpread = COLOR_PREFS.getDouble(ColorPrefs.AGREEN,0.16);
 
-	private double ABLUE = colorPrefs.getDouble(ColorPrefs.ABLUE,0.09);
+	private transient double blueSpread = COLOR_PREFS.getDouble(ColorPrefs.ABLUE,0.09);
 
-	private Color returnRGB(double x) {
-		int red = (int) (255 * Math.exp(-(x - X0R) * (x - X0R) / ARED));
-		int green = (int) (255 * Math.exp(-(x - X0G) * (x - X0G) / AGREEN));
-		int blue = (int) (255 * Math.exp(-(x - X0B) * (x - X0B) / ABLUE));
+	private Color returnRGB(double level) {
+		int red = (int) (255 * Math.exp(-(level - redCenter) * (level - redCenter) / redSpread));
+		int green = (int) (255 * Math.exp(-(level - greenCenter) * (level - greenCenter) / greenSpread));
+		int blue = (int) (255 * Math.exp(-(level - blueCenter) * (level - blueCenter) / blueSpread));
 		return new Color(red, green, blue);
 	}
 
