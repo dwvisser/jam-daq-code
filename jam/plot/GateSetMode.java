@@ -13,30 +13,32 @@ class GateSetMode {
 	/**
 	 * settting a new gate
 	 */
-	public final static GateSetMode GATE_NEW = new GateSetMode(0);
+	final static GateSetMode GATE_NEW = new GateSetMode(0);
 
 	/**
 	 * cancel the setting of a gate
 	 */
-	public final static GateSetMode GATE_CANCEL = new GateSetMode(1);
+	final static GateSetMode GATE_CANCEL = new GateSetMode(1);
 
 	/**
 	 * continue setting gate
 	 */
-	public final static GateSetMode GATE_CONTINUE = new GateSetMode(2);
+	final static GateSetMode GATE_CONTINUE = new GateSetMode(2);
+	
 	/**
 	 * add a point to setting gate
 	 */
-	public final static GateSetMode GATE_ADD = new GateSetMode(3);
+	final static GateSetMode GATE_ADD = new GateSetMode(3);
+	
 	/**
 	 * add a point to setting gate
 	 */
-	public final static GateSetMode GATE_REMOVE = new GateSetMode(4);
+	final static GateSetMode GATE_REMOVE = new GateSetMode(4);
 
 	/**
 	 * save the gate that is being set
 	 */
-	public final static GateSetMode GATE_SAVE = new GateSetMode(5);
+	final static GateSetMode GATE_SAVE = new GateSetMode(5);
 	
 	private GateSetMode(int i){
 		value=GateSetMode.VALUE_SET[i];
