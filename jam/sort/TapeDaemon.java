@@ -55,7 +55,6 @@ public class TapeDaemon extends StorageDaemon {
 	 *
 	 *
 	 * @param controller the process controlling sorting
-	 * @param eventOutput the stream events are written to
 	 * @param msgHandler conslole to write user messages to
 	 */
 	public TapeDaemon(Controller controller, MessageHandler msgHandler) {
@@ -64,8 +63,9 @@ public class TapeDaemon extends StorageDaemon {
 	}
 
 	/**
-	 * set the path of the tape device 
-	 * @param tapeDev the name of the tape device     
+	 * Set the path of the tape device.
+	 *  
+	 * @param device the name of the tape device     
 	 */
 	public void setDevice(String device) {
 		rewindDevice = new File(device);

@@ -13,7 +13,7 @@ import java.util.Hashtable;
  * @since       JDK1.1
  */
 
-public abstract class EventInputStream /*extends InputStream*/ {
+public abstract class EventInputStream {
     
     /**
      * Number of signal values for each event.
@@ -105,13 +105,19 @@ public abstract class EventInputStream /*extends InputStream*/ {
     /**
      * Constructor with event size given.
      *
-     * @param eventSize the number of signals per event
+     * @param console where to write text output to the user
+     * @param size the number of signals per event
      */
     public EventInputStream(MessageHandler console, int size){
         this(console);
         eventSize=size;
     }
     
+	/**
+	 * Define the console.
+	 *
+	 * @param console where to write text output to the user
+	 */
     public final void setConsole(MessageHandler console){
         this.console=console;
     }
@@ -119,7 +125,7 @@ public abstract class EventInputStream /*extends InputStream*/ {
     /**
      * Sets the event size.
      *
-     * @param eventSize the number of signals per event
+     * @param size the number of signals per event
      */
     public void setEventSize(int size){
         this.eventSize=size;

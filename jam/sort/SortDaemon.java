@@ -101,7 +101,7 @@ public class SortDaemon extends GoodThread {
      * setup the sort deamon tell it the mode and stream
      *
      * @param mode <code>ONLINE</code> or <code>OFFLINE</code>
-     * @param eventStream the source of event data
+     * @param eventInputStream the source of event data
      * @param eventSize number of parameters per event
      */
     public void setup(int mode, EventInputStream eventInputStream, int eventSize){
@@ -127,7 +127,7 @@ public class SortDaemon extends GoodThread {
     /**
      * Load the sorting class.
      *
-     * @param sortClass an object capable of sorting event data
+     * @param sortRoutine an object capable of sorting event data
      */
     public void load(SortRoutine sortRoutine){
         this.sortRoutine=sortRoutine;

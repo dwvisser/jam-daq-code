@@ -199,7 +199,7 @@ public abstract class StorageDaemon extends GoodThread {
 	/**
 	 * Opens a file using the given filename for writing to during online sorting.
 	 * 
-	 * @param fileName name of file to write to
+	 * @param file the file to write to
 	 * @exception SortException thrown if an error condition occurs while attempting to open file
 	 */
 	public abstract void openEventOutputFile(File file)
@@ -215,7 +215,7 @@ public abstract class StorageDaemon extends GoodThread {
 	/**
 	 * Opens a file using the given filename for writing to during online sorting.
 	 * 
-	 * @param fileName name of file to write to
+	 * @param file the file to write to
 	 * @exception SortException thrown if an error condition occurs while attempting to open file
 	 */
 	public abstract void openEventInputFile(File file)

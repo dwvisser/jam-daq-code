@@ -36,7 +36,8 @@ public class RingInputStream extends java.io.InputStream {
 
     /**
      * Load a buffer to read.
-     * @param buf	The input buffer (not copied)     
+     * 
+     * @param bufferIn	the input buffer (not copied)     
      */
     public void setBuffer(byte [] bufferIn) {
 	this.buf = bufferIn;
