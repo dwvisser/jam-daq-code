@@ -4,6 +4,7 @@ package jam.global;
 import javax.swing.JFrame;
 import java.text.*;
 import java.util.*;
+import jam.JamMain;
 /**
  * A global status class so that information is globally available.
  *
@@ -11,10 +12,43 @@ import java.util.*;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public  class JamStatus {
+	
+	/**
+	 * Sort Mode--No sort file loaded.
+	 */
+	static public final int NO_SORT = 0;
+
+	/**
+	 * Sort Mode--Set to sort online data to disk.
+	 */
+	static public final int ONLINE_DISK = 1;
+
+	/**
+	 * Sort Mode--Set to sort online data to tape.
+	 */
+	static public final int ONLINE_NODISK = 2;
+
+	/**
+	 * Sort Mode--Set to sort offline data from disk.
+	 */
+	static public final int OFFLINE_DISK = 3;
+
+	/**
+	 * Sort Mode--Acting as a client to a remote Jam process.
+	 */
+	static public final int REMOTE = 5;
+
+	/**
+	 * Sort Mode--Just read in a data file.
+	 */
+	static public final int FILE = 6; //we have read in a file
+
     private static AcquisitionStatus acquisitionStatus;
     private static String currentHistogramName="";
     private static String overlayHistogramName, currentGateName;
     private static JFrame frame;
+    /** For fowarding class */
+    private static JamMain jamMain;
     
     /**
      * The one instance of JamStatus.
@@ -53,6 +87,23 @@ public  class JamStatus {
 		return frame;
 	}
     
+	/**
+	 * Handle to JamMain to set sort Status
+	 * 
+	 * @param f the frame of the current Jam application
+	 */
+	public void setJamMain(JamMain jm){
+		jamMain=jm;
+	}    
+    /**
+     * Forwards call to JamMain but some of the implementation should be
+     * here
+     *  
+     * @param mode sort mode
+     */
+    public void setSortMode(int mode) {
+    	jamMain.setSortMode(mode); 
+    }
     /**
      * Set the acquisition status.
      * 
