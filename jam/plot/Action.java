@@ -625,7 +625,7 @@ public class Action
 		return rval;
 	}
 	
-	private double [] parameter;
+	private double [] parameter=new double[0];
 
 	/**
 	 * Calculate the area and centroid for a region
