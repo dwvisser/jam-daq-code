@@ -6,7 +6,7 @@ package jam.data;
  */
 public class DataBase {
 	
-	private static final DataBase dataBase=new DataBase();
+	private static final DataBase INSTANCE=new DataBase();
 	
 	private DataBase(){
 		super();
@@ -18,7 +18,7 @@ public class DataBase {
 	 * @return the only instance of this class
 	 */
 	static public DataBase getInstance(){
-		return dataBase;
+		return INSTANCE;
 	}
 
 	/**

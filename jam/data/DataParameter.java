@@ -23,15 +23,15 @@ import java.util.Map;
 
 public class DataParameter {
 
-	private static final Map parameterTable = Collections.synchronizedMap(new HashMap());
-	private static final List parameterList = Collections.synchronizedList(new ArrayList());
+	private static final Map TABLE = Collections.synchronizedMap(new HashMap());
+	private static final List LIST = Collections.synchronizedList(new ArrayList());
 
 	/**
 	 * Limit on name length.
 	 */
 	public final static int NAME_LENGTH = 16;
 
-	private final String name; //parameter name
+	private transient final String name; //parameter name
 	private double value; //parameter value
 
 	/**
@@ -41,7 +41,7 @@ public class DataParameter {
      * @throws UnsupportedArgumentException if name >NAME_LENGTH characters
 	 */
 	public DataParameter(String name)  {
-		StringUtilities su=StringUtilities.instance();
+		final StringUtilities stringUtil=StringUtilities.instance();
 		//give error if name is too long
 		if (name.length() > NAME_LENGTH) {
 			throw new IllegalArgumentException(
@@ -51,14 +51,14 @@ public class DataParameter {
 					+ NAME_LENGTH
 					+ " characters or less.  Please modify sort file.");
 		}
-		name = su.makeLength(name, NAME_LENGTH);
+		name = stringUtil.makeLength(name, NAME_LENGTH);
 		//make sure name is unique
 		int prime = 1;
 		String addition;
-		while (parameterTable.containsKey(name)) {
+		while (TABLE.containsKey(name)) {
 			addition = "[" + prime + "]";
 			name =
-				su.makeLength(
+				stringUtil.makeLength(
 					name,
 					NAME_LENGTH - addition.length())
 					+ addition;
@@ -67,8 +67,8 @@ public class DataParameter {
 		this.name = name;
 		this.value = 0.0; //default zero value	
 		// Add to list of parameters    	
-		parameterTable.put(name, this);
-		parameterList.add(this);
+		TABLE.put(name, this);
+		LIST.add(this);
 	}
 
 	/** 
@@ -77,39 +77,33 @@ public class DataParameter {
 	 * @return the list of all currently defined parameters.
 	 */
 	public static List getParameterList() {
-		return Collections.unmodifiableList(parameterList);
+		return Collections.unmodifiableList(LIST);
 	}
 
 	/**
 	 * Sets the list of all parameters.
 	 *
-	 * @param inParameterList list of all parameters
+	 * @param inList list of all parameters
 	 */
-	public static void setParameterList(List inParameterList) {
+	public static void setParameterList(List inList) {
 		DataParameter parameter;
-
-		//clear current lists
-		parameterTable.clear();
-		parameterList.clear();
-
-		Iterator allParameters = inParameterList.iterator();
-
-		//loop for all parameters
-
-		while (allParameters.hasNext()) {
-			parameter = (DataParameter) allParameters.next();
-			parameterTable.put(parameter.getName(), parameter);
-			parameterList.add(parameter);
+		/* clear current lists */
+		TABLE.clear();
+		LIST.clear();
+		final Iterator iter = inList.iterator();
+		while (iter.hasNext()) {
+			parameter = (DataParameter) iter.next();
+			TABLE.put(parameter.getName(), parameter);
+			LIST.add(parameter);
 		}
-
 	}
 
 	/**
 	 * Clears the list of parameters.
 	 */
 	public static void clearList() {
-		parameterTable.clear();
-		parameterList.clear();
+		TABLE.clear();
+		LIST.clear();
 		//run garbage collector, memory should be freed
 		System.gc();
 	}
@@ -120,7 +114,7 @@ public class DataParameter {
 	* @return the parameter with the specified name
 	*/
 	public static DataParameter getParameter(String name) {
-		return (DataParameter) parameterTable.get(name);
+		return (DataParameter) TABLE.get(name);
 	}
 
 	/**
