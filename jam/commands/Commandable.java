@@ -1,9 +1,7 @@
 package jam.commands;
 
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
-import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
+import jam.global.MessageHandler;
 /**
  * Interface for a command.
  *  
@@ -20,7 +18,7 @@ public interface Commandable {
 	 * @param msghdlr		Message and error output
 	 * @param broadcaster	Change in status messages
 	 */
-	void init(JamStatus status, MessageHandler msghdlr, Broadcaster broadcaster);
+	void init(MessageHandler msghdlr);
 	
 	/**
 	 * Execute a command with the given command parameters
