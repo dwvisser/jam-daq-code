@@ -126,6 +126,12 @@ public interface CommandNames {
 	/** Delete the displayed histogram */
 	String DELETE_HISTOGRAM="delhist";
 
+	/** Help About guide */
+	String HELP_ABOUT="helpabout";
+
+	/** Help About guide */
+	String HELP_LICENSE="helplicense";
+
 	/** User guide */
 	String USER_GUIDE="userguide";
 	
