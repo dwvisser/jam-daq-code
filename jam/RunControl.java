@@ -1,18 +1,36 @@
 package jam;
+
 import jam.data.control.HistogramControl;
-import jam.data.control.ScalerControl;
 import jam.global.GoodThread;
 import jam.global.RunInfo;
 import jam.io.DataIO;
-import jam.sort.*;
+import jam.sort.Controller;
+import jam.sort.DiskDaemon;
+import jam.sort.NetDaemon;
+import jam.sort.SortDaemon;
+import jam.sort.SortException;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Date;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
 /**
  * Class for data acquistion and run control.
  * This class
@@ -47,19 +65,17 @@ public class RunControl implements Controller, ActionListener {
     /**
      * The device writing events: DISK or FRONT_END
      */
-    private int device;
-
-    // handles to class we need
+    
     private final JamMain		jamMain;
     private final HistogramControl	histogramControl;
-    private final ScalerControl	scalerControl;
     private final DataIO		dataio;
     private final VMECommunication	vmeComm;
     private final JamConsole		console;
 
-    // daemon threads
+	private int device;
+
+    /* daemon threads */
     private NetDaemon		netDaemon;
-    //private StorageDaemon	storageDaemon;
     private DiskDaemon		diskDaemon;
     private SortDaemon		sortDaemon;
 
@@ -69,6 +85,7 @@ public class RunControl implements Controller, ActionListener {
     private String experimentName;
     private String dataPath;
     private File dataFile;
+    
     /**
      *histogram file information
      */
@@ -76,19 +93,21 @@ public class RunControl implements Controller, ActionListener {
     private String histFileName;
     private File histFile;
 
-
     /**
      * run Number, is append to experiment name to create event file
      */
     private int runNumber;
+    
     /**
      * run Title
      */
     private String runTitle;
+    
     /**
      * Are we currently in a run, saving event data
      */
     private boolean runOn=false;
+    
     /**
      *Run dialog box
      */
@@ -107,11 +126,10 @@ public class RunControl implements Controller, ActionListener {
      * @param dataio object in control of reading/writing data to/from disk
      * @param console
      */
-    RunControl(JamMain jamMain, HistogramControl histogramControl, ScalerControl scalerControl,
+    RunControl(JamMain jamMain, HistogramControl histogramControl,
     VMECommunication vmeComm, DataIO dataio, JamConsole console){
         this.jamMain=jamMain;
         this.histogramControl=histogramControl;
-        this.scalerControl=scalerControl;
         this.vmeComm=vmeComm;
         this.dataio=dataio;
         this.console=console;
