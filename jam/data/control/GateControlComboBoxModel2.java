@@ -2,7 +2,7 @@ package jam.data.control;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.JamStatus;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -30,12 +30,12 @@ public class GateControlComboBoxModel2
 			if (index==0) {
 				return this.CHOOSE_A_GATE;
 			} else {
-				Vector list =
+				List list =
 					Gate.getGateList(
 					Histogram
 						.getHistogram(JamStatus.getCurrentHistogramName())
 						.getDimensionality());
-				return ((Gate) (list.elementAt(index-1))).getName();
+				return ((Gate) (list.get(index-1))).getName();
 			}
 		} else {
 			return NO_GATES;
