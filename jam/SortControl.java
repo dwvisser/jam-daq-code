@@ -915,6 +915,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	private File getOutFile() {
+		File rval=null;//default return value
 		JFileChooser fd = new JFileChooser(outDirectory);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(
@@ -926,9 +927,9 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
 			outDirectory = fd.getSelectedFile(); //save current directory
-			return outDirectory;
+			rval = outDirectory;
 		}
-		return null;
+		return rval;
 	}
 
 	/** 
