@@ -29,7 +29,7 @@ import java.io.StreamTokenizer;
  * </p>
  *
  * @author Ken Swartz
- * @author <a href="mailto:dale@visser.name">Dale W. Visser</a>
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 1.0
  */
 public class ImpExpASCII extends ImpExp {
