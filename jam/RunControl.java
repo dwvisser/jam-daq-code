@@ -267,12 +267,12 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.VMEstart();
         // if we are in a run, display run number
         if (runOn) {//runOn is true if the current state is a run
-            jamMain.setRunState(JamMain.RUN_ON, runNumber);
+            jamMain.setRunState(RunState.RUN_ON(runNumber));
         	//see stopAcq() for reason for this next line.
         	bend.setEnabled(true);
         	console.messageOutln("Started Acquisition, continuing Run #"+runNumber);
         } else {//just viewing events, not running to disk
-            jamMain.setRunState(JamMain.ACQ_ON);
+            jamMain.setRunState(RunState.ACQ_ON);
             this.bbegin.setEnabled(false);//don't want to try to begin run while going
         	console.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
         }
@@ -286,7 +286,7 @@ public class RunControl implements Controller, ActionListener {
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
         //netDaemon.setState(GoodThread.SUSPEND);
-        jamMain.setRunState(JamMain.ACQ_OFF);
+        jamMain.setRunState(RunState.ACQ_OFF);
         //done to avoid "last buffer in this run becomes first and last buffer in 
         //next run" problem
         bend.setEnabled(false);
@@ -352,7 +352,7 @@ public class RunControl implements Controller, ActionListener {
         // enable end button, display run number
         bend.setEnabled(true);
         bbegin.setEnabled(false);
-        jamMain.setRunState(JamMain.RUN_ON, runNumber);
+        jamMain.setRunState(RunState.RUN_ON(runNumber));
         if(device==DISK){
             console.messageOutln("Began run "+runNumber+", events being written to file: "+dataFileName);
         } else if (device==TAPE) {
@@ -380,7 +380,7 @@ public class RunControl implements Controller, ActionListener {
         vmeComm.end();			    //stop Acq. flush buffer
         vmeComm.readScalers();		    //read scalers
         bend.setEnabled(false);	    		    //toggle button states
-        jamMain.setRunState(JamMain.RUN_OFF,runNumber);
+        jamMain.setRunState(RunState.RUN_OFF);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
         do {//wait for sort to catch up
             try {
