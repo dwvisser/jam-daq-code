@@ -2,6 +2,7 @@ package jam.plot;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
@@ -53,43 +54,45 @@ public class Display extends JPanel implements CommandListener, Observer {
 	 * @see #AUTO_PEAK_FIND
 	 * @see #CONTINUOUS_2D_LOG
 	 */
-	static public class Preferences {
+	static public class JamPrefs {
 		private int type;
 
 		/**
 		 * If true, ignore channel 0 when autoscaling the plot.
 		 */
-		static public Preferences AUTO_IGNORE_ZERO = new Preferences(0);
+		static public JamPrefs AUTO_IGNORE_ZERO = new JamPrefs(0);
 
 		/**
 		 * If true, ignore the last channel when autoscaling the plot.
 		 */
-		static public Preferences AUTO_IGNORE_FULL = new Preferences(1);
+		static public JamPrefs AUTO_IGNORE_FULL = new JamPrefs(1);
 
 		/**
 		 * If true, use black-on-white for displaying the plot.
 		 */
-		static public Preferences WHITE_BACKGROUND = new Preferences(2);
+		static public JamPrefs WHITE_BACKGROUND = new JamPrefs(2);
 
 		/**
 		 * If true, use white-on-black for displaying the plot.
 		 */
-		static public Preferences BLACK_BACKGROUND = new Preferences(3);
+		static public JamPrefs BLACK_BACKGROUND = new JamPrefs(3);
 
 		/**
 		 * If true, automatically find peaks and display their centroids.
 		 */
-		static public Preferences AUTO_PEAK_FIND = new Preferences(4);
+		static public JamPrefs AUTO_PEAK_FIND = new JamPrefs(4);
 
 		/**
 		 * If true, show a continuous gradient color scale on 2d plots.
 		 */
-		static public Preferences CONTINUOUS_2D_LOG = new Preferences(5);
+		static public JamPrefs CONTINUOUS_2D_LOG = new JamPrefs(5);
 
-		private Preferences(int type) {
+		private JamPrefs(int type) {
 			this.type = type;
 		}
 	}
+	
+		
 
 	private final MessageHandler msgHandler; //output for messages
 	private final Action action; //handles display events
@@ -98,7 +101,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 	private Histogram[] overlayHist;
 
 	private Plot currentPlot;
-	//private boolean overlayState = false;
 
 	/* plot panels */
 	private final JPanel plotswap;
@@ -135,14 +137,11 @@ public class Display extends JPanel implements CommandListener, Observer {
 		final Scroller scroller2d = new Scroller(plot2d);
 		plotswap.add("TwoD", scroller2d);
 		setPlot(plot1d);
-		/* default preferences */
-		plot1d.setIgnoreChZero(true);
-		plot1d.setIgnoreChFull(true);
-		plot2d.setIgnoreChZero(true);
-		plot2d.setIgnoreChFull(true);
 		add(plotswap, BorderLayout.CENTER);
 		JamStatus.instance().setDisplay(this);
+		Broadcaster.getSingletonInstance().addObserver(this);
 	}
+	
 
 	/**
 	 * Set the histogram to display
@@ -305,35 +304,6 @@ public class Display extends JPanel implements CommandListener, Observer {
 		} else if (command == BroadcastEvent.GATE_SELECT) {
 			Gate gate = (Gate) (be.getContent());
 			currentPlot.displayGate(gate);
-		}
-	}
-
-	/**
-	 * Set a display preference.
-	 *
-	 * @param preference the preference to set
-	 * @param state the state of the preference, if applicable
-	 */
-	public void setPreference(Preferences preference, boolean state) {
-		if (preference == Preferences.AUTO_IGNORE_ZERO) {
-			plot1d.setIgnoreChZero(state);
-			plot2d.setIgnoreChZero(state);
-		} else if (preference == Preferences.AUTO_IGNORE_FULL) {
-			plot1d.setIgnoreChFull(state);
-			plot2d.setIgnoreChFull(state);
-		} else if (preference == Preferences.BLACK_BACKGROUND) {
-			plot1d.setColorMode(PlotColorMap.WHITE_ON_BLACK);
-			plot2d.setColorMode(PlotColorMap.WHITE_ON_BLACK);
-			displayHistogram(currentHist);
-		} else if (preference == Preferences.WHITE_BACKGROUND) {
-			plot1d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
-			plot2d.setColorMode(PlotColorMap.BLACK_ON_WHITE);
-			displayHistogram(currentHist);
-		} else if (preference == Preferences.AUTO_PEAK_FIND) {
-			plot1d.setPeakFind(state);
-			displayHistogram(currentHist);
-		} else if (preference == Preferences.CONTINUOUS_2D_LOG) {
-			displayHistogram(currentHist);
 		}
 	}
 
