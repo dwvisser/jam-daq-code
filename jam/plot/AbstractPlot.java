@@ -588,7 +588,8 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 */
 	void update() {
 		reset();
-		refresh();
+		if (getCounts()!=null)
+			refresh();		
 	}
 	/**
 	 * Reset state 
