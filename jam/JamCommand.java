@@ -52,7 +52,7 @@ public class JamCommand
 	private final Display display;
 	private final JamConsole console;
 
-	private final Broadcaster broadcaster;
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/* classes for reading and writing histograms */
 	private final HDFIO hdfio;
@@ -97,14 +97,12 @@ public class JamCommand
 	 * communications
 	 * @param jc the text input and output area
 	 */
-	public JamCommand(JamMain jm, Display d, Broadcaster b, 
-	JamConsole jc) {
+	public JamCommand(JamMain jm, Display d, JamConsole jc) {
 		super();
 		classname = getClass().getName() + " - ";
 		this.jamMain = jm;
 		this.frame =(JFrame)jamMain;
 		this.display = d;
-		this.broadcaster = b;
 		this.console = jc;
 		status = JamStatus.instance();
 		/* class to hold run information */

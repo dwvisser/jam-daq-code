@@ -1,5 +1,5 @@
 package jam.global;
-import java.util.*;
+import java.util.Observable;
 
 /**
  * Part of a client server to handle message between packages
@@ -9,7 +9,17 @@ import java.util.*;
  * 
  * @author Ken Swartz
  */
-public class Broadcaster extends Observable {
+public final class Broadcaster extends Observable {
+	
+	static private final Broadcaster broadcaster=new Broadcaster();
+	
+	static public Broadcaster getSingletonInstance(){
+		return broadcaster;
+	}
+	
+	private Broadcaster(){
+		super();
+	}
 
     /** 
      * Broadcast an event to all registered observers. The necessary

@@ -234,19 +234,19 @@ public class JamConsole
 					textIn.setText((String)cmdStack.get(lastCmdIndex));				
 				else							
 					textIn.setText("");			
-			}				
-				
+			}							
 		}					
 	}
+	
 	/**
 	 * Get the last command from the command stack
-	 *
+	 * Unused, apparently.
 	 */
-	private void previousCommand() {									 
+	/*private void previousCommand() {									 
 		textIn.setText((String)cmdStack.get(lastCmdIndex));
 		if (lastCmdIndex>0)
 			lastCmdIndex=lastCmdIndex-1;
-	}
+	}*/
 	
 	/**
 	 * Outputs the string as a message to the console, which has more than one part,

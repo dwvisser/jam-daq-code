@@ -44,7 +44,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final JComboBox gateChooser = new JComboBox(new GateComboBoxModel());
 	final MessageHandler console;
 	final JamStatus status;
-	final Broadcaster broadcaster;
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	final Display display;
 	private boolean overlay = false;
 	final String classname;
@@ -52,7 +52,6 @@ final class SelectionToolbar extends JToolBar implements Observer {
 
 	SelectionToolbar(MessageHandler mh,
 					 JamStatus js,
-					 Broadcaster b,
 					 Display d,
 					 MainMenuBar mmb) {
 		super("Selection", JToolBar.HORIZONTAL);
@@ -61,9 +60,9 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		classname = getClass().getName() + "--";
 		console = mh;
 		status = js;
-		broadcaster = b;
 		display = d;
 		mbar=mmb;
+		broadcaster.addObserver(this);
 		final DefaultComboBoxModel noGateComboBoxModel = new DefaultComboBoxModel();
 		noGateComboBoxModel.addElement("NO GATES");
 		pCenter = new JPanel();

@@ -2,7 +2,6 @@ package jam.plot;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
@@ -91,7 +90,7 @@ public class Display
 	}
 
 	private final MessageHandler msgHandler; //output for messages
-	private Broadcaster broadcaster; //broadcaster if needed
+	//private Broadcaster broadcaster=Broadcaster.getSingletonInstance(); //broadcaster if needed
 	private final Action action; //handles display events
 
 	//private Displayable currentData;
@@ -113,11 +112,11 @@ public class Display
 	 *
 	 * @param mh the class to call if the plot button is pushed.
 	 */
-	public Display(Broadcaster b, MessageHandler mh) {
+	/*public Display(Broadcaster b, MessageHandler mh) {
 		this(mh);
 		this.broadcaster = b;
 		action.setBroadcaster(broadcaster);
-	}
+	}*/
 
 	/**
 	 * Constructor called by all constructors
