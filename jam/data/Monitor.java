@@ -3,7 +3,6 @@ package jam.data;
 import jam.global.Sorter;
 
 import java.applet.AudioClip;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +20,7 @@ import java.util.Map;
  * @version 0.5,0.9
  * @since JDK 1.1
  */
-public final class Monitor implements Serializable {
+public final class Monitor {
 
 	/**
 	 * Lookup table for all monitors.
@@ -37,9 +36,9 @@ public final class Monitor implements Serializable {
 	/** The update interval */
 	private static int interval;
 
-	private final String name; //name
+	private transient final String name; //name
 
-	private final Object source;
+	private transient final Object source;
 
 	private double threshold;
 
@@ -49,9 +48,9 @@ public final class Monitor implements Serializable {
 
 	private java.applet.AudioClip audioClip;
 
-	private double valueNew; //the newest value set
+	private transient double valueNew; //the newest value set
 
-	private double valueOld; //the previous value set
+	private transient double valueOld; //the previous value set
 
 	private double value; //value for testing
 
@@ -60,16 +59,16 @@ public final class Monitor implements Serializable {
 	 * <code>Sorter</code> for the caluclation of its current
 	 * value.
 	 * 
-	 * @param n
+	 * @param monitorName
 	 *            name of the monitor for display in dialog
 	 * @param sort
 	 *            the sort routine which produces the monitor values
 	 */
-	public Monitor(String n, Sorter sort) {
-		name = n;
+	public Monitor(String monitorName, Sorter sort) {
+		name = monitorName;
 		source = sort;
 		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+n+"\": source must be non-null.");
+			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
 		}
 		addToCollections();
 	}
@@ -83,16 +82,16 @@ public final class Monitor implements Serializable {
 	 * Constructs an object which monitors rate of increase
 	 * in the given <code>Scaler</code>.
 	 * 
-	 * @param n
+	 * @param monitorName
 	 *            name of the monitor for display in dialog
-	 * @param s
+	 * @param scaler
 	 *            the scaler which is monitored
 	 */
-	public Monitor(String n, Scaler s) {
-		name = n;
-		source = s;
+	public Monitor(String monitorName, Scaler scaler) {
+		name = monitorName;
+		source = scaler;
 		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+n+"\": source must be non-null.");
+			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
 		}
 		addToCollections();
 	}
@@ -101,16 +100,16 @@ public final class Monitor implements Serializable {
 	 * Constructs an object which monitors the rate of counts
 	 * in a particular <code>Gate</code>.
 	 * 
-	 * @param n
+	 * @param monitorName
 	 *            name of the monitor for display in dialog
-	 * @param g
+	 * @param gate
 	 *            the gate whose area is monitored
 	 */
-	public Monitor(String n, Gate g) {
-		name = n;
-		source = g;
+	public Monitor(String monitorName, Gate gate) {
+		name = monitorName;
+		source = gate;
 		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+n+"\": source must be non-null.");
+			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
 		}
 		addToCollections();
 	}
@@ -296,8 +295,8 @@ public final class Monitor implements Serializable {
 	 * implement this when the JDK 1.2 <code>javax.media</code> packeage is
 	 * available.
 	 */
-	public synchronized void setAudioClip(AudioClip ac) {
-		audioClip = ac;
+	public synchronized void setAudioClip(AudioClip clip) {
+		audioClip = clip;
 	}
 
 	/**
