@@ -9,6 +9,7 @@ import jam.io.hdf.HDFileFilter;
 
 import java.awt.Frame;
 import java.io.File;
+import java.util.List;
 import java.util.Observer;
 
 import javax.swing.JFileChooser;
@@ -81,8 +82,11 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
          */
 		if (loadGroup.getHistogramList().size()>0 ) {
 			Group group =Group.getCurrentGroup();
-			if (group!=null)
-			firstHist = (Histogram)group.getHistogramList().get(0);
+			if (group!=null) {
+				List histList =group.getHistogramList();
+				if (histList.size()>0)
+					firstHist = (Histogram)group.getHistogramList().get(0);
+			}
 		}					
 		STATUS.setCurrentHistogram(firstHist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);

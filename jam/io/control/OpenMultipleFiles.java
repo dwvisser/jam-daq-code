@@ -260,31 +260,32 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
             msgHandler.errorOutln("No histograms selected");
             return;
         }
-        hdfio.setListener(this);
-        final Iterator iter = multiChooser.getFileList().iterator();
+
+        Object [] objFiles = (Object [])multiChooser.getFileList().toArray();
+        File [] files =new File[objFiles.length];
+        for (int i=0;i<objFiles.length; i++) {
+        	files[i] =(File)objFiles[i];
+        }
+        
         /* Sum counts */
         if (chkBoxAdd.isSelected()) {
             /* Create blank histograms */
             file = multiChooser.getSelectedFile();
-            hdfio.readFile(FileOpenMode.OPEN, file, selectNames);
+            hdfio.setListener(this);
+            hdfio.readFile(FileOpenMode.OPEN, files[0], selectNames);
             /* Rename group */
             final Group fileGroup = Group.getGroup(file.getName());
-            fileGroup.setName("Sum");
+//            fileGroup.setName("Sum");
             Histogram.setZeroAll();
-            while (iter.hasNext()) {
-                file = (File) iter.next();
-                hdfio.readFile(FileOpenMode.ADD, file, selectNames);
-            }
+            hdfio.readFile(FileOpenMode.ADD, files, null, selectNames);
+            //while (iter.hasNext()) {
+            //	file = (File) iter.next();                
+            //}
             /* Open multiple groups */
         } else {
             DataBase.getInstance().clearAllLists();
-
-                Object [] objFiles = (Object [])multiChooser.getFileList().toArray();
-                File [] files =new File[objFiles.length];
-                for (int i=0;i<objFiles.length; i++) {
-                	files[i] =(File)objFiles[i];
-                }
-               hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectNames);
+            hdfio.setListener(this);
+            hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectNames);
 //            while (iter.hasNext()) {                
  //           }
             STATUS.setSortMode(SortMode.FILE, "Multiple");            
