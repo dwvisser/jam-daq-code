@@ -26,6 +26,7 @@ public final class JamStatus {
 	private static Display display;
 	private static MessageHandler console;
 	private static FrontEndCommunication frontEnd;
+	private boolean showGUI=true;
 
 	/**
 	 * The one instance of JamStatus.
@@ -47,6 +48,20 @@ public final class JamStatus {
 	 */
 	static public JamStatus instance() {
 		return _instance;
+	}
+	
+	/**
+	 * Set whether GUI components should be suppressed. Used in
+	 * scripting mode to quietly run behind the scenes.
+	 * 
+	 * @param state <code>false</code> if suppressin
+	 */
+	public synchronized void setShowGUI(boolean state){
+		showGUI=state;
+	}
+	
+	public synchronized boolean isShowGUI(){
+		return showGUI;
 	}
 
 	/**
