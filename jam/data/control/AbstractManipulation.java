@@ -19,41 +19,19 @@ import jam.global.BroadcastEvent;
 public abstract class AbstractManipulation extends AbstractControl {
 
 	/** String to prepend to new histogram group in combobox */ 
-	final String NEW_HIST = "NEW: ";
-	/** String to append to new histogram group in combobox */	
-	final String HIST_WILD_CARD="/.";	
+	final static String NEW_HIST = "NEW: ";
 	
+	/** String to append to new histogram group in combobox */	
+	private final static String WILD_CARD="/.";	
+	
+	/**
+	 * Constructs a dialog box for manipulation of histograms.
+	 * 
+	 * @param title if dialog
+	 * @param modal whether to grab focus from parent window
+	 */
 	public AbstractManipulation(String title, boolean modal){
 		super(title, modal);		
-	}
-
-	/* non-javadoc:
-	 * Adds a list of histograms to a choose
-	 */
-	private void loadAllHists(JComboBox comboBox) {
-		comboBox.removeAllItems();
-		/* Add working group new */
-		comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
-		//Add new histograms
-		for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-			Group group = (Group)iter.next();
-			if (group.getType() != Group.Type.SORT &&
-				!Group.WORKING_NAME.equals(group.getName())	) {
-				comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
-			}
-		}
-		/* Add Existing hisograms */
-		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			Group group = (Group)grpiter.next();
-			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				Histogram hist =(Histogram)histiter.next();
-				if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-					comboBox.addItem(hist.getFullName());
-				}
-			}
-		}
-
-		comboBox.setSelectedIndex(0);
 	}
 	
 	/* non-javadoc:
@@ -63,21 +41,21 @@ public abstract class AbstractManipulation extends AbstractControl {
 		comboBox.removeAllItems();
 		if(addNew) {
 			//Add working group new
-			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+HIST_WILD_CARD);
+			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+WILD_CARD);
 			//Add new histograms
-			for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-				Group group = (Group)iter.next();
+			for (final Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
+				final Group group = (Group)iter.next();
 				if (group.getType() != Group.Type.SORT &&
 					!Group.WORKING_NAME.equals(group.getName())) {
-					comboBox.addItem(NEW_HIST+group.getName()+HIST_WILD_CARD);
+					comboBox.addItem(NEW_HIST+group.getName()+WILD_CARD);
 				}
 			}
 		}
 		/* Add Existing hisograms */
-		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			Group group = (Group)grpiter.next();
-			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				Histogram hist =(Histogram)histiter.next();
+		for (final Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
+			final Group group = (Group)grpiter.next();
+			for  (final Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
+				final Histogram hist =(Histogram)histiter.next();
 				if (hist.getType().getDimensionality() == histDim) {
 					comboBox.addItem(hist.getFullName());
 				}
@@ -99,21 +77,20 @@ public abstract class AbstractManipulation extends AbstractControl {
 	 * @param name The name in the combobox 
 	 * @return	the group name
 	 */
-	String parseGroupName(String name){
-		
-		StringBuffer sb = new StringBuffer(name);
-		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
-		return groupName;
-
-	}
+	String parseGroupName(String name) {
+        final StringBuffer buffer = new StringBuffer(name);
+        final String groupName = buffer.substring(NEW_HIST.length(), name
+                .length()
+                - WILD_CARD.length());
+        return groupName;
+    }
+	
 	/*
 	 * Create a new histogram given a group, name and size 
 	 */
 	Histogram createNewHistogram(String name, String histName, int size) {
-
 		Histogram hist;
-		
-		String groupName = parseGroupName(name);
+		final String groupName = parseGroupName(name);
 		if (groupName.equals(Group.WORKING_NAME))
 		{
 			Group.createGroup(groupName, Group.Type.FILE);
@@ -121,41 +98,52 @@ public abstract class AbstractManipulation extends AbstractControl {
 		hist = (AbstractHist1D)Histogram.createHistogram(
 				new double[size],histName);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		
 		return hist;
-
 	}
 
-	/* non-javadoc:
-	 * Converts int array to double array
+	/**
+	 * Converts int array to double array.
+	 * 
+	 * @param intArray array to convert
+	 * @return double array most closely approximating the given array
 	 */
-	protected double[] intToDoubleArray(int[] in) {
-		final double[] out = new double[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = in[i];
+	protected double[] intToDoubleArray(int[] intArray) {
+	    final int len = intArray.length;
+		final double[] out = new double[len];
+		for (int i = 0; i < len; i++) {
+			out[i] = intArray[i];
 		}
 		return out;
 	}
 
-	/* non-javadoc:
-	 * Converts double array to int array
+	/**
+	 * Converts double array to int array.
+	 * 
+	 * @param dArray array to convert
+	 * @return int array most closely approximating the given array
 	 */
-	protected int[] doubleToIntArray(double[] in) {
-		final int[] out = new int[in.length];
-		for (int i = 0; i < in.length; i++) {
-			out[i] = (int) Math.round(in[i]);
+	protected int[] doubleToIntArray(double[] dArray) {
+	    final int len = dArray.length;
+		final int[] out = new int[len];
+		for (int i = 0; i < len; i++) {
+			out[i] = (int) Math.round(dArray[i]);
 		}
 		return out;
 	}
 	
-	/*
-	 * Convert int 2 dim array to double 2 dim array
+	/**
+	 * Convert int 2 dim array to double 2 dim array.
+	 * 
+	 * @param int2D array to convert
+	 * @return double array most closely approximating the given array
 	 */
-	protected double[][] intToDouble2DArray(int[][] in) {
-		double[][] rval = new double[in.length][in[0].length];
-		for (int i = 0; i < in.length; i++) {
-			for (int j = 0; j < in[0].length; j++) {
-				rval[i][j] = in[i][j];
+	protected double[][] intToDouble2DArray(int[][] int2D) {
+	    final int lenX=int2D.length;
+	    final int lenY=int2D[0].length;
+		double[][] rval = new double[lenX][lenY];
+		for (int i = 0; i < lenX; i++) {
+			for (int j = 0; j < lenY; j++) {
+				rval[i][j] = int2D[i][j];
 			}
 		}
 		return rval;
