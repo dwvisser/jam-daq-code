@@ -1,7 +1,9 @@
 package jam.sort;
 
+import jam.global.Beginner;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
@@ -174,6 +176,30 @@ public class SortDaemon extends GoodThread {
 		} catch (Exception e) {
 			msgHandler.errorOutln("Sorter stopped Exception " + e.toString());
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Invokes begin() in the user's sort routine if it
+	 * implements the <code>Beginner</code> interface.
+	 *
+	 * @see jam.global.Beginner
+	 */
+	public synchronized void userBegin(){
+		if (sortRoutine instanceof Beginner){
+			((Beginner)sortRoutine).begin();
+		}
+	}
+	
+	/**
+	 * Invokes end() in the user's sort routine if it
+	 * implements the <code>Ender</code> interface.
+	 *
+	 * @see jam.global.Ender
+	 */
+	public synchronized void userEnd(){
+		if (sortRoutine instanceof Ender){
+			((Ender)sortRoutine).end();
 		}
 	}
 

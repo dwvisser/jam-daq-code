@@ -1,6 +1,6 @@
 package jam;
 
-import jam.data.control.HistogramZero;
+import jam.data.Histogram;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -335,8 +335,9 @@ public class RunControl extends JDialog implements Controller, ActionListener {
             diskDaemon.openEventOutputFile(dataFile);
             diskDaemon.writeHeader();
         }
+        sortDaemon.userBegin();
         if (checkHistogramZero.isSelected()) {// should we zero histograms
-            (new HistogramZero(console)).zeroAll();
+            Histogram.setZeroAll();
         }
         if (zeroScalers.isSelected()) {//should we zero scalers
             vmeComm.clearScalers();
@@ -394,6 +395,7 @@ public class RunControl extends JDialog implements Controller, ActionListener {
         } while(!sortDaemon.caughtUp() && !storageCaughtUp());
         diskDaemon.resetReachedRunEnd();
         netDaemon.setState(GoodThread.SUSPEND);
+        sortDaemon.userEnd();
         // histogram file name constructed using run name and number
         histFileName=histFilePath+experimentName+runNumber+".hdf";
         // only write a histogram file
