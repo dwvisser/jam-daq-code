@@ -538,7 +538,7 @@ final class Plot1d extends AbstractPlot {
         final Bin c2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
         p.addPoint(c1.getX(), c1.getY());
         p.addPoint(c2.getX(), c2.getY());
-        return getClipBounds(p, true);
+        return r;
     }
 
 	/**
