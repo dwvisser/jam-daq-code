@@ -11,7 +11,7 @@ import javax.swing.AbstractAction;
 /**
  * Base class for commands
  * 
- * @author Ken
+ * @author Ken Swartz
  */
 public abstract class AbstractCommand extends AbstractAction implements Commandable {
 
@@ -76,14 +76,6 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 			logError();
 			throw new CommandListenerException(e);
 		}
-	}
-
-	/**
-	 * Does nothing here, but is implemented by default so
-	 * individual Commandable's don't have to if they "don't
-	 * care" what the mode is.
-	 */
-	public void sortModeChanged(){
 	}
 	
 	/**
