@@ -425,7 +425,6 @@ Observer {
     	
         JPanel ptoolbar=new JPanel();
         this.add(ptoolbar,BorderLayout.WEST);
-        ptoolbar.setBackground(Color.lightGray);
         ptoolbar.setForeground(Color.black);
         GridBagLayout gb =new GridBagLayout();
         GridBagConstraints gbc =new GridBagConstraints();
@@ -454,24 +453,18 @@ Observer {
             bfull.setActionCommand("full");
             bfull.setToolTipText("Click here to set display limits to full histogram extents.");
             bfull.addActionListener(action);
-            /*addComponent(ptoolbar, bfull, 0, GridBagConstraints.RELATIVE, 1, 1,
-            GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);*/
             zoomPanel.add(bfull);
             Icon i_zoomin=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomIn24.gif"));
             JButton bzoomin=new JButton(i_zoomin);
             bzoomin.setToolTipText("ZoomIn the display limits.");
             bzoomin.setActionCommand("zoomin");
             bzoomin.addActionListener(action);
-            /*addComponent(ptoolbar, bzoomin, 0, GridBagConstraints.RELATIVE, 1, 1,
-            GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);*/
             zoomPanel.add(bzoomin);
             Icon i_zoomout=new ImageIcon(cl.getResource("toolbarButtonGraphics/general/ZoomOut24.gif"));
             JButton bzoomout=new JButton(i_zoomout);
             bzoomout.setToolTipText("ZoomOut the display limits.");
             bzoomout.setActionCommand("zoomout");
             bzoomout.addActionListener(action);
-            /*addComponent(ptoolbar, bzoomout, 0, GridBagConstraints.RELATIVE, 1, 1,
-            GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);*/
             zoomPanel.add(bzoomout);
             addComponent(ptoolbar, zoomPanel, 0, GridBagConstraints.RELATIVE, 1, 1,
             GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTH);
