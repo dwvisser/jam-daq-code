@@ -115,12 +115,14 @@ public class ScientificData extends DataObject {
 	}
 
 	/**
-	 *  @exception HDFException unrecoverable error
+	 * @throws HDFException unrecoverable error
+	 * @throws UnsupportedOperationException if this object doesn't represent 1d int
+	 * @throws IllegalStateException if the input mode isn't recognized
 	 */
 	int[] getData1d(int size) throws HDFException { //assumes int type!
 		final byte[] localBytes;
 		if (numberType != INT || rank != 1) {
-			throw new HDFException("getData1d called on wrong type of SD.");
+			throw new UnsupportedOperationException("getData1d called on wrong type of SD.");
 		}
 		switch (inputMode) {
 			case STORE : //read data from internal array
@@ -137,7 +139,7 @@ public class ScientificData extends DataObject {
 				}
 				break;
 			default :
-				throw new HDFException(
+				throw new IllegalStateException(
 					"DataObject mode not properly set: Ref# " + ref);
 		}
 		final int[] output = new int[size];
@@ -280,7 +282,8 @@ public class ScientificData extends DataObject {
 	/**
 	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 *
-	 * @exception   HDFException  thrown if unrecoverable error occurs
+	 * @throws   HDFException  thrown if unrecoverable error occurs
+	 * @throws IllegalStateException if the rank is not 1 or 2
 	 */
 	byte[] getBytes() throws HDFException {
 		try {
@@ -309,7 +312,7 @@ public class ScientificData extends DataObject {
 					bytes = baos.toByteArray();
 					break;
 				default :
-					throw new HDFException(
+					throw new IllegalStateException(
 						"SD_" + tag + ", bad value for rank: " + rank);
 			}
 			return baos.toByteArray();
