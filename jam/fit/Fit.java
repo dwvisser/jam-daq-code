@@ -385,7 +385,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				middle.add(textError[i]);
 			}
 			if (parameter.canBeFixed()) {
-				cFixValue[i] = new JCheckBox("Fixed", parameter.fix);
+				cFixValue[i] = new JCheckBox("Fixed", parameter.isFixed());
 				cFixValue[i].addItemListener(this);
 				right.add(cFixValue[i]);
 			}
@@ -562,10 +562,8 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				}
 				if (parameter.hasErrorBar()) {
 					textError[i].setText(formatError(parameter));
-					if (parameter.isFixed()) {
-						textError[i].setBackground(Color.lightGray);
-					} else {
-						textError[i].setBackground(Color.yellow);
+					if (!parameter.isFixed()) {
+						textData[i].setBackground(Color.YELLOW);
 					}
 				}
 			}
@@ -603,20 +601,10 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			if (!parameter.isBoolean()) {
 				// text field backgrounds				    	    		    
 				if (parameter.isOutputOnly()) {
-					textData[i].setBackground(Color.lightGray);
-					if (parameter.hasErrorBar()) {
-						textError[i].setBackground(Color.lightGray);
-					}
+					textData[i].setEditable(false);
 				} else {
 					if (!parameter.isText()) {
 						textData[i].setBackground(Color.white);
-						if (parameter.hasErrorBar()) {
-							if (parameter.isFixed()) {
-								textError[i].setBackground(Color.lightGray);
-							} else {
-								textError[i].setBackground(Color.white);
-							}
-						}
 					}
 				}
 				if (parameter.isFixed()) {
@@ -634,14 +622,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Called when a fix checkbox is toggled.
 	 */
 	private void setFixed(Parameter param, int index) throws FitException {
-
-		boolean state = cFixValue[index].isSelected();
-
-		param.fix = state;
-
-		// fixed value
-		if (state) {
-			textData[index].setBackground(Color.white);
+		boolean fixed = cFixValue[index].isSelected();
+		param.setFixed(fixed);
+		if (fixed) {
 			if (param.canBeEstimated()) {
 				cEstimate[index].setSelected(false);
 				param.setEstimate(false);
@@ -650,18 +633,15 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			if (param.hasErrorBar()) {
 				param.setError(0.0);
 				textError[index].setText(formatError(param));
-				//textError[index].setBackground(Color.lightGray);
-				textError[index].setEnabled(false);
+				textData[index].setEditable(!fixed);
 			}
 			//not a fixed value
 		} else {
-			textData[index].setBackground(Color.white);
 			if (param.canBeEstimated()) {
 				cEstimate[index].setEnabled(true);
 			}
 			if (param.hasErrorBar()) {
-				//textError[index].setBackground(Color.white);
-				textError[index].setEnabled(true);
+				textData[index].setEditable(!fixed);
 			}
 		}
 	}
