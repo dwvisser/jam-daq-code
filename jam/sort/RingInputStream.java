@@ -92,18 +92,20 @@ public class RingInputStream extends java.io.InputStream {
 
     /**
      * Skips n bytes of input.
+     * 
      * @param n the number of bytes to be skipped
      * @return	the actual number of bytes skipped.
      */
     public long skip(long n) {
-	if (pos + n > count) {
-	    n = count - pos;
-	}
-	if (n < 0) {
-	    return 0;
-	}
-	pos += n;
-	return n;
+    	long rval=n;
+		if (pos + rval > count) {
+	    	rval = count - pos;
+		}
+		if (rval < 0) {
+	    	return 0;
+		}
+		pos += rval;
+		return rval;
     }
 
     /**
