@@ -9,7 +9,7 @@ import java.awt.event.*;
 /**
  * Dialog for setting peak finding parameters.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W. Visser</a>
+ * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public class PeakFindDialog extends JDialog implements ActionListener {
 
