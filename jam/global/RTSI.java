@@ -9,7 +9,6 @@ package jam.global;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
-import java.util.Iterator;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.*;
