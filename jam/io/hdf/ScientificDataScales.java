@@ -26,7 +26,7 @@ final class ScientificDataScales extends DataObject {
 	private static final byte TRUE = 1;//FALSE=0
 
 	ScientificDataScales(ScientificDataDimension sdd) {
-		super(sdd.getFile(), DFTAG_SDS); //sets tag
+		super(DFTAG_SDS); //sets tag
 		int i, j;
 		rank = sdd.getRank();
 		sizeX = sdd.getSizeX();

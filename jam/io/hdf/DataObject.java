@@ -3,6 +3,7 @@ package jam.io.hdf;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,22 +17,13 @@ import java.util.Map;
 public abstract class DataObject {
 
 	/**
-	 * List of objects in the file.
+	 * List of Data Objects in the file.
 	 */
 	private static List objectList=Collections.synchronizedList(new ArrayList());
+	/** Map of Data Objects in file with tag/ref as key */
 	private static Map tagRefMap=Collections.synchronizedMap(new HashMap());
-	
-	static short refCount;
-	
-	/**
-	 * contains the 2-byte tag for the data type
-	 */
-	protected short tag;
-	
-	/**
-	 * for use in Maps
-	 */
-	protected Short tagKey;
+	/** Reference count, starts at 1 */
+	static short refCount;	
 
 	/**
 	 * Tag for machine type.  
@@ -135,68 +127,82 @@ public abstract class DataObject {
 	 * @see Vdata
 	 */
 	public final static short DFTAG_VS = 1963;
-
+	
+	//Instance members
+	
+	/**
+	 * contains the 2-byte tag for the data type
+	 */
+	protected short tag;
+		
 	/**
 	  * Unique reference number, in case several data elements with the same tag exist. Only makes sense in 
 	  * the context of an HDF file.
 	  */
-	protected short ref;
-	
-	/**
-	 * Object version of <code>ref</code>.
-	 * 
-	 * @see #ref
-	 */
-	protected Short refKey;
-
+	protected short ref;	
 	/**
 	 * Offset from start of file.
 	 */
 	protected int offset;
-
+	/**
+	 * Before bytes is created, length of bytes.
+	 */
+	protected int length;
 	/**
 	 * Actual bytes stored in HDF file.
 	 */
 	protected byte[] bytes;
 
 	/**
-	 * Before bytes is created, length of bytes.
+	 * Set to false once the ref number is defined.
 	 */
-	protected int length;
-
+	protected boolean haveNotSetRef=true;
+	
 	/**
 	 * Reference to the particular <code>HDFile</code> this data element resides in.
 	 */
 	protected HDFile file;
 
+	/**
+	 * Get the list of all data objects
+	 * @return
+	 */
 	static List getDataObjectList() {
 		return objectList;
 	}
+	/**
+	 * Clear the lists of all data objects
+	 * @return
+	 */	
 	static void clear() {
+	
+		for (Iterator it=objectList.iterator(); it.hasNext();){
+			DataObject ob=(DataObject)it.next();
+			ob.bytes=null;
+			ob.file=null;
+		}
+
 		objectList.clear();
 		tagRefMap.clear();
 		refCount =0;
 
 	}
 	/**
-	 * <p>Adds the data object to the file.  The reference number is 
+	 * <p>Adds the data object to the list of objects.
+	 * --- FIXME KBS remove --  
+	 * The reference number is 
 	 * implicitly assigned at this time as the index number in the 
 	 * internal <code>Vector objectList</code>.  A typical call should 
 	 * look like:</p>
 	 * <blockquote><code>hdf = new hdfFile(outfile, "rw");<br>
 	 * hdf.addDataObject(new DataObject(this));</code></blockquote>
 	 * <p>Each call causes setOffsets to be called.</p>
+	 * ---
 	 *
 	 * @param data data object
-	 * @param useFileDefault	if true, automatically assigns ref number, 
-	 * else lets object assign its own
 	 * @see	#setOffsets()
 	 */
-	static void addDataObject(DataObject data, boolean useFileDefault) {
-		if (useFileDefault) {
-			data.setRef(getUniqueRef());
-		}
-		
+	static void addDataObjectToList(DataObject data) {
 		final Integer key =data.getKey();
 		if (!tagRefMap.containsKey(key)){
 			tagRefMap.put(key, data);
@@ -216,33 +222,7 @@ public abstract class DataObject {
 		}
 		return match;
 	}
-	static void changeRefKey(DataObject d, short refOld) {
-		
-		short tag =d.getTag();
-		short refNew=d.getRef();
-		 Integer key = calculateKey(tag, refOld);
-		 if (tagRefMap.containsKey(key)) {
-		 	tagRefMap.remove(key);
-		 }
-		 Integer keyNew = calculateKey(tag, refNew);
-		tagRefMap.put(key, d);
-		/*
-		final Short tag=d.getTagKey();
-		final Map refs=(Map)tagRefMap.get(tag);
-		if (refs.containsKey(old)){
-			refs.remove(old);
-		}
-		// if old not there, we were just called as the object was being
-		 // added to the file...no worries 
-		final Short ref=d.getRefKey();
-		if (!refs.containsKey(ref)){
-			refs.put(ref,d);
-		} else {
-			throw new IllegalStateException("Trying to put: "+ref+
-			"for tag:"+tag+" when one already exists.");
-		}
-		*/
-	} 
+	
 	
 	/**
 	 * 
@@ -261,14 +241,16 @@ public abstract class DataObject {
 	 * @param refs the map for a given tag type
 	 */
 	static short getUniqueRef() {
-		//Just add 1, set to 1 every time class created 
+		//Just add 1, set to 0 every time DataObject.clear is called 
 		return ++refCount;
-		/*
-		while (refs.containsKey(new Short(rval))){
-			rval++;
-		}
-		return rval;
-		*/
+	}
+
+	/**
+	 * Create a unique key given then tag an ref numbers
+	 */
+	static Integer calculateKey(short tag, short ref){
+		int key= (((int)tag)<<16)+(int)ref;		
+		return new Integer(key);
 	}
 	
 	/**
@@ -282,9 +264,16 @@ public abstract class DataObject {
 	DataObject(HDFile file, short tag) {
 		this.file = file;
 		setTag(tag);
-		addDataObject(this, true); //ref gets set in this call
+		setRef(getUniqueRef());
+		addDataObjectToList(this); //ref gets set in this call
 	}
 
+	DataObject(short tag) {
+		setTag(tag);
+		setRef(getUniqueRef());
+		addDataObjectToList(this); //ref gets set in this call
+	}
+	
 	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> with the specified byte array as the data which will (or does already) 
 	 * physically
@@ -299,7 +288,7 @@ public abstract class DataObject {
 		setTag(t);
 		setRef(r);
 		this.bytes = data;
-		addDataObject(this, false);
+		addDataObjectToList(this);
 	}
 
 	/* non-javadoc:
@@ -312,32 +301,16 @@ public abstract class DataObject {
 	 */
 	DataObject(HDFile file, int offset, int length, short t, short reference) {
 		this.file = file;
-		setTag(t);
+		this.tag=t;
 		setRef(reference);
 		this.offset = offset;
 		this.length = length;
-		addDataObject(this, false);
+		addDataObjectToList(this);
 	}
 	
 	private final void setTag(short t){
 		tag=t;
-		tagKey=new Short(t);
 	}
-
-	/* non-javadoc:
-	 * Returns the byte representation to be written at <code>offset</code> in the file.
-	 */
-	byte[] getBytes()  {
-		return bytes;
-	}
-
-	/**
-	 * When bytes are read from file, sets the internal fields of the data object.
-	 *
-	 * @exception   HDFException	    thrown if unrecoverable error occurs
-	 */
-	protected abstract void interpretBytes() throws HDFException;
-
 
 	/* non-javadoc:
 	 * Returns a 4-byte representation of the tag, usually defined in the HDF standard, of this item.  
@@ -347,11 +320,31 @@ public abstract class DataObject {
 	final short getTag() {
 		return tag;
 	}
-	
-	final Short getTagKey(){
-		return tagKey;
+	/**
+	 * Set the reference which is 2 bytes
+	 * 
+	 * @param newref
+	 */
+	final void setRef(short newref) {
+		if (haveNotSetRef) {
+			ref = newref;
+		} else {
+			if (ref!=newref){
+				//Change key, 
+				//remove and add with new key
+				Integer key = calculateKey(tag, ref);
+				if (tagRefMap.containsKey(key)) {
+					tagRefMap.remove(key);
+					//Add
+					ref = newref;
+					Integer keyNew = calculateKey(tag, ref);
+					tagRefMap.put(keyNew, this);
+				 }
+			}			
+			haveNotSetRef=false;
+		}
 	}
-
+	
 	/**
 	 * Returns a 2-byte representation of the reference number, which is unique for any given
 	 * tag type in an HDF file.  In my code, it is unique, period, but the HDF standard does not 
@@ -362,35 +355,7 @@ public abstract class DataObject {
 	public final short getRef() {
 		return ref;
 	}
-	
-	final Short getRefKey(){
-		return refKey; 
-	}
-	
-	/**
-	 * Set to false once the ref number is defined.
-	 */
-	protected boolean haveNotSetRef=true;
-	
-	final void setRef(short newref) {
-		if ((haveNotSetRef) || (ref!=newref)){
-			final short oldref=ref;
-			final Short oldrefKey=refKey;
-
-			ref = newref;
-			refKey=new Short(newref);
-			/* only call "change" if this isn't the first time */
-			if (!haveNotSetRef){	
-				changeRefKey(this,oldref);
-			}
-			haveNotSetRef=false;
-		}
-	}
-	
-	protected Integer getKey(){
-		return new Integer(tagRef2unigueKey(tag, ref));
-	}
-	/* non-javadoc:
+		/* non-javadoc:
 	 * Called back by <code>HDFile</code> to set the offset information.
 	 */
 	void setOffset(int off) {
@@ -409,25 +374,23 @@ public abstract class DataObject {
 		return bytes.length;
 	}
 
-	/**
-	 * Create a unique key given then tag an ref numbers
-	 */
-	private int tagRef2unigueKey(short tag, short ref) {
-		int key= (((int)tag)<<16)+(int)ref;
-		return key;
-	}
-
-	static Integer calculateKey(short tag, short ref){
-		int key= (((int)tag)<<16)+(int)ref;
-		
-		return new Integer(key);
-	}
-
 	/* non-javadoc:
-	 * Gives the handle to the file holding this object.
+	 * Returns the byte representation to be written at <code>offset</code> in the file.
 	 */
-	HDFile getFile() {
-		return file;
+	byte[] getBytes()  {
+		return bytes;
 	}
+
+	protected Integer getKey(){
+		return calculateKey(tag, ref);
+	}
+	
+	/**
+	 * When bytes are read from file, sets the internal fields of the data object.
+	 *
+	 * @exception   HDFException	    thrown if unrecoverable error occurs
+	 */
+	protected abstract void interpretBytes() throws HDFException;
+
 
 }

@@ -497,14 +497,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void close() throws IOException{
 		super.close();
-		List objectList = DataObject.getDataObjectList();
-		for (Iterator it=objectList.iterator(); it.hasNext();){
-			DataObject ob=(DataObject)it.next();
-			ob.bytes=null;
-			ob.file=null;
-			ob.refKey=null;
-			ob.tagKey=null;
-		}
+		DataObject.clear();
 		intNT=null;
 		doubleNT=null;
 	}

@@ -29,7 +29,7 @@ final class DataIDLabel extends DataObject {
 	private String label;
 
 	DataIDLabel(DataObject obj, String label) {
-		super(obj.getFile(), DFTAG_DIL); //sets tag
+		super(DFTAG_DIL); //sets tag
 		object = obj;
 		this.label = label;
 		int byteLength = 4 + label.length();

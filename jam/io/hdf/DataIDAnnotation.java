@@ -38,7 +38,7 @@ final class DataIDAnnotation extends DataObject {
 	 * @exception  HDFException thrown on unrecoverable error 
 	 */
 	DataIDAnnotation(DataObject obj, String note) throws HDFException {
-		super(obj.getFile(), DFTAG_DIA); //sets tag
+		super(DFTAG_DIA); //sets tag
 		try {
 			this.object = obj;
 			this.note = note;
