@@ -372,7 +372,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     Histogram openHistogram(String name, String title, int number, 
             byte histNumType, int histDim, int sizeX, int sizeY, ScientificData sciData,
             ScientificData sdErr) throws HDFException {
-        final Object data = getData(histNumType, histDim, sizeX, sizeY, sciData);
+        final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
         final Histogram histogram = Histogram.createHistogram(data, name, title);
         histogram.setNumber(number);
         if (sdErr != null) {
@@ -389,7 +389,7 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
                 Histogram.NAME_LENGTH));
         if (histogram != null) {
-            final Object data = getData(histNumType, histDim, sizeX, sizeY, sciData);
+            final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
             histogram.addCounts(data);            
         }
         return histogram;
@@ -402,27 +402,10 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
         final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
                 Histogram.NAME_LENGTH));
         if (histogram != null) {
-            final Object data = getData(histNumType, histDim, sizeX, sizeY, sciData);
+            final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
             histogram.setCounts(data);
         }
         return histogram;
     }
-    
-    private Object getData(byte histNumType, int histDim, int sizeX, int sizeY,
-            ScientificData sciData) throws HDFException {
-        final Object rval;
-        if ( (histDim == 1) && (histNumType == NumberType.INT) ) {
-            rval = sciData.getData1d(inHDF, sizeX);
-        } else if ( (histDim == 1) && (histNumType == NumberType.DOUBLE) ) {
-        	rval = sciData.getData1dD(inHDF, sizeX);
-        } else if ( (histDim == 2) && (histNumType == NumberType.INT) ) {
-        	rval =sciData.getData2d(inHDF, sizeX, sizeY);
-        } else if ( (histDim == 2) && (histNumType == NumberType.DOUBLE) ) {    
-        	rval =sciData.getData2dD(inHDF, sizeX, sizeY);
-        } else { 
-        	throw new HDFException("Unknown histogram data type");
-        }
-        return rval;
-    }
-    
+        
 }
