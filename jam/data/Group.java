@@ -62,8 +62,6 @@ public class Group {
     /** The sort group, group with sort histogram */
     private static Group sortGroup;
 
-    private final int NAME_LENGTH = 20;
-    
     /** children histograms of group */
     private final List histList = new ArrayList();
 
@@ -75,27 +73,32 @@ public class Group {
     
     /** Origonal group name */
     private String groupName;
+    
     /** Name of file that group belongs to */
     private String fileName;
+    
     /** Name of file and group canotated */
     private String fullName;
     /** Type of group, file or sort */
     private Type type;
+    
     /**
      * Set a group as the current group, create the group if it does not already
      * exist
+     * 
      * @param groupName
      *            name of the group
      * @param type
      *            of group
+     * @param fileName name of the file that this group belongs to
+     * @return the created <code>Group</code> object
      */
-    public synchronized static Group createGroup(String groupName, String fileName, Type type) {
-
-    	final Group group = new Group(groupName, type, fileName);        
-        
+    public synchronized static Group createGroup(String groupName,
+            String fileName, Type type) {
+        final Group group = new Group(groupName, type, fileName);
         /* Only one sort group */
-        if (type.type==Group.Type.TYPE_SORT) {
-        	sortGroup =group;
+        if (type.type == Group.Type.TYPE_SORT) {
+            sortGroup = group;
         }
         return group;
     }
@@ -108,6 +111,7 @@ public class Group {
      *            name of the group
      * @param type
      *            of group
+     * @return the created <code>Group</code> object
      */
     public synchronized static Group createGroup(String groupName, Type type) {
     	return Group.createGroup(groupName, null, type);
@@ -180,43 +184,28 @@ public class Group {
     /**
      * Constructor
      * 
-     * @param name
-     *            of the group
+     * @param groupName
+     *            name of the group
      * @param type
      *            the type of group
-     */
-    private Group(String name, Type type) {
-    	this(name, type, null);
-    }
-    /**
-     * Constructor
-     * 
-     * @param name
-     *            of the group
-     * @param type
-     *            the type of group
+     * @param fileName name of file this group is associated with
      */
     private Group(String groupName, Type type, String fileName) {
-
         final StringUtilities stringUtil = StringUtilities.instance();
-        
-        String tempFullName="GROUP";
-        
-        if (fileName!=null && groupName!=null) {
-        	tempFullName =fileName+"/"+groupName;
-        }else if (fileName!=null) {
-        	tempFullName =fileName;
-        }else if (groupName!=null) {
-        	tempFullName =groupName;
+        String tempFullName = "GROUP";
+        if (fileName != null && groupName != null) {
+            tempFullName = fileName + "/" + groupName;
+        } else if (fileName != null) {
+            tempFullName = fileName;
+        } else if (groupName != null) {
+            tempFullName = groupName;
         }
-		        
-        String uniqueName= stringUtil.makeUniqueName(tempFullName, NAME_MAP.keySet());
-        
+        String uniqueName = stringUtil.makeUniqueName(tempFullName, NAME_MAP
+                .keySet());
         this.type = type;
         this.groupName = groupName;
-        this.fileName=fileName;
-        this.fullName =uniqueName;
-        
+        this.fileName = fileName;
+        this.fullName = uniqueName;
         LIST.add(this);
         NAME_MAP.put(uniqueName, this);
     }
