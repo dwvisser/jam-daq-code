@@ -241,7 +241,7 @@ public class HistApplet
 			//if none ignore
 			if (!(ie.getItem().equals("none"))) {
 				gate = Gate.getGate((String) ie.getItem());
-				if (gate.getType() == Gate.ONE_DIMENSION) {
+				if (gate.getDimensionality() == 1) {
 					area = gate.getArea();
 					final int [] limits=gate.getLimits1d();
 					lowerLimit=limits[0];
