@@ -22,8 +22,11 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	protected Preferences prefsNode;
 	protected String key;
 	protected boolean state;
-	private final ImageIcon checkMark=new ImageIcon("jam/commands/checkmark.png");
-	private final ImageIcon clear=new ImageIcon("jam/clear.png");
+	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
+	private final ImageIcon checkMark=new ImageIcon(cl.getResource(
+	"jam/commands/checkmark.png"));
+	private final ImageIcon clear=new ImageIcon(cl.getResource(
+	"jam/clear.png"));
 	
 	/**
 	 * Set differently in subclass constuctor if necessary.
