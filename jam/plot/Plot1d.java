@@ -163,6 +163,9 @@ class Plot1d extends Plot {
 	}
 
 	void paintMarkArea(Graphics g) {
+		final Graphics2D g2=(Graphics2D)g;
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		0.5f));
 		g.setColor(PlotColorMap.area);
 		graph.update(g, viewSize, plotLimits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
@@ -237,11 +240,12 @@ class Plot1d extends Plot {
 	 * Paint a gate on the give graphics object
 	 */
 	void paintGate(Graphics g) throws DataException {
-		int ll;
-		int ul;
+		final Graphics2D g2=(Graphics2D)g;
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+		0.5f));
 		g.setColor(PlotColorMap.gateShow);
-		ll = currentGate.getLimits1d()[0];
-		ul = currentGate.getLimits1d()[1];
+		int ll = currentGate.getLimits1d()[0];
+		int ul = currentGate.getLimits1d()[1];
 		graph.drawGate1d(ll, ul);
 	}
 
