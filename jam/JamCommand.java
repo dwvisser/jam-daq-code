@@ -204,7 +204,7 @@ public class JamCommand
 					true);
 			} else if ("newclear".equals(incommand)) {
 				jamMain.setSortMode(JamMain.NO_SORT);
-				DataBase.clearAllLists();
+				DataBase.getInstance().clearAllLists();
 				dataChanged();
 			} else if ("open".equals(incommand)) {
 				if (histio.readJHFFile()) {
@@ -421,7 +421,7 @@ public class JamCommand
 		}
 	}
 	
-	private void dataChanged() throws GlobalException {
+	void dataChanged() throws GlobalException {
 		broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 	}
 }
