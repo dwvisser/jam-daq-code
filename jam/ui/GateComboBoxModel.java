@@ -27,20 +27,20 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
 	 */
 	static public class Mode {
-		private static final int disp = 0;
-		private static final int all = 1;
+		private static final int I_DISP = 0;
+		private static final int I_ALL = 1;
 
 		/**
 		 * The mode for which only gates belonging to the displayed
 		 * histogram are listed.
 		 */
-		static final public Mode DISPLAYED_HIST = new Mode(disp);
+		static final public Mode DISPLAYED_HIST = new Mode(I_DISP);
 
 		/**
 		 * The mode for which all gates of the same dimensionality
 		 * of the displayed histogram.
 		 */
-		static final public Mode ALL = new Mode(all);
+		static final public Mode ALL = new Mode(I_ALL);
 
 		private final int mode;
 

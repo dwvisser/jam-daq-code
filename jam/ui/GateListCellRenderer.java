@@ -22,26 +22,6 @@ import javax.swing.UIManager;
 public class GateListCellRenderer
 	extends DefaultListCellRenderer {
 
-	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-
-	private static final ImageIcon stopIcon;
-	private static final ImageIcon goIcon;
-	private static final ImageIcon clearIcon;
-
-	static{
-		URL urlStop=cl.getResource("jam/ui/stop.png");
-		URL urlGo =cl.getResource("jam/ui/go.png");
-		URL urlClear =cl.getResource("jam/ui/clear.png");
-		if (urlStop==null || urlGo==null || urlClear==null) {
-			JOptionPane.showMessageDialog(null, "Can't load resource: jam/(stop|go|clear).png");
-			stopIcon=goIcon=clearIcon=null;
-		} else {
-			stopIcon=new ImageIcon(urlStop);
-			goIcon=new ImageIcon(urlGo);
-			clearIcon=new ImageIcon(urlClear);
-		}
-	}
-
 	/**
 	 * Creates a new <code>HistogramListCellRenderer</code>.
 	 */
@@ -75,13 +55,13 @@ public class GateListCellRenderer
 			final String name = g.getName();
 			setText(name);
 			if (g.isDefined()) {
-				setIcon(goIcon);
+				setIcon(Icons.GO);
 			} else {
-				setIcon(stopIcon);
+				setIcon(Icons.STOP);
 			}
 		} else { //String
 			setText((String) value);
-			setIcon(clearIcon);
+			setIcon(Icons.CLEAR);
 		}
 		final boolean hasGates = (list.getModel().getSize()>1);
 		list.setEnabled(hasGates);

@@ -21,16 +21,7 @@ import javax.swing.UIManager;
 public class HistogramListCellRenderer
 	extends DefaultListCellRenderer {
 
-	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-	private static final ImageIcon stopIcon =
-		new ImageIcon(cl.getResource("jam/ui/stop.png"));
-	private static final ImageIcon goIcon =
-		new ImageIcon(cl.getResource("jam/ui/go.png"));
-	private static final ImageIcon cautionIcon =
-		new ImageIcon(cl.getResource("jam/ui/caution.png"));
-	private static final ImageIcon clearIcon = 
-	new ImageIcon(cl.getResource("jam/ui/clear.png"));
-
+	
 	/**
 	 * Creates a new <code>HistogramListCellRenderer</code>.
 	 */
@@ -88,18 +79,18 @@ public class HistogramListCellRenderer
 			setText(text.toString());
 			if (hasGates) {
 				if (allGatesSet) {
-					setIcon(goIcon);
+					setIcon(Icons.GO);
 				} else if (anyGatesSet) {
-					setIcon(cautionIcon);
+					setIcon(Icons.CAUTION);
 				} else {
-					setIcon(stopIcon);
+					setIcon(Icons.STOP);
 				}
 			} else {
-				setIcon(clearIcon);
+				setIcon(Icons.CLEAR);
 			}
 		} else { //String
 			setText((String) value);
-			setIcon(clearIcon);
+			setIcon(Icons.CLEAR);
 		}
 		boolean enable=Histogram.getHistogramList().size()>0;
 		list.setEnabled(enable);
