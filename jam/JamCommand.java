@@ -108,7 +108,7 @@ public class JamCommand
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
 		gateControl = new GateSet(console);
-		monitorControl = new MonitorControl(jamMain, broadcaster, console);
+		monitorControl = new MonitorControl(console);
 		paramControl = new ParameterControl(jamMain, console);
 		calibDisplay = new CalibrationDisplay(console);
 		calibFit = new CalibrationFit(console);
@@ -212,9 +212,9 @@ public class JamCommand
 			} else if ("gateset".equals(incommand)) {
 				gateControl.show();
 			} else if ("displaymonitors".equals(incommand)) {
-				monitorControl.show();
+				monitorControl.display.show();
 			} else if ("configmonitors".equals(incommand)) {
-				monitorControl.showConfig();
+				monitorControl.show();
 			} else if ("about".equals(incommand)) {
 				help.showAbout();
 			} else if ("license".equals(incommand)) {
