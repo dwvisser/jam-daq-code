@@ -23,10 +23,6 @@ import javax.swing.filechooser.FileFilter;
  */
 public final class ImportBanGates extends AbstractImpExp {
 
-	public ImportBanGates(){
-		super();
-	}
-
 	/**
 	 * @see jam.io.AbstractImpExp#openFile(File, String)
 	 */
