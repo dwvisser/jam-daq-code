@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 class PlotFit {
 
-	/**
+	/* non-javadoc:
 	 * Get the area for a 1 d histogram
 	 */
 	double getArea(double[] counts, Bin p1, Bin p2) {
@@ -24,7 +24,7 @@ class PlotFit {
 		return area;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Get the area for a 2 d histogram bounded by the rectangle x1, y1, x2, y2
 	 */
 	double getArea(double[][] counts, Bin p1, Bin p2) {
@@ -45,7 +45,7 @@ class PlotFit {
 		return area;
 	}
 
-	/**
+	/* non-javadoc:
 	 * method to calculate the centroid for a histogram given a bounded area
 	 */
 	double getCentroid(double[] counts, Bin p1, Bin p2) {
@@ -54,16 +54,14 @@ class PlotFit {
 		final int xmin = Math.min(x1, x2);
 		final int xmax = Math.max(x1, x2);
 		double area = 0;
-		double darea;
 		double centroid = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			area += counts[i];
 		}
-		darea = (double) area;
 		// calculate weight
 		if (area > 0) { // must have more than zero counts
 			for (int i = xmin; i <= xmax; i++) {
-				centroid += (double) (i * counts[i]) / darea;
+				centroid += (i * counts[i]) / area;
 			}
 		} else {
 			centroid = 0;
@@ -71,7 +69,7 @@ class PlotFit {
 		return centroid;
 	}
 
-	/**
+	/* non-javadoc:
 	 * method to calculate the FWHM for a histogram given a bounded area done in
 	 * such a way the we do not overflow. So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
@@ -156,23 +154,22 @@ class PlotFit {
 			channelBackground[n] = gradient * n + intercept;
 		}
 		netAreaError[0] = Math.pow(grossArea + netBackground, 0.5);
-		double darea = (double) area;
 		/* calculate weight */
 		if (area > 0) { // must have more than zero counts
 			for (int i = rx1; i <= rx2; i++) {
-				centroid[0] += (double) (i * counts[i] / darea);
+				centroid[0] += (i * counts[i] / area);
 			}
 		} else {
 			centroid[0] = 0;
 		}
 		/* Calculation of Variance */
 		for (int i = rx1; i <= rx2; i++) {
-			distance = (double) Math.pow((i - centroid[0]), 2);
-			variance += (double) counts[i] * distance / (darea - 1.0);
+			distance = Math.pow((i - centroid[0]), 2);
+			variance += counts[i] * distance / (area - 1.0);
 
 		}
 		/* Error in Centroid position */
 		centroidError[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
-		fwhm[0] = 2.354 * Math.sqrt(variance);
+		fwhm[0] = GaussianConstants.SIG_TO_FWHM * Math.sqrt(variance);
 	}
 }
