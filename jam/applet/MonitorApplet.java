@@ -1,5 +1,3 @@
-/*
-*/
 package jam.applet;
 import java.applet.Applet;
 import java.net.*;
@@ -135,11 +133,7 @@ public class MonitorApplet
 	public void start() {
 		System.out.println("start");
 		if (DEBUG) {
-			try {
-				createExample();
-			} catch (DataException de) {
-				System.out.println("DataException: " + de);
-			}
+			createExample();
 		} else {
 			link(hostName);
 		}
@@ -293,10 +287,11 @@ public class MonitorApplet
 		}
 		textError.setText("link made ");
 	}
+	
 	/**
 	 * creat a set of example monitors for debugging
 	 */
-	private void createExample() throws DataException {
+	private void createExample() {
 		numberMonitors = 3;
 		monitor = new Monitor[numberMonitors];
 		monitorValues = new double[numberMonitors];
@@ -307,6 +302,7 @@ public class MonitorApplet
 		monitor[2] = new Monitor("damn", scal);
 		interval = 5;
 	}
+	
 	/**
 	 *
 	 */
