@@ -177,7 +177,7 @@ public class HistogramNew extends AbstractControl {
 	public void show() {
 		doSetup();
 		super.show();
-		//FIXME setVisible lead to a stack overflow
+		//NOTE setVisible lead to a stack overflow
 		//setVisible(true);
 	}
 

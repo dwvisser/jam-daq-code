@@ -174,9 +174,6 @@ public final class MenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_ZERO));
 		histogram.add(getMenuItem(DELETE_HISTOGRAM));
 		histogram.add(getMenuItem(SHOW_HIST_FIT));
-		//FIXME KBS remove
-		//histogram.add(calHist);
-		//calHist.add(getMenuItem(SHOW_HIST_DISPLAY_FIT));
 		histogram.add(getMenuItem(SHOW_HIST_PROJECT));
 		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
 		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
