@@ -1,7 +1,6 @@
 package jam.plot;
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
@@ -70,8 +69,6 @@ class Scroller
 			isPlot2d = false;
 		}
 		this.setLayout(new BorderLayout());
-		this.setBackground(Color.darkGray);
-		this.setForeground(Color.lightGray);
 		//add scroll bars to plot
 		plot.addScrollBars(this);
 		//plot in middle panel
@@ -79,14 +76,12 @@ class Scroller
 		//scroll bar to move along the x axis
 		scrollHorz = new JScrollBar(JScrollBar.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
-		scrollHorz.setBackground(Color.lightGray);
 		scrollHorz.addAdjustmentListener(this);
 		//if 2d plot add y scrollers
 		if (isPlot2d) {
 			//scroll bar to move along the y axis
 			scrollVert = new JScrollBar(JScrollBar.VERTICAL, 0, 255, 0, 255);
 			this.add(scrollVert, BorderLayout.WEST);
-			scrollVert.setBackground(Color.lightGray);
 			scrollVert.addAdjustmentListener(this);
 		}
 		//scrollbar to change scale
@@ -99,7 +94,6 @@ class Scroller
 				COUNT_SCROLL_MAX);
 		this.add(scrollCount, BorderLayout.EAST);
 		scrollCount.addAdjustmentListener(this);
-		scrollCount.setBackground(Color.lightGray);
 		scrollCount.addMouseListener(this);
 		//starting not updating count scale
 		countChange = false;
