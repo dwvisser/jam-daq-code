@@ -4,7 +4,10 @@
 package jam;
 
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.data.control.AbstractControl;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.RTSI;
@@ -79,6 +82,8 @@ abstract class AbstractSetup {
      */
     protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
+	protected static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
+    
     /**
      * Press to browse for a classpath.
      */
@@ -339,6 +344,20 @@ abstract class AbstractSetup {
 		index = sortClassName.lastIndexOf(".");
 		sortName = sortClassName.substring(index+1, sortClassName.length());
 		return sortName;
+    }
+    
+    void selectFirstSortHistogram() {
+		//Select first histogram
+		Group sortGroup = Group.getSortGroup();
+		STATUS.setCurrentGroup(sortGroup);
+		List histList = sortGroup.getHistogramList();
+		if (histList.size()>0) {
+			Histogram firstHist =  (Histogram)histList.get(0);
+			STATUS.setCurrentHistogram(firstHist);
+		}			
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);			
+
     }
     /**
      * Returns the dialog for setting up offline sorting.

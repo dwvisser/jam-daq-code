@@ -2,7 +2,6 @@ package jam;
 
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -72,9 +71,6 @@ public final class SetupSortOn extends AbstractSetup {
 	private final Console jamConsole;
 
 	private final FrontEndCommunication frontEnd;
-
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
 
 	/* stuff for dialog box */
 	private final AbstractButton cdisk; //save events to disk
@@ -399,6 +395,7 @@ public final class SetupSortOn extends AbstractSetup {
 				loadSorter(); //load sorting routine
 				if (sortRoutine != null) {
 					lockMode(true);
+					selectFirstSortHistogram();					
 					setupAcq(); //create daemons
 					jamConsole.messageOutln("Loaded "
 							+ sortRoutine.getClass().getName()
@@ -428,7 +425,6 @@ public final class SetupSortOn extends AbstractSetup {
 		} catch (Exception e) {
 			jamConsole.errorOutln(e.getMessage());
 		} finally {
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);		    
 		}
 	}
 

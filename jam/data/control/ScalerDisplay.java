@@ -197,14 +197,16 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * Get the values from the Scalers and display them
 	 */
 	public void displayScalers() {
-		Group currentGroup = status.getCurrentGroup();
-		List scalerList = currentGroup.getScalerList();		
-		final Iterator iter = scalerList.iterator();
-		int count = 0;
-		while (iter.hasNext()) {
-			final Scaler currentScaler = (Scaler) iter.next();
-			textScaler[count].setText(String.valueOf(currentScaler.getValue()));
-			count++;
+		Group currentGroup = status.getCurrentGroup(); 
+		if (currentGroup !=null) {
+			List scalerList = currentGroup.getScalerList();		
+			final Iterator iter = scalerList.iterator();
+			int count = 0;
+			while (iter.hasNext()) {
+				final Scaler currentScaler = (Scaler) iter.next();
+				textScaler[count].setText(String.valueOf(currentScaler.getValue()));
+				count++;
+			}
 		}
 	}
 }
