@@ -46,7 +46,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	final JamStatus status;
 	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 	final Display display;
-	private boolean overlay = false;
+	//private boolean overlay = false;
 	final String classname;
 	final MainMenuBar mbar;
 
@@ -99,10 +99,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				synchronized (this) {
-					overlay = overlaySelected();
-				}
-				if (overlay) {
+				if (overlaySelected()) {
 					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
 				}
 			}
@@ -153,22 +150,28 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	}
 
 	void setOverlayEnabled(boolean state) {
-		this.boverLay.setEnabled(state);
+		synchronized (boverLay){
+			boverLay.setEnabled(state);
+		}
 	}
 
 	/**
 	 * @return whether histogram overlay mode is enabled
 	 */
 	public boolean overlaySelected() {
-		return boverLay.isSelected();
+		synchronized (boverLay){
+			return boverLay.isSelected();
+		}
 	}
 
 	/**
 	 * De-select overlay mode.
 	 */
 	public void deselectOverlay() {
-		if (boverLay.isSelected()) {
-			boverLay.doClick();
+		synchronized (boverLay){
+			if (boverLay.isSelected()) {
+				boverLay.doClick();
+			}
 		}
 	}
 
@@ -199,29 +202,27 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	 * @param hist The histogram to be selected and displayed
 	 */
 	private void selectHistogram(Histogram hist) {
-		if (hist != null) {
-			if (!overlay) {
+		if (hist == null) {
+			display.displayHistogram(null);
+			mbar.adjustHistogramItems(null);
+		} else {
+			if (overlaySelected()) {
+				status.setOverlayHistogramName(hist.getName());
+				console.messageOut(hist.getName(), MessageHandler.END);
+				display.addToOverlay(hist);
+				//deselectOverlay();
+			} else {
 				status.setCurrentHistogramName(hist.getName());
 				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
 				final Histogram h =
 					Histogram.getHistogram(
 					status.getCurrentHistogramName());
+				display.removeOverlays();
 				display.displayHistogram(h);
 				gatesChanged();
 				setOverlayEnabled(h.getDimensionality() == 1);
 				mbar.adjustHistogramItems(h);
-			} else {
-				status.setOverlayHistogramName(hist.getName());
-				console.messageOut(hist.getName(), MessageHandler.END);
-				display.addToOverlay(hist);
-				synchronized (this) {
-					overlay = false;
-				}
-				deselectOverlay();
 			}
-		} else { //null object passed
-			display.displayHistogram(null);
-			mbar.adjustHistogramItems(null);
 		}
 	}
 
