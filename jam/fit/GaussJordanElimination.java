@@ -1,7 +1,5 @@
 package jam.fit;
 
-import java.lang.Math;
-
 class GaussJordanElimination{
 
     private Matrix InputMatrix; // n by n

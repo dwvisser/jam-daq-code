@@ -2,7 +2,7 @@
  */
 package jam.fit;
 import java.text.NumberFormat;
-import java.lang.Math;
+
     /**
      * <p>Parameters used to fit. </p>
      * <dl>
