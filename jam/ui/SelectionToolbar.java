@@ -30,7 +30,7 @@ import javax.swing.JToolBar;
  * @author Ken Swartz
  * @since 31 December 2003
  */
-public final class SelectionToolbar extends JToolBar implements Observer {
+public abstract class SelectionToolbar extends JToolBar implements Observer {
 
 
 	private final JComboBox histogramChooser = new JComboBox(
@@ -205,7 +205,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			final boolean oneD = hist.getDimensionality() == 1;
 			if ((isOverlaySelected() && oneD) &&
 			    (display.getHistogram()!=null)){
-					status.setOverlayHistogramName(hist.getName());
+					//FIXME status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getName(), MessageHandler.END);
 					display.overlayHistogram(hist.getNumber());
 			} else {
