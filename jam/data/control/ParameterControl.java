@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.util.Iterator;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -33,9 +32,6 @@ public final class ParameterControl
 	private final Frame frame;
 	private final MessageHandler messageHandler;
 
-	//dialog box
-	private final JDialog ddisp;
-
 	//widgets for each parameter
 	private JPanel pCenter;
 	private JPanel[] pParam;
@@ -48,15 +44,14 @@ public final class ParameterControl
 	public ParameterControl(
 		Frame frame,
 		MessageHandler messageHandler) {
-		super();
+		super("Sort Parameters", false);
 		this.frame = frame;
 		this.messageHandler = messageHandler;
 
 		// dialog box to display Parameters
-		ddisp = new JDialog(frame, "Sort Parameters", false);
-		ddisp.setResizable(false);
-		ddisp.setLocation(20, 50);
-		Container cddisp = ddisp.getContentPane();
+		setResizable(false);
+		setLocation(20, 50);
+		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
 
 		//Central Panel
@@ -83,21 +78,14 @@ public final class ParameterControl
 			}
 		});
 		pbut.add(bset);
-		ddisp.addWindowListener(new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				ddisp.dispose();
+				dispose();
 			}
 		});
 		setup();
 	}
 
-	/**
-	 * Show the Display dialog box
-	 *
-	 */
-	public void show() {
-		ddisp.show();
-	}
 	/**
 	 * Setup the display dialog box.
 	 *
@@ -133,7 +121,7 @@ public final class ParameterControl
 				count++;
 			}
 		}
-		ddisp.pack();
+		pack();
 	}
 
 	/**

@@ -25,7 +25,6 @@ import java.text.NumberFormat;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -52,7 +51,6 @@ public class CalibrationFit extends DataControl implements ActionListener {
     private CalibrationFunction calibFunction=new LinearFunction();
 
     //GUI stuff
-    private final JDialog dialogCalib;
     private final JComboBox cFunc;
     private final JLabel lcalibEq=new JLabel("Select a function.", JLabel.CENTER);
     private final JPanel pPoint [];
@@ -70,16 +68,15 @@ public class CalibrationFit extends DataControl implements ActionListener {
      */
     public CalibrationFit(Frame fr, Broadcaster bc,
     MessageHandler mh) {
-        super();
+        super("Calibration Fit",false);
         frame=fr;
         broadcaster=bc;
         msghdlr=mh;
         status=JamStatus.instance();
         // calibration dialog box
-        dialogCalib =new JDialog(frame,"Calibration Fit",false);
-        dialogCalib.setResizable(false);
-        dialogCalib.setLocation(30,30);
-        Container cdialogCalib=dialogCalib.getContentPane();
+        setResizable(false);
+        setLocation(30,30);
+        final Container cdialogCalib=getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
         pChoose.add(new JLabel("Function: "));
@@ -150,10 +147,10 @@ public class CalibrationFit extends DataControl implements ActionListener {
         bcancelCal.setActionCommand("cancelcalib");
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
-        dialogCalib.pack();
-        dialogCalib.addWindowListener(new WindowAdapter(){
+        pack();
+        addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e){
-                dialogCalib.dispose();
+                dispose();
             }
 			public void windowActivated(WindowEvent e) {
 				setup();
@@ -180,31 +177,18 @@ public class CalibrationFit extends DataControl implements ActionListener {
                 } else {
                     doCalibration();
                     if (command=="okcalib") {
-                        dialogCalib.dispose();
+                        dispose();
                     }
                 }
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
-                dialogCalib.dispose();
+                dispose();
             } else {
                 //just so at least a exception is thrown for now
                 throw new UnsupportedOperationException("Unregonized command: "+command);
             }
     }
-
-    /**
-     * Show histogram calibration dialog box
-     */
-    public void showLinFit(){
-        dialogCalib.show();
-    }
-	/**
-	 * Default show dialog, shows calibration dialog
-	 */
-	public void show() {
-		dialogCalib.show();
-	}
 
     /**
      * Call the fitting method of the chosen function to calibrate a histogram

@@ -1,21 +1,27 @@
 package jam.data.control;
 
+import jam.global.JamStatus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.swing.JDialog;
 
 /**
  * A class to do overall control of the Jam data classes.
  *
  * @author Ken Swartz
  */
-public abstract class DataControl {
+public abstract class DataControl extends JDialog {
 	private static List controllers = Collections.synchronizedList(new ArrayList());
+	protected static JamStatus status=JamStatus.instance();
 
 	/**
 	 * Default constructor for implementation classes.
 	 */
-	public DataControl() {
+	protected DataControl(String title, boolean modal) {
+		super(status.getFrame(), title, modal);
 		controllers.add(this);
 	}
 	
@@ -40,8 +46,4 @@ public abstract class DataControl {
 	 */
 	public abstract void setup();
 
-	/**
-	 * Show the control dialog
-	 */
-	public abstract void show();
 }

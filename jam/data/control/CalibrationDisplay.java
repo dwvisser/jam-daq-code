@@ -21,7 +21,6 @@ import java.text.NumberFormat;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -43,7 +42,6 @@ ItemListener, WindowListener {
     private final Broadcaster broadcaster;
     private final MessageHandler msghdlr;
 
-    private final JDialog dialogCalib;
     private final JComboBox cFunc = new JComboBox(new CalibrationComboBoxModel());
 
     private final JLabel lcalibEq;
@@ -54,7 +52,6 @@ ItemListener, WindowListener {
     private Histogram currentHistogram;
 
     //calibrate histogram
-    //private CalibrationFunction calibFunction;
     int numberTerms;
     private final NumberFormat numFormat;
     private final JamStatus status;
@@ -67,18 +64,17 @@ ItemListener, WindowListener {
      * Constructor
      */
     public CalibrationDisplay(Frame frame, Broadcaster broadcaster, MessageHandler msghdlr){
-        super();
+        super("Histogram Calibration",false);
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.msghdlr=msghdlr;
         status=JamStatus.instance();
 
-        dialogCalib =new JDialog(frame,"Histogram Calibration",false);
-        dialogCalib.setResizable(false);
-        dialogCalib.setLocation(30,30);
-        Container cdialogCalib = dialogCalib.getContentPane();
+        setResizable(false);
+        setLocation(30,30);
+        final Container cdialogCalib = getContentPane();
         cdialogCalib.setLayout(new GridLayout(0, 1, 10,10));
-        dialogCalib.addWindowListener(this);
+        addWindowListener(this);
 
         //function choose dialog panel
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
@@ -129,7 +125,7 @@ ItemListener, WindowListener {
         bcancelCal.addActionListener(this);
         pbCal.add(bcancelCal);
 
-        dialogCalib.pack();
+        pack();
 
         //formating  output
         numFormat=NumberFormat.getInstance();
@@ -187,13 +183,6 @@ ItemListener, WindowListener {
     }
 
     /**
-     * Show histogram calibration dialog box
-     */
-    public void show(){
-        dialogCalib.show();
-    }
-
-    /**
      * Receive actions from Dialog Boxes
      *
      */
@@ -206,14 +195,14 @@ ItemListener, WindowListener {
                 msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+
 				" with "+currentHistogram.getCalibration().getFormula());
                 if (command=="okcalib") {
-                    dialogCalib.dispose();
+                    dispose();
                 }
             } else if (command=="recalcalib") {
                 setup();
             } else if (command=="cancelcalib") {
                 cancelCalib();
                 msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getName());
-                dialogCalib.dispose();
+                dispose();
             } else {
                 //just so at least a exception is thrown for now
                 throw new UnsupportedOperationException("Unregonized command: "+command);
@@ -288,7 +277,7 @@ ItemListener, WindowListener {
      *  windowClosing only one used.
      */
     public void windowClosing(WindowEvent e){
-        dialogCalib.dispose();
+        dispose();
     }
 
     /**

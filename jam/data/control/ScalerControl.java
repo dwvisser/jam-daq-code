@@ -23,8 +23,6 @@ public final class ScalerControl
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	private final MessageHandler messageHandler;
 
-	//scaler display dialog box
-	private final JDialog ddisp;
 	private JPanel[] ps;
 	private JLabel[] labelScaler;
 	private JTextField[] textScaler;
@@ -41,15 +39,14 @@ public final class ScalerControl
 	 * @param messageHandler object to send text output to user to
 	 */
 	public ScalerControl(MessageHandler messageHandler) {
-		super();
+		super("Scalers", false);
 		broadcaster.addObserver(this);
 		this.messageHandler = messageHandler;
 		sortScalers = false;
 
 		// dialog box to display scalers
-		ddisp = new JDialog(status.getFrame(), "Scalers", false);
-		Container cddisp = ddisp.getContentPane();
-		ddisp.setLocation(20, 50);
+		final Container cddisp = getContentPane();
+		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
 
 		pScalers = new JPanel(new GridLayout(0, 1, 10, 5));
@@ -78,9 +75,9 @@ public final class ScalerControl
 		checkDisabled.addItemListener(this);
 		plower.add(checkDisabled);
 
-		ddisp.addWindowListener(new WindowAdapter() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				ddisp.dispose();
+				dispose();
 			}
 		});
 		setup();
@@ -122,7 +119,7 @@ public final class ScalerControl
 	 */
 	public void show() {
 		displayScalers();
-		ddisp.show();
+		super.show();
 	}
 
 	/**
@@ -157,7 +154,7 @@ public final class ScalerControl
 				count++;
 			}
 		}
-		ddisp.pack();
+		pack();
 		displayScalers();
 	}
 

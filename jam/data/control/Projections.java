@@ -29,7 +29,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -51,7 +50,6 @@ ItemListener, Observer {
     private final Broadcaster broadcaster;
     private final MessageHandler messageHandler;
 
-    private final JDialog dproject;
     private final JComboBox cfrom, cto, cchan;
     private final JCheckBox cacross,cdown;
     private final JTextField tlim1, tlim2, ttextto;
@@ -65,26 +63,24 @@ ItemListener, Observer {
     private final JLabel and = new JLabel("and");
 
     public Projections(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
-        super();
+        super("Project 2D Histogram",false);
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
         status = JamStatus.instance();
-        dproject=new JDialog(frame,"Project 2D Histogram",false);
-        dproject.setResizable(false);
+        setResizable(false);
 
         final int CHOOSER_SIZE=200;
         Dimension dim;
         final int hgap=5;
         final int vgap=10;
 
-        Container cdproject = dproject.getContentPane();
+        final Container cdproject = getContentPane();
         cdproject.setLayout(new BorderLayout(hgap,vgap));
-        dproject.setLocation(20,50);
-        dproject.addWindowListener(new WindowAdapter(){
+        setLocation(20,50);
+        addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
-				cancel();
-				dproject.dispose();
+				dispose();
 			}
 
 			public void windowOpened(WindowEvent e){
@@ -195,8 +191,7 @@ ItemListener, Observer {
 			}
 		});
 		cfrom.setSelectedIndex(0);
-
-        dproject.pack();
+		pack();
     }
 
     /**
@@ -210,10 +205,10 @@ ItemListener, Observer {
             if (command=="ok"||command=="apply"){
                 project();
                 if (command=="ok") {
-                    cancel();
+                    dispose();
                 }
             } else if(command=="cancel") {
-                cancel();
+                dispose();
             } else  {
                 throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
@@ -253,22 +248,6 @@ ItemListener, Observer {
         } else if(be.getCommand()==BroadcastEvent.GATE_ADD){
             setupAdd();
         }
-    }
-
-    /**
-     * Show gate setter dialog box
-     */
-    public void show(){
-        dproject.show();
-    }
-
-    /**
-     *	Cancel the setting of the gate and
-     * disable editting of all fields
-     *
-     */
-    private void cancel(){
-        dproject.dispose();
     }
 
     /**

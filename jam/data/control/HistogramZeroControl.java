@@ -17,7 +17,6 @@ import java.awt.event.WindowEvent;
 import java.util.Iterator;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 /**
@@ -29,22 +28,20 @@ public class HistogramZeroControl extends DataControl {
 		Broadcaster.getSingletonInstance();
 	private final Frame frame;
 	private final MessageHandler msghdlr;
-	private final JDialog dialogZero;
 
 	/**
 	 * Constructor
 	 */
 	public HistogramZeroControl(Frame f, MessageHandler mh) {
-		super();
+		super("Zero Histograms", false);
 		frame = f;
 		msghdlr = mh;
 		/* zero histogram dialog box */
-		dialogZero = new JDialog(frame, "Zero Histograms", false);
-		final Container dzc = dialogZero.getContentPane();
-		dialogZero.setResizable(false);
+		final Container dzc = getContentPane();
+		setResizable(false);
 		dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
 		final JPanel pButton = new JPanel(new GridLayout(1, 0, 5, 5));
-		dialogZero.setLocation(20, 50);
+		setLocation(20, 50);
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -55,7 +52,7 @@ public class HistogramZeroControl extends DataControl {
 				broadcaster.broadcast(BroadcastEvent.REFRESH);
 				msghdlr.messageOutln(
 					"Zero Histogram: " + currentHistogram.getTitle());
-				dialogZero.dispose();
+				dispose();
 			}
 		});
 		pButton.add(one);
@@ -63,7 +60,7 @@ public class HistogramZeroControl extends DataControl {
 		all.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				zeroAll();
-				dialogZero.dispose();
+				dispose();
 			}
 			
 			/**
@@ -85,24 +82,20 @@ public class HistogramZeroControl extends DataControl {
 		final JButton cancel = new JButton(" Cancel ");
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				dialogZero.dispose();
+				dispose();
 			}
 		});
 		pButton.add(cancel);
 		dzc.add(pButton);
-		dialogZero.pack();
-		dialogZero.addWindowListener(new WindowAdapter() {
+		pack();
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				dialogZero.dispose();
+				dispose();
 			}
 		});
 	}
 
 	public void setup() {
 		/* nothing to do */
-	}
-
-	public void show() {
-		dialogZero.show();
 	}
 }

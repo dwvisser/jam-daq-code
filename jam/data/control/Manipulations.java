@@ -1,13 +1,36 @@
 /*
  */
 package jam.data.control;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import jam.global.*;
-import jam.data.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import jam.data.DataException;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Class for projecting 2-D histograms.
@@ -21,19 +44,17 @@ Observer {
     private Broadcaster broadcaster;
     private MessageHandler messageHandler;
 
-    private JDialog dmanip;
     private JComboBox cfrom1,cfrom2,cto;
     private JCheckBox cnorm,cplus,cminus,ctimes,cdiv;
     private JTextField  ttextto,ttimes1,ttimes2;
     private JLabel lname;
 
     public Manipulations(Frame frame, Broadcaster broadcaster, MessageHandler messageHandler){
-        super();
+        super("Manipulate 1-D Histograms",false);
         this.frame=frame;
         this.broadcaster=broadcaster;
         this.messageHandler=messageHandler;
-        dmanip=new JDialog(frame,"Manipulate 1-D Histograms",false);
-        dmanip.setResizable(false);
+        setResizable(false);
 
         final int CHOOSER_SIZE=200;
         Dimension dim;
@@ -41,10 +62,10 @@ Observer {
         final int vgap=5;
 
         //UI
-        Container cdmanip=dmanip.getContentPane();
+        final Container cdmanip=getContentPane();
         cdmanip.setLayout(new BorderLayout(hgap,vgap));
-        dmanip.setLocation(20,50);
-        dmanip.addWindowListener(this);
+        setLocation(20,50);
+        addWindowListener(this);
 
 		//Labels panel
         JPanel pLabels = new JPanel(new GridLayout(0,1,hgap,vgap));
@@ -148,9 +169,7 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
-
-
-        dmanip.pack();
+		pack();
     }
 
     /**
@@ -165,10 +184,10 @@ Observer {
                 manipulate();
                 broadcaster.broadcast(BroadcastEvent.REFRESH);
                 if (command=="ok") {
-                	disposeDialog();
+                	dispose();
                 } 
             } else if(command=="cancel") {
-                disposeDialog();
+                dispose();
             } else  {
                 throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
@@ -235,22 +254,6 @@ Observer {
         } else {
             setUseNewHist(false);
         }
-    }
-
-    /**
-     * Show gate setter dialog box
-     */
-    public void show(){
-        dmanip.show();
-    }
-
-    /**
-     *	Cancel the setting of the gate and
-     * disable editting of all fields
-     *
-     */
-    private void disposeDialog(){
-        dmanip.dispose();
     }
 
     /**
@@ -416,8 +419,7 @@ Observer {
      *  windowClosing only one used.
      */
     public void windowClosing(WindowEvent e){
-        disposeDialog();
-        dmanip.dispose();
+        dispose();
     }
 
     /**

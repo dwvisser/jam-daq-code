@@ -1,13 +1,36 @@
 package jam.data.control;
-import jam.global.*;
-import jam.data.*;
-import jam.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import jam.HistogramComboBoxModel;
+import jam.data.DataException;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.MessageHandler;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Class for adjusting the gain of 1d spectra.
@@ -21,7 +44,6 @@ ItemListener, Observer {
     private final Broadcaster broadcaster;
     private final MessageHandler messageHandler;
 
-    private final JDialog dgain;
     private final JComboBox cto;
     private final JComboBox cfrom;
     private final JLabel lname;
@@ -35,7 +57,7 @@ ItemListener, Observer {
     private Histogram hfrom;
 
     public GainShift(Frame f, Broadcaster bc, MessageHandler mh){
-        super();
+        super("Gain Shift 1-D Histogram",false);
         chan1i=0.0;
         chan2i=1.0;
         chan1f=0.0;
@@ -50,16 +72,14 @@ ItemListener, Observer {
 		Dimension dim;
 
         //UI Layout
-        dgain=new JDialog(frame,"Gain Shift 1-D Histogram",false);
-        dgain.setResizable(false);
-        Container cdgain=dgain.getContentPane();
+        setResizable(false);
+        final Container cdgain=getContentPane();
         cdgain.setLayout(new BorderLayout(hgap, vgap));
 
-        dgain.setLocation(20,50);
-        dgain.addWindowListener(new WindowAdapter(){
+        setLocation(20,50);
+        addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
-				cancel();
-				dgain.dispose();
+				dispose();
 			}
 
 			public void windowOpened(WindowEvent e){
@@ -172,9 +192,7 @@ ItemListener, Observer {
 			}
 		});
 		cfrom.setSelectedIndex(0);
-
-        dgain.pack();
-
+        pack();
         setUILabels(true);
     }
 
@@ -194,10 +212,10 @@ ItemListener, Observer {
             if (OK.equals(command)||APPLY.equals(command)){
                 doGainShift();
                 if (OK.equals(command)) {
-                    cancel();
+                    dispose();
                 }
             } else if(CANCEL.equals(command)) {
-                cancel();
+                dispose();
             } else  {
                 throw new UnsupportedOperationException("Not a recognized command: "+command);
             }
@@ -256,22 +274,6 @@ ItemListener, Observer {
             setUseNewHist(false);
         }
         cfrom.setSelectedIndex(0);
-    }
-
-    /**
-     * Show gate setter dialog box
-     */
-    public void show(){
-        dgain.show();
-    }
-
-    /**
-     *	Cancel the setting of the gate and
-     *  disable editting of all fields
-     *
-     */
-    private void cancel(){
-        dgain.dispose();
     }
 
 	/**
