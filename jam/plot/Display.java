@@ -145,17 +145,17 @@ public class Display
 	 */
 	public void displayHistogram(Histogram hist) {
 		currentHist = hist;
-		final Limits lim = Limits.getLimits(hist);
 		if (hist != null) {
+			final Limits lim = Limits.getLimits(hist);
 			if (lim == null) { //create a new Limits object for this histogram
 				newHistogram();
 			}
 			overlayState = false;
 			showPlot(currentHist); //changes local currentPlot            
+			bgoto.setEnabled(currentHist.getDimensionality() == 1);
 		} else { //we have a null histogram, but display anyway
 			showPlot(currentHist);
 		}
-		bgoto.setEnabled(currentHist.getDimensionality() == 1);
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class Display
 	}
 
 	private void makeLimits(Histogram h) {
-		if (h != null) {
+		if (h != null) {//else ignore
 			try {
 				if (h.getDimensionality() == 1) {
 					setPlot(plot1d);
