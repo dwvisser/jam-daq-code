@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-    <Product Name="Jam" Id="@PRODUCT_GUID@"
+    <Product Name="Jam" Id="????????-????-????-????-????????????"
             Version="@MAJOR@.@MINOR@.@RELEASE@" Manufacturer="http://jam-daq.sf.net/"
             Language="1033">
-        <Package Id="@PACKAGE_GUID@"
+        <Package Id="????????-????-????-????-????????????"
                 Comments="This MSI file installs Jam."
                 Manufacturer="http://jam-daq.sf.net/" InstallerVersion="200"
                 Languages="1033" Compressed="yes"/>
@@ -31,7 +31,7 @@
                                 Guid="@BIN_GUID@">
                             <File Id="Main_program" Name="Jam.exe" DiskId="1"
                                     src="bin/Jam.exe">
-                                <Shortcut Id="Program shortcut"
+                                <Shortcut Id="Program_shortcut"
                                         Directory="ProgramMenuFolder" Name="Jam"
                                         LongName="Jam @MAJOR@.@MINOR@.@RELEASE@"
                                         Show="normal"
@@ -39,7 +39,7 @@
                             </File>
                             <File Id="Help_program" Name="JamHelp.exe" DiskId="1"
                                     src="bin/JamHelp.exe">
-                                <Shortcut Id="Help shortcut"
+                                <Shortcut Id="Help_shortcut"
                                         Directory="ProgramMenuFolder" Name="JamHelp"
                                         LongName="Jam @MAJOR@.@MINOR@.@RELEASE@ Help"
                                         Show="normal"
