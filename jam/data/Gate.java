@@ -99,9 +99,9 @@ public final class Gate {
 	public static void setGateList(List inGateList) {
 		clearList();
 		/* loop for all histograms */
-		for (Iterator allGates = inGateList.iterator(); allGates.hasNext();) {
-			Gate gate = (Gate) allGates.next();
-			String name = gate.getName();
+		for (final Iterator allGates = inGateList.iterator(); allGates.hasNext();) {
+			final Gate gate = (Gate) allGates.next();
+			final String name = gate.getName();
 			TABLE.put(name, gate);
 			LIST.add(gate);
 		}
@@ -119,19 +119,19 @@ public final class Gate {
 	/**
 	 * Returns an unmodifiable list of gates with the given dimensionality.
 	 * 
-	 * @param dimensionality of gates
+	 * @param dimension of gates
 	 * @return list of gates with the given dimensionality
 	 */
-	public static List getGateList(int dimensionality) {
-		return Collections.unmodifiableList(DIM_LIST[dimensionality-1]);
+	public static List getGateList(int dimension) {
+		return Collections.unmodifiableList(DIM_LIST[dimension-1]);
 	}
 
 	/**
 	 * Clears the list of gates.
 	 */
 	public static void clearList() {
-		for (Iterator it=LIST.iterator(); it.hasNext();){
-			Gate gate=(Gate)it.next();
+		for (final Iterator it=LIST.iterator(); it.hasNext();){
+			final Gate gate=(Gate)it.next();
 			gate.insideGate=null;
 			gate.bananaGate.reset();
 		}
@@ -139,7 +139,7 @@ public final class Gate {
 		DIM_LIST[0].clear();
 		DIM_LIST[1].clear();
 		TABLE.clear();
-		//run garbage collector, memory should be freed
+		/* run garbage collector, memory should be freed */
 		System.gc();
 	}
 
@@ -215,7 +215,13 @@ public final class Gate {
 			throw new UnsupportedOperationException (
 				"getLimits2d(): can only be called for 2D gates.");
 		}
-		return insideGate;
+		final int lenX=insideGate.length;
+		final int lenY=insideGate[0].length;
+		final boolean [][] rval = new boolean[lenX][lenY];
+		for (int i=0; i<lenX; i++){
+		    System.arraycopy(insideGate[i],0,rval[i],0,lenY);
+		}
+		return rval;
 	}
 
 	/**
@@ -352,43 +358,51 @@ public final class Gate {
 	 * @return sum of counts in gate
 	 */
 	public double getArea() {
+		return (dimensions == 1) ? getArea1d() : getArea2d();
+	}
+	
+	private double getArea1d(){
 		final Histogram histogram=Histogram.getHistogram(histName);
 		final Histogram.Type htype=histogram.getType();
-		double sum = 0.0;
-		if (dimensions == 1) {
-			if (htype == Histogram.Type.ONE_D_DOUBLE) {
-				final double[] counts = (double[]) histogram.getCounts();
-				for (int i = lowerLimit; i <= upperLimit; i++) {
-					sum += counts[i];
-				}
-			} else { //1d int
-				final int[] counts = (int[]) histogram.getCounts();
-				for (int i = lowerLimit; i <= upperLimit; i++) {
-					sum += counts[i];
-				}
+		double rval=0.0;
+		if (htype == Histogram.Type.ONE_D_DOUBLE) {
+			final double[] counts = (double[]) histogram.getCounts();
+			for (int i = lowerLimit; i <= upperLimit; i++) {
+				rval += counts[i];
 			}
-		} else { //2d
-			if (htype == Histogram.Type.TWO_DIM_INT) {
-				final int[][] counts2d = (int[][]) histogram.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					for (int j = 0; j < sizeY; j++) {
-						if (insideGate[i][j]) {
-							sum += counts2d[i][j];
-						}
+		} else { //1d int
+			final int[] counts = (int[]) histogram.getCounts();
+			for (int i = lowerLimit; i <= upperLimit; i++) {
+				rval += counts[i];
+			}
+		}
+		return rval;
+	}
+	
+	private double getArea2d(){
+		final Histogram histogram=Histogram.getHistogram(histName);
+		final Histogram.Type htype=histogram.getType();
+		double rval=0.0;
+		if (htype == Histogram.Type.TWO_DIM_INT) {
+			final int[][] counts2d = (int[][]) histogram.getCounts();
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					if (insideGate[i][j]) {
+						rval += counts2d[i][j];
 					}
 				}
-			} else { //2d double
-				final double[][] counts2d = (double[][]) histogram.getCounts();
-				for (int i = 0; i < sizeX; i++) {
-					for (int j = 0; j < sizeY; j++) {
-						if (insideGate[i][j]) {
-							sum += counts2d[i][j];
-						}
+			}
+		} else { //2d double
+			final double[][] counts2d = (double[][]) histogram.getCounts();
+			for (int i = 0; i < sizeX; i++) {
+				for (int j = 0; j < sizeY; j++) {
+					if (insideGate[i][j]) {
+						rval += counts2d[i][j];
 					}
 				}
 			}
 		}
-		return sum;
+		return rval;
 	}
 
 	/**
