@@ -305,10 +305,6 @@ public class CalibrationFit extends DataControl implements ActionListener, ItemL
         openFile("Load Calibration Energies", FileDialog.LOAD);
     }
     
-    private void saveCalib() throws Exception{
-        openFile("Save Calibration Energies", FileDialog.SAVE);
-    }
-    
     /**
      * Open a file to read
      */
