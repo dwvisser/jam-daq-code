@@ -1,11 +1,30 @@
 package jam.plot;
-import java.awt.*;
+import jam.data.DataException;
+import jam.data.Gate;
+import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.CommandListener;
+import jam.global.ComponentPrintable;
+import jam.global.JamStatus;
+import jam.global.MessageHandler;
+import jam.global.RunInfo;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.print.PageFormat;
-import javax.swing.*;
-import java.util.*;
-import java.net.*;
-import jam.global.*;
-import jam.data.*;
+import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.JOptionPane;
 
 /**
  * This class is a display routine for plots.
@@ -468,7 +487,7 @@ public class Display
 	 * @since Version 0.5
 	 */
 	public void addToolbarAction() {
-		final ClassLoader cl = this.getClass().getClassLoader();
+		//final ClassLoader cl = this.getClass().getClassLoader();
 
 		Icon iUpdate =loadToolbarIcon("jam/plot/Update.png");
 		Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
@@ -496,7 +515,7 @@ public class Display
 		 * buttons without borders, and doesn't enable/disable
 		 * them as expected
 		 */
-		final JPanel tbcontents=new JPanel();
+		//final JPanel tbcontents=new JPanel();
 		// FIXME clean up KBS
 		//ptoolbar.add(tbcontents,BorderLayout.CENTER);
 		//BoxLayout bl = new BoxLayout(tbcontents,BoxLayout.Y_AXIS);
@@ -690,17 +709,14 @@ public class Display
 	 * Load icons for tool bar
 	 */
 	private Icon loadToolbarIcon(String path) {
-
-		URL urlResource;
-		Icon toolbarIcon;
-
+		final Icon toolbarIcon;
 		final ClassLoader cl = this.getClass().getClassLoader();
-		urlResource = cl.getResource(path);
-
+		final URL urlResource = cl.getResource(path);
 		if (!(urlResource==null)) {
 			toolbarIcon = new ImageIcon(urlResource);
-		} else {
-			JOptionPane.showMessageDialog(null, "Can't load resource: "+path);
+		} else {//instead use path, ugly but lets us see button
+			JOptionPane.showMessageDialog(this,"Can't load resource: "+path,
+			"Missing Icon",JOptionPane.ERROR_MESSAGE);
 			toolbarIcon=null; //FIXME KBS put in default icon here
 		}
 		return toolbarIcon;
