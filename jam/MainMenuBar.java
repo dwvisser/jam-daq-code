@@ -294,26 +294,29 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		return mPrefer;
 	}
 	
-	private void sortModeChanged() {
-		final SortMode mode = status.getSortMode();
-		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
-		impHist.setEnabled(file);
-	}
-
-	void adjustHistogramItems(Histogram h) {
-		final boolean hExists = h != null;
-		final boolean oneDops = hExists && h.getDimensionality() == 1;
-		calHist.setEnabled(oneDops);
-	}
 
 	public void update(Observable observe, Object obj) {
 		final BroadcastEvent be = (BroadcastEvent) obj;
 		final int command = be.getCommand();
 		if (command == BroadcastEvent.SORT_MODE_CHANGED) {
 			sortModeChanged();
+		} else if (command ==BroadcastEvent.HISTOGRAM_SELECT) {	
+			adjustHistogramItems((Histogram)be.getContent());
 		} else if (command == BroadcastEvent.FIT_NEW) {
 			Action fitAction =(Action)(be.getContent());
 			fitting.add(new JMenuItem(fitAction));
 		}
 	}
+	private void sortModeChanged() {
+		final SortMode mode = status.getSortMode();
+		final boolean file = mode == SortMode.FILE || mode == SortMode.NO_SORT;
+		impHist.setEnabled(file);
+	}
+
+	private void adjustHistogramItems(Histogram h) {
+		final boolean hExists = h != null;
+		final boolean oneDops = hExists && h.getDimensionality() == 1;
+		calHist.setEnabled(oneDops);
+	}
+	
 }

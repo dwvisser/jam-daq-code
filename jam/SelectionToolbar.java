@@ -203,7 +203,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	private void selectHistogram(Histogram hist) {
 		if (hist == null) {
 			display.displayHistogram(null);
-			mbar.adjustHistogramItems(null);
+			broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT, null);	
 		} else {
 			if (overlaySelected()) {
 				status.setOverlayHistogramName(hist.getName());
@@ -212,7 +212,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 				//deselectOverlay();
 			} else {
 				status.setCurrentHistogramName(hist.getName());
-				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT);
+
 				final Histogram h =
 					Histogram.getHistogram(
 					status.getCurrentHistogramName());
@@ -220,7 +220,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 				display.displayHistogram(h);
 				gatesChanged();
 				setOverlayEnabled(h.getDimensionality() == 1);
-				mbar.adjustHistogramItems(h);
+				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_SELECT, h);				
 			}
 		}
 	}
