@@ -403,13 +403,18 @@ public class MainMenuBar extends JMenuBar {
 		ctrl_mask | Event.SHIFT_MASK));
 		file.addSeparator();
 		final JMenuItem exit = new JMenuItem("Exit...");
+		/*
 		exit.addActionListener(new ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				jm.showExitDialog();
 			}
 		});
+		*/
 		exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,ctrl_mask));
 		file.add(exit);
+		exit.setActionCommand("exit");
+		exit.addActionListener(jamCommand);
+		
 		final JMenu setup = new JMenu("Setup");
 		add(setup);
 		final JMenuItem setupOnline = new JMenuItem("Online sorting...");
@@ -460,7 +465,7 @@ public class MainMenuBar extends JMenuBar {
 		mcontrol.add(statusacq);
 		final JMenu histogram = new JMenu("Histogram");
 		add(histogram);
-		histogramNew.setActionCommand("newhist");
+		histogramNew.setActionCommand("shownewhist");
 		histogramNew.addActionListener(jamCommand);
 		histogram.add(histogramNew);
 		zeroHistogram.setActionCommand("zerohist");
