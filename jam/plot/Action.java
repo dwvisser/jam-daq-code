@@ -182,7 +182,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		/* see if there is a command currently being processed */
 		if (commandPresent) {
 			/* Do the command */
-			doCommand(currentCommand);
+			doCommand(currentCommand, false);
 		} else if (settingGate) {
 			/* No command being processed check if gate is being set */
 			final Plot currentPlot = display.getPlot();
@@ -191,7 +191,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
 					pPixel);
 		} else {
-			doCommand(CURSOR);
+			doCommand(CURSOR, false);
 		}
 	}
 
@@ -200,42 +200,42 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * 
 	 * @param inCommand
 	 */
-	void doCommand(String inCommand) {
-		doCommand(inCommand, null);
+	void doCommand(String inCommand, boolean console) {
+		doCommand(inCommand, null, console);
 	}
 
 	/**
 	 * Does a command with parameters
 	 */
-	synchronized void doCommand(String inCommand, double[] parameters) {
-		/* Its a blank command so use last command */
-		if (inCommand == null) {
-			//NOP currentCommand=currentCommand;
-			//Not a cursor command so its a "real" command
-		} else if (!inCommand.equals(CURSOR)) {
-			//cancel previous command if command has changed
-			if (inCommand != currentCommand) {
-				done();
-			}
-			currentCommand = inCommand;
-		} else {
-			/* use cursor only if current command does not exist */
-			if (currentCommand == null){
+	synchronized void doCommand(String inCommand, final double[] inParams, boolean console) {
+		/* if inCommand is null, keep currentCommand */
+		if (inCommand != null) {
+			if (!inCommand.equals(CURSOR)) {
+				/* Not a cursor command so its a "real" command */
+				if (inCommand != currentCommand) {
+					/* cancel previous command */
+					done();
+				}
 				currentCommand = inCommand;
+			} else {
+				/* use cursor only if current command does not exist */
+				if (currentCommand == null) {
+					currentCommand = inCommand;
+				}
 			}
-		}
-		if (parameters == null) {
-			parameters = new double[0];
 		}
 		/* check that a histogram is defined */
-		if (status.getCurrentHistogram() == null) {
-			return;
+		if (status.getCurrentHistogram() != null) {
+			doCurrentCommand(inParams == null ? new double[0] : inParams, console);
 		}
+	}
+	
+	private void doCurrentCommand(double [] parameters, boolean console){
 		if (CANCEL.equals(currentCommand)) {
 			cancel();
 		} else if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
-		}else if (OVERLAY.equals(currentCommand)){
+		} else if (OVERLAY.equals(currentCommand)) {
 			overlay(parameters);
 		} else if (CURSOR.equals(currentCommand)) {
 			channelDisplay();
@@ -258,7 +258,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else if (AUTO.equals(currentCommand)) {
 			auto();
 		} else if (RANGE.equals(currentCommand)) {
-			range();
+			range(console);
 		} else if (AREA.equals(currentCommand)) {
 			areaCent();
 		} else if (GOTO.equals(currentCommand)) {
@@ -276,21 +276,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
-	boolean getIsCursorCommand() {
+	synchronized boolean getIsCursorCommand() {
 		return isCursorCommand;
 	}
 
-	int getCursorDimension() {
-		int cursorDimension;
-		if (display.getPlot().getDimensionality() == 2) {
-			cursorDimension = 2;
-		} else {
-			cursorDimension = 1;
-		}
-		return cursorDimension;
-	}
-
-	void setCursor(Bin cursorIn) {
+	synchronized void setCursor(Bin cursorIn) {
 		cursor.setChannel(cursorIn);
 	}
 
@@ -439,10 +429,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				if (h.getDimensionality() != 1) {
 					textOut.errorOutln(h.getName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
-				} else if (display.getPlot().getDimensionality()!=1){
-						textOut.errorOutln(" Current histogram not 1D, so it cannot be overlaid.");
-					
-				}else {
+				} else if (display.getPlot().getDimensionality() != 1) {
+					textOut
+							.errorOutln(" Current histogram not 1D, so it cannot be overlaid.");
+
+				} else {
 					display.overlayHistogram(num);
 					textOut.messageOut(Integer.toString(num) + ' ',
 							MessageHandler.CONTINUE);
@@ -460,21 +451,28 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	/**
 	 * Set the range for the counts scale.
 	 */
-	private void range() {
+	private void range(boolean console) {
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
-		} else if (clicks.size() == 0) {
-			countLow = (int) cursor.getY();
-			clicks.add(cursor);
-			textOut.messageOut("" + countLow + " to ");
 		} else {
-			countHigh = (int) cursor.getY();
-			clicks.add(cursor);
-			display.getPlot().setRange(countLow, countHigh);
-			textOut.messageOut(String.valueOf(countHigh), MessageHandler.END);
-			done();
+			final Plot plot = display.getPlot();
+			final boolean twoD = plot.getDimensionality() == 2;
+			final boolean useCounts = twoD && !console;
+			final double cts = useCounts ? cursor.getCounts() : cursor.getY();
+			if (clicks.size() == 0) {
+				countLow = (int)cts;
+				clicks.add(cursor);
+				textOut.messageOut("" + countLow + " to ");
+			} else {
+				countHigh = (int)cts;
+				clicks.add(cursor);
+				plot.setRange(countLow, countHigh);
+				textOut.messageOut(String.valueOf(countHigh),
+						MessageHandler.END);
+				done();
+			}
 		}
 	}
 
@@ -933,8 +931,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			setAutoOnExpand(Boolean.valueOf(newValue).booleanValue());
 		}
 	}
-	
-	String getCurrentCommand(){
+
+	String getCurrentCommand() {
 		return currentCommand;
 	}
 }
