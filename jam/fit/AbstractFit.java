@@ -232,13 +232,11 @@ public abstract class AbstractFit implements PlotMouseListener {
      *            controlling frame
      * @param d
      *            Jam main class
-     * @param mh
-     *            object to send error messages to
      */
-    public final void createDialog(Frame f, Display d, MessageHandler mh) {
+    public final void createDialog(Frame f, Display d) {
         frame = f;
         display = d;
-        msgHandler = mh;
+        msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
         parameters = getParameters();
         final int parNumber = parameters.size();
         parameterArray = new Parameter[parNumber];
