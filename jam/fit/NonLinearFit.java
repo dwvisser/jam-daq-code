@@ -117,7 +117,6 @@ public abstract class NonLinearFit extends Fit {
      * @return      message with number of iterations and degrees of freedom to fit
      */
     public String doFit() throws FitException{
-        double aLambda;
         double chiSq,newChiSq;
         int numIter=1;
         final int MAX_ITERATIONS=10;
