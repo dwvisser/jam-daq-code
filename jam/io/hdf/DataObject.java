@@ -128,6 +128,11 @@ public abstract class DataObject {
 	  */
 	protected short ref;
 	
+	/**
+	 * Object version of <code>ref</code>.
+	 * 
+	 * @see #ref
+	 */
 	protected Short refKey;
 
 	/**
@@ -158,13 +163,13 @@ public abstract class DataObject {
 	 * @param	file	The file to contain the new object.
 	 * @param	tag	The hdf tag of the new object.
 	 */
-	public DataObject(HDFile file, short tag) {
+	DataObject(HDFile file, short tag) {
 		this.file = file;
 		setTag(tag);
 		file.addDataObject(this, true); //ref gets set in this call
 	}
 
-	/**
+	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> with the specified byte array as the data which will (or does already) 
 	 * physically
 	 * reside in the file.
@@ -173,7 +178,7 @@ public abstract class DataObject {
 	 * @param	data	    The byte representation of the data.
 	 * @param	r   The unique value specifying the type of data object.
 	 */
-	public DataObject(HDFile f, byte[] data, short t, short r) {
+	DataObject(HDFile f, byte[] data, short t, short r) {
 		this.file = f;
 		setTag(t);
 		setRef(r);
@@ -181,7 +186,7 @@ public abstract class DataObject {
 		file.addDataObject(this, false);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Creates a new <code>DataObject</code> pointing to the offset in the file where its data reside.  This
 	 * option is for when you don't want to hog memory with a large byte array.
 	 *
@@ -189,7 +194,7 @@ public abstract class DataObject {
 	 * @param	offset	    The location in <code>file</code>
 	 * @param	reference   The unique value specifying the type of data object.
 	 */
-	public DataObject(HDFile file, int offset, int length, short t, short reference) {
+	DataObject(HDFile file, int offset, int length, short t, short reference) {
 		this.file = file;
 		setTag(t);
 		setRef(reference);
@@ -198,7 +203,7 @@ public abstract class DataObject {
 		file.addDataObject(this, false);
 	}
 	
-	protected final void setTag(short t){
+	private final void setTag(short t){
 		tag=t;
 		tagKey=new Short(t);
 	}
@@ -209,15 +214,7 @@ public abstract class DataObject {
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
 	byte[] getBytes() throws HDFException {
-		return this.bytes;
-	}
-
-	/**
-	 * Simply sets the bytes, usually performed after a read from a file.
-	 */
-	public void setBytes(byte[] bytes) {
-		this.bytes = new byte[bytes.length];
-		System.arraycopy(bytes, 0, this.bytes, 0, bytes.length);
+		return bytes;
 	}
 
 	/**
@@ -229,21 +226,23 @@ public abstract class DataObject {
 
 	/**
 	 * Returns the length of the byte array in the file for this data element.
+	 * 
+	 * @return he length of the byte array in the file for this data element
 	 */
 	protected int getLength() {
 		return bytes.length;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Returns a 4-byte representation of the tag, usually defined in the HDF standard, of this item.  
 	 * The tag is a 2-byte integer
 	 * denoting a unique data object type.
 	 */
-	public final short getTag() {
+	final short getTag() {
 		return tag;
 	}
 	
-	public final Short getTagKey(){
+	final Short getTagKey(){
 		return tagKey;
 	}
 
@@ -251,18 +250,23 @@ public abstract class DataObject {
 	 * Returns a 2-byte representation of the reference number, which is unique for any given
 	 * tag type in an HDF file.  In my code, it is unique, period, but the HDF standard does not 
 	 * expect or require this.
+	 * 
+	 * @return reference number
 	 */
 	public final short getRef() {
 		return ref;
 	}
 	
-	public final Short getRefKey(){
+	final Short getRefKey(){
 		return refKey; 
 	}
 	
+	/**
+	 * Set to false once the ref number is defined.
+	 */
 	protected boolean haveNotSetRef=true;
 	
-	public final void setRef(short newref) {
+	final void setRef(short newref) {
 		if ((haveNotSetRef) || (ref!=newref)){
 			final Short oldref=refKey;
 			ref = newref;
@@ -275,21 +279,21 @@ public abstract class DataObject {
 		}
 	}
 
-	/**
+	/* non-javadoc:
 	 * Called back by <code>HDFile</code> to set the offset information.
 	 */
-	public void setOffset(int off) {
+	void setOffset(int off) {
 		offset = off;
 	}
 
-	public int getOffset() {
+	int getOffset() {
 		return offset;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Gives the handle to the file holding this object.
 	 */
-	public HDFile getFile() {
+	HDFile getFile() {
 		return file;
 	}
 
