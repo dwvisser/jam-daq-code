@@ -197,6 +197,17 @@ final class SelectionToolbar extends JToolBar implements Observer {
 			display.displayHistogram(null);
 		}
 	}
+	
+	private void syncHistChooser(){
+		Histogram hist=Histogram.getHistogram(status.getCurrentHistogramName());
+		if (hist != null){
+			if (!hist.equals(histogramChooser.getSelectedItem())){
+				histogramChooser.setSelectedItem(hist);
+				//histogramChooser.repaint();
+				gatesChanged();
+			}
+		}
+	}
 
 	/**
 	 * A gate has been selected. Tell all appropriate classes, like
@@ -267,6 +278,9 @@ final class SelectionToolbar extends JToolBar implements Observer {
 		command == BroadcastEvent.GATE_SET_OFF){
 			gateChooser.repaint();
 			histogramChooser.repaint();
+		}
+		if (command==BroadcastEvent.HISTOGRAM_SELECT){
+			syncHistChooser();
 		}
 	}
 
