@@ -1,6 +1,5 @@
 package jam.ui;
 
-import jam.RunState;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -9,7 +8,6 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Display;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -17,16 +15,12 @@ import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
 
 /**
  * The selection tool bar the at the top of the plot.
@@ -38,8 +32,6 @@ import javax.swing.SwingConstants;
  */
 public final class SelectionToolbar extends JToolBar implements Observer {
 
-	private final JLabel lrunState = new JLabel("   Welcome   ",
-			SwingConstants.CENTER);
 
 	private final JComboBox histogramChooser = new JComboBox(
 			new HistogramComboBoxModel());
@@ -78,12 +70,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
-		// Run status 
-		final Box pRunState = new Box(BoxLayout.X_AXIS);
-		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		pRunState.add(new JLabel(" Status: "));
-		lrunState.setOpaque(true);
-		pRunState.add(lrunState);
 		//Histogram Chooser
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
@@ -135,7 +121,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(gateChooser);
-		add(pRunState);
 		addSeparator();
 		add(pCenter);
 	}
@@ -186,11 +171,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 	}
 	
 	
-
-	private void setRunState(RunState rs) {
-		lrunState.setBackground(rs.getColor());
-		lrunState.setText(rs.getLabel());
-	}
 
 	private String getHTML(String body) {
 		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
@@ -311,8 +291,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
 			gateChooser.repaint();
 			histogramChooser.repaint();
-		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			setRunState((RunState) be.getContent());
 		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){
 			setOverlaySelected(false);
 		}
