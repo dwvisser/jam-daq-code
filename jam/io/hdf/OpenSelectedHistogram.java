@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.io.*;
+import java.io.*; 
 import java.util.*;
 
 
@@ -387,9 +387,15 @@ public class OpenSelectedHistogram {
 	private void createHistogram(HistProp histProp){
 		Histogram histogram;
 		
+		//File name without ".hdf"
+		String fileName = hdfFile.getFile().getName();
+		int index=fileName.indexOf(".hdf");
+		if (index>0)
+			fileName =fileName.substring(0, index);
+		
 		//Unpack to local for convience
 		String name=histProp.name.trim()+fileIndicator;
-		String title=histProp.title;
+		String title="File: "+fileName+" - "+histProp.title;
 		int number=histProp.number;
 		int sizeX=histProp.sizeX;
 		int sizeY=histProp.sizeY;
