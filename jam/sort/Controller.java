@@ -20,12 +20,12 @@
      * <dt>ONLINE</dt>  <dd>does nothing</dd>
      * </dl>
      */
-    public void atSortStart() throws GlobalException;   
+    void atSortStart() throws GlobalException;   
      
     /**
      * Called back by sortDaemon thread when sort encounters a end-run-marker or a end of file marker.
      */
-    public void atSortEnd()  ;     
+    void atSortEnd();     
          
     /**
      * Called by <code>SortDaemon</code> when it needs to start the next stream.
@@ -34,12 +34,12 @@
      * <dt>ONLINE</dt> <dd>does nothing.</dd>
      * </dl>
      */
-    public boolean isSortNext();
+    boolean isSortNext();
 
     /**
      * Method called back by <code>StorageDaemon</code>
      * when it encouters a end-run-marker and has closed 
      * the data event file it was writing data to.
      */
-    public void atWriteEnd();
+    void atWriteEnd();
 }
