@@ -1,5 +1,7 @@
 package jam.data;
 
+import jam.util.StringUtilities;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +62,8 @@ public class Group {
     /** The sort group, group with sort histogram */
     private static Group sortGroup;
 
+    private final int NAME_LENGTH = 20;
+    
     /** children histograms of group */
     private final List histList = new ArrayList();
 
@@ -72,6 +76,28 @@ public class Group {
     private String name;
 
     private Type type;
+    /** Name of file that group belongs to */
+    private String fileName;
+    /**
+     * Set a group as the current group, create the group if it does not already
+     * exist
+     * 
+     * @param groupName
+     *            name of the group
+     * @param type
+     *            of group
+     */
+    public synchronized static Group createGroup(String groupName, Type type, String fileName) {
+
+    	final Group group = new Group(groupName, type, fileName);
+        setCurrentGroup(group);
+        
+        /* Only one sort group */
+        if (type.type==Group.Type.TYPE_SORT) {
+        	sortGroup =currentGroup;
+        }
+        return currentGroup;
+    }
 
     /**
      * Set a group as the current group, create the group if it does not already
@@ -83,17 +109,7 @@ public class Group {
      *            of group
      */
     public synchronized static Group createGroup(String groupName, Type type) {
-        if (NAME_MAP.containsKey(groupName)) {
-            setCurrentGroup(groupName);
-        } else {
-            final Group group = new Group(groupName, type);
-            setCurrentGroup(group);
-        }
-        /* Only one sort group */
-        if (type.type==Group.Type.TYPE_SORT) {
-        	sortGroup =currentGroup;
-        }
-        return currentGroup;
+    	return Group.createGroup(groupName, type, null);
     }
     
     /**
@@ -203,11 +219,29 @@ public class Group {
      *            the type of group
      */
     public Group(String name, Type type) {
-        this.name = name;
-        this.type = type;
-        LIST.add(this);
-        NAME_MAP.put(name, this);
+    	this(name, type, null);
     }
+    /**
+     * Constructor
+     * 
+     * @param name
+     *            of the group
+     * @param type
+     *            the type of group
+     */
+    public Group(String name, Type type, String fileName) {
+
+        final StringUtilities stringUtil = StringUtilities.instance();
+        String uniqueName= stringUtil.makeUniqueName(name, NAME_MAP.keySet(), NAME_LENGTH);
+        
+        this.type = type;
+        this.name =uniqueName;
+        this.fileName=fileName;
+        
+        LIST.add(this);
+        NAME_MAP.put(uniqueName, this);
+    }
+    
     /**
      * Set the name, used to rename group
      * @param name
@@ -222,7 +256,13 @@ public class Group {
      * @return the name of this group
      */
     public String getName() {
-        return name;
+		String fullName;
+    	if (fileName!=null) {
+    		fullName=fileName+"("+name+")";
+    	} else {
+    		fullName=name;
+    	}
+        return fullName;
     }
 
     /**

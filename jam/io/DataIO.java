@@ -39,7 +39,28 @@ public interface  DataIO {
      * @param histList list of histograms to write
      */
     void writeFile(File file, List histList);
-    
+                
+    /**
+     * Read a file in.
+     * @param mode open or reload
+     * @param file to read in
+     * @see FileOpenMode#OPEN
+     * @see FileOpenMode#RELOAD
+     * @return <code>true</code> if successful
+     */ 			        
+    boolean readFile(FileOpenMode mode, File file);
+    /**
+     * Read in an HDF file.
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @param group
+     * 			  group to read in
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile, Group group);
     /**
      * Writes out (to a specific file) the currently held spectra, gates, and
      * scalers, subject to the options given. Sets separately which data
@@ -61,15 +82,6 @@ public interface  DataIO {
     //FIXME KBS old write remove when new writes tested
     void writeFile(boolean hist, boolean gate, boolean scaler, boolean params,
             File file);
-        
-        
-    /**
-     * Read a file in.
-     * @param mode open or reload
-     * @param file to read in
-     * @see FileOpenMode#OPEN
-     * @see FileOpenMode#RELOAD
-     * @return <code>true</code> if successful
-     */ 			        
-    boolean readFile(FileOpenMode mode, File file);
+    
+    
 }    

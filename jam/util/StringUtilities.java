@@ -3,6 +3,8 @@ package jam.util;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Contains utilities for manipulating <code>String</code> objects.
@@ -29,6 +31,51 @@ public final class StringUtilities {
 		return INSTANCE;
 	}
 
+	/**
+	 * Make a unique name out of the given name that differs from
+	 * names in the given set.
+	 * 
+	 * @param name name to make unique
+	 * @param nameSet contains the existing names
+	 * @return unique name
+	 */
+	public String makeUniqueName(String name, Set nameSet, int nameLength) {
+		
+		String nameTemp = makeLength(name, nameLength);
+		boolean warn=name.length()>nameTemp.length();
+		boolean isUnique=false;
+		int prime = 1;
+		boolean copyFound;
+		
+		/* find a name that does not conflict with existing names */
+		while(!isUnique) {
+			copyFound=false;
+			Iterator nameIter = nameSet.iterator();
+			while (nameIter.hasNext()){
+				String nameNext=(String)nameIter.next();
+				if (nameTemp.compareTo(nameNext)==0) {
+					copyFound=true;
+					break;
+				}
+			}
+			if (copyFound) { 
+				final String nameAddition = "[" + prime + "]";
+				nameTemp = makeLength(nameTemp, nameLength - nameAddition.length());
+				warn |= name.length()>nameTemp.length();
+				nameTemp += nameAddition;
+				prime++;				
+			} else {
+				isUnique=true;
+			}
+		}
+		
+		if (warn){
+		    System.err.println("\""+name+"\" truncated to produce new name \""+
+		            nameTemp+"\".");
+		}
+		return nameTemp;
+	}
+	
 	/**
 	 * Truncates a <code>String</code> or pads the end with spaces to make it a 
 	 * certain length.

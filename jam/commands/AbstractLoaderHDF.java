@@ -52,12 +52,12 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HD
 	                && jfile.getSelectedFile() != null) {
 	        	final File selectedFile = jfile.getSelectedFile();
 	    		hdfio.setListener(this);
-	    		isFileReading=hdfio.readFile(fileOpenMode, selectedFile, loadGroup, null);	        	
+	    		isFileReading=hdfio.readFile(fileOpenMode, selectedFile, loadGroup);	        	
 	        } else{
 	        	isFileReading=false;
 	        }	        	
 		} else {
-			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup, null);
+			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup);
 		}		
 		/* File was not read in so no call back do notify here */
 		//FIXME add statements inside if clause:

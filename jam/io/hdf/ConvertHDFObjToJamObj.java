@@ -60,7 +60,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      *             if any histogram apparently has more than 2 dimensions
      * @return number of histograms
      */
-    List findGroups(FileOpenMode mode, List groupNames) throws HDFException {
+    List findGroups(FileOpenMode mode, List existingGroupNameList) throws HDFException {
     	final List groupList = new ArrayList();
         /* Get VirtualGroup that is root of all groups */
         final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);
@@ -75,9 +75,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             	if ( hData.getTag() == AbstractData.DFTAG_VG ) {
             		//Cast to VirtualGroup and add to list
             		final VirtualGroup currentVGrp = (VirtualGroup)hData;
-            		if (groupNames==null) {
+            		String groupName =readVirtualGroupName(currentVGrp);            		
+            		if (existingGroupNameList!=null && existingGroupNameList.contains(groupName)) {
             			groupList.add(currentVGrp);
-            		} else {
+            		} else if (existingGroupNameList==null ){
             			groupList.add(currentVGrp);
             		}
             	}
@@ -89,14 +90,15 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     /* non-javadoc:
      * Convert a virtual group to a jam data group
      */
-	Group convertGroup(VirtualGroup virtualGroup){
+	Group convertGroup(VirtualGroup virtualGroup, String fileName){
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
-		return new Group(dataIDLabel.getLabel(), Group.Type.FILE);
+		return Group.createGroup(dataIDLabel.getLabel(), Group.Type.FILE, fileName);
 	}
 	
+	
 	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) throws HDFException {
-		return findSubGroups(virtualGroupGroup, HIST_TYPE);
+		return findSubGroups(virtualGroupGroup, HIST_TYPE, histogramNames);
     }
     
     /** 
@@ -240,7 +242,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		} else {
 			throw new HDFException("Unkown Histogram type in finding gates");
 		}
-		return findSubGroups(virtualGroupHistogram, gateType);				
+		return findSubGroups(virtualGroupHistogram, gateType, null);				
     }
 
 	VDataDescription findCalibration(VirtualGroup virtualGroup){
@@ -541,7 +543,13 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
    	    return vdd;   	 		
    	 }
     
-	private List findSubGroups(VirtualGroup virtualGroupGroup, String groupType){
+	private String readVirtualGroupName(VirtualGroup virtualGroup) {
+		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
+				virtualGroup.getRef());
+		return dataIDLabel.getLabel();
+	}
+	
+	private List findSubGroups(VirtualGroup virtualGroupGroup, String groupType, List groupNameList){
     	final List groupSubList = new ArrayList();    	
     	final Iterator iter = virtualGroupGroup.getObjects().iterator();
    	 	while (iter.hasNext()) {
@@ -550,8 +558,13 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
    	 		if ( hData.getTag() == AbstractData.DFTAG_VG ) {        		
    	 			//add to list if is a scaler goup
    	 			final VirtualGroup currentVGroup = (VirtualGroup) hData;
-   	 			if ( currentVGroup.getType().equals(groupType) ) {
-   	 				groupSubList.add(currentVGroup);
+   	 			String groupName = readVirtualGroupName(currentVGroup); 
+   	 			if ( currentVGroup.getType().equals(groupType) ){
+   	 				if (groupNameList!=null && groupNameList.contains(groupName)) {
+   	   	 				groupSubList.add(currentVGroup);
+   	 				} else if (groupNameList==null) {
+   	 					groupSubList.add(currentVGroup);
+   	 				}
    	 			} 
    	 		}
        	}

@@ -91,7 +91,7 @@ public abstract class AbstractManipulation extends AbstractControl {
 	Histogram createNewHistogram(String name, String histName, int size) {
 		Histogram hist;
 		final String groupName = parseGroupName(name);
-		if (groupName.equals(Group.WORKING_NAME))
+		if (!Group.getGroupList().contains(Group.WORKING_NAME))
 		{
 			Group.createGroup(groupName, Group.Type.FILE);
 		}

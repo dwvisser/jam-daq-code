@@ -351,10 +351,11 @@ public abstract class Histogram {
 			group = Group.getCurrentGroup();
 		}
 		/* Make a unique name in the group */ 
-		final Map groupHistMap =group.getHistogramMap();		
-		name=makeUniqueName(nameIn, groupHistMap.keySet());
-		/* Create the full histogram name with group name */
+		final Map groupHistMap =group.getHistogramMap();	
+		final StringUtilities stringUtil = StringUtilities.instance();
+		name=stringUtil.makeUniqueName(nameIn, groupHistMap.keySet(), NAME_LENGTH);
 		
+		/* Create the full histogram name with group name */		
 		groupName=group.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
 		/* Add to group */
@@ -452,36 +453,7 @@ public abstract class Histogram {
 		this(group, name, type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
-	}
-	
-	/**
-	 * Make a unique name out of the given name that differs from
-	 * names in the given set.
-	 * 
-	 * @param name name to make unique
-	 * @param nameSet contains the existing names
-	 * @return unique name
-	 */
-	private final String makeUniqueName(String name, Set nameSet) {
-		final StringUtilities stringUtil = StringUtilities.instance();		
-		String nameTemp = stringUtil.makeLength(name, NAME_LENGTH);
-		boolean warn=name.length()>nameTemp.length();
-		/* find a name that does not conflict with existing names */
-		int prime = 1;
-		while (nameSet.contains(nameTemp)) {
-			final String nameAddition = "[" + prime + "]";
-			nameTemp = stringUtil.makeLength(nameTemp, NAME_LENGTH - nameAddition.length());
-			warn |= name.length()>nameTemp.length();
-			nameTemp += nameAddition;
-			prime++;
-		}
-		if (warn){
-		    System.err.println("\""+name+"\" truncated to produce new name \""+
-		            nameTemp+"\".");
-		}
-		return nameTemp;
-	}
-	
+	}	
 
 	//end of constructors
 

@@ -26,7 +26,7 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
-		Group.createGroup("Working", Group.Type.FILE);
+		//Group.createGroup(Group.WORKING_NAME, Group.Type.FILE);
 		Histogram.createHistogram(hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 

@@ -1,13 +1,11 @@
 package jam.data.func;
 import jam.data.DataException;
 
-import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram.  

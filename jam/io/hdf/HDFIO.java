@@ -12,7 +12,6 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
-import jam.plot.PlotPrefs;
 import jam.util.SwingWorker;
 
 import java.awt.Frame;
@@ -132,7 +131,24 @@ public final class HDFIO implements DataIO, JamFileFields {
     public boolean readFile(FileOpenMode mode, File infile) {
     	return readFile(mode, infile, null, null);
     }
+    /**
+     * Read in an HDF file.
+     * 
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @param group
+     * 			  group to read in
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile, Group group) {
+    	List groupNames= new ArrayList();
+    	groupNames.add(group.getName());
+    	return readFile(mode, infile, groupNames, null);
+    }
 
+    
     //FIXME KBS old write remove when new writes tested
     public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
             boolean wrtparams, final File file) {
@@ -271,18 +287,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         spawnAsyncWriteFile(file, histList, gateList, scalerList, paramList);
     }
 
-    /**
-     * Read in an HDF file.
-     * 
-     * @param infile
-     *            file to load
-     * @param mode
-     *            whether to open or reload
-     * @return <code>true</code> if successful
-     */
-    public boolean readFile(FileOpenMode mode, File infile, Group group) {
-    	return readFile(mode, infile, group, null);
-    }
+    
     /**
      * Read in an HDF file.
      * 
@@ -293,7 +298,7 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param histNames list of names of histograms to read in
      * @return <code>true</code> if successful
      */
-    public boolean readFile(FileOpenMode mode, File infile, Group group, List histNames) {
+    public boolean readFile(FileOpenMode mode, File infile,  List groupNames, List histNames) {
     	if(!infile.isFile()) {
     		msgHandler.errorOutln("Cannot find file "+infile+".");
     		return false;
@@ -303,7 +308,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             return  false;
         }
     	
-    	spawnAsyncReadFile(mode, infile, group, histNames);
+    	spawnAsyncReadFile(mode, infile, groupNames, histNames);
         return true;
     }
 
@@ -337,6 +342,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     /*
      * non-javadoc: Asyncronized write
      */
+    //FIXME KBS remove when all new writes work
     private void spawnAsyncWriteFile(final File file, final List histograms,
             final List gates, final List scalers, final List parameters) {
     	uiMessage="";
@@ -365,7 +371,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     /*
      * non-javadoc: Asyncronized read
      */
-    private void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final Group group, final List histNames) {
+    private void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List groupNames, final List histNames) {
     	uiMessage="";
     	uiErrorMsg ="";
 
@@ -377,7 +383,7 @@ public final class HDFIO implements DataIO, JamFileFields {
             	thisTread.setPriority(thisTread.getPriority()-1);
             	//End test 
             	try {
-            		asyncReadFileGroup(infile, mode, group, histNames);
+            		asyncReadFileGroup(infile, mode, groupNames, histNames);
             		//asyncReadFile(infile, mode, histNames);
             	}catch (Exception e) {
             		uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
@@ -595,7 +601,7 @@ public final class HDFIO implements DataIO, JamFileFields {
      *            names of histograms to read, null if all
      * @return <code>true</code> if successful
      */
-    synchronized private boolean asyncReadFileGroup(File infile, FileOpenMode mode, Group existingGroup, List histNames) {
+    synchronized private boolean asyncReadFileGroup(File infile, FileOpenMode mode, List existingGroupNames, List histNames) {
         boolean rval = true;
         final StringBuffer message = new StringBuffer();
         //reset all counters
@@ -621,9 +627,9 @@ public final class HDFIO implements DataIO, JamFileFields {
             
             asyncMonitor.increment();                
             if (hdfToJam.hasVGroupRootGroup()) {
-            	convertHDFToJam(mode, existingGroup, infile.getName());
+            	convertHDFToJam(mode, existingGroupNames, histNames, infile.getName());
             } else {
-            	convertHDFToJamOriginal(mode, existingGroup, infile.getName(), null);
+            	convertHDFToJamOriginal(mode, infile.getName(), null);
             }
             
             //Create output message
@@ -943,21 +949,22 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param mode
      * @throws HDFException
      */
-    private void convertHDFToJam(FileOpenMode mode, Group existingGroup, String fileName) throws HDFException {
+    private void convertHDFToJam(FileOpenMode mode, List existingGroupNameList, List histNames, String fileName) throws HDFException {
         hdfToJam.setInFile(inHDF);
 	    //Find groups	
-	    List groupVirtualGroups = hdfToJam.findGroups(mode, null);
+	    List groupVirtualGroups = hdfToJam.findGroups(mode, existingGroupNameList);
 	    groupCount =groupVirtualGroups.size();
 	    //Loop over groups
 	    Iterator groupIter =groupVirtualGroups.iterator();
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
-	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup);
-	    	if (mode==FileOpenMode.OPEN_MORE) {
-	    		appendFileName(currentGroup, fileName);
-	    	}
+	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, fileName);
+	    	//FIXME KBS remove
+	    	//if (mode==FileOpenMode.OPEN_MORE) {
+	    	//	appendFileName(currentGroup, fileName);
+	    	//}
 	        //Find histograms
-	    	List histList =hdfToJam.findHistograms(currentVGroup, null);
+	    	List histList =hdfToJam.findHistograms(currentVGroup, histNames);
 	    	histCount = histList.size();
 	        //Loop over histograms
 	    	Iterator histIter =histList.iterator();
@@ -1001,7 +1008,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    
     }
     
-    private void convertHDFToJamOriginal(FileOpenMode mode, Group existingGroup, String fileName, List histNames) throws HDFException {
+    private void convertHDFToJamOriginal(FileOpenMode mode, String fileName, List histNames) throws HDFException {
         hdfToJam.setInFile(inHDF);
     	Group currentGroup=null;
         //Set group
@@ -1059,7 +1066,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    Iterator groupIter =groupVirtualGroups.iterator();
 	    while (groupIter.hasNext()) {
 	    	VirtualGroup currentVGroup = (VirtualGroup)groupIter.next();
-	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup);
+	    	Group currentGroup =hdfToJam.convertGroup(currentVGroup, null);
 	        //Find histograms
 	    	List histList =hdfToJam.findHistograms(currentVGroup, null);
 	    	histCount = histList.size();
