@@ -272,11 +272,11 @@ public class HDFIO implements DataIO,JamHDFFields {
         synchronized (this){
         	out = null; //allows Garbage collector to free up memory
         }
-        doCleanup();
         msgHandler.messageOut("done!",MessageHandler.END);
         synchronized(this){
         	lastValidFile = file;
         }
+        System.gc();
     }
 
     /**
@@ -317,6 +317,7 @@ public class HDFIO implements DataIO,JamHDFFields {
             }
             if (mode==OPEN){
                 msgHandler.messageOut("Open "+fileNameOpen+": ",MessageHandler.NEW);
+				DataBase.getInstance().clearAllLists();
             } else {//reload
                 msgHandler.messageOut("Reload "+fileNameOpen+": ",MessageHandler.NEW);
             }
@@ -334,7 +335,6 @@ public class HDFIO implements DataIO,JamHDFFields {
             synchronized(this){
             	in = null;  // destroys reference to HDFile (and its DataObject's
             }
-            doCleanup();
             msgHandler.messageOut("done!",MessageHandler.END);
             synchronized(this){
             	lastValidFile = infile;
@@ -348,24 +348,10 @@ public class HDFIO implements DataIO,JamHDFFields {
             msgHandler.errorOutln(except.toString());
             outF = false;
         }
+		System.gc();
         return outF;
     }
     
-	/**
-	 * Create a thread which invokes the garbage collector. 
-	 */
-    private void doCleanup(){
-		final Runnable cleanup=new Runnable(){
-			public void run(){
-				System.gc();
-			}
-		};
-		final Thread runCleanup=new Thread(cleanup,
-		getClass().getName()+" cleanup");
-		runCleanup.start();
-    }
-
-
     /**
      * Adds data objects for the virtual group of histograms.
      *
@@ -467,9 +453,9 @@ public class HDFIO implements DataIO,JamHDFFields {
             ScientificData sdErr=null;
             if (hists != null){
             	/* clear if opening and there are histograms in file */
-                if (mode==OPEN) {
-                	DataBase.clearAllLists();
-                }
+                /*if (mode==OPEN) {
+                	DataBase.getInstance().clearAllLists();
+                }*/
                 /* get list of all DIL's in file */
                 final java.util.List labels=in.ofType(DataObject.DFTAG_DIL);
                 /* get list of all DIA's in file */
@@ -673,9 +659,9 @@ public class HDFIO implements DataIO,JamHDFFields {
             final java.util.List annotations = in.ofType(DataObject.DFTAG_DIA);
             if (gates != null){
             	/* clear if opening and there are histograms in file */
-                if (mode==OPEN) {
+                /*if (mode==OPEN) {
                 	Gate.clearList();
-                }
+                }*/
                 msgHandler.messageOut(gates.getObjects().size()+" gates",
                 MessageHandler.CONTINUE);
                 final Iterator temp = gates.getObjects().iterator() ;
@@ -781,9 +767,9 @@ public class HDFIO implements DataIO,JamHDFFields {
         /* only the "scalers" VH (only one element) in the file */
         try {
             if (VH != null) {
-                if (mode==OPEN) {
+                /*if (mode==OPEN) {
                 	Scaler.clearList();
-                }
+                }*/
                 /* get the VS corresponding to the given VH */
                 final Vdata VS=(Vdata)(in.getObject(DataObject.DFTAG_VS,
                 VH.getRef()));
@@ -874,9 +860,9 @@ public class HDFIO implements DataIO,JamHDFFields {
         /* only the "parameters" VH (only one element) in the file */
         try{
             if (VH != null) {
-                if (mode==OPEN) {
+                /*if (mode==OPEN) {
                 	DataParameter.clearList();
-                }
+                }*/
                 /* Get corresponding VS for this VH */
                 final Vdata VS=(Vdata)(in.getObject(
                 DataObject.DFTAG_VS,VH.getRef()));
@@ -978,7 +964,8 @@ public class HDFIO implements DataIO,JamHDFFields {
                     	/* determine which of the two contains error bars
                     	 * and ignore it, assigning the other to ndg */
                         if (DataIDLabel.withTagRef(labels,
-                        DataObject.DFTAG_NDG,numbers[0].getRef()).getLabel().equals(ERROR_LABEL)){
+                        DataObject.DFTAG_NDG,
+                        numbers[0].getRef()).getLabel().equals(ERROR_LABEL)){
                             ndg=numbers[1];
                         } else {
                             ndg=numbers[0];
