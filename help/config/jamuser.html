@@ -10,14 +10,16 @@
 <em>Note</em>: Properties listed in <code>JamUser.ini</code> will always override those
 listed in <code>JamConfig.ini</code>.
 
-<blockquote><code>
-!Initialization file for Jam
-<BR>exp.name=Mg24pt_
-<BR>sort.file=sort.Spectrograph 
-<BR>event.path=/home/jam/events
-<BR>hist.path=/home/jam/spectra
-<br>log.path=/hom/jam/logs
-</code>
+<blockquote><code><pre>
+!User initialization file for Jam astro account
+exp.name=testRun_
+sort.class=sort.coinc.july02.FPplusYLSA	
+hist.path=/data/aug02
+event.inpath=/home/jam
+event.outpath=/home/jam
+event.outfile=sortout.evn
+log.path=/data/aug02
+</pre></code>
 </blockquote>
 
 <h3>Parameter definitions</h3>
@@ -29,17 +31,21 @@ exp.name
 <DD>
 default name experimental name jam will use (online)
 <DT>
-sort.file
+sort.class
 <DD>
-default sort file jam will load, entered as you would refer to it on the classpath from a Java program
-<DT>
-event.path
-<DD>
-default path jam will use for saving and opening event files
+default sort to load when setting up, entered as you would refer to it on the classpath from a Java program
 <DT>
 hist.path
 <DD>
-default path jam will use for saving and opening histogram files
+default path for saving and opening histogram files
+<DT>
+event.inpath
+<DD>
+default path for reading in event files
+<DT>
+event.outpath
+<DD>
+default path for outputting event files
 <DT>
 log.path
 <DD>
