@@ -286,25 +286,23 @@ Observer {
      * Does the work of manipulating histograms
      */
     private void manipulate() throws DataException {
-        Histogram hfrom1,hfrom2,hto;
+        Histogram hto;
         double fac1,fac2;
-        String name;
         double [] in1,in2,out;
-        double [] err1,err2,errOut;
-        int i;
+        //int i;
 
         try {//read information for first histogram
             fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
         } catch (NumberFormatException nfe){
             throw new DataException("First factor is not a valid number [Manipulations]");
         }
-        hfrom1 = Histogram.getHistogram((String)cfrom1.getSelectedItem());
+        final Histogram hfrom1 = Histogram.getHistogram((String)cfrom1.getSelectedItem());
         if(hfrom1.getType()==Histogram.ONE_DIM_INT){
             in1 = toDoubleArray((int [])hfrom1.getCounts());
         } else {
             in1=(double [])hfrom1.getCounts();
         }
-        err1 = hfrom1.getErrors();
+        double [] err1 = hfrom1.getErrors();
 
         //read in information for second histogram
         try {
@@ -313,16 +311,16 @@ Observer {
             throw new DataException("Second factor is not a valid number [Manipulations]");
         }
 
-        hfrom2=Histogram.getHistogram((String)cfrom2.getSelectedItem());
+        final Histogram hfrom2=Histogram.getHistogram((String)cfrom2.getSelectedItem());
         if(hfrom2.getType()==Histogram.ONE_DIM_INT){
             in2 = toDoubleArray((int [])hfrom2.getCounts());
         } else {
             in2 = (double [])hfrom2.getCounts();
         }
-        err2 = hfrom2.getErrors();
+        double [] err2 = hfrom2.getErrors();
 
         //read in information for to histogram
-        name = (String)cto.getSelectedItem();
+        String name = (String)cto.getSelectedItem();
         if (name.equals("New Histogram")){
             name  = ttextto.getText().trim();
             hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom1.getSizeX(),name);
@@ -337,36 +335,35 @@ Observer {
         } else {
             out = (double [])hto.getCounts();
         }
-        errOut = hto.getErrors();
+        double [] errOut = hto.getErrors();
 
         if (cnorm.isSelected()) {
-            for (i=0; i<out.length;i++){
+            for (int i=0; i<out.length;i++){
                 out[i] = fac1 * in1[i];
                 errOut[i] = fac1 * err1[i];
             }
         } else if (cplus.isSelected()) {
-            for (i=0; i<out.length;i++){
+            for (int i=0; i<out.length;i++){
                 out[i] = fac1 * in1[i] + fac2 * in2[i];
                 errOut[i] = Math.sqrt(fac1*fac1*err1[i]*err1[i] + fac2*fac2*err2[i]*err2[i]);
             }
         } else if (cminus.isSelected()) {
-            for (i=0; i<out.length;i++){
+            for (int i=0; i<out.length;i++){
                 out[i] = fac1 * in1[i] - fac2 * in2[i];
                 errOut[i] = Math.sqrt(fac1*fac1*err1[i]*err1[i] + fac2*fac2*err2[i]*err2[i]);
             }
         } else if (ctimes.isSelected()) {
-            for (i=0; i<out.length;i++){
+            for (int i=0; i<out.length;i++){
                 out[i] = fac1 * in1[i] * fac2 * in2[i];
                 errOut[i] = Math.sqrt(fac2*fac2*err1[i]*err1[i] + fac1*fac1*err2[i]*err2[i]);
             }
         } else if (cdiv.isSelected()) {
-            for (i=0; i<out.length;i++){
+            for (int i=0; i<out.length;i++){
                 out[i] = fac1 * in1[i] / (fac2 * in2[i]);
                 errOut[i] = in1[i]/in2[i] * Math.sqrt(fac1*fac1/(err1[i]*err1[i]) + fac2*fac2/(err2[i]*err2[i]));
             }
         }
-        hto.setErrors(true);
-
+        hto.setErrors(errOut);
         //cast to int array if needed
         if (hto.getType()==Histogram.ONE_DIM_INT) {
             hto.setCounts(toIntArray(out));
