@@ -29,7 +29,6 @@ final class NumericalDataGroup extends DataObject {
      * Should be called whenever a change is made to the contents of the NDG.
      */
     protected void refreshBytes() {
-
         final int numBytes = 4 * elements.size();
         /* see DFTAG_NDG specification for HDF 4.1r2 */
         bytes = ByteBuffer.allocate(numBytes);
@@ -71,5 +70,19 @@ final class NumericalDataGroup extends DataObject {
      */
     List getObjects() {
         return elements;
+    }
+    
+    public String toString(){
+        final StringBuffer rval=new StringBuffer();
+        rval.append("NDG(");
+        final Iterator iterator = elements.iterator();
+        while (iterator.hasNext()){
+            rval.append(iterator.next().toString());
+            if (iterator.hasNext()){
+                rval.append(", ");
+            }
+        }
+        rval.append(")");
+        return rval.toString();
     }
 }

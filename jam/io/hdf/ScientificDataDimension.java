@@ -114,4 +114,15 @@ final class ScientificDataDimension extends DataObject {
     byte getType() {
         return numberType;
     }
+    
+    public String toString(){
+        final StringBuffer rval=new StringBuffer();
+        final String type = numberType == NumberType.DOUBLE ? "Double" : "Integer";
+        final String times=" x ";
+        rval.append("SDD ").append(ref).append(": ").append(type).append(times).append(sizeX);
+        if (rank ==2){
+            rval.append(times).append(sizeY);
+        }
+        return rval.toString();
+    }
 }

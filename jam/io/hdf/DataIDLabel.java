@@ -56,6 +56,10 @@ final class DataIDLabel extends DataObject {
     String getLabel() {
         return label;
     }
+    
+    public String toString(){
+        return label;
+    }
 
     /**
      * 
