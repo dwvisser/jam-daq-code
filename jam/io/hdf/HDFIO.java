@@ -14,6 +14,7 @@ import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.StringUtilities;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.ByteArrayOutputStream;
@@ -65,10 +66,17 @@ public final class HDFIO implements DataIO, JamHDFFields {
     }
 
     /**
+     * Number of steps in progress, 
+     * 1 for converting objects, 10 for writing them out
+     */    
+    private final int STEPS_WRITE_PROGRESS=10;
+    private final int STEPS_CONVERT_PROGRESS=1;
+    /**
      * Parent frame.
      */
     private final Frame frame;
-
+    
+    AsyncProgressMonitor asyncMonitor;
     /**
      * Where messages get sent (presumably the console).
      */
@@ -97,6 +105,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
     public HDFIO(Frame parent, MessageHandler console) {
         frame = parent;
         msgHandler = console;
+        asyncMonitor = new AsyncProgressMonitor(frame);
         jamToHDF = new ConvertJamObjToHDFObj();
         //FIXME convertHDFToJam = new ConvertHDFObjToJamObj();
     }
@@ -243,8 +252,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
         addDefaultDataObjects(file.getPath());
         final int totalToDo = hists.size() + gates.size() + scalers.size()
                 + parameters.size();
-        final ProgressMonitor monitor = new ProgressMonitor(frame,
-                "Saving HDF file", "Building file buffer", progress, totalToDo);
+        
+        asyncMonitor.setup("Saving HDF file", "Converting Objects", 
+        					STEPS_WRITE_PROGRESS+STEPS_CONVERT_PROGRESS);
         message.append("Saved ").append(file.getName()).append(" (");
         if (hasContents(hists)) {
             addHistogramSection();
@@ -255,8 +265,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
                 allHists.addDataObject(histVGroup);
                 //addHistogram((Histogram) (temp.next()));
-                progress++;
-                setProgress(monitor, progress);
+                //asyncMonitor.increment();
             }
         }
         if (hasContents(gates)) {
@@ -268,34 +277,33 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
                 allGates.addDataObject(gateVGroup);
                 //addGate((Gate) (temp.next()));
-                progress++;
-                setProgress(monitor, progress);
+                //asyncMonitor.increment();
             }
         }
         if (hasContents(scalers)) {
             jamToHDF.convertScalers(scalers);
             //addScalerSection(scalers);
             message.append(", ").append(scalers.size()).append(" scalers");
-            progress += scalers.size();
-            setProgress(monitor, progress);
+            //asyncMonitor.increment();            
         }
         if (hasContents(parameters)) {
             jamToHDF.convertParameters(parameters);
             //addParameterSection(parameters);
             message.append(", ").append(parameters.size())
                     .append(" parameters");
-            progress += parameters.size();
-            setProgress(monitor, progress);
+            //asyncMonitor.increment();
         }
+        asyncMonitor.increment();
         message.append(")");
         msgHandler.messageOut("", MessageHandler.END);
         HDFile out;
         try {
             synchronized (this) {
-                out = new HDFile(file, "rw");
+                out = new HDFile(file, "rw", asyncMonitor, STEPS_WRITE_PROGRESS);
+                asyncMonitor.setNote("Writing Data Objects");
             }
-            out.writeFile(monitor);
-            setProgressNote(monitor, "Closing File");
+            out.writeFile();
+            asyncMonitor.setNote("Closing File");
             out.close();
         } catch (FileNotFoundException e) {
             msgHandler.errorOutln("Opening file: " + file.getName());
@@ -306,11 +314,11 @@ public final class HDFIO implements DataIO, JamHDFFields {
             msgHandler.errorOutln("Exception writing to file '"
                     + file.getName() + "': " + e.toString());
         }
-        monitor.close();
         synchronized (this) {
             DataObject.clearAll();
             out = null; //allows Garbage collector to free up memory
         }
+        asyncMonitor.close();
         outln(message.toString());
         setLastValidFile(file);
         System.gc();
@@ -343,7 +351,20 @@ public final class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
-        return readFile(mode, infile, null);
+        readFile(mode, infile, null);
+        return true;
+    }
+
+    /*
+     * non-javadoc: Asyncronized write
+     */
+    public void aareadFile(final FileOpenMode mode, final File infile, final List histNames) {
+        final Thread thread = new Thread(new Runnable() {
+            public void run() {
+            //	asyncReadFile(mode, infile, histNames);
+            }
+        });
+        thread.start();
     }
 
     /**
@@ -1007,33 +1028,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
-    private void setProgressNote(final ProgressMonitor monitor,
-            final String note) {
-        final Runnable runner = new Runnable() {
-            public void run() {
-                monitor.setNote(note);
-            }
-        };
-        try {
-            SwingUtilities.invokeAndWait(runner);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setProgress(final ProgressMonitor monitor, final int value) {
-        final Runnable runner = new Runnable() {
-            public void run() {
-                monitor.setProgress(value);
-            }
-        };
-        try {
-            SwingUtilities.invokeAndWait(runner);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 
     private void outln(final String msg) {
         SwingUtilities.invokeLater(new Runnable() {

@@ -28,6 +28,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		final HDFileFilter filter=new HDFileFilter(false);
 		return filter.accept(file);
 	}
+	private AsyncProgressMonitor asyncProgressMonitor;
+	private int stepsProgress;
 	
 	/**
 	 * variable for marking position in file
@@ -42,8 +44,23 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param mode "r" or "rw"
 	 * @exception FileNotFoundException if given file not found
 	 */
+	public HDFile(File file, String mode, AsyncProgressMonitor asyncProgressMonitor, int stepsProgress) throws FileNotFoundException {
+		super(file, mode);
+		this.asyncProgressMonitor=asyncProgressMonitor;
+		this.stepsProgress=stepsProgress;
+	}
+	
+	/**
+	 * Constructor called with a <code>File</code> object, and an access
+	 * mode.
+	 *
+	 * @param file file to be accessed
+	 * @param mode "r" or "rw"
+	 * @exception FileNotFoundException if given file not found
+	 */
 	public HDFile(File file, String mode) throws FileNotFoundException {
 		super(file, mode);
+		stepsProgress=0;	//ignores progress
 	}
 	
 	/* non-javadoc:
@@ -51,11 +68,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * 
 	 * @throws HDFException
 	 */
-	void writeFile(final ProgressMonitor monitor) throws HDFException {
+	void writeFile() throws HDFException {
 		updateBytesOffsets();            
         writeMagicWord();	      
         writeDataDescriptorBlock();
-        writeAllObjects(monitor);
+        writeAllObjects();
 	}
 	
 	/**
@@ -130,23 +147,28 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @exception HDFException thrown if err occurs during file write
 	 */
-	private void writeAllObjects(final ProgressMonitor monitor) throws HDFException {
+	private void writeAllObjects() throws HDFException {
 		final List objectList = DataObject.getDataObjectList();
-		monitor.setMaximum(objectList.size());
-		int progress=1;
-		monitor.setProgress(progress);
-		monitor.setNote("Writing to disk");
+		
+		int numberObjctProgressStep;
+		int countObjct=0;
+		
+		numberObjctProgressStep=getNumberObjctProgressStep(objectList.size());
+		
 		final Iterator temp = objectList.iterator();
 		boolean foundEmpty = false;
 		writeLoop: while (temp.hasNext()) {
+			if (countObjct%numberObjctProgressStep==0) {
+				asyncProgressMonitor.increment();
+			}
+			
 			final DataObject dataObject = (DataObject) (temp.next());
 			if (dataObject.getBytes().capacity() == 0){
 			    foundEmpty=true;
 			    break writeLoop;
 			}
 			writeDataObject(dataObject);
-			progress++;
-			setProgress(monitor,progress);
+			countObjct++;
 		}
 		if (foundEmpty){
 			throw new HDFException("DataObject with no length encountered, halted writing HDF File.");
@@ -186,15 +208,23 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *  @exception HDFException unrecoverable error
 	 */
 	public void readFile() throws HDFException {
+		
+		int numberObjctProgressStep;
+		int countObjct=0;
+			
 		try {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file");
 			}
+			
 			seek(4);
 			boolean doAgain = true;
 			do {
 				final int numDD = readShort(); //number of DD's
 				final int nextBlock = readInt();
+				//Just one dd block for now
+				//numberObjctProgressStep=getNumberObjctProgressStep(numDD);
+				
 				for (int i = 1; i <= numDD; i++) {
 					final short tag = readShort();
 					final short ref = readShort();
@@ -202,6 +232,11 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					final int length = readInt();
 					final byte [] bytes = readBytes(offset,length);
 					DataObject.create(bytes,tag,ref,offset,length);
+					
+					//if (countObjct%numberObjctProgressStep==0) {
+						//asyncProgressMonitor.increment();
+					//}
+					
 				}
 				if (nextBlock == 0) {
 					doAgain = false;
@@ -209,11 +244,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					seek(nextBlock);
 				}
 			} while (doAgain);
+			
 			final Iterator temp = DataObject.getDataObjectList().iterator();
 			while (temp.hasNext()) {
 				final DataObject dataObject = (DataObject) (temp.next());
 				dataObject.interpretBytes();
 			}
+			
 		} catch (IOException e) {
 			throw new HDFException(
 				"Problem reading HDF file objects. ",e);
@@ -266,6 +303,19 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 */
 	public void close() throws IOException{
 		super.close();
+	}
+
+	private int getNumberObjctProgressStep(int numberObjects) {
+		int numberObjctProgressStep;
+		int countObjct=0;
+		if (stepsProgress>0) {
+			numberObjctProgressStep =numberObjects/stepsProgress;
+			if (numberObjctProgressStep <=0)
+				numberObjctProgressStep=1;
+		} else {
+			numberObjctProgressStep =1;
+		}
+		return numberObjctProgressStep;
 	}
 
 }

@@ -326,6 +326,13 @@ public abstract class DataObject {
 	    return rval;
 	}
 	
+	static void interpretBytesAll() throws HDFException {
+			final Iterator temp = getDataObjectList().iterator();
+			while (temp.hasNext()) {
+				final DataObject dataObject = (DataObject) (temp.next());
+				dataObject.interpretBytes();
+			}
+	}
 	/**
 	 * 
 	 * The HDF standard only requires that for a particular tag type, each instance have a
