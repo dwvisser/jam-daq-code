@@ -77,7 +77,7 @@ public final class MonitorControl
 	public MonitorControl(Frame frame,
 						  Broadcaster broadcaster,
 						  MessageHandler msgHandler) {
-		super();
+		super("Monitors Setup ", false);;
 		this.frame = frame;
 		this.broadcaster = broadcaster;
 		this.msgHandler = msgHandler;

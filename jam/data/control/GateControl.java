@@ -93,7 +93,7 @@ WindowListener,Observer  {
      * @param mh the console for text output
      */
     public GateControl(Frame f, Broadcaster bro, MessageHandler mh){
-        super();
+		super("Gate setting <none>", false);
         this.frame=f;
         this.broadcaster=bro;
         this.messageHandler=mh;
