@@ -629,7 +629,6 @@ public class ImpExpORNL extends ImpExp {
 	 * It is usually called by <code>openFile</code> in subclasses of <code>ImpExp</code>.
 	 *
 	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
 	 * @return	whether file was successfully read
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */

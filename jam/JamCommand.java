@@ -93,8 +93,6 @@ public class JamCommand
 	/** Constructor for this class.
 	 * @param jm The launch class for the Jam application
 	 * @param d the area where histograms are displayed
-	 * @param b the object which handles application-wide 
-	 * communications
 	 * @param jc the text input and output area
 	 */
 	public JamCommand(JamMain jm, Display d, JamConsole jc) {

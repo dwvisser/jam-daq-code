@@ -32,7 +32,7 @@ public class ImportBanGates extends ImpExp {
 	}
 
 	/**
-	 * @see jam.io.ImpExp#openFile()
+	 * @see jam.io.ImpExp#openFile(File, String)
 	 */
 	public boolean openFile(File f) throws ImpExpException {
 		return openFile(f, "Open BAN file");

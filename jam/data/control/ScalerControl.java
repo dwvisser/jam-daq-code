@@ -44,7 +44,6 @@ public final class ScalerControl extends DataControl implements ActionListener, 
 
     /** Creates the dialog box for reading and zeroing scalers.
      * @param frame main window for application that this dialog is attached to
-     * @param broadcaster hub of communications for message passin around Jam
      * @param messageHandler object to send text output to user to
      */
     public ScalerControl(Frame frame, MessageHandler messageHandler){
