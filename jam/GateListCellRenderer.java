@@ -11,7 +11,7 @@ import javax.swing.UIManager;
 
 /**
  * Renders representations for a JComboBox list entry of
- * a <code>jam.data.Histogram</code> object.
+ * a <code>jam.data.Gate</code> object.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 17 Dec 2003
@@ -26,7 +26,7 @@ public class GateListCellRenderer
 		new ImageIcon(cl.getResource("go.png"));
 	private static final ImageIcon clearIcon = 
 	new ImageIcon(cl.getResource("clear.png"));
-
+	
 	/**
 	 * Creates a new <code>HistogramListCellRenderer</code>.
 	 */
@@ -57,12 +57,9 @@ public class GateListCellRenderer
 		if (value instanceof Gate) {
 			final Gate g = (Gate) value;
 			final String name = g.getName();
-			final int number = g.getNumber();
-			final StringBuffer text = new StringBuffer();
-			text.append(number).append(". ").append(name);
-			setText(text.toString());
+			setText(name);
 			if (g.isDefined()) {
-					setIcon(goIcon);
+				setIcon(goIcon);
 			} else {
 				setIcon(stopIcon);
 			}
@@ -70,7 +67,9 @@ public class GateListCellRenderer
 			setText((String) value);
 			setIcon(clearIcon);
 		}
-		setEnabled(list.isEnabled());
+		final boolean hasGates = (list.getModel().getSize()>1);
+		list.setEnabled(hasGates);
+		setEnabled(hasGates);
 		setBorder(
 			(cellHasFocus)
 				? UIManager.getBorder("List.focusCellHighlightBorder")
