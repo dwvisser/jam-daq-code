@@ -8,6 +8,7 @@ import jam.global.MessageHandler;
 
 import java.awt.Frame;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,8 +86,8 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 *
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
-	public boolean openFile() throws ImpExpException {
-		return openFile("Import XSYS file ");
+	public boolean openFile(File f) throws ImpExpException {
+		return openFile(f, "Import XSYS file ");
 	}
 
 	/**

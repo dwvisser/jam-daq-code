@@ -1,11 +1,12 @@
 package jam.io;
 
-import jam.JamMain;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
 
+import java.awt.Frame;
 import java.awt.Polygon;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,7 +23,7 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ImportBanGates extends ImpExp {
 
-	public ImportBanGates(JamMain jm, MessageHandler c){
+	public ImportBanGates(Frame jm, MessageHandler c){
 		super(jm,c);
 	}
 	
@@ -33,8 +34,8 @@ public class ImportBanGates extends ImpExp {
 	/**
 	 * @see jam.io.ImpExp#openFile()
 	 */
-	public boolean openFile() throws ImpExpException {
-		return openFile("Open BAN file");
+	public boolean openFile(File f) throws ImpExpException {
+		return openFile(f, "Open BAN file");
 	}
 
 	/**

@@ -3,6 +3,7 @@ import jam.data.Histogram;
 import jam.global.MessageHandler;
 
 import java.awt.Frame;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -82,8 +83,8 @@ public class ImpExpASCII extends ImpExp {
 	 *
 	 * @exception   ImpExpException	    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
-	public boolean openFile() throws ImpExpException {
-		return openFile("Import text file ");
+	public boolean openFile(File f) throws ImpExpException {
+		return openFile(f, "Import text file ");
 	}
 
 	/**
