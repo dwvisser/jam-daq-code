@@ -470,7 +470,7 @@ public class RunControl extends JDialog implements Controller {
 		histFile = new File(histFilePath, histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
-		dataio.writeFile(histFile, Group.getSortGroup().getHistogramList());
+		dataio.writeFile(histFile, Group.getSortGroup());
 		runNumber++;//increment run number
 		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);

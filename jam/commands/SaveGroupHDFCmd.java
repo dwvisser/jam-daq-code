@@ -5,12 +5,8 @@ import jam.global.CommandListenerException;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
-import java.awt.Frame;
 import javax.swing.JFileChooser;
-
 
 /**
  *  * Command to save a group of histograms.
@@ -26,39 +22,42 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	
 	protected void execute(Object[] cmdParams) throws CommandException {
 		
-		Frame frame =STATUS.getFrame();
-		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		
+		File file=null;
 		Group group=STATUS.getCurrentGroup();
+		if (cmdParams!=null) {
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];	
+			if (cmdParams.length>1)
+				group =(Group)cmdParams[1];		
+		}		
+		saveGroup(file, group);		
+
+	}
+
+	private void saveGroup (File file, Group group) {
+
+		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
 		
 		if (group!=null) {
-			if (cmdParams == null || cmdParams.length==0) { //No file given		
+			if (file== null) { //No file given		
 		        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 		        jfile.setFileFilter(new HDFileFilter(true));
-		        int option = jfile.showSaveDialog(frame);
+		        int option = jfile.showSaveDialog(STATUS.getFrame());
 		        /* don't do anything if it was cancel */
 		        if (option == JFileChooser.APPROVE_OPTION
 		                && jfile.getSelectedFile() != null) {
-		            final File file = jfile.getSelectedFile();
-		            //List with only one item, the current group
-		            List tempArray =new ArrayList();
-		            tempArray.add(group);
-		            hdfio.writeFile(file, tempArray, true, true);
-		            //FIXME KBS remove
-		            //hdfio.writeFile(file, group.getHistogramList());
-
+		            file = jfile.getSelectedFile();
+		            hdfio.writeFile(file, group);
 		        }
 			}else {
-				File file=(File)cmdParams[0];
-				hdfio.writeFile(file, group.getHistogramList());
+				hdfio.writeFile(file, group);
 			}
 		} else {
 			msghdlr.errorOutln("Need to select a group.");
 		}
 			
-
+		
 	}
-
 	protected void executeParse(String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub

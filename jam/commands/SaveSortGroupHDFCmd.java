@@ -29,8 +29,20 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
-		final Frame frame =STATUS.getFrame();
-		final HDFIO hdfio = new HDFIO(frame, msghdlr);
+		
+		File file=null;
+		if (cmdParams!=null) {
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];			
+		}		
+		saveSortGroup(file);
+		
+	}
+
+	private void saveSortGroup (File file) {
+
+		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+		
 		final SortMode mode =STATUS.getSortMode();
 		if (mode == SortMode.ONLINE_DISK ||
 			mode == SortMode.ON_NO_DISK ||
@@ -38,26 +50,26 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 			/* find sort group */
 			final Group sortGroup=Group.getSortGroup();
 			if (sortGroup!=null) {
-				if (cmdParams == null || cmdParams.length==0) { //No file given		
+				if (file==null) { //No file given		
 			        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 			        jfile.setFileFilter(new HDFileFilter(true));
-			        final int option = jfile.showSaveDialog(frame);
+			        final int option = jfile.showSaveDialog(STATUS.getFrame());
 			        /* don't do anything if it was cancel */
 			        if (option == JFileChooser.APPROVE_OPTION
 			                && jfile.getSelectedFile() != null) {
-			            final File file = jfile.getSelectedFile();
-			            hdfio.writeFile(file, sortGroup.getHistogramList());
+			            file = jfile.getSelectedFile();
+			            hdfio.writeFile(file, sortGroup);
 			        }
 				}else {
-					final File file=(File)cmdParams[0];
-					hdfio.writeFile(file, sortGroup.getHistogramList());
+					hdfio.writeFile(file, sortGroup);
 				}
 			}
 		} else {//No sort group
 			throw new IllegalStateException("Need to be in a sort mode to save sort group.");
 		}
-	}
 
+		
+	}
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */

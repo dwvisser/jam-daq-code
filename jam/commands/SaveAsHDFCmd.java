@@ -59,7 +59,7 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	
 	        }
 		} else { //File name given	
-			hdfio.writeFile(true, true, true, true, file);
+			hdfio.writeFile(file, Group.getGroupList(), true, true);
 		}
 	}
 	/**

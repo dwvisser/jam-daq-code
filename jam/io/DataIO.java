@@ -1,5 +1,7 @@
 package jam.io;
 
+import jam.data.Group;
+
 import java.io.File;
 import java.util.List;
 
@@ -16,6 +18,14 @@ public interface  DataIO {
      */ 			        
     void writeFile(File file);
 
+    /**
+     *	write out a gorup to a given file all options true
+     *
+     * @param file to write to
+     * @param group of hisotgrams to write
+     */ 			        
+    void writeFile(File file, Group group);
+    
     /**
      *	write out to a given file all options true
      *

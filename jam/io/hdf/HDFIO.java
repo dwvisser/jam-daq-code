@@ -119,9 +119,22 @@ public final class HDFIO implements DataIO, JamHDFFields {
      *            to write to
      */
     public void writeFile(File file) {
-        writeFile(true, true, true, true, file);
+        writeFile(file, Group.getGroupList(), true, true); 
     }
 
+    /**
+     * Writes out to a specified file all the currently held spectra, gates,
+     * scalers, and parameters.
+     * 
+     * @param file
+     *            to write to
+     */
+    public void writeFile(File file, Group group) {
+    	List groupList = new ArrayList();
+		groupList.add(group);
+        writeFile(file, groupList, true, true); 
+    }
+    
     /**
      * Writes out to a specified file a list of histograms and gates, scalers,
      * and parameters.
@@ -147,7 +160,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
         /* Gate list */
         final List gateList = new ArrayList();
-        final Iterator iter = Gate.getGateList().iterator();
+        final Iterator iter = Gate.getGateList().iterator();	
         while (iter.hasNext()) {
             final Gate gate = (Gate) (iter.next());
             final Histogram histGate = gate.getHistogram();
@@ -381,7 +394,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             		asyncListener.CompletedIO(uiMessage, uiErrorMsg);
             	}
             	/*
-            	//FIXME KBS delete when read hist lists cases are handled
+            	//FIXME KBS delete when all async read hist lists cases are handled
             	 * 
             	JamStatus STATUS=JamStatus.getSingletonInstance();
             	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
