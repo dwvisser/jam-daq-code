@@ -86,6 +86,8 @@ public class JamProperties {
 	String END_LINE = System.getProperty("line.separator");
 	private String fileSep = System.getProperty("file.separator");
 	private String userHome = System.getProperty("user.home");
+	private static String os=null;
+	private static boolean macosx=false;
 
 	/**
 	 * Jam properties
@@ -116,6 +118,14 @@ public class JamProperties {
 	 */
 	public JamProperties() {
 		jamProperties = new Properties();
+	}
+	
+	public static boolean isMacOSX(){
+		if (os==null){
+			os=System.getProperty("os.name");
+			macosx=os.equals("Mac OS X");			
+		}
+		return macosx;
 	}
 	
 	public void setMessageHandler(MessageHandler msgHandler) {
