@@ -112,7 +112,7 @@ public abstract class EventInputStream /*extends InputStream*/ {
         eventSize=size;
     }
     
-    public void setConsole(MessageHandler console){
+    public final void setConsole(MessageHandler console){
         this.console=console;
     }
     
@@ -123,7 +123,6 @@ public abstract class EventInputStream /*extends InputStream*/ {
      */
     public void setEventSize(int size){
         this.eventSize=size;
-        //System.out.println(getClass().getName()+".setEventSize("+size+")");
     }
     
     /**
