@@ -89,8 +89,17 @@ public final class MonitorControl
 	private int interval; //update interval
 	private GoodThread loopThread; //loop to update monitors
 	private boolean configured = false; //monitors have been configured
+	
+	private static MonitorControl mc=null;
+	
+	static public MonitorControl getSingletonInstance(MessageHandler mh){
+		if (mc==null){
+			mc=new MonitorControl(mh);
+		}
+		return mc;
+	}
 
-	public MonitorControl(MessageHandler mh) {
+	MonitorControl(MessageHandler mh) {
 		super("Monitors Setup ", false);
 		msgHandler = mh;
 		final Container cdconfig = getContentPane();
