@@ -13,7 +13,8 @@ import javax.swing.AbstractAction;
  * 
  * @author Ken Swartz
  */
-public abstract class AbstractCommand extends AbstractAction implements Commandable {
+public abstract class AbstractCommand extends AbstractAction implements 
+Commandable {
 
 	protected final JamStatus status=JamStatus.instance();
 	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();

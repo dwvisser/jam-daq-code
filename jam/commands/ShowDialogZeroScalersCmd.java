@@ -1,6 +1,11 @@
 package jam.commands;
 
+import jam.data.Scaler;
 import jam.data.control.ScalerZero;
+
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Show the zero scalers dialog.
@@ -8,10 +13,18 @@ import jam.data.control.ScalerZero;
  * @author Ken Swartz
  *
  */
-final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd {
+final class ShowDialogZeroScalersCmd extends AbstractShowDataControlCmd 
+implements Observer {
+	
+	private final List scalerList=Scaler.getScalerList();
 	
 	protected void initCommand(){
 		putValue(NAME,"Zero Scalers\u2026");
 		dataControl=new ScalerZero();
 	}
+	
+	public void update(Observable observe, Object obj){
+		setEnabled(!scalerList.isEmpty());
+	}	
+
 }

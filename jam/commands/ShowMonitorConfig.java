@@ -1,21 +1,30 @@
 /*
  * Created on Jun 4, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package jam.commands;
-import jam.data.control.*;
+import jam.data.Monitor;
+import jam.data.control.MonitorControl;
+
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 4, 2004
  */
-public class ShowMonitorConfig extends AbstractShowDataControlCmd {
+final class ShowMonitorConfig extends AbstractShowDataControlCmd implements 
+Observer {
+
+	private final List monitorList=Monitor.getMonitorList();
 
 	protected void initCommand(){
 		putValue(NAME,"Configure Monitors\u2026");
 		dataControl=MonitorControl.getSingletonInstance(msghdlr);
 	}
+
+	public void update(Observable observe, Object obj){
+		setEnabled(!monitorList.isEmpty());
+	}	
 }
