@@ -1,5 +1,3 @@
-/*
- */
 package jam.plot;
 import java.awt.*;
 /**
@@ -11,7 +9,7 @@ import java.awt.*;
  */
 class PlotColorMap {
 
-
+	private static final Color DARK_RED=new Color(192,0,0);
     public final static int BLACK_ON_WHITE=0;
     public final static int WHITE_ON_BLACK=1;
     public final static int PRINT=5;
@@ -45,7 +43,7 @@ class PlotColorMap {
             background=Color.WHITE;
             foreground=Color.DARK_GRAY;
             hist=Color.BLACK;
-            overlay=Color.MAGENTA;
+            overlay=DARK_RED;
             gateDraw=Color.GREEN;
             gateShow=Color.RED;
             mark=Color.RED;
@@ -77,7 +75,7 @@ class PlotColorMap {
             background=Color.WHITE;
             foreground=Color.BLACK;
             hist=Color.BLACK;
-            overlay=new Color(59, 59, 59);
+            overlay=DARK_RED;
             gateDraw=new Color(59, 59, 59);
             gateShow=new Color(59, 59, 59);
             mark=new Color(102, 102, 102 );
