@@ -29,14 +29,29 @@ public  class RunInfo {
      */    
     public static Date runStartTime;
 
+    /**
+     * Time when run ended.
+     */
     public static Date runEndTime;    
-            
+    
+    /**
+     * Time when run started, as a string.
+     */
     public static String runStartTimeSt;
 
+    /**
+     * Time when run ended, as a string.
+     */
     public static String runEndTimeSt;
     
+    /**
+     * Number of possible parameters per event.
+     */
     public static int runEventSize;    
     
+    /**
+     * Block size for event stream.
+     */
     public static int runRecordLength;
     
     /**
