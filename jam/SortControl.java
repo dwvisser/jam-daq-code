@@ -91,7 +91,7 @@ public final class SortControl extends JDialog implements Controller {
 	private final JButton addfile, addDir, loadlist, remove, removeAll,
 			savelist;
 
-	private final static JamStatus status = JamStatus.instance();
+	private final static JamStatus STATUS = JamStatus.instance();
 
 	/**
 	 * button to get file brower
@@ -112,9 +112,9 @@ public final class SortControl extends JDialog implements Controller {
 	}
 
 	private SortControl() {
-		super(status.getFrame(), "Sorting", false);
-		msgHandler = status.getMessageHandler();
-		jamMain = status.getFrame();
+		super(STATUS.getFrame(), "Sorting", false);
+		msgHandler = STATUS.getMessageHandler();
+		jamMain = STATUS.getFrame();
 		defaultEvents = JamProperties
 				.getPropString(JamProperties.EVENT_OUTPATH);
 		defaultOutputFile = JamProperties
@@ -183,7 +183,7 @@ public final class SortControl extends JDialog implements Controller {
 		loadlist = new JButton("Load List");
 		loadlist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				Loadlist();
+				loadList();
 			}
 		});
 		ef.add(loadlist);
@@ -191,7 +191,7 @@ public final class SortControl extends JDialog implements Controller {
 		savelist = new JButton("Save List");
 		savelist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				Savelist();
+				saveList();
 			}
 		});
 		ef.add(savelist);
@@ -342,7 +342,7 @@ public final class SortControl extends JDialog implements Controller {
 		beginAction.setEnabled(false);
 		haltAction.setEnabled(true);
 		sortDaemon.setState(GoodThread.RUN);
-		status.setRunState(RunState.ACQ_ON);
+		STATUS.setRunState(RunState.ACQ_ON);
 	}
 
 	/**
@@ -365,7 +365,7 @@ public final class SortControl extends JDialog implements Controller {
 			msgHandler.messageOutln("Closed pre-sorted file: "
 					+ fileOut.getPath());
 		}
-		status.setRunState(RunState.ACQ_OFF);
+		STATUS.setRunState(RunState.ACQ_OFF);
 		msgHandler
 				.warningOutln("Ended offline sorting before reading all events.");
 		beginAction.setEnabled(false);
@@ -418,7 +418,7 @@ public final class SortControl extends JDialog implements Controller {
 	public void atSortEnd() {
 		try {
 			msgHandler.messageOutln("Sorting all done");
-			status.setRunState(RunState.ACQ_OFF);
+			STATUS.setRunState(RunState.ACQ_OFF);
 			if (!dataInpDaemon.closeEventInputListFile()) {
 				msgHandler.errorOutln("Couldn't close file [SortControl]");
 			}
@@ -520,7 +520,7 @@ public final class SortControl extends JDialog implements Controller {
 	/**
 	 * save list of items to sort
 	 */
-	private void Savelist() {
+	private void saveList() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
@@ -550,7 +550,7 @@ public final class SortControl extends JDialog implements Controller {
 	 * load a list of items to sort from a file
 	 *  
 	 */
-	private void Loadlist() {
+	private void loadList() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },

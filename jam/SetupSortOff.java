@@ -59,7 +59,7 @@ import javax.swing.border.EmptyBorder;
  */
 public final class SetupSortOff extends JDialog implements ItemListener {
 	
-	private static final JamStatus status=JamStatus.instance();
+	private static final JamStatus STATUS=JamStatus.instance();
 
     class ApplyActionListener implements ActionListener{
 
@@ -75,7 +75,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 
     private void doApply(boolean dispose){
 		try{
-			if (status.canSetup()) {
+			if (STATUS.canSetup()) {
 				resetSort();//clear current data areas and kill daemons
 				loadSorter();
 				msgHandler.messageOutln("Loaded sort class '"+
@@ -88,7 +88,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 					setupSort();      //create data areas and daemons
 					msgHandler.messageOutln("Daemons and dialogs initialized.");
 				}
-				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 				if (dispose) {
 					dispose();
 				}
@@ -103,9 +103,9 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     }
 
 	private final static String OK="OK";
-	private final static String Apply="Apply";
-	private final static String Cancel="Cancel";
-	private final static String SetupLocked="Setup Locked";
+	private final static String APPLY="Apply";
+	private final static String CANCEL="Cancel";
+	private final static String SETUP_LOCKED="Setup Locked";
 
 	private final String defaultSortPath, defaultSortRoutine,
 	defaultEventInStream,
@@ -115,7 +115,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     final private Frame frame;
     final private SortControl sortControl;
     final private DisplayCounters displayCounters;
-    final static private Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+    final static private Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
     final private MessageHandler msgHandler;
     private SortDaemon sortDaemon;
 
@@ -152,7 +152,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
 	}
 
     private SetupSortOff() {
-		super(status.getFrame(),"Setup Offline",false);  //dialog box
+		super(STATUS.getFrame(),"Setup Offline",false);  //dialog box
 		classname=getClass().getName()+"--";
         defaultSortRoutine = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
@@ -171,10 +171,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         if (!useDefaultPath){
 			sortClassPath=new File(defaultSortPath);
         }
-        frame=status.getFrame();
+        frame=STATUS.getFrame();
         sortControl=SortControl.getSingletonInstance();
         displayCounters=DisplayCounters.getSingletonInstance();
-        msgHandler=status.getMessageHandler();
+        msgHandler=STATUS.getMessageHandler();
         final Container cp=getContentPane();
         setResizable(false);
         final int posx=20;
@@ -304,16 +304,16 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         pb.add(bok);
         ApplyActionListener aal=new ApplyActionListener();
         bok.addActionListener(aal);
-        bapply = new JButton(Apply);
+        bapply = new JButton(APPLY);
         pb.add(bapply);
         bapply.addActionListener(aal);
-        final JButton bcancel =new JButton(new AbstractAction(Cancel){
+        final JButton bcancel =new JButton(new AbstractAction(CANCEL){
         	public void actionPerformed(ActionEvent ae){
         		dispose();
         	}
         });
         pb.add(bcancel);
-        checkLock =new JCheckBox(SetupLocked, false );
+        checkLock =new JCheckBox(SETUP_LOCKED, false );
         checkLock.setEnabled(false);
         checkLock.addItemListener(new ItemListener(){
         	public void itemStateChanged(ItemEvent ie){
@@ -509,7 +509,7 @@ public final class SetupSortOff extends JDialog implements ItemListener {
         }
         sortRoutine=null;
         DataBase.getInstance().clearAllLists();
-        broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         lockMode(false);
     }
 
@@ -554,10 +554,10 @@ public final class SetupSortOff extends JDialog implements ItemListener {
     	defaultPath.setEnabled(notLock);
     	sortChoice.setEnabled(notLock);
         if(lock){
-            status.setSortMode(SortMode.OFFLINE);
+            STATUS.setSortMode(SortMode.OFFLINE);
             bbrowsef.setEnabled(false);
         } else{
-            status.setSortMode(SortMode.NO_SORT);
+            STATUS.setSortMode(SortMode.NO_SORT);
             bbrowsef.setEnabled(specify.isSelected());
         }
     }

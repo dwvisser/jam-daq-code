@@ -47,7 +47,7 @@ FrontEndCommunication {
 
 	private static final byte STRING_NULL=(byte)0x0;
 
-    private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+    private static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
     private final MessageHandler console;
 
     private InetAddress addressVME;
@@ -74,7 +74,7 @@ FrontEndCommunication {
      * A daemon is also set up for receiving.
      * @throws JamException if something goes wrong
      */
-    public synchronized void setup()  throws JamException {
+    public synchronized void setupAcquisition()  throws JamException {
     	final InetAddress addressLocal;
     	
     	final String LOCAL_IP=JamProperties.getPropString(JamProperties.HOST_IP);
@@ -113,7 +113,7 @@ FrontEndCommunication {
             setPriority(jam.sort.ThreadPriorities.MESSAGING);
             start();
             active=true;
-			final Preferences prefs=JamPrefs.prefs;
+			final Preferences prefs=JamPrefs.PREFS;
             debug(prefs.getBoolean(JamPrefs.DEBUG,false));
             verbose(prefs.getBoolean(JamPrefs.VERBOSE,false));
         }
@@ -147,7 +147,7 @@ FrontEndCommunication {
      */
      public void openFile(String file) {
 		final String OPENFILE="OPENFILE ";//add filename as an argument
-        VMEsend(OPENFILE+file);
+        sendToVME(OPENFILE+file);
     }
     
     /** 
@@ -155,7 +155,7 @@ FrontEndCommunication {
      */
     public void startAcquisition() {
 		final String START="START";
-        VMEsend(START);
+        sendToVME(START);
     }
 
     /** 
@@ -164,7 +164,7 @@ FrontEndCommunication {
      */
     public void stopAcquisition() {
 		final String STOPACQ="STOP";
-        VMEsend(STOPACQ);
+        sendToVME(STOPACQ);
     }
 
     /**
@@ -174,7 +174,7 @@ FrontEndCommunication {
      */
     public void end() {
 		final String END="END";
-        this.VMEsend(END);
+        this.sendToVME(END);
     }
 
     /**
@@ -183,7 +183,7 @@ FrontEndCommunication {
      */
     public void flush() {
 		final String FLUSH="FLUSH";
-        this.VMEsend(FLUSH);
+        this.sendToVME(FLUSH);
     }
 
     /**
@@ -193,7 +193,7 @@ FrontEndCommunication {
      */
     public void readScalers()  {
  	 	final String RUN_SCALER=  "list scaler";
-        this.VMEsend(RUN_SCALER);
+        this.sendToVME(RUN_SCALER);
     }
 
     /**
@@ -202,7 +202,7 @@ FrontEndCommunication {
      */
     public void clearScalers(){
 		final String RUN_CLEAR=  "list clear";
-        VMEsend(RUN_CLEAR);
+        sendToVME(RUN_CLEAR);
     }
 
     /**
@@ -212,7 +212,7 @@ FrontEndCommunication {
      */
     public void readCounters()  {
  		final String COUNT_READ=  "count read";
-        VMEsend(COUNT_READ);
+        sendToVME(COUNT_READ);
     }
 
     /**
@@ -221,7 +221,7 @@ FrontEndCommunication {
      */
     public void zeroCounters() {
  		final String COUNT_ZERO=  "count zero";
-        VMEsend(COUNT_ZERO);
+        sendToVME(COUNT_ZERO);
     }
 
     /**
@@ -233,9 +233,9 @@ FrontEndCommunication {
  		final String DEBUG_ON=  "debug on";
 		final String DEBUG_OFF=  "debug off";
         if (state){
-            VMEsend(DEBUG_ON);
+            sendToVME(DEBUG_ON);
         } else {
-            VMEsend(DEBUG_OFF);
+            sendToVME(DEBUG_OFF);
         }
     }
 
@@ -249,9 +249,9 @@ FrontEndCommunication {
 		final String VERBOSE_ON=  "verbose on";
 		final String VERBOSE_OFF=  "verbose off";
         if (state){
-            VMEsend(VERBOSE_ON);
+            sendToVME(VERBOSE_ON);
         } else {
-           VMEsend(VERBOSE_OFF);
+           sendToVME(VERBOSE_OFF);
         }
     }
 
@@ -272,7 +272,7 @@ FrontEndCommunication {
         sendCNAFList(CNAF_EVENT, camacCommands.getEventCommands()); //load eventCNAFs
         sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands() );  //load scaler CNAFs
         sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands());    //load clear CNAFs
-        this.VMEsend(RUN_INIT);      //initialize camac
+        this.sendToVME(RUN_INIT);      //initialize camac
         console.messageOutln("Loaded CAMAC command lists, and initialized VME.");
     }
 
@@ -282,7 +282,7 @@ FrontEndCommunication {
      * @param vmeMap the map of channels to use and TDC ranges
      * @throws IllegalStateException if there are no parameters in the map
      */
-     public void setupVME_Map(VME_Map vmeMap) {
+     public void setupVMEmap(VME_Map vmeMap) {
         String temp="";
         final VME_Channel [] eventParams = vmeMap.getEventParameters();
         final Map hRanges = vmeMap.getV775Ranges();
@@ -310,7 +310,7 @@ FrontEndCommunication {
         } else {
             throw new IllegalStateException("No event parameters in map.");
         }
-        VMEsend(VMECommunication.VME_ADDRESSES,temp);
+        sendToVME(VMECommunication.VME_ADDRESS,temp);
     }
 
     /**
@@ -322,7 +322,7 @@ FrontEndCommunication {
      */
      public void sendScalerInterval(int seconds) {
         final String message= seconds+"\n\0";
-        VMEsend(SCALER_INTERVAL,message);
+        sendToVME(INTERVAL,message);
     }
 
     /**
@@ -332,8 +332,8 @@ FrontEndCommunication {
      * @param message   string to send
      * @throws JamException if there's a problem
      */
-    private void VMEsend(String message) {
-        VMEsend(VMECommunication.OK, message);
+    private void sendToVME(String message) {
+        sendToVME(VMECommunication.OK_MESSAGE, message);
     }
 
     /**
@@ -346,7 +346,7 @@ FrontEndCommunication {
      * @throws IllegalArgumentException if an unrecognized status is given
      * @throws IllegalStateException if we haven't established a connection yet
      */
-    private void VMEsend(int status, String message) {
+    private void sendToVME(int status, String message) {
         final DatagramPacket packetMessage;
         /* byte arrays initialized with zeros by definition */
         final byte [] byteMessage = new byte [message.length()+5];
@@ -454,14 +454,14 @@ FrontEndCommunication {
                 ByteArrayInputStream messageBais = new ByteArrayInputStream(packetIn.getData());
                 DataInput messageDis=new DataInputStream(messageBais);
                 final int status=messageDis.readInt();
-                if (status==OK) {
+                if (status==OK_MESSAGE) {
                     console.messageOutln(getClass().getName()+": "+unPackMessage(messageDis));
                 } else if (status==SCALER){
                     unPackScalers(messageDis);
                     Scaler.update(scalerValues);
                 } else if (status==COUNTER){
                     unPackCounters(messageDis);
-                    broadcaster.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE, counterValues);
+                    BROADCASTER.broadcast(BroadcastEvent.Command.COUNTERS_UPDATE, counterValues);
                 } else if (status==ERROR) {
                     console.errorOutln(getClass().getName()+": "
                         +unPackMessage(messageDis));
@@ -574,9 +574,9 @@ FrontEndCommunication {
      * @returns true if valid, false if not
      */
     private boolean validStatus(int status) {
-        return (status==OK || status==ERROR || status==SCALER ||
-        	status==CNAF || status==COUNTER || status==VME_ADDRESSES ||
-        	status==SCALER_INTERVAL);
+        return (status==OK_MESSAGE || status==ERROR || status==SCALER ||
+        	status==CNAF || status==COUNTER || status==VME_ADDRESS ||
+        	status==INTERVAL);
     }
     
 	public void preferenceChange(PreferenceChangeEvent pce){

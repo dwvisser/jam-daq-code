@@ -77,7 +77,7 @@ public final class SetupSortOn extends JDialog {
 
 	private final FrontEndCommunication frontEnd;
 
-	private static final Broadcaster broadcaster = Broadcaster
+	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
 	/* stuff for dialog box */
@@ -99,7 +99,7 @@ public final class SetupSortOn extends JDialog {
 
 	private final JTextField textPathLog;
 
-	private static final JamStatus status = JamStatus.instance();
+	private static final JamStatus STATUS = JamStatus.instance();
 
 	/* strings of data entered */
 	private String experimentName;
@@ -149,7 +149,7 @@ public final class SetupSortOn extends JDialog {
 	 * Constructor
 	 */
 	private SetupSortOn(JamConsole jc) {
-		super(status.getFrame(), "Setup Online ", false);
+		super(STATUS.getFrame(), "Setup Online ", false);
 		final int fileTextColumns = 25;
 		final String defaultName = JamProperties
 				.getPropString(JamProperties.EXP_NAME);
@@ -173,8 +173,8 @@ public final class SetupSortOn extends JDialog {
 		runControl = RunControl.getSingletonInstance();
 		displayCounters = DisplayCounters.getSingletonInstance();
 		jamConsole = jc;
-		frontEnd = status.getFrontEndCommunication();
-		frame = status.getFrame();
+		frontEnd = STATUS.getFrontEndCommunication();
+		frame = STATUS.getFrame();
 		setResizable(false);
 		setLocation(20, 50);
 		final Container dcp = getContentPane();
@@ -490,7 +490,7 @@ public final class SetupSortOn extends JDialog {
 	private void apply(boolean dispose) {
 		try {
 			/* lock setup so fields cant be edited */
-			if (status.canSetup()) {
+			if (STATUS.canSetup()) {
 				loadNames();
 				if (clog.isSelected()) { //if needed start logging to file
 					final String logFile = jamConsole
@@ -517,10 +517,10 @@ public final class SetupSortOn extends JDialog {
 					if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
 						setupCamac(); //set the camac crate
 					} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
-						setupVME_Map();
+						setupVMEmap();
 					}
 					lockMode(true);
-					broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 					jamConsole
 							.messageOutln("Setup data network, and Online sort daemons setup");
 				}
@@ -671,14 +671,14 @@ public final class SetupSortOn extends JDialog {
 	}
 
 	private void setupCamac() throws JamException {
-		frontEnd.setup();
+		frontEnd.setupAcquisition();
 		frontEnd.setupCamac(sortRoutine.getCamacCommands());
 	}
 
-	private void setupVME_Map() throws JamException, SortException {
-		frontEnd.setup();
+	private void setupVMEmap() throws JamException, SortException {
+		frontEnd.setupAcquisition();
 		VME_Map map = sortRoutine.getVME_Map();
-		frontEnd.setupVME_Map(map);
+		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}
 
@@ -704,46 +704,8 @@ public final class SetupSortOn extends JDialog {
 			sortRoutine = null;
 		}
 		DataBase.getInstance().clearAllLists();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
-
-	/**
-	 * Is the Browse for the Path Name where the histogram file to be saved.
-	 * 
-	 * @author Ken Swartz
-	 * @author Dale Visser
-	 */
-	/*private String getPathHist() {
-		JFileChooser fd = new JFileChooser(histDirectory);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(frame);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			histDirectory = fd.getSelectedFile().getPath();
-			//save current directory
-		}
-		return histDirectory;
-	}*/
-
-	/**
-	 * Is the Browse for the Path Name where the histogram file to be saved.
-	 * 
-	 * @author Ken Swartz
-	 * @author Dale Visser
-	 */
-	/*private String getPathLog() {
-		JFileChooser fd = new JFileChooser(logDirectory);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int option = fd.showOpenDialog(frame);
-		//save current values
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			logDirectory = fd.getSelectedFile().getPath();
-			//save current directory
-		}
-		return logDirectory;
-	}*/
 
 	/**
 	 * Is the Browse for the Path Name where the events file will be saved.
@@ -780,7 +742,7 @@ public final class SetupSortOn extends JDialog {
 		bbrowsed.setEnabled(notlock);
 		specify.setEnabled(notlock);
 		defaultPath.setEnabled(notlock);
-		status.setSortMode(notlock ? SortMode.NO_SORT
+		STATUS.setSortMode(notlock ? SortMode.NO_SORT
 				: (cdisk.isSelected() ? SortMode.ONLINE_DISK
 						: SortMode.ONLINE_NO_DISK));
 		bbrowsef.setEnabled(notlock && specify.isSelected());

@@ -1,4 +1,5 @@
 package jam;
+
 import jam.commands.CommandManager;
 import jam.global.CommandListener;
 import jam.global.JamStatus;
@@ -41,10 +42,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 /**
- * Class Console displays a output of commands and error messages
- * and allows the input of commands using the keyboard.
- *
- * @author  Ken Swartz
+ * Class Console displays a output of commands and error messages and allows the
+ * input of commands using the keyboard.
+ * 
+ * @author Ken Swartz
  * @author Dale Visser
  * @version 1.2 alpha last edit 15 Feb 2000
  * @version 0.5 last edit 11-98
@@ -56,7 +57,7 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * Number of lines in scrollback log.
 	 */
 	private final static int NUM_LINES = 100;
-	
+
 	/**
 	 * Command stack size.
 	 */
@@ -65,89 +66,96 @@ public class JamConsole extends JPanel implements MessageHandler {
 	/**
 	 * End of line character(s).
 	 */
-	private static final String END_LINE =
-		(String) System.getProperty("line.separator");
+	private static final String END_LINE = (String) System
+			.getProperty("line.separator");
 
-	private final java.util.List listenerList =
-		Collections.synchronizedList(new ArrayList());
-	private final JTextPane textLog = new JTextPane(); //output text area
-	private final Document doc = textLog.getStyledDocument();
-	private final SimpleAttributeSet attr_normal, attr_warning, attr_error;
-	private final JTextField textIn; //input text field
-	private final JScrollPane jsp;
-	private final LinkedList cmdStack = new LinkedList();
-	private int lastCmdIndex;
+	private transient final java.util.List listenerList = Collections
+			.synchronizedList(new ArrayList());
+
+	private transient final JTextPane textLog = new JTextPane(); //output text
+																 // area
+
+	private transient final Document doc = textLog.getStyledDocument();
+
+	private transient final SimpleAttributeSet attr_normal, attr_warning,
+			attr_error;
+
+	private transient final JTextField textIn; //input text field
+
+	private transient final JScrollPane jsp;
+
+	private transient final LinkedList cmdStack = new LinkedList();
+
+	private transient int lastCmdIndex;
 
 	/**
 	 * A lock for message output so messages don't overlap.
 	 */
-	private boolean msgLock;
+	private transient boolean msgLock;
 
 	/**
 	 * Private.
-	 *
+	 * 
 	 * @serial
 	 */
-	private final int maxLines;
-	private int numberLines; //number of lines in output
+	private transient final int maxLines;
+
+	private transient int numberLines; //number of lines in output
 
 	/**
 	 * Private.
-	 *
+	 * 
 	 * @serial
 	 */
-	private BufferedWriter logWriter; //output stream
+	private transient BufferedWriter logWriter; //output stream
 
 	/**
 	 * Private.
-	 *
+	 * 
 	 * @serial
 	 */
-	private boolean logFileOn; //are we logging to a file
+	private transient boolean logFileOn; //are we logging to a file
 
 	/**
 	 * Private.
-	 *
+	 * 
 	 * @serial
 	 */
-	private String messageFile; //message for file
+	private transient String messageFile; //message for file
 
 	/**
-	 * Create a JamConsole which has an text area for output
-	 * a text field for intput.
+	 * Create a JamConsole which has an text area for output a text field for
+	 * intput.
 	 */
 	public JamConsole() {
 		this(NUM_LINES);
 	}
 
 	/**
-	 *Constructor:
-	 * Create a JamConsole which has an text area for output
-	 * a text field for intput
+	 * Constructor: Create a JamConsole which has an text area for output a text
+	 * field for intput
 	 */
 	public JamConsole(int linesLog) {
 		JamStatus.instance().setMessageHandler(this);
 		SetupSortOn.createSingletonInstance(this);
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
-		textLog.setToolTipText(
-			"After setup, this log is (usually) written to a file, too.");
+		textLog
+				.setToolTipText("After setup, this log is (usually) written to a file, too.");
 		attr_normal = new SimpleAttributeSet();
 		attr_warning = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_warning, Color.blue);
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		jsp =
-			new JScrollPane(
-				textLog,
+		jsp = new JScrollPane(textLog,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
 
 		textIn = new JTextField();
-		textIn.setToolTipText(
-			"Enter underlined characters from buttons to start a command.");
+		textIn
+				.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(new ActionListener() {
 			/* Processes event when a return is hit in input field */
@@ -173,8 +181,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 		numberLines = 1;
 		logFileOn = false;
 		final int defaultLines = 8;
-		final int lineHeight =
-			textLog.getFontMetrics(textLog.getFont()).getHeight();
+		final int lineHeight = textLog.getFontMetrics(textLog.getFont())
+				.getHeight();
 		final int logHeight = lineHeight * defaultLines;
 		textLog.setPreferredSize(new Dimension(700, logHeight));
 		addCommandListener(CommandManager.getInstance());
@@ -183,30 +191,32 @@ public class JamConsole extends JPanel implements MessageHandler {
 	/**
 	 * Add a command to the command stack
 	 * 
-	 * @param cmdStr 
+	 * @param cmdStr
 	 */
 	private void addCommand(String cmdStr) {
 		cmdStack.add(cmdStr);
-		if (cmdStack.size() > STACK_SIZE){
+		if (cmdStack.size() > STACK_SIZE) {
 			cmdStack.removeFirst();
 		}
 		lastCmdIndex = cmdStack.size();
 	}
+
 	/**
 	 * Get a previous command from the command stack.
 	 * 
-	 * @param direction >0 forward, <0 backward 
+	 * @param direction
+	 *            >0 forward, <0 backward
 	 */
 	private void previousCommand(int direction) {
 		if (direction < 0) {
-			if (lastCmdIndex > 0){
+			if (lastCmdIndex > 0) {
 				lastCmdIndex = lastCmdIndex - 1;
 			}
 			textIn.setText((String) cmdStack.get(lastCmdIndex));
 		} else {
 			if (lastCmdIndex < cmdStack.size()) {
 				lastCmdIndex = lastCmdIndex + 1;
-				if (lastCmdIndex < cmdStack.size()){
+				if (lastCmdIndex < cmdStack.size()) {
 					textIn.setText((String) cmdStack.get(lastCmdIndex));
 				} else {
 					textIn.setText("");
@@ -216,48 +226,44 @@ public class JamConsole extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * Outputs the string as a message to the console, which has more than one part,
-	 * so message can continued by a subsequent call.
-	 *
-	 * @param _message the message to be output
-	 * @param part one of NEW, CONTINUE, or END
+	 * Outputs the string as a message to the console, which has more than one
+	 * part, so message can continued by a subsequent call.
+	 * 
+	 * @param _message
+	 *            the message to be output
+	 * @param part
+	 *            one of NEW, CONTINUE, or END
 	 */
 	public synchronized void messageOut(String _message, int part) {
-		final StringBuffer message=new StringBuffer(_message);
+		final StringBuffer message = new StringBuffer(_message);
 		if (part == NEW) {
 			msgLock = true;
 			messageFile = getDate() + ">" + message;
-			message.insert(0,'>').insert(0,getTime()).insert(0,END_LINE);
+			message.insert(0, '>').insert(0, getTime()).insert(0, END_LINE);
 			try {
-				doc.insertString(doc.getLength(), message.toString(), attr_normal);
+				doc.insertString(doc.getLength(), message.toString(),
+						attr_normal);
 			} catch (BadLocationException e) {
-				JOptionPane.showMessageDialog(
-					this,
-					e.getMessage(),
-					getClass().getName(),
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (part == CONTINUE) {
 			messageFile = messageFile + message;
 			try {
-				doc.insertString(doc.getLength(), message.toString(), attr_normal);
+				doc.insertString(doc.getLength(), message.toString(),
+						attr_normal);
 			} catch (BadLocationException e) {
-				JOptionPane.showMessageDialog(
-					this,
-					e.getMessage(),
-					getClass().getName(),
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (part == END) {
 			messageFile = messageFile + message + END_LINE;
 			try {
-				doc.insertString(doc.getLength(), message.toString(), attr_normal);
+				doc.insertString(doc.getLength(), message.toString(),
+						attr_normal);
 			} catch (BadLocationException e) {
-				JOptionPane.showMessageDialog(
-					this,
-					e.getMessage(),
-					getClass().getName(),
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 			trimLog();
 			textLog.setCaretPosition(doc.getLength());
@@ -277,7 +283,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 			msgLock = false;
 			notifyAll();
 		} else {
-			throw new IllegalArgumentException("Error not a valid message part [JamConsole]");
+			throw new IllegalArgumentException(
+					"Error not a valid message part [JamConsole]");
 		}
 	}
 
@@ -290,22 +297,20 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Output a message with a carriage return.
-	 *
-	 * @param _message the message to be printed to the console
+	 * 
+	 * @param _message
+	 *            the message to be printed to the console
 	 */
 	public synchronized void messageOutln(String _message) {
-		String message = new String(_message);
+		final StringBuffer mbuff = new StringBuffer();
 		msgLock = true;
-		messageFile = getDate() + ">" + message + END_LINE;
-		message = END_LINE + getTime() + ">" + message;
+		messageFile = getDate() + ">" + _message + END_LINE;
+		mbuff.append(END_LINE).append(getTime()).append('>').append(_message);
 		try {
-			doc.insertString(doc.getLength(), message, attr_normal);
+			doc.insertString(doc.getLength(), mbuff.toString(), attr_normal);
 		} catch (BadLocationException e) {
-			JOptionPane.showMessageDialog(
-				this,
-				e.getMessage(),
-				getClass().getName(),
-				JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
@@ -323,9 +328,10 @@ public class JamConsole extends JPanel implements MessageHandler {
 		msgLock = false;
 		notifyAll();
 	}
-	
-	private final String EMPTY="";
-	public synchronized void messageOutln(){
+
+	private static final String EMPTY = "";
+
+	public synchronized void messageOutln() {
 		messageOutln(EMPTY);
 	}
 
@@ -343,27 +349,26 @@ public class JamConsole extends JPanel implements MessageHandler {
 		promptOutln("Warning: " + message, attr_warning);
 	}
 
-	private synchronized void promptOutln(
-		final String _message,
-		AttributeSet attr) {
-		String message = new String(_message);
-		/* Dont wait for lock.  
-		 * Output message right away. */
+	private synchronized void promptOutln(final String _message,
+			AttributeSet attr) {
+		final StringBuffer mbuff = new StringBuffer();
+		/*
+		 * Dont wait for lock. Output message right away.
+		 */
 		if (msgLock) { //if locked add extra returns
-			messageFile = END_LINE + getDate() + ">" + message + END_LINE;
-			message = END_LINE + getTime() + ">" + message + END_LINE;
+			messageFile = END_LINE + getDate() + ">" + _message + END_LINE;
+			mbuff.append(END_LINE).append(getTime()).append('>').append(
+					_message).append(END_LINE);
 		} else { //normal message
-			messageFile = getDate() + ">" + message + END_LINE;
-			message = END_LINE + getTime() + ">" + message;
+			messageFile = getDate() + ">" + _message + END_LINE;
+			mbuff.append(END_LINE).append(getTime()).append('>').append(
+					_message);
 		}
 		try {
-			doc.insertString(doc.getLength(), message, attr);
+			doc.insertString(doc.getLength(), mbuff.toString(), attr);
 		} catch (BadLocationException e) {
-			JOptionPane.showMessageDialog(
-				this,
-				e.getMessage(),
-				getClass().getName(),
-				JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
@@ -381,9 +386,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * Where to send commands that are input
-	 * need to add types
-	 *
+	 * Where to send commands that are input need to add types
+	 *  
 	 */
 	public final void addCommandListener(CommandListener msgCommand) {
 		listenerList.add(msgCommand);
@@ -396,38 +400,37 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 */
 	private void parseCommand(final String _inString) {
 		final String[] cmdTokens = parseExpression(_inString);
-		final int numberInWords = cmdTokens.length;
+		final int numWords = cmdTokens.length;
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		if (cmdTokens.length > 0) { //check at least something was entered
 			final String command;
 			final String[] parameters;
 			final int countWrd;
 			if (isNumber(cmdTokens[0])) {
-				/* first token is a number, command is NUMBER_ONLY 
-				 * and params starts with first token */
+				/*
+				 * first token is a number, command is NUMBER_ONLY and params
+				 * starts with first token
+				 */
 				command = NUMBERS_ONLY;
-				parameters = new String[numberInWords];
+				parameters = new String[numWords];
 				countWrd = 0;
 			} else {
 				/* parameter list to hold one less */
 				command = cmdTokens[0];
-				parameters = new String[numberInWords - 1];
+				parameters = new String[numWords - 1];
 				countWrd = 1;
 			}
 			/* Load parameter tokens */
-			System.arraycopy(
-				cmdTokens,
-				countWrd,
-				parameters,
-				0,
-				numberInWords - countWrd);
+			System.arraycopy(cmdTokens, countWrd, parameters, 0, numWords
+					- countWrd);
 			/* perform command */
 			notifyListeners(command, parameters);
 		}
 	}
 
 	/**
-	 * Parse the input string 
+	 * Parse the input string
+	 * 
 	 * @param strCmd
 	 * @return a array of the command tokens
 	 */
@@ -439,8 +442,9 @@ public class JamConsole extends JPanel implements MessageHandler {
 		final Matcher matcher = pattern.matcher(strCmd);
 		while (matcher.find()) {
 			String cmdToken = matcher.group().trim();
-			if (cmdToken.charAt(0) == '\"')
+			if (cmdToken.charAt(0) == '\"') {
 				cmdToken = cmdToken.substring(1, cmdToken.length() - 1);
+			}
 			if (cmdToken != null) {
 				cmdTokenList.add(cmdToken);
 			}
@@ -452,13 +456,13 @@ public class JamConsole extends JPanel implements MessageHandler {
 		return cmdTokens;
 	}
 
-	private boolean isNumber(String s) {
+	private boolean isNumber(String string) {
 		boolean rval;
 		try {
-			if (s.indexOf('.') >= 0) {
-				Double.parseDouble(s);
+			if (string.indexOf('.') >= 0) {
+				Double.parseDouble(string);
 			} else {
-				Integer.parseInt(s);
+				Integer.parseInt(string);
 			}
 			rval = true;
 		} catch (NumberFormatException nfe) {
@@ -468,22 +472,23 @@ public class JamConsole extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * Create a file for the log to be saved to.
-	 * The method appends a number (starting at 1) to the file name
-	 * if the file already exists.
-	 *
-	 * @exception   JamException    exceptions that go to the console
+	 * Create a file for the log to be saved to. The method appends a number
+	 * (starting at 1) to the file name if the file already exists.
+	 * 
+	 * @exception JamException
+	 *                exceptions that go to the console
 	 */
 	String setLogFileName(String name) throws JamException {
 		String newName = name + ".log";
 		File file = new File(newName);
-		/* create a unique file, append a number if a 
-		 * log already exits */
-		int i = 1;
+		/*
+		 * create a unique file, append a number if a log already exits
+		 */
+		int index = 1;
 		while (file.exists()) {
-			newName = name + i + ".log";
+			newName = name + index + ".log";
 			file = new File(newName);
-			i++;
+			index++;
 		}
 		try {
 			logWriter = new BufferedWriter(new FileWriter(file));
@@ -496,8 +501,9 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Close the log file
-	 *
-	 * @exception   JamException    exceptions that go to the console
+	 * 
+	 * @exception JamException
+	 *                exceptions that go to the console
 	 */
 	void closeLogFile() throws JamException {
 		try {
@@ -510,15 +516,17 @@ public class JamConsole extends JPanel implements MessageHandler {
 
 	/**
 	 * Turn on the logging to a file
-	 *
-	 * @exception   JamException    exceptions that go to the console
+	 * 
+	 * @exception JamException
+	 *                exceptions that go to the console
 	 */
 	void setLogFileOn(boolean state) throws JamException {
 		if (logWriter != null) {
 			logFileOn = state;
 		} else {
 			logFileOn = false;
-			throw new JamException("Cannot turn on logging to file, log file does not exits  [JamConsole]");
+			throw new JamException(
+					"Cannot turn on logging to file, log file does not exits  [JamConsole]");
 		}
 	}
 
@@ -530,15 +538,11 @@ public class JamConsole extends JPanel implements MessageHandler {
 		if (numberLines > maxLines) { //get rid of top line
 			numberLines--;
 			try {
-				doc.remove(
-					0,
-					textLog.getText().indexOf(END_LINE) + END_LINE.length());
+				doc.remove(0, textLog.getText().indexOf(END_LINE)
+						+ END_LINE.length());
 			} catch (BadLocationException e) {
-				JOptionPane.showMessageDialog(
-					this,
-					e.getMessage(),
-					getClass().getName(),
-					JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+						.getName(), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -569,51 +573,50 @@ public class JamConsole extends JPanel implements MessageHandler {
 	/**
 	 * Send console command to all registered listeners.
 	 * 
-	 * @param cmd the command
-	 * @param params list of parameters
+	 * @param cmd
+	 *            the command
+	 * @param params
+	 *            list of parameters
 	 */
 	private void notifyListeners(String cmd, String[] params) {
-		final Iterator it = listenerList.iterator();
-		boolean validListenerFound = false;
-		while (it.hasNext()) {
-			CommandListener cl = (CommandListener) (it.next());
-			validListenerFound |= cl.performParseCommand(cmd, params);
+		final Iterator iter = listenerList.iterator();
+		boolean found = false;
+		while (iter.hasNext()) {
+			CommandListener listener = (CommandListener) (iter.next());
+			found |= listener.performParseCommand(cmd, params);
 		}
-		if (!validListenerFound) {
-			final StringBuffer sb = new StringBuffer("\"");
-			sb.append(cmd).append("\" is an invalid command. ");
-			final String[] offer =
-				CommandManager.getInstance().getSimilarCommnands(cmd, true);
+		if (!found) {
+			final StringBuffer buffer = new StringBuffer('"');
+			buffer.append(cmd).append("\" is an invalid command. ");
+			final String[] offer = CommandManager.getInstance()
+					.getSimilarCommnands(cmd, true);
 			if (offer.length > 0) {
-				sb.append("Maybe you meant ");
+				buffer.append("Maybe you meant ");
 				if (offer.length > 1) {
-					sb.append("one of the following:\t");
+					buffer.append("one of the following:\t");
 				} else {
-					sb.append(":\t");
+					buffer.append(":\t");
 				}
 				for (int i = 0; i < offer.length; i++) {
-					sb.append(offer[i]).append("\t");
+					buffer.append(offer[i]).append("\t");
 				}
 			}
-			errorOutln(sb.toString());
+			errorOutln(buffer.toString());
 		}
 	}
 
 	/**
 	 * On a class destruction close log file
 	 */
-	protected void finalize() {
+	protected void finalize() throws Throwable {
 		try {
 			if (logFileOn) {
 				closeLogFile();
 			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(
-				this,
-				e.getMessage(),
-				getClass().getName(),
-				JOptionPane.ERROR_MESSAGE);
+		} catch (JamException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
 		}
+		super.finalize();
 	}
-
 }

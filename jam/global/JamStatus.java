@@ -20,8 +20,8 @@ import javax.swing.JFrame;
  */
 public final class JamStatus {
 
-	private static AcquisitionStatus acquisitionStatus;
-	private static String currentHistogramName = "";
+	private static AcquisitionStatus acqStatus;
+	private static String histName = "";
 	private static String overlayHistogramName, currentGateName;
 	private static JFrame frame;
 	private static Display display;
@@ -32,7 +32,7 @@ public final class JamStatus {
 	/**
 	 * The one instance of JamStatus.
 	 */
-	static private JamStatus _instance=new JamStatus();
+	static private final JamStatus INSTANCE=new JamStatus();
 	
 	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
@@ -48,7 +48,7 @@ public final class JamStatus {
 	 * it if necessary.
 	 */
 	static public JamStatus instance() {
-		return _instance;
+		return INSTANCE;
 	}
 	
 	/**
@@ -178,39 +178,39 @@ public final class JamStatus {
 	 * @param as the current status of the Jam application
 	 */
 	public void setAcqisitionStatus(AcquisitionStatus as) {
-		acquisitionStatus = as;
+		acqStatus = as;
 	}
 
 	/**
 	 * Returns whether online acquisition is set up.
 	 */
 	public boolean isOnLine() {
-		return acquisitionStatus.isOnLine();
+		return acqStatus.isOnLine();
 	}
 
 	/**
 	 * Returns whether data is currently being taken.
 	 */
 	public boolean isAcqOn() {
-		return acquisitionStatus.isAcqOn();
+		return acqStatus.isAcqOn();
 	}
 
 	/**
 	 * Sets the current Histogram name.
 	 */
-	public synchronized void setCurrentHistogramName(String histogramName) {
-		currentHistogramName = histogramName;
+	public synchronized void setHistName(String name) {
+		histName = name;
 	}
 
 	/**
 	 * Gets the current Histogram name.
 	 */
-	public synchronized String getCurrentHistogramName() {
-		return currentHistogramName;
+	public synchronized String getHistName() {
+		return histName;
 	}
 	
 	public synchronized Histogram getCurrentHistogram(){
-		return Histogram.getHistogram(currentHistogramName);
+		return Histogram.getHistogram(histName);
 	}
 
 	/**
@@ -258,7 +258,7 @@ public final class JamStatus {
 		}
 		console=mh;
 		frontEnd=new VMECommunication();
-		JamPrefs.prefs.addPreferenceChangeListener(frontEnd);
+		JamPrefs.PREFS.addPreferenceChangeListener(frontEnd);
 		broadcaster.addObserver(frontEnd);
 	}
 	

@@ -37,14 +37,14 @@ import javax.swing.UIManager;
  */
 public class Help extends JDialog {
 	
-	private static final JamStatus status=JamStatus.instance();
-	private final static int posx=20;
+	private static final JamStatus STATUS=JamStatus.instance();
+	private final static int POS_X=20;
 
 	/**
 	 * Constructor.
 	 */
 	public Help() {
-		super(status.getFrame(),
+		super(STATUS.getFrame(),
 		"University of Illinois/NCSA Open Source License",
 		true);
 		layoutLicenseDialog();
@@ -52,7 +52,7 @@ public class Help extends JDialog {
 		final String version=Version.getName();
 		final String key="license";
 		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
-		if (status.isShowGUI() && 
+		if (STATUS.isShowGUI() && 
 		!version.equals(helpnode.get(key,defaultVal))){
 			setVisible(true);
 			helpnode.put(key,version);
@@ -74,7 +74,7 @@ public class Help extends JDialog {
 		try {
 			length = reader.read(textarray);
 		} catch (IOException e) {
-			status.getMessageHandler().errorOutln(getClass().getName()+hyphen+
+			STATUS.getMessageHandler().errorOutln(getClass().getName()+hyphen+
 			e.getMessage());
 		}
 		final String text = new String(textarray, 0, length);
@@ -84,7 +84,7 @@ public class Help extends JDialog {
 		contents.add(south, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent event){
 				dispose();
 			}
 		});
@@ -92,7 +92,7 @@ public class Help extends JDialog {
 		this.pack();
 		final Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(this.getWidth(),screen.height/2);
-		this.setLocation(posx,screen.height/4);
+		this.setLocation(POS_X,screen.height/4);
 	}
 
 	
@@ -100,12 +100,12 @@ public class Help extends JDialog {
 		final String linux = "Linux";
 		final String kunststoff =
 			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-		boolean useKunststoff = linux.equals(System.getProperty("os.name"));
-		if (useKunststoff) {
+		boolean bKunststoff = linux.equals(System.getProperty("os.name"));
+		if (bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(kunststoff);
 			} catch (ClassNotFoundException e) {
-				useKunststoff = false;
+				bKunststoff = false;
 			} catch (Exception e) { //all other exceptions
 				final String title = "Jam--error setting GUI appearance";
 				JOptionPane.showMessageDialog(
@@ -115,7 +115,7 @@ public class Help extends JDialog {
 					JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		if (!useKunststoff) {
+		if (!bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(
 					UIManager.getSystemLookAndFeelClassName());
@@ -141,10 +141,10 @@ public class Help extends JDialog {
 		try {
 			final URL hsURL =
 				ClassLoader.getSystemClassLoader().getResource(helpsetName);
-			final HelpSet hs = new HelpSet(null, hsURL);
-			final ActionListener al=new CSH.DisplayHelpFromSource(hs.createHelpBroker());
+			final HelpSet helpset = new HelpSet(null, hsURL);
+			final ActionListener listener=new CSH.DisplayHelpFromSource(helpset.createHelpBroker());
 			final JButton proxy=new JButton("Proxy");
-			proxy.addActionListener(al);
+			proxy.addActionListener(listener);
 			final JFrame frame=new JFrame("Jam User Guide");
 			final JButton exit=new JButton("Exit");
 			frame.getContentPane().add(exit,BorderLayout.CENTER);

@@ -2,7 +2,6 @@
  import jam.sort.CamacCommands;
 import jam.sort.VME_Map;
 
-import java.util.Observable;
 import java.util.Observer;
 import java.util.prefs.PreferenceChangeListener;
  
@@ -24,7 +23,7 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
 	/**
 	 * Standard informational message.
 	 */
-	int OK=0;//standard message
+	int OK_MESSAGE=0;//standard message
 	
 	/**
 	 * Error message.
@@ -49,30 +48,22 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
 	/**
 	 * Message containing CAEN VME electronics configuration info.
 	 */
-	int VME_ADDRESSES=5;//sent to VME, contains VME addressing information
+	int VME_ADDRESS=5;//sent to VME, contains VME addressing information
 	
 	/**
 	 * Message containing the interval in seconds at which to 
 	 * insert scalers in the event stream.
 	 */
-	int SCALER_INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
+	int INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
 	
-    /** Setup up the networking to the Front End.
+    /** 
+     * Setup up the networking to the Front End.
      * Called when Online data taking is setup.
+     * 
      * @throws JamException when something goes wrong
      */
-    void setup()  throws JamException;
+    void setupAcquisition()  throws JamException;
     
-    /**
-     * Reciever of distributed events
-     * can listen for broadcasted event
-     * Implementation of Observable interface
-     * 
-     * @param observable source of observed event
-     * @param o communicated message
-     */
-    void update(Observable observable, Object o);
-
     /**
      * Tell the Front End to start acquistion.
      */
@@ -144,12 +135,12 @@ public interface FrontEndCommunication extends Observer, PreferenceChangeListene
      * New version uploads CAMAC CNAF commands with udp pakets, and 
      * sets up the camac crate.
      *
-     * @param camacCommands object containing CAMAC CNAF commands
+     * @param commands object containing CAMAC CNAF commands
      * @throws JamException if there is a problem setting up
      */
-    void setupCamac(CamacCommands camacCommands) throws JamException;
+    void setupCamac(CamacCommands commands) throws JamException;
 
-	void setupVME_Map(VME_Map vmeMap) throws JamException;
+	void setupVMEmap(VME_Map vmeMap) throws JamException;
 	void sendScalerInterval(int milliseconds) throws JamException;
     
     /** 
