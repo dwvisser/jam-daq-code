@@ -51,8 +51,17 @@ public interface CommandNames {
 	/** Show the scaler values. */
 	String DISPLAY_SCALERS="displayscalers";
 	
+	/** Show the monitors */
+	String DISPLAY_MONITORS="displaymonitors";
+	
+	/** Show the monitor configuration dialog */
+	String DISPLAY_MON_CONFIG="displaymonitorconfig";
+	
 	/** Show the dialog for zeroing scalers. */
 	String SHOW_ZERO_SCALERS="showzeroscalers";
+	
+	/** Show batch export dialog */
+	String SHOW_BATCH_EXPORT="showbatchexport";
 	
 	/** Read or zero scalers. */
 	String SCALERS="scalers";
