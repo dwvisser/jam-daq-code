@@ -64,6 +64,7 @@ public class ScalerScan
 	private final MessageHandler console;
 	private final ScanAction sa;
 	private final Frame frame;
+	private final JButton bOK, bApply, bCancel;
 	
 	private File pathToRuns=new File(JamProperties.getPropString(
 	JamProperties.HIST_PATH));
@@ -127,18 +128,18 @@ public class ScalerScan
 		JPstatus.add(JLstatus);
 		final JPanel JPbuttons = new JPanel();
 		JPbuttons.setLayout(new BoxLayout(JPbuttons, BoxLayout.X_AXIS));
-		final JButton ok = new JButton(OK);
-		ok.setActionCommand(OK);
-		ok.addActionListener(this);
-		final JButton apply = new JButton(APPLY);
-		apply.setActionCommand(APPLY);
-		apply.addActionListener(this);
-		final JButton cancel = new JButton(CANCEL);
-		cancel.setActionCommand(CANCEL);
-		cancel.addActionListener(this);
-		JPbuttons.add(ok);
-		JPbuttons.add(apply);
-		JPbuttons.add(cancel);
+		bOK = new JButton(OK);
+		bOK.setActionCommand(OK);
+		bOK.addActionListener(this);
+		bApply = new JButton(APPLY);
+		bApply.setActionCommand(APPLY);
+		bApply.addActionListener(this);
+		bCancel = new JButton(CANCEL);
+		bCancel.setActionCommand(CANCEL);
+		bCancel.addActionListener(this);
+		JPbuttons.add(bOK);
+		JPbuttons.add(bApply);
+		JPbuttons.add(bCancel);
 		framebox.add(JPrun);
 		framebox.add(JPpath);
 		framebox.add(JPfirst);
@@ -154,6 +155,12 @@ public class ScalerScan
 	private static final String OK = "OK";
 	private static final String CANCEL = "Cancel";
 	private static final String APPLY = "Apply";
+	
+	private final void setButtonsEnable(boolean b){
+		bOK.setEnabled(b);
+		bApply.setEnabled(b);
+		bCancel.setEnabled(b);
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		final String command = e.getActionCommand();
@@ -161,9 +168,11 @@ public class ScalerScan
 		final boolean apply = ok || APPLY.equals(command);
 		final boolean cancel = ok || CANCEL.equals(command);
 		if (apply) {
+			setButtonsEnable(false);
 			final Runnable r=new Runnable(){
 				public void run(){
 					doIt();
+					setButtonsEnable(true);
 				}
 			};
 			final Thread t=new Thread(r);
