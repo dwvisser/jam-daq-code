@@ -45,7 +45,7 @@ public class RingBufferTest extends TestCase {
 			}
 			ring.getBuffer();
 		}
-		assertTrue(ring.empty());
+		assertTrue(ring.isEmpty());
 		final int most=RingBuffer.NUMBER_BUFFERS*3/4;
 		for (int i=0; i<most; i++){
 			try{

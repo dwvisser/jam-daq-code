@@ -59,7 +59,7 @@ public class RingBuffer {
      * @exception   RingFullException    thrown when the ring is too full to be written to
      */
     public synchronized void putBuffer(byte [] inBuffer) throws RingFullException {
-        if(full()){
+        if(isFull()){
         	final StringBuffer message=new StringBuffer();
         	message.append("Lost a buffer in thread \"");
         	message.append(Thread.currentThread().getName());
@@ -67,7 +67,7 @@ public class RingBuffer {
             throw new RingFullException(message.toString());
         }
         System.arraycopy(inBuffer, 0, ringBuffer[posPut&MASK], 0, inBuffer.length);
-        final boolean emptyBeforePut=empty();
+        final boolean emptyBeforePut=isEmpty();
         posPut++;
         /* The only reason another thread could be in wait() on this
          * object is that we were empty. Checking eliminates a lot
@@ -84,7 +84,7 @@ public class RingBuffer {
      * @return the next buffer in the ring
      */
     public synchronized byte [] getBuffer(){        
-        while(empty()){
+        while(isEmpty()){
             try {
 				/* notified when a putBuffer() occurs on the empty
 				 * ring
@@ -106,15 +106,15 @@ public class RingBuffer {
      *
      * @return true if there are no buffers in the ring.
      */
-    public synchronized boolean empty(){
-        return(posPut==posGet);
+    public synchronized boolean isEmpty(){
+        return posPut==posGet;
     }
     
-    public synchronized boolean full(){
+    public synchronized boolean isFull(){
 		return posPut-posGet+1 > NUMBER_BUFFERS;
     }
     
-    public synchronized boolean halfFull(){
+    public synchronized boolean isHalfFull(){
 		return posPut-posGet+1 > HALF_BUFFERS;
     }
 }

@@ -264,7 +264,7 @@ public class DiskDaemon extends StorageDaemon {
 			throw new IllegalStateException("Should always have a ring buffer here.");
 		}
 		boolean rval=false;
-		if (ringBuffer.empty()){
+		if (ringBuffer.isEmpty()){
 			synchronized (rreLock){
 				if (reachedRunEnd){
 					rval=true;
