@@ -139,26 +139,17 @@ public final class ScalerScan implements JamHDFFields {
 		txtLast = new JTextField(4);
 		pLast.add(txtLast);		
 		buttons = new PanelOKApplyCancelButtons(new
-		        PanelOKApplyCancelButtons.Listener(){
-		    public void ok(){
-		        apply();
-		        dialog.dispose();
-		    }
-		    
+		        PanelOKApplyCancelButtons.DefaultListener(dialog){
 		    public void apply(){
 				setButtonsEnable(false);
-				final Runnable r=new Runnable(){
+				final Runnable runnable=new Runnable(){
 					public void run(){
 						doIt();
 						setButtonsEnable(true);
 					}
 				};
-				final Thread t=new Thread(r);
-				t.start();		        
-		    }
-		    
-		    public void cancel(){
-		        dialog.dispose();
+				final Thread thread=new Thread(runnable);
+				thread.start();		        
 		    }
 		});
 		container.add(buttons.getComponent(), BorderLayout.SOUTH);

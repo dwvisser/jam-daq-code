@@ -173,12 +173,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 
 		/* button panel */
         final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-                new PanelOKApplyCancelButtons.Listener() {
-                    public void ok() {
-                        apply();
-                        dispose();
-                    }
-
+                new PanelOKApplyCancelButtons.DefaultListener(this) {
                     public void apply() {
                         try {
                         	doGainShift();
@@ -191,10 +186,6 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
                         } catch (DataException je) {
                             messageHandler.errorOutln(je.getMessage());
                         }
-                    }
-
-                    public void cancel() {
-                        dispose();
                     }
                 });
         cdgain.add(pButtons.getComponent(), BorderLayout.SOUTH);

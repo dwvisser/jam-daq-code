@@ -157,12 +157,8 @@ public class Projections extends AbstractManipulation implements Observer {
 		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
-		final PanelOKApplyCancelButtons.Listener listener = new PanelOKApplyCancelButtons.Listener(){
-			public void ok(){
-				apply();
-				dispose();
-			}
-			
+		final PanelOKApplyCancelButtons.Listener listener = 
+		    new PanelOKApplyCancelButtons.DefaultListener(this){
 			public void apply(){
 				try {
 					project();
@@ -172,10 +168,6 @@ public class Projections extends AbstractManipulation implements Observer {
 				} catch (DataException de) {
 					console.errorOutln(de.getMessage());
 				}
-			}
-			
-			public void cancel(){
-				dispose();
 			}
 		};
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(listener);
@@ -291,45 +283,32 @@ public class Projections extends AbstractManipulation implements Observer {
 		final String typeProj;
 		double [] countsDouble=null;
 		final double[][] counts2d;
-		
 		final String state = (String) cchan.getSelectedItem();
-
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
-		if (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) {
-			counts2d = (double[][]) hfrom.getCounts();
-		} else {
-			counts2d = intToDouble2DArray((int[][]) hfrom.getCounts());
-		}
-		final String name = (String) cto.getSelectedItem();
-		final int[] limits;
-		if (state.equals(BETWEEN)) {
-			limits = getLimits();
-		} else {
-			limits = new int[2];
-			if (state.equals(FULL)) {
-				limits[0] = 0;
-				if (cdown.isSelected()) {
-					limits[1] = counts2d[0].length - 1;
-				} else {
-					limits[1] = counts2d.length - 1;
-				}
-			}
-		}
-
-		if (isNewHistogram(name)) {
+		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? (double[][]) hfrom
+                .getCounts()
+                : intToDouble2DArray((int[][]) hfrom.getCounts());
+        final String name = (String) cto.getSelectedItem();
+		final boolean between = state.equals(BETWEEN);
+		final int[] limits = between ? getLimits() : new int[2];
+        if (state.equals(FULL)) {
+            limits[0] = 0;
+            if (cdown.isSelected()) {
+                limits[1] = counts2d[0].length - 1;
+            } else {
+                limits[1] = counts2d.length - 1;
+            }
+        }
+        if (isNewHistogram(name)) {
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
 			hto = createNewHistogram(name, histName, size);
 			console
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
-
 		} else {
 			hto = Histogram.getHistogram(name);
-
 		}
-		
-		
 		if (cdown.isSelected()) {
 			if (state.equals(FULL) || state.equals(BETWEEN)) {
 				typeProj = "counts between Y channels " + limits[0] + " and "
@@ -354,7 +333,6 @@ public class Projections extends AbstractManipulation implements Observer {
 						.getGate(state));
 			}
 		}
-		
 		if(hto.getType() ==Histogram.Type.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
 		} else if (hto.getType() ==Histogram.Type.ONE_DIM_INT) {
@@ -363,7 +341,6 @@ public class Projections extends AbstractManipulation implements Observer {
 			throw new DataException(
 			"Need to project to 1 dimension histogram");
 		}
-			
 		console.messageOutln("Project " + hfrom.getFullName().trim()
 				+ " to " + hto.getFullName() + " " + typeProj);
 	}

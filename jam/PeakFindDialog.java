@@ -62,20 +62,12 @@ public class PeakFindDialog extends JDialog {
 		center.add(sensitivity);
 		calibrate = new JCheckBox("Calibrated value",true);
 		center.add(calibrate);		
-		final PanelOKApplyCancelButtons.Listener callback= new PanelOKApplyCancelButtons.Listener(){
-		    public void ok(){
-				setPeakFindProperties();
-				setVisible(false);
-		    }
-		    
-		    public void apply(){
-				setPeakFindProperties();		        
-		    }
-		    
-		    public void cancel(){
-				setVisible(false);
-		    }
-		};
+		final PanelOKApplyCancelButtons.Listener callback = 
+		    new PanelOKApplyCancelButtons.DefaultListener(this) {
+            public void apply() {
+                setPeakFindProperties();
+            }
+        };
 		final PanelOKApplyCancelButtons pbutton=new PanelOKApplyCancelButtons(callback);
 		contents.add(pbutton.getComponent(), BorderLayout.SOUTH);		
 		setResizable(false);

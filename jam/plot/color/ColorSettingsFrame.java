@@ -67,12 +67,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		c.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
 		final PanelOKApplyCancelButtons buttons= new PanelOKApplyCancelButtons(
-		        new PanelOKApplyCancelButtons.Listener(){
-		            public void ok(){
-		                apply();
-		                setVisible(false);
-		            }
-		            
+		        new PanelOKApplyCancelButtons.DefaultListener(this){
 		        	public void apply(){
 		        		final double x0R = x0RSlider.getValue() / 100.0;
 		        		final double x0G = x0GSlider.getValue() / 100.0;
@@ -86,10 +81,6 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		        		COLOR_PREFS.putDouble(ColorPrefs.X0B, x0B);
 		        		COLOR_PREFS.putDouble(ColorPrefs.X0G, x0G);
 		        		COLOR_PREFS.putDouble(ColorPrefs.X0R, x0R);
-		        	}
-		        	
-		        	public void cancel(){
-		        	    setVisible(false);
 		        	}
 		        });
 		x0RSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0R);

@@ -18,7 +18,7 @@ import javax.swing.JTextField;
  * @author Ken Swartz
  *
  */
-public class GroupNew extends AbstractControl implements PanelOKApplyCancelButtons.Listener {
+public class GroupNew extends AbstractControl {
 
 	private final JTextField textName;
 	
@@ -31,18 +31,20 @@ public class GroupNew extends AbstractControl implements PanelOKApplyCancelButto
 		setResizable(false);
 		final Container cdialog = getContentPane();
 		cdialog.setLayout(new BorderLayout(10, 10));
-		
 		JPanel pMiddle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
 		cdialog.add(pMiddle, BorderLayout.CENTER);
-		
-		final JLabel ln = new JLabel("Name", JLabel.RIGHT);
-		pMiddle.add(ln);
+		final JLabel lName = new JLabel("Name", JLabel.RIGHT);
+		pMiddle.add(lName);
 		final String space = " ";
 		textName = new JTextField(space);
 		textName.setColumns(15);
 		pMiddle.add(textName);
-		
-		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(this);
+		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
+		        new PanelOKApplyCancelButtons.DefaultListener(this){
+		            public void apply(){
+		        		createGroup();
+		            }
+		        });
 		cdialog.add(pButtons.getComponent(), BorderLayout.SOUTH);
 		
 		pack();
@@ -53,19 +55,6 @@ public class GroupNew extends AbstractControl implements PanelOKApplyCancelButto
 	 */
 	public void doSetup() {
 		// NOOP
-	}
-	
-	public void ok(){
-		createGroup();
-		dispose();
-	}
-	
-	public void apply(){
-		createGroup();
-	}
-	
-	public void cancel(){
-		dispose();
 	}
 	
 	/**

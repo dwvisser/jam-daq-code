@@ -184,12 +184,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		pto.add(ttextto);
 		/* button panel */
         final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-                new PanelOKApplyCancelButtons.Listener() {
-                    public void ok() {
-                        apply();
-                        dispose();
-                    }
-
+                new PanelOKApplyCancelButtons.DefaultListener(this) {
                     public void apply() {
                         try {
                             combine();
@@ -202,10 +197,6 @@ public class Combine extends AbstractManipulation implements Observer {
                         } catch (DataException je) {
                             messageHandler.errorOutln(je.getMessage());
                         }
-                    }
-
-                    public void cancel() {
-                        dispose();
                     }
                 });
 		cdmanip.add(pButtons.getComponent(), BorderLayout.SOUTH);

@@ -40,7 +40,7 @@ public class LoadFit {
 	private final Display display;
 	private final Broadcaster broadcaster;	
 
-	private final JDialog dl;
+	private final JDialog dialog;
 
 	/**
 	 * Create the fit routine loading dialog.
@@ -53,31 +53,26 @@ public class LoadFit {
 		jamMain = jamStatus.getFrame();
 		display = jamStatus.getDisplay();
 		final String dialogName="Load Fit Routine";
-		dl = new JDialog(jamMain, dialogName, false);
-		final Container cp = dl.getContentPane();
-		dl.setResizable(false);
+		dialog = new JDialog(jamMain, dialogName, false);
+		final Container contents = dialog.getContentPane();
+		dialog.setResizable(false);
 		final int posx=20;
 		final int posy=50;
-		dl.setLocation(posx, posy);
-		cp.setLayout(new BorderLayout());
+		dialog.setLocation(posx, posy);
+		contents.setLayout(new BorderLayout());
 		// panel for fit file
-		final JPanel pf = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		final JPanel pFit = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		Border border = new EmptyBorder(20,20,20,20);
-		pf.setBorder(border);
-		final JLabel lf = new JLabel("Fit class: ", JLabel.RIGHT);
-		pf.add(lf);
+		pFit.setBorder(border);
+		final JLabel lFit = new JLabel("Fit class: ", JLabel.RIGHT);
+		pFit.add(lFit);
 		final JComboBox chooseFit = new JComboBox(this.getFitClasses());
 		Dimension dim = chooseFit.getPreferredSize();
 		dim.width=200;
 		chooseFit.setPreferredSize(dim);
-		pf.add(chooseFit);
+		pFit.add(chooseFit);
 		final PanelOKApplyCancelButtons.Listener callback = new 
-		PanelOKApplyCancelButtons.Listener(){
-		    public void ok(){
-		        apply();
-		        dl.dispose();
-		    }
-		    
+		PanelOKApplyCancelButtons.DefaultListener(dialog){
 		    public void apply(){
 				final Class fit = (Class)chooseFit.getSelectedItem();
 				try {
@@ -87,23 +82,19 @@ public class LoadFit {
 				    je.printStackTrace();
 				}
 		    }
-		    
-		    public void cancel(){
-		        dl.dispose();
-		    }
 		};
 		final PanelOKApplyCancelButtons buttons=new PanelOKApplyCancelButtons(callback);
-		cp.add(pf,BorderLayout.CENTER);
-		cp.add(buttons.getComponent(),BorderLayout.SOUTH);
-		dl.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dl.pack();
+		contents.add(pFit,BorderLayout.CENTER);
+		contents.add(buttons.getComponent(),BorderLayout.SOUTH);
+		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		dialog.pack();
 	}
 
 	/**
 	 * Show the load fit routine dialog box
 	 */
 	public void showLoad() {
-		dl.setVisible(true);
+		dialog.setVisible(true);
 	}
 
 	private void makeFit(Class fitClass) throws JamException {
@@ -137,3 +128,5 @@ public class LoadFit {
 		return set.toArray();
 	}
 }
+
+

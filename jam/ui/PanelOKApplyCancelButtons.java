@@ -2,6 +2,7 @@ package jam.ui;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,30 +27,30 @@ public class PanelOKApplyCancelButtons {
 	/**
 	 * Constructs a Swing component which has OK, Apply, and Cancel buttons.
 	 * 
-	 * @param cb object with methods to be called when the buttons get pressed
+	 * @param listener object with methods to be called when the buttons get pressed
 	 */
-	public PanelOKApplyCancelButtons(Listener cb) {
-		callback=cb;
-		final JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
-		panel.add(pb);
+	public PanelOKApplyCancelButtons(Listener listener) {
+		callback=listener;
+		final JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
+		panel.add(grid);
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				callback.ok();
+			public void actionPerformed(ActionEvent actionEvent) {
+				callback.doOK();
 			}
 		});
-		pb.add(bok);
+		grid.add(bok);
 		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent actionEvent) {
 				callback.apply();
 			}
 		});
-		pb.add(bapply);
+		grid.add(bapply);
 		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent actionEvent) {
 				callback.cancel();
 			}
 		});
-		pb.add(bcancel);
+		grid.add(bcancel);
 	}
 	
 	/**
@@ -63,12 +64,12 @@ public class PanelOKApplyCancelButtons {
 	
 	/**
 	 * Set the enabled state of the buttons.
-	 * @param ok the enable state of "OK" button
+	 * @param okEnable the enable state of "OK" button
 	 * @param apply the enable state of "Apply" button
 	 * @param cancel the enable state of "Cancel" button
 	 */
-	public void setButtonsEnabled(boolean ok, boolean apply, boolean cancel){
-	    bok.setEnabled(ok);
+	public void setButtonsEnabled(boolean okEnable, boolean apply, boolean cancel){
+	    bok.setEnabled(okEnable);
 	    bapply.setEnabled(apply);
 	    bcancel.setEnabled(cancel);
 	}
@@ -84,7 +85,7 @@ public class PanelOKApplyCancelButtons {
 	    /**
 	     * To be called when the user clicks the OK button.
 	     */
-		void ok();
+		void doOK();
 		
 	    /**
 	     * To be called when the user clicks the Apply button.
@@ -95,6 +96,36 @@ public class PanelOKApplyCancelButtons {
 	     * To be called when the user clicks the Cancel button.
 	     */
 		void cancel();
+	}
+	
+	/**
+	 * Default implementation of <code>Listener</code> has <code>doOK()</code>
+	 * exectute <code>apply()</code>, then <code>cancel</code>, which makes
+	 * the given <code>Window</code> invisible.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+	 */
+	public static abstract class DefaultListener implements Listener {
+	    private final Window parent;
+	    
+	    /**
+	     * Constructs a listener.
+	     * 
+	     * @param window the ultimate container we wish to make disappear
+	     * on cancel and OK
+	     */
+	    public DefaultListener(Window window){
+	        parent = window; 
+	    }
+	    
+	    public final void doOK(){
+	        apply();
+	        cancel();
+	    }
+	    
+	    public final void cancel(){
+	        parent.dispose();
+	    }
 	}
 	
 }
