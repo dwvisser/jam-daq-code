@@ -673,61 +673,56 @@ public class HDFIO implements DataIO, JamHDFFields {
 	protected void addGate(Gate g) throws HDFException {
 		String gateType = GATE_1D_TYPE_NAME;
 		int size = 1;
-
-		try {
-			String[] names = GATE_2D_NAMES;
-			int[] x = new int[0];
-			int[] y = new int[0];
-			final short[] types =
-				{ VdataDescription.DFNT_INT32, VdataDescription.DFNT_INT32 };
-			final short[] orders = { 1, 1 };
-			final String name = g.getName();
-			if (g.getType() == Gate.ONE_DIMENSION) {
-				names = GATE_1D_NAMES;
-			} else { //2d
-				gateType = GATE_2D_TYPE_NAME;
-				size = g.getBananaGate().npoints;
-				x = g.getBananaGate().xpoints;
-				y = g.getBananaGate().ypoints;
+		String[] names = GATE_2D_NAMES;
+		int[] x = new int[0];
+		int[] y = new int[0];
+		final short[] types =
+			{ VdataDescription.DFNT_INT32, VdataDescription.DFNT_INT32 };
+		final short[] orders = { 1, 1 };
+		final String name = g.getName();
+		if (g.getType() == Gate.ONE_DIMENSION) {
+			names = GATE_1D_NAMES;
+		} else { //2d
+			gateType = GATE_2D_TYPE_NAME;
+			size = g.getBananaGate().npoints;
+			x = g.getBananaGate().xpoints;
+			y = g.getBananaGate().ypoints;
+		}
+		/* get the VG for the current gate */
+		final VirtualGroup vg = new VirtualGroup(out, name, gateType);
+		gateGroup.addDataObject(vg); //add to Gate section vGroup
+		final VdataDescription desc =
+			new VdataDescription(
+				out,
+				name,
+				gateType,
+				size,
+				names,
+				types,
+				orders);
+		final Vdata data = new Vdata(out, desc);
+		vg.addDataObject(desc); //add vData description to gate VG
+		vg.addDataObject(data); //add vData to gate VG
+		if (g.getType() == 1) {
+			data.addInteger(0, 0, g.getLimits1d()[0]);
+			data.addInteger(1, 0, g.getLimits1d()[1]);
+		} else { //2d
+			for (int i = 0; i < size; i++) {
+				data.addInteger(0, i, x[i]);
+				data.addInteger(1, i, y[i]);
 			}
-			/* get the VG for the current gate */
-			final VirtualGroup vg = new VirtualGroup(out, name, gateType);
-			gateGroup.addDataObject(vg); //add to Gate section vGroup
-			final VdataDescription desc =
-				new VdataDescription(
-					out,
-					name,
-					gateType,
-					size,
-					names,
-					types,
-					orders);
-			final Vdata data = new Vdata(out, desc);
-			vg.addDataObject(desc); //add vData description to gate VG
-			vg.addDataObject(data); //add vData to gate VG
-			if (g.getType() == 1) {
-				data.addInteger(0, 0, g.getLimits1d()[0]);
-				data.addInteger(1, 0, g.getLimits1d()[1]);
-			} else { //2d
-				for (int i = 0; i < size; i++) {
-					data.addInteger(0, i, x[i]);
-					data.addInteger(1, i, y[i]);
-				}
-			}
-			data.refreshBytes();
-			/* add Histogram links... */
-			final VirtualGroup hist =
-				VirtualGroup.ofName(
-					out.ofType(DataObject.DFTAG_VG),
-					g.getHistogram().getName());
-			/* add name as note to vg */
-			new DataIDAnnotation(vg, g.getHistogram().getName());
-			if (hist != null) {
-				hist.addDataObject(vg);
-				//reference the Histogram in the gate group
-			}
-		} catch (DataException e) {
-			throw new HDFException("Problem adding Gate: " + e.getMessage());
+		}
+		data.refreshBytes();
+		/* add Histogram links... */
+		final VirtualGroup hist =
+			VirtualGroup.ofName(
+				out.ofType(DataObject.DFTAG_VG),
+				g.getHistogram().getName());
+		/* add name as note to vg */
+		new DataIDAnnotation(vg, g.getHistogram().getName());
+		if (hist != null) {
+			hist.addDataObject(vg);
+			//reference the Histogram in the gate group
 		}
 	}
 
@@ -740,82 +735,73 @@ public class HDFIO implements DataIO, JamHDFFields {
 	private void getGates(int mode) throws HDFException {
 		final StringUtilities su = StringUtilities.instance();
 		Gate g = null;
-		try {
-			/* get list of all VG's in file */
-			final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
-			/* get only the "gates" VG (only one element) */
-			final VirtualGroup gates =
-				VirtualGroup.ofName(groups, GATE_SECTION_NAME);
-			final java.util.List annotations = in.ofType(DataObject.DFTAG_DIA);
-			if (gates != null) {
-				/* clear if opening and there are histograms in file */
-				/*if (mode==OPEN) {
-					Gate.clearList();
-				}*/
-				msgHandler.messageOut(
-					gates.getObjects().size() + " gates",
-					MessageHandler.CONTINUE);
-				final Iterator temp = gates.getObjects().iterator();
-				while (temp.hasNext()) {
-					final VirtualGroup currVG = (VirtualGroup) (temp.next());
-					final VdataDescription VH =
-						(VdataDescription) (in
-							.ofType(currVG.getObjects(), DataObject.DFTAG_VH)
-							.get(0));
-					if (VH != null) {
-						final Vdata VS =
-							(Vdata) (in
-								.getObject(DataObject.DFTAG_VS, VH.getRef()));
-						//corresponding VS
-						final int numRows = VH.getNumRows();
-						final String gname = currVG.getName();
-						final String hname =
-							DataIDAnnotation
-								.withTagRef(
-									annotations,
-									currVG.getTag(),
-									currVG.getRef())
-								.getNote();
-						if (mode == OPEN) {
-							final Histogram h =
-								Histogram.getHistogram(
-									su.makeLength(
-										hname,
-										Histogram.NAME_LENGTH));
-							g = h == null ? null : new Gate(gname, h);
-						} else { //reload
-							g =
-								Gate.getGate(
-									su.makeLength(gname, Gate.NAME_LENGTH));
-						}
-						if (g != null) {
-							if (g.getType() == Gate.ONE_DIMENSION) { //1-d gate
-								g.setLimits(
-									VS.getInteger(0, 0).intValue(),
-									VS.getInteger(0, 1).intValue());
-							} else { //2-d gate
-								final Polygon pg = new Polygon();
-								for (int i = 0; i < numRows; i++) {
-									pg.addPoint(
-										VS.getInteger(i, 0).intValue(),
-										VS.getInteger(i, 1).intValue());
-								}
-								g.setLimits(pg);
+		/* get list of all VG's in file */
+		final java.util.List groups = in.ofType(DataObject.DFTAG_VG);
+		/* get only the "gates" VG (only one element) */
+		final VirtualGroup gates =
+			VirtualGroup.ofName(groups, GATE_SECTION_NAME);
+		final java.util.List annotations = in.ofType(DataObject.DFTAG_DIA);
+		if (gates != null) {
+			/* clear if opening and there are histograms in file */
+			msgHandler.messageOut(
+				gates.getObjects().size() + " gates",
+				MessageHandler.CONTINUE);
+			final Iterator temp = gates.getObjects().iterator();
+			while (temp.hasNext()) {
+				final VirtualGroup currVG = (VirtualGroup) (temp.next());
+				final VdataDescription VH =
+					(VdataDescription) (in
+						.ofType(currVG.getObjects(), DataObject.DFTAG_VH)
+						.get(0));
+				if (VH != null) {
+					final Vdata VS =
+						(Vdata) (in
+							.getObject(DataObject.DFTAG_VS, VH.getRef()));
+					//corresponding VS
+					final int numRows = VH.getNumRows();
+					final String gname = currVG.getName();
+					final String hname =
+						DataIDAnnotation
+							.withTagRef(
+								annotations,
+								currVG.getTag(),
+								currVG.getRef())
+							.getNote();
+					if (mode == OPEN) {
+						final Histogram h =
+							Histogram.getHistogram(
+								su.makeLength(hname, Histogram.NAME_LENGTH));
+						g = h == null ? null : new Gate(gname, h);
+					} else { //reload
+						g =
+							Gate.getGate(
+								su.makeLength(gname, Gate.NAME_LENGTH));
+					}
+					if (g != null) {
+						if (g.getType() == Gate.ONE_DIMENSION) { //1-d gate
+							g.setLimits(
+								VS.getInteger(0, 0).intValue(),
+								VS.getInteger(0, 1).intValue());
+						} else { //2-d gate
+							final Polygon pg = new Polygon();
+							for (int i = 0; i < numRows; i++) {
+								pg.addPoint(
+									VS.getInteger(i, 0).intValue(),
+									VS.getInteger(i, 1).intValue());
 							}
+							g.setLimits(pg);
 						}
-					} else {
-						msgHandler.messageOutln(
-							"Problem processing a VH in HDFIO!");
 					}
-					if (g == null) {
-						msgHandler.messageOut("X ", MessageHandler.CONTINUE);
-					} else { //got a gate
-						msgHandler.messageOut(". ", MessageHandler.CONTINUE);
-					}
+				} else {
+					msgHandler.messageOutln(
+						"Problem processing a VH in HDFIO!");
+				}
+				if (g == null) {
+					msgHandler.messageOut("X ", MessageHandler.CONTINUE);
+				} else { //got a gate
+					msgHandler.messageOut(". ", MessageHandler.CONTINUE);
 				}
 			}
-		} catch (DataException e) {
-			throw new HDFException("Problem getting gates: " + e.getMessage());
 		}
 	}
 
