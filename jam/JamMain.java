@@ -1,11 +1,11 @@
 package jam;
 import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
+import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
-import jam.global.SortModeListener;
 import jam.plot.Display;
 
 import java.awt.BorderLayout;
@@ -13,6 +13,8 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,7 +31,7 @@ import javax.swing.WindowConstants;
  * @author   Ken Swartz
  * @since    JDK1.1
  */
-public final class JamMain extends JFrame implements SortModeListener {
+public final class JamMain extends JFrame implements Observer {
 	/**
 	 * Configuration information for Jam.
 	 */
@@ -43,7 +45,7 @@ public final class JamMain extends JFrame implements SortModeListener {
 	/**
 	 * Event distributor.
 	 */
-	private final Broadcaster broadcaster;
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Histogram displayer.
@@ -71,7 +73,7 @@ public final class JamMain extends JFrame implements SortModeListener {
 		setLookAndFeel();
 		final int titleDisplayTime = 10000; //milliseconds
 		new SplashWindow(this, titleDisplayTime);
-		status.addSortModeListener(this);
+		//status.addSortModeListener(this);
 		final ClassLoader cl = getClass().getClassLoader();
 		setIconImage(
 			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
@@ -90,25 +92,22 @@ public final class JamMain extends JFrame implements SortModeListener {
 			}
 		});
 		/* class to distrute events to all listeners */
-		broadcaster = new Broadcaster();
+		broadcaster.addObserver(this);
 		this.setResizable(true);
 		me.setLayout(new BorderLayout());
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
-		//me.add(console, BorderLayout.SOUTH);
 		/* histogram displayer (needed by jamCommand) */
-		display = new Display(broadcaster, console);
-		//me.add(display, BorderLayout.CENTER);
+		display = new Display(console);
 		final JSplitPane splitCenter =
 			new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, display, console);
 		/*fraction of resize space that goes to display*/
 		me.add(splitCenter, BorderLayout.CENTER);
 		/* create user command listener */
-		jamCommand = new JamCommand(this, display, broadcaster, console);
+		jamCommand = new JamCommand(this, display, console);
 		menubar = new MainMenuBar(this, jamCommand, display, console);
 		this.setJMenuBar(menubar);
-		selectBar = new SelectionToolbar(console, status, broadcaster, display, menubar);
-		broadcaster.addObserver(selectBar);
+		selectBar = new SelectionToolbar(console, status, display, menubar);
 		me.add(selectBar, BorderLayout.NORTH);
 		display.addToolbarAction(); //the left-hand action toolbar
 		/* operations to close window */
@@ -162,7 +161,7 @@ public final class JamMain extends JFrame implements SortModeListener {
 	 * @see jam.global.SortMode
 	 * @param mode the new mode for Jam to be in
 	 */
-	public void sortModeChanged() {
+	private void sortModeChanged() {
 		final StringBuffer title = new StringBuffer("Jam - ");
 		final String disk = "disk";
 		final SortMode mode=status.getSortMode();
@@ -259,6 +258,14 @@ public final class JamMain extends JFrame implements SortModeListener {
 					title,
 					JOptionPane.WARNING_MESSAGE);
 			}
+		}
+	}
+	
+	public void update(Observable event, Object param){
+		final BroadcastEvent be=(BroadcastEvent)param;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			sortModeChanged();
 		}
 	}
 

@@ -3,12 +3,13 @@ import jam.data.Histogram;
 import jam.data.control.DataControl;
 import jam.data.control.ScalerControl;
 import jam.fit.LoadFit;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
-import jam.global.SortModeListener;
 import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
@@ -34,6 +35,8 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
@@ -58,7 +61,7 @@ import javax.swing.KeyStroke;
  * @version 1.4
  * @since 30 Dec 2003
  */
-public class MainMenuBar extends JMenuBar implements SortModeListener {
+public class MainMenuBar extends JMenuBar implements Observer {
 
 	private final JamStatus status=JamStatus.instance();
 
@@ -317,7 +320,7 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		super();
 		this.jamCommand=jamCommand;
 		hdfio=jamCommand.getHDFIO();
-		status.addSortModeListener(this);
+		Broadcaster.getSingletonInstance().addObserver(this);
 		final int ctrl_mask;
 		final boolean macosx=JamProperties.isMacOSX();
 		if (macosx){
@@ -681,7 +684,7 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		fitting.add(new JMenuItem(action));
 	}
 
-	public void sortModeChanged() {
+	private void sortModeChanged() {
 		final SortMode mode=status.getSortMode();
 		if (mode == SortMode.ONLINE_DISK || mode == SortMode.ONLINE_NO_DISK) {
 			cstartacq.setEnabled(true); //enable control JMenu items
@@ -813,4 +816,11 @@ public class MainMenuBar extends JMenuBar implements SortModeListener {
 		calHist.setEnabled(oneDops);
 	}
 
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final int command=be.getCommand();
+		if (command==BroadcastEvent.SORT_MODE_CHANGED){
+			sortModeChanged();
+		}
+	}
 }

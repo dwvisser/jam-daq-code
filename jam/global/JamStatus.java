@@ -3,11 +3,7 @@ import jam.JamMain;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.swing.JFrame;
@@ -31,6 +27,8 @@ public final class JamStatus {
 	 * The one instance of JamStatus.
 	 */
 	static private JamStatus _instance=new JamStatus();
+	
+	private final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/**
 	 * Never meant to be called by outside world.
@@ -103,10 +101,11 @@ public final class JamStatus {
 			}
 			sortMode = mode;
 		}
-		for (Iterator it = sortModeListeners.iterator(); it.hasNext();) {
+		/*for (Iterator it = sortModeListeners.iterator(); it.hasNext();) {
 			final SortModeListener sml = (SortModeListener) it.next();
 			sml.sortModeChanged();
-		}
+		}*/
+		broadcaster.broadcast(BroadcastEvent.SORT_MODE_CHANGED);
 	}
 
 	/**
@@ -132,11 +131,11 @@ public final class JamStatus {
 		}
 	}
 
-	public void addSortModeListener(SortModeListener sml) {
+	/*public void addSortModeListener(SortModeListener sml) {
 		sortModeListeners.add(sml);
-	}
+	}*/
 
-	private Set sortModeListeners = Collections.synchronizedSet(new HashSet(2));
+	//private Set sortModeListeners = Collections.synchronizedSet(new HashSet(2));
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
 
