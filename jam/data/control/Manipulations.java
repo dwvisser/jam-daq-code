@@ -105,6 +105,7 @@ Observer {
         pto.add(ttextto);
         cdmanip.add(pto);
         //button panel
+        JPanel pFlowControl = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
         JButton bOK =new JButton("OK");
         bOK.setActionCommand("ok");
@@ -118,7 +119,9 @@ Observer {
         bCancel.setActionCommand("cancel");
         bCancel.addActionListener(this);
         pcontrol.add(bCancel);
-        cdmanip.add(pcontrol);
+        pFlowControl.add(pcontrol);
+        cdmanip.add(pFlowControl);
+
         dmanip.pack();
     }
 
