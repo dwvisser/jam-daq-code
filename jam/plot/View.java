@@ -34,7 +34,7 @@ public class View {
 	
 	private int numHists;
 	
-	private Histogram [] histograms;
+	private String [] histogramNames;
 	
 	private final static List viewNameList;
 	
@@ -57,7 +57,7 @@ public class View {
 		
 		numHists=nRows*nCols;
 		
-		histograms= new Histogram[numHists];
+		histogramNames= new String[numHists];
 		
 		prime=1;
 		addition="";
@@ -106,14 +106,16 @@ public class View {
 	 * @return rows
 	 */
 	Histogram getHistogram(int num){
-		return histograms[num];
+		
+		return Histogram.getHistogram(histogramNames[num]);
 	}
 	/**
 	 * Get the number of plots
 	 * @return rows
 	 */
 	void setHistogram( int num, Histogram histIn){
-		histograms[num]=histIn;
+		histogramNames[num]=histIn.getName();
+
 	}
 	
 }
