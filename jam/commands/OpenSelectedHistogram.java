@@ -20,7 +20,7 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	
 	public void initCommand(){
 		putValue(NAME, "Open Additional Select Histograms\u2026");
-		osh=new jam.io.control.OpenSelectedHistogram(status.getFrame(), msghdlr);
+		osh=new jam.io.control.OpenSelectedHistogram(STATUS.getFrame(), msghdlr);
 	}
 
 	/**
@@ -28,8 +28,8 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	 */
 	protected void execute(Object[] cmdParams) {
 		osh.open();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		status.getFrame().repaint();
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		STATUS.getFrame().repaint();
 	}
 
 	/**

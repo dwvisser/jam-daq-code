@@ -38,7 +38,7 @@ final class ScalersCmd extends AbstractCommand {
 	 * Does the scaler zeroing.
 	 */
 	private void zeroScalers() {
-		broadcaster.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
+		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
 		readScalers();				
 	}
 	
@@ -46,8 +46,8 @@ final class ScalersCmd extends AbstractCommand {
 	 * Does the scaler reading.
 	 */
 	private void readScalers() {
-		if (status.isOnline()){
-			broadcaster.broadcast(BroadcastEvent.Command.SCALERS_READ);
+		if (STATUS.isOnline()){
+			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 		} 		
 	}
 }

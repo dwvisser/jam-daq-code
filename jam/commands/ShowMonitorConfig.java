@@ -19,6 +19,6 @@ Observer {
 	}
 
 	public void update(Observable observe, Object obj){
-		setEnabled(status.isOnline());
+		setEnabled(STATUS.isOnline());
 	}	
 }

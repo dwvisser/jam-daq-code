@@ -34,13 +34,13 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
-		final JFrame frame =status.getFrame();
+		final JFrame frame =STATUS.getFrame();
 		if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 		"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
-			status.setSortMode(SortMode.NO_SORT, "Data Cleared");
+			STATUS.setSortMode(SortMode.NO_SORT, "Data Cleared");
 			DataBase.getInstance().clearAllLists();
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		}
 		
 	}
@@ -58,7 +58,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	}
 	
 	private final void enable() {
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
 	}
 

@@ -35,7 +35,7 @@ final class ReloadHDFCmd extends LoaderHDF implements Observer {
 	}
 	
 	private void enable(){
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		final boolean online = mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK;
 		final boolean offline = mode == SortMode.OFFLINE;

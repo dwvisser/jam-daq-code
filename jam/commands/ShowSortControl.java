@@ -21,7 +21,7 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode == SortMode.OFFLINE);
 	}
 

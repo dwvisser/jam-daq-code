@@ -57,7 +57,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	}
 
 	private final boolean online() {
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		return mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK;
 	}

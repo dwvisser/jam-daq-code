@@ -29,7 +29,7 @@ final class ExportRadware extends AbstractExportFile implements Observer{
 	}
 
 	private void enable(){
-		final Histogram h=status.getCurrentHistogram();
+		final Histogram h=STATUS.getCurrentHistogram();
 		if (h!=null){
 			setEnabled(h.getDimensionality()==1);	
 		}

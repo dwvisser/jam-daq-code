@@ -24,8 +24,8 @@ public class DeleteGroup extends AbstractCommand {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) throws CommandException {
-		final JFrame frame =status.getFrame();
-		Group group = status.getCurrentGroup();
+		final JFrame frame =STATUS.getFrame();
+		Group group = STATUS.getCurrentGroup();
 		if (null==group){
 			msghdlr.errorOutln("Need to select a group.");
 			return;
@@ -39,7 +39,7 @@ public class DeleteGroup extends AbstractCommand {
 			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 					"Delete "+name+"?","Delete group",JOptionPane.YES_NO_OPTION)){
 				Group.clearGroup(group);
-				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 

@@ -24,10 +24,10 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	
 	protected void execute(Object[] cmdParams) throws CommandException {
 		
-		Frame frame =status.getFrame();
+		Frame frame =STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		
-		Group group=status.getCurrentGroup();
+		Group group=STATUS.getCurrentGroup();
 		
 		if (group!=null) {
 			if (cmdParams == null || cmdParams.length==0) { //No file given		

@@ -24,13 +24,13 @@ Commandable {
      * Reference to <code>JamStatus</code> singleton available to 
      * all implementing classes.
      */
-	protected static final JamStatus status=JamStatus.getSingletonInstance();
+	protected static final JamStatus STATUS=JamStatus.getSingletonInstance();
 	
     /**
      * Reference to <code>Broadcaster</code> singleton available to 
      * all implementing classes.
      */	
-	protected static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
+	protected static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
 	
     /**
      * Reference to global <code>MessageHandler</code> available to 
@@ -43,7 +43,7 @@ Commandable {
 	 */
 	AbstractCommand(){
 		super();
-		msghdlr=status.getMessageHandler();
+		msghdlr=STATUS.getMessageHandler();
 	}
 	
 	/**

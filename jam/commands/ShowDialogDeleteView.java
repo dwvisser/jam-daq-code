@@ -132,7 +132,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			}
 			Broadcaster.getSingletonInstance().broadcast(
 					BroadcastEvent.Command.VIEW_NEW);
-			status.getDisplay().setView(View.SINGLE);
+			STATUS.getDisplay().setView(View.SINGLE);
 			updateViewNames();
 		}
 	}

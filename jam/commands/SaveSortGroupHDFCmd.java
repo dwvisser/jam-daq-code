@@ -29,9 +29,9 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
-		final Frame frame =status.getFrame();
+		final Frame frame =STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		final SortMode mode =status.getSortMode();
+		final SortMode mode =STATUS.getSortMode();
 		if (mode == SortMode.ONLINE_DISK ||
 			mode == SortMode.ON_NO_DISK ||
 		  	mode == SortMode.OFFLINE ) {
@@ -74,7 +74,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 	
 	private void enable(){
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.OFFLINE 
 				|| mode==SortMode.ONLINE_DISK
 				|| mode==SortMode.ON_NO_DISK);		

@@ -15,7 +15,7 @@ final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
 	
 	public void initCommand() {
 		putValue(NAME, "Save select histograms\u2026");
-		saveSelectedDialog = new SaveSelectedHistogram(status.getFrame(), msghdlr);
+		saveSelectedDialog = new SaveSelectedHistogram(STATUS.getFrame(), msghdlr);
 	}
 	
 	/**

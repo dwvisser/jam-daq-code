@@ -37,9 +37,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
-		final JFrame frame = status.getFrame();
+		final JFrame frame = STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
-		final File file = status.getOpenFile();
+		final File file = STATUS.getOpenFile();
 		if (file != null) { //Prompt for overwrite
 			hdfio.writeFile(file);
 		} else { //File null, shouldn't be.	
@@ -71,8 +71,8 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void enable() {
-		final SortMode mode = status.getSortMode();
-		final boolean file = status.getOpenFile() != null;
+		final SortMode mode = STATUS.getSortMode();
+		final boolean file = STATUS.getOpenFile() != null;
 		setEnabled(file && (mode == SortMode.FILE || mode == SortMode.NO_SORT));
 	}
 }

@@ -31,8 +31,8 @@ final class DeleteHistogram extends AbstractCommand {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
-		final JFrame frame =status.getFrame();
-		final Histogram hist=status.getCurrentHistogram();
+		final JFrame frame =STATUS.getFrame();
+		final Histogram hist=STATUS.getCurrentHistogram();
 		final String name =hist.getFullName().trim();
 		final Group.Type type=hist.getGroup().getType();	
 		/* Cannot delete sort histograms */
@@ -42,7 +42,7 @@ final class DeleteHistogram extends AbstractCommand {
 			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 					"Delete "+name+"?","Delete histogram",JOptionPane.YES_NO_OPTION)){
 				Histogram.deleteHistogram(hist.getUniqueFullName());
-				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			}
 		}
 	}

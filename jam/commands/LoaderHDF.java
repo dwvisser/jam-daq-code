@@ -38,7 +38,7 @@ abstract class LoaderHDF extends AbstractCommand implements Observer {
 	 * @param cmdParams a file reference or null
 	 */ 
 	protected final void addHDFFile(final Object[] cmdParams) {		
-		Frame frame= status.getFrame();
+		Frame frame= STATUS.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
 		File file=null;
 		if (cmdParams!=null) {

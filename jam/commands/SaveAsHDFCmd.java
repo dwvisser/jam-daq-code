@@ -35,8 +35,8 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	 */
 	protected void execute(Object[] cmdParams) {
 		
-		Frame frame= status.getFrame();
-		final HDFIO hdfio = new HDFIO(status.getFrame(), msghdlr);
+		Frame frame= STATUS.getFrame();
+		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
 		
 		if (cmdParams == null || cmdParams.length==0) { //No file given		
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());

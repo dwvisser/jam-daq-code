@@ -43,7 +43,7 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	 * @param cmdParams
 	 */ 
 	private void readAdditionalHDFFile(Object[] cmdParams) {
-		Frame frame= status.getFrame();
+		Frame frame= STATUS.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
 		File file=null;
 		final boolean isFileRead;
@@ -85,14 +85,14 @@ public class OpenAdditionalHDF extends AbstractCommand {
 	}
 
 	private void notifyApp(File file) {
-		status.setSortMode(file);
+		STATUS.setSortMode(file);
 		AbstractControl.setupAll();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		//Set the current histogram to the first opened histogram
 		Histogram firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
-		status.setCurrentHistogram(firstHist);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-		status.getFrame().repaint();
+		STATUS.setCurrentHistogram(firstHist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		STATUS.getFrame().repaint();
 	}			
 
 }

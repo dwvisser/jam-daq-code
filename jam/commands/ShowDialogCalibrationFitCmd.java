@@ -20,7 +20,7 @@ Observer {
 	}
 
 	private void enable() {
-		final Histogram h=status.getCurrentHistogram();
+		final Histogram h=STATUS.getCurrentHistogram();
 		setEnabled(h !=null && h.getDimensionality()==1);
 	}
 

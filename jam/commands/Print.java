@@ -35,14 +35,14 @@ final class Print extends AbstractPrintingCommand {
 		if (firstTime){
 			msghdlr.warningOutln("On some systems, it will be necessary to first "+
 			"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");
-			display=status.getDisplay();
+			display=STATUS.getDisplay();
 			firstTime=false;
 		}
 		final PrinterJob pj = PrinterJob.getPrinterJob();
 		final ComponentPrintable cp = display.getComponentPrintable();
 		pj.setPrintable(cp, mPageFormat);
 		if (pj.printDialog()) {
-			String name =status.getCurrentHistogram().getFullName();
+			String name =STATUS.getCurrentHistogram().getFullName();
 			msghdlr.messageOut("Preparing to send histogram '" + 
 					name+"' to printer\u2026",
 			MessageHandler.NEW);

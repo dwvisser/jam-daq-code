@@ -30,7 +30,7 @@ final class ShowUserGuide extends AbstractCommand {
 			proxy.addActionListener(ac);
 		} catch (Exception ee) {
 			final String message = "HelpSet " + helpsetName + " not found";
-			final JFrame frame =status.getFrame();
+			final JFrame frame =STATUS.getFrame();
 			JOptionPane.showMessageDialog(
 				frame,
 				ee.getMessage(),

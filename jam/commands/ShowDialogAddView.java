@@ -134,8 +134,8 @@ public class ShowDialogAddView extends AbstractShowDialog {
 				name = "View " + nRows + "x" + nCols;
 			}
 			viewNew = new View(name, nRows, nCols);
-			broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
-			status.getDisplay().setView(viewNew);
+			BROADCASTER.broadcast(BroadcastEvent.Command.VIEW_NEW);
+			STATUS.getDisplay().setView(viewNew);
 		}
 	}
 }

@@ -23,7 +23,7 @@ final class AddHDFCmd extends LoaderHDF implements Observer {
 		final BroadcastEvent be=(BroadcastEvent)obj;
 		final BroadcastEvent.Command command=be.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
-			final SortMode mode=status.getSortMode();
+			final SortMode mode=STATUS.getSortMode();
 			setEnabled(mode != SortMode.REMOTE);
 		}
 	}

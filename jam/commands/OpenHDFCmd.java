@@ -49,7 +49,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	 * @param cmdParams
 	 */ 
 	private void readHDFFile(Object[] cmdParams) {
-		Frame frame= status.getFrame();
+		Frame frame= STATUS.getFrame();
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);		
 		File file=null;
 		final boolean isFileRead;
@@ -94,9 +94,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 		
 		Histogram firstHist;
 		
-		status.setSortMode(file);
+		STATUS.setSortMode(file);
 		AbstractControl.setupAll();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		
 		//Set the current histogram to the first opened histogram
 		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
@@ -105,9 +105,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 			firstHist=null;
 		}
 			
-		status.setCurrentHistogram(firstHist);
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-		status.getFrame().repaint();
+		STATUS.setCurrentHistogram(firstHist);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+		STATUS.getFrame().repaint();
 	}			
 	
 	public void update(Observable observe, Object obj){
@@ -119,7 +119,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer {
 	}
 	
 	private void enable(){
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);		
 	}
 }

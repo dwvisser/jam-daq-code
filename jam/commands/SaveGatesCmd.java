@@ -31,7 +31,7 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	 * @see java.io.File
 	 */
 	protected void execute(Object[] cmdParams) {
-		Frame frame= status.getFrame();
+		Frame frame= STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		
 		if (cmdParams == null || cmdParams.length==0) { //No file given		

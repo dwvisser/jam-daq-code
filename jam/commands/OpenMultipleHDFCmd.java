@@ -22,7 +22,7 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	
 	OpenMultipleHDFCmd(){
 		putValue(NAME,"Open Multiple\u2026");
-		openMultiple=new OpenMultipleFiles(status.getFrame(), msghdlr);
+		openMultiple=new OpenMultipleFiles(STATUS.getFrame(), msghdlr);
 		//broadcaster.addObserver(this);
 	}
 	
@@ -49,7 +49,7 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	}
 	
 	private void enable(){
-		final SortMode mode=status.getSortMode();
+		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);		
 	}
 	
