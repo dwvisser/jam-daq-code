@@ -129,8 +129,8 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Forwards call to JamMain but some of the implementation should be
-	 * here
+	 * Sets <code>FILE</code> sort mode, and stores the given file as
+	 * the last file accessed.
 	 *  
 	 * @param file the file just loaded
 	 */
@@ -141,11 +141,6 @@ public final class JamStatus {
 		}
 	}
 
-	/*public void addSortModeListener(SortModeListener sml) {
-		sortModeListeners.add(sml);
-	}*/
-
-	//private Set sortModeListeners = Collections.synchronizedSet(new HashSet(2));
 	private SortMode sortMode = SortMode.NO_SORT;
 	private File openFile = null;
 
