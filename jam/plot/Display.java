@@ -446,9 +446,9 @@ Observer {
     public void addToolbarAction() {
     	ClassLoader cl=this.getClass().getClassLoader();
     	
-        JPanel ptoolbar=new JPanel();
+        JToolBar ptoolbar=new JToolBar("Actions",JToolBar.VERTICAL);
         this.add(ptoolbar,BorderLayout.WEST);
-        ptoolbar.setForeground(Color.black);
+        //ptoolbar.setForeground(Color.black);
         GridBagLayout gb =new GridBagLayout();
         GridBagConstraints gbc =new GridBagConstraints();
         gbc.ipady=5;
