@@ -82,7 +82,7 @@ public class Group {
      * @param type
      *            of group
      */
-    public synchronized static void createGroup(String groupName, Type type) {
+    public synchronized static Group createGroup(String groupName, Type type) {
         if (NAME_MAP.containsKey(groupName)) {
             setCurrentGroup(groupName);
         } else {
@@ -93,6 +93,7 @@ public class Group {
         if (type.type==Group.Type.TYPE_SORT) {
         	sortGroup =currentGroup;
         }
+        return currentGroup;
     }
     
     /**

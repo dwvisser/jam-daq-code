@@ -31,6 +31,15 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     void setInFile(HDFile infile) {
         inHDF = infile;
     }
+    
+    boolean hasVGroupRootGroup() throws HDFException {
+    	boolean hasRoot =false;
+        final VirtualGroup groupsRoot = VirtualGroup.ofName(GROUP_SECTION);
+        if (groupsRoot!=null) {
+        	hasRoot =true;
+        }
+        return hasRoot;        	
+    } 
 
     /** 
      * looks for the special Histogram section and reads the data into
@@ -309,22 +318,12 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
 		return findSubGroupsName(virtualGroupGroup, SCALER_SECT);		
     }
 
-    /*
-     * non-javadoc: Retrieve the scalers from the file.
-     * 
-     * @param mode whether to open, reload or add @throws HDFException if there
-     * is a problem retrieving scalers
-     */
-    int convertScalers(FileOpenMode mode) throws HDFException {
-    	int numScalers = 0;
+	VdataDescription findScalersOriginal() throws HDFException {
         final VdataDescription vdd = VdataDescription.ofName(AbstractHData
                 .ofType(AbstractHData.DFTAG_VH), SCALER_SECT);
-        Group currentGroup = Group.getCurrentGroup();
-        if (vdd != null) {
-        	numScalers= convertScalers(currentGroup, vdd, mode);        	
-        }
-        return numScalers;
+		return vdd;
     }
+	
     /*
      * non-javadoc: Retrieve the scalers from the file.
      * 
@@ -374,32 +373,52 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     }
 
 	List findParameters(VirtualGroup virtualGroupGroup) throws HDFException {
-		return findSubGroups(virtualGroupGroup, PARAMETERS);		
+		return findSubGroupsName(virtualGroupGroup, PARAMETERS);		
     }
-    
+	
+	VdataDescription findParametersOriginal() throws HDFException {
+		final VdataDescription vdd = VdataDescription.ofName(AbstractHData
+                .ofType(AbstractHData.DFTAG_VH), PARAMETERS);	
+		return vdd;
+    }
+	
+    /*
+     * non-javadoc: Retrieve the scalers from the file.
+     * 
+     * @param mode whether to open, reload or add @throws HDFException if there
+     * is a problem retrieving scalers
+     */
+
+    int convertParameters(Group group, VirtualGroup currVG, FileOpenMode mode) throws HDFException {
+    	int numParameters = 0;    	
+    	 final VdataDescription vdd = (VdataDescription) (AbstractHData
+                .ofType(currVG.getObjects(), AbstractHData.DFTAG_VH)
+                .get(0));
+         /* only the "parameters" VH (only one element) in the file */
+         if (vdd != null) {    	 
+         	numParameters =convertParameters(group, vdd, mode);
+         }
+         return numParameters;
+    }
+	
     /*
      * non-javadoc: retrieve the parameters from the file
      * 
      * @param mode whether to open or reload @throws HDFException if an error
      * occurs reading the parameters
      */
-    int convertParameters(FileOpenMode mode) throws HDFException {
+    int convertParameters(Group group, VdataDescription vdd, FileOpenMode mode) throws HDFException {
         int numParams = 0;
-        final VdataDescription vdd = VdataDescription.ofName(AbstractHData
-                .ofType(AbstractHData.DFTAG_VH), PARAMETERS);
-        /* only the "parameters" VH (only one element) in the file */
-        if (vdd != null) {
-            /* Get corresponding VS for this VH */
-            final Vdata data = (Vdata) (AbstractHData.getObject(
-                    AbstractHData.DFTAG_VS, vdd.getRef()));
-            numParams = vdd.getNumRows();
-            for (int i = 0; i < numParams; i++) {
-                final String pname = data.getString(i, 0);
-                /* make if OPEN, retrieve if RELOAD */
-                final DataParameter param = produceParameter(mode, pname);
-                if (param != null) {
-                    param.setValue(data.getFloat(i, 1).floatValue());
-                }
+        /* Get corresponding VS for this VH */
+        final Vdata data = (Vdata) (AbstractHData.getObject(
+                AbstractHData.DFTAG_VS, vdd.getRef()));
+        numParams = vdd.getNumRows();
+        for (int i = 0; i < numParams; i++) {
+            final String pname = data.getString(i, 0);
+            /* make if OPEN, retrieve if RELOAD */
+            final DataParameter param = produceParameter(mode, pname);
+            if (param != null) {
+                param.setValue(data.getFloat(i, 1).floatValue());
             }
         }
         return numParams;
