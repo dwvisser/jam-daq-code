@@ -254,20 +254,21 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 	}
 
-	void drawNumber(int number, int overlayNumber) {
+	void drawNumber(int number, int [] overlayNumbers) {
 		final String s = Integer.toString(number);
 		setFont(font);
-		final int width = fm.stringWidth(s);
-		final int x = this.viewLeft - TITLE_OFFSET_TOP - width;
+		int width = fm.stringWidth(s);
+		int xNext = this.viewLeft - TITLE_OFFSET_TOP - width;
 		final int y = viewTop - TITLE_OFFSET_TOP;
 		final Color c = g.getColor();
 		g.setColor(PlotColorMap.foreground);
-		g.drawString(s, x, y);
-		if (overlayNumber >= 0){
-			final int x2=x+width;
-			final StringBuffer s2=new StringBuffer(", ").append(overlayNumber);
-			g.setColor(PlotColorMap.overlay);
-			g.drawString(s2.toString(),x2,y);
+		g.drawString(s, xNext, y);
+		for (int i=0; i<overlayNumbers.length; i++){
+			xNext += width;
+			final String sNext=", "+overlayNumbers[i];
+			width=fm.stringWidth(sNext);
+			g.setColor(PlotColorMap.overlay[i%PlotColorMap.overlay.length]);
+			g.drawString(sNext,xNext,y);
 		}
 		g.setColor(c);
 	}
