@@ -100,7 +100,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	
 	private int currentHistNumber;
 
-	public Plot(Action action, PlotGraphicsLayout graphicsLayout,
+	public Plot(PlotGraphicsLayout graphicsLayout,
 			PlotSelectListener plotSelect) {
 		this.plotSelectListener = plotSelect;
 		isSelected = false;

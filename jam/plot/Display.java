@@ -239,7 +239,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	private void createPlots(int numberPlots) {
 		for (int i=plotList.size();i<numberPlots;i++) {
-			final Plot plotTemp= new Plot(action,  graphLayout, this);
+			final Plot plotTemp= new Plot(graphLayout, this);
 			plotList.add(plotTemp);
 		}
 	}
