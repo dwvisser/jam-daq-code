@@ -63,7 +63,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
         cddisp.setLayout(new BorderLayout());
 
 
-		pScalers = new JPanel(new GridLayout(0,1,10,0));
+		pScalers = new JPanel(new GridLayout(0,1,10,5));
         Border borderScalers = new EmptyBorder(10,10,10,10);
         pScalers.setBorder(borderScalers);
 
@@ -213,9 +213,9 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             while(enumScaler.hasNext()) {
                 Scaler currentScaler=(Scaler)enumScaler.next();
                 //right justified, hgap, vgap
-                ps[count]= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
+                ps[count]= new JPanel(new FlowLayout(FlowLayout.RIGHT,10,0));
                 //ps[count].setLayout(
-                labelScaler[count]=new JLabel (currentScaler.getName(),JLabel.RIGHT);
+                labelScaler[count]=new JLabel (currentScaler.getName().trim(),JLabel.RIGHT);
                 textScaler[count] =new JTextField("  ");
                 textScaler[count].setColumns(12);
                 textScaler[count].setEditable(false);

@@ -79,14 +79,14 @@ public class PlotBar extends JPanel implements PlotBarLayout {
       }
 
       //clear area
-      g.clearRect(BORDER_END, BORDER_SIDE, length, height);
+      g.clearRect(BORDER_END, BORDER_SIDE, length, height-1);
       g.setColor(SystemColor.control);
-      g.fillRect(BORDER_END, BORDER_SIDE, length, height);
+      g.fillRect(BORDER_END, BORDER_SIDE, length, height-1);
 
       //draw outline
       g.setColor(SystemColor.textText);
       //g.setColor(Color.black);
-      g.drawRect(BORDER_END, BORDER_SIDE, length, height);
+      g.drawRect(BORDER_END, BORDER_SIDE, length, height-1);
 
       //Draw bar color depending on threshold and maximum
       if ((value<threshold)||(value>maximum)){
@@ -94,12 +94,13 @@ public class PlotBar extends JPanel implements PlotBarLayout {
       } else {
         g.setColor(Color.green);
       }
-      g.fillRect(BORDER_END+1, BORDER_SIDE+1, plotLength, height-1);
+
+      g.fillRect(BORDER_END+1, BORDER_SIDE+1, plotLength, height-2);
 
 	  //draw threshold
       g.setColor(SystemColor.textText);
 	 //g.setColor(Color.black);
       g.drawLine(BORDER_END+thresholdLine, BORDER_SIDE+(height/2),
-          BORDER_END+thresholdLine, BORDER_SIDE+height);
+          BORDER_END+thresholdLine, BORDER_SIDE+height-1);
     }
 }

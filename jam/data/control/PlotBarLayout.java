@@ -11,7 +11,7 @@ interface PlotBarLayout {
 
 
     static final int BORDER_END=5;	    	//border area at ends of bars
-    static final int BORDER_SIDE=5;	    //border area on sides of bars
+    static final int BORDER_SIDE=0;	    	//border area on sides of bars
 
     static final int BAR_WIDTH=20;	    	//width of bars
     static final int BAR_LENGTH=200;

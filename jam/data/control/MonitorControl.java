@@ -168,7 +168,7 @@ public final class MonitorControl
 
 		//Panel for the bars
 		pBars =new JPanel(new GridLayout(0,2,5,5));
-		pBars.setBorder(new EmptyBorder(10,10,0,10));
+		pBars.setBorder(new EmptyBorder(10,10,10,10));
 		cddisp.add(pBars, BorderLayout.CENTER);
 
 		// alarm panel for display dialog
@@ -278,7 +278,7 @@ public final class MonitorControl
 		if (numberMonitors != 0) {
 			for (int i = 0; i < numberMonitors; i++) {
 				pm[i] = new JPanel();
-				pm[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+				pm[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 				pBars.add(pm[i]);
 				labelDisp[i] = new JLabel("          ", JLabel.RIGHT);
 				labelDisp[i].setText(monitor[i].getName());

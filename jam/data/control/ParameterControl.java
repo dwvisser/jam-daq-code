@@ -5,7 +5,7 @@ import java.util.*;
 import jam.global.*;
 import jam.data.*;
 import javax.swing.*;
-
+import javax.swing.border.*;
 /**
  * Sets and displays the Parameters (data.Parameters.class)
  * used for sorting
@@ -25,6 +25,7 @@ public final class ParameterControl
 	private final JDialog ddisp;
 
 	//widgets for each parameter
+	private JPanel pCenter;
 	private JPanel[] pParam;
 	private JLabel[] labelParam;
 	private JTextField[] textParam;
@@ -40,14 +41,22 @@ public final class ParameterControl
 		this.frame = frame;
 		this.broadcaster = broadcaster;
 		this.messageHandler = messageHandler;
+
 		// dialog box to display Parameters
 		ddisp = new JDialog(frame, "Sort Parameters", false);
 		ddisp.setResizable(false);
 		ddisp.setLocation(20, 50);
 		Container cddisp = ddisp.getContentPane();
-		cddisp.setLayout(new GridLayout(0, 1, 5, 5));
-		// buttons for display dialog
+		cddisp.setLayout(new BorderLayout());
+
+		//Central Panel
+		pCenter =new JPanel(new GridLayout(0,1,5,5));
+		pCenter.setBorder(new EmptyBorder(10,10,10,10));
+		cddisp.add(pCenter, BorderLayout.CENTER);
+
+		//Buttons for display dialog
 		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		cddisp.add(pButton, BorderLayout.SOUTH);
 		JPanel pbut = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButton.add(pbut);
 		JButton bread = new JButton("Read");
@@ -90,8 +99,9 @@ public final class ParameterControl
 		int count;
 
 		numberParameters = DataParameter.getParameterList().size();
-		Container cddisp = ddisp.getContentPane();
-		cddisp.removeAll();
+		//Container cddisp = ddisp.getContentPane();
+		//cddisp.removeAll();
+		pCenter.removeAll();
 		// we have some elements in the parameter list
 		if (numberParameters != 0) {
 			//widgets for each parameter
@@ -102,13 +112,11 @@ public final class ParameterControl
 			count = 0;
 			while (enumParameter.hasNext()) {
 				currentParameter = (DataParameter) enumParameter.next();
-				pParam[count] =
-					new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-				cddisp.add(pParam[count]);
-				labelParam[count] =
-					new JLabel(currentParameter.getName(), JLabel.RIGHT);
+				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+				pCenter.add(pParam[count]);
+				labelParam[count] =new JLabel(currentParameter.getName().trim(), JLabel.RIGHT);
 				pParam[count].add(labelParam[count]);
-				textParam[count] = new JTextField(" ");
+				textParam[count] = new JTextField("");
 				textParam[count].setColumns(10);
 				textParam[count].setEditable(true);
 				textParam[count].setBackground(Color.white);
@@ -117,7 +125,6 @@ public final class ParameterControl
 				count++;
 			}
 		}
-		cddisp.add(pButton);
 		ddisp.pack();
 	}
 
@@ -170,7 +177,7 @@ public final class ParameterControl
 			}
 		}
 	}
-	
+
 	/**
 	 * Read the values from the Parameter Objects
 	 * and display them.
