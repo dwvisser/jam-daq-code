@@ -58,7 +58,7 @@ Commandable {
 		try {
 			execute(cmdParams);
 			logCommand();
-		} catch (Exception e) {			
+		} catch (CommandException e) {			
 			logError();
 			throw new CommandException(e);
 		}
