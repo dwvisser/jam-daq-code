@@ -2,6 +2,8 @@ package jam;
 
 import jam.data.Gate;
 import jam.data.Histogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
 
 /**
  * This class to make initial histogram to display that is nice to look at.
@@ -13,6 +15,9 @@ import jam.data.Histogram;
 
 public class InitialHistograms {
 
+    /**
+     * Constructs an instance of this class.
+     */
 	public InitialHistograms() {
 		makehists();
 	}
@@ -32,6 +37,7 @@ public class InitialHistograms {
 		new Gate("Area A", histJam2d); //gate 2d
 		new Gate("Area B", histJam2d); //gate 2d
 		new Gate("Area C", histJam2d); //gate 2d
+		Broadcaster.getSingletonInstance().broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
 	/**
