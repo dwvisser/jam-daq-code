@@ -3,6 +3,8 @@
  */
 package jam.fit;
 
+import java.util.Arrays;
+
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian
  * peak with a background.. The background is a polynomial up to a quadradic
@@ -14,234 +16,229 @@ package jam.fit;
  * 
  * @see NonLinearFit
  */
-public class GaussianFit extends NonLinearFit implements GaussianConstants {
+public final class GaussianFit extends NonLinearFit implements
+        GaussianConstants {
 
-	/**
-	 * name of <code>Parameter</code> --centroid of peak
-	 */
-	public static final String CENTROID = "Centroid";
+    /**
+     * name of <code>Parameter</code> --centroid of peak
+     */
+    public static final String CENTROID = "Centroid";
 
-	/**
-	 * name of <code>Parameter</code> --width of peak
-	 */
-	public static final String WIDTH = "Width";
+    /**
+     * name of <code>Parameter</code> --width of peak
+     */
+    public static final String WIDTH = "Width";
 
-	/**
-	 * name of <code>Parameter</code> --area of peak
-	 */
-	public static final String AREA = "Area";
+    /**
+     * name of <code>Parameter</code> --area of peak
+     */
+    public static final String AREA = "Area";
 
-	/**
-	 * function <code>Parameter</code> --area of peak
-	 */
-	private Parameter area;
+    /**
+     * function <code>Parameter</code> --area of peak
+     */
+    private final Parameter area;
 
-	/**
-	 * function <code>Parameter</code> --centroid of peak
-	 */
-	private Parameter centroid;
+    /**
+     * function <code>Parameter</code> --centroid of peak
+     */
+    private final Parameter centroid;
 
-	/**
-	 * function <code>Parameter</code> --wodth of peak
-	 */
-	private Parameter width;
+    /**
+     * function <code>Parameter</code> --wodth of peak
+     */
+    private final Parameter width;
 
-	/**
-	 * function <code>Parameter</code> --constant background term
-	 */
-	private Parameter paramA;
+    /**
+     * function <code>Parameter</code> --constant background term
+     */
+    private final Parameter paramA;
 
-	/**
-	 * function <code>Parameter</code> --linear background term
-	 */
-	private Parameter paramB;
+    /**
+     * function <code>Parameter</code> --linear background term
+     */
+    private final Parameter paramB;
 
-	/**
-	 * function <code>Parameter</code> --quadratic background term
-	 */
-	private Parameter paramC;
+    /**
+     * function <code>Parameter</code> --quadratic background term
+     */
+    private final Parameter paramC;
 
-	/**
-	 * used for calculations
-	 */
-	private double diff;
+    /**
+     * used for calculations
+     */
+    //	private double diff;
+    /**
+     * used for calculations
+     */
+    //	private double exp;
+    /**
+     * Class constructor.
+     */
+    public GaussianFit() {
+        super("GaussianFit");
 
-	/**
-	 * used for calculations
-	 */
-	private double exp;
+        Parameter background = new Parameter("Background: ", Parameter.TEXT);
+        background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
+        Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
+        equation
+                .setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
+        area = new Parameter(AREA, Parameter.DOUBLE, Parameter.FIX,
+                Parameter.ESTIMATE);
+        area.setEstimate(true);
+        centroid = new Parameter(CENTROID, Parameter.DOUBLE, Parameter.FIX,
+                Parameter.MOUSE);
+        width = new Parameter(WIDTH, Parameter.DOUBLE, Parameter.FIX,
+                Parameter.ESTIMATE);
+        width.setEstimate(true);
+        paramA = new Parameter("A", Parameter.DOUBLE, Parameter.FIX,
+                Parameter.ESTIMATE);
+        paramA.setEstimate(true);
+        paramB = new Parameter("B", Parameter.FIX);
+        paramB.setFixed(true);
+        paramC = new Parameter("C", Parameter.FIX);
+        paramC.setFixed(true);
 
-	/**
-	 * Class constructor.
-	 */
-	public GaussianFit() {
-		super("GaussianFit");
+        addParameter(equation);
+        addParameter(background);
+        addParameter(area);
+        addParameter(centroid);
+        addParameter(width);
+        addParameter(paramA);
+        addParameter(paramB);
+        addParameter(paramC);
 
-		Parameter background = new Parameter("Background: ", Parameter.TEXT);
-		background.setValue("A+B(x-Centroid)+C(x-Centroid)\u00b2");
-		Parameter equation = new Parameter("Peak: ", Parameter.TEXT);
-		equation
-				.setValue("2.354\u2219Area/(\u221a(2\u03c0)Width)\u2219exp[-2.354\u00b2(x-Centroid)\u00b2/(2 Width\u00b2)]");
-		area = new Parameter(AREA, Parameter.DOUBLE, Parameter.FIX,
-				Parameter.ESTIMATE);
-		area.setEstimate(true);
-		centroid = new Parameter(CENTROID, Parameter.DOUBLE, Parameter.FIX,
-				Parameter.MOUSE);
-		width = new Parameter(WIDTH, Parameter.DOUBLE, Parameter.FIX,
-				Parameter.ESTIMATE);
-		width.setEstimate(true);
-		paramA = new Parameter("A", Parameter.DOUBLE, Parameter.FIX,
-				Parameter.ESTIMATE);
-		paramA.setEstimate(true);
-		paramB = new Parameter("B", Parameter.FIX);
-		paramB.setFixed(true);
-		paramC = new Parameter("C", Parameter.FIX);
-		paramC.setFixed(true);
+    }
 
-		addParameter(equation);
-		addParameter(background);
-		addParameter(area);
-		addParameter(centroid);
-		addParameter(width);
-		addParameter(paramA);
-		addParameter(paramB);
-		addParameter(paramC);
+    /**
+     * If so requested, estimates A, Area, and Width.
+     */
+    public void estimate() {
+        orderParameters();
+        final int minCH = getParameter(FIT_LOW).getIntValue();
+        final int maxCH = getParameter(FIT_HIGH).getIntValue();
+        final double centroid = getParameter(CENTROID).getDoubleValue();
+        double width = getParameter(WIDTH).getDoubleValue();
+        double backLevel = getParameter("A").getDoubleValue();
+        double area = getParameter(AREA).getDoubleValue();
+        /* estimated level of background */
+        if (getParameter("A").isEstimate()) {
+            backLevel = (counts[minCH] + counts[maxCH]) * 0.5;
+            getParameter("A").setValue(backLevel);
+            textInfo.messageOutln("Estimated A = " + backLevel);
+        }
+        /* sum up counts */
+        if (getParameter(AREA).isEstimate()) {
+            area = 0.0;
+            for (int i = minCH; i <= maxCH; i++) {
+                area += counts[i] - backLevel;
+            }
+            getParameter(AREA).setValue(area);
+            textInfo.messageOutln("Estimated area = " + area);
+        }
+        /* find width */
+        double variance = 0.0;
+        if (getParameter(WIDTH).isEstimate()) {
+            for (int i = minCH; i <= maxCH; i++) {
+                final double distance = i - centroid;
+                variance += (counts[i] / area) * (distance * distance);
+            }
+            final double sigma = Math.sqrt(variance);
+            width = SIG_TO_FWHM * sigma;
+            getParameter(WIDTH).setValue(width);
+            textInfo.messageOutln("Estimated width = " + width);
+        }
+    }
 
-	}
+    /**
+     * Overrides normal setParameters to make sure channels are in proper order.
+     * This Allows the fit limits and centroids to be clicked in any order.
+     */
+    private void orderParameters() {
+        final double[] sortMe = { getParameter(FIT_LOW).getIntValue(),
+                getParameter(CENTROID).getDoubleValue(),
+                getParameter(FIT_HIGH).getIntValue() };
+        Arrays.sort(sortMe);
+        getParameter(FIT_LOW).setValue((int) sortMe[0]);
+        getParameter(CENTROID).setValue(sortMe[1]);
+        getParameter(FIT_HIGH).setValue((int) sortMe[2]);
+    }
 
-	/**
-	 * If so requested, estimates A, Area, and Width.
-	 */
-	public void estimate() {
-		orderParameters();
-		final int minCH = getParameter(FIT_LOW).getIntValue();
-		final int maxCH = getParameter(FIT_HIGH).getIntValue();
-		final double centroid = getParameter(CENTROID).getDoubleValue();
-		double width = getParameter(WIDTH).getDoubleValue();
-		double backLevel = getParameter("A").getDoubleValue();
-		double area = getParameter(AREA).getDoubleValue();
-		/* estimated level of background */
-		if (getParameter("A").isEstimate()) {
-			backLevel = (counts[minCH] + counts[maxCH]) * 0.5;
-			getParameter("A").setValue(backLevel);
-			textInfo.messageOutln("Estimated A = " + backLevel);
-		}
-		/* sum up counts */
-		if (getParameter(AREA).isEstimate()) {
-			area = 0.0;
-			for (int i = minCH; i <= maxCH; i++) {
-				area += counts[i] - backLevel;
-			}
-			getParameter(AREA).setValue(area);
-			textInfo.messageOutln("Estimated area = " + area);
-		}
-		/* find width */
-		double variance = 0.0;
-		if (getParameter(WIDTH).isEstimate()) {
-			for (int i = minCH; i <= maxCH; i++) {
-				final double distance = i - centroid;
-				variance += (counts[i] / area) * (distance * distance);
-			}
-			final double sigma = Math.sqrt(variance);
-			width = SIG_TO_FWHM * sigma;
-			getParameter(WIDTH).setValue(width);
-			textInfo.messageOutln("Estimated width = " + width);
-		}
-	}
+    /**
+     * Calculates the gaussian with background at a given x.
+     * 
+     * @param val
+     *            value to calculate at
+     * @return value of function at x
+     */
+    public double valueAt(double val) {
+        final double diff = diff(val);
+        final double temp = p("A") + p("B") * diff + p("C") * diff * diff
+                + p(AREA) / p(WIDTH) * MAGIC_A * exp(diff);
+        return temp;
+    }
 
-	/**
-	 * Overrides normal setParameters to make sure channels are in proper order.
-	 * This Allows the fit limits and centroids to be clicked in any order.
-	 */
-	private void orderParameters() {
-		final Matrix chVector = new Matrix(3, 1);
-		chVector.element[0][0] = getParameter(FIT_LOW).getIntValue();
-		chVector.element[1][0] = getParameter(CENTROID).getDoubleValue();
-		chVector.element[2][0] = getParameter(FIT_HIGH).getIntValue();
-		final Matrix sorted = chVector.sort();
-		getParameter(FIT_LOW).setValue((int) sorted.element[0][0]);
-		getParameter(CENTROID).setValue(sorted.element[1][0]);
-		getParameter(FIT_HIGH).setValue((int) sorted.element[2][0]);
-	}
+    int getNumberOfSignals() {
+        return 1;
+    }
 
-	/**
-	 * Calculates the gaussian with background at a given x.
-	 * 
-	 * @param x
-	 *            value to calculate at
-	 * @return value of function at x
-	 */
-	public double valueAt(double x) {
-		diff = x - p(CENTROID);
-		exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
+    double calculateSignal(int sig, int channel) {
+        return sig == 0 ? area.getDoubleValue() / width.getDoubleValue()
+                * MAGIC_A * exp(diff(channel)) : 0.0;
+    }
 
-		double temp = p("A") + p("B") * diff + p("C") * diff * diff + p(AREA)
-				/ p(WIDTH) * MAGIC_A * exp;
-		return temp;
-	}
+    private double diff(double val) {
+        return val - p(CENTROID);
+    }
 
-	int getNumberOfSignals() {
-		return 1;
-	}
+    private double exp(double diff) {
+        return Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
+    }
 
-	double calculateSignal(int sig, int channel) {
-		double rval = 0.0;
+    boolean hasBackground() {
+        return true;
+    }
 
-		if (sig == 0) {
-			diff = channel - p(CENTROID);
-			exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
-			rval = area.getDoubleValue() / width.getDoubleValue() * MAGIC_A
-					* exp;
-		}
-		return rval;
-	}
+    double calculateBackground(int channel) {
+        final double diff = diff(channel);
+        return p("A") + p("B") * diff + p("C") * diff * diff;
+    }
 
-	boolean hasBackground() {
-		return true;
-	}
-
-	double calculateBackground(int channel) {
-		diff = channel - p(CENTROID);
-		return p("A") + p("B") * diff + p("C") * diff * diff;
-	}
-
-	/**
-	 * Evaluates derivative with respect to <code>parameterName</code> at
-	 * <code>x</code>.
-	 * 
-	 * @param parName
-	 *            the name of the parameter to differentiate with respect to
-	 * @param x
-	 *            value to evalueate at
-	 * @return df( <code>x</code> )/d( <code>parameterName</code>) at x
-	 */
-	public double derivative(double x, String parName) {
-		double temp;
-		diff = x - p(CENTROID);
-		exp = Math.exp(-MAGIC_B * diff * diff / (p(WIDTH) * p(WIDTH)));
-		diff = x - p(CENTROID);
-		if (parName.equals(AREA)) {
-			temp = MAGIC_A / p(WIDTH) * exp;
-		} else if (parName.equals(CENTROID)) {
-			temp = MAGIC_2AB * p(AREA) * exp * diff
-					/ (p(WIDTH) * p(WIDTH) * p(WIDTH)) - p("B") - 2 * p("C")
-					* diff;
-		} else if (parName.equals(WIDTH)) {
-			temp = -MAGIC_A * p(AREA) * exp / (p(WIDTH) * p(WIDTH));
-			temp = temp + MAGIC_2AB * p(AREA) * exp * diff * diff
-					/ (p(WIDTH) * p(WIDTH) * p(WIDTH) * p(WIDTH));
-		} else if (parName.equals("A")) {
-			temp = 1.0;
-		} else if (parName.equals("B")) {
-			temp = diff;
-		} else if (parName.equals("C")) {
-			temp = diff * diff;
-		} else { //not valid
-			temp = 0.0;
-			throw new IllegalArgumentException("Invalid derivative argument: "
-					+ parName);
-		}
-		return temp;
-	}
+    /**
+     * Evaluates derivative with respect to <code>parameterName</code> at
+     * <code>x</code>.
+     * 
+     * @param parName
+     *            the name of the parameter to differentiate with respect to
+     * @param val
+     *            value to evalueate at
+     * @return df( <code>x</code> )/d( <code>parameterName</code>) at x
+     */
+    public double derivative(double val, String parName) {
+        final double rval;
+        final double diff = diff(val);
+        final double exp = exp(diff);
+        if (parName.equals(AREA)) {
+            rval = MAGIC_A / p(WIDTH) * exp;
+        } else if (parName.equals(CENTROID)) {
+            rval = MAGIC_2AB * p(AREA) * exp * diff
+                    / (p(WIDTH) * p(WIDTH) * p(WIDTH)) - p("B") - 2 * p("C")
+                    * diff;
+        } else if (parName.equals(WIDTH)) {
+            final double temp = -MAGIC_A * p(AREA) * exp / (p(WIDTH) * p(WIDTH));
+            rval = temp + MAGIC_2AB * p(AREA) * exp * diff * diff
+                    / (p(WIDTH) * p(WIDTH) * p(WIDTH) * p(WIDTH));
+        } else if (parName.equals("A")) {
+            rval = 1.0;
+        } else if (parName.equals("B")) {
+            rval = diff;
+        } else if (parName.equals("C")) {
+            rval = diff * diff;
+        } else { //not valid
+            throw new IllegalArgumentException("Invalid derivative argument: "
+                    + parName);
+        }
+        return rval;
+    }
 
 }
