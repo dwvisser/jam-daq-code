@@ -8,14 +8,13 @@
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
 <classPath>lib\Jam.jar</classPath>
-<classPath>lib\JamAPI.jar</classPath>
+<classPath>lib\JamHelp.jar</classPath>
 <classPath>lib\jh.jar</classPath>
 <classPath>lib\jlfgr-1_0.jar</classPath>
-<classPath>lib\kunststoff.jar</classPath>
 <embeddedJar>false</embeddedJar>
 <executableName>bin\Jam.exe</executableName>
 <iconLocation>nukeicon.ico</iconLocation>
-<initialMemoryHeap>83886080</initialMemoryHeap>
+<initialMemoryHeap>8388608</initialMemoryHeap>
 <mainClassName>jam.JamMain</mainClassName>
 <maximumMemoryHeap>209715200</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
