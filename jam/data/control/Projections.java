@@ -1,38 +1,12 @@
 package jam.data.control;
-import jam.data.DataException;
-import jam.data.Gate;
-import jam.data.Histogram;
-import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
-import jam.global.GlobalException;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import jam.data.*;
+import jam.global.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class for projecting 2-D histograms.
@@ -42,8 +16,8 @@ import javax.swing.JTextField;
 public class Projections extends DataControl implements ActionListener, ItemListener, WindowListener,
 Observer {
 
-    private static final String FULL="Full";
-    private static final String BETWEEN="Between";
+    private static final String FULL="Full Histogram";
+    private static final String BETWEEN="Between Channels";
     private static final String NEW_HIST="New Histogram";
 
     private Frame frame;
@@ -69,37 +43,44 @@ Observer {
         status = JamStatus.instance();
         dproject=new JDialog(frame,"Project 2D Histogram",false);
         dproject.setResizable(false);
+
+        final int CHOOSER_SIZE=200;
+        Dimension dim;
         int rows=5;
         int cols=1;
-        int hgap=10;
+        int hgap=5;
         int vgap=10;
+
         Container cdproject = dproject.getContentPane();
-        cdproject.setLayout(new GridLayout(rows,cols,hgap,vgap));
+        cdproject.setLayout(new BorderLayout(hgap,vgap));
         dproject.setLocation(20,50);
         dproject.addWindowListener(this);
 
-        JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        phist.add(new Label("Project from"));
-        tfrom = new JTextField("2DHISTOGRAM",16);
+        JPanel pLabels = new JPanel(new GridLayout(0,1,hgap,vgap));
+        pLabels.setBorder(new EmptyBorder(20,10,0,0));
+        cdproject.add(pLabels, BorderLayout.WEST);
+        pLabels.add(new JLabel("Project histogram", JLabel.RIGHT));
+        pLabels.add(new JLabel("Direction", JLabel.RIGHT));
+        pLabels.add(new JLabel("Region", JLabel.RIGHT));
+        pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
+
+		//Entries Panel
+        JPanel pEntries = new JPanel(new GridLayout(0,1,hgap,vgap));
+        pEntries.setBorder(new EmptyBorder(20,0,0,10));
+        cdproject.add(pEntries, BorderLayout.CENTER);
+
+		//From histogram
+        JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+        tfrom = new JTextField("2DHISTOGRAM",20);
+        dim= tfrom.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        tfrom.setPreferredSize(dim);
         tfrom.setEditable(false);
         phist.add(tfrom);
-        cdproject.add(phist);
+        pEntries.add(phist);
 
-        JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        ptextto.add(new JLabel("to histogram"));
-        cto   = new JComboBox();
-        cto.addItem("1DHISTOGRAM");
-        cto.addItemListener(this);
-        ptextto.add(cto);
-        lname=new JLabel("Name");
-        ptextto.add(lname);
-        ttextto = new JTextField("projection",12);
-        ttextto.setForeground(Color.black);
-        setUseNewHist(false);
-        ptextto.add(ttextto);
-        cdproject.add(ptextto);
-
-        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//Direction panel
+        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         ButtonGroup cbg = new ButtonGroup();
         cacross = new JCheckBox("Across",true);
         cdown = new JCheckBox("Down",false);
@@ -107,28 +88,51 @@ Observer {
         cbg.add(cdown);
         pradio.add(cacross);
         pradio.add(cdown);
-        cdproject.add(pradio);
+        pEntries.add(pradio);
 
-        JPanel pchannel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        pchannel.add(new JLabel("Channels"));
+		//Channels panel
+        JPanel pchannel = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         tlim1 = new JTextField(5);
         tlim1.setForeground(Color.black);
         tlim2 = new JTextField(5);
         tlim2.setForeground(Color.black);
         cchan = new JComboBox();
+        dim= cchan.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cchan.setPreferredSize(dim);
         cchan.addItem(FULL);
         cchan.addItem(BETWEEN);
         cchan.addItemListener(this);
         pchannel.add(cchan);
         setUseLimits(false);
+        pchannel.add(new JLabel("Channels"));
         pchannel.add(tlim1);
         pchannel.add(new JLabel("and"));
         pchannel.add(tlim2);
-        cdproject.add(pchannel);
+        pEntries.add(pchannel);
+
+
+		//To histogram
+        JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+        cto   = new JComboBox();
+        dim= cto.getPreferredSize();
+        dim.width=CHOOSER_SIZE;
+        cto.setPreferredSize(dim);
+        cto.addItem("1DHISTOGRAM");
+        cto.addItemListener(this);
+        ptextto.add(cto);
+        lname=new JLabel("Name");
+        ptextto.add(lname);
+        ttextto = new JTextField("projection",20);
+        ttextto.setForeground(Color.black);
+        setUseNewHist(false);
+        ptextto.add(ttextto);
+        pEntries.add(ptextto);
+
 
 		//Buttons panel
 		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cdproject.add(pButtons);
+		cdproject.add(pButtons,  BorderLayout.SOUTH);
         JPanel pcontrol = new JPanel(new GridLayout(1,0,5,5));
         pButtons.add(pcontrol);
         bOK.setActionCommand("ok");
@@ -276,7 +280,7 @@ Observer {
         cchan.addItem(BETWEEN);
         //add gates to chooser
         if (hfrom  != null){
-            final List g=hfrom.getGates();
+            final java.util.List g=hfrom.getGates();
             for (Iterator it=g.iterator(); it.hasNext();){
             //for (int i = 0;i < len;i++){
       			//final Gate gate=(Gate)g.get(i);
@@ -375,6 +379,7 @@ Observer {
             messageHandler.messageOutln("New Histogram created: '"+name+"'");
         } else {
             hto = Histogram.getHistogram(name);
+
         }
         if (cdown.isSelected()) {
             if (state.equals(FULL)||state.equals(BETWEEN)){
