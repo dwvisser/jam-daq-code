@@ -298,19 +298,16 @@ public final class DisplayCounters extends JDialog implements Observer {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final int command = be.getCommand();
 		int vmeCounters[] = new int[NUMBER_COUNTERS];
-
 		if (command == BroadcastEvent.COUNTERS_UPDATE) {
-
-			//online only update remote fields
 			if (mode == ONLINE) {
+				/* update remote fields */
 				vmeCounters = (int[]) be.getContent();
 				textBuffSent.setText(
 					String.valueOf(vmeCounters[INDEX_CNT_BUFF]));
 				textEvntSent.setText(
 					String.valueOf(vmeCounters[INDEX_CNT_EVNT]));
-
-				//off line we have to update all fields
 			} else {
+				/* update fields used in both modes */
 				textBuffSort.setText(
 					String.valueOf(sortDaemon.getBufferCount()));
 				textEvntSort.setText(
