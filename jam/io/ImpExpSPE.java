@@ -1,5 +1,4 @@
 package jam.io;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
 import java.awt.Frame;
@@ -110,8 +109,6 @@ public class ImpExpSPE extends ImpExp {
 			dis.close();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
-		} catch (DataException de) {
-			throw new ImpExpException(de.toString());
 		}
 	}
 

@@ -1,6 +1,5 @@
 package jam.io;
 import jam.data.DataBase;
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.CalibrationFunction;
@@ -144,11 +143,6 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 				}
 
 			}
-		} catch (DataException de) {
-			throw new ImpExpException(
-				"Can't create new histogram "
-					+ de.getMessage()
-					+ " [ImpExpXSYS]");
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
