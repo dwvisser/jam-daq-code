@@ -1,12 +1,15 @@
 package jam.plot;
+import java.awt.geom.AffineTransform;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.PrintGraphics;
+import java.awt.RenderingHints;
 import java.util.*;
 import javax.swing.JPanel;
 
@@ -51,7 +54,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	static final double LOG_FAKE_ZERO = 0.5;
 
 	//  current stuff to draw font, and font metrics and colors
-	private Graphics g;
+	private Graphics2D g;
 	private Font font;
 	private FontMetrics fm;
 	private int numberColors;
@@ -118,7 +121,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	public PlotGraphics(JPanel plot, Insets border, Font font) {
 		this.border = border;
-		this.font = font;
+		setFont(font);
 		//class that draws tick marks and makes color thresholds
 		tm = new Tickmarks();
 		//margin for printing
@@ -137,8 +140,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * contructors with default settings
 	 * default font
 	 */
-	public PlotGraphics(/*Canvas*/
-	JPanel plot, Insets border) {
+	public PlotGraphics(JPanel plot, Insets border) {
 		this(plot, border, (new Font("SansSerif", Font.PLAIN, 12)));
 	}
 
@@ -154,21 +156,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 	}
 
 	/**
-	 * contructors with default settings
-	 * default border and font
-	 */
-	public PlotGraphics(JPanel plot) {
-		this(
-			plot,
-			new Insets(BORDER_TOP, BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT),
-			new Font("SansSerif", Font.PLAIN, SCREEN_FONT_SIZE));
-	}
-
-	/**
 	 * change or set the font
 	 */
-	public void setFont(Font font) {
-		this.font = font;
+	public final synchronized void setFont(Font f) {
+		font = f;
+		if (g != null) {
+			g.setFont(f);
+			fm = g.getFontMetrics();
+		}
 	}
 
 	/**
@@ -194,10 +189,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 		Graphics graph,
 		Dimension newViewSize,
 		Limits plotLimits) {
-		this.g = graph; //get graphics and copy to local variables
+		update(graph); //get graphics and copy to local variables
 		this.plotLimits = plotLimits;
-		g.setFont(font); // give graph the font
-		fm = g.getFontMetrics(); // get the fontMetrics back
 		//retrieve imformation from plotLimits object
 		if (plotLimits == null) {
 			System.err.println(
@@ -268,11 +261,16 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @param graph  grapics object
 	 */
 	public void update(Graphics graph) {
-		g = graph; //get graphics and copy to local variables
+		final RenderingHints rh =
+			new RenderingHints(
+				RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		g = (Graphics2D) graph;
+		g.setRenderingHints(rh);
 	}
 
 	/**
-	 * Draws the title for a plot
+	 * Draws the title for a plot.
 	 *
 	 * @param title the title
 	 * @param side the side on which to draw the title
@@ -283,22 +281,25 @@ class PlotGraphics implements PlotGraphicsLayout {
 	public void drawTitle(String title, int side) {
 		int offset = 1;
 		if (side == PlotGraphics.TOP) {
+			setFont(font.deriveFont(PlotGraphicsLayout.TITLE_SCREEN_SIZE));
 			offset = fm.stringWidth(title); //title.length()*CHAR_SIZE;
 			g.drawString(
 				title,
 				viewMiddle().x - offset / 2,
 				viewTop - TITLE_OFFSET_TOP);
+			setFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
 		}
 	}
-	
-	public void drawNumber(int number){
-		final String s=Integer.toString(number);
-		final int width=fm.stringWidth(s);
-		final int x=this.viewLeft-TITLE_OFFSET_TOP-width;
-		final int y=viewTop - TITLE_OFFSET_TOP;
-		final Color c=g.getColor();
+
+	public void drawNumber(int number) {
+		final String s = Integer.toString(number);
+		setFont(font);
+		final int width = fm.stringWidth(s);
+		final int x = this.viewLeft - TITLE_OFFSET_TOP - width;
+		final int y = viewTop - TITLE_OFFSET_TOP;
+		final Color c = g.getColor();
 		g.setColor(Color.BLACK);
-		g.drawString(s,x,y);
+		g.drawString(s, x, y);
 		g.setColor(c);
 	}
 
@@ -359,37 +360,40 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawTicks(int side) {
-		int lowerLimit, upperLimit;
-
-		// tick marks for one dimension
-		if (plotType == ONE_DIMENSION) {
+		final int ll, ul;
+		Limits.ScaleType scale = Limits.ScaleType.LINEAR;
+		if (side == BOTTOM) {
+			ll = minX;
+			ul = maxX;
+			if (plotType == ONE_DIMENSION) {
+				scale = plotLimits.getScale();
+			}
+			ticksBottom(ll, ul, scale);
+		} else { //side==LEFT
+			ll = minY;
+			ul = maxY;
+			ticksLeft(ll, ul, scale);
+		}
+		/*if (plotType == ONE_DIMENSION) {
 			//do bottom always linear
 			if (side == BOTTOM) {
-				lowerLimit = minX;
-				upperLimit = maxX;
-				ticksBottom(lowerLimit, upperLimit, Limits.ScaleType.LINEAR);
+				ticksBottom(minX, maxX, Limits.ScaleType.LINEAR);
 			}
 			if (side == LEFT) {
 				//left side depends on scale
-				lowerLimit = minY;
-				upperLimit = maxY;
-				ticksLeft(lowerLimit, upperLimit, plotLimits.getScale());
+				ticksLeft(minY, maxY, plotLimits.getScale());
 			}
 			// two dimension tick marks, always linear
 		} else if (plotType == TWO_DIMENSION) {
 			//bottom
 			if (side == BOTTOM) {
-				lowerLimit = minX;
-				upperLimit = maxX;
-				ticksBottom(lowerLimit, upperLimit, Limits.ScaleType.LINEAR);
+				ticksBottom(minX, maxX, Limits.ScaleType.LINEAR);
 			}
 			//left side
 			if (side == LEFT) {
-				lowerLimit = minY;
-				upperLimit = maxY;
-				ticksLeft(lowerLimit, upperLimit, Limits.ScaleType.LINEAR);
+				ticksLeft(minY, maxY, Limits.ScaleType.LINEAR);
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -401,8 +405,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void ticksBottom(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
-		int x,y;
+	private void ticksBottom(
+		int lowerLimit,
+		int upperLimit,
+		Limits.ScaleType scale) {
+		int x, y;
 
 		int[] ticks =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MINOR);
@@ -414,11 +421,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 			}
 			y = viewBottom;
 			g.drawLine(x, y, x, y - TICK_MINOR);
+			y = viewTop;
+			g.drawLine(x, y, x, y + TICK_MINOR);
 		}
-
 		int[] ticksMajor =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MAJOR);
-		for (int i = 0; i < ticks.length; i++) {
+		for (int i = 0; i < ticksMajor.length; i++) {
 			if (scale == Limits.ScaleType.LINEAR) {
 				x = toViewHorzLin(ticksMajor[i]);
 			} else {
@@ -426,6 +434,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 			}
 			y = viewBottom;
 			g.drawLine(x, y, x, y - TICK_MAJOR);
+			y = viewTop;
+			g.drawLine(x, y, x, y + TICK_MAJOR);
 		}
 	}
 
@@ -438,8 +448,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void ticksLeft(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
-
+	private void ticksLeft(
+		int lowerLimit,
+		int upperLimit,
+		Limits.ScaleType scale) {
 		int x;
 		int y;
 
@@ -453,6 +465,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 			}
 			x = viewLeft;
 			g.drawLine(x, y, x + TICK_MINOR, y);
+			x = viewRight;
+			g.drawLine(x, y, x - TICK_MINOR, y);
 		}
 
 		int[] ticksMajor =
@@ -465,6 +479,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 			}
 			x = viewLeft;
 			g.drawLine(x, y, x + TICK_MAJOR, y);
+			x = viewRight;
+			g.drawLine(x, y, x - TICK_MAJOR, y);
 		}
 	}
 
@@ -518,7 +534,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 
-	private void labelsBottom(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
+	private void labelsBottom(
+		int lowerLimit,
+		int upperLimit,
+		Limits.ScaleType scale) {
 
 		int x;
 		int y;
@@ -549,7 +568,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	private void labelsLeft(int lowerLimit, int upperLimit, Limits.ScaleType scale) {
+	private void labelsLeft(
+		int lowerLimit,
+		int upperLimit,
+		Limits.ScaleType scale) {
 
 		int x;
 		int y;
@@ -581,16 +603,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawAxisLabel(String label, int side) {
-
-		//bottom side always linear
 		if (side == BOTTOM) {
 			axisLabelBottom(label);
 		}
-		//left side depends on scale
 		if (side == LEFT) {
 			axisLabelLeft(label);
 		}
 	}
+
 	/**
 	 * Draws the axis Labels on for the bottom side of a plot
 	 *
@@ -599,17 +619,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	private void axisLabelBottom(String label) {
-
-		int x;
-		int y;
-		int offset;
-
-		offset = fm.stringWidth(label);
-
-		x = viewMiddle().x - offset / 2;
-		y = viewBottom + fm.getAscent() + AXIS_LABEL_OFFSET_BOTTOM;
+		final int offset = fm.stringWidth(label);
+		final int x = viewMiddle().x - offset / 2;
+		final int y = viewBottom + fm.getAscent() + AXIS_LABEL_OFFSET_BOTTOM;
 		g.drawString(label, x, y);
 	}
+
 	/**
 	 * Draws the axis Labels on for the left side of a plot
 	 *
@@ -618,32 +633,30 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	private void axisLabelLeft(String label) {
-
-		int x;
-		int y;
-		int offset;
-		int ascent;
-		int width;
-		char[] lArray;
-		int i;
-
-		//check for null string
-		if (label == null) {
-			return;
-		}
-
-		lArray = label.toCharArray();
-		ascent = fm.getAscent();
-		offset = lArray.length * ascent / 2;
-		y = viewMiddle().y - offset;
-
-		for (i = 0; i < lArray.length; i++) {
-			width = fm.charWidth(lArray[i]);
-			x = viewLeft - width / 2 - AXIS_LABEL_OFFSET_LEFT;
-			g.drawChars(lArray, i, 1, x, y);
-			y += ascent;
-		}
+		/*if (label != null) {
+			char [] lArray = label.toCharArray();
+			int ascent = fm.getAscent();
+			int offset = lArray.length * ascent / 2;
+			int y = viewMiddle().y - offset;
+			for (int i = 0; i < lArray.length; i++) {
+				int width = fm.charWidth(lArray[i]);
+				int x = viewLeft - width / 2 - AXIS_LABEL_OFFSET_LEFT;
+				g.drawChars(lArray, i, 1, x, y);
+				y += ascent;
+			}
+		}*/
+		final double ninetyDeg=-Math.PI*0.5;
+		final int offset=fm.stringWidth(label);
+		final int y=viewMiddle().y+offset/2;
+		//final int height=fm.getHeight();
+		final int x=viewLeft - /*height / 2 -*/ AXIS_LABEL_OFFSET_LEFT;
+		final AffineTransform original=g.getTransform();
+		g.translate(x,y);
+		g.rotate(ninetyDeg);
+		g.drawString(label,0,0);
+		g.setTransform(original);
 	}
+
 	/**
 	 * Histogram a plot with int count array
 	 *
@@ -683,7 +696,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawLine(double[] channel, double[] countsdl) {
-
 		if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
 			drawLineLinear(channel, countsdl);
 		} else {
@@ -893,7 +905,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 		numberColors = colors.length;
 		colorThresholds = new int[numberColors];
 		colorThresholds =
-			tm.getColorThresholds(lowerLimit, upperLimit, numberColors, plotLimits.getScale());
+			tm.getColorThresholds(
+				lowerLimit,
+				upperLimit,
+				numberColors,
+				plotLimits.getScale());
 		int textHeight = (fm.getAscent());
 		/* lowest threshold for color to be drawn */
 		String label = Integer.toString(lowerLimit);
@@ -927,12 +943,13 @@ class PlotGraphics implements PlotGraphicsLayout {
 	}
 
 	void drawScale2d() {
-		ColorScale colors=new GradientColorScale(minCount,maxCount,plotLimits.getScale());
-		//int lowerLimit = Math.max(minCount,1);
+		ColorScale colors =
+			new GradientColorScale(minCount, maxCount, plotLimits.getScale());
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
+		setFont(font);
 		int textHeight = (fm.getAscent());
-		numberColors=PlotColorMap.getNumberColors();
+		numberColors = PlotColorMap.getNumberColors();
 		colorThresholds =
 			tm.getColorThresholds(
 				lowerLimit,
@@ -962,21 +979,25 @@ class PlotGraphics implements PlotGraphicsLayout {
 					+ textHeight / 2);
 		}
 		/* draw colors on side */
-		int scaleHeight=numberColors * COLOR_SCALE_SIZE;
-		int x1=viewRight+COLOR_SCALE_OFFSET;
-		int x2=x1+COLOR_SCALE_SIZE-1;
+		int scaleHeight = numberColors * COLOR_SCALE_SIZE;
+		int x1 = viewRight + COLOR_SCALE_OFFSET;
+		int x2 = x1 + COLOR_SCALE_SIZE - 1;
 		double level;
-		double lowEnd=Math.max(1.0,lowerLimit);
-		double highEnd=colorThresholds[numberColors-1];
+		double lowEnd = Math.max(1.0, lowerLimit);
+		double highEnd = colorThresholds[numberColors - 1];
 		for (int row = 0; row < scaleHeight; row++) {
-			int y=viewBottom-row;
+			int y = viewBottom - row;
 			if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
-				level=lowerLimit+(double)row*(highEnd-lowEnd)/scaleHeight;
-			} else {//log scale
-				level=lowEnd*Math.pow(highEnd/lowEnd,(double)row/scaleHeight);
+				level =
+					lowerLimit
+						+ (double) row * (highEnd - lowEnd) / scaleHeight;
+			} else { //log scale
+				level =
+					lowEnd
+						* Math.pow(highEnd / lowEnd, (double) row / scaleHeight);
 			}
 			g.setColor(colors.getColor(level));
-			g.drawLine(x1,y,x2,y);
+			g.drawLine(x1, y, x2, y);
 		}
 	}
 
@@ -1002,7 +1023,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 		numberColors = colors.length;
 		colorThresholds = new int[numberColors];
 		colorThresholds =
-			tm.getColorThresholds(minCounts, maxCounts, numberColors, plotLimits.getScale());
+			tm.getColorThresholds(
+				minCounts,
+				maxCounts,
+				numberColors,
+				plotLimits.getScale());
 		//for data each point
 		for (int j = minY; j <= maxY; j++) {
 			for (int i = minX; i <= maxX; i++) {
@@ -1059,7 +1084,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawHist2d(double[][] counts) {
-		ColorScale colors=new GradientColorScale(minCount,maxCount,plotLimits.getScale());
+		ColorScale colors =
+			new GradientColorScale(minCount, maxCount, plotLimits.getScale());
 		/* loop over channels */
 		for (int j = minY; j <= maxY; j++) {
 			for (int i = minX; i <= maxX; i++) {
@@ -1244,7 +1270,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final int height = y - toViewVertLin(p.y + 1);
 		/*are we inside plot window? */
 		if ((x >= viewLeft && x <= viewRight)
-		&& (y >= viewTop && y <= viewBottom)) {
+			&& (y >= viewTop && y <= viewBottom)) {
 			g.drawRect(x, y - height + 1, width - 1, height - 1);
 			//+1 need why?
 			//draw label
@@ -1306,19 +1332,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int highChanX,
 		int lowChanY,
 		int highChanY) {
-
-		int x1, x2;
-		int y1, y2;
-		int width, height;
-
-		x1 = toViewHorzLin(lowChanX);
-		x2 = toViewHorzLin(highChanX + 1);
-		y1 = toViewVertLin(lowChanY);
-		y2 = toViewVertLin(highChanY + 1);
-
-		width = x2 - x1 - 1;
-		height = y1 - y2 - 1;
-
+		final int x1 = toViewHorzLin(lowChanX);
+		final int x2 = toViewHorzLin(highChanX + 1);
+		final int y1 = toViewVertLin(lowChanY);
+		final int y2 = toViewVertLin(highChanY + 1);
+		final int width = x2 - x1 - 1;
+		final int height = y1 - y2 - 1;
 		g.drawRect(x1, y2 + 1, width, height);
 	}
 
@@ -1328,13 +1347,10 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @param channel channel to mark
 	 */
 	public void markMid(int channel) {
-		int x1, x2;
-		int y1, y2;
-
-		x1 = toViewHorzLin(channel + 0.5);
-		y1 = viewBottom;
-		x2 = toViewHorzLin(channel + 0.5);
-		y2 = viewMiddle.y;
+		final int x1 = toViewHorzLin(channel + 0.5);
+		final int y1 = viewBottom;
+		final int x2 = toViewHorzLin(channel + 0.5);
+		final int y2 = viewMiddle.y;
 		g.drawLine(x1, y1, x2, y2);
 	}
 
@@ -1415,6 +1431,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		viewMiddle.y = viewTop + viewHeight / 2;
 		return (viewMiddle);
 	}
+
 	/**
 	 * Clip so only active region of plot is drawen on
 	 * which one? both version below were used until
@@ -1424,33 +1441,33 @@ class PlotGraphics implements PlotGraphicsLayout {
 		g.clipRect(viewLeft, viewTop, viewWidth + 1, viewHeight + 1);
 
 	}
+
 	/**
-	 *Convert horizontal data to horizontal view point
-	 *screen horizontal linear scale
-	 *
+	 * Convert horizontal data to horizontal view point
+	 * screen horizontal linear scale.
 	 */
 	private int toViewHorzLin(int data) {
 		int view = (int) (viewLeft + (conversionX * (data - minX)));
 		//put at start of bin
 		return view;
 	}
+
 	/**
-	 *Convert horizontal data to horizontal view point
-	 *screen horizontal linear scale
-	 *
+	 * Convert horizontal data to horizontal view point
+	 * screen horizontal linear scale.
 	 */
 	private int toViewHorzLin(double data) {
 		int view = (int) (viewLeft + (conversionX * (data - minX)));
 		//put at start of bin
 		return view;
 	}
+
 	/**
-	 *Convert vertical data to vertical view (screen)
-	 *screen vertical linear scale
+	 * Convert vertical data to vertical view (screen)
+	 * screen vertical linear scale.
 	 */
 	private int toViewVertLin(int data) {
-
-		int view = (int) (viewBottom - (conversionY * (data - minY)));
+		final int view = (int) (viewBottom - (conversionY * (data - minY)));
 		return view;
 	}
 
@@ -1460,17 +1477,16 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 *
 	 */
 	private int toViewVertLin(double data) {
-		int view = (int) (viewBottom - (conversionY * (data - minY)));
+		final int view = (int) (viewBottom - (conversionY * (data - minY)));
 		return view;
 	}
 
 	/**
-	 *Convert vertical data to vertical view (screen)
-	 *screen vertical linear scale
+	 * Convert vertical data to vertical view (screen)
+	 * screen vertical linear scale.
 	 */
 	private int toViewVertLinCk(int data) {
-
-		int view;
+		final int view;
 
 		if (data > maxY) {
 			view = viewTop;
@@ -1481,14 +1497,13 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 		return view;
 	}
+
 	/**
-	 *Convert vertical data to vertical view (screen)
-	 *screen vertical linear scale
-	 *
+	 * Convert vertical data to vertical view (screen)
+	 * screen vertical linear scale.
 	 */
 	private int toViewVertLinCk(double data) {
-
-		int view;
+		final int view;
 
 		if (data > maxY) {
 			view = viewTop;
@@ -1499,6 +1514,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 		return view;
 	}
+
 	/**
 	 * Convert data points to view points
 	 * for Log scale
@@ -1507,6 +1523,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		double dataLog = Math.log((double) data);
 		return (toViewHorzLog(dataLog));
 	}
+
 	/**
 	 * Convert data points to view points
 	 * for Log scale
@@ -1515,6 +1532,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		double dataLog = Math.log(data);
 		return (toViewHorzLog(dataLog));
 	}
+
 	/**
 	 * Convert data vertical to view vertical
 	 * for Log scale
@@ -1532,6 +1550,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 		return view;
 	}
+
 	/**
 	 * Convert data vertical to view vertical
 	 * for Log scale
@@ -1549,6 +1568,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 		return view;
 	}
+
 	/**
 	 * Take the log of a data point if valid to otherwise return fake zero
 	 * @param point point to take log of
@@ -1560,6 +1580,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 			return (Math.log(LOG_FAKE_ZERO));
 		}
 	}
+
 	/**
 	 * Take the log of a data point if valid to otherwise return fake zero
 	 * @param point point to take log of
@@ -1571,5 +1592,4 @@ class PlotGraphics implements PlotGraphicsLayout {
 			return (Math.log(LOG_FAKE_ZERO));
 		}
 	}
-
 }
