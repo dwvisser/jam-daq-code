@@ -1,15 +1,19 @@
 package jam.commands;
 
+import jam.global.Broadcaster;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
-import jam.global.Broadcaster;
 import jam.global.CommandNames;
 import jam.global.MessageHandler;
-import java.util.Observer;
+
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-
+import java.util.Observer;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.Action;
 
@@ -159,5 +163,35 @@ public class JamCmdManager implements CommandListener, CommandNames {
 	
 	public void setEnabled(String cmd, boolean enable){
 		getAction(cmd).setEnabled(enable);
+	}
+	
+	public String [] getSimilarCommnands(final String s){
+		final SortedSet sim=new TreeSet();
+		final Set keys=cmdMap.keySet();
+		for (int i=s.length(); i>=1; i--){
+			final String com=s.substring(0,i);
+			for (Iterator it=keys.iterator(); it.hasNext();){
+				final String key=(String)it.next();
+				if (key.startsWith(com)){
+					sim.add(key);
+				}
+			}
+			if (!sim.isEmpty()){
+				break;
+			}
+		}
+		final String [] rval=new String[sim.size()];
+		int i=0;
+		for (Iterator it=sim.iterator(); it.hasNext(); i++){
+			rval[i]=(String)it.next();
+		}
+		return rval;
+	}
+	
+	public String [] getAllCommands(){
+		final Object [] c=cmdMap.keySet().toArray();
+		final String [] rval=new String[c.length];
+		System.arraycopy(c,0,rval,0,c.length);
+		return rval;
 	}
 }
