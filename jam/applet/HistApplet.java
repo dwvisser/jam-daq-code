@@ -86,28 +86,19 @@ public class HistApplet
 		blink.setActionCommand("link");
 		blink.addActionListener(this);
 		pHost.add(blink);
-
-		//output console at bottome
+		/* output console at bottome */
 		console = new JamConsole(20);
 		this.add(BorderLayout.SOUTH, console);
-
-		//display in middle						
+		/* display in middle */						
 		display = new Display((MessageHandler) console);
 		this.add(display);
-
-		// tool bar for selecting
-		addToolbarSelect(ptop);
-
-		// tool bar for plot actions
-		display.addToolbarAction();
-
-		//let display listen for text input commands	
+		addToolbarSelect(ptop);// tool bar for selecting
+		display.addToolbarAction();// tool bar for plot actions
+		/* let display listen for text input commands */	
 		console.setCommandListener((CommandListener) display);
-
-		//where did we come from, set host url
-		//setup applet document path
+		/* where did we come from, set host url, and 
+		 * setup applet document path */
 		localPath = this.getDocumentBase();
-
 		documentHost = this.getDocumentBase().getHost();
 		if (documentHost == null) {
 			documentHost = "hostname";
@@ -116,13 +107,9 @@ public class HistApplet
 			expname = "expname";
 		}
 		textHost.setText("rmi://" + documentHost + "/" + expname);
-		//XXSystem.out.println("local path  "+localPath);			
-		//System.out.println("Document url "+ documentHost);
-
-		//load initial histograms	    
 		Histogram.clearList();
 		try {
-			InitialHistograms inithist = new jam.InitialHistograms();
+			new jam.InitialHistograms();//load initial histograms
 			setHistogramList(Histogram.getHistogramList());
 			display.setPreference(Display.Preferences.WHITE_BACKGROUND, true);
 		} catch (Exception e) {
@@ -265,23 +252,6 @@ public class HistApplet
 		}
 	}
 	
-	/**
-	 *
-	 */
-	public void readfile(String fileName) {
-//		try {
-//			FileInputStream fis = new FileInputStream(fileName);
-			// FIXME	    histIO.readSpeFile(fis);
-//		} catch (FileNotFoundException e) {
-//			System.out.println("file not found");
-//		}
-	}
-	
-	public void setMode(int mode) {
-		//FIXME
-		//does nothing for now
-		System.out.println("setMode remote");
-	}
 	/**
 	 * link to host with rmi
 	 */
