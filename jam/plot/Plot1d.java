@@ -416,7 +416,7 @@ final class Plot1d extends AbstractPlot {
 	 */
 	double getEnergy(double channel) {
 		final AbstractHist1D plotHist=(AbstractHist1D)getHistogram();
-		return plotHist.getCalibration().getCalculatedEnergy(channel);
+		return plotHist.getCalibration().getValue(channel);
 	}
 
 	/**
