@@ -241,20 +241,17 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */	
-    VDataDescription convertCalibration(AbstractCalibrationFunction calibrationFunction) {	
-        String calibrationType;
+    VDataDescription convertCalibration(AbstractCalibrationFunction calibFunction) {	
+        String calibType;
         String[] columnNames;        
         int size;
         final short[] orders;
-
         final short[] types;
-//        = { VDataDescription.DFNT_DBL64,
-//        		VDataDescription.DFNT_DBL64 };
-        final String calibrationName = calibrationFunction.getName();
-        if (calibrationFunction.isFitPoints()) {   
-        	calibrationType = CALIBRATION_TYPE_POINTS;
+        final String calibName = calibFunction.getName();
+        if (calibFunction.isFitPoints()) {   
+        	calibType = CALIBRATION_TYPE_POINTS;
             columnNames = CALIBRATION_COLUMNS_POINTS;
-            size =calibrationFunction.getPtsEnergy().length;
+            size =calibFunction.getPtsEnergy().length;
             types = new short [2];
 			types [0]=VDataDescription.DFNT_DBL64;
             types [1]=VDataDescription.DFNT_DBL64;
@@ -262,29 +259,27 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
             orders[0] = 1;
             orders[1] = 1;
         } else { //2d
-        	calibrationType = CALIBRATION_TYPE_COEFF;        	
+        	calibType = CALIBRATION_TYPE_COEFF;        	
         	columnNames = CALIBRATION_COLUMNS_COEFF;
-            size = calibrationFunction.getNumberTerms();
+            size = calibFunction.getNumberTerms();
             types = new short [1];
 			types [0]=VDataDescription.DFNT_DBL64;
             orders = new short [1];
             orders[0] = 1;
         }
-        
-        final VDataDescription desc = new VDataDescription(calibrationName, calibrationType,
+        final VDataDescription desc = new VDataDescription(calibName, calibType,
                 size, columnNames, types, orders);        
         //HDF Undocumented Vdata has same reference as VdataDescription
         final VData data = new VData(desc);
-        
-        if (calibrationFunction.isFitPoints()) {
-        	double [] channels =calibrationFunction.getPtsChannel();
-        	double [] energies=calibrationFunction.getPtsEnergy();
+        if (calibFunction.isFitPoints()) {
+        	final double [] channels =calibFunction.getPtsChannel();
+        	final double [] energies=calibFunction.getPtsEnergy();
         	for (int i = 0; i < size; i++) {
         		data.addDouble(0, i, channels[i]);
         		data.addDouble(1, i, energies[i]);
         	}
         } else { //2d
-        	double [] coeffs = calibrationFunction.getCoeff();
+        	final double [] coeffs = calibFunction.getCoeff();
             for (int i = 0; i < size; i++) {
                 data.addDouble(0, i, coeffs[i]);
             }
