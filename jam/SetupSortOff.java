@@ -140,6 +140,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
 			public void actionPerformed(ActionEvent ae){
 				sortClassPath=getSortPath();
 				sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+				sortChoice.setSelectedIndex(0);
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
 		});
@@ -160,7 +161,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
         sortChoice.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				sortClass=(Class)sortChoice.getSelectedItem();
-				//sortClassName=sortClass.getName();
 			}
         });
         Iterator it=v.iterator();

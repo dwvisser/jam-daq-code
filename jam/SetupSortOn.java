@@ -242,6 +242,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 				sortClassPath = getSortPath();
 				sortChoice.setModel(
 					new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+				sortChoice.setSelectedIndex(0);
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
 		});
