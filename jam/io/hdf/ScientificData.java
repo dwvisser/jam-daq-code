@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 /**
@@ -110,7 +109,8 @@ final class ScientificData extends DataObject {
         super.init(offset, length, tag, reference);
         inputMode = WAIT_TO_READ;
     }
-    void init(byte [] bytes, short tag, short reference) throws HDFException {
+    
+    void init(byte [] bytes, short tag, short reference) {
         super.init(bytes, tag, reference);
         inputMode = STORE;
     }
@@ -120,9 +120,9 @@ final class ScientificData extends DataObject {
      * requires associated SDD, NT, NDG records
      */
     public void interpretBytes() {
-    	if (inputMode==STORE) {
-    		
-    	}
+//    	if (inputMode==STORE) {
+//    		
+//    	}
     }
 
     /*
@@ -130,121 +130,60 @@ final class ScientificData extends DataObject {
      * UnsupportedOperationException if this object doesn't represent 1d int
      * @throws IllegalStateException if the input mode isn't recognized
      */
-    int[] getData1d(HDFile infile, int size) throws HDFException { 
-                                                                                                                                                      
-        final byte[] localBytes;
+    int[] getData1d(HDFile infile, int size) throws HDFException {                                                                                                                                 
         if (numberType != NumberType.INT || rank != 1) {
             throw new HDFException(
                     "getData1d called on wrong type of SD.");
         }
-        switch (inputMode) {
-        case STORE: //read data from internal array
-            localBytes = bytes.array();
-            break;
-        case WAIT_TO_READ:
-            localBytes = infile.lazyReadData(this);
-            break;
-        default:
-            throw new IllegalStateException(REF_MSG + ref);
-        }
+        final byte[] localBytes=getLocalBytes(infile);
         final int[] output = new int[size];
-        final DataInput dataInput = new DataInputStream(
-                new ByteArrayInputStream(localBytes));
-        try {
-            for (int i = 0; i < size; i++) {
-                output[i] = dataInput.readInt();
-            }
-        } catch (IOException e) {
-            throw new HDFException("Problem getting 1d Data in SD: "
-                    + e.getMessage());
+        final ByteBuffer buffer = ByteBuffer.wrap(localBytes);
+        for (int i = 0; i < size; i++) {
+            output[i] = buffer.getInt();
         }
-        bytes =null;	//so they can be gc'ed
+        bytes = null; //so they can be gc'ed
         return output;
     }
 
-    double[] getData1dD(HDFile infile, int size) throws HDFException { 
-                                                                                                                                                             
+    double[] getData1dD(HDFile infile, int size) throws HDFException {                                                                                                                                                        
         double[] output;
-        byte[] localBytes;
-
         if (numberType != NumberType.DOUBLE || rank != 1) {
             throw new HDFException("SD ref#" + getRef()
                     + ": getData1dD() called on wrong type");
         }
-        switch (inputMode) {
-        case STORE: //read data from internal array
-            localBytes = bytes.array();
-            break;
-        case WAIT_TO_READ:
-        	 localBytes = infile.lazyReadData(this);
-            break;
-        default:
-            throw new HDFException(REF_MSG + ref);
-        }
+        final byte[] localBytes = getLocalBytes(infile);
         output = new double[size];
-        final DataInput dataInput = new DataInputStream(
-                new ByteArrayInputStream(localBytes));
-        try {
+        final ByteBuffer buffer = ByteBuffer.wrap(localBytes);
             for (int i = 0; i < size; i++) {
-                output[i] = dataInput.readDouble();
-            }
-        } catch (IOException e) {
-            throw new HDFException("Problem getting 1D data in SD: "
-                    + e.getMessage());
+            output[i] = buffer.getDouble();
         }
-        bytes =null;	//so they can be gc'ed
+        bytes = null; //so they can be gc'ed
         return output;
     }
 
     int[][] getData2d(HDFile infile, int sizeX, int sizeY)
             throws HDFException {
-        final byte[] localBytes;
-
         if (numberType != NumberType.INT || rank != 2) {
             throw new HDFException("getData2d called on wrong type of SD.");
         }
-        switch (inputMode) {
-        case STORE: //read data from internal array
-            localBytes = bytes.array();
-            break;
-        case WAIT_TO_READ:
-       	 	localBytes = infile.lazyReadData(this);
-            break;
-        default:
-            throw new HDFException(REF_MSG + ref);
-        }
+        final byte[] localBytes = getLocalBytes(infile);
         int[][] output = new int[sizeX][sizeY];
-        final DataInput dataInput = new DataInputStream(
-                new ByteArrayInputStream(localBytes));
-        try {
-            for (int i = 0; i < sizeX; i++) {
-                for (int j = 0; j < sizeY; j++) {
-                    output[i][j] = dataInput.readInt();
-                }
+        final ByteBuffer buffer = ByteBuffer.wrap(localBytes);
+        for (int i = 0; i < sizeX; i++) {
+            for (int j = 0; j < sizeY; j++) {
+                output[i][j] = buffer.getInt();
             }
-        } catch (IOException e) {
-            throw new HDFException(TWOD_MSG + e.getMessage());
         }
-        bytes =null;	//so they can be gc'ed
+        bytes = null; //so they can be gc'ed
         return output;
     }
 
     double[][] getData2dD(HDFile infile, int sizeX, int sizeY)
             throws HDFException {
-        final byte[] localBytes;
-
         if (numberType != NumberType.DOUBLE || rank != 2) {
             throw new HDFException("getData2dD called on wrong type of SD.");
         }
-        switch (inputMode) {
-        case STORE: //read data from internal array
-            localBytes = bytes.array();
-            break;
-        case WAIT_TO_READ:
-        	localBytes = infile.lazyReadData(this);        	
-        default:
-            throw new HDFException(REF_MSG + ref);
-        }
+        final byte[] localBytes = getLocalBytes(infile);
         double[][] output = new double[sizeX][sizeY];
         final DataInput dataInput = new DataInputStream(
                 new ByteArrayInputStream(localBytes));
@@ -314,5 +253,30 @@ final class ScientificData extends DataObject {
         synchronized (this) {
             rank = newRank;
         }
+    }
+    
+    public String toString(){
+        final StringBuffer rval=new StringBuffer();
+        final String type = numberType == NumberType.DOUBLE ? "Double" : "Integer";
+        final String times=" x ";
+        rval.append("SD ").append(ref).append(": ").append(type).append(times).append(sizeX);
+        if (rank ==2){
+            rval.append(times).append(sizeY);
+        }
+        return rval.toString();
+    }
+    
+    private byte [] getLocalBytes(HDFile infile) throws HDFException {
+        final byte [] localBytes;
+        switch (inputMode) {
+        case STORE: //read data from internal array
+            localBytes = bytes.array();
+            break;
+        case WAIT_TO_READ:
+        	localBytes = infile.lazyReadData(this);        	
+        default:
+            throw new HDFException(REF_MSG + ref);
+        }
+        return localBytes;
     }
 }
