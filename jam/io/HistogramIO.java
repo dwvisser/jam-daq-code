@@ -823,21 +823,12 @@ public class HistogramIO implements FilenameFilter {
 						}
 					}
 					if (mode == OPEN_MODE) {
-						try {
-							hist = new Histogram(name, title, counts2D);
-							hist.setNumber(number);
-							msgHandler.messageOut(" .");
-						} catch (DataException de) {
-							msgHandler.messageOut(
-								name + ": " + de.getMessage());
-						}
+						hist = new Histogram(name, title, counts2D);
+						hist.setNumber(number);
+						msgHandler.messageOut(" .");
 					} else { //RELOAD_MODE
 						hist = Histogram.getHistogram(name);
-						try {
-							hist.setCounts(counts2D);
-						} catch (DataException de) {
-							msgHandler.errorOutln(de.getMessage());
-						}
+						hist.setCounts(counts2D);
 						msgHandler.messageOut(" .");
 					}
 				} else {
@@ -846,22 +837,12 @@ public class HistogramIO implements FilenameFilter {
 						counts[i] = dis.readInt();
 					}
 					if (mode == OPEN_MODE) {
-						try {
-							hist = new Histogram(name, title, counts);
-							hist.setNumber(number);
-							msgHandler.messageOut(" .");
-						} catch (DataException de) {
-							throw new ImpExpException(
-								"Problem creating histogram from file: "
-									+ de.toString());
-						}
+						hist = new Histogram(name, title, counts);
+						hist.setNumber(number);
+						msgHandler.messageOut(" .");
 					} else { //RELOAD_MODE
 						hist = Histogram.getHistogram(name);
-						try {
-							hist.setCounts(counts);
-						} catch (DataException de) {
-							msgHandler.errorOutln(de.getMessage());
-						}
+						hist.setCounts(counts);
 						msgHandler.messageOut(" .");
 					}
 				}
