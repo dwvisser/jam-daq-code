@@ -44,6 +44,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		cmdMap.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
 		cmdMap.put(SHOW_SET_GATE, ShowDialogSetGate.class); 
 		cmdMap.put(SHOW_ADD_GATE, ShowDialogAddGate.class); 
+		cmdMap.put(SHOW_RUN_CONTROL, ShowRunControl.class); 
 		cmdMap.put(EXIT, ShowDialogExitCmd.class);
 		cmdMap.put(NEW, FileNewClearCmd.class);
 		cmdMap.put(PARAMETERS, ShowDialogParametersCmd.class);

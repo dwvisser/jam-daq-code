@@ -64,6 +64,9 @@ public interface CommandNames {
 	String DISPLAY_MON_CONFIG="displaymonitorconfig";
 	
 	/** Show the dialog for zeroing scalers. */
+	String SHOW_RUN_CONTROL="showruncontrol";
+
+	/** Show the dialog for zeroing scalers. */
 	String SHOW_ZERO_SCALERS="showzeroscalers";
 	
 	/** Show batch export dialog */
