@@ -53,12 +53,13 @@ final class VirtualGroup extends DataObject {
      */
     protected void refreshBytes() {
     	//Length 7 shorts always each member has 2 short, 
-    	//plus length of string of 2 strings    	
-        final int numBytes = 7*2 + 4 * elements.size() + name.length()
+    	//plus length of string of 2 strings  
+    	final short numItems=(short)elements.size();
+        final int numBytes = 7*2 + 4 * numItems + name.length()
                 + type.length();
         bytes = ByteBuffer.allocate(numBytes);
         //see DFTAG_VG specification for HDF 4.1r2
-        bytes.putShort((short)numBytes);
+        bytes.putShort(numItems);
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
             final DataObject dataObject = (DataObject) (temp.next());
             bytes.putShort(dataObject.getTag());
