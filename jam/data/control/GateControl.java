@@ -27,7 +27,7 @@ Observer  {
     private Gate currentGateAdd;
 
     private int type;
-    private Vector gatePoints;      //number intial points, increment increase
+    private java.util.List gatePoints;      //number intial points, increment increase
     private Polygon gatePoly2d;
     private int numberPoints;
 
@@ -276,12 +276,12 @@ Observer  {
                     type=ONE_DIMENSION;
                     lLower.setText("lower");
                     lUpper.setText("upper");
-                    gatePoints = new Vector (2);
+                    gatePoints = new ArrayList(2);
                 } else {
                     type=TWO_DIMENSION;
                     lLower.setText("x");
                     lUpper.setText("y");
-                    gatePoints = new Vector (10,5);
+                    gatePoints = new ArrayList();
                     addP.setEnabled(true);
                     //FIXME
                     removeP.setEnabled(true);
@@ -445,11 +445,12 @@ Observer  {
      */
     private void removePoint() throws GlobalException {
         if(!gatePoints.isEmpty()) {
-            gatePoints.removeElement(gatePoints.lastElement());
+            gatePoints.remove(gatePoints.size()-1);
             broadcaster.broadcast(BroadcastEvent.GATE_SET_REMOVE);
             if(!gatePoints.isEmpty()) {
-                textLower.setText(""+((Point)gatePoints.lastElement()).x);
-                textUpper.setText(""+((Point)gatePoints.lastElement()).y);
+            	Point lastPoint=(Point)gatePoints.get(gatePoints.size()-1);
+                textLower.setText(""+lastPoint.x);
+                textUpper.setText(""+lastPoint.y);
             } else {
                 textLower.setText("");
                 textUpper.setText("");
@@ -473,20 +474,18 @@ Observer  {
             if (type==ONE_DIMENSION){
                 if (numberPoints==0) {
                     numberPoints=1;
-                    gatePoints.insertElementAt(pChannel, 0);
-                    gatePoints.setSize(1);
+                    gatePoints.add(pChannel);
                     textLower.setText(""+pChannel.x);
                 } else if (numberPoints==1) {
                     numberPoints=0;
-                    gatePoints.insertElementAt(pChannel, 1);
-                    gatePoints.setSize(2);
+                    gatePoints.add(pChannel);
                     textUpper.setText(""+pChannel.x);
                 } else {
                     System.err.println("Error: setting 1 d gate should not be here [GateControl]");
                 }
 
             } else if (type==TWO_DIMENSION){
-                gatePoints.addElement(pChannel);
+                gatePoints.add(pChannel);
                 textLower.setText(""+pChannel.x);
                 textUpper.setText(""+pChannel.y);
             }
@@ -514,12 +513,12 @@ Observer  {
                     currentGate.setLimits(x1, x2);
                     messageHandler.messageOutln("Gate Set "+currentGate.getName()+" Limits="+x1+","+x2);
                 } else if (type==TWO_DIMENSION) {
-                    // complete gate, adding a last point = first point
-                    gatePoints.addElement(gatePoints.elementAt(0));
-                    //make a ploygon from data points
+                    /* complete gate, adding a last point = first point */
+                    gatePoints.add(gatePoints.get(0));
+                    /* make a polygon from data points */
                     for (int i=0; i<gatePoints.size();i++ ) {
-                        pointX=((Point)gatePoints.elementAt(i)).x;
-                        pointY=((Point)gatePoints.elementAt(i)).y;
+                        pointX=((Point)gatePoints.get(i)).x;
+                        pointY=((Point)gatePoints.get(i)).y;
                         gatePoly2d.addPoint(pointX,pointY);
                     }
                     currentGate.setLimits(gatePoly2d);
