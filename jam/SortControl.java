@@ -125,7 +125,7 @@ public final class SortControl extends JDialog implements Controller {
 		//List Panel
 		multipleFileChooser = new MultipleFileChooser(STATUS.getFrame(), msgHandler);
 		multipleFileChooser.showListSaveLoadButtons(true);
-		multipleFileChooser.setFileExtension("evn");
+		multipleFileChooser.setFileFilter("Event Files", "evn");
 		//JFileChooser fd = new JFileChooser(lastFile);
 		//fd.setFileFilter(new ExtensionFileFilter(new String[] { "evn" },
 		//"Event Files (*.evn)"));

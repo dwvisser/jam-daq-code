@@ -1,10 +1,13 @@
 package jam.io.control;
 
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
@@ -21,6 +24,7 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -32,6 +36,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Class to open multiple files at the same time.
@@ -57,6 +62,8 @@ public class OpenMultipleFiles {
 	private JButton bApply;
 
 	private JButton bCancel;
+	
+	private JCheckBox chkBoxAdd;
 
 	private final String OK = "OK";
 
@@ -96,7 +103,7 @@ public class OpenMultipleFiles {
 		container.add(tabPane, BorderLayout.CENTER);
 		
 		multipleFileChooser = new MultipleFileChooser(frame, msgHandler);
-		multipleFileChooser.setFileExtension("hdf");
+		multipleFileChooser.setFileFilter(new HDFileFilter(true));
 		//multipleFileChooser.activeListSaveLoadButtons(true);				
 		tabPane.addTab("Files", null, multipleFileChooser, "Select Files to open");
 		
@@ -172,16 +179,6 @@ public class OpenMultipleFiles {
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		
-		histListModel = new DefaultListModel();
-		histList = new JList(histListModel);
-		histList
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		histList.setSelectedIndex(0);
-		histList.setVisibleRowCount(10);
-		JScrollPane listScrollPane = new JScrollPane(histList);
-		listScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		panel.add(listScrollPane, BorderLayout.CENTER);
-		
 		JPanel pOption = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
 		JLabel lFile = new JLabel("Histograms list File:");
 		pOption.add(lFile);
@@ -190,6 +187,9 @@ public class OpenMultipleFiles {
 		txtHistListFile.setColumns(20);
 		txtHistListFile.setEditable(false);
 		pOption.add(txtHistListFile);		
+		chkBoxAdd = new JCheckBox("Sum Histograms");
+		pOption.add(chkBoxAdd);
+		/*
 		JButton bRefresh = new JButton("Refresh");
 		bRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -197,8 +197,19 @@ public class OpenMultipleFiles {
 			}
 		});
 		pOption.add(bRefresh);
+		*/
+		panel.add(pOption, BorderLayout.NORTH);
 		
-		panel.add(pOption, BorderLayout.SOUTH);
+		histListModel = new DefaultListModel();
+		histList = new JList(histListModel);
+		//histList
+		//		.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		histList.setSelectedIndex(0);
+		histList.setVisibleRowCount(10);
+		JScrollPane listScrollPane = new JScrollPane(histList);
+		listScrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panel.add(listScrollPane, BorderLayout.CENTER);
+		
 		return panel;
 		
 	}	
@@ -282,28 +293,63 @@ public class OpenMultipleFiles {
      * Load the histograms in the selected list from the selected files
      */
     private void loadFiles() {
-        final Object[] selected = histList.getSelectedValues();
-        if (selected.length == 0) {//No histograms selected
+    	
+    	File file;
+    	
+    	List selectedHistogramNames = createSelectedHistogramNamesList();  
+    	
+        if (selectedHistogramNames.size() == 0) {//No histograms selected
             msgHandler.errorOutln("No histograms selected");
             return;
         }
-        /* Put selected histograms into a list */
+        
+        final Iterator iter = multipleFileChooser.getFileList().iterator();
+        
+        //Sum counts
+    	if (chkBoxAdd.isSelected()) {
+    		//Create blank histograms
+    		file =multipleFileChooser.getSelectedFile();
+            hdfio.readFile(FileOpenMode.OPEN, file, 
+            		selectedHistogramNames);
+            //Rename group
+            Group fileGroup = Group.getGroup(file.getName());
+            fileGroup.setName("Sum");
+            Histogram.setZeroAll();
+
+            while (iter.hasNext()) {
+    			file = (File) iter.next();            	
+        		hdfio.readFile(FileOpenMode.ADD, file,
+        				selectedHistogramNames);
+            }
+            
+        //Open multiple groups    
+    	}else {
+    	
+    		/* Loop for all files */
+    		boolean isFirstFile = true;
+    		while (iter.hasNext()) {
+    			file = (File) iter.next();
+    			if (isFirstFile) {
+    				isFirstFile = false;
+                    hdfio.readFile(FileOpenMode.OPEN, file, 
+                    		selectedHistogramNames);            		
+    			} else {
+            		hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
+            						selectedHistogramNames);            		            		
+              }
+    		}
+         }
+    }        
+    private List createSelectedHistogramNamesList() {
         final List histogramNamesSelected = new ArrayList();
+        
+        final Object[] selected = histList.getSelectedValues();
+        
+        /* Put selected histograms into a list */
         for (int i = 0; i < selected.length; i++) {
             histogramNamesSelected.add(selected[i]);
         }
-        /* Loop for all files */
-        boolean isFirstFile = true;
-        final Iterator iter = multipleFileChooser.getFileList().iterator();
-        while (iter.hasNext()) {
-            final File file = (File) iter.next();
-            if (isFirstFile) {
-                hdfio.readFile(FileOpenMode.OPEN, file, histogramNamesSelected);
-                isFirstFile = false;
-            } else {
-                hdfio.readFile(FileOpenMode.OPEN_ADDITIONAL, file,
-                        histogramNamesSelected);
-            }
-        }
+    	return histogramNamesSelected;
     }
+
 }

@@ -2,6 +2,7 @@ package jam.ui;
 
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
+import jam.io.hdf.HDFileFilter;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -26,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
 
 
 
@@ -49,6 +51,8 @@ public final class MultipleFileChooser extends JPanel {
 	private JButton bLoadList;
 	
 	private JButton bAddfile, bAddDir, bRemove, bRemoveAll;
+	
+	private FileFilter fileFilter;
 	
 	private String fileExtension="*";
 	
@@ -138,14 +142,28 @@ public final class MultipleFileChooser extends JPanel {
 		
 	}
 	
+
 	/**
-	 * Sets the file extension to look for.
+	 * Sets the file filter to browse for
 	 * @param extension
 	 */
-	public void setFileExtension(String extension) {
-		fileExtension=extension;
+	public void setFileFilter(FileFilter filter) {
+		fileFilter=filter;
 	}
-	
+	/**
+	 * Sets the file extension to browse for, creates a default
+	 * file filter
+	 * @param extension
+	 */
+	public void setFileFilter(String extensionName, String extension) {
+		
+		String [] extensions = {extension};
+		
+		fileFilter =new ExtensionFileFilter(extensions ,
+						extensionName+"(*."+extension+")");
+
+	}
+
 	/**
 	 * Activate the save and load list buttons
 	 * @param state
@@ -284,10 +302,10 @@ public final class MultipleFileChooser extends JPanel {
 		
 		final JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(chooserMode);
-		fd.setMultiSelectionEnabled(true);
+		//fd.setMultiSelectionEnabled(true);
+		//fd.setFileFilter(fileFilter));
 		if (selectFileOnly){
-		    fd.setFileFilter(new ExtensionFileFilter(new String[] { fileExtension },
-				"Data Files (*."+fileExtension+")"));
+		    fd.setFileFilter(fileFilter);
 		}
 		final int option = fd.showOpenDialog(frame);
 		/* save current values */
@@ -314,15 +332,13 @@ public final class MultipleFileChooser extends JPanel {
 	private int addDirFiles(File f) {
 		int numFiles = 0;
 		if (f != null && f.exists()) {
-			final ExtensionFileFilter ff = new ExtensionFileFilter(
-					new String[] { fileExtension }, "Data Files(*."+fileExtension+")");
-			if (f.isFile() && ff.accept(f)) {
+			if (f.isFile() && fileFilter.accept(f)) {
 				addFile(f);
 				numFiles++;
 			} else if (f.isDirectory()) {
 				File[] dirArray = f.listFiles();
 				for (int i = 0; i < dirArray.length; i++) {
-					if (ff.accept(dirArray[i])){
+					if (fileFilter.accept(dirArray[i])){
 						addFile(dirArray[i]);
 					}
 					numFiles++;

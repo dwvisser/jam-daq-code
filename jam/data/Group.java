@@ -201,7 +201,16 @@ public class Group {
         LIST.add(this);
         NAME_MAP.put(name, this);
     }
-
+    /**
+     * Set the name, used to rename group
+     * @param name
+     * 			the new name of a group
+     */
+    public void setName(String name) {
+    	NAME_MAP.remove(this.getName());
+    	NAME_MAP.put(name, this);
+    	this.name = name;
+    }
     /**
      * Add a histogram to the group
      * 

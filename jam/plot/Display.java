@@ -341,8 +341,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
 		if (command == BroadcastEvent.Command.REFRESH) {
-			final Histogram hist = status.getCurrentHistogram();
-			displayHistogram(hist);
+			update();
 		}else if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
 			final Histogram hist = status.getCurrentHistogram();			
 			displayHistogram(hist); 

@@ -556,7 +556,9 @@ public abstract class Histogram {
 		if (name != null) {
 		    final String refer;
 		    if (name.indexOf('/')<0){
-		        refer = Group.getCurrentGroup().getName()+'/'+name;
+		    	//FIXME KBS
+		        //refer = Group.getCurrentGroup().getName()+'/'+name;
+		        refer=name;
 		    } else {
 		        refer=name;
 		    }

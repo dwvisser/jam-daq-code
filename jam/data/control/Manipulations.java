@@ -296,7 +296,7 @@ public class Manipulations extends AbstractControl implements WindowListener,
 			}
 		}
 
-		comboBox.setSelectedIndex(0);
+		//FIXME comboBox.setSelectedIndex(0);
 	}
 
 	/* non-javadoc:
