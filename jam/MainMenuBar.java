@@ -281,7 +281,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private JamCommand jamCommand;
 	
 	final private JMenuItem openhdf = new JMenuItem("Open(hdf)...");
-	final private JMenuItem addhdf;
 	final private JMenuItem reloadhdf = new JMenuItem("Reload(hdf)...");
 	final private JMenuItem saveHDF  = new JMenuItem("Save(hdf)...");
 	final private JMenuItem saveAsHDF  = new JMenuItem("Save As(hdf)...");
@@ -387,9 +386,8 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		reloadhdf.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));		
 		file.add(reloadhdf);
 
-		addhdf=new JMenuItem(commands.getAction(CommandNames.ADD_HDF));
-		//addhdf.setActionCommand(CommandNames.ADD_HDF);
-		//addhdf.addActionListener(jamCommand);
+		final JMenuItem addhdf=new JMenuItem(commands.getAction(
+		CommandNames.ADD_HDF));
 		file.add(addhdf);
 		
 		saveHDF.setActionCommand(CommandNames.SAVE_HDF);	
@@ -722,7 +720,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		openhdf.setEnabled(file);
 		saveHDF.setEnabled(file);
 		reloadhdf.setEnabled(sorting);
-		addhdf.setEnabled(sorting||file);
+		commands.setEnabled(CommandNames.ADD_HDF,sorting||file);
 		newClear.setEnabled(file);
 		impHist.setEnabled(file);
 	}
@@ -730,8 +728,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	void setRunState(RunState rs) {
 		final boolean acqmode = rs.isAcquireMode();
 		final boolean acqon = rs.isAcqOn();
-//		cstartacq.setEnabled(acqmode);
-//		cstopacq.setEnabled(acqmode);
 		iflushacq.setEnabled(acqon);
 		cstartacq.setSelected(acqon);
 		cstopacq.setSelected(acqmode && (!acqon));
@@ -789,6 +785,12 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		final int command=be.getCommand();
 		if (command==BroadcastEvent.SORT_MODE_CHANGED){
 			sortModeChanged();
+		}
+		if (command==BroadcastEvent.HISTOGRAM_SELECT){
+			final Histogram h=Histogram.getHistogram(
+			status.getCurrentHistogramName());
+			final boolean oneD=h.getDimensionality()==1;
+			commands.setEnabled(CommandNames.EXPORT_SPE, oneD);
 		}
 	}
 }

@@ -127,4 +127,8 @@ public class JamCmdManager implements CommandListener {
 	public Action getAction(String strCmd){
 		return createCmd(strCmd) ? currentCommand : null;
 	}
+	
+	public void setEnabled(String cmd, boolean enable){
+		getAction(cmd).setEnabled(enable);
+	}
 }
