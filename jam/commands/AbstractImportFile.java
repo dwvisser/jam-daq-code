@@ -8,18 +8,21 @@ import jam.io.ImpExpException;
 import java.io.File;
 
 /**
- * Export data to file
- * @author Ken Swartz
+ * Export data to file. Full implementations must assign an 
+ * <code>ImpExp</code> object.
  *
+ * @author Ken Swartz
  */
 class AbstractImportFile extends AbstractImportExport {
 
-	AbstractImportFile() {
-		super();
-	}
-
-	/* (non-Javadoc)
+	/**
+	 * Loads the given file, or opens a load dialog if given 
+	 * <code>null</code>.
+	 * 
+	 * @param cmdParams <code>null</code> or 1-element array with a file
+	 * reference
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
+	 * @see java.io.File
 	 */
 	protected final void execute(Object[] cmdParams) throws CommandException {
 		try {
@@ -38,10 +41,16 @@ class AbstractImportFile extends AbstractImportExport {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
+	/**
+	 * Loads the given file, or opens a load dialog if given 
+	 * <code>null</code>.
+	 * 
+	 * @param cmdParams 0- or 1-element array with a file
+	 * reference
+	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
+	 * @see java.io.File
 	 */
-	protected void executeParse(String[] cmdTokens)
+	protected final void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 		try {
 			if (cmdTokens.length == 0) {

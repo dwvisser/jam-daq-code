@@ -7,16 +7,19 @@ import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
 
 /**
- * Command for Page Setup 
+ * Superclass for printing-related commands.
+ *  
  * @author Ken Swartz
- *
  */
 abstract class AbstractPrintingCommand extends AbstractCommand {
 
+	/**
+	 * Page format object common to all printing commands.
+	 */
 	protected static PageFormat mPageFormat = 
 	PrinterJob.getPrinterJob().defaultPage();
 	
-	static {
+	static {//initial configuration of page format
 		final double inchesToPica=72.0;
 		final double top=PlotGraphicsLayout.MARGIN_TOP*inchesToPica;
 		final double bottom=mPageFormat.getHeight()-
