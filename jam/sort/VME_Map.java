@@ -3,7 +3,6 @@
 package jam.sort;
 
 import java.util.*;
-import jam.data.Scaler;
 
 /**
  * <p>Class for containing a map of the ADC and TDC modules to be addressed, along with

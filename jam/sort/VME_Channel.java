@@ -1,5 +1,4 @@
 package jam.sort;
-import jam.data.Scaler;
 
 /**
  * Represents a single channel of data that the acquisition
