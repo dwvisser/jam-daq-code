@@ -10,7 +10,6 @@ import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.Display;
 import jam.ui.SelectionToolbar;
-import jam.util.ThreadCheckingRepaintManager;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -25,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
