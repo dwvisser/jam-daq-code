@@ -13,12 +13,13 @@ import java.awt.event.*;
  */
 public class PeakFindDialog extends JDialog implements ActionListener {
 
-	private final MessageHandler console;
 	private final Display display;
+	private final MessageHandler console;
 
-	public PeakFindDialog(Display d, MessageHandler c) {
-		display = d;
-		console = c;
+	public PeakFindDialog() {
+		final JamStatus status=JamStatus.instance();
+		display = status.getDisplay();
+		console = status.getMessageHandler();
 		createDialog();
 	}
 
@@ -43,7 +44,7 @@ public class PeakFindDialog extends JDialog implements ActionListener {
 		center.add(fields,BorderLayout.CENTER);
 		center.add(calibrate,BorderLayout.SOUTH);
 		contents.add(center,BorderLayout.NORTH);
-		// panel for buttons         
+		/* panel for buttons */         
 		JPanel pb = new JPanel();
 		pb.setLayout(new GridLayout(1, 3));
 		contents.add(pb, BorderLayout.SOUTH);
@@ -59,8 +60,7 @@ public class PeakFindDialog extends JDialog implements ActionListener {
 		pb.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
-		this.setResizable(false);
-		//setPeakFindProperties();
+		setResizable(false);
 		pack();
 	}
 
