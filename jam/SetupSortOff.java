@@ -81,7 +81,7 @@ class SetupSortOff  implements ActionListener, ItemListener {
         defaultEventPath =JamProperties.getPropString(JamProperties.EVENT_INPATH);
         defaultSpectra=JamProperties.getPropString(JamProperties.HIST_PATH);
         defaultTape   =JamProperties.getPropString(JamProperties.TAPE_DEV);
-        boolean useDefaultPath=(defaultSortPath=="default");
+        boolean useDefaultPath=(defaultSortPath==JamProperties.DEFAULT_SORT_CLASSPATH);
         if (!useDefaultPath){
 			sortDirectory=new File(defaultSortPath);  
 			sortClassPath=sortDirectory;      	
@@ -337,7 +337,6 @@ class SetupSortOff  implements ActionListener, ItemListener {
      */
     public void itemStateChanged(ItemEvent ie){
     	ItemSelectable selectedItem=ie.getItemSelectable();
-        //System.err.println(getClass().getName()+".itemStateChanged(), arg = "+ie);
         if (selectedItem==ctape) {//set mode, disk or tape
             if(ctape.isSelected()){
                 setMode(TAPE);
