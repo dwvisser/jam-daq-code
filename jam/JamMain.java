@@ -196,9 +196,8 @@ public class JamMain extends JFrame {
 	 * @exception JamException sends a message to the console if 
 	 * there is an inappropriate call
 	 * @see #ONLINE_DISK
-	 * @see #ONLINE_TAPE
+	 * @see #ONLINE_NODISK
 	 * @see #OFFLINE_DISK
-	 * @see #OFFLINE_TAPE
 	 * @see #FILE
 	 * @see #REMOTE
 	 * @see #NO_SORT
