@@ -99,7 +99,7 @@ public final class Bin {
 	}
 	
 	synchronized double getCounts(){
-		return display.getPlot().getCount(this);		
+		return display.getPlotContainer().getCount(this);		
 	}
 	
 	synchronized Point getPoint(){
@@ -124,7 +124,7 @@ public final class Bin {
 	
 	synchronized String getCoordString() {
 		final StringBuffer rval = new StringBuffer().append(channel.x);
-		if (display.getPlot().getDimensionality()==2) {
+		if (display.getPlotContainer().getDimensionality()==2) {
 			rval.append(',').append(channel.y);
 		}
 		return rval.toString();
@@ -142,7 +142,7 @@ public final class Bin {
 	synchronized Bin closestInsideBin() {
 		int x=channel.x;
 		int y=channel.y;
-		final PlotContainer currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlotContainer();
 		if (x < 0) {
 			x = 0;
 		} else if (x >= currentPlot.getSizeX()) {
