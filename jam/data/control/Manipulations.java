@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -238,16 +239,16 @@ public class Manipulations extends DataControl implements ActionListener,
 
 		cfrom1.removeAllItems();
 		addChooserHists(cfrom1, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_DIM_DOUBLE);
+				Histogram.Type.ONE_D_DOUBLE);
 		cfrom1.setSelectedItem(lfrom1);
 		cfrom2.removeAllItems();
 		addChooserHists(cfrom2, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_DIM_DOUBLE);
+				Histogram.Type.ONE_D_DOUBLE);
 		cfrom2.setSelectedItem(lfrom2);
 		cto.removeAllItems();
 		cto.addItem("New Histogram");
 		addChooserHists(cto, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_DIM_DOUBLE);
+				Histogram.Type.ONE_D_DOUBLE);
 		cto.setSelectedItem(lto);
 		if (lto.equals("New Histogram")) {
 			setUseNewHist(true);
@@ -289,10 +290,6 @@ public class Manipulations extends DataControl implements ActionListener,
 	 * Does the work of manipulating histograms
 	 */
 	private void manipulate() throws DataException {
-		//Histogram hto;
-		//double fac1,fac2;
-		//double [] in1,in2,out;
-		//int i;
 		final double fac1;
 		try {//read information for first histogram
 			fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
@@ -300,7 +297,7 @@ public class Manipulations extends DataControl implements ActionListener,
 			throw new DataException(
 					"First factor is not a valid number [Manipulations]");
 		}
-		final Histogram hfrom1 = Histogram.getHistogram((String) cfrom1
+		final AbstractHist1D hfrom1 = (AbstractHist1D)Histogram.getHistogram((String) cfrom1
 				.getSelectedItem());
 		final double[] in1;
 		if (hfrom1.getType() == Histogram.Type.ONE_DIM_INT) {
@@ -318,7 +315,7 @@ public class Manipulations extends DataControl implements ActionListener,
 		}
 		final double[] in2, err2;
 		if (cfrom2.isEnabled()) {
-			final Histogram hfrom2 = Histogram.getHistogram((String) cfrom2
+			final AbstractHist1D hfrom2 = (AbstractHist1D)Histogram.getHistogram((String) cfrom2
 					.getSelectedItem());
 			if (hfrom2.getType() == Histogram.Type.ONE_DIM_INT) {
 				in2 = toDoubleArray((int[]) hfrom2.getCounts());
@@ -333,17 +330,19 @@ public class Manipulations extends DataControl implements ActionListener,
 
 		//read in information for to histogram
 		String name = (String) cto.getSelectedItem();
-		final Histogram hto;
+		final AbstractHist1D hto;
 		if (name.equals("New Histogram")) {
 			name = ttextto.getText().trim();
-			hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom1
-					.getSizeX(), name);
+			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom1
+					.getSizeX(), name);*/
+			hto = (AbstractHist1D)Histogram.createHistogram(
+					new double[hfrom1.getSizeX()],name);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New histogram of type double created, name: '"
 							+ name + "'");
 		} else {
-			hto = Histogram.getHistogram(name);
+			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
 		hto.setZero();
 		final double[] out = (hto.getType() == Histogram.Type.ONE_DIM_INT) ? toDoubleArray((int[]) hto

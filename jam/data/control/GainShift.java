@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -60,7 +61,7 @@ public class GainShift extends DataControl implements ActionListener,
 
 	private double chan1i, chan2i, chan1f, chan2f, a1, b1, a2, b2;
 
-	private Histogram hfrom;
+	private AbstractHist1D hfrom;
 
 	public GainShift(MessageHandler mh) {
 		super("Gain Shift 1-D Histogram", false);
@@ -189,7 +190,7 @@ public class GainShift extends DataControl implements ActionListener,
 					bOK.setEnabled(false);
 					bApply.setEnabled(false);
 				} else {
-					hfrom = (Histogram) selected;
+					hfrom = (AbstractHist1D) selected;
 					bOK.setEnabled(true);
 					bApply.setEnabled(true);
 				}
@@ -270,7 +271,7 @@ public class GainShift extends DataControl implements ActionListener,
 		cto.removeAllItems();
 		cto.addItem("New Histogram");
 		addChooserHists(cto, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_DIM_DOUBLE);
+				Histogram.Type.ONE_D_DOUBLE);
 		cto.setSelectedItem(lto);
 		if (lto.equals("New Histogram")) {
 			setUseNewHist(true);
@@ -352,16 +353,17 @@ public class GainShift extends DataControl implements ActionListener,
 		final double[] errIn = hfrom.getErrors();
 		/* Get or create output histogram. */
 		String name = (String) cto.getSelectedItem();
-		final Histogram hto;
+		final AbstractHist1D hto;
 		if (name.equals("New Histogram")) {
 			name = ttextto.getText().trim();
-			hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
-					.getSizeX(), name);
+			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
+					.getSizeX(), name);*/
+			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New Histogram created: '" + name + "'");
 		} else {
-			hto = Histogram.getHistogram(name);
+			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
 		hto.setZero();
 		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((int[]) hto

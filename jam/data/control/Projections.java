@@ -267,7 +267,7 @@ public class Projections extends DataControl implements Observer {
 		cto.addItem(NEW_HIST);
 		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
 			Histogram h = (Histogram) e.next();
-			if (h.getType() == Histogram.Type.ONE_DIM_DOUBLE) {
+			if (h.getType() == Histogram.Type.ONE_D_DOUBLE) {
 				cto.addItem(h.getName());
 			}
 		}
@@ -327,7 +327,7 @@ public class Projections extends DataControl implements Observer {
 		final String state = (String) cchan.getSelectedItem();
 		final double[][] counts2d;
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
-		if (hfrom.getType() == Histogram.Type.TWO_DIM_DOUBLE) {
+		if (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) {
 			counts2d = (double[][]) hfrom.getCounts();
 		} else {
 			counts2d = intToDouble((int[][]) hfrom.getCounts());
@@ -350,13 +350,15 @@ public class Projections extends DataControl implements Observer {
 		final Histogram hto;
 		if (name.equals(NEW_HIST)) {
 			name = ttextto.getText().trim();
-			if (cdown.isSelected()) {//project down
-				hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
+			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
+			/*if (cdown.isSelected()) {//project down
+				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 						.getSizeX(), name);
 			} else {//project across
-				hto = new Histogram(name, Histogram.Type.ONE_DIM_DOUBLE, hfrom
+				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 						.getSizeY(), name);
-			}
+			}*/
+			hto = Histogram.createHistogram(new double[size],name);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler
 					.messageOutln("New Histogram created: '" + name + "'");

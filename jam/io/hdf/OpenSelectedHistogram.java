@@ -1,5 +1,6 @@
 package jam.io.hdf;
 
+import jam.data.AbstractHist1D;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
 
@@ -379,21 +380,21 @@ public class OpenSelectedHistogram {
 		final String name = histProp.name.trim() + fileIndicator;
 		final String title = "File: " + fileName + " - " + histProp.title;
 		byte histNumType = histProp.histNumType;
-		final Histogram histogram;
 		if (histProp.histDim == 1) {
+			final AbstractHist1D histogram;
 			if (histNumType == NumberType.INT) {
-				histogram=new Histogram(name, title, (int[]) histProp.dataArray);
+				histogram=(AbstractHist1D)Histogram.createHistogram((int[]) histProp.dataArray, name, title);
 			} else { //DOUBLE
-				histogram=new Histogram(name, title, (double[]) histProp.dataArray);
+				histogram=(AbstractHist1D)Histogram.createHistogram((double[]) histProp.dataArray, name, title);
 			}
 			if (histProp.errorArray != null) {
 				histogram.setErrors((double[])histProp.errorArray);
 			}
 		} else { //2d
 			if (histNumType == NumberType.INT) {
-				new Histogram(name, title, (int[][]) histProp.dataArray);
+				Histogram.createHistogram((int[][]) histProp.dataArray, name, title);
 			} else {
-				new Histogram(name, title, (double[][]) histProp.dataArray);
+				Histogram.createHistogram((double[][]) histProp.dataArray, name, title);
 			}
 		}
 	}

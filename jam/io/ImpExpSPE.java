@@ -105,7 +105,7 @@ public class ImpExpSPE extends ImpExp {
 			dis.readInt(); //should read a hex  2000  dec 8192	
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
-			new Histogram(nameHist, nameHist, counts);
+			Histogram.createHistogram(counts, nameHist);
 			if (msgHandler != null) {
 				msgHandler.messageOut(" .");
 			}
@@ -139,7 +139,7 @@ public class ImpExpSPE extends ImpExp {
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsInt[i];
 				}
-			} else if (type == Histogram.Type.ONE_DIM_DOUBLE) {
+			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
 				final double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsDbl[i];

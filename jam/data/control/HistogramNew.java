@@ -92,9 +92,9 @@ public class HistogramNew extends DataControl {
 		final Panel pradio = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		final ButtonGroup cbg = new ButtonGroup();
 		coneInt = new JCheckBox(Histogram.Type.ONE_DIM_INT.toString(), true);
-		coneDbl = new JCheckBox(Histogram.Type.ONE_DIM_DOUBLE.toString(), false);
+		coneDbl = new JCheckBox(Histogram.Type.ONE_D_DOUBLE.toString(), false);
 		ctwoInt = new JCheckBox(Histogram.Type.TWO_DIM_INT.toString(), false);
-		ctwoDbl = new JCheckBox(Histogram.Type.TWO_DIM_DOUBLE.toString(), false);
+		ctwoDbl = new JCheckBox(Histogram.Type.TWO_D_DOUBLE.toString(), false);
 		cbg.add(coneInt);
 		cbg.add(coneDbl);
 		cbg.add(ctwoInt);
@@ -157,19 +157,19 @@ public class HistogramNew extends DataControl {
 	private void makeHistogram() {
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
-		final Histogram.Type type;
-		if (coneInt.isSelected()) {
-			type = Histogram.Type.ONE_DIM_INT;
-		} else if (coneDbl.isSelected()) {
-			type = Histogram.Type.ONE_DIM_DOUBLE;
-		} else if (ctwoInt.isSelected()) {
-			type = Histogram.Type.TWO_DIM_INT;
-		} else {
-			type = Histogram.Type.TWO_DIM_DOUBLE;
-		}
 		final int size = Integer
-				.parseInt(((String) comboSize.getSelectedItem()).trim());
-		new Histogram(name, type, size, title);
+		.parseInt(((String) comboSize.getSelectedItem()).trim());
+		final Object array;
+		if (coneInt.isSelected()) {
+			array = new int[size];
+		} else if (coneDbl.isSelected()) {
+			array=new double[size];
+		} else if (ctwoInt.isSelected()) {
+			array=new int[size][size];
+		} else {
+			array = new double[size][size];
+		}
+		Histogram.createHistogram(array, name, title);
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
