@@ -860,8 +860,9 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             histogram.setNumber(number);
         } else if (mode == FileOpenMode.RELOAD) {
-            histogram = Histogram.getHistogram(su.makeLength(name,
-                    Histogram.NAME_LENGTH));
+        	Group group = Group.getSortGroup();
+            histogram = group.getHistogram(su.makeLength(name,
+                    Histogram.NAME_LENGTH));                    	
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {
@@ -879,8 +880,9 @@ public class HDFIO implements DataIO, JamHDFFields {
                 }
             }
         } else if (mode == FileOpenMode.ADD) { 
-            histogram = Histogram.getHistogram(su.makeLength(name,
-                    Histogram.NAME_LENGTH));
+        	Group group = Group.getCurrentGroup();
+            histogram = group.getHistogram(su.makeLength(name,
+                    Histogram.NAME_LENGTH));            
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {

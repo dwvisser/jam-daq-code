@@ -168,7 +168,9 @@ public class Group {
     public static Map getGroupMap() {
         return Collections.unmodifiableMap(NAME_MAP);
     }
-    /** Clear all groups */
+    /** 
+     * Clear all groups 
+     */
     public static void clearList() {
         NAME_MAP.clear();
         LIST.clear();
@@ -210,25 +212,6 @@ public class Group {
     	this.name = name;
     }
     /**
-     * Add a histogram to the group
-     * 
-     * @param hist
-     */
-    public void addHistogram(Histogram hist) {
-        histogramList.add(hist);
-        histogramMap.put(hist.getUniqueFullName(), hist);
-    }
-    /**
-     * Remove a histogram from the group
-     * 
-     * @param hist
-     */
-    public void removeHistogram(Histogram hist) {
-        histogramList.remove(hist);
-        histogramMap.remove(hist.getUniqueFullName());
-    }
-
-    /**
      * @return the name of this group
      */
     public String getName() {
@@ -240,8 +223,33 @@ public class Group {
      */
     public Type getType() {
         return type;
+    }    
+    /**
+     * Add a histogram to the group
+     *  
+     * @param hist
+     */
+    public void addHistogram(Histogram hist) {
+        histogramList.add(hist);
+        histogramMap.put(hist.getName(), hist);
     }
-
+    /**
+     * Remove a histogram from the group
+     * 
+     * @param hist
+     */
+    public void removeHistogram(Histogram hist) {
+        histogramList.remove(hist);
+        histogramMap.remove(hist.getName());
+    }
+    /**
+     * Retreive a histogram given its name
+     * @param name the histogram name
+     * @return the histogram
+     */
+    public Histogram getHistogram(String name) {
+    	return (Histogram)histogramMap.get(name);
+    }
     /**
      * @return list of histograms in this group
      */
