@@ -107,7 +107,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	}
 	
 	private List getHistogramList(){
-		return Histogram.getSortedList(0);
+		return Histogram.getListSortedByNumber();
 	}
 
 }
