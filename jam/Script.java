@@ -5,8 +5,10 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.HDFileFilter;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,10 +27,9 @@ import java.util.Observer;
  *  <li>(Optional) Show the Jam window to observe sort progress.</li>
  *  <li><em>Perform the sort.</em></li>
  *  <li>Save the results in an HDF file.</li>
- *  <li>
+ *  <li>(Optional) Add histograms in stored HDF files together.
  * </ol>
- * It is also possible to add the histogram counts in a specified HDF
- * file to the counts in memory. For example, this may be desirable
+ * The last step may be desirable
  * in the case where you would like to execute portions of the 
  * sorting task on different machines at the same time, and combine
  * their results in a "merge script".
@@ -275,12 +276,23 @@ public final class Script implements Observer {
 	 * hasn't been called yet
 	 */
 	public void addHDF(File hdf){
+		final FileFilter filter=new HDFileFilter(false);
 		if (!isSetup){
 			throw new IllegalStateException(
 			"You may not call loadHDF() before calling setupOffline().");
 		}
-		hdfio.readFile(FileOpenMode.ADD, hdf);
-		System.out.println("Added HDF file: "+hdf);
+		if (hdf.isDirectory()){
+			final File [] files=hdf.listFiles(filter);
+			for (int i=0; i< files.length; i++){
+				hdfio.readFile(FileOpenMode.ADD, files[i]);
+				System.out.println("Added HDF file: "+files[i]);
+			}
+		} else if (filter.accept(hdf)){
+			hdfio.readFile(FileOpenMode.ADD, hdf);
+			System.out.println("Added HDF file: "+hdf);
+		} else {
+			System.out.println(hdf+" isn't an HDF file, not added.");
+		}
 	}
 
 	/**
@@ -300,6 +312,7 @@ public final class Script implements Observer {
 	 */
 	public  void showJam(){
 		jam.setVisible(true);
+		status.setShowGUI(true);
 	}
 	
 	/**
