@@ -26,7 +26,7 @@ public interface MessageHandler {
     public void messageOut(String message);
 
     /**
-     * Output a full message
+     * Output a full message.
      */
     public void messageOutln(String message);
     
@@ -36,12 +36,14 @@ public interface MessageHandler {
     public void messageOutln();
 
     /**
-     * Output a waring message
+     * Output a warning message.
+     * 
+     * @param message warning
      */
     public void warningOutln(String message);
 
     /**
-     * Output a error message
+     * Output an error message.
      */
     public void errorOutln(String message);
 }
