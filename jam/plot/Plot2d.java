@@ -190,7 +190,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	/**
 	 * Called by mouse movement while setting a gate
 	 * 
-	 * @param g
+	 * @param gc graphics context
 	 */
 	protected void paintSettingGate(Graphics gc) {
 		final Graphics2D g = (Graphics2D) gc;
@@ -365,8 +365,6 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	 * 
 	 * @param gc
 	 *            the graphics context to paint to
-	 * @throws DataException
-	 *             if there's a problem painting the gate
 	 */
 	protected void paintGate(Graphics gc) {
 		Graphics2D g = (Graphics2D) gc;
@@ -504,30 +502,30 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
 	private Rectangle getClipBounds(Shape clipShape,
-			boolean shapeInChannelCoords) {
-		final Rectangle r = clipShape.getBounds();
-		if (shapeInChannelCoords) {//shape is in channel coordinates
-			/* add one more plot channel around the edges */
-			r.add(r.x + r.width + 1, r.y + r.height + 1);
-			r.add(r.x - 1, r.y - 1);
-			final Bin p1 = Bin.Factory.create(r.getLocation());
-			final Bin p2 = Bin.Factory.create(p1.getX() + r.width, p1.getY() + r.height);
-			/* now do conversion */
-			r.setBounds(graph.getRectangleOutline2d(p1, p2));
-			return r;
-		} else {//shape is in view coordinates
-			/*
-			 * Recursively call back with a polygon using channel coordinates.
-			 */
-			final Polygon p = new Polygon();
-			final Bin p1 = graph.toData(r.getLocation());
-			final Bin p2 = graph
-					.toData(new Point(r.x + r.width, r.y + r.height));
-			p.addPoint(p1.getX(), p1.getY());
-			p.addPoint(p2.getX(), p2.getY());
-			return getClipBounds(p, true);
-		}
-	}
+            boolean shapeInChannelCoords) {
+        final Rectangle r = clipShape.getBounds();
+        if (shapeInChannelCoords) {//shape is in channel coordinates
+            /* add one more plot channel around the edges */
+            r.add(r.x + r.width + 1, r.y + r.height + 1);
+            r.add(r.x - 1, r.y - 1);
+            final Bin p1 = Bin.Factory.create(r.getLocation());
+            final Bin p2 = Bin.Factory.create(p1.getX() + r.width, p1.getY()
+                    + r.height);
+            /* now do conversion */
+            r.setBounds(graph.getRectangleOutline2d(p1, p2));
+            return r;
+        }
+        /*
+         * The shape is in view coordinates. Recursively call back with a
+         * polygon using channel coordinates.
+         */
+        final Polygon p = new Polygon();
+        final Bin p1 = graph.toData(r.getLocation());
+        final Bin p2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
+        p.addPoint(p1.getX(), p1.getY());
+        p.addPoint(p2.getX(), p2.getY());
+        return getClipBounds(p, true);
+    }
 
 	void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll){
