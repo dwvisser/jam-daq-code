@@ -273,7 +273,8 @@ final class ScientificData extends DataObject {
             localBytes = bytes.array();
             break;
         case WAIT_TO_READ:
-        	localBytes = infile.lazyReadData(this);        	
+        	localBytes = infile.lazyReadData(this);        
+        	break;
         default:
             throw new HDFException(REF_MSG + ref);
         }
