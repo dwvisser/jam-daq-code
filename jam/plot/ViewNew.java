@@ -1,9 +1,8 @@
-package jam;
+package jam.plot;
 
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.plot.View;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;

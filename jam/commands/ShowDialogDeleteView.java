@@ -1,7 +1,7 @@
 package jam.commands;
 
-import jam.ViewDelete;
 import jam.global.CommandListenerException;
+import jam.plot.ViewDelete;
 
 /**
  * Command to delete view.

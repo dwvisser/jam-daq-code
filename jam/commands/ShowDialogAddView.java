@@ -1,7 +1,7 @@
 package jam.commands;
 
-import jam.ViewNew;
 import jam.global.CommandListenerException;
+import jam.plot.ViewNew;
 
 /**
  * Command to add view.
