@@ -43,36 +43,26 @@ public class InitialHistograms{
         final int height=300;
         final int scale=height/100;
         /* Make a J. */
-        int y=15*scale;
-        for (int i =100;i< 150;i++) {
-            counts[i]=y;
-        }
-        y=10*scale;
-        for (int i =150;i< 225;i++) {
-            counts[i]=y;
-        }
-        y=100*scale;
-        for (int i =225;i< 300;i++) {
-            counts[i]=y;
-        }
+        int value=15*scale;
+        setRange(counts,100,50,value);
+        value=10*scale;
+        setRange(counts,150,75,value);
+        value=100*scale;
+        setRange(counts,225,75,value);
         /* Make an A. */
         int startCh=400;
         for (int i =startCh;i< startCh+50;i++) {
             counts[i]=2*(i-startCh)*scale;
         }
         startCh=450;
-        for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=y;
-        }
+        setRange(counts,startCh,50,value);
         startCh=500;
         for (int i =startCh;i< startCh+50;i++) {
             counts[i]=(100-2*(i-startCh))*scale;
         }
         /* Make a M. */
         startCh=650;
-        for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=y;
-        }
+        setRange(counts,startCh,50,value);
         startCh=700;
         for (int i =startCh;i< startCh+25;i++) {
             counts[i]=(100-2*(i-startCh))*scale;
@@ -82,80 +72,62 @@ public class InitialHistograms{
             counts[i]=(50+2*(i-startCh))*scale;
         }
         startCh=750;
-        for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=y;
-        }
+        setRange(counts,startCh,50,value);
         return counts;
     }
     
+    private void setRange(int [] array, int first, int numCh, int value){
+    	final int last=first+numCh;
+    	for (int i=first; i<last; i++){
+    		array[i]=value;
+    	}
+    }
+    
+    private void markChannel(int [][] counts, int chX, int chY){
+    	counts[chX][chY]=(int)Math.exp(1+chY/20.0);
+    }
+    
+    private void rectangles(int [][] counts){
+        final int [] xlow={20,40,50,100,170,220};
+        final int [] xhigh={40,70,70,140,190,240};
+        final int [] ylow={30,30,50,80,30,30};
+        final int [] yhigh={60,50,150,100,150,150};
+        /* J, some A, some M */
+        for (int index=0; index<xlow.length; index++){
+        	for (int i=xlow[index]; i<xhigh[index]; i++){
+        		for (int j=ylow[index]; j<yhigh[index]; j++){
+                    markChannel(counts,i,j);        			
+        		}
+        	}
+        }
+    }
+    
     private int [][] histNameJam2d(){
-        final int sizeX=260;
+       final int sizeX=260;
         final int sizeY=180;
         final int [][] counts2d = new int[sizeX][sizeY];
-        //Make a J
-        // increment x then y
-        for (int i =20;i< 40;i++) {
-            for (int j=30;j<60;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        for (int i =40;i< 70;i++) {
-            for (int j=30;j<50;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        for (int i =50;i<70;i++) {
-            for (int j=50;j<150;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        //Make a A
+        rectangles(counts2d);
+        /* Rest of A */
         int startCh=30;
-        //increment y then x
         for (int j=startCh;j<150;j++){
-            final int ch=(j-startCh)/10;
-            for (int i =90+ch;i<110+ch;i++) {
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
+            final int channel=(j-startCh)/10;
+            for (int i =90+channel;i<110+channel;i++) {
+                markChannel(counts2d,i,j);
+            }
+            for (int i =130-channel;i<150-channel;i++) {
+                markChannel(counts2d,i,j);
             }
         }
-        startCh=30;
-        for (int j=startCh;j<150;j++){
-            final int ch=(j-startCh)/10;
-            for (int i =130-ch;i<150-ch;i++) {
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        for (int i =100;i<140;i++) {
-            for (int j=80;j<100;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        //Make a M
-        for (int i =170;i<190;i++) {
-            for (int j=30;j<150;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        //x then y
+        /* Rest of M */
         startCh=75;
-        int endCh=150;
+        final int endCh=150;
         for (int j=startCh;j<150;j++){
-            final int ch=(endCh-j)/5;
-            for (int i =180+ch;i<200+ch;i++) {
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
+            final int channel=(endCh-j)/5;
+            for (int i =180+channel;i<200+channel;i++) {
+                markChannel(counts2d,i,j);
             }
-        }
-        startCh=75;
-        endCh=150;
-        for (int j=startCh;j<150;j++){
-            final int ch=(endCh-j)/5;
-            for (int i =210-ch;i<230-ch;i++) {
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
-            }
-        }
-        for (int i =220;i<240;i++) {
-            for (int j=30;j<150;j++){
-                counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
+            for (int i =210-channel;i<230-channel;i++) {
+                markChannel(counts2d,i,j);
             }
         }
         return counts2d;
@@ -183,7 +155,7 @@ public class InitialHistograms{
             if ((i<=position+range/2)) {
                 counts[i]=i-position;
             } else  {
-                counts[i]=position+range-i;;
+                counts[i]=position+range-i;
             }
         }
         position=800;
