@@ -109,8 +109,11 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	protected final Polygon pointsGate = new Polygon();
 	boolean settingGate = false;
 
+	final Polygon mouseMoveClip = new Polygon();
+	protected boolean mouseMoved = false;
+
 	//Area stuff
-	protected Point areaPoint= new Point();
+	protected Point areaStartPoint= new Point();
 	
 	//are we display more than a histogram
 	protected boolean displayingGate = false;
@@ -204,8 +207,6 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 		}
 	}
 
-	final Polygon mouseMoveClip = new Polygon();
-	protected boolean mouseMoved = false;
 	protected void setMouseMoved(boolean mm) {
 		synchronized (this) {
 			mouseMoved = mm;
@@ -362,6 +363,8 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 			this.addMouseMotionListener(this);
 		} else {
 			this.removeMouseMotionListener(this);
+			//Remove any left over lines
+			repaint();
 		}							
 	}
 
@@ -733,6 +736,7 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 	 * method overriden for 1 and 2 d plots
 	 */
 	abstract void paintHistogram(Graphics g);
+
 	/**
 	 * method overriden for 1 and 2 d for painting fits
 	 */
@@ -943,18 +947,20 @@ public abstract class Plot extends JPanel implements MouseMotionListener, MouseL
 
 	/**
 	 * Not used.
-	 * 
-	 * @param e created when mouse exits the plot
-	 */
-	public void mouseExited(MouseEvent e) {
-	}
-
-	/**
-	 * Not used.
 	 *
 	 * @param e created when the mouse is released
 	 */
 	public void mouseReleased(MouseEvent e) {
 	}
+	/**
+	 * Undo last temporary line drawn.
+	 * 
+	 * @param e created when mouse exits the plot
+	 */	
+	public void mouseExited(MouseEvent e) {
+		setMouseMoved(false);
+		repaint();
+	}
+	
 	
 }

@@ -20,7 +20,13 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	private final Point lastGatePoint = new Point();
 
 	/* last pixel point mouse moved to */
-	private Point lastMovePoint = new Point();
+	private final Point lastMovePoint = new Point();
+
+	/** areaMark is a rectangle in channel space */
+	private final Rectangle areaMark = new Rectangle();
+
+	/** A rectangle in pixel space while marking area*/
+	private final Rectangle recMarking = new Rectangle();
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
@@ -42,42 +48,45 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	}
 
 	/**
-	 * Marking Area.
+	 * Start marking an area.
 	 * 
 	 * @param p1 starting data point
 	 */
 	public void markingArea(Point p1) {
-		//Copy 
-		areaPoint.x=p1.x;
-		areaPoint.y=p1.y;
-		lastMovePoint.x=p1.x;
-		lastMovePoint.y=p1.y;
+		//Copy points, don't construct new rectangles
+		areaStartPoint.x=p1.x;
+		areaStartPoint.y=p1.y;
+		//set initial values out of range so we
+		//know they are initial values
+		lastMovePoint.x=-1;
+		lastMovePoint.y=-1;
 	} 
-	
+	/**
+	 * Paint call while marking an area
+	 */
 	void paintMarkingArea(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
 		g.setColor(Color.GREEN);		
 		
-		final int xll = Math.min(lastMovePoint.x, areaPoint.x);
-		final int xul = Math.max(lastMovePoint.x, areaPoint.x);
-		final int yll = Math.min(lastMovePoint.y, areaPoint.y);
-		final int yul = Math.max(lastMovePoint.y, areaPoint.y);
-		final int width=xul-xll+1;
-		final int height=yul-yll+1;
-		//synchronized (areaMark) {
-		//	areaMark.setBounds(xll,yll,width,height);
-		//}
-		//final Rectangle clip=graph.get2dAreaMark(xll,xul,yll,yul);
-		//clip.add(clip.getMaxX() + 1,clip.getMaxY() + 1);
-		//repaint(clip);
-
-		g.draw( new Rectangle(xll, yll, width, height)); 
+		//FIXME KBS some of this should be probably be moved to PlotData.
+		Point areaPointView = new Point();
+		areaPointView=graph.toViewLin(areaStartPoint);
+		if (lastMovePoint.x<0) {
+			lastMovePoint.x=areaPointView.x;
+			lastMovePoint.y=areaPointView.y;
+		}											
+		final int xll = Math.min(lastMovePoint.x, areaPointView.x);
+		final int xul = Math.max(lastMovePoint.x, areaPointView.x);
+		final int yll = Math.min(lastMovePoint.y, areaPointView.y);
+		final int yul = Math.max(lastMovePoint.y, areaPointView.y);
+		final int width=xul-xll;
+		final int height=yul-yll;
+		recMarking.setBounds(xll, yll, width, height);
+		graph.markArea2dOutline(recMarking);
 		setMouseMoved(false);
 		
 	}
 	
-	/* areaMark is a rectangle in channel space */
-	private final Rectangle areaMark = new Rectangle();
 	
 	/**
 	 * Mark a rectangular area on the plot.
@@ -182,6 +191,24 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	void paintSetGate(Graphics g) {
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate2d(pointsGate);
+	}
+	/**
+	 * Called by mouse movement while setting a gate
+	 * @param g
+	 */	
+	void paintSettingGate(Graphics gc) {
+		Graphics2D g=(Graphics2D)gc;
+		g.setColor(Color.BLACK);
+		g.setComposite(AlphaComposite.getInstance(
+		AlphaComposite.SRC_OVER,0.8f));
+		g.drawLine(
+			lastGatePoint.x,
+			lastGatePoint.y,
+			lastMovePoint.x,
+			lastMovePoint.y);
+		setMouseMoved(false);
+		mouseMoveClip.reset();
+		
 	}
 
 	private void setLastGatePoint(Point p) {
@@ -418,8 +445,9 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	}
 
 	/**
-	 * Mouse moved in drawing gate mode so
-	 * undo last line draw, and draw a new line.
+	 * Mouse moved so update drawing gate or marking area 
+	 * as appropriate 
+	 * For gate undo last line draw, and draw a new line.
 	 *
 	 * @param me created when the mouse pointer moves while in the 
 	 * plot
@@ -468,77 +496,20 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 		r.add(r.getX() - 1, r.getY() - 1);
 		return r;
 	}
-
+	/**
+	 * Paint called if mouse moved is enabled
+	 */
 	void paintMouseMoved(Graphics gc) {
-		Graphics2D g=(Graphics2D)gc;
-		g.setColor(Color.BLACK);
-		g.setComposite(AlphaComposite.getInstance(
-		AlphaComposite.SRC_OVER,0.8f));
+
 		//Setting gate
 		if (settingGate) {
-			g.drawLine(
-				lastGatePoint.x,
-				lastGatePoint.y,
-				lastMovePoint.x,
-				lastMovePoint.y);
-			setMouseMoved(false);
-			mouseMoveClip.reset();
-			
+			paintSettingGate(gc);			
 		} else if (markingArea) {
 			paintMarkingArea( gc);
 			
 		}		
 	}
 
-	/**
-	 * Not used.
-	 * 
-	 * @param me created when the mouse is dragged across the plot
-	 * with the button down
-	 */
-	public void mouseDragged(MouseEvent me) {
-	}
 
-	/**
-	 * Not used.
-	 * 
-	 * @param me created when the mouse button is pressed on the plot
-	 */
-	public void mousePressed(MouseEvent me) {
-		
-	}
 
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse is clicked on the plot
-	 */
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse pointer enters the plot
-	 */
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	/**
-	 * Undo last temporary line drawn.
-	 * 
-	 * @param e created when mouse exits the plot
-	 */
-	public void mouseExited(MouseEvent e) {
-		setMouseMoved(false);
-		repaint();
-	}
-
-	/**
-	 * Not used.
-	 *
-	 * @param e created when the mouse is released
-	 */
-	public void mouseReleased(MouseEvent e) {
-	}
 }

@@ -1037,7 +1037,36 @@ class PlotGraphics implements PlotGraphicsLayout {
 			g.drawLine(x1, viewBottom, x1, viewTop);
 		}
 	}
+	/**
+	 * 
+	 *
+	 */
+	public void markArea2dOutline(Rectangle rec){
+		clipPlot();		
+		g.draw(rec);
+	}
+	/*FIXME need to decide what is passed in  	
+	public void markArea2dOutline(Point p1, Point p2){
 
+		
+		int x1=toViewHorzLin(p1.x);
+		int y1=toViewHorzLin(p1.y);
+		int x2=toViewHorzLin(p2.x);
+		int y2=toViewHorzLin(p2.y);
+				
+		final int xll = Math.min(x1, x2);
+		final int xul = Math.max(x1, x2);
+		final int yll = Math.min(y1, y2);
+		final int yul = Math.max(y1, y2);
+		final int width=xul-xll;
+		final int height=yul-yll;
+		
+		//recMarking.setBounds(xll, yll, width, height);
+		
+		clipPlot();		
+		g.draw(new Rectange(xll, yll, width, height));	
+	}
+	*/
 	/**
 	 * Setting a 2d Gate
 	 *

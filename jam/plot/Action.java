@@ -481,9 +481,12 @@ public class Action
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
+			currentPlot.setMarkingArea(true);
+			currentPlot.markingArea(cursor);
 			addClick(cursor);
 			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
+			currentPlot.setMarkingArea(false);
 			textOut.messageOut(getCoordString(cursor), MessageHandler.END);
 			currentPlot.expand(getClick(0), cursor);
 			if (autoOnExpand) {
@@ -635,7 +638,7 @@ public class Action
 		} else if (clicks.size() == 0) {
 			addClick(cursor);
 			currentPlot.setMarkingArea(true);
-			currentPlot.markingArea(pixel);
+			currentPlot.markingArea(cursor);
 			currentPlot.markChannel(cursor);
 			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
@@ -762,6 +765,8 @@ public class Action
 			}
 		} else if (nclicks == 4) {
 			//************ First Region Marker *********************************
+			currentPlot.setMarkingArea(true);
+			currentPlot.markingArea(cursor);
 			addClick(cursor);
 			final Point p = cursor;
 			currentPlot.markChannel(p);
@@ -777,6 +782,7 @@ public class Action
 			}
 		} else if (nclicks == 5) {
 			//************ Second Region Marker *********************************
+			currentPlot.setMarkingArea(false);
 			addClick(cursor);
 			final Point p1 = getClick(4);
 			final Point p2 = cursor;

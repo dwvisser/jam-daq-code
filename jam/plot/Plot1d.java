@@ -147,7 +147,7 @@ class Plot1d extends Plot {
 	 * @param p1 starting data point
 	 */
 	public void markingArea(Point p1) {
-		areaPoint=p1;
+		areaStartPoint=p1;
 	}
 	
 	void paintMarkingArea(Graphics g) {
