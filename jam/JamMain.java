@@ -270,7 +270,8 @@ public class JamMain extends JFrame {
 	/**
 	 * @return the current sort mode.
 	 *
-	 * @see #setSortMode()
+	 * @see #setSortMode(int)
+	 * @see #setSortModeFile(String)
 	 */
 	public int getSortMode() {
 		return sortMode;
