@@ -47,10 +47,14 @@ public class BroadcastEvent {
     }
     
     static private boolean isValid(int command) {
+    	boolean rval=false;//default return value
         for (int i=POSSIBLE_CODES.length-1; i >= 0; i--) {
-            if (command == POSSIBLE_CODES[i]) return true;
+            if (command == POSSIBLE_CODES[i]) {
+            	rval = true;
+            	break;
+            }
         }
-        return false;
+        return rval;
     }
     
     /**
