@@ -1,5 +1,4 @@
 package jam;
-import jam.data.DataException;
 import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
 import jam.global.Broadcaster;
@@ -140,11 +139,7 @@ public final class JamMain extends JFrame {
 				showExitDialog();
 			}
 		});
-		try { //create first histogams
-			new InitialHistograms();
-		} catch (DataException de) {
-			console.errorOutln(de.getMessage());
-		}
+		new InitialHistograms();
 		DataControl.setupAll(); //setup jam.data.control dialog boxes
 		try { //setting no sort does not throw an exception
 			setSortMode(NO_SORT);
