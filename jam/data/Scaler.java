@@ -138,7 +138,7 @@ public class Scaler implements Serializable  {
      *
      * @return the value of this scaler
      */
-    public int getValue(){
+    public synchronized int getValue(){
         return value;
     }
 
@@ -147,7 +147,7 @@ public class Scaler implements Serializable  {
      *
      * @param valueIn the new value for this scaler
      */
-    public  void setValue(int valueIn){
+    public synchronized void setValue(int valueIn){
         value=valueIn;
     }
 }
