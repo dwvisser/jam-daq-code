@@ -2,27 +2,30 @@
  */
 package jam.global;
 import java.util.Date;
+
 /**
  * Run information, including run number, title, etc.
  *
  * @author Ken Swartz
  */
-
 public  class RunInfo {
     /**
-     *
+     * Experiment name.
      */
      public static String experimentName;
+     
     /**
-     * Run number
+     * Run number.
      */
     public static int runNumber;
+    
     /**
-     * Run Title
+     * Run Title.
      */
     public static String runTitle;
+    
     /**
-     * Run Title
+     * Run Title.
      */    
     public static Date runStartTime;
 
@@ -35,19 +38,14 @@ public  class RunInfo {
     public static int runEventSize;    
     
     public static int runRecordLength;
+    
     /**
      * Run State
      */
     public static boolean runState;
+    
     /**
      * Online  (true) or offline (false)
      */
-    public static boolean online;
-    
-    /**
-     * Constructor
-     */
-    public RunInfo(){
-    }
-    
+    public static boolean online;    
 }
