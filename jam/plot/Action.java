@@ -736,9 +736,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 
 	/**
-	 * Calculate the area and centroid for a region maybe should copy inquire
-	 * methods to this class
-	 */
+     * Calculate the area and centroid for a region. Maybe we should copy
+     * inquire methods to this class?
+     */
 	private void areaCent() {
 		final PlotContainer currentPlot = display.getPlot();
 		if (!commandPresent) {
