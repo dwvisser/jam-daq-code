@@ -13,21 +13,17 @@ import java.io.Serializable;
 
 public class Scaler implements Serializable  {
 
-
-
-    public static Hashtable scalerTable=new Hashtable(11);
-    public static List scalerList=new Vector(11);
+    private static final Map scalerTable=Collections.synchronizedMap(new HashMap());
+    private static final List scalerList=Collections.synchronizedList(new ArrayList());
+    
     /**
      * Limit on name length.
      */
     public final static int NAME_LENGTH = 16;
 
-
-    private String name;	//name of scaler
-
-    private int number;		//number in list
+    private final String name;	//name of scaler
+    private final int number;		//number in list
     private int value;		//value of scaler
-
 
     /**
      * Creates a new scaler with an assigned name and number.
@@ -64,7 +60,7 @@ public class Scaler implements Serializable  {
      * @return the list of all scalers
      */
     public static List getScalerList(){
-        return scalerList;
+        return Collections.unmodifiableList(scalerList);
     }
 
     /**

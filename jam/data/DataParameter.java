@@ -17,15 +17,15 @@ import jam.util.*;
 
 public class DataParameter {
 
-	static Hashtable parameterTable = new Hashtable(11);
-	static List parameterList = new Vector(11);
+	private static final Map parameterTable = Collections.synchronizedMap(new HashMap());
+	private static final List parameterList = Collections.synchronizedList(new ArrayList());
 
 	/**
 	 * Limit on name length.
 	 */
 	public final static int NAME_LENGTH = 16;
 
-	private String name; //parameter name
+	private final String name; //parameter name
 	private double value; //parameter value
 
 	/**
@@ -70,7 +70,7 @@ public class DataParameter {
 	 * @return the list of all currently defined parameters.
 	 */
 	public static List getParameterList() {
-		return parameterList;
+		return Collections.unmodifiableList(parameterList);
 	}
 
 	/**
