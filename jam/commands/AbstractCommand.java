@@ -85,7 +85,7 @@ public abstract class AbstractCommand implements Commandable {
 	 * 
 	 * @param cmdParams command parameters
 	 */
-	public abstract	void execute(Object [] cmdParams);
+	public abstract	void execute(Object [] cmdParams) throws CommandException;
 		
 	
 	/**
@@ -93,5 +93,5 @@ public abstract class AbstractCommand implements Commandable {
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
-	public abstract	void executeParse(String [] cmdTokens);			
+	public abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;			
 }
