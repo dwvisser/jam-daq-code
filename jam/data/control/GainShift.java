@@ -393,10 +393,10 @@ Observer {
         }
         hto.setErrors(errOut);
 
-        //messageHandler.messageOutln("GainShift "+hfrom.getName()+" to "+ name);
         messageHandler.messageOutln("Initial gain: "+format(a1)+" + "+format(b1)+" x ch; Final gain: "+
         format(a2)+" + "+format(b2) + " x ch");
     }
+    
     /**
      * get the coeff. from the text fields
      */
