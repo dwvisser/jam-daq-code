@@ -139,7 +139,7 @@ public interface CommandNames {
 	String HELP_LICENSE="helplicense";
 
 	/** User guide */
-	String USER_GUIDE="userguide";
+	String USER_GUIDE="helpuserguide";
 	
 	/** Start data acqisition */
 	String START="start";
