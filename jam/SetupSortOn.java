@@ -402,7 +402,7 @@ class SetupSortOn implements ActionListener, ItemListener {
                 //lock setup so fields cant be edited
                 if(jamMain.canSetSortMode()){
                     loadNames();
-                    if(clog.isSelected()==true) {//if needed start logging to file
+                    if(clog.isSelected()) {//if needed start logging to file
                         logFile=JamProperties.getProperty(JamProperties.LOG_PATH)+File.separator+experimentName;
                         logFile=jamConsole.setLogFileName( logFile );
                         jamConsole.messageOutln("Logging to file: "+logFile);
@@ -455,7 +455,7 @@ class SetupSortOn implements ActionListener, ItemListener {
     public void itemStateChanged(ItemEvent ie){
         try {
             if (ie.getItemSelectable()==checkLock) {
-                if(checkLock.isSelected()==false) {
+                if(!checkLock.isSelected()) {
                     //kill daemons, clear data areas
                     resetAcq();
                     //unlock sort mode
