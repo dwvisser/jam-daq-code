@@ -379,7 +379,11 @@ class SetupSortOn implements ActionListener, ItemListener {
         try {
             if (command=="bsort") {
                 sortFile=getSortFile();
-                textSortFile.setText(sortDirectory+sortFile);
+                //textSortFile.setText(sortDirectory+sortFile);
+                if (sortFile.endsWith(".class")) {
+                	sortFile = sortFile.substring(0,sortFile.lastIndexOf(".class"));
+                }
+                textSortFile.setText("sort."+sortFile);
             } else if (command=="blog") {
                 String logDirectory=getPathLog();
                 textPathLog.setText(logDirectory);

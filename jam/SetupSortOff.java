@@ -251,7 +251,10 @@ class SetupSortOff  implements ActionListener, ItemListener {
         try {
             if (command=="bsort") {
                 sortFile=getSortFile();
-                textSortFile.setText(defaultSort+sortFile);
+                if (sortFile.endsWith(".class")) {
+                	sortFile = sortFile.substring(0,sortFile.lastIndexOf(".class"));
+                }
+                textSortFile.setText("sort."+sortFile);
             } else if (command=="binstream") {
                 //eventDirectory=getEventStream();
                 textEventFile.setText(getEventStream());//note side effect: eventDirectory gets set
