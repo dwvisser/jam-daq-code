@@ -19,6 +19,9 @@ public class PanelOKApplyCancelButtons {
 
 	private final Listener callback;
 	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
+	private final JButton bok = new JButton("OK");
+	private final JButton bapply = new JButton("Apply");
+	private final JButton bcancel = new JButton("Cancel");
 	
 	/**
 	 * Constructs a Swing component which has OK, Apply, and Cancel buttons.
@@ -29,21 +32,18 @@ public class PanelOKApplyCancelButtons {
 		callback=cb;
 		final JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
 		panel.add(pb);
-		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				callback.ok();
 			}
 		});
 		pb.add(bok);
-		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				callback.apply();
 			}
 		});
 		pb.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
 		bcancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				callback.cancel();
@@ -59,6 +59,18 @@ public class PanelOKApplyCancelButtons {
 	 */
 	public JComponent getComponent(){
 	    return panel;
+	}
+	
+	/**
+	 * Set the enabled state of the buttons.
+	 * @param ok the enable state of "OK" button
+	 * @param apply the enable state of "Apply" button
+	 * @param cancel the enable state of "Cancel" button
+	 */
+	public void setButtonsEnabled(boolean ok, boolean apply, boolean cancel){
+	    bok.setEnabled(ok);
+	    bapply.setEnabled(apply);
+	    bcancel.setEnabled(cancel);
 	}
 	
 	/**
