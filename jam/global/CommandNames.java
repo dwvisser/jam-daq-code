@@ -39,6 +39,12 @@ public interface CommandNames {
 	/** Show dialog for defining a new gate. */
 	String SHOW_NEW_GATE="gateshownew";
 	
+	/** Show dialog for defining a new gate. */
+	String SHOW_SET_GATE="gateshowset";
+	
+	/** Show dialog for defining a new gate. */
+	String SHOW_ADD_GATE="gateshowadd";
+
 	/** Exit Jam. */
 	String EXIT = "exit";
 	

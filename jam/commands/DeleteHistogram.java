@@ -4,6 +4,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -49,16 +50,15 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	}
 	
 	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final int command=be.getCommand();
-		if (command==BroadcastEvent.SORT_MODE_CHANGED){
-			enable();
-		}
+		enable();
 	}
 	
+	private final List histogramList=Histogram.getHistogramList();
+
 	protected final void enable() {
 		final SortMode mode=status.getSortMode();
-		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
+		setEnabled((!histogramList.isEmpty()) && 
+		(mode==SortMode.FILE || mode==SortMode.NO_SORT));
 	}
 
 }
