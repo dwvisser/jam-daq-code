@@ -9,25 +9,46 @@ package jam.global;
  */
 public interface CommandNames {
 
-	/** clear all data */
-	public static final String NEWCLEAR ="clear";
-	
 	/** Open a hdf file */
-	public static final String OPEN_HDF = "open";
+	String OPEN_HDF = "open";
 	
 	/** Reload hdf file */
-	public static final String RELOAD_HDF = "reload";
+	String RELOAD_HDF = "reload";
 
 	/** Add hdf file */
-	public static final String ADD_HDF = "addfile";
+	String ADD_HDF = "addfile";
 
 	/** Save to hdf file */
-	public static final String SAVE_HDF = "save";
+	String SAVE_HDF = "save";
 	
 	/** Save as to a hdf */ 
-	public static final String SAVE_AS_HDF = "saveas";	
+	String SAVE_AS_HDF = "saveas";	
 	
 	/** Open selected histograms in hdf */ 
-	public static final String OPEN_SELECTED = "opensel";	
+	String OPEN_SELECTED = "opensel";	
 
+	/** Show dialog for defining a new histogram. */
+	String SHOW_NEW_HIST="shownewhist";
+	
+	/** Exit Jam. */
+	String EXIT = "exit";
+	
+	/** Erase the data in memory */
+	String NEW = "new";
+	
+	/** Show the parameters dialog. */
+	String PARAMETERS="parameters";
+	
+	/** Show the scaler values. */
+	String DISPLAY_SCALERS="displayscalers";
+	
+	/** Show the dialog for zeroing scalers. */
+	String SHOW_ZERO_SCALERS="showzeroscalers";
+	
+	/** Read or zero scalers. */
+	String SCALERS="scalers";
+	
+	/** Export the displayed histogram as a text file. */
+	String EXPORT_TEXT="exporttext";		
+	
 }
