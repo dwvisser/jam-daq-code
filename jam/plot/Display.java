@@ -63,14 +63,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	private boolean isScrolling;
 	/** show axis lables */
 	private boolean isAxisLabels;
-	/** The number of plots */
-	private int numberPlots;
+
 	/** Tool bar with plot controls (zoom...) */
 	private final Toolbar toolbar;
 	
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	
 	private final JamStatus status =JamStatus.instance();
+	
 	/**
 	 * Constructor called by all constructors
 	 * 
@@ -125,12 +125,11 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	/**
 	 * Set the view, tiled layout of plots
 	 * 
-	 * @param nPlotrows	number of rows
-	 * @param nPlotcolumns
+	 * @param viewIn the view to use now
 	 */
 	public void setView(View viewIn){
 		currentView=viewIn;
-		numberPlots=currentView.getNumberHists();
+		final int numberPlots=currentView.getNumberHists();
 		plotGridPanelLayout.setRows(currentView.getRows());
 		plotGridPanelLayout.setColumns(currentView.getColumns());
 		plotGridPanel.setLayout(plotGridPanelLayout);		
@@ -162,19 +161,15 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	}
 
 	/**
-	 * Update the layoug, show axis and title
-	 * or not 
-	 *
+	 * Update the layout, show axis and title
+	 * or not.
 	 */
 	private void updateLayout(){
-		
-		Plot plot;
-		int plotLayout;
-		int i;
-		boolean scrollTemp;
-		
-		//Single plot aways has axis showing
+		final int numberPlots=currentView.getNumberHists();
+		final int plotLayout;
+		final boolean scrollTemp;
 		if (numberPlots==1) {
+			/* Single plot aways has axis showing */
 			if (isAxisLabels) {
 				plotLayout=Plot.LAYOUT_TYPE_LABELS;
 			}else {
@@ -185,8 +180,8 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			plotLayout=Plot.LAYOUT_TYPE_NO_LABELS_BORDER;
 			scrollTemp=isScrolling;
 		}
-		for (i=0;i<numberPlots;i++){
-			plot =(Plot)(plotList.get(i));
+		for (int i=0;i<numberPlots;i++){
+			final Plot plot =(Plot)(plotList.get(i));
 			plot.setLayoutType(plotLayout);		
 			plot.enableScrolling(scrollTemp);
 		}
