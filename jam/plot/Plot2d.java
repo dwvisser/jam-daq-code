@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
+import java.util.prefs.PreferenceChangeEvent;
 
 /**
  * Class to plot a 2-dimensional histogram.
@@ -28,6 +29,8 @@ class Plot2d extends Plot {
 
 	/** areaMark is a rectangle in channel space */
 	private final Rectangle areaMark = new Rectangle();
+	
+	private boolean smoothColorScale=true;
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
@@ -36,8 +39,26 @@ class Plot2d extends Plot {
 	 */
 	Plot2d(Action a) {
 		super(a);
+		setSmoothColorScale(prefs.getBoolean(SMOOTH_COLOR_SCALE,true));
 	}
 	
+	public void preferenceChange(PreferenceChangeEvent pce){
+		super.preferenceChange(pce);
+		final String key=pce.getKey();
+		if (key.equals(SMOOTH_COLOR_SCALE)){
+			setSmoothColorScale(Boolean.valueOf(pce.getNewValue()).booleanValue());
+		} 
+		repaint();
+	}
+	
+	private synchronized void setSmoothColorScale(boolean bool){
+		smoothColorScale=bool;
+	}
+	
+	private synchronized boolean getSmoothColorScale(){
+		return smoothColorScale;
+	}
+
 	protected void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
 		final Iterator it=markedChannels.iterator();
@@ -300,7 +321,7 @@ class Plot2d extends Plot {
 		final int maxX = graph.toDataHorz((int) clipBounds.getMaxX());
 		final int minY = graph.toDataVert((int) clipBounds.getMaxY());
 		final int maxY = graph.toDataVert((int) clipBounds.getMinY());
-		if (JamProperties.getBooleanProperty(JamProperties.GRADIENT_SCALE)) {
+		if (getSmoothColorScale()) {
 			graph.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			g.setPaintMode();
 			g.setColor(PlotColorMap.foreground);
