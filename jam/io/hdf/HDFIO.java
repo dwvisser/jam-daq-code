@@ -268,6 +268,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     private void asyncWriteFile(File file, List hists, List gates, List scalers,
             List parameters) {
+    	
         final StringBuffer message = new StringBuffer();
 
         DataObject.clearAll();
@@ -399,6 +400,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     public void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List histNames) {
 
+    	uiMessage="";
+    	uiErrorMessage ="";
+
     	final SwingWorker worker = new SwingWorker() {
 
             public Object construct() {
@@ -408,6 +412,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
 
             //Runs on the event-dispatching thread.
             public void finished() {
+            	if (!uiErrorMessage.equals("")) {
+                    msgHandler.errorOutln(uiErrorMessage);
+            	} else {
+            		msgHandler.messageOutln(uiMessage);
+            	}
+            	
             	//FIXME KBS should move to someplace else or have callback
             	JamStatus STATUS=JamStatus.getSingletonInstance();            	
             	Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
@@ -423,16 +433,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
             }
         };
         worker.start();     	
-    	//Need to use worker 
-    	/*
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
-            	asyncReadFile(mode, infile, histNames);
-            }
-        }); 
-        thread.start();
-        */    	
-        //asyncReadFile(mode, infile, histNames);
     }
 
     /**
@@ -449,16 +449,18 @@ public final class HDFIO implements DataIO, JamHDFFields {
     public boolean asyncReadFile(FileOpenMode mode, File infile, List histNames) {
         boolean rval = true;
 
+        final StringBuffer message = new StringBuffer();
+        
         if (!HDFile.isHDFFile(infile)) {
-			//uiErrorMessage=infile + " is not a valid HDF File!";
-            msgHandler.errorOutln(infile + " is not a valid HDF File!");
+			uiErrorMessage=infile + " is not a valid HDF File!";
+            //msgHandler.errorOutln(infile + " is not a valid HDF File!");
             rval = false;
         }
         asyncMonitor.setup("Reading HDF file", "Reading Objects", 
 				STEPS_WRITE_PROGRESS+STEPS_CONVERT_PROGRESS);
         
         if (rval) {
-            final StringBuffer message = new StringBuffer();
+
             try {
                 if (mode == FileOpenMode.OPEN) {
                     message.append("Opened ").append(infile.getName()).append(
@@ -519,28 +521,35 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             .append(" parameters");
                 }
                 message.append(')');
-                msgHandler.messageOutln(message.toString());
-                inHDF.close();
-                synchronized (this) {
-                    /* destroys reference to HDFile (and its DataObject's) */
-                    inHDF = null;
-                }
+                //msgHandler.messageOutln(message.toString());
 
-                setLastValidFile(infile);
-            } catch (HDFException except) {
-                msgHandler.errorOutln(except.toString());
-                except.printStackTrace();
+            } catch (HDFException e) {
+            	uiErrorMessage ="Exception reading file '"
+                + infile.getName() + "': " + e.toString();            	
+                //msgHandler.errorOutln(e.toString());
                 rval = false;
-            } catch (IOException except) {
-                msgHandler.errorOutln(except.toString());
-                except.printStackTrace();
+            } catch (IOException e) {
+            	uiErrorMessage ="Exception reading file '"
+                    + infile.getName() + "': " + e.toString();            	
+                //msgHandler.errorOutln(e.toString());
                 rval = false;
+            } finally {
+            	try {
+            		inHDF.close();
+            	} catch (IOException except) {
+            		uiErrorMessage ="Closing file "+infile.getName();
+            		rval = false;
+            	}    	
+                 /* destroys reference to HDFile (and its DataObject's) */
+                 inHDF = null;
             }
 
             DataObject.clearAll();
-            System.gc();
             asyncMonitor.close();
+            System.gc();            
+            setLastValidFile(infile);
         }
+        uiMessage =message.toString();
         return rval;
     }
 
@@ -1097,14 +1106,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
         }
     }
 
-
-    private void outln(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                msgHandler.messageOutln(msg);
-            }
-        });
-    }
 
     /**
      * Class to hold histogram properties while we decide if we should load
