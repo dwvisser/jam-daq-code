@@ -20,15 +20,12 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
     static final int NUM_CHANNELS = NUM_V7X5_UNITS*32;
     static final int NUM_EVENTS_TO_STORE = 100;
     private BufferStatus internal_status = BufferStatus.FIFO_FILLING;
-    /*private int parameter;*/
     
     static final int STOP_PAD = 0x01DDDDDD;
     static final int END_PAD = 0x01EEEEEE;
     static final int BUFFER_PAD = 0x01FFFFFF;
     static final int SCALER_BLOCK = 0x01CCCCCC;
     static final int END_OF_BUFFER = 0x01bbbbbb;//at end of normal buffers
-    //Scaler blocks are simply 16*4 bytes long, containing the 16 scaler values
-    //read from the scaler unit at the time.
     int nscalerblock=0;	// for counting number of scaler blocks in the file
     
     private int[][] fifo=new int[NUM_EVENTS_TO_STORE][NUM_CHANNELS];
@@ -47,8 +44,10 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
      */
     private Hashtable eventNumberTable=new Hashtable(NUM_EVENTS_TO_STORE);
     
-    //make sure to issue a setConsole() after using this constructor
-    //It is here to satisfy the requirements of Class.newInstance()
+    /**
+     * Make sure to issue a setConsole() after using this constructor.
+     * It is here to satisfy the requirements of Class.newInstance()
+     */
     public YaleCAEN_InputStream(){
         super();
         posPut=0;
@@ -89,9 +88,6 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         eventNumberTable.put(new Integer(eventNumber), new Integer(posPut));
         incrementPut();
         if (fifoFull()) internal_status=BufferStatus.FIFO_FULL;
-        /*System.out.println("Added event "+eventNumber+" to FIFO, "+
-        (NUM_EVENTS_TO_STORE-numEventsInFIFO())+" spaces left, internal status="+
-        internal_status+".");*/
     }
     
     private boolean fifoFull() {
@@ -142,28 +138,23 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         boolean writescaler=false;	// whether or not to write scaler values to console
         int [] tval =new int[32];	//temporary array for scaler values, up to a max of 32
         try {
-            //internal_status may also be in a "flush" mode in which case
-            //we skip this read loop and go straight to flushing out another
-            //event 
+            /* internal_status may also be in a "flush" mode in which case
+             * we skip this read loop and go straight to flushing out another event */ 
             while(internal_status==BufferStatus.FIFO_FILLING){
-            //this loop may finish if status changes to "fifo full" mode 
-            //when an event index gets added below
+            /* this loop may finish if status changes to "fifo full" mode 
+             * when an event index gets added below */
                 int header = dataInput.readInt();
                 if (isHeader(header)) {
-                    //ADC's & TDC's in slots 2-7
+                    /* ADC's & TDC's in slots 2-31 */
                     int slot = (header >>> 27) & 0x1f;
-                    //number of parameters in event in this slot's ADC/TDC
-                    //int numParameters = (header >>> 8) & 0x3f;
                     boolean keepGoing=true;
                     int paramIndex=0;
                     int numParameters=0;
                     while (keepGoing){                        
-                    //for (int i=0; i < numParameters; i++) {
                         parameter = dataInput.readInt();
                         if (isParameter(parameter)) {
                             numParameters++;
                             int channel = (parameter >>> 16) & 0x3f;
-                            //ADC's & TDC's in slots 2-7
                             tempParams[paramIndex] = 32*(slot-2)+channel;
                             tempData[paramIndex] = parameter & 0xfff;
                             paramIndex++;
@@ -176,16 +167,15 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                             Integer.toHexString(parameter));
                         }
                     }
-                    //int endblock = dataInput.readInt();
-                    // If we really have end-of-block like we should, stick event
-                    // data in the appropriate space in our FIFO.
+                    /* If we really have end-of-block like we should, stick event
+                     * data in the appropriate space in our FIFO. */
                     if (isEndBlock(endblock)){
                         int eventNumber = endblock & 0xffffff;
                         if (!eventInFIFO(eventNumber)){//Event # not in FIFO, so need to add it.
                             addEventIndex(eventNumber);//can change internal state to FIFO_FULL
                         }
                         int arrayIndex = getEventIndex(eventNumber);
-                        //copy data in, item by item
+                        /* copy data in, item by item */
                         for (int i=0; i<numParameters; i++) {
                             fifo[arrayIndex][tempParams[i]]=tempData[i];
                         }
@@ -229,7 +219,7 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     rval=EventInputStatus.SCALER_VALUE;
                     internal_status=BufferStatus.SCALER;
                 } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon
-                    //no need to flush here
+                    /* no need to flush here */
                     rval=EventInputStatus.END_BUFFER;
                     internal_status=BufferStatus.PADDING;
                 } else if (header==BUFFER_PAD) {
@@ -242,16 +232,15 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     System.out.println("Scaler blocks in file ="+nscalerblock);
                     nscalerblock=0;
                 } else {
-                    //UNKNOWN WORD causes annoying beeps
+                    /* using IGNORE since UNKNOWN WORD causes annoying beeps */
                     rval = EventInputStatus.IGNORE;
-                    //rval=EventInputStatus.UNKNOWN_WORD;
                     internal_status=BufferStatus.PADDING;
                 }
             }// end of while loop
-            //We've dropped out of the while loop, which means either that 
-            // * the internal status is not FIFO_FILLING, or that
-            // * eventReady is set to true (i.e. encountered buffer pad or scaler)
-            //The first case is handled here, if it's true.
+            /* We've dropped out of the while loop, which means either that 
+             * the internal status is not FIFO_FILLING, or that
+             * eventReady is set to true (i.e. encountered buffer pad or scaler)
+             * The first case is handled here, if it's true. */
             if (inFlushState()) {//in one of the 2 flush states
                 if (!fifoEmpty()) {//FIFO not empty
                     getFirstEvent(data);
@@ -264,13 +253,13 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
                     }
                     internal_status=BufferStatus.FIFO_FILLING;
                 }
-            // The other possibility is that the FIFO is full and we need to 
-            // output an event.
+            /* The other possibility is that the FIFO is full and we need to 
+             * output an event. */
             } else if (internal_status==BufferStatus.FIFO_FULL) {
                 getFirstEvent(data);//routine retrieves data and updates tracking variables
                 rval = EventInputStatus.EVENT;
             } else {//internal status=SCALER or PADDING
-                //set to FIFO_FILLING so next call will enter loop
+                /* set to FIFO_FILLING so next call will enter loop */
                 internal_status=BufferStatus.FIFO_FILLING;
             }
         } catch (EOFException eofe) {// we got to the end of a file or stream
@@ -285,30 +274,32 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
             rval=EventInputStatus.UNKNOWN_WORD;
             throw new EventException(getClass().getName()+".readEvent() parameter = "+parameter+" Exception: "+e.toString());
         }
-        //System.out.println(getClass().getName()+".readEvent() Returning status="+rval);
         return rval ;
     }
     
-	static private final int typeMask   = 0x7000000;
-	static private final int paramCompare=0x0000000;
-    /* Checks whether the word type is for an event data word */
+	static private final int TYPE_MASK   = 0x7000000;
+	static private final int PARAM_COMPARE=0x0000000;
+    /**
+     * Checks whether the word type is for an event data word 
+     */
     private boolean isParameter(int data){
-        //return 0==((data>>>24)&0x7);
-        return (data & typeMask) == paramCompare;
+        return (data & TYPE_MASK) == PARAM_COMPARE;
     }
     
-	static private final int headerCompare = 0x2000000;
-    /* Checks whether the word typ is for an event header */
+	static private final int HEADER_COMPARE = 0x2000000;
+    /**
+     * Checks whether the word type is for an event header.
+     */
     private boolean isHeader(int data){
-        //return 2==((data>>>24)&0x7);
-        return (data & typeMask) == headerCompare;
+        return (data & TYPE_MASK) == HEADER_COMPARE;
     }
     
-	static private final int endCompare = 0x4000000;
-    /* Checks whether the word type is for an event end-of-block */
+	static private final int END_COMPARE = 0x4000000;
+    /**
+     * Checks whether the word type is for an event end-of-block 
+     */
     private boolean isEndBlock(int data){
-        //return 4==((data>>>24)&0x7);
-        return (data & typeMask) == endCompare;
+        return (data & TYPE_MASK) == END_COMPARE;
     }
     
     /**
@@ -363,12 +354,11 @@ public class YaleCAEN_InputStream extends EventInputStream implements L002Parame
         }
     }
     
-    final short endRun = (short)(END_PAD & 0xffff);
+    private static final short ENDRUN = (short)(END_PAD & 0xffff);
     /**
-     * Check for end of run word
+     * Check for end-of-run word.
      */
     public boolean isEndRun(short dataWord){
-		//final short endRun = (short)(END_PAD & 0xffff);
-		return (endRun==dataWord);
+		return (ENDRUN==dataWord);
     }
 }
