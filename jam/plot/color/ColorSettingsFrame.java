@@ -17,8 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.DecimalFormat;
-import java.text.FieldPosition;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -34,34 +32,41 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class ColorSettingsFrame extends JDialog implements ItemListener,
-		ChangeListener,ColorPrefs {
+public class ColorSettingsFrame extends JDialog implements ChangeListener,
+		ColorPrefs {
 
-	JComboBox colorSchemeComboBox;
+	private JComboBox colorSchemeComboBox;
 
-	RainbowPanel elementVizRainbowPanel;
+	private final RainbowPanel elementVizRainbowPanel=new RainbowPanel();
 
-	JPanel colorPanel, buttonPanel, sliderPanel;
+	private JPanel colorPanel, buttonPanel, sliderPanel;
 
-	JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider, aBSlider;
+	private JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
+			aBSlider;
 
-	JTextField x0RField, x0GField, x0BField, aRField, aGField, aBField;
+	private JTextField x0RField, x0GField, x0BField, aRField, aGField, aBField;
 
 	private static final double log10 = 1.0 / Math.log(10);//0.434294482;
 
 	static private final ColorSettingsFrame csf = new ColorSettingsFrame();
-	
-	static public ColorSettingsFrame getSingletonInstance(){
+
+	static public ColorSettingsFrame getSingletonInstance() {
 		return csf;
 	}
 
 	private ColorSettingsFrame() {
-		final int x0R = colorPrefs.getInt(ColorPrefs.X0R,80);
-		final int x0G = colorPrefs.getInt(ColorPrefs.X0G,60);
-		final int x0B = colorPrefs.getInt(ColorPrefs.X0B,20);
-		final int aR = colorPrefs.getInt(ColorPrefs.ARED,50);
-		final int aG = colorPrefs.getInt(ColorPrefs.AGREEN,40);
-		final int aB = colorPrefs.getInt(ColorPrefs.ABLUE,30);
+		final int x0R = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.X0R, .80));
+		final int x0G = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.X0G, .60));
+		final int x0B = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.X0B, .20));
+		final int aR = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.ARED, .50));
+		final int aG = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.AGREEN, .40));
+		final int aB = (int) Math.round(100 * colorPrefs.getDouble(
+				ColorPrefs.ABLUE, .30));
 		setTitle("Color Scale Settings");
 		setSize(825, 370);
 		final Container c = getContentPane();
@@ -70,32 +75,24 @@ public class ColorSettingsFrame extends JDialog implements ItemListener,
 		AbstractButton defaultButton = new JButton("Default Settings");
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				x0RSlider.setValue(80);
-				x0GSlider.setValue(60);
-				x0BSlider.setValue(20);
-				aRSlider.setValue(50);
-				aGSlider.setValue(40);
-				aBSlider.setValue(30);
-				colorSchemeComboBox.removeItemListener(ColorSettingsFrame.this);
 				colorSchemeComboBox.setSelectedItem("Rainbow");
-				colorSchemeComboBox.addItemListener(ColorSettingsFrame.this);
 			}
 		});
 		AbstractButton applyButton = new JButton("Apply Settings");
 		applyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 final double x0R =x0RSlider .getValue() / 100.0;
-				 final double x0G = x0GSlider .getValue() / 100.0;
-				 final double x0B =x0BSlider .getValue() / 100.0;
-				 final double aR =aRSlider .getValue() / 100.0;
-				 final double aG =aGSlider .getValue() / 100.0;
-				 final double aB = aBSlider .getValue() / 100.0;
-				 colorPrefs.putDouble(ColorPrefs.ABLUE,aB);
-				 colorPrefs.putDouble(ColorPrefs.AGREEN,aG);
-				 colorPrefs.putDouble(ColorPrefs.ARED,aR);
-				 colorPrefs.putDouble(ColorPrefs.X0B,x0B);
-				 colorPrefs.putDouble(ColorPrefs.X0G,x0G);
-				 colorPrefs.putDouble(ColorPrefs.X0R,x0R);
+				final double x0R = x0RSlider.getValue() / 100.0;
+				final double x0G = x0GSlider.getValue() / 100.0;
+				final double x0B = x0BSlider.getValue() / 100.0;
+				final double aR = aRSlider.getValue() / 100.0;
+				final double aG = aGSlider.getValue() / 100.0;
+				final double aB = aBSlider.getValue() / 100.0;
+				colorPrefs.putDouble(ColorPrefs.ABLUE, aB);
+				colorPrefs.putDouble(ColorPrefs.AGREEN, aG);
+				colorPrefs.putDouble(ColorPrefs.ARED, aR);
+				colorPrefs.putDouble(ColorPrefs.X0B, x0B);
+				colorPrefs.putDouble(ColorPrefs.X0G, x0G);
+				colorPrefs.putDouble(ColorPrefs.X0R, x0R);
 			}
 		});
 		x0RSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0R);
@@ -147,12 +144,62 @@ public class ColorSettingsFrame extends JDialog implements ItemListener,
 		final JComponent maxAbundLabel = new JLabel("Abundance max : ");
 		final JComponent colorSchemeLabel = new JLabel(
 				"<html>Choose a<p>color scheme :</html>");
+		final String current="Current";
+		final String rainbow="Rainbow";
 		colorSchemeComboBox = new JComboBox();
-		colorSchemeComboBox.addItemListener(this);
-		colorSchemeComboBox.addItem("Rainbow");
+		colorSchemeComboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				final String selection = (String) colorSchemeComboBox
+						.getSelectedItem();
+				if (selection.equals("Greyscale")) {
+					x0RSlider.setValue(100);
+					x0GSlider.setValue(100);
+					x0BSlider.setValue(100);
+					aRSlider.setValue(100);
+					aGSlider.setValue(100);
+					aBSlider.setValue(100);
+				} else if (selection.equals(rainbow)) {
+					x0RSlider.setValue(80);
+					x0GSlider.setValue(60);
+					x0BSlider.setValue(20);
+					aRSlider.setValue(50);
+					aGSlider.setValue(40);
+					aBSlider.setValue(30);
+				} else if (selection.equals("Purple Haze")) {
+					x0RSlider.setValue(100);
+					x0GSlider.setValue(0);
+					x0BSlider.setValue(100);
+					aRSlider.setValue(84);
+					aGSlider.setValue(0);
+					aBSlider.setValue(84);
+				} else {//current
+					final int x0R = (int) Math.round(100 * colorPrefs
+							.getDouble(ColorPrefs.X0R, .80));
+					final int x0G = (int) Math.round(100 * colorPrefs
+							.getDouble(ColorPrefs.X0G, .60));
+					final int x0B = (int) Math.round(100 * colorPrefs
+							.getDouble(ColorPrefs.X0B, .20));
+					final int aR = (int) Math.round(100 * colorPrefs.getDouble(
+							ColorPrefs.ARED, .50));
+					final int aG = (int) Math.round(100 * colorPrefs.getDouble(
+							ColorPrefs.AGREEN, .40));
+					final int aB = (int) Math.round(100 * colorPrefs.getDouble(
+							ColorPrefs.ABLUE, .30));
+					x0RSlider.setValue(x0R);
+					x0GSlider.setValue(x0G);
+					x0BSlider.setValue(x0B);
+					aRSlider.setValue(aR);
+					aGSlider.setValue(aG);
+					aBSlider.setValue(aB);
+				}
+			}
+		});
+		colorSchemeComboBox.addItem(current);
+		colorSchemeComboBox.addItem(rainbow);
 		colorSchemeComboBox.addItem("Purple Haze");
 		colorSchemeComboBox.addItem("Greyscale");
-		elementVizRainbowPanel = new RainbowPanel();
+		colorSchemeComboBox.setSelectedItem(rainbow);
+		colorSchemeComboBox.setSelectedItem(current);
 		final JScrollPane sp = new JScrollPane(elementVizRainbowPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -276,88 +323,6 @@ public class ColorSettingsFrame extends JDialog implements ItemListener,
 		gbc.gridwidth = 1;
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		validate();
-	}
-
-	NumberRange range = new NumberRange() {
-		public double getMinimum() {
-			return 1;
-		}
-
-		public double getMaximum() {
-			return 100;
-		}
-	};
-
-	public int getIntegerAbundValue(double abundance) {
-		double normValue = setLogScale(abundance, range.getMaximum(), range
-				.getMinimum(), getLogConstant());
-		return (int) Math.round(normValue * 1000);
-	}
-
-	public double setLogScale(double abundance, double max, double min, double C) {
-		if (abundance != 0.0) {
-			double normValue = C * log10 * Math.log(abundance) - C * log10
-					* Math.log(min);
-			return normValue;
-		} else {
-			double normValue = 0.0;
-			return normValue;
-		}
-	}
-
-	public double getLogConstant() {
-		return 1.0 / (log10 * Math.log(range.getMaximum() / range.getMinimum()));
-	}
-
-	public double getDoubleAbundValue(int sliderValue) {
-		final double normValue = ((double) sliderValue) / 1000.0;
-		final double constant = 1.0 / getLogConstant();
-		final double exponent = constant * normValue + log10
-				* Math.log(range.getMinimum());
-		return Math.pow(10, exponent);
-	}
-
-	public String getFormattedAbundance(double number) {
-		final DecimalFormat decimalFormat = new DecimalFormat("0.00000E00");
-		final FieldPosition fp = new FieldPosition(0);
-		String string = decimalFormat.format(number, new StringBuffer(), fp)
-				.toString();
-		if (!string.substring(8, 9).equals("-")) {
-			String[] tempArray = new String[2];
-			tempArray = string.split("E");
-			string = tempArray[0] + "E" + "+" + tempArray[1];
-		}
-		return string;
-	}
-
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getSource() == colorSchemeComboBox) {
-			if (((String) colorSchemeComboBox.getSelectedItem())
-					.equals("Greyscale")) {
-				x0RSlider.setValue(100);
-				x0GSlider.setValue(100);
-				x0BSlider.setValue(100);
-				aRSlider.setValue(100);
-				aGSlider.setValue(100);
-				aBSlider.setValue(100);
-			} else if (((String) colorSchemeComboBox.getSelectedItem())
-					.equals("Rainbow")) {
-				x0RSlider.setValue(80);
-				x0GSlider.setValue(60);
-				x0BSlider.setValue(20);
-				aRSlider.setValue(50);
-				aGSlider.setValue(40);
-				aBSlider.setValue(30);
-			} else if (((String) colorSchemeComboBox.getSelectedItem())
-					.equals("Purple Haze")) {
-				x0RSlider.setValue(100);
-				x0GSlider.setValue(0);
-				x0BSlider.setValue(100);
-				aRSlider.setValue(84);
-				aGSlider.setValue(0);
-				aBSlider.setValue(84);
-			}
-		}
 	}
 
 	public void stateChanged(ChangeEvent ce) {
