@@ -28,23 +28,22 @@ public class GateControlComboBoxModel extends AbstractListModel implements Combo
     }
 
     public Object getElementAt(int index){
+    	Object rval=NO_GATES;//default return value
         if (numGates()>0){
             if (index==0) {
-                return CHOOSE_A_GATE;
+                rval = CHOOSE_A_GATE;
             } else {
-                return Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
+                rval = Histogram.getHistogram(JamStatus.getCurrentHistogramName()).getGates()[index-1].getName();
             }
-        } else {
-            return NO_GATES;
-        }
+        } 
+        return rval;
     }
 
+	/**
+	 * Returns number of list elements in chooser.
+	 */
     public int getSize(){
-        if (numGates()>0){
-            return  numGates()+1;
-        } else {
-            return 1;
-        }
+		return numGates()+1;
     }
 
     public void setSelectedItem(Object anItem) {
@@ -61,13 +60,12 @@ public class GateControlComboBoxModel extends AbstractListModel implements Combo
     }
 
     private int numGates(){
-        //System.err.println("numGates(): \""+JamStatus.getCurrentHistogramName()+"\"");
+    	int rval=0;//default return value
         Histogram h=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
         if (h != null){
-            return h.getGates().length;
-        } else {
-            return 0;
-        }
+            rval = h.getGates().length;
+        } 
+        return rval;
     }
 
 }

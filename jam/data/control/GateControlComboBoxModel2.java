@@ -26,20 +26,20 @@ public class GateControlComboBoxModel2
 	}
 
 	public Object getElementAt(int index) {
+		Object rval = NO_GATES; //default return value
 		if (numGates() > 0) {
 			if (index==0) {
-				return this.CHOOSE_A_GATE;
+				rval = this.CHOOSE_A_GATE;
 			} else {
 				List list =
 					Gate.getGateList(
 					Histogram
 						.getHistogram(JamStatus.getCurrentHistogramName())
 						.getDimensionality());
-				return ((Gate) (list.get(index-1))).getName();
+				rval = ((Gate) (list.get(index-1))).getName();
 			}
-		} else {
-			return NO_GATES;
-		}
+		} 
+		return rval;
 	}
 
 	public int getSize() {
@@ -60,13 +60,13 @@ public class GateControlComboBoxModel2
 	}
 
 	private int numGates() {
+		int rval=0;//default return value
 		Histogram h =
 			Histogram.getHistogram(JamStatus.getCurrentHistogramName());
 		if (h != null) {
-			return Gate.getGateList(h.getDimensionality()).size();
-		} else {
-			return 0;
-		}
+			rval = Gate.getGateList(h.getDimensionality()).size();
+		} 
+		return rval;
 	}
 	
     /**
