@@ -73,8 +73,8 @@ public class Group {
     /** children scalers of group */
     private final List scalerList = new ArrayList();
     
-    /** Name of group */
-    private String name;
+    /** Origonal group name */
+    private String groupName;
     /** Name of file that group belongs to */
     private String fileName;
     /** Name of file and group canotated */
@@ -232,28 +232,26 @@ public class Group {
      * @param type
      *            the type of group
      */
-    public Group(String name, Type type, String fileName) {
+    public Group(String groupName, Type type, String fileName) {
 
         final StringUtilities stringUtil = StringUtilities.instance();
         
         String tempFullName="GROUP";
         
-        if (fileName!=null && name!=null) {
-        	tempFullName =fileName+"/"+name;
+        if (fileName!=null && groupName!=null) {
+        	tempFullName =fileName+"/"+groupName;
         }else if (fileName!=null) {
         	tempFullName =fileName;
-        }else if (name!=null) {
-        	tempFullName =name;
+        }else if (groupName!=null) {
+        	tempFullName =groupName;
         }
-		
-        
+		        
         String uniqueName= stringUtil.makeUniqueName(tempFullName, NAME_MAP.keySet());
         
         this.type = type;
-        this.name = name;
+        this.groupName = groupName;
         this.fileName=fileName;
         this.fullName =uniqueName;
-
         
         LIST.add(this);
         NAME_MAP.put(uniqueName, this);
@@ -267,24 +265,27 @@ public class Group {
     public void setName(String name) {
     	NAME_MAP.remove(this.getName());
     	NAME_MAP.put(name, this);
-    	this.name = name;
+    	this.fullName = name;
     }
     /**
      * @return the name of this group
      */
     public String getName() {
     	return fullName;
-    	/*
-		String tempFullName;
-    	if (tempFullName!=null) {
-    		tempFullName=fileName+"("+name+")";
-    	} else {
-    		tempFullName=name;
-    	}
-        return tempFullName;
-        */
     }
-
+    /**
+     * @return the group name part of the full name
+     */
+    public String getGroupName() {
+    	return groupName;
+    }
+    /**
+     * @return the file name part of this group
+     */
+    public String getFileName() {
+    	return fileName;
+    }
+    
     /**
      * @return the type of this group
      */
@@ -357,6 +358,6 @@ public class Group {
     }
     
     public String toString() {
-        return name;
+        return fullName;
     }
 }

@@ -2,6 +2,8 @@ package jam.io.hdf;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -33,6 +35,20 @@ public final class HistogramAttributes {
 	public static HistogramAttributes getHistogramAttribute(String fullName){
 		return (HistogramAttributes)FULL_NAMES.get(fullName);
 	}
+	/*
+	public static void filterList(List histogramFullNameList) {
+		Map mapFiltered = new HashMap();
+		Iterator nameIter = histogramFullNameList.iterator();
+		while(nameIter.hasNext()) {
+			String histFullName= (String)nameIter.next();
+			if (mapFullNames.containsKey(histFullName)) {
+				mapFiltered.put(histFullName, mapFullNames.get(histFullName) );
+			}
+		}
+		//Replace map with filtered map
+		mapFullNames =mapFiltered;
+	}
+	*/
 	
     private String groupName;
     

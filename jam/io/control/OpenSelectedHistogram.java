@@ -56,6 +56,8 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 	 * File to read histogram information from
 	 */
 	private File fileOpen;
+	
+    private List histAttributesList = new ArrayList();	
 
 	/** HDF file reader */
 	private final HDFIO hdfio;
@@ -155,7 +157,6 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 	 */
 	private boolean loadHistNames(File fileSelect) {	
 		boolean loadState;
-		HistogramAttributes.clear();
 		/* Read in histogram names attributes */	
 		try {
 			final List histAttr= hdfio.readHistogramAttributes(fileSelect);
@@ -181,6 +182,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 	private String loadHistograms() {
         final String rval;
         final Object[] selected = histList.getSelectedValues();
+        histAttributesList.clear();
         //No histograms selected
         if (selected.length == 0) {
             msgHandler.errorOutln("No histograms selected");
@@ -191,15 +193,19 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
             String histName0 = null;
             for (int i = 0; i < selected.length; i++) {
             	String histogramFullName = (String)selected[i];
-            	String histName = HistogramAttributes.getHistogramAttribute(histogramFullName).getName();
+            	HistogramAttributes histAttribute = HistogramAttributes.getHistogramAttribute(histogramFullName);
+            	histAttributesList.add(histAttribute);
+            	
+            	String histName = histAttribute.getName();
                 selectNames.add(histName);
+                
                 if (i == 0) {
                     histName0 = (String) selected[i];
                 }
             }
             /* Read in histograms */
             hdfio.setListener(this);
-            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, selectNames);
+            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, histAttributesList);
             rval = histName0;
         }
         return rval;

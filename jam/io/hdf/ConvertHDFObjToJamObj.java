@@ -130,20 +130,17 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             // loop begin
             while (temp.hasNext()) {
             	final VirtualGroup currHistGrp = (VirtualGroup) (temp.next());
-            	convertHist(group, currHistGrp, histNames, mode);
+            	convertHistogram(group, currHistGrp, histNames, mode);
             }
-            //after loop
+            //after loop 
         }
         return numHists;
     }
     
     
-    Object  convertHist(Object groupOrName, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    Histogram  convertHistogram(Group group, VirtualGroup histGroup,  List histAttributes, FileOpenMode mode) throws HDFException {
     	
-    	Object retValue  =null;
-    	Group group;
-    	Histogram hist;
-    	HistogramAttributes histAttributes;    	
+    	Histogram hist=null;    	
         final NumericalDataGroup ndg;
         NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
         
@@ -169,13 +166,12 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             }
         } else {
         	if (mode == FileOpenMode.RELOAD) {
-        		group=(Group)groupOrName;
-        		retValue = group.getHistogram(STRING_UTIL.makeLength(name,
+        		hist = group.getHistogram(STRING_UTIL.makeLength(name,
                     Histogram.NAME_LENGTH));
         	} else {
-        		retValue=null; //no histogram data
+        		hist=null; //no histogram data
         	}
-        	return retValue; 
+        	return hist; 
         	//FIXME KBS rem no longer the case
         	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
             //        + ") in VirtualGroup.");
@@ -197,33 +193,106 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         final ScientificData sdErr = produceErrorData(ndgErr, histDim);
                     
         /* Given name list check that that the name is in the list. */
-        if (histNames == null || histNames.contains(name)) {
+        if (histAttributes == null || containsHistogramAttribute(group.getGroupName(), name, histAttributes)) {
             if (mode.isOpenMode()) {
-            	group=(Group)groupOrName;
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
             	Object histErrData =null;
                 if (sdErr != null) {
                 	histErrData = sdErr.getData1dD(inHDF, sizeX);
                 }
-                retValue=openHistogram(group, name, title, number, histData, histErrData);
+                hist=openHistogram(group, name, title, number, histData, histErrData);
             } else if (mode == FileOpenMode.RELOAD) {
-            	group=(Group)groupOrName;
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
-            	retValue=reloadHistogram(group, name, histData);
-            	group=(Group)groupOrName;
+            	hist=reloadHistogram(group, name, histData);
             } else if  (mode == FileOpenMode.ADD) {
-            	group=(Group)groupOrName;
+
             	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);                	
-            	retValue=addHistogram(group, name, histData);
-            } else if (mode==FileOpenMode.ATTRIBUTES) {
-            	String groupName=(String)groupOrName;
-            	retValue=attributesHistogram(groupName, name, title, number);
+            	hist=addHistogram(group, name, histData);
+            } else {
+            	hist=null;
             }
             	
         }
-            return retValue;
+            return hist;
     }
-    
+    private boolean containsHistogramAttribute(String groupName, String histName, List histogramAttributeList){
+    	boolean inList=false;
+    	
+    	Iterator histAttIter =histogramAttributeList.iterator();
+    	while(histAttIter.hasNext()) {
+    		HistogramAttributes histAttribute =( HistogramAttributes)histAttIter.next();
+    		if( groupName.equals(histAttribute.getGroupName()) &&
+    			histName.equals(histAttribute.getName()) ) {
+    			inList =true;
+    			break;
+    		}
+    	}
+    	
+    	return inList;
+    }
+    				
+    HistogramAttributes convertHistogamAttributes(String groupName, VirtualGroup histGroup,  List histNames, FileOpenMode mode) throws HDFException {
+    	
+    	Group group;
+
+    	HistogramAttributes histAttributes=null;    	
+        NumericalDataGroup ndg=null;
+        NumericalDataGroup ndgErr = null; //check ndgErr==null to determine if error bars exist
+        
+        final DataIDLabel templabel = DataIDLabel.withTagRef(histGroup.getTag(), histGroup.getRef());
+        final String name = templabel.getLabel();            
+        final DataIDAnnotation tempnote = DataIDAnnotation.withTagRef(histGroup.getTag(), histGroup.getRef());            
+        final String title = tempnote.getNote();
+        
+        /* only the "histograms" VG (only one element) */
+        final List tempVec = AbstractData.ofType(histGroup.getObjects(),
+                AbstractData.DFTAG_NDG);
+        final NumericalDataGroup[] dataGroups = getNumericalGroups(tempVec);
+        if (dataGroups.length == 1) {
+            ndg = dataGroups[0]; //only one NDG -- the data
+        } else if (dataGroups.length == 2) {
+            if (DataIDLabel.withTagRef(AbstractData.DFTAG_NDG,
+                    dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+                ndg = dataGroups[1];
+                ndgErr = dataGroups[0];
+            } else {
+                ndg = dataGroups[0];
+                ndgErr = dataGroups[1];
+            }
+        } else {
+        	histAttributes=null;
+        	//FIXME KBS rem no longer the case
+        	//throw new HDFException( "Invalid number of data groups (" + dataGroups.length
+            //        + ") in VirtualGroup.");
+        }
+        final ScientificData sciData = (ScientificData) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SD).get(0));
+        final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractData
+                .ofType(ndg.getObjects(), AbstractData.DFTAG_SDD).get(0));
+        final byte histNumType = sdd.getType();
+        sciData.setNumberType(histNumType);
+        final int histDim = sdd.getRank();
+        sciData.setRank(histDim);
+        final int sizeX = sdd.getSizeX();
+        final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
+        
+        final DataIDLabel numLabel =DataIDLabel.withTagRef(ndg.getTag(), ndg.getRef());
+        final int number = Integer.parseInt(numLabel.getLabel());            
+        
+        final ScientificData sdErr = produceErrorData(ndgErr, histDim);
+                    
+        /* Given name list check that that the name is in the list. */
+        if (histNames == null || histNames.contains(name)) {            	
+            if (mode==FileOpenMode.ATTRIBUTES) {
+            	histAttributes=attributesHistogram(groupName, name, title, number);
+            } else {
+            	histAttributes=null;
+            }
+            	
+        }
+        
+        return histAttributes;
+    }
     
     private ScientificData produceErrorData(NumericalDataGroup ndgErr, int histDim) {
         final boolean exists = ndgErr != null;
