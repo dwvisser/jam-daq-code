@@ -1,5 +1,5 @@
 package jam;
-import jam.commands.JamCmdManager;
+import jam.commands.CommandManager;
 import jam.data.Histogram;
 import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
@@ -24,19 +24,15 @@ import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
-import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.help.CSH;
-import javax.help.HelpSet;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
@@ -79,7 +75,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
-	final private JamCmdManager commands;
+	final private CommandManager commands;
 
 	/**
 	 * Define and display menu bar.
@@ -107,7 +103,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		super();
 		this.jamCommand=jamCommand;
 		//KBS commands=jamCommand.getCmdManager();
-		commands=JamCmdManager.getInstance();
+		commands=CommandManager.getInstance();
 		hdfio=jamCommand.getHDFIO();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		final int ctrl_mask;
@@ -454,10 +450,9 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		helpMenu.add(about);
 		about.setActionCommand("about");
 		about.addActionListener(jamCommand);
-		final JMenuItem userG = new JMenuItem("User Guide\u2026");
+		final JMenuItem userG = new JMenuItem(
+		commands.getAction(CommandNames.USER_GUIDE));
 		helpMenu.add(userG);
-		userG.setActionCommand("userguide");
-		userG.addActionListener(getUserGuideListener());
 		final JMenuItem license = new JMenuItem("License\u2026");
 		helpMenu.add(license);
 		license.setActionCommand("license");
@@ -506,7 +501,7 @@ public class MainMenuBar extends JMenuBar implements Observer {
 	 * @return an ActionListener cabable of displaying the User
 	 * Guide
 	 */
-	private ActionListener getUserGuideListener() {
+	/*private ActionListener getUserGuideListener() {
 		final HelpSet hs;
 		final String helpsetName = "help/jam.hs";
 		try {
@@ -519,15 +514,15 @@ public class MainMenuBar extends JMenuBar implements Observer {
 			return null;
 		}
 		return new CSH.DisplayHelpFromSource(hs.createHelpBroker());
-	}
+	}*/
 
-	private void showErrorMessage(String title, Exception e) {
+	/*private void showErrorMessage(String title, Exception e) {
 		JOptionPane.showMessageDialog(
 			this,
 			e.getMessage(),
 			title,
 			JOptionPane.ERROR_MESSAGE);
-	}
+	}*/
 	
 	void adjustHistogramItems(Histogram h){
 		final boolean oneDops;

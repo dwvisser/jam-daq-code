@@ -1,6 +1,6 @@
 package jam;
 import jam.commands.CommandException;
-import jam.commands.JamCmdManager;
+import jam.commands.CommandManager;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
 import jam.data.control.GainShift;
@@ -86,7 +86,7 @@ public class JamCommand
 
 	private final JamStatus status;
 
-	private JamCmdManager jamCmdMgr;
+	private CommandManager jamCmdMgr;
 	private RemoteAccess remoteAccess=null;
 	private boolean remote=false;
 
@@ -153,7 +153,7 @@ public class JamCommand
 		peakFindDialog = new PeakFindDialog(jamMain, display, console);
 		addObservers();
 		
-		jamCmdMgr = JamCmdManager.getInstance();
+		jamCmdMgr = CommandManager.getInstance();
 		jamCmdMgr.setMessageHandler(console); 
 		console.addCommandListener(jamCmdMgr);
 		console.addCommandListener(display);

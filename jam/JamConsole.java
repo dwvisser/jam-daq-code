@@ -1,5 +1,5 @@
 package jam;
-import jam.commands.JamCmdManager;
+import jam.commands.CommandManager;
 import jam.global.CommandListener;
 import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
@@ -552,7 +552,7 @@ public class JamConsole
 			if (!validListenerFound){
 				final StringBuffer sb=new StringBuffer("\"");
 				sb.append(cmd).append("\" is an invalid command. ");
-				final String [] offer=JamCmdManager.getInstance().getSimilarCommnands(cmd);
+				final String [] offer=CommandManager.getInstance().getSimilarCommnands(cmd);
 				if (offer.length>0){
 					sb.append("Maybe you meant ");
 					if (offer.length>1){

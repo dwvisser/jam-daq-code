@@ -22,10 +22,10 @@ import javax.swing.Action;
  *
  * @author Ken Swartz
  */
-public class JamCmdManager implements CommandListener, CommandNames {
+public class CommandManager implements CommandListener, CommandNames {
 
 	private MessageHandler msghdlr=null;
-	private static JamCmdManager _instance=null;
+	private static CommandManager _instance=null;
 	private static final Map cmdMap = Collections.synchronizedMap(new HashMap());
 	private static final Map instances=Collections.synchronizedMap(new HashMap());
 	private Commandable currentCommand;
@@ -58,23 +58,24 @@ public class JamCmdManager implements CommandListener, CommandNames {
 		cmdMap.put(IMPORT_XSYS, ImportXSYS.class);
 		cmdMap.put(IMPORT_BAN, ImportORNLban.class);
 		cmdMap.put(DELETE_HISTOGRAM, DeleteHistogram.class);
-		cmdMap.put(USER_GUIDE, ShowUserGuide.class);	}
+		cmdMap.put(USER_GUIDE, ShowUserGuide.class);	
+	}
 	
 
 	/**
 	 * Constructor private as singleton
 	 *
 	 */
-	private JamCmdManager() {
+	private CommandManager() {
 	}
 	
 	/**
 	 * Singleton accessor
 	 * @return
 	 */
-	public static JamCmdManager getInstance () {
+	public static CommandManager getInstance () {
 		if (_instance==null) {
-			_instance=new JamCmdManager();
+			_instance=new CommandManager();
 		}		
 		return _instance;
 	}

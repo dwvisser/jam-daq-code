@@ -1,6 +1,6 @@
 package jam.plot;
 import jam.JamConsole;
-import jam.commands.JamCmdManager;
+import jam.commands.CommandManager;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -1102,7 +1102,7 @@ class Action implements ActionListener, PlotMouseListener {
 		sb.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
 		sb.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
 		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Channel\t");
-		final String [] commands=JamCmdManager.getInstance().getAllCommands();	
+		final String [] commands=CommandManager.getInstance().getAllCommands();	
 		for (int i=0; i< commands.length; i++){
 			sb.append(commands[i]).append("\t");
 		}
