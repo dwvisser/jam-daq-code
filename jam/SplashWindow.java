@@ -33,7 +33,7 @@ class SplashWindow extends JWindow {
 			System.exit(0);
 		}
 
-		urlOSIGif = cl.getResource("jam/OSI.gif");
+		urlOSIGif = cl.getResource("jam/OSI.png");
 		if (urlOSIGif==null) {
 			JOptionPane.showMessageDialog(f, "Can't load resource: jam/OSI.gif");
 			System.exit(0);
