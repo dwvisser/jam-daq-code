@@ -78,13 +78,12 @@ public class ParseCommand implements CommandListener{
 			}else {				
 				action.doCommand(null, parameters);				
 			}
-			
-
 		} else{
 			accept = false;
 		}
 		return accept;
 	}
+	
 	/**
 	 * Convert the parameters to doubles.
 	 * 
@@ -105,8 +104,8 @@ public class ParseCommand implements CommandListener{
 			throw new NumberFormatException("Input parameter not a number.");
 		}
 		return parameters;
-
 	}
+	
 	/**
 	 * Accepts integer input and does a command if one is present.
 	 * 
