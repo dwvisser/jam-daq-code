@@ -13,12 +13,10 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -41,7 +39,7 @@ final class Plot1d extends AbstractPlot {
 	private List overlayCounts = Collections.synchronizedList(new ArrayList());
 	//private Map overlayCounts = Collections.synchronizedMap(new HashMap());
 
-	private final PlotColorMap colorMap=PlotColorMap.getSingletonInstance();
+	private final PlotColorMap colorMap=PlotColorMap.getInstance();
 
 	private static double sensitivity = 3;
 
@@ -522,23 +520,26 @@ final class Plot1d extends AbstractPlot {
 	 */
 	private Rectangle getClipBounds(Shape clipShape,
             boolean shapeInChannelCoords) {
-        final Rectangle r = clipShape.getBounds();
+        final Rectangle rval = clipShape.getBounds();
         if (shapeInChannelCoords) {//shape is in channel coordinates
             /* add one more plot channel around the edges */
             /* now do conversion */
-            r.setBounds(graph.getRectangleOutline1d(r.x - 2,
-                    (int) r.getMaxX() + 2));
+            rval.setBounds(graph.getRectangleOutline1d(rval.x - 2, (int) rval
+                    .getMaxX() + 2));
+        } else {
+            /*
+             * Shape is in view coordinates. Recursively call back with a
+             * polygon using channel coordinates.
+             */
+            final Polygon p = new Polygon();
+            final Bin c1 = graph.toData(rval.getLocation());
+            final Bin c2 = graph.toData(new Point(rval.x + rval.width, rval.y
+                    + rval.height));
+            p.addPoint(c1.getX(), c1.getY());
+            p.addPoint(c2.getX(), c2.getY());
+            rval.setBounds(getClipBounds(p, true));
         }
-        /*
-         * Shape is in view coordinates. Recursively call back with a polygon
-         * using channel coordinates.
-         */
-        final Polygon p = new Polygon();
-        final Bin c1 = graph.toData(r.getLocation());
-        final Bin c2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
-        p.addPoint(c1.getX(), c1.getY());
-        p.addPoint(c2.getX(), c2.getY());
-        return r;
+        return rval;
     }
 
 	/**
