@@ -205,7 +205,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
         /* Add to view */
         currentPlot.displayHistogram(hist);
         currentPlot.repaint();
-        currentView.setHistogram(getPlot().getNumber(), hist);
+        currentView.setHistogram(getPlotContainer().getNumber(), hist);
     }
 	
 	/**
@@ -213,7 +213,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @return histogram
 	 */
 	public Histogram getHistogram(){
-		return getPlot().getHistogram();
+		return getPlotContainer().getHistogram();
 	}
 	
 	/**
@@ -236,7 +236,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	public void overlayHistogram(int num) {
 		final Histogram hist = Histogram.getHistogram(num);
 		/* Check we can overlay. */
-		if (!(getPlot().getDimensionality()==1)) {
+		if (!(getPlotContainer().getDimensionality()==1)) {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
@@ -275,7 +275,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 */
 	public void plotSelected(Object selectedObject){
 		final PlotContainer selectedPlot =(PlotContainer)selectedObject;
-		if (selectedPlot!=getPlot()) {
+		if (selectedPlot!=getPlotContainer()) {
 			setPlot(selectedPlot);
 			final Histogram hist =selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
@@ -309,14 +309,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param pf page layout
 	 */
 	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
-		getPlot().setRenderForPrinting(rfp, pf);
+		getPlotContainer().setRenderForPrinting(rfp, pf);
 	}
 
 	/**
 	 * @return a printable component
 	 */
 	public ComponentPrintable getComponentPrintable() {
-		return getPlot().getComponentPrintable(RunInfo.runNumber,
+		return getPlotContainer().getComponentPrintable(RunInfo.runNumber,
 				getDate());
 	}
 
@@ -337,47 +337,47 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @param object the message
 	 */
 	public void update(Observable observable, Object object) {
-        final BroadcastEvent be = (BroadcastEvent) object;
-        final BroadcastEvent.Command command = be.getCommand();
+        final BroadcastEvent event = (BroadcastEvent) object;
+        final BroadcastEvent.Command command = event.getCommand();
         if (command == BroadcastEvent.Command.REFRESH) {
             update();
         } else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
             //Clear plots select first plot
             final int numberPlots = currentView.getNumberHists();
-            PlotContainer plotContainer = null;
+            PlotContainer plots = null;
             /* Set initial states for all plots */
             for (int i = 0; i < numberPlots; i++) {
-                plotContainer = (PlotContainer) plotList.get(i);
-                plotContainer.removeAllPlotMouseListeners();
-                plotContainer.select(false);
-                plotContainer.reset();
-                plotContainer.displayHistogram(null);
+                plots = (PlotContainer) plotList.get(i);
+                plots.removeAllPlotMouseListeners();
+                plots.select(false);
+                plots.reset();
+                plots.displayHistogram(null);
             }
-            plotContainer = (PlotContainer) plotList.get(0);
-            plotSelected(plotContainer);
+            plots = (PlotContainer) plotList.get(0);
+            plotSelected(plots);
         } else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
             final Histogram hist = status.getCurrentHistogram();
             displayHistogram(hist);
             final Histogram[] overHists = status.getOverlayHistograms();
             overlayHistogram(overHists);
         } else if (command == BroadcastEvent.Command.GATE_SET_ON) {
-            getPlot().displaySetGate(GateSetMode.GATE_NEW, null, null);
+            getPlotContainer().displaySetGate(GateSetMode.GATE_NEW, null, null);
             action.setDefiningGate(true);
         } else if (command == BroadcastEvent.Command.GATE_SET_OFF) {
-            getPlot().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
+            getPlotContainer().displaySetGate(GateSetMode.GATE_CANCEL, null, null);
             action.setDefiningGate(false);
-            getPlot().repaint();
+            getPlotContainer().repaint();
         } else if (command == BroadcastEvent.Command.GATE_SET_SAVE) {
-            getPlot().displaySetGate(GateSetMode.GATE_SAVE, null, null);
+            getPlotContainer().displaySetGate(GateSetMode.GATE_SAVE, null, null);
             action.setDefiningGate(false);
         } else if (command == BroadcastEvent.Command.GATE_SET_ADD) {
-            getPlot().displaySetGate(GateSetMode.GATE_CONTINUE,
-                    (Bin) be.getContent(), null);
+            getPlotContainer().displaySetGate(GateSetMode.GATE_CONTINUE,
+                    (Bin) event.getContent(), null);
         } else if (command == BroadcastEvent.Command.GATE_SET_REMOVE) {
-            getPlot().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
+            getPlotContainer().displaySetGate(GateSetMode.GATE_REMOVE, null, null);
         } else if (command == BroadcastEvent.Command.GATE_SELECT) {
-            Gate gate = (Gate) (be.getContent());
-            getPlot().displayGate(gate);
+            final Gate gate = (Gate) (event.getContent());
+            getPlotContainer().displayGate(gate);
         }
     }
 
@@ -393,7 +393,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	    Plot1d.setWidth(width);
 	    Plot1d.setSensitivity(sensitivity);
 	    Plot1d.setPeakFindDisplayCal(cal);
-		getPlot().repaint();
+		getPlotContainer().repaint();
 	}
 
 	/**
@@ -446,7 +446,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	/**
 	 * @return the plot currently being displayed
 	 */
-	public PlotContainer getPlot() {
+	public PlotContainer getPlotContainer() {
 		synchronized (plotLock) {
 			return currentPlot;
 		}
@@ -461,7 +461,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @see #removePlotMouseListener
 	 */
 	public void addPlotMouseListener(PlotMouseListener listener) {
-		getPlot().addPlotMouseListener(listener);
+		getPlotContainer().addPlotMouseListener(listener);
 	}
 
 	/**
@@ -472,7 +472,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 	 * @see #addPlotMouseListener
 	 */
 	public void removePlotMouseListener(PlotMouseListener listener) {
-		getPlot().removePlotMouseListener(listener);
+		getPlotContainer().removePlotMouseListener(listener);
 	}
 
 	/**
