@@ -105,7 +105,6 @@ public final class JamMain extends JFrame implements Observer {
 		setJMenuBar(menubar);
 		selectBar = new SelectionToolbar();
 		me.add(selectBar, BorderLayout.NORTH);
-		display.addToolbarAction(); //the left-hand action toolbar
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {

@@ -4,19 +4,14 @@ import jam.JamException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
-import jam.global.CommandListener;
 import jam.plot.Display;
 
-import java.applet.Applet;
 import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Choice;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -25,8 +20,16 @@ import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 /**
  * An applet to allow remote viewing of Jam Histograms
  *
@@ -35,28 +38,28 @@ import java.util.List;
  * 
  */
 public class HistApplet
-	extends Applet
+	extends JApplet
 	implements ActionListener, ItemListener {
 
 	private Display display;
 	private JamConsole console;
 	private RemoteData remoteData;
 
-	private TextField textHost;
-	private Button blink;
+	private JTextField textHost;
+	private JButton blink;
 
 	private URL localPath;
 	private String documentHost;
 
 	// select panel controls
-	public Panel pselect;
+	public JPanel pselect;
 	FlowLayout flselect;
-	private Label lrunState; //run state label         
-	private Label lhist; //label for histogram Chooser    
-	Choice histogramChooser; //reference needed by command
-	private Button boverLay; //button for overlay    
-	private Label lgate; //label for gate choicer
-	Choice gateChooser; // reference needed by command
+	private JLabel lrunState; //run state label         
+	private JLabel lhist; //label for histogram Chooser    
+	JComboBox histogramChooser; //reference needed by command
+	private JButton boverLay; //button for overlay    
+	private JLabel lgate; //label for gate choicer
+	JComboBox gateChooser; // reference needed by command
 
 	private int sizeX;
 	private int sizeY;
@@ -92,13 +95,13 @@ public class HistApplet
 		Label llink = new Label("Link to URL: ", Label.RIGHT);
 		pHost.add(llink);
 
-		textHost = new TextField("rmi:// ");
+		textHost = new JTextField("rmi:// ");
 		textHost.setColumns(30);
 		textHost.setBackground(Color.white);
 		textHost.addActionListener(this);
 		pHost.add(textHost);
 
-		blink = new Button("Link");
+		blink = new JButton("Link");
 		blink.setActionCommand("link");
 		blink.addActionListener(this);
 		pHost.add(blink);
@@ -109,9 +112,6 @@ public class HistApplet
 		display = new Display(console);
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
-		display.addToolbarAction();// tool bar for plot actions
-		/* let display listen for text input commands */	
-		console.addCommandListener((CommandListener) display);
 		/* where did we come from, set host url, and 
 		 * setup applet document path */
 		localPath = this.getDocumentBase();
@@ -327,41 +327,15 @@ public class HistApplet
 	 * @return  <code>void</code> 
 	 */
 	public void setHistogramList(java.util.List histogramList) {
-
-		Iterator allHistograms;
-		Histogram firstHist = null;
-		Histogram hist;
-		boolean first = false;
-
 		histogramChooser.removeAll();
-		allHistograms = histogramList.iterator();
-
-		//There are histograms in list
-		if (histogramList.size() != 0) {
-			first = true;
-
-			//loop for all histograms
-			while (allHistograms.hasNext()) {
-				hist = ((Histogram) allHistograms.next());
-				histogramChooser.add(hist.getName());
-				//save first histogram	    
-				if (first) {
-					firstHist = hist;
-					first = false;
-				}
-			}
-			//load first histogram in lsit
+		histogramChooser.setModel(new DefaultComboBoxModel(
+		new Vector(histogramList)));		
+		final Histogram firstHist = histogramList.isEmpty() ? null : 
+		(Histogram)histogramList.get(0);
 			if (firstHist != null) {
 				display.displayHistogram(firstHist);
 				setGateList(firstHist.getGates());
-			}
-
-			//no histograms in list	    
-		} else {
-			histogramChooser.add("No Histograms");
-
-		}
-
+			} 
 		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
 		pselect.setLayout(flselect);
 		pselect.removeAll();
@@ -385,13 +359,8 @@ public class HistApplet
 		if (gateChooser != null) {
 
 			gateChooser.removeAll();
-			if (gates.size() == 0) {
-				gateChooser.add("none");
-			} else {
-				for (int i = 0; i < gates.size(); i++) {
-					gateChooser.add((String) ((Gate)gates.get(i)).getName());
-				}
-			}
+			/* set proper model */
+			gateChooser.setModel(new DefaultComboBoxModel(new Vector(gates)));
 		}
 	}
 	/**
@@ -403,7 +372,7 @@ public class HistApplet
 	public void addToolbarSelect(Panel p) {
 
 		//panel with selection and print ect..
-		pselect = new Panel();
+		pselect = new JPanel();
 		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
 		pselect.setLayout(flselect);
 		pselect.setBackground(Color.lightGray);
@@ -411,21 +380,21 @@ public class HistApplet
 		p.add(BorderLayout.NORTH, pselect);
 
 		// >>setup select panel 
-		lrunState = new Label("      ", Label.CENTER);
+		lrunState = new JLabel("      ", Label.CENTER);
 
-		lhist = new Label("Histogram", Label.RIGHT);
+		lhist = new JLabel("Histogram", Label.RIGHT);
 
-		histogramChooser = new Choice();
+		histogramChooser = new JComboBox();
 		histogramChooser.addItem("HISTOGRAMNAMES");
 		histogramChooser.addItemListener(this);
 
-		boverLay = new Button("Overlay");
+		boverLay = new JButton("Overlay");
 		boverLay.setActionCommand("overlay");
 		boverLay.addActionListener(this);
 
-		lgate = new Label("Gate", Label.RIGHT);
+		lgate = new JLabel("Gate", Label.RIGHT);
 
-		gateChooser = new Choice();
+		gateChooser = new JComboBox();
 		gateChooser.addItem("GATENAMES");
 		gateChooser.addItemListener(this);
 
