@@ -22,7 +22,7 @@ public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
 	private static String histName = "";
-	private static String overlayHistogramName, currentGateName;
+	private static String overlayName, gateName;
 	private static JFrame frame;
 	private static Display display;
 	private static MessageHandler console;
@@ -164,8 +164,9 @@ public final class JamStatus {
 		}
 	}
 	/**
-	 * The name of the sort or file
-	 * @return
+	 * Returns name of the sort or file.
+	 * 
+	 * @return name of the sort or file
 	 */
 	public String getSortName(){
 		return sortName;		
@@ -225,28 +226,28 @@ public final class JamStatus {
 	 * Sets the overlay Histogram name.
 	 */
 	public synchronized void setOverlayHistogramName(String histogramName) {
-		overlayHistogramName = histogramName;
+		overlayName = histogramName;
 	}
 
 	/**
 	 * Gets the overlay Histogram name.
 	 */
 	public synchronized String getOverlayHistogramName() {
-		return overlayHistogramName;
+		return overlayName;
 	}
 
 	/**
 	 * Sets the current Gate name.
 	 */
-	public synchronized void setCurrentGateName(String gateName) {
-		currentGateName = gateName;
+	public synchronized void setCurrentGateName(String name) {
+		gateName = name;
 	}
 
 	/**
 	 * Gets the current Gate name.
 	 */
 	public synchronized String getCurrentGateName() {
-		return currentGateName;
+		return gateName;
 	}
 
 	/**
