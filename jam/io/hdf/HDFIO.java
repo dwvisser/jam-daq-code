@@ -4,22 +4,23 @@ import jam.data.AbstractHist1D;
 import jam.data.DataBase;
 import jam.data.DataParameter;
 import jam.data.Gate;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.global.JamProperties;
-import jam.global.MessageHandler;
 import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
-import java.io.FileNotFoundException;
 import jam.util.StringUtilities;
 
 import java.awt.Frame;
 import java.awt.Polygon;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -83,7 +84,7 @@ public class HDFIO implements DataIO, JamHDFFields {
     /**
      * <code>HDFile<code> object to read from.
      */
-    private HDFile in;
+    private HDFile inHDF;
 
     /**
      * Constructor for file read access outside of any GUI context.
@@ -98,23 +99,23 @@ public class HDFIO implements DataIO, JamHDFFields {
     public HDFIO(File file) throws HDFException, IOException {
         frame = null;
         msgHandler = null;
-        in = new HDFile(file, "r");
-        in.seek(0);
-        in.readFile();
+        inHDF = new HDFile(file, "r");
+        inHDF.seek(0);
+        inHDF.readFile();
     }
 
     /**
      * Class constructor handed references to the main class and message
      * handler.
      * 
-     * @param f
+     * @param parent
      *            the parent window
-     * @param mh
+     * @param console
      *            where to send output
      */
-    public HDFIO(Frame f, MessageHandler mh) {
-        frame = f;
-        msgHandler = mh;
+    public HDFIO(Frame parent, MessageHandler console) {
+        frame = parent;
+        msgHandler = console;
     }
 
     /**
@@ -134,46 +135,39 @@ public class HDFIO implements DataIO, JamHDFFields {
      * scalers, and parameters.
      *  
      * @param file the to write to
-     * @param histogramList list of histograms to write
+     * @param histograms list of histograms to write
      */
-    public void writeFile(File file, List histogramList) {
-    	
-    	//Check to overwrite if file exist
+    public void writeFile(File file, List histograms) { 	
+    	/* Check to overwrite if file exists. */
         if (!overWriteExistsConfirm(file)) {
         	return;
         }
-        
-    	//Histogram list
+    	/* Histogram list */
         final List histList = new ArrayList();        	
-        final Iterator iterHist = histogramList.iterator();
+        final Iterator iterHist = histograms.iterator();
         while (iterHist.hasNext()) {
-            final Histogram h = (Histogram) iterHist.next();
-            if (h.getArea() > 0) {
-            	histList.add(h);
+            final Histogram hist = (Histogram) iterHist.next();
+            if (hist.getArea() > 0) {
+            	histList.add(hist);
             }
         }
-        
-        //Gate list
+        /* Gate list */
         final List gateList = new ArrayList();
-        final Iterator it = Gate.getGateList().iterator();
-        while (it.hasNext()) {
-            final Gate gate = (Gate) (it.next());
-            Histogram histGate =gate.getHistogram();     
-            //Gate defined and
-            //Does the histogram List contain this gates histogram
+        final Iterator iter = Gate.getGateList().iterator();
+        while (iter.hasNext()) {
+            final Gate gate = (Gate) (iter.next());
+            final Histogram histGate =gate.getHistogram();     
+            /*
+             * Gate defined and Does the histogram List contain this gate's
+             * histogram
+             */
             if (gate.isDefined() && histList.contains(histGate)) {
             	gateList.add(Gate.getGateList());
             }
         }
-        //Scaler list
         final List scalerList = Scaler.getScalerList();
-
-        //Parameter list
-        final List parameterList = DataParameter.getParameterList();
-               
-         //Asyncronized write 
-         asyncWriteFile(file, histList, gateList, scalerList, parameterList);
-    	
+        final List paramList = DataParameter.getParameterList();
+        asyncWriteFile(file, histList, gateList, scalerList, paramList);    	
     }
     
     /**
@@ -189,46 +183,42 @@ public class HDFIO implements DataIO, JamHDFFields {
      *            if true, Gates will be written
      * @param wrtscalers
      *            if true, scaler values will be written
-     * @param wrtparameters
+     * @param wrtparams
      *            if true, parameter values will be written
      * @param file
      *            to write to
      */
     public void writeFile(boolean wrthist, boolean wrtgate, boolean wrtscalers,
-            boolean wrtparameters, final File file) {
+            boolean wrtparams, final File file) {
         if (overWriteExistsConfirm(file)) {
-        	//Histogram list
+        	/* Histogram list */
             final List tempHist = wrthist ? Histogram.getHistogramList()
                     : EMPTY_LIST;
             final Iterator iter = tempHist.iterator();
-            final List hist = new ArrayList();
+            final List histList = new ArrayList();
             while (iter.hasNext()) {
-                final Histogram h = (Histogram) iter.next();
-                if (h.getArea() > 0) {
-                    hist.add(h);
+                final Histogram hist = (Histogram) iter.next();
+                if (hist.getArea() > 0) {
+                    histList.add(hist);
                 }
             }
-            //Gate list
-            final List gate = new ArrayList();
+            /* Gate list */
+            final List gateList = new ArrayList();
             if (wrtgate) {
-                gate.addAll(Gate.getGateList());
+                gateList.addAll(Gate.getGateList());
             }
-            final Iterator it = gate.iterator();
-            while (it.hasNext()) {
-                final Gate g = (Gate) (it.next());
-                if (!g.isDefined()) {
-                    it.remove();
+            final Iterator gateIterator = gateList.iterator();
+            while (gateIterator.hasNext()) {
+                final Gate gate = (Gate) (gateIterator.next());
+                if (!gate.isDefined()) {
+                    gateIterator.remove();
                 }
             }
-            //Scaler list
             final List scaler = wrtscalers ? Scaler.getScalerList()
                     : EMPTY_LIST;
-            //Parameter list
-            final List parameter = wrtparameters ? DataParameter
+            final List parameter = wrtparams ? DataParameter
                     .getParameterList() : EMPTY_LIST;
-                   
-             //Asyncronized write 
-             asyncWriteFile(file, hist, gate, scaler, parameter);
+            asyncWriteFile(file, histList, gateList, scaler, parameter);
         }
     }
     
@@ -237,16 +227,14 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private void asyncWriteFile(final File file, final List histograms, final List gates, final List scalers,
             final List parameters) {
-        final Runnable r = new Runnable() {
+        final Thread thread = new Thread(new Runnable() {
             public void run() {
                 writeFile(file, histograms, gates, scalers, parameters);
             }
-        };
-        /* Spawn in another thread */
-        final Thread t = new Thread(r);
-        t.start();
-
+        });
+        thread.start();
     }
+    
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty
@@ -265,21 +253,15 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     private void writeFile(File file, List hists, List gates, List scalers,
             List parameters) {
-    	
         final StringBuffer message = new StringBuffer();
         int progress = 1;
-                
-    	DataObject.clearAll();        
-    	
+    	DataObject.clearAll();
     	addDefaultDataObjects(file.getPath());
-    	
-        final int progressRange = hists.size() + gates.size()
+        final int totalToDo = hists.size() + gates.size()
                 + scalers.size() + parameters.size();
-
-        final ProgressMonitor pm = new ProgressMonitor(frame,
+        final ProgressMonitor monitor = new ProgressMonitor(frame,
                 "Saving HDF file", "Building file buffer", progress,
-                progressRange);
-
+                totalToDo);
         message.append("Saved ").append(file.getName()).append(" (");        
         try {
             if (hasContents(hists)) {
@@ -289,7 +271,7 @@ public class HDFIO implements DataIO, JamHDFFields {
                 while (temp.hasNext()) {
                     addHistogram((Histogram) (temp.next()));
                     progress++;
-                    setProgress(pm, progress);
+                    setProgress(monitor, progress);
                 }
             }
             if (hasContents(gates)) {   
@@ -299,20 +281,20 @@ public class HDFIO implements DataIO, JamHDFFields {
                 while (temp.hasNext()) {
                     addGate((Gate) (temp.next()));
                     progress++;
-                    setProgress(pm, progress);
+                    setProgress(monitor, progress);
                 }
             }
             if (hasContents(scalers)) {
                 addScalerSection(scalers);
                 message.append(", ").append(scalers.size()).append(" scalers");
                 progress += scalers.size();
-                setProgress(pm, progress);
+                setProgress(monitor, progress);
             }
             if (hasContents(parameters)) {
                 addParameterSection(parameters);
                 message.append(", ").append(parameters.size()).append(" parameters");
                 progress += parameters.size();
-                setProgress(pm, progress);
+                setProgress(monitor, progress);
             }
             message.append(")");         
         } catch (HDFException e) {
@@ -325,9 +307,9 @@ public class HDFIO implements DataIO, JamHDFFields {
             synchronized (this) {
             	out = new HDFile(file, "rw");
             }            
-        	out.writeFile(pm);
+        	out.writeFile(monitor);
         	            
-            setProgressNote(pm, "Closing File");
+            setProgressNote(monitor, "Closing File");
             out.close();
         } catch (FileNotFoundException e) {
         	msgHandler.errorOutln("Opening file: "
@@ -339,10 +321,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             msgHandler.errorOutln("Exception writing to file '"
                     + file.getName() + "': " + e.toString());
         }
-            
-        
-        pm.close();
-
+        monitor.close();
         synchronized (this) {
         	DataObject.clearAll();
             out = null; //allows Garbage collector to free up memory
@@ -370,30 +349,29 @@ public class HDFIO implements DataIO, JamHDFFields {
     }
 
     
-    private void setProgressNote(final ProgressMonitor pm, final String note) {
+    private void setProgressNote(final ProgressMonitor monitor, final String note) {
         final Runnable runner = new Runnable() {
             public void run() {
-                pm.setNote(note);
+                monitor.setNote(note);
             }
         };
         try {
-        	//frame.repaint();
         	SwingUtilities.invokeAndWait(runner);
         } catch(Exception e) {
-        	//Bury exception
+        	e.printStackTrace();
         }
     }
 
-    private void setProgress(final ProgressMonitor pm, final int value) {
+    private void setProgress(final ProgressMonitor monitor, final int value) {
         final Runnable runner = new Runnable() {
             public void run() {
-                pm.setProgress(value);
+                monitor.setProgress(value);
             }
         };
         try {
         	SwingUtilities.invokeAndWait(runner);
     	} catch(Exception e) {
-    		//Bury exception
+    		e.printStackTrace();
     	}
 
     }
@@ -417,137 +395,146 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile) {
-    	return readFile(mode, infile, null);
+        return readFile(mode, infile, null);
     }
+
     /**
-     * Read in an HDF file 
+     * Read in an HDF file
      * 
      * @param infile
      *            file to load
      * @param mode
      *            whether to open or reload
-     * @param histogramNames
-     * 				names of histograms to read, null if all
+     * @param histNames
+     *            names of histograms to read, null if all
      * @return <code>true</code> if successful
-     */    	
-   public boolean readFile(FileOpenMode mode, File infile, List histogramNames) {    	
-        boolean outF = true;
-        final int progressRange = mode == FileOpenMode.ADD ? 4 : 6;
-        final ProgressMonitor pm = new ProgressMonitor(frame,
-                "Reading HDF file", "Reading from disk", 0, progressRange);
-        
-        if (!HDFile.isHDFFile(infile)){
-       	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
-       	 return false;
-       }
+     */
+    public boolean readFile(FileOpenMode mode, File infile, List histNames) {
+        boolean rval = true;
+        final int amountToDo = mode == FileOpenMode.ADD ? 4 : 6;
+        final ProgressMonitor monitor = new ProgressMonitor(frame,
+                "Reading HDF file", "Reading from disk", 0, amountToDo);
+        if (!HDFile.isHDFFile(infile)) {
+            msgHandler.errorOutln(infile + " is not a valid HDF File!");
+            rval = false;
+        }
+        if (rval) {
+            final StringBuffer message = new StringBuffer();
+            try {
+                if (mode == FileOpenMode.OPEN) {
+                    message.append("Opened ").append(infile.getName()).append(
+                            " (");
+                    DataBase.getInstance().clearAllLists();
+                } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+                    message.append("Opened Additional ").append(
+                            infile.getName()).append(" (");
+                } else if (mode == FileOpenMode.RELOAD) {
+                    message.append("Reloaded ").append(infile.getName())
+                            .append(" (");
+                } else { //ADD
+                    message.append("Adding histogram counts in ").append(
+                            infile.getName()).append(" (");
+                }
 
-        final StringBuffer message = new StringBuffer();
-        try {
-            if (mode == FileOpenMode.OPEN) {
-                message.append("Opened ").append(infile.getName()).append(" (");
-                DataBase.getInstance().clearAllLists();
-            }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
-                message.append("Opened Additional ").append(infile.getName()).append(" (");
-            } else if (mode == FileOpenMode.RELOAD) {
-                message.append("Reloaded ").append(infile.getName()).append(
-                        " (");
-            } else { //ADD
-                message.append("Adding histogram counts in ").append(
-                        infile.getName()).append(" (");
-            }
-            
-            synchronized (this) {
-                in = new HDFile(infile, "r");
+                synchronized (this) {
+                    inHDF = new HDFile(infile, "r");
+                }
+                DataObject.clearAll();
+                inHDF.seek(0);
+                /*
+                 * read file into set of DataObject's, set their internal
+                 * variables
+                 */
+                monitor.setNote("Parsing objects");
+                inHDF.readFile();
+                monitor.setProgress(1);
+                monitor.setNote("Getting histograms");
+
+                //Set group
+                if (mode == FileOpenMode.OPEN) {
+                    Group.clearList();
+                    Group.createGroup(infile.getName(), Group.Type.FILE);
+                } else if (mode == FileOpenMode.OPEN_ADDITIONAL) {
+                    Group.createGroup(infile.getName(), Group.Type.FILE);
+                } else if (mode == FileOpenMode.RELOAD) {
+                    final String sortName = JamStatus.getSingletonInstance()
+                            .getSortName();
+                    Group.setCurrentGroup(sortName);
+                } else if (mode == FileOpenMode.ADD) {
+                    //use current group
+                }
+                final int numHists = getHistograms(mode, histNames);
+                message.append(numHists).append(" histograms");
+                monitor.setProgress(2);
+                monitor.setNote("Getting scalers");
+                final int numScalers = getScalers(mode);
+                message.append(", ").append(numScalers).append(" scalers");
+                monitor.setProgress(3);
+                if (mode != FileOpenMode.ADD) {
+                    monitor.setNote("Getting gates");
+                    final int numGates = getGates(mode);
+                    /* clear if opening and there are histograms in file */
+                    message.append(", ").append(numGates).append(" gates");
+
+                    monitor.setProgress(4);
+                    monitor.setNote("Getting parameters");
+                    final int numParams = getParameters(mode);
+                    message.append(", ").append(numParams)
+                            .append(" parameters");
+                    monitor.setProgress(5);
+                }
+                message.append(')');
+                monitor.setNote("Done");
+                inHDF.close();
+                synchronized (this) {
+                    /* destroys reference to HDFile (and its DataObject's) */
+                    inHDF = null;
+                }
+                msgHandler.messageOutln(message.toString());
+                setLastValidFile(infile);
+            } catch (HDFException except) {
+                msgHandler.errorOutln(except.toString());
+                rval = false;
+            } catch (IOException except) {
+                msgHandler.errorOutln(except.toString());
+                rval = false;
             }
             DataObject.clearAll();
-            in.seek(0);
-            /* read file into set of DataObject's, set their internal variables */
-            pm.setNote("Parsing objects");
-            in.readFile();
-            pm.setProgress(1);
-            pm.setNote("Getting histograms");
-            
-            //Set group
-            if (mode == FileOpenMode.OPEN) {
-            	Group.clearList();
-            	Group.createGroup(infile.getName(), Group.Type.FILE);
-            }else if(mode==FileOpenMode.OPEN_ADDITIONAL) {
-            	Group.createGroup(infile.getName(), Group.Type.FILE);
-        	} else if (mode == FileOpenMode.RELOAD) {
-        		String sortName = JamStatus.getSingletonInstance().getSortName();
-        		Group.setCurrentGroup(sortName);
-        	} else if (mode ==FileOpenMode.ADD) {
-        		//use current group
-        	}
-            
-            int numHists=getHistograms(mode, histogramNames);
-            message.append(""+numHists+" histograms");
-            pm.setProgress(2);
-            pm.setNote("Getting scalers");
-            int numScalers=getScalers(mode);
-            message.append(", ").append(numScalers).append(" scalers");
-            pm.setProgress(3);
-            if (mode != FileOpenMode.ADD) {
-                pm.setNote("Getting gates");
-                int numGates=getGates(mode);
-                /* clear if opening and there are histograms in file */
-                message.append(", ").append(numGates+" gates");
-                
-                pm.setProgress(4);
-                pm.setNote("Getting parameters");
-                int numParams = getParameters(mode);
-                message.append(", "+numParams+" parameters");
-                pm.setProgress(5);
-            }
-            message.append(')');
-            pm.setNote("Done");
-            in.close();
-            synchronized (this) {
-                /* destroys reference to HDFile (and its DataObject's) */
-                in = null;
-            }
-            msgHandler.messageOutln(message.toString());
-            setLastValidFile(infile);
-        } catch (HDFException except) {
-            msgHandler.errorOutln(except.toString());
-            outF = false;
-        } catch (IOException except) {
-            msgHandler.errorOutln(except.toString());
-            outF = false;
+            System.gc();
+            monitor.close();
         }
-        DataObject.clearAll();
-        System.gc();
-        pm.close();
-        return outF;
+        return rval;
     }
     
-    /** 
+    /**
      * Read the histograms in.
-     * @param infile to read from
+     * 
+     * @param infile
+     *            to read from
      * @return list of attributes
      */
-    public List readHistogramAttributes(File infile){
-    	final List histAttributes = new ArrayList();
-    	try {
-            if (!HDFile.isHDFFile(infile)){
-              	 msgHandler.errorOutln(infile+" is not a valid HDF File!");
-              	 return histAttributes;
-              }
-    		 
+    public List readHistogramAttributes(File infile) {
+        final List rval;
+        if (HDFile.isHDFFile(infile)) {
+            rval = new ArrayList();
+            try {
+                DataObject.clearAll();
+                /* Read in histogram names */
+                inHDF = new HDFile(infile, "r");
+                inHDF.readFile();
+                rval.addAll(loadHistogramAttributes());
+                inHDF.close();
+            } catch (HDFException except) {
+                msgHandler.errorOutln(except.toString());
+            } catch (IOException except) {
+                msgHandler.errorOutln(except.toString());
+            }
             DataObject.clearAll();
-			/* Read in histogram names */
-	    	in = new HDFile(infile, "r");
-	    	
-	    	in.readFile();
-	    	histAttributes.addAll(loadHistogramAttributes());
-			in.close();
-        } catch (HDFException except) {
-            msgHandler.errorOutln(except.toString());
-	    } catch (IOException except) {
-	        msgHandler.errorOutln(except.toString());
-	    }		
-	    DataObject.clearAll();
-		return histAttributes;   	
+        } else {
+            msgHandler.errorOutln(infile + " is not a valid HDF File!");
+            rval = Collections.EMPTY_LIST;
+        }
+        return rval;
     }
     
 	/* non-javadoc:
@@ -631,22 +618,22 @@ public class HDFIO implements DataIO, JamHDFFields {
 				final Object dataArray;
 				if (histDim == 1) {
 					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData1d(in, sizeX);
+						dataArray = sd.getData1d(inHDF, sizeX);
 					} else { //DOUBLE
-						dataArray = sd.getData1dD(in, sizeX);
+						dataArray = sd.getData1dD(inHDF, sizeX);
 					}
 					/*if (ndgErr != null) {
 						histogram.setErrors(sdErr.getData1dD(sizeX));
 					}*/
 				} else { //2d
 					if (histNumType == NumberType.INT) {
-						dataArray = sd.getData2d(in, sizeX, sizeY);
+						dataArray = sd.getData2d(inHDF, sizeX, sizeY);
 					} else {
-						dataArray = sd.getData2dD(in, sizeX, sizeY);
+						dataArray = sd.getData2dD(inHDF, sizeX, sizeY);
 					}
 				}
 				/* Add histogram */
-				HistogramAttributes histAtt = new HistogramAttributes();
+				final HistogramAttributes histAtt = new HistogramAttributes();
 				histAtt.name = name;
 				histAtt.title = title;
 				histAtt.number = number;
@@ -656,7 +643,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				histAtt.histNumType = histNumType;
 				histAtt.dataArray = dataArray;
 				if (ndgErr != null){
-					histAtt.errorArray=sdErr.getData1dD(in, sizeX);
+					histAtt.errorArray=sdErr.getData1dD(inHDF, sizeX);
 				}
 				lstHistAtt.add(histAtt);
 			}
@@ -706,9 +693,9 @@ public class HDFIO implements DataIO, JamHDFFields {
 		try {
 			JamProperties.getProperties().store(baos,header);			
 		} catch (IOException ioe) {
-			throw new RuntimeException("Unable to serialize properties");
+			throw new UndeclaredThrowableException(ioe,
+			        "Unable to serialize properties.");
 		}
-
 		final String notation = baos.toString()+noteAddition;
 		new FileDescription(notation);
 	}
@@ -730,50 +717,50 @@ public class HDFIO implements DataIO, JamHDFFields {
      * Add the virtual group representing a single histogram, and link it into
      * the virtual group representing all histograms.
      * 
-     * @param h
+     * @param hist
      *            the histogram to add
      * @see #addHistogramSection()
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */
-    protected void addHistogram(Histogram h) throws HDFException {
-        ScientificData sd;
-        final VirtualGroup temp = new VirtualGroup(h.getName(),
+    protected void addHistogram(Histogram hist) throws HDFException {
+        ScientificData sciData;
+        final VirtualGroup temp = new VirtualGroup(hist.getName(),
                 HIST_TYPE_NAME);
         histGroup.addDataObject(temp); //add to Histogram section vGroup
-        new DataIDLabel(temp, h.getName());
+        new DataIDLabel(temp, hist.getName());
         /* vGroup label is Histogram name */
-        new DataIDAnnotation(temp, h.getTitle());
+        new DataIDAnnotation(temp, hist.getTitle());
         /* vGroup Annotation is Histogram title */
         final NumericalDataGroup ndg = new NumericalDataGroup();
         /* NDG to contain data */
-        new DataIDLabel(ndg, Integer.toString(h.getNumber()));
+        new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
         /* make the NDG label the histogram number */
         temp.addDataObject(ndg);
         /* add to specific histogram vGroup (other info maybe later) */
-        final ScientificDataDimension sdd = getSDD(h);
+        final ScientificDataDimension sdd = getSDD(hist);
         ndg.addDataObject(sdd); //use new SDD
         temp.addDataObject(sdd); //use new SDD
-        final Histogram.Type type = h.getType();
+        final Histogram.Type type = hist.getType();
         if (type == Histogram.Type.ONE_DIM_INT) {
-            final AbstractHist1D h1 = (AbstractHist1D) h;
-            sd = new ScientificData((int[]) h.getCounts());
-            if (h1.errorsSet()) {
+            final AbstractHist1D hist1d = (AbstractHist1D) hist;
+            sciData = new ScientificData((int[]) hist.getCounts());
+            if (hist1d.errorsSet()) {
                 NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
                 temp.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = getSDD(h,
+                ScientificDataDimension sddErr = getSDD(hist,
                         NumberType.DOUBLE);
                 /* explicitly floating point */
                 ndgErr.addDataObject(sddErr);
                 temp.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(h1.getErrors());
+                ScientificData sdErr = new ScientificData(hist1d.getErrors());
                 ndgErr.addDataObject(sdErr);
                 temp.addDataObject(sdErr);
             }
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
-            final AbstractHist1D h1 = (AbstractHist1D) h;
-            sd = new ScientificData((double[]) h.getCounts());
+            final AbstractHist1D h1 = (AbstractHist1D) hist;
+            sciData = new ScientificData((double[]) hist.getCounts());
             if (h1.errorsSet()) {
                 NumericalDataGroup ndgErr = new NumericalDataGroup();
                 new DataIDLabel(ndgErr, ERROR_LABEL);
@@ -786,15 +773,15 @@ public class HDFIO implements DataIO, JamHDFFields {
                 temp.addDataObject(sdErr);
             }
         } else if (type == Histogram.Type.TWO_DIM_INT) {
-            sd = new ScientificData((int[][]) h.getCounts());
+            sciData = new ScientificData((int[][]) hist.getCounts());
         } else if (type == Histogram.Type.TWO_D_DOUBLE) {
-            sd = new ScientificData((double[][]) h.getCounts());
+            sciData = new ScientificData((double[][]) hist.getCounts());
         } else {
             throw new IllegalArgumentException(
                     "HDFIO encountered a Histogram of unknown type.");
         }
-        ndg.addDataObject(sd);
-        temp.addDataObject(sd);
+        ndg.addDataObject(sciData);
+        temp.addDataObject(sciData);
     }
 
     /**
@@ -927,22 +914,22 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histDim == 1) {
                 if (histNumType == NumberType.INT) {
                     histogram = Histogram.createHistogram(sd
-                            .getData1d(in, sizeX), name, title);
+                            .getData1d(inHDF, sizeX), name, title);
                 } else { //DOUBLE
                     histogram = Histogram.createHistogram(sd
-                            .getData1dD(in, sizeX), name, title);
+                            .getData1dD(inHDF, sizeX), name, title);
                 }
                 if (sdErr != null) {
                     ((AbstractHist1D) histogram).setErrors(sdErr
-                            .getData1dD(in, sizeX));
+                            .getData1dD(inHDF, sizeX));
                 }
             } else { //2d
                 if (histNumType == NumberType.INT) {
                     histogram = Histogram.createHistogram(sd.getData2d(
-                    		in, sizeX, sizeY), name, title);
+                    		inHDF, sizeX, sizeY), name, title);
                 } else {
                     histogram = Histogram.createHistogram(sd
-                            .getData2dD(in, sizeX, sizeY), name, title);
+                            .getData2dD(inHDF, sizeX, sizeY), name, title);
                 }
             }
             histogram.setNumber(number);
@@ -953,16 +940,16 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {
-                        histogram.setCounts(sd.getData1d(in, sizeX));
+                        histogram.setCounts(sd.getData1d(inHDF, sizeX));
                     } else {
-                        histogram.setCounts(sd.getData1dD(in, sizeX));
+                        histogram.setCounts(sd.getData1dD(inHDF, sizeX));
                     }
                 } else { // 2-d
                     if (histNumType == NumberType.INT) {
-                        histogram.setCounts(sd.getData2d(in, sizeX, sizeY));
+                        histogram.setCounts(sd.getData2d(inHDF, sizeX, sizeY));
                     } else {
                         histogram
-                                .setCounts(sd.getData2dD(in, sizeX, sizeY));
+                                .setCounts(sd.getData2dD(inHDF, sizeX, sizeY));
                     }
                 }
             }
@@ -973,16 +960,16 @@ public class HDFIO implements DataIO, JamHDFFields {
             if (histogram != null) {
                 if (histDim == 1) {
                     if (histNumType == NumberType.INT) {
-                        histogram.addCounts(sd.getData1d(in, sizeX));
+                        histogram.addCounts(sd.getData1d(inHDF, sizeX));
                     } else {
-                        histogram.addCounts(sd.getData1dD(in, sizeX));
+                        histogram.addCounts(sd.getData1dD(inHDF, sizeX));
                     }
                 } else { // 2-d
                     if (histNumType == NumberType.INT) {
-                        histogram.addCounts(sd.getData2d(in, sizeX, sizeY));
+                        histogram.addCounts(sd.getData2d(inHDF, sizeX, sizeY));
                     } else {
                         histogram
-                                .addCounts(sd.getData2dD(in, sizeX, sizeY));
+                                .addCounts(sd.getData2dD(inHDF, sizeX, sizeY));
                     }
                 }
             }
