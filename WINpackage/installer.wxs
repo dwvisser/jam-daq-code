@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
     <Product Name="Jam" Id="b7c77d4a-510a-4fef-af17-585098aa279f"
-            Version="1.5.0" Manufacturer="http://jam-daq.sf.net/"
+            Version="@MAJOR@.@MINOR@.@SUBMINOR@" Manufacturer="http://jam-daq.sf.net/"
             Language="1033">
         <Package Id="8ae7c577-d890-4c31-a7f5-5f0374d5d242"
                 Comments="This MSI file installs Jam."
@@ -10,7 +10,7 @@
         <Media Id="1" EmbedCab="yes" Cabinet="Jam.cab"/>
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
-                <Directory Id="JamDir" Name="Jam-1_5_0" LongName="Jam 1.5.0">
+                <Directory Id="JamDir" Name="Jam-@MAJOR@_@MINOR@_@SUBMINOR@" LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@">
                     <Component Id="Source Code"
                             Guid="9a18623b-01a7-4ffa-8b27-2bee2e01a0e8">
                         <File Id="src" Name="JamSrc.zip"
@@ -33,7 +33,7 @@
                                     src="bin/Jam.exe">
                                 <Shortcut Id="Program shortcut"
                                         Directory="ProgramMenuFolder" Name="Jam"
-                                        LongName="Jam 1.5.0"
+                                        LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@"
                                         Show="normal"
                                         WorkingDirectory="TARGETDIR"/>
                             </File>
@@ -41,7 +41,7 @@
                                     src="bin/JamHelp.exe">
                                 <Shortcut Id="Help shortcut"
                                         Directory="ProgramMenuFolder" Name="JamHelp"
-                                        LongName="Jam 1.5.0 Help"
+                                        LongName="Jam @MAJOR@.@MINOR@.@SUBMINOR@ Help"
                                         Show="normal"
                                         WorkingDirectory="TARGETDIR"/>
                             </File>
