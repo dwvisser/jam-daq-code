@@ -44,19 +44,18 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	protected void execute(final Object[] cmdParams) {
 		File file=null;
 		if (cmdParams!=null) {
-			if (cmdParams.length>0)
-				file =(File)cmdParams[0];			
+			if (cmdParams.length>0){
+				file =(File)cmdParams[0];
+			}
 		}		
 		readHDFFile(file);
 	}
-	/**
+	
+	/*
 	 * Read in a HDF file
-	 * @param cmdParams
 	 */ 
-	private void readHDFFile(File file) {
-
-		final boolean isFileReading;		
-
+	private void readHDFFile(final File file) {
+		final boolean isReading;		
 		if (file==null) {//No file given				
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
@@ -64,19 +63,19 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	        // dont do anything if it was cancel
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	        	file = jfile.getSelectedFile();
-	        	openFile=file;	//Save for callback
+	        	final File selectedFile = jfile.getSelectedFile();
+	        	openFile=selectedFile;	//Save for callback
 	        	DataBase.getInstance().clearAllLists();
 	    		hdfio.setListener(this);
-				isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);	        	
+				isReading=hdfio.readFile(FileOpenMode.OPEN, selectedFile);	        	
 	        } else {
-	        	isFileReading=false;
+	        	isReading=false;
 	        }	
 		} else {
-			isFileReading=hdfio.readFile(FileOpenMode.OPEN, file);
+			isReading=hdfio.readFile(FileOpenMode.OPEN, file);
 		}
 		//File was not read in so no call back do notify here		
-		if (!isFileReading){	
+		if (!isReading){	
 			hdfio.removeListener();
 			notifyApp(null);
 		}								
@@ -90,40 +89,35 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		if (cmdTokens.length==0) {
 			execute(null);
 		} else {
-			File file = new File(cmdTokens[0]); 
+			final File file = new File(cmdTokens[0]); 
 			cmdParams[0]=file;
 			execute(cmdParams);
 		}
 	}
 
 	private void notifyApp(File file) {
-		
-		Histogram firstHist;
- 
-		//Set general status 
-		STATUS.setOpenFile(file);
-		AbstractControl.setupAll();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		
-		//Set selection of group and histogram
-		
-		//Set to first group
-		if (Group.getGroupList().size()>0 ) {
-			Group.setCurrentGroup((Group)Group.getGroupList().get(0));
-		}
-		//Set the current histogram to the first opened histogram
-		if (Group.getCurrentGroup().getHistogramList().size()>0 ) {
-			firstHist = (Histogram)Group.getCurrentGroup().getHistogramList().get(0);
-		}else{
-			firstHist=null;
-		}			
-		STATUS.setCurrentHistogram(firstHist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-	}			
+        Histogram firstHist = null;
+        /* Set general status. */
+        STATUS.setOpenFile(file);
+        AbstractControl.setupAll();
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        /* Set selection of group and histogram. Set to first group */
+        if (Group.getGroupList().size() > 0) {
+            Group.setCurrentGroup((Group) Group.getGroupList().get(0));
+        }
+        /* Set the current histogram to the first opened histogram. */
+        if (Group.getCurrentGroup().getHistogramList().size() > 0) {
+            firstHist = (Histogram) Group.getCurrentGroup().getHistogramList()
+                    .get(0);
+        }
+        STATUS.setCurrentHistogram(firstHist);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+                firstHist);
+    }			
 	
 	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
@@ -136,7 +130,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */
-	public void CompletedIO(String message, String errorMessage) {
+	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
 		notifyApp(openFile);
 		openFile=null;
