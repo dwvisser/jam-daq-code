@@ -96,7 +96,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 					((JComboBox) ae.getSource()).getSelectedItem();
 				if (item instanceof Gate) {
 					final Gate gate = (Gate) item;
-					if (gate != null) {
+					if (gate != null  && gate.isDefined()) {
 						selectGate(gate);
 					}
 				}
