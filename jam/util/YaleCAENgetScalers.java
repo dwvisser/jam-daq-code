@@ -33,8 +33,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.swing.ProgressMonitor;
+
 public class YaleCAENgetScalers {
 
+	private ProgressMonitor pBstatus;
 	private final Frame frame;
 	private final MessageHandler console;
 	private String strScalerText;
@@ -51,6 +54,20 @@ public class YaleCAENgetScalers {
 		new TextDisplayDialog(frame, fileName, false, strScalerText);
 	}
 	
+	public void processEventFile(final File events){
+		final Runnable r=new Runnable(){
+			public void run(){
+				if (doIt(events)) {
+					display();				
+				} else {  
+					console.errorOutln("Reading Yale CAEN Scalers "+getErrorTxt());
+				}
+			}
+		};
+		final Thread t=new Thread(r);
+		t.start();		
+	}
+	
 	/**
 	 * Takes an event file, searches for scaler blocks in it and 
 	 * creates tab-delimited text listing each scaler block on one
@@ -59,30 +76,46 @@ public class YaleCAENgetScalers {
 	 * @param events the file to search
 	 * @return whether we were successful
 	 */
-	public boolean processEventFile(File events) {
+	private boolean doIt(File events) {
+		final int mega=1024*1024;
+		final long fileLength=events.length();
+		final int lengthMB=(int)(fileLength/mega);
+		pBstatus=new ProgressMonitor(frame, "Scanning " +events.getName()+
+		" for scaler blocks", "Initializing", 0, lengthMB);
 		boolean rtnState = true;
 		final StringBuffer strBuff = new StringBuffer();
 		final int SCALER_HEADER = 0x01cccccc;
 		DataInputStream dis = null;
 		strError.delete(0, strError.length());
+		int counter=0;
+		int megaCounter=0;
 		try {
 			dis =
 				new DataInputStream(
 					new BufferedInputStream(new FileInputStream(events)));
-			dis.skipBytes(256);
+			counter += dis.skipBytes(256);
 			int blockNum = 0;
 			while (true) {
 				int read_val = dis.readInt();
+				counter+=4;
 				if (read_val == SCALER_HEADER) {
 					blockNum++;
 					int numScalers = dis.readInt();
+					counter+=4;
 					for (int i = 1; i <= numScalers; i++) {
 						strBuff.append(dis.readInt());
+						counter+=4;
 						if (i < numScalers) {
 							strBuff.append('\t');
 						}
 					}
 					strBuff.append('\n');
+				}
+				if (counter >= mega){
+					counter -= mega;
+					megaCounter++;
+					updateProgressBar(megaCounter+" of "+lengthMB+" MB read.", 
+					megaCounter);
 				}
 			}
 			//End of file reached	
@@ -91,6 +124,7 @@ public class YaleCAENgetScalers {
 				//Bury close exception
 				try {
 					dis.close();
+					updateProgressBar("Done.",lengthMB);
 					rtnState = true;
 				} catch (Exception e) {
 					strError.append(e.getMessage());
@@ -109,5 +143,11 @@ public class YaleCAENgetScalers {
 	public String getErrorTxt() {
 		return strError.toString();
 	}
+
+	private void updateProgressBar(final String text, final int value){
+		pBstatus.setNote(text);
+		pBstatus.setProgress(value);
+	}
+	
 
 }
