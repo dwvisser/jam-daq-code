@@ -175,9 +175,6 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         ScientificData sciData=null;
         boolean hasErrors=false;
         AbstractHist1D hist1dWithErrors=null;
-        //FIXME KBS remove
-        //final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
-         //       HIST_TYPE);
 
         /* vGroup Annotation is Histogram title */
         final NumericalDataGroup ndg = new NumericalDataGroup();
@@ -308,10 +305,6 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      */		
 	VdataDescription convertScalers(List scalers)  {
                 
-		//FIXME KBS delete
-       // final VirtualGroup scalerGroup = new VirtualGroup(
-       //         SCALER_SECT, FILE_SECTION);
-       // new DataIDLabel(scalerGroup, SCALER_SECT);
         final int size = scalers.size();        
         final short[] types = { VdataDescription.DFNT_INT32,
                 VdataDescription.DFNT_CHAR8, VdataDescription.DFNT_INT32 };
@@ -334,11 +327,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
             data.addChars(1, i, STRING_UTIL.makeLength(scaler.getName(), orders[1]));
             data.addInteger(2, i, scaler.getValue());
         }
-        
-        //FIXME KBS delete
-        //scalerGroup.addDataObject(desc); //add vData description to gate VG        
-       // scalerGroup.addDataObject(data); //add vData to gate VG
-        
+                
         return desc;
 	}
 
@@ -387,12 +376,6 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
      */		
 	VdataDescription convertParameters(List parameters) {
 		
-		//FIXME KBS remove
-		/*
-	    final VirtualGroup paramGroup = new VirtualGroup(
-	            PARAMETERS, FILE_SECTION);
-	    new DataIDLabel(paramGroup, PARAMETERS);
-		*/
 	    final short[] types = { VdataDescription.DFNT_CHAR8,
 	            VdataDescription.DFNT_FLT32 };
 	    final short[] orders = new short[2];
@@ -409,9 +392,6 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 	        data.addChars(0, i, util.makeLength(param.getName(), orders[0]));
 	        data.addFloat(1, i, (float) param.getValue());
 	    }
-	    //FIXME KBS remove
-	    //paramGroup.addDataObject(desc); //add vData description to gate VG
-	    //paramGroup.addDataObject(data); //add vData to gate VG
 
 	    return desc;
 	}
