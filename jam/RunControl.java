@@ -260,7 +260,7 @@ public class RunControl extends JDialog implements Controller, ActionListener {
      *
      * @exception   JamException    all exceptions given to <code>JamException</code> go to the console
      */
-    void startAcq() throws JamException {
+    public void startAcq() {
         netDaemon.setState(GoodThread.RUN);
         vmeComm.startAcquisition();
         // if we are in a run, display run number
@@ -279,7 +279,7 @@ public class RunControl extends JDialog implements Controller, ActionListener {
     /**
      * Tells VME to stop acquisition, and suspends the net listener.
      */
-    void stopAcq() throws JamException {
+    public void stopAcq() {
         vmeComm.stopAcquisition();
         /*Commented out next line to see if this stops our problem of "leftover"
          *buffers DWV 15 Nov 2001 */
