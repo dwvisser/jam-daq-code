@@ -220,8 +220,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	 * data set.
 	 */
 	void displayHistogram(Histogram hist) {
-		plotHistNumber=hist.getNumber();
+
 		if (hist != null) {
+			plotHistNumber=hist.getNumber();			
 			plotLimits = Limits.getLimits(hist);
 			if (plotLimits == null) {
 				JOptionPane.showMessageDialog(null,

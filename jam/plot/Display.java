@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
-
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
 import javax.swing.JPanel;
 
 /**
@@ -31,7 +32,10 @@ import javax.swing.JPanel;
  * @see java.awt.Graphics
  * @since JDK1.1
  */
-public final class Display extends JPanel implements  PlotSelectListener, Observer {
+public final class Display extends JPanel implements  PlotSelectListener,
+														PreferenceChangeListener,
+														PlotPrefs,
+														Observer {
 
 	private static final String KEY1 = "1D Plot";
 
@@ -55,6 +59,12 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 	private PlotGraphicsLayout graphLayout;
 	/** Current  view */
 	private View currentView;
+	/** Is scrolling enabled */ 
+	private boolean isScrolling;
+	/** show axis lables */
+	private boolean isAxisLabels;
+	/** The number of plots */
+	private int numberPlots;
 	/** Tool bar with plot controls (zoom...) */
 	private final Toolbar toolbar;
 	
@@ -77,12 +87,15 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		Bin.Factory.init(this);
 		//display event handler
 		action = new Action(this, jc); 
+		prefs.addPreferenceChangeListener(this);
 		
 		plotList=new ArrayList();		
 		
 		createGridPanel();
 		
-		toolbar = new Toolbar(this, action);
+		toolbar = new Toolbar(this, action);		
+
+		initPrefs();
 		
 		//Initial view only 1 plot
 		//setView(1,1);
@@ -90,6 +103,12 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 					
 	}
 	
+	private final void initPrefs() {
+		prefs.addPreferenceChangeListener(this);
+		isScrolling=prefs.getBoolean(ENABLE_SCROLLING, true);
+		isAxisLabels=prefs.getBoolean(DISPLAY_AXIS_LABELS, true);
+	}
+		
 	/**
 	 * Constructor helper
 	 * Create a panel for plots
@@ -121,7 +140,6 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		currentView=viewIn;
 		
 		Plot plot=null;
-		int numberPlots;
 		int plotLayout;
 		int i;
 
@@ -134,26 +152,58 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 		createPlots(numberPlots);
 
 		//Type of layout
-		if (numberPlots>1)
-			plotLayout=Plot.LAYOUT_TYPE_TILED;
-		else
-			plotLayout=Plot.LAYOUT_TYPE_FULL;
-
+		updateLayout();
+		
 		//Set properties for each plot
 		plotGridPanel.removeAll();
 		for (i=0;i<numberPlots;i++){
 			plot =(Plot)(plotList.get(i));
 			plot.setNumber(i);
 			plotGridPanel.add(plot);			
-			plot.setLayoutType(plotLayout);		
 			Histogram hist=currentView.getHistogram(i);
-			if (hist!=null)
-				plot.displayHistogram(hist);
+			plot.displayHistogram(hist);
+				
 		}
 
 		setPlot(plot);			
 	}
-	
+
+	/**
+	 * Update the layoug, show axis and title
+	 * or not 
+	 *
+	 */
+	private void updateLayout(){
+		
+		Plot plot;
+		int plotLayout;
+		int i;
+		boolean scrollTemp;
+		
+		//Single plot aways has axis showing
+		if (numberPlots==1) {
+			if (isAxisLabels) {
+				plotLayout=Plot.LAYOUT_TYPE_FULL;
+			}else {
+				plotLayout=Plot.LAYOUT_TYPE_TILED;
+			}			
+			//plotLayout=Plot.LAYOUT_TYPE_FULL;
+			scrollTemp=true;
+		} else {
+			//if (isAxisLabels) {
+			//	plotLayout=Plot.LAYOUT_TYPE_FULL;
+			//}else {
+			//	plotLayout=Plot.LAYOUT_TYPE_TILED;
+			//s}
+			plotLayout=Plot.LAYOUT_TYPE_TILED;
+			scrollTemp=isScrolling;
+		}
+		for (i=0;i<numberPlots;i++){
+			plot =(Plot)(plotList.get(i));
+			plot.setLayoutType(plotLayout);		
+			plot.enableScrolling(scrollTemp);
+		}
+	}
 	/**
 	 * Set the view, tiled layout of plots
 	 * 
@@ -271,7 +321,6 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		}
 	}
-
 	/**
 	 * Update all the plots
 	 *
@@ -435,7 +484,22 @@ public final class Display extends JPanel implements  PlotSelectListener, Observ
 			plot.displayHistogram(hist);			
 		} 
 		
-		plot.repaint();
-		
+		plot.repaint();	
 	}
+	/**
+	 * Preferences changed
+	 */
+	public void preferenceChange(PreferenceChangeEvent pce) {
+		final String key = pce.getKey();
+		final String newValue = pce.getNewValue();
+
+		if (key.equals(PlotPrefs.ENABLE_SCROLLING)){
+			isScrolling=Boolean.valueOf(newValue).booleanValue();
+		} else if (key.equals(PlotPrefs.DISPLAY_AXIS_LABELS)){		
+			isAxisLabels=Boolean.valueOf(newValue).booleanValue();
+		}
+		updateLayout();
+		update();
+	}
+	
 }

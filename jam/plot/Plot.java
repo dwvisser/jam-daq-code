@@ -82,15 +82,19 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 
 	private final Scroller scroller1d, scroller2d;
 
+	private boolean isSelected;
+	
+	private boolean isScrolling;
+
 	private final PlotSelectListener plotSelectListener;
 
 	private final List overlays = Collections.synchronizedList(new ArrayList());
 
-	private boolean isSelected;
-
 	private int layoutType, plotNumber;
 
 	private AbstractPlot currentSubPlot;
+	
+	private int currentHistNumber;
 
 	public Plot(Action action, PlotGraphicsLayout graphicsLayout,
 			PlotSelectListener plotSelect) {
@@ -115,7 +119,10 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(this, KEY1);
 		currentSubPlot = plot1d;
-		PlotPrefs.prefs.addPreferenceChangeListener(this);
+		//FIXME KBS tempory test
+		//enableScrolling(false);
+		//Enable prefernce
+		prefs.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -161,9 +168,9 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 */
 	void displayHistogram(Histogram hist) {
 		select(true);
-		final int dim = hist.getDimensionality();
-		final String key;
-		synchronized (plotLock) {
+		if (hist!=null){
+			final int dim = hist.getDimensionality();
+			String key;
 			if (dim == 1) {
 				currentSubPlot = plot1d;
 				key = KEY1;
@@ -171,9 +178,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 				currentSubPlot = plot2d;
 				key = KEY2;
 			}
-			currentSubPlot.displayHistogram(hist);
+			plotSwapPanelLayout.show(this, key);
+			currentHistNumber = hist.getNumber();					
+		}else {
+			plotSwapPanelLayout.show(this, KEY1);
+			currentHistNumber=-1;
 		}
-		plotSwapPanelLayout.show(this, key);
+		currentSubPlot.displayHistogram(hist);	
 	}
 
 	/**
@@ -218,8 +229,9 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	public int getDimensionality() {
 		return (getPlot() == plot1d) ? 1 : 2;
 	}
-
-	void enableScrolling(boolean enable) {
+	
+	void enableScrolling(boolean enable){
+		isScrolling=enable;
 		scroller1d.enableScrolling(enable);
 		scroller2d.enableScrolling(enable);
 	}
@@ -488,13 +500,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
-		if (PlotPrefs.ENABLE_SCROLLING.equals(key)) {
-			enableScrolling(Boolean.valueOf(newValue).booleanValue());
-		}
-		/*
-		 * all AbstractPlot's are already registered with prefs.
-		 */
-		//currentSubPlot.preferenceChange(pce);
+
 	}
 
 }
