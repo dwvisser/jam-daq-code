@@ -19,7 +19,7 @@ import javax.swing.JFileChooser;
 public class SaveGroupHDFCmd extends AbstractCommand {
 
 	public void initCommand() {
-		putValue(NAME, "Save group as\u2026");
+		putValue(NAME, "Save select group as\u2026");
 	}
 	
 	protected void execute(Object[] cmdParams) throws CommandException {
@@ -47,7 +47,7 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 				hdfio.writeFile(file, group.getHistogramList());
 			}
 		} else {
-			throw new CommandException("Need to select a group");
+			msghdlr.errorOutln("Need to select a group.");
 		}
 			
 
