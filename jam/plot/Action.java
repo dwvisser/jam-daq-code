@@ -2,8 +2,6 @@ package jam.plot;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -88,8 +86,8 @@ public class Action
 	private final List clicks = new ArrayList();
 	private final Map commandMap;
 	private double countLow, countHigh;
-	private final Collection empty =
-		Collections.unmodifiableList(new ArrayList());
+	/*private final Collection empty =
+		Collections.unmodifiableList(new ArrayList());*/
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -341,10 +339,8 @@ public class Action
 					textOut.errorOutln(
 						getClass().getName() + ".plotMousePressed()" + ge);
 				}
-				currentPlot.displaySetGate(
-					Plot.GATE_CONTINUE,
-					pChannel,
-					pPixel);
+				currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE,
+				pChannel,pPixel);
 			} else {
 				/* output counts for the channel */
 				currentPlot.markChannel(cursor);
@@ -630,7 +626,7 @@ public class Action
 						+ numFormat.format(fwhm),
 					MessageHandler.END);
 
-			} else {
+			} else {//2D histogram
 				textOut.messageOut(getCoordString(cursor));
 				final double area =
 					inquire.getArea(
@@ -957,7 +953,8 @@ public class Action
 	private void init() {
 		synchronized (this) {
 			commandPresent = true;
-			clicks.retainAll(empty);
+			//clicks.retainAll(empty);
+			clicks.clear();
 		}
 	}
 
@@ -969,7 +966,8 @@ public class Action
 			commandPresent = false;
 			mousePressed = false;
 			inCommand = null;
-			clicks.retainAll(empty);
+			clicks.clear();
+			//clicks.retainAll(empty);
 		}
 	}
 
