@@ -26,7 +26,7 @@ public class InitialHistograms{
         makehists();
     }
 
-    public void makehists() throws DataException{
+    private void makehists() throws DataException{
         //histogram with Jam name 2d
         Histogram histJam2d=new Histogram("Histogram2D", "Jam Name 2D",histNameJam2d());    //fake histogram
         histStart=histJam2d;
