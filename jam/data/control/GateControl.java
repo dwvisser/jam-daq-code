@@ -51,13 +51,11 @@ WindowListener,Observer  {
     /* new gate dialog box */
     private final JDialog dnew;
     private final JTextField textNew;
-	//private GateControlComboBoxModel2 caddModel;
 	
     /* add gate dialog box */
     private final JDialog dadd;
     final private JComboBox cadd;
 
-    
     private final JamStatus status;
 
     /**
@@ -509,7 +507,14 @@ WindowListener,Observer  {
     
 	private void unset(){
 		currentGate.unsetLimits();
-		messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
+		try{
+			broadcaster.broadcast(BroadcastEvent.GATE_SET_OFF);
+			messageHandler.messageOutln("Gate UnSet: "+currentGate.getName());
+			cancel();
+		} catch (GlobalException ge){
+			messageHandler.errorOutln(getClass().getName()+".unset(): "+
+			ge.getMessage());
+		}
 	}
     
     /**
