@@ -107,7 +107,7 @@ public class Display
 	public Display(MessageHandler mh) {
 		msgHandler = mh; //where to send output messages
 		action = new Action(this, msgHandler);// display event handler
-		final int size=500;
+		final int size=400;
 		setPreferredSize(new Dimension(size,size));
 		final int minsize=400;
 		setMinimumSize(new Dimension(minsize,minsize));
