@@ -384,7 +384,9 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	void setBinWidth(double x) {
 		getPlot().setBinWidth(x);
 	}
-
+	double getBinWidth(){
+		return getPlot().getBinWidth();
+	}
 	void setSelectingArea(boolean tf) {
 		getPlot().setSelectingArea(tf);
 	}

@@ -210,7 +210,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
 			currentPlot.displayHistogram(hist);			 
-			toolbar.setHistogramDimension(hist.getDimensionality());
+			toolbar.setHistogramProperties(hist.getDimensionality(), currentPlot.getBinWidth());
 			
 		}
 		/* Add to view */

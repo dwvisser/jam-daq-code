@@ -294,13 +294,19 @@ class Toolbar extends JToolBar implements ActionListener {
 		return rval.toString();
 	}
 
-	void setHistogramDimension(int dimension){
+	void setHistogramProperties(int dimension, double binWidth){
+
 		final boolean enable = dimension==1;
 		bgoto.setEnabled(enable);
-		//brebin.setEnabled(enable);
 		bnetarea.setEnabled(enable);
 		isSyncEvent=true;
+			//Convert double to int string
+			String strBinWidth = new Integer( new Double(binWidth).intValue()).toString();
 			comboBinRatio.setSelectedIndex(0);
+			for (int i=0;i<REBIN_RATIOS.length; i++){
+				if (strBinWidth.equals(REBIN_RATIOS[i]))
+					comboBinRatio.setSelectedIndex(i);
+			}
 			comboBinRatio.setEnabled(enable);
 		isSyncEvent=false;			
 	}

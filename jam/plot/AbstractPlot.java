@@ -612,6 +612,9 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 	synchronized void setBinWidth(double x) {
 		binWidth = x;
 	}
+	synchronized double getBinWidth() {
+		return binWidth;
+	}
 
 	/**
 	 * Get histogram counts at the specified point, which is given in channel
