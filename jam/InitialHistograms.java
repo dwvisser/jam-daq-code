@@ -48,7 +48,7 @@ public class InitialHistograms{
     /**
      * Make a 1 d histogram that says JAM.
      */
-    public int [] histNameJam1d(){
+    private int [] histNameJam1d(){
         sizeX=1024;
         int startCh;
         counts = new int [sizeX];
@@ -97,7 +97,7 @@ public class InitialHistograms{
         return counts;
     }
     
-    public int [][] histNameJam2d(){
+    private int [][] histNameJam2d(){
         sizeX=256;
         sizeY=256;
         int startCh;      //start channel for a loop
@@ -177,7 +177,7 @@ public class InitialHistograms{
      * Make a numer of triangle to display in a 1 D Plot
      *
      */
-    public int [] histTriangle(){
+    private int [] histTriangle(){
         sizeX=1024;
         int range;
         int position;
