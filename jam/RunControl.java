@@ -97,9 +97,6 @@ public class RunControl implements Controller, ActionListener {
      *Run dialog box
      */
     private JDialog d;
-    private JCheckBox writeHistograms;
-    private JCheckBox writeGates;
-    private JCheckBox writeScalers;
     private JButton bbegin;
     private JButton bend;
     private JTextField textRunNumber, textRunTitle, textExptName;
