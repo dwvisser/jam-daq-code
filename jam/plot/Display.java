@@ -262,12 +262,11 @@ public final class Display extends JPanel implements Observer {
 			action.setDefiningGate(false);
 		}
 		if (hist != null) {
-			if ((hist.getType() == Histogram.ONE_DIM_INT)
-					|| (hist.getType() == Histogram.ONE_DIM_DOUBLE)) {
+			final int dim=hist.getDimensionality();
+			if (dim==1) {
 				/* Show plot repaint if last plot was also 1d. */
 				setPlot(plot1d);
-			} else if ((hist.getType() == Histogram.TWO_DIM_INT)
-					|| (hist.getType() == Histogram.TWO_DIM_DOUBLE)) {
+			} else if (dim==2) {
 				/* Show plot repaint if last plot was also 2d. */
 				setPlot(plot2d);
 			}
