@@ -41,6 +41,8 @@
 				<string>true</string>
 				<key>apple.laf.useScreenMenuBar</key>
 				<string>true</string>
+				<key>apple.awt.brushMetalLook</key>
+				<string>true</string>
 			</dict>
 		</dict>
 	</dict>
