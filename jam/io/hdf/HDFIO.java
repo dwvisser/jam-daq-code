@@ -482,7 +482,6 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     Group.setCurrentGroup(sortName);
                 } // else mode == FileOpenMode.ADD, so use current group
                 
-                //FIXME takes a long time needs to update progress
                 hdfToJam.setInFile(inHDF);
                 final int numHists =hdfToJam.convertHistograms(mode, histNames);
                 message.append(numHists).append(" histograms");
@@ -562,7 +561,9 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 DataObject.clearAll();
                 /* Read in histogram names */
                 inHDF = new HDFile(infile, "r");
+                inHDF.setLazyLoadData(true);
                 inHDF.readFile();
+                DataObject.interpretBytesAll();
                 rval.addAll(loadHistogramAttributes());
                 inHDF.close();
             } catch (HDFException except) {

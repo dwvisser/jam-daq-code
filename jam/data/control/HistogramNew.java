@@ -174,11 +174,14 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Show the dialog.
 	 */
+
 	public void show() {
 		doSetup();
-		setVisible(true);
+		super.show();
+		//FIXME setVisible lead to a stack overflow
+		//setVisible(true);
 	}
-	
+
 	/**
 	 * Initializes chooser properly.
 	 */
