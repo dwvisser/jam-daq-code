@@ -38,7 +38,6 @@ WindowListener,Observer  {
     /* set gate dialog box */
     private final JDialog dgate;
     final private JComboBox cgate;
-    /*private GateComboBoxModel cgateModel;*/
     private final JLabel lLower;
     private final JTextField textLower;
     private final JLabel lUpper;
