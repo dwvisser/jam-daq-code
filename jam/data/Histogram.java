@@ -777,13 +777,17 @@ public final class Histogram implements Serializable {
 	public synchronized void addGate(Gate gate) {
 		if (gate.type == Gate.ONE_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 1) {
-				gates.add(gate);
+				if (!gates.contains(gate)){ 
+					gates.add(gate);
+				}
 			} else {
 				throw new UnsupportedOperationException("Can't add 1-d gate to 2-dim histogram.");
 			}
 		} else if (gate.type == Gate.TWO_DIMENSION) {
 			if (gate.histogram.getDimensionality() == 2) {
-				gates.add(gate);
+				if (!gates.contains(gate)){ 
+					gates.add(gate);
+				}
 			} else {
 				throw new UnsupportedOperationException("Can't add 2-d gate to 1-dim histogram.");
 			}
