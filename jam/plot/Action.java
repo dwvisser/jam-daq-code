@@ -91,6 +91,7 @@ public class Action
 
 	//variables for commands
 	private Point cursor = new Point();
+	private Point pixel = new Point();
 	private double cursorCount;
 	private final List clicks = new ArrayList();
 	private final Map commandMap;
@@ -334,6 +335,7 @@ public class Action
 		}
 		/* cursor position and counts for that channel */
 		cursor = pChannel;
+		pixel =pPixel;
 		cursorCount = currentPlot.getCount(pChannel);
 		/* there is a command currently being processed */
 		if (commandPresent) {
@@ -632,9 +634,12 @@ public class Action
 				MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
 			addClick(cursor);
+			currentPlot.setMarkingArea(true);
+			currentPlot.markingArea(pixel);
 			currentPlot.markChannel(cursor);
 			textOut.messageOut(getCoordString(cursor) + " to ");
 		} else {
+			currentPlot.setMarkingArea(false);
 			final Point lim1 = getClick(0);
 			if (currentPlot instanceof Plot1d) {
 				textOut.messageOut(String.valueOf(cursor.x));
@@ -1003,6 +1008,7 @@ public class Action
 			commandPresent = false;
 			mousePressed = false;
 			inCommand = null;
+			currentPlot.setMarkingArea(false);
 			clicks.clear();
 		}
 	}

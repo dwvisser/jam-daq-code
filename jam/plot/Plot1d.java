@@ -142,6 +142,24 @@ class Plot1d extends Plot {
 	}
 
 	/**
+	 * Marking Area. The y-values are ignored.
+	 * 
+	 * @param p1 starting data point
+	 */
+	public void markingArea(Point p1) {
+		areaPoint=p1;
+	}
+	
+	void paintMarkingArea(Graphics g) {
+	//FIXME KBS	final Graphics2D g2=(Graphics2D)g;
+	//	g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+	//	0.5f));
+	//	g.setColor(PlotColorMap.area);
+	//	graph.update(g, viewSize, plotLimits);
+	//	graph.markArea1d(areaMark1, areaMark2, counts);
+	}
+	
+	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
 	 * @param minChanX the lower x channel
@@ -151,8 +169,8 @@ class Plot1d extends Plot {
 	 */
 	public void markArea(Point p1, Point p2) {
 		synchronized (this) {
-			markingArea = (p1 != null) && (p2 != null);
-			if (markingArea) {
+			markArea = (p1 != null) && (p2 != null);
+			if (markArea) {
 				areaMark1 = Math.min(p1.x, p2.x);
 				areaMark2 = Math.max(p1.x, p2.x);
 			}

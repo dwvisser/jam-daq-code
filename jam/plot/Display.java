@@ -456,6 +456,7 @@ public class Display
 				setPlot(plot2d);
 			}
 			currentPlot.setMarkingArea(false);
+			currentPlot.setMarkArea(false);
 			currentPlot.setMarkingChannels(false);
 		} else { //null histogram lets be in plot1d
 			plotswapLayout.show(plotswap, "OneD");

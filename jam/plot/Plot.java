@@ -3,16 +3,12 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
 
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Polygon;
+
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.print.PageFormat;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.util.List;
@@ -27,7 +23,7 @@ import java.util.ArrayList;
  * @since JDK 1.1
  * @author Ken Swartz
  */
-public abstract class Plot extends JPanel {
+public abstract class Plot extends JPanel implements MouseMotionListener, MouseListener {
 
 	/**
 	 * Specifies Zoom direction, zoom out
@@ -106,11 +102,15 @@ public abstract class Plot extends JPanel {
 	protected final Polygon pointsGate = new Polygon();
 	boolean settingGate = false;
 
+	//Area stuff
+	protected Point areaPoint= new Point();
+	
 	//are we display more than a histogram
 	protected boolean displayingGate = false;
 	protected boolean displayingFit = false;
 	protected boolean displayingOverlay = false;
 	protected boolean markingArea = false;
+	protected boolean markArea = false;	
 	protected boolean markingChannels = false;
 	protected GateSetMode gateSetMode = GateSetMode.GATE_CANCEL;
 
@@ -343,6 +343,22 @@ public abstract class Plot extends JPanel {
 	}
 
 	/**
+	 * Marking an area on the plot.
+	 * 
+	 * @param p1 starting points (corner for 2d)
+	 */
+	public abstract void markingArea(Point p1);
+
+	synchronized void setMarkingArea(boolean tf){
+		markingArea=tf;
+		if (markingArea) {
+			this.addMouseMotionListener(this);
+		} else {
+			this.removeMouseMotionListener(this);
+		}							
+	}
+
+	/**
 	 * Mark an area on the plot.
 	 * 
 	 * @param p1 first corner of rectangle
@@ -350,8 +366,8 @@ public abstract class Plot extends JPanel {
 	 */
 	public abstract void markArea(Point p1, Point p2);
 	
-	synchronized void setMarkingArea(boolean tf){
-		markingArea=tf;
+	synchronized void setMarkArea(boolean tf){
+		markArea=tf;
 	}
 
 	/**
@@ -528,6 +544,7 @@ public abstract class Plot extends JPanel {
 		displayingFit = false;
 		displayingOverlay = false;
 		markingArea = false;
+		markArea = false;
 		setMarkingChannels(false);
 		refresh();
 	}
@@ -595,6 +612,9 @@ public abstract class Plot extends JPanel {
 				paintFit(g);
 			}
 			if (markingArea) {
+				paintMarkingArea(g);
+			}			
+			if (markArea) {
 				paintMarkArea(g);
 			}
 			if (settingGate){
@@ -679,6 +699,14 @@ public abstract class Plot extends JPanel {
 		}
 		graph.drawBorder();
 	}
+
+	/**
+	 * Method for painting a area while it
+	 * is been marked
+	 * 
+	 * @param g the graphics context
+	 */
+	abstract void paintMarkingArea(Graphics g);
 
 	/**
 	 * Method for painting a clicked area.
@@ -865,4 +893,61 @@ public abstract class Plot extends JPanel {
 	int getSizeY() {
 		return sizeY;
 	}
+
+	/**
+	 * Not used.
+	 * 
+	 * @param me created when the mouse is moved
+	 */
+	public void mouseMoved(MouseEvent me) {	
+	}
+	/**
+	 * Not used.
+	 * 
+	 * @param me created when the mouse is dragged across the plot
+	 * with the button down
+	 */
+	public void mouseDragged(MouseEvent me) {
+	}
+
+	/**
+	 * Not used.
+	 * 
+	 * @param me created when the mouse button is pressed on the plot
+	 */
+	public void mousePressed(MouseEvent me) {
+	}
+
+	/**
+	 * Not used.
+	 *
+	 * @param e created when the mouse is clicked on the plot
+	 */
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	/**
+	 * Not used.
+	 *
+	 * @param e created when the mouse pointer enters the plot
+	 */
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	/**
+	 * Not used.
+	 * 
+	 * @param e created when mouse exits the plot
+	 */
+	public void mouseExited(MouseEvent e) {
+	}
+
+	/**
+	 * Not used.
+	 *
+	 * @param e created when the mouse is released
+	 */
+	public void mouseReleased(MouseEvent e) {
+	}
+	
 }
