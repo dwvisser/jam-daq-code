@@ -26,8 +26,8 @@ public class Group {
         final private static int TYPE_TEMP = 3;        
         final int type;
 
-        private Type(int i) {
-            type = i;
+        private Type(int kind) {
+            type = kind;
         }
 
         /**
@@ -174,11 +174,12 @@ public class Group {
     /** 
      * Clear all groups 
      */
-    public static void clearList() {
+    public static synchronized void clearList() {
         NAME_MAP.clear();
         LIST.clear();
         /* Cast needed because of overloaded method. */
-        setCurrentGroup((Group)null);
+        createGroup(WORKING_NAME,Group.Type.TEMP);
+        setCurrentGroup(WORKING_NAME);
         sortGroup=null;
     }
 
@@ -260,6 +261,14 @@ public class Group {
     public List getHistogramList() {
         return Collections.unmodifiableList(histList);
     }
+    
+    /**
+     * Returns whether this group has histograms in it.
+     * @return whether this group has histograms in it
+     */
+    public boolean hasHistograms(){
+        return !histList.isEmpty();
+    }
 
     /**
      * @return map of histograms in this group keyed by name
@@ -268,10 +277,19 @@ public class Group {
         return Collections.unmodifiableMap(histogramMap);
     }
 
+    /**
+     * Add a scaler to the stored list of scalers.
+     * 
+     * @param scaler to add
+     */
     public void addScaler(Scaler scaler) {
     	 scalerList.add(scaler);    	    	
     }
     
+    /**
+     * Returns a view of the list of scalers.
+     * @return a view of the list of scalers
+     */
     public List getScalerList() {
         return Collections.unmodifiableList(scalerList);
     }
