@@ -7,6 +7,7 @@ import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 
+//FIXME KBS not yet used.
 /**
  * Delete a group
  * 
