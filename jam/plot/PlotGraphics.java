@@ -62,7 +62,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 	private FontMetrics fm;
 	private int numberColors;
 	private int[] colorThresholds;
-	private Color[] colorScale;
 	private Tickmarks tm;
 	/**
 	 * Border for plot in pixels
@@ -716,7 +715,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 	void drawScale2d(Color[] colors) {
 		int lowerLimit = minCount;
 		int upperLimit = maxCount;
-		colorScale = colors;
 		numberColors = colors.length;
 		colorThresholds = new int[numberColors];
 		colorThresholds =
@@ -750,7 +748,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 		}
 		/* draw colors on side */
 		for (int k = 0; k < numberColors; k++) {
-			g.setColor(colorScale[k]);
+			g.setColor(colors[k]);
 			g.fillRect(viewRight + COLOR_SCALE_OFFSET, //horizontal
 			viewBottom - COLOR_SCALE_SIZE - k * COLOR_SCALE_SIZE, //vertical
 			COLOR_SCALE_SIZE, COLOR_SCALE_SIZE); //size
@@ -826,16 +824,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	void drawHist2d(double[][] counts, int minChanX, int minChanY,
 	int maxChanX, int maxChanY, Color[] colors) {
-		double count;
-		int channelWidth, channelHeight;
-
-		int x = 0;
-		int y = 0;
-
 		int minCounts = minCount;
 		int maxCounts = maxCount;
 
-		colorScale = colors;
 		numberColors = colors.length;
 		colorThresholds = new int[numberColors];
 		colorThresholds =
@@ -847,43 +838,37 @@ class PlotGraphics implements PlotGraphicsLayout {
 		//for data each point
 		for (int j = minChanY; j <= maxChanY; j++) {
 			for (int i = minChanX; i <= maxChanX; i++) {
-				count = counts[i][j];
+				final double count = counts[i][j];
 				//quickly check above lower limit
 				if (count > minCounts) {
-					//FIXME must be faster way then going trough all thresholds
+					/* Constructing a color lookup array would be faster, 
+					 * but this seems to draw fast enough. */
+					final int x = toViewHorzLin(i);
+					final int y = toViewVertLin(j);
+					final int channelWidth = toViewHorzLin(i + 1) - x;
+					final int channelHeight = y - toViewVertLin(j + 1);
 					paintChannel : for (int k = 0; k < numberColors; k++) {
 						//check for min counts first as these are most likely
 						if (count <= colorThresholds[k]) {
-							g.setColor(colorScale[k]);
+							g.setColor(colors[k]);
 							// inline for speed
-							x = toViewHorzLin(i);
-							y = toViewVertLin(j);
-							channelWidth = toViewHorzLin(i + 1) - x;
-							channelHeight = y - toViewVertLin(j + 1);
 							g.fillRect(
 								x,
 								y - channelHeight + 1,
 								channelWidth,
 								channelHeight);
-							//FIXME +1 hack fix, needed why
 							break paintChannel;
 						}
 					}
 					// go here on break;
 					//check if greater than all thresholds
 					if (count > colorThresholds[numberColors - 1]) {
-						g.setColor(colorScale[numberColors - 1]);
-						// inline for speed was drawChannel(i,j);
-						x = toViewHorzLin(i);
-						y = toViewVertLin(j);
-						channelWidth = toViewHorzLin(i + 1) - x;
-						channelHeight = y - toViewVertLin(j + 1);
+						g.setColor(colors[numberColors - 1]);
 						g.fillRect(
 							x,
 							y - channelHeight + 1,
 							channelWidth,
 							channelHeight);
-						//FIXME +1 hack fix, needed why
 					}
 					//end of loop for each point
 				}
@@ -965,7 +950,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 						y - channelHeight + 1,
 						channelWidth,
 						channelHeight);
-					//FIXME +1 needed why?
 				}
 				// --end for each point
 			}
