@@ -2,7 +2,6 @@ package jam;
 import jam.data.DataBase;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
-import jam.data.control.DataControl;
 import jam.data.control.GainShift;
 import jam.data.control.GateControl;
 import jam.data.control.HistogramControl;
@@ -11,22 +10,28 @@ import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
 import jam.data.control.ScalerControl;
-import jam.global.*;
-import jam.io.hdf.OpenSelectedHistogram;
+import jam.global.BroadcastEvent;
+import jam.global.Broadcaster;
+import jam.global.JamProperties;
+import jam.global.JamStatus;
+import jam.global.RunInfo;
 import jam.io.hdf.HDFIO;
+import jam.io.hdf.OpenSelectedHistogram;
 import jam.plot.Display;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
+
 import javax.swing.AbstractButton;
+import javax.swing.JOptionPane;
 
 /**
- * This class recieves the commands for all the pull
- * down menues of JamMain.
+ * This class recieves the commands for many of the pull
+ * down menus of JamMain.
  * It then calls the necessary methods.
- * It is implemented by <code>Jam</code>.
  *
  * @version  0.5 April 98
  * @author   Ken Swartz
@@ -37,7 +42,7 @@ import javax.swing.AbstractButton;
 public class JamCommand
 	extends MouseAdapter
 	implements ActionListener, ItemListener {
-
+		
 	static final int MESSAGE_SCALER = 1; //alert scaler class
 	private final String classname;
 
@@ -185,28 +190,16 @@ public class JamCommand
 					Display.Preferences.WHITE_BACKGROUND,
 					true);
 			} else if ("newclear".equals(incommand)) {
-				jamMain.setSortMode(JamMain.NO_SORT);
-				DataBase.getInstance().clearAllLists();
-				dataChanged();
-			} else if ("openhdf".equals(incommand)) {
-				if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
-					jamMain.setSortModeFile(hdfio.getFileNameOpen());
-					DataControl.setupAll();
+				if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(jamMain,
+				"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
+					jamMain.setSortMode(JamMain.NO_SORT);
+					DataBase.getInstance().clearAllLists();
 					dataChanged();
-					jamMain.repaint();
-				}
-			} else if ("reloadhdf".equals(incommand)) {
-				if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
-					scalerControl.displayScalers();
 				}
 			} else if ("openselectedhist".equals(incommand)) {				
 				openSelectedHist.open();
 				dataChanged();
 				jamMain.repaint();
-			} else if ("savehdf".equals(incommand)) {
-				hdfio.writeFile(hdfio.lastValidFile());
-			} else if ("saveAsHDF".equals(incommand)) {
-				hdfio.writeFile();
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
 			} else if ("online".equals(incommand)) {
@@ -284,6 +277,11 @@ public class JamCommand
 			console.errorOutln("JamException: " + exc.getMessage());
 		} 
 	}
+	
+	ScalerControl getScalerControl(){
+		return scalerControl;
+	}
+		
 
 	/** 
 	 * Recieves the inputs from the pull down menus that are selectable 
