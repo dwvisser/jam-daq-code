@@ -247,7 +247,7 @@ public abstract class Histogram {
 		final Map groupHistMap =currentGroup.getHistogramMap();		
 		name=makeUniqueName(nameIn, groupHistMap);
 		/* Create the full histogram name with group name */
-		groupName=currentGroup.getName();		
+		final String groupName=currentGroup.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
 		/* Add to group */
 		currentGroup.addHistogram(this);
@@ -560,9 +560,9 @@ public abstract class Histogram {
 	public static Histogram getHistogram(int num) {
 		return (Histogram) NUMBER_MAP.get(new Integer(num));
 	}
-	
+
 	/* instantized methods */
-	
+
 	/**
 	 * Get the group this histograms belongs to.
 	 * 
@@ -572,6 +572,7 @@ public abstract class Histogram {
 		Group group=Group.getGroup(groupName);
 		return group;	
 	}
+
 	/**
 	 * Returns the histogram title.
 	 * 
