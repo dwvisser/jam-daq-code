@@ -374,14 +374,24 @@ public class RunControl implements Controller, ActionListener {
         bend.setEnabled(false);	    		    //toggle button states
         jamMain.setRunState(RunState.RUN_OFF);
         console.messageOutln("Ending run "+runNumber+", waiting for sorting to finish.");
+        int numSeconds=0;
         do {//wait for sort to catch up
             try {
                 Thread.sleep(1000);		//sleep 1 second
+                numSeconds++;
+                if (numSeconds % 3 ==0){
+                	console.warningOutln("Waited "+numSeconds+" seconds for "+
+                	"sorter and file writer to finish. Sending commands to "+
+                	"front end again.");
+                	vmeComm.end();
+                	vmeComm.readScalers();
+                }
             } catch(InterruptedException ie){
                 console.errorOutln(getClass().getName()+".endRun(), Error: Interrupted while"
                 +" waiting for sort to finish.");
             }
         } while(!sortDaemon.caughtUp() && !storageCaughtUp());
+        diskDaemon.resetReachedRunEnd();
         netDaemon.setState(GoodThread.SUSPEND);
         // histogram file name constructed using run name and number
         histFileName=histFilePath+experimentName+runNumber+".hdf";
