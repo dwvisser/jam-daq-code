@@ -16,7 +16,6 @@ import java.awt.Dimension;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -117,7 +116,8 @@ public final class Display extends JPanel implements Observer {
 
 	private final List overlays = Collections.synchronizedList(new ArrayList());
 
-	public void addToOverlay(Histogram h) {
+	public void addToOverlay(int num) {
+		final Histogram h=Histogram.getHistogram(num);
 		if (h.getDimensionality() != 1) {
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
@@ -125,7 +125,7 @@ public final class Display extends JPanel implements Observer {
 		if (Limits.getLimits(h) == null) {
 			makeLimits(h);
 		}
-		overlays.add(h);
+		overlays.add(new Integer(num));
 		doOverlay();
 	}
 
@@ -138,17 +138,7 @@ public final class Display extends JPanel implements Observer {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
-		final Iterator it = overlays.iterator();
-		while (it.hasNext()) {
-			final Histogram hist = (Histogram) it.next();
-			if (hist == null) {
-				throw new IllegalStateException(
-						"Display attempted overlay with null histogram.");
-			}
-		}
-		final Histogram[] hists = (Histogram[]) overlays
-				.toArray(new Histogram[overlays.size()]);
-		plot1d.overlayHistograms(hists);
+		plot1d.overlayHistograms(Collections.unmodifiableList(overlays));
 	}
 
 	private void makeLimits(Histogram h) {
