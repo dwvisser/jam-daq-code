@@ -281,7 +281,7 @@ class Action implements ActionListener, PlotMouseListener,
 				countParam++;
 			}
 		} catch (NumberFormatException nfe) {
-			throw new NumberFormatException("Input parameter not a number");
+			throw new NumberFormatException("Input parameter not a number.");
 		}
 		return parameters;
 
