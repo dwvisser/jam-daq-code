@@ -2,7 +2,6 @@ package jam;
 
 import jam.global.MessageHandler;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -100,8 +99,6 @@ class Help {
 	private void layoutLicenseDialog() {
 		final String hyphen = " - ";
 		final Container contents = licenseD.getContentPane();
-		licenseD.setForeground(Color.black);
-		licenseD.setBackground(Color.lightGray);
 		licenseD.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
