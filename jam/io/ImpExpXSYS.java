@@ -134,9 +134,9 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 					//FIXMEhist = new Histogram(areaName, areaTitle, counts2d);
 					//FIXMEhist.setNumber(areaNumber);			
 					//FIXMEmsgHandler.messageOut(" .");	//dot indicating a spectrum read
-					if (msgHandler != null) msgHandler.messageOut(" X");
-					//cross indicating a spectrum NOT read				
-
+					if (msgHandler != null) {
+						msgHandler.messageOut(" X");//cross indicating a spectrum NOT read
+					}
 				} else if (areaDataType == XSYSEVAL) {
 					unPackEVAL(buffin, areaLengthPage);
 
@@ -159,7 +159,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 */
 	protected void writeHist(OutputStream outStream, Histogram hist)
 		throws ImpExpException {
-		/* FIXME not implemented */
+		/* someday maybe if someone asks */
 	}
 
 	/** 
@@ -443,6 +443,12 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 
 	}
 	
+	/**
+	 * Will set to true when somebody asks for it and it gets
+	 * implemented.
+	 * 
+	 * @return false
+	 */
 	public boolean canExport(){
 		return false;
 	}
