@@ -1,6 +1,7 @@
 package jam;
 import javax.swing.*;
 import jam.data.Histogram;
+import java.util.List;
 
 /**
  * This class takes care of properly displaying the histogram chooser
@@ -32,9 +33,15 @@ public class HistogramComboBoxModel  extends DefaultComboBoxModel {
      */
     public Object getElementAt(int index){
     	Object rval=NO_HISTS; //default value if no histograms
-        if (numHists()>0){
-            rval = ((Histogram) Histogram.getHistogramList().get(index)).getName();
-        } 
+    	List list=Histogram.getHistogramList(); 
+    	if (index <0 || index >= list.size()) {
+    		System.err.println("WARNING: "+getClass().getName()+
+				".getElementAt("+index+"): index out of range.");  	
+    	} else {
+    		if (numHists()>0){
+				rval = ((Histogram) Histogram.getHistogramList().get(index)).getName();
+			} 
+    	}
         return rval;
     }
 
