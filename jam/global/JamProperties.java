@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
 
 /**
  * This is an class that is used to get and set the properties for Jam.
@@ -68,6 +67,9 @@ public class JamProperties {
 	public final static String LOG_PATH = "log.path";
 	public final static String FRONTEND_VERBOSE = "frontend.verbose";
 	public final static String FRONTEND_DEBUG = "frontend.debug";
+	
+	private final String NO_ERRORS="No error messages.";
+	private final String NO_WARNINGS="No warning messages.";
 	
 	/**
 	 * Property for determining whether Jam handles writing of event data (JAM), or
@@ -137,32 +139,36 @@ public class JamProperties {
 	 * 
 	 */
 	public static String getPropString(String key) {
+		String rval = "undefined";//default return value
 		if (jamProperties.getProperty(key) != null) {
-			return (String) (jamProperties.getProperty(key)).trim();
+			rval = (String) (jamProperties.getProperty(key)).trim();
 		} else {
 			msgHandler.warningOutln(
 				"Property " + key + " not defined [JamProperties]");
-			return "undefined";
+//			return "undefined";
 		}
+		return rval;
 	}
 
 	/**
 	 * Get an integer property for this Jam process.
 	 */
 	public static int getPropInt(String key) {
+		int rval=0;//default return value
 		try {
 			if (jamProperties.getProperty(key) != null) {
-				return Integer.parseInt(jamProperties.getProperty(key).trim());
+				rval = Integer.parseInt(jamProperties.getProperty(key).trim());
 			} else {
 				msgHandler.warningOutln(
 					"Property " + key + " not defined [JamProperties]");
-				return 0;
+//				return 0;
 			}
 		} catch (NumberFormatException nfe) {
 			msgHandler.errorOutln(
 				"Property " + key + " not an integer [JamProperties]");
-			return 0;
+//			return 0;
 		}
+		return rval;
 	}
 
 	/**
@@ -171,9 +177,9 @@ public class JamProperties {
 	public void loadProperties() {
 		String fileName = "";
 		FileInputStream fis;
-		configLoadWarning = null;
-		userLoadWarning = null;
-		loadError = null;
+		configLoadWarning = NO_WARNINGS;
+		userLoadWarning = NO_WARNINGS;
+		loadError = NO_ERRORS;
 		try {
 			//load default configuration
 			loadDefaultConfig();
@@ -311,14 +317,14 @@ public class JamProperties {
 	 * Output message from loading propreties
 	 */
 	public void outputMessages(MessageHandler msgHandler) {
-		if (loadError != null) {
+		if (loadError != NO_ERRORS) {
 			msgHandler.warningOutln(loadError);
 		}
-		if (configLoadWarning != null) {
+		if (configLoadWarning != NO_WARNINGS) {
 			msgHandler.warningOutln(configLoadWarning);
 		}
 		msgHandler.messageOutln(configLoadMessage);
-		if (userLoadWarning != null) {
+		if (userLoadWarning != NO_WARNINGS) {
 			msgHandler.warningOutln(userLoadWarning);
 		}
 		msgHandler.messageOutln(userLoadMessage);
