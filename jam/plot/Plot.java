@@ -10,11 +10,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.print.PageFormat;
-import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 /**
  * Abstract class for displayed plots.
@@ -36,40 +36,12 @@ public abstract class Plot extends JPanel {
 	 * Specifies Zoom direction, zoom in
 	 */
 	public final static int ZOOM_IN = 2;
-
+	
 	/**
 	 * Specifies how much to zoom,
 	 * zoom is 1/ZOOM_FACTOR
 	 */
 	public final static int ZOOM_FACTOR = 10;
-
-	/**
-	 * settting a new gate
-	 */
-	public final static int GATE_NEW = 0;
-
-	/**
-	 * cancel the setting of a gate
-	 */
-	public final static int GATE_CANCEL = 1;
-
-	/**
-	 * continue setting gate
-	 */
-	public final static int GATE_CONTINUE = 2;
-	/**
-	 * add a point to setting gate
-	 */
-	public final static int GATE_ADD = 3;
-	/**
-	 * add a point to setting gate
-	 */
-	public final static int GATE_REMOVE = 4;
-
-	/**
-	 * save the gate that is being set
-	 */
-	public final static int GATE_SAVE = 5;
 
 	/**
 	 * Type of histogram being plotted this is 1 dimensional int array
@@ -129,13 +101,15 @@ public abstract class Plot extends JPanel {
 
 	//gate stuff
 	protected Gate currentGate;
-	protected final List pointsGate=new Vector(10,5);
+	protected final Polygon pointsGate=new Polygon();
 	boolean settingGate = false;
 
 	//are we display more than a histogram
 	protected boolean displayingGate = false;
 	protected boolean displayingFit = false;
 	protected boolean displayingOverlay = false;
+	protected boolean markingArea = false;
+	protected GateSetMode gateSetMode=GateSetMode.GATE_CANCEL;
 
 	//configuration for screen plotting
 	protected Dimension viewSize;
@@ -172,7 +146,7 @@ public abstract class Plot extends JPanel {
 		super(false);
 		final String fontclass = "Serif";
 		action = a;
-		//setOpaque(true);
+		setOpaque(true);
 		this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 		//some initial layout stuff
 		Insets viewBorder =
@@ -209,6 +183,20 @@ public abstract class Plot extends JPanel {
 		currentHist = hist;
 	}
 
+	protected void setSettingGate(boolean sg){
+		synchronized(this){
+			settingGate=sg;
+		}
+	}
+	
+	final Polygon mouseMoveClip=new Polygon();
+	protected boolean mouseMoved=false;
+	protected void setMouseMoved(boolean mm){
+		synchronized(this){
+			mouseMoved=mm;
+		}
+	}
+    
 	/**
 	 * Set the histogram to plot. If the plot limits are null, make one
 	 * save all neccessary histogram parameters to local variables.
@@ -276,7 +264,7 @@ public abstract class Plot extends JPanel {
 	 * mode are we starting a new gate or continue
 	 * or saving on
 	 */
-	public abstract void displaySetGate(int mode, Point pChannel, Point pPixel);
+	public abstract void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel);
 
 	/**
 	 * Copies the counts into the local array--needed by scroller.
@@ -481,7 +469,7 @@ public abstract class Plot extends JPanel {
 	 */
 	public void setLog() {
 		plotLimits.setScale(Limits.ScaleType.LOG);
-		refresh();
+		repaint();
 	}
 
 	/**
@@ -537,9 +525,16 @@ public abstract class Plot extends JPanel {
 		displayingGate = false;
 		displayingFit = false;
 		displayingOverlay = false;
+		markingArea=false;
 		refresh();
 	}
 
+	void setDisplayingGate(boolean dg){
+		synchronized(this){
+			displayingGate=dg;
+		}
+	}
+	
 	/**
 	 *methods for getting histogram data
 	 */
@@ -558,6 +553,7 @@ public abstract class Plot extends JPanel {
 	 * Overrides <code>Canvas</code> method.
 	 */
 	protected synchronized void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		if (currentHist == null) {
 			System.err.println(
 				getClass().getName()
@@ -573,13 +569,6 @@ public abstract class Plot extends JPanel {
 				PlotColorMap.setColorMap(colorMode);
 				graph.setView(null);
 			}
-			g.setColor(PlotColorMap.background);
-			//since setting background  color seems insufficient
-			g.fillRect(
-				scrollbars.getX(),
-				this.getY(),
-				this.getWidth(),
-				this.getHeight());
 			g.setColor(PlotColorMap.foreground); //color foreground
 			this.setForeground(PlotColorMap.foreground);
 			this.setBackground(PlotColorMap.background);
@@ -589,13 +578,12 @@ public abstract class Plot extends JPanel {
 			//draw outline, tickmarks, labels, and title
 			paintHeader(g);
 			paintHistogram(g);
-			//are we to display a gate
-			if (displayingGate) {
+			if (displayingGate) {//are we to display a gate
 				try {
 					paintGate(g);
 				} catch (DataException de) {
-					System.err.println(
-						"Plot.paint() DataException: " + de.getMessage());
+					error("Problem while displaying gate: "+
+					de.getMessage());
 				}
 			}
 			if (displayingOverlay) {
@@ -604,9 +592,23 @@ public abstract class Plot extends JPanel {
 			if (displayingFit) {
 				paintFit(g);
 			}
+			if (markingArea){
+				paintMarkArea(g);
+			}
+			if (mouseMoved){
+				paintMouseMoved(g);
+			}
 		}
 	}
 
+	void error(String mess){
+		final String plotErrorTitle="Plot Error";
+		JOptionPane.showMessageDialog(this,
+		mess,
+		plotErrorTitle,
+		JOptionPane.ERROR_MESSAGE);
+	}
+    
 	/**
 	 * paints header for plot to screen and printer
 	 * sets colors and
@@ -622,6 +624,13 @@ public abstract class Plot extends JPanel {
 		}
 		graph.drawBorder();
 	}
+	
+	/**
+	 * Method for painting a clicked area.
+	 * 
+	 * @param g the graphics context
+	 */
+	abstract void paintMarkArea(Graphics g);
 
 	/**
 	 * method overriden for 1 and 2 d plots
@@ -639,6 +648,15 @@ public abstract class Plot extends JPanel {
 	 * method overriden for 1 and 2 d for painting fits
 	 */
 	abstract void paintFit(Graphics g);
+	
+	/**
+	 * Method for painting segments while setting a gate.
+	 * 
+	 * @param g the graphics context
+	 */
+	abstract void paintSetGate(Graphics g);
+	
+	abstract void paintMouseMoved(Graphics g);
 
 	public synchronized void setRenderForPrinting(boolean rfp, PageFormat pf) {
 		printing = rfp;
@@ -682,8 +700,11 @@ public abstract class Plot extends JPanel {
 	/**
 	 * Set the color mode, color palette
 	 */
-	public final void setColorMode(int colorMode) {
-		this.colorMode = colorMode;
+	public final void setColorMode(int cm) {
+		synchronized(this){
+			colorMode = cm;
+		}
+		setBackground(PlotColorMap.background);
 	}
 
 	/**
