@@ -113,7 +113,7 @@ final class ParseCommand implements CommandListener {
 	 */
 	private void cursorChannel(double[] parameters, boolean vertical) {
 		final Display display = JamStatus.instance().getDisplay();
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		final int numParam = parameters.length;
 		/* Must have at least 1 parameter */
 		if (numParam > 0) {

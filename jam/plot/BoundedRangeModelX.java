@@ -17,16 +17,16 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 
 	private Limits lim;
 
-	private Plot plot;
+	private PlotContainer plot;
 	
 	private static final JamStatus STATUS=JamStatus.instance();
 
-	BoundedRangeModelX(Plot p) {
+	BoundedRangeModelX(PlotContainer p) {
 		super();
 		setFields(p);
 	}
 
-	void setFields(Plot p) {
+	void setFields(PlotContainer p) {
 		plot = p;
 		final Histogram hist = STATUS.getCurrentHistogram();
 		if (hist != null) {

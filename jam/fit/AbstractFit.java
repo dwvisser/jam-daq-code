@@ -5,7 +5,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Bin;
 import jam.plot.Display;
-import jam.plot.Plot;
+import jam.plot.PlotContainer;
 import jam.plot.PlotMouseListener;
 
 import java.awt.BorderLayout;
@@ -477,7 +477,7 @@ public abstract class AbstractFit implements ItemListener, PlotMouseListener {
 		}
 	}
 	
-	public  void plotMouseSelected(Plot selectedPlot){
+	public  void plotMouseSelected(PlotContainer selectedPlot){
 		
 	};
 	

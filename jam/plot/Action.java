@@ -195,7 +195,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			doCommand(currentCommand, false);
 		} else if (settingGate) {
 			/* No command being processed check if gate is being set */
-			final Plot currentPlot = display.getPlot();
+			final PlotContainer currentPlot = display.getPlot();
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_POINT,
 					pChannel);
 			currentPlot.displaySetGate(GateSetMode.GATE_CONTINUE, pChannel,
@@ -316,7 +316,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		String binText;
 		/* check that a histogram is defined */
 		final Histogram hist = STATUS.getCurrentHistogram();
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 
 		synchronized (cursor) {
 			xch = cursor.getX();
@@ -349,7 +349,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * and broadcast a histogram selection message to force the rest of the GUI
 	 * to be consistent with the currently selected histogram.
 	 * 
-	 * @see Plot#update()
+	 * @see PlotContainer#update()
 	 */
 	private void update() {
 		isCursorCommand = false;
@@ -357,7 +357,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		display.update();
 		
 		//Reset rebin to 1
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		currentPlot.setBinWidth(1.0);		
 		
 		done();
@@ -500,7 +500,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else {
-			final Plot plot = display.getPlot();
+			final PlotContainer plot = display.getPlot();
 			final boolean twoD = plot.getDimensionality() == 2;
 			final boolean useCounts = twoD && !console;
 			final double cts = useCounts ? cursor.getCounts() : cursor.getY();
@@ -528,7 +528,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			init();
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		if (parameters.length > 0) {
 			final double binWidth = parameters[0];
@@ -554,7 +554,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	private void expand() {
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -582,7 +582,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Expand the region to view.
 	 */
 	private void zoomhorz() {
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -618,8 +618,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void zoomin() {
 		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
-		currentPlot.zoom(Plot.Zoom.IN);
+		final PlotContainer currentPlot = display.getPlot();
+		currentPlot.zoom(PlotContainer.Zoom.IN);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
 		}
@@ -631,8 +631,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void zoomout() {
 		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
-		currentPlot.zoom(Plot.Zoom.OUT);
+		final PlotContainer currentPlot = display.getPlot();
+		currentPlot.zoom(PlotContainer.Zoom.OUT);
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
 		}
@@ -644,7 +644,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void full() {
 		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		currentPlot.setFull();
 		if (autoOnExpand) {
 			currentPlot.autoCounts();
@@ -704,7 +704,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final char sp = ' ';
 		final String intro = "Goto (click on spectrum or type the ";
 		final char lp = ')';
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		if (!commandPresent) {
 			isCursorCommand = true;
@@ -767,7 +767,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * methods to this class
 	 */
 	private void areaCent() {
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -818,7 +818,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * Background subtracted intensity of 1-d plots
 	 */
 	private void netArea() {
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		final Histogram hist = STATUS.getCurrentHistogram();
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];

@@ -131,7 +131,7 @@ public final class Bin {
 	public synchronized Bin closestInsideBin() {
 		int x=channel.x;
 		int y=channel.y;
-		final Plot currentPlot = display.getPlot();
+		final PlotContainer currentPlot = display.getPlot();
 		if (x < 0) {
 			x = 0;
 		} else if (x >= currentPlot.getSizeX()) {
