@@ -1,7 +1,8 @@
 package help.sortfiles;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
@@ -21,7 +22,9 @@ import jam.sort.SortRoutine;
 public class EvsDE extends SortRoutine {
 
 	/* histograms */
-	transient final Histogram hEnergy, hDE, hEvsDE, hSum, hSumGate;
+	transient final HistInt1D hEnergy, hDE, hSum, hSumGate;
+	
+	transient final HistInt2D hEvsDE;
 
 	/* gates */
 	transient final Gate gEvsDE;
@@ -39,16 +42,18 @@ public class EvsDE extends SortRoutine {
 
 	public EvsDE() {
 		super();
-		hEnergy = new Histogram("E", HIST_1D, 2048, "Energy");
+		final int oneD=2048;
+		final int twoD=256;
+		hEnergy = createHist1D(oneD,"E", "Energy");
 		/* delta-E signal */
-		hDE = new Histogram("DE", HIST_1D, 2048, "Delta-E");
+		hDE = createHist1D(oneD, "DE", "Delta-E");
 		/* Energy vs. delta-E 2-d histogram */
-		hEvsDE = new Histogram("EvsDE", HIST_2D, 256, "E vs Delta E", "Energy",
+		hEvsDE = createHist2D(twoD, "EvsDE", "E vs Delta E", "Energy",
 				"Delta Energy");
 		/* Energy plus delta-E */
-		hSum = new Histogram("sum", HIST_1D, 2048, "Energy Sum");
+		hSum = createHist1D(oneD, "sum", "Energy Sum");
 		/* Energy plus delta-E gated on particle ID */
-		hSumGate = new Histogram("sumGate", HIST_1D, 2048, "Gated Energy Sum");
+		hSumGate = createHist1D(oneD, "sumGate", "Gated Energy Sum");
 		/* Particle ID gate */
 		gEvsDE = new Gate("PID", hEvsDE);
 		/* Integrated beam current (BIC) */

@@ -7,7 +7,7 @@
 package help.sortfiles;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.HistInt1D;
 import jam.data.Scaler;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
@@ -15,13 +15,13 @@ import jam.sort.SortRoutine;
 public final class CamacSortTemplate extends SortRoutine {
 
 	/** variables declarations */
-	static final int PARAM_ID=0; //id number for event word from cnaf
+	static final int PARAM_ID = 0; //id number for event word from cnaf
 
-	static final int SCALER_ID=0; //id number for scaler from cnaf
+	static final int SCALER_ID = 0; //id number for scaler from cnaf
 
-	transient final Histogram myHist; //declare histogram myHist
+	transient final HistInt1D myHist; //declare histogram myHist
 
-	transient final Histogram myHistGated; //declare histogram myHistGated
+	transient final HistInt1D myHistGated; //declare histogram myHistGated
 
 	transient final Gate myGate; //declare gate myGate;
 
@@ -29,10 +29,10 @@ public final class CamacSortTemplate extends SortRoutine {
 
 	public CamacSortTemplate() {
 		super();
+		final int hist1d = 1024;
 		/* initialize histograms, gates, and scalers */
-		myHist = new Histogram("detector1", HIST_1D, 1024, "my detector");
-		myHistGated = new Histogram("detecGated", HIST_1D, 1024,
-				"my detector gated");
+		myHist = createHist1D(hist1d, "detector1", "my detector");
+		myHistGated = createHist1D(hist1d, "detecGated", "my detector gated");
 		myGate = new Gate("detector1", myHist);
 		myScal = new Scaler("scaler1", SCALER_ID);
 	}

@@ -1,5 +1,7 @@
 package jam.sort;
 
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.Beginner;
 import jam.global.Ender;
@@ -80,12 +82,12 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * constant to define a 1d histogram type double
 	 */
-	protected final static Histogram.Type HIST_1D_DBL = Histogram.Type.ONE_DIM_DOUBLE;
+	protected final static Histogram.Type HIST_1D_DBL = Histogram.Type.ONE_D_DOUBLE;
 
 	/**
 	 * constant to define a 1d histogram type double
 	 */
-	protected final static Histogram.Type HIST_2D_DBL = Histogram.Type.TWO_DIM_DOUBLE;
+	protected final static Histogram.Type HIST_2D_DBL = Histogram.Type.TWO_D_DOUBLE;
 
 	/**
 	 * Indicates that the parameter count hasn't been set by any means.
@@ -95,7 +97,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Size of buffer to be used by event streams.
 	 */
-	public int BUFFER_SIZE;
+	private int bufferSize;
 
 	/**
 	 * Set to true when we're writing out events. (For presorting?)
@@ -127,9 +129,9 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 
 	private final String classname = getClass().getName();
 
-	private final static String colon = ": ";
+	private final static String COLON = ": ";
 
-	private final static String illegalMode = "Illegal value for event size mode: ";
+	private final static String ILLEGAL_MODE = "Illegal value for event size mode: ";
 
 	/**
 	 * Creates a new sort routine object.
@@ -154,7 +156,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * 
 	 * @return the object containing directives for ADC's and TDC's
 	 */
-	public final VME_Map getVME_Map() {
+	public final VME_Map getVMEmap() {
 		return vmeMap;
 	}
 
@@ -188,7 +190,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @see #SET_BY_VME_MAP
 	 */
 	void setEventSizeMode(int mode) throws SortException {
-		final StringBuffer mess = new StringBuffer(classname).append(colon);
+		final StringBuffer mess = new StringBuffer(classname).append(COLON);
 		if ((eventSizeMode != mode) && (eventSizeMode != INIT_NO_MODE)) {
 			final String s1 = "Illegal attempt to set event size a second time. ";
 			final String s2 = "Already set to ";
@@ -203,7 +205,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 				eventSizeMode = mode;
 			}
 		} else {
-			throw new SortException(mess.append(illegalMode).append(mode)
+			throw new SortException(mess.append(ILLEGAL_MODE).append(mode)
 					.toString());
 		}
 	}
@@ -227,14 +229,14 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	public int getEventSize() throws SortException {
 		final int rval;
-		final StringBuffer mess = new StringBuffer(classname).append(colon);
+		final StringBuffer mess = new StringBuffer(classname).append(COLON);
 		if (eventSizeMode == 0) {
 			final String sizeUnknown = "Event Size Unkown";
 			throw new SortException(mess.append(sizeUnknown).toString());
 		} else if (eventSizeMode != SET_BY_CNAF
 				&& eventSizeMode != SET_BY_VME_MAP
 				&& eventSizeMode != SET_EXPLICITLY) {
-			throw new SortException(mess.append(illegalMode).append(
+			throw new SortException(mess.append(ILLEGAL_MODE).append(
 					eventSizeMode).toString());
 		} else if (eventSizeMode == SET_BY_CNAF) {
 			rval = cnafCommands.getEventSize();
@@ -320,5 +322,44 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	
 	public void end(){
 		/* default end() does nothing */
+	}
+	
+	protected void setBufferSize(int size){
+		bufferSize=size;
+	}
+	
+	public int getBufferSize(){
+		return bufferSize;
+	}
+	
+	public static HistInt1D createHist1D(int numCh, String name, String title, String labelX,
+			String labelY){
+		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title,labelX,labelY);
+	}
+	public static HistInt1D createHist1D(int numCh, String name, String title){
+		return (HistInt1D)Histogram.createHistogram(new int[numCh],name,title);
+	}
+	public static HistInt1D createHist1D(int numCh, String name){
+		return (HistInt1D)Histogram.createHistogram(new int[numCh],name);
+	}
+	public static HistInt2D createHist2D(int chX, int chY, String name, String title, String labelX,
+			String labelY){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title,labelX,labelY);
+	}
+	public static HistInt2D createHist2D(int chX, int chY, String name, String title){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name,title);
+	}
+	public static HistInt2D createHist2D(int chX, int chY, String name){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chY],name);
+	}
+	public static HistInt2D createHist2D(int chX, String name, String title, String labelX,
+			String labelY){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title,labelX,labelY);
+	}
+	public static HistInt2D createHist2D(int chX, String name, String title){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title);
+	}
+	public static HistInt2D createHist2D(int chX, String name){
+		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name);
 	}
 }

@@ -1,7 +1,8 @@
 package help.sortfiles;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
@@ -32,13 +33,13 @@ public class CI extends SortRoutine {
 
 	transient int idGe, idNaI, idTAC;//  id numbers for the signals
 
-	transient final Histogram hGe, hNaI, hTAC;//  ungated 1D spectra
+	transient final HistInt1D hGe, hNaI, hTAC;//  ungated 1D spectra
 
-	transient final Histogram hGeNaI;//  ungated 2D spectra
+	transient final HistInt2D hGeNaI;//  ungated 2D spectra
 
-	transient final Histogram hGe_TAC;//	gated on TAC
+	transient final HistInt1D hGe_TAC;//	gated on TAC
 
-	transient final Histogram hGe_g2d, hTAC_g2d;//  gated on Ge vs. NaI
+	transient final HistInt1D hGe_g2d, hTAC_g2d;//  gated on Ge vs. NaI
 
 	transient final Gate gTAC;//  1D gate
 
@@ -58,18 +59,16 @@ public class CI extends SortRoutine {
 		super();
 		final String NAI="NaI";
 		/** * HISTOGRAM SECTION ** */
-		hGe = new Histogram("Ge", HIST_1D_INT, ADC_CHANNELS, "Germanium");
-		hNaI = new Histogram(NAI, HIST_1D_INT, ADC_CHANNELS, NAI);
-		hTAC = new Histogram("TAC", HIST_1D_INT, ADC_CHANNELS, "TAC");
-
-		hGe_TAC = new Histogram("Ge-TAC", HIST_1D_INT, ADC_CHANNELS,
+		hGe = createHist1D(ADC_CHANNELS,"Ge", "Germanium");
+		hNaI = createHist1D(ADC_CHANNELS, NAI);
+		hTAC = createHist1D(ADC_CHANNELS, "TAC");
+		hGe_TAC = createHist1D(ADC_CHANNELS, "Ge-TAC",
 				"Germanium, gated on TAC");
-		hGe_g2d = new Histogram("Ge-2dgate", HIST_1D_INT, ADC_CHANNELS,
+		hGe_g2d = createHist1D(ADC_CHANNELS, "Ge-2dgate", 
 				"Germanium--gated on NaI vs Ge");
-		hTAC_g2d = new Histogram("TAC-2dgate", HIST_1D_INT, ADC_CHANNELS,
+		hTAC_g2d = createHist1D(ADC_CHANNELS, "TAC-2dgate",
 				"TAC--gated on NaI vs Ge");
-
-		hGeNaI = new Histogram("GeNaI", HIST_2D_INT, TWO_D_CHANS,
+		hGeNaI = createHist2D(TWO_D_CHANS, "GeNaI",
 				"NaI vs. Germanium", "Germanium", NAI);
 		/** * GATE SECTION ** */
 		gTAC = new Gate("TAC", hTAC);

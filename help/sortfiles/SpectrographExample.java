@@ -1,7 +1,8 @@
 package help.sortfiles;
 
 import jam.data.Gate;
-import jam.data.Histogram;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
@@ -73,36 +74,36 @@ public final class SpectrographExample extends SortRoutine {
 	/*
 	 * ungated spectra
 	 */
-	private transient final Histogram hCthd, hSntrSum, hFrntPsn;
+	private transient final HistInt1D hCthd, hSntrSum, hFrntPsn;
 
 	/*
 	 * Rear Wire Pulse Height
 	 */
-	private transient final Histogram hFrntPH;
+	private transient final HistInt2D hFrntPH;
 
 	/*
 	 * position x height y
 	 */
-	private transient final Histogram hRearPH;
+	private transient final HistInt2D hRearPH;
 
-	private transient final Histogram hSntrCthd, hFrntCthd, hFrntSntr, hFrntPRearP;
+	private transient final HistInt2D hSntrCthd, hFrntCthd, hFrntSntr, hFrntPRearP;
 
 	/*
 	 * gate by scintillator cathode
 	 */
-	private transient final Histogram hFrntSntrGSC, hFrntCthdGSC;
+	private transient final HistInt2D hFrntSntrGSC, hFrntCthdGSC;
 
 	/*
 	 * gate by Front wire Cathode
 	 */
-	private transient final Histogram hSntrCthdGFC, hFrntSntrGFC;
+	private transient final HistInt2D hSntrCthdGFC, hFrntSntrGFC;
 
-	private transient final Histogram hSntrCthdGFS, hFrntCthdGFS;
+	private transient final HistInt2D hSntrCthdGFS, hFrntCthdGFS;
 
 	/*
 	 * gate by Front wire Scintillator
 	 */
-	private transient final Histogram hFrntGAll;
+	private transient final HistInt1D hFrntGAll;
 
 	/*
 	 * 2D gates
@@ -128,46 +129,46 @@ public final class SpectrographExample extends SortRoutine {
 
 	public SpectrographExample() {
 		super();
-		hCthd = new Histogram("Cathode     ", HIST_1D_INT, ADC_CHANNELS,
+		hCthd = createHist1D(ADC_CHANNELS, "Cathode     ",
 				"Cathode Raw ");
-		hSntrSum = new Histogram("ScintSum    ", HIST_1D_INT, ADC_CHANNELS,
+		hSntrSum = createHist1D(ADC_CHANNELS, "ScintSum    ",
 				"Scintillator Sum");
-		hFrntPsn = new Histogram("FrontPosn    ", HIST_1D_INT, ADC_CHANNELS,
+		hFrntPsn = createHist1D(ADC_CHANNELS, "FrontPosn    ", 
 				"Front Wire Position");
 		final String FRONT_POS = "Front Position";
-		hFrntPH = new Histogram("FrontPvsHeight", HIST_2D_INT, CHAN_2D,
+		hFrntPH = createHist2D(CHAN_2D, "FrontPvsHeight",
 				"Pulse Height of FrontFront wire vs Front Position", FRONT_POS,
 				"Pulse Height");
-		hRearPH = new Histogram("RearPvsHeight ", HIST_2D_INT, CHAN_2D,
+		hRearPH = createHist2D(CHAN_2D, "RearPvsHeight ", 
 				"Pulse Height of RearMiddle wire vs Rear Position",
 				"Rear Position", "Pulse Height");
 		final String SCINT = "Scintillator";
 		final String CATH = "Cathode";
-		hSntrCthd = new Histogram("ScintCathode  ", HIST_2D_INT, CHAN_2D,
+		hSntrCthd = createHist2D(CHAN_2D, "ScintCathode  ", 
 				"Cathode vs Scintillator", SCINT, CATH);
-		hFrntCthd = new Histogram("FrontCathode  ", HIST_2D_INT, CHAN_2D,
+		hFrntCthd = createHist2D(CHAN_2D, "FrontCathode  ", 
 				"Cathode vs Front Position", FRONT_POS, CATH);
-		hFrntSntr = new Histogram("FrontScint ", HIST_2D_INT, CHAN_2D,
+		hFrntSntr = createHist2D(CHAN_2D, "FrontScint ", 
 				"Scintillator vs Front Position", FRONT_POS, SCINT);
-		hFrntPRearP = new Histogram("FrontRear  ", HIST_2D_INT, TWO_D_HIRES,
+		hFrntPRearP = createHist2D(TWO_D_HIRES,"FrontRear  ", 
 				"Rear Position vs Front Position", FRONT_POS, "Rear Position");
 		//ScintCathode Gated on other
-		hSntrCthdGFC = new Histogram("ScintCathodeGFC", HIST_2D_INT, CHAN_2D,
+		hSntrCthdGFC = createHist2D(CHAN_2D,"ScintCathodeGFC", 
 				"Cathode vs Scintillator - FwCa gate", SCINT, CATH);
-		hSntrCthdGFS = new Histogram("ScintCathodeGFS", HIST_2D_INT, CHAN_2D,
+		hSntrCthdGFS = createHist2D(CHAN_2D,"ScintCathodeGFS", 
 				"Cathode vs Scintillator - FwSc gate", SCINT, CATH);
 		//FrontCathode Gated on other
-		hFrntCthdGSC = new Histogram("FrontCathodeGSC", HIST_2D_INT, CHAN_2D,
+		hFrntCthdGSC = createHist2D(CHAN_2D,"FrontCathodeGSC", 
 				"Cathode vs Front Position - ScCa gate", FRONT_POS, CATH);
-		hFrntCthdGFS = new Histogram("FrontCathodeGFS ", HIST_2D_INT, CHAN_2D,
+		hFrntCthdGFS = createHist2D(CHAN_2D,"FrontCathodeGFS ", 
 				"Cathode vs Front Position - FwSc gate ", FRONT_POS, CATH);
 		//FrontScint Gated on other
-		hFrntSntrGSC = new Histogram("FrontScintGSC ", HIST_2D_INT, CHAN_2D,
+		hFrntSntrGSC = createHist2D(CHAN_2D,"FrontScintGSC ", 
 				"Scintillator vs Front Position - ScCa gate", FRONT_POS, SCINT);
-		hFrntSntrGFC = new Histogram("FrontScintGFC", HIST_2D_INT, CHAN_2D,
+		hFrntSntrGFC = createHist2D(CHAN_2D,"FrontScintGFC", 
 				"Scintillator vs Front Position - FwCa gate", FRONT_POS, SCINT);
 		//gated on 4 gates
-		hFrntGAll = new Histogram("FrontGAll    ", HIST_1D_INT, ADC_CHANNELS,
+		hFrntGAll = createHist1D(ADC_CHANNELS,"FrontGAll    ", 
 				"Front Position - ScCa,FwCa,FwSc,FwRw gates");
 		//gates 2d
 		gSntrCthd = new Gate("Ca-Sc", hSntrCthd);
