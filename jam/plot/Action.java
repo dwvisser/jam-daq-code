@@ -357,7 +357,7 @@ public class Action
 						cursorX = parameters[i];
 					}
 					cursorY = 0;
-					if (energyEx != true) {
+					if (!energyEx) {
 						cursorCount = currentPlot.getCount(cursorX, cursorY);
 					}
 					doCommand();
@@ -447,7 +447,7 @@ public class Action
 	 * Expand the region to view.
 	 */
 	private void expand() {
-		if (commandPresent == false) {
+		if (!commandPresent) {
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else if (numberPoints == 0) {
@@ -476,13 +476,12 @@ public class Action
 	}
 
 	/**
-	 * Set the range for the counts scale
-	 *
+	 * Set the range for the counts scale.
 	 */
 	private void range() {
-
 		String text;
-		if (commandPresent == false) {
+		
+		if (!commandPresent) {
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else if (numberPoints == 0) {
@@ -516,7 +515,7 @@ public class Action
 		double area, centroid, fwhm;
 		String name;
 
-		if (commandPresent == false) {
+		if (!commandPresent) {
 			init();
 			name = currentPlot.getHistogram().getName();
 			textOut.messageOut(
@@ -609,7 +608,7 @@ public class Action
 		centroid = new double[1];
 		channelBackground = new double[currentPlot.getSizeX()];
 
-		if (commandPresent == false) {
+		if (!commandPresent) {
 			init();
 			name = currentPlot.getHistogram().getName().trim();
 			textOut.messageOut(
@@ -707,7 +706,6 @@ public class Action
 			xyCursor[5][0] = cursorX;
 			xyCursor[5][1] = cursorY;
 			if (currentPlot instanceof Plot1d) {
-				Plot1d plot1d=(Plot1d)currentPlot;
 				currentPlot.markChannel(xyCursor[5][0], xyCursor[5][1]);
 				currentPlot.markArea(
 					xyCursor[4][0],
@@ -874,7 +872,7 @@ public class Action
 			}
 			if (currentPlot instanceof Plot1d) {
 				Plot1d plot1d=(Plot1d)currentPlot;
-				if (mousePressed != true) {
+				if (!mousePressed) {
 					if (currentPlot.isCalibrated) {
 						output = "energy = "+xyCursor[0][0];
 						xyCursor[0][0] =
