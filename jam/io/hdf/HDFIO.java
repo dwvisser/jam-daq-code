@@ -403,7 +403,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
         scalerCount=0;
         parameterCount=0;
         
-        DataObject.clearAll();
+        AbstractHData.clearAll();
         addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
@@ -444,7 +444,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             asyncMonitor.close();            
         }
 
-        DataObject.clearAll();
+        AbstractHData.clearAll();
         out = null; //allows Garbage collector to free up memory
      
         setLastValidFile(file);
@@ -554,7 +554,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	
         final StringBuffer message = new StringBuffer();
 
-        DataObject.clearAll();
+        AbstractHData.clearAll();
         addDefaultDataObjects(file.getPath());
         
         asyncMonitor.setup("Saving HDF file", "Converting Objects", 
@@ -579,8 +579,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final VirtualGroup gateVGroup = jamToHDF.convertGate(gate);
                 allGates.addDataObject(gateVGroup);
                 // add Histogram links...
-                final VirtualGroup hist = VirtualGroup.ofName(DataObject
-                        .ofType(DataObject.DFTAG_VG), gate.getHistogram().getName());
+                final VirtualGroup hist = VirtualGroup.ofName(AbstractHData
+                        .ofType(AbstractHData.DFTAG_VG), gate.getHistogram().getName());
                 if (hist != null) {
                     //reference the Gate in the Histogram group
                     hist.addDataObject(gateVGroup);
@@ -624,7 +624,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             asyncMonitor.close();            
         }
         synchronized (this) {
-            DataObject.clearAll();
+            AbstractHData.clearAll();
             out = null; //allows Garbage collector to free up memory
         }     
         setLastValidFile(file);
@@ -672,16 +672,16 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             infile.getName()).append(" (");
                 }
 
-                DataObject.clearAll();
+                AbstractHData.clearAll();
                 
                 //Read in objects
                 inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
                 inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
-                 /* read file into set of DataObject's, set their internal variables */
+                 /* read file into set of AbstractHData's, set their internal variables */
                 inHDF.readFile();
                 
-                DataObject.interpretBytesAll();
+                AbstractHData.interpretBytesAll();
                 
                 asyncMonitor.increment();                
                 
@@ -735,10 +735,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
             		rval = false;
             	}    
                 asyncMonitor.close();
-                 /* destroys reference to HDFile (and its DataObject's) */
+                 /* destroys reference to HDFile (and its AbstractHData's) */
                  inHDF = null;
             }
-            DataObject.clearAll();
+            AbstractHData.clearAll();
             setLastValidFile(infile);
         }
         uiMessage =message.toString();
@@ -808,16 +808,16 @@ public final class HDFIO implements DataIO, JamHDFFields {
                             infile.getName()).append(" (");
                 }
 
-                DataObject.clearAll();
+                AbstractHData.clearAll();
                 
                 //Read in objects
                 inHDF = new HDFile(infile, "r", asyncMonitor, STEPS_WRITE);
                 inHDF.setLazyLoadData(true);
                 inHDF.seek(0);
-                 /* read file into set of DataObject's, set their internal variables */
+                 /* read file into set of AbstractHData's, set their internal variables */
                 inHDF.readFile();
                 
-                DataObject.interpretBytesAll();
+                AbstractHData.interpretBytesAll();
                 
                 asyncMonitor.increment();                
                 
@@ -865,10 +865,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
             		rval = false;
             	}    
                 asyncMonitor.close();
-                 /* destroys reference to HDFile (and its DataObject's) */
+                 /* destroys reference to HDFile (and its AbstractHData's) */
                  inHDF = null;
             }
-            DataObject.clearAll();
+            AbstractHData.clearAll();
             setLastValidFile(infile);
         }
         uiMessage =message.toString();
@@ -905,12 +905,12 @@ public final class HDFIO implements DataIO, JamHDFFields {
         if (HDFile.isHDFFile(infile)) {
             rval = new ArrayList();
             try {
-                DataObject.clearAll();
+                AbstractHData.clearAll();
                 /* Read in histogram names */
                 inHDF = new HDFile(infile, "r");
                 inHDF.setLazyLoadData(true);
                 inHDF.readFile();
-                DataObject.interpretBytesAll();
+                AbstractHData.interpretBytesAll();
                 rval.addAll(loadHistogramAttributes());
                 inHDF.close();
             } catch (HDFException except) {
@@ -918,7 +918,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
             } catch (IOException except) {
                 msgHandler.errorOutln(except.toString());
             }
-            DataObject.clearAll();
+            AbstractHData.clearAll();
         } else {
             msgHandler.errorOutln(infile + " is not a valid HDF File!");
             rval = Collections.EMPTY_LIST;
@@ -937,30 +937,30 @@ public final class HDFIO implements DataIO, JamHDFFields {
         /* I check ndgErr==null to determine if error bars exist */
         NumericalDataGroup ndgErr = null;
         /* get list of all VG's in file */
-        final java.util.List groups = DataObject.ofType(DataObject.DFTAG_VG);
+        final java.util.List groups = AbstractHData.ofType(AbstractHData.DFTAG_VG);
         final VirtualGroup hists = VirtualGroup.ofName(groups,
                 JamHDFFields.HIST_SECTION);
         /* only the "histograms" VG (only one element) */
         ScientificData sdErr = null;
         if (hists != null) {
             /* get list of all DIL's in file */
-            final java.util.List labels = DataObject
-                    .ofType(DataObject.DFTAG_DIL);
+            final java.util.List labels = AbstractHData
+                    .ofType(AbstractHData.DFTAG_DIL);
             /* get list of all DIA's in file */
-            final java.util.List annotations = DataObject
-                    .ofType(DataObject.DFTAG_DIA);
+            final java.util.List annotations = AbstractHData
+                    .ofType(AbstractHData.DFTAG_DIA);
             final Iterator temp = hists.getObjects().iterator();
             while (temp.hasNext()) {
                 final VirtualGroup current = (VirtualGroup) (temp.next());
-                final java.util.List tempVec = DataObject.ofType(current
-                        .getObjects(), DataObject.DFTAG_NDG);
+                final java.util.List tempVec = AbstractHData.ofType(current
+                        .getObjects(), AbstractHData.DFTAG_NDG);
                 final NumericalDataGroup[] numbers = new NumericalDataGroup[tempVec
                         .size()];
                 tempVec.toArray(numbers);
                 if (numbers.length == 1) {
                     ndg = numbers[0]; //only one NDG -- the data
                 } else if (numbers.length == 2) {
-                    if (DataIDLabel.withTagRef(labels, DataObject.DFTAG_NDG,
+                    if (DataIDLabel.withTagRef(labels, AbstractHData.DFTAG_NDG,
                             numbers[0].getRef()).getLabel().equals(
                             JamHDFFields.ERROR_LABEL)) {
                         ndg = numbers[1];
@@ -973,10 +973,10 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     throw new HDFException("Invalid number of data groups ("
                             + numbers.length + ") in NDG.");
                 }
-                final ScientificData sciData = (ScientificData) (DataObject
-                        .ofType(ndg.getObjects(), DataObject.DFTAG_SD).get(0));
-                final ScientificDataDimension sdd = (ScientificDataDimension) (DataObject
-                        .ofType(ndg.getObjects(), DataObject.DFTAG_SDD).get(0));
+                final ScientificData sciData = (ScientificData) (AbstractHData
+                        .ofType(ndg.getObjects(), AbstractHData.DFTAG_SD).get(0));
+                final ScientificDataDimension sdd = (ScientificDataDimension) (AbstractHData
+                        .ofType(ndg.getObjects(), AbstractHData.DFTAG_SDD).get(0));
                 final DataIDLabel numLabel = DataIDLabel.withTagRef(labels, ndg
                         .getTag(), ndg.getRef());
                 final int number = Integer.parseInt(numLabel.getLabel());
@@ -993,14 +993,14 @@ public final class HDFIO implements DataIO, JamHDFFields {
                 final String name = templabel.getLabel();
                 final String title = tempnote.getNote();
                 if (ndgErr != null) {
-                    sdErr = (ScientificData) (DataObject.ofType(ndgErr
-                            .getObjects(), DataObject.DFTAG_SD).get(0));
+                    sdErr = (ScientificData) (AbstractHData.ofType(ndgErr
+                            .getObjects(), AbstractHData.DFTAG_SD).get(0));
                     sdErr.setRank(histDim);
                     sdErr.setNumberType(NumberType.DOUBLE);
                     /*
                      * final ScientificDataDimension sddErr
                      * =(ScientificDataDimension)(in.ofType(
-                     * ndgErr.getObjects(),DataObject.DFTAG_SDD).get(0));
+                     * ndgErr.getObjects(),AbstractHData.DFTAG_SDD).get(0));
                      */
                 }
                 /* read in data */

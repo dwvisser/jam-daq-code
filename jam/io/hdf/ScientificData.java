@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-final class ScientificData extends DataObject {
+final class ScientificData extends AbstractHData {
 
     /**
      * The number of dimensions
@@ -36,7 +36,7 @@ final class ScientificData extends DataObject {
 
     private static final byte WAIT_TO_READ = 1;
 
-    private static final String REF_MSG = "DataObject mode not properly set: Ref# ";
+    private static final String REF_MSG = "AbstractHData mode not properly set: Ref# ";
 
     private static final String TWOD_MSG = "Problem getting 2D data in SD: ";
 

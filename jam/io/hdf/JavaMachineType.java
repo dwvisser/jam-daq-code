@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-final class JavaMachineType extends DataObject {
+final class JavaMachineType extends AbstractHData {
 
 	/**
 	 * BigEndian 32 bit Sun architecture output, not coincidentally the way Sun chose to have

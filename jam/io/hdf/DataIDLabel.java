@@ -12,7 +12,7 @@ import java.util.List;
  * @author Dale Visser
  * @since JDK1.1
  */
-final class DataIDLabel extends DataObject {
+final class DataIDLabel extends AbstractHData {
 
 
     static DataIDLabel withTagRef(int tag, int ref) {    	
@@ -20,8 +20,8 @@ final class DataIDLabel extends DataObject {
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()) {
-			final DataObject dataObject=(DataObject)iter.next();
-			if ( dataObject.getTag() ==DataObject.DFTAG_DIL)  {
+			final AbstractHData dataObject=(AbstractHData)iter.next();
+			if ( dataObject.getTag() ==AbstractHData.DFTAG_DIL)  {
 				dil =  (DataIDLabel)dataObject;
 			    if ( (dil.getObject().getTag() == tag) &&
                      (dil.getObject().getRef() == ref) ){			    		
@@ -47,11 +47,11 @@ final class DataIDLabel extends DataObject {
     /**
      * Object being labelled.
      */
-    private DataObject object;
+    private AbstractHData object;
 
     private String label;
 
-    DataIDLabel(DataObject obj, String label) {
+    DataIDLabel(AbstractHData obj, String label) {
         super(DFTAG_DIL); //sets tag
         object = obj;
         this.label = label;
@@ -95,7 +95,7 @@ final class DataIDLabel extends DataObject {
      * 
      * @return the object referred to
      */
-    private DataObject getObject() {
+    private AbstractHData getObject() {
         return object;
     }
 

@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-public final class Vdata extends DataObject {
+public final class Vdata extends AbstractHData {
 
     private VdataDescription description;
 

@@ -10,7 +10,7 @@ import java.util.Iterator;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @since JDK1.1
  */
-final class ScientificDataDimension extends DataObject {
+final class ScientificDataDimension extends AbstractHData {
 
     /**
      * The number of dimensions
@@ -30,7 +30,7 @@ final class ScientificDataDimension extends DataObject {
     static ScientificDataDimension create(short rank, int sizeX, int sizeY,
             byte numberType) {
         ScientificDataDimension rval = null;//return value
-        final Iterator temp = DataObject.ofType(DataObject.DFTAG_SDD)
+        final Iterator temp = AbstractHData.ofType(AbstractHData.DFTAG_SDD)
                 .iterator();
         while (temp.hasNext()) {
             final ScientificDataDimension sdd = (ScientificDataDimension) temp
@@ -62,9 +62,9 @@ final class ScientificDataDimension extends DataObject {
             bytes.putInt(sizeY);
         }
         /* write out data number type */
-        final DataObject itype = NumberType.getIntType();
+        final AbstractHData itype = NumberType.getIntType();
         if (numberType == NumberType.DOUBLE) {
-            final DataObject dtype = NumberType.getDoubleType();
+            final AbstractHData dtype = NumberType.getDoubleType();
             bytes.putShort(dtype.getTag());
             bytes.putShort(dtype.getRef());
         } else {

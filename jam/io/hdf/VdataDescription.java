@@ -11,7 +11,7 @@ import java.util.List;
  * @author Dale Visser
  * @since JDK1.1
  */
-public final class VdataDescription extends DataObject {
+public final class VdataDescription extends AbstractHData {
 
     /**
      * Specifies how data records are interlaced in the Vdata record.

@@ -25,7 +25,7 @@ package jam.util;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.io.hdf.DataObject;
+import jam.io.hdf.AbstractHData;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
 import jam.io.hdf.JamHDFFields;
@@ -245,12 +245,12 @@ public final class ScalerScan implements JamHDFFields {
 		String[] sname = null;
 		final VdataDescription VH =
 			VdataDescription.ofName(
-					DataObject.ofType(DataObject.DFTAG_VH),
+					AbstractHData.ofType(AbstractHData.DFTAG_VH),
 				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
-				(Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH.getRef()));
+				(Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, VH.getRef()));
 			final int numScalers = VH.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -274,12 +274,12 @@ public final class ScalerScan implements JamHDFFields {
 		int[] values = null;
 		final VdataDescription VH =
 			VdataDescription.ofName(
-					DataObject.ofType(DataObject.DFTAG_VH),
+					AbstractHData.ofType(AbstractHData.DFTAG_VH),
 				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
-				(Vdata) (DataObject.getObject(DataObject.DFTAG_VS, VH.getRef()));
+				(Vdata) (AbstractHData.getObject(AbstractHData.DFTAG_VS, VH.getRef()));
 			//corresponding VS
 			final int numScalers = VH.getNumRows();
 			values = new int[numScalers];

@@ -11,7 +11,7 @@ import java.util.List;
  * @since       JDK1.1
  * @see		DataIDLabel
  */
-final class DataIDAnnotation extends DataObject {
+final class DataIDAnnotation extends AbstractHData {
 
 
 	/**
@@ -28,8 +28,8 @@ final class DataIDAnnotation extends DataObject {
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()) {
-			final DataObject dataObject=(DataObject)iter.next();
-			if ( dataObject.getTag() ==DataObject.DFTAG_DIA)  {
+			final AbstractHData dataObject=(AbstractHData)iter.next();
+			if ( dataObject.getTag() ==AbstractHData.DFTAG_DIA)  {
 				dia =  (DataIDAnnotation)dataObject;
 			    if ( (dia.getObject().getTag() == tag) &&
                      (dia.getObject().getRef() == ref) ){			    		
@@ -63,7 +63,7 @@ final class DataIDAnnotation extends DataObject {
 	/**
 	 * Object being annotated.
 	 */
-	private DataObject object;
+	private AbstractHData object;
 
 	/**
 	 * Text of annotation.
@@ -77,7 +77,7 @@ final class DataIDAnnotation extends DataObject {
 	 * @param note  text of annotation
 	 * @exception  HDFException thrown on unrecoverable error 
 	 */
-	DataIDAnnotation(DataObject obj, String note) {
+	DataIDAnnotation(AbstractHData obj, String note) {
         super(DFTAG_DIA); //sets tag
         this.object = obj;
         this.note = note;
@@ -112,7 +112,7 @@ final class DataIDAnnotation extends DataObject {
 	    return note;
 	}
 
-	private DataObject getObject() {
+	private AbstractHData getObject() {
 		return object;
 	}
 

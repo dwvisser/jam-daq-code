@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-final class FileIdentifier extends DataObject {
+final class FileIdentifier extends AbstractHData {
 
 	FileIdentifier(String label) {
 		super(DFTAG_FID); //sets tag

@@ -12,7 +12,7 @@ import java.util.List;
  * @version 0.5 December 98
  * @author Dale Visser
  */
-final class VirtualGroup extends DataObject {
+final class VirtualGroup extends AbstractHData {
 
     /**
      * List of data elements this vGroup ties together.
@@ -61,11 +61,11 @@ final class VirtualGroup extends DataObject {
         //see DFTAG_VG specification for HDF 4.1r2
         bytes.putShort(numItems);
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final DataObject dataObject = (DataObject) (temp.next());
+            final AbstractHData dataObject = (AbstractHData) (temp.next());
             bytes.putShort(dataObject.getTag());
         }
         for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final DataObject dataObject = (DataObject) (temp.next());
+            final AbstractHData dataObject = (AbstractHData) (temp.next());
             bytes.putShort(dataObject.getRef());
         }
         bytes.putShort((short) name.length());
@@ -112,7 +112,7 @@ final class VirtualGroup extends DataObject {
      * @throws IllegalArgumentException
      *             if <code>data==null</code>
      */
-    void addDataObject(DataObject data) {
+    void addDataObject(AbstractHData data) {
         if (data == null) {
             throw new IllegalArgumentException("Can't add null to vGroup.");
         }
@@ -163,7 +163,7 @@ final class VirtualGroup extends DataObject {
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
 		while(iter.hasNext()){
-			final DataObject dataObject=(DataObject)iter.next();
+			final AbstractHData dataObject=(AbstractHData)iter.next();
 			if (dataObject.getTag()==DFTAG_VG){
 				final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
 				String type = virtualGroup.getType();
@@ -195,7 +195,7 @@ final class VirtualGroup extends DataObject {
 			final List objectList = getDataObjectList();
 			final Iterator iter = objectList.iterator();
 			while(iter.hasNext()){
-				final DataObject dataObject=(DataObject)iter.next();
+				final AbstractHData dataObject=(AbstractHData)iter.next();
 				if (dataObject.getTag()==DFTAG_VG){
 					final VirtualGroup virtualGroup=(VirtualGroup)dataObject;
 					String type = virtualGroup.getName();
