@@ -205,7 +205,7 @@ public abstract class Histogram {
 	/**	abbreviation to refer to histogram */
 	private transient String name; 
 	/**	unique name amongst all histograms */
-	private transient String uniqueFullName; 
+	private transient String uniqueName; 
 	/**Name of group histogram belongs to */
 	private String groupName;
 	/** Number of histogram */
@@ -334,9 +334,9 @@ public abstract class Histogram {
 	/* Create the full histogram name with group name. */		
 	final void updateNames(Group group){
 		groupName=group.getName();
-		NAME_MAP.remove(uniqueFullName);
-		uniqueFullName = groupName+"/"+name;
-		NAME_MAP.put(uniqueFullName, this);
+		NAME_MAP.remove(uniqueName);
+		uniqueName = groupName+"/"+name;
+		NAME_MAP.put(uniqueName, this);
 	}
 
 	/**
@@ -515,33 +515,28 @@ public abstract class Histogram {
 		return NAME_MAP.containsValue(hist);
 	}
 	
+	private static final String EMPTY_STRING="";
+	
 	private void clearInfo() {
 		gates.clear();
-		labelX = null;
-		labelY = null;
-		title = null;
+		labelX = EMPTY_STRING;
+		labelY = EMPTY_STRING;
+		title = EMPTY_STRING;
 		clearCounts();
 	}
 
 	abstract void clearCounts();
 
 	/**
-	 * Get the histogram with the given name.
-	 * 
-	 * @param name
-	 *            name of histogram to retrieve
-	 * @return the histogram with the given name, null if name doesn't exist.
-	 */
-	public static Histogram getHistogram(final String name) {
-        final Histogram rval;//default return value
-        if (name == null) {
-            rval = null;
-        } else {
-            //FIXME KBS
-            //refer = Group.getCurrentGroup().getName()+'/'+name;
-            /* get() will return null if key not in table */
-            rval = (Histogram) NAME_MAP.get(name);
-        }
+     * Get the histogram with the given name.
+     * 
+     * @param name
+     *            name of histogram to retrieve
+     * @return the histogram with the given name, null if name doesn't exist.
+     */
+    public static Histogram getHistogram(final String name) {
+        final Histogram rval = name == null ? null : (Histogram) NAME_MAP
+                .get(name);
         return rval;
     }
 
@@ -584,6 +579,7 @@ public abstract class Histogram {
 	public String getName() {
 		return name;
 	}
+	
 	/**
 	 * Returns the histogram full name that
 	 * resolves it. (could change if multiple
@@ -593,7 +589,7 @@ public abstract class Histogram {
 	 */
 	public String getFullName() {
 		//FIXME need to get name if no name collision
-		return uniqueFullName;
+		return uniqueName;
 	}
 	/**
 	 * Returns the histogram unique full name.
@@ -602,7 +598,7 @@ public abstract class Histogram {
 	 * @return the name of this histogram
 	 */
 	public String getUniqueFullName() {
-		return uniqueFullName;
+		return uniqueName;
 	}
 
 	/**
@@ -844,7 +840,7 @@ public abstract class Histogram {
 	 * @return its name
 	 */
 	public String toString() {
-		return uniqueFullName;
+		return uniqueName;
 	}
 
 	/**
