@@ -45,7 +45,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
 	 */
-	public static final class Zoom {
+	static final class Zoom {
 		private static final int in = 1;
 
 		private static final int out = 2;
