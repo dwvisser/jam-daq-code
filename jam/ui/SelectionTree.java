@@ -92,9 +92,8 @@ public class SelectionTree extends JPanel implements Observer {
 	 * Load the tree for the data objects
 	 *
 	 */	
-	private void loadTree(){
+	public void loadTree(){
 
-		
 		SortMode sortMode =status.getSortMode();		
 		String sortName=status.getSortName();
 		
@@ -109,17 +108,17 @@ public class SelectionTree extends JPanel implements Observer {
 		} else {
 			rootNode = new DefaultMutableTreeNode("No Data ");
 		}
-		 
-		 Iterator iter = Histogram.getHistogramList().iterator();
-		 
-		 while(iter.hasNext()){
-		 	Histogram hist =(Histogram)iter.next();
+
+		//Loop through histograms and load them
+		Iterator iter = Histogram.getHistogramList().iterator();
+		while(iter.hasNext()){
+			Histogram hist =(Histogram)iter.next();
 		 	DefaultMutableTreeNode histNode =
 			      new DefaultMutableTreeNode(hist);
 		 		
+		 	//Loop through histograms and load them
 			List listGates =hist.getGates();
 			Iterator iterGate=listGates.iterator();
-			
 		 	while(iterGate.hasNext()){
 		 		Gate gate= (Gate)iterGate.next();
 		 		DefaultMutableTreeNode gateNode =
@@ -128,62 +127,16 @@ public class SelectionTree extends JPanel implements Observer {
 		 	}
 			
 			 rootNode.add(histNode);
-		 }
+		}
 
-		 treeModel.setRoot(rootNode);		
+		treeModel.setRoot(rootNode);		
 		 
 	}
-
-	public void reload(){
-		loadTree();
-		repaint();
-		dataTree.repaint();
-	}
-
-	public void refresh(){
-		repaint();
-		dataTree.repaint();
-	}
 	/**
-	 * Refresh the selected node
-	 *
+	 * A node has been selected in the tree 
+	 * Set selected object
+	 * @param nodeObject
 	 */
-	private void refreshSelection(){
-		
-		DefaultMutableTreeNode currentNode;
-		Histogram hist = status.getCurrentHistogram();
-		
-		if (rootNode==null)
-			return;
-		
-		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
-		while(nodeEnum.hasMoreElements()){
-			currentNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
-			TreeNode [] tnp=currentNode.getPath();
-			
-			Object obj=currentNode.getUserObject();
-			if (obj instanceof Histogram) {
-				if (obj==hist){
-					TreeNode []tnpath=currentNode.getPath();
-					TreePath tp = new TreePath(tnpath);
-					dataTree.setSelectionPath(tp);
-					//break;
-				}
-			}	
-		}
-		//Walk Tree
-		//TreePath tp = new TreePath(); 
-		//tp.
-		//dataTree.get
-		//Loop through nodes and set appropriate node to selected
-		//Object rootNode =treeModel.getRoot();
-		//DefaultMutableTreeModel root =(DefaultMutableTreeModel)treeModel.getRoot();		
-		//TreeSelectionModel tsm =histTree.getSelectionModel();
-		
-		repaint();
-		dataTree.repaint();
-	}
-	
 	private void selection(Object nodeObject){
 
 		//Syncronize events should not fire events
@@ -192,7 +145,6 @@ public class SelectionTree extends JPanel implements Observer {
 		
 		if (nodeObject instanceof Histogram) {			
 			Histogram hist =(Histogram)nodeObject;
-
 				status.setHistName(hist.getName());
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		} else if (nodeObject instanceof Gate) {
@@ -209,6 +161,38 @@ public class SelectionTree extends JPanel implements Observer {
 			
 		}
 	}	
+
+	/**
+	 * Refresh the selected node
+	 *
+	 */
+	private void refreshSelection(){
+		
+		DefaultMutableTreeNode currentNode;
+		Histogram hist = status.getCurrentHistogram();
+		
+		//if (rootNode==null)
+	//		return;
+		
+		//Loop through all nodes to find select histogram
+		Enumeration nodeEnum =rootNode.breadthFirstEnumeration();
+		while(nodeEnum.hasMoreElements()){
+			currentNode=(DefaultMutableTreeNode)nodeEnum.nextElement();
+			TreeNode [] tnp=currentNode.getPath();
+			
+			Object obj=currentNode.getUserObject();
+			if (obj instanceof Histogram) {
+				if (obj==hist){
+					TreeNode []tnpath=currentNode.getPath();
+					TreePath tp = new TreePath(tnpath);
+					dataTree.setSelectionPath(tp);
+					break;
+				}
+			}	
+		}		
+		repaint();
+		dataTree.repaint();
+	}
 	/**
 	 * Implementation of Observable interface.
 	 * 
@@ -220,23 +204,24 @@ public class SelectionTree extends JPanel implements Observer {
 	public void update(Observable observable, Object o) {
 		final BroadcastEvent be = (BroadcastEvent) o;
 		final BroadcastEvent.Command command = be.getCommand();
-		
+		isSyncEvent=true;		
 		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			isSyncEvent=true;
 			refreshSelection();
-			isSyncEvent=false;
 		}else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			loadTree();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			loadTree();
+		} else if (command == BroadcastEvent.Command.GATE_SELECT) {			
+			refreshSelection();
 		} else if (command == BroadcastEvent.Command.GATE_ADD) {
 			loadTree();
 		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
-			refresh();
+			refreshSelection();
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			loadTree();
 		}
+		isSyncEvent=false;
 		/*
 			final String lastHistName = status.getHistName();
 			selectHistogram(Histogram.getHistogram(lastHistName));

@@ -107,8 +107,7 @@ public final class JamMain extends JFrame implements Observer {
 		/* Histogram selection menu bar */
 		selectBar = new SelectionToolbar();
 		contents.add(selectBar, BorderLayout.NORTH);
-		
-		//FIXME KBS for selection tree		
+				
 		// Histogram selection tree 
 		SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
@@ -132,11 +131,13 @@ public final class JamMain extends JFrame implements Observer {
 		new InitialHistograms();
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
+
+		selectTree.loadTree();
+
 		selectBar.setChoosersToFirstItems();
+		
 		showMainWindow(showGUI);
 		
-		//FIXME KBS for selection tree
-		selectTree.reload();
 	}
 
 	/**

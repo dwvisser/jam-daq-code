@@ -33,7 +33,8 @@ class Toolbar extends JToolBar implements ActionListener {
 	
 	private final Action action;
 	
-	private JButton boverlay, bnetarea, brebin, bgoto;
+	private JButton bnetarea, brebin, bgoto;
+	private JToggleButton boverlay;
 	private JComboBox comboBinRatio;
 	
 	private static final int ORIENTATION;
@@ -99,6 +100,15 @@ class Toolbar extends JToolBar implements ActionListener {
 			bupdate.setActionCommand(Action.UPDATE);
 			bupdate.addActionListener(this);
 			add(bupdate);
+			
+			boverlay = iOverlay == null ?
+					new JToggleButton(getHTML("<u>O</u>verlay")) : new JToggleButton(iOverlay);
+			boverlay.setToolTipText(
+				getHTML("<u>O</u>verlay a histogram."));
+			boverlay.setActionCommand(Action.OVERLAY);
+			boverlay.addActionListener(this);
+			add(boverlay);
+			
 			final JButton blinear = iLinLog==null ?
 					new JButton(getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
 			blinear.setToolTipText(
@@ -114,13 +124,6 @@ class Toolbar extends JToolBar implements ActionListener {
 			bauto.addActionListener(this);
 			add(bauto);
 			
-			boverlay = iOverlay == null ?
-					new JButton(getHTML("<u>O</u>verlay")) : new JButton(iOverlay);
-			boverlay.setToolTipText(
-				getHTML("<u>O</u>verlay a histogram."));
-			boverlay.setActionCommand(Action.OVERLAY);
-			boverlay.addActionListener(this);
-			add(boverlay);
 			
 			final JButton brange = iRange == null ? 
 					new JButton(getHTML("<u>Ra</u>nge")) : new JButton(iRange);
@@ -307,9 +310,13 @@ class Toolbar extends JToolBar implements ActionListener {
 	void setHistogramProperties(int dimension, double binWidth){
 
 		final boolean enable1D = dimension==1;
-		boverlay.setEnabled(enable1D);
+
 		bgoto.setEnabled(enable1D);
 		bnetarea.setEnabled(enable1D);
+		boverlay.setEnabled(enable1D);
+		if (!enable1D)
+			boverlay.setSelected(false);
+		
 		isSyncEvent=true;
 			//Convert double to int string
 			String strBinWidth = new Integer( new Double(binWidth).intValue()).toString();
@@ -319,6 +326,7 @@ class Toolbar extends JToolBar implements ActionListener {
 					comboBinRatio.setSelectedIndex(i);
 			}
 			comboBinRatio.setEnabled(enable1D);
+			
 		isSyncEvent=false;			
 	}
 	/**

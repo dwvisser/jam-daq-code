@@ -3,6 +3,7 @@ package jam.plot;
 import jam.JamConsole;
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
+import jam.data.Gate;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -441,7 +442,30 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			done();
 		}
 	}
-
+	/**
+	 * Display a gate
+	 * @param params
+	 */
+	void displayGate(Object []params ) {
+		Gate gate =(Gate)params[0];
+		STATUS.setCurrentGateName(gate.getName());
+		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
+		final double area = gate.getArea();
+		if (gate.getDimensionality() == 1) {
+			final double centroid = (double) ((int) (gate.getCentroid() * 100.0)) / 100.0;
+			final int lowerLimit = gate.getLimits1d()[0];
+			final int upperLimit = gate.getLimits1d()[1];
+			textOut.messageOut("Gate: " + gate.getName() + ", Ch. "
+					+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
+			textOut.messageOut("  Area = " + area + ", Centroid = "
+					+ centroid, MessageHandler.END);
+		} else {
+			textOut
+					.messageOut("Gate " + gate.getName(),
+							MessageHandler.NEW);
+			textOut.messageOut(", Area = " + area, MessageHandler.END);
+		}
+	}
 	/**
 	 * Set the range for the counts scale.
 	 */
