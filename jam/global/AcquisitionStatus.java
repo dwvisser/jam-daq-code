@@ -11,12 +11,9 @@ package jam.global;
 
 public interface AcquisitionStatus {
     /**
-     * Are we Online
-     */
-    boolean isOnLine();
-    
-    /**
-     * Are we currently taking data
+     * Are we currently taking data.
+     * 
+     * @return whether we are currently acquiring data
      */
     boolean isAcqOn();
 }
