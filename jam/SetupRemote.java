@@ -328,7 +328,7 @@ public class SetupRemote implements ActionListener, ItemListener {
 			}
 		} else {
 			if ((mode != SERVER) && (!inApplet)) {
-				jamMain.setSortMode(JamMain.NO_ACQ);
+				jamMain.setSortMode(JamMain.NO_SORT);
 			}
 		}
 	}
