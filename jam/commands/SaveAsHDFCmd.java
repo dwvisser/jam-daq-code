@@ -31,7 +31,10 @@ public class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 			
 			int write = hdfio.writeFile();
 			if (write==JFileChooser.APPROVE_OPTION){
+				
 				//KBS FIXME setSaveEnabled(true);
+				//??Is this the right instead of setSaveEnabled 
+				//status.setSortMode(file);
 			}
 			
 			//throw new CommandException("Error executing command save");
