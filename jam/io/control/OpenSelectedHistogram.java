@@ -3,28 +3,25 @@ package jam.io.control;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.MessageHandler;
 import jam.global.JamStatus;
+import jam.global.MessageHandler;
 import jam.io.FileOpenMode;
-import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFException;
+import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 import jam.io.hdf.HistogramAttributes;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -45,28 +42,13 @@ import javax.swing.border.EmptyBorder;
  */
 public final class OpenSelectedHistogram {
 
-	//UI components
-	private JDialog dialog;
+	private final JDialog dialog;
 
-	private JTextField txtFile;
+	private final JTextField txtFile;
 
-	private JList histList;
+	private final JList histList;
 	
-	private DefaultListModel histListModel;
-
-	private JButton bOK;
-
-	private JButton bApply;
-
-	private JButton bCancel;
-
-	private Frame frame;
-
-	private final String OK = "OK";
-
-	private final String CANCEL = "Cancel";
-
-	private final String APPLY = "Apply";
+	private final DefaultListModel histListData;
 
 	/**
 	 * File to read histogram information from
@@ -74,28 +56,28 @@ public final class OpenSelectedHistogram {
 	private File fileOpen;
 
 	/** HDF file reader */
-	private HDFIO hdfio;
+	private final HDFIO hdfio;
 	/** Messages output */
-	private MessageHandler msgHandler;
+	private final MessageHandler msgHandler;
 	/** Broadcaster */
-	private Broadcaster broadcaster;
+	private final Broadcaster broadcaster;
+	
+	private final Frame frame;
 
 	/**
 	 * Constructs an object which uses a dialog to open a selected histogram out of an
 	 * HDF file.
 	 *  
-	 * @param f parent frame
+	 * @param frame parent frame
 	 * @param msgHandler where to print messages
 	 */
-	public OpenSelectedHistogram(Frame f, MessageHandler msgHandler) {
-		
-		frame = f;
+	public OpenSelectedHistogram(Frame frame, MessageHandler msgHandler) {
+	    this.frame=frame;
 		this.msgHandler = msgHandler;
 		hdfio = new HDFIO(frame, msgHandler);
-		
 		broadcaster= Broadcaster.getSingletonInstance();
-		dialog = new JDialog(f, "Open Selected Histograms", false);
-		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
+		dialog = new JDialog(frame, "Open Selected Histograms", false);
+		dialog.setLocation(frame.getLocation().x + 50, frame.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -106,80 +88,57 @@ public final class OpenSelectedHistogram {
 		pFileInd.add(txtFile);
 		container.add(pFileInd, BorderLayout.NORTH);
 		/* Selection list */
-		histListModel = new DefaultListModel();
-		histList = new JList(histListModel);
+		histListData = new DefaultListModel();
+		histList = new JList(histListData);
 		histList
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		histList.setSelectedIndex(0);
 		histList.setVisibleRowCount(10);
-		JScrollPane listScrollPane = new JScrollPane(histList);
-		listScrollPane.setBorder(new EmptyBorder(0, 10, 0, 10));
-		container.add(listScrollPane, BorderLayout.CENTER);
+		JScrollPane listPane = new JScrollPane(histList);
+		listPane.setBorder(new EmptyBorder(0, 10, 0, 10));
+		container.add(listPane, BorderLayout.CENTER);
 		/* Lower panel with buttons */
 		final JPanel pLower = new JPanel();
 		container.add(pLower, BorderLayout.SOUTH);
-		final JPanel pButtons = new JPanel(new GridLayout(1, 0, 5, 5));
-		pLower.add(pButtons);
-		bOK = new JButton(OK);
-		bOK.setActionCommand(OK);
-		bOK.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doOK();
-			}
-		});
-		pButtons.add(bOK);
-		bApply = new JButton(APPLY);
-		bApply.setActionCommand(APPLY);
-		bApply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doApply();
-			}
-		});
-		pButtons.add(bApply);
-		bCancel = new JButton(CANCEL);
-		bCancel.setActionCommand(CANCEL);
-		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				doCancel();
-			}
-		});
-		pButtons.add(bCancel);
+		final PanelOKApplyCancelButtons.Listener listener = new PanelOKApplyCancelButtons.Listener() {
+            public void doOK() {
+                apply();
+                cancel();
+            }
+
+            /**
+             * Apply Button
+             *  
+             */
+            public void apply() {
+                String histName0 = loadHistograms();
+                broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+                Histogram hist = Histogram.getHistogram(histName0);
+                if (hist != null) {
+                    JamStatus.getSingletonInstance().setCurrentHistogram(hist);
+                    broadcaster.broadcast(
+                            BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+                }
+            }
+
+            /**
+             * Cancel Button
+             *  
+             */
+            public void cancel() {
+                /* Clear memory */
+                histListData.clear();
+                dialog.dispose();
+            }
+        };
+        final PanelOKApplyCancelButtons pButtons=new PanelOKApplyCancelButtons(listener);
+		pLower.add(pButtons.getComponent());
 		dialog.setResizable(false);
 		dialog.pack();
 	}
 
-	/**
-	 * OK button
-	 *  
-	 */
-	private void doOK() {
-		doApply();
-		doCancel();
-	}
 
-	/**
-	 * Apply Button
-	 *  
-	 */
-	private void doApply() {
-		String firstHistName=loadHistograms();
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		Histogram hist = Histogram.getHistogram(firstHistName);
-		if (hist!=null) {
-			JamStatus.getSingletonInstance().setCurrentHistogram(hist);
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
-		}
-	}
 
-	/**
-	 * Cancel Button
-	 *  
-	 */
-	private void doCancel() {
-		/* Clear memory */
-		histListModel.clear();
-		dialog.dispose();
-	}
 
 	/**
 	 * Entry points show the dialog if a file is chosen to open
@@ -201,11 +160,11 @@ public final class OpenSelectedHistogram {
 		boolean loadState;
 		/* Read in histogram names attributes */	
 		try {
-			final List histAttributes= hdfio.readHistogramAttributes(fileSelect);
-			final Iterator iter = histAttributes.iterator(); 
+			final List histAttr= hdfio.readHistogramAttributes(fileSelect);
+			final Iterator iter = histAttr.iterator(); 
 			while (iter.hasNext()) {
 				final HistogramAttributes histAtt= (HistogramAttributes)iter.next();
-				histListModel.addElement(histAtt.getFullName());				
+				histListData.addElement(histAtt.getFullName());				
 			}
 			loadState=true;
 		}catch (HDFException hdfe){
@@ -222,25 +181,28 @@ public final class OpenSelectedHistogram {
 	 * Load the histograms in the selected list.
 	 */
 	private String loadHistograms() {
-		final Object[] selected = histList.getSelectedValues();
-		//No histograms selected
-		if (selected.length == 0) {
-			msgHandler.errorOutln("No histograms selected");
-			return null;
-		}
-		/* Put selected histograms into a list */
-		final List histogramNamesSelected =new ArrayList();
-		String firstHistName=null;
-		for (int i=0; i<selected.length;i++) {
-			histogramNamesSelected.add(selected[i]);
-			if (i==0) {
-				firstHistName =(String)selected[i];
-			}
-		}
-		/* Read in histograms */
-		hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, null, histogramNamesSelected);
-		return firstHistName;
-	}
+        final String rval;
+        final Object[] selected = histList.getSelectedValues();
+        //No histograms selected
+        if (selected.length == 0) {
+            msgHandler.errorOutln("No histograms selected");
+            rval = "";
+        } else {
+            /* Put selected histograms into a list */
+            final List selectNames = new ArrayList();
+            String histName0 = null;
+            for (int i = 0; i < selected.length; i++) {
+                selectNames.add(selected[i]);
+                if (i == 0) {
+                    histName0 = (String) selected[i];
+                }
+            }
+            /* Read in histograms */
+            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, null, selectNames);
+            rval = histName0;
+        }
+        return rval;
+    }
 
 	/**
 	 * Read in an unspecified file by opening up a dialog box.
@@ -264,5 +226,5 @@ public final class OpenSelectedHistogram {
 		}
 		return openF;
 	}
-
 }
+
