@@ -1436,9 +1436,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	}
 
 	/**
-	 * Clip so only active region of plot is drawen on
-	 * which one? both version below were used until
-	 * a signal method was made
+	 * Clip so only active region of plot is drawn on.
 	 */
 	public void clipPlot() {
 		g.clipRect(viewLeft, viewTop, viewWidth + 1, viewHeight + 1);
