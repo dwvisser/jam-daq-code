@@ -8,7 +8,7 @@ import jam.data.*;
  */
 public class SqrtEnergyFunction extends CalibrationFunction {
 
-	private final int NUMBER_TERMS = 2;
+	private static final int NUMBER_TERMS = 2;
 	/**
 	 * Creates a new <code>SqrtEnergyFunction </code> object of the specified type.  
 	 *

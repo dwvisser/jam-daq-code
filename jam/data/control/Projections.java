@@ -16,9 +16,9 @@ import javax.swing.*;
 public class Projections extends DataControl implements ActionListener, ItemListener, WindowListener,
 Observer {
 
-    private final String FULL="Full";
-    private final String BETWEEN="Between";
-    private final String NEW_HIST="New Histogram";
+    private static final String FULL="Full";
+    private static final String BETWEEN="Between";
+    private static final String NEW_HIST="New Histogram";
 
     private Frame frame;
     private Broadcaster broadcaster;
