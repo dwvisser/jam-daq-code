@@ -96,8 +96,6 @@ public class BatchExport extends JDialog implements ActionListener {
 		l_hists = new JList(new DefaultListModel());
 		l_hists.setSelectionMode(
 			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		l_hists.setBackground(Color.white);
-		l_hists.setForeground(Color.black);
 		p_list.add(new JScrollPane(l_hists));
 		contents.add(p_list, BorderLayout.CENTER);
 
