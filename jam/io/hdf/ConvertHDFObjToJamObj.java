@@ -93,12 +93,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	Group convertGroup(VirtualGroup virtualGroup, String fileName, FileOpenMode mode){
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(virtualGroup.getTag(),
 				virtualGroup.getRef());
-		//Don't use file name for group name for open
-    	if (mode==FileOpenMode.OPEN) {
-    		fileName=null;
-    	}
-		return Group.createGroup(dataIDLabel.getLabel(), Group.Type.FILE, fileName);
-	}
+		/* Don't use file name for group name for open. */
+		final String fname = mode==FileOpenMode.OPEN ? null : fileName;
+		return Group.createGroup(dataIDLabel.getLabel(), Group.Type.FILE, fname);
+	} 
 	
 	
 	List findHistograms(VirtualGroup virtualGroupGroup, List histogramNames) throws HDFException {
