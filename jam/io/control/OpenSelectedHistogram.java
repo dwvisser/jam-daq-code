@@ -199,7 +199,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
             }
             /* Read in histograms */
             hdfio.setListener(this);
-            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, null, selectNames);
+            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, selectNames);
             rval = histName0;
         }
         return rval;

@@ -266,24 +266,28 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
         if (chkBoxAdd.isSelected()) {
             /* Create blank histograms */
             file = multiChooser.getSelectedFile();
-            hdfio.readFile(FileOpenMode.OPEN, file, null, selectNames);
+            hdfio.readFile(FileOpenMode.OPEN, file, selectNames);
             /* Rename group */
             final Group fileGroup = Group.getGroup(file.getName());
             fileGroup.setName("Sum");
             Histogram.setZeroAll();
             while (iter.hasNext()) {
                 file = (File) iter.next();
-                hdfio.readFile(FileOpenMode.ADD, file, null, selectNames);
+                hdfio.readFile(FileOpenMode.ADD, file, selectNames);
             }
             /* Open multiple groups */
         } else {
             DataBase.getInstance().clearAllLists();
-            while (iter.hasNext()) {
-                file = (File) iter.next();
 
-                hdfio.readFile(FileOpenMode.OPEN_MORE, file, null, selectNames);
-                STATUS.setSortMode(SortMode.FILE, "Multiple");
-            }
+                Object [] objFiles = (Object [])multiChooser.getFileList().toArray();
+                File [] files =new File[objFiles.length];
+                for (int i=0;i<objFiles.length; i++) {
+                	files[i] =(File)objFiles[i];
+                }
+               hdfio.readFile(FileOpenMode.OPEN_MORE, files, null, selectNames);
+//            while (iter.hasNext()) {                
+ //           }
+            STATUS.setSortMode(SortMode.FILE, "Multiple");            
         }
     }      
     

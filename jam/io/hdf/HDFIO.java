@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
+
+import org.omg.CORBA.portable.InvokeHandler;
 
 /**
  * Reads and writes HDF files containing spectra, scalers, gates, and additional
@@ -130,13 +134,20 @@ public final class HDFIO implements DataIO, JamFileFields {
     public void writeFile(final File file, List histograms) {
     	writeFile(file, null, histograms, true, true);    	
     }
-    
+    /**
+     * Read in an HDF file.
+     * @param mode
+     *            whether to open or reload
+     * @param infile
+     *            file to load 
+     */
     public boolean readFile(FileOpenMode mode, File infile) {
-    	return readFile(mode, infile, null, null);
+    	File [] inFiles = new File[1];
+    	inFiles[0]=infile;
+    	return readFile(mode, inFiles, null, null);
     }
     /**
      * Read in an HDF file.
-     * 
      * @param infile
      *            file to load
      * @param mode
@@ -146,9 +157,27 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile, Group group) {
+    	File [] inFiles = new File[1];
+    	inFiles[0]=infile;    	
     	List groupNames= new ArrayList();
     	groupNames.add(group.getName());
-    	return readFile(mode, infile, groupNames, null);
+    	return readFile(mode, inFiles, groupNames, null);
+    }
+
+    /**
+     * Read in an HDF file.
+     * @param infile
+     *            file to load
+     * @param mode
+     *            whether to open or reload
+     * @param group
+     * 			  group to read in
+     * @return <code>true</code> if successful
+     */
+    public boolean readFile(FileOpenMode mode, File infile, List histogramNames) {
+    	File [] inFiles = new File[1];
+    	inFiles[0]=infile;    	    	
+    	return readFile(mode, inFiles, null,histogramNames);
     }
 
     
@@ -301,17 +330,22 @@ public final class HDFIO implements DataIO, JamFileFields {
      * @param histNames list of names of histograms to read in
      * @return <code>true</code> if successful
      */
-    public boolean readFile(FileOpenMode mode, File infile,  List groupNames, List histNames) {
-    	if(!infile.isFile()) {
-    		msgHandler.errorOutln("Cannot find file "+infile+".");
-    		return false;
+    public boolean readFile(FileOpenMode mode, File [] inFiles,  List groupNames, List histNames) {
+
+    	for(int i=0;i<inFiles.length; i++) {
+    		File infile = inFiles[i];
+	    	if(!infile.isFile()) {
+	    		msgHandler.errorOutln("Cannot find file "+infile+".");
+	    		return false;
+	    	}
+	        if (!HDFile.isHDFFile(infile)) {
+	        	msgHandler.errorOutln("File "+ infile + " is not a valid HDF file.");
+	            return  false;
+	        }
     	}
-        if (!HDFile.isHDFFile(infile)) {
-        	msgHandler.errorOutln("File "+ infile + " is not a valid HDF file.");
-            return  false;
-        }
     	
-    	spawnAsyncReadFile(mode, infile, groupNames, histNames);
+    	spawnAsyncReadFile(mode, inFiles, groupNames, histNames);
+    	
         return true;
     }
 
@@ -374,7 +408,7 @@ public final class HDFIO implements DataIO, JamFileFields {
     /*
      * non-javadoc: Asyncronized read
      */
-    private void spawnAsyncReadFile(final FileOpenMode mode, final File infile, final List groupNames, final List histNames) {
+    private void spawnAsyncReadFile(final FileOpenMode mode, final File [] inFiles, final List groupNames, final List histNames) {
     	uiMessage="";
     	uiErrorMsg ="";
 
@@ -385,22 +419,25 @@ public final class HDFIO implements DataIO, JamFileFields {
             	Thread thisTread =Thread.currentThread();
             	thisTread.setPriority(thisTread.getPriority()-1);
             	//End test 
-            	try {
-            		asyncReadFileGroup(infile, mode, groupNames, histNames);
-            		//asyncReadFile(infile, mode, histNames);
-            	}catch (Exception e) {
-            		uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
-            		e.printStackTrace();
-            		asyncMonitor.close();
-            	}
+            	//Loop for all files
+        		for (int i=0;i<inFiles.length;i++) {
+        			File infile =inFiles[i];
+            	
+        			try {
+            			asyncReadFileGroup(infile, mode, groupNames, histNames);            
+            			displayMessage();
+            		}catch (Exception e) {
+            			uiErrorMsg ="UError reading file "+infile.getName()+", "+e;
+            			e.printStackTrace();
+            			asyncMonitor.close();
+            		}
+        		}
             	return null;
             }
             /* Runs on the event-dispatching thread. */
             public void finished() {
-            	if (uiErrorMsg.equals("")) {
-            		msgHandler.messageOutln(uiMessage);
-            	} else {
-                    msgHandler.errorOutln(uiErrorMsg);
+            	if (!uiErrorMsg.equals("")) {
+	                msgHandler.errorOutln(uiErrorMsg);
             	}
             	if (asyncListener!=null) {
             		asyncListener.completedIO(uiMessage, uiErrorMsg);
@@ -427,7 +464,26 @@ public final class HDFIO implements DataIO, JamFileFields {
         worker.start();     	
     }
 
-    
+    private void displayMessage() {
+		final Runnable runner = new Runnable() {
+	        public void run() {
+	        	if (uiErrorMsg.equals("")) {
+	        		msgHandler.messageOutln(uiMessage);
+	        	} else {
+	                msgHandler.errorOutln(uiErrorMsg);
+	        	}
+	        	uiMessage="";
+	        	uiErrorMsg="";
+	        }
+	    };    			
+    	        
+        try {
+            SwingUtilities.invokeAndWait(runner);
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }		
+    	        
+    }
     /**
      * Given separate vectors of the writeable objects, constructs and writes
      * out an HDF file containing the contents. Null or empty

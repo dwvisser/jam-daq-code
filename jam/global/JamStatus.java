@@ -157,10 +157,10 @@ public final class JamStatus {
 	public void setOpenFile(File file) {
 		synchronized (sortMode) {
 			openFile = file;
-			String fileName="";			
+			String sortName="";			
 			if (file!=null)
-				fileName=file.getName();
-			setSortMode(SortMode.FILE, fileName);
+				sortName=file.getPath();
+			setSortMode(SortMode.FILE, sortName);
 		}
 	}
 	/**
