@@ -33,7 +33,7 @@ public class MultipleGaussians extends NonLinearFit {
 	/**
 	 * Ratio of FWHM to sigma for a gaussian.
 	 */
-	static final double SIGMA_TO_FWHM = 2.0 * Math.sqrt(2.0 * Math.log(2.0));
+	public static final double SIGMA_TO_FWHM = 2.0 * Math.sqrt(2.0 * Math.log(2.0));
 
 	/**
 	 * function <code>Parameter</code>--constant background term
