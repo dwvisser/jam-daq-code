@@ -485,31 +485,25 @@ public class Vdata extends DataObject {
 		}
 		return out;
 	}
-
-	//FIXME 
+	
 	public Short getShort(int row, int col) {
-		int location;
-		int length = 2;
-		byte[] temp;
-		short n;
-		ByteArrayInputStream bis;
-		DataInputStream dis;
-
-		Short out = null;
+		Short rval = null;
 		if (types[col] == VdataDescription.DFNT_INT32) {
-			location = row * ivsize + offsets[col];
-			temp = new byte[length];
-			System.arraycopy(bytes, location, temp, 0, length);
-			bis = new ByteArrayInputStream(temp);
-			dis = new DataInputStream(bis);
-			n = 0;
+			final int location = row * ivsize + offsets[col];
+			final int shortLength = 2;
+			final byte [] temp = new byte[shortLength];
+			System.arraycopy(bytes, location, temp, 0, shortLength);
+			final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
+			final DataInputStream dis = new DataInputStream(bis);
+			short value = 0;
 			try {
-				n = dis.readShort();
+				value = dis.readShort();
+				dis.close();
 			} catch (IOException ioe) {
 				JOptionPane.showMessageDialog(null,ioe.getMessage(),
 				getClass().getName(),JOptionPane.ERROR_MESSAGE);
 			}
-			out = new Short(n);
+			rval = new Short(value);
 		} else {
 			throw new IllegalStateException(
 				"VS_"
@@ -522,7 +516,7 @@ public class Vdata extends DataObject {
 					+ col
 					+ "): cell not short!");
 		}
-		return out;
+		return rval;
 	}
 
 	/**
