@@ -5,13 +5,7 @@ import jam.sort.stream.EventException;
 import jam.sort.stream.EventInputStream;
 import jam.sort.stream.EventOutputStream;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -39,35 +33,77 @@ public abstract class StorageDaemon extends GoodThread {
 	 */
 	public static final int OFFLINE = 2;
 
+	/**
+	 * @see #ONLINE
+	 * @see #OFFLINE
+	 */
 	protected int mode;
+	
+	/**
+	 * @see jam.SortControl
+	 * @see jam.RunControl
+	 */
 	protected Controller controller;
+	
+	/**
+	 * Message handler for text output.
+	 */
 	protected MessageHandler msgHandler;
 
+	/**
+	 * To process data from.
+	 */
 	protected RingBuffer ringBuffer;
 
+	/**
+	 * File to grab data from.
+	 */
 	protected File inputFile;
+	
+	/**
+	 * File to save data to.
+	 */
 	protected File outputFile;
 
-	boolean inputFileOpen;
-	boolean outputFileOpen;
+	/**
+	 * Whether we have an input file open.
+	 */
+	protected boolean inputFileOpen;
+	
+	/**
+	 * Whether we have an output file open.
+	 */
+	protected boolean outputFileOpen;
 
-	//files to sort in a list
-	protected List sortFilesList;
+	/** files to sort in a list */
+	private List sortFilesList;
+	
+	/**
+	 * Iterator over the list of sort files.
+	 */
 	protected Iterator sortFiles;
 
-	protected FileOutputStream fos;
-	protected BufferedOutputStream bos;
-	protected DataOutputStream dos;
+	/**
+	 * The output stream used to write events.
+	 */
 	protected EventOutputStream eventOutput;
 
-	//for reading from device	        
-	protected FileInputStream fis;
-	protected BufferedInputStream bis;
-	protected DataInputStream dis;
+	/** The input stream used to read events. */       
 	protected EventInputStream eventInput;
 
+	/**
+	 * Number of buffers processed.
+	 */
 	protected int bufferCount = 0;
+	
+	/** 
+	 * Number of bytes processed.
+	 */
 	protected int byteCount = 0;
+	
+	/**
+	 * Number of files processed.
+	 */
 	protected int fileCount = 0;
 
 	/**
@@ -100,7 +136,10 @@ public abstract class StorageDaemon extends GoodThread {
 	}
 	
 	/**
-	 * setup for offline sorting
+	 * Setup for offline sorting.
+	 * 
+	 * @param eventInputStream type of incoming data
+	 * @param eventOutputStream type of outgoing data
 	 */
 	public void setupOff(
 		EventInputStream eventInputStream,
@@ -112,6 +151,8 @@ public abstract class StorageDaemon extends GoodThread {
 	
 	/** 
 	 * Set the ring buffer to get data from.
+	 * 
+	 * @param ringBuffer ring buffer to process data from
 	 */
 	public void setRingBuffer(RingBuffer ringBuffer) {
 		this.ringBuffer = ringBuffer;
@@ -164,7 +205,9 @@ public abstract class StorageDaemon extends GoodThread {
 	}
 
 	/**
-	 * number of files read or written
+	 * Get the umber of files read or written.
+	 * 
+	 * @return number of files processed
 	 */
 	public int getFileCount() {
 		return fileCount;
