@@ -48,14 +48,16 @@ class Plot1d extends Plot {
 		super(a);
 		setPeakFind(prefs.getBoolean(AUTO_PEAK_FIND, true));
 	}
+	
+	void setOverlayList(List list){
+		overlayHists=list;
+	}
 
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms(List hists) {
+	void overlayHistograms() {
 		displayingOverlay = true;
-		overlayHists = hists;
-		final int len = hists.size();
 		/* retain any items in list in the map */
 		countsOverlay.keySet().retainAll(overlayHists);
 		final Iterator iter = overlayHists.iterator();

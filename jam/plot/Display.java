@@ -82,6 +82,7 @@ public final class Display extends JPanel implements Observer {
 		plotswap.setLayout(plotswapLayout);
 		/* panel 1d plot and its scroll bars */
 		plot1d = new Plot1d(action);
+		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
 		plot1d.addPlotMouseListener(action);
 		final Scroller scroller1d = new Scroller(plot1d);
 		plotswap.add(KEY1, scroller1d);
@@ -142,7 +143,7 @@ public final class Display extends JPanel implements Observer {
 			throw new UnsupportedOperationException(
 					"Overlay attempted for non-1D histogram.");
 		}
-		plot1d.overlayHistograms(Collections.unmodifiableList(overlays));
+		plot1d.overlayHistograms();
 	}
 
 	private void makeLimits(Histogram h) {

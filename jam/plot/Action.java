@@ -473,6 +473,7 @@ class Action implements ActionListener, PlotMouseListener,
 	 * @see Plot#update()
 	 */
 	private void update() {
+		broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		display.getPlot().update();
 		done();
 		/*
@@ -527,9 +528,8 @@ class Action implements ActionListener, PlotMouseListener,
 				JamStatus.instance().setCurrentHistogramName(h.getName());
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
-				if (hist.length < 2) {
-					display.removeOverlays();
-				}
+				display.removeOverlays();
+				broadcaster.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
 			} else {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);

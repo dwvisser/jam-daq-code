@@ -22,6 +22,11 @@ public class BroadcastEvent {
 
 		/** A histogram has been selected. */
 		public static final Command HISTOGRAM_SELECT = new Command(12);
+		
+		/**
+		 * For telling the gui that we want overlay mode off.
+		 */
+		public static final Command OVERLAY_OFF=new Command(13);
 
 		/** Scalers have been read. */
 		public static final Command SCALERS_READ = new Command(20);

@@ -108,7 +108,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				if (overlaySelected()) {
+				if (isOverlaySelected()) {
 					console.messageOut("Overlay Spectrum ", MessageHandler.NEW);
 				}
 			}
@@ -162,19 +162,27 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		synchronized (boverLay) {
 			boverLay.setEnabled(state);
 			if (!state){//disabled
-				boverLay.setSelected(false);
+				setOverlaySelected(false);
 			}
+		}
+	}
+	
+	private void setOverlaySelected(boolean state){
+		synchronized (boverLay){
+			boverLay.setSelected(state);
 		}
 	}
 
 	/**
 	 * @return whether histogram overlay mode is enabled
 	 */
-	private boolean overlaySelected() {
+	private boolean isOverlaySelected() {
 		synchronized (boverLay) {
 			return boverLay.isSelected();
 		}
 	}
+	
+	
 
 	private void setRunState(RunState rs) {
 		lrunState.setBackground(rs.getColor());
@@ -208,7 +216,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		} else {
 			final boolean oneD = hist.getDimensionality() == 1;
-			if (overlaySelected() && oneD) {
+			if (isOverlaySelected() && oneD) {
 					status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getName(), MessageHandler.END);
 					display.addToOverlay(hist.getNumber());
@@ -283,25 +291,22 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			final String lastHistName = status.getCurrentHistogramName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			dataChanged();
-		}
-		if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
+		} else if (command == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			dataChanged();
-		}
-		if (command == BroadcastEvent.Command.GATE_ADD) {
+		} else if (command == BroadcastEvent.Command.GATE_ADD) {
 			final String lastHistName = status.getCurrentHistogramName();
 			selectHistogram(Histogram.getHistogram(lastHistName));
 			gatesChanged();
-		}
-		if (command == BroadcastEvent.Command.GATE_SET_SAVE
+		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE
 				|| command == BroadcastEvent.Command.GATE_SET_OFF) {
 			gateChooser.repaint();
 			histogramChooser.repaint();
-		}
-		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			syncHistChooser();
-		}
-		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
+		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) be.getContent());
+		} else if (command==BroadcastEvent.Command.OVERLAY_OFF){
+			setOverlaySelected(false);
 		}
 	}
 
