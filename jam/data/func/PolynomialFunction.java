@@ -11,7 +11,6 @@ public class PolynomialFunction extends CalibrationFunction {
 	 * polynomial order. 
 	 *
 	 * @param numberTerms terms in the polynomial (including a constant term)
-	 * @exception   DataException   thrown if invalid <code>type</code> passed to constructor
 	 */
 	public PolynomialFunction(int numberTerms) {
 		super(numberTerms);
@@ -23,10 +22,6 @@ public class PolynomialFunction extends CalibrationFunction {
 		}
 	}
 	
-	public PolynomialFunction(){
-		this(4);
-	}
-
 	/**
 	 * Get the calibration value at a specified channel.
 	 * 
