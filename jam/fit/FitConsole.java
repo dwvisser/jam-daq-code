@@ -98,7 +98,7 @@ public class FitConsole
 	 * @param part one of NEW, CONTINUE, or END
 	 */
 	public synchronized void messageOut(String _message, int part) {
-		String message=new String(_message);
+		String message=String.valueOf(_message);
 		if (part == NEW) {
 			msgLock = true;
 			message = END_LINE + message;
@@ -147,7 +147,7 @@ public class FitConsole
 	 * @param _message the message to be printed to the console
 	 */
 	public synchronized void messageOutln(String _message) {
-		String message=new String(_message);
+		String message=String.valueOf(_message);
 		msgLock = true;
 		message = END_LINE + message;
 		try {
@@ -183,7 +183,7 @@ public class FitConsole
 	}
 
 	private synchronized void promptOutln(final String _message, AttributeSet attr) {
-		String message=new String(_message);
+		String message=String.valueOf(_message);
 		/* Dont wait for lock.  
 		 * Output message right away. */
 		if (msgLock) { //if locked add extra returns
