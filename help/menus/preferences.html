@@ -10,19 +10,17 @@
 <BODY>
 <h2>Preferences Menu</h2>
 
+<p>All of the 'check/uncheck' preferences save their states to disk automatically. The last-used state is automatically set the next time youu start Jam.</p>
+
 <dl>
-  <dt>Ignore zero channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the first channel of the histogram when the user clicks <em>Auto</em>.</dd>
-  <dt>Ignore max channel on autoscale</dt><dd>Enabled by default. Ignore any counts in the last channel of the histogram when the user clicks <em>Auto</em>.</dd>
+  <dt>Autoscale--Ignore Zero</dt><dd>Enabled by default. Ignore any counts in the first channel of the histogram when the user clicks <em>Auto</em>.</dd>
+  <dt>Autoscale--Ignore Last Channel</dt><dd>Enabled by default. Ignore any counts in the last channel of the histogram when the user clicks <em>Auto</em>.</dd>
   <dt>Autoscale on Expand/Zoom</dt><dd>Enabled by default. When enabled, histogram display is auto-scaled any time the view changes.
 </dl>
 <hr>
 <dl>
-  <dt>Disable Gate Fill</dt><dd>This option directs Jam to draw just the boundary instead of filling in the gates. The default setting is false, i.e., to highlight all the channels inside gates when they're drawn. Inserting the line
-  	<pre>graph.noFillGate=true</pre>
-  	in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file will override the default at startup.</dd>
-  <dt>Use gradient color scale</dt><dd>Jam was originally used on systems with limited color availability. Thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, now you may check this option or insert the
-  line 
-  <pre>graph.gradientScale=true</pre> in your <a href="../config/jamuser.html">JamUser.ini</a> or <a href="../config/jamconfig.html">JamConfig.ini</a> file to enable
+  <dt>Highlight Gate Channels</dt><dd>Enabled by default. Disabling this option directs Jam to draw just the boundary instead of filling in the gates.</dd>
+  <dt>Use gradient color scale</dt><dd>Enabled by default. Jam was originally used on systems with limited color availability. Now, thanks to <a href="mailto:elingerf@utk.edu">Eric Lingerfelt</a>, this option enables
   a rainbow gradient for 2-dimensional histogram plots.</dd>
 </dl>
 <hr>
@@ -32,13 +30,12 @@
 </dl>
 <hr>
 <dl>  
-  <dt>Black Background</dt><dd>Sets the display color scheme to white on black.</dd>
-  <dt>White Background</dt><dd>Sets the display color scheme to black on white.</dd>
+  <dt>Invert foreground/background</dt><dd>Disabled by default. Sets the display color scheme to white on black.</dd>
 </dl>
 <hr>
 <dl>  
-  <dt>Verbose front end</dt><dd>Sends a command to the front end computer turning on or off 'verbose' mode. In verbose mode, the front end sends status messages which are printed on the console by jam.
-  <dt>Debug front end</dt><dd>Sets the 'debug' mode of the front end computer on or off. In verbose mode, the front end computer may print out more messages to its terminal and send more messages to Jam.
+  <dt>Verbose front end</dt><dd>Disabled by default. Sends a command to the front end computer turning on or off 'verbose' mode. In verbose mode, the front end sends status messages which are printed on the console by jam.
+  <dt>Debug front end</dt><dd>Disabled by default. Sets the 'debug' mode of the front end computer on or off. In verbose mode, the front end computer may print out more messages to its terminal and send more messages to Jam.
 </dl>
 
 <a href="index.html">Back</a> to Menus.
