@@ -94,11 +94,11 @@ public final class SetupSortOn extends AbstractSetup {
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/* strings of data entered */
-	private String experimentName;
+	private String exptName;
 
-	private File histDirectory;
+	private File histFolder;
 
-	private File dataDirectory;
+	private File dataFolder;
 
 	private File logDirectory;
 
@@ -156,7 +156,7 @@ public final class SetupSortOn extends AbstractSetup {
 				.getPropString(JamProperties.EVENT_OUTSTREAM);
 		final String defaultEvents = JamProperties
 				.getPropString(JamProperties.EVENT_OUTPATH);
-		histDirectory = new File(JamProperties.getPropString(JamProperties.HIST_PATH));
+		histFolder = new File(JamProperties.getPropString(JamProperties.HIST_PATH));
 		final String defaultLog = JamProperties
 				.getPropString(JamProperties.LOG_PATH);
 		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
@@ -249,7 +249,7 @@ public final class SetupSortOn extends AbstractSetup {
 				.setToolTipText("Select the writer for your output event format.");
 		selectName(outStreamChooser,lhs,defaultEventOutStream);		
 		pEntries.add(outStreamChooser);
-		textPathHist = new JTextField(histDirectory.getPath());
+		textPathHist = new JTextField(histFolder.getPath());
 		textPathHist.setColumns(fileTextColumns);
 		textPathHist
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
@@ -306,16 +306,16 @@ public final class SetupSortOn extends AbstractSetup {
 		bbrowseh = new JButton("Browse...");
 		bbrowseh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				histDirectory = getPath(histDirectory);
-				textPathHist.setText(histDirectory.getPath());
+				histFolder = getPath(histFolder);
+				textPathHist.setText(histFolder.getPath());
 			}
 		});
 		pBrowse.add(bbrowseh);
 		bbrowsed = new JButton("Browse...");
 		bbrowsed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dataDirectory = getPath(dataDirectory);
-				textPathData.setText(dataDirectory.getPath());
+				dataFolder = getPath(dataFolder);
+				textPathData.setText(dataFolder.getPath());
 			}
 		});
 		pBrowse.add(bbrowsed);
@@ -385,7 +385,7 @@ public final class SetupSortOn extends AbstractSetup {
 				loadNames();
 				if (clog.isSelected()) { //if needed start logging to file
 					final String logFile = jamConsole
-							.setLogFileName(logDirectory + experimentName);
+							.setLogFileName(logDirectory + exptName);
 					jamConsole.messageOutln("Logging to file: " + logFile);
 					jamConsole.setLogFileOn(true);
 				} else {
@@ -393,7 +393,7 @@ public final class SetupSortOn extends AbstractSetup {
 				}
 				jamConsole
 						.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
-								+ experimentName);
+								+ exptName);
 				/* Kill all existing Daemons and clear data areas */
 				resetAcq(false);
 				loadSorter(); //load sorting routine
@@ -437,7 +437,7 @@ public final class SetupSortOn extends AbstractSetup {
 	 * histogram directories.
 	 */
 	private void loadNames() {
-		experimentName = textExpName.getText().trim();
+		exptName = textExpName.getText().trim();
 	}
 
 	/* non-javadoc
@@ -503,7 +503,7 @@ public final class SetupSortOn extends AbstractSetup {
 				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
 				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
 		/* Tell control about everything. */
-		runControl.setupOn(experimentName, dataDirectory, histDirectory,
+		runControl.setupOn(exptName, dataFolder, histFolder,
 				sortDaemon, netDaemon, diskDaemon);
 		/* Tell the status dialog. */
 		displayCounters.setupOn(netDaemon, sortDaemon, diskDaemon);
