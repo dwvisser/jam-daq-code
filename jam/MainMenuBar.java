@@ -1,7 +1,6 @@
 package jam;
 import jam.commands.JamCmdManager;
 import jam.data.Histogram;
-import jam.data.control.DataControl;
 import jam.fit.LoadFit;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -10,12 +9,6 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.SortMode;
-import jam.io.ImpExp;
-import jam.io.ImpExpASCII;
-import jam.io.ImpExpORNL;
-import jam.io.ImpExpSPE;
-import jam.io.ImpExpXSYS;
-import jam.io.ImportBanGates;
 import jam.io.hdf.HDFIO;
 import jam.plot.Display;
 import jam.plot.PlotGraphicsLayout;
@@ -37,7 +30,6 @@ import java.util.Observer;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -61,27 +53,6 @@ public class MainMenuBar extends JMenuBar implements Observer {
 
 	private final JamStatus status=JamStatus.instance();
 
-	class ImportAction extends AbstractAction {
-		
-		private final ImpExp impexp;
-		
-		ImportAction(ImpExp ie){
-			super(ie.getFormatDescription());
-			impexp=ie;
-		}
-		
-		public void actionPerformed(ActionEvent ae){
-			try {
-				if (impexp.openFile()) {
-				 	status.setSortMode(impexp.getLastFile());
-					DataControl.setupAll();
-					jamCommand.dataChanged();
-				}
-			} catch (Exception e){
-				console.errorOutln(e.getMessage());
-			}
-		}
-	}
 
 	static final String NO_FILL_MENU_TEXT = "Disable Gate Fill";
 
@@ -218,20 +189,20 @@ public class MainMenuBar extends JMenuBar implements Observer {
 		utilities.add(new JMenuItem(ss.getAction()));
 		file.addSeparator();
 		file.add(impHist);
-		final ImpExp ieASCII=new ImpExpASCII(jamMain,console);
-		final JMenuItem openascii = new JMenuItem(new ImportAction(ieASCII));
+		final JMenuItem openascii = new JMenuItem(commands.getAction(
+		CommandNames.IMPORT_TEXT));
 		impHist.add(openascii);
-		final ImpExp ieSpe=new ImpExpSPE(jamMain,console);
-		final JMenuItem openspe = new JMenuItem(new ImportAction(ieSpe));
+		final JMenuItem openspe = new JMenuItem(commands.getAction(
+		CommandNames.IMPORT_SPE));
 		impHist.add(openspe);
-		final ImpExp ieHis=new ImpExpORNL(jamMain,console);
-		final JMenuItem openornl = new JMenuItem(new ImportAction(ieHis));
+		final JMenuItem openornl = new JMenuItem(commands.getAction(
+		CommandNames.IMPORT_DAMM));
 		impHist.add(openornl);
-		final ImpExp ieXsys = new ImpExpXSYS(jamMain,console);
-		final JMenuItem openxsys = new JMenuItem(new ImportAction(ieXsys));
+		final JMenuItem openxsys = new JMenuItem(commands.getAction(
+		CommandNames.IMPORT_XSYS));
 		impHist.add(openxsys);
-		final JMenuItem importBan = new JMenuItem(new ImportAction(
-		new ImportBanGates(jamMain,console)));
+		final JMenuItem importBan = new JMenuItem(commands.getAction(
+		CommandNames.IMPORT_BAN));
 		impHist.add(importBan);
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
