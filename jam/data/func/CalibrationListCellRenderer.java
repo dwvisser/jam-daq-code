@@ -21,11 +21,12 @@ import javax.swing.UIManager;
 public class CalibrationListCellRenderer
 	extends DefaultListCellRenderer {
 
-	private static final ImageIcon LINE_ICON;
-	private static final ImageIcon POLY_ICON;
-	private static final ImageIcon SQRT_ICON;
+	//private static final ImageIcon LINE_ICON;
+	//private static final ImageIcon POLY_ICON;
+	//private static final ImageIcon SQRT_ICON;
 
 	static{
+		/*FIXME KBS remove
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
 		URL urlLine=loader.getResource("jam/data/func/line.png");
 		URL urlPoly =loader.getResource("jam/data/func/poly.png");
@@ -38,6 +39,7 @@ public class CalibrationListCellRenderer
 			POLY_ICON=new ImageIcon(urlPoly);
 			SQRT_ICON=new ImageIcon(urlSqrt);
 		}
+		*/
 	}
 
 	/**
@@ -62,7 +64,9 @@ public class CalibrationListCellRenderer
 		}
 		
 		setText(value.toString());
-		/* FIXME KBS
+		ImageIcon icon= CalibrationFunction.getIcon(value.toString());
+		setIcon(icon);
+		/* FIXME KBS remove
  		if (value==null){
 			setText("null");
 			setIcon(null);

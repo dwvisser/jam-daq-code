@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import javax.swing.ImageIcon;
 
 /**
  * A function that can be use to calibrate a histogram.  
@@ -17,6 +18,7 @@ public abstract class CalibrationFunction implements Function {
 
 	private static final Map  mapFunctions =new HashMap();	
 	private static final List names =new ArrayList();	
+	private static final Map  mapIcons =new HashMap();
 
 	/**
 	 * Maximum number of terms assigned by default to <code>POLYNOMIAL</code> type.
@@ -56,6 +58,7 @@ public abstract class CalibrationFunction implements Function {
 	}	
 	public static void clearAll(){
 		mapFunctions.clear();
+		mapIcons.clear();
 		names.clear();
 	}
 	public static void addFunction(String name, Class funcClass) {
@@ -64,6 +67,13 @@ public abstract class CalibrationFunction implements Function {
 			mapFunctions.put(name, funcClass);
 			names.add(name);
 		}		
+	}
+	public static void setIcon(String name, ImageIcon icon){
+		mapIcons.put(name, icon);
+	}
+
+	public static ImageIcon getIcon(String name){
+		return (ImageIcon)mapIcons.get(name);
 	}
 		
 
@@ -132,6 +142,7 @@ public abstract class CalibrationFunction implements Function {
 	public String getFormula(){
 		return formula.toString();
 	}
+
 	
 	/**
 	 * Called by setCoeff() to update the formula.

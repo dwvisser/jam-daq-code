@@ -6,31 +6,27 @@ import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
+import jam.data.func.PolynomialFunction;
 import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
-import jam.global.BroadcastEvent;
-import jam.io.hdf.HDFileFilter;
-import jam.ui.MultipleFileChooser;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.text.NumberFormat;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -58,12 +54,26 @@ public class CalibrationFit extends AbstractControl {
 	
 	//Avaliable functions
 	static {
+		final ClassLoader loader = ClassLoader.getSystemClassLoader();
 		CalibrationFunction.clearAll();
 		//Not calibrated
 		CalibrationFunction.addFunction(NOT_CALIBRATED, null);
 		
-        new LinearFunction();
-        new SqrtEnergyFunction();
+		CalibrationFunction linearFunc=new LinearFunction();
+		CalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
+		//CalibrationFunction polyFunc=new PolynomialFunction(2);
+		
+		//Load icons
+		URL urlLine=loader.getResource("jam/data/func/line.png");
+		URL urlSqrtE =loader.getResource("jam/data/func/sqrt.png");
+		//URL urlPoly =loader.getResource("jam/data/func/poly.png");
+		if (urlLine!=null && urlSqrtE!=null) {
+			CalibrationFunction.setIcon(linearFunc.getName(), new ImageIcon(urlLine));
+			CalibrationFunction.setIcon(sqrtEFunc.getName(), new ImageIcon(urlSqrtE));
+			//CalibrationFunction.setIcon(polyFunc.getName(), new ImageIcon(urlPoly));
+		} else {
+			JOptionPane.showMessageDialog(null, "Can't load resource function icons");
+		}
 	}
 	
 
