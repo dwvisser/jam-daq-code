@@ -39,9 +39,7 @@ public class InitialHistograms{
      */
     private int [] histNameJam1d(){
         final int sizeX=1024;
-        int startCh;
         final int[] counts = new int [sizeX];
-
         //Make a J
         for (int i =100;i< 150;i++) {
             counts[i]=15;
@@ -53,7 +51,7 @@ public class InitialHistograms{
             counts[i]=100;
         }
         //Make a A
-        startCh=400;
+        int startCh=400;
         for (int i =startCh;i< startCh+50;i++) {
             counts[i]=2*(i-startCh);
         }
@@ -86,11 +84,8 @@ public class InitialHistograms{
     }
     
     private int [][] histNameJam2d(){
-        final int sizeX=256;
-        final int sizeY=256;
-        int startCh;      //start channel for a loop
-        int endCh;      //end channel for a loop
-        int ch;
+        final int sizeX=260;
+        final int sizeY=180;
         final int [][] counts2d = new int[sizeX][sizeY];
         //Make a J
         // increment x then y
@@ -110,17 +105,17 @@ public class InitialHistograms{
             }
         }
         //Make a A
-        startCh=30;
+        int startCh=30;
         //increment y then x
         for (int j=startCh;j<150;j++){
-            ch=(j-startCh)/10;
+            final int ch=(j-startCh)/10;
             for (int i =90+ch;i<110+ch;i++) {
                 counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
             }
         }
         startCh=30;
         for (int j=startCh;j<150;j++){
-            ch=(j-startCh)/10;
+            final int ch=(j-startCh)/10;
             for (int i =130-ch;i<150-ch;i++) {
                 counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
             }
@@ -138,9 +133,9 @@ public class InitialHistograms{
         }
         //x then y
         startCh=75;
-        endCh=150;
+        int endCh=150;
         for (int j=startCh;j<150;j++){
-            ch=(endCh-j)/5;
+            final int ch=(endCh-j)/5;
             for (int i =180+ch;i<200+ch;i++) {
                 counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
             }
@@ -148,7 +143,7 @@ public class InitialHistograms{
         startCh=75;
         endCh=150;
         for (int j=startCh;j<150;j++){
-            ch=(endCh-j)/5;
+            final int ch=(endCh-j)/5;
             for (int i =210-ch;i<230-ch;i++) {
                 counts2d[i][j]=(int)Math.exp(1.0+j/20.0);
             }
