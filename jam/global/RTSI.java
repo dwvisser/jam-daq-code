@@ -86,12 +86,7 @@ public class RTSI {
 		String pckgname,
 		Class tosubclass,
 		boolean recurse) {
-		Iterator i = findClasses(pckgname, tosubclass, recurse).iterator();
-		/*Set sortedNameSet = new TreeSet();
-		while (i.hasNext()) {
-			sortedNameSet.add(((Class) i.next()).getName());
-		}
-		i = sortedNameSet.iterator();*/
+		Iterator i = findClassNames(pckgname, tosubclass, recurse).iterator();
 		Set rval = new LinkedHashSet(); //preserves order of add()'s
 		ClassLoader loader = ClassLoader.getSystemClassLoader();
 		try {
@@ -114,7 +109,7 @@ public class RTSI {
 	 * @param recurse whether to traverse subpackages recursively
 	 * @return an unordered list of classes assignable as requested
 	 */
-	private static Set findClasses(
+	private static Set findClassNames(
 		String pckgname,
 		Class tosubclass,
 		boolean recurse) {
@@ -129,8 +124,6 @@ public class RTSI {
 
 		/* Get a File object for the package */
 		URL url = RTSI.class.getResource(name);
-		//		System.out.println(name + "->" + url);
-
 		/* Happens only if the jar file is not well constructed, i.e.
 		 * if the directories do not appear alone in the jar file like here:
 		 * 
@@ -187,7 +180,7 @@ public class RTSI {
 						if (files[i].isDirectory()) {
 							//System.out.println(files[i]);
 							rval.addAll(
-								find(
+								findClassNames(
 									pckgname + "." + files[i].getName(),
 									tosubclass,
 									true));
@@ -197,8 +190,8 @@ public class RTSI {
 			}
 		} else {
 			try {
-				// It does not work with the filesystem: we must
-				// be in the case of a package contained in a jar file.
+				/* It does not work with the filesystem: we must
+				   be in the case of a package contained in a jar file. */
 				JarURLConnection conn = (JarURLConnection) url.openConnection();
 				String starts = conn.getEntryName();
 				JarFile jfile = conn.getJarFile();
@@ -215,13 +208,9 @@ public class RTSI {
 							classname = classname.substring(1);
 						classname = classname.replace('/', '.');
 						try {
-							// Try to create an instance of the object
+							/* Try to create an instance of the object */
 							Class c = Class.forName(classname);
-							//Object o = Class.forName(classname).newInstance();
 							if (tosubclass.isAssignableFrom(c)) {
-								/*System.out.println(
-									classname.substring(
-										classname.lastIndexOf('.') + 1));*/
 								rval.add(classname);
 							}
 						} catch (ClassNotFoundException cnfex) {
