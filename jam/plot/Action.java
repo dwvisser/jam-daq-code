@@ -27,13 +27,21 @@ import jam.data.*;
 public class Action
 	implements ActionListener, PlotMouseListener, CommandListener {
 
+	/**
+	 *  Variable to indicate mouse was pressed
+	 */
+	static boolean mousePressed;
+
+	/**
+	 * Accessed by Display.
+	 */
+	static boolean settingGate;
+
 	private MessageHandler textOut;
 	private Display display;
 	private Broadcaster broadcaster;
-
 	private Plot currentPlot;
-	PlotFit inquire;
-
+	private PlotFit inquire;
 	private NumberFormat numFormat;
 
 	//current state
@@ -41,10 +49,12 @@ public class Action
 	private String lastCommand;
 	private boolean commandPresent;
 	private boolean overlayState;
-	boolean settingGate;
-	// Variable to indicate mouse was pressed
-	static boolean mousePressed;
-	static boolean energyEx;
+	
+	/**
+	 * Used by the GoTo action to let the code know
+	 * to check for a calibration.
+	 */
+	private boolean energyEx=false;
 
 	//variables for commands
 	private int numberPoints; //number of mouse points needed
@@ -70,20 +80,18 @@ public class Action
 	public Action(Display display, MessageHandler messageHandler) {
 		this.display = display;
 		this.textOut = messageHandler;
-
 		commandPresent = false;
 		numberPoints = 0;
 		overlayState = false;
 		settingGate = false;
 		inquire = new PlotFit(); //class with area/centroid routines
-
-		//formating enery output
+		/* numFormat for formatting energy output */
 		numFormat = NumberFormat.getInstance();
 		numFormat.setGroupingUsed(false);
 		numFormat.setMinimumFractionDigits(2);
 		numFormat.setMaximumFractionDigits(2);
-
 	}
+	
 	/**
 	 * Add a broadcaster
 	 */
@@ -106,7 +114,7 @@ public class Action
 	 * routine called back by pressing a button
 	 */
 	public void actionPerformed(ActionEvent e) {
-		//cancel command if command has changed
+		/* cancel command if command has changed */
 		if (e.getActionCommand() != lastCommand) {
 			done();
 		}
@@ -115,20 +123,21 @@ public class Action
 	}
 
 	/**
-	 * Do a command sent in as a message
-	 *
-	 * sees if the string is command that plot can understand
-	 * and sets command something to the string that display can
-	 * interpret expand abbreviations
-	 * translate command to local commands
+	 * Do a command sent in as a message. Sees if the 
+	 * string is command that plot can understand
+	 * and sets a command string to something that 
+	 * can be interpreted by doCommand(), i.e.,
+	 * expand abbreviations.
+	 * 
+	 * @param _command entry from console
+	 * @param parameters integer parameters from console
 	 */
 	public void commandPerform(String _command, int[] parameters) {
-		int len; //length on command
 		boolean accept = false; //is the command accepted
-
 		String command = _command.toLowerCase();
-		len = command.length();
-		//int is special case no command just parameters
+		int len = command.length();
+		/* int is a special case meaning
+		 * no command and just parameters */
 		if (len >= 3) {
 			if (command.substring(0, 3).equals("int")) {
 				integerChannel(parameters);
@@ -136,8 +145,8 @@ public class Action
 				return;
 			}
 		}
-		//All your usual commands
-		//a command and array of integers was input
+		/* All your usual commands
+		 * a command and array of integers was input */
 		if (len == 2) {
 			if (command.substring(0, 2).equals("ex")) {
 				inCommand = "expand";
@@ -183,15 +192,12 @@ public class Action
 			} else if (command.substring(0, 1).equals("x")) {
 				inCommand = "expand";
 				accept = true;
-
 			} else if (command.substring(0, 1).equals("y")) {
 				inCommand = "expand";
 				accept = true;
-
 			} else if (command.substring(0, 1).equals("r")) {
 				inCommand = "range";
 				accept = true;
-
 			} else if (command.equals("d")) {
 				inCommand = "disp";
 				//FIXME does not work yet
@@ -213,12 +219,10 @@ public class Action
 	 */
 	private synchronized void doCommand() {
 		lastCommand = inCommand;
-
-		//check that a histogram is defined
+		/* check that a histogram is defined */
 		if (currentPlot.getHistogram() == null) {
 			return;
 		}
-
 		if (inCommand == "cancel") {
 			textOut.messageOutln("");
 			done();
@@ -252,30 +256,27 @@ public class Action
 			System.err.println(
 				"Error: Unrecongized command " + inCommand + " [Action]");
 		}
-
 	}
+	
 	/**
 	 * Routine called back by mouse a mouse clicks on plot
 	 *
 	 * @param pChannel  channel of mouse click
 	 */
 	public synchronized void plotMousePressed(Point pChannel, Point pPixel) {
-
-		double energy; //for calibrated spectrum
-
-		//check that a histogram is defined
+		/* check that a histogram is defined */
 		if (currentPlot.currentHist == null) {
 			return;
 		}
-		//cursor position and counts for that channel
+		/* cursor position and counts for that channel */
 		cursorX = pChannel.x;
 		cursorY = pChannel.y;
 		cursorCount = currentPlot.getCount(cursorX, cursorY);
-
-		//there is a command currently been processed
+		/* there is a command currently being processed */
 		if (commandPresent) {
 			doCommand();
-			//no command being processed check if gate is being
+		/* no command being processed 
+		 * check if gate is being set */
 		} else {
 			if (settingGate) {
 				try {
@@ -291,12 +292,12 @@ public class Action
 					pChannel,
 					pPixel);
 			} else {
-				//output counts for the channel
+				/* output counts for the channel */
 				currentPlot.markChannel(cursorX, cursorY);
 				if (currentPlot instanceof Plot1d) {
 					if (currentPlot.isCalibrated) {
 						Plot1d plot1d = (Plot1d)currentPlot;
-						energy = plot1d.getEnergy(cursorX);
+						double energy = plot1d.getEnergy(cursorX);
 						textOut.messageOutln(
 							"Channel "
 								+ cursorX
@@ -322,22 +323,18 @@ public class Action
 				}
 				done();
 			}
-
 		}
-
 	}
+	
 	/**
 	 * Accepts integer input and does a command if one
 	 * is present
 	 *
 	 */
 	public synchronized void integerChannel(int[] parameters) {
-
-		int numPar;
-		numPar = parameters.length;
-
-		//FIXME we should be better organized so this if is not here
-		//so range is not a special case
+		int numPar = parameters.length;
+		/* FIXME we should be better organized so this if is not here
+		 * so range is not a special case */
 		if ((commandPresent) && (inCommand == "range")) {
 			for (int i = 0;(i < numPar) && (i < 2); i++) {
 				cursorY = parameters[i];
@@ -346,10 +343,8 @@ public class Action
 			}
 			return;
 		}
-
-		//we have a 1 d plot
+		/* we have a 1 d plot */
 		if (currentPlot instanceof Plot1d) {
-			//command present
 			if (commandPresent) {
 				for (int i = 0;(i < numPar) && (i < 2); i++) {
 					//check for out of bounds
@@ -368,12 +363,10 @@ public class Action
 						cursorCount = currentPlot.getCount(cursorX, cursorY);
 					}
 					doCommand();
-				}
-
-				//no command so get channel
-			} else {
+				}				
+			} else {//no command so get channel
 				if (numPar > 0) {
-					//check for out of bounds
+					/* check for out of bounds */
 					if (parameters[0] < 0) {
 						cursorX = 0;
 					} else if (parameters[0] > (currentPlot.getSizeX() - 1)) {
@@ -388,14 +381,11 @@ public class Action
 						"Channel " + cursorX + ":  Counts = " + cursorCount);
 					done();
 				}
-			}
-
-			//we have a 2 d plot
-		} else {
-			//commandPresent
+			}			
+		} else {//we have a 2 d plot
 			if (commandPresent) {
 				for (int i = 1;(i < numPar) && (i < 4); i = i + 2) {
-					//check for out of bounds
+					/* check for out of bounds */
 					if (parameters[i - 1] < 0) {
 						cursorX = 0;
 					} else if (
@@ -411,15 +401,12 @@ public class Action
 					} else {
 						cursorY = parameters[i];
 					}
-
 					cursorCount = currentPlot.getCount(cursorX, cursorY);
 					doCommand();
-				}
-
-				//no command so get channel
-			} else {
+				}				
+			} else {//no command so get channel
 				if (numPar > 1) {
-					//check for out of bounds
+					/* check for out of bounds */
 					if (parameters[0] < 0) {
 						cursorX = 0;
 					} else if (parameters[0] > (currentPlot.getSizeX() - 1)) {
@@ -434,7 +421,6 @@ public class Action
 					} else {
 						cursorY = parameters[1];
 					}
-
 					cursorCount = currentPlot.getCount(cursorX, cursorY);
 					currentPlot.markChannel(cursorX, cursorY);
 					textOut.messageOutln(
@@ -448,7 +434,6 @@ public class Action
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -866,31 +851,49 @@ public class Action
 		double inputEnergyValue;
 
 		inputEnergyValue = 0;
-		if (commandPresent == false) {
+		if (!commandPresent) {
 			init();
-			textOut.messageOut(
-				"Click on spectra or type the channel number (energy if calibrated) of interest ",
+			if (currentPlot instanceof Plot1d && currentPlot.isCalibrated) {
+				textOut.messageOut("Goto (click on spectrum or type the calibrated energy) ",
 				MessageHandler.NEW);
+			} else {
+				textOut.messageOut(
+				"Goto (click on spectrum or type the channel) ",
+				MessageHandler.NEW);
+			}
 		} else if (numberPoints == 0) {
 			numberPoints = 1;
 			xyCursor[0][0] = cursorX;
 			xyCursor[0][1] = cursorY;
 			inputCursorValue = xyCursor[0][0];
+			String output="";
+			if (!currentPlot.isCalibrated) {
+				output="channel = "+xyCursor[0][0];
+			} else {
+				if (currentPlot instanceof Plot1d) {
+					Plot1d plot1d=(Plot1d)currentPlot;
+					output = "energy = "+plot1d.getEnergy(xyCursor[0][0])+
+							", channel = "+xyCursor[0][0];
+				}
+			}
 			if (currentPlot instanceof Plot1d) {
 				Plot1d plot1d=(Plot1d)currentPlot;
 				if (mousePressed != true) {
 					if (currentPlot.isCalibrated) {
+						output = "energy = "+xyCursor[0][0];
 						xyCursor[0][0] =
-							(int) plot1d.getEnergy(xyCursor[0][0]);
+							(int) plot1d.getChannel(xyCursor[0][0]);
 						if (xyCursor[0][0] > currentPlot.getSizeX()) {
 							xyCursor[0][0] = currentPlot.getSizeX() - 1;
 						}
+						output += ", channel = "+xyCursor[0][0]; 
 					}
 				}
 			}
 			channelLow = xyCursor[0][0] - 50;
 			channelHigh = channelLow + 100;
 			currentPlot.expand(channelLow, channelHigh, 0, 0);
+			textOut.messageOut(output, MessageHandler.END);			
 			energyEx = false;
 			auto();
 			done();
