@@ -325,7 +325,7 @@ public class JamConsole
 	private void parseCommand(String _inString) {
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		final String inString = _inString.trim();
-		final StringTokenizer inLine = new StringTokenizer(inString, " ,END_LINE");
+		final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
 		final int numberInWords = inLine.countTokens();
 		String [] parameters;
 		String command;
@@ -477,10 +477,8 @@ public class JamConsole
 			if (!validListenerFound)
 				errorOutln("Invalid command "+cmd);
 				
-		} catch (CommandListenerException cle){
-			
-			
-			errorOutln("Performing command command "+cmd);					
+		} catch (CommandListenerException cle){						
+			errorOutln("Performing command command "+cmd+"; "+cle.getMessage());					
 		}
 			
 	}
