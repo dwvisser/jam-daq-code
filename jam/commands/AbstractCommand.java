@@ -25,7 +25,6 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 */
 	AbstractCommand(){
 		super();	
-		enable();
 	}
 	
 	/**
@@ -36,11 +35,12 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	public void init(MessageHandler mh) {
 		msghdlr=mh;
 	}
+	
 	/**
 	 * Implentation for interface Action
 	 * 
 	 */
-	public void actionPerformed(ActionEvent ae){
+	public final void actionPerformed(ActionEvent ae){
 		try{
 			performCommand(null);
 		} catch(CommandException e){
@@ -99,7 +99,7 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 * 
 	 * @param cmdParams command parameters
 	 */
-	protected abstract	void execute(Object [] cmdParams) throws CommandException;
+	protected abstract void execute(Object [] cmdParams) throws CommandException;
 		
 	
 	/**
@@ -107,13 +107,5 @@ public abstract class AbstractCommand extends AbstractAction implements Commanda
 	 * 
 	 * @param cmdTokens command parameters as string
 	 */
-	protected abstract	void executeParse(String [] cmdTokens) throws CommandListenerException;
-	
-	/**
-	 * Enable or disable command depending on JamStatus
-	 * Called from constructor by update of observer if needed
-	 */
-	protected void enable(){
-					
-	}
+	protected abstract void executeParse(String [] cmdTokens) throws CommandListenerException;
 }
