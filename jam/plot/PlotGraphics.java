@@ -79,19 +79,14 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/**
 	 * variable for converting pixels to data and data to pixels
 	 */
-	private int minX; //minimum horizontal for data
-	private int maxX; //maximum horizontal for data
-	private int rangeX;
-	private double minXLog;
-	private double maxXLog;
-	private double rangeXLog;
-	/** limits in Y */
+	private int minXch; //minimum horizontal for data
+	private int maxXch; //maximum horizontal for data
+	private int rangeXch;
+	/** limits in Y, counts (1d) or channels (2d) */
 	private int minY;
 	private int maxY;
-	private int rangeY;
 	private double minYLog;
 	private double maxYLog;
-	private double rangeYLog;
 	private int minCount;
 	private int maxCount;
 	/**number of pixels per channel */
@@ -99,14 +94,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/**number of pixels per channel */
 	private double conversionY;
 	/**number of pixels per channel */
-	private double conversionXLog;
-	/**number of pixels per channel */
 	private double conversionYLog;
 
 	/** the dimensions of the plot canvas */
 	private Dimension viewSize;
-	/** print page dots per inch */
-	//private int pagedpi;
+
 	/**sides of plot in pixels */
 	private int viewLeft; //left hand side of plot area
 	private int viewRight; //right hand side of plot area
@@ -199,23 +191,21 @@ class PlotGraphics implements PlotGraphicsLayout {
 			minCount = plotLimits.getMinimumCounts();
 			maxCount = plotLimits.getMaximumCounts();
 			if (plotType == ONE_DIMENSION) {
-				minX = plotLimits.getMinimumX();
-				maxX = plotLimits.getMaximumX();
+				minXch = plotLimits.getMinimumX();
+				maxXch = plotLimits.getMaximumX();
 				minY = plotLimits.getMinimumCounts();
 				maxY = plotLimits.getMaximumCounts();
 			} else if (plotType == TWO_DIMENSION) {
-				minX = plotLimits.getMinimumX();
-				maxX = plotLimits.getMaximumX();
+				minXch = plotLimits.getMinimumX();
+				maxXch = plotLimits.getMaximumX();
 				minY = plotLimits.getMinimumY();
 				maxY = plotLimits.getMaximumY();
 			}
-			minXLog = takeLog(minX);
-			maxXLog = takeLog(maxX);
 			minYLog = takeLog(minY);
 			maxYLog = takeLog(maxY);
-			rangeX = maxX - minX + 1;
-			rangeY = maxY - minY + 1;
-			rangeYLog = maxYLog - minYLog;
+			rangeXch = maxXch - minXch + 1;
+			final int rangeY = maxY - minY + 1;
+			final double rangeYLog = maxYLog - minYLog;
 			if (pageformat == null){
 				this.viewSize = newViewSize;
 			}
@@ -230,13 +220,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 			//add 1 as border part of plot
 			viewHeight = viewBottom - viewTop + 1;
 			//add 1 as border part of plot
-			conversionX = (double) viewWidth / ((double) rangeX);
+			conversionX = (double) viewWidth / ((double) rangeXch);
 			//number of pixels per channel
 			conversionY = (double) viewHeight / ((double) rangeY);
 			//number of pixels per channel
-			conversionXLog = (double) viewWidth / ((double) rangeXLog);
-			//number of pixels per channel
-			conversionYLog = (double) viewHeight / ((double) rangeYLog);
+			conversionYLog = viewHeight / rangeYLog;
 			//number of pixels per channel
 		}
 	}
@@ -339,8 +327,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 		final int ll, ul;
 		Limits.ScaleType scale = Limits.ScaleType.LINEAR;
 		if (side == BOTTOM) {//always linear
-			ll = minX;
-			ul = maxX;
+			ll = minXch;
+			ul = maxXch;
 			ticksBottom(ll, ul);
 		} else { //side==LEFT, if 1d-depends on Limits's scale
 			ll = minY;
@@ -363,33 +351,22 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	private void ticksBottom(
 		int lowerLimit,
-		int upperLimit/*,
-		Limits.ScaleType scale*/) {
-		int x, y;
-
+		int upperLimit) {
 		final Limits.ScaleType scale=Limits.ScaleType.LINEAR;
-		int[] ticks =
+		final int [] ticks =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MINOR);
 		for (int i = 0; i < ticks.length; i++) {
-			//if (scale == Limits.ScaleType.LINEAR) {
-				x = toViewHorzLin(ticks[i]);
-			/*} else {
-				x = toViewHorzLog(ticks[i]);
-			}*/
-			y = viewBottom;
+			final int x = toViewHorzLin(ticks[i]);
+			int y = viewBottom;
 			g.drawLine(x, y, x, y - TICK_MINOR);
 			y = viewTop;
 			g.drawLine(x, y, x, y + TICK_MINOR);
 		}
-		int[] ticksMajor =
+		final int [] ticksMajor =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
-			//if (scale == Limits.ScaleType.LINEAR) {
-				x = toViewHorzLin(ticksMajor[i]);
-			/*} else {
-				x = toViewHorzLog(ticksMajor[i]);
-			}*/
-			y = viewBottom;
+			final int x = toViewHorzLin(ticksMajor[i]);
+			int y = viewBottom;
 			g.drawLine(x, y, x, y - TICK_MAJOR);
 			y = viewTop;
 			g.drawLine(x, y, x, y + TICK_MAJOR);
@@ -449,40 +426,16 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawLabels(int side) {
-
-		int lowerLimit;
-		int upperLimit;
-
-		// labels for one dimension
-		if (plotType == ONE_DIMENSION) {
-			//bottom side always linear
-			if (side == BOTTOM) {
-				lowerLimit = minX;
-				upperLimit = maxX;
-				labelsBottom(lowerLimit, upperLimit/*, Limits.ScaleType.LINEAR*/);
-			}
-			//left side depends on scale
-			if (side == LEFT) {
-				lowerLimit = minY;
-				upperLimit = maxY;
-				labelsLeft(lowerLimit, upperLimit, plotLimits.getScale());
-			}
-			//two dimension tick marks always linear
-		} else if (plotType == TWO_DIMENSION) {
-			//bottom always linear
-			if (side == BOTTOM) {
-				lowerLimit = minX;
-				upperLimit = maxX;
-				labelsBottom(lowerLimit, upperLimit/*, Limits.ScaleType.LINEAR*/);
-			}
-			//left side
-			if (side == LEFT) {
-				lowerLimit = minY;
-				upperLimit = maxY;
-				labelsLeft(lowerLimit, upperLimit, Limits.ScaleType.LINEAR);
-			}
+		if (side == BOTTOM) {
+			labelsBottom(minXch, maxXch);
+		}
+		if (plotType == ONE_DIMENSION && side == LEFT) {
+			labelsLeft(minY, maxY, plotLimits.getScale());
+		} else if (plotType == TWO_DIMENSION && side == LEFT) {
+			labelsLeft(minY, maxY, Limits.ScaleType.LINEAR);
 		}
 	}
+	
 	/**
 	 * Draws the Labels on for the bottom side of a plot
 	 *
@@ -493,26 +446,15 @@ class PlotGraphics implements PlotGraphicsLayout {
 
 	private void labelsBottom(
 		int lowerLimit,
-		int upperLimit/*,
-		Limits.ScaleType scale*/) {
-		int x;
-		int y;
-		int offset;
-		String label;
-		
+		int upperLimit) {
 		final Limits.ScaleType scale=Limits.ScaleType.LINEAR;
-		int[] ticksMajor =
+		final int [] ticksMajor =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
-			label = Integer.toString(ticksMajor[i]);
-			offset = fm.stringWidth(label); //length of string
-			//if (scale == Limits.ScaleType.LINEAR) {
-				x = toViewHorzLin(ticksMajor[i]);
-			/*} else {
-				x = toViewHorzLog(ticksMajor[i]);
-			}*/
-			x -= offset / 2;
-			y = viewBottom + fm.getAscent() + LABEL_OFFSET_BOTTOM;
+			final String label = Integer.toString(ticksMajor[i]);
+			final int offset = fm.stringWidth(label); //length of string
+			final int x = toViewHorzLin(ticksMajor[i]) - offset / 2;
+			final int y = viewBottom + fm.getAscent() + LABEL_OFFSET_BOTTOM;
 			g.drawString(label, x, y);
 		}
 	}
@@ -528,29 +470,22 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int lowerLimit,
 		int upperLimit,
 		Limits.ScaleType scale) {
-
-		int x;
-		int y;
-		int offset;
-		String label;
-
 		int[] ticksMajor =
 			tm.getTicks(lowerLimit, upperLimit, scale, Tickmarks.MAJOR);
-
 		for (int i = 0; i < ticksMajor.length; i++) {
-			label = Integer.toString(ticksMajor[i]);
-			offset = fm.stringWidth(label);
-
+			final String label = Integer.toString(ticksMajor[i]);
+			final int offset = fm.stringWidth(label);
+			int y=fm.getAscent() / 2;
 			if (scale == Limits.ScaleType.LINEAR) {
-				y = toViewVertLin(ticksMajor[i]);
+				y += toViewVertLin(ticksMajor[i]);
 			} else {
-				y = toViewVertLog(ticksMajor[i]);
+				y += toViewVertLog(ticksMajor[i]);
 			}
-			y += (fm.getAscent() / 2);
-			x = viewLeft - offset - LABEL_OFFSET_LEFT;
+			final int x = viewLeft - offset - LABEL_OFFSET_LEFT;
 			g.drawString(label, x, y);
 		}
 	}
+	
 	/**
 	 * Draws the axis Labels on for a plot
 	 *
@@ -607,13 +542,12 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void drawHist(int[] counts) {
-		double[] countOut = new double[counts.length];
-		//convert to double
+	public void drawHist(int[] counts, double binWidth) {
+		final double[] countOut = new double[counts.length];
 		for (int i = 0; i < counts.length; i++) {
 			countOut[i] = (int) counts[i];
 		}
-		drawHist(countOut);
+		drawHist(countOut, binWidth);
 	}
 
 	/**
@@ -623,12 +557,9 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void drawHist(double[] counts) {
-		if (plotLimits.getScale() == Limits.ScaleType.LINEAR) {
-			drawHistLinear(counts);
-		} else {
-			drawHistLog(counts);
-		}
+	public void drawHist(double[] counts, double binWidth) {
+		drawHistLinear(counts, binWidth, 
+		plotLimits.getScale()!=Limits.ScaleType.LINEAR);
 	}
 
 	/**
@@ -655,38 +586,43 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
-	public void drawHistLinear(double[] counts) {
+	private void drawHistLinear(double[] counts, double binWidth, boolean log) {
+		/* x's are in channels, y's are in counts */
+		final double [] drawCounts=getDrawCounts(counts,binWidth);
+		final int dclen=drawCounts.length;
+		final int lastBinAll=dclen-1;
+		final double lastBinAllLo=lastBinAll*binWidth;
 		if (counts == null) {
 			System.err.println(
 				getClass().getName()
 					+ ".drawHistLinear() called "
 					+ "with null array.");
 		} else {
-			int lowerX = minX;
-			int upperX = Math.min(this.maxX, counts.length - 1);
-			//dont go beyond length
-			int x1, x2, y1, y2;
-
-			x1 = 0;
-			x2 = toViewHorzLin(lowerX);
-			y2 = viewBottom;
-			//for each point vertical then horizontal line
-			for (int i = lowerX; i <= upperX; i++) {
-				//vertical leading edge
-				x1 = x2;
-				y1 = y2;
-				x2 = x1;
-				y2 = toViewVertLinCk(counts[i]);
-				g.drawLine(x1, y1, x2, y2);
-				//horizontal line for point
-				x1 = x2;
-				y1 = y2;
-				x2 = toViewHorzLin(i + 1);
-				if (i == upperX) { //go 1 pixel less for last point
-					x2 = x2 - 1;
-				}
-				y2 = y1;
-				g.drawLine(x1, y1, x2, y2);
+			final int upperX = (int)Math.min(maxXch,lastBinAllLo);
+			final int firstBin=(int)Math.floor(minXch/binWidth);
+			final int lastBin=(int)Math.floor(upperX/binWidth);
+			double binChLo=firstBin*binWidth;
+			int x1 = 0;
+			int x2 = toViewHorzLin(minXch);
+			int y2 = viewBottom;
+			double delCh=binWidth;
+			if (binChLo<minXch){
+				delCh=binChLo+binWidth-minXch;
+				binChLo=minXch;
+			}
+			for (int i=firstBin; i<=lastBin; i++){
+				/* first a vertical line */
+				x1=x2; x2=x1;
+				int y1=y2;
+				y2= log ? toViewVertLog(drawCounts[i]) :
+				toViewVertLinCk(drawCounts[i]);
+				g.drawLine(x1,y1,x2,y2);
+				/* now horizontal across bin, i.e., y1==y2 */
+				x1=x2; y1=y2; //last point becomes start
+				binChLo += delCh;
+				x2 = toViewHorzLin(binChLo);
+				g.drawLine(x1,y1,x2,y2);
+				delCh=Math.min(binWidth,maxXch-binChLo);
 			}
 			// last vertical line
 			if (x1 >= viewRight) {
@@ -694,62 +630,43 @@ class PlotGraphics implements PlotGraphicsLayout {
 			} else {
 				x1 = x2;
 			}
-			y1 = y2;
+			int y1 = y2;
 			x2 = x1;
 			y2 = viewBottom;
 			g.drawLine(x1, y1, x2, y2);
 		}
 	}
-
-	/**
-	 * Histogram a plot with Log scale.
-	 * Stair step, step up at channel beginning.
-	 *
-	 * @param side
-	 * @return  <code>void</code>
-	 * @since Version 0.5
-	 */
-	public void drawHistLog(double[] counts) {
-
-		int lowerX = minX;
-		int upperX = Math.min(this.maxX, counts.length - 1);
-		//dont go beyond length
-		int x1, x2;
-		int y1, y2;
-
-		x1 = 0;
-		x2 = toViewHorzLin(lowerX);
-		y2 = viewBottom;
-
-		// do vertical then horizontal
-		for (int i = lowerX; i <= upperX; i++) {
-			//vertical at leading edge
-			x1 = x2;
-			y1 = y2;
-			x2 = x1;
-			y2 = toViewVertLog(counts[i]);
-			g.drawLine(x1, y1, x2, y2);
-			// horizontal line for point
-			x1 = x2;
-			y1 = y2;
-			x2 = toViewHorzLin(i + 1);
-			if (i == upperX) { //go 1 less for last point
-				x2 = x2 - 1;
-			}
-			y2 = y1;
-			g.drawLine(x1, y1, x2, y2);
-		}
-		// last vertical line
-		if (x1 >= viewRight) {
-			x1 = viewRight;
+	
+	private static final double EPSILON=0.001;
+	private double [] getDrawCounts(double [] counts, double bin){
+		/* bin assumed >= 1.0 */
+		final double one=1.0;
+		final int clen=counts.length;
+		final int len=(int)Math.ceil(counts.length/bin);
+		double [] rval=new double[len];
+		if ((bin-1.0)<=EPSILON) {
+			rval=counts;
 		} else {
-			x1 = x2;
+			double remain=bin;
+			int index=0;
+			for (int i=0; i<clen; i++){
+				if (remain > one){
+					rval[index] += counts[i];
+					remain -= one;
+				} else {
+					rval[index] += counts[i]*remain;
+					if(index < len-1){
+						index++;
+					}
+					rval[index] += counts[i]*(one-remain);
+					remain += bin-one;
+				}
+			}
+			for (int i=0; i<len; i++){
+				rval[i] /= bin;
+			}
 		}
-		y1 = y2;
-		x2 = x1;
-		y2 = viewBottom;
-
-		g.drawLine(x1, y1, x2, y2);
+		return rval;
 	}
 
 	/**
@@ -762,28 +679,25 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	public void drawLineLinear(double[] channel, double[] counts) {
-
-		int lowerX = Math.max(this.minX, (int) channel[0] + 1);
-		int upperX = Math.min(this.maxX, (int) channel[channel.length - 1]);
-		int x1, x2;
-		int y1, y2;
-
-		x1 = toViewHorzLin(channel[0]);
-		y1 = toViewVertLin(counts[0]);
-		//check dont go beyond border
-		if (y1 < viewTop) {
+		int x2, y2;
+		
+		int lowerX = Math.max(this.minXch, (int) channel[0] + 1);
+		int upperX = Math.min(this.maxXch, (int) channel[channel.length - 1]);
+		int x1 = toViewHorzLin(channel[0]);
+		/* check dont go beyond border */
+		int y1 = Math.max(toViewVertLin(counts[0]),viewTop);
+		/*if (y1 < viewTop) {
 			y1 = viewTop;
-		}
-
+		}*/
 		//for each point draw from last line to next line
 		for (int i = 1; i < channel.length; i++) {
 			x2 = toViewHorzLin(channel[i]);
 			//could go 1 pixel too far for last i
-			y2 = toViewVertLin(counts[i]);
+			y2 = Math.max(toViewVertLin(counts[i]),viewTop);
 			//check dont go beyond border
-			if (y2 < viewTop) {
+			/*if (y2 < viewTop) {
 				y2 = viewTop;
-			}
+			}*/
 			if ((channel[i] >= lowerX) && (channel[i] <= upperX)) {
 				g.drawLine(x1, y1, x2, y2);
 			}
@@ -803,8 +717,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	public void drawLineLog(double[] channel, double[] counts) {
 
-		int lowerX = Math.max(this.minX, (int) channel[0] + 1);
-		int upperX = Math.min(this.maxX, (int) channel[channel.length - 1]);
+		int lowerX = Math.max(this.minXch, (int) channel[0] + 1);
+		int upperX = Math.min(this.maxXch, (int) channel[channel.length - 1]);
 		int x1, x2;
 		int y1, y2;
 
@@ -1081,7 +995,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	public void drawGate2d(boolean[][] gate) {
 		for (int j = minY; j <= maxY; j++) { // for each point
-			for (int i = minX; i <= maxX; i++) {
+			for (int i = minXch; i <= maxXch; i++) {
 				if (gate[i][j]) { //if inside gate
 					final int x = toViewHorzLin(i);
 					final int y = toViewVertLin(j);
@@ -1219,13 +1133,13 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int x1, x2, y; //x1 left rect x2 right rect
 		int width, height;
 
-		int minChan = Math.max(minX, lowChan);
-		int maxChan = Math.min(maxX, highChan);
+		int minChan = Math.max(minXch, lowChan);
+		int maxChan = Math.min(maxXch, highChan);
 		//for each channel draw a filled rectangle
 		for (int i = minChan; i <= maxChan; i++) {
 			x1 = toViewHorzLin(i);
 			x2 = toViewHorzLin(i + 1);
-			if (i != minX) {
+			if (i != minXch) {
 				if (counts[i - 1] < counts[i]) {
 					x1 = x1 + 1;
 				}
@@ -1233,7 +1147,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 			} else {
 				x1 = x1 + 1;
 			}
-			if (i != maxX) {
+			if (i != maxXch) {
 				if (counts[i] > counts[i + 1]) {
 					x2 = x2 - 1;
 				}
@@ -1323,11 +1237,11 @@ class PlotGraphics implements PlotGraphicsLayout {
 		int data;
 		//if we are beyond limits set point to limit
 		if (view < viewLeft) {
-			data = minX;
+			data = minXch;
 		} else if (view >= viewRight) {
-			data = maxX;
+			data = maxXch;
 		} else {
-			data = (int) (minX + (view - viewLeft) / conversionX);
+			data = (int) (minXch + (view - viewLeft) / conversionX);
 		}
 		return data;
 	}
@@ -1379,7 +1293,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * screen horizontal linear scale.
 	 */
 	private int toViewHorzLin(int data) {
-		int view = (int) (viewLeft + (conversionX * (data - minX)));
+		int view = (int) (viewLeft + (conversionX * (data - minXch)));
 		//put at start of bin
 		return view;
 	}
@@ -1389,7 +1303,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * screen horizontal linear scale.
 	 */
 	private int toViewHorzLin(double data) {
-		int view = (int) (viewLeft + (conversionX * (data - minX)));
+		int view = (int) (viewLeft + (conversionX * (data - minXch)));
 		//put at start of bin
 		return view;
 	}
