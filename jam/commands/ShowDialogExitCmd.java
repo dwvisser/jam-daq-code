@@ -58,9 +58,9 @@ public class ShowDialogExitCmd extends AbstractCommand{
 			
 			Boolean confirm;
 			if (cmdParams[0].equals("noconfirm"))
-				confirm = Boolean.valueOf(true);
+				confirm = Boolean.valueOf(false);
 			else	
-				confirm =Boolean.valueOf(false);
+				confirm =Boolean.valueOf(true);
 				 
 			Object [] cmdParmObj=new Object[1];
 			cmdParmObj[0]=confirm;
