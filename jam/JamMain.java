@@ -25,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
 
 /**
  * Launcher and main window for Jam.
@@ -67,14 +66,17 @@ public final class JamMain extends JFrame implements Observer {
 
 	JamMain(final boolean showGUI) {
 		super("Jam");
+		status.setShowGUI(showGUI);
 		setLookAndFeel();
-		final int titleDisplayTime = 10000; //milliseconds
-		new SplashWindow(this, titleDisplayTime);
+		if (showGUI){
+			final int titleDisplayTime = 10000; //milliseconds
+			new SplashWindow(this, titleDisplayTime);
+		}
 		final ClassLoader cl = getClass().getClassLoader();
 		setIconImage(
 			(new ImageIcon(cl.getResource("jam/nukeicon.png")).getImage()));
 		classname = getClass().getName() + "--";
-		me = this.getContentPane();
+		me = getContentPane();
 		jamProperties = new JamProperties(); //class that has properties
 		status.setFrame(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
@@ -88,7 +90,7 @@ public final class JamMain extends JFrame implements Observer {
 		});
 		/* class to distrute events to all listeners */
 		broadcaster.addObserver(this);
-		this.setResizable(true);
+		setResizable(true);
 		me.setLayout(new BorderLayout());
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
@@ -105,8 +107,8 @@ public final class JamMain extends JFrame implements Observer {
 		me.add(selectBar, BorderLayout.NORTH);
 		display.addToolbarAction(); //the left-hand action toolbar
 		/* operations to close window */
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter() {
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				exit();
 			}
