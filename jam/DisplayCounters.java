@@ -286,7 +286,6 @@ public final class DisplayCounters extends JDialog implements Observer {
 	/**
 	 * Receive a broadcast event in order to update counters.
 	 *
-	 * @author Ken Swartz
 	 * @param observable the observed object
 	 * @param o the communicated event
 	 */

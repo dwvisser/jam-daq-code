@@ -447,12 +447,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		return sortClassPath;
 	}
 
-	/**
-	 * Receives events from this dialog box.
-	 *
-	 * @Author Ken Swartz
-	 *
-	 */
 	public void actionPerformed(ActionEvent ae) {
 		String command = ae.getActionCommand();
 		try {
@@ -527,11 +521,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		}
 	}
 
-	/**
-	 * Recieves events from this check box.
-	 *
-	 * @Author Ken Swartz
-	 */
 	public void itemStateChanged(ItemEvent ie) {
 		final ItemSelectable item = ie.getItemSelectable();
 		if (item == checkLock) {
