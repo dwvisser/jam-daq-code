@@ -124,7 +124,6 @@ public  class NetDaemon extends GoodThread {
             dataSocket.receive(dataIn);
             if (this.checkState()) {
                 dataIn.getData();//data goes to bufferOut
-                //FIXME NEVER USED BUT SHOULD BE final int packetLength=dataIn.getLength();
                 packetCount++;
                 //put buffer into to sorting ring with sample fraction
                 if( sorterOn&&((packetCount%sortInterval)==0) ){
