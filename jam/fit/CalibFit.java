@@ -53,14 +53,14 @@ package jam.fit;
     
 	for (int i=0; i< NUMBER_POINTS; i++){
 	    name="point "+i;
-	    points[i]=new Parameter(name, Parameter.DOUBLE, Parameter.KNOWN, Parameter.NO_ERROR, Parameter.MOUSE);
+	    points[i]=new Parameter(name, Parameter.DOUBLE, Parameter.KNOWN, Parameter.KNOWN, Parameter.MOUSE);
 	    addParameter(points[i]);
 	}	    
-	A=new Parameter("A",Parameter.DOUBLE, Parameter.ERROR, Parameter.FIX);
+	A=new Parameter("A",Parameter.DOUBLE, Parameter.FIX);
 	addParameter(A);		
-	B=new Parameter("B",Parameter.DOUBLE, Parameter.ERROR, Parameter.FIX);	
+	B=new Parameter("B",Parameter.DOUBLE, Parameter.FIX);	
 	addParameter(B);		
-	C=new Parameter("C",Parameter.DOUBLE, Parameter.ERROR, Parameter.FIX);	
+	C=new Parameter("C",Parameter.DOUBLE, Parameter.FIX);	
 	addParameter(C);
 	
     }

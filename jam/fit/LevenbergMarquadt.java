@@ -1,5 +1,5 @@
 package jam.fit;
-import java.util.List;
+import java.util.*;
 import java.text.NumberFormat;
 
 /**
@@ -139,29 +139,34 @@ public class LevenbergMarquadt {
 	 * @param	nlf the parent <code>NonLinearFit</code> object creating this
 	 */
 	public LevenbergMarquadt(NonLinearFit nlf) {
-		int j, k;
-		int type;
-		boolean done;
+		//int j, k;
+		//int type;
+		//boolean done;
 		
 		this.nonLinFit = nlf;
-		List temp = nonLinFit.getParameters();
-		Parameter[] temp2 = new Parameter[temp.size()];
-		j = 0;
-		k = 0;
-		do { //eliminate non-double parameters
-			type = ((Parameter) (temp.get(j))).getType();
-			if (type == Parameter.DOUBLE) {
-				if (!((Parameter) (temp.get(j))).isOutputOnly()) {
-					temp2[k] = (Parameter) (temp.get(j));
-					k++;
+		Iterator it = nonLinFit.getParameters().iterator();
+		List temp2 = new Vector();
+		//j = 0;
+		//k = 0;
+		while (it.hasNext()){
+		//do { //eliminate non-double parameters
+			Parameter param=(Parameter)it.next();
+			//type = param.getType();
+			if (param.isDouble()) {
+				boolean variableParameter=!(param.isOutputOnly() || param.isKnown());
+				if (variableParameter) {
+					temp2.add(param);
+					//k++;
 				}
 			}
-			j++;
-			done = (j == temp.size());
-		} while (!done);
-		parameters = new Parameter[k];
-		for (int i = 0; i < parameters.length; i++) {
-			parameters[i] = temp2[i];
+			//j++;
+			//done = (j == temp.size());
+		} //while (!done);
+		parameters = new Parameter[temp2.size()];
+		int i=0;
+		for (it=temp2.iterator(); it.hasNext();) {
+			parameters[i] = (Parameter)it.next();
+			i++;
 		}
 		nPar = parameters.length;
 	}

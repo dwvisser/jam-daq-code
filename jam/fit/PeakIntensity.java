@@ -22,13 +22,13 @@ package jam.fit;
      * input <code>Parameter</code>
      */
     private Parameter LowChannel=new Parameter("Low Channel",Parameter.MOUSE,
-    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.NO_ERROR);
+    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
     private Parameter HighChannel=new Parameter("High Channel",Parameter.MOUSE,
-    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.NO_ERROR);
+    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
     private Parameter LowPeak=new Parameter("Low Peak",Parameter.MOUSE,
-    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.NO_ERROR);
+    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
     private Parameter HighPeak=new Parameter("High Peak",Parameter.MOUSE,
-    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.NO_ERROR);
+    							Parameter.NO_OUTPUT,Parameter.INT,Parameter.KNOWN);
     
   
     /**
@@ -50,14 +50,14 @@ package jam.fit;
 		addParameter(HighChannel);
 		addParameter(LowPeak);
 		addParameter(HighPeak);
-		A=new Parameter("Constant",Parameter.DOUBLE, Parameter.ERROR);
+		A=new Parameter("Constant",Parameter.DOUBLE);
 		addParameter(A);		
-		B=new Parameter("Slope",Parameter.DOUBLE, Parameter.ERROR, Parameter.FIX);	
+		B=new Parameter("Slope",Parameter.DOUBLE, Parameter.FIX);	
 		addParameter(B);	
 		addParameter(comment);
-		PeakArea=new Parameter("Peak Area",Parameter.DOUBLE, Parameter.ERROR);
+		PeakArea=new Parameter("Peak Area",Parameter.DOUBLE);
 		addParameter(PeakArea);	
-		PeakCentroid=new Parameter("Peak Centroid",Parameter.DOUBLE, Parameter.ERROR);
+		PeakCentroid=new Parameter("Peak Centroid",Parameter.DOUBLE);
 		addParameter(PeakCentroid);	
     }
     

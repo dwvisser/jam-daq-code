@@ -70,12 +70,12 @@ public abstract class NonLinearFit extends Fit {
         super(name);
         parameters=new Vector();
         chisq = new Parameter("ChiSq/dof",Parameter.DOUBLE,
-        Parameter.NO_ERROR, Parameter.OUTPUT);
+        Parameter.KNOWN, Parameter.OUTPUT);
         addParameter(chisq);
-        lo = new Parameter(FIT_LOW, Parameter.INT, Parameter.NO_ERROR,
+        lo = new Parameter(FIT_LOW, Parameter.INT, Parameter.KNOWN,
         Parameter.MOUSE);
         addParameter(lo);
-        hi = new Parameter(FIT_HIGH, Parameter.INT, Parameter.NO_ERROR,
+        hi = new Parameter(FIT_HIGH, Parameter.INT, Parameter.KNOWN,
         Parameter.MOUSE);
         addParameter(hi);
     }
@@ -204,10 +204,10 @@ public abstract class NonLinearFit extends Fit {
      * @return    the value of the function at <code>channel</code>
      */
     public double calculate(int channel){
-        double temp=0.0;
+        double rval=0.0;
         if (channel>=minCH&&channel<=maxCH){
-            temp=valueAt((double)channel);
+            rval=valueAt((double)channel);
         }
-        return temp;
+        return rval;
     }
 }

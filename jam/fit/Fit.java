@@ -123,7 +123,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	/**
 	 * Text printed in dialog box.
 	 */
-	private JTextField[] textKnown;
+	//private JTextField[] textKnown;
 
 	/**
 	 * Data field values.
@@ -267,7 +267,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					setMouseActive(false);
-					setParamValues();
+					updateParametersFromDialog();
 					getCounts();
 					status.setText("Estimating...");
 					estimate();
@@ -324,7 +324,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		cFixValue = new JCheckBox[parNumber];
 		cEstimate = new JCheckBox[parNumber];
 		cOption = new JCheckBox[parNumber];
-		textKnown = new JTextField[parNumber];
+		//textKnown = new JTextField[parNumber];
 		textData = new JTextField[parNumber];
 		textError = new JLabel[parNumber];
 		text = new JLabel[parNumber];
@@ -343,7 +343,6 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				textData[i].setEnabled(true);
 				west.add(new JLabel(parName, JLabel.RIGHT));
 				middle.add(textData[i]);
-
 			} else if (parameter.isText()) {
 				text[i] = new JLabel(formatValue(parameter));
 				west.add(new JLabel(parName, JLabel.RIGHT));
@@ -356,11 +355,11 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 				west.add(new JPanel());
 			}
 			/* Take care of options. */
-			if (parameter.isKnown()) {
+			/*if (parameter.isKnown()) {
 				textKnown[i] = new JTextField("0.0", 8);
 				textKnown[i].setEnabled(true);
 				middle.add(textKnown[i]);
-			}
+			}*/
 			JPanel right = new JPanel(new GridLayout(1, 0));
 			east.add(right);
 			if (parameter.hasErrorBar()) {
@@ -392,7 +391,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			}
 		});
 		dfit.pack();
-		reset();
+		//reset();
 	}
 
 	/** 
@@ -423,7 +422,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		try {
 			for (int i = 0; i < parameters.size(); i++) {
 				Parameter par = (Parameter) (parameters.get(i));
-				if (par.isFixable()) {
+				if (par.canBeFixed()) {
 					if (ie.getItemSelectable() == cFixValue[i]) {
 						setFixed(par, i);
 					}
@@ -495,7 +494,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	 * Set the parameter values using input in the text fields
 	 * just before a fit.
 	 */
-	private void setParamValues() throws FitException {
+	private void updateParametersFromDialog() throws FitException {
 		Parameter parameter = null;
 		for (int i = 0; i < parameters.size(); i++) {
 			try {
@@ -512,23 +511,23 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 									textError[i].getText().substring(1).trim())
 								.doubleValue());
 					}
-					if (parameter.isKnown()) {
+					/*if (parameter.isKnown()) {
 						parameter.setKnown(
 							Double
 								.valueOf(textKnown[i].getText().trim())
 								.doubleValue());
-					}
+					}*/
 				} else if (parameter.isInteger()) {
 					parameter.setValue(
 						Integer
 							.valueOf(textData[i].getText().trim())
 							.intValue());
-					if (parameter.isKnown()) {
+					/*if (parameter.isKnown()) {
 						parameter.setKnown(
 							Integer
 								.valueOf(textKnown[i].getText().trim())
 								.intValue());
-					}
+					}*/
 				} else if (parameter.isBoolean()) {
 					parameter.setValue(cOption[i].isSelected());
 				}
@@ -549,10 +548,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 			Parameter parameter = (Parameter) parameters.get(i);
 			if (parameter.isDouble() || parameter.isInteger()) {
 				textData[i].setText(formatValue(parameter));
-				if (parameter.isFixed()) {
-					textData[i].setBackground(Color.lightGray);
-				} else {
-					textData[i].setBackground(Color.yellow);
+				if (parameter.canBeFixed()) {
+					this.cFixValue[i].setSelected(parameter.isFixed());
+					setFixed(parameter,i);
 				}
 				if (parameter.hasErrorBar()) {
 					textError[i].setText(formatError(parameter));
@@ -562,9 +560,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 						textError[i].setBackground(Color.yellow);
 					}
 				}
-				if (parameter.isKnown()) {
+				/*if (parameter.isKnown()) {
 					textKnown[i].setBackground(Color.lightGray);
-				}
+				}*/
 			}
 		}
 	}
@@ -616,9 +614,9 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 						}
 					}
 				}
-				if (parameter.isKnown()) {
+				/*if (parameter.isKnown()) {
 					textKnown[i].setBackground(Color.white);
-				}
+				}*/
 				if (parameter.isFixed()) {
 					setFixed(parameter, i);
 				}
@@ -740,7 +738,7 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		double [][] signals=null;
 		double [] residuals=null;
 		double [] background=null;
-		setParamValues();
+		updateParametersFromDialog();
 		int numChannel = upperLimit-lowerLimit+1;
 		//double[] evaluated = new double[numChannel];
 		if (getNumberOfSignals()>0){
@@ -795,8 +793,8 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 		String temp = "Invalid Type"; //default return value
 		if (param.isDouble()) {
 			double value = param.getDoubleValue();
-			double error = param.getDoubleError();
 			if (param.hasErrorBar()) {
+				double error = param.getDoubleError();
 				temp = format(value, error)[0];
 			} else {
 				int integer = (int) log10(Math.abs(value));
@@ -832,48 +830,14 @@ public abstract class Fit implements ItemListener, PlotMouseListener {
 	
 	}*/
 
-	/**
-	 * Helper method for GridBagConstains 
-	 * 
-	 * @since Version 0.5
-	 */
-
-	/*private void addComponent(
-		Component component,
-		int gridx,
-		int gridy,
-		int width,
-		int height) {
-	
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = gridx;
-	
-		gbc.gridy = gridy;
-		gbc.ipadx = 0;
-	
-		gbc.ipady = 0;
-	
-		gbc.gridwidth = width;
-	
-		gbc.gridheight = height;
-	
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-	
-		gbc.anchor = GridBagConstraints.EAST;
-	
-		gridBag.setConstraints(component, gbc);
-	
-		panelParam.add(component);
-	}*/
-
 	private String format(double value, int integer, int fraction) {
 		NumberFormat fval;
 		fval = NumberFormat.getInstance();
 		fval.setGroupingUsed(false);
 		fval.setMinimumFractionDigits(fraction);
 		fval.setMinimumFractionDigits(fraction);
-		fval.setMinimumIntegerDigits(integer);
-		fval.setMaximumIntegerDigits(integer);
+		//fval.setMinimumIntegerDigits(integer);
+		//fval.setMaximumIntegerDigits(integer);
 		return fval.format(value);
 	}
 
