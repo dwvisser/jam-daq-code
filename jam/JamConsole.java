@@ -17,16 +17,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.Iterator;
-
-import java.util.StringTokenizer;
+import java.util.LinkedList;
 import java.util.TimeZone;
-
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -386,24 +383,18 @@ public class JamConsole
 	/**
 	 * Parses the command and issues it to the current listener.
 	 */
-	private void parseCommand(String _inString) {
-		
-		String [] cmdTokens;
-		String [] parameters;
+	private void parseCommand(String _inString) {		
+		String [] cmdTokens, parameters;
 		String command;
-		int numParam;
 		int countWrd;
 		
 		cmdTokens=parseExpression(_inString);
 		final int numberInWords = cmdTokens.length;
-		
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
 		//Remove KBS
 		//final String inString = _inString.trim();
 		//final StringTokenizer inLine = new StringTokenizer(inString, " ,"+END_LINE);
-		//final int numberInWords = inLine.countTokens();
-		
-		
+		//final int numberInWords = inLine.countTokens();	
 		if (cmdTokens.length>0) {//check at least something was entered
 				//if first token is a number
 				if (isNumber(cmdTokens[0])) {
@@ -411,13 +402,13 @@ public class JamConsole
 				 * and params starts with first token */
 				command = NUMBERS_ONLY;				 
 				parameters=new String[numberInWords];
-				numParam=numberInWords;
+				//numParam=numberInWords;
 				countWrd=0;				
 			} else {
 				/* parameter list to hold one less */
 				command = cmdTokens[0];
 				parameters = new String[numberInWords - 1];
-				numParam=numberInWords - 1;				
+				//numParam=numberInWords - 1;				
 				countWrd = 1;
 			}
 			/* Load parameter tokens */
@@ -431,54 +422,46 @@ public class JamConsole
 			notifyListeners(command, parameters);
 		}
 	}
+	
 	/**
 	 * Parse the input string 
 	 * @param strCmd
 	 * @return a array of the command tokens
 	 */
 	private String [] parseExpression(String strCmd){
-		 
-		String regex;
-		ArrayList cmdTokenList = new ArrayList();
-		String cmdToken;
-		String cmdTokens []; 
-		int count; 
-		 
-		//match anything between quotes or words (not spaces)
-		regex="\"(.*?)\"|(\\S+)\\s*";
-		regex="\"([^\"]*?)\"|(\\S+)\\s*";   
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(strCmd);
-		
-		//cmdTokens = new String[matcher.groupCount()];
-	 		
-		//count=0;
+		final ArrayList cmdTokenList = new ArrayList();
+		/* match anything between quotes or words (not spaces) */
+		final String regex="\"([^\"]*?)\"|(\\S+)\\s*";   
+		final Pattern pattern = Pattern.compile(regex);
+		final Matcher matcher = pattern.matcher(strCmd);
 		while(matcher.find()) {
-			cmdToken=matcher.group().trim();
+			String cmdToken=matcher.group().trim();
 			if (cmdToken.charAt(0)=='\"')
 				cmdToken=cmdToken.substring(1, cmdToken.length()-1);
 			if (cmdToken !=null) {
 				cmdTokenList.add(cmdToken);
-				//cmdTokens[count]=cmdToken;
-				//count++;				
 			}
 		}
-		
-		cmdTokens = new String[cmdTokenList.size()];
+		final String [] cmdTokens = new String[cmdTokenList.size()];
 		for (int i=0; i<cmdTokenList.size();i++) {
 			cmdTokens[i]=(String)cmdTokenList.get(i);
 		}
-		 
 		return cmdTokens;
 	}
 	
 	private boolean isNumber(String s) {
+		boolean rval;
 		try {	
-			double num=(s.indexOf('.')>=0) ? Double.parseDouble(s) : Integer.parseInt(s);
-			return true;
+			if (s.indexOf('.')>=0){
+				Double.parseDouble(s);
+			} else {
+				Integer.parseInt(s);	
+			}
+			rval = true;
 		} catch (NumberFormatException nfe) {
-			return false;
+			rval = false;
 		}		
+		return rval;
 	}
 
 	/**
