@@ -2,6 +2,8 @@ package jam;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.JamStatus;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 
@@ -31,13 +33,13 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 		 * histogram are listed.
 		 */
 		static final public Mode DISPLAYED_HIST = new Mode(disp);
-		
+
 		/**
 		 * The mode for which all gates of the same dimensionality
 		 * of the displayed histogram.
 		 */
 		static final public Mode ALL = new Mode(all);
-		
+
 		private final int mode;
 
 		private Mode(int i) {
@@ -45,10 +47,10 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 		}
 	}
 
-	private String selection = null;
+	private Object selection = null;
 	private JamStatus status;
-	private int lastSize = 0;
-	private Object[] lastValue;
+	private final List lastValue =
+		Collections.synchronizedList(new ArrayList());
 	private final Mode mode;
 
 	/**
@@ -86,36 +88,29 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param index the index of the desired element
 	 */
 	public Object getElementAt(int index) {
-		int i=Math.max(index,0);
+		int i = Math.max(index, 0);
 		final String NO_GATES = "No Gates";
 		final String CHOOSE_A_GATE = "Choose a gate";
 		Object rval = NO_GATES; //default value if no gates
 		if (numGates() > 0) {
 			if (index == 0) {
 				rval = CHOOSE_A_GATE;
-			} else if (Mode.DISPLAYED_HIST.equals(mode)){
-				rval =
-					Histogram
-						.getHistogram(status.getCurrentHistogramName())
-						.getGates()[index
-						- 1].getName();
 			} else {
-				final List list =
-					Gate.getGateList(
-					Histogram
-						.getHistogram(status.getCurrentHistogramName())
-						.getDimensionality());
-				rval = ((Gate) (list.get(index-1))).getName();
+				final Histogram his =
+					Histogram.getHistogram(status.getCurrentHistogramName());
+				final int which = index - 1;
+				if (Mode.DISPLAYED_HIST.equals(mode)) {
+					rval = (Gate) his.getGates().get(which);
+				} else {
+					final List list = Gate.getGateList(his.getDimensionality());
+					rval = (Gate) (list.get(which));
+				}
 			}
 		}
-		if (lastValue[i] != null) {
-			if (!lastValue[i].equals(rval)) {
-				changeOccured();
-			}			
+		if (!rval.equals(lastValue.get(i))) {
+			changeOccured();
 		} else {
-			synchronized(this){
-				lastValue[index] = rval;
-			}
+			lastValue.set(index, rval);
 		}
 		return rval;
 	}
@@ -125,10 +120,13 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public int getSize() {
 		final int rval = numGates() + 1;
-		if (rval != lastSize) {
-			synchronized(this){
-				lastSize = rval;
-				lastValue = new Object[rval];
+		final int oldSize = lastValue.size();
+		if (rval < oldSize) { //trim list back
+			lastValue.subList(rval, oldSize).clear();
+			changeOccured();
+		} else if (rval > oldSize) { //expand list
+			for (int i = oldSize; i < rval; i++) {
+				lastValue.add(null);
 			}
 			changeOccured();
 		}
@@ -140,7 +138,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public void setSelectedItem(Object anItem) {
 		synchronized (this) {
-			selection = (String) anItem;
+			selection = anItem;
 		}
 	}
 
@@ -152,21 +150,16 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	private int numGates() {
-		int returnValue=0;
+		int numG = 0;
 		final Histogram hist =
 			Histogram.getHistogram(status.getCurrentHistogramName());
-		if (hist == null) {
-			returnValue = 0;
-		} else if (Mode.DISPLAYED_HIST.equals(mode)) {
-				final Gate[] gates = hist.getGates();
-				if (gates == null) {
-					returnValue = 0;
-				} else {
-					returnValue = gates.length;
-				}
-		} else {//ALL
-			returnValue = Gate.getGateList(hist.getDimensionality()).size();
+		if (hist != null) {
+			if (Mode.DISPLAYED_HIST.equals(mode)) {
+				numG = hist.getGates().size();
+			} else { //ALL
+				numG = Gate.getGateList(hist.getDimensionality()).size();
+			}
 		}
-		return returnValue;
+		return numG;
 	}
 }

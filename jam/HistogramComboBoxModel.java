@@ -1,6 +1,7 @@
 package jam;
 import jam.data.Histogram;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.DefaultComboBoxModel;
 
 /**
@@ -14,7 +15,11 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private Object selection = null;
 	private int lastSize=0;
-	private Object [] lastValue;
+	
+	/**
+	 * Unmodifiable Collection.
+	 */
+	private Collection histograms=Histogram.getListSortedByNumber();
 
 	/**
 	 * Create a data model for any JComboBox wishing to display the available
@@ -40,36 +45,26 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	public Object getElementAt(int index) {
 		final String NO_HISTS = "No Histograms";
 		Object rval = NO_HISTS; //default value if no histograms
-		final List list = getHistogramList();
-		final int size = list.size();
-		if (size > 0) {
-			if (index < 0 || index >= size) {
-				System.err.println(
-					"WARNING: "
-						+ getClass().getName()
-						+ ".getElementAt("
-						+ index
-						+ "): index out of range.");
-			} else {
-				if (numHists() > 0) {
-					rval =
-						(Histogram) list.get(index);
-				}
-			}
-		}
-		if (lastValue[index]!=null){
-			if (!lastValue[index].equals(rval)){
-				changeOccured();
-			}
-		} else {
-			synchronized (this){
-				lastValue[index]=rval;
+		final int size = getSize();
+		if (index < 0 || index >= size) {
+			System.err.println(
+				"WARNING: "
+					+ getClass().getName()
+					+ ".getElementAt("
+					+ index
+					+ "): index out of range.");
+		} else if (size > 0) {
+			final int numhists=numHists();
+			if (size>1 || (size==1 && numhists==1)){
+				rval = getHistogram(index);
 			}
 		}
 		return rval;
 	}
-
+	
 	/**
+	 * The size of the list is guaranteed to be >=1.
+	 * 
 	 * @return the number of list elements in the chooser
 	 */
 	public int getSize() {
@@ -77,7 +72,6 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 		if (rval != lastSize){
 			synchronized (this){
 				lastSize=rval;
-				lastValue=new Object[rval];
 			}
 			changeOccured();
 		}
@@ -103,11 +97,16 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	}
 
 	private int numHists() {
-		return getHistogramList().size();
+		return histograms.size();
 	}
 	
-	private List getHistogramList(){
-		return Histogram.getListSortedByNumber();
-	}
-
+	Iterator it;
+	private Object getHistogram(int index){
+		Object rval=null;
+		int n=index;
+		for (it=histograms.iterator(); n>=0 && it.hasNext(); n--){
+			rval=it.next();
+		}
+		return rval;
+	}	
 }
