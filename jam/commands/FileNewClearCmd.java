@@ -19,7 +19,9 @@ import javax.swing.JOptionPane;
 final class FileNewClearCmd extends AbstractCommand implements Observer {
 	
 	FileNewClearCmd(){
-		this.putValue(NAME,"Clear data");
+		super();
+		putValue(NAME,"Clear data");
+		enable();
 	}
 
 	/**
@@ -55,10 +57,10 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 			enable();
 		}
 	}
-	protected void enable() {
+	
+	protected final void enable() {
 		final SortMode mode=status.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
-
 	}
 
 }
