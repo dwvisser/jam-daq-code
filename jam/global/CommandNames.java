@@ -47,6 +47,9 @@ public interface CommandNames {
 
 	/** Show dialog for defining a new group. */
 	String SHOW_NEW_GROUP="shownewgroup";
+
+	/** Show dialog for defining a new group. */
+	String SHOW_RENAME_GROUP="showrenamegroup";
 	
 	/** Show dialog for defining a new group. */
 	String DELETE_GROUP="deletegroup";	

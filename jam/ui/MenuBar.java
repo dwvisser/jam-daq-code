@@ -167,6 +167,7 @@ public final class MenuBar implements Observer, CommandNames {
 			final JMenuItem group = new JMenu("Group");
 			histogram.add(group);
 			group.add(getMenuItem(SHOW_NEW_GROUP));
+			group.add(getMenuItem(SHOW_RENAME_GROUP));
 			group.add(getMenuItem(DELETE_GROUP));
 		
 		histogram.add(getMenuItem(SHOW_NEW_HIST));

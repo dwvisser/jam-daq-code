@@ -185,7 +185,7 @@ public class Group {
      * @param type
      *            the type of group
      */
-    public Group(String name, Type type) {
+    private Group(String name, Type type) {
     	this(name, type, null);
     }
     /**
@@ -196,7 +196,7 @@ public class Group {
      * @param type
      *            the type of group
      */
-    public Group(String groupName, Type type, String fileName) {
+    private Group(String groupName, Type type, String fileName) {
 
         final StringUtilities stringUtil = StringUtilities.instance();
         

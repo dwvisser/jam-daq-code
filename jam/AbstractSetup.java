@@ -210,7 +210,8 @@ abstract class AbstractSetup {
         }
         //FIXME maybe we should do DataBase.clearAll(); here
         Group.clearList();
-        Group.createGroup(sortClass.getName(), Group.Type.SORT);
+        String sortName = parseSortClassName( sortClass.getName() );
+        Group.createGroup(sortName, Group.Type.SORT);
         try {        	
             if (specify.isSelected()) {
                 /* we call loadClass() in order to guarantee latest version */
@@ -327,7 +328,18 @@ abstract class AbstractSetup {
             }
         }
     }
-
+    /**
+     * Get just the class name from the full name 
+     * @param sortClassName
+     * @return
+     */
+    private String parseSortClassName(String sortClassName) {
+    	String sortName;
+    	int index;
+		index = sortClassName.lastIndexOf(".");
+		sortName = sortClassName.substring(index+1, sortClassName.length());
+		return sortName;
+    }
     /**
      * Returns the dialog for setting up offline sorting.
      * 

@@ -306,7 +306,7 @@ public class MonitorApplet
 	 * creat a set of example monitors for debugging
 	 */
 	private void createExample() {
-		Group testGroup = new Group("Test" , Group.Type.TEMP);
+		Group testGroup = Group.createGroup("Test" , Group.Type.TEMP);
 		numberMonitors = 3;
 		monitor = new Monitor[numberMonitors];
 		monitorValues = new double[numberMonitors];
