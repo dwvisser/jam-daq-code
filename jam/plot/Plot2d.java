@@ -3,7 +3,6 @@
 package jam.plot;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import jam.data.*;
 import jam.global.JamProperties;
 
@@ -19,7 +18,7 @@ import jam.global.JamProperties;
 class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 
     private Graphics graphicsSetGate;
-    private int numberPointsSetGate;  //number of gate points set.
+    //private int numberPointsSetGate;  //number of gate points set.
     private Point lastPoint;    //last data gate point
     private boolean needErase;    //need to erase the last tempory line drawen
 
@@ -28,16 +27,14 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     private int lastMoveX;    //last pixel point mouse moved to
     private int lastMoveY;
 
-
     /**
      * Construnctor just runs super
      */
     public Plot2d(Action a){
         super(a);
         needErase=false;
-        numberPointsSetGate=0;
     }
-
+    
     /**
      * Mark a channel
      *
@@ -124,24 +121,20 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     public void displaySetGate(int mode, Point pChannel, Point pPixel){
         if (mode==GATE_NEW){
             settingGate=true;
-            pointsGate=new Vector(10,5);
+            pointsGate.clear();
             graphicsSetGate=this.getGraphics();
             graph.update(graphicsSetGate);        //so graph has all pertinent imfo
-            numberPointsSetGate=0;
             needErase=false;
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
         } else if (mode==GATE_CONTINUE) {
             pointsGate.add(pChannel);
-            //save data point
-            lastPoint=pChannel;
-            //erase last line
-            if(needErase) {
+            lastPoint=pChannel;//save data point
+            if(needErase) {//erase last line
                 graphicsSetGate.setXORMode(Color.black);
                 graphicsSetGate.drawLine(lastGateX, lastGateY, lastMoveX, lastMoveY);
                 needErase=false;
             }
-            numberPointsSetGate++;
             //update variables
             Point tempP=graph.toViewLin(pChannel);
             lastGateX=tempP.x;
@@ -167,12 +160,12 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
                 graph.update(graphicsSetGate);        //so graph has all pertinent imfo
                 graph.settingGate2d(pointsGate);
                 /* remove last point */
-                if((numberPointsSetGate>=1)) {
+                if((pointsGate.size()>0)) {
                     pointsGate.remove(pointsGate.size()-1);
-                    numberPointsSetGate--;
+                    //numberPointsSetGate--;
                 }
                 //go back a point
-                if((numberPointsSetGate>=1)) {
+                if((pointsGate.size()>0)) {
                     lastPoint=(Point)pointsGate.get(pointsGate.size()-1);
                     //erase last moving line
                     if(needErase) {
@@ -195,13 +188,14 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             }
         } else if(mode==GATE_SAVE){//draw a saved gate
             settingGate=false;
-            numberPointsSetGate=0;
+            //numberPointsSetGate=0;
             //draw the finished gate
             pointsGate.add((Point)pointsGate.get(0));
             graphicsSetGate.setPaintMode();
             graphicsSetGate.setColor(PlotColorMap.gateDraw);
             graph.update(graphicsSetGate);        //so graph has all pertinent imfo
             graph.settingGate2d(pointsGate);
+            pointsGate.clear();
             if(graphicsSetGate!=null) {
                 graphicsSetGate.dispose();
             }
@@ -209,7 +203,8 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
             this.removeMouseMotionListener(this);
         } else if(mode==GATE_CANCEL){//cancel a drawing gate
             settingGate=false;
-            numberPointsSetGate=0;
+            //numberPointsSetGate=0;
+            pointsGate.clear();
             if(graphicsSetGate!=null) {
                 graphicsSetGate.dispose();
             }
@@ -346,7 +341,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
         if (settingGate){
             graph.settingGate2d(pointsGate);
             needErase=false;
-            if(numberPointsSetGate>0){
+            if(pointsGate.size()>0){
                 Point tempP=graph.toViewLin(lastPoint);
                 lastGateX=tempP.x;
                 lastGateY=tempP.y;
@@ -412,20 +407,22 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
      * undo last line and draw a new line
      */
     public void mouseMoved(MouseEvent me){
-
-        //only if we have 1 only
-        if(numberPointsSetGate>=1){
-
+        /* only if we have 1 or more */
+        if(pointsGate.size()>0){
+        	//final Graphics2D graphicsSetGate=(Graphics2D)getGraphics();
+        	/*graphicsSetGate.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			RenderingHints.VALUE_ANTIALIAS_OFF);*/
+			final Color xorColor=Color.BLACK;
             //remove old lines lines
             if(needErase) {
-                graphicsSetGate.setXORMode(Color.black);
+                graphicsSetGate.setXORMode(xorColor);
                 graphicsSetGate.drawLine(lastGateX, lastGateY, lastMoveX, lastMoveY);
             }
 
             //draw new line
             lastMoveX=me.getX();
             lastMoveY=me.getY();
-            graphicsSetGate.setXORMode(Color.black);
+            graphicsSetGate.setXORMode(xorColor);
             graphicsSetGate.drawLine(lastGateX, lastGateY, lastMoveX, lastMoveY);
             needErase=true;
         }
@@ -456,9 +453,10 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
      * Undo last temporary line drawn.
      */
     public void  mouseExited(MouseEvent e){
-        //remove tempory lines only if we need to and have 1 or more point
+        /* remove temporay lines only if we need to and 
+         * have 1 or more point */
         if (needErase) {
-            //undo last line
+        	//final Graphics graphicsSetGate=getGraphics();
             graphicsSetGate.setXORMode(Color.black);
             graphicsSetGate.drawLine(lastGateX, lastGateY, lastMoveX, lastMoveY);
             needErase=false;
