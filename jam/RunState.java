@@ -13,17 +13,17 @@ import java.awt.Color;
 public class RunState {
 	
 	private static final String [] NAMES={"NO_ACQ","ACQ_ON",
-	"ACQ_OFF","RUN_OFF","RUN_ON","REMOTE"};
+	"ACQ_OFF","RUN_ON","REMOTE"};
 	private static final String STOPPED="   Stopped   ";
 	private static final String [] LABELS={"   Welcome   ", 
-		"   Started   ",STOPPED,STOPPED,"","   Remote   "};
+		"   Started   ",STOPPED,"","   Remote   "};
 	private static final Color [] COLORS={Color.LIGHT_GRAY,
-		Color.ORANGE,Color.RED,Color.RED,Color.GREEN,Color.LIGHT_GRAY
+		Color.ORANGE,Color.RED,Color.GREEN,Color.LIGHT_GRAY
 	};
 	private static final boolean [] ACQUIRE_ON={false,true,
-		false,false,true,false};
+		false,true,false};
 	private static final boolean [] ACQUIRE_MODE={false,true,
-		true,true,true,false
+		true,true,false
 	};
 	
 	private final String name;
@@ -45,24 +45,20 @@ public class RunState {
 	public static final RunState NO_ACQ=new RunState(0);
 	
 	/**
-	 * Online acquisition is set up.
+	 * Actively sorting offline data.
 	 */
 	public static final RunState ACQ_ON=new RunState(1);
 	
 	/**
-	 * Offline acquisition is set up.
+	 * Online or offline acquisition is just setup, or we
+	 * just ended an online or offline run/sort.
 	 */
 	public static final RunState ACQ_OFF=new RunState(2);
 	
 	/**
-	 * Offline acquisition is set up and running.
-	 */
-	public static final RunState RUN_OFF=new RunState(3);
-	
-	/**
 	 * Getting our display data from a remote session.
 	 */
-	public static final RunState REMOTE=new RunState(5);
+	public static final RunState REMOTE=new RunState(4);
 	
 	/**
 	 * Online acquisition is set up, running and storing events to 
@@ -72,7 +68,7 @@ public class RunState {
 	 * @return a new state object
 	 */
 	public static final RunState RUN_ON(int run){
-		RunState rval=new RunState(4);
+		RunState rval=new RunState(3);
 		rval.setLabel("   Run "+run+"   ");
 		return rval;
 	}
@@ -93,10 +89,20 @@ public class RunState {
 		return color;
 	}
 	
+	/**
+	 * 
+	 * @return <code>true</code> if this mode represents a state of
+	 * actively sorting data
+	 */
 	public boolean isAcqOn(){
 		return acquireOn;
 	}
 	
+	/**
+	 * 
+	 * @return <code>true</code> if this mode represents an online or 
+	 * offline sorting mode
+	 */
 	public boolean isAcquireMode(){
 		return acquireMode;
 	}
