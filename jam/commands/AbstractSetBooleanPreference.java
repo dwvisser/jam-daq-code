@@ -27,11 +27,15 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	 */
 	protected String key;
 	protected boolean state;
-	private static final ClassLoader cl = ClassLoader.getSystemClassLoader();
-	private final ImageIcon checkMark=new ImageIcon(cl.getResource(
-	"jam/commands/checkmark.png"));
-	private final ImageIcon clear=new ImageIcon(cl.getResource(
-	"jam/ui/clear.png"));
+	private final ImageIcon checkMark, clear;
+	
+	{
+		final ClassLoader loader = ClassLoader.getSystemClassLoader();
+		checkMark=new ImageIcon(loader.getResource(
+		"jam/commands/checkmark.png"));
+		clear=new ImageIcon(loader.getResource(
+		"jam/ui/clear.png"));
+	}
 	
 	/**
 	 * Set to <code>true</code> here. Set differently in 
