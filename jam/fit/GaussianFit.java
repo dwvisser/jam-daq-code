@@ -150,7 +150,7 @@ public class GaussianFit extends NonLinearFit {
 	 *
 	 * @exception   FitException	    thrown if unrecoverable error occurs during estimation
 	 */
-	public void estimate() throws FitException {
+	public void estimate() {
 
 		orderParameters();
 
@@ -203,21 +203,15 @@ public class GaussianFit extends NonLinearFit {
 	 * Overrides normal setParameters to make sure channels are in proper order.  This
 	 * Allows the fit limits and centroids to be clicked in any order.
 	 */
-	private void orderParameters() throws FitException {
-
-		Matrix chVector = new Matrix(3, 1);
-		Matrix sorted;
-
+	private void orderParameters()  {
+		final Matrix chVector = new Matrix(3, 1);
 		chVector.element[0][0] = getParameter(FIT_LOW).getIntValue();
 		chVector.element[1][0] = getParameter(CENTROID).getDoubleValue();
 		chVector.element[2][0] = getParameter(FIT_HIGH).getIntValue();
-
-		sorted = chVector.sort();
-
+		final Matrix sorted = chVector.sort();
 		getParameter(FIT_LOW).setValue((int) sorted.element[0][0]);
 		getParameter(CENTROID).setValue(sorted.element[1][0]);
 		getParameter(FIT_HIGH).setValue((int) sorted.element[2][0]);
-
 	}
 
 	/**
