@@ -509,7 +509,7 @@ public abstract class Histogram {
 			if (histogram != null) {
 				histogram.clearInfo();
 				LIST.remove(histogram);
-				NAME_MAP.remove(histogram.getUniqueFullName());
+				NAME_MAP.remove(histogram.getFullName());
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
@@ -576,11 +576,20 @@ public abstract class Histogram {
 		return uniqueFullName;
 	}
 	/**
-	 * Returns the histogram unique name.
+	 * Returns the histogram  name not resolved.
 	 * 
 	 * @return the name of this histogram
 	 */
-	public String getUniqueFullName() {
+	public String getNameUnresolved() {
+		return name;
+	}
+	/**
+	 * Returns the histogram unique full name.
+	 * 
+	 * @return the name of this histogram
+	 */
+	
+	public String getFullName() {
 		return uniqueFullName;
 	}
 

@@ -153,7 +153,7 @@ public class SelectionTree extends JPanel implements Observer {
             if (firstNode instanceof Histogram) {
                 /* Histogram selected */
                 final Histogram hist = (Histogram) firstNode;
-                STATUS.setHistName(hist.getUniqueFullName());
+                STATUS.setHistName(hist.getFullName());
                 STATUS.setCurrentGateName(null);                
                 /* Do we have overlays ? */
                 if (paths.length>1) {

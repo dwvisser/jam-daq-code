@@ -56,7 +56,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
                 tip.append('x').append(hist.getSizeY());
             }
             tip.append(')');
-            setText(hist.getName());
+            setText(hist.getNameUnresolved());
             setToolTipText(tip.toString());
         } else if (nodeObject instanceof Gate) {
             Gate gate = (Gate) nodeObject;
