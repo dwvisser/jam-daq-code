@@ -8,7 +8,6 @@ import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.plot.Display;
@@ -669,7 +668,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	 * @param o the message
 	 */
 	public void update(Observable observable, Object o) {
-		try {
+		//try {
 			final BroadcastEvent be = (BroadcastEvent) o;
 			if (be.getCommand() == BroadcastEvent.HISTOGRAM_NEW) {
 				final String lastHistName = status.getCurrentHistogramName();
@@ -683,9 +682,9 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 					Histogram.getHistogram(lastHistName));
 				gatesChanged();
 			}
-		} catch (GlobalException ge) {
+		/**} catch (GlobalException ge) {
 			console.errorOutln(getClass().getName() + ".update(): " + ge);
-		}
+		}*/
 	}
 
 	/**
@@ -985,7 +984,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 	public void addFit(String name) {
 		final JMenuItem fitItem = new JMenuItem(name + "...");
 		fitItem.setActionCommand(name);
-		fitItem.addActionListener(jamCommand.loadFit);
+		fitItem.addActionListener(jamCommand.getLoadFit());
 		fitting.add(fitItem);
 	}
 
