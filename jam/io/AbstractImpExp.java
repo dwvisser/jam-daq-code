@@ -78,11 +78,11 @@ public abstract class AbstractImpExp {
 	 * Opens a file for reading. Subclasses generally should call <code>openFile(msg,ext)</code>
 	 * which is already implemented in <code>ImpExp</code>.
 	 *
-	 * @param in file to open, if null we provide a dialog
+	 * @param file to open, if null we provide a dialog
 	 * @return <code>true</code> if successful
 	 * @exception   ImpExpException all ImpExpExceptions go to the msgHandler
 	 */
-	public abstract boolean openFile(File in) throws ImpExpException;
+	public abstract boolean openFile(File file) throws ImpExpException;
 
 	/**
 	  * Saves a histogram or all histograms.  Typically, the implementation calls
@@ -128,34 +128,39 @@ public abstract class AbstractImpExp {
 	 * Opens a file with a specified dialog box title bar and file extension.
 	 * It is usually called by <code>openFile</code> in subclasses of <code>ImpExp</code>.
 	 *
-	 * @param in the file to open
+	 * @param file the file to open
 	 * @param msg text to go on title bar of dialog box
 	 * @return	whether file was successfully read
 	 */
-	protected boolean openFile(File in, String msg) {
-		boolean rval=false; //default return value
-		try {
-			final File inFile = (in==null) ? getFileOpen(msg) : in;
-			if (inFile != null) { // if Open file was  not canceled
-				setLastFile(inFile);
-				FileInputStream inStream = new FileInputStream(inFile);
-				BufferedInputStream inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
-				if (msgHandler != null) msgHandler.messageOut(
-					msg + " " + getFileName(inFile),
-					MessageHandler.NEW);
-				/* implementing class implement following method */
-				readData(inBuffStream);
-				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
-				inBuffStream.close();
-				rval = true;
-			}
-		} catch (IOException ioe) {
-			msgHandler.errorOutln("Problem handling file: "+ioe.getMessage());
-		} catch (ImpExpException iee) {
-			msgHandler.errorOutln("Problem while importing or exporting: "+iee.getMessage());
-		}
-		return rval;
-	}
+	protected boolean openFile(File file, String msg) {
+        boolean rval = false; //default return value
+        try {
+            final File inFile = (file == null) ? getFileOpen(msg) : file;
+            if (inFile != null) { // if Open file was not canceled
+                setLastFile(inFile);
+                final FileInputStream inStream = new FileInputStream(inFile);
+                final BufferedInputStream inBuffStream = new BufferedInputStream(
+                        inStream, BUFFER_SIZE);
+                if (msgHandler != null) {
+                    msgHandler.messageOut(msg + " " + getFileName(inFile),
+                            MessageHandler.NEW);
+                }
+                /* implementing class implement following method */
+                readData(inBuffStream);
+                if (msgHandler != null) {
+                    msgHandler.messageOut(" done!", MessageHandler.END);
+                }
+                inBuffStream.close();
+                rval = true;
+            }
+        } catch (IOException ioe) {
+            msgHandler.errorOutln("Problem handling file: " + ioe.getMessage());
+        } catch (ImpExpException iee) {
+            msgHandler.errorOutln("Problem while importing or exporting: "
+                    + iee.getMessage());
+        }
+        return rval;
+    }
 
 	/**
 	 * Save a specific histogram using a file dialog box.  The programmer supplies a file dialog box title,
@@ -167,28 +172,30 @@ public abstract class AbstractImpExp {
 	 * @see	    #saveFile(Histogram)
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the msgHandler
 	 */
-	protected void saveFile(String msg, Histogram hist)
-		throws ImpExpException {
-		File outFile = getFileSave(msg);
-		try {// open file dialog		 
-			if (outFile != null) { // if Save file dialog was  not canceled
-				setLastFile(outFile);
-				FileOutputStream outStream = new FileOutputStream(outFile);
-				BufferedOutputStream outBuffStream =
-					new BufferedOutputStream(outStream, BUFFER_SIZE);
-				if (msgHandler != null) msgHandler.messageOut(
-					msg + " " + getFileName(outFile),
-					MessageHandler.NEW);
-				writeHist(outBuffStream, hist);
-				outBuffStream.flush();
-				outStream.flush();
-				outStream.close();
-				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
-			}
-		} catch (IOException io) {
-			throw new ImpExpException("Creating file [ImpExp]",io);
-		}
-	}
+	protected void saveFile(String msg, Histogram hist) throws ImpExpException {
+        final File outFile = getFileSave(msg);
+        try {// open file dialog
+            if (outFile != null) { // if Save file dialog was not canceled
+                setLastFile(outFile);
+                final FileOutputStream outStream = new FileOutputStream(outFile);
+                final BufferedOutputStream buffStream = new BufferedOutputStream(
+                        outStream, BUFFER_SIZE);
+                if (msgHandler != null) {
+                    msgHandler.messageOut(msg + " " + getFileName(outFile),
+                            MessageHandler.NEW);
+                }
+                writeHist(buffStream, hist);
+                buffStream.flush();
+                outStream.flush();
+                outStream.close();
+                if (msgHandler != null) {
+                    msgHandler.messageOut(" done!", MessageHandler.END);
+                }
+            }
+        } catch (IOException io) {
+            throw new ImpExpException("Creating file [ImpExp]", io);
+        }
+    }
 
 	/**
 	 * Save the given histogram to the given file.
@@ -197,18 +204,20 @@ public abstract class AbstractImpExp {
 	 * @throws ImpExpException
 	 */
 	public void saveFile(File outFile, Histogram hist) throws ImpExpException {
-		try {
-			FileOutputStream outStream = new FileOutputStream(outFile);
-			BufferedOutputStream outBuffStream =
-				new BufferedOutputStream(outStream, BUFFER_SIZE);
-			writeHist(outBuffStream, hist);
-			outBuffStream.flush();
-			outStream.close();
-			if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
-		} catch (IOException io) {
-			throw new ImpExpException("Creating file [ImpExp]",io);
-		}
-	}
+        try {
+            final FileOutputStream outStream = new FileOutputStream(outFile);
+            final BufferedOutputStream buffStream = new BufferedOutputStream(
+                    outStream, BUFFER_SIZE);
+            writeHist(buffStream, hist);
+            buffStream.flush();
+            outStream.close();
+            if (msgHandler != null) {
+                msgHandler.messageOut(" done!", MessageHandler.END);
+            }
+        } catch (IOException io) {
+            throw new ImpExpException("Creating file [ImpExp]", io);
+        }
+    }
 
 	/**
 	 * Open a file to read from.
@@ -240,27 +249,25 @@ public abstract class AbstractImpExp {
 	 * @return			    a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
 	protected File getFile(String msg, int state) {
-		File file = null;
-		int option;
-		JFileChooser jfile = new JFileChooser(getLastFile());
-		jfile.setDialogTitle(msg);
-		jfile.setFileFilter(getFileFilter());
-		if (state == LOAD) {
-			option = jfile.showOpenDialog(frame);
-		} else if (state == SAVE) {
-			option = jfile.showSaveDialog(frame);
-		} else {
-			throw new IllegalArgumentException(
-				getClass().getName()
-					+ "getFile() called with state = "
-					+ state);
-		}
-		/* don't do anything if it was cancel */
-		if (option == JFileChooser.APPROVE_OPTION) {
-			file = jfile.getSelectedFile();
-		}
-		return file;
-	}
+        File file = null;
+        int option;
+        final JFileChooser jfile = new JFileChooser(getLastFile());
+        jfile.setDialogTitle(msg);
+        jfile.setFileFilter(getFileFilter());
+        if (state == LOAD) {
+            option = jfile.showOpenDialog(frame);
+        } else if (state == SAVE) {
+            option = jfile.showSaveDialog(frame);
+        } else {
+            throw new IllegalArgumentException(getClass().getName()
+                    + "getFile() called with state = " + state);
+        }
+        /* don't do anything if it was cancel */
+        if (option == JFileChooser.APPROVE_OPTION) {
+            file = jfile.getSelectedFile();
+        }
+        return file;
+    }
 	
 	/**
 	 * Defines the file filter to be used by the file dialogs.
@@ -302,14 +309,14 @@ public abstract class AbstractImpExp {
 	
 	/**
 	 * Set the last file accessed.
-	 * @param f last file accessed
+	 * @param file last file accessed
 	 */
-	protected void setLastFile(File f) {
-		synchronized (LASTFILE_MON){
-			lastFile=f;	
-			PREFS.put(lastFileKey,f.getAbsolutePath());
-		}
-	}
+	protected void setLastFile(File file) {
+        synchronized (LASTFILE_MON) {
+            lastFile = file;
+            PREFS.put(lastFileKey, file.getAbsolutePath());
+        }
+    }
 	
 	/**
 	 * Returns whether this class can export files to disk.
