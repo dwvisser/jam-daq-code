@@ -122,10 +122,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	/**
 	 * Constructor
 	 */
-	public SetupSortOn(RunControl runControl,
-						DisplayCounters displayCounters,
-						FrontEndCommunication frontEnd,
-						JamConsole jamConsole) {
+	public SetupSortOn(DisplayCounters displayCounters, JamConsole jc) {
 
 		final int fileTextColumns = 25;
 		final String defaultName =
@@ -149,11 +146,11 @@ class SetupSortOn implements ActionListener, ItemListener {
 		if (!useDefaultPath) {
 			sortClassPath = new File(defaultSortPath);
 		}
-		this.runControl = runControl;
+		runControl = RunControl.getSingletonInstance();
 		this.displayCounters = displayCounters;
-		this.jamConsole = jamConsole;
-		this.msgHandler = jamConsole;
-		this.frontEnd = frontEnd;
+		jamConsole = jc;
+		msgHandler = jamConsole;
+		frontEnd = status.getFrontEndCommunication();
 		frame=status.getFrame();
 		d = new JDialog(frame, "Setup Online ", false);
 		d.setResizable(false);
