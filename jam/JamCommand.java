@@ -1,5 +1,6 @@
 package jam;
-import jam.data.DataBase;
+import jam.commands.CommandException;
+import jam.commands.JamCmdManager;
 import jam.data.control.CalibrationDisplay;
 import jam.data.control.CalibrationFit;
 import jam.data.control.GainShift;
@@ -19,17 +20,14 @@ import jam.io.hdf.HDFIO;
 import jam.io.hdf.OpenSelectedHistogram;
 import jam.plot.Display;
 
-import jam.commands.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 
-import javax.swing.JFrame;
 import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
+import javax.swing.JFrame;
 
 /**
  * This class recieves the commands for many of the pull
