@@ -1,9 +1,9 @@
 package jam.io;
-import jam.data.CalibrationFunction;
 import jam.data.DataBase;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.data.Scaler;
+import jam.data.func.CalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.MessageHandler;
 import java.awt.Frame;
