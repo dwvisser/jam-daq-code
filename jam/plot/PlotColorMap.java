@@ -27,8 +27,10 @@ class PlotColorMap {
     static Color overlay;
     static Color gateDraw;
     static Color gateShow;
-    static Color fit;
-    static Color residual;
+    static Color fitTotal;
+    static Color fitSignal;
+    static Color fitBackground;
+    static Color fitResidual;
     static Color mark;
     static Color area;
 
@@ -48,8 +50,10 @@ class PlotColorMap {
             gateShow=Color.red;
             mark=Color.red;
             area=Color.green;
-            fit=Color.red;
-            residual=Color.blue;
+            fitTotal=Color.BLUE;
+            fitSignal=Color.DARK_GRAY;
+            fitBackground=Color.GREEN;
+            fitResidual=Color.RED;
             colorScale=colorScaleBonW;
         } else if (mode==WHITE_ON_BLACK){
             colorMode=mode;
@@ -61,8 +65,10 @@ class PlotColorMap {
             gateShow=Color.yellow;
             mark=Color.yellow;
             area=Color.green;
-            fit=Color.pink;
-            residual=Color.red;
+			fitTotal=Color.CYAN;
+			fitSignal=Color.LIGHT_GRAY;
+			fitBackground=Color.GREEN;
+			fitResidual=Color.RED;
             colorScale=colorScaleWonB;
         } else if (mode==PRINT){
             colorMode=mode;
@@ -74,8 +80,10 @@ class PlotColorMap {
             gateShow=new Color(59, 59, 59);
             mark=new Color(102, 102, 102 );
             area=new Color(102, 102, 102 );
-            fit= new Color(59, 59, 59);
-            residual=new Color(102, 102, 102 );
+			fitTotal=Color.BLUE;
+			fitSignal=Color.DARK_GRAY;
+			fitBackground=Color.GREEN;
+			fitResidual=Color.RED;
             colorScale=colorScaleGray;
         } else {
             System.err.println("PlotGraphicsColorMap.setColorMap("+mode+"): Invalid Color Mode!");
