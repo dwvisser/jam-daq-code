@@ -332,7 +332,7 @@ public class GainShift extends AbstractManipulation implements ItemListener, Obs
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D)createNewHistogram(name, histName, hfrom.getSizeX());
+			hto = (AbstractHist1D)createNewHistogram(groupName, name, histName, hfrom.getSizeX());
 			messageHandler
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 			

@@ -305,10 +305,10 @@ public class Projections extends AbstractManipulation implements Observer {
             }
         }
         if (isNewHistogram(name)) {
+			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();        	
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
-			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
-			hto = createNewHistogram(name, histName, size);
+			hto = createNewHistogram(groupName, name, histName, size);
 			console
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 		} else {

@@ -277,7 +277,9 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		final double[] in1, err1;
 		final double[] in2, err2;
+		final double[] out, errOut;
 		String operation="";
+		int numChannels;
 		
 		validateFactors();
 		
@@ -303,19 +305,23 @@ public class Combine extends AbstractManipulation implements Observer {
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto =(AbstractHist1D)createNewHistogram(name, histName, hfrom1.getSizeX());
+			hto =(AbstractHist1D)createNewHistogram(groupName, name, histName, hfrom1.getSizeX());
 			messageHandler.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");			
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
 		hto.setZero();
 
-		final double[] out = doubleCountsArray(hto); 
-		
-		double[] errOut = hto.getErrors();
+		out = doubleCountsArray(hto); 		
+		errOut = hto.getErrors();
 
-		//Use minimun size of both 
-		int numChannels = Math.min(out.length, in1.length);
+		//Minimun size of both out an in1
+		numChannels = Math.min(out.length, in1.length);		
+		
+		//Minimun size of all out an in1 and in2		
+		if (!cnorm.isSelected()) {
+			numChannels = Math.min(numChannels, in2.length);
+		}
 		
 		//Do calculation
 		if (cnorm.isSelected()) {
