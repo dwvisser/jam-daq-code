@@ -33,6 +33,7 @@ class PlotColorMap {
     static Color fitResidual;
     static Color mark;
     static Color area;
+    static Color peakLabel;
 
     public  PlotColorMap(int mode){
         setColorMap(mode);
@@ -54,6 +55,7 @@ class PlotColorMap {
             fitBackground=Color.GREEN;
             fitResidual=Color.RED;
             colorScale=colorScaleBonW;
+            peakLabel=Color.BLUE;
         } else if (mode==WHITE_ON_BLACK){
             colorMode=mode;
             background=Color.black;
@@ -68,6 +70,7 @@ class PlotColorMap {
 			fitSignal=Color.LIGHT_GRAY;
 			fitBackground=Color.GREEN;
 			fitResidual=Color.RED;
+			peakLabel=Color.CYAN;
             colorScale=colorScaleWonB;
         } else if (mode==PRINT){
             colorMode=mode;
@@ -83,6 +86,7 @@ class PlotColorMap {
 			fitSignal=Color.DARK_GRAY;
 			fitBackground=Color.GREEN;
 			fitResidual=Color.RED;
+			peakLabel=Color.BLUE;
             colorScale=colorScaleGray;
         } else {
             throw new IllegalArgumentException("PlotGraphicsColorMap.setColorMap("+mode+"): Invalid Color Mode!");
