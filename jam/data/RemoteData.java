@@ -1,7 +1,7 @@
 package jam.data;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Remote interface for getting data from a Jam server process.
@@ -33,7 +33,7 @@ public interface RemoteData extends Remote {
      * @return the list of all histograms
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    public Vector getHistogramList() throws RemoteException ;
+    public List getHistogramList() throws RemoteException ;
 
     /**
      * Returns the list of histogram names.
@@ -58,7 +58,7 @@ public interface RemoteData extends Remote {
      * @return the list of all gates
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    public Vector getGateList() throws RemoteException;
+    public List getGateList() throws RemoteException;
 
     /**
      * Gets the list of gate names assiciated with the given histogram name.
@@ -84,7 +84,7 @@ public interface RemoteData extends Remote {
      * @return the list of all scalers
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    public Vector getScalerList() throws RemoteException ;
+    public List getScalerList() throws RemoteException ;
 
     /**
      * Returns the list of monitors.
@@ -92,7 +92,7 @@ public interface RemoteData extends Remote {
      * @return the list of all monitors
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    public Vector getMonitorList() throws RemoteException ;
+    public List getMonitorList() throws RemoteException ;
     /**
      * Returns the values of monitors.
      *
