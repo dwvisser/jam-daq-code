@@ -159,48 +159,41 @@ public final class HDFIO implements DataIO, JamHDFFields {
     	writeFile(file, null, null, wrtdata, wrtsettings);    	
     }
     
-    /**
+    /* non-javadoc:
      * Center call for all public writes
      */
-    private void writeFile(final File file, List groups, List histograms, boolean wrtdata, boolean wrtsettings) {
-    	
-    	//Groups specified determines histograms 
-    	if (groups!=null) {
-	    	histograms =new ArrayList();
-	    	Iterator iterGroup = groups.iterator();
-	    	while (iterGroup.hasNext()){
-	    		Group g =(Group)iterGroup.next();
-	    		Iterator iterHist = g.getHistogramList().iterator();
-	    		while(iterHist.hasNext()) {	    		
-	    			histograms.add( (Histogram)(iterHist.next()) );
-	    		}
-	    	}
-	   //Histograms specified determines groups	    	
-    	} else if (histograms!=null) {
-    		groups =new ArrayList();
-	    	Iterator iterHist = histograms.iterator();
-	    	while (iterHist.hasNext()){
-	    		Histogram h= (Histogram)iterHist.next();
-	    		if (!groups.contains(h.getGroup())){
-	    			groups.add(h.getGroup());
-	    		}
-	    	}
-    	//Neither groups nor histograms specified
-    	} else {
-    		groups =Group.getGroupList();
-	    	histograms =new ArrayList();
-	    	Iterator iterGroup = groups.iterator();
-	    	while (iterGroup.hasNext()){
-	    		Group g =(Group)iterGroup.next();
-	    		Iterator iterHist = g.getHistogramList().iterator();
-	    		while(iterHist.hasNext()) {
-	    			histograms.add( (Histogram)iterHist.next() );
-	    		}
-	    	}    		
-    	}
-		
-    	
-        if (overWriteExistsConfirm(file)) {        	
+    //TODO remove this unused private method?
+    private void writeFile(final File file, List groups, List histograms,
+            boolean wrtdata, boolean wrtsettings) {
+        /* Groups specified determines histograms */
+        if (groups != null) {
+            histograms = new ArrayList();
+            final Iterator iterGroup = groups.iterator();
+            while (iterGroup.hasNext()) {
+                final Group currGroup = (Group) iterGroup.next();
+                histograms.addAll(currGroup.getHistogramList());
+            }
+        } else if (histograms != null) {
+            /* Histograms specified determines groups. */
+            groups = new ArrayList();
+            final Iterator iterHist = histograms.iterator();
+            while (iterHist.hasNext()) {
+                final Histogram hist = (Histogram) iterHist.next();
+                if (!groups.contains(hist.getGroup())) {
+                    groups.add(hist.getGroup());
+                }
+            }
+            //Neither groups nor histograms specified
+        } else {
+            groups = Group.getGroupList();
+            histograms = new ArrayList();
+            final Iterator iterGroup = groups.iterator();
+            while (iterGroup.hasNext()) {
+                final Group currGroup = (Group) iterGroup.next();
+                histograms.addAll(currGroup.getHistogramList());
+            }
+        }
+        if (overWriteExistsConfirm(file)) {
             spawnAsyncWriteFile(file, groups, histograms, wrtdata, wrtsettings);
         }
     }
@@ -440,7 +433,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
                     msgHandler.errorOutln(uiErrorMsg);
             	}
             	if (asyncListener!=null) {
-            		asyncListener.CompletedIO(uiMessage, uiErrorMsg);
+            		asyncListener.completedIO(uiMessage, uiErrorMsg);
             	}
             	/*
             	//FIXME KBS delete when all async read hist lists cases are handled
@@ -1212,10 +1205,15 @@ public final class HDFIO implements DataIO, JamHDFFields {
    
     }
 	/**
-	 * Interface to be called when asynchronized IO is completed  
+	 * Interface to be called when asynchronized IO is completed.
 	 */
     public interface AsyncListener {
-    	public void CompletedIO(String message, String errorMessage);
+        /**
+         * Called when asychronous IO is completed
+         * @param message if normal completion
+         * @param errorMessage if an error occurs
+         */
+    	public void completedIO(String message, String errorMessage);
     }
     
 }
