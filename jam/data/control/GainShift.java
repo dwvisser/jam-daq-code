@@ -170,7 +170,7 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 		pto.add(cto);
 		lname = new JLabel("Name");
 		pto.add(lname);
-		ttextto = new JTextField("new", 20);
+		ttextto = new JTextField("gainshift", 20);
 		pto.add(ttextto);
 		pEntries.add(pto);
 
@@ -286,7 +286,7 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 			}
 		} else if (ie.getSource() == cto) {
 			if (cto.getSelectedItem() != null) {
-				setUseNewHist(cto.getSelectedItem().equals("New Histogram"));
+				setUseHist((String)cto.getSelectedItem());
 			}
 		}
 	}
@@ -312,15 +312,9 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	public void doSetup() {
 		String lto = (String) cto.getSelectedItem();
 		cto.removeAllItems();
-		cto.addItem("New Histogram");
-		addChooserHists(cto, Histogram.Type.ONE_DIM_INT,
-				Histogram.Type.ONE_D_DOUBLE);
+		 addChooserHists(cto, true, Histogram.Type.ONE_D);
 		cto.setSelectedItem(lto);
-		if (lto.equals("New Histogram")) {
-			setUseNewHist(true);
-		} else {
-			setUseNewHist(false);
-		}
+		setUseHist((String)cto.getSelectedItem());
 		cfrom.setSelectedIndex(0);
 	}
 
@@ -361,14 +355,6 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 		}
 	}
 
-	private void addChooserHists(JComboBox c, Histogram.Type type1,
-			Histogram.Type type2) {
-		for (Iterator e = Histogram.getHistogramList().iterator(); e.hasNext();) {
-			Histogram h = (Histogram) e.next();
-			if (h.getType() == type1 || h.getType() == type2)
-				c.addItem(h.getFullName());
-		}
-	}
 	/* non-javadoc:
 	 * add histograms of type type1 and type2 to chooser
 	 */
@@ -403,11 +389,22 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	/* non-javadoc:
 	 * Set dialog box for a new histogram to be written out.
 	 */
-	private void setUseNewHist(boolean state) {
-		lname.setEnabled(state);
-		ttextto.setEnabled(state);
+	/* non-javadoc:
+	 * setup if using a new histogram
+	 */
+	private void setUseHist(String name) {
+		if (isNewHistogram(name)){
+			lname.setEnabled(true);
+			ttextto.setEnabled(true);
+			ttextto.setEditable(true);
+		} else {
+			lname.setEnabled(false);
+			ttextto.setEnabled(false);
+			ttextto.setEditable(false);
+			
+		}
 	}
-
+	
 	/* non-javadoc:
 	 * Does the work of manipulating histograms
 	 */
@@ -427,10 +424,19 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 		/* Get or create output histogram. */
 		String name = (String) cto.getSelectedItem();
 		
-		if (name.equals("New Histogram")) {
+		
+		if (isNewHistogram(name)) {
+			String histName = ttextto.getText().trim();
+			createNewHistogram(name, histName, hfrom.getSizeX());
+		} else {
+			hto = (AbstractHist1D)Histogram.getHistogram(name);
+
+		}
+		/*
+		if (isNewHistogram(name)) {
 			name = ttextto.getText().trim();
-			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
-					.getSizeX(), name);*/
+			//hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
+			//		.getSizeX(), name);
 			Group.createGroup("Working", Group.Type.FILE);
 			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
@@ -439,6 +445,7 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 		} else {
 			hto = (AbstractHist1D)Histogram.getHistogram(name);
 		}
+		*/
 		hto.setZero();
 		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((int[]) hto
 				.getCounts()).length
@@ -726,4 +733,29 @@ public class GainShift extends AbstractControl implements ItemListener, Observer
 	private double log10(double x) {
 		return Math.log(x) / Math.log(10.0);
 	}
+	private boolean isNewHistogram(String name){
+		return name.startsWith(NEW_HIST);
+	}
+	private String parseGroupName(String name){
+		
+		StringBuffer sb = new StringBuffer(name);
+		String groupName=sb.substring(NEW_HIST.length(), name.length()-HIST_WILD_CARD.length());
+		return groupName;
+
+	}
+	
+	private void createNewHistogram(String name, String histName, int size) {
+
+	
+		String groupName = parseGroupName(name);
+		if (groupName.equals(Group.WORKING_NAME))
+		{
+			Group.createGroup(groupName, Group.Type.FILE);
+		}
+		hto =(AbstractHist1D) Histogram.createHistogram(new double[size],histName);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		messageHandler
+				.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
+	}
+
 }

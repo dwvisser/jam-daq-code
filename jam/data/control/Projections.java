@@ -59,6 +59,8 @@ public class Projections extends AbstractControl implements Observer {
 
 	private final JTextField tlim1, tlim2, ttextto;
 
+	private final JLabel lname;
+	
 	private String hfromname;
 	
 	private Histogram hto;
@@ -159,7 +161,7 @@ public class Projections extends AbstractControl implements Observer {
 			}
 		});
 		ptextto.add(cto);
-		final JComponent lname = new JLabel("Name");
+		lname = new JLabel("Name");
 		ptextto.add(lname);
 		ttextto = new JTextField("projection", 20);
 		setUseHist(NEW_HIST);
@@ -309,10 +311,12 @@ public class Projections extends AbstractControl implements Observer {
 	 */
 	private void setUseHist(String name) {
 		if (isNewHistogram(name)){
+			lname.setEnabled(true);
 			ttextto.setEnabled(true);
 			ttextto.setEditable(true);
 		} else {
-			ttextto.setEnabled(false);
+			lname.setEnabled(false);
+			ttextto.setEnabled(true);
 			ttextto.setEditable(false);
 			
 		}
