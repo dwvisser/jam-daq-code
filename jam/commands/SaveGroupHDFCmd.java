@@ -38,11 +38,13 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 		        if (option == JFileChooser.APPROVE_OPTION
 		                && jfile.getSelectedFile() != null) {
 		            final File file = jfile.getSelectedFile();
-		            //FIMXE need to create a new call
-		            hdfio.writeFile(true, true, true, true, file);
+
+		            hdfio.writeFile(file, group.getHistogramList());
+
 		        }
 			}else {
-				//hdfio.write
+				File file=(File)cmdParams[0];
+				hdfio.writeFile(file, group.getHistogramList());
 			}
 		} else {
 			throw new CommandException("Need to select a group");

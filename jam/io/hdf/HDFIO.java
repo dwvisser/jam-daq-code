@@ -134,37 +134,42 @@ public class HDFIO implements DataIO, JamHDFFields {
      * @param histogramList list of histograms to write
      */
     public void writeFile(File file, List histogramList) {
-        if (overWriteExistsConfirm(file)) {
-        	//Histogram list
-            final Iterator iterHist = histogramList.iterator();
-            final List hist = new ArrayList();
-            while (iterHist.hasNext()) {
-                final Histogram h = (Histogram) iterHist.next();
-                if (h.getArea() > 0) {
-                    hist.add(h);
-                }
-            }
-            //Gate list
-            final List gate = new ArrayList();
-            gate.addAll(Gate.getGateList());
-            final Iterator it = gate.iterator();
-            while (it.hasNext()) {
-                final Gate g = (Gate) (it.next());
-                if (!g.isDefined()) {
-                	//FIXME Check gate is in histgram List
-                    it.remove();
-                }
-            }
-            //Scaler list
-            final List scaler = Scaler.getScalerList();
-
-            //Parameter list
-            final List parameter = DataParameter.getParameterList();
-                   
-             //Asyncronized write 
-             asyncWriteFile(file, hist, gate, scaler, parameter);
-        }
     	
+    	//Check to overwrite if file exist
+        if (!overWriteExistsConfirm(file)) {
+        	return;
+        }
+        
+    	//Histogram list
+        final List histList = new ArrayList();        	
+        final Iterator iterHist = histogramList.iterator();
+        while (iterHist.hasNext()) {
+            final Histogram h = (Histogram) iterHist.next();
+            if (h.getArea() > 0) {
+            	histList.add(h);
+            }
+        }
+        
+        //Gate list
+        final List gateList = new ArrayList();
+        final Iterator it = Gate.getGateList().iterator();
+        while (it.hasNext()) {
+            final Gate gate = (Gate) (it.next());
+            Histogram histGate =gate.getHistogram();     
+            //Gate defined and
+            //Does the histogram List contain this gates histogram
+            if (gate.isDefined() && histList.contains(histGate)) {
+            	gateList.add(Gate.getGateList());
+            }
+        }
+        //Scaler list
+        final List scalerList = Scaler.getScalerList();
+
+        //Parameter list
+        final List parameterList = DataParameter.getParameterList();
+               
+         //Asyncronized write 
+         asyncWriteFile(file, histList, gateList, scalerList, parameterList);
     	
     }
     
