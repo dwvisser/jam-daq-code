@@ -20,6 +20,7 @@ public interface  DataIO {
      *	write out to a given file all options true
      *
      * @param file to write to
+     * @param histogramList list of hisotgrams to write
      */ 			        
     void writeFile(File file, List histogramList);
     
