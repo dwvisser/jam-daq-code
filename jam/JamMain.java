@@ -127,7 +127,6 @@ public class JamMain extends JFrame {
 		final JSplitPane splitCenter=new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 		true,display,console);
 		/*fraction of resize space that goes to display*/
-		splitCenter.setResizeWeight(0.5);
 		me.add(splitCenter,BorderLayout.CENTER);
 		/* create user command listener */
 		jamCommand = new JamCommand(this, display, broadcaster, 
@@ -165,6 +164,7 @@ public class JamMain extends JFrame {
 			public void run(){ 
 				pack();
 				selectBar.setChoosersToFirstItems();
+				splitCenter.setResizeWeight(0.5);
 				show();
 				/* print out where config files were read from */
 				jamProperties.setMessageHandler(console);
