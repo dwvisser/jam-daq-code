@@ -43,7 +43,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * 
      * see #readFile
      */
-    private static File lastValidFile;
+    private static File lastGoodFile;
 
     private static final Object LVF_MONITOR = new Object();
 
@@ -56,7 +56,7 @@ public class HDFIO implements DataIO, JamHDFFields {
     .unmodifiableList(new ArrayList());
     
     static {
-        lastValidFile = new File(PREFS.get(LAST_FILE_KEY, System
+        lastGoodFile = new File(PREFS.get(LAST_FILE_KEY, System
                 .getProperty("user.dir")));
     }
     
@@ -279,7 +279,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             synchronized (this) {
                 out = new HDFile(file, "rw");
             }
-            message.append("Saved " + file.getName() + " (");
+            message.append("Saved ").append(file.getName()).append(" (");
             out.addFileID(file.getPath());
             out.addFileNote();
             out.addMachineType();
@@ -304,7 +304,7 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             if (hasContents(gates)) {
                 addGateSection();
-                message.append(", "+gates.size()).append(" gates");
+                message.append(", ").append(gates.size()).append(" gates");
                 final Iterator temp = gates.iterator();
                 while (temp.hasNext()) {
                     addGate((Gate) (temp.next()));
@@ -314,13 +314,13 @@ public class HDFIO implements DataIO, JamHDFFields {
             }
             if (hasContents(scalers)) {
                 addScalerSection(scalers);
-                message.append(", "+scalers.size()).append(" scalers");
+                message.append(", ").append(scalers.size()).append(" scalers");
                 progress += scalers.size();
                 setProgress(pm, progress);
             }
             if (hasContents(parameters)) {
                 addParameterSection(parameters);
-                message.append(", "+parameters.size()).append(" parameters");
+                message.append(", ").append(parameters.size()).append(" parameters");
                 progress += parameters.size();
                 setProgress(pm, progress);
             }
@@ -1209,13 +1209,13 @@ public class HDFIO implements DataIO, JamHDFFields {
      */
     public static File getLastValidFile() {
         synchronized (LVF_MONITOR) {
-            return lastValidFile;
+            return lastGoodFile;
         }
     }
 
     private static void setLastValidFile(File f) {
         synchronized (LVF_MONITOR) {
-            lastValidFile = f;
+            lastGoodFile = f;
             PREFS.put(LAST_FILE_KEY, f.getAbsolutePath());
         }
     }
