@@ -122,12 +122,12 @@ final class ScientificData extends DataObject {
      * UnsupportedOperationException if this object doesn't represent 1d int
      * @throws IllegalStateException if the input mode isn't recognized
      */
-    int[] getData1d(RandomAccessFile file, int size) throws HDFException { //assumes
-                                                                           // int
-                                                                           // type!
+    int[] getData1d(RandomAccessFile file, int size) throws HDFException { 
+                                                                           
+                                                                           
         final byte[] localBytes;
         if (numberType != NumberType.INT || rank != 1) {
-            throw new UnsupportedOperationException(
+            throw new HDFException(
                     "getData1d called on wrong type of SD.");
         }
         switch (inputMode) {
@@ -161,9 +161,8 @@ final class ScientificData extends DataObject {
         return output;
     }
 
-    double[] getData1dD(RandomAccessFile file, int size) throws HDFException { //assumes
-                                                                               // int
-                                                                               // type!
+    double[] getData1dD(RandomAccessFile file, int size) throws HDFException { 
+                                                                                                                                                             
         double[] output;
         byte[] localBytes;
 
