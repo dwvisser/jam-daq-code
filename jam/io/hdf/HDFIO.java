@@ -884,8 +884,8 @@ public final class HDFIO implements DataIO, JamFileFields {
         List rval = new ArrayList();
         if (!HDFile.isHDFFile(infile)) {
             rval = Collections.EMPTY_LIST;
-            throw new HDFException("File:+ " + infile.getPath()
-                    + "is not an HDF file.");
+            throw new HDFException("File:" + infile.getPath()
+                    + " is not an HDF file.");
         }
         try {
             AbstractData.clearAll();

@@ -263,7 +263,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		
 			loadState=true;
 		}catch (HDFException hdfe){
-			msgHandler.errorOutln(hdfe.toString());
+			msgHandler.errorOutln(hdfe.getMessage());
 			loadState=false;
 		}
 		histList.clearSelection();
@@ -298,13 +298,9 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
             hdfio.readFile(FileOpenMode.OPEN, files[0], selectHistAttributes);
             /* Rename group */
             final Group fileGroup = Group.getGroup(file.getName());
-//            fileGroup.setName("Sum");
+
             Histogram.setZeroAll();
             hdfio.readFile(FileOpenMode.ADD, files, null, selectHistAttributes);
-            //while (iter.hasNext()) {
-            //	file = (File) iter.next();                
-            //}
-            /* Open multiple groups */
         } else {
             DataBase.getInstance().clearAllLists();
             hdfio.setListener(this);
