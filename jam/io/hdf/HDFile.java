@@ -76,7 +76,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 * @return the file on disk being accessed
 	 */
-	public File getFile() {
+	File getFile() {
 		return file;
 	}
 
@@ -93,12 +93,12 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @throws HDFException error with writing hdf file
 	 */
-	public void writeHeader() throws HDFException {
+	private void writeHeader() throws HDFException {
 		try {
 			seek(0);
 			writeInt(HDF_HEADER);
 		} catch (IOException e) {
-			throw new HDFException("Problem writing header: " + e.getMessage());
+			throw new HDFException("Problem writing HDF header.",e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * fields of the <code>DataObject</code>'s. To be run when all data
 	 * elements have been defined.
 	 */
-	public void setOffsets() {
+	void setOffsets() {
 		synchronized (this) {
 			DDblockSize = 2 + 4 + 12 * objectList.size();
 			/* numDD's + offset to next (always 0 here) + size*12 for
@@ -130,13 +130,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param	data	HDF data element
 	 * @exception   HDFException	    thrown if unrecoverable error occurs
 	 */
-	public void writeDataObject(DataObject data) throws HDFException {
+	private void writeDataObject(DataObject data) throws HDFException {
 		try {
 			seek(data.getOffset());
 			write(data.getBytes(), 0, data.getLength());
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem writing HDF data object" + e.getMessage());
+				"Problem writing HDF data object.",e);
 		}
 	}
 
@@ -148,7 +148,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @see jam.io.hdf.NumberType
 	 */
-	public void addNumberTypes() {
+	void addNumberTypes() {
 		synchronized (this){
 			intNT = new NumberType(this, NumberType.INT);
 			doubleNT = new NumberType(this, NumberType.DOUBLE);
@@ -161,21 +161,21 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @see JavaMachineType
 	 */
-	public void addMachineType() {
+	void addMachineType() {
 		new JavaMachineType(this);
 	}
 
 	/**
 	 * @return the double number type.
 	 */
-	public NumberType getDoubleType() {
+	NumberType getDoubleType() {
 		return doubleNT;
 	}
 
 	/**
 	 * @return the int number type.
 	 */
-	public NumberType getIntType() {
+	NumberType getIntType() {
 		return intNT;
 	}
 
@@ -193,7 +193,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * else lets object assign its own
 	 * @see	#setOffsets()
 	 */
-	public void addDataObject(DataObject data, boolean useFileDefault) {
+	void addDataObject(DataObject data, boolean useFileDefault) {
 		objectList.add(data);
 		final Short tag=data.getTagKey();
 		if (!tagMap.containsKey(tag)){
@@ -296,7 +296,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @exception HDFException unrecoverable errror
 	 */
-	public void writeDataDescriptorBlock() throws HDFException {
+	void writeDataDescriptorBlock() throws HDFException {
 		try {
 			synchronized(this){
 				DDblockSize = 2 + 4 + 12 * objectList.size();
@@ -316,7 +316,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			}
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem writing DD block: " + e.getMessage());
+				"Problem writing DD block.",e);
 		}
 	}
 
@@ -335,7 +335,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		while (temp.hasNext()) {
 			final DataObject ob = (DataObject) (temp.next());
 			if (ob.getLength() == 0){
-				throw new HDFException("DataObject with no length encountered, halted writing HDF File");
+				throw new HDFException("DataObject with no length encountered, halted writing HDF File.");
 			}
 			writeDataObject(ob);
 			progress++;
@@ -349,29 +349,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		}
 	}
 	
-	/**
-	 *
-	 *  @exception HDFException unrecoverable error
-	 */
-	public void printDDblock() throws HDFException {
-		try {
-			boolean doAgain = true;
-			seek(HDFconstants.HEAD_NBYTES);
-			do {
-				readShort(); //skip number of DD's
-				final int nextBlock = readInt();
-				if (nextBlock == 0) {
-					doAgain = false;
-				} else {
-					seek(nextBlock);
-				}
-			} while (doAgain);
-		} catch (IOException e) {
-			throw new HDFException(
-				"Problem printing DD block: " + e.getMessage());
-		}
-	}
-
 	/**
 	 * Reads file into set of DataObject's and sets their internal
 	 * variables.
@@ -454,7 +431,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			}
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem reading HDF objects: " + e.getMessage());
+				"Problem reading HDF objects.",e);
 		}
 	}
 
@@ -477,26 +454,17 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	}
 	
 	/**
-	 *  @exception HDFException unrecoverable error
+	 *  @exception IOException unrecoverable error
 	 */
-	protected void mark() throws HDFException {
-		try {
-			synchronized(this){
-				mark = getFilePointer();
-			}
-		} catch (IOException e) {
-			throw new HDFException(e.getMessage());
-		}
-	}
+	private synchronized void mark() throws IOException {
+            mark = getFilePointer();
+    }
+	
 	/**
-	 *  @exception HDFException unrecoverable error
+	 *  @exception IOException unrecoverable error
 	 */
-	protected void reset() throws HDFException {
-		try {
-			seek(mark);
-		} catch (IOException e) {
-			throw new HDFException(e.getMessage());
-		}
+	private synchronized void reset() throws IOException {
+		seek(mark);
 	}
 
 	/**
@@ -505,16 +473,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @param in the list to search
 	 * @param tagType the type to return
 	 */
-	public List ofType(Collection in, short tagType) {
-		/*final List output = new ArrayList();
-		final Iterator temp = in.iterator(); 
-		while ( temp.hasNext()) {
-			final DataObject ob = (DataObject) (temp.next());
-			if (ob.getTag() == tagType) {
-				output.add(ob);
-			}
-		}
-		return output;*/
+	List ofType(Collection in, short tagType) {
 		final Set ssin=new HashSet();
 		final Object temp=tagMap.get(new Short(tagType));
 		if (temp !=null){
@@ -525,22 +484,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		return new ArrayList(ssin);
 	}
 
-	/**
-	 * @return a list of all <code>DataObject</code>s in this file of the
-	 * same type as the passed instance
-	 * @param in example of the type to return 
-	 */
-	public List ofType(DataObject in) {
-		//return ofType(objectList, in.getTag());
-		final List rval=new ArrayList();
-		final Object temp=tagMap.get(in.getTagKey());
-		if (temp != null){
-			final Map refMap=(Map)temp;
-			rval.addAll(refMap.values());
-		}
-		return rval;
-	}
-	
 	/**
 	 * @return a list of all <code>DataObject</code>s in this file of the
 	 * given type
@@ -562,7 +505,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * 
 	 * @param ID file-id is based on this
 	 */
-	public void addFileID(String ID) {
+	void addFileID(String ID) {
 		new FileIdentifier(this, ID);
 	}
 	
@@ -574,7 +517,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * @throws IOException if there's a problem writing to the file
 	 * @see jam.global.JamProperties
 	 */
-	public void addFileNote() throws IOException {
+	void addFileNote() throws IOException {
 		final String noteAddition=
 			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
 				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
@@ -596,9 +539,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @return <code>true</code> if this file has a valid HDF magic word
 	 */
-	public boolean checkMagicWord() {
+	private boolean checkMagicWord() {
 		final HDFileFilter filter=new HDFileFilter(false);
-		return filter.accept(this.getFile());
+		return filter.accept(getFile());
 	}
 	
 	/**
