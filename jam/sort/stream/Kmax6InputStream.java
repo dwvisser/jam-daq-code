@@ -52,9 +52,11 @@ public class Kmax6InputStream extends EventInputStream {
         super(console);
     }
 
-    /** Reads an event from the input stream
+    /** 
+     * Reads an event from the input stream
      * Expects the stream position to be the beginning of an event.
      * It is up to the user to ensure this.
+     * 
      * @param input data array
      * @exception EventException thrown for errors in the event stream
      * @return status resulting after read attempt
