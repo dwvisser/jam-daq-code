@@ -43,7 +43,7 @@ public class OpenHDFCmd extends AbstractCommand implements Commandable {
 	 */
 	public void executeParse(String[] cmdTokens) {		
 		
-		if (cmdTokens==null) {
+		if (cmdTokens.length==0) {
 			execute(null);
 		}
 	}
