@@ -286,15 +286,6 @@ public class Display
 		}
 	}
 
-	/**
-	 * Display a gate.
-	 *
-	 * @param gate The gate to display.
-	 */
-	public void displayGate(Gate gate) {
-		currentPlot.displayGate(gate);
-	}
-
 	public void setRenderForPrinting(boolean rfp, PageFormat pf){
 		currentPlot.setRenderForPrinting(rfp,pf);
 	}
