@@ -4,11 +4,21 @@
     <property name="base.dir" value="." />
     <property name="build.dir" value="${user.home}/jambuild" />
     
-    <target name="prepare">
+    <target name="prepare" depends="clean">
         <mkdir dir="${build.dir}" />
     </target>
     
-    <target name="jar" depends="javadoc">
+    <target name="clean">
+    	<delete >
+    		<fileset
+    			dir="${base.dir}"
+    			includes="**\*.bak"
+    		/>
+    		</delete>
+    		<delete dir="${build.dir}"></delete>
+    </target>
+    
+    <target name="jar" >
         <jar jarfile="${build.dir}/Jam.jar"
             basedir="${base.dir}"
             excludes="*.xml,*.jardesc,*.jar,jam\**\*.java,jam\**\*.html,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
@@ -44,6 +54,6 @@
     </target>
 
     
-    <target name="all" depends="copy,jar,srcjar" />
+    <target name="all" depends="copy,javadoc,jar,srcjar" />
         
 </project>
