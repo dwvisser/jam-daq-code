@@ -35,6 +35,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 	private JamConsole jamConsole;
 	private MessageHandler msgHandler;
 	private FrontEndCommunication frontEnd;
+	final Broadcaster broadcaster;
 
 	private static final int FILE_TEXT_COLUMNS = 25;
 
@@ -119,7 +120,8 @@ class SetupSortOn implements ActionListener, ItemListener {
 		RunControl runControl,
 		DisplayCounters displayCounters,
 		FrontEndCommunication frontEnd,
-		JamConsole jamConsole) {
+		JamConsole jamConsole,
+		Broadcaster b) {
 		defaultName = JamProperties.getPropString(JamProperties.EXP_NAME);
 		defaultSortRoutine =
 			JamProperties.getPropString(JamProperties.SORT_ROUTINE);
@@ -164,6 +166,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		this.jamConsole = jamConsole;
 		this.msgHandler = jamConsole;
 		this.frontEnd = frontEnd;
+		broadcaster=b;
 		tapePathData = defaultTape;
 		d = new JDialog(jamMain, "Setup Online ", false);
 		LayoutManager verticalGrid = new GridLayout(0, 1, 5, 5);
@@ -240,8 +243,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				sortClassPath = getSortPath();
-				sortChoice.setModel(
-					new DefaultComboBoxModel(getSortClasses(sortClassPath)));
+				sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(sortClassPath)));
 				sortChoice.setSelectedIndex(0);
 				textSortPath.setText(sortClassPath.getAbsolutePath());
 			}
@@ -543,7 +545,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 							setupVME_Map();
 						}
 						lockMode(true);
-						jamMain.dataChanged();
+						broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
 						jamConsole.messageOutln(
 							"Setup data network, and Online sort daemons setup");
 					}
@@ -901,7 +903,7 @@ class SetupSortOn implements ActionListener, ItemListener {
 			specify.setEnabled(false);
 			defaultPath.setEnabled(false);
 		} else {
-			jamMain.setSortMode(JamMain.NO_ACQ);
+			jamMain.setSortMode(JamMain.NO_SORT);
 			checkLock.setEnabled(false);
 			textExpName.setEnabled(true);
 			inStreamChooser.setEnabled(true);

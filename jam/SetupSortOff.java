@@ -43,7 +43,7 @@ class SetupSortOff  implements ItemListener {
                         setupSort();      //create data areas and daemons
                         msgHandler.messageOutln("Daemons and dialogs initialized.");
                     }
-                    jamMain.dataChanged();
+					broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
                     if (bok.equals(ae.getSource())){
                     	d.dispose();
                     }
@@ -606,7 +606,7 @@ class SetupSortOff  implements ItemListener {
             }
             bbrowsef.setEnabled(false);
         } else{
-            jamMain.setSortMode(JamMain.NO_ACQ);
+            jamMain.setSortMode(JamMain.NO_SORT);
             bbrowsef.setEnabled(specify.isSelected());
         }
     }
