@@ -4,15 +4,16 @@ import jam.util.StringUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * A group of histograms, A node in the tree
  *  
  */
-public class Group {
+public final class Group {
 
     /**
      * Abstraction of Group type.
@@ -74,11 +75,12 @@ public class Group {
     /** Origonal group name */
     private String groupName;
     
-    /** Name of file that group belongs to */
+    /** Name of file that group belongs to. */
     private String fileName;
     
-    /** Name of file and group canotated */
+    /** Name of file and group concatenated. */
     private String fullName;
+    
     /** Type of group, file or sort */
     private Type type;
     
@@ -211,15 +213,25 @@ public class Group {
     }
     
     /**
-     * Set the name, used to rename group
+     * Set the name, used to rename group.
      * @param name
      * 			the new name of a group
+     * @throws DataException if an attempt is made to rename to an existing name
      */
-    public void setName(String name) {
+    public void setName(String name) throws DataException {
+        if (NAME_MAP.containsKey(name)){
+            throw new DataException("You may not rename to an existing name.");
+        }
     	NAME_MAP.remove(this.getName());
     	NAME_MAP.put(name, this);
-    	this.fullName = name;
+    	fullName = name;
+    	final Iterator iterator = getHistogramList().iterator();
+    	while (iterator.hasNext()){
+    	    final Histogram hist = (Histogram) iterator.next();
+    	    hist.updateNames(this);
+    	}
     }
+    
     /**
      * @return the name of this group
      */

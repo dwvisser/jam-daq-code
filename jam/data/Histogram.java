@@ -281,24 +281,11 @@ public abstract class Histogram {
 	static public Histogram createHistogram(Group group, Object array, String name) {
 		return createHistogram(group, array, name, name, null, null);
 	}
-	/**
-	 * Creates a new histogram, using the given array as the template.
-	 * 
-	 * @param array 1d or 2d int or double array
-	 * @param name unique identifier
-	 * @param title verbose description
-	 * @return a newly created histogram
-	 */
-	/* FIXME KBS now longer used, all create methods must have a group
-	static public Histogram createHistogram(Object array, String name,
-			String title) {
-		return createHistogram(null, array, name, title, null, null);
-	}
-	*/
 	
 	/**
 	 * Master constructor invoked by all other constructors.
 	 * 
+	 * @param group group this histogram belongs to
 	 * @param nameIn
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -326,10 +313,7 @@ public abstract class Histogram {
 		final Map groupHistMap =group.getHistogramMap();	
 		final StringUtilities stringUtil = StringUtilities.instance();
 		name=stringUtil.makeUniqueName(nameIn, groupHistMap.keySet(), NAME_LENGTH);
-		
-		/* Create the full histogram name with group name */		
-		groupName=group.getName();		
-		this.uniqueFullName = groupName+"/"+name;
+		updateNames(group);//puts in name map as well
 		/* Add to group */
 		group.addHistogram(this);
 		gates.clear();
@@ -343,14 +327,22 @@ public abstract class Histogram {
 			labelY = oneD ? Y_LABEL_1D : Y_LABEL_2D;
 		}
 		/* add to static lists */
-		NAME_MAP.put(uniqueFullName, this);
 		LIST.add(this);
 		DIM_LIST[type.getDimensionality() - 1].add(this);
+	}
+	
+	/* Create the full histogram name with group name. */		
+	final void updateNames(Group group){
+		groupName=group.getName();
+		NAME_MAP.remove(uniqueFullName);
+		uniqueFullName = groupName+"/"+name;
+		NAME_MAP.put(uniqueFullName, this);
 	}
 
 	/**
 	 * Contructor with no number given, but axis labels are given.
 	 * 
+	 * @param group group this histogram belongs to
 	 * @param nameIn
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -372,6 +364,7 @@ public abstract class Histogram {
 	/**
 	 * Contructor with no number given, but axis labels are given.
 	 * 
+	 * @param group group this histogram belongs to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -402,6 +395,7 @@ public abstract class Histogram {
 	/**
 	 * Contructor with no number given, but axis labels are given.
 	 * 
+	 * @param group group this histogram belongs to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -439,7 +433,7 @@ public abstract class Histogram {
 		clearList();
 		final Iterator iter = inHistList.iterator();
 		while (iter.hasNext()) { //loop for all histograms
-			Histogram hist = (Histogram) iter.next();
+			final Histogram hist = (Histogram) iter.next();
 			NAME_MAP.put(hist.getUniqueFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(new Integer(hist.getNumber()), hist);
@@ -475,18 +469,12 @@ public abstract class Histogram {
 	}
 
 	/**
-	 * @return list of all histograms sorted by name
-	 */
-	public static Collection getListSortedByName() {
-		return Collections.unmodifiableCollection(NAME_MAP.values());
-	}
-
-	/**
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
-		for (Iterator it = LIST.iterator(); it.hasNext();) {
-			final Histogram his = (Histogram) it.next();
+	    final Iterator iterator = LIST.iterator();	    
+		while (iterator.hasNext()) {
+			final Histogram his = (Histogram) iterator.next();
 			his.clearInfo();
 		}
 		LIST.clear();
@@ -512,7 +500,7 @@ public abstract class Histogram {
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
-				Group group=histogram.getGroup();
+				final Group group=histogram.getGroup();
 				group.removeHistogram(histogram);
 			}
 		}
@@ -538,37 +526,32 @@ public abstract class Histogram {
 	abstract void clearCounts();
 
 	/**
+	 * Get the histogram with the given name.
 	 * 
 	 * @param name
 	 *            name of histogram to retrieve
 	 * @return the histogram with the given name, null if name doesn't exist.
 	 */
 	public static Histogram getHistogram(final String name) {
-		final Histogram rval;//default return value
-		if (name != null) {
-		    final String refer;
-		    if (name.indexOf('/')<0){
-		    	//FIXME KBS
-		        //refer = Group.getCurrentGroup().getName()+'/'+name;
-		        refer=name;
-		    } else {
-		        refer=name;
-		    }
-			/* get() will return null if key not in table */
-			rval = (Histogram) NAME_MAP.get(refer);
-		} else {
-		    rval =null;
-		}
-		return rval;
-	}
+        final Histogram rval;//default return value
+        if (name == null) {
+            rval = null;
+        } else {
+            //FIXME KBS
+            //refer = Group.getCurrentGroup().getName()+'/'+name;
+            /* get() will return null if key not in table */
+            rval = (Histogram) NAME_MAP.get(name);
+        }
+        return rval;
+    }
 
 	/**
-	 * Get the histogram with the given number.
-	 * 
-	 * @param num
-	 *            of the histogram
-	 * @return the histogram, if it exists, null otherwise
-	 */
+     * Get the histogram with the given number.
+     * 
+     * @param num
+     *            of the histogram
+     * @return the histogram, if it exists, null otherwise
+     */
 	public static Histogram getHistogram(int num) {
 		return (Histogram) NUMBER_MAP.get(new Integer(num));
 	}
@@ -581,8 +564,7 @@ public abstract class Histogram {
 	 * @return the Group
 	 */	
 	public Group getGroup() {
-		Group group=Group.getGroup(groupName);
-		return group;	
+		return Group.getGroup(groupName);
 	}
 
 	/**
