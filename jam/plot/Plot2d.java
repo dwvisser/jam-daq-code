@@ -512,6 +512,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
                     + r.height);
             /* now do conversion */
             r.setBounds(graph.getRectangleOutline2d(p1, p2));
+            r.width+=1;
+            r.height+=1;
             return r;
         }
         /*

@@ -524,8 +524,10 @@ final class Plot1d extends AbstractPlot {
         if (shapeInChannelCoords) {//shape is in channel coordinates
             /* add one more plot channel around the edges */
             /* now do conversion */
-            rval.setBounds(graph.getRectangleOutline1d(rval.x - 2, (int) rval
+            rval.setBounds(graph.getRectangleOutline1d(rval.x -2, (int) rval
                     .getMaxX() + 2));
+            rval.width+=1;
+            rval.height+=1;
         } else {
             /*
              * Shape is in view coordinates. Recursively call back with a
