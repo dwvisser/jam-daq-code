@@ -45,12 +45,14 @@ public abstract class AbstractHist1D extends Histogram {
 		unsetErrors();
 	}
 	
+	private static final double [] NO_ERRORS=new double[0];
+	
 	/**
 	 * Make it so no error bars are <em>explicitly</em> defined
 	 * for this histogram.
 	 */
 	protected synchronized final void unsetErrors(){
-		errors=null;
+		errors=NO_ERRORS;
 		errorsSet=false;
 	}
 	
@@ -98,7 +100,7 @@ public abstract class AbstractHist1D extends Histogram {
 		if (getType() == Type.ONE_D_DOUBLE) {
 			histArray = (double [])getCounts();
 		} else if (getType() == Type.ONE_DIM_INT) { //INT type
-			int[] temp = (int [])getCounts();
+			final int[] temp = (int [])getCounts();
 			histArray = new double[temp.length];
 			for (int i = 0; i < temp.length; i++) {
 				histArray[i] = temp[i];
@@ -107,7 +109,7 @@ public abstract class AbstractHist1D extends Histogram {
 			throw new UnsupportedOperationException(
 					"findPeaks() called on 2D hist");
 		}
-		double[] posn = PeakFinder.getCentroids(histArray, sensitivity, width);
+		final double[] posn = PeakFinder.getCentroids(histArray, sensitivity, width);
 		double[][] rval = new double[3][posn.length];
 		if (cal && this.isCalibrated()) {
 			for (int i = 0; i < posn.length; i++) {
@@ -181,7 +183,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 * 
 	 * @return <code>true</code> if a calibration function has been defined,
 	 *         <code>false</code> if not
-	 * @see #setCalibration(CalibrationFunction)
+	 * @see #setCalibration(AbstractCalibrationFunction)
 	 */
 	public synchronized boolean isCalibrated() {
 		return (calibFunc != null);
