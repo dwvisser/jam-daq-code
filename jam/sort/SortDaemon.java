@@ -4,6 +4,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.MessageHandler;
+import jam.global.SortMode;
 import jam.sort.stream.EventInputStatus;
 import jam.sort.stream.EventInputStream;
 
@@ -22,16 +23,6 @@ import jam.sort.stream.EventInputStream;
 public class SortDaemon extends GoodThread {
 
 	/**
-	 * Mode setting if sorting online.
-	 */
-	final public static int ONLINE = 0;
-
-	/**
-	 * Mode setting if sorting offline.
-	 */
-	final public static int OFFLINE = 1;
-
-	/**
 	 * Number of events to occur before updating counters.
 	 */
 	private final static int COUNT_UPDATE = 1000;
@@ -41,7 +32,6 @@ public class SortDaemon extends GoodThread {
 	 */
 	final static int BUFFER_SIZE = 8 * 1024;
 
-	//handles to classes
 	private final Controller controller;
 
 	private final MessageHandler msgHandler;
@@ -53,28 +43,18 @@ public class SortDaemon extends GoodThread {
 	/**
 	 * mode offline or online
 	 */
-	int mode;
+	private SortMode mode;
+
+	private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 
 	/**
-	 * Used in offline only, whether to send events to an output file
-	 */
-	private boolean observed = false;
-
-	private Broadcaster broadcaster;
-
-	/**
-	 * Used for online only, ringbuffer buffers input from network
+	 * Used for online only, holds data buffers from network.
 	 */
 	private RingBuffer ringBuffer;
 
-	/**
-	 * class to convert input array to stream
-	 */
-	private RingInputStream ringInputStream;
-
 	private byte[] buffer;
 
-	//event information
+	/* event information */ 
 	private int eventSize;
 
 	private int[] eventData;
@@ -86,8 +66,6 @@ public class SortDaemon extends GoodThread {
 	private int eventSortedCount;
 
 	private int bufferCount;
-
-	//private static final boolean sortLoop=true;
 
 	/**
 	 * Creates a new <code>SortDaemon</code> process.
@@ -113,17 +91,13 @@ public class SortDaemon extends GoodThread {
 	 * @param eventSize
 	 *            number of parameters per event
 	 */
-	public void setup(int mode, EventInputStream eventInputStream, int eventSize) {
+	public void setup(SortMode mode, EventInputStream eventInputStream, int eventSize) {
 		this.mode = mode;
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);
 		/* Set the event size for the stream. */
 		eventInputStream.setEventSize(eventSize);
 		setEventCount(0);
-		if (mode == ONLINE) {
-			ringInputStream = new RingInputStream();//input stream converts
-			// array to stream
-		}
 		setPriority(ThreadPriorities.SORT);
 		setDaemon(true);
 	}
@@ -190,29 +164,11 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Sets this object to observe broadcasted messages.
-	 * 
-	 * @param bc
-	 *            the message sender
-	 */
-	public void setObserver(Broadcaster bc) {
-		observed = true;
-		broadcaster = bc;
-	}
-
-	/**
-	 * Stop receiving broadcasts.
-	 */
-	public void removeObserver() {
-		observed = false;
-	}
-
-	/**
 	 * Reads events from the event stream.
 	 */
 	public void run() {
 		try {
-			if (mode == ONLINE) {//which type of sort to do
+			if (mode.isOnline()) {//which type of sort to do
 				sortOnline();
 			} else {
 				sortOffline();
@@ -231,6 +187,7 @@ public class SortDaemon extends GoodThread {
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
 	public void sortOnline() throws Exception {
+		final RingInputStream ringInputStream=new RingInputStream();
 		while (true) { //loop while acquisition on
 			controller.atSortStart(); //does nothing for online
 			/* Get a new buffer and make an input stream out of it. */
@@ -252,11 +209,11 @@ public class SortDaemon extends GoodThread {
 						incrementSortedCount();
 					}
 					incrementEventCount();
-					//zero event array and get ready for next event
+					/* Zero event array and get ready for next event. */
 					System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
 				} //else SCALER_VALUE, assume sort stream took care and move on
 			}
-			//we have reached the end of a buffer
+			/* We have reached the end of a buffer. */
 			if (status == EventInputStatus.END_BUFFER) {
 				incrementBufferCount();
 				yield();
@@ -402,12 +359,10 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * update the counters display
+	 * Update the counters display.
 	 */
 	private void updateCounters() {
-		if (observed) {
-			broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
-		}
+		broadcaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
 	}
 
 	/**
