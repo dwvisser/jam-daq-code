@@ -1,9 +1,3 @@
-/*
- * Created on Apr 12, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package jam.sort;
 
 /**
@@ -31,26 +25,26 @@ public interface ThreadPriorities {
 	 * while this may seem like I/O, the arrival of a data packet
 	 * is an important <em>event</em> that must be handled ASAP.
 	 */
-	final int NET = 9;
+	int NET = 9;
 
 	/**
 	 * Priority value for <code>jam.VMECommunication</code>. Messages
 	 * from the VME are also events, but of a lower priority than
 	 * data packets.
 	 */
-	final int MESSAGING = 7;
+	int MESSAGING = 7;
 
 	/**
 	 * Priority value for <code>jam.sort.StorageDaemon</code>, a 
 	 * relatively high priority thread for writing event data to 
 	 * disk.
 	 */
-	final int STORAGE = 6;
+	int STORAGE = 6;
 	
 	/**
 	 * Priority value for <code>jam.sort.SortDaemon</code>, which
 	 * qualifies as background computation.
 	 */
-	final int SORT = 3;
+	int SORT = 3;
 	
 }
