@@ -679,75 +679,6 @@ public class HDFIO implements DataIO, JamHDFFields {
     }
 
     /**
-     * Add the virtual group representing a single histogram, and link it into
-     * the virtual group representing all histograms.
-     * 
-     * @param hist
-     *            the histogram to add
-     * @see #addHistogramSection()
-     * @exception HDFException
-     *                thrown if unrecoverable error occurs
-     */
-    protected void addHistogram(Histogram hist) throws HDFException {
-        ScientificData sciData;
-        final VirtualGroup temp = new VirtualGroup(hist.getName(),
-                HIST_TYPE_NAME);
-        allHistogramsGroup.addDataObject(temp); //add to Histogram section vGroup
-        new DataIDLabel(temp, hist.getName());
-        /* vGroup label is Histogram name */
-        new DataIDAnnotation(temp, hist.getTitle());
-        /* vGroup Annotation is Histogram title */
-        final NumericalDataGroup ndg = new NumericalDataGroup();
-        /* NDG to contain data */
-        new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
-        /* make the NDG label the histogram number */
-        temp.addDataObject(ndg);
-        /* add to specific histogram vGroup (other info maybe later) */
-        final ScientificDataDimension sdd = getSDD(hist);
-        ndg.addDataObject(sdd); //use new SDD
-        temp.addDataObject(sdd); //use new SDD
-        final Histogram.Type type = hist.getType();
-        if (type == Histogram.Type.ONE_DIM_INT) {
-            final AbstractHist1D hist1d = (AbstractHist1D) hist;
-            sciData = new ScientificData((int[]) hist.getCounts());
-            if (hist1d.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup();
-                new DataIDLabel(ndgErr, ERROR_LABEL);
-                temp.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = getSDD(hist,
-                        NumberType.DOUBLE);
-                /* explicitly floating point */
-                ndgErr.addDataObject(sddErr);
-                temp.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(hist1d.getErrors());
-                ndgErr.addDataObject(sdErr);
-                temp.addDataObject(sdErr);
-            }
-        } else if (type == Histogram.Type.ONE_D_DOUBLE) {
-            final AbstractHist1D h1 = (AbstractHist1D) hist;
-            sciData = new ScientificData((double[]) hist.getCounts());
-            if (h1.errorsSet()) {
-                NumericalDataGroup ndgErr = new NumericalDataGroup();
-                new DataIDLabel(ndgErr, ERROR_LABEL);
-                temp.addDataObject(ndgErr);
-                ScientificDataDimension sddErr = sdd;
-                /* explicitly floating point */
-                ndgErr.addDataObject(sddErr);
-                ScientificData sdErr = new ScientificData(h1.getErrors());
-                ndgErr.addDataObject(sdErr);
-                temp.addDataObject(sdErr);
-            }
-        } else if (type == Histogram.Type.TWO_DIM_INT) {
-            sciData = new ScientificData((int[][]) hist.getCounts());
-        } else if (type == Histogram.Type.TWO_D_DOUBLE) {
-            sciData = new ScientificData((double[][]) hist.getCounts());
-        } else {
-            throw new IllegalArgumentException(
-                    "HDFIO encountered a Histogram of unknown type.");
-        }
-        ndg.addDataObject(sciData);
-        temp.addDataObject(sciData);
-    }
 
     /**
      * looks for the special Histogram section and reads the data into memory.
@@ -953,63 +884,6 @@ public class HDFIO implements DataIO, JamHDFFields {
         new DataIDLabel(allGatesGroup, GATE_SECTION_NAME);
     }
 
-    /**
-     * Add the virtual group representing a single gate, and link it into the
-     * virtual group representing all gates.
-     * 
-     * @param g
-     *            the gate to add
-     * @see #addGateSection()
-     * @exception HDFException
-     *                thrown if unrecoverable error occurs
-     */
-    protected void addGate(Gate g) throws HDFException {
-        String gateType = GATE_1D_TYPE_NAME;
-        int size = 1;
-        String[] names = GATE_2D_NAMES;
-        int[] x = new int[0];
-        int[] y = new int[0];
-        final short[] types = { VdataDescription.DFNT_INT32,
-                VdataDescription.DFNT_INT32 };
-        final short[] orders = { 1, 1 };
-        final String name = g.getName();
-        if (g.getDimensionality() == 1) {
-            names = GATE_1D_NAMES;
-        } else { //2d
-            gateType = GATE_2D_TYPE_NAME;
-            size = g.getBananaGate().npoints;
-            x = g.getBananaGate().xpoints;
-            y = g.getBananaGate().ypoints;
-        }
-        /* get the VG for the current gate */
-        final VirtualGroup vg = new VirtualGroup(name, gateType);
-        allGatesGroup.addDataObject(vg); //add to Gate section vGroup
-        final VdataDescription desc = new VdataDescription(name, gateType,
-                size, names, types, orders);
-        final Vdata data = new Vdata(desc);
-        vg.addDataObject(data); //add vData to gate VG
-        vg.addDataObject(desc); //add vData description to gate VG
-
-        if (g.getDimensionality() == 1) {
-            data.addInteger(0, 0, g.getLimits1d()[0]);
-            data.addInteger(1, 0, g.getLimits1d()[1]);
-        } else { //2d
-            for (int i = 0; i < size; i++) {
-                data.addInteger(0, i, x[i]);
-                data.addInteger(1, i, y[i]);
-            }
-        }
-        data.refreshBytes();
-        /* add Histogram links... */
-        final VirtualGroup hist = VirtualGroup.ofName(DataObject
-                .ofType(DataObject.DFTAG_VG), g.getHistogram().getName());
-        /* add name as note to vg */
-        new DataIDAnnotation(vg, g.getHistogram().getName());
-        if (hist != null) {
-            hist.addDataObject(vg);
-            //reference the Histogram in the gate group
-        }
-    }
 
     /*
      * non-javadoc: Retrieve the gates from the file.

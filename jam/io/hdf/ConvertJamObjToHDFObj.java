@@ -95,7 +95,13 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
 
 	}
 	
-	
+    /**
+     * Converts a gate to a Virtual group
+     * @param g
+     *            the gate to convert
+     * @exception HDFException
+     *                thrown if unrecoverable error occurs
+     */	
 	VirtualGroup convertGate(Gate gate) throws HDFException {	
         String gateType;
         String[] columnNames;        
@@ -148,7 +154,14 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
         }        
         return vggate;		
 	}
-	
+
+    /**
+     * Converts a scaler to a Virtual group
+     * @param list
+     *            the list to convert
+     * @exception HDFException
+     *                thrown if unrecoverable error occurs
+     */		
 	VirtualGroup convertScalers(List scalers) throws HDFException {
         final StringUtilities su = StringUtilities.instance();
         final short[] types = { VdataDescription.DFNT_INT32,
@@ -188,7 +201,20 @@ public class ConvertJamObjToHDFObj implements JamHDFFields{
         return scalerGroup;
 
 	}
-	
+	/* FIXME KBS
+	Vdata convertScaler(Scaler scaler) {
+		
+        final Vdata data = new Vdata(desc);
+		return data;
+	}
+	*/
+    /**
+     * Converts a parameters to a Virtual group
+     * @param list
+     *            the list to convert
+     * @exception HDFException
+     *                thrown if unrecoverable error occurs
+     */		
 	VirtualGroup convertParameters(List parameters) throws HDFException {	
 	    final short[] types = { VdataDescription.DFNT_CHAR8,
 	            VdataDescription.DFNT_FLT32 };
