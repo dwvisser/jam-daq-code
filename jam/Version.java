@@ -7,11 +7,15 @@ package jam;
  * @version 30 Dec 2003
  */
 public final class Version {
+	
+	/* When building, And replaces the version fields with the right
+	 * values. */
+	
 	/**
 	 * Increments only for changes which impact backward and/or 
 	 * forward compatibility in a big way. 
 	 */
-	public static final int MAJOR=1;
+	public static final String MAJOR="@MAJOR@";
 	
 	/**
 	 * Incremented whenever work starts on new features to be
@@ -20,13 +24,13 @@ public final class Version {
 	 * etc. may go into the current release without committing
 	 * users to the new, untested stuff yet.
 	 */
-	public static final int MINOR=5;
+	public static final String MINOR="@MINOR@";
 	
 	/**
 	 * Incremented every time a bugfix or patch is performed for
 	 * release back to the users. 
 	 */
-	public static final int SUBMINOR=0;
+	public static final String SUBMINOR="@SUBMINOR@";
 	
 	public static final String PLATFORM=System.getProperty("os.name");
 		
@@ -42,5 +46,6 @@ public final class Version {
 	static public String getName(){
 		return NAME.toString();
 	}
+	
 
 }
