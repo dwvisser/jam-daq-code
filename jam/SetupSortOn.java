@@ -133,7 +133,7 @@ class SetupSortOn implements ActionListener, ItemListener {
     public SetupSortOn(JamMain jamMain , RunControl runControl, DisplayCounters displayCounters,
     FrontEndCommunication frontEnd, JamConsole jamConsole ) {
         defaultName   =JamProperties.getPropString(JamProperties.EXP_NAME);
-        defaultSort   =JamProperties.getPropString(JamProperties.SORT_CLASS);
+        defaultSort   =JamProperties.getPropString(JamProperties.SORT_ROUTINE);
         defaultEventInStream=JamProperties.getPropString(JamProperties.EVENT_INSTREAM);
         defaultEventOutStream=JamProperties.getPropString(JamProperties.EVENT_OUTSTREAM);
         defaultEvents =JamProperties.getPropString(JamProperties.EVENT_OUTPATH);
