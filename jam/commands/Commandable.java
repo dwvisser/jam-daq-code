@@ -2,13 +2,15 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 import jam.global.MessageHandler;
+
+import javax.swing.Action;
 /**
  * Interface for a command.
  *  
  * @author Ken Swartz
  *
  */
-public interface Commandable {
+public interface Commandable extends Action {
 
 	/**
 	 * References needed for commands. Commands have null constructors

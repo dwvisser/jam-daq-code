@@ -5,12 +5,16 @@ import jam.global.CommandListenerException;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
 /**
  * Base class for commands
  * 
  * @author Ken
  */
-public abstract class AbstractCommand implements Commandable {
+public abstract class AbstractCommand extends AbstractAction implements Commandable {
 
 	protected final JamStatus status=JamStatus.instance();
 	protected final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
@@ -20,7 +24,7 @@ public abstract class AbstractCommand implements Commandable {
 	 * Constructor
 	 *
 	 */
-	public AbstractCommand(){
+	AbstractCommand(){
 		super();	
 	}
 	
@@ -31,8 +35,16 @@ public abstract class AbstractCommand implements Commandable {
 	 * @param msghdlr
 	 * @param broadcaster
 	 */
-	public void init(MessageHandler msghdlr) {
-		this.msghdlr=msghdlr;
+	public void init(MessageHandler mh) {
+		msghdlr=mh;
+	}
+	
+	public void actionPerformed(ActionEvent ae){
+		try{
+			performCommand(null);
+		} catch(CommandException e){
+			msghdlr.errorOutln(e.toString());
+		}
 	}
 	
 	/**

@@ -5,9 +5,12 @@ import jam.global.CommandListenerException;
 import jam.global.CommandNames;
 import jam.global.MessageHandler;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.Action;
+
 /**
  * Class to create commands and execute them
  *
@@ -17,7 +20,7 @@ public class JamCmdManager implements CommandListener {
 
 	private final MessageHandler msghdlr;
 
-	private static final Map cmdMap = new HashMap();
+	private static final Map cmdMap = Collections.synchronizedMap(new HashMap());
 	/* initializer block for map */
 	static {
 		cmdMap.put(CommandNames.OPEN_HDF, OpenHDFCmd.class);
@@ -32,8 +35,12 @@ public class JamCmdManager implements CommandListener {
 		cmdMap.put(CommandNames.DISPLAY_SCALERS, ShowDialogScalersCmd.class);
 		cmdMap.put(CommandNames.SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
 		cmdMap.put(CommandNames.SCALERS, ScalersCmd.class);
-		cmdMap.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);		
+		cmdMap.put(CommandNames.EXPORT_TEXT, ExportTextFileCmd.class);
+		cmdMap.put(CommandNames.EXPORT_DAMM, ExportDamm.class);
+		cmdMap.put(CommandNames.EXPORT_SPE, ExportRadware.class);		
 	}
+	
+	private static final Map instances=Collections.synchronizedMap(new HashMap());
 
 	private Commandable currentCommand;
 
@@ -47,16 +54,7 @@ public class JamCmdManager implements CommandListener {
 	public JamCmdManager(MessageHandler msghdlr) {
 		this.msghdlr = msghdlr;
 	}
-	/**
-	 * Create a new Action command
-	 * 
-	 * @param actionName action name as in CommandNames
-	 * @return Action object
-	 */
-	public Action getAction(String actionName){
-		createCmd(actionName);
-		return  (Action)currentCommand;
-	}
+
 	/**
 	 * Perform command with object parameters
 	 *
@@ -67,8 +65,10 @@ public class JamCmdManager implements CommandListener {
 		throws CommandException {
 		boolean success=false;
 		if (createCmd(strCmd)) {
-			currentCommand.performCommand(cmdParams);
-			success= true;
+			if (currentCommand.isEnabled()){
+				currentCommand.performCommand(cmdParams);
+				success= true;
+			}
 		}
 		return success;
 	}
@@ -83,33 +83,48 @@ public class JamCmdManager implements CommandListener {
 		throws CommandListenerException {
 		boolean success=false;
 		if (createCmd(strCmd)) {
-			currentCommand.performParseCommand(strCmdParams);
-			success=true;
+			if (currentCommand.isEnabled()){
+				currentCommand.performParseCommand(strCmdParams);
+				success=true;
+			}
 		} 
 		return success;
 	}
 	
 	/**
-	 * Create a command class given a key string
+	 * See if we have the instance created, create it if necessary,
+	 * and return whether it was successfully created. 
+	 * 
 	 * @param strCmd name of the command
 	 * @return <code>true</code> if successful, <code>false</code> if 
 	 * the given command doesn't exist
 	 */
 	private boolean createCmd(String strCmd)  {
 		final boolean exists=cmdMap.containsKey(strCmd);
+		//boolean success;
 		if (exists) {
 			final Class cmdClass = (Class)cmdMap.get(strCmd);
 			currentCommand = null;
-			try {
-				currentCommand = (Commandable) (cmdClass.newInstance());
-				currentCommand.init(msghdlr);
-			} catch (Exception e) {
-				/* There was a problem resolving the command class or 
-				 * with creating an instance. This should never happen
-				 * if exists==true. */
-				throw new RuntimeException(e);
+			final boolean created=instances.containsKey(strCmd);
+			if (created){
+				currentCommand=(Commandable) instances.get(strCmd);
+			} else {
+				try {
+					currentCommand = (Commandable) (cmdClass.newInstance());
+					currentCommand.init(msghdlr);
+				} catch (Exception e) {
+					/* There was a problem resolving the command class or 
+					 * with creating an instance. This should never happen
+					 * if exists==true. */
+					throw new RuntimeException(e);
+				}
+				instances.put(strCmd,currentCommand);
 			}
 		}
 		return exists;
+	}
+	
+	public Action getAction(String strCmd){
+		return createCmd(strCmd) ? currentCommand : null;
 	}
 }
