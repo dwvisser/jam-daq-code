@@ -7,7 +7,6 @@ import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
@@ -77,8 +76,6 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	private final DisplayCounters displayCounters;
 
 	private final JamConsole jamConsole;
-
-	private final MessageHandler msgHandler;
 
 	private final FrontEndCommunication frontEnd;
 
@@ -182,7 +179,6 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		runControl = RunControl.getSingletonInstance();
 		displayCounters = DisplayCounters.getSingletonInstance();
 		jamConsole = jc;
-		msgHandler = jc;
 		frontEnd = status.getFrontEndCommunication();
 		frame = status.getFrame();
 		setResizable(false);
@@ -266,8 +262,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 				}
 			}
 		});
-
-		//Class path text
+		/* Class path text */
 		textSortPath = new JTextField(defaultSortPath);
 		textSortPath
 				.setToolTipText("Use Browse button to change. \nMay fail if classes have unresolvable references."
@@ -275,7 +270,6 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		textSortPath.setColumns(35);
 		textSortPath.setEditable(false);
 		pEntries.add(textSortPath);
-
 		/* Sort classes chooser */
 		sortChoice = new JComboBox();
 		final java.util.List sortClassList = setChooserDefault(useDefaultPath);
@@ -295,8 +289,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			}
 		}
 		pEntries.add(sortChoice);
-
-		// Input stream classes
+		/* Input stream classes */
 		Set lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
 				EventInputStream.class, false));
 		lhs.remove(EventInputStream.class);
@@ -314,8 +307,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 			}
 		}
 		pEntries.add(inStreamChooser);
-
-		//Output stream classes
+		/* Output stream classes */
 		lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
 				EventOutputStream.class, false));
 		lhs.remove(EventOutputStream.class);
@@ -524,7 +516,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 				dispose();
 			}
 		} catch (SortException je) {
-			msgHandler.errorOutln(je.getMessage());
+			jamConsole.errorOutln(je.getMessage());
 		} catch (JamException je) {
 			jamConsole.errorOutln(je.getMessage());
 		} catch (Exception e) {
@@ -537,9 +529,9 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		if (item == checkLock) {
 			if (!checkLock.isSelected()) {
 				try {
-					//kill daemons, clear data areas
+					/* kill daemons, clear data areas */
 					resetAcq(true);
-					//unlock sort mode
+					/* unlock sort mode */
 					lockMode(false);
 					jamConsole.closeLogFile();
 				} catch (Exception e) {
@@ -583,6 +575,9 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 	 * Load and instantize the sort file.
 	 */
 	private void loadSorter() throws JamException {
+		if (sortClass==null){
+			sortClass=(Class)sortChoice.getSelectedItem();
+		}
 		try { // create sort class
 			if (specify.isSelected()) {
 				/* We call loadClass() in order to guarantee latest version. */
@@ -625,7 +620,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		try { //create new event input stream class
 			eventInputStream = (EventInputStream) ((Class) inStreamChooser
 					.getSelectedItem()).newInstance();
-			eventInputStream.setConsole(msgHandler);
+			eventInputStream.setConsole(jamConsole);
 		} catch (InstantiationException ie) {
 			//            eventInputStream=null;
 			ie.printStackTrace();
@@ -654,7 +649,7 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 					+ outStreamChooser.getSelectedItem());
 		}
 		//create sorter daemon
-		sortDaemon = new SortDaemon(runControl, msgHandler);
+		sortDaemon = new SortDaemon(runControl, jamConsole);
 		final boolean useDisk=cdisk.isSelected();
 		final SortMode sortmode = useDisk ? SortMode.ONLINE_DISK
 				: SortMode.ONLINE_NO_DISK;
@@ -664,12 +659,12 @@ public final class SetupSortOn extends JDialog implements ActionListener,
 		sortDaemon.setSortRoutine(sortRoutine);
 		//create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
-			diskDaemon = new DiskDaemon(runControl, msgHandler);
+			diskDaemon = new DiskDaemon(runControl, jamConsole);
 			diskDaemon.setupOn(eventInputStream, eventOutputStream);
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, msgHandler,
+		netDaemon = new NetDaemon(sortingRing, storageRing, jamConsole,
 				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
 				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
 		/* Tell control about everything. */

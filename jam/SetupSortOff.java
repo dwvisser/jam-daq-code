@@ -386,6 +386,9 @@ public final class SetupSortOff extends JDialog implements ItemListener {
      * @throws JamException if there's a problem
      */
     private void loadSorter() throws JamException {
+    	if (sortClass==null){
+    		sortClass=(Class)sortChoice.getSelectedItem();
+    	}
         try {
         	if (specify.isSelected()){
         		/* we call loadClass() in order to guarantee latest version */
