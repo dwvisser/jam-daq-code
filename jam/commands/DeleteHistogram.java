@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
@@ -38,10 +39,16 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		final JFrame frame =status.getFrame();
 		final Histogram hist=status.getCurrentHistogram();
 		String name =hist.getFullName();
-		if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
-		"Delete "+name.trim()+"?","Delete histogram",JOptionPane.YES_NO_OPTION)){
-			Histogram.deleteHistogram(hist.getUniqueFullName());
-			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		Group group=hist.getGroup();	
+		//Cannot delete sort histograms
+		if (group.getType()== Group.Type.SORT) {
+			msghdlr.errorOutln("Cannot delete '"+name.trim()+"', it is sort histogram.");
+		} else {
+			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
+					"Delete "+name.trim()+"?","Delete histogram",JOptionPane.YES_NO_OPTION)){
+				Histogram.deleteHistogram(hist.getUniqueFullName());
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+			}
 		}
 		
 	}
@@ -58,8 +65,6 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 
 	private final void enable() {
 		final SortMode mode=status.getSortMode();
-		setEnabled((!histogramList.isEmpty()) && 
-		(mode==SortMode.FILE || mode==SortMode.NO_SORT));
 	}
 
 }

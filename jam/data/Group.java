@@ -204,6 +204,15 @@ public class Group {
         histogramList.add(hist);
         histogramMap.put(hist.getUniqueFullName(), hist);
     }
+    /**
+     * Remove a histogram from the group
+     * 
+     * @param hist
+     */
+    public void removeHistogram(Histogram hist) {
+        histogramList.remove(hist);
+        histogramMap.remove(hist.getUniqueFullName());
+    }
 
     /**
      * @return the name of this group

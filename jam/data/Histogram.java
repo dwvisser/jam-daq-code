@@ -197,8 +197,10 @@ public abstract class Histogram {
 	private transient String name; 
 	/**	unique name amongst all histograms */
 	private transient String uniqueFullName; 
-	
-	private int number; //histogram number
+	/**Name of group histogram belongs to */
+	private String groupName;
+	/** Number of histogram */
+	private int number; 
 
 	private transient Type type; //one or two dimension
 
@@ -245,7 +247,7 @@ public abstract class Histogram {
 		final Map groupHistMap =currentGroup.getHistogramMap();		
 		name=makeUniqueName(nameIn, groupHistMap);
 		/* Create the full histogram name with group name */
-		String groupName=currentGroup.getName();		
+		groupName=currentGroup.getName();		
 		this.uniqueFullName = groupName+"/"+nameIn;
 		/* Add to group */
 		currentGroup.addHistogram(this);
@@ -508,6 +510,8 @@ public abstract class Histogram {
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
+				Group group=histogram.getGroup();
+				group.removeHistogram(histogram);
 			}
 		}
 		System.gc();
@@ -556,9 +560,18 @@ public abstract class Histogram {
 	public static Histogram getHistogram(int num) {
 		return (Histogram) NUMBER_MAP.get(new Integer(num));
 	}
-
+	
 	/* instantized methods */
-
+	
+	/**
+	 * Get the group this histograms belongs to.
+	 * 
+	 * @return the Group
+	 */	
+	public Group getGroup() {
+		Group group=Group.getGroup(groupName);
+		return group;	
+	}
 	/**
 	 * Returns the histogram title.
 	 * 
