@@ -17,7 +17,7 @@ package jam.sort;
  *
  * @author	Ken Swartz
  */
-public class RingInputStream extends java.io.InputStream {
+public final class RingInputStream extends java.io.InputStream {
 
 	/**
 	 * The buffer where data is stored.
@@ -40,8 +40,8 @@ public class RingInputStream extends java.io.InputStream {
 	 * @param bufferIn	the input buffer (not copied)     
 	 */
 	public void setBuffer(byte[] bufferIn) {
-		this.buf = bufferIn;
-		this.pos = 0;
+		buf = bufferIn;
+		pos = 0;
 		count = bufferIn.length;
 	}
 
