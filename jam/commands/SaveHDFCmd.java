@@ -38,6 +38,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
 	protected void execute(Object[] cmdParams) {
+		//No command options used
 		final JFrame frame = STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		final File file = STATUS.getOpenFile();

@@ -32,27 +32,34 @@ final class SaveGatesCmd extends AbstractCommand implements Commandable {
 	 * @see java.io.File
 	 */
 	protected void execute(Object[] cmdParams) {
+		File file=null;
+		if (cmdParams!=null) {
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];			
+		}		
+		saveGates(file);
+		
+	}
+	private void saveGates(File file) {
 		Frame frame= STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame, msghdlr);
 		
-		if (cmdParams == null || cmdParams.length==0) { //No file given		
+		if (file == null) { //No file given		
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
 	        int option = jfile.showSaveDialog(frame);
 	        /* don't do anything if it was cancel */
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	            final File file = jfile.getSelectedFile();
+	           file = jfile.getSelectedFile();
 	            hdfio.writeFile(file, Group.getGroupList(), false, true);
-	            //FIXME KBS remove
-	            //hdfio.writeFile(false,  true, true, true, file);
 	        }
 		
 		} else { //File name given	
-			hdfio.writeFile(false, true, true, true, (File) cmdParams[0]);
+			hdfio.writeFile(file, Group.getGroupList(), false, true);
 		}
-	}
 
+	}
 	/**
 	 * Save to an hdf file.
 	 * 

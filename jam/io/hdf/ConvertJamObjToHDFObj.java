@@ -140,7 +140,21 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
     	
     	return paramGroup;
     }
-	
+
+    /* non-javadoc:
+     * Adds group object for the a histogram
+     */
+    VirtualGroup addHistogramGroup(Histogram hist) {
+        final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
+                HIST_TYPE);
+        //histGroup.addDataObject(temp); //add to Histogram section vGroup
+        new DataIDLabel(histVGroup, hist.getName());
+        /* vGroup label is Histogram name */
+        new DataIDAnnotation(histVGroup, hist.getTitle());
+        
+        return histVGroup;
+    }
+    
     /* non-javadoc:
      * Adds data objects for the virtual group of histograms.
      */
@@ -157,56 +171,34 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
 	 * @return VirtualGroup for the histogram
 	 * @throws HDFException
 	 */
-	VirtualGroup convertHistogram(Histogram hist) {
-        ScientificData sciData;
-        final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
-                HIST_TYPE);
+    NumericalDataGroup convertHistogram(VirtualGroup histVGroup, Histogram hist) {
+        ScientificData sciData=null;
+        boolean hasErrors=false;
+        AbstractHist1D hist1dWithErrors=null;
         //FIXME KBS remove
-        //histGroup.addDataObject(temp); //add to Histogram section vGroup
-        new DataIDLabel(histVGroup, hist.getName());
-        /* vGroup label is Histogram name */
-        new DataIDAnnotation(histVGroup, hist.getTitle());
+        //final VirtualGroup histVGroup = new VirtualGroup(hist.getName(),
+         //       HIST_TYPE);
+
         /* vGroup Annotation is Histogram title */
         final NumericalDataGroup ndg = new NumericalDataGroup();
-        /* NDG to contain data */
-        new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
         /* make the NDG label the histogram number */
         histVGroup.addDataObject(ndg);
+        
+        /* NDG to contain data */
+        new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
         /* add to specific histogram vGroup (other info maybe later) */
         final ScientificDataDimension sdd = getSDD(hist);
         ndg.addDataObject(sdd); //use new SDD
-        histVGroup.addDataObject(sdd); //use new SDD
+
         final Histogram.Type type = hist.getType();
         if (type == Histogram.Type.ONE_DIM_INT) {
-            final AbstractHist1D hist1d = (AbstractHist1D) hist;
             sciData = new ScientificData((int[]) hist.getCounts());
-            if (hist1d.errorsSet()) {
-                final NumericalDataGroup ndgErr = new NumericalDataGroup();
-                new DataIDLabel(ndgErr, ERROR_LABEL);
-                histVGroup.addDataObject(ndgErr);
-                final ScientificDataDimension sddErr = getSDD(hist,
-                        NumberType.DOUBLE);
-                /* explicitly floating point */
-                ndgErr.addDataObject(sddErr);
-                histVGroup.addDataObject(sddErr);
-                final ScientificData sdErr = new ScientificData(hist1d.getErrors());
-                ndgErr.addDataObject(sdErr);
-                histVGroup.addDataObject(sdErr);
-            }
+            hist1dWithErrors = (AbstractHist1D) hist;            
+            hasErrors=hist1dWithErrors.errorsSet();
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
-            final AbstractHist1D hist1d = (AbstractHist1D) hist;
             sciData = new ScientificData((double[]) hist.getCounts());
-            if (hist1d.errorsSet()) {
-                final NumericalDataGroup ndgErr = new NumericalDataGroup();
-                new DataIDLabel(ndgErr, ERROR_LABEL);
-                histVGroup.addDataObject(ndgErr);
-                final ScientificDataDimension sddErr = sdd;
-                /* explicitly floating point */
-                ndgErr.addDataObject(sddErr);
-                final ScientificData sdErr = new ScientificData(hist1d.getErrors());
-                ndgErr.addDataObject(sdErr);
-                histVGroup.addDataObject(sdErr);
-            }
+            hist1dWithErrors = (AbstractHist1D) hist;
+            hasErrors=hist1dWithErrors.errorsSet();
         } else if (type == Histogram.Type.TWO_DIM_INT) {
             sciData = new ScientificData((int[][]) hist.getCounts());
         } else if (type == Histogram.Type.TWO_D_DOUBLE) {
@@ -216,8 +208,31 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
                     "HDFIO encountered a Histogram of unknown type.");
         }
         ndg.addDataObject(sciData);
-        histVGroup.addDataObject(sciData);
-        return histVGroup;
+        
+        //Add errors
+        if (hasErrors) {
+        	ScientificDataDimension sddErr=null;
+        	if (type == Histogram.Type.ONE_DIM_INT) {
+                sddErr = getSDD(hist,
+                        NumberType.DOUBLE);        		
+        	} else if (type == Histogram.Type.ONE_D_DOUBLE) {
+                sddErr = sdd;        		
+        	}
+            final NumericalDataGroup ndgErr = new NumericalDataGroup();
+            histVGroup.addDataObject(ndgErr);
+            new DataIDLabel(ndgErr, ERROR_LABEL);
+            /* explicitly floating point */
+            ndgErr.addDataObject(sddErr);
+            final ScientificData sdErr = new ScientificData(hist1dWithErrors.getErrors());
+            ndgErr.addDataObject(sdErr);
+            //histVGroup.addDataObject(sdErr);	//FIXME KBS remove
+            //histVGroup.addDataObject(sddErr);            
+        }
+        
+
+        //histVGroup.addDataObject(sdd); //use new SDD
+        //histVGroup.addDataObject(sciData); //FIXME KBS remove
+        return ndg;
 
 	}
 	

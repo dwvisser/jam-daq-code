@@ -9,7 +9,6 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
-import java.awt.Frame;
 
 /**
  * Save data to an hdf file.
@@ -36,27 +35,33 @@ final class SaveAsHDFCmd extends AbstractCommand implements Commandable {
 	 */
 	protected void execute(Object[] cmdParams) {
 		
-		Frame frame= STATUS.getFrame();
-		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
-		
-		if (cmdParams == null || cmdParams.length==0) { //No file given		
+		File file=null;
+		if (cmdParams!=null) {
+			if (cmdParams.length>0)
+				file =(File)cmdParams[0];			
+		}		
+		openHDFFile(file);
+	}
+	
+	private void openHDFFile(File file) {
+	
+	final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+	
+		if (file == null) { //No file given		
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));
-	        int option = jfile.showSaveDialog(frame);
+	        int option = jfile.showSaveDialog(STATUS.getFrame());
 	        /* don't do anything if it was cancel */
 	        if (option == JFileChooser.APPROVE_OPTION
 	                && jfile.getSelectedFile() != null) {
-	            final File file = jfile.getSelectedFile();
-				//FIXME KBS needs to be deleted
-	           //hdfio.writeFile(true, true, true, true, file);
+	            file = jfile.getSelectedFile();
 	           hdfio.writeFile(file, Group.getGroupList(), true, true);
-
+	
 	        }
 		} else { //File name given	
-			hdfio.writeFile(true, true, true, true, (File) cmdParams[0]);
+			hdfio.writeFile(true, true, true, true, file);
 		}
 	}
-
 	/**
 	 * Save to an hdf file.
 	 * 

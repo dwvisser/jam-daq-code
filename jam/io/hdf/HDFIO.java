@@ -512,7 +512,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
             final Iterator iter = hists.iterator();
             while (iter.hasNext()) {
                 final Histogram hist = (Histogram) iter.next();
-                final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
+                final VirtualGroup histVGroup = jamToHDF.addHistogramGroup(hist);
+                jamToHDF.convertHistogram(histVGroup, hist);
                 allHists.addDataObject(histVGroup);
             }
         }
@@ -842,7 +843,7 @@ public final class HDFIO implements DataIO, JamHDFFields {
     
     private void convertJamToHDF(List groups, boolean wrtdata, boolean wrtsetting) {
     	
-        VirtualGroup virtualGroupGroups= jamToHDF.addGroupSection();
+        VirtualGroup globalVirtualGroupGroups= jamToHDF.addGroupSection();
         VirtualGroup globalVirtualGroupHistogram= jamToHDF.addHistogramSection();
         VirtualGroup globalVirtualGroupGate = jamToHDF.addGateSection();
         VirtualGroup globalVirtualGroupScaler = jamToHDF.addScalerSection();
@@ -853,35 +854,38 @@ public final class HDFIO implements DataIO, JamHDFFields {
         while(groupsIter.hasNext()){
         	Group group = (Group)groupsIter.next();
         	VirtualGroup virtualGroupGroup = jamToHDF.convertGroup(group);
-        	virtualGroupGroups.addDataObject(virtualGroupGroup);
+        	globalVirtualGroupGroups.addDataObject(virtualGroupGroup);
         	
         	//Histograms 
-        	//VirtualGroup virtualGroupHists= addHistogramSection();
         	//virtualGroupGroup.addDataObject(virtualGroupHists);
             //Loop for all histograms
             final Iterator histsIter = group.getHistogramList().iterator();
             while (histsIter.hasNext()) {
-                final Histogram hist = (Histogram) histsIter.next();
-                //if (wrtdata) {	//FIXME KBS
-                	final VirtualGroup histVGroup = jamToHDF.convertHistogram(hist);
-                	virtualGroupGroup.addDataObject(histVGroup);
-                	//backward compatible
-                	globalVirtualGroupHistogram.addDataObject(histVGroup);
-                //}
-                histCount++;
+                final Histogram hist = (Histogram) histsIter.next();   
+                final VirtualGroup histVGroup =jamToHDF.addHistogramGroup(hist);
+               	if (wrtdata) {
+               		jamToHDF.convertHistogram(histVGroup, hist);
+            	virtualGroupGroup.addDataObject(histVGroup);
+            	//backward compatible
+            	globalVirtualGroupHistogram.addDataObject(histVGroup);
+ 
+               		histCount++;
+               	}
                 
                 //Loop for all gates
-                final Iterator gatesIter = hist.getGates().iterator();
-                while (gatesIter.hasNext()) {
-                    final Gate gate = (Gate) gatesIter.next();
-                    if(gate.isDefined()){
-                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
-                    	histVGroup.addDataObject(gateVGroup);
-                    	//backward compatiable
-                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
-                    	gateCount++;
-                	}
-                } //end loop gates
+                if (wrtsetting) {
+	                final Iterator gatesIter = hist.getGates().iterator();
+	                while (gatesIter.hasNext()) {
+	                    final Gate gate = (Gate) gatesIter.next();
+	                    if(gate.isDefined()){
+	                    	final VirtualGroup gateVGroup =jamToHDF.convertGate(gate);
+	                    	histVGroup.addDataObject(gateVGroup);
+	                    	//backward compatiable
+	                    	globalVirtualGroupGate.addDataObject(gateVGroup);	
+	                    	gateCount++;
+	                	}
+	                } //end loop gates
+                }
                 
             } //end loop histograms
 
