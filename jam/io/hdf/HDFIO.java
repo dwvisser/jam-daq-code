@@ -1156,7 +1156,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	            /* clear if opening and there are histograms in file */
 	            final VDataDescription vddParam= hdfToJam.findParametersOriginal();
 	            if (vddParam!=null) {
-	            	hdfToJam.convertParameters(currentGroup, vddParam, mode);
+	            	paramCount = hdfToJam.convertParameters(currentGroup, vddParam, mode);
 	            }
 	        }
     	}
