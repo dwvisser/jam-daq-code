@@ -160,8 +160,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		defaultOutputFile =
 			JamProperties.getPropString(JamProperties.EVENT_OUTFILE);
 		d = new JDialog(jamMain, "Sorting ", false);
-		d.setForeground(Color.black);
-		d.setBackground(Color.lightGray);
+		//d.setForeground(Color.black);
+		//d.setBackground(Color.lightGray);
 		d.setResizable(false);
 		d.setLocation(20, 50);
 		//d.setSize(500, 350);
@@ -177,23 +177,23 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		textDev = new JTextField("    ");
 		textDev.setColumns(12);
 		textDev.setEditable(false);
-		textDev.setBackground(Color.lightGray);
-		textDev.setForeground(Color.black);
+		//textDev.setBackground(Color.lightGray);
+		//textDev.setForeground(Color.black);
 		ptape.add(ltd);
 		ptape.add(textDev);
 		JLabel lfrom = new JLabel("Run(s)");
 		ptape.add(lfrom);
 		textInitRecord = new JTextField("");
 		textInitRecord.setColumns(5);
-		textInitRecord.setBackground(Color.white);
-		textInitRecord.setForeground(Color.black);
+		//textInitRecord.setBackground(Color.white);
+		//textInitRecord.setForeground(Color.black);
 		ptape.add(textInitRecord);
 		JLabel lto = new JLabel("to");
 		ptape.add(lto);
 		textFinalRecord = new JTextField("");
 		textFinalRecord.setColumns(5);
-		textFinalRecord.setBackground(Color.white);
-		textFinalRecord.setForeground(Color.black);
+		//textFinalRecord.setBackground(Color.white);
+		//textFinalRecord.setForeground(Color.black);
 		ptape.add(textFinalRecord);
 
 		//Center panel--card layout
@@ -205,8 +205,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		listEventFiles = new JList(eventFileModel);
 		listEventFiles.setSelectionMode(
 			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		listEventFiles.setBackground(Color.white);
-		listEventFiles.setForeground(Color.black);
+		//listEventFiles.setBackground(Color.white);
+		//listEventFiles.setForeground(Color.black);
 		pdiskfiles.add(new JScrollPane(listEventFiles));
 		ptaperecords = new JPanel();
 		ptaperecords.setLayout(new GridLayout());
@@ -214,8 +214,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		listTapeRecords = new JList(tapeRecordModel);
 		listTapeRecords.setSelectionMode(
 			ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		listTapeRecords.setBackground(Color.white);
-		listTapeRecords.setForeground(Color.black);
+		//listTapeRecords.setBackground(Color.white);
+		//listTapeRecords.setForeground(Color.black);
 		ptaperecords.add(new JScrollPane(listTapeRecords));
 		pcenter.add(pdiskfiles, DISKFILES);
 		pcenter.add(ptaperecords, TAPERECORDS);
@@ -310,8 +310,8 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		textOutFile =
 			new JTextField(defaultEvents + File.separator + defaultOutputFile);
 		textOutFile.setColumns(28);
-		textOutFile.setBackground(Color.lightGray);
-		textOutFile.setForeground(Color.black);
+		//textOutFile.setBackground(Color.lightGray);
+		//textOutFile.setForeground(Color.black);
 		textOutFile.setEnabled(false);
 		pout.add(textOutFile);
 
@@ -422,12 +422,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		if (ie.getItemSelectable() == cout) {
 			if (cout.isSelected()) {
 				textOutFile.setEnabled(true);
-				textOutFile.setBackground(Color.white);
+				//textOutFile.setBackground(Color.white);
 				bbrowse.setEnabled(true);
 				writeEvents = true;
 			} else {
 				textOutFile.setEnabled(false);
-				textOutFile.setBackground(Color.lightGray);
+				//textOutFile.setBackground(Color.lightGray);
 				bbrowse.setEnabled(false);
 				writeEvents = false;
 			}
@@ -532,7 +532,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		}
 		bbegin.setEnabled(false);
 		sortDaemon.setState(GoodThread.RUN);
-		jamMain.setRunState(JamMain.ACQ_ON);
+		jamMain.setRunState(RunState.ACQ_ON);
 	}
 
 	/**
@@ -563,7 +563,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			msgHandler.messageOutln(
 				"Stopped sorting from Tape, need to setup again");
 		}
-		jamMain.setRunState(JamMain.ACQ_OFF);
+		jamMain.setRunState(RunState.ACQ_OFF);
 	}
 
 	/**
@@ -654,7 +654,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	public void atSortEnd() {
 		try {
 			msgHandler.messageOutln("Sorting all done");
-			jamMain.setRunState(JamMain.ACQ_OFF);
+			jamMain.setRunState(RunState.ACQ_OFF);
 			if (!dataInpDaemon.closeEventInputListFile()) {
 				msgHandler.errorOutln("Couldn't close file [SortControl]");
 			}
@@ -692,18 +692,18 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			centerCardLayout.show(pcenter, TAPERECORDS);
 			westCardLayout.show(pwest, TAPEBUTTONS);
 			textInitRecord.setEditable(true);
-			textInitRecord.setBackground(Color.white);
+			//textInitRecord.setBackground(Color.white);
 			textFinalRecord.setEditable(true);
-			textFinalRecord.setBackground(Color.white);
+			//textFinalRecord.setBackground(Color.white);
 			textDev.setEnabled(true);
 		} else if (device == DISK) {
 			centerCardLayout.show(pcenter, DISKFILES);
 			westCardLayout.show(pwest, DISKBUTTONS);
 			textInitRecord.setEditable(false);
-			textInitRecord.setBackground(Color.lightGray);
+			//textInitRecord.setBackground(Color.lightGray);
 			textInitRecord.setText("");
 			textFinalRecord.setEditable(false);
-			textFinalRecord.setBackground(Color.lightGray);
+			//textFinalRecord.setBackground(Color.lightGray);
 			textFinalRecord.setText("");
 			textDev.setEnabled(true);
 		}
@@ -953,13 +953,13 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			loadrunlist.setEnabled(false);
 			saverunlist.setEnabled(false);
 			textInitRecord.setEnabled(false);
-			textInitRecord.setBackground(Color.lightGray);
+			//textInitRecord.setBackground(Color.lightGray);
 			textFinalRecord.setEnabled(false);
-			textFinalRecord.setBackground(Color.lightGray);
-			listEventFiles.setBackground(Color.lightGray);
-			listTapeRecords.setBackground(Color.lightGray);
+			//textFinalRecord.setBackground(Color.lightGray);
+			//listEventFiles.setBackground(Color.lightGray);
+			//listTapeRecords.setBackground(Color.lightGray);
 			textOutFile.setEditable(false);
-			textOutFile.setBackground(Color.lightGray);
+			//textOutFile.setBackground(Color.lightGray);
 			cout.setEnabled(false);
 		} else {
 			setupLock = false;
@@ -975,13 +975,13 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			loadrunlist.setEnabled(true);
 			saverunlist.setEnabled(false);
 			textInitRecord.setEnabled(true);
-			textInitRecord.setBackground(Color.white);
+			//textInitRecord.setBackground(Color.white);
 			textFinalRecord.setEnabled(true);
-			textFinalRecord.setBackground(Color.white);
-			listEventFiles.setBackground(Color.white);
-			listTapeRecords.setBackground(Color.white);
+			//textFinalRecord.setBackground(Color.white);
+			//listEventFiles.setBackground(Color.white);
+			//listTapeRecords.setBackground(Color.white);
 			textOutFile.setEditable(true);
-			textOutFile.setBackground(Color.white);
+			//textOutFile.setBackground(Color.white);
 			cout.setEnabled(true);
 		}
 	}
