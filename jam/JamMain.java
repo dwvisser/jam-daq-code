@@ -1,8 +1,10 @@
 package jam;
+import jam.commands.CommandManager;
 import jam.data.control.DataControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.CommandNames;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
@@ -10,13 +12,13 @@ import jam.plot.Display;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
@@ -113,10 +115,10 @@ public final class JamMain extends JFrame implements Observer {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				jamCommand.actionPerformed(new ActionEvent(this, 0,  "exit"));
+				exit();
 			}
 			public void windowClosed(WindowEvent e) {
-				jamCommand.actionPerformed(new ActionEvent(this, 0, "exit"));
+				exit();
 			}
 		});
 		new InitialHistograms();
@@ -145,6 +147,12 @@ public final class JamMain extends JFrame implements Observer {
 	JamMain(Script s){
 		this(false);
 		s.setJamCommand(jamCommand);
+	}
+
+	private void exit(){
+		final JButton temp=new JButton(CommandManager.getInstance().getAction(
+		CommandNames.EXIT));
+		temp.doClick();
 	}
 
 	/**
