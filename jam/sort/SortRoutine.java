@@ -136,7 +136,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * User may optionally use this to read in gain calibrations.
 	 */
-	protected GainCalibration gains=new GainCalibration();
+	protected final GainCalibration gains;
 
 	/**
 	 * Creates a new sort routine object.
@@ -145,6 +145,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 		writeOn = false;
 		cnafCommands = new CamacCommands(this);
 		vmeMap = new VME_Map(this);
+		gains=new GainCalibration(this);
 	}
 
 	/**
