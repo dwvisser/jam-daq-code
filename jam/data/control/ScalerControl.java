@@ -53,7 +53,6 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
         //zeroDisabled=true;
         ddisp=new JDialog(frame,"Scalers",false);// dialog box to display scalers
         Container cddisp = ddisp.getContentPane();
-        //ddisp.setResizable(false);
         ddisp.setLocation(20,50);
         cddisp.setLayout(new GridLayout(0,1,5,5));
         pb= new JPanel();// buttons for display dialog
@@ -77,12 +76,11 @@ public class ScalerControl extends DataControl implements ActionListener, ItemLi
             }
         }
         );
-        dzero=new JDialog(frame, "Scalers Zero",true);// dialog to zero scalers
+        dzero=new JDialog(frame, "Zero Scalers",true);// dialog to zero scalers
         Container dzc=dzero.getContentPane();
         dzero.setResizable(false);
         dzero.setLocation(20,50);
-        //dzero.setSize(250, 100);
-        dzc.setLayout(new FlowLayout(FlowLayout.CENTER,10,20));
+        dzc.setLayout(new GridLayout(1,0));
         bzero2 =  new JButton("Zero ");
         bzero2.setActionCommand("scalzero2");
         bzero2.addActionListener(this);
