@@ -1,5 +1,6 @@
 package jam.sort;
 
+import jam.SortControl;
 import jam.global.Beginner;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -301,6 +302,7 @@ public class SortDaemon extends GoodThread {
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
 	public void sortOffline() throws Exception {
+	    final SortControl sortControl=(SortControl)controller;
 		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
 		boolean atBuffer = false; //are we at a buffer word
@@ -308,13 +310,13 @@ public class SortDaemon extends GoodThread {
 		 * Next statement causes checkState() to immediately suspend this
 		 * thread.
 		 */
-		controller.atSortStart();
+		sortControl.atSortStart();
 		while (checkState()) {//checkstate loop
 			/* suspends this thread when we're done sorting all files */
-			controller.atSortStart();
+			sortControl.atSortStart();
 			resumeOfflineSorting();//after we come out of suspend
 			/* Loop for each new sort file. */
-			while (!offlineSortingCanceled() && controller.isSortNext()) {
+			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
 				boolean endSort = false;
 				while (!offlineSortingCanceled() && !endSort) {//buffer loop
 					/* Zero the event container. */
@@ -379,7 +381,7 @@ public class SortDaemon extends GoodThread {
 					yield();
 				}//end buffer loop
 			}//end isSortNext loop
-			controller.atSortEnd();
+			sortControl.atSortEnd();
 		}//end checkstate loop
 	}
 
