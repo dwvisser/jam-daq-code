@@ -12,6 +12,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.print.PageFormat;
 
 import javax.swing.JOptionPane;
@@ -309,8 +310,8 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 * @since Version 0.5
 	 */
 	void drawDate(String sdate) {
-		int x = viewRight - fm.stringWidth(sdate); //position of string
-		int y = viewTop - TITLE_OFFSET_DATE;
+		final int x = viewRight - fm.stringWidth(sdate); //position of string
+		final int y = viewTop - TITLE_OFFSET_DATE;
 		g.drawString(sdate, x, y);
 	}
 
@@ -588,6 +589,7 @@ class PlotGraphics implements PlotGraphicsLayout {
 	 */
 	private void drawHist(double[] counts, double binWidth, boolean log) {
 		/* x's are in channels, y's are in counts */
+		final GeneralPath path=new GeneralPath();
 		final double[] drawCounts = getDrawCounts(counts, binWidth);
 		final int dclen = drawCounts.length;
 		final int lastBinAll = dclen - 1;
@@ -601,37 +603,31 @@ class PlotGraphics implements PlotGraphicsLayout {
 			final int firstBin = (int) Math.floor(minXch / binWidth);
 			final int lastBin = (int) Math.floor(upperX / binWidth);
 			double binChLo = firstBin * binWidth;
-			int x1 = 0;
-			int x2 = toViewHorzLin(minXch);
-			int y2 = viewBottom;
+			int x = toViewHorzLin(minXch);
+			int y = viewBottom;
 			double delCh = binWidth;
 			if (binChLo < minXch) {
 				delCh = binChLo + binWidth - minXch;
 				binChLo = minXch;
 			}
+			path.moveTo(x,y);
 			for (int i = firstBin; i <= lastBin; i++) {
 				/* first a vertical line */
-				x1 = x2;
-				x2 = x1;
-				int y1 = y2;
-				y2 = log ? toViewVertLog(drawCounts[i])
+				y = log ? toViewVertLog(drawCounts[i])
 						: toViewVertLinCk(drawCounts[i]);
-				g.drawLine(x1, y1, x2, y2);
-				/* now horizontal across bin, i.e., y1==y2 */
-				x1 = x2;
-				y1 = y2; //last point becomes start
+				path.lineTo(x,y);
+				/* now horizontal across bin */
 				binChLo += delCh;
-				x2 = Math.min(viewRight, toViewHorzLin(binChLo));
-				g.drawLine(x1, y1, x2, y2);
+				x = Math.min(viewRight, toViewHorzLin(binChLo));
+				path.lineTo(x,y);
 				delCh = Math.min(binWidth, maxXch + 1 - binChLo);
 			}
 			// last vertical line
-			if (x2 < viewRight) {
-				x1 = x2;
-				int y1 = y2;
-				y2 = viewBottom;
-				g.drawLine(x1, y1, x2, y2);
+			if (x < viewRight) {
+				y = viewBottom;
+				path.lineTo(x,y);
 			}
+			g.draw(path);
 		}
 	}
 
