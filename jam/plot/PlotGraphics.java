@@ -294,8 +294,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 				viewMiddle().x - offset / 2,
 				viewTop - TITLE_OFFSET_TOP);
 		}
-		if (side == PlotGraphics.BOTTOM) {
-		}
 	}
 
 	/**
@@ -1068,7 +1066,6 @@ class PlotGraphics implements PlotGraphicsLayout {
 		for (int i = 0; i < numberPoints; i++) {
 			Point p = (Point) (gatePoints.elementAt(i));
 			int x1 = toViewHorzLin(p.x);
-			int x2 = toViewVertLin(p.x);
 			g.drawLine(x1, viewBottom, x1, viewTop);
 		}
 	}
