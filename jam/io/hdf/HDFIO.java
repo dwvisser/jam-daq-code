@@ -29,16 +29,13 @@ import javax.swing.JFileChooser;
 public class HDFIO implements DataIO, JamHDFFields {
 
 	/**
-	 * last file successfully read from or written to
+	 * Last file successfully read from or written to for all instances of
+	 * HDFIO.
 	 *
 	 * see #readFile
 	 */
-	private File lastValidFile;
-
-	/**
-	 * File to save HDF information to.
-	 */
-	private File fileSave;
+	private static File lastValidFile;
+	private static final Object lvfMonitor = new Object();
 
 	/**
 	 * Parent frame.
@@ -61,13 +58,6 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * <code>HDFile<code> object to read from.
 	 */
 	private HDFile in;
-
-	/**
-	 * File that was read from.  Gets set when reading.
-	 *
-	 * @see getFileNameOpen
-	 */
-	private File fileOpen;
 
 	/**
 	 * Constructor for file read access outside of any GUI context.
@@ -93,8 +83,8 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @param mh where to send output
 	 */
 	public HDFIO(Frame f, MessageHandler mh) {
-		this.frame = f;
-		this.msgHandler = mh;
+		frame = f;
+		msgHandler = mh;
 	}
 
 	/**
@@ -144,16 +134,14 @@ public class HDFIO implements DataIO, JamHDFFields {
 		boolean wrtgate,
 		boolean wrtscalers,
 		boolean wrtparameters) {
-		final JFileChooser jfile = new JFileChooser(fileSave);
+		final JFileChooser jfile = new JFileChooser(getLastValidFile());
 		jfile.setFileFilter(new HDFileFilter(true));
 		final int option = jfile.showSaveDialog(frame);
 		/* don't do anything if it was cancel */
 		if (option == JFileChooser.APPROVE_OPTION
 			&& jfile.getSelectedFile() != null) {
-			synchronized (this) {
-				fileSave = jfile.getSelectedFile();
-			}
-			writeFile(wrthis, wrtgate, wrtscalers, wrtparameters, fileSave);
+			final File f = jfile.getSelectedFile();
+			writeFile(wrthis, wrtgate, wrtscalers, wrtparameters, f);
 		}
 		return option;
 	}
@@ -317,9 +305,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 			out = null; //allows Garbage collector to free up memory
 		}
 		msgHandler.messageOut("done!", MessageHandler.END);
-		synchronized (this) {
-			lastValidFile = file;
-		}
+		setLastValidFile(file);
 		System.gc();
 	}
 
@@ -330,20 +316,15 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @return  <code>true</code> if successful
 	 */
 	public boolean readFile(FileOpenMode mode) {
-		boolean outF = false;
-		final JFileChooser jfile = new JFileChooser(fileSave);
+		boolean outF = false;//default if not set to true later
+		final JFileChooser jfile = new JFileChooser(getLastValidFile());
 		jfile.setFileFilter(new HDFileFilter(true));
 		final int option = jfile.showOpenDialog(frame);
 		// dont do anything if it was cancel
 		if (option == JFileChooser.APPROVE_OPTION
 			&& jfile.getSelectedFile() != null) {
-			synchronized (this) {
-				fileSave = jfile.getSelectedFile();
-			}
-			outF = readFile(mode, fileSave);
-		} else { //dialog didn't return a file
-			outF = false;
-		}
+			outF = readFile(mode, jfile.getSelectedFile());
+		} 
 		return outF;
 	}
 
@@ -357,21 +338,18 @@ public class HDFIO implements DataIO, JamHDFFields {
 	public boolean readFile(FileOpenMode mode, File infile) {
 		boolean outF = true;
 		try {
-			synchronized (this) {
-				fileOpen = infile;
-			}
 			if (mode == FileOpenMode.OPEN) {
 				msgHandler.messageOut(
-					"Open " + fileOpen.getName() + ": ",
+					"Open " + infile.getName() + ": ",
 					MessageHandler.NEW);
 				DataBase.getInstance().clearAllLists();
 			} else if (mode==FileOpenMode.RELOAD) {
 				msgHandler.messageOut(
-					"Reload " + fileOpen.getName() + ": ",
+					"Reload " + infile.getName() + ": ",
 					MessageHandler.NEW);
 			} else {//ADD
 				msgHandler.messageOut("Adding histogram counts in "+
-				fileOpen.getName()+": ", MessageHandler.NEW);
+				infile.getName()+": ", MessageHandler.NEW);
 			}
 			synchronized (this) {
 				in = new HDFile(infile, "r");
@@ -391,9 +369,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 				// destroys reference to HDFile (and its DataObject's
 			}
 			msgHandler.messageOut("done!", MessageHandler.END);
-			synchronized (this) {
-				lastValidFile = infile;
-			}
+			setLastValidFile(infile);
 		} catch (HDFException except) {
 			msgHandler.messageOut("", MessageHandler.END);
 			msgHandler.errorOutln(except.toString());
@@ -1033,17 +1009,18 @@ public class HDFIO implements DataIO, JamHDFFields {
 	}
 
 	/**
-	 * @return the name of the file opened
-	 */
-	public File getFileOpen() {
-		return fileOpen;
-	}
-
-	/**
 	 * @return last file successfully read from or written to.
 	 */
-	public File lastValidFile() {
-		return lastValidFile;
+	public static File getLastValidFile() {
+		synchronized (lvfMonitor){
+			return lastValidFile;
+		}
+	}
+	
+	private static void setLastValidFile(File f){
+		synchronized (lvfMonitor){
+			lastValidFile=f;
+		}
 	}
 
 	/**
