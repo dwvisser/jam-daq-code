@@ -132,6 +132,11 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	private final static String COLON = ": ";
 
 	private final static String ILLEGAL_MODE = "Illegal value for event size mode: ";
+	
+	/**
+	 * User may optionally use this to read in gain calibrations.
+	 */
+	protected GainCalibration gains=new GainCalibration();
 
 	/**
 	 * Creates a new sort routine object.
