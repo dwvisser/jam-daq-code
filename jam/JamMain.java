@@ -9,6 +9,7 @@ import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.Display;
+import jam.ui.SelectionToolbar;
 import jam.util.ThreadCheckingRepaintManager;
 
 import java.awt.BorderLayout;

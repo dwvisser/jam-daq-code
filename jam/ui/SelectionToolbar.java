@@ -1,4 +1,5 @@
-package jam;
+package jam.ui;
+import jam.RunState;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -34,7 +35,7 @@ import javax.swing.SwingConstants;
  * @author Ken Swartz
  * @since 31 December 2003
  */
-final class SelectionToolbar extends JToolBar implements Observer {
+public final class SelectionToolbar extends JToolBar implements Observer {
 
 	private final JLabel lrunState = new JLabel("   Welcome   ", SwingConstants.CENTER);
 	private final JPanel pCenter;
@@ -48,7 +49,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	private final Display display;
 	private final String classname;
 
-	SelectionToolbar() {
+	public SelectionToolbar() {
 		super("Selection", JToolBar.HORIZONTAL);
 		this.setFloatable(false);
 		final int chooserWidth=200;
@@ -184,7 +185,7 @@ final class SelectionToolbar extends JToolBar implements Observer {
 	 * Selects first items in histogram and gate choosers.  Default
 	 * priveleges allows JamCommand to call this as well.
 	 */
-	void setChoosersToFirstItems() {
+	public void setChoosersToFirstItems() {
 		histogramChooser.setSelectedIndex(0);
 		gateChooser.setSelectedIndex(0);
 	}
