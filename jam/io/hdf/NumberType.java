@@ -54,9 +54,11 @@ public class NumberType extends DataObject {
 	public static final byte DOUBLE_SIZE = 8;
 
 	/**
-	 *  @exception HDFException unrecoverable error
+	 * @param fi HDF file we belong to
+	 * @param type one of <code>INT</code> or <code>DOUBLE</code>, 
+	 * @throws IllegalArgumentException if an invalid type is given
 	 */
-	public NumberType(HDFile fi, byte type) throws HDFException {
+	public NumberType(HDFile fi, byte type) {
 		super(fi, DFTAG_NT); //sets tag
 		if (type == INT) {
 			bytes = new byte[] { NT_VERSION, DFNT_INT32, IntWidth, DFNT_MBO };
@@ -64,7 +66,7 @@ public class NumberType extends DataObject {
 			bytes =
 				new byte[] { NT_VERSION, DFNT_FLOAT64, DoubleWidth, DFNT_MBO };
 		} else {
-			throw new HDFException("Invalid type for NumberType.");
+			throw new IllegalArgumentException("Invalid type for NumberType: "+type);
 		}
 	}
 
