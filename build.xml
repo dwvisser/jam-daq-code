@@ -33,21 +33,24 @@
     <target name="jar" depends="prepare">
         <jar jarfile="${build.dir}/Jam.jar"
             basedir="${base.dir}"
-            excludes="*.xml,*.jardesc,*.jar,help\API\**\*,jam\**\*.java,jam\**\*.html,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
+            excludes="*.html,**/*/*.db,*.jnlp,*.xml,*.jardesc,*.jar,help,help/**/*,WINpackage,WINpackage/*,jam\**\*.java,jam\**\*.chk,jam\**\*.bak,.classpath,.project"
         />    
     </target>
 
     <target name="srczip" depends="prepare">
         <zip zipfile="${build.dir}/JamSrc.zip"
             basedir="${base.dir}"
-            includes="jam\**\*.java"
+            includes="jam\**\*.java,jam\**\*.png,jam\**\*.gif, *.txt,jam/**/*.html"
         />    
     </target>
     
-    <target name="apijar" depends="prepare,javadoc">
-        <jar jarfile="${build.dir}/JamAPI.jar"
+    <target name="helpjar" depends="prepare,javadoc">
+    	<copy todir="${APIbase.dir}">
+    		<fileset dir = "${base.dir}" includes = "help/**/*" />
+    	</copy>
+        <jar jarfile="${build.dir}/JamHelp.jar"
             basedir="${APIbase.dir}"
-            includes="help\API\**\*"
+            includes="help/**/*"
         />    
     	<delete dir="${APIbase.dir}" />
     </target>
@@ -73,17 +76,17 @@
             	doctitle="Jam - API"/>
     </target>
 
-    <target name="windows" depends="jar,srczip,apijar"
+    <target name="windows" depends="jar,srczip,helpjar"
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamAPI.jar, jh.jar, jlfgr-1_0.jar, kunststoff.jar" />
+    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar, jh.jar, jlfgr-1_0.jar" />
     	</copy>
     	<copy todir="${windows}" file="${build.dir}/JamSrc.zip" />
     	<copy todir="${windows}" flatten="true">
     		<fileset dir="${base.dir}/WINpackage" includes="*.*" />
     	</copy>
     	<jsmoothgen project="${windows}/build.jsmooth" 
-      		skeletonroot="C:\\Program Files\\JSmooth 0.9.6\\skeletons"/>
+      		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
       	<zip zipfile="${build.dir}/jam-windows.zip" basedir="${build.dir}/windows"
       	excludes="**/*.jsmooth,**/*.ico" />
     </target>
