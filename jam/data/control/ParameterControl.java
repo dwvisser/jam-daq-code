@@ -7,7 +7,7 @@ import jam.data.*;
 import javax.swing.*;
 
 /**
- * Sets and displays the Parameters (data.Parameters.class) 
+ * Sets and displays the Parameters (data.Parameters.class)
  * used for sorting
  *
  * @version	0.5 October 98
@@ -22,7 +22,7 @@ public final class ParameterControl
 	private Broadcaster broadcaster;
 	private MessageHandler messageHandler;
 
-	//dialog box	              
+	//dialog box
 	private JDialog ddisp;
 
 	//widgets for each parameter
@@ -30,7 +30,8 @@ public final class ParameterControl
 	private JLabel[] labelParam;
 	private JTextField[] textParam;
 
-	private JPanel pbut;
+	private JPanel pButton;
+
 
 	public ParameterControl(
 		Frame frame,
@@ -46,8 +47,10 @@ public final class ParameterControl
 		ddisp.setLocation(20, 50);
 		Container cddisp = ddisp.getContentPane();
 		cddisp.setLayout(new GridLayout(0, 1, 5, 5));
-		// buttons for display dialog				
-		pbut = new JPanel(new GridLayout(1, 0, 5, 5));
+		// buttons for display dialog
+		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel pbut = new JPanel(new GridLayout(1, 0, 5, 5));
+		pButton.add(pbut);
 		JButton bread = new JButton("Read");
 		bread.setActionCommand("read");
 		bread.addActionListener(this);
@@ -64,7 +67,7 @@ public final class ParameterControl
 		setup();
 	}
 
-	/** 
+	/**
 	 * Action set parameters
 	 *
 	 */
@@ -93,7 +96,7 @@ public final class ParameterControl
 	 *
 	 */
 	public void itemStateChanged(ItemEvent ie) {
-		/* not used so far 
+		/* not used so far
 		if (ie.getItemSelectable()==checkDisabled) {
 		}
 		*/
@@ -120,7 +123,7 @@ public final class ParameterControl
 		cddisp.removeAll();
 		// we have some elements in the parameter list
 		if (numberParameters != 0) {
-			//widgets for each parameter	    
+			//widgets for each parameter
 			pParam = new JPanel[numberParameters];
 			labelParam = new JLabel[numberParameters];
 			textParam = new JTextField[numberParameters];
@@ -143,11 +146,11 @@ public final class ParameterControl
 				count++;
 			}
 		}
-		cddisp.add(pbut);
+		cddisp.add(pButton);
 		ddisp.pack();
 	}
 
-	/** 
+	/**
 	 * Set the Parameter values called back by
 	 *
 	 */
@@ -157,7 +160,7 @@ public final class ParameterControl
 			textParam[i].setText(String.valueOf(inParamValue[i]));
 		}
 	}
-	/** 
+	/**
 	 * Set the parameter values using the values
 	 * in the text fields
 	 *
@@ -197,15 +200,15 @@ public final class ParameterControl
 		}
 
 	}
-	/** 
+	/**
 	 * Read the values from the Parameter Objects
 	 * and display them
-	 *	
+	 *
 	 */
 	public void read() {
 		if (DataParameter.getParameterList().size() != 0) {
 			DataParameter.getParameterList().size();//number of parameters
-			final Iterator enumParameter = 
+			final Iterator enumParameter =
 			DataParameter.getParameterList().iterator();
 			int count = 0;
 			while (enumParameter.hasNext()) {

@@ -34,13 +34,13 @@ import javax.swing.JTextField;
 class DisplayCounters implements Observer {
 
 	/**
-	 * We are sorting online when the internal mode variable equals 
+	 * We are sorting online when the internal mode variable equals
 	 * this.
 	 */
 	public static final int ONLINE = 1;
 
 	/**
-	* We are sorting offline when the internal mode variable equals 
+	* We are sorting offline when the internal mode variable equals
 	* this.
 	*/
 	public static final int OFFLINE = 2;
@@ -120,9 +120,11 @@ class DisplayCounters implements Observer {
 		textFileRead = newTextField();
 		pFileRead.add(textFileRead);
 		/* panel for buttons */
-		pButton = new JPanel(new GridLayout(1, 0, flowgap, flowgap));
-		pButton.add(getUpdateButton());
-		pButton.add(getClearButton());
+		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel pb = new JPanel(new GridLayout(1, 0, flowgap, flowgap));
+		pButton.add(pb);
+		pb.add(getUpdateButton());
+		pb.add(getClearButton());
 		/*Recieves events for closing the dialog box and closes it. */
 		d.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -233,7 +235,7 @@ class DisplayCounters implements Observer {
 
 	/**
 	 * Setup for online
-	 * 
+	 *
 	 * @param nd network process
 	 * @param sod sorting process
 	 * @param std event record storage process
