@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,47 +32,42 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	/**
 	 *  number types automatically thrown into the file
 	 */
-	private NumberType intNT, doubleNT;
+	private transient NumberType intNT, doubleNT;
 
 	/**
 	 * List of objects in the file.
 	 */
-	private List objectList=new ArrayList();
-	private Map tagMap=new HashMap();
-
-	/**
-	 * The size of the DD block.
-	 */
-	private int DDblockSize;
+	private transient List objectList=Collections.synchronizedList(new ArrayList());
+	private transient Map tagMap=Collections.synchronizedMap(new HashMap());
 
 	/**
 	 * variable for marking position in file
 	 */
-	private long mark = 0;
-	
+	private transient long mark = 0;
+
 	private short refCount;
 
-	private File file; //File object corresponding to this object
+	private transient File file; //File object corresponding to this object
 
 	/**
 	 * Constructor called with a <code>File</code> object, and an access
 	 * mode.
 	 *
-	 * @param f file to be accessed
+	 * @param file file to be accessed
 	 * @param mode "r" or "rw"
 	 * @exception HDFException error with hdf file
 	 * @exception IOException error opening file
 	 */
-	public HDFile(File f, String mode) throws HDFException, IOException {
-		super(f, mode);
+	public HDFile(File file, String mode) throws HDFException, IOException {
+		super(file, mode);
 		refCount=0;
-		this.file = f;
+		this.file = file;
 		if ("rw".equals(mode)) { //Saving a file
 			writeHeader();
 			addVersionNumber();
 		} else { //should be "r" ,i.e., opening a file
 			if (!checkMagicWord()){
-				throw new HDFException(f+"is not a valid HDF File!");
+				throw new HDFException(file+" is not a valid HDF File!");
 			}
 		}
 	}
@@ -110,13 +106,9 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * fields of the <code>DataObject</code>'s. To be run when all data
 	 * elements have been defined.
 	 */
-	void setOffsets() {
-		synchronized (this) {
-			DDblockSize = 2 + 4 + 12 * objectList.size();
-			/* numDD's + offset to next (always 0 here) + size*12 for
-			 * tag/ref/offset/length info */
-		}
-		final int initialOffset = DDblockSize + 4; //add in HDF file header
+	synchronized void setOffsets() {
+		//final int DDblockSize = 2 + 4 + 12 * objectList.size();
+		final int initialOffset = ddBlockSize() + 4; //add in HDF file header
 		int counter = initialOffset;
 		final Iterator temp = objectList.iterator();
 		while (temp.hasNext()) {
@@ -124,6 +116,13 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 			ob.setOffset(counter);
 			counter += ob.getLength();
 		}
+	}
+	
+	private final int ddBlockSize(){
+	    /* The size of the DD block. */
+		/* numDD's + offset to next (always 0 here) + size*12 for
+		 * tag/ref/offset/length info */
+	    return 2 + 4 + 12 * objectList.size();
 	}
 
 	/**
@@ -305,13 +304,8 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 *
 	 * @exception HDFException unrecoverable errror
 	 */
-	void writeDataDescriptorBlock() throws HDFException {
+	synchronized void writeDataDescriptorBlock() throws HDFException {
 		try {
-			synchronized(this){
-				DDblockSize = 2 + 4 + 12 * objectList.size();
-			}
-			/* numDD's + offset to next (always 0 here) + size*12 for
-			 * tag/ref/offset/length info */
 			seek(4); //skip header
 			writeShort(objectList.size()); //number of DD's
 			writeInt(0); //no additional descriptor block
@@ -498,8 +492,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 	 * given type
 	 * @param tagType the type to return 
 	 */
-	public List ofType(short tagType) {
-		//return ofType(objectList, tagType);
+	public List ofType(final short tagType) {
 		final List rval=new ArrayList();
 		final Object temp=tagMap.get(new Short(tagType));
 		if (temp != null){//the refmap exists
@@ -538,7 +531,7 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		final String header="Jam Properties at time of save:";
 		JamProperties.getProperties().store(baos,header);
-		final String notation = new String(baos.toByteArray())+noteAddition;
+		final String notation = baos.toString()+noteAddition;
 		new FileDescription(this, notation);
 	}
 
