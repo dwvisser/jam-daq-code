@@ -41,7 +41,7 @@ public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
         Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
         if (nodeObject instanceof Group) {
         	  Group group = (Group)nodeObject;
-        	  if (group.getType()==Group.TYPE_FILE) {
+        	  if (group.getType()==Group.Type.FILE) {
         	  	setIcon(Icons.GROUP);
         	  }else{
         	  	setIcon(Icons.SORT);        	  	

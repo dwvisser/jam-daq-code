@@ -1,8 +1,8 @@
 package jam.io.hdf;
 
 import jam.data.AbstractHist1D;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
@@ -82,6 +83,13 @@ public class OpenSelectedHistogram {
 	/** Broadcaster */
 	private Broadcaster broadcaster;
 
+	/**
+	 * Constructs an object which uses a dialog to open a selected histogram out of an
+	 * HDF file.
+	 *  
+	 * @param f parent frame
+	 * @param c where to print messages
+	 */
 	public OpenSelectedHistogram(Frame f, MessageHandler c) {
 		frame = f;
 		console = c;
@@ -90,19 +98,6 @@ public class OpenSelectedHistogram {
 		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
-		/* Panel with file indicator */
-		/*
-		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		final JLabel runlabel = new JLabel("File Indicator", JLabel.RIGHT);
-		pFileInd.add(runlabel);
-		txtFileInd = new JTextField(10);
-		txtFileInd
-				.setToolTipText("Text added to histgram name to indicate the file of origin");
-		pFileInd.add(txtFileInd);
-
-		container.add(pFileInd, BorderLayout.NORTH);
-		*/		
-
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);		
 		pFileInd.add(filelabel);
@@ -110,7 +105,6 @@ public class OpenSelectedHistogram {
 		txtFile.setEditable(false);
 		pFileInd.add(txtFile);
 		container.add(pFileInd, BorderLayout.NORTH);
-		
 		/* Selection list */
 		DefaultListModel listModel = new DefaultListModel();
 		histList = new JList(listModel);
@@ -198,7 +192,7 @@ public class OpenSelectedHistogram {
 	 *  
 	 */
 	private void openLoadNames() {
-		ArrayList histNames;
+		List histNames;
 		try {
 			if (openFile()) {
 				/* Read in histogram names */
@@ -234,7 +228,7 @@ public class OpenSelectedHistogram {
 		//No histograms selected
 		if (selected.length > 0) {
 			
-			Group.createGroup(fileOpen.getName(), Group.TYPE_FILE);
+			Group.createGroup(fileOpen.getName(), Group.Type.FILE);
 			//Loop for each selected item
 			for (i = 0; i < selected.length; i++) {
 				if (loadedHistograms.containsKey(selected[i])) {
@@ -272,13 +266,13 @@ public class OpenSelectedHistogram {
 		return openF;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Reads in the histogram and hold them in a tempory array
 	 * 
 	 * @exception HDFException
 	 *                thrown if unrecoverable error occurs
 	 */
-	private ArrayList readHistograms() throws HDFException {
+	private List readHistograms() throws HDFException {
 		final ArrayList histNames = new ArrayList();
 		NumericalDataGroup ndg = null;
 		/* I check ndgErr==null to determine if error bars exist */
@@ -400,29 +394,17 @@ public class OpenSelectedHistogram {
 		}
 		final String name = histProp.name.trim() + fileIndicator;
 		final String title = "File: " + fileName + " - " + histProp.title;
-		byte histNumType = histProp.histNumType;
+		final Histogram hist=Histogram.createHistogram(histProp.dataArray, name, title);
 		if (histProp.histDim == 1) {
-			final AbstractHist1D histogram;
-			if (histNumType == NumberType.INT) {
-				histogram=(AbstractHist1D)Histogram.createHistogram((int[]) histProp.dataArray, name, title);
-			} else { //DOUBLE
-				histogram=(AbstractHist1D)Histogram.createHistogram((double[]) histProp.dataArray, name, title);
-			}
+			final AbstractHist1D hist1d=(AbstractHist1D)hist;
 			if (histProp.errorArray != null) {
-				histogram.setErrors((double[])histProp.errorArray);
-			}
-		} else { //2d
-			if (histNumType == NumberType.INT) {
-				Histogram.createHistogram((int[][]) histProp.dataArray, name, title);
-			} else {
-				Histogram.createHistogram((double[][]) histProp.dataArray, name, title);
+				hist1d.setErrors((double[])histProp.errorArray);
 			}
 		}
 	}
 
-
 	/**
-	 * Class to hold histogram properties while we decide if we should load them
+	 * Class to hold histogram properties while we decide if we should load them.
 	 *  
 	 */
 	private class HistProp {
@@ -443,9 +425,5 @@ public class OpenSelectedHistogram {
 
 		Object dataArray; //generic data array
 		Object errorArray;
-
-		public HistProp() {
-		}
-
 	}
 }

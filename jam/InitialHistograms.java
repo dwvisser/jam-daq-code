@@ -25,7 +25,7 @@ public class InitialHistograms {
 
 	private void makehists() {
 
-		Group.createGroup("Initial", Group.TYPE_FILE);
+		Group.createGroup("Initial", Group.Type.FILE);
 		/* histogram with Jam name 2d */
 		final Histogram histJam2d = Histogram.createHistogram(histNameJam2d(),
 				"Histogram2D", "Jam Name 2D");

@@ -356,7 +356,7 @@ public class Projections extends AbstractControl implements Observer {
 				hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 						.getSizeY(), name);
 			}*/
-			Group.createGroup("Working", Group.TYPE_FILE);
+			Group.createGroup("Working", Group.Type.FILE);
 			hto = Histogram.createHistogram(new double[size],name);
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler

@@ -360,7 +360,7 @@ public class GainShift extends AbstractControl implements ActionListener,
 			name = ttextto.getText().trim();
 			/*hto = new Histogram(name, Histogram.Type.ONE_D_DOUBLE, hfrom
 					.getSizeX(), name);*/
-			Group.createGroup("Working", Group.TYPE_FILE);
+			Group.createGroup("Working", Group.Type.FILE);
 			hto=(AbstractHist1D)Histogram.createHistogram(new double[hfrom.getSizeX()],name);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 			messageHandler

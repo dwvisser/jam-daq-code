@@ -515,7 +515,7 @@ public abstract class Histogram {
 	/**
 	 * Histogram is a valid histogram
 	 * @param hist
-	 * @return
+	 * @return <code>true</code> if this histogram remains in the name mapping
 	 */
 	public static boolean isValid(Histogram hist){
 		return NAME_MAP.containsValue(hist);

@@ -6,12 +6,9 @@ import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
-
-import javax.swing.KeyStroke;
 
 /**
  * @author ken
