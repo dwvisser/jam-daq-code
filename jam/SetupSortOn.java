@@ -30,7 +30,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -66,7 +65,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private final RunControl runControl;
 
-	private final DisplayCounters displayCounters;
+	private final DisplayCounters counters;
 
 	private final Console jamConsole;
 
@@ -80,7 +79,7 @@ public final class SetupSortOn extends AbstractSetup {
 	private final AbstractButton bok, bapply, checkLock, bbrowseh,
 			bbrowsed, bbrowsel;
 
-	private final JComboBox inStreamChooser, outStreamChooser;
+	private final JComboBox inChooser, outChooser;
 
 	private final JTextField textExpName, textPathHist,
 			textPathData;
@@ -106,9 +105,9 @@ public final class SetupSortOn extends AbstractSetup {
 	private DiskDaemon diskDaemon;
 
 	/* streams to read and write events */
-	private EventInputStream eventInputStream;
+	private EventInputStream inStream;
 
-	private EventOutputStream eventOutputStream;
+	private EventOutputStream outStream;
 
 	private static SetupSortOn instance = null;
 
@@ -127,19 +126,19 @@ public final class SetupSortOn extends AbstractSetup {
 	/**
 	 * Creates the only instance of this class.
 	 * 
-	 * @param jc the console to use
+	 * @param console the console to use
 	 */
-	public static void createInstance(Console jc) {
+	public static void createInstance(Console console) {
 		if (instance == null) {
-			instance = new SetupSortOn(jc);
+			instance = new SetupSortOn(console);
 		} else {
 			throw new IllegalStateException("Object already created.");
 		}
 	}
 
-	private SetupSortOn(Console jc) {
+	private SetupSortOn(Console console) {
 	    super("Setup Online");
-		final int fileTextColumns = 25;
+		final int fileTextCols = 25;
 		final String defaultName = JamProperties
 				.getPropString(JamProperties.EXP_NAME);
 		final String defaultSortRoutine = JamProperties
@@ -157,8 +156,8 @@ public final class SetupSortOn extends AbstractSetup {
 				.getPropString(JamProperties.LOG_PATH);
 		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
 		runControl = RunControl.getSingletonInstance();
-		displayCounters = DisplayCounters.getSingletonInstance();
-		jamConsole = jc;
+		counters = DisplayCounters.getSingletonInstance();
+		jamConsole = console;
 		frontEnd = STATUS.getFrontEndCommunication();
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
@@ -173,14 +172,14 @@ public final class SetupSortOn extends AbstractSetup {
 				.setBorder(new EmptyBorder(topInset, leftInset, noSpace,
 						noSpace));
 		dcp.add(pLabels, BorderLayout.WEST);
-		final JLabel ln = new JLabel("Experiment Name", JLabel.RIGHT);
-		pLabels.add(ln);
+		final JLabel expName = new JLabel("Experiment Name", JLabel.RIGHT);
+		pLabels.add(expName);
 		final JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
 		pLabels.add(lsc);
 		final JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
 		pLabels.add(lscs);
-		final JLabel ls = new JLabel("Sort Routine", JLabel.RIGHT);
-		pLabels.add(ls);
+		final JLabel lSortRoutine = new JLabel("Sort Routine", JLabel.RIGHT);
+		pLabels.add(lSortRoutine);
 		final JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
 		pLabels.add(leis);
 		final JLabel leos = new JLabel("Event output stream", JLabel.RIGHT);
@@ -216,13 +215,12 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Class path text */
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
-		final List sortClassList = setChooserDefault(useDefaultPath);
-		Iterator it = sortClassList.iterator();
-		while (it.hasNext()) {
-			final Class c = (Class) it.next();
-			final String name = c.getName();
+		Iterator iterator = setChooserDefault(useDefaultPath).iterator();
+		while (iterator.hasNext()) {
+			final Class clazz = (Class) iterator.next();
+			final String name = clazz.getName();
 			if (name.equals(defaultSortRoutine)) {
-				sortChoice.setSelectedItem(c);
+				sortChoice.setSelectedItem(clazz);
 				break;
 			}
 		}
@@ -231,38 +229,38 @@ public final class SetupSortOn extends AbstractSetup {
 		Set lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
 				EventInputStream.class, false));
 		lhs.remove(EventInputStream.class);
-		inStreamChooser = new JComboBox(new Vector(lhs));
-		inStreamChooser
+		inChooser = new JComboBox(new Vector(lhs));
+		inChooser
 				.setToolTipText("Select the reader for your event data format.");
-		selectName(inStreamChooser,lhs,defaultEventInStream);
-		pEntries.add(inStreamChooser);
+		selectName(inChooser,lhs,defaultEventInStream);
+		pEntries.add(inChooser);
 		/* Output stream classes */
 		lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
 				EventOutputStream.class, false));
 		lhs.remove(EventOutputStream.class);
-		outStreamChooser = new JComboBox(new Vector(lhs));
-		outStreamChooser
+		outChooser = new JComboBox(new Vector(lhs));
+		outChooser
 				.setToolTipText("Select the writer for your output event format.");
-		selectName(outStreamChooser,lhs,defaultEventOutStream);		
-		pEntries.add(outStreamChooser);
+		selectName(outChooser,lhs,defaultEventOutStream);		
+		pEntries.add(outChooser);
 		textPathHist = new JTextField(histFolder.getPath());
-		textPathHist.setColumns(fileTextColumns);
+		textPathHist.setColumns(fileTextCols);
 		textPathHist
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
 		textPathHist.setEditable(false);
 		pEntries.add(textPathHist);
 		textPathData = new JTextField(defaultEvents);
-		textPathData.setColumns(fileTextColumns);
+		textPathData.setColumns(fileTextCols);
 		textPathData.setToolTipText("Path to save event data.");
 		textPathData.setEditable(false);
 		pEntries.add(textPathData);
 		textPathLog = new JTextField(defaultLog);
-		textPathLog.setColumns(fileTextColumns);
+		textPathLog.setColumns(fileTextCols);
 		textPathLog.setToolTipText("Path to save the console log.");
 		textPathLog.setEditable(false);
 		pEntries.add(textPathLog);
-		JPanel pSortInterval = new JPanel(new GridLayout(1, 2, 40, 0));
-		pEntries.add(pSortInterval);
+		JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
+		pEntries.add(pInterval);
 		cdisk = new JCheckBox("Events to Disk", true);
 		cdisk.setToolTipText("Send events to disk.");
 		cdisk.addItemListener(new ItemListener() {
@@ -285,7 +283,7 @@ public final class SetupSortOn extends AbstractSetup {
 				bbrowsed.setEnabled(store);
 			}
 		});
-		pSortInterval.add(cdisk);
+		pInterval.add(cdisk);
 		clog = new JCheckBox("Log Commands", false);
 		clog.setSelected(true);
 		/* Browse panel */
@@ -327,27 +325,27 @@ public final class SetupSortOn extends AbstractSetup {
 		/*  panel for buttons */
 		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		dcp.add(pbutton, BorderLayout.SOUTH);
-		final JPanel pb = new JPanel(new GridLayout(1, 4, 5, 5));
-		pbutton.add(pb);
+		final JPanel pBottom = new JPanel(new GridLayout(1, 4, 5, 5));
+		pbutton.add(pBottom);
 		bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent actionEvent) {
 				apply(true);
 			}
 		});
-		pb.add(bok);
+		pBottom.add(bok);
 		bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				apply(false);
 			}
 		});
-		pb.add(bapply);
+		pBottom.add(bapply);
 		final JButton bcancel = new JButton("Cancel");
-		pb.add(bcancel);
+		pBottom.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent actionEvent) {
 			    dialog.dispose();
 			}
 		});
@@ -369,7 +367,7 @@ public final class SetupSortOn extends AbstractSetup {
 			}
 		});
 		checkLock.setEnabled(false);
-		pb.add(checkLock);
+		pBottom.add(checkLock);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
 	}
@@ -395,14 +393,13 @@ public final class SetupSortOn extends AbstractSetup {
 				loadSorter(); //load sorting routine
 				if (sortRoutine != null) {
 					lockMode(true);
-					selectFirstSortHistogram();					
 					setupAcq(); //create daemons
 					jamConsole.messageOutln("Loaded "
 							+ sortRoutine.getClass().getName()
 							+ ", "
-							+ eventInputStream.getClass().getName()
+							+ inStream.getClass().getName()
 							+ " and "
-							+ eventOutputStream.getClass().getName());
+							+ outStream.getClass().getName());
 					jamConsole.messageOutln("Communications and processing daemons successfully initiated.");
 					if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_CNAF) {
 						setupCamac(); //set the camac crate
@@ -412,6 +409,7 @@ public final class SetupSortOn extends AbstractSetup {
 						jamConsole.messageOutln("VME map sent.");
 					}
 				}
+				selectFirstSortHistogram();					
 				if (dispose) {
 					dialog.dispose();
 				}
@@ -424,7 +422,6 @@ public final class SetupSortOn extends AbstractSetup {
 			jamConsole.errorOutln(je.getMessage());
 		} catch (Exception e) {
 			jamConsole.errorOutln(e.getMessage());
-		} finally {
 		}
 	}
 
@@ -451,47 +448,47 @@ public final class SetupSortOn extends AbstractSetup {
 				: null;
 		/* typical setup of event streams */
 		try { //create new event input stream class
-			eventInputStream = (EventInputStream) ((Class) inStreamChooser
+			inStream = (EventInputStream) ((Class) inChooser
 					.getSelectedItem()).newInstance();
-			eventInputStream.setConsole(jamConsole);
+			inStream.setConsole(jamConsole);
 		} catch (InstantiationException ie) {
 			//            eventInputStream=null;
 			ie.printStackTrace();
 			throw new JamException(getClass().getName()
 					+ ": can't instantiate EventInputStream: "
-					+ inStreamChooser.getSelectedItem());
+					+ inChooser.getSelectedItem());
 		} catch (IllegalAccessException iae) {
 			//            eventInputStream=null;
 			throw new JamException(getClass().getName()
 					+ ": illegal access to EventInputStream: "
-					+ inStreamChooser.getSelectedItem());
+					+ inChooser.getSelectedItem());
 		}
 		try { //create new event input stream class
-			eventOutputStream = (EventOutputStream) ((Class) outStreamChooser
+			outStream = (EventOutputStream) ((Class) outChooser
 					.getSelectedItem()).newInstance();
-			eventOutputStream.setEventSize(sortRoutine.getEventSize());
+			outStream.setEventSize(sortRoutine.getEventSize());
 		} catch (InstantiationException ie) {
 			//            eventOutputStream=null;
 			ie.printStackTrace();
 			throw new JamException(getClass().getName()
 					+ ": can't instantiate EventOutputStream class: "
-					+ outStreamChooser.getSelectedItem());
+					+ outChooser.getSelectedItem());
 		} catch (IllegalAccessException iae) {
 			throw new JamException(getClass().getName()
 					+ ": illegal access to EventOutputStream class: "
-					+ outStreamChooser.getSelectedItem());
+					+ outChooser.getSelectedItem());
 		}
 		//create sorter daemon
 		sortDaemon = new SortDaemon(runControl, jamConsole);
 		final boolean useDisk = cdisk.isSelected();
 		sortDaemon
-				.setup(eventInputStream, sortRoutine.getEventSize());
+				.setup(inStream, sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
 		sortDaemon.setSorter(sortRoutine);
 		//create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
 			diskDaemon = new DiskDaemon(runControl, jamConsole);
-			diskDaemon.setupOn(eventInputStream, eventOutputStream);
+			diskDaemon.setupOn(inStream, outStream);
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
@@ -502,7 +499,7 @@ public final class SetupSortOn extends AbstractSetup {
 		runControl.setupOn(exptName, dataFolder, histFolder,
 				sortDaemon, netDaemon, diskDaemon);
 		/* Tell the status dialog. */
-		displayCounters.setupOn(netDaemon, sortDaemon, diskDaemon);
+		counters.setupOn(netDaemon, sortDaemon, diskDaemon);
 		/* Startup the daemons. */
 		if (useDisk) {
 			diskDaemon.start();
@@ -518,7 +515,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private void setupVMEmap() throws JamException {
 		frontEnd.setupAcquisition();
-		VME_Map map = sortRoutine.getVMEmap();
+		final VME_Map map = sortRoutine.getVMEmap();
 		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}
@@ -554,13 +551,13 @@ public final class SetupSortOn extends AbstractSetup {
 	 * @author Ken Swartz
 	 * @author Dale Visser
 	 */
-	private File getPath(File f) {
-		final JFileChooser fd = new JFileChooser(f);
-		fd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = fd.showOpenDialog(STATUS.getFrame());
+	private File getPath(File file) {
+		final JFileChooser fileChooser = new JFileChooser(file);
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
 		final boolean approval = option == JFileChooser.APPROVE_OPTION;
-		final boolean selected = fd.getSelectedFile() != null;
-		return (approval && selected) ? fd.getSelectedFile() : f;
+		final boolean selected = fileChooser.getSelectedFile() != null;
+		return (approval && selected) ? fileChooser.getSelectedFile() : file;
 	}
 
 	/* non-javadoc:
@@ -573,8 +570,8 @@ public final class SetupSortOn extends AbstractSetup {
 		final boolean notlock = !lock;
 		checkLock.setEnabled(lock);
 		textExpName.setEnabled(notlock);
-		inStreamChooser.setEnabled(notlock);
-		outStreamChooser.setEnabled(notlock);
+		inChooser.setEnabled(notlock);
+		outChooser.setEnabled(notlock);
 		sortChoice.setEnabled(notlock);
 		bok.setEnabled(notlock);
 		bapply.setEnabled(notlock);
@@ -591,3 +588,5 @@ public final class SetupSortOn extends AbstractSetup {
 		checkLock.setSelected(lock);
 	}
 }
+
+
