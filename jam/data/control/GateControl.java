@@ -1,5 +1,3 @@
-/*
- */
 package jam.data.control;
 import java.util.*;
 import java.awt.*;
@@ -14,7 +12,7 @@ import javax.swing.*;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public class GateControl extends DataControl implements ActionListener, ItemListener, WindowListener,
+public class GateControl extends DataControl implements ActionListener, WindowListener,
 Observer  {
 
     static final int ONE_DIMENSION=1;
@@ -50,7 +48,8 @@ Observer  {
     //new gate dialog box
     private JDialog dnew;
     private JTextField textNew;
-
+	private GateControlComboBoxModel2 caddModel;
+	
     //add gate dialog box
     private JDialog dadd;
     private JComboBox cadd;
@@ -178,25 +177,22 @@ Observer  {
         dadd=new JDialog(frame,"Add Gate",false);
         Container cdadd=dadd.getContentPane();
         dadd.setResizable(false);
-        //dadd.setSize(300, 150);
-        cdadd.setLayout(new GridLayout(2,1,10,10));
         dadd.setLocation(20,50);
 
         //panel with chooser
         JPanel ptadd =new JPanel();
-        ptadd.setLayout(new FlowLayout(FlowLayout.LEFT,20,20));
-        cdadd.add(ptadd);
+        ptadd.setLayout(new GridLayout(1,0));
+        cdadd.add(ptadd,BorderLayout.CENTER);
 
-        JLabel ladd =new JLabel("Name");
-        ptadd.add(ladd);
-
-        cadd=new JComboBox(new GateControlComboBoxModel2(this));
+		caddModel = new GateControlComboBoxModel2(this);
+        cadd=new JComboBox(caddModel);
+        
         ptadd.add(cadd);
 
         // panel for buttons
         JPanel pbadd= new JPanel();
-        pbadd.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-        cdadd.add(pbadd);
+        pbadd.setLayout(new GridLayout(1,0));
+        cdadd.add(pbadd,BorderLayout.SOUTH);
 
         JButton bokadd  =   new JButton("OK");
         bokadd.setActionCommand("okadd");
@@ -307,16 +303,10 @@ Observer  {
         }
     }
 
-    /**
-     * A item state change indicates that a gate has been choicen
-     *
-     */
-    public void itemStateChanged(ItemEvent ie){
-        if (ie.getSource()==cadd) {//add gate choice
-            currentGateAdd=Gate.getGate((String)ie.getItem());
-        }
+    void selectGateAdd(String name) {
+        currentGateAdd=Gate.getGate(name);
     }
-    
+
     /**
      *Implementation of Observable interface
      * To receive broadcast events
@@ -372,6 +362,7 @@ Observer  {
 
         String typeGate="gate";
         cgateModel.changeOccured();
+        caddModel.changeOccured();
         //get current state
         currentHistogram = Histogram.getHistogram(JamStatus.getCurrentHistogramName());
         if (currentHistogram == null) {
@@ -390,6 +381,7 @@ Observer  {
             type=99;
         }
         cgate.setSelectedIndex(0);
+        cadd.setSelectedIndex(0);
         //change labels depending if we have a one or two D histogram
         if (currentHistogram != null && currentHistogram.getDimensionality()==1) {
             type=ONE_DIMENSION;
@@ -421,7 +413,7 @@ Observer  {
             Histogram hist=Histogram.getHistogram(JamStatus.getCurrentHistogramName());
             hist.addGate(currentGateAdd);
             broadcaster.broadcast(BroadcastEvent.GATE_ADD);
-            messageHandler.messageOutln("Add gate "+currentGateAdd.getName().trim()+" to histogram "+hist.getName());
+            messageHandler.messageOutln("Added gate '"+currentGateAdd.getName().trim()+"' to histogram '"+hist.getName()+"'");
         } else {
             messageHandler.errorOutln("Need to choose a gate to add ");
         }
