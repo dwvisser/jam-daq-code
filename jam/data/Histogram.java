@@ -507,6 +507,12 @@ public class Histogram implements Serializable {
 		return rval;
 	}
 	
+	/**
+	 * Get the histogram with the given number.
+	 * 
+	 * @param num of the histogram
+	 * @return the histogram, if it exists, null otherwise
+	 */
 	public static Histogram getHistogram(int num){
 		return (Histogram)sortedNumberMap.get(new Integer(num));
 	}
