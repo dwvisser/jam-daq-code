@@ -3,7 +3,6 @@ import jam.JamConsole;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.CommandListener;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
@@ -38,7 +37,7 @@ import javax.swing.JOptionPane;
  */
 
 public class Action
-	implements ActionListener, PlotMouseListener, CommandListener {
+	implements ActionListener, PlotMouseListener /*, CommandListener*/ {
 
 	static final String EXPAND = "expand";
 	static final String ZOOMIN = "zoomin";
@@ -219,7 +218,7 @@ public class Action
 	 * @param _command entry from console
 	 * @param parameters integer parameters from console
 	 */
-	public void commandPerform(String _command, double [] parameters) {
+	public boolean commandPerform(String _command, double [] parameters) {
 		boolean accept = false; //is the command accepted
 		//boolean disp = false;
 		final String command = _command.toLowerCase();
@@ -230,16 +229,16 @@ public class Action
 			if (command.equals(JamConsole.NUMBERS_ONLY)) {
 				if (DISPLAY.equals(inCommand)) {
 					display(parameters);
-					return;
+					accept = true;
 				} else if (OVERLAY.equals(inCommand)) {
 					overlay(parameters);
-					return;
+					accept = true;					
 				} else {
 					integerChannel(parameters);
 					accept = true;
-					return;
 				}
 			}
+			return accept;
 		}
 		final String c1 = command.substring(0, Math.min(1, command.length()));
 		final String c2 = command.substring(0, Math.min(2, command.length()));
@@ -266,6 +265,8 @@ public class Action
 					+ command
 					+ "' not understood.");
 		}
+		
+		return accept;
 	}
 
 	/**
