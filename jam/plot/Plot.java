@@ -15,6 +15,7 @@ import java.awt.print.PageFormat;
 
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  * Abstract class for displayed plots.
@@ -126,6 +127,9 @@ public abstract class Plot extends JPanel {
 
 	private int runNumber;
 	private String date;
+	
+	protected double binWidth=1.0;
+	
 	/**
 	 * Dont use 0 ch for auto scale
 	 */
@@ -529,6 +533,10 @@ public abstract class Plot extends JPanel {
 			displayingGate = dg;
 		}
 	}
+	
+	public synchronized void setBinWidth(double x){
+		binWidth=x;
+	}
 
 	/**
 	 *methods for getting histogram data
@@ -567,6 +575,11 @@ public abstract class Plot extends JPanel {
 		//draw outline, tickmarks, labels, and title
 		if (this.currentHist != null) {
 			paintHeader(g);
+			if (binWidth > currentHist.getSizeX()){
+				binWidth=1.0;
+				warning(
+				"Bin width > hist size, so setting bin width back to 1.");
+			}
 			paintHistogram(g);
 			if (displayingGate) { //are we to display a gate
 				try {
@@ -593,13 +606,32 @@ public abstract class Plot extends JPanel {
 		}
 	}
 
-	void error(String mess) {
-		final String plotErrorTitle = "Plot Error";
+	void error(final String mess) {
+		Runnable task=new Runnable(){
+			public void run(){
+				final String plotErrorTitle = "Plot Error";
+				JOptionPane.showMessageDialog(
+					Plot.this,
+					mess,
+					plotErrorTitle,
+					JOptionPane.ERROR_MESSAGE);
+			}
+		};
+		SwingUtilities.invokeLater(task);
+	}
+	
+	void warning(final String mess){
+		Runnable task=new Runnable(){
+			public void run(){
+		final String plotErrorTitle = "Plot Warning";
 		JOptionPane.showMessageDialog(
-			this,
+			Plot.this,
 			mess,
 			plotErrorTitle,
-			JOptionPane.ERROR_MESSAGE);
+			JOptionPane.WARNING_MESSAGE);
+			}
+		};
+		SwingUtilities.invokeLater(task);
 	}
 	
 	/**
