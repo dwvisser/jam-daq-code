@@ -61,27 +61,6 @@ public interface  DataIO {
      * @return <code>true</code> if successful
      */
     public boolean readFile(FileOpenMode mode, File infile, Group group);
-    /**
-     * Writes out (to a specific file) the currently held spectra, gates, and
-     * scalers, subject to the options given. Sets separately which data
-     * writeFile should actually output. Not writing histograms when you are
-     * saving tape data can significantly save time when you have many 2-d
-     * spectra.
-     * 
-     * @param hist
-     *            if true, Histograms will be written
-     * @param gate
-     *            if true, Gates will be written
-     * @param scaler
-     *            if true, scaler values will be written
-     * @param params
-     *            if true, parameter values will be written
-     * @param file
-     *            to write to
-     */
-    //FIXME KBS old write remove when new writes tested
-    //void writeFile(boolean hist, boolean gate, boolean scaler, boolean params,
-    //        File file);
     
     
 }    

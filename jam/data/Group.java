@@ -141,27 +141,6 @@ public class Group {
         return sortGroup;
     }
 
-    /**
-     * Sets the "current" group.
-     * 
-     * @param group
-     *            to be "current"
-     */
-    /* FIXME KBS use method in JamStatus
-    public synchronized static void setCurrentGroup(Group group) {
-        currentGroup = group;
-    }
-
-    /**
-     * Get the current group.
-     * 
-     * @return the current group
-     */
-    /* FIXME KBS use method in JamStatus
-    public synchronized static Group getCurrentGroup() {
-        return currentGroup;
-    }
-    */
 
     /**
      * Gets a list of all groups.
@@ -186,9 +165,6 @@ public class Group {
     public static synchronized void clearList() {
         NAME_MAP.clear();
         LIST.clear();
-        /* Cast needed because of overloaded method. */
-        //FIXME KBS
-        //createGroup(WORKING_NAME,Group.Type.TEMP);s
         sortGroup=null;
     }
 

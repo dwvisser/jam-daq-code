@@ -100,11 +100,6 @@ public abstract class AbstractData implements Constants {
 	
 	private static final byte[] CLEARBYTES=new byte[0];
 
-	/**
-	 * Set to false once the ref number is defined.
-	 */
-	//FIXME KBS remove
-	//protected boolean refNotSet=true;
 	
 	/**
 	 * Get the list of all data objects.
@@ -360,8 +355,6 @@ public abstract class AbstractData implements Constants {
 			//Check for collision
 			if (tagRefMap.containsKey(key))
 				throw new IllegalArgumentException("Can't set reference on DataObject as one the reference already exists.");			
-				//FIXME KBS remove
-				//throw new HDFException("Cannot change reference to existing object");
 			
 			ref = newref;			
 			tagRefMap.put(keyNew, this);
@@ -411,12 +404,6 @@ public abstract class AbstractData implements Constants {
 	ByteBuffer getBytes()  {
 		return bytes;
 	}
-
-	/*FIXME KBS no longer needed
-	private final Integer getKey(){
-		return calculateKey(tag, ref);
-	}
-	*/
 	
 	/**
 	 * Utility method for inserting a String as an ASCII array 

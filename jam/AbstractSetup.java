@@ -208,6 +208,7 @@ abstract class AbstractSetup {
         if (sortClass == null) {
             sortClass = (Class) sortChoice.getSelectedItem();
         }
+        //FIXME maybe we should do DataBase.clearAll(); here
         Group.clearList();
         Group.createGroup(sortClass.getName(), Group.Type.SORT);
         try {        	

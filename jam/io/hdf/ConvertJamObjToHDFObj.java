@@ -223,13 +223,8 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
             ndgErr.addDataObject(sddErr);
             final ScientificData sdErr = new ScientificData(hist1dWithErrors.getErrors());
             ndgErr.addDataObject(sdErr);
-            //histVGroup.addDataObject(sdErr);	//FIXME KBS remove
-            //histVGroup.addDataObject(sddErr);            
         }
         
-
-        //histVGroup.addDataObject(sdd); //use new SDD
-        //histVGroup.addDataObject(sciData); //FIXME KBS remove
         return ndg;
 
 	}
@@ -338,15 +333,6 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
                 data.addInteger(1, i, ycoord[i]);
             }
         }
-        /* FIXME KBS delete
-        // add Histogram links...
-        final VirtualGroup hist = VirtualGroup.ofName(DataObject
-                .ofType(DataObject.DFTAG_VG), gate.getHistogram().getName());
-        if (hist != null) {
-            hist.addDataObject(vggate);
-            //reference the Histogram in the gate group
-        } 
-        */       
         return vggate;		
 	}
 

@@ -114,7 +114,6 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
 		groupName=dataIDLabel.getLabel();
 		
-		//FIXME KBS hasHistogramsInList should check group name as well has hist name
 		if (hasHistogramsInList(virtualGroup,  groupName, histAttributeList)) {
 			
 			/* Don't use file name for group name for open. */
