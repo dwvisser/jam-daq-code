@@ -83,8 +83,9 @@ public abstract class AbstractManipulation extends AbstractControl {
 				}
 			}
 		}
-
-		comboBox.setSelectedIndex(0);
+		
+		//FIXME Throws error on setup offline
+		//comboBox.setSelectedIndex(0);
 	}
 	
 	boolean isNewHistogram(String name){
