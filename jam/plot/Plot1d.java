@@ -24,14 +24,14 @@ class Plot1d extends Plot {
 	/**
 	 * Constructor
 	 */
-	public Plot1d(Action a) {
+	Plot1d(Action a) {
 		super(a);
 	}
 
 	/**
 	 * Overlay a second histogram
 	 */
-	public void overlayHistogram(Histogram hist) {
+	void overlayHistogram(Histogram hist) {
 		displayingOverlay = true;
 		overlayHist = hist;
 		final int sizex=hist.getSizeX();
@@ -54,7 +54,7 @@ class Plot1d extends Plot {
 	 * @param mode GATE_NEW, GATE_CONTINUE, GATE_SAVE or GATE_CANCEL
 	 * @param pChannel channel coordinates of clicked channel
 	 */
-	public void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
+	void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
 			setSettingGate(true);
@@ -71,7 +71,7 @@ class Plot1d extends Plot {
 		}
 	}
 	
-	void paintSetGate(Graphics g){
+	protected void paintSetGate(Graphics g){
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
@@ -79,7 +79,7 @@ class Plot1d extends Plot {
 	 * Painting to do if the mouse has moved
 	 * 
 	 */
-	void paintMouseMoved(Graphics gc){
+	protected void paintMouseMoved(Graphics gc){
 
 		if (markingArea) {
 			paintMarkingArea( gc);
@@ -89,7 +89,7 @@ class Plot1d extends Plot {
 	/**
 	 * Displays a fit, starting
 	 */
-	public void displayFit(
+	void displayFit(
 		double[][] signals,
 		double[] background,
 		double[] residuals,
@@ -143,7 +143,7 @@ class Plot1d extends Plot {
 		repaint();
 	}
 
-	void paintMarkedChannels(Graphics g){
+	protected void paintMarkedChannels(Graphics g){
 		g.setColor(PlotColorMap.mark);
 		final Iterator it=markedChannels.iterator();
 		while (it.hasNext()){
@@ -157,7 +157,7 @@ class Plot1d extends Plot {
 	 * 
 	 * @param p1 starting data point
 	 */
-	public void markingArea(Point p1) {
+	void markingArea(Point p1) {
 		//Copy points, don't construct new rectangles
 		areaStartPoint.x=p1.x;
 		areaStartPoint.y=p1.y;
@@ -167,7 +167,7 @@ class Plot1d extends Plot {
 		lastMovePoint.y=-1;		
 	}
 	
-	void paintMarkingArea(Graphics gc) {
+	protected void paintMarkingArea(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
 		g.setColor(PlotColorMap.area);		
 		//Chech we moved otherwise same point
@@ -190,7 +190,7 @@ class Plot1d extends Plot {
 	 * @param maxChanX the upper x channel
 	 * @param maxchanY the upper y channel
 	 */
-	public void markArea(Point p1, Point p2) {
+	void markArea(Point p1, Point p2) {
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 			if (markArea) {
@@ -201,7 +201,7 @@ class Plot1d extends Plot {
 		repaint();
 	}
 
-	void paintMarkArea(Graphics g) {
+	protected void paintMarkArea(Graphics g) {
 		final Graphics2D g2=(Graphics2D)g;
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 		0.5f));
@@ -215,7 +215,7 @@ class Plot1d extends Plot {
 	 * including title, border, tickmarks, tickmark labels
 	 * and last but not least update the scrollbars
 	 */
-	void paintHistogram(Graphics g) { 
+	protected void paintHistogram(Graphics g) { 
 		g.setColor(PlotColorMap.hist);
 		graph.drawHist(counts,binWidth);
 		if (autoPeakFind) {
@@ -267,7 +267,7 @@ class Plot1d extends Plot {
 	/**
 	 * Draw a overlay of another data set
 	 */
-	void paintOverlay(Graphics g) {
+	protected void paintOverlay(Graphics g) {
 		g.setColor(PlotColorMap.overlay);
 		graph.drawHist(countsOverlay,binWidth);
 	}
@@ -275,7 +275,7 @@ class Plot1d extends Plot {
 	/**
 	 * Paint a gate on the give graphics object
 	 */
-	void paintGate(Graphics g) {
+	protected void paintGate(Graphics g) {
 		final Graphics2D g2=(Graphics2D)g;
 		final boolean noFillMode =
 			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
@@ -292,7 +292,7 @@ class Plot1d extends Plot {
 	/**
 	 * paints a fit to a given graphics
 	 */
-	void paintFit(Graphics g) {
+	protected void paintFit(Graphics g) {
 		if (fitChannels != null) {
 			if (fitBackground != null) {
 				g.setColor(PlotColorMap.fitBackground);
@@ -319,21 +319,21 @@ class Plot1d extends Plot {
 	 * Get the counts in a X channel,
 	 * Y channel ignored.
 	 */
-	public double getCount(Point p) {
+	double getCount(Point p) {
 		return counts[p.x];
 	}
 
 	/**
 	 * Get the array of counts for the current histogram
 	 */
-	public double[] getCounts() {
+	double[] getCounts() {
 		return counts;
 	}
 
 	/**
 	 * Find the maximum counts in the part of the histogram displayed
 	 */
-	public int findMaximumCounts() {
+	protected final int findMaximumCounts() {
 		int chmax = plotLimits.getMaximumX();
 		int chmin = plotLimits.getMinimumX();
 		int maxCounts = 0;
@@ -354,7 +354,7 @@ class Plot1d extends Plot {
 	/**
 	 * Find the minimum counts in the part of the histogram displayed
 	 */
-	public int findMinimumCounts() {
+	protected final int findMinimumCounts() {
 		int chmax = plotLimits.getMaximumX();
 		int chmin = plotLimits.getMinimumX();
 		int minCounts = 0;
@@ -375,21 +375,22 @@ class Plot1d extends Plot {
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
-	public double getEnergy(double channel) {
+	double getEnergy(double channel) {
 		return currentHist.getCalibration().getCalculatedEnergy(channel);
 	}
 
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
-	public int getChannel(double energy) {
+	int getChannel(double energy) {
 		return (int) Math.round(
 			currentHist.getCalibration().getChannel(energy));
 	}
+	
 	/**
 	 * Called when the mouse has moved
 	 */
-	public void mouseMoved(MouseEvent me) {
+	protected void mouseMoved(MouseEvent me) {
 		if (markingArea) {			
 			lastMovePoint.setLocation(me.getX(), me.getY());
 			setMouseMoved(true);
