@@ -171,17 +171,17 @@ public final class DisplayCounters extends JDialog implements Observer {
 			public void actionPerformed(ActionEvent ae) {
 				if (mode == ONLINE) {
 					broadcaster.broadcast(BroadcastEvent.COUNTERS_READ);
-					textEvntSort.setText(
-						String.valueOf(sortDaemon.getEventCount()));
+					textBuffRecv.setText(
+							String.valueOf(netDaemon.getPacketCount()));
 					textBuffSort.setText(
 						String.valueOf(sortDaemon.getBufferCount()));
-					textBuffRecv.setText(
-						String.valueOf(netDaemon.getPacketCount()));
 					textBuffWrit.setText(
 						String.valueOf(storageDaemon.getBufferCount()));
+					textEvntSort.setText(
+							String.valueOf(sortDaemon.getSortedCount()));
 				} else { //offline
 					textEvntSort.setText(
-						String.valueOf(sortDaemon.getEventCount()));
+						String.valueOf(sortDaemon.getSortedCount()));
 					textBuffSort.setText(
 						String.valueOf(sortDaemon.getBufferCount()));
 					textFileRead.setText(
@@ -205,8 +205,9 @@ public final class DisplayCounters extends JDialog implements Observer {
 						String.valueOf(sortDaemon.getBufferCount()));
 					textEvntSent.setText(space);
 					sortDaemon.setEventCount(0);
+					sortDaemon.setSortedCount(0);
 					textEvntSort.setText(
-						String.valueOf(sortDaemon.getEventCount()));
+						String.valueOf(sortDaemon.getSortedCount()));
 					textBuffSent.setText(space); //value update method
 					textEvntSent.setText(space); //value update method
 					textBuffRecv.setText(space);
@@ -226,6 +227,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 						String.valueOf(sortDaemon.getBufferCount()));
 					textEvntSent.setText(space);
 					sortDaemon.setEventCount(0);
+					sortDaemon.setSortedCount(0);
 					textEvntSort.setText(
 						String.valueOf(sortDaemon.getEventCount()));
 					textFileRead.setText(space);
@@ -312,7 +314,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 				textBuffSort.setText(
 					String.valueOf(sortDaemon.getBufferCount()));
 				textEvntSort.setText(
-					String.valueOf(sortDaemon.getEventCount()));
+					String.valueOf(sortDaemon.getSortedCount()));
 				textFileRead.setText(
 					String.valueOf(storageDaemon.getFileCount()));
 			}

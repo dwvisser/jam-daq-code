@@ -693,7 +693,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
 				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
 		//set the fraction of buffers to give to the sort routine
-		netDaemon.setSortInterval(sortInterval);
+		sortDaemon.setSortInterval(sortInterval);
 		//tell control about everything
 		runControl.setupOn(
 			experimentName,

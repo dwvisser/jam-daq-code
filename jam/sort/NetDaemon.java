@@ -50,7 +50,7 @@ public  class NetDaemon extends GoodThread {
     /**
      * sample interval to sort data
      */
-    private int sortInterval=1;//sort every buffer
+    //private int sortInterval=1;//sort every buffer
     
     /**
      * number of packets counter
@@ -122,11 +122,11 @@ public  class NetDaemon extends GoodThread {
         while(this.checkState()){//loop as long as state is RUN
             //wait for packet
             dataSocket.receive(dataIn);
-            if (this.checkState()) {
+            if (checkState()) {
                 dataIn.getData();//data goes to bufferOut
                 packetCount++;
                 //put buffer into to sorting ring with sample fraction
-                if( sorterOn&&((packetCount%sortInterval)==0) ){
+                if( sorterOn ){
                     try {
                         sortingRing.putBuffer(bufferOut);
                     } catch (RingFullException rfe){
@@ -171,29 +171,7 @@ public  class NetDaemon extends GoodThread {
             dataSocket.close();
         }
     }
-    /**
-     * Sets the sort sample interval
-     * This is the frequeny of buffers sent to
-     * the sort routine.
-     * For example if this is set to 2 only every second
-     * buffer is sent to the sort routine.
-     *
-     * @param sample the sample interval
-     */
-    public void setSortInterval(int sample) {
-        sortInterval=sample;
-    }
     
-    /**
-     * Returns the sort sample interval.
-     *
-     * @see #setSortInterval(int)
-     * @return the total number of packets sent
-     */
-    public int getSortInterval() {
-        return sortInterval;
-        
-    }
     /**
      * Returns the total packets sent.
      *

@@ -74,6 +74,7 @@ public class SortDaemon extends GoodThread {
     private int []eventData;
     private int [] eventDataZero;
     private int eventCount;
+    private int eventSortedCount;
     private int bufferCount;
 
     //private static final boolean sortLoop=true;
@@ -201,21 +202,27 @@ public class SortDaemon extends GoodThread {
      * @exception Exception thrown if an unrecoverable error occurs during sorting
      */
     public  void sortOnline() throws Exception {
-    	EventInputStatus status;
-    	
         while(true) {				//loop while acquisition on
             controller.atSortStart();  //does nothing for online
             //get a new buffer and make a input sream out of it
+            if (ringBuffer.halfFull()){
+            	incSortInterval();
+            }
             buffer=ringBuffer.getBuffer();
             ringInputStream.setBuffer(buffer);
             eventInputStream.setInputStream(ringInputStream);
             System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array
             //read events until not a event
+        	EventInputStatus status;
             while ((((status=eventInputStream.readEvent(eventData))
             == EventInputStatus.EVENT) || (status == EventInputStatus.SCALER_VALUE)
             || (status == EventInputStatus.IGNORE))) {
                 if (status == EventInputStatus.EVENT) {
-                    sortRoutine.sort(eventData);
+                	/* Sort only the sortInterval'th events. */
+                    if (eventCount%sortInterval==0){
+                    	sortRoutine.sort(eventData);
+                    	eventSortedCount++;
+                    }
                     eventCount++;
                     //zero event array and get ready for next event
                     System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);
@@ -295,6 +302,7 @@ public class SortDaemon extends GoodThread {
                         	if (status == EventInputStatus.EVENT) {
 								sortRoutine.sort(eventData);
 								eventCount++;
+								eventSortedCount++;
 								System.arraycopy(eventDataZero, 0, eventData, 0, eventSize);//zero event array and get ready for next event
 								atBuffer=false;
 								if (eventCount%COUNT_UPDATE==0){      //exactly divisible by COUNT_UPDATE
@@ -362,8 +370,16 @@ public class SortDaemon extends GoodThread {
      *
      * @return the number of events processed
      */
-    public int getEventCount(){
+    public synchronized int getEventCount(){
         return eventCount;
+    }
+    
+    public synchronized int getSortedCount(){
+    	return eventSortedCount;
+    }
+    
+    public synchronized void setSortedCount(int count){
+    	eventSortedCount=count;
     }
 
     /**
@@ -371,7 +387,7 @@ public class SortDaemon extends GoodThread {
      *
      * @param count the number of events processed
      */
-    public void setEventCount(int count){
+    public synchronized void setEventCount(int count){
         eventCount=count;
     }
 
@@ -392,6 +408,37 @@ public class SortDaemon extends GoodThread {
     public void setBufferCount(int count){
         bufferCount=count;
     }
+    
+    private int sortInterval=1;
+
+	/**
+	 * Sets the sort sample interval
+	 * This is the frequeny of buffers sent to
+	 * the sort routine.
+	 * For example if this is set to 2 only every second
+	 * buffer is sent to the sort routine.
+	 *
+	 * @param sample the sample interval
+	 */
+	public synchronized void setSortInterval(int sample) {
+	    sortInterval=sample;
+	}
+	
+	private synchronized void incSortInterval(){
+		sortInterval++;
+		msgHandler.warningOutln("Sorting ring buffer half-full."+ 
+				" Sort interval increased to "+sortInterval+".");
+	}
+
+	/**
+	 * Returns the sort sample interval.
+	 *
+	 * @see #setSortInterval(int)
+	 * @return the total number of packets sent
+	 */
+	public synchronized int getSortInterval() {
+	    return sortInterval;     
+	}
 
 
 }
