@@ -12,7 +12,7 @@ import javax.swing.DefaultComboBoxModel;
  */
 public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
-	private String selection = null;
+	private Object selection = null;
 	private int lastSize=0;
 	private Object [] lastValue;
 
@@ -53,8 +53,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 			} else {
 				if (numHists() > 0) {
 					rval =
-						((Histogram) list.get(index))
-							.getName();
+						(Histogram) list.get(index);
 				}
 			}
 		}
@@ -92,7 +91,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public void setSelectedItem(Object anItem) {
 		synchronized(this){
-			selection = (String) anItem;
+			selection = anItem;
 		}
 	}
 
