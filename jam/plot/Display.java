@@ -4,6 +4,7 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandListener;
+import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -300,23 +301,15 @@ public class Display
 	 * @param commandIn
 	 * @param cmdParams
 	 */
-	public boolean performParseCommand(String commandIn, String [] cmdParams) {
-		final int numberParams = cmdParams.length;
-		double [] parameters = new double [numberParams];
-		//rest of tokens must be numbers
-		try {
-			int countParam=0;
-			while (countParam<numberParams) {
-				parameters[countParam] = getNumber(cmdParams[countParam]);
-				countParam++;
-			}
-		} catch (NumberFormatException nfe) {
-			msgHandler.errorOutln("Input parameter not a number");
-		}
+	public boolean performParseCommand(String commandIn, String [] cmdParams) throws CommandListenerException{
 		
-		boolean accept =action.commandPerform(commandIn, parameters);
-		return accept;
-				
+		try {		
+		
+			boolean accept =action.commandPerform(commandIn, cmdParams);
+			return accept;
+		} catch(NumberFormatException e) {
+			throw new CommandListenerException(e.getMessage());		
+		}
 	}
 
 	/**
@@ -674,16 +667,6 @@ public class Display
 	 */
 	public void setAutoOnExpand(boolean whether) {
 		action.setAutoOnExpand(whether);
-	}
-	/**
-	 * Parse a string go a number
-	 * @param s
-	 * @return
-	 * @throws NumberFormatException
-	 */
-	private double getNumber(String s) throws NumberFormatException {
-		return (s.indexOf('.')>=0) ? Double.parseDouble(s) : 
-		Integer.parseInt(s);
 	}
 	
 }
