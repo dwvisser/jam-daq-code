@@ -130,6 +130,11 @@ public final class SetupSortOn extends JDialog {
 
 	private static SetupSortOn instance = null;
 
+	/**
+	 * Returns the only instance of this class.
+	 * 
+	 * @return the only instance of this class
+	 */
 	public static SetupSortOn getSingletonInstance() {
 		if (instance == null) {
 			throw new IllegalStateException("Object not created yet.");
@@ -137,6 +142,11 @@ public final class SetupSortOn extends JDialog {
 		return instance;
 	}
 
+	/**
+	 * Creates the only instance of this class.
+	 * 
+	 * @param jc the console to use
+	 */
 	public static void createSingletonInstance(JamConsole jc) {
 		if (instance == null) {
 			instance = new SetupSortOn(jc);
@@ -145,9 +155,6 @@ public final class SetupSortOn extends JDialog {
 		}
 	}
 
-	/**
-	 * Constructor
-	 */
 	private SetupSortOn(JamConsole jc) {
 		super(STATUS.getFrame(), "Setup Online ", false);
 		final int fileTextColumns = 25;
@@ -444,6 +451,7 @@ public final class SetupSortOn extends JDialog {
 						jamConsole.closeLogFile();
 					} catch (Exception e) {
 						jamConsole.errorOutln(e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}
@@ -472,7 +480,7 @@ public final class SetupSortOn extends JDialog {
 		return RTSI.find(path, jam.sort.SortRoutine.class);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Browses for the sort file.
 	 */
 	private File getSortPath() {
@@ -505,8 +513,9 @@ public final class SetupSortOn extends JDialog {
 								+ experimentName);
 				loadSorter(); //load sorting routine
 				if (sortRoutine != null) {
+					/* Kill all existing Daemons and clear data areas */
 					resetAcq(false);
-					//Kill all existing Daemons and clear data areas
+					lockMode(true);
 					setupAcq(); //create daemons
 					jamConsole.messageOutln("Loaded sort routine "
 							+ sortRoutine.getClass().getName()
@@ -519,7 +528,6 @@ public final class SetupSortOn extends JDialog {
 					} else if (sortRoutine.getEventSizeMode() == SortRoutine.SET_BY_VME_MAP) {
 						setupVMEmap();
 					}
-					lockMode(true);
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 					jamConsole
 							.messageOutln("Setup data network, and Online sort daemons setup");
@@ -539,30 +547,18 @@ public final class SetupSortOn extends JDialog {
 		}
 	}
 
-	/*
-	 * public void itemStateChanged(ItemEvent ie) { final ItemSelectable item =
-	 * ie.getItemSelectable(); if (item == checkLock) { } else if (item ==
-	 * cdisk) { } }
-	 */
-
 	/**
 	 * Save the names of the experiment, the sort file and the event and
 	 * histogram directories.
 	 */
-	private void loadNames() throws JamException {
-		final String fileSeparator = System.getProperty("file.separator", "/");
+	private void loadNames() {
 		experimentName = textExpName.getText().trim();
-		/*histDirectory = textPathHist.getText().trim() + fileSeparator;
-		dataDirectory = new File(textPathData.getText().trim() + fileSeparator);
-		logDirectory = textPathLog.getText().trim() + fileSeparator;*/
-		/*
-		 * if (!cdisk.isSelected()) { dataDirectory = dataDirectory +
-		 * fileSeparator; }
-		 */
 	}
 
 	/**
 	 * Load and instantize the sort file.
+	 * 
+	 * @throws JamException if there is a problem loading the sorter
 	 */
 	private void loadSorter() throws JamException {
 		if (sortClass == null) {
@@ -585,7 +581,7 @@ public final class SetupSortOn extends JDialog {
 		}
 	}
 
-	/**
+	/* non-javadoc
 	 * Sets up the online sort process. Creates the necessary daemons and link
 	 * pipes between the processes.
 	 * 
@@ -641,12 +637,10 @@ public final class SetupSortOn extends JDialog {
 		//create sorter daemon
 		sortDaemon = new SortDaemon(runControl, jamConsole);
 		final boolean useDisk = cdisk.isSelected();
-		final SortMode sortmode = useDisk ? SortMode.ONLINE_DISK
-				: SortMode.ON_NO_DISK;
 		sortDaemon
-				.setup(sortmode, eventInputStream, sortRoutine.getEventSize());
+				.setup(eventInputStream, sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
-		sortDaemon.setSortRoutine(sortRoutine);
+		sortDaemon.setSorter(sortRoutine);
 		//create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
 			diskDaemon = new DiskDaemon(runControl, jamConsole);
@@ -675,14 +669,14 @@ public final class SetupSortOn extends JDialog {
 		frontEnd.setupCamac(sortRoutine.getCamacCommands());
 	}
 
-	private void setupVMEmap() throws JamException, SortException {
+	private void setupVMEmap() throws JamException {
 		frontEnd.setupAcquisition();
 		VME_Map map = sortRoutine.getVMEmap();
 		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}
 
-	/**
+	/* non-javadoc:
 	 * reset online data Aquisition kill all daemons closes data network clear
 	 * all data areas Histograms, Gates, Scalers, Monitors, Parameters
 	 */
@@ -691,7 +685,7 @@ public final class SetupSortOn extends JDialog {
 			diskDaemon.setState(GoodThread.STOP);
 		}
 		if (sortDaemon != null) {
-			sortDaemon.setSortRoutine(null);
+			sortDaemon.setSorter(null);
 			//make sure sorter Daemon does not have a handle to sortClass
 			sortDaemon.setState(GoodThread.STOP);
 			//this line should be sufficient but above line is needed
@@ -707,7 +701,7 @@ public final class SetupSortOn extends JDialog {
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 	}
 
-	/**
+	/* non-javadoc:
 	 * Is the Browse for the Path Name where the events file will be saved.
 	 * 
 	 * @author Ken Swartz
@@ -722,13 +716,13 @@ public final class SetupSortOn extends JDialog {
 		return (approval && selected) ? fd.getSelectedFile() : f;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Locks up the Online setup so the fields cannot be edited.
 	 * 
 	 * @param lock
 	 *            is true if the fields are to be locked
 	 */
-	private void lockMode(boolean lock) throws JamException {
+	private void lockMode(boolean lock) {
 		final boolean notlock = !lock;
 		checkLock.setEnabled(lock);
 		textExpName.setEnabled(notlock);
@@ -742,9 +736,10 @@ public final class SetupSortOn extends JDialog {
 		bbrowsed.setEnabled(notlock);
 		specify.setEnabled(notlock);
 		defaultPath.setEnabled(notlock);
-		SortMode sortMode =notlock ? SortMode.NO_SORT : (
+		final SortMode sortMode =notlock ? SortMode.NO_SORT : (
 				           cdisk.isSelected() ? SortMode.ONLINE_DISK: SortMode.ON_NO_DISK);
-		STATUS.setSortMode(sortMode, sortRoutine.getClass().getName() );
+		final String name=sortRoutine==null ? "No Data" : sortRoutine.getClass().getName();
+		STATUS.setSortMode(sortMode, name);
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
 	}
