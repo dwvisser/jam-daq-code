@@ -123,6 +123,7 @@ public class ViewNew extends JDialog {
 	 */
 	private void makeView(){
 		String name =textName.getText();
+		View viewNew;
 		int nRows = Integer.parseInt(((String) comboRows.getSelectedItem()).trim());
 		int nCols = Integer.parseInt(((String) comboCols.getSelectedItem()).trim());
 		
@@ -131,10 +132,11 @@ public class ViewNew extends JDialog {
 			name ="View "+nRows+"x"+nCols;
 		}
 		
-		new View(name, nRows, nCols);
+		viewNew=new View(name, nRows, nCols);
 		
 		Broadcaster broadcaster=Broadcaster.getSingletonInstance();
 		broadcaster.broadcast(BroadcastEvent.Command.VIEW_NEW);
+		status.getDisplay().setView(viewNew);
 	}
 	private void close(){
 		dispose();
