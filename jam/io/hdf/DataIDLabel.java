@@ -28,7 +28,7 @@ final class DataIDLabel extends DataObject {
 
 	private String label;
 
-	DataIDLabel(DataObject obj, String label) {
+	DataIDLabel(DataObject obj, String label) throws HDFException {
 		super(DFTAG_DIL); //sets tag
 		object = obj;
 		this.label = label;
@@ -40,8 +40,7 @@ final class DataIDLabel extends DataObject {
 			dos.writeShort(object.getRef());
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("Problem creating DataIDLabel.",ioe);
 		}
 		bytes = baos.toByteArray();
 	}

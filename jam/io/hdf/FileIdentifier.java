@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
  */
 final class FileIdentifier extends DataObject {
 
-	FileIdentifier(String label) {
+	FileIdentifier(String label) throws HDFException {
 		super(DFTAG_FID); //sets tag
 		int byteLength = label.length();
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -25,8 +25,8 @@ final class FileIdentifier extends DataObject {
 		try {
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException(
+					"Creating FileIdentifier.",ioe);
 		}
 		bytes = baos.toByteArray();
 	}

@@ -25,15 +25,10 @@ final class NumericalDataGroup extends DataObject {
 	 */
 	private List elements;
 
-	NumericalDataGroup() {
+	NumericalDataGroup() throws HDFException {
 		super(DFTAG_NDG); //sets tag
 		elements = new Vector();
-		try {
-			refreshBytes();
-		} catch (HDFException e) {
-			JOptionPane.showMessageDialog(null,e.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
-		}
+		refreshBytes();
 	}
 
 	NumericalDataGroup(byte[] data, short t, short reference) {
@@ -94,14 +89,9 @@ final class NumericalDataGroup extends DataObject {
 	 *
 	 * @param  data  data element to be added
 	 */
-	void addDataObject(DataObject data) {
+	void addDataObject(DataObject data) throws HDFException {
 		elements.add(data);
-		try {
-			refreshBytes();
-		} catch (HDFException e) {
-			JOptionPane.showMessageDialog(null,e.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
-		}
+		refreshBytes();
 	}
 
 	/* non-javadoc:

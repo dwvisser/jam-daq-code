@@ -25,7 +25,7 @@ final class ScientificDataScales extends DataObject {
 
 	private static final byte TRUE = 1;//FALSE=0
 
-	ScientificDataScales(ScientificDataDimension sdd) {
+	ScientificDataScales(ScientificDataDimension sdd) throws HDFException {
 		super(DFTAG_SDS); //sets tag
 		int i, j;
 		rank = sdd.getRank();
@@ -49,8 +49,7 @@ final class ScientificDataScales extends DataObject {
 				}
 			}
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("Creating ScientificDataScales.",ioe);
 		}
 		bytes = baos.toByteArray();
 	}

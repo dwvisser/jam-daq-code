@@ -44,7 +44,7 @@ final class LibVersion extends DataObject {
 
     /* DFTAG_VERSION seems to need to be 92(80=92-12) long */
 
-	LibVersion() {
+	LibVersion() throws HDFException {
 		super(DFTAG_VERSION); //sets tag
 		final int byteLength = 12 + description.length(); // 3 ints + string
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -55,8 +55,7 @@ final class LibVersion extends DataObject {
 			dos.writeInt(RELEASE);
 			dos.writeBytes(description);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("Creating LibVersion ",ioe);
 		}
 		bytes = baos.toByteArray();
 	}

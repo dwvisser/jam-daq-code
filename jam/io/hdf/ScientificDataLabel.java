@@ -52,7 +52,7 @@ final class ScientificDataLabel extends DataObject {
 			}
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting SDL.",e);
+				"Problem interpreting ScientificDataLabel.",e);
 		}
 	}
 }

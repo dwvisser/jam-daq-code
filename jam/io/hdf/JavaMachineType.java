@@ -24,15 +24,15 @@ final class JavaMachineType extends DataObject {
 	 */
 	private static final short DFMT_SUN = 0x1111;
 
-	JavaMachineType() {
+	JavaMachineType() throws HDFException {
 		super(DFTAG_MT); //sets tag
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			dos.writeShort(DFMT_SUN);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException(
+					"Creating JavaMachineType.",ioe);
 		}
 		bytes = baos.toByteArray();
 	}

@@ -42,16 +42,11 @@ final class VirtualGroup extends DataObject {
 	private final short version = 3; //version of DFTAG_VG info
 	private final short more = 0; //unused but must add
 
-	VirtualGroup(String name, String type) {
+	VirtualGroup(String name, String type) throws HDFException {
 		super(DFTAG_VG); //sets tag
 		this.name = name;
 		this.type = type;
-		try {
-			refreshBytes();
-		} catch (HDFException e) {
-			JOptionPane.showMessageDialog(null,e.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
-		}
+		refreshBytes();
 	}
 
 	VirtualGroup(byte[] data, short t, short r) {

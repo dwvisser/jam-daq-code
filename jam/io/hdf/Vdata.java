@@ -46,7 +46,7 @@ public final class Vdata extends DataObject {
 		setRef(description.getRef());
 	}
 	
-	Vdata(byte[] data, short t, short reference) {
+	Vdata(byte[] data, short t, short reference) throws HDFException {
 		super(data, t, reference);
 		description = (VdataDescription) (getObject(DFTAG_VH, reference));
 		description.interpretBytes();
@@ -93,7 +93,7 @@ public final class Vdata extends DataObject {
 		cells[column][row] = indata;
 	}
 	
-	protected void interpretBytes() {
+	protected void interpretBytes() throws HDFException {
 		int row;
 
 		for (int col = 0; col < nfields; col++) {
@@ -152,7 +152,7 @@ public final class Vdata extends DataObject {
 	 * The workhorse of this method is calls made to the <it>protected</it>
 	 * method <code>getBytes(row,col)</code>.
 	 */
-	void refreshBytes() {
+	void refreshBytes() throws HDFException {
 		final int numBytes = nvert * ivsize;
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream(numBytes);
 		final DataOutputStream dos = new DataOutputStream(baos);
@@ -163,8 +163,7 @@ public final class Vdata extends DataObject {
 				}
 			}
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException("Writing VData ", ioe);
 		}
 		bytes = baos.toByteArray();
 	}
@@ -460,7 +459,7 @@ public final class Vdata extends DataObject {
 	/* non-javadoc:
 	 * Get the double in the specified cell.  Of course, there'd better actually be a float there!
 	 */
-	private Double getDouble(int row, int col) {
+	private Double getDouble(int row, int col) throws HDFException {
 		int location;
 		int length = 8;
 		byte[] temp;
@@ -479,8 +478,7 @@ public final class Vdata extends DataObject {
 			try {
 				d = dis.readDouble();
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(null,ioe.getMessage(),
-				getClass().getName(),JOptionPane.ERROR_MESSAGE);
+				throw new HDFException ("VData", ioe);
 			}
 			out = new Double(d);
 		} else {

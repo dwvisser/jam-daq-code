@@ -229,7 +229,11 @@ public class HDFIO implements DataIO, JamHDFFields {
             final List parameters) {
         final Thread thread = new Thread(new Runnable() {
             public void run() {
-                writeFile(file, histograms, gates, scalers, parameters);
+            	try {
+            		writeFile(file, histograms, gates, scalers, parameters);
+            	} catch (HDFException hde) {
+            		outerr("Writing hdf file "+hde.getMessage());
+            	}
             }
         });
         thread.start();
@@ -252,7 +256,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      *            list of <code>Parameter</code> objects to write
      */
     private void writeFile(File file, List hists, List gates, List scalers,
-            List parameters) {
+            List parameters)  throws HDFException {
         final StringBuffer message = new StringBuffer();
         int progress = 1;
     	DataObject.clearAll();
@@ -384,6 +388,13 @@ public class HDFIO implements DataIO, JamHDFFields {
         });
     }
 
+    private void outerr(final String msg) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                msgHandler.errorOutln(msg);
+            }
+        });
+    }
 
     /**
      * Read in an HDF file.
@@ -662,7 +673,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @see jam.io.hdf.NumberType
 	 */
 	
-	void addDefaultDataObjects(String fileID) {
+	void addDefaultDataObjects(String fileID) throws HDFException {
 		new LibVersion(); //DataObjects add themselves
 		
 		NumberType.createDefaultTypes();
@@ -679,7 +690,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 	 * @throws IOException if there's a problem writing to the file
 	 * @see jam.global.JamProperties
 	 */
-	void addFileNote() {
+	void addFileNote() throws HDFException {
 		final String noteAddition=
 			"\n\nThe histograms when loaded into jam are displayed starting at channel zero up\n"
 				+ "to dimension-1.  Two-dimensional data are properly displayed with increasing channel\n"
@@ -705,7 +716,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * 
      * @see #addHistogram(Histogram)
      */
-    protected void addHistogramSection() {
+    protected void addHistogramSection()  throws HDFException {
         synchronized (this) {
             histGroup = new VirtualGroup(HIST_SECTION_NAME,
                     FILE_SECTION_NAME);
@@ -980,7 +991,7 @@ public class HDFIO implements DataIO, JamHDFFields {
      * 
      * @see #addGate(Gate)
      */
-    protected void addGateSection() {
+    protected void addGateSection()  throws HDFException {
         synchronized (this) {
             gateGroup = new VirtualGroup(GATE_SECTION_NAME,
                     FILE_SECTION_NAME);

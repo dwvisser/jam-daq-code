@@ -22,7 +22,7 @@ final class FileDescription extends DataObject {
 	 */
 	DataObject object;
 
-	FileDescription(String label) {
+	FileDescription(String label) throws HDFException {
 		super(DFTAG_FD); //sets tag
 		int byteLength = label.length();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(byteLength);
@@ -30,8 +30,8 @@ final class FileDescription extends DataObject {
 		try {
 			dos.writeBytes(label);
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null,ioe.getMessage(),
-			getClass().getName(),JOptionPane.ERROR_MESSAGE);
+			throw new HDFException(
+					"Creating FileDescription", ioe);			
 		}
 		bytes = baos.toByteArray();
 	}
@@ -51,7 +51,7 @@ final class FileDescription extends DataObject {
 			dis.read(temp);
 		} catch (IOException e) {
 			throw new HDFException(
-				"Problem interpreting FID.",e);
+				"Problem interpreting FileDescription.",e);
 		}
 	}
 }

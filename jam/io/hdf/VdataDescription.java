@@ -121,7 +121,7 @@ public final class VdataDescription extends DataObject {
     private final static short VH_VERSION = 3;
 
     VdataDescription(String name, String classtype, int size,
-            String[] names, short[] types, short[] orders) {
+            String[] names, short[] types, short[] orders) throws HDFException {
         super(DFTAG_VH); //sets tag
         /* Double check dimensionality */
         if ((names.length != types.length) || (names.length != orders.length)) {
@@ -206,8 +206,7 @@ public final class VdataDescription extends DataObject {
             dos.writeShort(0); //unused bytes
             dos.writeByte(0); //unused additional (undocumented) byte
         } catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null, ioe.getMessage(), getClass()
-                    .getName(), JOptionPane.ERROR_MESSAGE);
+        	throw new HDFException("Creating VDataDescription", ioe);
         }
         bytes = baos.toByteArray();
     }
@@ -216,7 +215,7 @@ public final class VdataDescription extends DataObject {
         super(data, t, reference);
     }
 
-    public void interpretBytes() {
+    public void interpretBytes() throws HDFException {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         DataInputStream dis = new DataInputStream(bais);
         short len;
@@ -265,8 +264,7 @@ public final class VdataDescription extends DataObject {
             dis.readShort(); //should be version(=VH_VERSION)
             dis.readShort(); //no extension
         } catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null, ioe.getMessage(), getClass()
-                    .getName(), JOptionPane.ERROR_MESSAGE);
+        	throw new HDFException("Interpret VDataDescription", ioe);
         }
     }
 
