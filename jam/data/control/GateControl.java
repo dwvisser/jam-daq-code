@@ -17,6 +17,7 @@ Observer  {
 
     static final int ONE_DIMENSION=1;
     static final int TWO_DIMENSION=2;
+    static final int NONE=-1;
 
     private Frame frame;
     private Broadcaster broadcaster;
@@ -31,7 +32,7 @@ Observer  {
     private Polygon gatePoly2d;
     private int numberPoints;
 
-    //set gate dialog box
+    /* set gate dialog box */
     private JDialog dgate;
     private JComboBox cgate;
     private GateControlComboBoxModel cgateModel;
@@ -45,16 +46,16 @@ Observer  {
     private JButton save;
     private JButton cancel;
 
-    //new gate dialog box
+    /* new gate dialog box */
     private JDialog dnew;
     private JTextField textNew;
 	private GateControlComboBoxModel2 caddModel;
 	
-    //add gate dialog box
+    /* add gate dialog box */
     private JDialog dadd;
     private JComboBox cadd;
 
-    boolean newGate=false;    //a gate has been choicen
+    boolean newGate=false;//a gate has been chosen
     
     private JamStatus status;
 
@@ -361,7 +362,7 @@ Observer  {
      *
      */
     public void setup(){
-        int type;
+        //int type;
 
         String typeGate="gate";
         cgateModel.changeOccured();
@@ -369,8 +370,9 @@ Observer  {
         //get current state
         currentHistogram = Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHistogram == null) {
-            System.err.println("GateControl.setup(): currentHistogram is null.");
-            type=99;//undefined type
+            //System.err.println("GateControl.setup(): currentHistogram is null.");
+            /* There are many normal situations with no current histogram. */
+            type=NONE;//undefined type
         } else if ((currentHistogram.getType()==Histogram.ONE_DIM_INT)||
         (currentHistogram.getType()==Histogram.ONE_DIM_DOUBLE)) {
             type=Gate.ONE_DIMENSION;
@@ -381,7 +383,7 @@ Observer  {
             typeGate="gate 2-D";
         } else {
             System.err.println("GateControl undefined histogram type ");
-            type=99;
+            type=NONE;
         }
         cgate.setSelectedIndex(0);
         cadd.setSelectedIndex(0);
