@@ -16,9 +16,9 @@ import jam.global.MessageHandler;
  * @author Ken Swartz
  *  
  */
-public class ParseCommand implements CommandListener {
+final class ParseCommand implements CommandListener {
 
-	private Action action;
+	private final Action action;
 
 	private final MessageHandler textOut;
 
@@ -51,9 +51,6 @@ public class ParseCommand implements CommandListener {
 		textOut = jc;
 	}
 
-	/**
-	 * Parse a plot command
-	 */
 	public boolean performParseCommand(String _command, String[] cmdParams) {
 		boolean accept = false; //is the command accepted
 		final String command = _command.toLowerCase();
