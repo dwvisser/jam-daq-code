@@ -87,7 +87,6 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
-
 		Dimension dim = histogramChooser.getPreferredSize();
 		dim.width = chooserWidth;
 		histogramChooser.setPreferredSize(dim);
