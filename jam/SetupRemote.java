@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.ItemSelectable;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -47,29 +48,27 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	final static int SNAP = 1;
 	final static int LINK = 2;
 
-	private MessageHandler msgHandler;
+	private transient MessageHandler msgHandler;
 
-	private JLabel lname;
-	private JTextField textName;
-	private JCheckBox cserver;
-	private JCheckBox csnap;
-	private JCheckBox clink;
-	private JButton bok;
-	private JButton bapply;
-	private JCheckBox checkLock;
+	private transient JLabel lname;
+	private transient JTextField textName;
+	private transient JCheckBox cserver;
+	private transient JCheckBox csnap;
+	private transient JCheckBox clink;
+	private transient JButton bok;
+	private transient JButton bapply;
+	private transient JCheckBox checkLock;
 	
 	private static final JamStatus STATUS=JamStatus.instance();
 
-	private int mode; //mode server, snap or link
-	RemoteData remoteData;
-	RemoteAccess remoteAccess;
+	private transient int mode; //mode server, snap or link
+	transient RemoteData remoteData;
+	transient RemoteAccess remoteAccess;
 
-	private String[] histogramNames;
-	private List histogramList, gateList;
-	private boolean inApplet; //are we running in a applet
+	private transient String[] histNames;
+	private transient List histList, gateList;
+	private transient boolean inApplet; //are we running in a applet
 
-	private boolean setupLock = false;
-	
 	private static SetupRemote instance;
 	public static SetupRemote getSingletonInstance(){
 		if (instance==null){
@@ -90,55 +89,55 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 		setResizable(false);
 		setLocation(20, 50);
 		setSize(400, 250);
-		final Container dl=getContentPane();
-		dl.setLayout(new GridLayout(0, 1, 10, 10));
+		final Container contents=getContentPane();
+		contents.setLayout(new GridLayout(0, 1, 10, 10));
 		// panel for mode     
-		Panel pm = new Panel();
-		pm.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		dl.add(pm);
+		final Panel panelM = new Panel();
+		panelM.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		contents.add(panelM);
 		final ButtonGroup cbgmode = new ButtonGroup();
 		cserver = new JCheckBox("Server  ", true);
 		cbgmode.add(cserver);
 		cserver.addItemListener(this);
-		pm.add(cserver);
+		panelM.add(cserver);
 		csnap = new JCheckBox("SnapShot", false);
 		cbgmode.add(csnap);
 		csnap.addItemListener(this);
-		pm.add(csnap);
+		panelM.add(csnap);
 		clink = new JCheckBox("Link    ", false);
 		cbgmode.add(clink);
 		clink.addItemListener(this);
-		pm.add(clink);
+		panelM.add(clink);
 		// panel for name
-		Panel pn = new Panel();
-		pn.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		dl.add(pn);
+		final Panel panelN = new Panel();
+		panelN.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		contents.add(panelN);
 		lname = new JLabel("Name:", Label.RIGHT);
-		pn.add(lname);
+		panelN.add(lname);
 		textName = new JTextField(DEFAULT_NAME);
 		textName.setColumns(35);
 		textName.setBackground(Color.white);
-		pn.add(textName);
+		panelN.add(textName);
 		// panel for buttons         
-		Panel pb = new Panel();
-		pb.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		dl.add(pb);
+		final Panel panelB = new Panel();
+		panelB.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		contents.add(panelB);
 		bok = new JButton("   OK   ");
-		pb.add(bok);
+		panelB.add(bok);
 		bok.setActionCommand("ok");
 		bok.addActionListener(this);
 		bapply = new JButton(" Apply  ");
-		pb.add(bapply);
+		panelB.add(bapply);
 		bapply.setActionCommand("apply");
 		bapply.addActionListener(this);
 		Button bcancel = new Button(" Cancel ");
-		pb.add(bcancel);
+		panelB.add(bcancel);
 		bcancel.setActionCommand("cancel");
 		bcancel.addActionListener(this);
 		checkLock = new JCheckBox("Setup Locked", false);
 		checkLock.setEnabled(false);
 		checkLock.addItemListener(this);
-		pb.add(checkLock);
+		panelB.add(checkLock);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		mode = SERVER;
 		inApplet = false;
@@ -149,10 +148,9 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	 *
 	 *
 	 */
-	public void actionPerformed(ActionEvent ae) {
-
-		String command = ae.getActionCommand();
-		String name = textName.getText().trim();
+	public void actionPerformed(ActionEvent event) {
+		final String command = event.getActionCommand();
+		final String name = textName.getText().trim();
 		try {
 			if (command == "ok" || command == "apply") {
 				if (mode == SERVER) {
@@ -185,24 +183,23 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	/**
 	 * What mode has been picked
 	 */
-	public void itemStateChanged(ItemEvent ie) {
-
+	public void itemStateChanged(ItemEvent event) {
+		final ItemSelectable item=event.getItemSelectable();
 		try {
-
-			if (ie.getItemSelectable() == cserver) {
+			if (item == cserver) {
 				mode = SERVER;
 				lname.setText("Name:");
 				textName.setText(DEFAULT_NAME);
-			} else if (ie.getItemSelectable() == csnap) {
+			} else if (item == csnap) {
 				mode = SNAP;
 				lname.setText("URL:");
 				textName.setText(DEFAULT_URL);
-			} else if (ie.getItemSelectable() == clink) {
+			} else if (item == clink) {
 				mode = LINK;
 				lname.setText("URL:");
 				textName.setText(DEFAULT_URL);
 				//lock up state    
-			} else if (ie.getItemSelectable() == checkLock) {
+			} else if (item == checkLock) {
 				setActive((checkLock.isSelected()));
 				lockFields((checkLock.isSelected()));
 
@@ -270,12 +267,12 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 		}
 		try {
 			System.out.println("get hist names");
-			histogramNames = remoteData.getHistogramNames();
+			histNames = remoteData.getHistogramNames();
 			System.out.println("got hist names");
-			System.out.println("names 0 " + histogramNames[0]);
+			System.out.println("names 0 " + histNames[0]);
 			//load histogram list
-			histogramList = remoteData.getHistogramList();
-			Histogram.setHistogramList(histogramList);
+			histList = remoteData.getHistogramList();
+			Histogram.setHistogramList(histList);
 			//load gate list
 			gateList = remoteData.getGateList();
 			Gate.setGateList(gateList);
@@ -327,20 +324,17 @@ public class SetupRemote extends JDialog implements ActionListener, ItemListener
 	 */
 	private void lockFields(boolean lock) {
 		if (lock) {
-			setupLock = true;
 			checkLock.setSelected(true);
 			checkLock.setEnabled(true);
 			textName.setEditable(false);
-			textName.setBackground(Color.lightGray);
+			textName.setEnabled(false);
 			bok.setEnabled(false);
 			bapply.setEnabled(false);
-
 		} else {
-			setupLock = false;
 			checkLock.setSelected(false);
 			checkLock.setEnabled(false);
 			textName.setEditable(true);
-			textName.setBackground(Color.white);
+			textName.setEnabled(true);
 			bok.setEnabled(true);
 			bapply.setEnabled(true);
 

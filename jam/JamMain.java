@@ -38,31 +38,30 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * Configuration information for Jam.
 	 */
-	private final JamProperties jamProperties;
+	private transient final JamProperties properties;
 
 	/**
 	 * Overall status of Jam.
 	 */
-	private final JamStatus status = JamStatus.instance();
+	private transient final JamStatus status = JamStatus.instance();
 
 	/**
 	 * Event distributor.
 	 */
-	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	/**
 	 * Histogram displayer.
 	 */
-	private final Display display;
+	private transient final Display display;
 
 	/**
 	 * Message output and text input.
 	 */
-	private final JamConsole console;
+	private transient final JamConsole console;
 
-	private final Container me;
 
-	private final SelectionToolbar selectBar;
+	private transient final SelectionToolbar selectBar;
 
 	private RunState runState = RunState.NO_ACQ;
 
@@ -72,7 +71,7 @@ public final class JamMain extends JFrame implements Observer {
 		setLookAndFeel();
 		showSplashScreen(showGUI);
 		/* Application initialization */
-		jamProperties = new JamProperties(); //class that has properties
+		properties = new JamProperties(); //class that has properties
 		status.setFrame(this);
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
@@ -87,8 +86,8 @@ public final class JamMain extends JFrame implements Observer {
 		broadcaster.addObserver(this);
 		/* Create main window GUI */
 		loadIcon();
-		me = getContentPane();
-		me.setLayout(new BorderLayout());
+		final Container contents = getContentPane();
+		contents.setLayout(new BorderLayout());
 		/* Ouput/Input text console */
 		console = new JamConsole();
 		console.messageOutln("Welcome to Jam v" + Version.getName());
@@ -98,13 +97,13 @@ public final class JamMain extends JFrame implements Observer {
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.5);
 		/* fraction of resize space that goes to display */
-		me.add(splitCenter, BorderLayout.CENTER);
+		contents.add(splitCenter, BorderLayout.CENTER);
 		/* Main menu bar */
 		final MainMenuBar menus = new MainMenuBar();
 		setJMenuBar(menus.menubar);
 		/* Histogram selection menu bar */
 		selectBar = new SelectionToolbar();
-		me.add(selectBar, BorderLayout.NORTH);
+		contents.add(selectBar, BorderLayout.NORTH);
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -132,8 +131,8 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private void showSplashScreen(boolean showGUI) {
 		if (showGUI) {
-			final int titleDisplayTime = 10000; //milliseconds
-			new SplashWindow(this, titleDisplayTime);
+			final int displayTime = 10000; //milliseconds
+			new SplashWindow(this, displayTime);
 		}
 	}
 
@@ -141,8 +140,8 @@ public final class JamMain extends JFrame implements Observer {
 	 * Load the application icon
 	 */
 	private void loadIcon() {
-		final ClassLoader cl = getClass().getClassLoader();
-		setIconImage((new ImageIcon(cl.getResource("jam/nukeicon.png"))
+		final ClassLoader loader = getClass().getClassLoader();
+		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
 				.getImage()));
 
 	}
@@ -166,8 +165,8 @@ public final class JamMain extends JFrame implements Observer {
 					setVisible(true);
 				}
 				/* print out where config files were read from */
-				jamProperties.setMessageHandler(console);
-				jamProperties.outputMessages(console);
+				properties.setMessageHandler(console);
+				properties.outputMessages(console);
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);
@@ -235,12 +234,12 @@ public final class JamMain extends JFrame implements Observer {
 	 * <li>Updates display status label .</li>
 	 * </ul>
 	 * 
-	 * @param rs
+	 * @param state
 	 *            one of the possible run states control dialog box
 	 */
-	private void setRunState(RunState rs) {
+	private void setRunState(RunState state) {
 		synchronized (runState) {
-			runState = rs;
+			runState = state;
 		}
 	}
 
@@ -256,19 +255,19 @@ public final class JamMain extends JFrame implements Observer {
 	private void setLookAndFeel() {
 		final String linux = "Linux";
 		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-		boolean useKunststoff = linux.equals(System.getProperty("os.name"));
-		if (useKunststoff) {
+		boolean bKunststoff = linux.equals(System.getProperty("os.name"));
+		if (bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(kunststoff);
 			} catch (ClassNotFoundException e) {
-				useKunststoff = false;
+				bKunststoff = false;
 			} catch (Exception e) { //all other exceptions
 				final String title = "Jam--error setting GUI appearance";
 				JOptionPane.showMessageDialog(null, e.getMessage(), title,
 						JOptionPane.WARNING_MESSAGE);
 			}
 		}
-		if (!useKunststoff) {
+		if (!bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
@@ -281,12 +280,12 @@ public final class JamMain extends JFrame implements Observer {
 	}
 
 	public void update(Observable event, Object param) {
-		final BroadcastEvent be = (BroadcastEvent) param;
-		final BroadcastEvent.Command command = be.getCommand();
+		final BroadcastEvent beParam = (BroadcastEvent) param;
+		final BroadcastEvent.Command command = beParam.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			setRunState((RunState) be.getContent());
+			setRunState((RunState) beParam.getContent());
 		}
 	}
 

@@ -6,9 +6,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.SortMode;
-import jam.plot.Display;
 import jam.plot.PlotPrefs;
 import jam.plot.View;
 import jam.plot.color.ColorPrefs;
@@ -34,25 +32,21 @@ import javax.swing.JMenuItem;
  */
 final class MainMenuBar implements Observer, CommandNames {
 
-	final private JamStatus status = JamStatus.instance();
+	final transient private JamStatus status = JamStatus.instance();
 
-	final private JMenuItem impHist = new JMenu("Import");
-
-	/** Fit menu needed as members so we can add a fit */
-	final private JMenu fitting = new JMenu("Fitting");
+	final transient private JMenuItem impHist = new JMenu("Import");
 
 	/** Fit menu needed as members so we can add a fit */
-	final private JMenu view = new JMenu("View");
+	final transient private JMenu fitting = new JMenu("Fitting");
 
-	final private Display display;
+	/** Fit menu needed as members so we can add a fit */
+	final transient private JMenu view = new JMenu("View");
 
-	final private MessageHandler console;
-	
-	final JMenuBar menubar=new JMenuBar();
+	final transient JMenuBar menubar=new JMenuBar();
 
-	final private JMenu calHist = new JMenu("Calibrate");
+	final transient private JMenu calHist = new JMenu("Calibrate");
 
-	final private CommandManager commands = CommandManager.getInstance();
+	final transient private CommandManager commands = CommandManager.getInstance();
 
 	/**
 	 * Jam's menu bar. It has the following menus:
@@ -74,8 +68,6 @@ final class MainMenuBar implements Observer, CommandNames {
 	MainMenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		console = status.getMessageHandler();
-		display = status.getDisplay();
 		menubar.add(getFileMenu());
 		menubar.add(getSetupMenu());
 		menubar.add(getControlMenu());
@@ -248,17 +240,17 @@ final class MainMenuBar implements Observer, CommandNames {
 	}
 
 	public void update(Observable observe, Object obj) {
-		final BroadcastEvent be = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = be.getCommand();
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			final Object content = be.getContent();
-			final Histogram h = content == null ? status.getCurrentHistogram()
+			final Object content = event.getContent();
+			final Histogram hist = content == null ? status.getCurrentHistogram()
 					: (Histogram) content;
-			adjustHistogramItems(h);
+			adjustHistogramItems(hist);
 		} else if (command == BroadcastEvent.Command.FIT_NEW) {
-			Action fitAction = (Action) (be.getContent());
+			Action fitAction = (Action) (event.getContent());
 			fitting.add(new JMenuItem(fitAction));
 		} else if (command == BroadcastEvent.Command.VIEW_NEW) {
 			updateViews();
@@ -271,9 +263,9 @@ final class MainMenuBar implements Observer, CommandNames {
 		impHist.setEnabled(file);
 	}
 
-	private void adjustHistogramItems(Histogram h) {
-		final boolean hExists = h != null;
-		final boolean oneDops = hExists && h.getDimensionality() == 1;
+	private void adjustHistogramItems(Histogram hist) {
+		final boolean hExists = hist != null;
+		final boolean oneDops = hExists && hist.getDimensionality() == 1;
 		calHist.setEnabled(oneDops);
 	}
 	

@@ -71,63 +71,63 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	private static final int FRONT_END = 2;
 
-	final static String EVENT_FILE_EXTENSION = ".evn";
+	final static String EVENT_EXT = ".evn";
 
-	private final DataIO dataio;
+	private transient final DataIO dataio;
 
-	private final FrontEndCommunication vmeComm;
+	private transient final FrontEndCommunication vmeComm;
 
-	private final MessageHandler console;
+	private transient final MessageHandler console;
 
 	private static final JamStatus STATUS = JamStatus.instance();
 
-	private final Frame jamMain = STATUS.getFrame();
+	private transient final Frame jamMain = STATUS.getFrame();
 
-	private int device;
+	private transient int device;
 
 	/* daemon threads */
-	private NetDaemon netDaemon;
+	private transient NetDaemon netDaemon;
 
-	private DiskDaemon diskDaemon;
+	private transient DiskDaemon diskDaemon;
 
-	private SortDaemon sortDaemon;
+	private transient SortDaemon sortDaemon;
 
 	/**
 	 * event file information
 	 */
-	private String experimentName;
+	private transient String exptName;
 
-	private File dataPath;
+	private transient File dataPath;
 
-	private File dataFile;
+	private transient File dataFile;
 
 	/**
 	 * histogram file information
 	 */
-	private File histFilePath;
+	private transient File histFilePath;
 
-	private File histFile;
+	private transient File histFile;
 
 	/**
 	 * run Number, is append to experiment name to create event file
 	 */
-	private int runNumber;
+	private transient int runNumber;
 
 	/**
 	 * run Title
 	 */
-	private String runTitle;
+	private transient String runTitle;
 
 	/**
 	 * Are we currently in a run, saving event data
 	 */
 	private boolean runOn = false;
 
-	private final JTextField textRunNumber, textRunTitle, textExptName;
+	private transient final JTextField tRunNumber, textRunTitle, textExptName;
 
-	private final JCheckBox checkHistogramZero;
+	private transient final JCheckBox cHistZero;
 
-	private final JCheckBox zeroScalers;
+	private transient final JCheckBox zeroScalers;
 
 	private static RunControl instance = null;
 
@@ -153,8 +153,8 @@ public class RunControl extends JDialog implements Controller {
 	 *            object in control of reading/writing data to/from disk
 	 * @param console
 	 */
-	private RunControl(Frame f) {
-		super(f, "Run", false);
+	private RunControl(Frame frame) {
+		super(frame, "Run", false);
 		console = STATUS.getMessageHandler();
 		vmeComm = STATUS.getFrontEndCommunication();
 		this.dataio = new HDFIO(jamMain, console);
@@ -162,24 +162,24 @@ public class RunControl extends JDialog implements Controller {
 		setResizable(false);
 		setLocation(20, 50);
 		setSize(400, 250);
-		final Container cp = getContentPane();
-		cp.setLayout(new BorderLayout(10, 0));
+		final Container contents = getContentPane();
+		contents.setLayout(new BorderLayout(10, 0));
 		/* Labels Panel */
-		JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 		pLabels.setBorder(new EmptyBorder(10, 10, 10, 0));
-		cp.add(pLabels, BorderLayout.WEST);
-		JLabel len = new JLabel("Experiment Name", JLabel.RIGHT);
+		contents.add(pLabels, BorderLayout.WEST);
+		final JLabel len = new JLabel("Experiment Name", JLabel.RIGHT);
 		pLabels.add(len);
-		JLabel lrn = new JLabel("Run", JLabel.RIGHT);
+		final JLabel lrn = new JLabel("Run", JLabel.RIGHT);
 		pLabels.add(lrn);
-		JLabel lt = new JLabel("Title", JLabel.RIGHT);
-		pLabels.add(lt);
-		JLabel lc = new JLabel("Zero on Begin?", JLabel.RIGHT);
-		pLabels.add(lc);
+		final JLabel lTitle = new JLabel("Title", JLabel.RIGHT);
+		pLabels.add(lTitle);
+		final JLabel lCheck = new JLabel("Zero on Begin?", JLabel.RIGHT);
+		pLabels.add(lCheck);
 		/* panel for text fields */
 		final JPanel pCenter = new JPanel(new GridLayout(0, 1, 5, 5));
 		pCenter.setBorder(new EmptyBorder(10, 0, 10, 10));
-		cp.add(pCenter, BorderLayout.CENTER);
+		contents.add(pCenter, BorderLayout.CENTER);
 		final JPanel pExptName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 				0));
 		pCenter.add(pExptName);
@@ -190,10 +190,10 @@ public class RunControl extends JDialog implements Controller {
 		final JPanel pRunNumber = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 				0));
 		pCenter.add(pRunNumber);
-		textRunNumber = new JTextField("");
-		textRunNumber.setColumns(3);
-		textRunNumber.setText(Integer.toString(runNumber));
-		pRunNumber.add(textRunNumber);
+		tRunNumber = new JTextField("");
+		tRunNumber.setColumns(3);
+		tRunNumber.setText(Integer.toString(runNumber));
+		pRunNumber.add(tRunNumber);
 		final JPanel pRunTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 				0));
 		pCenter.add(pRunTitle);
@@ -202,53 +202,53 @@ public class RunControl extends JDialog implements Controller {
 		pRunTitle.add(textRunTitle);
 		/* Zero Panel */
 		JPanel pZero = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, -2));
-		checkHistogramZero = new JCheckBox("Histograms", true);
-		pZero.add(checkHistogramZero);
+		cHistZero = new JCheckBox("Histograms", true);
+		pZero.add(cHistZero);
 		zeroScalers = new JCheckBox("Scalers", true);
 		pZero.add(zeroScalers);
 		pCenter.add(pZero);
 		/* Panel for buttons */
-		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cp.add(pButtons, BorderLayout.SOUTH);
-		JPanel pb = new JPanel(new GridLayout(1, 0, 50, 5));
-		pButtons.add(pb);
+		final JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		contents.add(pButtons, BorderLayout.SOUTH);
+		final JPanel pGrid = new JPanel(new GridLayout(1, 0, 50, 5));
+		pButtons.add(pGrid);
 		final JButton bbegin = new JButton(beginAction);
-		pb.add(bbegin);
+		pGrid.add(bbegin);
 		final JButton bend = new JButton(endAction);
-		pb.add(bend);
+		pGrid.add(bend);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
 	}
 
-	private final Action endAction = new AbstractAction() {
+	private transient final Action endAction = new AbstractAction() {
 
 		{
 			putValue(Action.NAME, "End Run");
 			putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
-			final ClassLoader cl = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(cl.getResource("jam/end.png"));
+			final ClassLoader loader = ClassLoader.getSystemClassLoader();
+			final ImageIcon icon = new ImageIcon(loader.getResource("jam/end.png"));
 			putValue(Action.SMALL_ICON, icon);
 			setEnabled(false);
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent event) {
 			endRun();
 		}
 	};
 
-	private final Action beginAction = new AbstractAction() {
+	private transient final Action beginAction = new AbstractAction() {
 
 		{
 			putValue(Action.NAME, "Begin Run");
 			putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-			final ClassLoader cl = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(cl
+			final ClassLoader loader = ClassLoader.getSystemClassLoader();
+			final ImageIcon icon = new ImageIcon(loader
 					.getResource("jam/begin.png"));
 			putValue(Action.SMALL_ICON, icon);
 			setEnabled(false);
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent event) {
 			runTitle = textRunTitle.getText().trim();
 			boolean confirm = (JOptionPane.showConfirmDialog(RunControl.this,
 					"Is this title OK? :\n" + runTitle,
@@ -270,32 +270,32 @@ public class RunControl extends JDialog implements Controller {
 	 * Setup for online acquisition.
 	 * 
 	 * @see jam.SetupSortOn
-	 * @param exptName
+	 * @param name
 	 *            name of the current experiment
 	 * @param datapath
 	 *            path to event files
 	 * @param histpath
 	 *            path to HDF files
-	 * @param sd
+	 * @param sortD
 	 *            the sorter thread
-	 * @param nd
+	 * @param netD
 	 *            the network communication thread
-	 * @param dd
+	 * @param diskD
 	 *            the storage thread
 	 */
-	public void setupOn(String exptName, File datapath, File histpath,
-			SortDaemon sd, NetDaemon nd, DiskDaemon dd) {
-		experimentName = exptName;
+	public void setupOn(String name, File datapath, File histpath,
+			SortDaemon sortD, NetDaemon netD, DiskDaemon diskD) {
+		exptName = name;
 		dataPath = datapath;
 		histFilePath = histpath;
-		sortDaemon = sd;
-		netDaemon = nd;
-		nd.setEndRunAction(endAction);
-		textExptName.setText(exptName);
-		if (dd == null) {//case if front end is taking care of storing events
+		sortDaemon = sortD;
+		netDaemon = netD;
+		netD.setEndRunAction(endAction);
+		textExptName.setText(name);
+		if (diskD == null) {//case if front end is taking care of storing events
 			device = FRONT_END;
 		} else {
-			diskDaemon = dd;
+			diskDaemon = diskD;
 			device = DISK;
 		}
 		beginAction.setEnabled(true);
@@ -383,7 +383,7 @@ public class RunControl extends JDialog implements Controller {
 	 */
 	private void beginRun() throws JamException, SortException {
 		try {//get run number and title
-			runNumber = Integer.parseInt(textRunNumber.getText().trim());
+			runNumber = Integer.parseInt(tRunNumber.getText().trim());
 			runTitle = textRunTitle.getText().trim();
 			RunInfo.runNumber = runNumber;
 			RunInfo.runTitle = runTitle;
@@ -392,8 +392,8 @@ public class RunControl extends JDialog implements Controller {
 			throw new JamException("Run number not an integer [RunControl]");
 		}
 		if (device == DISK) {//saving to disk
-			final String dataFileName = experimentName + runNumber
-					+ EVENT_FILE_EXTENSION;
+			final String dataFileName = exptName + runNumber
+					+ EVENT_EXT;
 			dataFile = new File(dataPath, dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
 				throw new JamException("Event file already exits, File: "
@@ -404,7 +404,7 @@ public class RunControl extends JDialog implements Controller {
 			diskDaemon.writeHeader();
 		}
 		sortDaemon.userBegin();
-		if (checkHistogramZero.isSelected()) {// should we zero histograms
+		if (cHistZero.isSelected()) {// should we zero histograms
 			Histogram.setZeroAll();
 		}
 		if (zeroScalers.isSelected()) {//should we zero scalers
@@ -473,14 +473,14 @@ public class RunControl extends JDialog implements Controller {
 		netDaemon.setState(GoodThread.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
-		final String histFileName = experimentName + runNumber + ".hdf";
+		final String histFileName = exptName + runNumber + ".hdf";
 		// only write a histogram file
 		histFile = new File(histFilePath, histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
 		dataio.writeFile(histFile);
 		runNumber++;//increment run number
-		textRunNumber.setText(Integer.toString(runNumber));
+		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);
 		beginAction.setEnabled(true);//set begin button state for next run
 	}

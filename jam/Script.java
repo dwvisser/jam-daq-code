@@ -39,13 +39,13 @@ import java.util.Observer;
  */
 public final class Script implements Observer {
 	
-	private final JamMain jam;
-	private final File base;
-	private SetupSortOff sso;
-	private SortControl sc;
-	private HDFIO hdfio;
-	private boolean isSetup=false;
-	private boolean eventFilesGiven=false;
+	private transient final JamMain jam;
+	private transient  File base;
+	private transient SetupSortOff sso;
+	private transient SortControl sortControl;
+	private transient HDFIO hdfio;
+	private transient boolean isSetup=false;
+	private transient boolean filesGiven=false;
 	
 	/**
 	 * Creates an instance, of which the user then invokes the methods 
@@ -90,7 +90,7 @@ public final class Script implements Observer {
 	 * <code>EventOutputStream</code> to use.
 	 * 
 	 * @param classPath the path that sort routines get loaded from
-	 * @param sortRoutineName fully qualified with all package names
+	 * @param sortName fully qualified with all package names
 	 * in the standard java "dot" notation, e.g., <code>"sort.Calorimeter"</code> 
 	 * for the file <code>sort/Calorimeter.class</code> relative to 
 	 * <code>classPath</code>
@@ -101,10 +101,10 @@ public final class Script implements Observer {
 	 * @see jam.sort.stream.EventOutputStream
 	 */
 	public  void setupOffline(final File classPath, 
-	final String sortRoutineName, final Class inStream, final Class outStream){
-		sso.setupSort(classPath, sortRoutineName, inStream, outStream);
+	final String sortName, final Class inStream, final Class outStream){
+		sso.setupSort(classPath, sortName, inStream, outStream);
 		System.out.println("Setup online sorting:");
-		System.out.println("\t"+classPath+": "+sortRoutineName);
+		System.out.println("\t"+classPath+": "+sortName);
 		System.out.println("\tin: "+inStream);
 		System.out.println("\tout: "+outStream);
 		isSetup=true;
@@ -128,7 +128,7 @@ public final class Script implements Observer {
 			throw new IllegalStateException(
 			"You may not call addEventFile() before calling setupOffline().");
 		}
-		final int numFiles=sc.addEventFile(fileOrDir);
+		final int numFiles=sortControl.addEventFile(fileOrDir);
 		if (fileOrDir.isFile()){
 			System.out.println("Added event file to sort: "+fileOrDir.getName());
 		}
@@ -137,7 +137,7 @@ public final class Script implements Observer {
 			fileOrDir.getName());
 		}
 		if (numFiles>0){
-			eventFilesGiven=true;
+			filesGiven=true;
 		} else {
 			System.err.println(fileOrDir.getName()+" didn't contain any usable files.");
 		}
@@ -159,9 +159,9 @@ public final class Script implements Observer {
 			throw new IllegalStateException(
 			"You may not call loadFileList() before calling setupOffline().");
 		}
-		final int numFiles=sc.readList(list);
+		final int numFiles=sortControl.readList(list);
 		if (numFiles>0){
-			eventFilesGiven=true;
+			filesGiven=true;
 		} else {
 			System.err.println(list.getName()+" didn't contain any usable filenames.");
 		}
@@ -181,7 +181,7 @@ public final class Script implements Observer {
 			throw new IllegalStateException(
 			"You may not call setEventOutput() before calling setupOffline().");
 		}
-		sc.setEventOutput(eventsOut);
+		sortControl.setEventOutput(eventsOut);
 		System.out.println("Set file for pre-sorted events"+
 		eventsOut.getAbsolutePath());
 	}
@@ -198,7 +198,7 @@ public final class Script implements Observer {
 	
 	private void initFields(){
 		sso=SetupSortOff.getSingletonInstance();
-		sc=SortControl.getSingletonInstance();
+		sortControl=SortControl.getSingletonInstance();
 		hdfio=new HDFIO(STATUS.getFrame(),null);
 	}
 	
@@ -213,18 +213,18 @@ public final class Script implements Observer {
 			throw new IllegalStateException(
 			"You may not call beginSort() before calling setupOffline().");
 		}
-		if (!eventFilesGiven){
+		if (!filesGiven){
 			throw new IllegalStateException(
 			"You may not call beginSort() without first specifying event files to sort.");
 		}
 		try{
-			sc.beginSort();
+			sortControl.beginSort();
 			System.out.println("Began sort. Waiting for finish...");
 			final Object lock=new Object();
 			synchronized (lock) {
-				final long ms=2500;//wait time in milliseconds
-				while (rs != RunState.ACQ_OFF){
-					lock.wait(ms);
+				final long millisec=2500;
+				while (state != RunState.ACQ_OFF){
+					lock.wait(millisec);
 				}
 			}
 			System.out.println("Reached end of sort.");
@@ -235,18 +235,16 @@ public final class Script implements Observer {
 		}
 	}
 	
-	private RunState rs=RunState.NO_ACQ;
+	private transient RunState state=RunState.NO_ACQ;
 	public void update(Observable event, Object param){
-		final BroadcastEvent be=(BroadcastEvent)param;
-		final BroadcastEvent.Command command=be.getCommand();
+		final BroadcastEvent bEvent=(BroadcastEvent)param;
+		final BroadcastEvent.Command command=bEvent.getCommand();
 		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
-			synchronized(rs){
-				rs=(RunState)param;
+			synchronized(state){
+				state=(RunState)param;
 			}
 		}
 	}
-
-
 	
 	/**
 	 * Load the given HDF file into memory. You must have already 

@@ -609,13 +609,8 @@ public class JamConsole extends JPanel implements MessageHandler {
 	 * On a class destruction close log file
 	 */
 	protected void finalize() throws Throwable {
-		try {
-			if (logFileOn) {
-				closeLogFile();
-			}
-		} catch (JamException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), getClass()
-					.getName(), JOptionPane.ERROR_MESSAGE);
+		if (logFileOn) {
+			closeLogFile();
 		}
 		super.finalize();
 	}

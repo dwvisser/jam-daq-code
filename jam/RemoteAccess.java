@@ -76,8 +76,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	/**
 	 *Get the list of gate names given a histogram
 	 */
-	public String[] getGateNames(String histogramName) throws RemoteException {
-		Histogram hist = Histogram.getHistogram(histogramName);
+	public String[] getGateNames(String histName) throws RemoteException {
+		Histogram hist = Histogram.getHistogram(histName);
 		Gate[] gates = (Gate [])hist.getGates().toArray(new Gate[0]);
 		String[] names = new String[gates.length];
 		for (int i = 0; i < gates.length; i++) {
@@ -125,9 +125,9 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	public static void main(String args[]) {
 		System.out.println("Test starting up Server");
 		try {
-			String name = "jam";
-			RemoteAccess ra = new RemoteAccess();
-			Naming.rebind(name, ra);
+			final String name = "jam";
+			final RemoteAccess remote = new RemoteAccess();
+			Naming.rebind(name, remote);
 			System.out.println("Server setup");
 		} catch (RemoteException re) {
 			System.out.println("Error constructing Server");

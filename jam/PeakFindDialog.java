@@ -26,8 +26,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class PeakFindDialog extends JDialog {
 
-	private final Display display;
-	private final MessageHandler console;
+	private transient final Display display;
+	private transient final MessageHandler console;
 
 	public PeakFindDialog() {
 		final JamStatus status=JamStatus.instance();
@@ -36,8 +36,9 @@ public class PeakFindDialog extends JDialog {
 		createDialog();
 	}
 
-	private JTextField width, sensitivity;
-	private JCheckBox calibrate;
+	private transient JTextField width, sensitivity;
+	private transient JCheckBox calibrate;
+	
 	private void createDialog() {
 		this.setTitle("Peak Find Preferences");
 		Container contents = getContentPane();
@@ -71,29 +72,29 @@ public class PeakFindDialog extends JDialog {
 		/* panel for buttons */         
 		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		contents.add(pbutton, BorderLayout.SOUTH);		
-		JPanel pb = new JPanel();
-		pbutton.add(pb);
-		pb.setLayout(new GridLayout(1, 3,5,5));
+		final JPanel pGrid1by3 = new JPanel();
+		pbutton.add(pGrid1by3);
+		pGrid1by3.setLayout(new GridLayout(1, 3,5,5));
 
 		final JButton bok = new JButton("OK");
-		pb.add(bok);
+		pGrid1by3.add(bok);
 		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent event){
 				setPeakFindProperties();
 				setVisible(false);
 			}
 		});
 		final JButton bapply = new JButton("Apply");
-		pb.add(bapply);
+		pGrid1by3.add(bapply);
 		bapply.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent event){
 				setPeakFindProperties();
 			}
 		});
 		final JButton bcancel = new JButton(" Cancel ");
-		pb.add(bcancel);
+		pGrid1by3.add(bcancel);
 		bcancel.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+			public void actionPerformed(ActionEvent event){
 				setVisible(false);
 			}
 		});		
@@ -102,12 +103,12 @@ public class PeakFindDialog extends JDialog {
 	}
 
 	private void setPeakFindProperties(){
-		double w = Double.parseDouble(width.getText().trim());
-		double s = Double.parseDouble(sensitivity.getText().trim());
+		final double dWidth = Double.parseDouble(width.getText().trim());
+		final double dSense = Double.parseDouble(sensitivity.getText().trim());
 		boolean cal = calibrate.isSelected();
-		display.setPeakFindProperties(w,s,cal);
-		console.messageOut("Peak Find Properties Set: Width="+w+
-		", Sensitivity="+s,MessageHandler.NEW);
+		display.setPeakFindProperties(dWidth,dSense,cal);
+		console.messageOut("Peak Find Properties Set: Width="+dWidth+
+		", Sensitivity="+dSense,MessageHandler.NEW);
 		if (!cal) {
 			console.messageOut(", centroid channel displayed.",MessageHandler.END);
 		} else {

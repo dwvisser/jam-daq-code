@@ -26,7 +26,7 @@ public class RunState {
 		true,true,false
 	};
 	
-	private final String name;
+	private transient final String name;
 	private String label;
 	private final Color color;
 	private final boolean acquireOn,acquireMode;
@@ -76,8 +76,8 @@ public class RunState {
 		return rval;
 	}
 	
-	private void setLabel(String l){
-		label=l;
+	private void setLabel(String string){
+		label=string;
 	}
 	
 	public String getLabel(){
