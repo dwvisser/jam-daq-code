@@ -17,7 +17,6 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -40,77 +39,83 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	static final int LAYOUT_TYPE_TILED = 1;
 
 	/**
-	 * Specifies Zoom direction, zoom out
+	 * Zoom direction.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
 	 */
-	public final static int ZOOM_OUT = 1; //zoom mode, in or out
+	public static final class Zoom {
+		private static final int in = 1;
 
-	/**
-	 * Specifies Zoom direction, zoom in
-	 */
-	public final static int ZOOM_IN = 2;
+		private static final int out = 2;
 
-	public static int TYPE_1D = 1;
+		/**
+		 * Zoom in.
+		 */
+		public static final Zoom IN = new Zoom(in);
 
-	public static int TYPE_2D = 2;
+		/**
+		 * Zoom out.
+		 */
+		public static final Zoom OUT = new Zoom(out);
+
+		private final int direction;
+
+		private Zoom(int i) {
+			direction = i;
+		}
+	}
 
 	private static final String KEY1 = "1D Plot";
 
 	private static final String KEY2 = "2D Plot";
 
+	/*
+	 * any access to currentSubPlot should be syn synchronized on this
+	 */
 	private final Object plotLock = new Object();
-
-	private int currentHistNumber;
-
-	private int layoutType;
 
 	private final CardLayout plotSwapPanelLayout;
 
-	private Border selectBorder;
-
-	private AbstractPlot currentSubPlot;
-	
 	private final Plot1d plot1d;
 
 	private final Plot2d plot2d;
 
-	private final Scroller scroller1d;
-	
-	private final Scroller scroller2d;	
-	
-	private int plotNumber; 
-
-	private boolean isSelected;
+	private final Scroller scroller1d, scroller2d;
 
 	private final PlotSelectListener plotSelectListener;
 
 	private final List overlays = Collections.synchronizedList(new ArrayList());
 
+	private boolean isSelected;
+
+	private int layoutType, plotNumber;
+
+	private AbstractPlot currentSubPlot;
+
 	public Plot(Action action, PlotGraphicsLayout graphicsLayout,
 			PlotSelectListener plotSelect) {
 		this.plotSelectListener = plotSelect;
 		isSelected = false;
-
-		//panel containing plots panel to holds 1d and 2d plots,
-		//and swaps them
+		/*
+		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
+		 */
 		plotSwapPanelLayout = new CardLayout();
 		setLayout(plotSwapPanelLayout);
-
 		/* panel 1d plot and its scroll bars */
 		plot1d = new Plot1d();
 		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
-		 scroller1d = new Scroller(plot1d);
+		scroller1d = new Scroller(plot1d);
 		add(KEY1, scroller1d);
 		plot1d.addPlotSelectListener(this);
-
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d();
 		scroller2d = new Scroller(plot2d);
 		add(KEY2, scroller2d);
 		plot2d.addPlotSelectListener(this);
-
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(this, KEY1);
 		currentSubPlot = plot1d;
+		PlotPrefs.prefs.addPreferenceChangeListener(this);
 	}
 
 	/**
@@ -140,11 +145,11 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		if (type == LAYOUT_TYPE_FULL) {
 			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
 			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
-			this.setBorder(null);
+			setBorder(null);
 		} else if (type == LAYOUT_TYPE_TILED) {
 			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_TILED);
 			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_TILED);
-			this.setBorder(new EmptyBorder(0, 0, 0, 0));
+			setBorder(new EmptyBorder(0, 0, 0, 0));
 		}
 	}
 
@@ -157,17 +162,18 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	void displayHistogram(Histogram hist) {
 		select(true);
 		final int dim = hist.getDimensionality();
-		String key;
-		if (dim == 1) {
-			currentSubPlot = plot1d;
-			key = KEY1;
-		} else {
-			currentSubPlot = plot2d;
-			key = KEY2;
+		final String key;
+		synchronized (plotLock) {
+			if (dim == 1) {
+				currentSubPlot = plot1d;
+				key = KEY1;
+			} else {
+				currentSubPlot = plot2d;
+				key = KEY2;
+			}
+			currentSubPlot.displayHistogram(hist);
 		}
 		plotSwapPanelLayout.show(this, key);
-		currentSubPlot.displayHistogram(hist);
-		currentHistNumber = hist.getNumber();
 	}
 
 	/**
@@ -177,17 +183,19 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 *            the number of the histogram
 	 */
 	void overlayHistograms(int num) {
-		final Histogram h = Histogram.getHistogram(num);
 		final Integer value = new Integer(num);
-		//Don't overlay histogram already displaye
-		if (currentHistNumber != num && !overlays.contains(value)) {
-			overlays.add(value);
+		synchronized (plotLock) {
+			/* Don't overlay histogram already displayed. */
+			if (currentSubPlot.getHistogram().getNumber() != num
+					&& !overlays.contains(value)) {
+				overlays.add(value);
+			}
+			currentSubPlot.overlayHistograms(overlays);
 		}
-		currentSubPlot.overlayHistograms(overlays);
 	}
 
 	/**
-	 * Clear overlays
+	 * Clear overlays.
 	 */
 	void removeOverlays() {
 		overlays.clear();
@@ -199,7 +207,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * @return
 	 */
 	Histogram getHistogram() {
-		return currentSubPlot.getHistogram();
+		return getPlot().getHistogram();
 	}
 
 	/**
@@ -207,38 +215,33 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * 
 	 * @return plot type
 	 */
-	public int getType() {
-		int plotType;
-		if (currentSubPlot == plot1d)
-			plotType = TYPE_1D;
-		else
-			plotType = TYPE_2D;
-
-		return plotType;
+	public int getDimensionality() {
+		return (getPlot() == plot1d) ? 1 : 2;
 	}
-	
-	void enableScrolling(boolean enable){
+
+	void enableScrolling(boolean enable) {
 		scroller1d.enableScrolling(enable);
 		scroller2d.enableScrolling(enable);
 	}
-	
-	int getNumber(){
+
+	int getNumber() {
 		return plotNumber;
 	}
-	void setNumber(int numIn){
-		plotNumber=numIn;
+
+	void setNumber(int numIn) {
+		plotNumber = numIn;
 	}
-	
+
 	Limits getLimits() {
-		return currentSubPlot.getLimits();
+		return getPlot().getLimits();
 	}
 
 	void markChannel(Bin p) {
-		currentSubPlot.markChannel(p);
+		getPlot().markChannel(p);
 	}
 
 	void update() {
-		currentSubPlot.update();
+		getPlot().update();
 	}
 
 	public AbstractPlot getPlot() {
@@ -249,57 +252,57 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 
 	void displayFit(double[][] signals, double[] background,
 			double[] residuals, int ll) {
-		currentSubPlot.displayFit(signals, background, residuals, ll);
+		getPlot().displayFit(signals, background, residuals, ll);
 	}
 
 	/**
 	 * Caller should have checked 'isCalibrated' first.
 	 */
 	public double getEnergy(double channel) {
-		return currentSubPlot.getEnergy(channel);
+		return getPlot().getEnergy(channel);
 	}
 
 	/**
 	 * Get the counts in a bin
 	 */
 	protected double getCount(jam.plot.Bin p) {
-		return currentSubPlot.getCount(p);
+		return getPlot().getCount(p);
 	}
 
 	int getChannel(double energy) {
-		return currentSubPlot.getChannel(energy);
+		return getPlot().getChannel(energy);
 	}
 
 	protected Object getCounts() {
-		return currentSubPlot.getCounts();
+		return getPlot().getCounts();
 	}
 
 	protected int findMinimumCounts() {
-		return currentSubPlot.findMinimumCounts();
+		return getPlot().findMinimumCounts();
 	}
 
 	protected int findMaximumCounts() {
-		return currentSubPlot.findMaximumCounts();
+		return getPlot().findMaximumCounts();
 	}
 
-	void zoom(int inOut) {
-		currentSubPlot.zoom(inOut);
+	void zoom(Zoom inOut) {
+		getPlot().zoom(inOut);
 	}
 
 	public void markArea(Bin p1, Bin p2) {
-		currentSubPlot.markArea(p1, p2);
+		getPlot().markArea(p1, p2);
 	}
 
 	void setMarkArea(boolean tf) {
-		currentSubPlot.setMarkArea(tf);
+		getPlot().setMarkArea(tf);
 	}
 
 	void autoCounts() {
-		currentSubPlot.autoCounts();
+		getPlot().autoCounts();
 	}
 
 	void setRange(int limC1, int limC2) {
-		currentSubPlot.setRange(limC1, limC2);
+		getPlot().setRange(limC1, limC2);
 	}
 
 	/**
@@ -308,69 +311,69 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * @param c1
 	 * @param c2
 	 */
-	void expand(jam.plot.Bin c1, jam.plot.Bin c2) {
-		currentSubPlot.expand(c1, c2);
+	void expand(Bin c1, Bin c2) {
+		getPlot().expand(c1, c2);
 	}
 
 	/**
 	 * Show full plot
 	 */
 	void setFull() {
-		currentSubPlot.setFull();
+		getPlot().setFull();
 	}
 
 	/**
 	 * Set the scale as linear
 	 */
 	void setLinear() {
-		currentSubPlot.setLinear();
+		getPlot().setLinear();
 	}
 
 	/**
 	 * Set the scale as log
 	 */
 	void setLog() {
-		currentSubPlot.setLog();
+		getPlot().setLog();
 	}
 
 	void setBinWidth(double x) {
-		currentSubPlot.setBinWidth(x);
+		getPlot().setBinWidth(x);
 	}
 
 	void setSelectingArea(boolean tf) {
-		currentSubPlot.setSelectingArea(tf);
+		getPlot().setSelectingArea(tf);
 	}
 
 	void setMarkingChannels(boolean mc) {
-		currentSubPlot.setMarkingChannels(mc);
+		getPlot().setMarkingChannels(mc);
 	}
 
 	protected final void initializeSelectingArea(Bin p1) {
-		currentSubPlot.initializeSelectingArea(p1);
+		getPlot().initializeSelectingArea(p1);
 	}
 
 	void displayGate(Gate gate) {
-		currentSubPlot.displayGate(gate);
+		getPlot().displayGate(gate);
 	}
 
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
-		currentSubPlot.displaySetGate(mode, pChannel, pPixel);
+		getPlot().displaySetGate(mode, pChannel, pPixel);
 	}
 
 	void setRenderForPrinting(boolean rfp, PageFormat pf) {
-		currentSubPlot.setRenderForPrinting(rfp, pf);
+		getPlot().setRenderForPrinting(rfp, pf);
 	}
 
 	ComponentPrintable getComponentPrintable(int run, String d) {
-		return currentSubPlot.getComponentPrintable(run, d);
+		return getPlot().getComponentPrintable(run, d);
 	}
 
 	int getSizeX() {
-		return currentSubPlot.getSizeX();
+		return getPlot().getSizeX();
 	}
 
 	int getSizeY() {
-		return currentSubPlot.getSizeY();
+		return getPlot().getSizeY();
 	}
 
 	//Paint methods
@@ -379,39 +382,39 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * @param g
 	 */
 	protected void paintHistogram(Graphics g) {
-		currentSubPlot.paintHistogram(g);
+		getPlot().paintHistogram(g);
 	}
 
 	protected void paintSelectingArea(Graphics g) {
-		currentSubPlot.paintSelectingArea(g);
+		getPlot().paintSelectingArea(g);
 	}
 
 	protected void paintMarkedChannels(Graphics g) {
-		currentSubPlot.paintMarkedChannels(g);
+		getPlot().paintMarkedChannels(g);
 	}
 
 	protected void paintOverlay(Graphics g) {
-		currentSubPlot.paintOverlay(g);
+		getPlot().paintOverlay(g);
 	}
 
 	protected void paintFit(Graphics g) {
-		currentSubPlot.paintFit(g);
+		getPlot().paintFit(g);
 	}
 
 	protected void paintGate(Graphics g) {
-		currentSubPlot.paintGate(g);
+		getPlot().paintGate(g);
 	}
 
 	protected void paintSettingGate(Graphics g) {
-		currentSubPlot.paintSettingGate(g);
+		getPlot().paintSettingGate(g);
 	}
 
 	protected void paintSetGatePoints(Graphics g) {
-		currentSubPlot.paintSetGatePoints(g);
+		getPlot().paintSetGatePoints(g);
 	}
 
 	public void paintMarkArea(Graphics g) {
-		currentSubPlot.paintMarkArea(g);
+		getPlot().paintMarkArea(g);
 	}
 
 	//End Paint methods
@@ -439,7 +442,7 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	}
 
 	protected void mouseMoved(MouseEvent me) {
-		currentSubPlot.mouseMoved(me);
+		getPlot().mouseMoved(me);
 	}
 
 	/**
@@ -460,11 +463,11 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * are we ignoring channel zero on auto scale
 	 */
 	boolean getIgnoreChZero() {
-		return currentSubPlot.getIgnoreChZero();
+		return getPlot().getIgnoreChZero();
 	}
 
 	boolean getIgnoreChFull() {
-		return currentSubPlot.getIgnoreChFull();
+		return getPlot().getIgnoreChFull();
 	}
 
 	void setSensitivity(double val) {
@@ -485,12 +488,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	public void preferenceChange(PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
-
-		if (key.equals(PlotPrefs.ENABLE_SCROLLING)){
+		if (PlotPrefs.ENABLE_SCROLLING.equals(key)) {
 			enableScrolling(Boolean.valueOf(newValue).booleanValue());
-		}		
-		
-		currentSubPlot.preferenceChange(pce);
+		}
+		/*
+		 * all AbstractPlot's are already registered with prefs.
+		 */
+		//currentSubPlot.preferenceChange(pce);
 	}
 
 }
