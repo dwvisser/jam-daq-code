@@ -5,6 +5,9 @@ import java.util.*;
 import jam.global.*;
 import jam.data.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.Border;
+
 
 /**
  * Reads and displays the scaler values.
@@ -25,7 +28,8 @@ public final class ScalerControl extends DataControl implements ActionListener, 
     private JPanel [] ps;
     private JLabel [] labelScaler;
     private JTextField [] textScaler;
-    private JPanel pb;
+    private JPanel plower;
+    private JPanel pScalers;
     private JCheckBox checkDisabled;
     private JButton bzero;
 
@@ -37,7 +41,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
 
     private boolean sortScalers;	    //have scalers been added by sort
 	private JamStatus status;
-	
+
     /** Creates the dialog box for reading and zeroing scalers.
      * @param frame main window for application that this dialog is attached to
      * @param broadcaster hub of communications for message passin around Jam
@@ -51,24 +55,40 @@ public final class ScalerControl extends DataControl implements ActionListener, 
         status = JamStatus.instance();
         sortScalers=false;
         //zeroDisabled=true;
-        ddisp=new JDialog(frame,"Scalers",false);// dialog box to display scalers
+
+        // dialog box to display scalers
+        ddisp=new JDialog(frame,"Scalers",false);
         Container cddisp = ddisp.getContentPane();
         ddisp.setLocation(20,50);
-        cddisp.setLayout(new GridLayout(0,1,5,5));
-        pb= new JPanel();// buttons for display dialog
-        pb.setLayout(new FlowLayout(FlowLayout.CENTER,10,5));
+        cddisp.setLayout(new BorderLayout());
+
+
+		pScalers = new JPanel(new GridLayout(0,1,10,0));
+        Border borderScalers = new EmptyBorder(10,10,10,10);
+        pScalers.setBorder(borderScalers);
+
+		cddisp.add(pScalers, BorderLayout.CENTER);
+
+        plower = new JPanel(new FlowLayout(FlowLayout.CENTER,10,10));
+        JPanel pb= new JPanel();// buttons for display dialog
+        pb.setLayout(new GridLayout(1,0,10,10));
+		cddisp.add(plower, BorderLayout.SOUTH);
+
         JButton bupdate = new JButton ("Read");
         bupdate.setActionCommand("scalerread");
         bupdate.addActionListener(this);
+        pb.add(bupdate);
         bzero =  new JButton("Zero");
         bzero.setActionCommand("scalzero");
         bzero.addActionListener(this);
         bzero.setEnabled(false);
+        pb.add(bzero);
+		plower.add(pb);
+
         checkDisabled =new JCheckBox("Disable Zero", true );
         checkDisabled.addItemListener(this);
-        pb.add(bupdate);
-        pb.add(bzero);
-        pb.add(checkDisabled);
+        plower.add(checkDisabled);
+
         ddisp.addWindowListener(
         new WindowAdapter(){
             public void windowClosing(WindowEvent e){
@@ -76,19 +96,25 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             }
         }
         );
-        dzero=new JDialog(frame, "Zero Scalers",true);// dialog to zero scalers
+
+        // dialog to zero scalers
+        dzero=new JDialog(frame, "Zero Scalers",true);
         Container dzc=dzero.getContentPane();
         dzero.setResizable(false);
         dzero.setLocation(20,50);
-        dzc.setLayout(new GridLayout(1,0));
-        bzero2 =  new JButton("Zero ");
+        //dzc.setLayout(new GridLayout(1,0));
+        final JPanel pZero = new JPanel(new GridLayout(1,0,20,20));
+        Border border = new EmptyBorder(20,20,20,20);
+        pZero.setBorder(border);
+
+        bzero2 =  new JButton("Zero");
         bzero2.setActionCommand("scalzero2");
         bzero2.addActionListener(this);
         bzero2.setEnabled(false);
+        pZero.add(bzero2);
         checkDisabled2 =new JCheckBox("Disable Zero", true );
         checkDisabled2.addItemListener(this);
-        dzc.add(bzero2);
-        dzc.add(checkDisabled2);
+        pZero.add(checkDisabled2);
         dzero.addWindowListener(
         new WindowAdapter(){
             public void windowClosing(WindowEvent e){
@@ -96,6 +122,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             }
         }
         );
+        dzero.add(pZero);
         dzero.pack();
         setup();
     }
@@ -179,7 +206,9 @@ public final class ScalerControl extends DataControl implements ActionListener, 
         int numberScalers=Scaler.getScalerList().size();
         Container cddisp=ddisp.getContentPane();
         //ddisp.setResizable(true);
-        cddisp.removeAll();
+
+        //cddisp.removeAll();
+        pScalers.removeAll();
         //ddisp.setSize(250, 100+35*numberScalers);
         if (numberScalers!=0){// we have some elements in the scaler list
             //gui widgets for each scaler
@@ -190,7 +219,8 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             int count=0;
             while(enumScaler.hasNext()) {
                 Scaler currentScaler=(Scaler)enumScaler.next();
-                ps[count]= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));//right justified, hgap, vgap
+                //right justified, hgap, vgap
+                ps[count]= new JPanel(new FlowLayout(FlowLayout.RIGHT,5,5));
                 //ps[count].setLayout(
                 labelScaler[count]=new JLabel (currentScaler.getName(),JLabel.RIGHT);
                 textScaler[count] =new JTextField("  ");
@@ -200,11 +230,10 @@ public final class ScalerControl extends DataControl implements ActionListener, 
                 textScaler[count].setText( String.valueOf(currentScaler.getValue()) );
                 ps[count].add(labelScaler[count]);
                 ps[count].add(textScaler[count]);
-                cddisp.add(ps[count]);
+                pScalers.add(ps[count]);
                 count++;
             }
         }
-        cddisp.add(pb);	//buttons panel
         ddisp.pack();
         displayScalers();
     }
