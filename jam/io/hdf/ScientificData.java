@@ -300,14 +300,6 @@ final class ScientificData extends DataObject {
         return bytes;
     }
 
-    /**
-     * @return the length of the byte array in the file for this data element.
-     */
-    /* FIXME KBS remove
-    protected int getByteLength() {
-        return byteLength;
-    }
-    */
     void setNumberType(byte type) {
         synchronized (this) {
             numberType = type;

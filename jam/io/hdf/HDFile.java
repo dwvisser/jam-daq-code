@@ -273,13 +273,6 @@ public final class HDFile extends RandomAccessFile implements HDFconstants {
 					seek(nextBlock);
 				}
 			} while (doAgain);
-			/*FIXME KBS remove
-			final Iterator temp = DataObject.getDataObjectList().iterator();
-			while (temp.hasNext()) {
-				final DataObject dataObject = (DataObject) (temp.next());
-				dataObject.interpretBytes();
-			}
-			*/
 			
 		} catch (IOException e) {
 			throw new HDFException(
