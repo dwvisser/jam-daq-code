@@ -168,19 +168,13 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		//Single plot aways has axis showing
 		if (numberPlots==1) {
 			if (isAxisLabels) {
-				plotLayout=Plot.LAYOUT_TYPE_FULL;
+				plotLayout=Plot.LAYOUT_TYPE_LABELS;
 			}else {
-				plotLayout=Plot.LAYOUT_TYPE_TILED;
+				plotLayout=Plot.LAYOUT_TYPE_NO_LABELS;
 			}			
-			//plotLayout=Plot.LAYOUT_TYPE_FULL;
 			scrollTemp=true;
 		} else {
-			//if (isAxisLabels) {
-			//	plotLayout=Plot.LAYOUT_TYPE_FULL;
-			//}else {
-			//	plotLayout=Plot.LAYOUT_TYPE_TILED;
-			//}
-			plotLayout=Plot.LAYOUT_TYPE_TILED;
+			plotLayout=Plot.LAYOUT_TYPE_NO_LABELS_BORDER;
 			scrollTemp=isScrolling;
 		}
 		for (i=0;i<numberPlots;i++){
@@ -189,12 +183,14 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			plot.enableScrolling(scrollTemp);
 		}
 	}
+	
 	/**
 	 * Set the view, tiled layout of plots
 	 * 
 	 * @param nPlotrows	number of rows
 	 * @param nPlotcolumns
 	 */
+	/*FIXME KBS to be removed
 	public void setView(int nPlotRows, int nPlotColumns){
 		
 		Plot plot=null;
@@ -227,7 +223,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		}
 		setPlot(plot);			
 	}
-	
+	*/
 	/**
 	 * Create some plots.
 	 * 

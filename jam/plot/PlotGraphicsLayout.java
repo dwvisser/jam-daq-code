@@ -9,9 +9,9 @@ package jam.plot;
 class PlotGraphicsLayout {
 
 	//LayoutType full plot
-	static final int LAYOUT_TYPE_FULL = 0;
+	static final int LAYOUT_TYPE_LABELS = 0;
 	//LayoutType tiled plots
-	static final int LAYOUT_TYPE_TILED = 1;
+	static final int LAYOUT_TYPE_NO_LABELS = 1;
 
 	int LAYOUT_TYPE;
 	
@@ -64,19 +64,19 @@ class PlotGraphicsLayout {
 	String FONT_CLASS="Serif";
 
 	void setLayoutType(int type) {
-		if (type == LAYOUT_TYPE_FULL) {
-			setLayoutTypeFull();
-			LAYOUT_TYPE=LAYOUT_TYPE_FULL;
-		} else if (type == LAYOUT_TYPE_TILED) {
-			setLayoutTypeTiled();
-			LAYOUT_TYPE=LAYOUT_TYPE_TILED;
+		if (type == LAYOUT_TYPE_LABELS) {
+			setLayoutTypeLabels();
+			LAYOUT_TYPE=LAYOUT_TYPE_LABELS;
+		} else if (type == LAYOUT_TYPE_NO_LABELS) {
+			setLayoutTypeNoLabels();
+			LAYOUT_TYPE=LAYOUT_TYPE_NO_LABELS;
 		}
 	}
 	/**
 	 * Full plot with margins 
 	 *
 	 */
-	private void setLayoutTypeFull() {
+	private void setLayoutTypeLabels() {
 		//border outside of plot
 		BORDER_TOP = 40;
 		BORDER_LEFT = 60;
@@ -126,7 +126,7 @@ class PlotGraphicsLayout {
 	 * Tiled plot with no margins  
 	 *
 	 */
-	private void setLayoutTypeTiled() {
+	private void setLayoutTypeNoLabels() {
 
 		//border outside of plot
 		BORDER_TOP = 0;

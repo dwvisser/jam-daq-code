@@ -221,6 +221,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 			scrollbars.setLimits(plotLimits);
 		} else { //we have a null histogram so fake it
 			hasHistogram=false;
+			plotHistNumber=-1;
 			counts = new double[100];
 			counts2d = null;			
 			type = Histogram.Type.ONE_DIM_INT;

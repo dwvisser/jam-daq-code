@@ -163,7 +163,7 @@ class PlotGraphics  {
 		} else if (plot instanceof Plot2d) {
 			plotDimensions = 2;
 		}
-		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
+		setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
 	}
 	
 	/**
@@ -306,7 +306,7 @@ class PlotGraphics  {
 		int xPos;
 		int yPos;
 		offset = fm.stringWidth(title); 
-		if (graphLayout.LAYOUT_TYPE==PlotGraphicsLayout.LAYOUT_TYPE_FULL)
+		if (graphLayout.LAYOUT_TYPE==PlotGraphicsLayout.LAYOUT_TYPE_LABELS)
 			xPos=viewMiddle().x - offset / 2;
 		else
 			xPos=viewLeft+graphLayout.TITLE_OFFSET_LEFT;

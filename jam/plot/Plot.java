@@ -32,12 +32,14 @@ import javax.swing.border.LineBorder;
 public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		PreferenceChangeListener {
 
-	//LayoutType full plot
-	static final int LAYOUT_TYPE_FULL = 0;
-
-	//LayoutType tiled plots
-	static final int LAYOUT_TYPE_TILED = 1;
-
+	//Layout with axis labels without border
+	static final int LAYOUT_TYPE_LABELS = 0;
+	//Layout with axis labels and border 
+	static final int LAYOUT_TYPE_LABELS_BORDER = 1;
+	//Layout not axis labels without border
+	static final int LAYOUT_TYPE_NO_LABELS = 2;
+//	Layout not axis labels but with border
+	static final int LAYOUT_TYPE_NO_LABELS_BORDER = 3;
 	/**
 	 * Zoom direction.
 	 * 
@@ -133,14 +135,15 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 * @param selectedState
 	 */
 	void select(boolean selectedState) {
-		if (layoutType == LAYOUT_TYPE_FULL) {
-			setBorder(null);
-		} else {
+		if ((layoutType == LAYOUT_TYPE_LABELS_BORDER)||
+			(layoutType == LAYOUT_TYPE_NO_LABELS_BORDER)) {
 			if (selectedState) {
 				setBorder(new LineBorder(Color.BLACK, 2));
 			} else {
 				setBorder(new EmptyBorder(2, 2, 2, 2));
-			}
+			}			
+		} else {
+			setBorder(null);
 		}
 	}
 
@@ -151,14 +154,23 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	 */
 	void setLayoutType(int type) {
 		layoutType = type;
-		if (type == LAYOUT_TYPE_FULL) {
-			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
-			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_FULL);
+		//Plot labels
+		if ((type == LAYOUT_TYPE_LABELS_BORDER)||
+			(type == LAYOUT_TYPE_LABELS))	{
+			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
+			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
+		} else if ((type == LAYOUT_TYPE_NO_LABELS_BORDER)||
+				  (type == LAYOUT_TYPE_NO_LABELS)) {
+			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_NO_LABELS);
+			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_NO_LABELS);
+
+		}
+		//Plot border
+		if ((type == LAYOUT_TYPE_LABELS_BORDER)||
+			(type == LAYOUT_TYPE_NO_LABELS_BORDER))	{
+			setBorder(new EmptyBorder(2, 2, 2, 2));
+		} else {
 			setBorder(null);
-		} else if (type == LAYOUT_TYPE_TILED) {
-			plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_TILED);
-			plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_TILED);
-			setBorder(new EmptyBorder(0, 0, 0, 0));
 		}
 	}
 
