@@ -2,7 +2,6 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
-import jam.data.Group;
 import jam.io.hdf.HDFIO;
 
 import java.awt.event.KeyEvent;
