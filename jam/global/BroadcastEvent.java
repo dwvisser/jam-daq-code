@@ -29,12 +29,14 @@ public class BroadcastEvent {
     public static final int COUNTERS_UPDATE=40;
     public static final int COUNTERS_READ=41;
     public static final int COUNTERS_ZERO=42;
+    
+    public static final int SORT_MODE_CHANGED=50;
 
     private static final int[] POSSIBLE_CODES = {REFRESH, HISTOGRAM_NEW,
         HISTOGRAM_ADD,HISTOGRAM_SELECT,SCALERS_READ,SCALERS_CLEAR,
         SCALERS_UPDATE,GATE_SELECT,GATE_ADD,GATE_SET_ON,GATE_SET_OFF,
         GATE_SET_SAVE,GATE_SET_POINT,GATE_SET_ADD,GATE_SET_REMOVE,
-        COUNTERS_UPDATE,COUNTERS_READ,COUNTERS_ZERO};
+        COUNTERS_UPDATE,COUNTERS_READ,COUNTERS_ZERO,SORT_MODE_CHANGED};
     
     private int command;
     private Object content;
