@@ -8,6 +8,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -25,7 +26,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -165,47 +165,38 @@ public class Projections extends AbstractControl implements Observer {
 		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
-		/* Buttons panel */
-		final JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cdproject.add(pButtons, BorderLayout.SOUTH);
-		final JPanel pcontrol = new JPanel(new GridLayout(1, 0, 5, 5));
-		pButtons.add(pcontrol);
-		
-		final JButton bOK = new JButton("OK");
-		bOK.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ok();
-			}
-		});
-		pcontrol.add(bOK);
-		
-		final JButton bApply = new JButton("Apply");		
-		bApply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		final PanelOKApplyCancelButtons.Listener listener = new PanelOKApplyCancelButtons.Listener(){
+			public void ok(){
 				apply();
-			}
-		});
-		pcontrol.add(bApply);
-		
-		JButton bCancel = new JButton("Cancel");
-		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
-		});
-		pcontrol.add(bCancel);
-		
+			
+			public void apply(){
+				try {
+					project();
+					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
+					STATUS.setCurrentHistogram(hto);
+					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
+				} catch (DataException de) {
+					messageHandler.errorOutln(de.getMessage());
+				}
+			}
+			
+			public void cancel(){
+				dispose();
+			}
+		};
+		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(listener);
+		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);		
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfromname = null;
-					bOK.setEnabled(false);
-					bApply.setEnabled(false);
+					buttons.setButtonsEnabled(false,false,true);
 				} else {
 					hfromname = ((Histogram) selected).getFullName();
-					bOK.setEnabled(true);
-					bApply.setEnabled(true);
+					buttons.setButtonsEnabled(true,true,true);
 					setupCuts(FULL);
 				}
 			}
@@ -214,26 +205,6 @@ public class Projections extends AbstractControl implements Observer {
 		pack();
 	}
 	
-	public void ok(){
-		apply();
-		dispose();
-	}
-	
-	public void apply(){
-		try {
-			project();
-			BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-			STATUS.setCurrentHistogram(hto);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
-			
-		} catch (DataException de) {
-			messageHandler.errorOutln(de.getMessage());
-		}
-	}
-	
-	public void cancel(){
-		dispose();
-	}
 
 	/**
 	 * Implementation of Observable interface Listners for broadcast events.
@@ -261,7 +232,7 @@ public class Projections extends AbstractControl implements Observer {
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
 		setUseHist(NEW_HIST); //default use new histogram
-		setupToHist(NEW_HIST);//setup "to" histogram
+		setupToHist();//setup "to" histogram
 		setupCuts(FULL);//default setup channels
 	}
 
@@ -270,9 +241,8 @@ public class Projections extends AbstractControl implements Observer {
 	 */
 	private void setupAdd() {
 		final String lastCut = (String) cchan.getSelectedItem();
-		final String lastHist = (String) cto.getSelectedItem();
 		/* setup to histogram */
-		setupToHist(lastHist);
+		setupToHist();
 		/* setup channels */
 		setupCuts(lastCut);
 	}
@@ -280,9 +250,9 @@ public class Projections extends AbstractControl implements Observer {
 	/* non-javadoc:
 	 * Adds a list of histograms to a choose
 	 */
-	private void setupToHist(String newSelect) {
+	private void setupToHist() {
 		cto.removeAllItems();
-		//Add working group new
+		/* Add working group new */
 		cto.addItem(NEW_HIST+Group.WORKING_NAME+"/.");
 		//Add new histograms
 		for (Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
@@ -292,7 +262,7 @@ public class Projections extends AbstractControl implements Observer {
 				cto.addItem(NEW_HIST+group.getName()+"/.");
 			}
 		}
-		//Add Existing hisograms
+		/* Add Existing hisograms */
 		for (Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
 			Group group = (Group)grpiter.next();
 			for  (Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
