@@ -42,7 +42,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -61,7 +60,6 @@ public class ScalerScan
 	private final JTextField txtFirst, txtLast;
 	private ProgressMonitor pBstatus;
 	private final MessageHandler console;
-	private final ScanAction sa;
 	private final Frame frame;
 	private final JButton bOK, bApply, bCancel;
 	
@@ -78,7 +76,6 @@ public class ScalerScan
 		super(status.getFrame(), "HDF Scaler Values Scan", false);
 		frame = status.getFrame();
 		console = status.getMessageHandler();
-		sa = new ScanAction();
 		final Container container = getContentPane();
 		container.setLayout(new BorderLayout(10,5));
 		
@@ -308,22 +305,9 @@ public class ScalerScan
 		return values;
 	}
 
-	public class ScanAction extends AbstractAction {
-		public ScanAction() {
-			super("Scan HDF files for scaler values...");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			show();
-		}
-	}
-	
 	private void updateProgressBar(final String text, final int value){
 		pBstatus.setNote(text);
 		pBstatus.setProgress(value);
 	}
-
-	public AbstractAction getAction() {
-		return sa;
-	}
+	
 }
