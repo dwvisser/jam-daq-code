@@ -140,16 +140,16 @@ Observer  {
         Container cdnew=dnew.getContentPane();
         dnew.setResizable(false);
         //dnew.setSize(300, 150);
-        cdnew.setLayout(new GridLayout(2,1,10,10));
+        cdnew.setLayout(new BorderLayout());
         dnew.setLocation(20,50);
 
         //panel with chooser
         JPanel ptnew =new JPanel();
-        ptnew.setLayout(new FlowLayout(FlowLayout.LEFT,20,20));
-        cdnew.add(ptnew);
+        ptnew.setLayout(new GridLayout(1,1));
+        cdnew.add(ptnew,BorderLayout.CENTER);
 
         JLabel lnew =new JLabel("Name");
-        ptnew.add(lnew);
+        cdnew.add(lnew,BorderLayout.WEST);
 
         textNew=new JTextField("",12);
         textNew.setBackground(Color.white);
@@ -157,8 +157,8 @@ Observer  {
 
         // panel for buttons
         JPanel pbnew= new JPanel();
-        pbnew.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
-        cdnew.add(pbnew);
+        pbnew.setLayout(new GridLayout(1,3));
+        cdnew.add(pbnew,BorderLayout.SOUTH);
 
         JButton bok  =   new JButton("OK");
         bok.setActionCommand("oknew");
