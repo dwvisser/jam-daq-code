@@ -113,7 +113,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		/*  Lower panel with buttons */ 
 		final JPanel pLower = new JPanel(new BorderLayout(5,5));
 		container.add(pLower, BorderLayout.SOUTH);
-		final JPanel pLoad = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,0));
+		final JPanel pLoad = new JPanel(new FlowLayout(FlowLayout.CENTER, 30,0));
 		pLower.add(pLoad, BorderLayout.NORTH);
 		final JPanel pLoadButtons = new JPanel(new GridLayout(1, 0, 10, 0));		
 		pLoad.add(pLoadButtons, BorderLayout.NORTH);
@@ -127,7 +127,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener{
 		JButton bSavelist = new JButton("Save List");
 		pLoadButtons.add(bSavelist);		
 		chkBoxAdd = new JCheckBox("Sum Histograms");
-		pLoadButtons.add(chkBoxAdd);
+		pLoad.add(chkBoxAdd);
 		
 		bSavelist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
