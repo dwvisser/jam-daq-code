@@ -1,32 +1,32 @@
-   <?xml version='1.0' encoding='ISO-8859-1' ?>
-   <!DOCTYPE map
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE map
      PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 1.0//EN"
             "http://java.sun.com/products/javahelp/map_1_0.dtd">
 
-   <map version="1.0">
-      <mapID target="configure" url="config/index.html" />
-      <mapID target="jamconfig" url="config/jamconfig.html" />
-      <mapID target="jamuser" url="config/jamuser.html" />
-      <mapID target="usingjam" url="usingjam/index.html" />
-      <mapID target="online" url="usingjam/online.html" />
-      <mapID target="offline" url="usingjam/offline.html" />
-      <mapID target="writesort" url="usingjam/writesort.html" />
-      <mapID target="dofit" url="usingjam/fitting.html" />
-      <mapID target="menus" url="menus/index.html" />
-      <mapID target="file" url="menus/file.html" />
-      <mapID target="setup" url="menus/setup.html" />
-      <mapID target="control" url="menus/control.html" />
-      <mapID target="histogram" url="menus/histogram.html" />
-      <mapID target="gate" url="menus/gate.html" />
-      <mapID target="scalers" url="menus/scalers.html" />
-      <mapID target="preferences" url="menus/preferences.html" />
-      <mapID target="fitmenu" url="menus/fitting.html" />
-      <mapID target="help" url="menus/help.html" />
-      <mapID target="l002" url="L002format.html" />
-      <mapID target="caen" url="CAENformat.html" />
-      <mapID target="protocol" url="frontEndComm.html" />
-      <mapID target="API" url="API/index.html" />
-      <mapID target="ack" url="acknowledgements.html" />
-      <mapID target="notice" url="notice.html" />
-      <mapID target="contrib" url="contribute.html" />
-   </map>
+<map version="1.0">
+   <mapID target="configure" url="config/index.html" />
+   <mapID target="jamconfig" url="config/jamconfig.html" />
+   <mapID target="jamuser" url="config/jamuser.html" />
+   <mapID target="usingjam" url="usingjam/index.html" />
+   <mapID target="online" url="usingjam/online.html" />
+   <mapID target="offline" url="usingjam/offline.html" />
+   <mapID target="writesort" url="usingjam/writesort.html" />
+   <mapID target="dofit" url="usingjam/fitting.html" />
+   <mapID target="menus" url="menus/index.html" />
+   <mapID target="file" url="menus/file.html" />
+   <mapID target="setup" url="menus/setup.html" />
+   <mapID target="control" url="menus/control.html" />
+   <mapID target="histogram" url="menus/histogram.html" />
+   <mapID target="gate" url="menus/gate.html" />
+   <mapID target="scalers" url="menus/scalers.html" />
+   <mapID target="preferences" url="menus/preferences.html" />
+   <mapID target="fitmenu" url="menus/fitting.html" />
+   <mapID target="help" url="menus/help.html" />
+   <mapID target="l002" url="L002format.html" />
+   <mapID target="caen" url="CAENformat.html" />
+   <mapID target="protocol" url="frontEndComm.html" />
+   <mapID target="API" url="API/index.html" />
+   <mapID target="ack" url="acknowledgements.html" />
+   <mapID target="notice" url="notice.html" />
+   <mapID target="contrib" url="contribute.html" />
+</map>
