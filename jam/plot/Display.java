@@ -129,7 +129,7 @@ public class Display
 		action = new Action(this, msgHandler);// display event handler
 		final int size=420;
 		setPreferredSize(new Dimension(size,size));
-		final int minsize=420;
+		final int minsize=400;
 		setMinimumSize(new Dimension(minsize,minsize));
 		setLayout(new BorderLayout());
 		/* setup up middle panel containing plots panel to holds 1d and 2d
@@ -503,9 +503,18 @@ public class Display
 		Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
 		Icon iCancel = loadToolbarIcon("jam/plot/Cancel.png");
 
-		final JToolBar ptoolbar = new JToolBar("Actions", JToolBar.VERTICAL);
+		final String defaultVal=BorderLayout.NORTH;
+		final String key="toolbarLocation";
+		final java.util.prefs.Preferences helpnode=
+		java.util.prefs.Preferences.userNodeForPackage(getClass());
+		final String location=helpnode.get(key,defaultVal);		
+		final int orientation = (BorderLayout.NORTH.equals(location) || 
+		location==BorderLayout.SOUTH) ? JToolBar.HORIZONTAL : 
+		JToolBar.VERTICAL;
+		final JToolBar ptoolbar = new JToolBar("Actions", orientation);
 		ptoolbar.setToolTipText("Underlined letters are shortcuts for the console.");
-		add(ptoolbar, BorderLayout.WEST);
+		add(ptoolbar, location);
+		
 		try {
 			ptoolbar.setRollover(true);
 
@@ -592,14 +601,41 @@ public class Display
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
 			bcancel.addActionListener(action);
 			ptoolbar.add(bcancel);
-			final int height=ptoolbar.getPreferredSize().height;
+			
+			/* Listen for changes in orientation */
+			ptoolbar.addPropertyChangeListener("orientation",new java.beans.PropertyChangeListener() {
+				public void propertyChange(java.beans.PropertyChangeEvent evt) {
+					/* Get the new orientation */
+					Integer newValue = (Integer)evt.getNewValue();
+					/* place an appropriate value in the user prefs */
+					helpnode.put(key,
+					(newValue.intValue() == JToolBar.HORIZONTAL) ?
+					BorderLayout.NORTH : BorderLayout.WEST);
+					fitToolbar(ptoolbar);
+				}
+			});			
+			fitToolbar(ptoolbar);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void fitToolbar(JToolBar tb){
+		final boolean vertical = tb.getOrientation()==JToolBar.VERTICAL;
+		if (vertical){
+			final int height=tb.getPreferredSize().height;
 			final Dimension oldmin=getMinimumSize();
 			if (height>oldmin.height){
 				final Dimension newMin=new Dimension(oldmin.width,height);
-				this.setMinimumSize(newMin);	
+				setMinimumSize(newMin);	
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} else {
+			final int width=tb.getPreferredSize().width;
+			final Dimension oldmin=getMinimumSize();
+			if (width>oldmin.width){
+				final Dimension newMin=new Dimension(width,oldmin.height);
+				setMinimumSize(newMin);	
+			}
 		}
 	}
 
