@@ -17,11 +17,16 @@ import java.io.OutputStream;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-public class DiskDaemon extends StorageDaemon {
+public final class DiskDaemon extends StorageDaemon {
 
-	/**
-	 * Constructor for online sorting to write out data.
-	 */
+	private FileOutputStream fos;
+	private BufferedOutputStream bos;
+	private FileInputStream fis;
+	private BufferedInputStream bis;
+	
+    /**
+     * @see StorageDaemon#StorageDaemon(Controller, MessageHandler)
+     */
 	public DiskDaemon(Controller controller, MessageHandler msgHandler) {
 		super(controller, msgHandler);
 		setName("Disk I/O for Event Data");
@@ -113,9 +118,9 @@ public class DiskDaemon extends StorageDaemon {
 	private boolean reachedRunEnd=false;
 	private final Object rreLock=new Object();
 	
-	/**
+	/* non-javadoc:
 	 * Take data from ring buffer and write it out to a file 
-	 * until you see a end of run marker, then inform controller
+	 * until you see a end of run marker, then inform controller.
 	 */
 	private void writeLoop() throws IOException {
 		final byte [] buffer=RingBuffer.freshBuffer();
@@ -260,6 +265,12 @@ public class DiskDaemon extends StorageDaemon {
 		}
 	}
 	
+	/**
+	 * Returns whether online sorting is all caught up with incoming
+	 * buffers.
+	 * 
+	 * @return <code>true</code> if all received buffers have been sorted
+	 */
 	public boolean caughtUpOnline(){
 		if (ringBuffer == null){
 			throw new IllegalStateException("Should always have a ring buffer here.");
@@ -275,6 +286,10 @@ public class DiskDaemon extends StorageDaemon {
 		return rval;
 	}
 	
+	/**
+	 * Reset the "reached run end" state to <code>false</code>.
+	 *
+	 */
 	public void resetReachedRunEnd(){
 		synchronized(rreLock){
 			reachedRunEnd=false;
