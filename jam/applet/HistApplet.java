@@ -51,7 +51,7 @@ public class HistApplet
 	private URL localPath;
 	private String documentHost;
 
-	// select panel controls
+	/* select panel controls */
 	public JPanel pselect;
 	FlowLayout flselect;
 	private JLabel lrunState; //run state label         
@@ -323,7 +323,6 @@ public class HistApplet
 	 * Sets the chooser to the current list of histograms.
 	 *
 	 * @param   histogramList  the list of histograms.
-	 * @return  <code>void</code> 
 	 */
 	public void setHistogramList(java.util.List histogramList) {
 		histogramChooser.removeAll();
@@ -351,7 +350,6 @@ public class HistApplet
 	 * Sets the chooser to the current list of gates
 	 *
 	 * @param   gates  the list of gates
-	 * @return  <code>void</code> 
 	 */
 	public void setGateList(List gates) {
 		//if we have gates load gates of current histogram into chooser 
@@ -365,7 +363,6 @@ public class HistApplet
 	/**
 	 * Adds the tool bar the at the top of the plot.
 	 *
-	 * @return  <code>void</code> 
 	 * @since Version 0.5
 	 */
 	public void addToolbarSelect(Panel p) {
