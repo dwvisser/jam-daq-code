@@ -1,7 +1,6 @@
 package jam.sort;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
-import jam.global.GlobalException;
 import jam.global.GoodThread;
 import jam.global.MessageHandler;
 import jam.sort.stream.EventInputStatus;
@@ -327,8 +326,10 @@ public class SortDaemon extends GoodThread {
     /**
      * update the counters display
      */
-    private void updateCounters () throws GlobalException {
-        if (observed) broadCaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
+    private void updateCounters () {
+        if (observed) {
+        	broadCaster.broadcast(BroadcastEvent.COUNTERS_UPDATE);
+        } 
     }
 
     /**
