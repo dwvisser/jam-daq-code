@@ -51,6 +51,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	static final String ZOOMOUT = "zoomout";
 
+	static final String ZOOMVERT = "zoomvert";
+
+	static final String ZOOMHORZ = "zoomhorz";
+	
 	static final String FULL = "full";
 
 	static final String LINEAR = "linear";
@@ -110,6 +114,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	private final Bin cursor;
 
+	private double[] parameter = new double[0];
+	
 	private final List clicks = new ArrayList();
 
 	private int countLow, countHigh;
@@ -246,7 +252,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else if (ZOOMIN.equals(currentCommand)) {
 			zoomin();
 		} else if (ZOOMOUT.equals(currentCommand)) {
-			zoomout();
+			zoomout();			
+		} else if (ZOOMVERT.equals(currentCommand)) {
+			zoomvert();
+		} else if (ZOOMHORZ.equals(currentCommand)) {			
+			zoomhorz();
 		} else if (FULL.equals(currentCommand)) {
 			full();
 		} else if (LINEAR.equals(currentCommand)) {
@@ -338,34 +348,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		 * following to recover the chooser if user just overlayed a histogram
 		 */
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
-	}
-
-	/**
-	 * Expand the region to view.
-	 */
-	private void expand() {
-		final Plot currentPlot = display.getPlot();
-		if (!commandPresent) {
-			isCursorCommand = true;
-			init();
-			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
-		} else if (clicks.size() == 0) {
-			synchronized (cursor) {
-				currentPlot.initializeSelectingArea(cursor);
-				addClick(cursor);
-				textOut.messageOut(cursor.getCoordString() + " to ");
-			}
-		} else {
-			currentPlot.setSelectingArea(false);
-			synchronized (cursor) {
-				textOut.messageOut(cursor.getCoordString(), MessageHandler.END);
-				currentPlot.expand(getClick(0), cursor);
-			}
-			if (autoOnExpand) {
-				currentPlot.autoCounts();
-			}
-			done();
-		}
 	}
 
 	/**
@@ -506,8 +488,218 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			}
 		}
 	}
+	
+	/**
+	 * Expand the region to view.
+	 */
+	private void expand() {
+		final Plot currentPlot = display.getPlot();
+		if (!commandPresent) {
+			isCursorCommand = true;
+			init();
+			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
+		} else if (clicks.size() == 0) {
+			synchronized (cursor) {
+				currentPlot.initializeSelectingArea(cursor);
+				addClick(cursor);
+				textOut.messageOut(cursor.getCoordString() + " to ");
+			}
+		} else {
+			currentPlot.setSelectingArea(false);
+			synchronized (cursor) {
+				textOut.messageOut(cursor.getCoordString(), MessageHandler.END);
+				currentPlot.expand(getClick(0), cursor);
+			}
+			if (autoOnExpand) {
+				currentPlot.autoCounts();
+			}
+			done();
+		}
+	}
 
-	private double[] parameter = new double[0];
+	/**
+	 * Expand the region to view.
+	 */
+	private void zoomhorz() {
+		final Plot currentPlot = display.getPlot();
+		if (!commandPresent) {
+			isCursorCommand = true;
+			init();
+			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
+		} else if (clicks.size() == 0) {
+			synchronized (cursor) {
+				currentPlot.initializeSelectingArea(cursor);
+				addClick(cursor);
+				textOut.messageOut(cursor.getCoordString() + " to ");
+			}
+		} else {
+			currentPlot.setSelectingArea(false);
+			synchronized (cursor) {
+				textOut.messageOut(cursor.getCoordString(), MessageHandler.END);
+				currentPlot.expand(getClick(0), cursor);
+			}
+			if (autoOnExpand) {
+				currentPlot.autoCounts();
+			}
+			done();
+		}
+	}
+	
+	private void zoomvert(){
+		
+	}
+
+
+
+
+	/**
+	 * Zoom in on the histogram
+	 */
+	private void zoomin() {
+		isCursorCommand = false;
+		final Plot currentPlot = display.getPlot();
+		currentPlot.zoom(Plot.Zoom.IN);
+		if (autoOnExpand) {
+			currentPlot.autoCounts();
+		}
+		done();
+	}
+
+	/**
+	 * Zoom out on the histogram.
+	 */
+	private void zoomout() {
+		isCursorCommand = false;
+		final Plot currentPlot = display.getPlot();
+		currentPlot.zoom(Plot.Zoom.OUT);
+		if (autoOnExpand) {
+			currentPlot.autoCounts();
+		}
+		done();
+	}
+	
+	/**
+	 * Display the full histogram.
+	 */
+	private void full() {
+		isCursorCommand = false;
+		final Plot currentPlot = display.getPlot();
+		currentPlot.setFull();
+		if (autoOnExpand) {
+			currentPlot.autoCounts();
+		}
+		done();
+	}
+
+	/**
+	 * Set the counts to linear scale.
+	 */
+	private void linear() {
+		isCursorCommand = false;
+		display.getPlot().setLinear();
+		done();
+	}
+
+	/**
+	 * Set the counts to log scale.
+	 */
+	private void log() {
+		isCursorCommand = false;
+		display.getPlot().setLog();
+		done();
+	}
+
+	/**
+	 * Change the scale for linear to log or log to linear
+	 */
+	private void changeScale() {
+		isCursorCommand = false;
+		if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
+			log();
+		} else {
+			linear();
+		}
+	}
+
+	
+	/**
+	 * Auto scale the plot.
+	 */
+	private void auto() {
+		isCursorCommand = false;
+		display.getPlot().autoCounts();
+		done();
+	}
+
+	/**
+	 * Goto input channel
+	 */
+	private void gotoChannel() {
+		final String sep = ", ";
+		final String eq = " = ";
+		final String ch = "channel";
+		final String en = "energy";
+		final String cal = "calibrated";
+		final char sp = ' ';
+		final String intro = "Goto (click on spectrum or type the ";
+		final char lp = ')';
+		final Plot currentPlot = display.getPlot();
+		final Histogram hist = status.getCurrentHistogram();
+		if (!commandPresent) {
+			isCursorCommand = true;
+			init();
+			if (currentPlot.getDimensionality() == 1 && hist.isCalibrated()) {
+				final String mess = new StringBuffer(intro).append(cal).append(
+						sp).append(en).append(lp).append(sp).toString();
+				textOut.messageOut(mess, MessageHandler.NEW);
+			} else {
+				final String mess = new StringBuffer(intro).append(ch).append(
+						lp).append(sp).toString();
+				textOut.messageOut(mess, MessageHandler.NEW);
+			}
+		} else if (clicks.size() == 0) {
+			synchronized (cursor) {
+				addClick(cursor);
+				StringBuffer output = new StringBuffer();
+				int x = cursor.getX();
+				if (!hist.isCalibrated()) {
+					output.append(ch).append(eq).append(x);
+				} else {
+					if (currentPlot.getDimensionality() == 1) {
+						output.append(en).append(eq).append(
+								currentPlot.getEnergy(x)).append(sep)
+								.append(ch).append(eq).append(x);
+					}
+				}
+				if (currentPlot.getDimensionality() == 1) {
+					if (!mousePressed) { //FIXME KBS
+						if (hist.isCalibrated()) {
+							output = new StringBuffer(en).append(eq).append(x);
+							synchronized (this) {
+								x = currentPlot.getChannel(x);
+								if (x > currentPlot.getSizeX()) {
+									x = currentPlot.getSizeX() - 1;
+								}
+							}
+							output.append(sep).append(ch).append(eq).append(x);
+						}
+					}
+				}
+				final int rangeToUse = 100;
+				final int halfRange = rangeToUse / 2;
+				final int channelLow = x - halfRange;
+				final int channelHigh = channelLow + rangeToUse;
+				currentPlot.expand(Bin.Factory.create(channelLow), Bin.Factory
+						.create(channelHigh));
+				textOut.messageOut(output.toString(), MessageHandler.END);
+			}
+			synchronized (this) {
+				energyEx = false;
+			}
+			auto();
+			done();
+		}
+	}
 
 	/**
 	 * Calculate the area and centroid for a region maybe should copy inquire
@@ -718,154 +910,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	private Bin getClick(int i) {
 		return (Bin) clicks.get(i);
-	}
-
-	/**
-	 * Zoom in on the histogram
-	 */
-	private void zoomin() {
-		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
-		currentPlot.zoom(Plot.Zoom.IN);
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
-		done();
-	}
-
-	/**
-	 * Zoom out on the histogram.
-	 */
-	private void zoomout() {
-		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
-		currentPlot.zoom(Plot.Zoom.OUT);
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
-		done();
-	}
-
-	/**
-	 * Display the full histogram.
-	 */
-	private void full() {
-		isCursorCommand = false;
-		final Plot currentPlot = display.getPlot();
-		currentPlot.setFull();
-		if (autoOnExpand) {
-			currentPlot.autoCounts();
-		}
-		done();
-	}
-
-	/**
-	 * Set the counts to linear scale.
-	 */
-	private void linear() {
-		isCursorCommand = false;
-		display.getPlot().setLinear();
-		done();
-	}
-
-	/**
-	 * Set the counts to log scale.
-	 */
-	private void log() {
-		isCursorCommand = false;
-		display.getPlot().setLog();
-		done();
-	}
-
-	/**
-	 * Change the scale for linear to log or log to linear
-	 */
-	private void changeScale() {
-		isCursorCommand = false;
-		if (display.getPlot().getLimits().getScale() == Scale.LINEAR) {
-			log();
-		} else {
-			linear();
-		}
-	}
-
-	/**
-	 * Auto scale the plot.
-	 */
-	private void auto() {
-		isCursorCommand = false;
-		display.getPlot().autoCounts();
-		done();
-	}
-
-	/**
-	 * Goto input channel
-	 */
-	private void gotoChannel() {
-		final String sep = ", ";
-		final String eq = " = ";
-		final String ch = "channel";
-		final String en = "energy";
-		final String cal = "calibrated";
-		final char sp = ' ';
-		final String intro = "Goto (click on spectrum or type the ";
-		final char lp = ')';
-		final Plot currentPlot = display.getPlot();
-		final Histogram hist = status.getCurrentHistogram();
-		if (!commandPresent) {
-			isCursorCommand = true;
-			init();
-			if (currentPlot.getDimensionality() == 1 && hist.isCalibrated()) {
-				final String mess = new StringBuffer(intro).append(cal).append(
-						sp).append(en).append(lp).append(sp).toString();
-				textOut.messageOut(mess, MessageHandler.NEW);
-			} else {
-				final String mess = new StringBuffer(intro).append(ch).append(
-						lp).append(sp).toString();
-				textOut.messageOut(mess, MessageHandler.NEW);
-			}
-		} else if (clicks.size() == 0) {
-			synchronized (cursor) {
-				addClick(cursor);
-				StringBuffer output = new StringBuffer();
-				int x = cursor.getX();
-				if (!hist.isCalibrated()) {
-					output.append(ch).append(eq).append(x);
-				} else {
-					if (currentPlot.getDimensionality() == 1) {
-						output.append(en).append(eq).append(
-								currentPlot.getEnergy(x)).append(sep)
-								.append(ch).append(eq).append(x);
-					}
-				}
-				if (currentPlot.getDimensionality() == 1) {
-					if (!mousePressed) { //FIXME KBS
-						if (hist.isCalibrated()) {
-							output = new StringBuffer(en).append(eq).append(x);
-							synchronized (this) {
-								x = currentPlot.getChannel(x);
-								if (x > currentPlot.getSizeX()) {
-									x = currentPlot.getSizeX() - 1;
-								}
-							}
-							output.append(sep).append(ch).append(eq).append(x);
-						}
-					}
-				}
-				final int rangeToUse = 100;
-				final int halfRange = rangeToUse / 2;
-				final int channelLow = x - halfRange;
-				final int channelHigh = channelLow + rangeToUse;
-				currentPlot.expand(Bin.Factory.create(channelLow), Bin.Factory
-						.create(channelHigh));
-				textOut.messageOut(output.toString(), MessageHandler.END);
-			}
-			synchronized (this) {
-				energyEx = false;
-			}
-			auto();
-			done();
-		}
 	}
 
 	/**

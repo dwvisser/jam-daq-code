@@ -6,17 +6,21 @@ package jam.plot;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
+import javax.swing.*;
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.JButton; 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
-
 
 /**
  * The toolbar that goes with the display.
@@ -25,13 +29,19 @@ import javax.swing.JToolBar;
  */
 class Toolbar extends JToolBar implements ActionListener {
 
-	private Action action;
+	String [] REBIN_RATIOS={"1","2","4","8","16"};
+	
+	private final Action action;
 	
 	private JButton bnetarea, brebin, bgoto;
+	private JComboBox comboBinRatio;
 	
 	private static final int orientation;
 	private static final String location, key;
 	private static final Preferences helpnode;
+	
+	final Icon iRebin;
+	
 	static {
 		final String defaultVal = BorderLayout.NORTH;
 		key = "toolbarLocation";
@@ -53,15 +63,20 @@ class Toolbar extends JToolBar implements ActionListener {
 	Toolbar(Container container, Action action) {
 		super("Actions", orientation);
 		this.action=action;
+		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
 		final Icon iLinLog = loadToolbarIcon("jam/plot/LinLog.png");
 		final Icon iAutoScale = loadToolbarIcon("jam/plot/AutoScale.png");
 		final Icon iRange = loadToolbarIcon("jam/plot/Range.png");
-		final Icon iRebin = loadToolbarIcon("jam/plot/Rebin.png");
+		 iRebin = loadToolbarIcon("jam/plot/Rebin.png");
+		
 		final Icon iExpand = loadToolbarIcon("jam/plot/ZoomRegion.png");
 		final Icon iFullScale = loadToolbarIcon("jam/plot/FullScale.png");
 		final Icon iZoomIn = loadToolbarIcon("jam/plot/ZoomIn.png");
 		final Icon iZoomOut = loadToolbarIcon("jam/plot/ZoomOut.png");
+		final Icon iZoomVert = loadToolbarIcon("jam/plot/ZoomVert.png");
+		final Icon iZoomHorz = loadToolbarIcon("jam/plot/ZoomHorz.png");
+		
 		final Icon iGoto = loadToolbarIcon("jam/plot/Goto.png");
 		final Icon iArea = loadToolbarIcon("jam/plot/Area.png");
 		final Icon iNetArea = loadToolbarIcon("jam/plot/NetArea.png");
@@ -98,6 +113,32 @@ class Toolbar extends JToolBar implements ActionListener {
 			brange.setActionCommand(Action.RANGE);
 			brange.addActionListener(this);
 			add(brange);
+			
+			//Combox for Re Bin
+			Integer [] intArray= new Integer[REBIN_RATIOS.length];
+			for (int i = 0; i < REBIN_RATIOS.length; i++) {
+	            intArray[i] = new Integer(i);
+			}
+			
+			comboBinRatio = new JComboBox(intArray);
+			comboBinRatio.setBorder(null);
+			Dimension dimMax= comboBinRatio.getMaximumSize();			
+			Dimension dimPref= comboBinRatio.getPreferredSize();
+			dimMax.width=dimPref.width+40;
+			comboBinRatio.setMaximumSize(dimMax);
+			comboBinRatio.setRenderer(new ReBinComboBoxRenderer());
+			comboBinRatio.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					final Object item = ((JComboBox) ae.getSource())
+							.getSelectedItem();
+					selectionReBin((Integer)item);
+				}
+			});
+			
+			add(comboBinRatio);				
+			addSeparator();
+			
+			/* FIXME KBS remove
 			brebin = iRebin == null ? 
 					new JButton(getHTML("<u>Re</u>bin")) : new JButton(iRebin);
 			brebin.setToolTipText(
@@ -106,18 +147,20 @@ class Toolbar extends JToolBar implements ActionListener {
 			brebin.addActionListener(this);
 			add(brebin);
 			addSeparator();
+			*/
+			final JButton bfull = iFullScale==null ? 
+					new JButton(getHTML("<u>F</u>ull")) : new JButton(iFullScale);
+				bfull.setActionCommand(Action.FULL);
+				bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
+				bfull.addActionListener(this);
+				add(bfull);
+			
 			final JButton bexpand = iExpand==null ? 
 					new JButton(getHTML("<u>E</u>xpand")) : new JButton(iExpand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
 			bexpand.setActionCommand(Action.EXPAND);
 			bexpand.addActionListener(this);
 			add(bexpand);
-			final JButton bfull = iFullScale==null ? 
-				new JButton(getHTML("<u>F</u>ull")) : new JButton(iFullScale);
-			bfull.setActionCommand(Action.FULL);
-			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
-			bfull.addActionListener(this);
-			add(bfull);
 			final JButton bzoomin = iZoomIn==null ? 
 					new JButton(getHTML("<u>Z</u>oom<u>i</u>n")) : new JButton(iZoomIn);
 			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
@@ -130,6 +173,21 @@ class Toolbar extends JToolBar implements ActionListener {
 			bzoomout.setActionCommand(Action.ZOOMOUT);
 			bzoomout.addActionListener(this);
 			add(bzoomout);
+			/* FIXME KBS still to add
+			final JButton bzoomvert = iZoomVert == null ? 
+					new JButton(getHTML("<u>Z</u>oom<u>H</u>orizontal")) : new JButton(iZoomVert);
+			bzoomvert.setToolTipText(getHTML("<u>Z</u>oom<u>H</u>orizontal plot."));
+			bzoomvert.setActionCommand(Action.ZOOMVERT);
+			bzoomvert.addActionListener(this);
+			add(bzoomvert);
+
+			final JButton bzoomhorz = iZoomHorz == null ? 
+					new JButton(getHTML("<u>Z</u>oom<u>v</u>ertical")) : new JButton(iZoomHorz);
+			bzoomhorz.setToolTipText(getHTML("<u>Z</u>oom<u>v</u>ertical plot."));
+			bzoomhorz.setActionCommand(Action.ZOOMHORZ);
+			bzoomhorz.addActionListener(this);
+			add(bzoomhorz);
+			*/
 			bgoto = iGoto==null ? 
 					new JButton(getHTML("<u>G</u>oto")) : new JButton(iGoto);
 			bgoto.setActionCommand(Action.GOTO);
@@ -228,8 +286,10 @@ class Toolbar extends JToolBar implements ActionListener {
 	void setHistogramDimension(int dimension){
 		final boolean enable = dimension==1;
 		bgoto.setEnabled(enable);
-		brebin.setEnabled(enable);
+		//brebin.setEnabled(enable);
 		bnetarea.setEnabled(enable);
+		comboBinRatio.setEnabled(enable);
+		comboBinRatio.setSelectedIndex(0);
 	}
 	/**
 	 * Routine called by pressing a button on the action toolbar.
@@ -241,5 +301,65 @@ class Toolbar extends JToolBar implements ActionListener {
 		final String command = e.getActionCommand();
 		action.doCommand(command,false);
 	}
+	/**
+	 * Called by a combo box rebin selection
+	 * @param rebinIndex
+	 */
+	public void selectionReBin(Integer rebinIndex){
+		int index=rebinIndex.intValue();		
+		String ratio =REBIN_RATIOS[index];
+		double [] parameters = new double [1];
+		parameters[0]=Double.parseDouble(ratio);
+		action.doCommand(Action.REBIN, parameters, false);
+	}
+	/**
+	 * Class to render rebin selections 
+	 */
+	 class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
 
+		Icon icon = iRebin;
+		
+		
+		ReBinComboBoxRenderer() {
+	 		setOpaque(true);
+	 		//setBorderPainted(false);
+	 		Dimension dim;
+	 		dim=getPreferredSize();
+	 		dim.width=dim.width-100;
+	 		//setPreferredSize(dim);
+	 		setHorizontalAlignment(LEFT);
+	 		//setVerticalAlignment(CENTER);
+	 	}	
+
+	 	/*
+	 	 * This method finds the image and text corresponding
+	 	 * to the selected value and returns the label, set up
+	 	 * to display the text and image.
+	 	 */
+	 	public Component getListCellRendererComponent(
+                      JList list,
+                      Object value,
+                      int index,
+                      boolean isSelected,
+                      boolean cellHasFocus) {
+	 		//Get the selected index. (The index param isn't
+	 		//always valid, so just use the value.)
+	 		int selectedIndex = ((Integer)value).intValue();
+
+	 		if (isSelected) {
+	 			setBackground(list.getSelectionBackground());
+	 			setForeground(list.getSelectionForeground());
+	 		} else {
+	 			setBackground(list.getBackground());
+	 			setForeground(list.getForeground());
+	 		}
+	 		
+	 		//Set the icon and text. 
+	 		setIcon(icon);
+ 			setText(REBIN_RATIOS[selectedIndex]);
+ 			setFont(list.getFont());
+ 			
+ 			return this;
+	 	}
+	 }
 }
