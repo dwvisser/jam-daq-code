@@ -59,72 +59,22 @@ public class ImpExpORNL extends AbstractImpExp {
 
 	private int totalHist; //number of histograms
 
-	private int totalHalfWords;
+	private int numHalfWords;
 
 	/* Histogram info in Drr file for each histogram */
 	private int[] dim; // Histogram dimensionality
 
 	private int[] chSize; //half words per channel
 
-	private int[] param1; // Histogram parameter
-
-	private int[] param2;
-
-	private int[] param3;
-
-	private int[] param4;
-
-	private int[] lenParRaw1; //Length raw parameters
-
-	private int[] lenParRaw2;
-
-	private int[] lenParRaw3;
-
-	private int[] lenParRaw4;
-
 	private int[] lenParScal1; //Length scaled parameters
 
 	private int[] lenParScal2;
 
-	private int[] lenParScal3;
-
-	private int[] lenParScal4;
-
-	private int[] minCh1; //Min channels
-
-	private int[] minCh2;
-
-	private int[] minCh3;
-
-	private int[] minCh4;
-
-	private int[] maxCh1; //Max channels
-
-	private int[] maxCh2;
-
-	private int[] maxCh3;
-
-	private int[] maxCh4;
-
 	private int[] offSet;
-
-	private String[] parLabelX; //x-parm label x 12 bytes
-
-	private String[] parLabelY; //y parm label y 12 bytes
-
-	private float[] cal1; // Calibration constants
-
-	private float[] cal2;
-
-	private float[] cal3;
-
-	private float[] cal4;
 
 	private String[] titleDrr; //title 40 bytes
 
 	private int[] iDnumber; //ID list
-
-	private byte[] tempShort = new byte[2];
 
 	private static final String[] EXTS = { "his", "drr" };
 
@@ -151,8 +101,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
-	public boolean openFile(File f) throws ImpExpException {
-		return openFile(f, "Import ORNL file ");
+	public boolean openFile(File file) throws ImpExpException {
+		return openFile(file, "Import ORNL file ");
 	}
 
 	/**
@@ -196,11 +146,11 @@ public class ImpExpORNL extends AbstractImpExp {
 	 */
 	private void readDrr(InputStream buffin) throws IOException,
 			ImpExpException {
-		byte[] bsignature = new byte[SIGNATURE.length()];
-		byte bChilText[] = new byte[80]; //chill file text;
-		byte[] parLabelb = new byte[12]; //paramater label
-		byte[] titleb = new byte[40]; //title
-		byte[] totalHistByte = new byte[4];
+		final byte[] bsignature = new byte[SIGNATURE.length()];
+		final byte bChilText[] = new byte[80]; //chill file text;
+		final byte[] parLabelb = new byte[12]; //paramater label
+		final byte[] titleb = new byte[40]; //title
+		final byte[] numHistByte = new byte[4];
 		disDrr = new DataInputStream(buffin);
 		//read in header
 		disDrr.read(bsignature); //HHRIF signature
@@ -209,10 +159,10 @@ public class ImpExpORNL extends AbstractImpExp {
 			throw new ImpExpException("Incorrect header, expected '"
 					+ SIGNATURE + "', but got '" + signature + "'.");
 		}
-		disDrr.read(totalHistByte); //number of histograms
+		disDrr.read(numHistByte); //number of histograms
 		byteOrder = ByteOrder.nativeOrder(); //assume file was created locally
 		msgHandler.messageOut(", native byte order: " + byteOrder + ", ");
-		if (!isCorrectByteOrder(byteArrayToInt(totalHistByte, 0))) {
+		if (!isCorrectByteOrder(byteArrayToInt(numHistByte, 0))) {
 			if (byteOrder == ByteOrder.BIG_ENDIAN) {
 				byteOrder = ByteOrder.LITTLE_ENDIAN;
 			} else {
@@ -220,8 +170,8 @@ public class ImpExpORNL extends AbstractImpExp {
 			}
 		}
 		msgHandler.messageOut("file byte order: " + byteOrder + ", ");
-		totalHist = byteArrayToInt(totalHistByte, 0); //number of histograms
-		totalHalfWords = readInt(disDrr); //total number of 16 bit words
+		totalHist = byteArrayToInt(numHistByte, 0); //number of histograms
+		numHalfWords = readInt(disDrr); //total number of 16 bit words
 		readInt(disDrr); //space nothing defined
 		readInt(disDrr); //year
 		readInt(disDrr); //month
@@ -233,33 +183,33 @@ public class ImpExpORNL extends AbstractImpExp {
 		/* Histogram info in Drr file */
 		dim = new int[totalHist]; // Histogram dimensionality
 		chSize = new int[totalHist]; //half words per channel
-		param1 = new int[totalHist]; // Histogram parameter
-		param2 = new int[totalHist];
-		param3 = new int[totalHist];
-		param4 = new int[totalHist];
-		lenParRaw1 = new int[totalHist]; //Length raw parameters
-		lenParRaw2 = new int[totalHist];
-		lenParRaw3 = new int[totalHist];
-		lenParRaw4 = new int[totalHist];
+		final int [] param1 = new int[totalHist]; // Histogram parameter
+		final int [] param2 = new int[totalHist];
+		final int [] param3 = new int[totalHist];
+		final int [] param4 = new int[totalHist];
+		final int [] lenParRaw1 = new int[totalHist]; //Length raw parameters
+		final int [] lenParRaw2 = new int[totalHist];
+		final int [] lenParRaw3 = new int[totalHist];
+		final int [] lenParRaw4 = new int[totalHist];
 		lenParScal1 = new int[totalHist]; //Length scaled parameters
 		lenParScal2 = new int[totalHist];
-		lenParScal3 = new int[totalHist];
-		lenParScal4 = new int[totalHist];
-		minCh1 = new int[totalHist]; //Min channels
-		minCh2 = new int[totalHist];
-		minCh3 = new int[totalHist];
-		minCh4 = new int[totalHist];
-		maxCh1 = new int[totalHist]; //Max channels
-		maxCh2 = new int[totalHist];
-		maxCh3 = new int[totalHist];
-		maxCh4 = new int[totalHist];
+		final int [] lenParScal3 = new int[totalHist];
+		final int [] lenParScal4 = new int[totalHist];
+		final int [] minCh1 = new int[totalHist]; //Min channels
+		final int [] minCh2 = new int[totalHist];
+		final int [] minCh3 = new int[totalHist];
+		final int [] minCh4 = new int[totalHist];
+		final int [] maxCh1 = new int[totalHist]; //Max channels
+		final int [] maxCh2 = new int[totalHist];
+		final int [] maxCh3 = new int[totalHist];
+		final int [] maxCh4 = new int[totalHist];
 		offSet = new int[totalHist];
-		parLabelX = new String[totalHist];
-		parLabelY = new String[totalHist];
-		cal1 = new float[totalHist]; // Calibration constants
-		cal2 = new float[totalHist];
-		cal3 = new float[totalHist];
-		cal4 = new float[totalHist];
+		final String [] parLabelX = new String[totalHist];
+		final String [] parLabelY = new String[totalHist];
+		final float [] cal1 = new float[totalHist]; // Calibration constants
+		final float [] cal2 = new float[totalHist];
+		final float [] cal3 = new float[totalHist];
+		final float [] cal4 = new float[totalHist];
 		titleDrr = new String[totalHist]; //title 40 bytes
 		/* ID list */
 		iDnumber = new int[totalHist];
@@ -314,19 +264,19 @@ public class ImpExpORNL extends AbstractImpExp {
 	/* non-javadoc:
 	 * Read in a histogram.
 	 */
-	private void readHist(RandomAccessFile fileHis, int k) throws IOException {
+	private void readHist(RandomAccessFile fileHis, int index) throws IOException {
 		/* copy to histogram variables */
-		final String name = titleDrr[k].trim();
-		final int number = iDnumber[k];
-		final int type = dim[k];
-		final int wordCh = chSize[k];
-		final int sizeX = lenParScal1[k];
-		final int sizeY = lenParScal2[k];
+		final String name = titleDrr[index].trim();
+		final int number = iDnumber[index];
+		final int type = dim[index];
+		final int wordCh = chSize[index];
+		final int sizeX = lenParScal1[index];
+		final int sizeY = lenParScal2[index];
 		if (type == 2) { //Read in 2D histogram
 			int[][] counts2d = new int[sizeX][sizeY];
-			fileHis.seek((long) offSet[k] * 2);
-			final int numByteToRead = sizeX * sizeY * 4;
-			final byte [] inBuffer = new byte[numByteToRead];
+			fileHis.seek((long) offSet[index] * 2);
+			final int bytesToRead = sizeX * sizeY * 4;
+			final byte [] inBuffer = new byte[bytesToRead];
 			fileHis.read(inBuffer); //read in byte array
 			if (wordCh == 2) { //four byte data
 				int offset = 0;
@@ -355,9 +305,9 @@ public class ImpExpORNL extends AbstractImpExp {
 			}
 		} else { //Read in 1D Histogram
 			int[] counts = new int[sizeX];
-			fileHis.seek((long) offSet[k] * 2);
-			final int numByteToRead = sizeX * 4;
-			final byte [] inBuffer = new byte[numByteToRead];
+			fileHis.seek((long) offSet[index] * 2);
+			final int bytesToRead = sizeX * 4;
+			final byte [] inBuffer = new byte[bytesToRead];
 			fileHis.read(inBuffer); //read in byte array
 			if (wordCh == 2) { //four byte data
 				int offset = 0;
@@ -420,26 +370,26 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * write out a ORNL drr file
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
-		final StringUtilities su = StringUtilities.instance();
+		final StringUtilities util = StringUtilities.instance();
 		int diskOffSet = 0;
-		DataOutputStream dosDrr = new DataOutputStream(buffout);
-		List allHists = Histogram.getHistogramList();
+		final DataOutputStream dosDrr = new DataOutputStream(buffout);
+		final List allHists = Histogram.getHistogramList();
 		/* number of histograms */
 		totalHist = Histogram.getHistogramList().size(); //number of histograms
 		/*
 		 * total number of 1/2 words need in file size of file needed? in 16 bit
 		 * words
 		 */
-		totalHalfWords = 0;
+		numHalfWords = 0;
 		for (int i = 0; i < allHists.size(); i++) {
 			final Histogram hist = ((Histogram) allHists.get(i));
 			final int sizeX = hist.getSizeX();
 			final int sizeY = hist.getSizeY(); //will be zero for 1-d
 			final int dim=hist.getDimensionality();
 			if (dim==1) {
-				totalHalfWords = totalHalfWords + 2 * sizeX;
+				numHalfWords = numHalfWords + 2 * sizeX;
 			} else if (dim == 2) {
-				totalHalfWords = totalHalfWords + 2 * sizeX
+				numHalfWords = numHalfWords + 2 * sizeX
 						* sizeY;
 			} else {
 				throw new IOException(
@@ -449,9 +399,9 @@ public class ImpExpORNL extends AbstractImpExp {
 		/* write header */
 		dosDrr.writeBytes(SIGNATURE); //HHRIF signature, ASCII encoded
 		dosDrr.writeInt(totalHist); //number of histograms
-		dosDrr.writeInt(totalHalfWords); //total number of 16 bit words
+		dosDrr.writeInt(numHalfWords); //total number of 16 bit words
 		dosDrr.writeInt(0); //space nothing defined
-		Calendar calendar = Calendar.getInstance();
+		final Calendar calendar = Calendar.getInstance();
 		dosDrr.writeInt(calendar.get(Calendar.YEAR)); //date year (date and
 													  // time)
 		dosDrr.writeInt(calendar.get(Calendar.MONTH + 1)); // month
@@ -459,12 +409,12 @@ public class ImpExpORNL extends AbstractImpExp {
 		dosDrr.writeInt(calendar.get(Calendar.HOUR_OF_DAY)); //time
 		dosDrr.writeInt(calendar.get(Calendar.MINUTE)); //time
 		dosDrr.writeInt(calendar.get(Calendar.SECOND)); //time
-		dosDrr.writeBytes(su.makeLength("File Created by Jam", 80));
+		dosDrr.writeBytes(util.makeLength("File Created by Jam", 80));
 		/* text from chill file */
 		for (int i = 0; i < allHists.size(); i++) {
 			final Histogram hist = ((Histogram) allHists.get(i));
-			short sizeX = (short) (hist.getSizeX());
-			short sizeY = (short) (hist.getSizeY()); //will be zero for 1-d
+			final short sizeX = (short) (hist.getSizeX());
+			final short sizeY = (short) (hist.getSizeY()); //will be zero for 1-d
 			// use data output stream name only 15 char long title 50 char long
 			dosDrr.writeShort((short) (hist.getDimensionality()));
 			dosDrr.writeShort(2); //half-words per channel
@@ -498,7 +448,7 @@ public class ImpExpORNL extends AbstractImpExp {
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			/* subtitle */
-			dosDrr.writeBytes(su.makeLength(hist.getTitle(), 40));
+			dosDrr.writeBytes(util.makeLength(hist.getTitle(), 40));
 			final int dim=hist.getDimensionality();
 			/* increment disk offset for .his file */
 			if (dim==1) {
@@ -522,32 +472,32 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * Write out the .his file.
 	 */
 	private void writeHis(OutputStream outputStream) throws IOException {
-		DataOutputStream dosHis = new DataOutputStream(outputStream);
-		Iterator allHistograms = Histogram.getHistogramList().iterator();
-		while (allHistograms.hasNext()) {
-			Histogram hist = ((Histogram) allHistograms.next());
-			int sizeX = hist.getSizeX();
-			int sizeY = hist.getSizeY();
+		final DataOutputStream dosHis = new DataOutputStream(outputStream);
+		final Iterator histIterator = Histogram.getHistogramList().iterator();
+		while (histIterator.hasNext()) {
+		    final Histogram hist = ((Histogram) histIterator.next());
+		    final int sizeX = hist.getSizeX();
+		    final int sizeY = hist.getSizeY();
 			/* write as determined by type */
 			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-				int[] countsInt = (int[]) hist.getCounts();
+			    final int[] countsInt = (int[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt(countsInt[i]);
 				}
 			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				double[] countsDbl = (double[]) hist.getCounts();
+			    final double[] countsDbl = (double[]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					dosHis.writeInt((int) (countsDbl[i] + 0.5));
 				}
 			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
-				int[][] counts2dInt = (int[][]) hist.getCounts();
+			    final int[][] counts2dInt = (int[][]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {
 						dosHis.writeInt(counts2dInt[j][i]);
 					}
 				}
 			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
-				double[][] counts2dDbl = (double[][]) hist.getCounts();
+			    final double[][] counts2dDbl = (double[][]) hist.getCounts();
 				for (int i = 0; i < sizeX; i++) {
 					for (int j = 0; j < sizeY; j++) {
 						dosHis.writeInt((int) (counts2dDbl[j][i] + 0.5));
@@ -567,14 +517,15 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
-		final byte a = array[offset];
-		final byte b = array[offset + 1];
-		final byte c = array[offset + 2];
-		final byte d = array[offset + 3];
-		final int rval = byteOrder == ByteOrder.BIG_ENDIAN ? constructInt(a, b,
-				c, d) : constructInt(d, c, b, a);
-		return rval;
-	}
+        final byte byte0 = array[offset];
+        final byte byte1 = array[offset + 1];
+        final byte byte2 = array[offset + 2];
+        final byte byte3 = array[offset + 3];
+        final int rval = byteOrder == ByteOrder.BIG_ENDIAN ? constructInt(
+                byte0, byte1, byte2, byte3) : constructInt(byte3, byte2, byte1,
+                byte0);
+        return rval;
+    }
 
 	private final int constructInt(byte highest, byte high, byte low,
 			byte lowest) {
@@ -595,15 +546,16 @@ public class ImpExpORNL extends AbstractImpExp {
 		return rval;
 	}
 
-	private int readInt(DataInput di) throws IOException {
-		byte[] tempInt = new byte[4];
-		di.readFully(tempInt);
-		return byteArrayToInt(tempInt, 0);
+	private int readInt(DataInput dataInput) throws IOException {
+		final byte[] rval = new byte[4];
+		dataInput.readFully(rval);
+		return byteArrayToInt(rval, 0);
 	}
 
-	private short readShort(DataInput di) throws IOException {
-		di.readFully(tempShort);
-		return byteArrayToShort(tempShort, 0);
+	private short readShort(DataInput dataInput) throws IOException {
+	    final byte [] rval=new byte[2];
+		dataInput.readFully(rval);
+		return byteArrayToShort(rval, 0);
 	}
 
 	public boolean canExport() {
@@ -623,29 +575,31 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @return whether file was successfully read
 	 */
-	protected boolean openFile(File in, String msg) {
-		File inFile = in;
+	protected boolean openFile(File file, String msg) {
+		File inFile = file;
 		boolean rval = false; //default return value
 		try {
-			if (in == null) {
+			if (file == null) {
 				inFile = getFileOpen(msg);
 			}
 			if (inFile != null) { // if Open file was not canceled
 				setLastFile(inFile);
-				final File f = (inFile.getName().endsWith("his")) ? new File(
+				final File drrFile = (inFile.getName().endsWith("his")) ? new File(
 						inFile.getParent(), FileUtilities.setExtension(inFile
 								.getName(), "drr", FileUtilities.FORCE))
 						: inFile;
-				FileInputStream inStream = new FileInputStream(f);
-				BufferedInputStream inBuffStream = new BufferedInputStream(
+				final FileInputStream inStream = new FileInputStream(drrFile);
+				final BufferedInputStream inBuffStream = new BufferedInputStream(
 						inStream, BUFFER_SIZE);
-				if (msgHandler != null)
+				if (msgHandler != null) {
 					msgHandler.messageOut(msg + " " + getFileName(inFile),
 							MessageHandler.NEW);
+				}
 				/* implementing class implement following method */
 				readData(inBuffStream);
-				if (msgHandler != null)
+				if (msgHandler != null){
 					msgHandler.messageOut(" done!", MessageHandler.END);
+				}
 				inBuffStream.close();
 				rval = true;
 			}
