@@ -1092,8 +1092,8 @@ public final class HDFIO implements DataIO, JamHDFFields {
      */
     private VirtualGroup addGroupSection() {
     	VirtualGroup virtualGroup;
-       	virtualGroup = new VirtualGroup(GROUP_SECTION, FILE_SECTION);
-        new DataIDLabel(virtualGroup, GROUP_SECTION);
+       	virtualGroup = new VirtualGroup(GROUP_SECT, FILE_SECTION);
+        new DataIDLabel(virtualGroup, GROUP_SECT);
         return  virtualGroup;
     }
     
