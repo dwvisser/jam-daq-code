@@ -50,14 +50,10 @@ public class CalibrationFit extends AbstractControl {
 	private final static int MAX_NUMBER_TERMS = 5;
 	private final static String BLANK_TITLE = "Histogram not calibrated";
 	private final static String BLANK_LABEL = "    --     ";	
-	public final static String NOT_CALIBRATED ="Not Calibrated";
 	
-	//Avaliable functions
+	//Avaliable functions load icons
 	static {
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-		CalibrationFunction.clearAll();
-		//Not calibrated
-		CalibrationFunction.addFunction(NOT_CALIBRATED, null);
 		
 		CalibrationFunction linearFunc=new LinearFunction();
 		CalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
@@ -280,7 +276,7 @@ public class CalibrationFit extends AbstractControl {
     	
 		try {
 			calibrationFunction = getCurrentCalibrationFunction();
-			if (!funcName.equals(NOT_CALIBRATED)) {
+			if (!funcName.equals(CalibrationFunction.NOT_CALIBRATED)) {
 				calClass = (Class)CalibrationFunction.getMapFunctions().get(funcName);
 				boolean change = calClass.isInstance(calibrationFunction);
 				if ( calibrationFunction==null || !change ) {
@@ -335,7 +331,7 @@ public class CalibrationFit extends AbstractControl {
 				rbSetCoeffs.setSelected(true);
 			}			
 		} else {
-			name=NOT_CALIBRATED;
+			name=CalibrationFunction.NOT_CALIBRATED;
 			rbFitPoints.setSelected(true);
 		}		
 		

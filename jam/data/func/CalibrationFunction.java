@@ -1,10 +1,13 @@
 package jam.data.func;
 import jam.data.DataException;
+
+import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram.  
@@ -16,10 +19,23 @@ import javax.swing.ImageIcon;
  */
 public abstract class CalibrationFunction implements Function {
 
+	public final static String NOT_CALIBRATED ="Not Calibrated";	
 	private static final Map  mapFunctions =new HashMap();	
 	private static final List names =new ArrayList();	
 	private static final Map  mapIcons =new HashMap();
 
+	static {
+		CalibrationFunction.clearAll();
+		//Not calibrated
+		addFunction(NOT_CALIBRATED, null);		
+		CalibrationFunction linearFunc=new LinearFunction();
+		addFunction(linearFunc.getName(), linearFunc.getClass());
+		CalibrationFunction sqrtEFunc=new SqrtEnergyFunction();
+		addFunction(sqrtEFunc.getName(), sqrtEFunc.getClass());
+		//CalibrationFunction polyFunc=new PolynomialFunction(2);
+		
+	}
+	
 	/**
 	 * Maximum number of terms assigned by default to <code>POLYNOMIAL</code> type.
 	 */
@@ -34,7 +50,10 @@ public abstract class CalibrationFunction implements Function {
 	 * Name of calibration function.
 	 */	
 	protected transient String name;
-	
+	/** 
+	 * This functions class
+	 */
+	protected transient Class funcClass;
 	/**
 	 * Title of calibration function.
 	 */
@@ -96,8 +115,8 @@ public abstract class CalibrationFunction implements Function {
 	 * @param	numberTerms	number of terms in function
 	 */
 	public CalibrationFunction(Class inClass, String name, int numberTerms) {
+		this.funcClass = inClass;
 		this.name=name;
-		addFunction(name, inClass);
 		if (numberTerms < MAX_NUMBER_TERMS) {
 			coeff=new double[numberTerms];
 			labels=new String[numberTerms];
@@ -159,6 +178,7 @@ public abstract class CalibrationFunction implements Function {
 	 * @return the function formula
 	 */
 	public String getFormula(){
+		updateFormula();
 		return formula.toString();
 	}
 
