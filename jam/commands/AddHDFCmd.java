@@ -10,20 +10,18 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
+
 /**
- * Add counts from a histogram
+ * Add counts to histograms in memory from histograms in an HDF file.
  * 
  * @author Ken Swartz
  */
 final class AddHDFCmd extends AbstractCommand implements Observer {
 
-	AddHDFCmd(){
+	public void initCommand(){
 		putValue(NAME,"Add counts\u2026");
 	}
 
-	/* (non-Javadoc)
-	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
-	 */
 	protected void execute(Object[] cmdParams) {
 		JFrame frame = status.getFrame();				
 		final HDFIO	hdfio = new HDFIO(frame, msghdlr);
@@ -31,9 +29,6 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
-	 */
 	protected void executeParse(String[] cmdTokens)
 		throws CommandListenerException {
 			execute(null);
@@ -47,5 +42,4 @@ final class AddHDFCmd extends AbstractCommand implements Observer {
 			setEnabled(mode != SortMode.REMOTE);
 		}
 	}
-
 }
