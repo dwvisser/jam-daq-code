@@ -78,7 +78,7 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
     }
 
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of groups
      */
     VirtualGroup addGroupSection() {
@@ -88,42 +88,40 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
         return  virtualGroup;
     }
     
-    /**
-     * Adds data objects for the virtual group of histograms.
+    /*
+     * non-javadoc: Adds data objects for the virtual group of histograms.
      */
     VirtualGroup addHistogramSection() {
-       	VirtualGroup allHists = new VirtualGroup(HIST_SECTION, FILE_SECTION);
+        final VirtualGroup allHists = new VirtualGroup(HIST_SECTION,
+                FILE_SECTION);
         new DataIDLabel(allHists, HIST_SECTION);
         return allHists;
     }
 
-
-    /**
-     * Adds data objects for the virtual group of gates.
+    /*
+     * non-javadoc: Adds data objects for the virtual group of gates.
      */
-     VirtualGroup addGateSection() {
-
-     	VirtualGroup   allGates = new VirtualGroup(GATE_SECTION, FILE_SECTION);
+    VirtualGroup addGateSection() {
+        final VirtualGroup allGates = new VirtualGroup(GATE_SECTION,
+                FILE_SECTION);
         new DataIDLabel(allGates, GATE_SECTION);
         return allGates;
     }
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of scalers.
      */
    VirtualGroup addScalerSection() {
-
     	final VirtualGroup scalerGroup = new VirtualGroup(
             SCALER_SECT, FILE_SECTION);
     	new DataIDLabel(scalerGroup, SCALER_SECT);
     	return scalerGroup;
     }
 
-    /**
+    /* non-javadoc:
      * Adds data objects for the virtual group of scalers.
      */
     VirtualGroup addScalers() {
-
     	final VirtualGroup scalerGroup = new VirtualGroup(
             SCALER_SECT, FILE_SECTION);
     	new DataIDLabel(scalerGroup, SCALER_SECT);
@@ -175,28 +173,25 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
     NumericalDataGroup convertHistogram(VirtualGroup histVGroup, Histogram hist) {
         ScientificData sciData=null;
         boolean hasErrors=false;
-        AbstractHist1D hist1dWithErrors=null;
-
+        AbstractHist1D hist1d=null;
         /* vGroup Annotation is Histogram title */
         final NumericalDataGroup ndg = new NumericalDataGroup();
         /* make the NDG label the histogram number */
         histVGroup.add(ndg);
-        
         /* NDG to contain data */
         new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
         /* add to specific histogram vGroup (other info maybe later) */
         final ScientificDataDimension sdd = getSDD(hist);
         ndg.addDataObject(sdd); //use new SDD
-
         final Histogram.Type type = hist.getType();
         if (type == Histogram.Type.ONE_DIM_INT) {
             sciData = new ScientificData((int[]) hist.getCounts());
-            hist1dWithErrors = (AbstractHist1D) hist;            
-            hasErrors=hist1dWithErrors.errorsSet();
+            hist1d = (AbstractHist1D) hist;            
+            hasErrors=hist1d.errorsSet();
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
             sciData = new ScientificData((double[]) hist.getCounts());
-            hist1dWithErrors = (AbstractHist1D) hist;
-            hasErrors=hist1dWithErrors.errorsSet();
+            hist1d = (AbstractHist1D) hist;
+            hasErrors=hist1d.errorsSet();
         } else if (type == Histogram.Type.TWO_DIM_INT) {
             sciData = new ScientificData((int[][]) hist.getCounts());
         } else if (type == Histogram.Type.TWO_D_DOUBLE) {
@@ -206,9 +201,7 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
                     "HDFIO encountered a Histogram of unknown type.");
         }
         ndg.addDataObject(sciData);
-        
-        //Add errors
-        if (hasErrors) {
+        if (hasErrors) {//Add errors
         	ScientificDataDimension sddErr=null;
         	if (type == Histogram.Type.ONE_DIM_INT) {
                 sddErr = getSDD(hist,
@@ -221,12 +214,10 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
             new DataIDLabel(ndgErr, ERROR_LABEL);
             /* explicitly floating point */
             ndgErr.addDataObject(sddErr);
-            final ScientificData sdErr = new ScientificData(hist1dWithErrors.getErrors());
+            final ScientificData sdErr = new ScientificData(hist1d.getErrors());
             ndgErr.addDataObject(sdErr);
         }
-        
         return ndg;
-
 	}
 
     /* non-javadoc:
@@ -236,17 +227,17 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
      * @exception HDFException
      *                thrown if unrecoverable error occurs
      */	
-    VDataDescription convertCalibration(AbstractCalibrationFunction calibFunction) {	
+    VDataDescription convertCalibration(AbstractCalibrationFunction calibration) {	
         String calibType;
         String[] columnNames;        
         int size;
         final short[] orders;
         final short[] types;
-        final String calibName = calibFunction.getName();
-        if (calibFunction.isFitPoints()) {   
+        final String calibName = calibration.getName();
+        if (calibration.isFitPoints()) {   
         	calibType = CALIBRATION_TYPE_POINTS;
             columnNames = CALIBRATION_COLUMNS_POINTS;
-            size =calibFunction.getPtsEnergy().length;
+            size =calibration.getPtsEnergy().length;
             types = new short [2];
 			types [0]=VDataDescription.DFNT_DBL64;
             types [1]=VDataDescription.DFNT_DBL64;
@@ -256,7 +247,7 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
         } else { //2d
         	calibType = CALIBRATION_TYPE_COEFF;        	
         	columnNames = CALIBRATION_COLUMNS_COEFF;
-            size = calibFunction.getNumberTerms();
+            size = calibration.getNumberTerms();
             types = new short [1];
 			types [0]=VDataDescription.DFNT_DBL64;
             orders = new short [1];
@@ -266,15 +257,15 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
                 size, columnNames, types, orders);        
         //HDF Undocumented Vdata has same reference as VdataDescription
         final VData data = new VData(desc);
-        if (calibFunction.isFitPoints()) {
-        	final double [] channels =calibFunction.getPtsChannel();
-        	final double [] energies=calibFunction.getPtsEnergy();
+        if (calibration.isFitPoints()) {
+        	final double [] channels =calibration.getPtsChannel();
+        	final double [] energies=calibration.getPtsEnergy();
         	for (int i = 0; i < size; i++) {
         		data.addDouble(0, i, channels[i]);
         		data.addDouble(1, i, energies[i]);
         	}
         } else { //2d
-        	final double [] coeffs = calibFunction.getCoeff();
+        	final double [] coeffs = calibration.getCoeff();
             for (int i = 0; i < size; i++) {
                 data.addDouble(0, i, coeffs[i]);
             }
