@@ -605,7 +605,8 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		noGateComboBoxModel.addElement("NO GATES");
 
 		/* panel with selection and print etc. */
-		JPanel pselect = new JPanel(new BorderLayout());
+		JToolBar pselect = new JToolBar("Selection",JToolBar.HORIZONTAL);
+		pselect.setLayout(new BorderLayout());
 		pselect.setBackground(Color.lightGray);
 		pselect.setForeground(Color.black);
 		//run status
