@@ -286,41 +286,47 @@ Observer {
      * Does the work of manipulating histograms
      */
     private void manipulate() throws DataException {
-        Histogram hto;
-        double fac1,fac2;
-        double [] in1,in2,out;
+        //Histogram hto;
+        //double fac1,fac2;
+        //double [] in1,in2,out;
         //int i;
-
+		final double fac1;
         try {//read information for first histogram
             fac1 = Double.valueOf(ttimes1.getText().trim()).doubleValue();
         } catch (NumberFormatException nfe){
             throw new DataException("First factor is not a valid number [Manipulations]");
         }
         final Histogram hfrom1 = Histogram.getHistogram((String)cfrom1.getSelectedItem());
-        if(hfrom1.getType()==Histogram.ONE_DIM_INT){
+        final double [] in1;
+        if (hfrom1.getType()==Histogram.ONE_DIM_INT){
             in1 = toDoubleArray((int [])hfrom1.getCounts());
         } else {
             in1=(double [])hfrom1.getCounts();
         }
-        double [] err1 = hfrom1.getErrors();
-
-        //read in information for second histogram
-        try {
+        final double [] err1 = hfrom1.getErrors();
+        final double fac2;
+        try {//read in information for second histogram
             fac2 = Double.valueOf(ttimes2.getText().trim()).doubleValue();
         } catch (NumberFormatException nfe){
             throw new DataException("Second factor is not a valid number [Manipulations]");
         }
-
-        final Histogram hfrom2=Histogram.getHistogram((String)cfrom2.getSelectedItem());
-        if(hfrom2.getType()==Histogram.ONE_DIM_INT){
-            in2 = toDoubleArray((int [])hfrom2.getCounts());
-        } else {
-            in2 = (double [])hfrom2.getCounts();
-        }
-        double [] err2 = hfrom2.getErrors();
+        final double [] in2,err2;
+		if (cfrom2.isEnabled()){
+			final Histogram hfrom2=Histogram.getHistogram((String)cfrom2.getSelectedItem());
+			if(hfrom2.getType()==Histogram.ONE_DIM_INT){
+				in2 = toDoubleArray((int [])hfrom2.getCounts());
+			} else {
+				in2 = (double [])hfrom2.getCounts();
+			}
+			err2 = hfrom2.getErrors();
+		} else {
+			in2=null;
+			err2=null;
+		}
 
         //read in information for to histogram
         String name = (String)cto.getSelectedItem();
+        final Histogram hto;
         if (name.equals("New Histogram")){
             name  = ttextto.getText().trim();
             hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom1.getSizeX(),name);
@@ -330,11 +336,9 @@ Observer {
             hto = Histogram.getHistogram(name);
         }
         hto.setZero();
-        if(hto.getType()==Histogram.ONE_DIM_INT){
-            out = toDoubleArray((int [])hto.getCounts());
-        } else {
-            out = (double [])hto.getCounts();
-        }
+        final double [] out=(hto.getType()==Histogram.ONE_DIM_INT) ?
+            toDoubleArray((int [])hto.getCounts()):
+            (double [])hto.getCounts();
         double [] errOut = hto.getErrors();
 
         if (cnorm.isSelected()) {
