@@ -100,8 +100,6 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 
 	private File sortClassPath;
 	private Class sortClass;
-	/* 1/fraction of events to sort */
-	private int sortInterval;
 
 	/* sorting classes */
 	private SortDaemon sortDaemon;
@@ -666,7 +664,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 			diskDaemon.setupOn(eventInputStream, eventOutputStream);
 			diskDaemon.setRingBuffer(storageRing);
 		}
-		//create net daemon
+		/* Create the net daemon. */
 		netDaemon =
 			new NetDaemon(
 				sortingRing,
@@ -674,9 +672,7 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 				msgHandler,
 				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
 				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
-		//set the fraction of buffers to give to the sort routine
-		sortDaemon.setSortInterval(sortInterval);
-		//tell control about everything
+		/* Tell control about everything. */
 		runControl.setupOn(
 			experimentName,
 			dataDirectory,
@@ -684,9 +680,9 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 			sortDaemon,
 			netDaemon,
 			diskDaemon);
-		//tell status
+		/* Tell the status dialog. */
 		displayCounters.setupOn(netDaemon, sortDaemon, diskDaemon);
-		//startup daemons
+		/* Startup the daemons. */
 		if (cdisk.isSelected()) {
 			diskDaemon.start();
 		}
@@ -694,13 +690,9 @@ public final class SetupSortOn extends JDialog implements ActionListener, ItemLi
 		netDaemon.start();
 	}
 
-	/**
-	 *
-	 */
 	private void setupCamac() throws JamException {
 		frontEnd.setup();
 		frontEnd.setupCamac(sortRoutine.getCamacCommands());
-		// tell vme to read files of list of cnafs
 	}
 
 	private void setupVME_Map() throws JamException, SortException {
