@@ -436,38 +436,38 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param chans number of bins along the horizontal and vertical axes
 	 * @param name unique name
 	 * @param title verbose title
 	 * @param labelX x-axis label
 	 * @param labelY y-axis label
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, String name, String title, String labelX,
+	public static HistInt2D createHist2D(int chans, String name, String title, String labelX,
 			String labelY){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title,labelX,labelY);
+		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name,title,labelX,labelY);
 	}
 	
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param chans number of bins along the horizontal and vertical axes
 	 * @param name unique name
 	 * @param title verbose title
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, String name, String title){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name,title);
+	public static HistInt2D createHist2D(int chans, String name, String title){
+		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name,title);
 	}
 	
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal and vertical axes
+	 * @param chans number of bins along the horizontal and vertical axes
 	 * @param name unique name
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, String name){
-		return (HistInt2D)Histogram.createHistogram(new int[chX][chX],name);
+	public static HistInt2D createHist2D(int chans, String name){
+		return (HistInt2D)Histogram.createHistogram(new int[chans][chans],name);
 	}
 }
