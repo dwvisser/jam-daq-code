@@ -78,12 +78,13 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		pCenter.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		previousLayout = VERTICAL;
-		/* Run status */
+		// Run status 
 		final Box pRunState = new Box(BoxLayout.X_AXIS);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
 		lrunState.setOpaque(true);
 		pRunState.add(lrunState);
+		//Histogram Chooser
 		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
@@ -105,6 +106,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(histogramChooser);
+		//Overlay button
 		boverLay.setToolTipText("Overlay next histogram choice.");
 		boverLay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -114,6 +116,7 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			}
 		});
 		pCenter.add(boverLay);
+		//Gate Chooser
 		gateChooser.setRenderer(new GateListCellRenderer());
 		dim = gateChooser.getPreferredSize();
 		dim.width = chooserWidth;
@@ -216,12 +219,14 @@ public final class SelectionToolbar extends JToolBar implements Observer {
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, null);
 		} else {
 			final boolean oneD = hist.getDimensionality() == 1;
-			if (isOverlaySelected() && oneD) {
+			if ((isOverlaySelected() && oneD) &&
+			    (display.getHistogram()!=null)){
 					status.setOverlayHistogramName(hist.getName());
 					console.messageOut(hist.getName(), MessageHandler.END);
 					display.overlayHistogram(hist.getNumber());
 			} else {
 				synchronized (status) {
+					setOverlaySelected(false);
 					status.setCurrentHistogramName(hist.getName());
 					display.removeOverlays();
 					display.displayHistogram();

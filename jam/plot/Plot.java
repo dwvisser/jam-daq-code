@@ -215,8 +215,10 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		final Integer value = new Integer(num);
 		synchronized (plotLock) {
 			/* Don't overlay histogram already displayed. */
-			if (currentSubPlot.getHistogram().getNumber() != num
-					&& !overlays.contains(value)) {
+			Histogram hist=currentSubPlot.getHistogram();
+			if (hist!=null && 
+				hist.getNumber() != num && 
+				!overlays.contains(value)) {
 				overlays.add(value);
 			}
 			currentSubPlot.overlayHistograms(overlays);

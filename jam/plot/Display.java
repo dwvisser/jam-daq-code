@@ -216,7 +216,13 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		/* Add to view */
 		currentView.setHistogram(getPlot().getNumber(), hist);
 	}
-	
+	/**
+	 * Get the current select histogram
+	 * @return histogram
+	 */
+	public Histogram getHistogram(){
+		return getPlot().getHistogram();
+	}
 	/**
 	 * Overlay a histogram.
 	 * 
@@ -334,13 +340,10 @@ public final class Display extends JPanel implements  PlotSelectListener,
 			if (p!=currentPlot) {
 				/* Change plot mouse listener source */
 				if (currentPlot!=null ) {
-					currentPlot.reset();
-					/// Cancel all previous stuff.
+					/// Cancel area setting 
 					currentPlot.setSelectingArea(false);
-					currentPlot.setMarkArea(false);
-					currentPlot.setMarkingChannels(false);					
+					//Cancel gate setting
 					currentPlot.displaySetGate(GateSetMode.GATE_CANCEL, null, null);
-					
 					currentPlot.removeAllPlotMouseListeners();
 				}
 				if (p.HasHistogram())
