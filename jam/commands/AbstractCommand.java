@@ -18,8 +18,9 @@ public abstract class AbstractCommand implements Commandable {
 	 *
 	 */
 	public AbstractCommand(){
-		
+		super();	
 	}
+	
 	/**
 	 * Initializer
 	 * 
@@ -40,10 +41,8 @@ public abstract class AbstractCommand implements Commandable {
 	public void performCommand(Object [] cmdParams)  throws CommandException {
 		
 		try {
-			
 			execute(cmdParams);
 			logCommand();
-			
 		} catch (Exception e) {			
 			logError();
 			throw new CommandException(e);
@@ -55,13 +54,10 @@ public abstract class AbstractCommand implements Commandable {
 	 *
 	 * @param strCmdParams the command parameters as strings
 	 */
-	public void performParseCommand(String [] strCmdParams) throws CommandListenerException{
-				
-		try {
-			
+	public void performParseCommand(String [] strCmdParams) throws CommandListenerException{			
+		try {	
 			executeParse(strCmdParams);
 			logCommand();
-			
 		} catch (Exception e) {
 			logError();
 			throw new CommandListenerException(e);
@@ -83,6 +79,7 @@ public abstract class AbstractCommand implements Commandable {
 	public void logError(){
 			
 	}
+	
 	/**
 	 * Execute a command with the given command parameters
 	 * 
@@ -97,5 +94,4 @@ public abstract class AbstractCommand implements Commandable {
 	 * @param cmdTokens command parameters as string
 	 */
 	public abstract	void executeParse(String [] cmdTokens);			
-
 }
