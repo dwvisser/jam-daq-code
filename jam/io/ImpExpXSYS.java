@@ -7,7 +7,6 @@ import jam.data.Scaler;
 import jam.data.func.PolynomialFunction;
 import jam.global.MessageHandler;
 import java.awt.Frame;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -178,32 +177,28 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	}
 
 	/** 
-	 * Unpacks a Xsys histogram header
-	 * returns true if it read a headerm 
-	 *	       false if end of file found
-	 *
+	 * Unpacks a Xsys histogram header.
+	 * 
+	 * @return true if it read a header, false if end of file found
 	 */
 	private boolean unPackHeaderXSYS(InputStream buffin)
 		throws IOException, ImpExpException {
-
 		boolean endOfFile = false;
-
-		//read in full buffer, because there is stuff in buffer we want to skip	
-		endOfFile : for (int i = 0; i < L_BUFFER; i++) {
+		/* read in full buffer, because there is 
+		 * stuff in buffer we want to skip */
+		readBuffers : for (int i = 0; i < L_BUFFER; i++) {
 			if ((buffer[i] = buffin.read()) == (-1)) {
 				endOfFile = true;
-				break endOfFile;
+				break readBuffers;
 			}
 		}
-
 		if (!endOfFile) {
-			//read header word						
+			/* read header word	*/				
 			header = bufferToString(buffer, P_HEADER, L_INT);
 			if (!(header.equals(XSYSHEADER))) {
 				throw new ImpExpException("Not an XSYS file, no SPEC key word [ImpExpXsys]");
 			}
-
-			//read in header info
+			/* read in header info */
 			runNumber = bufferToBigEndian(buffer, P_RUN_NUMBER);
 			runTitle = bufferToString(buffer, P_TITLE, L_TITLE);
 			areaNumber = bufferToBigEndian(buffer, P_AREA_NUMBER);
@@ -212,7 +207,6 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 			areaLengthPage = bufferToBigEndian(buffer, P_AREA_LENGTH_PAGE);
 			areaSizeX = bufferToBigEndian(buffer, P_AREA_SIZE_X);
 			areaSizeY = bufferToBigEndian(buffer, P_AREA_SIZE_Y);
-
 			calibFlag = bufferToBigEndian(buffer, P_AREA_CALIB_FLAG);
 			mbdChan = bufferToBigEndian(buffer, P_AREA_MBD_CHAN);
 			if (calibFlag == CALIB_ENERGY) {
@@ -223,7 +217,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 							P_AREA_CALIB_COEF + i * L_INT);
 				}
 			}
-			//if header before first histogram
+			/* if header before first histogram */
 			if (firstHeader) {
 				if (msgHandler != null) msgHandler.messageOutln(
 					"  Run number: "
@@ -231,12 +225,12 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 						+ " Title: "
 						+ runTitle.trim()
 						+ " ");
-				//read in scalers values
+				/* read in scalers values */
 				for (int i = 0; i < NUMBER_SCALERS; i++) {
 					scalers[i] =
 						bufferToBigEndian(buffer, P_SCALERS + L_INT * i);
 				}
-				//read in scaler titles
+				/* read in scaler titles */
 				for (int i = 0; i < NUMBER_SCALERS; i++) {
 					scalerTitles[i] =
 						bufferToString(
@@ -251,46 +245,38 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 					}
 				}
 			}
-
 			firstHeader = false;
-			//DEBUGdumpHeader();		
-
-			return true;
-		} else {
-			//end of file found
-			return false;
-
 		}
+		return !endOfFile;
 	}
+	
 	/**
-	 * Unpacks a XSYS histogram 1d type INTEGER
+	 * Unpacks a XSYS histogram 1d type INTEGER.
+	 * 
 	 * @param buffin inputdata stream
 	 * @param areaSizeX size of histogra
 	 * @param areaLengthPage length of area in pages a page is XSYS_BUFFER_SIZE long
+	 * @return histogram
 	 */
 	private int[] unPackData1d(
 		DataInputStream buffin,
 		int areaSizeX,
 		int areaLengthPage)
 		throws IOException {
-
 		int numberLongWords;
 		int[] counts = new int[areaSizeX];
 		byte[] tempBuff; //array to hold byte data
-
 		numberLongWords = areaLengthPage * XSYS_BUFFER_SIZE;
-
 		tempBuff = new byte[numberLongWords * L_INT];
-		//read in data to a tempory buffer	    
+		/* read in data to a tempory buffer	*/    
 		buffin.readFully(tempBuff, 0, numberLongWords * L_INT);
-
 		for (int i = 0; i < areaSizeX; i++) {
-			//litte endian read from buffer		    	    
+			/* litte endian read from buffer */
 			counts[i] = bufferToBigEndian(tempBuff, i * L_INT);
 		}
-
 		return counts;
 	}
+	
 	/**
 	 * Unpack the data of a XSYS 2d spectum type INTEGER
 	 * We make a square specturm using the 
