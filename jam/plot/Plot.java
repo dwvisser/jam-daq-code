@@ -1,8 +1,8 @@
 package jam.plot;
 import java.awt.*;
 import javax.swing.*;
-import java.util.*;
 import jam.data.*;
+
 /**
  * Abstract class for displayed plots.
  *
@@ -113,7 +113,7 @@ public abstract class Plot extends JPanel  {
     
     //gate stuff
     protected Gate currentGate;
-    protected Vector pointsGate;
+    protected java.util.List pointsGate;
     boolean settingGate=false;
     
     //are we display more than a histogram

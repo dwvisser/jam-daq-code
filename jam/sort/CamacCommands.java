@@ -2,7 +2,7 @@
  */
 package jam.sort;
 
-import java.util.Vector;
+import java.util.*;
 
 /**
  * <p>Class for storing and sending CNAF commands to the crate controller (which may in fact be
@@ -18,8 +18,8 @@ import java.util.Vector;
  * </ul>
  */
 public class CamacCommands {
-    Vector [] eventCommands;
-    Vector initCommands, scalerCommands, userCommands, clearCommands;
+    List [] eventCommands;
+    List initCommands, scalerCommands, userCommands, clearCommands;
     private int eventSize[];
     private int numberStreams, streamNumber, paramId, scalerId;
     private SortRoutine sortRoutine;
@@ -85,7 +85,7 @@ public class CamacCommands {
         //paramId+1 since stream has 1 for first element
         paramId++;
         eventSize[streamNumber]++;
-        eventCommands[streamNumber].addElement(CNAF(paramId, crate, number, address,
+        eventCommands[streamNumber].add(CNAF(paramId, crate, number, address,
         function,  data));
         sortRoutine.setEventSizeMode(SortRoutine.SET_BY_CNAF);
         return (paramId-1);	    
@@ -114,7 +114,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void eventCommand(int crate, int number, int address, int function){
-        eventCommands[streamNumber].addElement(CNAF(0, crate, number, address, function,  0));
+        eventCommands[streamNumber].add(CNAF(0, crate, number, address, function,  0));
     }
 
     /** Adds the command specified by the arguments to the next position in the
@@ -126,7 +126,7 @@ public class CamacCommands {
      * @param data any data sent with command to module
      */
     public void init(int crate, int number, int address, int function, int data){
-        initCommands.addElement(CNAF(0, crate,number,address,function, data));
+        initCommands.add(CNAF(0, crate,number,address,function, data));
     }
 
     /**
@@ -139,7 +139,7 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void init(int crate, int number, int address, int function){
-        initCommands.addElement(CNAF(0, crate,number,address,function, 0));
+        initCommands.add(CNAF(0, crate,number,address,function, 0));
     }
     /** Adds the command specified by the arguments to the next position in the
      * scaler command list.
@@ -151,7 +151,7 @@ public class CamacCommands {
      * @return number of scaler
      */
     public int scaler(int crate, int number, int address, int function, int data){
-        scalerCommands.addElement(CNAF(scalerId, crate,number,address,function, data));
+        scalerCommands.add(CNAF(scalerId, crate,number,address,function, data));
         return scalerId++;
     }
 
@@ -176,7 +176,7 @@ public class CamacCommands {
      * @param data any data sent with the command to the module
      */
     public void clear(int crate, int number, int address, int function, int data){
-        clearCommands.addElement(CNAF(0, crate, number, address, function, data));
+        clearCommands.add(CNAF(0, crate, number, address, function, data));
     }
 
     /**
@@ -189,34 +189,34 @@ public class CamacCommands {
      * @param function code indicating the action to be taken
      */
     public void clear(int crate, int number, int address, int function){
-        clearCommands.addElement(CNAF(0, crate,number,address,function, 0));
+        clearCommands.add(CNAF(0, crate,number,address,function, 0));
     }
     
     /** Get the list of init cnafs
      * @return list of
      */
-    public Vector getInitCommands(){
+    public List getInitCommands(){
         return initCommands;
     }
     
     /** Get the list of event cnafs
      * @return list of event CNAF commands
      */
-    public Vector getEventCommands(){
+    public List getEventCommands(){
         return eventCommands[0];
     }
     
     /** Get the list of scaler cnafs
      * @return list of scaler read CNAF commands
      */
-    public Vector getScalerCommands(){
+    public List getScalerCommands(){
         return scalerCommands;
     }
     
     /** Get the list of clear cnafs
      * @return list of "clear" CNAF commands
      */
-    public Vector getClearCommands(){
+    public List getClearCommands(){
         return clearCommands;
     }
     

@@ -10,11 +10,8 @@ import java.util.*;
  */
 public class VME_Map {
 
-    //private int eventSize=0;//number of parameters to an event
-    private Vector eventParameters;//vector containing all event parameters
-    //private Vector scalerParameters;//vector containing all scaler parameters
+    private List eventParameters;//vector containing all event parameters
     private int indexCounter = 0;//counter for array assignments of parameter ID's
-    //private int scalerCounter = 0;
     private SortRoutine sortRoutine;
     private int interval=1;//interval in milliseconds for the VME to insert scalers into the event stream
     private Hashtable V775ranges;
@@ -26,7 +23,6 @@ public class VME_Map {
     public VME_Map(SortRoutine sr) {
         sortRoutine = sr;
         eventParameters = new Vector();
-        //scalerParameters = new Vector();
         V775ranges = new Hashtable();
     }
 
@@ -45,22 +41,13 @@ public class VME_Map {
     int channel, int threshold) throws SortException {
         VME_Channel vmec = new VME_Channel(slot, baseAddress,
         channel, threshold, indexCounter);
-        eventParameters.addElement(vmec);
+        eventParameters.add(vmec);
         indexCounter++;
         sortRoutine.setEventSizeMode(SortRoutine.SET_BY_VME_MAP);
         int parameterNumber = vmec.getParameterNumber();//ADC's and TDC's in slots 2-7
         if (parameterNumber > maxParameterNumber) maxParameterNumber = parameterNumber;
         return parameterNumber;
     }
-
-    /*public void scalerParameter(int parameterNumber, int baseAddress, int channel, Scaler scaler)
-    throws SortException {
-        if (channel > scalerParameters.size()) throw new SortException(getClass().getName()+
-        ".scalerParameter(): Attempted "+
-        "to use channel number "+channel+" before using channel "+
-        Math.max(0,scalerParameters.size()-1)+".  Only use channels in sequence from zero.");
-        scalerParameters.addElement(new VME_Channel(parameterNumber, baseAddress, channel, scaler));
-    }*/
 
     public void setScalerInterval(int seconds) {
         interval=seconds;
@@ -75,10 +62,9 @@ public class VME_Map {
      */
     public int getEventSize(){
         return maxParameterNumber+1;
-        //return 0x301+1;//temporary for inserting counter in event stream
     }
 
-    VME_Channel [] convertToArray(Vector vmeVec) {
+    VME_Channel [] convertToArray(List vmeVec) {
         Object [] temp = vmeVec.toArray();
         VME_Channel [] rval = new VME_Channel[temp.length];
         for (int i=0; i< temp.length; i++) {
@@ -88,22 +74,8 @@ public class VME_Map {
     }
 
     public VME_Channel [] getEventParameters(){
-        //System.err.println("# event Parameters: "+eventParameters.size());
         return convertToArray(eventParameters);
     }
-
-    /*public VME_Channel [] getScalerParameters(){
-        return convertToArray(scalerParameters);
-    }*/
-
-    /*public Hashtable getScalerTable() throws SortException {
-        Hashtable returnVal = new Hashtable();
-        for (Enumeration e = scalerParameters.elements() ; e.hasMoreElements() ;) {
-            VME_Channel vc = (VME_Channel)e.nextElement();
-            returnVal.put(new Short(vc.getParameterNumber()), vc.getScaler());
-        }
-        return returnVal;
-    }*/
 
     /**
      * Called in a sort routine to set the range of a V775 TDC in nanoseconds.

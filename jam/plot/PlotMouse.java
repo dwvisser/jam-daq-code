@@ -1,6 +1,6 @@
 package jam.plot;
 import java.awt.*;
-import java.util.Vector;
+import java.util.*;
 import java.awt.event.*;
 
 /**
@@ -13,7 +13,7 @@ import java.awt.event.*;
  * @author Ken Swartz.
  */
 public class PlotMouse extends MouseAdapter {
-	private Vector listenersList; //list of listeners for plotmouse
+	private java.util.List listenersList; //list of listeners for plotmouse
 	private PlotGraphics pg; //converts screen pixels to data values
 
 	/**
@@ -34,7 +34,7 @@ public class PlotMouse extends MouseAdapter {
 	 *
 	 */
 	public void addListener(PlotMouseListener listener) {
-		listenersList.addElement(listener);
+		listenersList.add(listener);
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class PlotMouse extends MouseAdapter {
 	 * returns true if it could remove this listener
 	 */
 	public boolean removeListener(PlotMouseListener listener) {
-		return listenersList.removeElement(listener);
+		return listenersList.remove(listener);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class PlotMouse extends MouseAdapter {
 		Point pin = e.getPoint();
 		Point pout = pg.toData(pin);
 		for (int i = 0; i < listenersList.size(); i++) {
-			((PlotMouseListener) listenersList.elementAt(i)).plotMousePressed(
+			((PlotMouseListener) listenersList.get(i)).plotMousePressed(
 				pout,
 				pin);
 		}

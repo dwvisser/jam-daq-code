@@ -1,6 +1,6 @@
 package jam.fit;
 
-import java.util.Vector;
+import java.util.*;
 import java.text.NumberFormat;
 
 /**
@@ -113,6 +113,8 @@ public class Matrix {
 						case '-' :
 							element[i][j] = m1.element[i][j] - m2.element[i][j];
 							break;
+						default://do nothing
+							break; 
 					}
 				}
 			}
@@ -566,7 +568,7 @@ public class Matrix {
 		return A;
 	}
 
-	public Vector qr() {
+	public List qr() {
 		/*	returns the QR-decomposition of this matrix object
 			using Householder rotations, without column pivoting
 		*/
@@ -605,7 +607,7 @@ public class Matrix {
 
 	}
 
-	public Vector toHess() {
+	public List toHess() {
 		/*	makes the matrix upper Hessenberg via Householder rotations
 			returns  P, H, s.t. P' * this * P = H and H is upper Hessenberg
 			and P' * P = I.
@@ -644,7 +646,7 @@ public class Matrix {
 
 	}
 
-	public Vector genp() {
+	public List genp() {
 		/*	returns the LU decomposition of a matrix using the Gauss
 			transform. This algorithm returns 3 matrices as follows:
 			[P, L, U] such that LU = PA. This algorithm performs no
@@ -681,7 +683,7 @@ public class Matrix {
 
 	}
 
-	public Vector gepp() {
+	public List gepp() {
 		/*	returns the LU decomposition of a matrix using the Gauss
 			transform. This algorithm returns 3 matrices as follows:
 			[P, L, U] such that LU = PA. This algorithm performs partial
@@ -749,12 +751,12 @@ public class Matrix {
 		Matrix L = new Matrix(rows, columns);
 		Matrix U = new Matrix(rows, columns);
 		Matrix A = new Matrix(this); // initialized
-		Vector v = new Vector();
+		List v = new Vector();
 		int i;
 		for (i = 0; i < iter; i++) {
 			v = A.genp(); // get LU factorization
-			L = (Matrix) v.elementAt(1);
-			U = (Matrix) v.elementAt(2);
+			L = (Matrix) v.get(1);
+			U = (Matrix) v.get(2);
 			A = new Matrix(U, L, '*');
 		}
 		return A;
@@ -766,15 +768,15 @@ public class Matrix {
 			not too efficient. I will also implement a QR-givens method
 			for Hessenberg or 3-diagonal matrices.
 		*/
-		Vector qr;
+		List qr;
 		Matrix Q = new Matrix(rows, columns);
 		Matrix R = new Matrix(rows, columns);
 		Matrix A = new Matrix(this); // initialized
 		int i;
 		for (i = 0; i < iter; i++) {
 			qr = A.qr();
-			Q = (Matrix) qr.elementAt(1);
-			R = (Matrix) qr.elementAt(0);
+			Q = (Matrix) qr.get(1);
+			R = (Matrix) qr.get(0);
 			A = new Matrix(R, Q, '*');
 		}
 		return A;
@@ -787,7 +789,7 @@ public class Matrix {
 			A.leig(0.01) returns the largest eigenvalue to at least two
 			digits of accuracy.
 		*/
-		Vector qr;
+		List qr;
 		Matrix Q = new Matrix(rows, columns);
 		Matrix R = new Matrix(rows, columns);
 		Matrix A = new Matrix(this); // initialized
@@ -800,8 +802,8 @@ public class Matrix {
 		double res = 99; // residual
 		while ((i < maxIter) && (res > p)) {
 			qr = A.qr();
-			Q = (Matrix) qr.elementAt(1);
-			R = (Matrix) qr.elementAt(0);
+			Q = (Matrix) qr.get(1);
+			R = (Matrix) qr.get(0);
 			A = new Matrix(R, Q, '*');
 			i++;
 			res = Math.abs(A.element[0][0] - v);
