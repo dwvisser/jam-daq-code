@@ -22,7 +22,7 @@ import javax.swing.DefaultBoundedRangeModel;
  * @author Dale Visser
  * @version 1.4
  */
-public class Limits {
+class Limits {
 
     static class ScaleType{
     	/**
@@ -53,7 +53,6 @@ public class Limits {
 	private final Histogram histogram;
 	private final BoundedRangeModel rangeModelX=new DefaultBoundedRangeModel();
 	private final BoundedRangeModel rangeModelY=new DefaultBoundedRangeModel();
-	private final BoundedRangeModel rangeModelCount=new DefaultBoundedRangeModel();
 
     private int minimumX,maximumX;
     private int minimumY,maximumY;
@@ -62,37 +61,6 @@ public class Limits {
     private int zeroY, sizeY;		//translate to rangemodel min, max
     private Limits.ScaleType scale=ScaleType.LINEAR;        // is it in log or linear
     
-    /**
-     * limits with no histogram
-     */
-    public Limits(){
-        sizeX=INITHI;
-        zeroX=INITLO;
-        sizeY=INITHI;
-        zeroY=INITLO;
-        minimumX=INITLO;
-        maximumX=INITHI;
-        minimumY=INITLO;
-        maximumY=INITHI;
-        minimumCounts=INITLO;
-        maximumCounts=DEFAULTMAXCOUNTS;
-        //update the bounded range models
-        updateModelX();
-        updateModelY();
-        //updateModelCounts();
-        histogram=null;
-    }
-    
-    /** 
-     * Creates a new set of display limits for the specified 
-     * histogram.
-     * @param hist Histogram for which this instance provides display 
-     * limits
-     */
-    public Limits(Histogram hist){
-        this(hist, false, false);
-    }
-
     /** 
      * Creates the display limits for the specified histogram, 
      * specifying whether to ignore first and/or last channels for 
@@ -105,7 +73,7 @@ public class Limits {
      * @param ignoreFull ignores the last channel for auto scaling 
      * histogram
      */
-    public Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull){
+    Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull){
         histogram=hist;
         TABLE.put(hist.getName(),this);
         sizeX=hist.getSizeX()-1;
@@ -113,7 +81,7 @@ public class Limits {
         sizeY=hist.getSizeY()-1;
         zeroY=INITLO;
         init(ignoreZero, ignoreFull);//set initial values
-        //update the bounded range models
+        /* update the bounded range models */
         updateModelX();
         updateModelY();
     }
@@ -220,7 +188,7 @@ public class Limits {
      * @param hist Histogram to retrieve the limits for
      * @return display limits for the specified histogram
      */
-    public static Limits getLimits(Histogram hist) {
+    static Limits getLimits(Histogram hist) {
         return (Limits) TABLE.get(hist.getName());
     }
 
@@ -228,9 +196,9 @@ public class Limits {
      * @param data object which implements the Displayable interface
      * @return the display limits for the displayable object
      */
-    public static Limits getLimits(Displayable data) {
+    /*public static Limits getLimits(Displayable data) {
         return (Limits) TABLE.get(data.getName());
-    }
+    }*/
 
     /**
      * @return model for scrollbar attached to X-limits
@@ -246,18 +214,11 @@ public class Limits {
         return rangeModelY;
     }
     
-    /**
-     * @return model for scroller attached to counts limits
-     */
-    BoundedRangeModel getModelCount(){
-        return rangeModelCount;
-    }
-
     /** Set the limits for the horizontal dimension.
      * @param minX new minimum x value
      * @param maxX new maximum x value
      */
-    public synchronized final void setLimitsX(int minX, int maxX){
+    synchronized final void setLimitsX(int minX, int maxX){
         minimumX=minX;
         maximumX=maxX;
         updateModelX();
@@ -266,18 +227,15 @@ public class Limits {
     /** Set the minimimum X limit.
      * @param minX new minimum x value
      */
-    public synchronized void setMinimumX(int minX){
+    synchronized void setMinimumX(int minX){
         minimumX=minX;
         updateModelX();
     }
 
-    /*
-     * Set the maximum X limit
-     */
     /** Sets the new maximum x value.
      * @param maxX the new maximum x value
      */
-    public synchronized void setMaximumX(int maxX){
+    synchronized void setMaximumX(int maxX){
         maximumX=maxX;
         updateModelX();
     }
@@ -288,7 +246,7 @@ public class Limits {
      * @param minY minumum Y to display
      * @param maxY maximum Y to display
      */
-    public final synchronized void setLimitsY(int minY, int maxY){
+    final synchronized void setLimitsY(int minY, int maxY){
         minimumY=minY;
         maximumY=maxY;
         updateModelY();
@@ -299,7 +257,7 @@ public class Limits {
      *
      * @param minY minumum Y to display
      */
-    public synchronized void setMinimumY(int minY){
+    synchronized void setMinimumY(int minY){
         minimumY=minY;
         updateModelY();
     }
@@ -309,7 +267,7 @@ public class Limits {
      *
      * @param maxY maximum Y to display
      */
-    public synchronized void setMaximumY(int maxY){
+    synchronized void setMaximumY(int maxY){
         maximumY=maxY;
         updateModelY();
     }
@@ -320,7 +278,7 @@ public class Limits {
      * @param minCounts the lowest count value to display
      * @param maxCounts the highest count value to display
      */
-    public synchronized final void setLimitsCounts(int minCounts, 
+    private synchronized final void setLimitsCounts(int minCounts, 
     int maxCounts){
         minimumCounts=minCounts;
         maximumCounts=maxCounts;
@@ -331,7 +289,7 @@ public class Limits {
      * 
      * @param minCounts the lowest count value to display
      */
-    public final void setMinimumCounts(int minCounts){
+    final void setMinimumCounts(int minCounts){
 		synchronized(this){
 			minimumCounts=minCounts;
 		}
@@ -342,7 +300,7 @@ public class Limits {
      * 
      * @param maxCounts the highest count value to display
      */
-    public final void setMaximumCounts(int maxCounts){
+    final void setMaximumCounts(int maxCounts){
         synchronized(this){
 			maximumCounts=maxCounts;
         }
@@ -354,7 +312,7 @@ public class Limits {
      * @param s one of <code>Limits.LINEAR</code> or <code>
      * Limits.LOG</code>
      */
-    public final void setScale(Limits.ScaleType s){
+    final void setScale(Limits.ScaleType s){
     	synchronized(scale){
 			scale=s;
     	}
@@ -363,7 +321,7 @@ public class Limits {
     /**
      * update the values from the model
      */
-    public synchronized void update(){
+    synchronized void update(){
         minimumX=rangeModelX.getValue();
         maximumX=minimumX+rangeModelX.getExtent();
         minimumY=sizeY-rangeModelY.getValue()-rangeModelY.getExtent();
@@ -393,42 +351,42 @@ public class Limits {
     /**
      * @return the lowest x-channel to display
      */
-    public int getMinimumX(){
+    int getMinimumX(){
         return(minimumX);
     }
 
 	/**
 	 * @return the highest x-channel to display
 	 */
-    public int getMaximumX(){
+    int getMaximumX(){
         return(maximumX);
     }
 
     /**
      * @return the lowest y-channel to display
      */
-    public int getMinimumY(){
+    int getMinimumY(){
         return minimumY;
     }
 
 	/**
 	 * @return the highest y-channel to display
 	 */
-    public int getMaximumY(){
+    int getMaximumY(){
         return maximumY;
     }
 
     /**
      * @return the minimum count level to be displayed
      */
-    public int getMinimumCounts(){
+    int getMinimumCounts(){
         return minimumCounts;
     }
 
     /**
      * @return the maximum count level to be displayed
      */
-    public int getMaximumCounts(){
+    int getMaximumCounts(){
         return maximumCounts;
     }
 
@@ -438,7 +396,7 @@ public class Limits {
      * @return <code>PlotGraphics.LINEAR</code> or <code>
      * PlotGraphics.LOG</code>
      */
-    public Limits.ScaleType getScale(){
+    Limits.ScaleType getScale(){
         return scale;
     }
 
