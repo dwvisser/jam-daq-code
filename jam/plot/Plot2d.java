@@ -66,7 +66,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 */
 	void paintMarkingArea(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
-		g.setColor(Color.GREEN);		
+		g.setColor(PlotColorMap.area);		
 		
 		//FIXME KBS some of this should be moved to PlotData.
 		final Point areaPointView=graph.toViewLin(areaStartPoint);
@@ -197,7 +197,7 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
 	 */	
 	void paintSettingGate(Graphics gc) {
 		Graphics2D g=(Graphics2D)gc;
-		g.setColor(Color.BLACK);
+		g.setColor(PlotColorMap.gateDraw);
 		g.setComposite(AlphaComposite.getInstance(
 		AlphaComposite.SRC_OVER,0.8f));
 		g.drawLine(
