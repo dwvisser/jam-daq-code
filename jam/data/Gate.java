@@ -141,15 +141,6 @@ public class Gate implements Serializable {
 	}
 
 	public static List getGateList(int type) {
-		/*Vector out = new Vector(gateList);
-		for (int i = 0; i < out.size(); i++) {
-			if (((Gate) (out.elementAt(i))).getType() != type) {
-				out.removeElementAt(i);
-				i--;
-				//so that i++ in next loop iteration will actually access the next element
-			}
-		}
-		return out;*/
 		return Collections.unmodifiableList(gateListDim[type-1]);
 	}
 
