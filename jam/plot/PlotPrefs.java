@@ -11,7 +11,7 @@ import java.util.prefs.Preferences;
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Jun 10, 2004
- * @see java.util.prefs.Preferences;
+ * @see java.util.prefs.Preferences
  */
 public interface PlotPrefs {
 	final Preferences prefs=Preferences.systemNodeForPackage(PlotPrefs.class);
