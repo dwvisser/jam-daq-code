@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
@@ -112,9 +111,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private final Bin cursor;
 
 	private final List clicks = new ArrayList();
-
-	private final List rangeList = Collections
-			.synchronizedList(new ArrayList());
 
 	private int countLow, countHigh;
 
@@ -470,16 +466,12 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
-			countLow = (int) cursor.getCounts();
+			countLow = (int) cursor.getY();
 			clicks.add(cursor);
-			//FIXME remove
-			//countLow = ((Integer) rangeList.get(0)).intValue();
 			textOut.messageOut("" + countLow + " to ");
 		} else {
-			countHigh = (int) cursor.getCounts();
+			countHigh = (int) cursor.getY();
 			clicks.add(cursor);
-			//FIXME remove
-			//countHigh = ((Integer) rangeList.get(1)).intValue();
 			display.getPlot().setRange(countLow, countHigh);
 			textOut.messageOut(String.valueOf(countHigh), MessageHandler.END);
 			done();
@@ -908,7 +900,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			mousePressed = false;
 			currentCommand = null;
 			clicks.clear();
-			rangeList.clear();
 			display.getPlot().setSelectingArea(false);
 		}
 	}
@@ -941,5 +932,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		if (key.equals(PlotPrefs.AUTO_ON_EXPAND)) {
 			setAutoOnExpand(Boolean.valueOf(newValue).booleanValue());
 		}
+	}
+	
+	String getCurrentCommand(){
+		return currentCommand;
 	}
 }
