@@ -975,24 +975,33 @@ class PlotGraphics implements PlotGraphicsLayout {
 	/**
 	 * Setting a 1d Gate
 	 *
-	 * @param gatePoints the vector of gate points to be drawn
+	 * @param gatePoints gate points to be drawn (in graphics coordinates)
 	 * @return  <code>void</code>
 	 * @since Version 0.5
 	 */
 	void settingGate1d(Polygon gatePoints) {
 		clipPlot();
-		for (int i = 0; i < gatePoints.npoints; i++) {
-			final int x1 = gatePoints.xpoints[i];
-			g.drawLine(x1, viewBottom, x1, viewTop);
+		if (gatePoints.npoints>0){
+			final int x1=gatePoints.xpoints[gatePoints.npoints-1];
+			if (gatePoints.npoints>1){
+				markAreaOutline1d(toDataHorz(gatePoints.xpoints[gatePoints.npoints-2]), 
+				toDataHorz(x1));
+			} else {
+				g.drawLine(x1, viewBottom, x1, viewTop);
+			}
 		}
 	}
 
 	/**
-	 * Mark the outline of an area in a 1d 
-	 * @param x1 first clicked channel point
-	 * @param x2 second clicked channel point
+	 * Determine the outline of an area in a 1d plot.
+	 * 
+	 * @param x1 a point in plot coordinates
+	 * @param x2 a point in plot coordinates
+	 * @return a rectangle in graphics coordinates that will
+	 * highlight the channels indicated
 	 */
 	Rectangle getRectangleOutline1d(int x1, int x2){
+		final int height=viewBottom-viewTop;//Full plot vertically
 		final int x;
 		final int width;		
 		
@@ -1017,12 +1026,15 @@ class PlotGraphics implements PlotGraphicsLayout {
 			//At least 1 wide
 			width=Math.max(xv2-xv1,1);
 		} 	
-		//Full plot vertically
-		final int height=viewBottom-viewTop;
-		//g.drawRect(x,viewTop,width,height);
 		return new Rectangle(x,viewTop,width,height);					
 	}
 	
+	/**
+	 * Mark the outline of an area in a 1d plot.
+	 * 
+	 * @param x1 a point in plot coordinates
+	 * @param x2 a point in plot coordinates
+	 */
 	void markAreaOutline1d(int x1, int x2){
 		clipPlot();
 		g.draw(getRectangleOutline1d(x1,x2));

@@ -53,34 +53,46 @@ class Plot1d extends Plot {
 	void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
+			addMouseListener(mouseInputAdapter);
+			addMouseMotionListener(mouseInputAdapter);
 			setSettingGate(true);
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
 				pointsGate.addPoint(pChannel.x, pChannel.y);
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
+				removeMouseListener(mouseInputAdapter);
+				removeMouseMotionListener(mouseInputAdapter);
 			} else if (mode == GateSetMode.GATE_CANCEL) {
 				pointsGate.reset();
 				setSettingGate(false);
+				removeMouseListener(mouseInputAdapter);
+				removeMouseMotionListener(mouseInputAdapter);
 			}
 			repaint();
 		}
 	}
 
-	protected void paintSetGate(Graphics g) {
-		g.setColor(PlotColorMap.gateDraw);
+	protected void paintSetGatePoints(Graphics g) {
+		g.setColor(PlotColorMap.gateShow);
 		graph.settingGate1d(graph.toView(pointsGate));
 	}
-	/**
-	 * Painting to do if the mouse has moved
-	 * 
-	 */
-	protected void paintMouseMoved(Graphics gc) {
-		if (selectingArea) {
-			paintSelectingArea(gc);
+	
+	protected void paintSettingGate(Graphics g){
+		g.setColor(PlotColorMap.gateDraw);
+		final int x1=pointsGate.xpoints[pointsGate.npoints-1];
+		final int x2=graph.toDataHorz(lastMovePoint.x);
+		graph.markAreaOutline1d(x1,x2);
+		setMouseMoved(false);
+		clearMouseMoveClip();
+	}
+	
+	private void clearMouseMoveClip(){
+		synchronized (mouseMoveClip){
+			mouseMoveClip.reset();
 		}
 	}
-
+	
 	/**
 	 * Displays a fit, starting
 	 */
@@ -147,26 +159,9 @@ class Plot1d extends Plot {
 		}
 	}
 
-	/**
-	 * Marking Area. The y-values are ignored.
-	 * 
-	 * @param p1 starting data point
-	 */
-	/*void initializeSelectingArea(Point p1) {
-		setSelectingArea(true);
-		areaStartPoint.setLocation(p1);
-		lastMovePoint.setLocation(p1);
-	}*/
-
 	protected void paintSelectingArea(Graphics gc) {
 		Graphics2D g = (Graphics2D) gc;
 		g.setColor(PlotColorMap.area);
-		/*final Point move;
-		if (lastMovePoint.x > 0) {
-			move = graph.toData(lastMovePoint);
-		} else {
-			move = selectionStartPoint;
-		}*/
 		graph.markAreaOutline1d(selectionStartPoint.x, lastMovePoint.x);
 		setMouseMoved(false);
 		clearSelectingAreaClip();
@@ -193,11 +188,13 @@ class Plot1d extends Plot {
 
 	protected void paintMarkArea(Graphics g) {
 		final Graphics2D g2 = (Graphics2D) g;
+		final Composite prev=g2.getComposite();
 		g2.setComposite(
 			AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 		g.setColor(PlotColorMap.area);
 		graph.update(g, viewSize, plotLimits);
 		graph.markArea1d(areaMark1, areaMark2, counts);
+		g2.setComposite(prev);
 	}
 
 	/**
@@ -269,6 +266,7 @@ class Plot1d extends Plot {
 		final Graphics2D g2 = (Graphics2D) g;
 		final boolean noFillMode =
 			JamProperties.getBooleanProperty(JamProperties.NO_FILL_GATE);
+		Composite prev=g2.getComposite();
 		if (!noFillMode) {
 			g2.setComposite(
 				AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
@@ -277,6 +275,7 @@ class Plot1d extends Plot {
 		int ll = currentGate.getLimits1d()[0];
 		int ul = currentGate.getLimits1d()[1];
 		graph.drawGate1d(ll, ul, noFillMode);
+		g2.setComposite(prev);
 	}
 
 	/**
@@ -381,15 +380,55 @@ class Plot1d extends Plot {
 	 * Called when the mouse has moved
 	 */
 	protected void mouseMoved(MouseEvent me) {
+		setMouseMoved(true);
 		if (selectingArea) {
 			if (isSelectingAreaClipClear()) {
-				addToSelectClip(selectionStartPoint, lastMovePoint);
+				synchronized(selectingAreaClip){
+					selectingAreaClip.setBounds(graph.getRectangleOutline1d(
+					selectionStartPoint.x,lastMovePoint.x));
+				}
+				//addToSelectClip(selectionStartPoint, lastMovePoint);
 			}
-			lastMovePoint.setLocation(graph.toData(me.getPoint()));
-			setMouseMoved(true);
+			setLastMovePoint(graph.toData(me.getPoint()));
+			addToSelectClip(selectionStartPoint, lastMovePoint);
 			synchronized (selectingAreaClip) {
 				repaint(getClipBounds(selectingAreaClip, false));
 			}
+		} else if (settingGate){
+			/* only if we have 1 or more */
+			if (pointsGate.npoints > 0) {
+				/* draw new line */
+				synchronized (lastMovePoint){
+					if (isMouseMoveClipClear()) {
+						final Point p1=graph.toViewLin(new Point(pointsGate.xpoints[pointsGate.npoints-1], 
+						pointsGate.ypoints[pointsGate.npoints-1]));
+						addToMouseMoveClip(p1.x,p1.y);
+						if (pointsGate.npoints>1){
+							final Point p2=graph.toViewLin(new Point(pointsGate.xpoints[pointsGate.npoints-2], 
+							pointsGate.ypoints[pointsGate.npoints-2]));
+							addToMouseMoveClip(p2.x,p2.y);							
+						}
+						addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
+					}
+					lastMovePoint.setLocation(me.getPoint());
+					addToMouseMoveClip(lastMovePoint.x, lastMovePoint.y);
+				}
+				synchronized (mouseMoveClip){
+					repaint(getClipBounds(mouseMoveClip,false));
+				}
+			}
+		}
+	}
+	
+	private boolean isMouseMoveClipClear(){
+		synchronized(mouseMoveClip){
+			return mouseMoveClip.npoints == 0;
+		}
+	}
+	
+	private void addToMouseMoveClip(int x, int y){
+		synchronized(mouseMoveClip){
+			mouseMoveClip.addPoint(x,y);
 		}
 	}
 
@@ -425,7 +464,7 @@ class Plot1d extends Plot {
 		if (shapeInChannelCoords){//shape is in channel coordinates
 			/* add one more plot channel around the edges */
 			/* now do conversion */
-			r.setBounds(graph.getRectangleOutline1d(r.x-1,(int)r.getMaxX()+1));
+			r.setBounds(graph.getRectangleOutline1d(r.x-2,(int)r.getMaxX()+2));
 			return r;
 		} else {//shape is in view coordinates
 			/* Recursively call back with a polygon using channel

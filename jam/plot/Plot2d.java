@@ -111,8 +111,8 @@ class Plot2d extends Plot {
 		if (mode == GateSetMode.GATE_NEW) {
 			setSettingGate(true);
 			pointsGate.reset();
-			this.addMouseListener(mouseInputAdapter);
-			this.addMouseMotionListener(mouseInputAdapter);
+			addMouseListener(mouseInputAdapter);
+			addMouseMotionListener(mouseInputAdapter);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.x,pChannel.y);
 			setLastPoint(pChannel); //save data point
@@ -155,7 +155,7 @@ class Plot2d extends Plot {
 		} 
 	}
 
-	protected void paintSetGate(Graphics g) {
+	protected void paintSetGatePoints(Graphics g) {
 		g.setColor(PlotColorMap.gateDraw);
 		graph.settingGate2d(pointsGate);
 	}
@@ -164,8 +164,10 @@ class Plot2d extends Plot {
 	 * Called by mouse movement while setting a gate
 	 * @param g
 	 */	
-	private void paintSettingGate(Graphics gc) {
-		Graphics2D g=(Graphics2D)gc;
+	protected void paintSettingGate(Graphics gc) {
+		//gc.setColor(PlotColorMap.gateDraw);
+		//graph.settingGate2d(pointsGate);
+		final Graphics2D g=(Graphics2D)gc;
 		g.setColor(PlotColorMap.gateDraw);
 		g.setComposite(AlphaComposite.getInstance(
 		AlphaComposite.SRC_OVER,0.8f));
@@ -497,14 +499,4 @@ class Plot2d extends Plot {
 		}
 	}
 	
-	/**
-	 * Paint called if mouse moved is enabled
-	 */
-	protected void paintMouseMoved(Graphics gc) {
-		if (settingGate) {
-			paintSettingGate(gc);			
-		} else if (selectingArea) {
-			paintSelectingArea(gc);
-		}		
-	}
 }
