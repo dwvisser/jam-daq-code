@@ -1,7 +1,4 @@
-/*
- */
 package jam.sort;
-import java.util.*;
 import java.io.*;
 import jam.global.*;
 import jam.sort.stream.*;
@@ -33,15 +30,10 @@ public class TapeDaemon extends StorageDaemon {
 	private File rewindDevice;
 	private File noRewindDevice;
 	private static String noRewindName;
-
 	private boolean firstOpen;
-	private boolean firstInList = true;
 	int numberOfRuns;
 	int currentRunNumber;
-
 	byte lastByte[];
-
-	private Date now;
 	int status;
 	int eventNumber = 0;
 
@@ -333,8 +325,6 @@ public class TapeDaemon extends StorageDaemon {
 		boolean endOfRun;
 		short last2bytes;
 
-		int counter = 0;
-
 		System.out.println("TapeDaemon resuming...");
 		do {
 			buffer = ringBuffer.getBuffer();
@@ -342,16 +332,8 @@ public class TapeDaemon extends StorageDaemon {
 				(short) (((buffer[buffer.length - 2] & 0xFF) << 8)
 					+ (buffer[buffer.length - 1] & 0xFF));
 			endOfRun = eventInput.isEndRun(last2bytes);
-
-			//		if ((counter+numRead)>RECORD_SIZE){
-			//		    fos.close();
-			//		    counter=0;
-
-			//		}
-
 			if (endOfRun) {
 				fos.write(buffer);
-				counter = 0;
 				fos.close();
 				//XXX		    netDaemon.setEventWriter(false);
 				System.out.println("TapeDaemon at endOfRun, file closed.");
@@ -401,7 +383,7 @@ public class TapeDaemon extends StorageDaemon {
 	 * a new block when there is not enough space in the current record
 	 * to store an event.  XXXcontroller.getEventSize()
 	 */
-	private void startNextEventRecord() throws IOException, EventException {
+	void startNextEventRecord() throws IOException, EventException {
 
 		//pad out current record
 		while (recordByteCounter < RECORD_SIZE) {
@@ -442,7 +424,7 @@ public class TapeDaemon extends StorageDaemon {
 	/**
 	 *
 	 */
-	private boolean enoughSpace() {
+	boolean enoughSpace() {
 		return (
 			(recordByteCounter + 4 * (eventOutput.getEventSize()) + 2)
 				<= (RECORD_SIZE - 1));
@@ -450,7 +432,7 @@ public class TapeDaemon extends StorageDaemon {
 	/**
 	 *
 	 */
-	private int bytesToNextRecord() {
+	int bytesToNextRecord() {
 		int temp = 256;
 		do {
 			temp = temp + RECORD_SIZE;
