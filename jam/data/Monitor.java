@@ -56,13 +56,14 @@ public final class Monitor implements Serializable {
 	private double value; //value for testing
 
 	/**
-	 * Constructor which gives type <code>SORT</code>.
+	 * Constructs an monitor object which delegates to a given
+	 * <code>Sorter</code> for the caluclation of its current
+	 * value.
 	 * 
 	 * @param n
 	 *            name of the monitor for display in dialog
 	 * @param sort
 	 *            the sort routine which produces the monitor values
-	 * @see #SORT
 	 */
 	public Monitor(String n, Sorter sort) {
 		name = n;
@@ -79,13 +80,13 @@ public final class Monitor implements Serializable {
 	}
 
 	/**
-	 * Constructor which gives type <code>SCALER</code>.
+	 * Constructs an object which monitors rate of increase
+	 * in the given <code>Scaler</code>.
 	 * 
 	 * @param n
 	 *            name of the monitor for display in dialog
 	 * @param s
 	 *            the scaler which is monitored
-	 * @see #SCALER
 	 */
 	public Monitor(String n, Scaler s) {
 		name = n;
@@ -97,13 +98,13 @@ public final class Monitor implements Serializable {
 	}
 
 	/**
-	 * Constructor which gives type <code>GATE</code>.
+	 * Constructs an object which monitors the rate of counts
+	 * in a particular <code>Gate</code>.
 	 * 
 	 * @param n
 	 *            name of the monitor for display in dialog
 	 * @param g
 	 *            the gate whose area is monitored
-	 * @see #GATE
 	 */
 	public Monitor(String n, Gate g) {
 		name = n;
