@@ -29,7 +29,7 @@ public class NewHistogramCmd extends AbstractCommand {
 	/**
 	 * Execute the command
 	 */
-	public void executeStrParam(String [] cmdParams){	
+	public void executeParse(String [] cmdParams){	
 		String name = cmdParams[0];
 		String title = cmdParams[1];
 		int type = Integer.parseInt(cmdParams[2]);	

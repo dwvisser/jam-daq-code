@@ -35,6 +35,7 @@ public class JamCmdManager implements CommandListener {
 		//could be read from a file
 		cmdMap.put("shownewhist", "ShowDialogNewHistogramCmd");
 		cmdMap.put("exit", "ShowDialogExitCmd");
+		cmdMap.put("newclear", "FileNewClearCmd");
 	}
 	
 	/**
