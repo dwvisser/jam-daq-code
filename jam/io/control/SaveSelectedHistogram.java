@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,35 +37,27 @@ import javax.swing.border.EmptyBorder;
 public final class SaveSelectedHistogram {
 
 	
-	private Frame frame;
+	private final Frame frame;
 	
-	private JDialog dialog;
+	private final JDialog dialog;
 	
-	private JList listHist;
-	
-	private JButton bSave;
-
-	private JButton bCancel;
-	
-	private final String SAVE = "Save";
-
-	private final String CANCEL = "Cancel";
+	private final JList listHist;
 	
 	/** Messages output */
-	private MessageHandler console;
+	private final MessageHandler console;
 
 	/**
 	 * Constructs a dialog to save a selection of histograms out of an
 	 * HDF file.
 	 *  
-	 * @param f parent frame
-	 * @param c where to print messages
+	 * @param frame parent frame
+	 * @param msgHandler where to print messages
 	 */
-	public SaveSelectedHistogram(Frame f, MessageHandler c) {
-		frame = f;
-		console = c;
-		dialog = new JDialog(f, "Save Selected Histograms", false);
-		dialog.setLocation(f.getLocation().x + 50, f.getLocation().y + 50);
+	public SaveSelectedHistogram(Frame frame, MessageHandler msgHandler) {
+		this.frame = frame;
+		console = msgHandler;
+		dialog = new JDialog(frame, "Save Selected Histograms", false);
+		dialog.setLocation(frame.getLocation().x + 50, frame.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
@@ -74,26 +67,24 @@ public final class SaveSelectedHistogram {
 				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listHist.setSelectedIndex(0);
 		listHist.setVisibleRowCount(10);
-		JScrollPane listScrollPane = new JScrollPane(listHist);
-		listScrollPane.setBorder(new EmptyBorder(10, 10, 0, 10));
-		container.add(listScrollPane, BorderLayout.CENTER);
+		final JScrollPane listPane = new JScrollPane(listHist);
+		listPane.setBorder(new EmptyBorder(10, 10, 0, 10));
+		container.add(listPane, BorderLayout.CENTER);
 		/* Lower panel with buttons */
 		final JPanel pLower = new JPanel();
 		container.add(pLower, BorderLayout.SOUTH);
 		final JPanel pButtons = new JPanel(new GridLayout(1, 0, 5, 5));
 		pLower.add(pButtons);
-		bSave = new JButton(SAVE);
-		bSave.setActionCommand(SAVE);
+		final AbstractButton bSave = new JButton("Save");
 		bSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(ActionEvent actionEvent) {
 				doSave();
 			}
 		});
 		pButtons.add(bSave);
-		bCancel = new JButton(CANCEL);
-		bCancel.setActionCommand(CANCEL);
+		final AbstractButton bCancel = new JButton("Cancel");
 		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(ActionEvent actionEvent) {
 				doCancel();
 			}
 		});
@@ -133,10 +124,10 @@ public final class SaveSelectedHistogram {
 		final List histList= Histogram.getHistogramList();
 		final String [] histNames = new String[histList.size()];
 		final Iterator histIter=histList.iterator();
-		int i=0;
+		int index=0;
 		while(histIter.hasNext()) {
-			histNames[i]=((Histogram)histIter.next()).getFullName();
-			i++;
+			histNames[index]=((Histogram)histIter.next()).getFullName();
+			index++;
 		}
 		listHist.setListData(histNames);
 	}
@@ -146,25 +137,23 @@ public final class SaveSelectedHistogram {
 	 *
 	 */
 	private void saveHistListToFile(){
-		
-		HDFIO hdfio= new HDFIO(frame, console);
-		List listSelected = new ArrayList();
+		final HDFIO hdfio= new HDFIO(frame, console);
+		final List listSelected = new ArrayList();
 		File file=null;
-		//Add selected histgrams to a list
-		Object[] selected = listHist.getSelectedValues();		
+		/* Add selected histgrams to a list. */
+		final Object[] selected = listHist.getSelectedValues();		
 		for (int  i=0;i<selected.length;i++) {
 			listSelected.add(Histogram.getHistogram((String)selected[i]));			
 		}
-
-		//Select file
+		/* Select file */
         final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());
         chooser.setFileFilter(new HDFileFilter(true));
         final int option = chooser.showSaveDialog(frame);
-        // dont do anything if it was cancel
+        /* don't do anything if it was cancel */
         if (option == JFileChooser.APPROVE_OPTION
                 && chooser.getSelectedFile() != null) {
         	file = chooser.getSelectedFile();
-        	//write out histograms
+        	/* write out histograms */
         	hdfio.writeFile(file, listSelected);
         }
 	}
