@@ -22,12 +22,22 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
-import jam.io.*;
-import jam.global.*;
-import java.io.*;
-import javax.swing.*;
+import jam.global.JamProperties;
+import jam.global.MessageHandler;
+import jam.io.ExtensionFileFilter;
+
 import java.awt.event.ActionEvent;
-import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 public class YaleCAENgetScalers {
 
@@ -90,15 +100,16 @@ public class YaleCAENgetScalers {
 			if (file != null) {
 				String name = file.getName();
 				boolean display = true;
-				JTextArea text = null;
+				String text = null;
 				try {
-					text = new JTextArea(processEventFile(file));
+					text = processEventFile(file);
 				} catch (IOException e) {
 					console.errorOutln(e.getMessage());
 					display = false;
 				}
 				if (display) {
-					final JDialog jd = new JDialog(frame, name, false);
+					new TextDisplayDialog(frame,name,false,text);
+					/*final JDialog jd = new JDialog(frame, name, false);
 					final Container contents=jd.getContentPane();
 					contents.setLayout(new BorderLayout());
 					final JScrollPane jsp = new JScrollPane(text);
@@ -117,7 +128,7 @@ public class YaleCAENgetScalers {
 					screenSize.height-del-y);	
 					jd.setLocation(x,y);
 					jd.setSize(sizex,sizey);
-					jd.show();
+					jd.show();*/
 				}
 			}
 		}
@@ -131,14 +142,9 @@ public class YaleCAENgetScalers {
 		new File(JamProperties.getPropString(JamProperties.EVENT_INPATH));
 
 	/**
-	 * Get a file from a file dialog box.
-	 * See Java 1.1 AWT Reference (J.Zukowski) page 245 and
-	 * Nutshell Java Examples page 162.
+	 * Get a *.evn file from a JFileChooser.
 	 *
-	 * @param	    msg		    text to go on title bar of dialog box
-	 * @param	    extension	    file extension to suggest to user
-	 * @param	    state	    <code>ImpExp.LOAD</code> or <code>ImpExp.SAVE</code>
-	 * @return			    a <code>File</code> chosen by the user, null if dialog cancelled
+	 * @return	a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
 	protected File getFile() {
 		File file = null;
