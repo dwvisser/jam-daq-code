@@ -1,7 +1,14 @@
 package jam.data;
-import java.util.*;
-import java.io.Serializable;
 import jam.global.Sorter;
+
+import java.applet.AudioClip;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -14,18 +21,17 @@ import jam.global.Sorter;
  * @version 0.5,0.9
  * @since JDK 1.1
  */
-public class Monitor implements Serializable {
+public final class Monitor implements Serializable {
 
     /**
      * Lookup table for all monitors.
      */
-    public static Hashtable monitorTable=new Hashtable(11);
+    public static Map monitorTable=Collections.synchronizedMap(new HashMap());
 
     /**
      * List of all monitors.
      */
-    public static List monitorList=new Vector(11);
-
+    public static List monitorList=Collections.synchronizedList(new ArrayList());
 
     /**
      * Monitor based on value of a scaler.
@@ -44,8 +50,8 @@ public class Monitor implements Serializable {
     /** The update interval */
     private static int interval;
 
-    private String name;  //name
-    private int type;    //monitor type gate, scaler ...
+    private final String name;  //name
+    private final int type;    //monitor type gate, scaler ...
 
     private double threshold;
     private double maximum;
@@ -53,54 +59,49 @@ public class Monitor implements Serializable {
     private boolean alarm;
     private java.applet.AudioClip audioClip;
 
-    private Sorter sortClass;
-    private Scaler scaler;
-    private Gate gate;
+    private final Sorter sortClass;
+    private final Scaler scaler;
+    private final Gate gate;
 
     private double valueNew;  //the newest value set
     private double valueOld;  //the previous value set
     private double value;    //value for testing
 
     /**
-     * Master constructor always called with name and type of monitor.
-     *
-     * @param name name of the monitor for display in dialog
-     * @param type one of four defined types
-     * @see #SCALER
-     * @see #GATE
-     * @see #SORT
-     * @see #TEST
-     */
-    private Monitor(String name, int type ) {
-        this.name=name;
-        this.type=type;
-        // Add to list of monitors
-        monitorTable.put(name,this);
-        monitorList.add(this);
-    }
-
-    /**
      * Constructor which gives type <code>SORT</code>.
      *
-     * @param name name of the monitor for display in dialog
+     * @param n name of the monitor for display in dialog
      * @param sort the sort routine which produces the monitor values
      * @see #SORT
      */
-    public Monitor(String name, Sorter sort) {
-        this(name, SORT);
-        this.sortClass=sort;
+    public Monitor(String n, Sorter sort) {
+        name=n;
+        type=SORT;
+        sortClass=sort;
+        gate=null;
+        scaler=null;
+        addToCollections();
+    }
+    
+    private final void addToCollections(){
+		monitorTable.put(name,this);
+		monitorList.add(this);    	
     }
 
     /**
      * Constructor which gives type <code>SCALER</code>.
      *
-     * @param name name of the monitor for display in dialog
-     * @param scaler the scaler which is monitored
+     * @param n name of the monitor for display in dialog
+     * @param s the scaler which is monitored
      * @see #SCALER
      */
-    public Monitor(String name, Scaler scaler)  {
-        this(name, SCALER);
-        this.scaler=scaler;
+    public Monitor(String n, Scaler s)  {
+        name=n;
+        scaler=s;
+        gate=null;
+        sortClass=null;
+        type=SCALER;
+        addToCollections();
     }
 
     /**
@@ -110,9 +111,13 @@ public class Monitor implements Serializable {
      * @param gate the gate whose area is monitored
      * @see #GATE
      */
-    public Monitor(String name, Gate gate)  {
-        this(name, GATE);
-        this.gate=gate;
+    public Monitor(String n, Gate g)  {
+        name=n;
+        gate=g;
+        scaler=null;
+        sortClass=null;
+        type=GATE;
+        addToCollections();
     }
 
     /**
@@ -120,7 +125,7 @@ public class Monitor implements Serializable {
      *
      * @param intervalIn interval in seconds
      */
-    public static void setInterval(int intervalIn){
+    public synchronized static void setInterval(int intervalIn){
         interval=intervalIn;
     }
 
@@ -129,7 +134,7 @@ public class Monitor implements Serializable {
      *
      * @return interval in seconds
      */
-    public static int getInterval(){
+    public synchronized static int getInterval(){
         return interval;
     }
 
@@ -139,7 +144,7 @@ public class Monitor implements Serializable {
      * @return the list of monitors
      */
     public static List getMonitorList() {
-        return monitorList;
+        return Collections.unmodifiableList(monitorList);
     }
 
     /**
@@ -184,7 +189,7 @@ public class Monitor implements Serializable {
      *
      * @return this monitor's current value
      */
-    public double getValue(){
+    public synchronized double getValue(){
         return value;
     }
 
@@ -193,14 +198,14 @@ public class Monitor implements Serializable {
      *
      * @param valueIn the new value
      */
-    public void setValue(int valueIn){
+    public synchronized void setValue(int valueIn){
         valueNew=valueIn;
     }
 
     /**
      * Sets this monitor's value to zero.
      */
-    public void reset() {
+    public synchronized void reset() {
         value=0;
     }
 
@@ -229,7 +234,7 @@ public class Monitor implements Serializable {
      * @param inThreshold the new minimum
      * @see jam.data.control.MonitorControl
      */
-    public void setThreshold(double inThreshold){
+    public synchronized void setThreshold(double inThreshold){
         threshold=inThreshold;
     }
 
@@ -238,7 +243,7 @@ public class Monitor implements Serializable {
      *
      * @return the threshold value
      */
-    public double getThreshold(){
+    public synchronized double getThreshold(){
         return threshold;
     }
 
@@ -249,7 +254,7 @@ public class Monitor implements Serializable {
      * @param inMaximum the new maximum
      * @see jam.data.control.MonitorControl
      */
-    public void setMaximum(double inMaximum){
+    public synchronized void setMaximum(double inMaximum){
         maximum=inMaximum;
     }
 
@@ -258,7 +263,7 @@ public class Monitor implements Serializable {
      *
      * @return the maximum value for this monitor
      */
-    public double getMaximum(){
+    public synchronized double getMaximum(){
         return maximum;
     }
 
@@ -269,7 +274,7 @@ public class Monitor implements Serializable {
      *
      * @param inAlarm <code>true</code> if an audible alarm is desired, <code>false</code> if not
      */
-    public void setAlarm(boolean inAlarm){
+    public synchronized void setAlarm(boolean inAlarm){
         alarm=inAlarm;
     }
 
@@ -278,7 +283,7 @@ public class Monitor implements Serializable {
      *
      * @return <code>true</code> if an audible alarm is desired, <code>false</code> if not
      */
-    public boolean getAlarm(){
+    public synchronized boolean getAlarm(){
         return alarm;
     }
 
@@ -287,8 +292,8 @@ public class Monitor implements Serializable {
      * Currently, the plan is to fully implement this when the JDK 1.2 <code>javax.media</code> packeage is
      * available.
      */
-    public void setAudioClip(java.applet.AudioClip audioClip){
-        this.audioClip=audioClip;
+    public synchronized void setAudioClip(AudioClip ac){
+        audioClip=ac;
     }
 
     /**
@@ -298,8 +303,11 @@ public class Monitor implements Serializable {
      *
      * @return the sound clip for this monitor's alarm, <code>null</code> indicates that a default system beep is desired
      */
-    public java.applet.AudioClip getAudioClip(){
+    public synchronized AudioClip getAudioClip(){
         return audioClip;
     }
 
+	public synchronized boolean isAcceptable(){
+		return value>maximum || value < threshold;
+	}
 }
