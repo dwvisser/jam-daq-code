@@ -191,15 +191,17 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
             Group.setCurrentGroup(group);
             /* Given name list check that that the name is in the list. */
             if (histNames == null || histNames.contains(name)) {
+            	final Object histData = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
                 if (mode.isOpenMode()) {
-                	hist=openHistogram(name, title, number, histNumType, histDim,
-                            sizeX, sizeY, sciData, sdErr);
+                	Object histErrorData =null;
+                    if (sdErr != null) {
+                    	histErrorData = sdErr.getData1dD(inHDF, sizeX);
+                    }
+                	hist=openHistogram(group, name, title, number, histData, histErrorData);
                 } else if (mode == FileOpenMode.RELOAD) {
-                	hist=reloadHistogram(name, histNumType, histDim, sizeX,
-                            sizeY, sciData);
+                	hist=reloadHistogram(group, name, histData);
                 } else if  (mode == FileOpenMode.RELOAD) {                	
-                	hist=addHistogram(name, histNumType, histDim, sizeX,
-                                sizeY, sciData);
+                	hist=addHistogram(group, name, histData);
                 }
             }
             return hist;
@@ -369,41 +371,32 @@ final class ConvertHDFObjToJamObj implements JamHDFFields {
     }
 
     
-    Histogram openHistogram(String name, String title, int number, 
-            byte histNumType, int histDim, int sizeX, int sizeY, ScientificData sciData,
-            ScientificData sdErr) throws HDFException {
-        final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
-        final Histogram histogram = Histogram.createHistogram(data, name, title);
+    Histogram openHistogram(Group group, String name, String title, int number, 
+            Object histData, Object histErrorData) throws HDFException {
+        final Histogram histogram = Histogram.createHistogram(histData, name, title);
         histogram.setNumber(number);
-        if (sdErr != null) {
-            ((AbstractHist1D) histogram).setErrors(sdErr.getData1dD(
-                    inHDF, sizeX));
+        if (histErrorData != null) {
+            ((AbstractHist1D) histogram).setErrors((double [])histErrorData);
         }
         return histogram;
     }
     
-    private Histogram addHistogram(String name, byte histNumType, int histDim,
-            int sizeX, int sizeY, ScientificData sciData) throws HDFException {
+    private Histogram addHistogram(Group group, String name, Object histData) throws HDFException {
 
-        final Group group = Group.getCurrentGroup();
         final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
                 Histogram.NAME_LENGTH));
         if (histogram != null) {
-            final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
-            histogram.addCounts(data);            
+            histogram.addCounts(histData);            
         }
         return histogram;
     }
     
-    private Histogram reloadHistogram(String name, byte histNumType, int histDim,
-            int sizeX, int sizeY, ScientificData sciData) throws HDFException {
+    private Histogram reloadHistogram(Group group, String name, Object histData) throws HDFException {
         
-        final Group group = Group.getSortGroup();
         final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(name,
                 Histogram.NAME_LENGTH));
         if (histogram != null) {
-            final Object data = sciData.getData(inHDF, histDim, histNumType, sizeX, sizeY);
-            histogram.setCounts(data);
+            histogram.setCounts(histData);
         }
         return histogram;
     }

@@ -20,8 +20,8 @@ public abstract class AbstractHist2D extends Histogram {
      * @param sizeY chnnels along y-axis
      * @param title verbose
      */
-	protected AbstractHist2D(String name, Type type, int sizeX, int sizeY, String title) {
-		super(name, type, sizeX, sizeY, title);
+	protected AbstractHist2D(Group group, String name, Type type, int sizeX, int sizeY, String title) {
+		super(group, name, type, sizeX, sizeY, title);
 	}
 
     /**
@@ -35,9 +35,9 @@ public abstract class AbstractHist2D extends Histogram {
      * @param axisLabelX x-axis label
      * @param axisLabelY y-axis label
      */
-	protected AbstractHist2D(String name, Type type, int sizeX, int sizeY, String title,
+	protected AbstractHist2D(Group group, String name, Type type, int sizeX, int sizeY, String title,
 			String axisLabelX, String axisLabelY) {
-		super(name, type, sizeX, sizeY, title, axisLabelX, axisLabelY);
+		super(group, name, type, sizeX, sizeY, title, axisLabelX, axisLabelY);
 	}
 
 	/**

@@ -34,14 +34,14 @@ public abstract class AbstractHist1D extends Histogram {
 	 */
 	protected transient boolean errorsSet;
 
-	AbstractHist1D(String name, Type type, int len, String title, String axisLabelX,
+	AbstractHist1D(Group group, String name, Type type, int len, String title, String axisLabelX,
 			String axisLabelY){
-		super(name,type,len,title,axisLabelX,axisLabelY);
+		super(group, name,type,len,title,axisLabelX,axisLabelY);
 		unsetErrors();
 	}
 	
-	AbstractHist1D(String name, Type type, int len, String title){
-		super(name,type,len,title);
+	AbstractHist1D(Group group, String name, Type type, int len, String title){
+		super(group, name,type,len,title);
 		unsetErrors();
 	}
 	

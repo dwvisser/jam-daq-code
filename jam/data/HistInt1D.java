@@ -33,9 +33,9 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt1D(String name, String title, String axisLabelX, String axisLabelY,
+	HistInt1D(Group group, String name, String title, String axisLabelX, String axisLabelY,
 			int[] countsIn) {
-		super(name, Type.ONE_DIM_INT, countsIn.length, title, axisLabelX,
+		super(group, name, Type.ONE_DIM_INT, countsIn.length, title, axisLabelX,
 				axisLabelY);
 		initCounts(countsIn);
 	}
@@ -54,8 +54,8 @@ public final class HistInt1D extends AbstractHist1D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt1D(String name, String title, int[] countsIn) {
-		super(name, Type.ONE_DIM_INT, countsIn.length, title);
+	HistInt1D(Group group, String name, String title, int[] countsIn) {
+		super(group, name, Type.ONE_DIM_INT, countsIn.length, title);
 		initCounts(countsIn);
 	}
 	

@@ -28,8 +28,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param countsIn
 	 *            array of counts to initialize with, must be square
 	 */
-	HistInt2D(String name, String title, int[][] countsIn) {
-		super(name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
+	HistInt2D(Group group, String name, String title, int[][] countsIn) {
+		super(group, name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
 				title);
 		initCounts(countsIn);
 	}
@@ -52,9 +52,9 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt2D(String name, String title, String axisLabelX, String axisLabelY,
+	HistInt2D(Group group, String name, String title, String axisLabelX, String axisLabelY,
 			int[][] countsIn) {
-		super(name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
+		super(group, name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
 				title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}

@@ -246,7 +246,7 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(String nameIn, Type type, int sizeX, int sizeY, String title) {		
+	protected Histogram(Group group, String nameIn, Type type, int sizeX, int sizeY, String title) {		
 		this.type = type;		
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;		
@@ -293,8 +293,8 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(String nameIn, Type type, int size, String title) {
-		this(nameIn, type, size, size, title);
+	protected Histogram(Group group, String nameIn, Type type, int size, String title) {
+		this(group, nameIn, type, size, size, title);
 	}
 
 	/**
@@ -320,9 +320,9 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(String name, Type type, int sizeX, int sizeY, String title,
+	protected Histogram(Group group, String name, Type type, int sizeX, int sizeY, String title,
 			String axisLabelX, String axisLabelY) {
-		this(name, type, sizeX, sizeY, title);
+		this(group, name, type, sizeX, sizeY, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
@@ -348,9 +348,9 @@ public abstract class Histogram {
 	 * @throws IllegalArgumentException
 	 *             if an unknown histogram type is given
 	 */
-	protected Histogram(String name, Type type, int size, String title,
+	protected Histogram(Group group, String name, Type type, int size, String title,
 			String axisLabelX, String axisLabelY) {
-		this(name, type, size, size, title);
+		this(group, name, type, size, size, title);
 		setLabelX(axisLabelX);
 		setLabelY(axisLabelY);
 	}
@@ -383,6 +383,37 @@ public abstract class Histogram {
 		return nameTemp;
 	}
 	
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @param labelX x-axis label
+	 * @param labelY y-axis label
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name,
+			String title, String labelX, String labelY) {
+		
+		final Histogram rval;
+		final Type hType = Type.getArrayType(array);
+		if (hType == Type.ONE_DIM_INT) {
+			rval = new HistInt1D(group, name, title, labelX, labelY, (int[]) array);
+		} else if (hType == Type.ONE_D_DOUBLE) {
+			rval = new HistDouble1D(group, name, title, labelX, labelY,
+					(double[]) array);
+		} else if (hType == Type.TWO_DIM_INT) {
+			rval = new HistInt2D(group, name, title, labelX, labelY, (int[][]) array);
+		} else {//TWO_D_DOUBLE
+			rval = new HistDouble2D(group, name, title, labelX, labelY,
+					(double[][]) array);
+		}
+		return rval;
+	}
+
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
@@ -395,22 +426,23 @@ public abstract class Histogram {
 	 */
 	static public Histogram createHistogram(Object array, String name,
 			String title, String labelX, String labelY) {
-		final Histogram rval;
-		final Type hType = Type.getArrayType(array);
-		if (hType == Type.ONE_DIM_INT) {
-			rval = new HistInt1D(name, title, labelX, labelY, (int[]) array);
-		} else if (hType == Type.ONE_D_DOUBLE) {
-			rval = new HistDouble1D(name, title, labelX, labelY,
-					(double[]) array);
-		} else if (hType == Type.TWO_DIM_INT) {
-			rval = new HistInt2D(name, title, labelX, labelY, (int[][]) array);
-		} else {//TWO_D_DOUBLE
-			rval = new HistDouble2D(name, title, labelX, labelY,
-					(double[][]) array);
-		}
-		return rval;
+		return createHistogram(null, array, name, title, labelX, labelY);
 	}
-
+		
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @param title verbose description
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name,
+			String title) {
+		return createHistogram(group, array, name, title, null, null);
+	}
+	
 	/**
 	 * Creates a new histogram, using the given array as the template.
 	 * 
@@ -421,7 +453,19 @@ public abstract class Histogram {
 	 */
 	static public Histogram createHistogram(Object array, String name,
 			String title) {
-		return createHistogram(array, name, title, null, null);
+		return createHistogram(null, array, name, title, null, null);
+	}
+
+	/**
+	 * Creates a new histogram, using the given array as the template.
+	 * 
+	 * @param group group to create histogram in
+	 * @param array 1d or 2d int or double array
+	 * @param name unique identifier
+	 * @return a newly created histogram
+	 */
+	static public Histogram createHistogram(Group group, Object array, String name) {
+		return createHistogram(group, array, name, name, null, null);
 	}
 	
 	/**
@@ -432,7 +476,7 @@ public abstract class Histogram {
 	 * @return a newly created histogram
 	 */
 	static public Histogram createHistogram(Object array, String name) {
-		return createHistogram(array, name, name, null, null);
+		return createHistogram(null, array, name, name, null, null);
 	}
 
 	//end of constructors

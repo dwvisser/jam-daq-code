@@ -27,14 +27,14 @@ final class HistDouble1D extends AbstractHist1D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistDouble1D(String name, String title, double[] countsIn) {
-		super(name, Type.ONE_D_DOUBLE, countsIn.length, title);
+	HistDouble1D(Group group, String name, String title, double[] countsIn) {
+		super(group, name, Type.ONE_D_DOUBLE, countsIn.length, title);
 		initCounts(countsIn);
 	}
 
-	HistDouble1D(String name, String title, String axisLabelX, String axisLabelY,
+	HistDouble1D(Group group, String name, String title, String axisLabelX, String axisLabelY,
 			double [] countsIn) {
-		super(name, Type.ONE_D_DOUBLE, countsIn.length, title, axisLabelX,
+		super(group, name, Type.ONE_D_DOUBLE, countsIn.length, title, axisLabelX,
 				axisLabelY);
 		initCounts(countsIn);
 	}
