@@ -99,7 +99,7 @@ final class VirtualGroup extends AbstractHData {
         final short typeLen = bytes.getShort();
         type = getString(typeLen);
         for (int i = 0; i < numItems; i++) {
-            addDataObject(getObject(tags[i], refs[i]));
+            add(getObject(tags[i], refs[i]));
         }
         /* rest of element has no useful information */
     }
@@ -112,7 +112,7 @@ final class VirtualGroup extends AbstractHData {
      * @throws IllegalArgumentException
      *             if <code>data==null</code>
      */
-    void addDataObject(AbstractHData data) {
+    void add(AbstractHData data) {
         if (data == null) {
             throw new IllegalArgumentException("Can't add null to vGroup.");
         }

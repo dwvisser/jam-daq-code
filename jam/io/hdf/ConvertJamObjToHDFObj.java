@@ -179,7 +179,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         /* vGroup Annotation is Histogram title */
         final NumericalDataGroup ndg = new NumericalDataGroup();
         /* make the NDG label the histogram number */
-        histVGroup.addDataObject(ndg);
+        histVGroup.add(ndg);
         
         /* NDG to contain data */
         new DataIDLabel(ndg, Integer.toString(hist.getNumber()));
@@ -216,7 +216,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
                 sddErr = sdd;        		
         	}
             final NumericalDataGroup ndgErr = new NumericalDataGroup();
-            histVGroup.addDataObject(ndgErr);
+            histVGroup.add(ndgErr);
             new DataIDLabel(ndgErr, ERROR_LABEL);
             /* explicitly floating point */
             ndgErr.addDataObject(sddErr);
@@ -269,7 +269,7 @@ final class ConvertJamObjToHDFObj implements JamHDFFields{
         
         final VdataDescription desc = new VdataDescription(gateName, gateType,
                 size, columnNames, types, orders);
-        vggate.addDataObject(desc); //add vData description to gate VG        
+        vggate.add(desc); //add vData description to gate VG        
         //HDF Undocumented Vdata has same reference as VdataDescription
         final Vdata data = new Vdata(desc);
         //KBS not needed
