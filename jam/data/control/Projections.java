@@ -312,25 +312,33 @@ Observer {
     private void project() throws DataException, GlobalException {
         Histogram hto;
         String name,state,typeProj;
-        int [][] counts2d;
+        double [][] counts2d;
         int [] limits = new int[2];
 
         state = (String) cchan.getSelectedItem();
-        counts2d=(int [][])hfrom.getCounts();
+        if (hfrom.getType()==Histogram.TWO_DIM_DOUBLE){
+        	counts2d=(double [][])hfrom.getCounts();
+        } else {
+        	counts2d=intToDouble((int [][])hfrom.getCounts());
+        }
         name = (String) cto.getSelectedItem();
         if (state.equals(BETWEEN)) {
             limits = getLimits();
         } else if (state.equals(FULL)) {
             limits[0]=0;
             if (cdown.isSelected()) {
-                limits[1] = counts2d.length-1;
-            } else {
                 limits[1] = counts2d[0].length-1;
+            } else {
+                limits[1] = counts2d.length-1;
             }
         }
         if (name.equals(NEW_HIST)){
             name  = ttextto.getText().trim();
-            hto = new Histogram(name, Histogram.ONE_DIM_INT, hfrom.getSizeX(),name);
+            if (cdown.isSelected()){//project down
+				hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom.getSizeX(),name);
+            } else {//project across
+				hto = new Histogram(name, Histogram.ONE_DIM_DOUBLE, hfrom.getSizeY(),name);
+            }
             broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
             messageHandler.messageOutln("New Histogram created: '"+name+"'");
         } else {
@@ -338,28 +346,38 @@ Observer {
         }
         if (cdown.isSelected()) {
             if (state.equals(FULL)||state.equals(BETWEEN)){
-                typeProj="between channels "+limits[0]+" and "+limits[1];
-                hto.setCounts(projectX(counts2d,((int [])hto.getCounts()).length,limits[0],limits[1]));
+                typeProj="counts between Y channels "+limits[0]+" and "+limits[1];
+                hto.setCounts(projectX(counts2d,((double [])hto.getCounts()).length,limits[0],limits[1]));
             } else {
                 typeProj="using gate "+state;
-                hto.setCounts(projectX(counts2d,((int [])hto.getCounts()).length,Gate.getGate(state)));
+                hto.setCounts(projectX(counts2d,((double [])hto.getCounts()).length,Gate.getGate(state)));
             }
         } else { // cacross is true
             if (state.equals(FULL)||state.equals(BETWEEN)){
-                typeProj="between channels "+limits[0]+" and "+limits[1];
-                hto.setCounts(projectY(counts2d,((int [])hto.getCounts()).length,limits[0],limits[1]));
+                typeProj="counts between X channels "+limits[0]+" and "+limits[1];
+                hto.setCounts(projectY(counts2d,((double [])hto.getCounts()).length,limits[0],limits[1]));
             } else {
                 typeProj="using gate "+state.trim();
-                hto.setCounts(projectY(counts2d,((int [])hto.getCounts()).length,Gate.getGate(state)));
+                hto.setCounts(projectY(counts2d,((double [])hto.getCounts()).length,Gate.getGate(state)));
             }
         }
         messageHandler.messageOutln("Project "+hfrom.getName().trim()+" to "+ name.trim()+" "+typeProj);
     }
+    
+    private double [][] intToDouble(int [][] in){
+		double [][] rval = new double[in.length][in[0].length];
+		for (int i=0; i<in.length; i++){
+			for (int j=0; j<in[0].length; j++){
+				rval[i][j]=in[i][j];
+			}
+		}
+		return rval;
+    }
 
-    int [] projectX(int [][] inArray, int outLength, int _ll, int _ul){
-        int [] out = new int [outLength];
+    double [] projectX(double [][] inArray, int outLength, int _ll, int _ul){
+        double [] out = new double [outLength];
         int ll = Math.max(0,_ll);
-        int ul = Math.min(outLength-1,_ul);
+        int ul = Math.min(inArray[0].length-1,_ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
@@ -371,10 +389,10 @@ Observer {
         return out;
     }
 
-    int [] projectY(int [][] inArray, int outLength, int _ll, int _ul){
-        int [] out = new int [outLength];
+    double [] projectY(double [][] inArray, int outLength, int _ll, int _ul){
+		double [] out = new double [outLength];
         int ll = Math.max(0,_ll);
-        int ul = Math.min(outLength-1,_ul);
+        int ul = Math.min(inArray.length-1,_ul);
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
@@ -387,8 +405,8 @@ Observer {
     }
 
 
-    int [] projectX(int [][] inArray, int outLength, Gate gate) throws DataException {
-        int [] out = new int [outLength];
+    double [] projectX(double [][] inArray, int outLength, Gate gate) throws DataException {
+		double [] out = new double [outLength];
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
@@ -402,15 +420,11 @@ Observer {
         return out;
     }
 
-    int [] projectY(int [][] inArray, int outLength, Gate gate) throws DataException {
-        int [] out;
-
-        out = new int [outLength];
-
+    double [] projectY(double [][] inArray, int outLength, Gate gate) throws DataException {
+		double [] out = new double [outLength];
         for (int k=0; k<outLength; k++) {
             out[k]=0;
         }
-
         for (int i=0;i<inArray.length;i++){
             for (int j=0;j<inArray[0].length;j++){
                 if (gate.inGate(i,j)) {
