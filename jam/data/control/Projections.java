@@ -4,7 +4,6 @@ import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -43,9 +42,7 @@ public class Projections extends AbstractManipulation implements Observer {
 
 	private static final String BETWEEN = "Between Channels";
 
-	private final Broadcaster broadcaster;
-
-	private final MessageHandler messageHandler;
+	private final MessageHandler console;
 
 	private final JComboBox cfrom, cto, cchan;
 
@@ -62,13 +59,11 @@ public class Projections extends AbstractManipulation implements Observer {
 	/**
 	 * Constructs a new projections dialog.
 	 * 
-	 * @param mh where to print messages
+	 * @param msgHandler where to print messages
 	 */
-	public Projections(MessageHandler mh) {
+	public Projections(MessageHandler msgHandler) {
 		super("Project 2D Histogram", false);
-		messageHandler = mh;
-		broadcaster = Broadcaster.getSingletonInstance();
-		
+		console = msgHandler;
 		setResizable(false);
 		final int CHOOSER_SIZE = 200;
 		Dimension dim;
@@ -175,7 +170,7 @@ public class Projections extends AbstractManipulation implements Observer {
 					STATUS.setCurrentHistogram(hto);
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
 				} catch (DataException de) {
-					messageHandler.errorOutln(de.getMessage());
+					console.errorOutln(de.getMessage());
 				}
 			}
 			
@@ -186,10 +181,10 @@ public class Projections extends AbstractManipulation implements Observer {
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(listener);
 		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);		
 		cfrom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object selected = cfrom.getSelectedItem();
+			public void actionPerformed(ActionEvent actionEvent) {
+				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
-					hfromname = null;
+					hfromname = "";
 					buttons.setButtonsEnabled(false,false,true);
 				} else {
 					hfromname = ((Histogram) selected).getFullName();
@@ -207,9 +202,9 @@ public class Projections extends AbstractManipulation implements Observer {
 	 * Implementation of Observable interface Listners for broadcast events.
 	 * Broadcast events: histograms new and histogram added
 	 */
-	public void update(Observable observable, Object o) {
-		BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command com = be.getCommand();
+	public void update(Observable observable, Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command com = event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_NEW) {
 			doSetup();
 		} else if (com == BroadcastEvent.Command.HISTOGRAM_ADD || 
@@ -247,9 +242,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* add gates to chooser */
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
-			final Iterator it = hfrom.getGates().iterator();
-			while (it.hasNext()) {
-				final Gate gate = (Gate) it.next();
+			final Iterator iterator = hfrom.getGates().iterator();
+			while (iterator.hasNext()) {
+				final Gate gate = (Gate) iterator.next();
 				if (gate.isDefined()){
 					cchan.addItem(gate.getName());
 				}
@@ -287,9 +282,6 @@ public class Projections extends AbstractManipulation implements Observer {
 		tlim2.setEnabled(state);
 		tlim1.setEditable(state);
 		tlim2.setEditable(state);
-		//FIXME KBS 
-		//lChannels.setEnabled(state);
-		//lAnd.setEnabled(state);
 	}
 
 	/* non-javadoc:
@@ -308,7 +300,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		} else {
 			counts2d = intToDouble2DArray((int[][]) hfrom.getCounts());
 		}
-		String name = (String) cto.getSelectedItem();
+		final String name = (String) cto.getSelectedItem();
 		final int[] limits;
 		if (state.equals(BETWEEN)) {
 			limits = getLimits();
@@ -325,11 +317,11 @@ public class Projections extends AbstractManipulation implements Observer {
 		}
 
 		if (isNewHistogram(name)) {
-			String histName = ttextto.getText().trim();
-			String groupName = parseGroupName(name);
+			final String histName = ttextto.getText().trim();
+			final String groupName = parseGroupName(name);
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();
 			hto = createNewHistogram(name, histName, size);
-			messageHandler
+			console
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 
 		} else {
@@ -372,18 +364,18 @@ public class Projections extends AbstractManipulation implements Observer {
 			"Need to project to 1 dimension histogram");
 		}
 			
-		messageHandler.messageOutln("Project " + hfrom.getFullName().trim()
+		console.messageOutln("Project " + hfrom.getFullName().trim()
 				+ " to " + hto.getFullName() + " " + typeProj);
 	}
 
 
 	double[] projectX(double[][] inArray, int outLength, int _ll, int _ul) {
 		final double[] out = new double[outLength];
-		int ll = Math.max(0, _ll);
-		int ul = Math.min(inArray[0].length - 1, _ul);
+		final int lower = Math.max(0, _ll);
+		final int upper = Math.min(inArray[0].length - 1, _ul);
 		final int xul = Math.min(inArray.length, outLength);
 		for (int i = 0; i < xul; i++) {
-			for (int j = ll; j <= ul; j++) {
+			for (int j = lower; j <= upper; j++) {
 				out[i] += inArray[i][j];
 			}
 		}
@@ -392,10 +384,10 @@ public class Projections extends AbstractManipulation implements Observer {
 
 	double[] projectY(double[][] inArray, int outLength, int _ll, int _ul) {
 		double[] out = new double[outLength];
-		int ll = Math.max(0, _ll);
-		int ul = Math.min(inArray.length - 1, _ul);
+		final int lower = Math.max(0, _ll);
+		final int upper = Math.min(inArray.length - 1, _ul);
 		final int yul = Math.min(inArray[0].length, outLength);
-		for (int i = ll; i <= ul; i++) {
+		for (int i = lower; i <= upper; i++) {
 			for (int j = 0; j < yul; j++) {
 				out[j] += inArray[i][j];
 			}
@@ -411,8 +403,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
 				if (gate.inGate(i, j)) {
-					if (i < out.length)
+					if (i < out.length){
 						out[i] += inArray[i][j];
+					}
 				}
 			}
 		}
@@ -427,8 +420,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
 				if (gate.inGate(i, j)) {
-					if (j < out.length)
+					if (j < out.length){
 						out[j] += inArray[i][j];
+					}
 				}
 			}
 		}
@@ -441,7 +435,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			out[0] = Integer.parseInt(tlim1.getText().trim());
 			out[1] = Integer.parseInt(tlim2.getText().trim());
 			if (out[0] > out[1]) {
-				int temp = out[0];
+				final int temp = out[0];
 				out[0] = out[1];
 				out[1] = temp;
 			}
@@ -450,6 +444,6 @@ public class Projections extends AbstractManipulation implements Observer {
 					"Invalid channel not a valid numbers");
 		}
 		return out;
-	}
-		
+	}	
 }
+
