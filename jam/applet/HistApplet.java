@@ -48,11 +48,10 @@ public class HistApplet
 	private JTextField textHost;
 	private JButton blink;
 
-	private URL localPath;
 	private String documentHost;
 
 	/* select panel controls */
-	public JPanel pselect;
+	private JPanel pselect;
 	FlowLayout flselect;
 	private JLabel lrunState; //run state label         
 	private JLabel lhist; //label for histogram Chooser    
@@ -114,8 +113,8 @@ public class HistApplet
 		addToolbarSelect(ptop);// tool bar for selecting
 		/* where did we come from, set host url, and 
 		 * setup applet document path */
-		localPath = this.getDocumentBase();
-		documentHost = this.getDocumentBase().getHost();
+		final URL localPath = this.getDocumentBase();
+		documentHost = localPath.getHost();
 		if (documentHost == null) {
 			documentHost = "hostname";
 		}
@@ -266,7 +265,7 @@ public class HistApplet
 		}
 	}
 	
-	/**
+	/* non-javadoc:
 	 * link to host with rmi
 	 */
 	private void link(String stringURL) throws JamException {
@@ -363,6 +362,7 @@ public class HistApplet
 	/**
 	 * Adds the tool bar the at the top of the plot.
 	 *
+	 * @param p panel to add toolbar to
 	 * @since Version 0.5
 	 */
 	public void addToolbarSelect(Panel p) {
