@@ -67,11 +67,15 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 
 	private Border selectBorder;
 
+	private AbstractPlot currentSubPlot;
+	
 	private final Plot1d plot1d;
 
 	private final Plot2d plot2d;
 
-	private AbstractPlot currentSubPlot;
+	private final Scroller scroller1d;
+	
+	private final Scroller scroller2d;	
 	
 	private int plotNumber; 
 
@@ -94,13 +98,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 		/* panel 1d plot and its scroll bars */
 		plot1d = new Plot1d();
 		plot1d.setOverlayList(Collections.unmodifiableList(overlays));
-		final Scroller scroller1d = new Scroller(plot1d);
+		 scroller1d = new Scroller(plot1d);
 		add(KEY1, scroller1d);
 		plot1d.addPlotSelectListener(this);
 
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d();
-		final Scroller scroller2d = new Scroller(plot2d);
+		scroller2d = new Scroller(plot2d);
 		add(KEY2, scroller2d);
 		plot2d.addPlotSelectListener(this);
 
@@ -212,6 +216,12 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 
 		return plotType;
 	}
+	
+	void enableScrolling(boolean enable){
+		scroller1d.enableScrolling(enable);
+		scroller2d.enableScrolling(enable);
+	}
+	
 	int getNumber(){
 		return plotNumber;
 	}
@@ -473,6 +483,13 @@ public class Plot extends JPanel implements PlotPrefs, PlotSelectListener,
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
+		final String key = pce.getKey();
+		final String newValue = pce.getNewValue();
+
+		if (key.equals(PlotPrefs.ENABLE_SCROLLING)){
+			enableScrolling(Boolean.valueOf(newValue).booleanValue());
+		}		
+		
 		currentSubPlot.preferenceChange(pce);
 	}
 

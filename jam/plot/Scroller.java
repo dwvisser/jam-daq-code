@@ -221,5 +221,10 @@ class Scroller
 		plot.setMaximumCountsConstrained(newMax);
 	}
 	
-
+	void enableScrolling(boolean enableIn){
+		scrollCount.setVisible(enableIn);
+		scrollHorz.setVisible(enableIn);
+		if (isPlot2d)
+			scrollVert.setVisible(enableIn);			
+	}
 }

@@ -268,6 +268,7 @@ abstract class AbstractPlot extends JPanel implements PlotPrefs,
 		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)) {
 			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
 		}
+			
 	}
 
 	private synchronized void setNoFillMode(boolean bool) {

@@ -22,4 +22,5 @@ public interface PlotPrefs {
 	final String SMOOTH_COLOR_SCALE="ContinuousColorScale";
 	final String AUTO_ON_EXPAND="AutoOnExpand";
 	final String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
+	final String ENABLE_SCROLLING="EnableScrolling";
 }

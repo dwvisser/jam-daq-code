@@ -181,7 +181,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 	private JMenu getViewMenu() {
 		
 		updateViews();
-		
+		//FIXME KBS remove
 		//final JamStatus status = JamStatus.instance();		
 /*		
 		JMenuItem view11 = new JMenuItem("View 1-1");
@@ -253,6 +253,7 @@ final class MainMenuBar extends JMenuBar implements Observer, CommandNames {
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
 		mPrefer.add(getMenuItem(PlotPrefs.SMOOTH_COLOR_SCALE));
+		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
 		mPrefer.add(getMenuItem(SHOW_PEAK_FIND));

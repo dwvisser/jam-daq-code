@@ -100,6 +100,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		SetSmoothColorScale.class);
 		cmdMap.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
 		cmdMap.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS, SetGatedChannelsHighlight.class);
+		cmdMap.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
 		cmdMap.put(JamPrefs.VERBOSE, SetVerbose.class);
 		cmdMap.put(JamPrefs.DEBUG, SetDebug.class);
 		cmdMap.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);
