@@ -2,7 +2,6 @@ package jam;
 import jam.global.*;
 import jam.io.ExtensionFileFilter;
 import jam.sort.*;
-import jam.sort.stream.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -20,7 +19,7 @@ import javax.swing.border.*;
  * @author Dale Visser and Ken Swartz
  * @version 1.0
  */
-class SortControl implements Controller, ActionListener, ItemListener {
+class SortControl implements Controller{
 
 	private final JamMain jamMain;
 	private final MessageHandler msgHandler;
@@ -32,6 +31,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 
 	private File lastFile; //last file referred to in a JFileChooser
 	private File fileOut; //file name for output
+	
 	private File outDirectory; //directory we last output files to.
 
 	private boolean setupLock;
@@ -40,22 +40,22 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 *  Dialog box widget
 	 */
-	private JDialog d;
+	private final JDialog d;
 
 	/**
 	 * Text field for output file
 	 */
-	private JTextField textOutFile;
+	private final JTextField textOutFile;
 
 	/** check box for writing out events */
-	private JCheckBox cout;
+	private final JCheckBox cout;
 
-	private JPanel pdiskfiles;
+	private final JPanel pdiskfiles;
 
-	private JList listEventFiles;
-	private DefaultListModel eventFileModel;
+	private final JList listEventFiles;
+	private final DefaultListModel eventFileModel;
 
-	private JButton addfile,
+	private final JButton addfile,
 		addDir,
 		loadlist,
 		remove,
@@ -65,17 +65,17 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	  * button to get file brower
 	  */
-	private JButton bbrowse;
+	private final JButton bbrowse;
 
 	/**
 	  *control button for begin sort
 	  */
-	private JButton bbegin;
+	private final JButton bbegin;
 
 	/**
 	  * control button for end sort
 	  */
-	private JButton bend;
+	private final JButton bend;
 
 	String defaultEvents;
 	String defaultOutputFile;
@@ -88,7 +88,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		defaultOutputFile =
 			JamProperties.getPropString(JamProperties.EVENT_OUTFILE);
 		d = new JDialog(jamMain, "Sorting ", false);
-		d.setResizable(false);
+		d.setResizable(true);//sometimes there are long paths to files
 		d.setLocation(20, 50);
 
 		//GUI layout
@@ -118,36 +118,52 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		cd.add(ef, BorderLayout.WEST);
 
 		addfile = new JButton("Add File");
-		addfile.setActionCommand("addfile");
-		addfile.addActionListener(this);
+		addfile.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				addEventFile();
+			}
+		});
 		ef.add(addfile);
 
 		addDir = new JButton("Add Directory");
-		addDir.setActionCommand("addDir");
-		addDir.addActionListener(this);
+		addDir.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			addDirectory();
+		}
+		});
 		ef.add(addDir);
 
 		remove = new JButton("Remove File");
-		remove.setActionCommand("remove");
-		remove.addActionListener(this);
+		remove.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			removeItem();
+		}
+		});
 		ef.add(remove);
 
 		removeAll = new JButton("Remove All");
-		removeAll.setActionCommand("removeall");
-		removeAll.addActionListener(this);
+		removeAll.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			removeAllItems();
+		}
+		});
 		ef.add(removeAll);
 
 		loadlist = new JButton("Load List");
-		loadlist.setActionCommand("loadlist");
-		loadlist.addActionListener(this);
+		loadlist.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			Loadlist();
+		}
+		});
 		ef.add(loadlist);
 
 		savelist = new JButton("Save List");
-		savelist.setActionCommand("savelist");
-		savelist.addActionListener(this);
+		savelist.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			Savelist();
+		}
+		});
 		ef.add(savelist);
-
-		//ef.add(Box.createVerticalGlue());
 
 		//Bottom Panel
 		final JPanel pbottom = new JPanel(new GridLayout(0, 1, 5, 5));
@@ -158,7 +174,11 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		final JPanel pout = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		pbottom.add(pout);
 		cout = new JCheckBox("Output Events to File:", false);
-		cout.addItemListener(this);
+		cout.addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent e){
+				setWriteEvents(cout.isSelected());
+			}
+		});
 		pout.add(cout);
 
 		textOutFile =
@@ -168,8 +188,11 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		pout.add(textOutFile);
 
 		bbrowse = new JButton("Browse..");
-		bbrowse.setActionCommand("bfileout");
-		bbrowse.addActionListener(this);
+		bbrowse.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			textOutFile.setText(getOutFile().getPath());
+		}
+		});
 		bbrowse.setEnabled(false);
 		pout.add(bbrowse);
 
@@ -180,16 +203,25 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		pbutton.add(pb);
 
 		bbegin = new JButton("Begin");
-		bbegin.setActionCommand("begin");
-		bbegin.setBackground(Color.green);
+		bbegin.setToolTipText("Begin sort of all files."
+		+" If a sort was halted, we start over.");
+		bbegin.setBackground(Color.GREEN);
 		bbegin.setEnabled(false);
-		bbegin.addActionListener(this);
+		bbegin.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			beginSort();
+		}
+		});
 		pb.add(bbegin);
 
-		bend = new JButton("End/Cancel");
-		bend.setActionCommand("end");
-		bend.setBackground(Color.red);
-		bend.addActionListener(this);
+		bend = new JButton("Halt");
+		bend.setToolTipText("Halt sort in process.");
+		bend.setBackground(Color.RED);
+		bend.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			endSort();
+		}
+		});
 		bend.setEnabled(false);
 		pb.add(bend);
 
@@ -209,54 +241,6 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 */
 	public void show() {
 		d.show();
-	}
-
-	/**
-	 * action performed on widget in dialog box
-	 *
-	 */
-	public void actionPerformed(ActionEvent ae) {
-		final String command = ae.getActionCommand();
-		try {
-			if (command == "addfile") {
-				addEventFile();
-			} else if (command == "addDir") {
-				addDirectory();
-			} else if (command == "remove") {
-				removeItem();
-			} else if (command == "removeall") {
-				removeAllItems();
-			} else if (command == "savelist") {
-				Savelist();
-			} else if (command == "loadlist") {
-				Loadlist();
-			} else if (command == "begin") {
-				beginSort();
-			} else if (command == "end") {
-				endSort();
-				msgHandler.warningOutln(
-					"Ended offline sorting before reading all events.");
-				bend.setEnabled(false);
-			} else if (command == "bfileout") {
-				textOutFile.setText(getOutFile().getPath());
-			}
-		} catch (SortException se) {
-			msgHandler.errorOutln(se.getMessage());
-		} catch (EventException ee) {
-			msgHandler.errorOutln(ee.getMessage());
-		} catch (JamException je) {
-			msgHandler.errorOutln(je.getMessage());
-		} 
-	}
-
-	/**
-	 * Recieves events from the check box.
-	 *
-	 */
-	public void itemStateChanged(ItemEvent ie) {
-		if (ie.getItemSelectable() == cout) {
-			setWriteEvents(cout.isSelected());
-		}
 	}
 
 	void setWriteEvents(boolean state){
@@ -283,7 +267,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * Load the name of objects entered in dialog box
 	 * give the list to storage deamon
 	 */
-	private void loadNames() throws JamException, SortException {
+	private void loadNames() {
 		final List fileList = new Vector(eventFileModel.getSize());
 		for (int count = 0; count < eventFileModel.getSize(); count++) {
 			final File f=(File)eventFileModel.get(count);
@@ -302,8 +286,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * @param lockOnThis passed by script thread, which wants to know when
 	 * sorting is done
 	 */
-	public void beginSort()
-		throws JamException, SortException, EventException {
+	public void beginSort() {
 		loadNames();
 		lockFields(true);
 		RunInfo.runNumber = 999;
@@ -311,8 +294,23 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		RunInfo.runStartTime = new java.util.Date();
 		if (writeEvents) {
 			sortDaemon.setWriteEnabled(true);
-			dataOutDaemon.openEventOutputFile(fileOut);
-			dataOutDaemon.writeHeader();
+			boolean openSuccess=true;
+			try {
+				dataOutDaemon.openEventOutputFile(fileOut);
+			} catch (SortException e){
+				msgHandler.errorOutln(
+				"Sort|Control.Begin: couldn't open event output file.");
+				sortDaemon.setWriteEnabled(false);
+				openSuccess=false;
+			}
+			if (openSuccess){
+				try {
+					dataOutDaemon.writeHeader();
+				} catch (Exception e){
+					msgHandler.errorOutln(
+					"Sort|Control.Begin: couldn't write header to event output file.");
+				}
+			}
 		} else {
 			sortDaemon.setWriteEnabled(false);
 		}
@@ -327,8 +325,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * stop offline sorting
 	 *
 	 */
-	private void endSort()
-		throws JamException, SortException {
+	private void endSort() {
 		sortDaemon.cancelOfflineSorting();
 		if (!dataInpDaemon.closeEventInputListFile()) {
 			msgHandler.errorOutln(
@@ -336,13 +333,19 @@ class SortControl implements Controller, ActionListener, ItemListener {
 					+ dataInpDaemon.getEventInputFileName());
 		}
 		if (writeEvents) {
-			dataOutDaemon.closeEventOutputFile();
+			try {
+				dataOutDaemon.closeEventOutputFile();
+			} catch (SortException e){
+				msgHandler.errorOutln(
+				"Sort|Control...: couldn't close event output file.");
+			}
 			msgHandler.messageOutln(
 				"Closed pre-sorted file: " + fileOut.getPath());
 		}
-		msgHandler.warningOutln(
-				"Stopped sorting from disk before all events were read.");
 		jamMain.setRunState(RunState.ACQ_OFF);
+		msgHandler.warningOutln(
+			"Ended offline sorting before reading all events.");
+		bend.setEnabled(false);
 	}
 
 	/**
@@ -358,9 +361,10 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	}
 
 	/**
-	 * Called by sorter after startup looking to see if there is a next file
-	 * to sort. If there is a nex file we tell <code>StorageDaemon</code> to open it
-	 * if <code>storageDaemon</code> can open it we return true.
+	 * Called by sorter after startup looking to see if there is a 
+	 * next file to sort. If there is a next file, we tell 
+	 * <code>StorageDaemon</code> to open it, and return 
+	 * <ocde>true</code>.
 	 *
 	 * @return <code>true</code> if there is a next event file to sort
 	 */
@@ -381,13 +385,12 @@ class SortControl implements Controller, ActionListener, ItemListener {
 						+ RunInfo.runNumber
 						+ " title: "
 						+ RunInfo.runTitle);
-				sortNext = true;
 			} else {
 				msgHandler.errorOutln(
 					"Could not open file: "
 						+ dataInpDaemon.getEventInputFileName());
-				sortNext = true; //try next file anyway
 			}
+			sortNext=true;//try next file no matter what
 		}
 		return sortNext;
 	}
@@ -505,7 +508,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	/**
 	 * save list of items to sort
 	 */
-	private void Savelist() throws JamException {
+	private void Savelist() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(
@@ -517,17 +520,17 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		if (option == JFileChooser.APPROVE_OPTION
 			&& fd.getSelectedFile() != null) {
 			lastFile = fd.getSelectedFile(); //save current directory
-		}
-		try {
-				FileWriter saveStream = new FileWriter(fd.getSelectedFile());
-				for (int i = 0; i < eventFileModel.size(); i++) {
-					final File f=(File)eventFileModel.elementAt(i);
-					saveStream.write(f.getAbsolutePath());
-					saveStream.write("\n");
-				}
-				saveStream.close();
-		} catch (IOException ioe) {
-			throw new JamException("Unable to save list to file, open file [SortControl]");
+			try {
+					FileWriter saveStream = new FileWriter(lastFile);
+					for (int i = 0; i < eventFileModel.size(); i++) {
+						final File f=(File)eventFileModel.elementAt(i);
+						saveStream.write(f.getAbsolutePath());
+						saveStream.write("\n");
+					}
+					saveStream.close();
+			} catch (IOException ioe) {
+				msgHandler.errorOutln("Control|Sort...:Unable to save list to file "+lastFile.getName());
+			}
 		}
 	}
 
@@ -535,7 +538,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 * load a list of items to sort from a file
 	 *
 	 */
-	private void Loadlist() throws JamException {
+	private void Loadlist() {
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(
@@ -549,7 +552,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 		}
 	}
 
-	void readList(File f) throws JamException {
+	void readList(File f) {
 		lastFile=f;
 		try {
 			BufferedReader br =
@@ -564,7 +567,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 			} while (listItem != null);
 			br.close();
 		} catch (IOException ioe) {
-			throw new JamException("Unable to load list, open file [SortControl]");
+			msgHandler.errorOutln("Jam|Sort...: Unable to load list from file "+f);
 		}
 	}
 
@@ -573,7 +576,7 @@ class SortControl implements Controller, ActionListener, ItemListener {
 	 *
 	 */
 	private File getOutFile() {
-		File rval = null; //default return value
+		File rval = new File(textOutFile.getText().trim()); //default return value
 		JFileChooser fd = new JFileChooser(outDirectory);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(
