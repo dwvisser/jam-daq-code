@@ -1,11 +1,10 @@
 package jam.commands;
 
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
-import jam.global.JamStatus;
-import jam.data.Group;
-import jam.data.Histogram;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFIO;
 
