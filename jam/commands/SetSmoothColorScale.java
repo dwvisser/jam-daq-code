@@ -19,6 +19,6 @@ final class SetSmoothColorScale extends AbstractSetBooleanPreference {
 		"Use a continuous rainbow color scale for 2d histograms.");
 		prefsNode=ColorPrefs.COLOR_PREFS;
 		key=ColorPrefs.SMOOTH_COLOR_SCALE;
-		defaultState=false;
+		defaultState=true;
 	}
 }

@@ -7,6 +7,7 @@ import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
+import jam.plot.color.ColorPrefs;
 import jam.ui.Console;
 
 import java.awt.BorderLayout;
@@ -95,6 +96,7 @@ public final class Display extends JPanel implements  PlotSelectListener,
 		PREFS.addPreferenceChangeListener(this);
 		isScrolling=PREFS.getBoolean(ENABLE_SCROLLING_TILED, false);
 		isAxisLabels=PREFS.getBoolean(DISPLAY_AXIS_LABELS, true);
+		boolean colorScale = PREFS.getBoolean(ColorPrefs.SMOOTH_COLOR_SCALE, true);
 	}
 		
 	/**
