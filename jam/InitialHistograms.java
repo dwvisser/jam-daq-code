@@ -40,45 +40,50 @@ public class InitialHistograms{
     private int [] histNameJam1d(){
         final int sizeX=900;
         final int[] counts = new int [sizeX];
-        //Make a J
+        final int height=300;
+        final int scale=height/100;
+        /* Make a J. */
+        int y=15*scale;
         for (int i =100;i< 150;i++) {
-            counts[i]=15;
+            counts[i]=y;
         }
+        y=10*scale;
         for (int i =150;i< 225;i++) {
-            counts[i]=10;
+            counts[i]=y;
         }
+        y=100*scale;
         for (int i =225;i< 300;i++) {
-            counts[i]=100;
+            counts[i]=y;
         }
-        //Make a A
+        /* Make an A. */
         int startCh=400;
         for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=2*(i-startCh);
+            counts[i]=2*(i-startCh)*scale;
         }
         startCh=450;
         for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=100;
+            counts[i]=y;
         }
         startCh=500;
         for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=100-2*(i-startCh);
+            counts[i]=(100-2*(i-startCh))*scale;
         }
-        //Make a M
+        /* Make a M. */
         startCh=650;
         for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=100;
+            counts[i]=y;
         }
         startCh=700;
         for (int i =startCh;i< startCh+25;i++) {
-            counts[i]=100-2*(i-startCh);
+            counts[i]=(100-2*(i-startCh))*scale;
         }
         startCh=725;
         for (int i =startCh;i< startCh+25;i++) {
-            counts[i]=50+2*(i-startCh);
+            counts[i]=(50+2*(i-startCh))*scale;
         }
         startCh=750;
         for (int i =startCh;i< startCh+50;i++) {
-            counts[i]=100;
+            counts[i]=y;
         }
         return counts;
     }
