@@ -9,7 +9,8 @@ import java.awt.Event;
 import javax.swing.Action;
 
 /**
- * Interface for a command.
+ * Objects to be executed by <code>CommandManager</code> must
+ * implement this interface.
  *  
  * @author Ken Swartz
  */
@@ -19,12 +20,12 @@ public interface Commandable extends Action {
 	 * References needed for commands. Commands have null constructors
 	 * so a init method is needed 
 	 * 
-	 * @param msghdlr		Message and error output
+	 * @param msghdlr message and error output
 	 */
 	void init(MessageHandler msghdlr);
 
 	/**
-	 * Execute a command with the given command parameters
+	 * Execute a command with the given command parameters.
 	 * 
 	 * @param cmdParams command parameters
 	 */
