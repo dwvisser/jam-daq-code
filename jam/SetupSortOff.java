@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 /**
  * Class to setup the offline sort process.
@@ -31,7 +32,7 @@ class SetupSortOff  implements ItemListener {
     		doApply(bok.equals(ae.getSource()));
     	}
     }
-    
+
     private void doApply(boolean dispose){
 		try{
 			if (jamMain.canSetSortMode()) {
@@ -57,6 +58,7 @@ class SetupSortOff  implements ItemListener {
 			}
 		} catch (Exception ex){
 			msgHandler.errorOutln(ex.getMessage());
+			ex.printStackTrace();
 		}
     }
 
@@ -105,6 +107,7 @@ class SetupSortOff  implements ItemListener {
     SetupSortOff(JamMain jm,  SortControl sc,
     DisplayCounters dc, Broadcaster b, MessageHandler mh) {
 
+
 		classname=getClass().getName()+"--";
         defaultSortRoutine = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
@@ -135,7 +138,8 @@ class SetupSortOff  implements ItemListener {
         final int posx=20;
         final int posy=50;
         d.setLocation(posx,posy);
-        cp.setLayout(new BorderLayout());
+        cp.setLayout(new BorderLayout(5,5));
+
 		final int space=5;
 		final LayoutManager verticalGrid=new GridLayout(0,1,space,space);
 		final JPanel pNorth=new JPanel(verticalGrid);
@@ -157,12 +161,108 @@ class SetupSortOff  implements ItemListener {
 		pradio.add(specify);
 		pNorth.add(pradio);
 
-		final JPanel pCenter=new JPanel(new BorderLayout());
-		cp.add(pCenter,BorderLayout.CENTER);
+		//final JPanel pCenter=new JPanel(new BorderLayout(5,0));
+		//pCenter.setBorder(new EmptyBorder(0,10,10,10));
+		//cp.add(pCenter,BorderLayout.CENTER);
+
+		//Labels
+		final JPanel pLabels = new JPanel(new GridLayout(0,1, 5,5));
+		pLabels.setBorder(new EmptyBorder(2,10,0,0));	//down so browse button lines up
+		cp.add(pLabels, BorderLayout.WEST);
+
+        final JLabel lf=new JLabel("Sort classpath", JLabel.RIGHT);
+        pLabels.add(lf);
+        final JLabel ls =new JLabel("Sort Routine",JLabel.RIGHT);
+        pLabels.add(ls);
+        final JLabel lis= new JLabel("Event input stream",JLabel.RIGHT);
+        pLabels.add(lis);
+        final JLabel los =new JLabel("Event output stream",Label.RIGHT);
+        pLabels.add(los);
+
+		//Entry fields
+		final JPanel pEntry = new JPanel(new GridLayout(0,1, 5,5));
+		pEntry.setBorder(new EmptyBorder(2,0,0,0));//down so browse button lines up
+		cp.add(pEntry, BorderLayout.CENTER);
+
+		//Path
+        textSortPath =new JTextField(defaultSortPath);
+        textSortPath.setToolTipText("Use Browse button to change. \n"+
+        "May fail if classes have unresolvable references."+
+        "\n* use the sort.classpath property in your JamUser.ini "+
+        "file to set this automatically.");
+		textSortPath.setColumns(35);
+		textSortPath.setEditable(false);
+        pEntry.add(textSortPath);
+        //Sort class
+		sortChoice = new JComboBox();
+		sortChoice.setToolTipText("Select sort routine class");
+		sortChoice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				sortClass = (Class) sortChoice.getSelectedItem();
+			}
+		});
+		selectSortRoutine(defaultSortRoutine,useDefaultPath);
+ 		pEntry.add(sortChoice);
+ 		//Input stream
+        Set lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",
+        EventInputStream.class,false));
+        lhs.remove(EventInputStream.class);
+        inStreamChooser=new JComboBox(new Vector(lhs));
+        inStreamChooser.setToolTipText("Select input event data format.");
+		Iterator it=lhs.iterator();
+		while (it.hasNext()) {
+			final Class cl=(Class)it.next();
+			final String name=cl.getName();
+			final boolean match = name.equals(defaultEventInStream);
+			if (match){
+				inStreamChooser.setSelectedItem(cl);
+				break;
+			}
+		}
+        pEntry.add(inStreamChooser);
+        //Output stream
+		lhs=new LinkedHashSet(RTSI.find("jam.sort.stream",EventOutputStream.class,false));
+		lhs.remove(EventOutputStream.class);
+		outStreamChooser=new JComboBox(new Vector(lhs));
+		outStreamChooser.setToolTipText("Select output event format.");
+		it=lhs.iterator();
+		while (it.hasNext()) {
+			final Class cl=(Class)it.next();
+			final String name=cl.getName();
+			final boolean match = name.equals(defaultEventOutStream);
+			if (match){
+				outStreamChooser.setSelectedItem(cl);
+				break;
+			}
+		}
+		pEntry.add(outStreamChooser);
+
+		final JPanel pBrowse = new JPanel(new GridLayout(4,1, 0,0));
+		pBrowse.setBorder(new EmptyBorder(0,0,0,10));
+		cp.add(pBrowse, BorderLayout.EAST);
+
+		bbrowsef = new JButton("Browse");
+		pBrowse.add(bbrowsef);
+		bbrowsef.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				//sortClassPath=getSortPath();
+				//sortChoice.setModel(new DefaultComboBoxModel(
+				//getSortClasses(sortClassPath)));
+				//if (sortChoice.getModel().getSize()>0){
+				//	sortChoice.setSelectedIndex(0);
+				//}
+				//textSortPath.setText(sortClassPath.getAbsolutePath());
+				setSortClassPath(getSortPath());
+			}
+		});
+
+/*
+
 		final JPanel pf = new JPanel(new BorderLayout());
 		pCenter.add(pf,BorderLayout.NORTH);
         final JLabel lf=new JLabel("Sort classpath", JLabel.RIGHT);
         pf.add(lf,BorderLayout.WEST);
+
         textSortPath =new JTextField(defaultSortPath);
         textSortPath.setToolTipText("Use Browse button to change. \n"+
         "May fail if classes have unresolvable references."+
@@ -175,13 +275,13 @@ class SetupSortOff  implements ItemListener {
 		pf.add(bbrowsef,BorderLayout.EAST);
 		bbrowsef.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
-				/*sortClassPath=getSortPath();
-				sortChoice.setModel(new DefaultComboBoxModel(
-				getSortClasses(sortClassPath)));
-				if (sortChoice.getModel().getSize()>0){
-					sortChoice.setSelectedIndex(0);
-				}
-				textSortPath.setText(sortClassPath.getAbsolutePath());*/
+				//sortClassPath=getSortPath();
+				//sortChoice.setModel(new DefaultComboBoxModel(
+				//getSortClasses(sortClassPath)));
+				//if (sortChoice.getModel().getSize()>0){
+				//	sortChoice.setSelectedIndex(0);
+				//}
+				//textSortPath.setText(sortClassPath.getAbsolutePath());
 				setSortClassPath(getSortPath());
 			}
 		});
@@ -238,6 +338,9 @@ class SetupSortOff  implements ItemListener {
 			}
 		}
 		pChoosers.add(outStreamChooser);
+
+		*/
+		//Button Panel
         final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
         final JPanel pb=new JPanel();
         pb.setLayout(new GridLayout(1,0,space,space));
@@ -278,7 +381,7 @@ class SetupSortOff  implements ItemListener {
         } );
         d.pack();
     }
-    
+
     private void setSortClassPath(File f){
     	if (f.exists()){
 			sortClassPath=f;
@@ -498,6 +601,7 @@ class SetupSortOff  implements ItemListener {
     	final boolean notLock=!lock;
     	checkLock.setEnabled(lock);
     	checkLock.setSelected(lock);
+    	textSortPath.setEnabled(notLock);
     	inStreamChooser.setEnabled(notLock);
     	outStreamChooser.setEnabled(notLock);
     	bok.setEnabled(notLock);
@@ -513,7 +617,7 @@ class SetupSortOff  implements ItemListener {
             bbrowsef.setEnabled(specify.isSelected());
         }
     }
-    
+
     void setupSort(File classPath, String sortRoutineName,
 	Class inStream, Class outStream){
 		/*sortClassPath=classPath;
@@ -526,7 +630,7 @@ class SetupSortOff  implements ItemListener {
 		outStreamChooser.setSelectedItem(outStream);
 		doApply(false);
 	}
-	
+
 	private final void selectSortRoutine(String srName, boolean useDefaultPath){
 		final java.util.List sortClassList=setChooserDefault(useDefaultPath);
 		Iterator it = sortClassList.iterator();
