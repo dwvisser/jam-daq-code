@@ -526,8 +526,8 @@ public abstract class Plot extends JPanel {
 	}
 
 	/**
-	 * called when display needs to be updated.
-	 *
+	 * Updated the display, resetting so that fits, gates and 
+	 * overlays are no longer shown.
 	 */
 	public void update() {
 		displayingGate = false;
