@@ -27,7 +27,6 @@ import javax.swing.*;
  */
 class SetupSortOn implements ActionListener, ItemListener {
 
-	//handles to classes we need
 	private JamMain jamMain;
 	private RunControl runControl;
 	private DisplayCounters displayCounters;
@@ -44,7 +43,6 @@ class SetupSortOn implements ActionListener, ItemListener {
 
 	//strings of data entered
 	String experimentName; 
-	//eventOutFile;
 	File sortDirectory;
 	String histDirectory, dataDirectory;
 	String logDirectory;
@@ -135,29 +133,11 @@ class SetupSortOn implements ActionListener, ItemListener {
 		defaultSpectra = JamProperties.getPropString(JamProperties.HIST_PATH);
 		defaultTape = JamProperties.getPropString(JamProperties.TAPE_DEV);
 		defaultLog = JamProperties.getPropString(JamProperties.LOG_PATH);
-		String storageType =
-			JamProperties.getPropString(JamProperties.EVENT_WRITER);
 		boolean useDefaultPath =
 			(defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
 		if (!useDefaultPath) {
 			sortDirectory = new File(defaultSortPath);
 			sortClassPath = sortDirectory;
-		}
-		if (storageType.equals(JamProperties.STORE_EVENTS_LOCALLY)) {
-			storeEventsLocally = true;
-		} else if (storageType.equals(JamProperties.STORE_EVENTS_FRONTEND)) {
-			storeEventsLocally = false;
-		} else {
-			storeEventsLocally = true;
-			jamConsole.warningOutln(
-				JamProperties.EVENT_WRITER
-					+ " set to invalid value \""
-					+ storageType
-					+ "\".  Valid values are \""
-					+ JamProperties.STORE_EVENTS_LOCALLY
-					+ "\" or \""
-					+ JamProperties.STORE_EVENTS_FRONTEND
-					+ "\". Defaulting to writing events locally.");
 		}
 		this.jamMain = jamMain;
 		this.runControl = runControl;
