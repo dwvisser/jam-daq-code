@@ -174,7 +174,7 @@ public class HDFIO implements DataIO, JamHDFFields {
 		File file) {
 		writeFile(wrthis, wrtgate, wrtscalers, true, file);
 	}
-	
+
 	static private final List EMPTY_LIST = new ArrayList();
 
 	/**
@@ -197,16 +197,17 @@ public class HDFIO implements DataIO, JamHDFFields {
 		boolean wrtparameters,
 		File file) {
 		final boolean writeIt =
-				file.exists()
-					&& JOptionPane.YES_OPTION
-						== JOptionPane.showConfirmDialog(
-							frame,
-							"Replace the existing file? \n" + file.getName(),
-							"Save " + file.getName(),
-							JOptionPane.YES_NO_OPTION);
-		if (writeIt){
-			final List hist = wrthis ? Histogram.getHistogramList() : 
-			EMPTY_LIST;
+			file.exists()
+				? JOptionPane.YES_OPTION
+					== JOptionPane.showConfirmDialog(
+						frame,
+						"Replace the existing file? \n" + file.getName(),
+						"Save " + file.getName(),
+						JOptionPane.YES_NO_OPTION)
+				: true;
+		if (writeIt) {
+			final List hist =
+				wrthis ? Histogram.getHistogramList() : EMPTY_LIST;
 			final List gate = new ArrayList();
 			if (wrtgate) {
 				gate.addAll(Gate.getGateList());
@@ -218,10 +219,10 @@ public class HDFIO implements DataIO, JamHDFFields {
 					it.remove();
 				}
 			}
-			final List scaler = wrtscalers ? Scaler.getScalerList() : 
-			EMPTY_LIST;
-			final List parameter = wrtparameters ? 
-			DataParameter.getParameterList() : EMPTY_LIST;
+			final List scaler =
+				wrtscalers ? Scaler.getScalerList() : EMPTY_LIST;
+			final List parameter =
+				wrtparameters ? DataParameter.getParameterList() : EMPTY_LIST;
 			writeFile(file, hist, gate, scaler, parameter);
 		}
 	}
@@ -243,6 +244,11 @@ public class HDFIO implements DataIO, JamHDFFields {
 		java.util.List gates,
 		java.util.List scalers,
 		java.util.List parameters) {
+		if (file.exists()) {
+			/* At this point, we've confirmed overwrite with the 
+			 * user. */
+			file.delete();
+		}
 		try {
 			synchronized (this) {
 				out = new HDFile(file, "rw");
