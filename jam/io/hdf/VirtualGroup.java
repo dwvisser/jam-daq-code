@@ -37,10 +37,10 @@ final class VirtualGroup extends DataObject {
 	 */
 	private String type;
 
-	private final short extag = 0; //purpose?
-	private final short exref = 0; //purpose?
-	private final short version = 3; //version of DFTAG_VG info
-	private final short more = 0; //unused but must add
+	private final static short EXTAG = 0; //purpose?
+	private final static short EXREF = 0; //purpose?
+	private final static short VERSION = 3; //version of DFTAG_VG info
+	private final static short MORE = 0; //unused but must add
 
 	VirtualGroup(String name, String type) throws HDFException {
 		super(DFTAG_VG); //sets tag
@@ -49,8 +49,8 @@ final class VirtualGroup extends DataObject {
 		refreshBytes();
 	}
 
-	VirtualGroup(byte[] data, short t, short r) {
-		super(data, t, r);
+	VirtualGroup(byte[] data, short tag, short ref) {
+		super(data, tag, ref);
 	}
 
 	/**
@@ -61,29 +61,29 @@ final class VirtualGroup extends DataObject {
 		int numBytes;
 		ByteArrayOutputStream baos;
 		DataOutputStream dos;
-		DataObject ob;
+		DataObject dataObject;
 		try {
 			numBytes = 14 + 4 * elements.size() + name.length() + type.length();
 			//see DFTAG_VG specification for HDF 4.1r2
 			baos = new ByteArrayOutputStream(numBytes);
 			dos = new DataOutputStream(baos);
 			dos.writeShort(elements.size());
-			for (Iterator temp = elements.iterator(); temp.hasNext();) {
-				ob = (DataObject) (temp.next());
-				dos.writeShort(ob.getTag());
+			for (final Iterator temp = elements.iterator(); temp.hasNext();) {
+				dataObject = (DataObject) (temp.next());
+				dos.writeShort(dataObject.getTag());
 			}
-			for (Iterator temp = elements.iterator(); temp.hasNext();) {
-				ob = (DataObject) (temp.next());
-				dos.writeShort(ob.getRef());
+			for (final Iterator temp = elements.iterator(); temp.hasNext();) {
+				dataObject = (DataObject) (temp.next());
+				dos.writeShort(dataObject.getRef());
 			}
 			dos.writeShort(name.length());
 			dos.writeBytes(name);
 			dos.writeShort(type.length());
 			dos.writeBytes(type);
-			dos.writeShort(extag);
-			dos.writeShort(exref);
-			dos.writeShort(version);
-			dos.writeShort(more);
+			dos.writeShort(EXTAG);
+			dos.writeShort(EXREF);
+			dos.writeShort(VERSION);
+			dos.writeShort(MORE);
 			bytes = baos.toByteArray();
 		} catch (IOException e) {
 			throw new HDFException("Problem processing VG: " + e.getMessage());
@@ -96,10 +96,9 @@ final class VirtualGroup extends DataObject {
 	 * @exception   HDFException thrown if unrecoverable error occurs
 	 */
 	protected void interpretBytes() throws HDFException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bais);
+		final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bais);
 		short numItems;
-		int i;
 		short[] tags;
 		short[] refs;
 		short nameLen;
@@ -111,10 +110,10 @@ final class VirtualGroup extends DataObject {
 			elements.clear();
 			tags = new short[numItems];
 			refs = new short[numItems];
-			for (i = 0; i < numItems; i++) {
+			for (int i = 0; i < numItems; i++) {
 				tags[i] = dis.readShort();
 			}
-			for (i = 0; i < numItems; i++) {
+			for (int i = 0; i < numItems; i++) {
 				refs[i] = dis.readShort();
 			}
 			nameLen = dis.readShort();
@@ -126,7 +125,7 @@ final class VirtualGroup extends DataObject {
 			temp = new byte[typeLen];
 			dis.read(temp);
 			type = util.getASCIIstring(temp);
-			for (i = 0; i < numItems; i++) {
+			for (int i = 0; i < numItems; i++) {
 				addDataObject(getObject(tags[i], refs[i]));
 			}
 			//rest of element has no useful information
@@ -167,16 +166,16 @@ final class VirtualGroup extends DataObject {
 	 * Returns a List of <code>VirtualGroup</code>'s of the 
 	 * type specified by <code>groupType</code>.
 	 *
-	 * @param in should contain only VirtualGroup objects
+	 * @param list should contain only VirtualGroup objects
 	 * @param groupType	type string showing what kind of info is contained
 	 * @return list of groups with the given type
 	 */
-	static List ofType(List in, String groupType) {
-		List output = new ArrayList();
-		for (Iterator temp = in.iterator(); temp.hasNext();) {
-			VirtualGroup vg = (VirtualGroup) (temp.next());
-			if (vg.getType() == groupType) {
-				output.add(vg);
+	static List ofType(List list, String groupType) {
+		final List output = new ArrayList();
+		for (final Iterator temp = list.iterator(); temp.hasNext();) {
+			final VirtualGroup group = (VirtualGroup) (temp.next());
+			if (group.getType() == groupType) {
+				output.add(group);
 			}
 		}
 		return output;
@@ -187,16 +186,16 @@ final class VirtualGroup extends DataObject {
 	 * name specified.  Should only be called when the name is expected to be
 	 * unique.
 	 *
-	 * @param in should contain only VirtualGroup objects
+	 * @param list should contain only VirtualGroup objects
 	 * @param groupName name of the desired group
 	 * @return the group with the given name
 	 */
-	static VirtualGroup ofName(List in, String groupName) {
+	static VirtualGroup ofName(List list, String groupName) {
 		VirtualGroup output = null;
-		for (Iterator temp = in.iterator(); temp.hasNext();) {
-			VirtualGroup vg = (VirtualGroup) (temp.next());
-			if (vg.getName().equals(groupName)) {
-				output = vg;
+		for (final Iterator temp = list.iterator(); temp.hasNext();) {
+			final VirtualGroup group = (VirtualGroup) (temp.next());
+			if (group.getName().equals(groupName)) {
+				output = group;
 			}
 		}
 		return output;
