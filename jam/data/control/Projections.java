@@ -38,6 +38,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class Projections extends AbstractManipulation implements Observer {
 
+	private static final int CHOOSER_SIZE = 200;
+	
 	private static final String FULL = "Full Histogram";
 
 	private static final String BETWEEN = "Between Channels";
@@ -65,18 +67,14 @@ public class Projections extends AbstractManipulation implements Observer {
 		super("Project 2D Histogram", false);
 		console = msgHandler;
 		setResizable(false);
-	
-		Dimension dim;
 		final int hgap = 5;
 		final int vgap = 10;
-		int meanCharWidth;
-		
 		final Container cdproject = getContentPane();
 		cdproject.setLayout(new BorderLayout(hgap, vgap));
 		setLocation(20, 50);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowOpened(WindowEvent e) {
+			public void windowOpened(WindowEvent windowEvent) {
 				doSetup();
 			}
 		});
@@ -95,9 +93,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
-		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
-		dim = cfrom.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
+		int meanWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
+		Dimension dim = cfrom.getPreferredSize();
+		dim.width = CHAR_LENGTH*meanWidth;				
 		cfrom.setPreferredSize(dim);
 		cfrom.setEditable(false);
 		phist.add(cfrom);
@@ -125,7 +123,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
 		cchan.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent e){
+			public void itemStateChanged(ItemEvent itemEvent){
 				if (cchan.getSelectedItem() != null) {
 					setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
 				}
@@ -143,13 +141,13 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* To histogram */
 		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cto = new JComboBox();
-		meanCharWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
+		meanWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHOOSER_CHAR_LENGTH*meanCharWidth;				
+		dim.width = CHAR_LENGTH*meanWidth;				
 		cto.setPreferredSize(dim);
 		cto.addItem("1DHISTOGRAM");
 		cto.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent e){
+			public void itemStateChanged(ItemEvent itemEvent){
 				if (cto.getSelectedItem() != null) {
 					setUseHist((String)cto.getSelectedItem());
 				}
@@ -158,7 +156,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		ptextto.add(cto);
 		lname = new JLabel("Name");
 		ptextto.add(lname);
-		ttextto = new JTextField("projection", NEW_NAME_LENGTH);
+		ttextto = new JTextField("projection", TEXT_LENGTH);
 		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
@@ -308,7 +306,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();        	
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
-			hto = createNewHistogram(groupName, name, histName, size);
+			hto = createNewHistogram(groupName, histName, size);
 			console
 			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
 		} else {
