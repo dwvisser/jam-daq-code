@@ -46,10 +46,8 @@ Observer {
 
         final int CHOOSER_SIZE=200;
         Dimension dim;
-        int rows=5;
-        int cols=1;
-        int hgap=5;
-        int vgap=10;
+        final int hgap=5;
+        final int vgap=10;
 
         Container cdproject = dproject.getContentPane();
         cdproject.setLayout(new BorderLayout(hgap,vgap));
