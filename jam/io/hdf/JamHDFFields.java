@@ -16,7 +16,7 @@ public interface JamHDFFields {
     /**
      * The section name for the histograms.
      */
-    String GROUP_SECT = "Groups";
+    String GROUP_SECTION = "Groups";
 
     /**
      * The type name for the histograms?
