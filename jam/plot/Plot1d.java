@@ -21,8 +21,8 @@ class Plot1d extends Plot {
 	/**
 	 * Constructor
 	 */
-	public Plot1d() {
-		super();
+	public Plot1d(Action a) {
+		super(a);
 	}
 
 	/**
@@ -196,12 +196,12 @@ class Plot1d extends Plot {
 	 * Mark a channel
 	 * ignores the channelY
 	 */
-	public void markChannel(int channelX, int channelY) {
+	public void markChannel(Point p) {
 		Graphics g = this.getGraphics();
 		g.setColor(PlotColorMap.mark);
 		graph.update(g, viewSize, plotLimits);
 		//so graph has all pertinent imfo
-		graph.markChannel1d(channelX, counts[channelX]);
+		graph.markChannel1d(p.x, counts[p.x]);
 		g.dispose();
 	}
 
@@ -213,19 +213,15 @@ class Plot1d extends Plot {
 	 * @param maxchanY the upper y channel
 	 * dont use y values
 	 */
-	public void markArea(
-		int minChanX,
-		int maxChanX,
-		int minChanY,
-		int maxChanY) {
-		int xll, xul;
+	public void markArea(Point p1, Point p2) {
+		final int xll, xul;
 
-		if (minChanX <= maxChanX) {
-			xll = minChanX;
-			xul = maxChanX;
+		if (p1.x <= p2.x) {
+			xll = p1.x;
+			xul = p2.x;
 		} else {
-			xll = maxChanX;
-			xul = minChanX;
+			xll = p2.x;
+			xul = p1.x;
 		}
 		Graphics g = this.getGraphics();
 		g.setColor(PlotColorMap.area);
@@ -342,8 +338,8 @@ class Plot1d extends Plot {
 	 * Get the counts in a X channel,
 	 * Y channel ignored.
 	 */
-	public double getCount(int channelX, int channelY) {
-		return counts[channelX];
+	public double getCount(Point p) {
+		return counts[p.x];
 	}
 
 	/**

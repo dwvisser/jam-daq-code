@@ -32,8 +32,8 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     /**
      * Construnctor just runs super
      */
-    public Plot2d(){
-        super();
+    public Plot2d(Action a){
+        super(a);
         needErase=false;
         numberPointsSetGate=0;
     }
@@ -42,11 +42,11 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
      * Mark a channel
      *
      */
-    public void markChannel(int channelX, int channelY) {
+    public void markChannel(Point p) {
         Graphics g=this.getGraphics();
         g.setColor(PlotColorMap.mark);
         graph.update(g,viewSize,plotLimits);  //so graph has all pertinent imfo
-        graph.markChannel2d(channelX, channelY);
+        graph.markChannel2d(p);
         g.dispose();
     }
 
@@ -57,23 +57,23 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
      * @param maxChanX the upper x channel
      * @param maxchanY the upper y channel
      */
-    public void markArea(int minChanX, int maxChanX, int minChanY, int maxChanY){
-        int xll, xul;      //x lower and upper limits
-        int yll, yul;      //y lower and upper limits
+    public void markArea(Point p1, Point p2){
+        final int xll, xul;      //x lower and upper limits
+        final int yll, yul;      //y lower and upper limits
 
-        if (minChanX<=maxChanX){
-            xll=minChanX;
-            xul=maxChanX;
+        if (p1.x<=p2.x){
+            xll=p1.x;
+            xul=p2.x;
         } else{
-            xll=maxChanX;
-            xul=minChanX;
+            xll=p2.x;
+            xul=p1.x;
         }
-        if (minChanY<=maxChanY){
-            yll=minChanY;
-            yul=maxChanY;
+        if (p1.y<=p2.y){
+            yll=p1.y;
+            yul=p2.y;
         } else {
-            yll=maxChanY;
-            yul=minChanY;
+            yll=p2.y;
+            yul=p1.y;
         }
         Graphics g=this.getGraphics();
         g.setColor(PlotColorMap.area);
@@ -226,8 +226,8 @@ class Plot2d extends Plot implements MouseMotionListener, MouseListener {
     /**
      * Get the counts for a particular channel.
      */
-    public double getCount(int channelX, int channelY){
-        return counts2d[channelX][channelY];
+    public double getCount(Point p){
+        return counts2d[p.x][p.y];
     }
 
     /**

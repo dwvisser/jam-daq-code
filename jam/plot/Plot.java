@@ -146,11 +146,14 @@ public abstract class Plot extends JPanel  {
      */
     protected boolean ignoreChFull;
     
+    Action action;
+    
     /**
      * Constructor
      */
-    public Plot(){
+    public Plot(Action a){
         super(false);
+        action=a;
         //setOpaque(true);
         this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         //some initial layout stuff
@@ -163,7 +166,7 @@ public abstract class Plot extends JPanel  {
         printFont=new Font("SansSerif",Font.PLAIN,PlotGraphicsLayout.PRINT_FONT_SIZE);
         graph=new PlotGraphics(this,viewBorder,screenFont);
         this.setColorMode(PlotColorMap.BLACK_ON_WHITE);
-        plotMouse=new PlotMouse(graph);
+        plotMouse=new PlotMouse(graph,action);
         this.addMouseListener(plotMouse);  //plot now calls this class for mouse pressed
     }
     
@@ -302,7 +305,7 @@ public abstract class Plot extends JPanel  {
      * @param channelX the x channel to be marked
      * @param channelY the y channel to be marked
      */
-    public abstract void markChannel(int channelX, int channelY);
+    public abstract void markChannel(Point p);
     
     /**
      * Mark Area
@@ -311,24 +314,23 @@ public abstract class Plot extends JPanel  {
      * @param maxChanX the upper x channel
      * @param maxChanY the upper y channel
      */
-    public abstract void markArea(int minChanX, int maxChanX, int minChanY, int maxChanY);
+    public abstract void markArea(Point p1, Point p2);
     
     /**
      *Expand the region viewed.
      */
-    public void expand(int limX1, int limX2, int limY1, int limY2){
+    public void expand(Point p1, Point p2){
         int xll;    // x lower limit
         int xul;    // x upper limit
         int yll;    // y lower limit
         int yul;    // y upper limit
         
-        System.err.println("expand("+limX1+","+limX2+","+limY1+","+limY2+")");
-        if (limX1<=limX2){
-            xll=limX1;
-            xul=limX2;
+        if (p1.x<=p2.x){
+            xll=p1.x;
+            xul=p2.x;
         } else{
-            xll=limX2;
-            xul=limX1;
+            xll=p2.x;
+            xul=p1.x;
         }
         // check for beyond extremes and set to extremes
         if ( (xll<0)||(xll>sizeX-1) ) {
@@ -337,12 +339,12 @@ public abstract class Plot extends JPanel  {
         if ( (xul<0)||(xul>sizeX-1) ) {
             xul=sizeX-1;
         }
-        if (limY1<=limY2){
-            yll=limY1;
-            yul=limY2;
+        if (p1.y<=p2.y){
+            yll=p1.y;
+            yul=p2.y;
         } else{
-            yll=limY2;
-            yul=limY1;
+            yll=p2.y;
+            yul=p1.y;
         }
         // check for beyond extremes and set to extremes
         if ( (yll<0)||(yll>sizeY-1) ) {
@@ -519,7 +521,7 @@ public abstract class Plot extends JPanel  {
     /**
      *methods for getting histogram data
      */
-    public abstract double getCount(int channelX, int channelY);
+    public abstract double getCount(Point p);
     /**
      * Find the maximum number of counts in the region of interest
      */
