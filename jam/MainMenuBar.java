@@ -7,6 +7,7 @@ import jam.global.ComponentPrintable;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.io.FileOpenMode;
 import jam.io.ImpExp;
 import jam.io.ImpExpASCII;
 import jam.io.ImpExpORNL;
@@ -140,7 +141,7 @@ public class MainMenuBar extends JMenuBar {
 		}
 		
 		public void actionPerformed(ActionEvent ae){
-			if (hdfio.readFile(HDFIO.OPEN)) { //true if successful
+			if (hdfio.readFile(FileOpenMode.OPEN)) { //true if successful
 				jamMain.setSortModeFile(hdfio.getFileNameOpen());
 				DataControl.setupAll();
 				jamCommand.dataChanged();
@@ -159,12 +160,23 @@ public class MainMenuBar extends JMenuBar {
 		}
 		
 		public void actionPerformed(ActionEvent ae){
-			if (hdfio.readFile(HDFIO.RELOAD)) { //true if successful
+			if (hdfio.readFile(FileOpenMode.RELOAD)) { //true if successful
 				scalerControl.displayScalers();
 			}
 		}
 	}
 	
+	class AddHDF extends AbstractAction {	
+		AddHDF(){
+			super("Add counts(hdf)...");
+			this.setEnabled(false);
+		}
+		
+		public void actionPerformed(ActionEvent ae){
+			hdfio.readFile(FileOpenMode.ADD);
+		}
+	}
+
 	/**
 	 * Action for the File|Page Setup menu item.
 	 * 
@@ -267,6 +279,7 @@ public class MainMenuBar extends JMenuBar {
 	final private SaveHDF saveHDF;
 	final private OpenHDF openhdf;
 	final private ReloadHDF reloadhdf;
+	final private AddHDF addHDF=new AddHDF();
 	final private HDFIO hdfio;
 
 	private PageFormat mPageFormat=PrinterJob.getPrinterJob().defaultPage();
@@ -345,6 +358,7 @@ public class MainMenuBar extends JMenuBar {
 		reloadhdf.setEnabled(false);
 		file.add(reloadhdf).setAccelerator(
 		KeyStroke.getKeyStroke(KeyEvent.VK_O,ctrl_mask | Event.SHIFT_MASK));
+		file.add(addHDF);
 		saveHDF.setEnabled(false);
 		saveHDF.setEnabled(false);
 		file.add(saveHDF).setAccelerator(
@@ -665,6 +679,7 @@ public class MainMenuBar extends JMenuBar {
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
+			addHDF.setEnabled(true);
 		}
 		if (mode == JamMain.OFFLINE_DISK) {
 			cstartacq.setEnabled(false);
@@ -677,6 +692,7 @@ public class MainMenuBar extends JMenuBar {
 			openhdf.setEnabled(false);
 			saveHDF.setEnabled(false);
 			reloadhdf.setEnabled(true);
+			addHDF.setEnabled(true);
 			newClear.setEnabled(false);
 		}
 		if (mode == JamMain.REMOTE) { //remote display
@@ -690,6 +706,7 @@ public class MainMenuBar extends JMenuBar {
 			newClear.setEnabled(false);
 			openhdf.setEnabled(false);
 			reloadhdf.setEnabled(false);
+			addHDF.setEnabled(false);
 			impHist.setEnabled(false);
 		}
 		if (mode == JamMain.FILE) {
@@ -704,6 +721,7 @@ public class MainMenuBar extends JMenuBar {
 			openhdf.setEnabled(true);
 			saveHDF.setEnabled(true);
 			reloadhdf.setEnabled(false);
+			addHDF.setEnabled(true);
 			impHist.setEnabled(true);
 		}
 		if (mode == JamMain.NO_SORT) {
@@ -717,6 +735,7 @@ public class MainMenuBar extends JMenuBar {
 			newClear.setEnabled(true);
 			openhdf.setEnabled(true);
 			reloadhdf.setEnabled(false);
+			addHDF.setEnabled(false);
 			impHist.setEnabled(true);
 		}
 	}
