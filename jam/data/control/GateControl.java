@@ -362,15 +362,12 @@ Observer  {
      *
      */
     public void setup(){
-        //int type;
-
         String typeGate="gate";
         cgateModel.changeOccured();
         caddModel.changeOccured();
-        //get current state
+        /* get current state */
         currentHistogram = Histogram.getHistogram(status.getCurrentHistogramName());
         if (currentHistogram == null) {
-            //System.err.println("GateControl.setup(): currentHistogram is null.");
             /* There are many normal situations with no current histogram. */
             type=NONE;//undefined type
         } else if ((currentHistogram.getType()==Histogram.ONE_DIM_INT)||
