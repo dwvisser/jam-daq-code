@@ -4,8 +4,6 @@ package jam.io;
 import java.io.*;
 import java.awt.*;
 import java.util.Iterator;
-import java.util.Enumeration;
-import java.util.Vector;
 import jam.util.*;
 import jam.data.*;
 import jam.global.*;
@@ -240,13 +238,10 @@ public class HistogramIO implements FilenameFilter {
 	 */
 	public File getFile(String msg, String extension, int state)
 		throws ImpExpException {
-
-		File fileIn = null;
-
+		File fileIn = null;//default return value
 		try {
 			FileDialog fd = new FileDialog(frame, msg, state);
-
-			//use previous file and directory as default
+			/* use previous file and directory as default */
 			if ((fileName) != null) {
 				fd.setFile(fileName);
 			} else {
@@ -256,8 +251,7 @@ public class HistogramIO implements FilenameFilter {
 				fd.setDirectory(directoryName);
 			}
 			fd.setFilenameFilter(this);
-
-			//show file dialoge box to get file     	    
+			/* show file dialog box to get file */   	    
 			fd.show();
 			directoryName = fd.getDirectory(); //save current directory
 			fileName = fd.getFile();
@@ -270,9 +264,7 @@ public class HistogramIO implements FilenameFilter {
 						extension,
 						FileUtilities.FORCE);
 				fileIn = new File(directoryName, fileName);
-			} else {
-				fileIn = null;
-			}
+			} 
 			return fileIn;
 		} catch (UtilException ue) {
 			throw new ImpExpException(
