@@ -37,7 +37,8 @@ import javax.swing.SwingUtilities;
  */
 public final class HDFIO implements DataIO, JamFileFields {
 
-	private static String HDF_FILE_EXTENSION ="hdf";
+	private static final String HDF_FILE_EXT ="hdf";
+	
     /**
      * Last file successfully read from or written to for all instances of
      * HDFIO.
@@ -52,9 +53,6 @@ public final class HDFIO implements DataIO, JamFileFields {
             .userNodeForPackage(HDFIO.class);
 
     private static final String LFILE_KEY = "LastValidFile";
-
-    static private final List EMPTY_LIST = Collections
-            .unmodifiableList(new ArrayList());
 
     static {
         lastGoodFile = new File(PREFS.get(LFILE_KEY, System
@@ -252,7 +250,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         }
         //Append .hdf to file name
         String path =file.getParent();        
-        String fileName = FileUtilities.changeExtension(file.getName(), HDF_FILE_EXTENSION, FileUtilities.APPEND_ONLY);
+        String fileName = FileUtilities.changeExtension(file.getName(), HDF_FILE_EXT, FileUtilities.APPEND_ONLY);
         String fileFullName = path+File.separator+fileName;        
         File appendFile = new File(fileFullName);
         
