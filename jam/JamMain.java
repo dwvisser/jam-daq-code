@@ -624,6 +624,7 @@ public class JamMain extends JFrame implements AcquisitionStatus, Observer {
 		//histogram chooser
 		final JPanel pCenter = new JPanel(new GridLayout(1, 0));
 		histogramChooser = new JComboBox(new HistogramComboBoxModel());
+		histogramChooser.setRenderer(new HistogramListCellRenderer());
 		histogramChooser.setMaximumRowCount(30);
 		histogramChooser.setSelectedIndex(0);
 		histogramChooser.setToolTipText(
