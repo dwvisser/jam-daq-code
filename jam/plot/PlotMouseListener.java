@@ -13,5 +13,5 @@ public interface PlotMouseListener{
      * @param pChannel location of click in channel coordinates
      * @param pPixel location of click in graphics coordinates
      */
-    void plotMousePressed(Point pChannel, Point pPixel);
+    void plotMousePressed(Bin pChannel, Point pPixel);
 }
