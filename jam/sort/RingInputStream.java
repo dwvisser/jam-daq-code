@@ -1,7 +1,7 @@
 /*
  */
 package jam.sort;
-import java.io.InputStream;
+
 /**
  * This class takes a buffer and creates from it a InputStream.
  * The buffers are not copied but referenced so you must make
@@ -34,12 +34,6 @@ public class RingInputStream extends java.io.InputStream {
      */
     private int count;
 
-    /**
-     * Creates InputStream from the specified array of bytes.
-     */
-    public RingInputStream() {
-    }
-    
     /**
      * Load a buffer to read.
      * @param buf	The input buffer (not copied)     
