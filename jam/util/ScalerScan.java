@@ -246,7 +246,7 @@ public final class ScalerScan implements JamHDFFields {
 		final VdataDescription VH =
 			VdataDescription.ofName(
 					DataObject.ofType(DataObject.DFTAG_VH),
-				SCALER_SECTION_NAME);
+				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
@@ -275,7 +275,7 @@ public final class ScalerScan implements JamHDFFields {
 		final VdataDescription VH =
 			VdataDescription.ofName(
 					DataObject.ofType(DataObject.DFTAG_VH),
-				SCALER_SECTION_NAME);
+				SCALER_SECT);
 		//only the "scalers" VH (only one element) in the file
 		if (VH != null) {
 			final Vdata VS =
