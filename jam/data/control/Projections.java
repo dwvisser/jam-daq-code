@@ -167,10 +167,7 @@ Observer {
             }
         } catch (DataException je) {
             messageHandler.errorOutln( je.getMessage() );
-        } catch (GlobalException ge) {
-            messageHandler.errorOutln(getClass().getName()+
-            ".actionPerformed(): "+ge);
-        }
+        } 
     }
 
     /**
@@ -343,7 +340,7 @@ Observer {
     /**
      * Does the work of projecting a histogram
      */
-    private void project() throws DataException, GlobalException {
+    private void project() throws DataException {
         Histogram hto;
         String name,state,typeProj;
         double [][] counts2d;
@@ -440,7 +437,7 @@ Observer {
     }
 
 
-    double [] projectX(double [][] inArray, int outLength, Gate gate) throws DataException {
+    double [] projectX(double [][] inArray, int outLength, Gate gate) {
 		double [] out = new double [outLength];
         for (int k=0; k<outLength; k++) {
             out[k]=0;
@@ -455,7 +452,7 @@ Observer {
         return out;
     }
 
-    double [] projectY(double [][] inArray, int outLength, Gate gate) throws DataException {
+    double [] projectY(double [][] inArray, int outLength, Gate gate) {
 		double [] out = new double [outLength];
         for (int k=0; k<outLength; k++) {
             out[k]=0;
