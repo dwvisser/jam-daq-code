@@ -2,7 +2,6 @@
  *
  */
 package jam.fit;
-import java.util.Vector;
 
 /**
  * This abstract class uses <code>NonLinearFit</code> to fit a single gaussian peak with 
