@@ -7,12 +7,10 @@ package jam.plot;
 * @version 0.5
 * @author Ken Swartz
 */
-public class Tickmarks {
+final class Tickmarks {
 
 	private static final int MIN_NUMBER_TICKS = 10;
-	public static final int MAXIMUM_COUNTS = 1000000000;
-	//dont go on for ever in loop
-
+	
 	static final int MAJOR = 0;
 	static final int MINOR = 1;
 
@@ -20,7 +18,7 @@ public class Tickmarks {
 	private int countInDecadeMin;
 	private int countInDecadeMax;
 
-	/**
+	/* non-javadoc:
 	 * Get an array indicating where the Tickmark should be given an
 	 * lower limit, upper limit, and scale (Log or Linear) and  histogram 
 	 * type either one or 2 d
@@ -49,7 +47,7 @@ public class Tickmarks {
 		return ticks;
 	}
 
-	/** 
+	/* non-javadoc:
 	 * Figure out ticks for linear scale.    
 	 */
 	private int[] ticksLinear(int lowerLimit, int upperLimit) {
@@ -64,14 +62,14 @@ public class Tickmarks {
 		return tempTick;
 	}
 	
-	/** 
+	/* non-javadoc:
 	 *  Tick spacing for linear scale.   
 	 */
 	private int tickSpace(int lowerLimit, int upperLimit) {
 		final int range = upperLimit - lowerLimit + 1;
 		int tickSpace = 1;
 		//loop trying succesively bigger tick spacing
-		for (int i = 1; i < MAXIMUM_COUNTS; i *= 10) {
+		for (int i = 1; i < Constants.MAXIMUM_COUNTS; i *= 10) {
 			tickSpace = i;
 			if ((tickSpace * MIN_NUMBER_TICKS) >= range){
 				break;
@@ -88,7 +86,7 @@ public class Tickmarks {
 		return tickSpace;
 	}
 	
-	/** 
+	/* non-javadoc:
 	 * Placement of minimum tick for linear         
 	 */
 	private int tickMin(int lowerLimit, int tickSpace) {
@@ -107,7 +105,7 @@ public class Tickmarks {
 		return tempTickMin;
 	}
 	
-	/** 
+	/* non-javadoc:
 	 * Placement of maximum tick for linear         
 	 */
 	private int tickMax(int upperLimit, int tickSpace) {
@@ -121,7 +119,7 @@ public class Tickmarks {
 		return tempTickMax;
 	}
 	
-	/**    
+	/* non-javadoc:
 	 *  tick marks at new decades use ticksLog 
 	 */
 	private int[] ticksLogMajor(int lowerLimit, int upperLimit) {
@@ -161,7 +159,7 @@ public class Tickmarks {
 		return outTicks;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Get tick placement for Log Scaler
 	 * lower limit upperLimit
 	 *
