@@ -222,7 +222,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
                 fitText=calibFunction.getFormula();
                 currentHist.setCalibration(calibFunction);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getName().trim()+" with "+
+                msghdlr.messageOutln("Calibrated histogram "+currentHist.getName().trim()+" with "+
                 fitText);
             } else {
                 msghdlr.errorOutln("Need at least 2 points [Calibrate]");
