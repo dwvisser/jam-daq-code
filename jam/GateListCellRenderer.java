@@ -3,14 +3,13 @@ package jam;
 import jam.data.Gate;
 
 import java.awt.Component;
-import java.awt.Frame;
-import java.net.*;
+import java.net.URL;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
-import javax.swing.DefaultListCellRenderer;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.*;
 
 
 /**
