@@ -122,7 +122,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
             }
         }
         );
-        dzero.add(pZero);
+        dzc.add(pZero);
         dzero.pack();
         setup();
     }
@@ -204,7 +204,7 @@ public final class ScalerControl extends DataControl implements ActionListener, 
     public void setup(){
         sortScalers=true;
         int numberScalers=Scaler.getScalerList().size();
-        Container cddisp=ddisp.getContentPane();
+        //Container cddisp=ddisp.getContentPane();
         //ddisp.setResizable(true);
 
         //cddisp.removeAll();
