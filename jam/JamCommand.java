@@ -10,13 +10,11 @@ import jam.data.control.Manipulations;
 import jam.data.control.MonitorControl;
 import jam.data.control.ParameterControl;
 import jam.data.control.Projections;
-import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.io.hdf.HDFIO;
-import jam.io.hdf.OpenSelectedHistogram;
 import jam.plot.Display;
 
 import java.awt.event.ActionEvent;
@@ -55,7 +53,6 @@ public class JamCommand
 
 	/* classes for reading and writing histograms */
 	private final HDFIO hdfio;
-	private final OpenSelectedHistogram openSelectedHist;
 	private final jam.io.BatchExport batchexport;
 
 	/* control classes */
@@ -106,7 +103,6 @@ public class JamCommand
 		/* io classes */
 		hdfio = new HDFIO(jamMain, console);
 		batchexport = new jam.io.BatchExport(jamMain, console);
-		openSelectedHist = new OpenSelectedHistogram(jamMain, console);
 		/* communication */
 		frontEnd = new VMECommunication(jamMain, this, broadcaster, console);
 		/* data bases manipulation */
@@ -189,10 +185,6 @@ public class JamCommand
 				display.setPreference(
 					Display.Preferences.WHITE_BACKGROUND,
 					true);
-			} else if ("openselectedhist".equals(incommand)) {				
-				openSelectedHist.open();
-				broadcaster.broadcast(BroadcastEvent.HISTOGRAM_ADD);
-				jamMain.repaint();
 			} else if ("batchexport".equals(incommand)) {
 				batchexport.show();
 			} else if ("online".equals(incommand)) {
@@ -220,7 +212,7 @@ public class JamCommand
 			} else if ("caldisp".equals(incommand)) {
 				calibDisplay.show();
 			} else if ("calfitlin".equals(incommand)) {
-				calibFit.showLinFit();
+				calibFit.show();
 			} else if ("gatenew".equals(incommand)) {
 				gateControl.showNew();
 			} else if ("gateadd".equals(incommand)) {
