@@ -2,40 +2,59 @@
 <HTML>
 <HEAD>
    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-   <META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
    <TITLE>jam Manual--Front End Protocol</TITLE>
    <LINK REL=STYLESHEET TYPE="text/css" HREF="manualstyle.css" TITLE="Manual Style">
-<meta name="Microsoft Border" content="none, default">
 </HEAD>
 <BODY>
 <H2>Front End Protocol</H2>
-<h3>Notes</h3>
-<dl>
-<dt>6/16/98 KBS</dt>
-<dd>Added Reset to list of commands.<dd>
-
-<dt>4/27/98 DWV</dt>
-<dd>Added a command to the protocol indicating end-of-run, distinct from just
-stopping acquisition temporarily.</dd>
-
-<dt>4/8/98 JB</dt>
-<dd>This file describes the communication in the jam data acquisition program between the host (SUN) computer and the VME computer. The communication is done using udp sockets, udp sockets were chosen for their ease of use. The communication is expected to be realiable, not warranting the over head of tcp 
-sockets. There are replies to requests making it easy to verify that communication and execution is occuring. The udp packets are 1024 bytes long.</dd>
-</dl>
+<p>Jam and the front end computer running the real-time acquisition of data communicate using UDP/IP packets, often referred herein as "datagrams". For simplicity here, the front end computer will be referred to as a VME controller, though it need not be in practice. At University of Washington's <a href="http://www.npl.washington.edu/">CENPA</a>, <a href="mailto:swanson@npl.washington.edu">Erik Swanson</a> has developed a PC-based program to control a CAMAC crate, and which communicates with a local Jam process through these same datagrams.</p>
 <h3>Form of host-to-VME Command datagrams</h3>
 <table>
 <tr>
 <td>Bytes</td><td>Item</td>
 </tr> 
 <tr> 
-<td>0-3</td><td>An int undefined / reserved for future use </td>
+<td>0-3</td><td>A 4-byte (big endian) signed int indicating the type of packet</td>
 </tr>
 <tr>
 <td>4-80</td><td>A NUL ('\0') terminated string command-line-type command. e.g: <code>command arg1 arg2</code></td>
 </tr>
 </table>
 
-<p>Note: Commands and arguments <em>are</em> case-sensitive.</p>
+<h4>Datagrams sent by Jam for "Setup Online" when the sort routine uses vmeMap</h4>
+<p>In the following table, N is the number of defined parameters, R is the number of TDC's where ranges are specified, baseAddress is the base address of each ADC or TDC given in hexadecimal and prefixed by "0x", unitChannel is the channel within the ADC or TDC to be read, and range is the number to be sent to the range register in the TDC. The quotes around the strings are not actually sent, but a null character is sent immediately after the string.</p>
+
+<p>It is expected that all channels in the ADC's and TDC's <em>other than those defined here</em> will be disabled.</p>
+<hr>
+<table>
+    <tr><td>Packet#</td><td>integer</td><td>string</td></tr>
+    <tr><td>1</td><td>0</td><td>"debug on" or "debug off", depending on user preferences</td></tr>
+    <tr><td>2</td><td>0</td><td>"verbose on" or "verbose off", depending on user preferences</td></tr>
+    <tr><td>3</td><td>5</td>
+    <td>
+    "N<br>
+    slot(param1) baseAddress(param1) unitChannel(param1)<br>
+    ...
+    slot(paramN) baseAddress(paramN) unitChannel(paramN)<br>
+    R<br>
+    baseAddress(tdc1) range(tdc1)<br>
+    ...<br>
+    baseAddress(tdcR) range(tdcR)<br>
+    "</td></tr>
+</table>
+<h4>Datagram sent by Jam when "start" or "Begin" is clicked</h4>
+<p>Clicking start simply sends this packet. Clicking Begin will first cause Jam to open an event file, write a header to it, optionally zero the histograms and optionally send a datagram to request the scalers be zeroed, then finally send the packet shown below.</p>
+<hr>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"START"</td>
+</table>
+<h4>Datagram sent by Jam to request zeroing of scalers</h4>
+<hr>
+<table>
+<tr><td>integer</td><td>string</td></tr>
+<tr><td>0</td><td>"count zero"</td>
+</table>
 
 
 <h3>Form of VME-to-host reply datagrams</h3>
@@ -90,7 +109,8 @@ sockets. There are replies to requests making it easy to verify that communicati
 </table>
          	
 <h2>Commands</h2>
-<p><a name="note">*</a> - not yet implemented</p>	
+<p>Note: Commands and arguments <em>are</em> case-sensitive.</p>
+<p><a name="note">*</a> - indicates command not yet implemented</p>	
 
 <dl>
 <dt><code>reset</code></dt>
@@ -144,7 +164,7 @@ sockets. There are replies to requests making it easy to verify that communicati
 <dd>Flush out the data buffer and send it.</dd>
 
 <dt><code><a href="vmeprotocol.html#note">*</a>loadRoutine [user]</code></dt>
-<dd>Load a user routine. (This routine could be interupt driven.</dd>
+<dd>Load a user routine. (This routine could be interrupt driven, for instance.)</dd>
 
 <dt><code><a href="vmeprotocol.html#note">*</a>execute [user]</code></dt>
 <dd>Execute the user routine</dd>
@@ -164,6 +184,23 @@ sockets. There are replies to requests making it easy to verify that communicati
 						
 <dt><code>debug off</code></dt>
 <dd>Sets mode to NOT debugging, see debug.</dd>
+</dl>
+<h3>Change Log</h3>
+<dl>
+
+<dt>10 Dec 2003 DWV</dt>
+<dd>Added a complete description of packets sent by Jam to VME when acquisition is set up.</dd>
+
+<dt>6/16/98 KBS</dt>
+<dd>Added Reset to list of commands.<dd>
+
+<dt>4/27/98 DWV</dt>
+<dd>Added a command to the protocol indicating end-of-run, distinct from just
+stopping acquisition temporarily.</dd>
+
+<dt>4/8/98 JB</dt>
+<dd>This file describes the communication in the jam data acquisition program between the host (SUN) computer and the VME computer. The communication is done using udp sockets, udp sockets were chosen for their ease of use. The communication is expected to be realiable, not warranting the over head of tcp 
+sockets. There are replies to requests making it easy to verify that communication and execution is occuring. The udp packets are 1024 bytes long.</dd>
 </dl>
 </BODY>
 </HTML>
