@@ -70,8 +70,8 @@ public class JamProperties {
 	public final static String FRONTEND_DEBUG = "frontend.debug";
 	public final static String NO_FILL_2D = "graph.nofill2d";
 	public final static String GRADIENT_SCALE = "graph.gradientScale";
-	private final String NO_ERRORS="No error messages.";
-	private final String NO_WARNINGS="No warning messages.";
+	private final static String NO_ERRORS="No error messages.";
+	private final static String NO_WARNINGS="No warning messages.";
 	
 	/**
 	 * Property for determining whether Jam handles writing of event data (JAM), or

@@ -20,17 +20,17 @@ public class GaussianFit extends NonLinearFit {
 	/**
 	 * magic number for calculating
 	 */
-	private final double a = 0.93911;
+	private static final double a = 0.93911;
 
 	/**
 	 * magic number for calculating
 	 */
-	private final double b = 2.77066;
+	private static final double b = 2.77066;
 
 	/**
 	 * magic number for calculating
 	 */
-	private final double c = 5.20391;
+	private static final double c = 5.20391;
 
 	/**
 	 * magic number for calculating
