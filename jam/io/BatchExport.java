@@ -2,10 +2,9 @@ package jam.io;
 
 import jam.JamMain;
 import jam.data.Histogram;
-import jam.global.MessageHandler;
-import jam.global.RTSI;
-import jam.global.JamStatus;
+import jam.global.*;
 import java.awt.*;
+import jam.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -105,10 +104,7 @@ public class BatchExport extends JDialog implements ActionListener {
 		for (int i = 0; i < exportClasses.length; i++) {
 			exportChoice[i] =
 				new JRadioButton(
-					exportClasses[i].getFormatDescription()
-						+ " ("
-						+ exportClasses[i].getFileExtension()
-						+ ")");
+					exportClasses[i].getFormatDescription());
 			exportChoice[i].setToolTipText("Select to export in "
 			+exportClasses[i].getFormatDescription()+" format.");
 			exportChoice[i].addActionListener(this);
@@ -240,7 +236,8 @@ public class BatchExport extends JDialog implements ActionListener {
 					files[i] =
 						new File(
 							dir,
-							hist[i].getName().trim() + out.getFileExtension());
+							FileUtilities.setExtension(hist[i].getName().trim(),
+							out.getDefaultExtension(),FileUtilities.APPEND_ONLY));
 					already |= files[i].exists();
 				}
 				if (already) {

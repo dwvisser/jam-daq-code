@@ -1,8 +1,20 @@
 package jam.io;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
+
 import java.awt.Frame;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Imports and exports histograms in ASCII channel-space-counts-return format.
@@ -48,13 +60,21 @@ public class ImpExpASCII extends ImpExp {
 	public ImpExpASCII() {
 		super();
 	}
-
-	public String getFileExtension() {
-		return ".dat";
+	
+	private static final String [] exts={"dat","txt"};
+	private static final ExtensionFileFilter filter=new ExtensionFileFilter(exts, 
+	"Text file");
+	
+	protected FileFilter getFileFilter() {
+		return filter;
+	}
+	
+	protected String getDefaultExtension(){
+		return filter.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return "Text file";
+		return filter.getDescription();
 	}
 
 	/**
@@ -63,7 +83,7 @@ public class ImpExpASCII extends ImpExp {
 	 * @exception   ImpExpException	    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
 	public boolean openFile() throws ImpExpException {
-		return openFile("Import text file ", "dat");
+		return openFile("Import text file ");
 	}
 
 	/**
@@ -73,7 +93,7 @@ public class ImpExpASCII extends ImpExp {
 	 * @exception   ImpExpException all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
 	public void saveFile(Histogram hist) throws ImpExpException {
-		saveFile("Export text file ", "dat", hist);
+		saveFile("Export text file ", hist);
 	}
 
 	/**

@@ -5,11 +5,14 @@ import jam.data.Scaler;
 import jam.data.func.CalibrationFunction;
 import jam.data.func.PolynomialFunction;
 import jam.global.MessageHandler;
+
 import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.swing.filechooser.FileFilter;
 /**
  * Imports and Exports Histograms files using the
  * XSYS format.
@@ -63,12 +66,18 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 		super();
 	}
 
-	public String getFileExtension() {
-		return ".dat";
+	private static final ExtensionFileFilter filter=new ExtensionFileFilter("dat", 
+	"TUNL's XSYS");
+	protected FileFilter getFileFilter() {
+		return filter;
 	}
 
+	protected String getDefaultExtension(){
+		return filter.getExtension(0);
+	}
+	
 	public String getFormatDescription() {
-		return "XSYS";
+		return filter.getDescription();
 	}
 
 	/**
@@ -77,7 +86,7 @@ public class ImpExpXSYS extends ImpExp implements XsysHeader {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public boolean openFile() throws ImpExpException {
-		return openFile("Import XSYS file ", "dat");
+		return openFile("Import XSYS file ");
 	}
 
 	/**

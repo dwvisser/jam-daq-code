@@ -1,6 +1,7 @@
 package jam.io;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
+
 import java.awt.Frame;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 /** 
  * Abstract class for importing and exporting histograms.
  * Gives you methods to open files and returns either an input
@@ -28,39 +30,28 @@ public abstract class ImpExp {
 	/**
 	 * size of read/write buffers
 	 */
-	private final static int BUFFER_SIZE = 256 * 256 * 4;
-	//size 2d array and int
+	protected final static int BUFFER_SIZE = 256 * 256 * 4;
 
 	/**
 	 * load or save option on file dialogs
 	 */
-	static final int LOAD = 137;
-	static final int SAVE = 314;
+	private static final int LOAD = 137;
+	private static final int SAVE = 314;
 
 	/**
 	 * so the programmer may set display options
 	 */
-	protected Frame frame;
+	protected final Frame frame;
 
 	/**
 	 * to be used for printing messages to the <bold>jam</bold> msgHandler
 	 */
-	protected MessageHandler msgHandler;
+	protected final MessageHandler msgHandler;
 
 	/**
 	 * the last file accessed, null goes to users home directory
 	 */
 	protected File lastFile = null;
-
-	/**
-	 * file dialog title
-	 */
-	protected String dialogTitle;
-
-	/**
-	 * file dialog extension
-	 */
-	protected String dialogExtension;
 
 	/**
 	 * Class constructor.
@@ -80,6 +71,7 @@ public abstract class ImpExp {
 	 * for batch exports.
 	 */
 	public ImpExp(){
+		this(null, null);
 	}
 
 	/**
@@ -100,13 +92,6 @@ public abstract class ImpExp {
 	  */
 	public abstract void saveFile(Histogram hist) throws ImpExpException;
 
-	/**
-	 * Gets the default file extension used with this file format.
-	 * 
-	 * @return file extension (with the period)
-	 */
-	public abstract String getFileExtension();
-	
 	/**
 	 * Gets a short description of the file format this class works with.
 	 * 
@@ -145,13 +130,12 @@ public abstract class ImpExp {
 	 * @return	whether file was successfully read
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
 	 */
-	protected boolean openFile(String msg, String extension) {
+	protected boolean openFile(String msg) {
 		File inFile=null;
-		
 		boolean rval=false; //default return value
 		try {
 			/* open file dialog */    		
-			inFile = getFileOpen(msg, extension);
+			inFile = getFileOpen(msg);
 			if (inFile != null) { // if Open file was  not canceled
 				lastFile = inFile;
 				FileInputStream inStream = new FileInputStream(inFile);
@@ -184,9 +168,9 @@ public abstract class ImpExp {
 	 * @see	    #saveFile(Histogram)
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the msgHandler
 	 */
-	protected void saveFile(String msg, String extension, Histogram hist)
+	protected void saveFile(String msg, Histogram hist)
 		throws ImpExpException {
-		File outFile = getFileSave(msg, extension);
+		File outFile = getFileSave(msg);
 		try {// open file dialog		 
 			if (outFile != null) { // if Save file dialog was  not canceled
 				lastFile = outFile;
@@ -228,9 +212,9 @@ public abstract class ImpExp {
 	 * @param	    extension	    file extension to suggest to user
 	 * @return			    a <code>File</code> to read from
 	 */
-	protected File getFileOpen(String msg, String extension)
+	protected File getFileOpen(String msg)
 		throws ImpExpException {
-		return getFile(msg, extension, ImpExp.LOAD);
+		return getFile(msg, ImpExp.LOAD);
 	}
 
 	/**
@@ -240,9 +224,9 @@ public abstract class ImpExp {
 	 * @param	    extension	    file extension to suggest to user
 	 * @return			    a <code>File</code> to save to
 	*/
-	protected File getFileSave(String msg, String extension)
+	protected File getFileSave(String msg)
 		throws ImpExpException {
-		return getFile(msg, extension, ImpExp.SAVE);
+		return getFile(msg, ImpExp.SAVE);
 	}
 
 	/**
@@ -255,13 +239,13 @@ public abstract class ImpExp {
 	 * @param	    state	    <code>ImpExp.LOAD</code> or <code>ImpExp.SAVE</code>
 	 * @return			    a <code>File</code> chosen by the user, null if dialog cancelled
 	 */
-	protected File getFile(String msg, String extension, int state)
+	protected File getFile(String msg, int state)
 		throws ImpExpException {
 		File file = null;
 		int option;
 		JFileChooser jfile = new JFileChooser(lastFile);
 		jfile.setDialogTitle(msg);
-		jfile.setFileFilter(new ExtensionFileFilter(extension));
+		jfile.setFileFilter(getFileFilter());
 		if (state == LOAD) {
 			option = jfile.showOpenDialog(frame);
 		} else if (state == SAVE) {
@@ -278,6 +262,9 @@ public abstract class ImpExp {
 		}
 		return file;
 	}
+	
+	abstract protected FileFilter getFileFilter();
+	abstract protected String getDefaultExtension();
 
 	/**
 	 * Return the name of the file that was entered using the <code>FileDialog</code> box.

@@ -1,12 +1,15 @@
 package jam.io;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
+
 import java.awt.Frame;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Imports and Exports Spectra (Histograms) using the
@@ -29,14 +32,21 @@ public class ImpExpSPE extends ImpExp {
 	public ImpExpSPE() {
 		super();
 	}
+	
+	private static final ExtensionFileFilter filter=new ExtensionFileFilter("spe", 
+	"Radware gf3");
+	protected FileFilter getFileFilter() {
+		return filter;
+	}
 
-	public String getFileExtension() {
-		return ".spe";
+	protected String getDefaultExtension(){
+		return filter.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return "Radware gf3";
+		return filter.getDescription();
 	}
+
 
 	/**
 	 * Prompts for and opens a file.
@@ -44,7 +54,7 @@ public class ImpExpSPE extends ImpExp {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public boolean openFile() throws ImpExpException {
-		return openFile("Import RadWare .spe file ", "spe");
+		return openFile("Import RadWare .spe file ");
 	}
 
 	/**
@@ -58,7 +68,7 @@ public class ImpExpSPE extends ImpExp {
 				msgHandler.errorOutln(
 					"Cannot write out 2 dimensional spe files");
 		} else {
-			saveFile("Export RadWare .spe file ", "spe", hist);
+			saveFile("Export RadWare .spe file ", hist);
 		}
 
 	}

@@ -1,15 +1,16 @@
 package jam.io;
 
-import javax.swing.filechooser.*;
 import java.io.File;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Copied from SimpleFileFilter pages 363-364 in O'Reilly's <it>Java Swing</it>.
  */
 public class ExtensionFileFilter extends FileFilter {
     
-	String [] extensions;
-	String description;
+	private final String [] extensions;
+	private final String description;
 	
 	/**
 	 * Creates and file filter for a certain extension. The description
@@ -31,6 +32,10 @@ public class ExtensionFileFilter extends FileFilter {
 		this(new String[] {ext}, descr);
     }
     
+    public String getExtension(int i){
+    	return extensions[i];
+    }
+    
 	/**
 	 * Creates and file filter for a list of extensions and using a specific description. 
 	 *
@@ -39,12 +44,23 @@ public class ExtensionFileFilter extends FileFilter {
 	 */    
     public ExtensionFileFilter(String [] exts, String descr){
     	//clone and lowercase the extensions
-    	extensions = new String[exts.length];
-    	for (int i=exts.length -1; i >= 0;  i--){
+    	final int len=exts.length;
+    	extensions = new String[len];
+    	for (int i=len-1; i >= 0;  i--){
     		extensions[i]=exts[i].toLowerCase();
     	}
-    	//make sure we have a valid (if simplistic) description
-    	description = (descr == null ? "*."+exts[0]+" files" : descr);
+    	final StringBuffer sb=(descr==null) ? new StringBuffer() :
+    	new StringBuffer(descr);
+    	sb.append(" (");
+		for (int i=0; i < len;  i++){
+			sb.append("*.").append(extensions[i]);
+			if (i != (len-1)){
+				sb.append(", ");
+			} else {
+				sb.append(')');
+			}
+		}
+		description=sb.toString();
     }
     
     public boolean accept(File f){

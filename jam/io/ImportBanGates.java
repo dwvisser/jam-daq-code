@@ -1,16 +1,19 @@
 package jam.io;
 
+import jam.JamMain;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
-import jam.JamMain;
+
 import java.awt.Polygon;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * 
@@ -31,7 +34,7 @@ public class ImportBanGates extends ImpExp {
 	 * @see jam.io.ImpExp#openFile()
 	 */
 	public boolean openFile() throws ImpExpException {
-		return openFile("Open BAN file", "ban");
+		return openFile("Open BAN file");
 	}
 
 	/**
@@ -41,18 +44,21 @@ public class ImportBanGates extends ImpExp {
 		msgHandler.warningOutln("Save BAN not implemented.");
 	}
 
-	/**
-	 * @see jam.io.ImpExp#getFileExtension()
-	 */
-	public String getFileExtension() {
-		return ".ban";
+	private static final ExtensionFileFilter filter=new ExtensionFileFilter("ban", 
+	"ORNL Banana Gates");
+	protected FileFilter getFileFilter() {
+		return filter;
+	}
+	
+	protected String getDefaultExtension(){
+		return filter.getExtension(0);
 	}
 
 	/**
 	 * @see jam.io.ImpExp#getFormatDescription()
 	 */
 	public String getFormatDescription() {
-		return "BAN file--ORNL banana gates";
+		return filter.getDescription();
 	}
 
 	/**

@@ -5,11 +5,13 @@ import jam.util.FileUtilities;
 import jam.util.StringUtilities;
 
 import java.awt.Frame;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Imports and exports Oak Ridge (Milner) formatted files, as used by <code>DAMM</code> and
@@ -104,12 +108,18 @@ public class ImpExpORNL extends ImpExp {
 		super();
 	}
 
-	public String getFileExtension() {
-		return ".drr";
+	private static final String [] exts={"his","drr"};
+	private static final ExtensionFileFilter filter=new ExtensionFileFilter(exts, 
+	"Oak Ridge DAMM");
+	protected FileFilter getFileFilter() {
+		return filter;
+	}
+	protected String getDefaultExtension(){
+		return filter.getExtension(0);
 	}
 
 	public String getFormatDescription() {
-		return "Oak Ridge DAMM";
+		return filter.getDescription();
 	}
 
 	/**
@@ -119,7 +129,7 @@ public class ImpExpORNL extends ImpExp {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public boolean openFile() throws ImpExpException {
-		return openFile("Import ORNL file ", "drr");
+		return openFile("Import ORNL file ");
 	}
 
 	/**
@@ -128,7 +138,7 @@ public class ImpExpORNL extends ImpExp {
 	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
 	 */
 	public void saveFile(Histogram hist) throws ImpExpException {
-		saveFile("Export ORNL file (use .drr explicitly)", "drr", hist);
+		saveFile("Export ORNL", hist);
 	}
 
 	/**
@@ -605,4 +615,44 @@ public class ImpExpORNL extends ImpExp {
 	boolean batchExportAllowed() {
 		return false;
 	}
+	
+	/**
+	 * Opens a file with a specified dialog box title bar and file extension.
+	 * It is usually called by <code>openFile</code> in subclasses of <code>ImpExp</code>.
+	 *
+	 * @param	    msg		    text to go on title bar of dialog box
+	 * @param	    extension	    file extension to suggest to user
+	 * @return	whether file was successfully read
+	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> go to the msgHandler
+	 */
+	protected boolean openFile(String msg) {
+		File inFile=null;
+		boolean rval=false; //default return value
+		try {
+			/* open file dialog */    		
+			inFile = getFileOpen(msg);
+			if (inFile != null) { // if Open file was  not canceled
+				lastFile = inFile;
+				final File f= (inFile.getName().endsWith("his")) ?
+				new File(inFile.getParent(),FileUtilities.setExtension(inFile.getName(),
+				"drr", FileUtilities.FORCE)) : inFile;
+				FileInputStream inStream = new FileInputStream(f);
+				BufferedInputStream inBuffStream = new BufferedInputStream(inStream, BUFFER_SIZE);
+				if (msgHandler != null) msgHandler.messageOut(
+					msg + " " + getFileName(inFile),
+					MessageHandler.NEW);
+				/* implementing class implement following method */
+				readData(inBuffStream);
+				if (msgHandler != null) msgHandler.messageOut(" done!", MessageHandler.END);
+				inBuffStream.close();
+				rval = true;
+			}
+		} catch (IOException ioe) {
+			msgHandler.errorOutln("Problem handling file \""+inFile.getPath()+"\": "+ioe.getMessage());
+		} catch (ImpExpException iee) {
+			msgHandler.errorOutln("Problem while importing or exporting: "+iee.getMessage());
+		}
+		return rval;
+	}
+
 }
