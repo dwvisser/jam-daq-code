@@ -38,7 +38,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	private JDialog dl;
 	//private JTextField textFitFile;
 	private String fitDirectory;
-	private String fitName;
+//	private String fitName;
 	private JComboBox chooseFit;
 
 	public LoadFit(JamMain jamMain, Display display, MessageHandler console) {
@@ -148,7 +148,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		fd.show();
 		//save current values
 		fitDirectory = fd.getDirectory(); //save current directory
-		fitName = fd.getFile();
+		String fitName = fd.getFile();
 		fd.dispose();
 		return fitName;
 	}
@@ -156,27 +156,27 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 	/**
 	 * Load a fit routine.
 	 */
-	private void makeFit(String fitName) throws JamException {
+	private void makeFit(String _fitName) throws JamException {
 		int indexPeriod;
 
 		try {
 			// create fit class
-			fitClass = (Fit) Class.forName(fitName).newInstance();
+			fitClass = (Fit) Class.forName(_fitName).newInstance();
 		} catch (ClassNotFoundException ce) {
 			fitClass = null;
-			throw new JamException(" Fit Class not found : " + fitName);
+			throw new JamException(" Fit Class not found : " + _fitName);
 		} catch (InstantiationException ie) {
 			fitClass = null;
-			throw new JamException(" Fit Class cannot instantize: " + fitName);
+			throw new JamException(" Fit Class cannot instantize: " + _fitName);
 		} catch (IllegalAccessException iae) {
 			fitClass = null;
-			throw new JamException(" Fit Class cannot Access: " + fitName);
+			throw new JamException(" Fit Class cannot Access: " + _fitName);
 		}
 		//add fit function to menu
-		indexPeriod = fitName.lastIndexOf(".");
-		fitName = fitName.substring(indexPeriod + 1);
-		fitList.put(fitName, fitClass);
-		jamMain.addFit(fitName);
+		indexPeriod = _fitName.lastIndexOf(".");
+		String fitNameFront = _fitName.substring(indexPeriod + 1);
+		fitList.put(fitNameFront, fitClass);
+		jamMain.addFit(fitNameFront);
 		try {
 			fitClass.createDialog((Frame) jamMain, display, msgHandler);
 		} catch (FitException fe) {
@@ -188,7 +188,7 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		fitClass.show();
 	}
 	
-	private Vector getFitClassNames() {
+	private Object [] getFitClassNames() {
 		Class temp=null;
 		Set set = jam.global.RTSI.find("jam.fit", Fit.class);
 		set.remove(Fit.class);
@@ -204,6 +204,6 @@ public class LoadFit extends WindowAdapter implements ActionListener {
 		for (Iterator it = set.iterator(); it.hasNext(); temp = (Class) it.next(),i++) {
 			rval.add(temp.getName());
 		}
-		return rval;
+		return rval.toArray();
 	}
 }
