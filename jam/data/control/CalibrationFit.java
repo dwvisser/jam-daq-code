@@ -229,7 +229,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
         tChannel =new JTextField[NUMBER_POINTS];
         cUse =new JCheckBox[NUMBER_POINTS];
         for ( int i=0; i<NUMBER_POINTS; i++ ){
-            pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
+            pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
             pAllPoints.add(pPoint[i]);
             pPoint[i].add(new JLabel("Energy"));
             tEnergy[i] =new JTextField("");
@@ -262,7 +262,7 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 		tcoeff = new JTextField[MAX_NUMBER_TERMS];
 	
 		for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
-			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
 			pCoeff.add(pcoeff[i]);
 			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
 			pcoeff[i].add(lcoeff[i]);
@@ -411,36 +411,36 @@ public class CalibrationFit extends AbstractControl implements ActionListener {
 	 * setups up the dialog box
 	 */
 	public void updateCoefficients() {
-		CalibrationFunction hcf=null;
+		String[] labels; 
+		double[] coeff;
+		CalibrationFunction cf=null;
+		
 		final boolean isHist1d = currentHistogram != null
 				&& currentHistogram.getDimensionality() == 1;
 		
 		if (currentHistogram!=null)
-			hcf = currentHistogram.getCalibration();
+			cf = currentHistogram.getCalibration();
 		
-		final boolean exists = isHist1d && hcf != null;
+		final boolean exists = isHist1d && cf != null;
 		//comboBoxFunction.setEnabled(exists);
 		if (exists) {
-			numberTerms = hcf.getNumberTerms();
-			lcalibEq.setText(hcf.getTitle());
-			String[] labels = hcf.getLabels();
-			double[] coeff = hcf.getCoeff();
-			for (int i = 0; i < numberTerms; i++) {
+			cf=currentHistogram.getCalibration();
+		}else{			
+			cf=calibFunction;
+		}
+		numberTerms = cf.getNumberTerms();
+		lcalibEq.setText(cf.getTitle());
+		labels = cf.getLabels();
+		coeff = cf.getCoeff();
+		for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
+			if (i<numberTerms) {
 				lcoeff[i].setText(labels[i]);
-				tcoeff[i].setText(String.valueOf(coeff[i]));
 				tcoeff[i].setEnabled(true);
-			}
-			for (int i = numberTerms; i < MAX_NUMBER_TERMS; i++) {
+				tcoeff[i].setText(String.valueOf(coeff[i]));					
+			} else {
 				lcoeff[i].setText(BLANK_LABEL);
-				tcoeff[i].setText("");
 				tcoeff[i].setEnabled(false);
-			}
-		} else {// histogram not calibrated
-			//lcalibEq.setText(BLANK_TITLE);
-			for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
-				lcoeff[i].setText(BLANK_LABEL);
 				tcoeff[i].setText("");
-				tcoeff[i].setEnabled(false);
 			}
 		}
 	}
