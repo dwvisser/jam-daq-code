@@ -95,9 +95,6 @@ public final class JamMain extends JFrame implements Observer {
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
 		setJMenuBar(MenuBar.getMenuBar());
-		/* Histogram selection menu bar */
-		/*final SelectionToolbar selectBar = new SelectionToolbar();
-		contents.add(selectBar, BorderLayout.NORTH); */
 		/* Histogram selection tree */ 
 		SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
@@ -105,8 +102,6 @@ public final class JamMain extends JFrame implements Observer {
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
 		splitTree.setResizeWeight(0.1);
 		contents.add(splitTree, BorderLayout.CENTER);	
-		//contents.add(StatusBar.getInstance().getComponent(),BorderLayout.SOUTH);
-		/**/
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -119,18 +114,12 @@ public final class JamMain extends JFrame implements Observer {
 			}
 		});
 		/* Initial histograms and setup */
-		InitialHistograms ih = new InitialHistograms();
-		
-		
+		final InitialHistograms initHists = new InitialHistograms();
 		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
-
-		//selectTree.loadTree();
-		//selectBar.setChoosersToFirstItems();
 		showMainWindow(showGUI);
-
-		status.setCurrentHistogram(ih.getInitialHist());
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, ih.getInitialHist());
+		status.setCurrentHistogram(initHists.getInitialHist());
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, initHists.getInitialHist());
 	}
 
 	/**
