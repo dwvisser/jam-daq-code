@@ -143,7 +143,7 @@ Observer {
 	/**
 	 * Run state can be ACQ_ON, ACQ_OFF ....
 	 */
-	private int runState;
+	private RunState runState;
 
 	/**
 	 * Name of file if used file|open to read a file
@@ -393,7 +393,7 @@ Observer {
 		//online sort
 		menubar.setSortMode(mode);
 		if (mode == ONLINE_DISK || mode == ONLINE_TAPE) {
-			setRunState(ACQ_OFF);
+			setRunState(RunState.ACQ_OFF);
 			title.append("Online Sorting TO ");
 			if (mode == ONLINE_DISK) {
 				this.setTitle(title.append(disk).toString());
@@ -401,7 +401,7 @@ Observer {
 				this.setTitle(title.append(tape).toString());
 			}
 		} else if (mode == OFFLINE_DISK || mode == OFFLINE_TAPE) {
-			setRunState(ACQ_OFF);
+			setRunState(RunState.ACQ_OFF);
 			title.append("Offline Sorting FROM ");
 			if (mode == OFFLINE_DISK) {
 				this.setTitle(title.append(disk).toString());
@@ -409,14 +409,14 @@ Observer {
 				this.setTitle(title.append(tape).toString());
 			}
 		} else if (mode == REMOTE) { //remote display
-			setRunState(NO_ACQ);
+			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
 			/* read in a file */
 		} else if (mode == FILE) {
-			setRunState(NO_ACQ);
+			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(openFileName).toString());
 		} else if (mode == NO_SORT) {
-			setRunState(NO_ACQ);
+			setRunState(RunState.NO_ACQ);
 			title.append("sorting not enabled");
 			this.setTitle(title.toString());
 		}
@@ -489,31 +489,33 @@ Observer {
 	 * @see #RUN_OFF
 	 * @see #RUN_ON
 	 */
-	public void setRunState(int rs, int runNumber) {
-		final String welcome="   Welcome   ";
-		final String stopped="   Stopped   ";
-		final String started="   Started   ";
+	public void setRunState(RunState rs) {
+//		final String welcome="   Welcome   ";
+//		final String stopped="   Stopped   ";
+//		final String started="   Started   ";
 		menubar.setRunState(rs);
-		if (rs == NO_ACQ) {
-			lrunState.setBackground(Color.lightGray);
-			lrunState.setText(welcome);
-		} else if (rs == ACQ_OFF) {
-			lrunState.setBackground(Color.red);
-			lrunState.setText(stopped);
-		} else if (rs == ACQ_ON) {
-			lrunState.setBackground(Color.orange);
-			lrunState.setText(started);
-		} else if (rs == RUN_OFF) {
-			lrunState.setBackground(Color.red);
-			lrunState.setText(stopped);
-		} else if (rs == RUN_ON) {
-			lrunState.setBackground(Color.green);
-			final String runpre="   Run ";
-			final String runpost="   ";
-			lrunState.setText(runpre+runNumber+runpost);
-		} else {
-			console.errorOutln("Illegal run state: "+rs);
-		}
+//		if (rs == NO_ACQ) {
+//			lrunState.setBackground(Color.lightGray);
+//			lrunState.setText(welcome);
+//		} else if (rs == ACQ_OFF) {
+//			lrunState.setBackground(Color.red);
+//			lrunState.setText(stopped);
+//		} else if (rs == ACQ_ON) {
+//			lrunState.setBackground(Color.orange);
+//			lrunState.setText(started);
+//		} else if (rs == RUN_OFF) {
+//			lrunState.setBackground(Color.red);
+//			lrunState.setText(stopped);
+//		} else if (rs == RUN_ON) {
+//			lrunState.setBackground(Color.green);
+//			final String runpre="   Run ";
+//			final String runpost="   ";
+//			lrunState.setText(runpre+runNumber+runpost);
+//		} else {
+//			console.errorOutln("Illegal run state: "+rs);
+//		}
+		lrunState.setBackground(rs.getColor());
+		lrunState.setText(rs.getLabel());
 		synchronized (this) {
 			this.runState = rs;
 		}
@@ -526,9 +528,9 @@ Observer {
 	 * @see #getRunState()
 	 * @param rs one of six possible modes
 	 */
-	public void setRunState(int rs) {
+	/*public void setRunState(int rs) {
 		setRunState(rs, 0);
-	}
+	}*/
 
 	/**
 	 * Gets the current run state of Jam.
@@ -541,7 +543,7 @@ Observer {
 	 * @see #NO_ACQ
 	 * @return one of the six possible modes
 	 */
-	public int getRunState() {
+	public RunState getRunState() {
 		return runState;
 	}
 
@@ -550,7 +552,7 @@ Observer {
 	 * either just acquistion or a run.
 	 */
 	public boolean isAcqOn() {
-		return ((runState == ACQ_ON) || (runState == RUN_ON));
+		return runState.isAcquireOn();
 	}
 
 	/**
