@@ -40,7 +40,8 @@ public class Peak extends Object implements Comparable {
     }
 
     /**
-     * @return  */
+     * @return  centroid of peak
+     */
     public double getPosition() {
         return position;
     }
