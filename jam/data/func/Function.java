@@ -10,14 +10,5 @@ public interface  Function  {
      * @param	x   where to evaluate the function
      * @return	the value of the function at the given x-value
      */ 			        
-    public double getValue(int x);
-
-    /**
-     *	Returns the value of the function at the given x-value.
-     *
-     * @param	x   where to evaluate the function
-     * @return	the value of the function at the given x-value
-     */ 			        
-    public double getValue(double x);
-    
+    double getValue(double x);
 }    
