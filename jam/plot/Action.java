@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 
 class Action implements ActionListener, PlotMouseListener {
 
+	static final String HELP = "help";
 	static final String EXPAND = "expand";
 	static final String ZOOMIN = "zoomin";
 	static final String ZOOMOUT = "zoomout";
@@ -114,7 +115,7 @@ class Action implements ActionListener, PlotMouseListener {
 		final int fracDigits = 2;
 		numFormat.setMinimumFractionDigits(fracDigits);
 		numFormat.setMaximumFractionDigits(fracDigits);
-		commandMap = getCommandMap();
+		commandMap = createCommandMap();
 	}
 
 	/**
@@ -153,9 +154,10 @@ class Action implements ActionListener, PlotMouseListener {
 		doCommand();
 	}
 
-	final private Map getCommandMap() {
+	final private Map createCommandMap() {
 		final String[] commands =
 			{
+				HELP,
 				EXPAND,
 				ZOOMIN,
 				ZOOMOUT,
@@ -176,6 +178,7 @@ class Action implements ActionListener, PlotMouseListener {
 				REBIN, SCALE };
 		final String[] abbr =
 			{
+				"help",
 				"ex",
 				"zi",
 				"zo",
@@ -217,38 +220,47 @@ class Action implements ActionListener, PlotMouseListener {
 	 * @param _command entry from console
 	 * @param parameters integer parameters from console
 	 */
-	boolean commandPerform(String _command, double [] parameters) {
+	boolean commandPerform(String _command, String [] cmdParams) {
+		
 		boolean accept = false; //is the command accepted
 		//boolean disp = false;
 		final String command = _command.toLowerCase();
 		final int comLen = command.length();
+		double [] parameters;
 		/* int is a special case meaning
 		 * no command and just parameters */
-		if (comLen >= JamConsole.NUMBERS_ONLY.length()) {
-			if (command.equals(JamConsole.NUMBERS_ONLY)) {
-				if (DISPLAY.equals(inCommand)) {
-					display(parameters);
-					accept = true;
-				} else if (OVERLAY.equals(inCommand)) {
-					overlay(parameters);
-					accept = true;					
-				} else {
-					integerChannel(parameters);
-					accept = true;
-				}
+		if (command.equals(JamConsole.NUMBERS_ONLY)) {
+			parameters=convertParameters(cmdParams);
+			if (DISPLAY.equals(inCommand)) {
+				display(parameters);
+				accept = true;
+			} else if (OVERLAY.equals(inCommand)) {
+				overlay(parameters);
+				accept = true;					
+			} else {
+				integerChannel(parameters);
+				accept = true;
 			}
 			return accept;
 		}
-		final String c1 = command.substring(0, Math.min(1, command.length()));
-		final String c2 = command.substring(0, Math.min(2, command.length()));
-		if (commandMap.containsKey(c2)) {
-			inCommand = (String) commandMap.get(c2);
-			accept = true;
-		} else if (commandMap.containsKey(c1)) {
-			inCommand = (String) commandMap.get(c1);
+		
+		
+		if (commandMap.containsKey(command)) {
+			inCommand = (String) commandMap.get(command);
 			accept = true;
 		}
+		//Remove KBS lead to duplicate of other commands	
+		//final String c1 = command.substring(0, Math.min(1, command.length()));
+		//final String c2 = command.substring(0, Math.min(2, command.length()));
+		//if (commandMap.containsKey(c2)) {
+		//	inCommand = (String) commandMap.get(c2);
+		//	accept = true;
+		//} else if (commandMap.containsKey(c1)) {
+		//	inCommand = (String) commandMap.get(c1);
+		//	accept = true;
+		//}
 		if (accept) {
+			parameters=convertParameters(cmdParams);
 			if (DISPLAY.equals(inCommand)){
 				display(parameters);
 			} else if (OVERLAY.equals(inCommand)){
@@ -257,17 +269,39 @@ class Action implements ActionListener, PlotMouseListener {
 				doCommand();
 				integerChannel(parameters);
 			}
-		} else {
-			textOut.errorOutln(
-				getClass().getName()
-					+ ".commandPerform(): Command '"
-					+ command
-					+ "' not understood.");
-		}
+		} 
+		//Remove KBS
+		//else {
+		//	textOut.errorOutln(
+		//		getClass().getName()
+		//			+ ".commandPerform(): Command '"
+		//			+ command
+		//			+ "' not understood.");
+		//}
 		
 		return accept;
 	}
-
+	/**
+	 * Convert the parameters to doubles
+	 * @param parameters
+	 * @return
+	 */
+	private double [] convertParameters(String [] cmdParams)  {
+		final int numberParams = cmdParams.length;
+		double [] parameters = new double [numberParams];
+		//rest of tokens must be numbers
+		try {
+			int countParam=0;
+			while (countParam<numberParams) {
+				parameters[countParam] = convertNumber(cmdParams[countParam]);
+				countParam++;
+			}
+		} catch (NumberFormatException nfe) {
+			throw new NumberFormatException("Input parameter not a number");
+		}
+		return parameters; 
+		
+	}
 	/**
 	 * Sort the input command and do command.
 	 */
@@ -280,6 +314,8 @@ class Action implements ActionListener, PlotMouseListener {
 		if (CANCEL.equals(inCommand)) {
 			textOut.messageOutln("");
 			done();
+		} else if (HELP.equals(inCommand)) {			
+			help();
 		} else if (UPDATE.equals(inCommand)) {
 			update();
 		} else if (EXPAND.equals(inCommand)) {
@@ -1052,4 +1088,26 @@ class Action implements ActionListener, PlotMouseListener {
 	private synchronized void setCursor(Point p) {
 		cursor = p;
 	}
+	/**
+	 * Parse a string go a number
+	 * @param s
+	 * @return
+	 * @throws NumberFormatException
+	 */
+	private double convertNumber(String s) throws NumberFormatException {
+		return (s.indexOf('.')>=0) ? Double.parseDouble(s) : 
+		Integer.parseInt(s);
+	}
+	
+	private void help() {
+		textOut.messageOutln("Plot Commands:");
+		textOut.messageOutln("li - Linear Scale \t\t  lo - Log Scale\t a  - Auto Scale\t ra - Range");		
+		textOut.messageOutln("ex - Expand     \t\t  f  - Full view   \t zi - Zoom In    \t\t zo - Zoom Out");
+		textOut.messageOutln("d  - Display    \t\t  o  - Overlay   \t u  - Update     \t\t g  - GoTo");
+		textOut.messageOutln("ar - Area       \t\t  n  - Net Area  \t re - Rebin \t\t c  - Channel");		
+		//textOut.messageOutln("x  - X                 y  - Y ");		
+		//textOut.messageOutln("s  - Scale" );
+
+	}
+	
 }
