@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.Preferences;
 
 /**
  * Class to communicate with VME crate using
@@ -36,14 +38,14 @@ import java.util.Observable;
  * @author   Ken Swartz and Dale Visser
  * @since       JDK1.1
  */
-public class VMECommunication  extends GoodThread implements FrontEndCommunication {
+public class VMECommunication  extends GoodThread implements 
+FrontEndCommunication {
 
     private static final int MAX_PACKET_SIZE=1024;
 	private static final int MAX_MESSAGE_SIZE=80;
 
 	private static final byte STRING_NULL=(byte)0x0;
 
-    //private final JamCommand jamCommand;
     private static final Broadcaster broadcaster=Broadcaster.getSingletonInstance();
     private final MessageHandler console;
 
@@ -114,8 +116,9 @@ public class VMECommunication  extends GoodThread implements FrontEndCommunicati
             setPriority(jam.sort.ThreadPriorities.MESSAGING);
             start();
             active=true;
-            debug(JamProperties.getBooleanProperty(JamProperties.FRONTEND_DEBUG));
-            verbose(JamProperties.getBooleanProperty(JamProperties.FRONTEND_VERBOSE));
+			final Preferences prefs=JamPrefs.prefs;
+            debug(prefs.getBoolean(JamPrefs.DEBUG,false));
+            verbose(prefs.getBoolean(JamPrefs.VERBOSE,false));
         }
     }
 
@@ -590,4 +593,15 @@ public class VMECommunication  extends GoodThread implements FrontEndCommunicati
         	status==CNAF || status==COUNTER || status==VME_ADDRESSES ||
         	status==SCALER_INTERVAL);
     }
+    
+	public void preferenceChange(PreferenceChangeEvent pce){
+		final String key=pce.getKey();
+		final String newValue=pce.getNewValue();
+		final boolean state=Boolean.valueOf(newValue).booleanValue();
+		if (key.equals(JamPrefs.DEBUG)){
+			debug(state);
+		} else if (key.equals(JamPrefs.VERBOSE)){
+			verbose(state);
+		} 
+	}
 }
