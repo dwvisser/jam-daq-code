@@ -9,12 +9,12 @@ import jam.data.control.GroupNew;
  *
  */
 public class ShowDialogNewGroup extends AbstractShowDialog {
+    
 	/**
 	 * Initialize command
 	 */
 	public void initCommand(){
 		putValue(NAME, "New Group\u2026");
-		dialog= new GroupNew(msghdlr); 
+		dialog= new GroupNew(); 
 	}
-
 }
