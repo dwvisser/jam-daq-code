@@ -124,13 +124,7 @@ class Action implements ActionListener, PlotMouseListener,
 	 */
 	private boolean energyEx = false;
 
-	//variables for commands
-	//private Point cursor = new Point();
-
-	private Point pixel = new Point();
-
-	//private double cursorCount;
-	private final Cursor cursor;
+	private final Bin cursor;
 
 	private final List clicks = new ArrayList();
 
@@ -149,7 +143,7 @@ class Action implements ActionListener, PlotMouseListener,
 	Action(Display d, JamConsole jc) {
 		display = d;
 		textOut = jc;
-		cursor = new Cursor(d, new Point());
+		cursor = Bin.Factory.create();
 		jc.addCommandListener(this);
 		commandPresent = false;
 		overlayState = false;
@@ -333,7 +327,7 @@ class Action implements ActionListener, PlotMouseListener,
 	 * @param pChannel
 	 *            channel of mouse click
 	 */
-	public synchronized void plotMousePressed(Point pChannel, Point pPixel) {
+	public synchronized void plotMousePressed(Bin pChannel, Point pPixel) {
 		/* check that a histogram is defined */
 		final Plot currentPlot = display.getPlot();
 		if (currentPlot.currentHist == null) {
@@ -341,11 +335,10 @@ class Action implements ActionListener, PlotMouseListener,
 		}
 		/* cursor position and counts for that channel */
 		cursor.setChannel(pChannel);
-		pixel = pPixel;
 		/* there is a command currently being processed */
 		if (commandPresent) {
-			if (RANGE.equals(inCommand)){
-				rangeList.add(new Integer((int)cursor.getCounts()));
+			if (RANGE.equals(inCommand)) {
+				rangeList.add(new Integer((int) cursor.getCounts()));
 			}
 			doCommand();
 		} else {
@@ -358,28 +351,28 @@ class Action implements ActionListener, PlotMouseListener,
 						pPixel);
 			} else {
 				/* output counts for the channel */
-				final Point channel;
 				final double count;
 				final String coord;
+				final int xch;
 				synchronized (cursor) {
-					channel = cursor.getPoint();
+					xch = cursor.getX();
 					count = cursor.getCounts();
 					coord = cursor.getCoordString();
 				}
-				currentPlot.markChannel(channel);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
 					if (currentPlot.isCalibrated) {
 						final Plot1d plot1d = (Plot1d) currentPlot;
-						final double energy = plot1d.getEnergy(channel.x);
-						textOut.messageOutln("Channel " + channel.x
-								+ ":  Counts = " + numFormat.format(count)
-								+ "  Energy = " + numFormat.format(energy));
+						final double energy = plot1d.getEnergy(xch);
+						textOut.messageOutln("Bin " + xch + ":  Counts = "
+								+ numFormat.format(count) + "  Energy = "
+								+ numFormat.format(energy));
 					} else {
-						textOut.messageOutln("Channel " + channel.x
-								+ ":  Counts = " + numFormat.format(count));
+						textOut.messageOutln("Bin " + xch + ":  Counts = "
+								+ numFormat.format(count));
 					}
 				} else {
-					textOut.messageOutln("Channel " + coord + ":  Counts = "
+					textOut.messageOutln("Bin " + coord + ":  Counts = "
 							+ numFormat.format(count));
 				}
 				done();
@@ -407,10 +400,6 @@ class Action implements ActionListener, PlotMouseListener,
 				synchronized (cursor) {
 					final int len = Math.min(numPar, 2);
 					for (int i = 0; i < len; i++) {
-						/*
-						 * cursor.y = (int) parameters[i]; cursorCount =
-						 * parameters[i];
-						 */
 						rangeList.add(new Integer((int) parameters[i]));
 						doCommand();
 					}
@@ -419,7 +408,7 @@ class Action implements ActionListener, PlotMouseListener,
 			} else if (REBIN.equals(inCommand)) {
 				if (numPar > 0) {
 					parameter = new double[numPar];
-					System.arraycopy(parameters,0,parameter,0,numPar);
+					System.arraycopy(parameters, 0, parameter, 0, numPar);
 				}
 			}
 		}
@@ -429,12 +418,11 @@ class Action implements ActionListener, PlotMouseListener,
 			if (commandPresent) {
 				final int loopMax = Math.min(numPar, 2);
 				for (int i = 0; i < loopMax; i++) {
-					if (GOTO.equals(inCommand)){
-						cursor.setChannel(new Point((int)parameters[i],0));
-					}else {
-					cursor
-							.setChannel(closestInsidePoint((int) parameters[i],
-									0));
+					if (GOTO.equals(inCommand)) {
+						cursor.setChannel((int) parameters[i], 0);
+					} else {
+						cursor.setChannel((int)parameters[i], 0);
+						cursor.shiftInsidePlot();
 					}
 					doCommand();
 				}
@@ -442,12 +430,11 @@ class Action implements ActionListener, PlotMouseListener,
 				if (numPar > 0) {
 					/* check for out of bounds */
 					synchronized (cursor) {
-						cursor.setChannel(closestInsidePoint(
-								(int) parameters[0], 0));
+						cursor.setChannel((int) parameters[0], 0);
+						cursor.shiftInsidePlot();
 						final double cursorCount = cursor.getCounts();
-						final Point channel = cursor.getPoint();
-						currentPlot.markChannel(channel);
-						textOut.messageOutln("Channel " + channel.x
+						currentPlot.markChannel(cursor);
+						textOut.messageOutln("Bin " + cursor.getX()
 								+ ":  Counts = " + cursorCount);
 					}
 					done();
@@ -458,20 +445,17 @@ class Action implements ActionListener, PlotMouseListener,
 				final int loopMax = Math.min(numPar, 4);
 				synchronized (this) {
 					for (int i = 1; i < loopMax; i += 2) {
-						/* check for out of bounds */
-						cursor.setChannel(closestInsidePoint(
-								(int) parameters[i - 1], (int) parameters[i]));
-						//cursorCount = currentPlot.getCount(cursor);
+						cursor.setChannel((int) parameters[i - 1], (int) parameters[i]);
+						cursor.shiftInsidePlot();
 						doCommand();
 					}
 				}
 			} else { //no command so get channel
 				if (numPar > 1) {
-					cursor.setChannel(closestInsidePoint((int) parameters[0],
-							(int) parameters[1]));
-					//cursorCount = currentPlot.getCount(cursor);
-					currentPlot.markChannel(cursor.getPoint());
-					textOut.messageOutln("Channel " + cursor.getCoordString()
+					cursor.setChannel((int) parameters[0],(int) parameters[1]);
+					cursor.shiftInsidePlot();
+					currentPlot.markChannel(cursor);
+					textOut.messageOutln("Bin " + cursor.getCoordString()
 							+ ":  Counts = " + cursor.getCounts());
 					done();
 				}
@@ -505,38 +489,21 @@ class Action implements ActionListener, PlotMouseListener,
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
 			synchronized (cursor) {
-				final Point channel = cursor.getPoint();
-				currentPlot.initializeSelectingArea(channel);
-				addClick(channel);
+				currentPlot.initializeSelectingArea(cursor);
+				addClick(cursor);
 				textOut.messageOut(cursor.getCoordString() + " to ");
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
 			synchronized (cursor) {
 				textOut.messageOut(cursor.getCoordString(), MessageHandler.END);
-				currentPlot.expand(getClick(0), cursor.getPoint());
+				currentPlot.expand(getClick(0), cursor);
 			}
 			if (autoOnExpand) {
 				currentPlot.autoCounts();
 			}
 			done();
 		}
-	}
-
-	private Point closestInsidePoint(int x, int y) {
-		final Point rval = new Point(x, y);
-		final Plot currentPlot = display.getPlot();
-		if (rval.x < 0) {
-			rval.x = 0;
-		} else if (rval.x >= currentPlot.getSizeX()) {
-			rval.x = currentPlot.getSizeX() - 1;
-		}
-		if (rval.y < 0) {
-			rval.y = 0;
-		} else if (rval.y >= currentPlot.getSizeY()) {
-			rval.y = currentPlot.getSizeY() - 1;
-		}
-		return rval;
 	}
 
 	/**
@@ -621,10 +588,10 @@ class Action implements ActionListener, PlotMouseListener,
 			init();
 			textOut.messageOut("Range from ", MessageHandler.NEW);
 		} else if (rangeList.size() == 1) {
-			countLow = ((Integer)rangeList.get(0)).intValue();
+			countLow = ((Integer) rangeList.get(0)).intValue();
 			textOut.messageOut(String.valueOf(countLow) + " to ");
 		} else {
-			countHigh = ((Integer)rangeList.get(1)).intValue();
+			countHigh = ((Integer) rangeList.get(1)).intValue();
 			display.getPlot().setRange(countLow, countHigh);
 			textOut.messageOut(String.valueOf(countHigh), MessageHandler.END);
 			done();
@@ -684,27 +651,26 @@ class Action implements ActionListener, PlotMouseListener,
 					MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
 			synchronized (cursor) {
-				final Point channel = cursor.getPoint();
-				addClick(channel);
-				currentPlot.initializeSelectingArea(channel);
-				currentPlot.markChannel(channel);
+				addClick(cursor);
+				currentPlot.initializeSelectingArea(cursor);
+				currentPlot.markChannel(cursor);
 				textOut.messageOut(cursor.getCoordString() + " to ");
 			}
 		} else {
 			currentPlot.setSelectingArea(false);
-			final Point lim1 = getClick(0);
+			final Bin lim1 = getClick(0);
 			if (currentPlot instanceof Plot1d) {
 				synchronized (cursor) {
-					final Point channel = cursor.getPoint();
-					textOut.messageOut(String.valueOf(channel.x));
+					//final Point channel = cursor.getPoint();
+					textOut.messageOut(String.valueOf(cursor.getX()));
 					final double area = inquire.getArea(((Plot1d) currentPlot)
-							.getCounts(), lim1, channel);
+							.getCounts(), lim1, cursor);
 					final double centroid = inquire.getCentroid(
-							((Plot1d) currentPlot).getCounts(), lim1, channel);
+							((Plot1d) currentPlot).getCounts(), lim1, cursor);
 					final double fwhm = inquire.getFWHM(((Plot1d) currentPlot)
-							.getCounts(), lim1, channel);
-					currentPlot.markChannel(channel);
-					currentPlot.markArea(lim1, channel);
+							.getCounts(), lim1, cursor);
+					currentPlot.markChannel(cursor);
+					currentPlot.markArea(lim1, cursor);
 					textOut.messageOut(":  Area = " + numFormat.format(area)
 							+ ", Centroid = " + numFormat.format(centroid)
 							+ ", FWHM = " + numFormat.format(fwhm),
@@ -713,11 +679,11 @@ class Action implements ActionListener, PlotMouseListener,
 			} else {//2D histogram
 				synchronized (cursor) {
 					textOut.messageOut(cursor.getCoordString());
-					final Point channel = cursor.getPoint();
+					//final Point channel = cursor.getPoint();
 					final double area = inquire.getArea(((Plot2d) currentPlot)
-							.getCounts(), lim1, channel);
-					currentPlot.markChannel(channel);
-					currentPlot.markArea(lim1, channel);
+							.getCounts(), lim1, cursor);
+					currentPlot.markChannel(cursor);
+					currentPlot.markArea(lim1, cursor);
 					textOut.messageOut(":  Area = " + numFormat.format(area),
 							MessageHandler.END);
 				}
@@ -752,13 +718,11 @@ class Action implements ActionListener, PlotMouseListener,
 			//************ First background Marker
 			// ***********************************
 			synchronized (cursor) {
-				final Point channel = cursor.getPoint();
-				addClick(channel);
-				//final Point p = cursor;
-				currentPlot.markChannel(channel);
+				addClick(cursor);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
 					textOut.messageOut(
-							crt + "Background " + channel.x + " to ",
+							crt + "Background " + cursor.getX() + " to ",
 							MessageHandler.CONTINUE);
 				} else {
 					textOut.messageOut(cursor.getCoordString() + " to ",
@@ -769,13 +733,12 @@ class Action implements ActionListener, PlotMouseListener,
 			//************ Second Background marker
 			// **********************************
 			synchronized (cursor) {
-				final Point p2 = cursor.getPoint();
-				addClick(p2);
-				final Point p1 = getClick(0);
-				currentPlot.markChannel(p2);
+				addClick(cursor);
+				final Bin p1 = getClick(0);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
-					currentPlot.markArea(p1, p2);
-					textOut.messageOut(Integer.toString(p2.x));
+					currentPlot.markArea(p1, cursor);
+					textOut.messageOut(Integer.toString(cursor.getX()));
 				} else {
 					textOut.messageOut(cursor.getCoordString(),
 							MessageHandler.CONTINUE);
@@ -785,11 +748,11 @@ class Action implements ActionListener, PlotMouseListener,
 			//************ Third Background Marker
 			// **********************************
 			synchronized (cursor) {
-				final Point p = cursor.getPoint();
-				addClick(p);
-				currentPlot.markChannel(p);
+				//final Point p = cursor.getPoint();
+				addClick(cursor);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
-					textOut.messageOut(" and " + p.x + " to ");
+					textOut.messageOut(" and " + cursor.getX() + " to ");
 
 				} else {
 					textOut.messageOut(cursor.getCoordString() + " to ",
@@ -800,13 +763,12 @@ class Action implements ActionListener, PlotMouseListener,
 			//************ Fourth Background Marker
 			// *********************************
 			synchronized (cursor) {
-				final Point p2 = cursor.getPoint();
-				addClick(p2);
-				final Point p1 = getClick(2);
-				currentPlot.markChannel(p2);
+				addClick(cursor);
+				final Bin p1 = getClick(2);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
-					currentPlot.markArea(p1, p2);
-					textOut.messageOut(String.valueOf(p2.x),
+					currentPlot.markArea(p1, cursor);
+					textOut.messageOut(String.valueOf(cursor.getX()),
 							MessageHandler.CONTINUE);
 				} else {
 					textOut.messageOut(cursor.getCoordString(),
@@ -818,13 +780,12 @@ class Action implements ActionListener, PlotMouseListener,
 			// *********************************
 			//currentPlot.setSelectingArea(true);
 			synchronized (cursor) {
-				final Point p = cursor.getPoint();
-				currentPlot.initializeSelectingArea(p);
-				addClick(p);
-				currentPlot.markChannel(p);
+				currentPlot.initializeSelectingArea(cursor);
+				addClick(cursor);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
-					textOut.messageOut("." + crt + "Peak " + p.x + " to ",
-							MessageHandler.CONTINUE);
+					textOut.messageOut("." + crt + "Peak " + cursor.getX()
+							+ " to ", MessageHandler.CONTINUE);
 				} else {
 
 					textOut.messageOut(cursor.getCoordString() + " to ",
@@ -835,23 +796,26 @@ class Action implements ActionListener, PlotMouseListener,
 			//************ Second Region Marker
 			// *********************************
 			currentPlot.setSelectingArea(false);
-			final Point p1,p2;
+			//final Point p1,p2;
+			final Bin p4;
 			synchronized (cursor) {
-				p2 = cursor.getPoint();
-				addClick(p2);
-				p1 = getClick(4);
-				currentPlot.markChannel(p2);
+				//p2 = cursor.getPoint();
+				addClick(cursor);
+				//p1 = getClick(4).getPoint();
+				p4 = getClick(4);
+				currentPlot.markChannel(cursor);
 				if (currentPlot instanceof Plot1d) {
-					currentPlot.markArea(p1, p2);
-					textOut.messageOut(p2.x + ". ", MessageHandler.CONTINUE);
+					currentPlot.markArea(p4, cursor);
+					textOut.messageOut(cursor.getX() + ". ",
+							MessageHandler.CONTINUE);
 				} else {
 					textOut.messageOut(cursor.getCoordString() + ". ",
 							MessageHandler.CONTINUE);
 				}
 			}
 			final double grossArea = inquire.getArea(((Plot1d) currentPlot)
-					.getCounts(), p1, p2);
-			Point[] passClicks = new Point[clicks.size()];
+					.getCounts(), p4, cursor);
+			final Bin[] passClicks = new Bin[clicks.size()];
 			clicks.toArray(passClicks);
 			/* results of next call are passed back in the parameters */
 			inquire.getNetArea(netArea, netAreaError, channelBackground, fwhm,
@@ -876,8 +840,8 @@ class Action implements ActionListener, PlotMouseListener,
 					+ numFormat.format(centroidError[0]) + crt + "FWHM = "
 					+ numFormat.format(fwhm[0]), MessageHandler.END);
 			/* Draw Fit on screen by calling DisplayFit in Display.java */
-			final int ll = getClick(0).x;
-			final int ul = getClick(3).x + 1;
+			final int ll = getClick(0).getPoint().x;
+			final int ul = getClick(3).getPoint().x + 1;
 			final double[] bkgd = new double[ul - ll + 1];
 			System.arraycopy(channelBackground, ll, bkgd, 0, bkgd.length);
 			this.display.displayFit(null, bkgd, null, ll);
@@ -885,8 +849,8 @@ class Action implements ActionListener, PlotMouseListener,
 		}
 	}
 
-	private Point getClick(int i) {
-		return (Point) clicks.get(i);
+	private Bin getClick(int i) {
+		return (Bin) clicks.get(i);
 	}
 
 	/**
@@ -975,42 +939,40 @@ class Action implements ActionListener, PlotMouseListener,
 			}
 		} else if (clicks.size() == 0) {
 			synchronized (cursor) {
-				final Point channel=cursor.getPoint();
-				addClick(channel);
+				addClick(cursor);
 				StringBuffer output = new StringBuffer();
+				int x = cursor.getX();
 				if (!currentPlot.isCalibrated) {
-					output.append(ch).append(eq).append(channel.x);
+					output.append(ch).append(eq).append(x);
 				} else {
 					if (currentPlot instanceof Plot1d) {
 						final Plot1d plot1d = (Plot1d) currentPlot;
-						output.append(en).append(eq).append(
-								plot1d.getEnergy(channel.x)).append(sep).append(
-								ch).append(eq).append(channel.x);
+						output.append(en).append(eq)
+								.append(plot1d.getEnergy(x)).append(sep)
+								.append(ch).append(eq).append(x);
 					}
 				}
 				if (currentPlot instanceof Plot1d) {
 					final Plot1d plot1d = (Plot1d) currentPlot;
 					if (!mousePressed) {
 						if (currentPlot.isCalibrated) {
-							output = new StringBuffer(en).append(eq).append(
-									channel.x);
+							output = new StringBuffer(en).append(eq).append(x);
 							synchronized (this) {
-								channel.x = plot1d.getChannel(channel.x);
-								if (channel.x > currentPlot.getSizeX()) {
-									channel.x = currentPlot.getSizeX() - 1;
+								x = plot1d.getChannel(x);
+								if (x > currentPlot.getSizeX()) {
+									x = currentPlot.getSizeX() - 1;
 								}
 							}
-							output.append(sep).append(ch).append(eq).append(
-									channel.x);
+							output.append(sep).append(ch).append(eq).append(x);
 						}
 					}
 				}
 				final int rangeToUse = 100;
 				final int halfRange = rangeToUse / 2;
-				final int channelLow = channel.x - halfRange;
+				final int channelLow = x - halfRange;
 				final int channelHigh = channelLow + rangeToUse;
-				currentPlot.expand(new Point(channelLow, 0), new Point(
-						channelHigh, 0));
+				currentPlot.expand(Bin.Factory.create(channelLow), Bin.Factory
+						.create(channelHigh));
 				textOut.messageOut(output.toString(), MessageHandler.END);
 			}
 			synchronized (this) {
@@ -1063,8 +1025,8 @@ class Action implements ActionListener, PlotMouseListener,
 		mousePressed = whether;
 	}
 
-	private synchronized void addClick(Point p) {
-		clicks.add(p);
+	private synchronized void addClick(Bin c) {
+		clicks.add(Bin.copy(c));
 	}
 
 	/**
@@ -1086,7 +1048,7 @@ class Action implements ActionListener, PlotMouseListener,
 		sb
 				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
 		sb.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
-		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Channel\t");
+		sb.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
 		final String[] commands = CommandManager.getInstance().getAllCommands();
 		for (int i = 0; i < commands.length; i++) {
 			sb.append(commands[i]).append("\t");

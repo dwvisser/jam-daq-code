@@ -56,7 +56,7 @@ public class PlotMouse extends MouseAdapter {
 	public void mousePressed(MouseEvent e) {
 	    action.setMousePressed(true);
 		final Point pin = e.getPoint();
-		final Point pout = pg.toData(pin);
+		final Bin pout = pg.toData(pin);
 		for (int i = 0; i < listenersList.size(); i++) {
 			((PlotMouseListener) listenersList.get(i)).plotMousePressed(
 				pout,

@@ -75,7 +75,7 @@ class Plot1d extends Plot {
 	 * @param pChannel
 	 *            channel coordinates of clicked channel
 	 */
-	void displaySetGate(GateSetMode mode, Point pChannel, Point pPixel) {
+	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
 			addMouseListener(mouseInputAdapter);
@@ -83,7 +83,7 @@ class Plot1d extends Plot {
 			setSettingGate(true);
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
-				pointsGate.addPoint(pChannel.x, pChannel.y);
+				pointsGate.addPoint(pChannel.getX(), pChannel.getY());
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
 				removeMouseListener(mouseInputAdapter);
@@ -172,15 +172,15 @@ class Plot1d extends Plot {
 		g.setColor(PlotColorMap.mark);
 		final Iterator it = markedChannels.iterator();
 		while (it.hasNext()) {
-			final Point p = (Point) it.next();
-			graph.markChannel1d(p.x, counts[p.x]);
+			final int px = ((Bin) it.next()).getX();
+			graph.markChannel1d(px, counts[px]);
 		}
 	}
 
 	protected void paintSelectingArea(Graphics gc) {
 		Graphics2D g = (Graphics2D) gc;
 		g.setColor(PlotColorMap.area);
-		graph.markAreaOutline1d(selectionStartPoint.x, lastMovePoint.x);
+		graph.markAreaOutline1d(selectionStartPoint.getX(), lastMovePoint.x);
 		setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
@@ -188,21 +188,17 @@ class Plot1d extends Plot {
 	/**
 	 * Mark Area. The y-values are ignored.
 	 * 
-	 * @param minChanX
-	 *            the lower x channel
-	 * @param minchanY
-	 *            the lower y channel
-	 * @param maxChanX
-	 *            the upper x channel
-	 * @param maxchanY
-	 *            the upper y channel
+	 * @param p1 one limit
+	 * @param p2 the other limit
 	 */
-	void markArea(Point p1, Point p2) {
+	void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
 			markArea = (p1 != null) && (p2 != null);
 			if (markArea) {
-				areaMark1 = Math.min(p1.x, p2.x);
-				areaMark2 = Math.max(p1.x, p2.x);
+				final int x1=p1.getX();
+				final int x2=p2.getX();
+				areaMark1 = Math.min(x1, x2);
+				areaMark2 = Math.max(x1, x2);
 			}
 		}
 		repaint();
@@ -345,8 +341,8 @@ class Plot1d extends Plot {
 	/**
 	 * Get the counts in a X channel, Y channel ignored.
 	 */
-	double getCount(Point p) {
-		return counts[p.x];
+	double getCount(Bin p) {
+		return counts[p.getX()];
 	}
 
 	/**
@@ -422,12 +418,11 @@ class Plot1d extends Plot {
 			if (isSelectingAreaClipClear()) {
 				synchronized (selectingAreaClip) {
 					selectingAreaClip.setBounds(graph.getRectangleOutline1d(
-							selectionStartPoint.x, lastMovePoint.x));
+							selectionStartPoint.getX(), lastMovePoint.x));
 				}
-				//addToSelectClip(selectionStartPoint, lastMovePoint);
 			}
-			setLastMovePoint(graph.toData(me.getPoint()));
-			addToSelectClip(selectionStartPoint, lastMovePoint);
+			setLastMovePoint(graph.toData(me.getPoint()).getPoint());
+			addToSelectClip(selectionStartPoint, Bin.Factory.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
 				repaint(getClipBounds(selectingAreaClip, false));
 			}
@@ -437,13 +432,13 @@ class Plot1d extends Plot {
 				/* draw new line */
 				synchronized (lastMovePoint) {
 					if (isMouseMoveClipClear()) {
-						final Point p1 = graph.toViewLin(new Point(
+						final Point p1 = graph.toViewLin(Bin.Factory.create(
 								pointsGate.xpoints[pointsGate.npoints - 1],
 								pointsGate.ypoints[pointsGate.npoints - 1]));
 						addToMouseMoveClip(p1.x, p1.y);
 						if (pointsGate.npoints > 1) {
 							final Point p2 = graph
-									.toViewLin(new Point(
+									.toViewLin(Bin.Factory.create(
 											pointsGate.xpoints[pointsGate.npoints - 2],
 											pointsGate.ypoints[pointsGate.npoints - 2]));
 							addToMouseMoveClip(p2.x, p2.y);
@@ -474,17 +469,17 @@ class Plot1d extends Plot {
 
 	/**
 	 * Add to the selection clip region, using the two given
-	 * graphics-coordinates points to indicate the corners of a rectangular
+	 * plot-coordinates points to indicate the corners of a rectangular
 	 * region of channels that needs to be included.
 	 * 
 	 * @param p1
-	 *            in graphics coordinates
+	 *            in plot coordinates
 	 * @param p2
-	 *            in graphics coordinates
+	 *            in plot coordinates
 	 */
-	private final void addToSelectClip(Point p1, Point p2) {
+	private final void addToSelectClip(Bin p1, Bin p2) {
 		synchronized (selectingAreaClip) {
-			selectingAreaClip.add(graph.getRectangleOutline1d(p1.x, p2.x));
+			selectingAreaClip.add(graph.getRectangleOutline1d(p1.getX(), p2.getX()));
 		}
 	}
 
@@ -515,11 +510,11 @@ class Plot1d extends Plot {
 			 * Recursively call back with a polygon using channel coordinates.
 			 */
 			final Polygon p = new Polygon();
-			final Point p1 = graph.toData(r.getLocation());
-			final Point p2 = graph.toData(new Point(r.x + r.width, r.y
+			final Bin c1 = graph.toData(r.getLocation());
+			final Bin c2 = graph.toData(new Point(r.x + r.width, r.y
 					+ r.height));
-			p.addPoint(p1.x, p1.y);
-			p.addPoint(p2.x, p2.y);
+			p.addPoint(c1.getX(), c1.getY());
+			p.addPoint(c2.getX(), c2.getY());
 			return getClipBounds(p, true);
 		}
 	}

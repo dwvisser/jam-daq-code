@@ -113,7 +113,7 @@ PreferenceChangeListener {
 	boolean settingGate = false;
 
 	/** selection start point in plot coordinates */
-	protected Point selectionStartPoint= new Point();
+	protected Bin selectionStartPoint= Bin.Factory.create();
 	
 	/** currently displaying a gate? */
 	protected boolean displayingGate = false;
@@ -337,7 +337,7 @@ PreferenceChangeListener {
 	 */
 	abstract void displaySetGate(
 		GateSetMode mode,
-		Point pChannel,
+		Bin pChannel,
 		Point pPixel);
 
 	/**
@@ -394,9 +394,9 @@ PreferenceChangeListener {
 	 *
 	 * @param p graphics coordinates on the plot where the channel is
 	 */
-	final void markChannel(Point p) {
+	final void markChannel(Bin p) {
 		markingChannels=true;
-		markedChannels.add(p);
+		markedChannels.add(Bin.copy(p));
 		repaint();
 	}
 	
@@ -412,10 +412,10 @@ PreferenceChangeListener {
 	 * 
 	 * @param p1 starting point in plot coordinates
 	 */
-	protected final void initializeSelectingArea(Point p1) {
+	protected final void initializeSelectingArea(Bin p1) {
 		setSelectingArea(true);
-		selectionStartPoint.setLocation(p1);
-		setLastMovePoint(p1);
+		selectionStartPoint.setChannel(p1);
+		setLastMovePoint(p1.getPoint());
 	} 
 	
 	protected final void setLastMovePoint(Point p) {
@@ -440,7 +440,7 @@ PreferenceChangeListener {
 	 * @param p1 a corner of the rectangle in plot coordinates
 	 * @param p2 a corner of the rectangle in plot coordinates
 	 */
-	abstract void markArea(Point p1, Point p2);
+	abstract void markArea(Bin p1, Bin p2);
 	
 	synchronized void setMarkArea(boolean tf){
 		markArea=tf;
@@ -449,18 +449,21 @@ PreferenceChangeListener {
 	/**
 	 *Expand the region viewed.
 	 */
-	void expand(Point p1, Point p2) {
+	void expand(jam.plot.Bin c1, jam.plot.Bin c2) {
+		final int x1=c1.getX();
+		final int x2=c2.getX();
+		final int y1=c1.getY();
+		final int y2=c2.getY();
 		int xll; // x lower limit
 		int xul; // x upper limit
 		int yll; // y lower limit
 		int yul; // y upper limit
-
-		if (p1.x <= p2.x) {
-			xll = p1.x;
-			xul = p2.x;
+		if (x1 <= x2) {
+			xll = x1;
+			xul = x2;
 		} else {
-			xll = p2.x;
-			xul = p1.x;
+			xll = x2;
+			xul = x1;
 		}
 		// check for beyond extremes and set to extremes
 		if ((xll < 0) || (xll > sizeX - 1)) {
@@ -469,12 +472,12 @@ PreferenceChangeListener {
 		if ((xul < 0) || (xul > sizeX - 1)) {
 			xul = sizeX - 1;
 		}
-		if (p1.y <= p2.y) {
-			yll = p1.y;
-			yul = p2.y;
+		if (y1 <= y2) {
+			yll = y1;
+			yul = y2;
 		} else {
-			yll = p2.y;
-			yul = p1.y;
+			yll = y2;
+			yul = y1;
 		}
 		/* check for beyond extremes and set to extremes */
 		if ((yll < 0) || (yll > sizeY - 1)) {
@@ -639,7 +642,7 @@ PreferenceChangeListener {
 	 * Get histogram counts at the specified point, which is given
 	 * in channel coordinates.
 	 */
-	abstract double getCount(Point p);
+	abstract double getCount(jam.plot.Bin p);
 	
 	/**
 	 * Find the maximum number of counts in the region of interest
