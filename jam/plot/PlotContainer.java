@@ -98,7 +98,7 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/**
 	 * @param plotSelect place to send selection messages
 	 */
-	public PlotContainer(PlotSelectListener plotSelect) {
+	private PlotContainer(PlotSelectListener plotSelect) {
 		plotSelectListener = plotSelect;
 		/*
 		 * panel containing plots panel to holds 1d and 2d plots, and swaps them
@@ -118,6 +118,10 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
+	}
+	
+	static PlotContainer createPlotContainer(PlotSelectListener psl){
+	    return new PlotContainer(psl);
 	}
 
 	/**
