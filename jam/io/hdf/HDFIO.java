@@ -784,54 +784,61 @@ public final class HDFIO implements DataIO, JamFileFields {
 	    	 }	    	  
 	    } //Loop group end
     }
+    
     /**
-     * Convert a the HDF DataObjects to Jam objects for old
-     * format files
-     *  
-     * @param mode
-     * @param existingGroupList
-     * @param histAttributeList
-     * @param fileName
+     * Convert a the HDF DataObjects to Jam objects for old format files
+     * 
+     * @param mode how to read the data into memory
+     * @param groups list of existing groups
+     * @param histAttrs list of histogram attributes?
+     * @param fileName ???
      * @throws HDFException
-     */    
-    private void convertHDFToJamOriginal(FileOpenMode mode, String fileName, List existingGroupList, List histAttributes) throws HDFException {
+     */
+    private void convertHDFToJamOriginal(FileOpenMode mode, String fileName,
+            List groups, List histAttrs) throws HDFException {
         hdfToJam.setInFile(inHDF);
-    	Group currentGroup=null;
+        Group currentGroup = null;
         //Set group
-        if ( (mode == FileOpenMode.OPEN))  {                   
-        	currentGroup=Group.createGroup(Group.DEFAULT_NAME, null, Group.Type.FILE);
+        if ((mode == FileOpenMode.OPEN)) {
+            currentGroup = Group.createGroup(Group.DEFAULT_NAME, null,
+                    Group.Type.FILE);
         } else if (mode == FileOpenMode.OPEN_MORE) {
-        	currentGroup=Group.createGroup(Group.DEFAULT_NAME, fileName, Group.Type.FILE);        	
-        } else if ( mode == FileOpenMode.ADD) {        	
-        	currentGroup=(Group)existingGroupList.get(0);
-        	//so use current group        	
+            currentGroup = Group.createGroup(Group.DEFAULT_NAME, fileName,
+                    Group.Type.FILE);
+        } else if (mode == FileOpenMode.ADD) {
+            currentGroup = (Group) groups.get(0);
+            //so use current group
         } else if (mode == FileOpenMode.RELOAD) {
-        	JamStatus status =JamStatus.getSingletonInstance();
-            final String sortName = status.getSortName();
-            status.setCurrentGroup(Group.getGroup(sortName));
-            currentGroup=status.getCurrentGroup();
+            final JamStatus status = JamStatus.getSingletonInstance();
+            final Group sortGroup = Group.getSortGroup();
+            status.setCurrentGroup(sortGroup);
+            currentGroup = status.getCurrentGroup();
         }
-    	/* Keep track of first loaded group */
-    	if (firstLoadedGroup==null) {
-    		firstLoadedGroup = currentGroup;
-    	}
-        groupCount=0;
-    	/* Check Group, file only has Default group */
-    	if (currentGroup.getGroupName() == Group.DEFAULT_NAME ) {
-	        histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histAttributes);
-	        final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
-	        if (vddScalers!=null) {
-	        	scalerCount=hdfToJam.convertScalers(currentGroup, vddScalers, mode);
-	        }
-	        if (mode != FileOpenMode.ADD) {
-	        	gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
-	            /* clear if opening and there are histograms in file */
-	            final VDataDescription vddParam= hdfToJam.findParametersOriginal();
-	            if (vddParam != null) {
-	            	paramCount = hdfToJam.convertParameters(currentGroup, vddParam, mode);
-	            }
-	        }
-    	}
+        /* Keep track of first loaded group */
+        if (firstLoadedGroup == null) {
+            firstLoadedGroup = currentGroup;
+        }
+        groupCount = 0;
+        /* Check Group, file only has Default group */
+        if (currentGroup.getGroupName() == Group.DEFAULT_NAME) {
+            histCount = hdfToJam.convertHistogramsOriginal(currentGroup, mode,
+                    histAttrs);
+            final VDataDescription vddScalers = hdfToJam.findScalersOriginal();
+            if (vddScalers != null) {
+                scalerCount = hdfToJam.convertScalers(currentGroup, vddScalers,
+                        mode);
+            }
+            if (mode != FileOpenMode.ADD) {
+                gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
+                /* clear if opening and there are histograms in file */
+                final VDataDescription vddParam = hdfToJam
+                        .findParametersOriginal();
+                if (vddParam != null) {
+                    paramCount = hdfToJam.convertParameters(currentGroup,
+                            vddParam, mode);
+                }
+            }
+        }
     }
     
     /*
