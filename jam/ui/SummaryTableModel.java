@@ -19,7 +19,7 @@ import javax.swing.table.TableModel;
  * @author ken
  *
  */
-public class SummaryTableModel implements TableModel {
+public final class SummaryTableModel implements TableModel {
 	
 	private String COL_NAME_GROUP="Group";
 
@@ -86,16 +86,14 @@ public class SummaryTableModel implements TableModel {
 		}
 									
 	}
-	/**
+	
+	/*non-javadoc:
 	 * Set the selection type
-	 *
 	 */
-	public void setSelectionType(int selectionType) {
-		
+	final void setSelectionType(int selectionType) {
 		if (selectionType==SummaryTable.ALL_GROUPS_SELECTED ) {
 			numColumns =4;		
 			columnTitles = new String[numColumns];
-			
 			columnTitles[0]=COL_NAME_GROUP;
 			columnTitles[1]=COL_NAME_TYPE;
 			columnTitles[2]=COL_NAME_NAME;
@@ -103,21 +101,18 @@ public class SummaryTableModel implements TableModel {
 		} else {
 			numColumns =3;		
 			columnTitles = new String[numColumns];
-	
 			columnTitles[0]=COL_NAME_TYPE;
 			columnTitles[1]=COL_NAME_NAME;
 			columnTitles[2]=COL_NAME_VALUE;			
 		}
-
-		TableModelEvent tme = new TableModelEvent(this);
-		
-		Iterator listenerIter =listenerList.iterator();		
+		final TableModelEvent tme = new TableModelEvent(this);
+		final Iterator listenerIter =listenerList.iterator();		
 		while (listenerIter.hasNext()) {			
-			TableModelListener tml = (TableModelListener)listenerIter.next();
+			final TableModelListener tml = (TableModelListener)listenerIter.next();
 			tml.tableChanged(tme);
 		}
-
 	}
+	
 	/**
 	 * Get the number of columns
 	 * @see javax.swing.table.TableModel#getColumnCount()
