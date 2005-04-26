@@ -14,7 +14,7 @@ public final class Bin {
 	 * For 1d hists, y-coordinate is arbitrary.
 	 */
 	private final Point channel=new Point();
-	private static Display display=null;
+	private static PlotDisplay display=null;
 	
 	/**
 	 * Class for producing instances of <code>Bin</code>.
@@ -23,7 +23,7 @@ public final class Bin {
 	 * @see Bin
 	 */
 	public static class Factory{
-		static void init(Display disp){
+		static void init(PlotDisplay disp){
 			display=disp;
 		}
 		

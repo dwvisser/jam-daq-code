@@ -16,7 +16,7 @@ import java.util.TreeMap;
  * 
  * @author Ken Swartz
  * @version 2004-11-03
- * @see Display
+ * @see PlotDisplay
  */
 public final class View {
 

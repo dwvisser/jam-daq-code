@@ -33,7 +33,7 @@ import java.util.TreeMap;
  * @version 0.5, 1.0
  * @since JDK 1.1
  */
-public abstract class Histogram {
+public abstract class Histogram implements DataElement {
 
 	/**
 	 * Encapsulates the 4 different types a histogram may have.
@@ -802,6 +802,12 @@ public abstract class Histogram {
 		}
 	}
 
+	public abstract int getCount();
+	
+	public int getElementType() {
+		return DataElement.ELEMENT_TYPE_HISTOGRAM;
+	}
+	
 	/**
 	 * Set the counts array using the given <code>int</code> or
 	 * <code>double</code> array.

@@ -3,7 +3,7 @@ package jam.commands;
 import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
 import jam.global.MessageHandler;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
@@ -19,7 +19,7 @@ import javax.swing.KeyStroke;
 final class Print extends AbstractPrintingCommand {
 	
 	private boolean firstTime=true;
-	private Display display=null;
+	private PlotDisplay display=null;
 	
 	Print(){
 		super();

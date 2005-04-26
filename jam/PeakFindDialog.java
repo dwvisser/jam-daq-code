@@ -2,7 +2,7 @@ package jam;
 
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -23,7 +23,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class PeakFindDialog extends JDialog {
 
-	private transient final Display display;
+	private transient final PlotDisplay display;
 	private transient final MessageHandler console;
 
 	/**

@@ -6,7 +6,7 @@ import jam.RunState;
 import jam.VMECommunication;
 import jam.data.Group;
 import jam.data.Histogram;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 
 import java.io.File;
 import java.util.HashSet;
@@ -28,7 +28,7 @@ public final class JamStatus {
 	private static Set overlayNames=new HashSet();	
 	private static String gateName;
 	private static JFrame frame;
-	private static Display display;
+	private static PlotDisplay display;
 	private static MessageHandler console;
 	private static FrontEndCommunication frontEnd;
 	private boolean showGUI=true;
@@ -93,7 +93,7 @@ public final class JamStatus {
 	 * 
 	 * @param d the display
 	 */
-	public synchronized void setDisplay(Display d){
+	public synchronized void setDisplay(PlotDisplay d){
 		display=d;
 	}
 	
@@ -102,7 +102,7 @@ public final class JamStatus {
 	 * 
 	 * @return the display
 	 */
-	public synchronized Display getDisplay(){
+	public synchronized PlotDisplay getDisplay(){
 		return display;
 	}
 

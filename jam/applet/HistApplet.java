@@ -4,7 +4,7 @@ import jam.JamException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 import jam.ui.Console;
 
 import java.awt.BorderLayout;
@@ -42,7 +42,7 @@ public class HistApplet
 	extends JApplet
 	implements ActionListener, ItemListener {
 
-	private Display display;
+	private PlotDisplay display;
 	private Console console;
 	private RemoteData remoteData;
 
@@ -109,7 +109,7 @@ public class HistApplet
 		console = new Console(20);
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */						
-		display = new Display(console);
+		display = new PlotDisplay(console);
 		this.add(display);
 		addToolbarSelect(ptop);// tool bar for selecting
 		/* where did we come from, set host url, and 

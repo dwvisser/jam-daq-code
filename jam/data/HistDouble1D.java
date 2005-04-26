@@ -106,6 +106,9 @@ final class HistDouble1D extends AbstractHist1D {
 		return countsDouble;
 	}
 
+	public int getCount() {
+		return (int)getArea();
+	}
 	/*
 	 * (non-Javadoc)
 	 * 

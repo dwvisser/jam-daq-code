@@ -127,7 +127,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private final MessageHandler textOut;
 
 	/** Plot displayer */
-	private final Display display;
+	private final PlotDisplay display;
 
 	/** Jam status to get current histogram */
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
@@ -143,7 +143,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 * @param jc
 	 *            Jam's console component
 	 */
-	Action(Display d, Console jc) {
+	Action(PlotDisplay d, Console jc) {
 		display = d;
 		textOut = jc;
 		parseCommand = new ParseCommand(this);

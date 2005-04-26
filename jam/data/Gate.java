@@ -17,7 +17,7 @@ import java.util.Map;
  * @version 0.5
  * @since JDK 1.1
  */
-public final class Gate {
+public final class Gate implements DataElement {
 
 	/**
 	 * Maximum number of characters in the histogram name.
@@ -168,6 +168,13 @@ public final class Gate {
 		return name;
 	}
 
+	public int getCount() {
+		return (int)getArea();
+	}
+	
+	public int getElementType() {
+		return DataElement.ELEMENT_TYPE_GATE;
+	}
 	/**
 	 * Returns the dimensionality  of this <code>Gate</code>, which
 	 * is the same as its associated <code>Histogram</code>.

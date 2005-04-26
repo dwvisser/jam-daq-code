@@ -18,7 +18,7 @@ import java.util.Map;
  * @since JDK 1.1
  */
 
-public class Scaler {
+public class Scaler implements DataElement {
 
     private static final Map TABLE=Collections.synchronizedMap(new HashMap());
     private static final List LIST=Collections.synchronizedList(new ArrayList());
@@ -173,5 +173,14 @@ public class Scaler {
     public synchronized void setValue(int valueIn){
         value=valueIn;
     }
+    
+    public synchronized int getCount() {
+    	return value;
+    }
+    
+	public int getElementType() {
+		return DataElement.ELEMENT_TYPE_SCALER;
+	}
+    
 }
 

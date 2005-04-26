@@ -9,10 +9,11 @@ import jam.global.CommandNames;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.SortMode;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 import jam.ui.Console;
 import jam.ui.MenuBar;
 import jam.ui.SelectionTree;
+import jam.ui.SummaryTable;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -53,9 +54,15 @@ public final class JamMain extends JFrame implements Observer {
 	private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	/**
+	 * Display Panel
+	 */
+	Display display;
+	/**
 	 * Histogram displayer.
 	 */
-	private transient final Display display;
+	private transient final PlotDisplay plotDisplay;
+	
+	private SummaryTable summaryTable;
 
 	/**
 	 * Message output and text input.
@@ -87,8 +94,11 @@ public final class JamMain extends JFrame implements Observer {
 		/* Ouput/Input text console */
 		console = new Console();
 		console.messageOutln("Welcome to Jam v" + Version.getInstance().getName());
+
 		/* histogram displayer */
-		display = new Display(console);
+		plotDisplay = new PlotDisplay(console);
+		summaryTable = new SummaryTable();		
+		display =new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.9);
@@ -167,6 +177,7 @@ public final class JamMain extends JFrame implements Observer {
 				/* print out where config files were read from */
 				properties.setMessageHandler(console);
 				properties.outputMessages(console);
+				summaryTable.repaint();
 			}
 		};
 		SwingUtilities.invokeLater(showWindow);

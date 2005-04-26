@@ -5,7 +5,7 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RTSI;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -37,7 +37,7 @@ import javax.swing.border.EmptyBorder;
 public class LoadFit {
 
 	private final Frame jamMain;
-	private final Display display;
+	private final PlotDisplay display;
 	private final Broadcaster broadcaster;	
 
 	private final JDialog dialog;

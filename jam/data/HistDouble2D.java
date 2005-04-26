@@ -77,6 +77,9 @@ final class HistDouble2D extends AbstractHist2D {
 		return counts2dD;
 	}
 
+	public int getCount() {
+		return (int) getArea();
+	}
 	/* (non-Javadoc)
 	 * @see jam.data.Histogram#setZero()
 	 */

@@ -5,7 +5,7 @@ import jam.data.Histogram;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.Bin;
-import jam.plot.Display;
+import jam.plot.PlotDisplay;
 import jam.plot.PlotMouseListener;
 
 import java.awt.BorderLayout;
@@ -62,7 +62,7 @@ public abstract class AbstractFit implements PlotMouseListener {
     /**
      * Jam main display window.
      */
-    protected Display display;
+    protected PlotDisplay display;
 
     /**
      * Class to send output messages to.
@@ -233,7 +233,7 @@ public abstract class AbstractFit implements PlotMouseListener {
      * @param d
      *            Jam main class
      */
-    public final void createDialog(Frame f, Display d) {
+    public final void createDialog(Frame f, PlotDisplay d) {
         frame = f;
         display = d;
         msgHandler = JamStatus.getSingletonInstance().getMessageHandler();

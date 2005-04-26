@@ -76,6 +76,10 @@ public final class HistInt1D extends AbstractHist1D {
 		return counts;
 	}
 
+	public int getCount() {
+		return (int)getArea();
+	}
+	
 	/**
 	 * Returns the number of counts in the given channel.
 	 * 
