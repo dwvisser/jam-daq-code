@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  */
 public class Display extends JPanel implements Observer{
 
-		private String KEY_PLOT="plot";
+		private final String KEY_PLOT="plot";
 		
 		private String KEY_TABLE="table";
 		
