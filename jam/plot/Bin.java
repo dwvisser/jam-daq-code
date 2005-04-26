@@ -130,14 +130,14 @@ public final class Bin {
 		return rval.toString();
 	}	
 	
-	public boolean equals(Object o){
-		boolean rval= o instanceof Bin;
-		if (rval){
-			final Bin that=(Bin)o;
-			rval &= channel.equals(that.channel);
-		}
-		return rval;
-	}
+	public boolean equals(Object object) {
+        boolean rval = object instanceof Bin;
+        if (rval) {
+            final Bin that = (Bin) object;
+            rval &= channel.equals(that.channel);
+        }
+        return rval;
+    }
 	
 	synchronized Bin closestInsideBin() {
 		int x=channel.x;
