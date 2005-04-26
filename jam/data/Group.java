@@ -325,4 +325,14 @@ public final class Group {
     public String toString() {
         return fullName;
     }
+
+    /**
+     * Get just the class name from the full name 
+     * @param name the full sort class name
+     * @return the classname, minus any packages
+     */
+    public static String parseSortClassName(String name) {
+    	final int index = name.lastIndexOf(".");
+    	return name.substring(index+1, name.length());
+    }
 }

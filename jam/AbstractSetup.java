@@ -202,7 +202,6 @@ abstract class AbstractSetup {
         }
         /* setup scaler, parameter, monitors, gate, dialog boxes */
         AbstractControl.setupAll();
-
     }
 
     /**
@@ -218,7 +217,7 @@ abstract class AbstractSetup {
         }
         //FIXME maybe we should do DataBase.clearAll(); here
         Group.clearList();
-        final String sortName = parseSortClassName( sortClass.getName() );
+        final String sortName = Group.parseSortClassName( sortClass.getName() );
         Group.createGroup(sortName, Group.Type.SORT);
         try {        	
             if (specify.isSelected()) {
@@ -336,15 +335,6 @@ abstract class AbstractSetup {
             }
         }
     }
-    /**
-     * Get just the class name from the full name 
-     * @param name the full sort class name
-     * @return the classname, minus any packages
-     */
-    private String parseSortClassName(String name) {
-    	final int index = name.lastIndexOf(".");
-		return name.substring(index+1, name.length());
-    }
     
     /**
      * Do what it takes to open up the tree to the first histogram
@@ -361,8 +351,8 @@ abstract class AbstractSetup {
 		}			
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);			
-
     }
+    
     /**
      * Returns the dialog for setting up offline sorting.
      * 
