@@ -184,8 +184,7 @@ public final class PlotDisplay extends JPanel implements  PlotSelectListener,
 	 */
 	private void createPlots(int numberPlots) {
 		for (int i=plotList.size();i<numberPlots;i++) {
-			final PlotContainer plotTemp= new PlotContainer(this);
-			plotList.add(plotTemp);
+			plotList.add(PlotContainer.createPlotContainer(this));
 		}
 	}
 	
