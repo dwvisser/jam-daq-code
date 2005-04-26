@@ -811,18 +811,14 @@ public final class HDFIO implements DataIO, JamFileFields {
             status.setCurrentGroup(Group.getGroup(sortName));
             currentGroup=status.getCurrentGroup();
         }
-        
-    	//Keep track of first loaded group
-    	if (firstLoadedGroup==null)
-    		firstLoadedGroup =currentGroup;
-
+    	/* Keep track of first loaded group */
+    	if (firstLoadedGroup==null) {
+    		firstLoadedGroup = currentGroup;
+    	}
         groupCount=0;
-        
-    	//Check Group, file only has Default group
+    	/* Check Group, file only has Default group */
     	if (currentGroup.getGroupName() == Group.DEFAULT_NAME ) {
-
 	        histCount=hdfToJam.convertHistogramsOriginal(currentGroup, mode, histAttributes);
-	        
 	        final VDataDescription vddScalers= hdfToJam.findScalersOriginal();                
 	        if (vddScalers!=null) {
 	        	scalerCount=hdfToJam.convertScalers(currentGroup, vddScalers, mode);
@@ -831,7 +827,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	        	gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
 	            /* clear if opening and there are histograms in file */
 	            final VDataDescription vddParam= hdfToJam.findParametersOriginal();
-	            if (vddParam!=null) {
+	            if (vddParam != null) {
 	            	paramCount = hdfToJam.convertParameters(currentGroup, vddParam, mode);
 	            }
 	        }
