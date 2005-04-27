@@ -52,8 +52,44 @@ public final class SummaryTableModel implements TableModel {
 	public void setGroup(Group groupIn) {
 		
 		selectedGroup=groupIn;
-		dataList.clear();
+		
+		refresh();
+									
+	}
+	
+	/*non-javadoc:
+	 * Set the selection type
+	 */
+	final void setSelectionType(int selectionType) {
+		if (selectionType==SummaryTable.ALL_GROUPS_SELECTED ) {
+			numColumns =4;		
+			columnTitles = new String[numColumns];
+			columnTitles[0]=COL_NAME_GROUP;
+			columnTitles[1]=COL_NAME_TYPE;
+			columnTitles[2]=COL_NAME_NAME;
+			columnTitles[3]=COL_NAME_VALUE;					
+		} else {
+			numColumns =3;		
+			columnTitles = new String[numColumns];
+			columnTitles[0]=COL_NAME_TYPE;
+			columnTitles[1]=COL_NAME_NAME;
+			columnTitles[2]=COL_NAME_VALUE;			
+		}
+		
+		refresh();
+	}
+	
+	public void setOptions(boolean showScalers, boolean showHistograms, boolean showGates) {
+		this.showScalers=showScalers;		
+		this.showHistograms=showHistograms;		
+		this.showGates=showGates;		
+		refresh();
+	}
+	
+	public void refresh() {
 				
+		dataList.clear();
+		
 		if (selectedGroup!=null) {
 			
 			//Scalers
@@ -93,41 +129,7 @@ public final class SummaryTableModel implements TableModel {
 				dataList.add(dataElement);						
 			}			
 			*/
-
 		}
-									
-	}
-	
-	/*non-javadoc:
-	 * Set the selection type
-	 */
-	final void setSelectionType(int selectionType) {
-		if (selectionType==SummaryTable.ALL_GROUPS_SELECTED ) {
-			numColumns =4;		
-			columnTitles = new String[numColumns];
-			columnTitles[0]=COL_NAME_GROUP;
-			columnTitles[1]=COL_NAME_TYPE;
-			columnTitles[2]=COL_NAME_NAME;
-			columnTitles[3]=COL_NAME_VALUE;					
-		} else {
-			numColumns =3;		
-			columnTitles = new String[numColumns];
-			columnTitles[0]=COL_NAME_TYPE;
-			columnTitles[1]=COL_NAME_NAME;
-			columnTitles[2]=COL_NAME_VALUE;			
-		}
-		
-		refresh();
-	}
-	
-	public void setOptions(boolean showScalers, boolean showHistograms, boolean showGates) {
-		this.showScalers=showScalers;		
-		this.showHistograms=showHistograms;		
-		this.showGates=showGates;		
-		refresh();
-	}
-	
-	public void refresh() {
 		final TableModelEvent tme = new TableModelEvent(this);
 		final Iterator listenerIter =listenerList.iterator();		
 		while (listenerIter.hasNext()) {			
