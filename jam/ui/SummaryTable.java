@@ -29,17 +29,24 @@ public class SummaryTable extends JPanel implements Observer {
 	
 	private final JamStatus status = JamStatus.getSingletonInstance();	
 	
+	private SummaryTableToolbar summaryTableToolbar;
+	
 	private SummaryTableModel summaryTableModel;
 	
 	public SummaryTable() {
 		setLayout(new BorderLayout());
-		summaryTableModel = new SummaryTableModel();
+
+		summaryTableModel = new SummaryTableModel();			
 	    JTable table = new JTable(summaryTableModel);
 	    JScrollPane scrollPane = new JScrollPane(table);	
 	    this.add(scrollPane);
+	    
+		summaryTableToolbar = new SummaryTableToolbar(this, summaryTableModel);
+		summaryTableModel.setOptions(true, true, true);
+		
+		this.add(summaryTableToolbar,BorderLayout.NORTH);
 		broadcaster.addObserver(this);
 	}
-
  
 	/**
 	 * Implementation of Observable interface.
@@ -54,8 +61,7 @@ public class SummaryTable extends JPanel implements Observer {
 		if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
 			summaryTableModel.setGroup(status.getCurrentGroup());
 			summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);			
-		}
-		
+		}		
 	}
 	
 }

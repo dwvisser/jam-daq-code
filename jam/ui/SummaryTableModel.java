@@ -25,15 +25,21 @@ public final class SummaryTableModel implements TableModel {
 
 	private String COL_NAME_TYPE ="Type";
 	
-	private String COL_NAME_NAME ="NAME";
+	private String COL_NAME_NAME ="Name";
 	
-	private String COL_NAME_VALUE ="COUNTS";
+	private String COL_NAME_VALUE ="Counts";
 	
 	Group selectedGroup;
 	
 	int numColumns;
 	
 	String [] columnTitles;
+	
+	boolean showScalers;
+	
+	boolean showHistograms;
+	
+	boolean showGates;	
 	
 	List dataList = new ArrayList();
 	
@@ -51,24 +57,29 @@ public final class SummaryTableModel implements TableModel {
 		if (selectedGroup!=null) {
 			
 			//Scalers
-			Iterator scalIter = selectedGroup.getScalerList().iterator();
-			while (scalIter.hasNext()) {
-				DataElement dataElement =(DataElement)scalIter.next();
-				dataList.add(dataElement);						
+			if (showScalers) {
+				Iterator scalIter = selectedGroup.getScalerList().iterator();
+				while (scalIter.hasNext()) {
+					DataElement dataElement =(DataElement)scalIter.next();
+					dataList.add(dataElement);						
+				}
 			}
-						
 			//Histograms
 			Iterator histIter = selectedGroup.getHistogramList().iterator();			
 			while (histIter.hasNext()) {
 				Histogram hist = (Histogram)histIter.next();
-				DataElement dataElement =(DataElement)hist;
-				dataList.add(dataElement);
+				if (showHistograms) {
+					DataElement dataElement =(DataElement)hist;
+					dataList.add(dataElement);
+				}
 				
 				//Gates
-				Iterator gateIter = hist.getGates().iterator();
-				while (gateIter.hasNext()) {
-					DataElement dataElementGate =(DataElement)gateIter.next();
-					dataList.add(dataElementGate);				
+				if (showGates) {
+					Iterator gateIter = hist.getGates().iterator();
+					while (gateIter.hasNext()) {
+						DataElement dataElementGate =(DataElement)gateIter.next();
+						dataList.add(dataElementGate);				
+					}
 				}
 			
 			}
@@ -105,6 +116,18 @@ public final class SummaryTableModel implements TableModel {
 			columnTitles[1]=COL_NAME_NAME;
 			columnTitles[2]=COL_NAME_VALUE;			
 		}
+		
+		refresh();
+	}
+	
+	public void setOptions(boolean showScalers, boolean showHistograms, boolean showGates) {
+		this.showScalers=showScalers;		
+		this.showHistograms=showHistograms;		
+		this.showGates=showGates;		
+		refresh();
+	}
+	
+	public void refresh() {
 		final TableModelEvent tme = new TableModelEvent(this);
 		final Iterator listenerIter =listenerList.iterator();		
 		while (listenerIter.hasNext()) {			
@@ -112,7 +135,6 @@ public final class SummaryTableModel implements TableModel {
 			tml.tableChanged(tme);
 		}
 	}
-	
 	/**
 	 * Get the number of columns
 	 * @see javax.swing.table.TableModel#getColumnCount()
@@ -198,9 +220,14 @@ public final class SummaryTableModel implements TableModel {
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
 	 */
-	public void removeTableModelListener(TableModelListener arg0) {
-		// TODO Auto-generated method stub
-
+	public void removeTableModelListener(TableModelListener listenerRemove) {
+		Iterator iterListener = listenerList.iterator();
+		for (int i=0; i<listenerList.size(); i++){
+			TableModelListener listener =(TableModelListener)listenerList.get(i);
+			if (listenerRemove==listener) {
+				listenerList.remove(i);
+			}
+		}
 	}
 
 }
