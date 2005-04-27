@@ -96,7 +96,7 @@ public class SummaryTableToolbar extends JToolBar {
 		boolean showHistograms = chkShowHistogram.isSelected();
 		boolean showGates =chkShowGate.isSelected();
 		summaryTableModel.setOptions(showScalers, showHistograms, showGates);
-		summaryTableModel.refresh();
+		
 	}
 	/* non-javadoc:
 	 * Load icons for tool bar
