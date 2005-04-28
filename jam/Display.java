@@ -52,7 +52,8 @@ public class Display extends JPanel implements Observer{
 		}
 		public void update(Observable observable, Object o) {
 			BroadcastEvent be = (BroadcastEvent) o;
-			if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
+			if	( (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) ||
+			      (be.getCommand() == BroadcastEvent.Command.ROOT_SELECT) ){
 				showTable();
 			}else if ( (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)||
 					   (be.getCommand() == BroadcastEvent.Command.GATE_SELECT) ){

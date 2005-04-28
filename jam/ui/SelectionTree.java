@@ -38,6 +38,8 @@ public class SelectionTree extends JPanel implements Observer {
     private final JTree tree;
 
     private final DefaultTreeModel treeModel;
+    
+    private DefaultMutableTreeNode rootNode;    
 
     private static final JamStatus STATUS = JamStatus.getSingletonInstance();
     
@@ -96,8 +98,9 @@ public class SelectionTree extends JPanel implements Observer {
      * Load the tree for the data objects.
      */
     private void loadTree() {
+    	
         final SortMode sortMode = STATUS.getSortMode();
-        final DefaultMutableTreeNode rootNode;
+
         if (sortMode == SortMode.FILE) {
         	final String fileName =STATUS.getSortName();
         	rootNode = new DefaultMutableTreeNode("File: "+fileName);
@@ -148,16 +151,20 @@ public class SelectionTree extends JPanel implements Observer {
              */
             removeSelectionListener();
             final TreePath prime = paths[0];
-            final Object firstNode = ((DefaultMutableTreeNode) prime
-                    .getLastPathComponent()).getUserObject();
-            if (firstNode instanceof Group) {
-            	final Group group = (Group)firstNode;
+            final DefaultMutableTreeNode firstNode =  ((DefaultMutableTreeNode) prime
+                    .getLastPathComponent());            
+            final Object firstNodeObject = firstNode.getUserObject();
+            
+            if (firstNode==rootNode) {
+            	BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
+            }else if (firstNodeObject instanceof Group) {
+            	final Group group = (Group)firstNodeObject;
             	 //Group.setCurrentGroup(group);
             	 STATUS.setCurrentGroup(group);
             	 BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT, group);
-            }else if (firstNode instanceof Histogram) {
+            }else if (firstNodeObject instanceof Histogram) {
                 /* Histogram selected */
-                final Histogram hist = (Histogram) firstNode;
+                final Histogram hist = (Histogram) firstNodeObject;
                 STATUS.setCurrentGroup(hist.getGroup());         
                 STATUS.setCurrentHistogram(hist);
                 STATUS.setCurrentGateName(null);                
@@ -172,9 +179,9 @@ public class SelectionTree extends JPanel implements Observer {
                 	STATUS.clearOverlays();
                 }
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,hist);
-            } else if (firstNode instanceof Gate) {
+            } else if (firstNodeObject instanceof Gate) {
                 /* Gate selected */                
-                final Gate gate = (Gate) firstNode;
+                final Gate gate = (Gate) firstNodeObject;
                 final Histogram hist = getAssociatedHist(prime);
                 tree.addSelectionPath(pathForDataObject(hist));
                 STATUS.setCurrentGroup(hist.getGroup());    

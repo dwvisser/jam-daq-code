@@ -17,6 +17,11 @@ public final class BroadcastEvent {
 		public static final Command REFRESH = new Command(1);
 
 		/**
+		 * The root node has been selected 
+		 */
+		public static final Command ROOT_SELECT = new Command(3);		
+		
+		/**
 		 * A Group has been selected.
 		 * 
 		 * @see jam.plot.View

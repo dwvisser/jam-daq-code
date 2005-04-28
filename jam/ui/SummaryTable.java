@@ -58,9 +58,12 @@ public class SummaryTable extends JPanel implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
-			summaryTableModel.setGroup(status.getCurrentGroup());
+		if	(be.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
+			summaryTableModel.setSelectionType(ALL_GROUPS_SELECTED);
+		} else if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
 			summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);			
+			summaryTableModel.setGroup(status.getCurrentGroup());
+			
 		}		
 	}
 	
