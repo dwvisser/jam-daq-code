@@ -127,6 +127,7 @@ public final class MenuBar implements Observer, CommandNames {
 
 		final JMenu expHist = new JMenu("Export");
 		file.add(expHist);
+		expHist.add(getMenuItem(EXPORT_TABLE));
 		expHist.add(getMenuItem(EXPORT_TEXT));
 		expHist.add(getMenuItem(EXPORT_SPE));
 		expHist.add(getMenuItem(EXPORT_DAMM));

@@ -116,6 +116,9 @@ public interface CommandNames {
 	
 	/** Read or zero scalers. */
 	String SCALERS="scalers";
+
+	/** Export the summary table to a file. */
+	String EXPORT_TABLE="exporttable";
 	
 	/** Export the displayed histogram as a text file. */
 	String EXPORT_TEXT="exporttext";

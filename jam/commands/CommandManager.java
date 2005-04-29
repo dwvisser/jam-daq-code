@@ -80,6 +80,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(DISPLAY_SCALERS, ShowDialogScalersCmd.class);
 		CMD_MAP.put(SHOW_ZERO_SCALERS, ShowDialogZeroScalersCmd.class);
 		CMD_MAP.put(SCALERS, ScalersCmd.class);
+		CMD_MAP.put(EXPORT_TABLE, ExportSummaryTableCmd.class);
 		CMD_MAP.put(EXPORT_TEXT, ExportTextFileCmd.class);
 		CMD_MAP.put(EXPORT_DAMM, ExportDamm.class);
 		CMD_MAP.put(EXPORT_SPE, ExportRadware.class);	
