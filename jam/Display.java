@@ -42,11 +42,15 @@ public class Display extends JPanel implements Observer{
 			broadcaster.addObserver(this);
 			
 		}
-		
+		/**
+		 * Show plots in the main panel
+		 */
 		public void showPlot() {
 			displaySwapPanelLayout.show(this, KEY_PLOT);			
 		}
-		
+		/**
+		 * Show a table in the main panel
+		 */		
 		public void showTable() {
 			displaySwapPanelLayout.show(this, KEY_TABLE);
 		}

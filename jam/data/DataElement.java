@@ -12,7 +12,7 @@ public interface DataElement {
 	public static final int ELEMENT_TYPE_GATE=1;
 	
 	public static final int ELEMENT_TYPE_SCALER=2;
-	
+		
     public String getName();
     
     public int getCount();

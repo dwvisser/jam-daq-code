@@ -90,7 +90,10 @@ public class SummaryTableToolbar extends JToolBar {
 		add(chkShowGate);		
 		
 	}
-	
+	/**
+	 * Refresh display of table
+	 *
+	 */
 	private void refresh() {
 		boolean showScalers = chkShowScaler.isSelected();
 		boolean showHistograms = chkShowHistogram.isSelected();
@@ -98,7 +101,7 @@ public class SummaryTableToolbar extends JToolBar {
 		summaryTableModel.setOptions(showScalers, showHistograms, showGates);
 		
 	}
-	/* non-javadoc:
+	/** 
 	 * Load icons for tool bar
 	 */
 	private Icon loadToolbarIcon(String path) {
@@ -124,6 +127,5 @@ public class SummaryTableToolbar extends JToolBar {
 				"</html></body>");
 		return rval.toString();
 	}
-	
 
 }

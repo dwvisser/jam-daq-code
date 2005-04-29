@@ -10,8 +10,6 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.table.TableModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.JScrollPane;
 
 /**
@@ -60,10 +58,11 @@ public class SummaryTable extends JPanel implements Observer {
 		BroadcastEvent be = (BroadcastEvent) o;
 		if	(be.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
 			summaryTableModel.setSelectionType(ALL_GROUPS_SELECTED);
+			//summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);
+			//summaryTableModel.setGroup(status.getCurrentGroup());			
 		} else if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
 			summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);			
-			summaryTableModel.setGroup(status.getCurrentGroup());
-			
+			summaryTableModel.setGroup(status.getCurrentGroup());			
 		}		
 	}
 	
