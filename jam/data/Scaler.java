@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Class representing an individual scaler in the experiment.
@@ -29,6 +31,7 @@ public class Scaler implements DataElement {
     public final static int NAME_LENGTH = 16;
 
     private transient final String name;	//name of scaler
+    private transient final String uniqueName;	//unique name in all groups
     private transient final int number;		//number in list
     private int value;		//value of scaler
 
@@ -45,19 +48,31 @@ public class Scaler implements DataElement {
      * @throws IllegalArgumentException
      *             if name ><code>NAME_LENGTH</code> characters
      */
-    public Scaler(Group group, String name, int number) {
+    public Scaler(Group group, String nameIn, int number) {
         final StringUtilities stringUtil = StringUtilities.instance();
+        
+        /*FIXME KBS remove
         if (name.length() > NAME_LENGTH) {//give error if name is too long
             throw new IllegalArgumentException("Scale name '" + name
                     + "' too long maximum characters " + NAME_LENGTH);
         }
-        name = stringUtil.makeLength(name, NAME_LENGTH);
-        //        if (group==null) {
-        //FIXME KBS should not reference Status
-        //group = STATUS.getCurrentGroup();
-        //        }
+        */
+        
+		//Set of names of gates for histogram this gate belongs to
+		Set scalerNames = new TreeSet();
+		Iterator groupScalerIter = group.getScalerList().iterator();
+		while (groupScalerIter.hasNext()) {
+			Scaler scaler =(Scaler)groupScalerIter.next();
+			scalerNames.add(scaler.getName()); 
+		}	
+		
+		this.name=stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
+		this.uniqueName = group.getName()+"/"+name;
         group.addScaler(this);
+        
+        //FIXME KBS remove
         /* make sure name is unique */
+        /*
         int prime = 1;
         String addition;
         while (TABLE.containsKey(name)) {
@@ -67,11 +82,11 @@ public class Scaler implements DataElement {
             prime++;
 
         }
+        */
 
-        this.name = name;
         this.number = number;
         /* Add to list of scalers */
-        TABLE.put(name, this);
+        TABLE.put(uniqueName, this);
         LIST.add(this);
     }
 
@@ -90,6 +105,7 @@ public class Scaler implements DataElement {
      * @param inScalerList
      *            the new list of all scalers
      */
+    /*FIXME KBS not used needs unique name for key to TABLE
     public static void setScalerList(List inScalerList) {
         clearList();
         final Iterator allScalers = inScalerList.iterator();
@@ -99,7 +115,7 @@ public class Scaler implements DataElement {
             LIST.add(scaler);
         }
     }
-
+    */
     /**
      * Clears the list of all scalers.
      */

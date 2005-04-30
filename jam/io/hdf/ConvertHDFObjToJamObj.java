@@ -593,9 +593,12 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
     }
     
     private Scaler produceScaler(Group group, FileOpenMode mode, int number, String name){
+    	//FIXME check works for unique name and
+    	//create unique name should be a utility
+    	String uniqueName = group.getName()+"/"+name;
         return mode.isOpenMode() ? new Scaler(group, name,
                 number) : Scaler
-                .getScaler(name);        
+                .getScaler(uniqueName);        
     }
 
 	List findParameters(VirtualGroup virtualGroupGroup) throws HDFException {

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A gate, used for data sorting, belongs to a histogram which determines what type of
@@ -35,7 +37,8 @@ public final class Gate implements DataElement {
 	}
 
 	private transient final String name; //name of gate
-	private transient final String histName; //histogram gate belongs to
+	private transient String uniqueName;//unique name of group
+	private transient final String histUniqueName; //histogram gate belongs to
 	private transient final int dimensions; //type of gate ONE_DIMESION or TWO_DIMENSION
 
 	private transient final int sizeX; //size of gate for 1d and x of 2d
@@ -58,13 +61,26 @@ public final class Gate implements DataElement {
 	 * @param name name of the gate which will be put on the chooser in the display
 	 * @param hist the <code>Histogram</code> to which the gate will belong.
 	 */
-	public Gate(String name, Histogram hist) {
+	public Gate(String nameIn, Histogram hist) {
+		
 		final StringUtilities stringUtil=StringUtilities.instance();
-		histName = hist.getUniqueFullName();
-		//work out name, and give error message if name is to be truncated
-		String name2 = name = stringUtil.makeLength(name, NAME_LENGTH);
-		name = name2;
+		histUniqueName = hist.getUniqueFullName();
+		
+		//Set of names of gates for histogram this gate belongs to
+		Set gateNames = new TreeSet();
+		Iterator histGatesIter = hist.getGates().iterator();
+		while (histGatesIter.hasNext()) {
+			Gate gate =(Gate)histGatesIter.next();
+			gateNames.add(gate.getName()); 
+		}	
+		
+		this.name=stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);
+		
+		this.uniqueName = histUniqueName+"/"+name;
+		
+		 //FIXME KBS remove
 		//add to histogramTable here
+		/*
 		int prime = 1;
 		String addition;
 		while (TABLE.containsKey(name)) {
@@ -76,17 +92,20 @@ public final class Gate implements DataElement {
 					+ addition;
 			prime++;
 		}
-		this.name = name;
+		*/
+
 		dimensions = hist.getDimensionality();
 		sizeX = hist.getSizeX();
 		sizeY = hist.getSizeY();
 		unsetLimits();
+		
 		addToCollections();
 		hist.addGate(this);
 	}
 	
 	private final void addToCollections(){
-		TABLE.put(name, this);
+		
+		TABLE.put(uniqueName, this);
 		LIST.add(this);
 		DIM_LIST[dimensions-1].add(this);
 	}
@@ -192,7 +211,7 @@ public final class Gate implements DataElement {
 	 * @return the <code>Histogram</code> this <code>Gate</code> belongs to
 	 */
 	public Histogram getHistogram() {
-		return Histogram.getHistogram(histName);
+		return Histogram.getHistogram(histUniqueName);
 	}
 
 	/**
@@ -371,7 +390,7 @@ public final class Gate implements DataElement {
 	}
 	
 	private double getArea1d(){
-		final Histogram histogram=Histogram.getHistogram(histName);
+		final Histogram histogram=Histogram.getHistogram(histUniqueName);
 		final Histogram.Type htype=histogram.getType();
 		double rval=0.0;
 		if (htype == Histogram.Type.ONE_D_DOUBLE) {
@@ -389,7 +408,7 @@ public final class Gate implements DataElement {
 	}
 	
 	private double getArea2d(){
-		final Histogram histogram=Histogram.getHistogram(histName);
+		final Histogram histogram=Histogram.getHistogram(histUniqueName);
 		final Histogram.Type htype=histogram.getType();
 		double rval=0.0;
 		if (htype == Histogram.Type.TWO_DIM_INT) {
@@ -425,7 +444,7 @@ public final class Gate implements DataElement {
 		double centroid = 0.0;
 		double area = 0.0;
 		if (dimensions == 1) {
-			final Histogram histogram=Histogram.getHistogram(histName);
+			final Histogram histogram=Histogram.getHistogram(histUniqueName);
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] counts = (int[]) histogram.getCounts();
 				//sum up counts and weight
@@ -486,7 +505,7 @@ public final class Gate implements DataElement {
 	 * @return	the number of the associated <code>Histogram</code>
 	 */
 	public int getHistogramNumber() {
-		return Histogram.getHistogram(histName).getNumber();
+		return Histogram.getHistogram(histUniqueName).getNumber();
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package jam.data.control;
 
+import jam.commands.ScalersCmd;
 import jam.global.BroadcastEvent;
+import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -25,14 +27,18 @@ import javax.swing.border.EmptyBorder;
  */
 public class ScalerZero extends AbstractControl {
 
-	private transient final JCheckBox disable;
+	private transient final JCheckBox chkDisable;
 	private transient final JButton bzero2;
+	private final ScalersCmd scalersCmd;
+	private MessageHandler msgHandler;
 
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
 	 */
 	public ScalerZero() {
 		super("Zero Scalers", true);
+		msgHandler = STATUS.getMessageHandler();
+		scalersCmd =new ScalersCmd();
 		Container dzc = getContentPane();
 		setResizable(false);
 		setLocation(20, 50);
@@ -42,24 +48,25 @@ public class ScalerZero extends AbstractControl {
 		bzero2 = new JButton("Zero");
 		bzero2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event){
-				disable.setSelected(true);
+				chkDisable.setSelected(true);
 				bzero2.setEnabled(false);
+				zero();
 				dispose();
 			}
 		});
 		bzero2.setEnabled(false);
 		pZero.add(bzero2);
-		disable = new JCheckBox("Disable Zero", true);
-		disable.addItemListener(new ItemListener(){
+		chkDisable = new JCheckBox("Disable Zero", true);
+		chkDisable.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent event){
-				if(disable.isSelected()){
+				if(chkDisable.isSelected()){
 					bzero2.setEnabled(false);
 				} else {
 					bzero2.setEnabled(true);
 				}
 			}
 		});
-		pZero.add(disable);
+		pZero.add(chkDisable);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent event) {
 				dispose();
@@ -73,12 +80,8 @@ public class ScalerZero extends AbstractControl {
 	 * zero scalers, call broadcast which will sent it to
 	 * the class that will zero the camac crate scalers.
 	 */
-	static void zero() {
-		if (!STATUS.isOnline()) {
-			throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
-		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
-		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
+	private void zero() {
+		scalersCmd.zeroScalers();
 	}
 
 	/**

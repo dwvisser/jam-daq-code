@@ -7,7 +7,7 @@ import jam.global.BroadcastEvent;
  * 
  * @author Ken Swartz
  */
-final class ScalersCmd extends AbstractCommand {
+public final class ScalersCmd extends AbstractCommand {
 
 	private static final int READ =1;
 	private static final int ZERO =2;
@@ -37,9 +37,18 @@ final class ScalersCmd extends AbstractCommand {
 	/**
 	 * Does the scaler zeroing.
 	 */
-	private void zeroScalers() {
-		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
-		readScalers();				
+	public void zeroScalers() {
+		if (STATUS.isOnline()) {
+			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_CLEAR);
+			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
+			
+		}else {
+			msghdlr.errorOutln("Can only Zero Scalers when in Online mode.");			
+			//FIXME KBS remove
+			//throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
+			
+		}
+
 	}
 	
 	/**

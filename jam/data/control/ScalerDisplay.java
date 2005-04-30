@@ -1,5 +1,6 @@
 package jam.data.control;
 
+import jam.commands.ScalersCmd;
 import jam.data.Group;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
@@ -46,6 +47,8 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	private JTextField[] textScaler;
 
 	private final JPanel pScalers;
+	
+	private final ScalersCmd scalersCmd;
 
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
@@ -53,6 +56,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	public ScalerDisplay() {
 		super("Scalers", false);
 		broadcaster.addObserver(this);
+		scalersCmd = new ScalersCmd();
 		/* dialog box to display scalers */
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
@@ -79,7 +83,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			public void actionPerformed(ActionEvent e) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
-				ScalerZero.zero();
+				scalersCmd.zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);
