@@ -1,5 +1,11 @@
 package jam.commands;
 
+import jam.ui.SummaryTable;
+import jam.global.BroadcastEvent;
+import jam.global.CommandListenerException;
+import jam.global.MessageHandler;
+import jam.io.ExtensionFileFilter;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,16 +15,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFileChooser;
-
-import jam.data.Group;
-import jam.global.BroadcastEvent;
-import jam.global.CommandListenerException;
-import jam.global.MessageHandler;
-import jam.io.ExtensionFileFilter;
-import jam.io.ImpExpASCII;
-import jam.io.hdf.HDFIO;
-import jam.io.hdf.HDFileFilter;
-import jam.ui.SummaryTable;
 
 /**
  * Export the summary table 
@@ -34,7 +30,6 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter(EXTS, 
 	"Text file");
 	
-	//private 
 	public void initCommand(){
 		putValue(NAME,"Table");		
 	}
@@ -96,7 +91,7 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 	
 	private File chooseFile() {
 		File file=null;
-		final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
+		final JFileChooser jfile = new JFileChooser();
 
 	    jfile.setFileFilter(FILTER);
 	    final int option = jfile.showSaveDialog(STATUS.getFrame());

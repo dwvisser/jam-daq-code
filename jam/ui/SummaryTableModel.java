@@ -1,13 +1,12 @@
 package jam.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import jam.data.DataElement;
 import jam.data.Group;
 import jam.data.Histogram;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
