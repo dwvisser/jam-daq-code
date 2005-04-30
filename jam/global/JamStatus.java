@@ -7,6 +7,7 @@ import jam.VMECommunication;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.plot.PlotDisplay;
+import jam.ui.SummaryTable;
 
 import java.io.File;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ public final class JamStatus {
 	private static String gateName;
 	private static JFrame frame;
 	private static PlotDisplay display;
+	private static SummaryTable summaryTable;
 	private static MessageHandler console;
 	private static FrontEndCommunication frontEnd;
 	private boolean showGUI=true;
@@ -106,6 +108,24 @@ public final class JamStatus {
 		return display;
 	}
 
+	/**
+	 * Sets the display.
+	 * 
+	 * @param d the display
+	 */
+	public synchronized void setTable(SummaryTable t){
+		summaryTable=t;
+	}
+	
+	/**
+	 * Gets the display.
+	 * 
+	 * @return the display
+	 */
+	public synchronized SummaryTable getTable(){
+		return summaryTable;
+	}
+	
 	/**
 	 * Get the application frame.
 	 *

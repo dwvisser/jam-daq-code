@@ -5,6 +5,8 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -44,6 +46,38 @@ public class SummaryTable extends JPanel implements Observer {
 		
 		this.add(summaryTableToolbar,BorderLayout.NORTH);
 		broadcaster.addObserver(this);
+	}
+	/**
+	 * Write out the table to a writer stream
+	 * @param writer
+	 */
+	public void writeTable(OutputStream outputStream) {
+		
+		final PrintWriter writer = new PrintWriter(outputStream);
+		
+		int numCols = summaryTableModel.getColumnCount();
+		int numRows = summaryTableModel.getRowCount();
+		//write header
+		for (int i=0;i<numCols;i++) {
+			writer.print(summaryTableModel.getColumnName(i) );
+			if (i<numCols-1) {
+				writer.print("\t");
+			}
+		}
+		writer.println();
+		
+		//write data
+		for (int i=0;i<numRows;i++) {
+			for (int j=0;j<numCols;j++) {
+				writer.print(summaryTableModel.getValueAt(i,j));
+				if (j<numCols-1) {
+					writer.print("\t");
+				}
+			}
+			writer.println();			
+		}
+
+		writer.flush();
 	}
  
 	/**

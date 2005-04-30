@@ -97,7 +97,9 @@ public final class JamMain extends JFrame implements Observer {
 
 		/* histogram displayer */
 		plotDisplay = new PlotDisplay(console);
+		JamStatus.getSingletonInstance().setDisplay(plotDisplay);
 		summaryTable = new SummaryTable();		
+		JamStatus.getSingletonInstance().setTable(summaryTable); 
 		display =new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);

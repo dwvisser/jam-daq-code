@@ -76,8 +76,7 @@ public final class PlotDisplay extends JPanel implements  PlotSelectListener,
 	 *            the class to call to print out messages
 	 */
 	public PlotDisplay(Console jc) {		
-		/* Set gobal status */
-		JamStatus.getSingletonInstance().setDisplay(this);
+
 		Broadcaster.getSingletonInstance().addObserver(this);
 		Bin.Factory.init(this);
 		/* display event handler */
