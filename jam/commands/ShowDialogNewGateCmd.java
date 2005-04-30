@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.data.Histogram;
 import jam.data.control.GateNew;
+import jam.global.BroadcastEvent;
 
 import java.util.List;
 import java.util.Observable;
@@ -21,6 +22,15 @@ Observer {
 	}
 	
 	public void update(Observable observe, Object obj){
-		setEnabled(!histogramList.isEmpty());
-	}	
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=be.getCommand();
+		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
+			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
+			setEnabled(false);			
+		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
+				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
+			Histogram hist =STATUS.getCurrentHistogram();
+			setEnabled(!histogramList.isEmpty() && hist!=null);
+		} 
+	}		
 }

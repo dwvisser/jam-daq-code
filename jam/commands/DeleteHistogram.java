@@ -5,6 +5,8 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 
 import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,7 +18,7 @@ import javax.swing.KeyStroke;
  * @author Ken Swartz
  *
  */
-final class DeleteHistogram extends AbstractCommand {
+final class DeleteHistogram extends AbstractCommand implements Observer {
 	
 	DeleteHistogram(){
 		super();
@@ -50,4 +52,17 @@ final class DeleteHistogram extends AbstractCommand {
 	protected void executeParse(String[] cmdTokens) {
 		execute(null);		
 	}
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=be.getCommand();
+		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
+			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
+			setEnabled(false);			
+		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
+				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
+			Histogram hist =STATUS.getCurrentHistogram();
+			setEnabled(hist!=null);
+		} 
+	}			
+	
 }
