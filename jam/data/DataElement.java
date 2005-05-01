@@ -15,7 +15,7 @@ public interface DataElement {
 		
     public String getName();
     
-    public int getCount();
+    public double getCount();
     
     public int getElementType();
 	

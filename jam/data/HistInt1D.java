@@ -76,8 +76,8 @@ public final class HistInt1D extends AbstractHist1D {
 		return counts;
 	}
 
-	public int getCount() {
-		return (int)getArea();
+	public double getCount() {
+		return getArea();
 	}
 	
 	/**

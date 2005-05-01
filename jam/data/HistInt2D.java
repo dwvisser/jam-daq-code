@@ -114,8 +114,8 @@ public final class HistInt2D extends AbstractHist2D {
 		return counts2d;
 	}
 
-	public int getCount() {
-		return (int)getArea();
+	public double getCount() {
+		return getArea();
 	}
 	
 	/**

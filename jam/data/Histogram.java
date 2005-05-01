@@ -802,7 +802,7 @@ public abstract class Histogram implements DataElement {
 		}
 	}
 
-	public abstract int getCount();
+	public abstract double getCount();
 	
 	public int getElementType() {
 		return DataElement.ELEMENT_TYPE_HISTOGRAM;

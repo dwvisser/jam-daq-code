@@ -187,8 +187,8 @@ public final class Gate implements DataElement {
 		return name;
 	}
 
-	public int getCount() {
-		return (int)getArea();
+	public double getCount() {
+		return getArea();
 	}
 	
 	public int getElementType() {

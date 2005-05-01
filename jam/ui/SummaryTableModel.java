@@ -4,6 +4,7 @@ import jam.data.DataElement;
 import jam.data.Group;
 import jam.data.Histogram;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,12 +36,14 @@ public final class SummaryTableModel implements TableModel {
 	int numColumns;
 	/** The titles of the columns */
 	String [] columnTitles;
-	
+	/** Flag to show scalers */
 	boolean showScalers;
-	
+	/** Flag to show histograms */
 	boolean showHistograms;
-	
+	/** Flag to show gates */	
 	boolean showGates;	
+	
+	NumberFormat numFormat;
 	
 	List dataList = new ArrayList();
 	
@@ -49,6 +52,13 @@ public final class SummaryTableModel implements TableModel {
 	
 	SummaryTableModel() {
 		setSelectionType(SummaryTable.SINGLE_GROUP_SELECTED);
+		
+		numFormat = NumberFormat.getInstance();
+		numFormat.setGroupingUsed(false);
+		final int fracDigits = 2;
+		numFormat.setMinimumFractionDigits(fracDigits);
+		numFormat.setMaximumFractionDigits(fracDigits);
+
 	}
 	
 	public void setGroup(Group groupIn) {
@@ -184,10 +194,15 @@ public final class SummaryTableModel implements TableModel {
     	//Name	
     	} else if (col==offsetCol+1) {
     		retValue=dataElement.getName();
+    		
     	//Value	
-    	} else if (col==offsetCol+2) {    		
-    		//retValue = new Double(dataElement.getCount());
-    		retValue = new Integer(dataElement.getCount());
+    	} else if (col==offsetCol+2) {
+    		//Cheap format as integer
+    		//int countInt = (int)Math.round(dataElement.getCount());
+    		//retValue = new Integer(countInt);
+    		
+    		retValue = numFormat.format(dataElement.getCount());
+    		
 	    }
 	
 		return retValue;

@@ -190,8 +190,8 @@ public class Scaler implements DataElement {
         value=valueIn;
     }
     
-    public synchronized int getCount() {
-    	return value;
+    public synchronized double getCount() {
+    	return (double)value;
     }
     
 	public int getElementType() {
