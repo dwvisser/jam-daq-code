@@ -13,10 +13,15 @@ import jam.io.hdf.HDFileFilter;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -34,7 +39,9 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		putValue(NAME,"Open\u2026");
 		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_O, CTRL_MASK));
 		Frame frame= STATUS.getFrame();
-		hdfio = new HDFIO(frame, msghdlr);		
+		hdfio = new HDFIO(frame, msghdlr);
+		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
+		putValue(Action.SMALL_ICON, iOpen);
 		
 	}
 
@@ -135,6 +142,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);		
 	}
+	
 	/**
 	 * Called by HDFIO when asynchronized IO is completed  
 	 */

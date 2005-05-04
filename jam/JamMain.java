@@ -11,6 +11,7 @@ import jam.global.JamStatus;
 import jam.global.SortMode;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
+import jam.ui.JamToolBar;
 import jam.ui.MenuBar;
 import jam.ui.SelectionTree;
 import jam.ui.SummaryTable;
@@ -53,6 +54,7 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
+	JamToolBar jamToolBar;
 	/**
 	 * Display Panel
 	 */
@@ -91,10 +93,14 @@ public final class JamMain extends JFrame implements Observer {
 		loadIcon();
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
+
+		jamToolBar = new JamToolBar();
+		contents.add(jamToolBar, BorderLayout.NORTH);
+		
 		/* Ouput/Input text console */
 		console = new Console();
 		console.messageOutln("Welcome to Jam v" + Version.getInstance().getName());
-
+		
 		/* histogram displayer */
 		plotDisplay = new PlotDisplay(console);
 		JamStatus.getSingletonInstance().setDisplay(plotDisplay);

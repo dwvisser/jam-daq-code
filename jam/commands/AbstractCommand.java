@@ -6,8 +6,12 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.event.ActionEvent;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  * Implementation of <code>Commandable</code> interface in which
@@ -109,6 +113,26 @@ Commandable {
 	 */
 	public void logError(){
 			
+	}
+	
+	/* non-javadoc:
+	 * Load icons for command
+	 */
+	protected Icon loadToolbarIcon(String path) {
+		final Icon toolbarIcon;
+		final ClassLoader cl = this.getClass().getClassLoader();
+		final URL urlResource = cl.getResource(path);
+		if (!(urlResource == null)) {
+			toolbarIcon = new ImageIcon(urlResource);
+		} else { //instead use path, ugly but lets us see button
+			JOptionPane.showInputDialog(
+				null,
+				"Can't load resource: " + path,
+				"Missing Icon",
+				JOptionPane.ERROR_MESSAGE);
+			toolbarIcon = null; //buttons initialized with text if icon==null
+		}
+		return toolbarIcon;
 	}
 	
 	/**

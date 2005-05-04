@@ -11,6 +11,8 @@ import jam.io.hdf.HDFileFilter;
 import java.awt.Frame;
 import java.io.File;
 
+import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
 /**
@@ -27,7 +29,9 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	OpenAdditionalHDF(){
 		putValue(NAME,"Open Additional\u2026");
 		Frame frame= STATUS.getFrame();
-		hdfio = new HDFIO(frame, msghdlr);				
+		hdfio = new HDFIO(frame, msghdlr);			
+	    final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
+	    putValue(Action.SMALL_ICON, iOpenAdd);
 	}
 
 	/* 

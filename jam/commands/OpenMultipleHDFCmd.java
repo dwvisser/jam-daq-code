@@ -3,6 +3,9 @@ package jam.commands;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.global.SortMode;
@@ -23,6 +26,9 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	OpenMultipleHDFCmd(){
 		putValue(NAME,"Open Multiple\u2026");
 		openMultiple=new OpenMultipleFiles(STATUS.getFrame(), msghdlr);
+		final Icon iOpen = loadToolbarIcon("jam/ui/OpenMultiHDF.png");
+		putValue(Action.SMALL_ICON, iOpen);
+
 		//broadcaster.addObserver(this);
 	}
 	
