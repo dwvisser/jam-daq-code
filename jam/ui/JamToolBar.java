@@ -34,38 +34,18 @@ public class JamToolBar extends JToolBar implements Observer, CommandNames {
 		//final Icon iOpen = loadToolbarIcon("jam/ui/OpenJam.png");
 		//Action actionOpen=commands.getAction(OPEN_HDF);
 		//JButton bOpen = new JButton("Open");
-		JButton bOpen = new JButton();
-		bOpen.setAction(commands.getAction(OPEN_HDF));
-		bOpen.setText("");		
-	    add(bOpen);
+		
+	    add(createButton(OPEN_HDF));
 
-	    //final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddJam.png");
-	    //JButton bOpenAdd = new JButton(iOpenAdd);
-	    JButton bOpenAdd = new JButton();
-	    bOpenAdd.setAction(commands.getAction(OPEN_ADDITIONAL_HDF));
-	    bOpenAdd.setText("");
-	    add(bOpenAdd);
+	    add(createButton(OPEN_ADDITIONAL_HDF));
+	    	    
+	    add(createButton(OPEN_MULTIPLE_HDF));	    
+	    	    
+	    add(createButton(SAVE_HDF));	    
+	    	    
+	    add(createButton(SAVE_AS_HDF));	    
 	    
-	    //final Icon iOpenMulti = loadToolbarIcon("jam/ui/OpenJamMulti.png");	    
-	    //JButton bOpenMult = new JButton(iOpenMulti);	    
-	    JButton bOpenMult = new JButton();	    
-	    bOpenMult.setAction(commands.getAction(OPEN_MULTIPLE_HDF));
-	    bOpenMult.setText("");	    
-	    add(bOpenMult);	    
-	    
-	    //final Icon iSave = loadToolbarIcon("toolbarButtonGraphics/general/Save24.gif");
-	    JButton bSave = new JButton();	    
-	    bSave.setAction(commands.getAction(SAVE_HDF));	    
-	    add(bSave);
-
-	    //final Icon iSaveAs = loadToolbarIcon("toolbarButtonGraphics/general/SaveAs24.gif");	    
-	    JButton bSaveAs = new JButton();
-	    bSaveAs.setAction(commands.getAction(SAVE_AS_HDF));	    
-	    add(bSaveAs);	    
-	    
-	    JButton bPrint = new JButton();	    
-	    bPrint.setAction(commands.getAction(PRINT));	    
-	    add(bPrint);
+	    add(createButton(PRINT));	    
 	    
 	    JButton bSort = new JButton();
 	    bSort.setAction(commands.getAction(SHOW_SORT_CONTROL));	    
@@ -113,6 +93,12 @@ public class JamToolBar extends JToolBar implements Observer, CommandNames {
 		return toolbarIcon;
 	}
 	
+	private JButton createButton(String command) {
+	    JButton buttonToolbar = new JButton();
+	    buttonToolbar.setAction(commands.getAction(command));	    
+	    buttonToolbar.setText("");	    
+	    return buttonToolbar;
+	}
 	public void update(Observable observe, Object obj) {
 		/*
 

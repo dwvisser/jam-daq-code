@@ -6,6 +6,8 @@ import jam.io.hdf.HDFileFilter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 
@@ -21,6 +23,10 @@ final class SaveAsHDFCmd extends AbstractCommand {
 		putValue(
 			ACCELERATOR_KEY,
 			KeyStroke.getKeyStroke(KeyEvent.VK_S, CTRL_MASK));
+	    final Icon iSaveAs = loadToolbarIcon("jam/ui/SaveAsHDF.png");
+	    putValue(Action.SMALL_ICON, iSaveAs);
+		putValue(Action.SHORT_DESCRIPTION, "Save histograms to a new hdf data file.");	    
+		
 	}
 
 	/**

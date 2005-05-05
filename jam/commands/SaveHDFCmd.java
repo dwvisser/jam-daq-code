@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
@@ -27,6 +29,10 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 			KeyStroke.getKeyStroke(
 				KeyEvent.VK_S,
 				CTRL_MASK | KeyEvent.SHIFT_MASK));
+	    final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
+	    putValue(Action.SMALL_ICON, iSave);
+		putValue(Action.SHORT_DESCRIPTION, "Save histograms to a hdf data file.");	    
+		
 		enable(); //depending on sort mode
 	}
 

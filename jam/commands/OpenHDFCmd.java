@@ -42,7 +42,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		hdfio = new HDFIO(frame, msghdlr);
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
-		
+		putValue(Action.SHORT_DESCRIPTION, "Open a hdf data file");
 	}
 
 	/* 
