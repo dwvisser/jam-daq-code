@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 /**
  * Show the zero histograms dialog
  *  
@@ -24,7 +27,10 @@ implements Observer {
 	 */
 	public void initCommand(){
 		putValue(NAME, "Zero\u2026");
-		dialog= new HistogramZero(msghdlr);
+	   final Icon iZero = loadToolbarIcon("jam/ui/Zero.png");
+	   putValue(Action.SMALL_ICON, iZero);
+	   putValue(Action.SHORT_DESCRIPTION, "Zero Histograms.");	    
+	   dialog= new HistogramZero(msghdlr);		
 	}
 
 	public void update(Observable observe, Object obj){

@@ -46,27 +46,31 @@ public class JamToolBar extends JToolBar implements Observer, CommandNames {
 	    add(createButton(SAVE_AS_HDF));	    
 	    
 	    add(createButton(PRINT));	    
+
+	    JButton bRun = new JButton();
+	    bRun.setAction(commands.getAction(SHOW_RUN_CONTROL));	    
+	    add(bRun);
+	    	    
+	    add(createButton(START));
+	    
+	    add(createButton(STOP));
+	    //STOP
 	    
 	    JButton bSort = new JButton();
 	    bSort.setAction(commands.getAction(SHOW_SORT_CONTROL));	    
 	    add(bSort);
-	    
-	    JButton bStart = new JButton("Start");
-	    bStart.setAction(commands.getAction(START));	    
-	    add(bStart);
-	    //STOP
 	    	    
 	    JButton bBuffers = new JButton("Buffers");
 	    bBuffers.setAction(commands.getAction(SHOW_BUFFER_COUNT));	    
 	    add(bBuffers);
 
-	    JButton bZero = new JButton("Zero");
-	    //bBuffers.setAction(commands.getAction(SHOW_BUFFER_COUNT));	    
-	    add(bZero);
+	    add(createButton(SHOW_HIST_ZERO));	    
 	    
-	    JButton bGateSet = new JButton("Gate Set");
+	    add(createButton(SHOW_SET_GATE));
+	    
+	    //JButton bGateSet = new JButton("Gate Set");
 	    //bGateSet.setAction(commands.getAction(SHOW_SET_GATE));	    
-	    add(bGateSet);
+	    //add(bGateSet);
 	    
 	     //button.setToolTipText(toolbarLabels[i]);
 	     //button.setMargin(margins);

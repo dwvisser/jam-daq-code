@@ -9,6 +9,9 @@ import jam.global.SortMode;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 /**
  * Start data acquisition.
  * 
@@ -21,9 +24,11 @@ final class StartAcquisition extends AbstractCommand implements Observer {
 
 	public void initCommand(){
 		putValue(NAME, "start");
-		putValue(SHORT_DESCRIPTION, "Start data acquisition.");
 		control=RunControl.getSingletonInstance();
-		enable();
+	    final Icon iStart = loadToolbarIcon("jam/ui/Start.png");
+	    putValue(Action.SMALL_ICON, iStart);
+		putValue(SHORT_DESCRIPTION, "Start data acquisition.");	    
+				
 	}
 	
 	protected void execute(Object[] cmdParams) {

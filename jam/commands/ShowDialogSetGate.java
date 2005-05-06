@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 /**
  * Show the scalers dialog box
  * 
@@ -22,7 +25,12 @@ Observer {
 	
 	public void initCommand(){
 		putValue(NAME,"Set\u2026");
-		dialog=new GateSet();
+		dialog=new GateSet();		
+	   final Icon iGateSet = loadToolbarIcon("jam/ui/GateSet.png");
+	   putValue(Action.SMALL_ICON, iGateSet);
+	   putValue(Action.SHORT_DESCRIPTION, "Set Gate.");	    
+		
+
 	}
 
 	public void update(Observable observe, Object obj){
@@ -34,7 +42,8 @@ Observer {
 		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
 				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
 			Histogram hist = STATUS.getCurrentHistogram();
-			setEnabled(!hist.getGates().isEmpty());
+			if (hist!=null)
+				setEnabled(!hist.getGates().isEmpty());
 		}
 	}		
 }

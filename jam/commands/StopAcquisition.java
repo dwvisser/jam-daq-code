@@ -9,6 +9,9 @@ import jam.global.SortMode;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 /**
  * Stop data acquisition.
  * 
@@ -21,7 +24,9 @@ final class StopAcquisition extends AbstractCommand implements Observer {
 
 	public void initCommand(){
 		putValue(NAME, "stop");
-		putValue(SHORT_DESCRIPTION, "Pause data acquisition.");
+	    final Icon iPause = loadToolbarIcon("jam/ui/Pause.png");
+	    putValue(Action.SMALL_ICON, iPause);
+		putValue(Action.SHORT_DESCRIPTION, "Pause data acquisition.");	    
 		control=RunControl.getSingletonInstance();
 		enable();
 	}
