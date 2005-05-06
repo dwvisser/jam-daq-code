@@ -139,7 +139,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param linesLog number of lines to retain in onscreen display
 	 */
 	public Console(int linesLog) {
-		JamStatus.getSingletonInstance().setMessageHandler(this);
+
 		SetupSortOn.createInstance(this);
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
