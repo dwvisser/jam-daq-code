@@ -22,7 +22,7 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	private RunControl control;
 
 	public void initCommand(){
-		putValue(NAME, "flush");
+		putValue(NAME, "Flush");
 		putValue(SHORT_DESCRIPTION, "Flush the current data acquisition buffer.");
 		control=RunControl.getSingletonInstance();
 		setEnabled(false);
