@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
+import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
 /**
@@ -26,6 +28,10 @@ final class Print extends AbstractPrintingCommand {
 		putValue(NAME,"Print\u2026");
 		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_P, 
 		CTRL_MASK));
+	    final Icon iPrint = loadToolbarIcon("jam/ui/Print.png");
+	    putValue(Action.SMALL_ICON, iPrint);
+		putValue(Action.SHORT_DESCRIPTION, "Print histogram");	    
+		
 	}
 
 	/* (non-Javadoc)
