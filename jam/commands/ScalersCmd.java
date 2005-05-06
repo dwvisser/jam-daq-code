@@ -44,9 +44,6 @@ public final class ScalersCmd extends AbstractCommand {
 			
 		}else {
 			msghdlr.errorOutln("Can only Zero Scalers when in Online mode.");			
-			//FIXME KBS remove
-			//throw new IllegalStateException("Can't Zero Scalers when not in Online mode.");
-			
 		}
 
 	}

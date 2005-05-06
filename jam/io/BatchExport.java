@@ -110,22 +110,6 @@ public class BatchExport extends JDialog implements Observer {
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
 
-		/* Top Panel with chooser */
-		/*FIXME KBS remove
-		final int CHOOSER_SIZE = 200; 
-		final JPanel pTop = new JPanel(new GridLayout(0, 1, 5, 5));
-		pTop.setBorder(new EmptyBorder(10, 10, 0, 10));
-		contents.add(pTop, BorderLayout.NORTH);		
-		final JPanel pChooser = new JPanel(new FlowLayout(FlowLayout.CENTER,
-				10, 10));
-		pTop.add(pChooser);
-		pChooser.add(new JLabel("Add Histogram"));
-		//cbHist.setActionCommand("select");
-		final Dimension dim = cbHist.getPreferredSize();
-		dim.width = CHOOSER_SIZE;
-		cbHist.setPreferredSize(dim);
-		pChooser.add(cbHist);
-		*/
 		/* Button panel on left ("west"). */
 		contents.add(getButtonPanel(), BorderLayout.WEST);
 		/* List of histograms */
@@ -295,30 +279,6 @@ public class BatchExport extends JDialog implements Observer {
 		return rval;
 	}
 	
-	/* FIXME KBS remove
-	public void actionPerformed(ActionEvent actionEvent) {
-		final String command = actionEvent.getActionCommand();
-		if (command.equals("addall")) {
-			addAllHists();
-		} else if (command.equals("removeselect")) {
-			removeSelectedHist();
-		} else if (command.equals("removeall")) {
-			removeAllHists();
-		} else if (command.equals("browse")) {
-			browseForDir();
-		} else if (command.equals("loadlist")) {
-			loadList();
-		} else if (command.equals("savelist")) {
-			saveList();
-		} else if (command.equals("cancel")) {
-			dispose();
-		} else if (command.equals("export")) {
-			export();
-		}
-		setExportEnable();
-	}
-	*/
-
 	/**
 	 * Enable export button
 	 *  
