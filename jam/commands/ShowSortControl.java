@@ -6,6 +6,9 @@ import jam.global.SortMode;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+
 /**
  * Show the sort control dialog.
  * 
@@ -16,6 +19,10 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 	
 	public void initCommand(){
 		putValue(NAME, "Sort\u2026");
+	    final Icon iPlayBack = loadToolbarIcon("jam/ui/PlayBack.png");
+	    putValue(Action.SMALL_ICON, iPlayBack);
+		putValue(Action.SHORT_DESCRIPTION, "Sort Control.");	    
+		
 		dialog=SortControl.getInstance();
 		enable();
 	}

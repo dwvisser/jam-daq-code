@@ -183,7 +183,7 @@ public class Console extends JPanel implements MessageHandler {
 		msgLock = false;
 		numberLines = 1;
 		logFileOn = false;
-		final int defaultLines = 8;
+		final int defaultLines = 6;
 		final int lineHeight = textLog.getFontMetrics(textLog.getFont())
 				.getHeight();
 		final int logHeight = lineHeight * defaultLines;
