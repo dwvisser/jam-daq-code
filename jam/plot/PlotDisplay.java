@@ -247,8 +247,7 @@ public final class PlotDisplay extends JPanel implements  PlotSelectListener,
 		Histogram [] hists = new Histogram [1];
 		hists[0]=hist;
 		overlayHistogram(hists);
-		
-		//FIXME KBS REMOVE currentPlot.overlayHistograms(num);		
+				
 	}
 	
 	/**

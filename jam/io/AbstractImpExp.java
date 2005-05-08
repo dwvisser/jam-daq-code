@@ -66,7 +66,6 @@ public abstract class AbstractImpExp {
 	/**
 	 * Group to import data into
 	 */
-	//FIXME KBS not yet created
 	protected Group importGroup;
 	
 

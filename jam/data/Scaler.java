@@ -50,14 +50,7 @@ public class Scaler implements DataElement {
      */
     public Scaler(Group group, String nameIn, int number) {
         final StringUtilities stringUtil = StringUtilities.instance();
-        
-        /*FIXME KBS remove
-        if (name.length() > NAME_LENGTH) {//give error if name is too long
-            throw new IllegalArgumentException("Scale name '" + name
-                    + "' too long maximum characters " + NAME_LENGTH);
-        }
-        */
-        
+                
 		//Set of names of gates for histogram this gate belongs to
 		Set scalerNames = new TreeSet();
 		Iterator groupScalerIter = group.getScalerList().iterator();
@@ -68,21 +61,7 @@ public class Scaler implements DataElement {
 		
 		this.name=stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
 		this.uniqueName = group.getName()+"/"+name;
-        group.addScaler(this);
-        
-        //FIXME KBS remove
-        /* make sure name is unique */
-        /*
-        int prime = 1;
-        String addition;
-        while (TABLE.containsKey(name)) {
-            addition = "[" + prime + "]";
-            name = stringUtil.makeLength(name, NAME_LENGTH - addition.length())
-                    + addition;
-            prime++;
-
-        }
-        */
+        group.addScaler(this);        
 
         this.number = number;
         /* Add to list of scalers */
@@ -99,23 +78,6 @@ public class Scaler implements DataElement {
         return Collections.unmodifiableList(LIST);
     }
 
-    /**
-     * Sets the list of scalers. Used for remote setting of scaler values.
-     * 
-     * @param inScalerList
-     *            the new list of all scalers
-     */
-    /*FIXME KBS not used needs unique name for key to TABLE
-    public static void setScalerList(List inScalerList) {
-        clearList();
-        final Iterator allScalers = inScalerList.iterator();
-        while (allScalers.hasNext()) {//loop for all histograms
-            final Scaler scaler = (Scaler) allScalers.next();
-            TABLE.put(scaler.getName(), scaler);
-            LIST.add(scaler);
-        }
-    }
-    */
     /**
      * Clears the list of all scalers.
      */

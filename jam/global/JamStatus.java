@@ -27,8 +27,7 @@ public final class JamStatus {
 	private static AcquisitionStatus acqStatus;
 	private static Group currentGroup;	
 	private static Histogram currentHistogram;
-	private static Gate currentGate;	
-	//FIXME KBS remove private static String gateName;	
+	private static Gate currentGate;		
 	private static Set overlayNames=new HashSet();	
 	private static JFrame frame;
 	private static PlotDisplay display;

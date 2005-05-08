@@ -78,22 +78,6 @@ public final class Gate implements DataElement {
 		
 		this.uniqueName = histUniqueName+"/"+name;
 		
-		 //FIXME KBS remove
-		//add to histogramTable here
-		/*
-		int prime = 1;
-		String addition;
-		while (TABLE.containsKey(name)) {
-			addition = "[" + prime + "]";
-			name =
-				stringUtil.makeLength(
-					name,
-					NAME_LENGTH - addition.length())
-					+ addition;
-			prime++;
-		}
-		*/
-
 		dimensions = hist.getDimensionality();
 		sizeX = hist.getSizeX();
 		sizeY = hist.getSizeY();
