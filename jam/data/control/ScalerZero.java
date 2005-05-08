@@ -1,7 +1,6 @@
 package jam.data.control;
 
 import jam.commands.ScalersCmd;
-import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
 
 import java.awt.Container;

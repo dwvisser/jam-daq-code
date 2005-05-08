@@ -4,7 +4,6 @@ import jam.JamException;
 import jam.SetupSortOn;
 import jam.commands.CommandManager;
 import jam.global.CommandListener;
-import jam.global.JamStatus;
 import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;

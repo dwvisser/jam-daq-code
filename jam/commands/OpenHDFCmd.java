@@ -13,15 +13,12 @@ import jam.io.hdf.HDFileFilter;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 /**

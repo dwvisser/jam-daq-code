@@ -449,7 +449,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	void displayGate(Object []params ) {
 		final Gate gate =(Gate)params[0];
-		STATUS.setCurrentGateName(gate.getName());
+		STATUS.setCurrentGate(gate);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 		final double area = gate.getArea();
 		if (gate.getDimensionality() == 1) {

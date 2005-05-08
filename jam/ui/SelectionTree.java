@@ -167,7 +167,7 @@ public class SelectionTree extends JPanel implements Observer {
                 final Histogram hist = (Histogram) firstNodeObject;
                 STATUS.setCurrentGroup(hist.getGroup());         
                 STATUS.setCurrentHistogram(hist);
-                STATUS.setCurrentGateName(null);                
+                STATUS.setCurrentGate(null);                
                 /* Do we have overlays ? */
                 if (paths.length>1) {
                 	if (hist.getDimensionality()==1) { 
@@ -186,6 +186,7 @@ public class SelectionTree extends JPanel implements Observer {
                 tree.addSelectionPath(pathForDataObject(hist));
                 STATUS.setCurrentGroup(hist.getGroup());    
                 STATUS.setCurrentHistogram(hist);
+                STATUS.setCurrentGate(gate);  
                 STATUS.clearOverlays();
                 BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
                         hist);
@@ -213,7 +214,7 @@ public class SelectionTree extends JPanel implements Observer {
             if (overlayObj instanceof Histogram) {
                 overlayHist = (Histogram) (overlayObj);
                 if (overlayHist.getDimensionality() == 1) {
-                    STATUS.addOverlayHistogramName(overlayHist.getUniqueFullName());
+                    STATUS.addOverlayHistogramName(overlayHist.getFullName());
                 } else {
                     tree.removeSelectionPath(paths[i]);
                     msgHandler.errorOutln("Cannot overlay 2D histograms.");
@@ -227,7 +228,7 @@ public class SelectionTree extends JPanel implements Observer {
      */
     private void refreshSelection() {
         final Histogram hist = STATUS.getCurrentHistogram();
-        final Gate gate = Gate.getGate(STATUS.getCurrentGateName());
+        final Gate gate = STATUS.getCurrentGate();
         final Histogram[] overlayHists=STATUS.getOverlayHistograms();
         final TreePath histTreePath = pathForDataObject(hist);
         tree.setSelectionPath(histTreePath);
@@ -252,7 +253,7 @@ public class SelectionTree extends JPanel implements Observer {
 	private void selectGate(Gate gate) {
 		final String methodname = "selectGate(): ";
 		try {
-			STATUS.setCurrentGateName(gate.getName());
+			STATUS.setCurrentGate(gate);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			final double area = gate.getArea();
 			if (gate.getDimensionality() == 1) {

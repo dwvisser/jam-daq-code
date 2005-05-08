@@ -65,11 +65,11 @@ public class HistogramTest extends TestCase {
     public void testGetHistogram() {
         assertNotNull("h1 nonexistent here", hist1);
         assertNotNull("Couldn't find histogram named \""
-                + hist1.getUniqueFullName() + "\"", Histogram
-                .getHistogram(hist1.getUniqueFullName()));
+                + hist1.getFullName() + "\"", Histogram
+                .getHistogram(hist1.getFullName()));
         assertNotNull("Couldn't find histogram named \""
-                + hist2.getUniqueFullName() + "\"", Histogram
-                .getHistogram(hist2.getUniqueFullName()));
+                + hist2.getFullName() + "\"", Histogram
+                .getHistogram(hist2.getFullName()));
         assertNull("Found nonexistent histogram named \"notreal\"", Histogram
                 .getHistogram("notreal"));
     }

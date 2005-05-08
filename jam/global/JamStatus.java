@@ -4,6 +4,7 @@ import jam.FrontEndCommunication;
 import jam.JamPrefs;
 import jam.RunState;
 import jam.VMECommunication;
+import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.plot.PlotDisplay;
@@ -26,8 +27,9 @@ public final class JamStatus {
 	private static AcquisitionStatus acqStatus;
 	private static Group currentGroup;	
 	private static Histogram currentHistogram;
+	private static Gate currentGate;	
+	//FIXME KBS remove private static String gateName;	
 	private static Set overlayNames=new HashSet();	
-	private static String gateName;
 	private static JFrame frame;
 	private static PlotDisplay display;
 	private static SummaryTable summaryTable;
@@ -344,8 +346,8 @@ public final class JamStatus {
 	 * 
 	 * @param name of current gate
 	 */
-	public synchronized void setCurrentGateName(String name) {
-		gateName = name;
+	public synchronized void setCurrentGate(Gate gate) {
+		currentGate = gate;
 	}
 
 	/**
@@ -353,8 +355,11 @@ public final class JamStatus {
 	 * 
 	 * @return name of current gate
 	 */
-	public synchronized String getCurrentGateName() {
-		return gateName;
+	public synchronized Gate getCurrentGate() {
+		if (!Gate.isValid(currentGate)){
+			currentGate=null;
+		}
+		return currentGate;
 	}
 
 	/**

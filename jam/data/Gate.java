@@ -64,7 +64,7 @@ public final class Gate implements DataElement {
 	public Gate(String nameIn, Histogram hist) {
 		
 		final StringUtilities stringUtil=StringUtilities.instance();
-		histUniqueName = hist.getUniqueFullName();
+		histUniqueName = hist.getFullName();
 		
 		//Set of names of gates for histogram this gate belongs to
 		Set gateNames = new TreeSet();
@@ -120,8 +120,8 @@ public final class Gate implements DataElement {
 		/* loop for all histograms */
 		for (final Iterator allGates = inGateList.iterator(); allGates.hasNext();) {
 			final Gate gate = (Gate) allGates.next();
-			final String name = gate.getName();
-			TABLE.put(name, gate);
+			final String fullName = gate.getFullName();
+			TABLE.put(fullName, gate);
 			LIST.add(gate);
 		}
 	}
@@ -170,14 +170,23 @@ public final class Gate implements DataElement {
 	 * @param	name name of the desired gate
 	 * @return	<code>Gate</code> with the given name, null if non-existent
 	 */
-	public static Gate getGate(String name) {
+	public static Gate getGate(String fullName) {
 		Gate rval=null;
-		if (name != null && TABLE.containsKey(name)){
-			rval = (Gate)TABLE.get(name);
+		if (fullName != null && TABLE.containsKey(fullName)){
+			rval = (Gate)TABLE.get(fullName);
 		}
 		return rval;
 	}
 
+	/**
+	 * Gate is a valid gate
+	 * @param gate
+	 * @return <code>true</code> if this gate remains in the name mapping
+	 */
+	public static boolean isValid(Gate gate){
+		return TABLE.containsValue(gate);
+	}
+	
 	/**
 	 * Returns the name of the <code>Gate</code>.
 	 *
@@ -185,6 +194,10 @@ public final class Gate implements DataElement {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	public String getFullName() {
+		return uniqueName;
 	}
 
 	public double getCount() {

@@ -1,5 +1,6 @@
 package jam.commands;
 
+import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
 import jam.global.MessageHandler;
@@ -8,6 +9,8 @@ import jam.plot.PlotDisplay;
 import java.awt.event.KeyEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -18,7 +21,7 @@ import javax.swing.KeyStroke;
  * @author Ken Swartz
  *
  */
-final class Print extends AbstractPrintingCommand {
+final class Print extends AbstractPrintingCommand implements Observer {
 	
 	private boolean firstTime=true;
 	private PlotDisplay display=null;
@@ -73,4 +76,17 @@ final class Print extends AbstractPrintingCommand {
 	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
 		execute(null);
 	}
+	
+	public void update(Observable observe, Object obj){
+		final BroadcastEvent be=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=be.getCommand();
+		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
+			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
+			setEnabled(false);			
+		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
+				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
+			setEnabled(true);
+		} 
+	}			
+	
 }

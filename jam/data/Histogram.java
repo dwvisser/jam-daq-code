@@ -434,7 +434,7 @@ public abstract class Histogram implements DataElement {
 		final Iterator iter = inHistList.iterator();
 		while (iter.hasNext()) { //loop for all histograms
 			final Histogram hist = (Histogram) iter.next();
-			NAME_MAP.put(hist.getUniqueFullName(), hist);
+			NAME_MAP.put(hist.getFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(new Integer(hist.getNumber()), hist);
 		}
@@ -496,7 +496,7 @@ public abstract class Histogram implements DataElement {
 			if (histogram != null) {
 				histogram.clearInfo();
 				LIST.remove(histogram);
-				NAME_MAP.remove(histogram.getUniqueFullName());
+				NAME_MAP.remove(histogram.getFullName());
 				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
 				DIM_LIST[0].remove(histogram);
 				DIM_LIST[1].remove(histogram);
@@ -588,16 +588,6 @@ public abstract class Histogram implements DataElement {
 	 * @return the name of this histogram
 	 */
 	public String getFullName() {
-		//FIXME need to get name if no name collision
-		return uniqueName;
-	}
-	/**
-	 * Returns the histogram unique full name.
-	 * Does not vary so use this name for hashs.
-	 * 
-	 * @return the name of this histogram
-	 */
-	public String getUniqueFullName() {
 		return uniqueName;
 	}
 

@@ -104,9 +104,9 @@ public final class PlotDisplay extends JPanel implements  PlotSelectListener,
 	 */
 	private void createGridPanel() {
 		/* Create main panel with tool bar */ 
-		final int size = 400;
+		final int size = 200;
 		setPreferredSize(new Dimension(size, size));
-		final int minsize = 400;
+		final int minsize = 200;
 		setMinimumSize(new Dimension(minsize, minsize));
 		setLayout(new BorderLayout());
 		/* Create imbedded grid panel */
@@ -284,7 +284,7 @@ public final class PlotDisplay extends JPanel implements  PlotSelectListener,
 			}else{
 				status.setCurrentHistogram(null);		
 			}
-			status.setCurrentGateName(null);
+			status.setCurrentGate(null);
 			status.clearOverlays();
 			broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);			
 		}
