@@ -56,16 +56,13 @@ Commandable {
 	public void initCommand(){
 	}
 	
-	/**
-	 * Implentation for interface Action. 
-	 */
-	public final void actionPerformed(ActionEvent ae){
-		try{
-			performCommand(null);
-		} catch(CommandException e){
-			msghdlr.errorOutln(e.toString());
-		}
-	}
+	public final void actionPerformed(ActionEvent actionEvent) {
+        try {
+            performCommand(null);
+        } catch (CommandException e) {
+            msghdlr.errorOutln(e.toString());
+        }
+    }
 	
 	/**
 	 * Perform a command and log it. This calls 
@@ -115,24 +112,27 @@ Commandable {
 			
 	}
 	
-	/* non-javadoc:
-	 * Load icons for command
+	/** 
+	 * Load an icon from the given path and return it.
+	 * 
+	 * @param path that the icon lies at
+	 * @return the icon if successful, <code>null</code> if not
 	 */
 	protected Icon loadToolbarIcon(String path) {
-		final Icon toolbarIcon;
-		final ClassLoader cl = this.getClass().getClassLoader();
-		final URL urlResource = cl.getResource(path);
-		if (!(urlResource == null)) {
-			toolbarIcon = new ImageIcon(urlResource);
-		} else { //instead use path, ugly but lets us see button
+	    /* buttons initialized with text if icon==null */
+		Icon rval=null;
+		final ClassLoader loader = this.getClass().getClassLoader();
+		final URL urlResource = loader.getResource(path);
+		if (urlResource == null) {
 			JOptionPane.showInputDialog(
-				null,
-				"Can't load resource: " + path,
-				"Missing Icon",
-				JOptionPane.ERROR_MESSAGE);
-			toolbarIcon = null; //buttons initialized with text if icon==null
+					null,
+					"Can't load resource: " + path,
+					"Missing Icon",
+					JOptionPane.ERROR_MESSAGE);
+		} else { //instead use path, ugly but lets us see button
+			rval = new ImageIcon(urlResource);
 		}
-		return toolbarIcon;
+		return rval;
 	}
 	
 	/**
