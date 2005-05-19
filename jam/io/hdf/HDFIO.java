@@ -819,24 +819,22 @@ public final class HDFIO implements DataIO, JamFileFields {
             firstLoadedGroup = currentGroup;
         }
         groupCount = 0;
-        /* Check Group, file only has Default group */
-        if (currentGroup.getGroupName() == Group.DEFAULT_NAME) {
-            histCount = hdfToJam.convertHistogramsOriginal(currentGroup, mode,
-                    histAttrs);
-            final VDataDescription vddScalers = hdfToJam.findScalersOriginal();
-            if (vddScalers != null) {
-                scalerCount = hdfToJam.convertScalers(currentGroup, vddScalers,
-                        mode);
-            }
-            if (mode != FileOpenMode.ADD) {
-                gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
-                /* clear if opening and there are histograms in file */
-                final VDataDescription vddParam = hdfToJam
-                        .findParametersOriginal();
-                if (vddParam != null) {
-                    paramCount = hdfToJam.convertParameters(currentGroup,
-                            vddParam, mode);
-                }
+        
+        histCount = hdfToJam.convertHistogramsOriginal(currentGroup, mode,
+                histAttrs);
+        final VDataDescription vddScalers = hdfToJam.findScalersOriginal();
+        if (vddScalers != null) {
+            scalerCount = hdfToJam.convertScalers(currentGroup, vddScalers,
+                    mode);
+        }
+        if (mode != FileOpenMode.ADD) {
+            gateCount = hdfToJam.convertGatesOriginal(currentGroup, mode);
+            /* clear if opening and there are histograms in file */
+            final VDataDescription vddParam = hdfToJam
+                    .findParametersOriginal();
+            if (vddParam != null) {
+                paramCount = hdfToJam.convertParameters(currentGroup,
+                        vddParam, mode);
             }
         }
     }
