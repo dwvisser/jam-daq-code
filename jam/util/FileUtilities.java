@@ -27,6 +27,10 @@ public class FileUtilities {
 	public static FileUtilities getInstance(){
 		return instance;
 	}
+	
+	private FileUtilities(){
+		super();
+	}
 
 	/**
 	 * Takes a file name and extension and makes the file name to have the
