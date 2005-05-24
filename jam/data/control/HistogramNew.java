@@ -173,7 +173,6 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Show the dialog.
 	 */
-
 	public void show() {
 		doSetup();
 		super.show();
@@ -186,11 +185,11 @@ public class HistogramNew extends AbstractControl {
 	 */
 	public void doSetup() {
 		comboGroupModel.removeAllElements();
-		Iterator iter = Group.getGroupList().iterator();		
+		final Iterator iter = Group.getGroupList().iterator();		
 		/* Add working group first */
 		comboGroupModel.addElement( Group.WORKING_NAME);
 		while(iter.hasNext()) {
-			Group group =(Group)iter.next();
+			final Group group =(Group)iter.next();
 			/* Don't add sort group or working group that was already added */
 			if (group.getType()!=Group.Type.SORT && 
 				!Group.WORKING_NAME.equals(group.getName()) ){
