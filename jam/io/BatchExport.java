@@ -409,14 +409,17 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	}
 	
-	private File createExportFile(String dir, String groupName,  String histName, String extension) {
-		String fullFileName = FileUtilities.changeExtension(histName.trim(), extension,  FileUtilities.APPEND_ONLY);
-        return new File(dir + File.separator + groupName, fullFileName);
-    }
+	private File createExportFile(final String dir, final String groupName,
+			final String histName, final String extension) {
+		final FileUtilities fileUtil = FileUtilities.getInstance();
+		final String fullFileName = fileUtil.changeExtension(histName.trim(),
+				extension, FileUtilities.APPEND_ONLY);
+		return new File(dir + File.separator + groupName, fullFileName);
+	}
 
 	/**
-     * Export the histograms
-     */
+	 * Export the histograms
+	 */
 	private void export() {
 		
 		boolean status;
@@ -634,8 +637,9 @@ public class BatchExport extends JDialog implements Observer {
 	        CollectionsUtil.instance().addConditional(Histogram.getHistogramList(),
 	                histSet, HIST_COND_1D);
 	        histList.setListData(histSet.toArray());			
-			dialog.show();
+			dialog.setVisible(true);
 		}
+		
 		void addToSelection() {
 			
 			selected = histList.getSelectedValues();

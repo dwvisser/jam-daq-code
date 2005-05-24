@@ -122,11 +122,12 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * @exception ImpExpException
 	 *                thrown for errors
 	 */
-	public void readData(InputStream buffin) throws ImpExpException {
+	public void readData(final InputStream buffin) throws ImpExpException {
 		try {
 			Histogram.clearList(); //clear current list of histograms
 			readDrr(buffin); //read the drr file
-			final String fileNameHis = FileUtilities.changeExtension(
+			final FileUtilities fileUtil = FileUtilities.getInstance();
+			final String fileNameHis = fileUtil.changeExtension(
 					getFileName(getLastFile()), "*.his", FileUtilities.FORCE);
 			/* open .his file random access, read only */
 			final RandomAccessFile fileHis = new RandomAccessFile(new File(
@@ -141,8 +142,8 @@ public class ImpExpORNL extends AbstractImpExp {
 		}
 	}
 
-	/* non-javadoc:
-	 * Read in ORNL drr file, which is the index to the his file.
+	/*
+	 * non-javadoc: Read in ORNL drr file, which is the index to the his file.
 	 */
 	private void readDrr(InputStream buffin) throws IOException,
 			ImpExpException {
@@ -340,12 +341,13 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the msgHandler
 	 */
-	public void writeHist(OutputStream ignored, Histogram hist)
+	public void writeHist(final OutputStream ignored, final Histogram hist)
 			throws ImpExpException {
 		try {
-			final String fileNameHis = FileUtilities.changeExtension(getLastFile()
+			final FileUtilities fileUtil = FileUtilities.getInstance();
+			final String fileNameHis = fileUtil.changeExtension(getLastFile()
 					.getName(), ".his", FileUtilities.FORCE);
-			final String fileNameDRR = FileUtilities.changeExtension(getLastFile()
+			final String fileNameDRR = fileUtil.changeExtension(getLastFile()
 					.getName(), ".drr", FileUtilities.FORCE);
 			final File parent = getLastFile().getParentFile();
 			final File fileHis = new File(parent, fileNameHis);
@@ -366,8 +368,8 @@ public class ImpExpORNL extends AbstractImpExp {
 		}
 	}
 
-	/* non-javadoc:
-	 * write out a ORNL drr file
+	/*
+	 * non-javadoc: write out a ORNL drr file
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
 		final StringUtilities util = StringUtilities.instance();
@@ -471,27 +473,21 @@ public class ImpExpORNL extends AbstractImpExp {
 	/*
      * non-javadoc: Write out the .his file.
      */
-    private void writeHis(OutputStream outputStream) throws IOException {
+    private void writeHis(final OutputStream outputStream) throws IOException {
         final DataOutputStream dosHis = new DataOutputStream(outputStream);
         final Iterator histIterator = Histogram.getHistogramList().iterator();
         while (histIterator.hasNext()) {
             final Histogram hist = ((Histogram) histIterator.next());
-            final int sizeX = hist.getSizeX();
-            final int sizeY = hist.getSizeY();
+            final Histogram.Type type = hist.getType();
             /* write as determined by type */
-            if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-                writeHist1dInt(dosHis, hist, sizeX);
-            } else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-                writeHist1dDouble(dosHis, hist, sizeX);
-            } else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
-                writeHist2dInt(dosHis, hist, sizeX, sizeY);
-            } else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
-                final double[][] counts2dDbl = (double[][]) hist.getCounts();
-                for (int i = 0; i < sizeX; i++) {
-                    for (int j = 0; j < sizeY; j++) {
-                        dosHis.writeInt((int) (counts2dDbl[j][i] + 0.5));
-                    }
-                }
+            if (type == Histogram.Type.ONE_DIM_INT) {
+                writeHist1dInt(dosHis, hist);
+            } else if (type == Histogram.Type.ONE_D_DOUBLE) {
+                writeHist1dDouble(dosHis, hist);
+            } else if (type == Histogram.Type.TWO_DIM_INT) {
+                writeHist2dInt(dosHis, hist);
+            } else if (type == Histogram.Type.TWO_D_DOUBLE) {
+                writeHist2dDouble(dosHis, hist);
             } else {
                 msgHandler
                         .errorOutln("Unrecognized histogram type [ImpExpORNL]");
@@ -502,34 +498,58 @@ public class ImpExpORNL extends AbstractImpExp {
         dosHis.close();
     }
 
-    private void writeHist1dInt(DataOutputStream dosHis, Histogram hist,
-            int sizeX) throws IOException {
-        final int[] countsInt = (int[]) hist.getCounts();
-        for (int i = 0; i < sizeX; i++) {
-            dosHis.writeInt(countsInt[i]);
-        }
-    }
+    private void writeHist1dInt(final DataOutputStream dosHis,
+			final Histogram hist) throws IOException {
+		final int[] countsInt = (int[]) hist.getCounts();
+		final int len = countsInt.length;
+		for (int i = 0; i < len; i++) {
+			dosHis.writeInt(countsInt[i]);
+		}
+	}
 
-    private void writeHist1dDouble(DataOutputStream dosHis, Histogram hist,
-            int sizeX) throws IOException {
-        final double[] countsDbl = (double[]) hist.getCounts();
-        for (int i = 0; i < sizeX; i++) {
-            dosHis.writeInt((int) (countsDbl[i] + 0.5));
-        }
-    }
+    private void writeHist1dDouble(final DataOutputStream dosHis,
+			final Histogram hist) throws IOException {
+		final double[] countsDbl = (double[]) hist.getCounts();
+		final int len = countsDbl.length;
+		for (int i = 0; i < len; i++) {
+			dosHis.writeInt((int) (countsDbl[i] + 0.5));
+		}
+	}
 
-    private void writeHist2dInt(DataOutputStream dosHis, Histogram hist,
-            int sizeX, int sizeY) throws IOException {
-        final int[][] counts2dInt = (int[][]) hist.getCounts();
+    private void writeHist2dInt(final DataOutputStream dosHis,
+			final Histogram hist) throws IOException {
+		final int[][] counts2dInt = (int[][]) hist.getCounts();
+		final int sizeX = hist.getSizeX();
+		final int sizeY = hist.getSizeY();
+		for (int i = 0; i < sizeX; i++) {
+			for (int j = 0; j < sizeY; j++) {
+				/*
+				 * Next line was [j][i] which caused array out of bounds. Was
+				 * the order that way for some reason?
+				 */
+				dosHis.writeInt(counts2dInt[i][j]);
+			}
+		}
+	}
+    
+    private void writeHist2dDouble(final DataOutputStream dosHis,
+			final Histogram hist) throws IOException {
+        final double[][] counts2dDbl = (double[][]) hist.getCounts();
+		final int sizeX = hist.getSizeX();
+		final int sizeY = hist.getSizeY();
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
-                dosHis.writeInt(counts2dInt[j][i]);
+				/*
+				 * Next line was [j][i] which caused array out of bounds. Was
+				 * the order that way for some reason?
+				 */
+                dosHis.writeInt((int) (counts2dDbl[i][j] + 0.5));
             }
         }
-    }
+	}
 
-	/* non-javadoc:
-	 * Get a int from an array of byes
+	/*
+	 * non-javadoc: Get a int from an array of byes
 	 */
 	private int byteArrayToInt(byte[] array, int offset) {
         final byte byte0 = array[offset];
@@ -590,7 +610,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @return whether file was successfully read
 	 */
-	protected boolean openFile(File file, String msg) {
+	protected boolean openFile(final File file, final String msg) {
 		File inFile = file;
 		boolean rval = false; //default return value
 		try {
@@ -599,8 +619,9 @@ public class ImpExpORNL extends AbstractImpExp {
 			}
 			if (inFile != null) { // if Open file was not canceled
 				setLastFile(inFile);
+				final FileUtilities fileUtil = FileUtilities.getInstance();
 				final File drrFile = (inFile.getName().endsWith("his")) ? new File(
-						inFile.getParent(), FileUtilities.changeExtension(inFile
+						inFile.getParent(), fileUtil.changeExtension(inFile
 								.getName(), "drr", FileUtilities.FORCE))
 						: inFile;
 				final FileInputStream inStream = new FileInputStream(drrFile);
@@ -612,7 +633,7 @@ public class ImpExpORNL extends AbstractImpExp {
 				}
 				/* implementing class implement following method */
 				readData(inBuffStream);
-				if (msgHandler != null){
+				if (msgHandler != null) {
 					msgHandler.messageOut(" done!", MessageHandler.END);
 				}
 				inBuffStream.close();

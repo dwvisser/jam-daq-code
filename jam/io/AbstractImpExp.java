@@ -152,7 +152,8 @@ public abstract class AbstractImpExp {
             final File inFile = (file == null) ? getFileOpen(msg) : file;
             if (inFile != null) { // if Open file was not canceled
             	//Create group
-            	String groupName = FileUtilities.removeExtensionFileName(inFile.getName());
+            	final FileUtilities fileUtil = FileUtilities.getInstance();
+            	final String groupName = fileUtil.removeExtensionFileName(inFile.getName());
             	importGroup =Group.createGroup(groupName, Group.Type.FILE);
             	
                 setLastFile(inFile);

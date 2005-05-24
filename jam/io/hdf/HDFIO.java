@@ -66,6 +66,9 @@ public final class HDFIO implements DataIO, JamFileFields {
     private static final int MONITOR_STEPS_READ_WRITE=11;		//1 Count DD's, 10 read objects
     private static final int MONITOR_STEPS_OVERHEAD_WRITE=3;	//2 for start of read object
     private static final int MONITOR_STEPS_OVERHEAD_READ=1;		//
+
+    private static final FileUtilities FILE_UTIL = FileUtilities.getInstance();
+    
     /**
      * Parent frame.
      */
@@ -250,7 +253,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         }
         //Append .hdf to file name
         String path =file.getParent();        
-        String fileName = FileUtilities.changeExtension(file.getName(), HDF_FILE_EXT, FileUtilities.APPEND_ONLY);
+        String fileName = FILE_UTIL.changeExtension(file.getName(), HDF_FILE_EXT, FileUtilities.APPEND_ONLY);
         String fileFullName = path+File.separator+fileName;        
         File appendFile = new File(fileFullName);
         
@@ -469,100 +472,108 @@ public final class HDFIO implements DataIO, JamFileFields {
     
     
     /**
-     * Read in an HDF file
-     * 
-     * @param infile
-     *            file to load
-     * @param mode
-     *            whether to open or reload
-     * @param histNames
-     *            names of histograms to read, null if all
-     * @return <code>true</code> if successful
-     */
-    synchronized private boolean asyncReadFileGroup(File infile, FileOpenMode mode, List existingGroupList, List histAttributeList) {
-        boolean rval = true;
-        final StringBuffer message = new StringBuffer();
-        //reset all counters
-        groupCount=0;
-        histCount=0;
-        gateCount=0;
-        scalerCount=0;
-        paramCount=0;
-        try {
-            AbstractData.clearAll();
-            //Read in objects
-            inHDF = new HDFile(infile, "r", asyncMonitor, MONITOR_STEPS_READ_WRITE);
-            inHDF.setLazyLoadData(true);
-             /* read file into set of AbstractHData's, set their internal variables */
-            inHDF.readFile();
-            AbstractData.interpretBytesAll();
-            asyncMonitor.increment();          
-            final String fileName = FileUtilities.removeExtensionFileName(infile.getName());
-            if (hdfToJam.hasVGroupRootGroup()) {
-            	convertHDFToJam(mode, fileName,  existingGroupList, histAttributeList);
-            } else {
-            	convertHDFToJamOriginal(mode,  fileName, existingGroupList, histAttributeList);
-            }
-            /* Create output message. */
-            if (mode == FileOpenMode.OPEN) {
-                message.append("Opened ").append(infile.getName());
-            } else if (mode == FileOpenMode.OPEN_MORE) {
-                message.append("Opened Additional ").append(infile.getName());
-            } else if (mode == FileOpenMode.RELOAD) {
-                message.append("Reloaded ").append(infile.getName());
-            } else { //ADD
-                message.append("Adding counts in ").append(infile.getName());
-                //FIXME currently only add one group
-                message.append(" to groups ");                
-                for (int i=0; i<existingGroupList.size(); i++) {
-                	String groupName = ((Group)existingGroupList.get(0)).getName();
-                	if (0<i)
-                		message.append(", ");
-                    message.append(groupName);
-                    
-                }
-
-            }
-            message.append(" (");
-            message.append(groupCount).append(" groups");
-            message.append(", ").append(histCount).append(" histograms");    
-            message.append(", ").append(gateCount).append(" gates");
-            message.append(", ").append(scalerCount).append(" scalers");
-            message.append(", ").append(paramCount).append(" parameters");
-            message.append(')');
-         } catch (FileNotFoundException e) {
-           	uiErrorMsg ="Opening file: " + infile.getPath()+
-			" Cannot find file or file is locked";
-        } catch (HDFException e) {
-        	uiErrorMsg ="Reading file: '"
-            + infile.getName() + "', Exception " + e.toString();            	
-            rval = false;
-        } finally {
-        	try {
-        		inHDF.close();
-        	} catch (IOException except) {
-        		uiErrorMsg ="Closing file "+infile.getName();
-        		rval = false;
-        	}    
-             /* destroys reference to HDFile (and its AbstractHData's) */
-             inHDF = null;
-        }
-        AbstractData.clearAll();
-        setLastValidFile(infile);   
-        uiMessage =message.toString();
-        return rval;
-    }
-
-
+	 * Read in an HDF file
+	 * 
+	 * @param infile
+	 *            file to load
+	 * @param mode
+	 *            whether to open or reload
+	 * @param histNames
+	 *            names of histograms to read, null if all
+	 * @return <code>true</code> if successful
+	 */
+	synchronized private boolean asyncReadFileGroup(final File infile,
+			final FileOpenMode mode, final List existingGrps,
+			final List histAttrList) {
+		boolean rval = true;
+		final StringBuffer message = new StringBuffer();
+		//reset all counters
+		groupCount = 0;
+		histCount = 0;
+		gateCount = 0;
+		scalerCount = 0;
+		paramCount = 0;
+		try {
+			AbstractData.clearAll();
+			//Read in objects
+			inHDF = new HDFile(infile, "r", asyncMonitor,
+					MONITOR_STEPS_READ_WRITE);
+			inHDF.setLazyLoadData(true);
+			/*
+			 * read file into set of AbstractHData's, set their internal
+			 * variables
+			 */
+			inHDF.readFile();
+			AbstractData.interpretBytesAll();
+			asyncMonitor.increment();
+			final String fileName = FILE_UTIL.removeExtensionFileName(infile
+					.getName());
+			if (hdfToJam.hasVGroupRootGroup()) {
+				convertHDFToJam(mode, fileName, existingGrps,
+						histAttrList);
+			} else {
+				convertHDFToJamOriginal(mode, fileName, existingGrps,
+						histAttrList);
+			}
+			/* Create output message. */
+			if (mode == FileOpenMode.OPEN) {
+				message.append("Opened ").append(infile.getName());
+			} else if (mode == FileOpenMode.OPEN_MORE) {
+				message.append("Opened Additional ").append(infile.getName());
+			} else if (mode == FileOpenMode.RELOAD) {
+				message.append("Reloaded ").append(infile.getName());
+			} else { //ADD
+				message.append("Adding counts in ").append(infile.getName());
+				//FIXME currently only add one group
+				message.append(" to groups ");
+				for (int i = 0; i < existingGrps.size(); i++) {
+					final String groupName = ((Group) existingGrps.get(0))
+							.getName();
+					if (0 < i) {
+						message.append(", ");
+					}
+					message.append(groupName);
+				}
+			}
+			message.append(" (");
+			message.append(groupCount).append(" groups");
+			message.append(", ").append(histCount).append(" histograms");
+			message.append(", ").append(gateCount).append(" gates");
+			message.append(", ").append(scalerCount).append(" scalers");
+			message.append(", ").append(paramCount).append(" parameters");
+			message.append(')');
+		} catch (FileNotFoundException e) {
+			uiErrorMsg = "Opening file: " + infile.getPath()
+					+ " Cannot find file or file is locked";
+		} catch (HDFException e) {
+			uiErrorMsg = "Reading file: '" + infile.getName() + "', Exception "
+					+ e.toString();
+			rval = false;
+		} finally {
+			try {
+				inHDF.close();
+			} catch (IOException except) {
+				uiErrorMsg = "Closing file " + infile.getName();
+				rval = false;
+			}
+			/* destroys reference to HDFile (and its AbstractHData's) */
+			inHDF = null;
+		}
+		AbstractData.clearAll();
+		setLastValidFile(infile);
+		uiMessage = message.toString();
+		return rval;
+	}
     
     /**
-     * Read the histograms in.
-     * 
-     * @param infile
-     *            to read from
-     * @return list of attributes
-     * @throws HDFException if something goes wrong
-     */
+	 * Read the histograms in.
+	 * 
+	 * @param infile
+	 *            to read from
+	 * @return list of attributes
+	 * @throws HDFException
+	 *             if something goes wrong
+	 */
     public List readHistogramAttributes(File infile) throws HDFException {
         List rval = new ArrayList();
         if (!HDFile.isHDFFile(infile)) {
