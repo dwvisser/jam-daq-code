@@ -108,10 +108,10 @@ class PlotFit {
 		return fwhm;
 	}
 
-	void getNetArea(double[] netArea, double[] netAreaError,
-			double[] channelBackground, double[] fwhm, double[] centroid,
-			double[] centroidError, Bin[] clicks, double grossArea, int X,
-			double[] counts) {
+	void getNetArea(final double[] netArea, double[] netAreaError,
+			double[] channelBkgd, double[] fwhm, double[] centroid,
+			double[] centroidError, Bin[] clicks, final double grossArea, final int X,
+			final double[] counts) {
 		double netBackground = 0;
 		double[] channel = new double[X];
 		double countsHigh = 0;
@@ -146,12 +146,12 @@ class PlotFit {
 		for (int p = rx1; p <= rx2; p++) {
 			area += counts[p];
 			channel[p] = p + 0.5;
-			channelBackground[p] = gradient * p + intercept;
-			netArea[0] += counts[p] - channelBackground[p];
-			netBackground += channelBackground[p];
+			channelBkgd[p] = gradient * p + intercept;
+			netArea[0] += counts[p] - channelBkgd[p];
+			netBackground += channelBkgd[p];
 		}
 		for (int n = x1; n <= x4 + 1; n++) {
-			channelBackground[n] = gradient * n + intercept;
+			channelBkgd[n] = gradient * n + intercept;
 		}
 		netAreaError[0] = Math.pow(grossArea + netBackground, 0.5);
 		/* calculate weight */
