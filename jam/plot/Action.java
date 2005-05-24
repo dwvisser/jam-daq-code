@@ -922,29 +922,29 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				fwhm[0] = fwhm[0] - fwhm[1];
 				centroidError[0] = centroidError[0] - centroidError[1];
 			}
-			final char pm = '\u00b1';
-			textOut.messageOut(crt + "Gross Area = " + grossArea + pm
+			final char plusMinus = '\u00b1';
+			textOut.messageOut(crt + "Gross Area = " + grossArea + plusMinus
 					+ numFormat.format(Math.sqrt(grossArea)) + crt
-					+ "NetArea = " + numFormat.format(netArea[0]) + pm
+					+ "NetArea = " + numFormat.format(netArea[0]) + plusMinus
 					+ numFormat.format(netAreaError[0]) + crt + "Centroid = "
-					+ numFormat.format(centroid[0]) + pm
+					+ numFormat.format(centroid[0]) + plusMinus
 					+ numFormat.format(centroidError[0]) + crt + "FWHM = "
 					+ numFormat.format(fwhm[0]), MessageHandler.END);
 			/* Draw Fit on screen by calling DisplayFit in Display.java */
 			final int[] bgdPts = { getClick(0).getX(), getClick(1).getX(),
 					getClick(2).getX(), getClick(3).getX() };
 			Arrays.sort(bgdPts);
-			final int ll = bgdPts[0];
-			final int ul = bgdPts[3] + 1;
-			final double[] bkgd = new double[ul - ll + 1];
-			System.arraycopy(channelBackground, ll, bkgd, 0, bkgd.length);
-			display.displayFit(null, bkgd, null, ll);
+			final int lowerLimit = bgdPts[0];
+			final int upperLimit = bgdPts[3] + 1;
+			final double[] bkgd = new double[upperLimit - lowerLimit + 1];
+			System.arraycopy(channelBackground, lowerLimit, bkgd, 0, bkgd.length);
+			display.displayFit(null, bkgd, null, lowerLimit);
 			done();
 		}
 	}
 
-	private Bin getClick(int i) {
-		return (Bin) clicks.get(i);
+	private Bin getClick(final int bin) {
+		return (Bin) clicks.get(bin);
 	}
 
 	/**
