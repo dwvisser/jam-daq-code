@@ -152,7 +152,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		commandPresent = false;
 		//overlayState = false;
 		settingGate = false;
-		inquire = new PlotFit(); //class with area/centroid routines
+		inquire = PlotFit.getInstance(); //class with area/centroid routines
 		/* numFormat for formatting energy output */
 		numFormat = NumberFormat.getInstance();
 		numFormat.setGroupingUsed(false);

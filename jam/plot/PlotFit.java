@@ -7,16 +7,26 @@ import java.util.Arrays;
 /**
  * Class to perform simple fits such as area and centroid
  */
-class PlotFit {
+final class PlotFit {
+	
+	private static final PlotFit INSTANCE = new PlotFit();
+	
+	private PlotFit(){
+		super();
+	}
+	
+	static PlotFit getInstance(){
+		return INSTANCE;
+	}
 
 	/* non-javadoc:
 	 * Get the area for a 1 d histogram
 	 */
-	double getArea(double[] counts, Bin p1, Bin p2) {
-		final int x1 = p1.getX();
-		final int x2 = p2.getX();
-		final int xmin = Math.min(x1, x2);
-		final int xmax = Math.max(x1, x2);
+	double getArea(final double[] counts, final Bin bin1, final Bin bin2) {
+		final int xpos1 = bin1.getX();
+		final int xpos2 = bin2.getX();
+		final int xmin = Math.min(xpos1, xpos2);
+		final int xmax = Math.max(xpos1, xpos2);
 		double area = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			area += counts[i];
@@ -27,15 +37,15 @@ class PlotFit {
 	/* non-javadoc:
 	 * Get the area for a 2 d histogram bounded by the rectangle x1, y1, x2, y2
 	 */
-	double getArea(double[][] counts, Bin p1, Bin p2) {
-		final int x1 = p1.getX();
-		final int x2 = p2.getX();
-		final int y1 = p1.getY();
-		final int y2 = p2.getY();
-		final int xmin = Math.min(x1, x2);
-		final int xmax = Math.max(x1, x2);
-		final int ymin = Math.min(y1, y2);
-		final int ymax = Math.max(y1, y2);
+	double getArea(final double[][] counts, final Bin bin1, final Bin bin2) {
+		final int xpos1 = bin1.getX();
+		final int xpos2 = bin2.getX();
+		final int ypos1 = bin1.getY();
+		final int ypos2 = bin2.getY();
+		final int xmin = Math.min(xpos1, xpos2);
+		final int xmax = Math.max(xpos1, xpos2);
+		final int ymin = Math.min(ypos1, ypos2);
+		final int ymax = Math.max(ypos1, ypos2);
 		double area = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
 			for (int j = ymin; j <= ymax; j++) {
@@ -48,11 +58,11 @@ class PlotFit {
 	/* non-javadoc:
 	 * method to calculate the centroid for a histogram given a bounded area
 	 */
-	double getCentroid(double[] counts, Bin p1, Bin p2) {
-		final int x1 = p1.getX();
-		final int x2 = p2.getX();
-		final int xmin = Math.min(x1, x2);
-		final int xmax = Math.max(x1, x2);
+	double getCentroid(final double[] counts, final Bin bin1, final Bin bin2) {
+		final int xpos1 = bin1.getX();
+		final int xpos2 = bin2.getX();
+		final int xmin = Math.min(xpos1, xpos2);
+		final int xmax = Math.max(xpos1, xpos2);
 		double area = 0;
 		double centroid = 0;
 		for (int i = xmin; i <= xmax; i++) {//sum up counts
@@ -74,11 +84,11 @@ class PlotFit {
 	 * such a way the we do not overflow. So we cant use SUM =Xi^2-(X^bar)^2
 	 * does not yet take care of N-1 for denominatior of variance.
 	 */
-	double getFWHM(double[] counts, Bin p1, Bin p2) {
-		final int x1 = p1.getX();
-		final int x2 = p2.getX();
-		final int xmin = Math.min(x1, x2);
-		final int xmax = Math.max(x1, x2);
+	double getFWHM(final double[] counts, final Bin bin1, final Bin bin2) {
+		final int xpos1 = bin1.getX();
+		final int xpos2 = bin2.getX();
+		final int xmin = Math.min(xpos1, xpos2);
+		final int xmax = Math.max(xpos1, xpos2);
 		int area = 0;
 		double distance;
 		double centroid = 0;
@@ -110,10 +120,10 @@ class PlotFit {
 
 	void getNetArea(final double[] netArea, double[] netAreaError,
 			double[] channelBkgd, double[] fwhm, double[] centroid,
-			double[] centroidError, Bin[] clicks, final double grossArea, final int X,
+			double[] centroidErr, final Bin[] clicks, final double grossArea, final int numChannels,
 			final double[] counts) {
-		double netBackground = 0;
-		double[] channel = new double[X];
+		double netBkgd = 0;
+		double[] channel = new double[numChannels];
 		double countsHigh = 0;
 		double countsLow = 0;
 		double area = 0;
@@ -122,38 +132,38 @@ class PlotFit {
 		final int[] bgdX1 = { clicks[0].getX(), clicks[1].getX(),
 				clicks[2].getX(), clicks[3].getX() };
 		Arrays.sort(bgdX1);
-		final int x1 = bgdX1[0];
-		final int x2 = bgdX1[1];
-		final int x3 = bgdX1[2];
-		final int x4 = bgdX1[3];
+		final int bkgd1 = bgdX1[0];
+		final int bkgd2 = bgdX1[1];
+		final int bkgd3 = bgdX1[2];
+		final int bkgd4 = bgdX1[3];
 		final int x5temp = clicks[4].getX();
 		final int x6temp = clicks[5].getX();
 		final int rx1 = Math.min(x5temp, x6temp);
 		final int rx2 = Math.max(x5temp, x6temp);
-		for (int n = x1; n <= x2; n++) {
+		for (int n = bkgd1; n <= bkgd2; n++) {
 			countsLow += counts[n];
 		}
-		for (int n = x3; n <= x4; n++) {
+		for (int n = bkgd3; n <= bkgd4; n++) {
 			countsHigh += counts[n];
 		}
-		double avLow = countsLow / (x2 - x1 + 1);
-		double avHigh = countsHigh / (x4 - x3 + 1);
-		double midLow = (x2 + x1) / 2;
-		double midHigh = (x4 + x3) / 2;
-		double gradient = (avHigh - avLow) / (midHigh - midLow);
-		double intercept = avHigh - (gradient * midHigh);
+		final double avLow = countsLow / (bkgd2 - bkgd1 + 1);
+		final double avHigh = countsHigh / (bkgd4 - bkgd3 + 1);
+		final double midLow = (bkgd2 + bkgd1) / 2;
+		final double midHigh = (bkgd4 + bkgd3) / 2;
+		final double gradient = (avHigh - avLow) / (midHigh - midLow);
+		final double intercept = avHigh - (gradient * midHigh);
 		/* sum counts between region - background at each channel */
 		for (int p = rx1; p <= rx2; p++) {
 			area += counts[p];
 			channel[p] = p + 0.5;
 			channelBkgd[p] = gradient * p + intercept;
 			netArea[0] += counts[p] - channelBkgd[p];
-			netBackground += channelBkgd[p];
+			netBkgd += channelBkgd[p];
 		}
-		for (int n = x1; n <= x4 + 1; n++) {
+		for (int n = bkgd1; n <= bkgd4 + 1; n++) {
 			channelBkgd[n] = gradient * n + intercept;
 		}
-		netAreaError[0] = Math.pow(grossArea + netBackground, 0.5);
+		netAreaError[0] = Math.pow(grossArea + netBkgd, 0.5);
 		/* calculate weight */
 		if (area > 0) { // must have more than zero counts
 			for (int i = rx1; i <= rx2; i++) {
@@ -169,7 +179,7 @@ class PlotFit {
 
 		}
 		/* Error in Centroid position */
-		centroidError[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
+		centroidErr[0] = Math.sqrt(variance) / Math.sqrt(rx2 - rx1 + 1);
 		fwhm[0] = GaussianConstants.SIG_TO_FWHM * Math.sqrt(variance);
 	}
 }
