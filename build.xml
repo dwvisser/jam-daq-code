@@ -12,8 +12,8 @@
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="2" />
-	<property name = "MINOR" value="1" />
-	<property name = "RELEASE" value="1" />
+	<property name = "MINOR" value="2" />
+	<property name = "RELEASE" value="0" />
 	<property name = "SOURCE_GUID" value="e21944cc-fa42-4957-8220-949b49454bfa" />
 	<property name = "LIB_GUID" value="c5699147-8e76-48dc-bc37-0b9c09838b57" />
 	<property name = "BIN_GUID" value="59b9a804-9890-413c-974d-7f7afdbdf30d" />
