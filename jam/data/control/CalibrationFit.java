@@ -565,20 +565,21 @@ public class CalibrationFit extends AbstractControl {
 	}
 	
 	/**
-	* Update selection then show dialog
-	**/
-    public void show() {
-    	updateSelection(); 
-    	super.setVisible(true);
-    }
-    public void update(Observable observable, Object object) {
-    	
-    	final BroadcastEvent be = (BroadcastEvent) object;
-		final BroadcastEvent.Command com=be.getCommand();
+	 * Update selection then show dialog
+	 */
+	public void setVisible(final boolean show) {
+		if (show) {
+			updateSelection();
+		}
+		super.setVisible(show);
+	}
+    
+    public void update(Observable observable, Object object) {    	
+    	final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command com=event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT ||
 			com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			updateSelection();     	       
 		}
 	}    
-        
 }

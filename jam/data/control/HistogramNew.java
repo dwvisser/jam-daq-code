@@ -173,11 +173,11 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Show the dialog.
 	 */
-	public void show() {
-		doSetup();
-		super.show();
-		//NOTE setVisible lead to a stack overflow
-		//setVisible(true);
+	public void setVisible(final boolean show) {
+		if (show) {
+			doSetup();
+		}
+		super.setVisible(show);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class HistogramNew extends AbstractControl {
 	 */
 	private void makeHistogram() {
 		Group histGroup;
-		String groupName = (String)comboGroupModel.getSelectedItem();		
+		final String groupName = (String)comboGroupModel.getSelectedItem();		
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
 		final int size = Integer
@@ -224,7 +224,7 @@ public class HistogramNew extends AbstractControl {
 			histGroup =Group.getGroup(groupName);
 			STATUS.setCurrentGroup(histGroup);			
 		}
-		Histogram hist= Histogram.createHistogram(histGroup, array, name, title);
+		final Histogram hist= Histogram.createHistogram(histGroup, array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		JamStatus.getSingletonInstance().setCurrentHistogram(hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
