@@ -569,7 +569,7 @@ public class CalibrationFit extends AbstractControl {
 	**/
     public void show() {
     	updateSelection(); 
-    	super.show();
+    	super.setVisible(true);
     }
     public void update(Observable observable, Object object) {
     	

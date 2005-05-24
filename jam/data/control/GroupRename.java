@@ -72,7 +72,7 @@ public class GroupRename extends AbstractControl {
                                 + currentGroup.getName() + ".");
             } else {
                 textName.setText(currentGroup.getName());
-                super.show();
+                super.setVisible(true);
             }
         }
     }
