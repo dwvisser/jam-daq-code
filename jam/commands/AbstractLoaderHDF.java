@@ -19,81 +19,91 @@ import javax.swing.JFileChooser;
  * 
  * @author Ken Swartz
  */
-abstract class AbstractLoaderHDF extends AbstractCommand implements Observer, HDFIO.AsyncListener {
-    
-	final HDFIO	hdfio;	
-	Group loadGroup;
-	
+abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
+        HDFIO.AsyncListener {
+
+    final transient HDFIO hdfio;
+
+    transient Group loadGroup;
+
     /**
      * Mode under which to do the loading.
      */
-    protected FileOpenMode fileOpenMode;
+    protected transient FileOpenMode fileOpenMode;
 
     AbstractLoaderHDF() {
-    	Frame frame= STATUS.getFrame();    	
-    	hdfio = new HDFIO(frame, msghdlr);    	
-    }    
+        Frame frame = STATUS.getFrame();
+        hdfio = new HDFIO(frame, msghdlr);
+    }
 
-	/**
-	 * Read in an HDF file.
-	 * 
-	 * @param file a file reference or null
-	 * @param loadGroup 
-	 */ 
-	protected final void loadHDFFile(File file, Group loadGroup) {		
-		this.loadGroup=loadGroup;			
-		final boolean isFileReading;		
+    /**
+     * Read in an HDF file.
+     * 
+     * @param file
+     *            a file reference or null
+     * @param loadGroup
+     * @return whether file was read
+     */
+    protected final boolean loadHDFFile(File file, Group loadGroup) {
+        this.loadGroup = loadGroup;
+        final boolean fileRead;
+        if (file == null) {//No file given
+            final JFileChooser jfile = new JFileChooser(HDFIO
+                    .getLastValidFile());
+            jfile.setFileFilter(new HDFileFilter(true));
+            final int option = jfile.showOpenDialog(STATUS.getFrame());
+            /* Don't do anything if it was cancel. */
+            if (option == JFileChooser.APPROVE_OPTION
+                    && jfile.getSelectedFile() != null) {
+                final File selectedFile = jfile.getSelectedFile();
+                hdfio.setListener(this);
+                fileRead = hdfio
+                        .readFile(fileOpenMode, selectedFile, loadGroup);
+            } else {
+                fileRead = false;
+            }
+        } else {
+            fileRead = hdfio.readFile(fileOpenMode, file, loadGroup);
+        }
+        return fileRead;
+    }
 
-		if (file==null) {//No file given				
-	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
-	        jfile.setFileFilter(new HDFileFilter(true));
-	        final int option = jfile.showOpenDialog(STATUS.getFrame());
-	        /* Don't do anything if it was cancel. */
-	        if (option == JFileChooser.APPROVE_OPTION
-	                && jfile.getSelectedFile() != null) {
-	        	final File selectedFile = jfile.getSelectedFile();
-	    		hdfio.setListener(this);
-	    		isFileReading=hdfio.readFile(fileOpenMode, selectedFile, loadGroup);	        	
-	        } else{
-	        	isFileReading=false;
-	        }	        	
-		} else {
-			isFileReading=hdfio.readFile(fileOpenMode, file,  loadGroup);
-		}		
-	}
-	
-	protected final void executeParse(String[] cmdTokens) {
-		//LATER KBS needs to be implemented
-	    //execute(null);	//has unhandled exception
-	}	
-	/**
-	 * Notify the application when the command is done
-	 *
-	 */
-	private void notifyApp() {
-		Histogram firstHist=null;
-		/*
+    protected final void executeParse(String[] cmdTokens) {
+        //LATER KBS needs to be implemented
+        //execute(null); //has unhandled exception
+    }
+
+    /**
+     * Notify the application when the command is done
+     *  
+     */
+    private void notifyApp() {
+        Histogram firstHist = null;
+        /*
          * Set to sort group. Set the current histogram to the first opened
          * histogram.
          */
-		if (loadGroup.getHistogramList().size()>0 ) {
-			Group group =STATUS.getCurrentGroup();
-			if (group!=null) {
-				List histList =group.getHistogramList();
-				if (histList.size()>0)
-					firstHist = (Histogram)group.getHistogramList().get(0);
-			}
-		}					
-		STATUS.setCurrentHistogram(firstHist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-		
-	}
-	/**
-	 * Called by HDFIO when asynchronized IO is completed  
-	 */
-	public void completedIO(String message, String errorMessage) {
-		hdfio.removeListener();
-		notifyApp();
-	}
-	
+        if (loadGroup.getHistogramList().size() > 0) {
+            final Group group = STATUS.getCurrentGroup();
+            if (group != null) {
+                final List histList = group.getHistogramList();
+                if (histList.size() > 0) {
+                    firstHist = (Histogram) group.getHistogramList().get(0);
+                }
+            }
+        }
+        STATUS.setCurrentHistogram(firstHist);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+                firstHist);
+
+    }
+
+    /**
+     * Called by HDFIO when asynchronized IO is completed
+     */
+    public void completedIO(String message, String errorMessage) {
+        hdfio.removeListener();
+        notifyApp();
+    }
+
 }
