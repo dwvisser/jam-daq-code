@@ -5,26 +5,32 @@ import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 /**
- * Set repaint manager to this to check whether Swing and
- * event threads are being used properly.
+ * Set repaint manager to this to check whether Swing and event threads are
+ * being used properly.
  * 
- * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+ * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-public class ThreadCheckingRepaintManager extends RepaintManager {
-    public synchronized void addInvalidComponent(JComponent jComponent) {
-        checkThread(jComponent);
-        super.addInvalidComponent(jComponent);
-    }
+public final class ThreadCheckingRepaintManager extends RepaintManager {
 
-    private void checkThread(JComponent c) {
-        if (!SwingUtilities.isEventDispatchThread() && c.isShowing()) {
-            System.out.println("Wrong Thread");
-            Thread.dumpStack();
-        }
-    }
+	public void addInvalidComponent(final JComponent jComponent) {
+		synchronized (this) {
+			checkThread(jComponent);
+			super.addInvalidComponent(jComponent);
+		}
+	}
 
-    public synchronized void addDirtyRegion(JComponent jComponent, int i, int i1, int i2, int i3) {
-        checkThread(jComponent);
-        super.addDirtyRegion(jComponent, i, i1, i2, i3);
-    }
+	private void checkThread(final JComponent component) {
+		if (!SwingUtilities.isEventDispatchThread() && component.isShowing()) {
+			System.err.println("Wrong Thread");
+			Thread.dumpStack();
+		}
+	}
+
+	public void addDirtyRegion(final JComponent component, final int xcoord,
+			final int ycoord, final int width, final int height) {
+		synchronized (this) {
+			checkThread(component);
+			super.addDirtyRegion(component, xcoord, ycoord, width, height);
+		}
+	}
 }
