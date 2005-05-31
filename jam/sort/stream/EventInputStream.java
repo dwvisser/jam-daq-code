@@ -276,13 +276,15 @@ public abstract class EventInputStream {
 	
 	/**
 	 * Prints a message to the console.
-	 * @param s message
+	 * 
+	 * @param message
+	 *            message
 	 */
-	protected final void showMessage(String s){
-		if (console!=null){
-			console.messageOutln(s);
+	protected final void showMessage(final String message) {
+		if (console == null) {
+			System.out.println(message);
 		} else {
-		    System.out.println(s);
+			console.messageOutln(message);
 		}
 	}
     
