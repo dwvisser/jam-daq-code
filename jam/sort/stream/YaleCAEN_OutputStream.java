@@ -77,7 +77,7 @@ public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
 	 * @see jam.sort.stream.EventOutputStream#isEndRun(short)
 	 */
 	public boolean isEndRun(short event) {
-		final short endRun = (short)(YaleCAEN_InputStream.END_OF_BUFFER & 0xffff);
+		final short endRun = (short)(YaleCAEN_InputStream.BUFFER_END & 0xffff);
 		return (endRun==event);
 	}
 
