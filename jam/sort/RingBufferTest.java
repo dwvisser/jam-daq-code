@@ -45,7 +45,7 @@ public class RingBufferTest extends TestCase {
 			try{
 				ring.putBuffer(buffer);
 			} catch (RingFullException re){
-				System.err.println(re);
+				re.printStackTrace();
 			}
 			ring.getBuffer(out);
 		}
@@ -59,17 +59,19 @@ public class RingBufferTest extends TestCase {
 			try{
 				ring.putBuffer(buffer);
 			} catch (RingFullException re){
-				System.err.println(re);
+				re.printStackTrace();
 			}
 		}
 		assertFalse(ring.isEmpty());
-		assertTrue(ring.isFull());
+		assertTrue("After filling buffer, expected it to to indicate it was full.",
+				ring.isFull());
 		ring.getBuffer(out);
 		/* Next expression is false because buffer if FIFO. */
 		assertFalse(Arrays.equals(buffer,out));
 		assertFalse(ring.isFull());
 		ring.clear();
-		assertTrue(ring.isEmpty());
+		assertTrue("After clearing ring buffer, expected it to be empty.",
+				ring.isEmpty());
 	}
 	
 	/**
@@ -77,15 +79,16 @@ public class RingBufferTest extends TestCase {
 	 *
 	 */
 	public void testGetAvailableBuffers(){
-		System.out.println("Number of buffers: "+RingBuffer.NUMBER_BUFFERS);
-		assertEquals(RingBuffer.NUMBER_BUFFERS,ring.getAvailableBuffers());
+		assertEquals("Before filling buffers, expected all buffers available.",
+				RingBuffer.NUMBER_BUFFERS,ring.getAvailableBuffers());
 		for (int i=0; i<RingBuffer.NUMBER_BUFFERS; i++){
 			try{
 				ring.putBuffer(buffer);
 			} catch (RingFullException re){
-				System.err.println(re);
+				re.printStackTrace();
 			}
 		}
-		assertEquals(0,ring.getAvailableBuffers());
+		assertEquals("After filling buffer, expected zero available buffers.",
+				0,ring.getAvailableBuffers());
 	}	
 }
