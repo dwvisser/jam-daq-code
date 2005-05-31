@@ -135,7 +135,6 @@ public final class UconnInputStream extends EventInputStream {
 	 */
 	private boolean readBlockHeader() throws EventException {
 		try {
-
 			blockFullSize = dataInput.readInt();
 			blockCurrSize = dataInput.readInt();
 			blockNumber = dataInput.readInt();
@@ -199,57 +198,39 @@ public final class UconnInputStream extends EventInputStream {
 	 * we are at an event so unpack it
 	 */
 	private void unpackData(int[] input) throws IOException, EventException {
-
-		short dataWord;
 		int vsn = 0;
-		int chan;
-		int data;
-
-		//while there are words left in the event
+		/* while there are words left in the event */
 		for (int i = 0; i < eventNumWord; i++) {
-
-			//read word
-			dataWord = dataInput.readShort();
-			//XXXSystem.out.print(" dataWord  "+dataWord);			    			
-
+			final short dataWord = dataInput.readShort();//read word
 			//if new event check we start with a vsn
 			if (i == 0) {
 				if ((dataWord & VSN_MARKER) == 0) {
-					//XXXSystem.out.println(" Error event not started with vsn");			    		    		
 					throw new EventException(" Event not started with vsn [UconnInputStream]");
 				}
 			}
-
-			//we have vsn		
-			if ((dataWord & VSN_MARKER) != 0) {
-				vsn = dataWord & VSN_MASK;
-				System.out.println(" vsn  " + vsn);
-
-				//we have a data word		    
-			} else {
-
+			/* we have vsn */		
+			if ((dataWord & VSN_MARKER) == 0) {//data word
+				int chan,data;
 				//if vsn of adc 1
 				if (vsn < VSN_TDC) {
 					chan = (dataWord >> ADC_CHAN_SHFT) & ADC_CHAN_MASK;
 					data = dataWord & ADC_DATA_MASK;
-					//offset data by ADC_OFFSET
+					/* offset data by ADC_OFFSET */
 					input[vsn * ADC_OFFSET + chan] = data;
-					//XXXSystem.out.println(" tdc channel  "+chan+" data "+data);			    					    		    		    		    					
-					// if tdc     		     
-				} else {
+				} else {//if tdc
 					chan = (dataWord >> TDC_CHAN_SHFT) & TDC_CHAN_MASK;
 					data = dataWord & TDC_DATA_MASK;
-					//XXXSystem.out.println(" tdc channel  "+chan+" data "+data);			    					    		    
 					input[TDC_OFFSET + chan] = data;
 				}
 				System.out.println("ch " + chan + " data " + data);
-
-				//end data sort     
+				/* end data sort */     		    
+			} else {//we have vsn
+				vsn = dataWord & VSN_MASK;
+				System.out.println(" vsn  " + vsn);
 			}
-			//end for				     
 		}
-
 	}
+	
 	/**
 	 * Read an event stream header.
 	 *
