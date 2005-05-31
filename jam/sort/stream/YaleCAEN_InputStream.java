@@ -4,7 +4,9 @@ import jam.global.MessageHandler;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class sorts the native data format of the CAEN V7x5 ADC's and TDC's.
@@ -18,25 +20,26 @@ import java.util.Hashtable;
  */
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L002Parameters {
     
-    static final int NUM_V7X5_UNITS=19;//20 slots in a VME crate - 1 controller slot
-    static final int NUM_CHANNELS = NUM_V7X5_UNITS*32;
-    static final int NUM_EVENTS_TO_STORE = 100;
-    private BufferStatus internalStatus = BufferStatus.FIFO_FILLING;
+    static final int BUFFER_END = 0x01bbbbbb;//at end of normal buffers
+
+    private static final int STOP_PAD = 0x01DDDDDD;
+    private static final int END_PAD = 0x01EEEEEE;
+    private static final int BUFFER_PAD = 0x01FFFFFF;
+    private static final int SCALER_BLOCK = 0x01CCCCCC;
     
-    static final int STOP_PAD = 0x01DDDDDD;
-    static final int END_PAD = 0x01EEEEEE;
-    static final int BUFFER_PAD = 0x01FFFFFF;
-    static final int SCALER_BLOCK = 0x01CCCCCC;
-    static final int END_OF_BUFFER = 0x01bbbbbb;//at end of normal buffers
-    int nscalerblock=0;	// for counting number of scaler blocks in the file
+    private static final int N_V7X5_UNITS=19;//20 slots in a VME crate - 1 controller slot
+    private static final int NUM_CHANNELS = N_V7X5_UNITS*32;
+    private static final int BUFFER_DEPTH = 100;   
     
-    private int[][] fifo=new int[NUM_EVENTS_TO_STORE][NUM_CHANNELS];
-    private final int [] zeros = new int[NUM_CHANNELS];//automatically initialized to all zeros
-    private int[] eventNumbers = new int[NUM_EVENTS_TO_STORE];
+    private transient BufferStatus internalStat = BufferStatus.FIFO_FILLING;
+    private transient int nScalrBlocks=0;	// for counting number of scaler blocks in the file
+    private transient int[][] fifo=new int[BUFFER_DEPTH][NUM_CHANNELS];
+    private transient final int [] zeros = new int[NUM_CHANNELS];//automatically initialized to all zeros
+    private transient int[] eventNumbers = new int[BUFFER_DEPTH];
     
-    private int posPut;//array index where next event counter is to be written to FIFO
-    private int posGet;//array index where next (i.e. oldest) event counter/event should be retrieved from
-    private int lastIncremented;
+    private transient int posPut;//array index where next event counter is to be written to FIFO
+    private transient int posGet;//array index where next (i.e. oldest) event counter/event should be retrieved from
+    private transient int lastIncr;//last incremented
     private static final int PUT=0;
     private static final int GET=1;
     
@@ -44,7 +47,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     /**
      * Hashtable keys are the event numbers, objects are the array indices.
      */
-    private Hashtable eventNumberTable=new Hashtable(NUM_EVENTS_TO_STORE);
+    private transient final Map eventNumMap=Collections.synchronizedMap(
+    		new HashMap(BUFFER_DEPTH));
     
     /**
      * Make sure to issue a setConsole() after using this constructor.
@@ -54,19 +58,23 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
         super();
         posPut=0;
         posGet=0;
-        lastIncremented=GET;//initially empty requires last incremented to be GET
+        lastIncr=GET;//initially empty requires last incremented to be GET
     }
     
     private void incrementPut() {
         posPut++;
-        if (posPut==eventNumbers.length) posPut=0;
-        lastIncremented=PUT;
+        if (posPut==eventNumbers.length) {
+        	posPut=0;
+        }
+        lastIncr=PUT;
     }
     
     private void incrementGet() {
         posGet++;
-        if (posGet==eventNumbers.length) posGet=0;
-        lastIncremented=GET;
+        if (posGet==eventNumbers.length) {
+        	posGet=0;
+        }
+        lastIncr=GET;
     }
     
     /**
@@ -76,42 +84,46 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
         super(console);
     }
     
-    private boolean eventInFIFO(int eventNumber){
-        return eventNumberTable.containsKey(new Integer(eventNumber));
+    private boolean eventInFIFO(final int eventNumber){
+        return eventNumMap.containsKey(new Integer(eventNumber));
     }
     
-    private int getEventIndex(int eventNumber){
-        return ((Integer)(eventNumberTable.get(new Integer(eventNumber)))).intValue();
+    private int getEventIndex(final int eventNumber){
+        return ((Integer)(eventNumMap.get(new Integer(eventNumber)))).intValue();
     }
     
-    private void addEventIndex(int eventNumber){
+    private void addEventIndex(final int eventNumber){
         eventNumbers[posPut] = eventNumber;
         System.arraycopy(zeros,0,fifo[posPut],0,zeros.length);
-        eventNumberTable.put(new Integer(eventNumber), new Integer(posPut));
+        eventNumMap.put(new Integer(eventNumber), new Integer(posPut));
         incrementPut();
-        if (fifoFull()) internalStatus=BufferStatus.FIFO_FULL;
+        if (fifoFull()) {
+        	internalStat=BufferStatus.FIFO_FULL;
+        }
     }
     
     private boolean fifoFull() {
-        return posPut==posGet && lastIncremented==PUT;
+        return posPut==posGet && lastIncr==PUT;
     }
     
     private boolean fifoEmpty() {
-        return posPut==posGet && lastIncremented==GET;
+        return posPut==posGet && lastIncr==GET;
     }
     
-    private void getFirstEvent(int [] data){
-        int eventNumber = eventNumbers[posGet];
-        eventNumberTable.remove(new Integer(eventNumber));
-        int [] rval = fifo[posGet];
+    private void getFirstEvent(final int [] data){
+        final int eventNumber = eventNumbers[posGet];
+        eventNumMap.remove(new Integer(eventNumber));
+        final int [] rval = fifo[posGet];
         System.arraycopy(rval,0,data,0,data.length);
         incrementGet();
-        if (!inFlushState()) internalStatus = BufferStatus.FIFO_FILLING;
+        if (!inFlushState()) {
+        	internalStat = BufferStatus.FIFO_FILLING;
+        }
     }
     
     private boolean inFlushState(){
-        return internalStatus==BufferStatus.FIFO_FLUSH ||
-        internalStatus==BufferStatus.FIFO_ENDRUN_FLUSH;
+        return internalStat==BufferStatus.FIFO_FLUSH ||
+        internalStat==BufferStatus.FIFO_ENDRUN_FLUSH;
     }
         
     /**
@@ -121,8 +133,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
         super(console, eventSize);
     }
     
-    private int [] tempParams=new int[32];
-    private int [] tempData = new int[32];
+    private transient final int [] tempParams=new int[32];
+    private transient final int [] tempData = new int[32];
+    
     /**
      * Reads an event from the input stream
      * Expects the stream position to be the beginning of an event.
@@ -130,7 +143,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
      *
      * @exception   EventException    thrown for errors in the event stream
      */
-    public synchronized EventInputStatus readEvent(int[] data) throws  EventException {
+    public synchronized EventInputStatus readEvent(final int[] data) throws  EventException {
         EventInputStatus rval=EventInputStatus.EVENT;
         int parameter=0;
         int endblock=0;
@@ -138,21 +151,21 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
         try {
             /* internal_status may also be in a "flush" mode in which case
              * we skip this read loop and go straight to flushing out another event */ 
-            while(internalStatus==BufferStatus.FIFO_FILLING){
+            while(internalStat==BufferStatus.FIFO_FILLING){
             /* this loop may finish if status changes to "fifo full" mode 
              * when an event index gets added below */
-                int header = dataInput.readInt();
+                final int header = dataInput.readInt();
                 if (isHeader(header)) {
                     /* ADC's & TDC's in slots 2-31 */
-                    int slot = (header >>> 27) & 0x1f;
+                    final int slot = (header >>> 27) & 0x1f;
                     boolean keepGoing=true;
                     int paramIndex=0;
-                    int numParameters=0;
+                    int numParams=0;
                     while (keepGoing){                        
                         parameter = dataInput.readInt();
                         if (isParameter(parameter)) {
-                            numParameters++;
-                            int channel = (parameter >>> 16) & 0x3f;
+                            numParams++;
+                            final int channel = (parameter >>> 16) & 0x3f;
                             tempParams[paramIndex] = 32*(slot-2)+channel;
                             tempData[paramIndex] = parameter & 0xfff;
                             paramIndex++;
@@ -168,13 +181,13 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
                     /* If we really have end-of-block like we should, stick event
                      * data in the appropriate space in our FIFO. */
                     if (isEndBlock(endblock)){
-                        int eventNumber = endblock & 0xffffff;
+                        final int eventNumber = endblock & 0xffffff;
                         if (!eventInFIFO(eventNumber)){//Event # not in FIFO, so need to add it.
                             addEventIndex(eventNumber);//can change internal state to FIFO_FULL
                         }
-                        int arrayIndex = getEventIndex(eventNumber);
+                        final int arrayIndex = getEventIndex(eventNumber);
                         /* copy data in, item by item */
-                        for (int i=0; i<numParameters; i++) {
+                        for (int i=0; i<numParams; i++) {
                             fifo[arrayIndex][tempParams[i]]=tempData[i];
                         }
                     } else {
@@ -183,31 +196,31 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
                         Integer.toHexString(endblock));
                     }
                 } else if (header==SCALER_BLOCK) {//read and ignore scaler values
-                    int numScalers = dataInput.readInt();
-                    nscalerblock++;
+                    final int numScalers = dataInput.readInt();
+                    nScalrBlocks++;
                     for (int i=0; i<numScalers; i++) {
                     	tval[i]=dataInput.readInt();
                     }
                 	Scaler.update(tval);
                     rval=EventInputStatus.SCALER_VALUE;
-                    internalStatus=BufferStatus.SCALER;
-                } else if (header==END_OF_BUFFER){//return end of buffer to SortDaemon
+                    internalStat=BufferStatus.SCALER;
+                } else if (header==BUFFER_END){//return end of buffer to SortDaemon
                     /* no need to flush here */
                     rval=EventInputStatus.END_BUFFER;
-                    internalStatus=BufferStatus.PADDING;
+                    internalStat=BufferStatus.PADDING;
                 } else if (header==BUFFER_PAD) {
                     rval=EventInputStatus.IGNORE;
-                    internalStatus=BufferStatus.PADDING;
+                    internalStat=BufferStatus.PADDING;
                 } else if (header==STOP_PAD) {
-                    internalStatus = BufferStatus.FIFO_FLUSH;
+                    internalStat = BufferStatus.FIFO_FLUSH;
                 } else if (header==END_PAD) {
-                    internalStatus = BufferStatus.FIFO_ENDRUN_FLUSH;
-                    showMessage("Scaler blocks in file ="+nscalerblock);
-                    nscalerblock=0;
+                    internalStat = BufferStatus.FIFO_ENDRUN_FLUSH;
+                    showMessage("Scaler blocks in file ="+nScalrBlocks);
+                    nScalrBlocks=0;
                 } else {
                     /* using IGNORE since UNKNOWN WORD causes annoying beeps */
                     rval = EventInputStatus.IGNORE;
-                    internalStatus=BufferStatus.PADDING;
+                    internalStat=BufferStatus.PADDING;
                 }
             }// end of while loop
             /* We've dropped out of the while loop, which means either that 
@@ -215,25 +228,25 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
              * eventReady is set to true (i.e. encountered buffer pad or scaler)
              * The first case is handled here, if it's true. */
             if (inFlushState()) {//in one of the 2 flush states
-                if (!fifoEmpty()) {//FIFO not empty
-                    getFirstEvent(data);
-                    rval=EventInputStatus.EVENT;
-                } else {//all events flushed, make ready for next event
-                    if (internalStatus==BufferStatus.FIFO_FLUSH){
+                if (fifoEmpty()) {
+                    if (internalStat==BufferStatus.FIFO_FLUSH){
                         rval = EventInputStatus.END_BUFFER;
                     } else {//internal status must be "endrun flush"
                         rval = EventInputStatus.END_RUN;
                     }
-                    internalStatus=BufferStatus.FIFO_FILLING;
+                    internalStat=BufferStatus.FIFO_FILLING;
+                } else {//all events flushed, make ready for next event
+                    getFirstEvent(data);
+                    rval=EventInputStatus.EVENT;
                 }
             /* The other possibility is that the FIFO is full and we need to 
              * output an event. */
-            } else if (internalStatus==BufferStatus.FIFO_FULL) {
+            } else if (internalStat==BufferStatus.FIFO_FULL) {
                 getFirstEvent(data);//routine retrieves data and updates tracking variables
                 rval = EventInputStatus.EVENT;
             } else {//internal status=SCALER or PADDING
                 /* set to FIFO_FILLING so next call will enter loop */
-                internalStatus=BufferStatus.FIFO_FILLING;
+                internalStat=BufferStatus.FIFO_FILLING;
             }
         } catch (EOFException eofe) {// we got to the end of a file or stream
             rval=EventInputStatus.END_FILE;
@@ -251,22 +264,22 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
     
 	static private final int TYPE_MASK   = 0x7000000;
-	static private final int PARAM_COMPARE=0x0000000;
+	static private final int PARM_COMPARE=0x0000000;
 	
     /* non-javadoc
      * Checks whether the word type is for an event data word 
      */
-    private boolean isParameter(int data){
-        return (data & TYPE_MASK) == PARAM_COMPARE;
+    private boolean isParameter(final int data){
+        return (data & TYPE_MASK) == PARM_COMPARE;
     }
     
-	static private final int HEADER_COMPARE = 0x2000000;
+	static private final int HEAD_COMPARE = 0x2000000;
 	
     /* non-javadoc
      * Checks whether the word type is for an event header.
      */
-    private boolean isHeader(int data){
-        return (data & TYPE_MASK) == HEADER_COMPARE;
+    private boolean isHeader(final int data){
+        return (data & TYPE_MASK) == HEAD_COMPARE;
     }
     
 	static private final int END_COMPARE = 0x4000000;
@@ -274,15 +287,13 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     /* non-javadoc
      * Checks whether the word type is for an event end-of-block 
      */
-    private boolean isEndBlock(int data){
+    private boolean isEndBlock(final int data){
         return (data & TYPE_MASK) == END_COMPARE;
     }
         
     private static final short ENDRUN = (short)(END_PAD & 0xffff);
-    /**
-     * Check for end-of-run word.
-     */
-    public boolean isEndRun(short dataWord){
+
+    public boolean isEndRun(final short dataWord){
 		return (ENDRUN==dataWord);
     }
 }
