@@ -1,6 +1,8 @@
 package jam.data.control;
 import jam.data.DataParameter;
 import jam.global.MessageHandler;
+import jam.io.ExtensionFileFilter;
+import jam.util.StringUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -10,9 +12,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -28,8 +38,6 @@ import javax.swing.border.EmptyBorder;
 public final class ParameterControl
 	extends AbstractControl {
 
-	private final MessageHandler messageHandler;
-
 	//widgets for each parameter
 	private JPanel pCenter;
 	private JPanel[] pParam;
@@ -38,7 +46,12 @@ public final class ParameterControl
 
 	private final JPanel pButton;
 
+	private File lastFile; //last file referred to in a JFileChooser	
 
+	final StringUtilities stringUtil=StringUtilities.instance();
+	
+	private final MessageHandler messageHandler;
+	
 	/**
 	 * Constructs a new parameter dialog.
 	 * @param messageHandler where to print messages
@@ -78,6 +91,23 @@ public final class ParameterControl
 			}
 		});
 		pbut.add(bset);
+		
+		JButton bsave = new JButton("Save");
+		bsave.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				save();
+			}
+		});
+		pbut.add(bsave);
+		
+		JButton bload = new JButton("Load");
+		bload.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				load();
+			}
+		});
+		pbut.add(bload);
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				dispose();
@@ -182,4 +212,86 @@ public final class ParameterControl
 			}
 		}
 	}
+	/**
+	 * Save the parameters to a file
+	 *
+	 */
+	private void save() {
+		
+		JFrame frame =null;
+		
+		set();
+		
+		JFileChooser fd = new JFileChooser(lastFile);
+		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
+				"List Files (*.lst)"));
+		int option = fd.showSaveDialog(frame);
+		// save current values 
+		if (option == JFileChooser.APPROVE_OPTION
+				&& fd.getSelectedFile() != null) {
+			File outputFile = fd.getSelectedFile();
+			Properties saveProperties = new Properties();			
+			final Iterator iterParameter =
+				DataParameter.getParameterList().iterator();
+			while (iterParameter.hasNext()) {
+				DataParameter parameter= (DataParameter)iterParameter.next();
+				String valueString = (new Double(parameter.getValue())).toString();
+				saveProperties.put(parameter.getName().trim(),valueString );
+			}
+			try {
+				FileOutputStream fos = new FileOutputStream(outputFile);
+				saveProperties.store(fos, "Jam Sort Parameters");
+			} catch (FileNotFoundException fnfe) {
+				messageHandler.errorOutln("Saving Parameters. Cannot create file "+outputFile.getName());
+			} catch (IOException ioe) {				
+				messageHandler.errorOutln("Saving Parameters. Cannot write to file "+outputFile.getName());				
+			}
+			messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());
+		}
+	}
+
+	private void load() {
+		JFrame frame =null;
+		
+		String name=null;
+		
+		JFileChooser fd = new JFileChooser(lastFile);
+		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
+				"List Files (*.lst)"));
+		int option = fd.showOpenDialog(frame);
+		// save current values 
+		if (option == JFileChooser.APPROVE_OPTION
+				&& fd.getSelectedFile() != null) {
+			File inputFile =fd.getSelectedFile(); 
+			try {			
+				Properties saveProperties = new Properties();
+				FileInputStream fos = new FileInputStream( inputFile);
+				saveProperties.load(fos);					
+			
+				final Iterator iterParameter =
+					DataParameter.getParameterList().iterator();
+				while (iterParameter.hasNext()) {
+					DataParameter parameter= (DataParameter)iterParameter.next();
+					name = parameter.getName().trim();
+					if (saveProperties.containsKey(name)) {
+						String valueString = (String) saveProperties.get(name);						
+						double valueDouble = Double.parseDouble(valueString);
+						parameter.setValue(valueDouble);						
+					} else {
+						//add to list of not loaded
+					}
+				}
+			} catch (IOException ioe) {				
+				messageHandler.errorOutln("Loading Parameters. Cannot write to file "+inputFile.getName());				
+			} catch (NumberFormatException nfe) {
+				messageHandler.errorOutln("Loading Parameters. Cannot convert value for Parameter: "+name);
+			}					
+			read();
+			messageHandler.messageOutln("Load Parameters from file "+inputFile.getName());
+			
+		}
+	}
+	
 }
