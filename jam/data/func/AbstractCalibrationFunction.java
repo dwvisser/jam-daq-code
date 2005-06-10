@@ -331,19 +331,18 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 */
 	protected double[] linearRegression(final double[] xVal, final double[] yVal)
 		throws DataException {
+		double[] rval = new double[2];
 		double sum = 0.0;
 		double sumx = 0.0;
 		double sumy = 0.0;
 		double sumxx = 0.0;
 		double sumxy = 0.0;
 		double sumyy = 0.0;
-		double weight = 1.0;
+		final double weight = 1.0;
 		double delta = 0.0;
 		double aEst, bEst;
-		double[] func = new double[2];
 		final int numberPoints = xVal.length;
 		for (int i = 0; i < numberPoints; i++) {
-			weight = 1.0;
 			sum = sum + weight;
 			sumx = sumx + weight * xVal[i];
 			sumy = sumy + yVal[i];
@@ -353,14 +352,14 @@ public abstract class AbstractCalibrationFunction implements Function {
 		}
 		delta = sum * sumxx - sumx * sumx;
 		if (delta == 0.0) {
-			func[0] = 0.0;
-			func[1] = 0.0;
+			rval[0] = 0.0;
+			rval[1] = 0.0;
 			throw new DataException("Linear regression failed [CalibrationFunction]");
 		} 
 		aEst = (sumxx * sumy - sumx * sumxy) / delta;
         bEst = (sumxy * sum - sumx * sumy) / delta;
-        func[0] = aEst;
-        func[1] = bEst;
-        return func;
+        rval[0] = aEst;
+        rval[1] = bEst;
+        return rval;
 	}
 }
