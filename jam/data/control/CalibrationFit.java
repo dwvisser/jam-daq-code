@@ -32,8 +32,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * Class to control the histograms
@@ -58,86 +56,74 @@ public class CalibrationFit extends AbstractControl {
 		/* Load icons. */
 		URL urlLine=loader.getResource("jam/data/func/line.png");
 		URL urlSqrtE =loader.getResource("jam/data/func/sqrt.png");
-		if (urlLine!=null && urlSqrtE!=null) {
+		if (urlLine==null || urlSqrtE==null) {
+			JOptionPane.showMessageDialog(null, "Can't load resource function icons");
+		} else {
 			AbstractCalibrationFunction.setIcon(linearFunc.getName(), new ImageIcon(urlLine));
 			AbstractCalibrationFunction.setIcon(sqrtEFunc.getName(), new ImageIcon(urlSqrtE));
-		} else {
-			JOptionPane.showMessageDialog(null, "Can't load resource function icons");
 		}
 	}
 	    
-    // calibration function
-    private AbstractCalibrationFunction calibrationFunction=null;
+    private transient AbstractCalibrationFunction calibFunc=null;
 
-    //GUI stuff
-    //Tabbed for fit type
-    JTabbedPane tabPane;
-    //Chooser for function type
-    private final JComboBox comboBoxFunction;
-    private final JLabel lcalibEq;
-	//Radio buttons for fit type
-    JRadioButton rbFitPoints;
-    JRadioButton rbSetCoeffs;
-    //Points panel
-    private JPanel pPoint [];
-    private JTextField [] tEnergy;
-    private JTextField [] tChannel;
-    private JCheckBox cUse[];
-    //Coeff panel
-	private JPanel pcoeff[];
-	private JLabel lcoeff[];
-	private JTextField tcoeff[];
-	PanelOKApplyCancelButtons pButtons;
+    /* GUI stuff */
+    private transient final JTabbedPane tabPane;//Tabbed for fit type
+    private transient final JComboBox funcChooser;//Chooser for function type
+    private transient final JLabel lcalibEq;
+	/* Radio buttons for fit type */
+    private transient final JRadioButton rbFitPoints, rbSetCoeffs;
+	private transient final PanelOKApplyCancelButtons pButtons;
+    private transient JPanel pPoint [];
+    private transient JTextField [] tEnergy;
+    private transient JTextField [] tChannel;
+    private transient JCheckBox cUse[];
+	private transient JPanel pcoeff[];
+	private transient JLabel lcoeff[];
+	private transient JTextField tcoeff[];
 	
-	int numberTerms;
-	boolean isUpdate;
+	private transient int numberTerms;
+	private transient boolean isUpdate;
 	
-    private final NumberFormat numFormat;
+    private transient final NumberFormat numFormat;
     
-    private final MessageHandler msghdlr;
+    private transient final MessageHandler msghdlr;
     /**
      * Constructs a calibration fitting dialog.
      * 
-     * @param mh the console for printing text output
+     * @param console the console for printing text output
      */
-    public CalibrationFit(MessageHandler mh) {
+    public CalibrationFit(MessageHandler console) {
         super("Calibration Fit",false);
-        msghdlr=mh;
-        
+        msghdlr=console;        
         setResizable(false);
         setLocation(30,30);
         final Container cdialogCalib=getContentPane();
         cdialogCalib.setLayout(new BorderLayout(5, 5));       
-        
-        //Selection panel at the top
+        /* Selection panel at the top */
         JPanel pSelection = new JPanel(new GridLayout(0,1,5,0));
         pSelection.setBorder(new EmptyBorder(10,0,0,0));
         cdialogCalib.add(pSelection, BorderLayout.NORTH);
-        
-        //Equation chooser
+        /* Equation chooser */
         JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
         pChoose.add(new JLabel("Function: "));
-        comboBoxFunction = new JComboBox(new CalibrationComboBoxModel());
-        comboBoxFunction.setRenderer(new CalibrationListCellRenderer());
-		comboBoxFunction.addItemListener(new ItemListener(){
+        funcChooser = new JComboBox(new CalibrationComboBoxModel());
+        funcChooser.setRenderer(new CalibrationListCellRenderer());
+		funcChooser.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent ie){
 				selectionChange();
 			}
 		});
-        pChoose.add(comboBoxFunction);
+        pChoose.add(funcChooser);
         pSelection.add(pChoose);
-        
-        //Equation 
-        JPanel pEquation = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        /* Equation */ 
         lcalibEq=new JLabel(BLANK_TITLE, JLabel.CENTER);
         pSelection.add(lcalibEq);        
-        
-        //Fit using points or coeffs 
+        /* Fit using points or coeffs */ 
         final JPanel pFitType = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         final ButtonGroup gFitType=new ButtonGroup();
         rbFitPoints = new JRadioButton("Fit Points", true);
         rbFitPoints.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
+			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (rbFitPoints.isSelected()) {
 					setFitTypePoints(true);					
 				}
@@ -147,33 +133,22 @@ public class CalibrationFit extends AbstractControl {
         pFitType.add(rbFitPoints);
         rbSetCoeffs = new JRadioButton("Set Coefficients", false);
         rbSetCoeffs.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
+			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (rbSetCoeffs.isSelected()) {
 					setFitTypePoints(false);
 				}
 			}
-		});
-        
+		});        
         gFitType.add(rbSetCoeffs);
         pFitType.add(rbSetCoeffs);        
         pSelection.add(pFitType);
-        
-		//Tabbed panel with fit points an coefficients
+		/* Tabbed panel with fit points an coefficients */
 		tabPane = new JTabbedPane();
 		cdialogCalib.add(tabPane, BorderLayout.CENTER);
-		JPanel ptsPanel = createPointsPanel();
+		JPanel ptsPanel = createAllPointsPanel();
 		tabPane.addTab("Points", null, ptsPanel, "Channels and Energies to fit.");		
 		JPanel histPanel = createCoeffPanel();
 		tabPane.addTab("Coefficients", null, histPanel, "Fit coefficients.");		
-		tabPane.addChangeListener(new ChangeListener() {
-	        // This method is called whenever the selected tab changes
-	        public void stateChanged(ChangeEvent evt) {
-	            final JTabbedPane pane = (JTabbedPane)evt.getSource();
-	            //changeSelectedTab(pane.getSelectedIndex());
-	        }
-	    });		
-        
-        
 		/* button panel */
         pButtons = new PanelOKApplyCancelButtons(
                 new PanelOKApplyCancelButtons.DefaultListener(this) {
@@ -205,59 +180,64 @@ public class CalibrationFit extends AbstractControl {
     }
 
     //Create panel with the points to fit
-    private JPanel createPointsPanel() {
-    	JPanel pAllPoints = new JPanel(new GridLayout(0, 1, 10,2));
+    private JPanel createAllPointsPanel() {
+    	final JPanel pAllPoints = new JPanel(new GridLayout(0, 1, 10,2));
         pPoint=new JPanel[NUM_POINTS];
         tEnergy =new JTextField[NUM_POINTS];
         tChannel =new JTextField[NUM_POINTS];
         cUse =new JCheckBox[NUM_POINTS];
         for ( int i=0; i<NUM_POINTS; i++ ){
-            pPoint[i]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
-            pAllPoints.add(pPoint[i]);
-            pPoint[i].add(new JLabel("Energy"));
-            tEnergy[i] =new JTextField("");
-            tEnergy[i].setColumns(6);
-            pPoint[i].add(tEnergy[i]);
-            pPoint[i].add(new JLabel("Channel"));
-            tChannel[i] =new JTextField("");
-            tChannel[i].setColumns(6);
-            pPoint[i].add(tChannel[i]);
-            cUse[i] =new JCheckBox("use");
-            cUse[i].setSelected(true);
-            pPoint[i].add(cUse[i]);
-            //cUse[i].addItemListener(this);
-            final int index=i;//silly, but necessary for anonymous class
-            cUse[i].addItemListener(new ItemListener(){
-				public void itemStateChanged(ItemEvent ie){
-					setPointFieldActive(index, cUse[index].isSelected());
-				}				
-            });
+        	generatePointPanel(i);
+        	pAllPoints.add(pPoint[i]);
         }
         return pAllPoints;
-
+    }
+    
+    private void generatePointPanel(final int index){
+        pPoint[index]=new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+        //pAllPoints.add(pPoint[i]);
+        pPoint[index].add(new JLabel("Energy"));
+        tEnergy[index] =new JTextField("");
+        tEnergy[index].setColumns(6);
+        pPoint[index].add(tEnergy[index]);
+        pPoint[index].add(new JLabel("Channel"));
+        tChannel[index] =new JTextField("");
+        tChannel[index].setColumns(6);
+        pPoint[index].add(tChannel[index]);
+        cUse[index] =new JCheckBox("use");
+        cUse[index].setSelected(true);
+        pPoint[index].add(cUse[index]);
+        cUse[index].addItemListener(new ItemListener(){
+			public void itemStateChanged(ItemEvent itemEvent){
+				setPointFieldActive(index, cUse[index].isSelected());
+			}				
+        });    	
     }
     
     //Create panel with the coefficients    
     private JPanel createCoeffPanel() {    
-    	JPanel pCoeff = new JPanel(new GridLayout(0, 1, 10,2));
+    	final JPanel pCoeff = new JPanel(new GridLayout(0, 1, 10,2));
 		pcoeff = new JPanel[MAX_TERMS];
 		lcoeff = new JLabel[MAX_TERMS];
-		tcoeff = new JTextField[MAX_TERMS];
-	
+		tcoeff = new JTextField[MAX_TERMS];	
 		for (int i = 0; i < MAX_TERMS; i++) {
-			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+			generateCoeffPanel(i);
 			pCoeff.add(pcoeff[i]);
-			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
-			pcoeff[i].add(lcoeff[i]);
-			tcoeff[i] = new JTextField("");
-			tcoeff[i].setColumns(10);
-			pcoeff[i].add(tcoeff[i]);
 		}
 		return pCoeff;
     }
     
+    private void generateCoeffPanel(final int index){
+		pcoeff[index] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+		lcoeff[index] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
+		pcoeff[index].add(lcoeff[index]);
+		tcoeff[index] = new JTextField("");
+		tcoeff[index].setColumns(10);
+		pcoeff[index].add(tcoeff[index]);
+    }
+    
     private void selectionChange() {
-		final String funcName = (String)comboBoxFunction.getSelectedItem();    	
+		final String funcName = (String)funcChooser.getSelectedItem();    	
     	if(!isUpdate) {
     		selectFunction(funcName);
     	}
@@ -265,55 +245,55 @@ public class CalibrationFit extends AbstractControl {
     /*
      * Function selected
      */
-    private void selectFunction(String funcName) {
-        Class calClass;
-        try {
-            calibrationFunction = getCurrentCalibrationFunction();
-            if (!funcName.equals(AbstractCalibrationFunction.NOT_CALIB)) {
-                calClass = (Class) AbstractCalibrationFunction
-                        .getMapFunctions().get(funcName);
-                boolean change = calClass.isInstance(calibrationFunction);
-                if (calibrationFunction == null || !change) {
-                    calibrationFunction = (AbstractCalibrationFunction) calClass
-                            .newInstance();
-                }
-            } else {
-                calibrationFunction = null;
-            }
-            updateFields(calibrationFunction, rbFitPoints.isSelected());
-        } catch (InstantiationException e) {
-            msghdlr.errorOutln("Creating fit function " + getClass().getName()
-                    + " " + e.toString());
-        } catch (IllegalAccessException e) {
-            msghdlr.errorOutln("Creating fit function " + getClass().getName()
-                    + " " + e.toString());
-        }
-    }
+    private void selectFunction(final String funcName) {
+		Class calClass;
+		try {
+			calibFunc = getCurrentCalibrationFunction();
+			if (funcName.equals(AbstractCalibrationFunction.NOT_CALIB)) {
+				calibFunc = null;
+			} else {
+				calClass = (Class) AbstractCalibrationFunction
+						.getMapFunctions().get(funcName);
+				final boolean change = calClass.isInstance(calibFunc);
+				if (calibFunc == null || !change) {
+					calibFunc = (AbstractCalibrationFunction) calClass
+							.newInstance();
+				}
+			}
+			updateFields(calibFunc, rbFitPoints.isSelected());
+		} catch (InstantiationException e) {
+			msghdlr.errorOutln("Creating fit function " + getClass().getName()
+					+ " " + e.toString());
+		} catch (IllegalAccessException e) {
+			msghdlr.errorOutln("Creating fit function " + getClass().getName()
+					+ " " + e.toString());
+		}
+	}
     
     /*
-     * Set the fit type to be points instead of setting coefficients.
-     */
-    private void setFitTypePoints(boolean state) {
+	 * Set the fit type to be points instead of setting coefficients.
+	 */
+    private void setFitTypePoints(final boolean state) {
         if (state) {
             tabPane.setSelectedIndex(0);
         } else {
             tabPane.setSelectedIndex(1);
         }
-        updateFields(calibrationFunction, state);
+        updateFields(calibFunc, state);
     }        
     
     private void updateSelection() {
         final String name;
         boolean isCalPts = true;
-        calibrationFunction = getCurrentCalibrationFunction();
+        calibFunc = getCurrentCalibrationFunction();
         /* Select name. */
-        if (calibrationFunction == null) {
+        if (calibFunc == null) {
             name = AbstractCalibrationFunction.NOT_CALIB;
             rbFitPoints.setSelected(true);
         } else {
-            name = calibrationFunction.getName();
+            name = calibFunc.getName();
             /* Set fit type. */
-            if (calibrationFunction.isFitPoints()) {
+            if (calibFunc.isFitPoints()) {
                 isCalPts = true;
                 rbFitPoints.setSelected(true);
             } else {
@@ -323,21 +303,21 @@ public class CalibrationFit extends AbstractControl {
         }
         //Change isUpdate state so we dont loop on item Change event
         isUpdate = true;
-        comboBoxFunction.setSelectedItem(name);
+        funcChooser.setSelectedItem(name);
         isUpdate = false;
-        updateFields(calibrationFunction, isCalPts);
+        updateFields(calibFunc, isCalPts);
     }
 
     public void doSetup() {
-        calibrationFunction = getCurrentCalibrationFunction();
-        final boolean isCalPts = calibrationFunction == null ? true
-                : calibrationFunction.isFitPoints();
-        updateFields(calibrationFunction, isCalPts);
+        calibFunc = getCurrentCalibrationFunction();
+        final boolean isCalPts = calibFunc == null ? true
+                : calibFunc.isFitPoints();
+        updateFields(calibFunc, isCalPts);
     }
     
     private void doApplyCalib(){
     	AbstractHist1D currentHistogram=getCurrentHistogram();
-    	if (currentHistogram != null && calibrationFunction==null){
+    	if (currentHistogram != null && calibFunc==null){
     		currentHistogram.setCalibration(null);
             msghdlr.messageOutln("Uncalibrated histogram "+currentHistogram.getFullName());
     	} else {
@@ -358,9 +338,9 @@ public class CalibrationFit extends AbstractControl {
     }
     
 	/**
-	 *sets fields to be active
+	 * sets fields to be active
 	 */
-	private void setPointFieldActive(int number, boolean state){
+	private void setPointFieldActive(final int number, final boolean state) {
 		tChannel[number].setEnabled(state);
 		tEnergy[number].setEnabled(state);
 	}
@@ -373,46 +353,46 @@ public class CalibrationFit extends AbstractControl {
         double energy [] =new double[NUM_POINTS];
         double channel [] =new double[NUM_POINTS];
         int numberPoints=0;
-        double x[];
-        double y[];
+        double xval[];
+        double yval[];
         String fitText;
-        AbstractHist1D currentHistogram=getCurrentHistogram();
+        final AbstractHist1D currentHist=getCurrentHistogram();
         try {
             for(int i=0;i<NUM_POINTS;i++){
                 //is entry marked
                 if(cUse[i].isSelected()) {
                     //is there text in enery field
                     if (tEnergy[i].getText().trim().length()!=0){
-                        energy[numberPoints]=( new Double(tEnergy[i].getText()) ).doubleValue();
-                        channel[numberPoints]=( new Double(tChannel[i].getText()) ).doubleValue();
+                        energy[numberPoints]=Double.parseDouble(tEnergy[i].getText());
+                        channel[numberPoints]=Double.parseDouble(tChannel[i].getText());
                         numberPoints++;
                     }
                 }
             }
             if(numberPoints>=2){
                 //setFunctionType();//ensures a fresh CalibrationFit instance is created
-                x=new double [numberPoints];
-                y=new double [numberPoints];
+                xval=new double [numberPoints];
+                yval=new double [numberPoints];
                 //put valid energy and channel into arrays
                 for (int i=0;i<numberPoints;i++){
-                    y[i]=energy[i];
-                    x[i]=channel[i];
+                    yval[i]=energy[i];
+                    xval[i]=channel[i];
                 }
-                calibrationFunction.setPoints(x,y);
-                calibrationFunction.fit();                
-                fitText=calibrationFunction.getFormula();
-                currentHistogram.setCalibration(calibrationFunction);
+                calibFunc.setPoints(xval,yval);
+                calibFunc.fit();                
+                fitText=calibFunc.getFormula();
+                currentHist.setCalibration(calibFunc);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getFullName().trim()+" with "+
+                msghdlr.messageOutln("Calibrated histogram "+currentHist.getFullName().trim()+" with "+
                 fitText);
             } else {
                 msghdlr.errorOutln("Need at least 2 points");
             }
         } catch (NumberFormatException nfe){
-        	currentHistogram.setCalibration(null);	//Make sure hisogram no longer has calibration
+        	currentHist.setCalibration(null);	//Make sure hisogram no longer has calibration
             msghdlr.errorOutln("Invalid input, not a number");
         } catch (DataException de) {
-        	currentHistogram.setCalibration(null); //Make sure hisogram no longer has calibration       	
+        	currentHist.setCalibration(null); //Make sure hisogram no longer has calibration       	
             msghdlr.errorOutln(de.getMessage());
         } 
     }
@@ -422,27 +402,26 @@ public class CalibrationFit extends AbstractControl {
 	 */
 	private void doSetCoefficients() {
 		double coeff[] = new double[numberTerms];
-		int i = 0;
-		AbstractHist1D currentHistogram=getCurrentHistogram();
- 
+		final AbstractHist1D currentHist=getCurrentHistogram();
 		/* silently ignore if histogram null */
-		if (calibrationFunction != null) {
+		if (calibFunc == null) {
+			msghdlr.errorOutln("Calibration function not defined.");
+		} else {
+			int index=0;
 			try {
-				for (i = 0; i < numberTerms; i++) {
-					coeff[i] = (new Double(tcoeff[i].getText())).doubleValue();
+				for (index = 0; index < numberTerms; index++) {
+					coeff[index] = Double.parseDouble(tcoeff[index].getText());
 				}
-				calibrationFunction.setCoeff(coeff);
-                currentHistogram.setCalibration(calibrationFunction);
+				calibFunc.setCoeff(coeff);
+                currentHist.setCalibration(calibFunc);
                 BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-                msghdlr.messageOutln("Calibrated histogram "+currentHistogram.getFullName().trim()+" with "+
-                		calibrationFunction.getFormula());
+                msghdlr.messageOutln("Calibrated histogram "+currentHist.getFullName().trim()+" with "+
+                		calibFunc.getFormula());
 				
 			} catch (NumberFormatException nfe) {
 				msghdlr.errorOutln("Invalid input, coefficient "
-						+ calibrationFunction.getLabels()[i]);
+						+ calibFunc.getLabels()[index]);
 			}
-		} else {
-			msghdlr.errorOutln("Calibration function not defined.");
 		}
 	}
 
@@ -456,7 +435,8 @@ public class CalibrationFit extends AbstractControl {
      * @param isCalPts
      *            if <code>true</code>, calibration was fit to points
      */
-	private void updateFields(AbstractCalibrationFunction hcf, boolean isCalPts) {		
+	private void updateFields(final AbstractCalibrationFunction hcf, 
+			final boolean isCalPts) {		
 		final boolean calNotNull = hcf != null;
         final String title = calNotNull ? hcf.getTitle() : BLANK_TITLE;
 		lcalibEq.setText(title);	 
@@ -543,25 +523,17 @@ public class CalibrationFit extends AbstractControl {
 	}
     
 	private AbstractHist1D getCurrentHistogram() {
-		final AbstractHist1D rval;
 		final Histogram hist = STATUS.getCurrentHistogram();
-		if (hist instanceof AbstractHist1D) {
-			rval = (AbstractHist1D) hist;
-		} else {
-			rval=null;
-		}
+		final AbstractHist1D rval = hist instanceof AbstractHist1D ? (AbstractHist1D) hist
+				: null;
 		return rval;
 	}
-	private AbstractCalibrationFunction getCurrentCalibrationFunction() {	
-		AbstractCalibrationFunction hcf;
-		//Get histogram status
-		AbstractHist1D currentHistogram=getCurrentHistogram();
-		if (currentHistogram!=null) {
-			hcf=currentHistogram.getCalibration();    		
-		}else{
-			hcf=null;    		
-		}
-		return hcf;
+	
+	private AbstractCalibrationFunction getCurrentCalibrationFunction() {
+		final AbstractHist1D currentHist = getCurrentHistogram();
+		final AbstractCalibrationFunction rval = currentHist == null ? null
+				: currentHist.getCalibration();
+		return rval;
 	}
 	
 	/**
@@ -574,7 +546,7 @@ public class CalibrationFit extends AbstractControl {
 		super.setVisible(show);
 	}
     
-    public void update(Observable observable, Object object) {    	
+    public void update(final Observable observable, final Object object) {    	
     	final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com=event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT ||
