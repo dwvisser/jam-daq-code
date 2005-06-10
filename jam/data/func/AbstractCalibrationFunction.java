@@ -2,6 +2,7 @@ package jam.data.func;
 import jam.data.DataException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,27 +52,31 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Name of calibration function.
 	 */	
 	protected transient String name;
+	
 	/** 
 	 * This functions class
 	 */
 	protected transient Class funcClass;
+	
 	/**
 	 * Title of calibration function.
 	 */
 	protected transient String title;
+	
 	/**
-	 * Title of calibration function.
+	 * Whether fit points were used for calibration.
 	 */
-	protected transient boolean isFitPoints=true;
+	protected transient boolean fitPoints=true;
 
 	/**
 	 * Fit channels
 	 */
-	protected double[] ptsChannel;
+	protected transient double[] ptsChannel;
+	
 	/**
 	 * Fit energy
 	 */
-	protected double[] ptsEnergy;
+	protected transient double[] ptsEnergy;
 	
 	/**
 	 * Coeffiecient values.
@@ -108,7 +113,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 		NAMES.clear();
 	}
 	
-	private static void addFunction(String name, Class funcClass) {
+	private static void addFunction(final String name, final Class funcClass) {
 		/* Only add once. */
 		if (!FUNCTIONS.containsKey(name)){
 			FUNCTIONS.put(name, funcClass);
@@ -121,11 +126,11 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @param name of the function
 	 * @param icon for the function
 	 */
-	public static void setIcon(String name, ImageIcon icon){
+	public static void setIcon(final String name, final ImageIcon icon){
 		ICONS.put(name, icon);
 	}
 
-	static ImageIcon getIcon(String name){
+	static ImageIcon getIcon(final String name){
 		return (ImageIcon)ICONS.get(name);
 	}	
 
@@ -137,6 +142,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @param	numberTerms	number of terms in function
 	 */
 	AbstractCalibrationFunction(Class inClass, String name, int numberTerms) {
+		super();
 		this.funcClass = inClass;
 		this.name=name;
 		if (numberTerms < MAX_TERMS) {
@@ -199,16 +205,20 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Returns whether coeffecients are result of a fit.
 	 * @return whether coeffecients are result of a fit
 	 */
-	public synchronized boolean isFitPoints() {
-		return isFitPoints;
+	public boolean isFitPoints() {
+		synchronized (this){
+			return fitPoints;
+		}
 	}
 	
 	/**
 	 * Sets whether coefficients are result of a fit.
 	 * @param isFitIn whether coefficients are result of a fit
 	 */
-	private synchronized void setIsFitPoints(boolean isFitIn) {
-		isFitPoints=isFitIn;
+	private void setIsFitPoints(final boolean isFitIn) {
+		synchronized (this) {
+			fitPoints=isFitIn;
+		}
 	}
 	
 	/**
@@ -230,15 +240,16 @@ public abstract class AbstractCalibrationFunction implements Function {
 	/**
 	 * Set the calibration points used for fitting.
 	 * 
-	 * @param ptsChannelIn the channels
-	 * @param ptsEnergyIn the "energies"
+	 * @param ptsChannelIn
+	 *            the channels
+	 * @param ptsEnergyIn
+	 *            the "energies"
 	 */
-	public void setPoints(double [] ptsChannelIn, double [] ptsEnergyIn) {
+	public void setPoints(final double[] ptsChannelIn,
+			final double[] ptsEnergyIn) {
 		setIsFitPoints(true);
-		ptsChannel =new double [ptsChannelIn.length];
-		ptsEnergy =new double [ptsEnergyIn.length];
-		System.arraycopy(ptsChannelIn, 0, ptsChannel, 0, ptsChannelIn.length);
-		System.arraycopy(ptsEnergyIn, 0, ptsEnergy, 0, ptsEnergyIn.length);
+		ptsChannel = (double[]) ptsChannelIn.clone();
+		ptsEnergy = (double[]) ptsEnergyIn.clone();
 	}
 
 	/**
@@ -259,33 +270,28 @@ public abstract class AbstractCalibrationFunction implements Function {
 	
 	/**
 	 * Get the input point energies.
+	 * 
 	 * @return the input point energies
 	 */
 	public double[] getPtsEnergy() {
-        final double[] rval;
-        if (ptsEnergy == null) {
-            rval = new double[0];
-        } else {
-            final int len = ptsEnergy.length;
-            rval = new double[len];
-            System.arraycopy(ptsEnergy, 0, rval, 0, len);
-        }
-        return rval;
-    }
+		final double[] rval = ptsEnergy == null ? new double[0]
+				: (double[]) ptsEnergy.clone();
+		return rval;
+	}
 	
 	/**
-	 * Set the coefficients of the calibration function using the contents of the passed <code>Array</code>.
-	 * If passed a larger than necessary array, the first elements of the array will be used.
-	 *
-	 * @param aIn   array of coefficients which should be at least as large as the number of coefficients
+	 * Set the coefficients of the calibration function using the contents of
+	 * the passed <code>Array</code>. If passed a larger than necessary
+	 * array, the first elements of the array will be used.
+	 * 
+	 * @param aIn
+	 *            array of coefficients which should be at least as large as the
+	 *            number of coefficients
 	 */
-	public void setCoeff(double aIn[]) {
+	public void setCoeff(final double aIn[]) {
 		setIsFitPoints(false);
 		if (aIn.length <= coeff.length) {
-			//zero array
-			for (int i = 0; i < coeff.length; i++) {
-				coeff[i] = 0.0;
-			}
+			Arrays.fill(coeff, 0.0);
 			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
 			updateFormula();
 		} else {
@@ -323,7 +329,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @throws DataException if regression fails
 	 * @return array where first element is constant, second is slope
 	 */
-	protected double[] linearRegression(double[] xVal, double[] yVal)
+	protected double[] linearRegression(final double[] xVal, final double[] yVal)
 		throws DataException {
 		double sum = 0.0;
 		double sumx = 0.0;
