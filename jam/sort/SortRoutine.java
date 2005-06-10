@@ -46,62 +46,63 @@ import jam.sort.stream.EventOutputStream;
 public abstract class SortRoutine implements Sorter, Beginner, Ender {
 
 	/**
-     * Encapsulates the different ways the event size can be specified.
-     * 
-     * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
-     */
-    public static class EventSizeMode {
-        private static final int SET_BY_CNAF = 0;
+	 * Encapsulates the different ways the event size can be specified.
+	 * 
+	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
+	 */
+	public static class EventSizeMode {
+		private static final int SET_BY_CNAF = 0;
 
-        private static final int SET_VME_MAP = 1;
+		private static final int SET_VME_MAP = 1;
 
-        private static final int SET_EXPLICIT = 2;
+		private static final int SET_EXPLICIT = 2;
 
-        private static final int INIT_NO_MODE = 3;
-        
-        private static final boolean [] IS_SET={true,true,true,false};
+		private static final int INIT_NO_MODE = 3;
 
-        final int mode;
+		private static final boolean[] IS_SET = { true, true, true, false };
 
-        private EventSizeMode(int value) {
-            mode = value;
-        }
-        
-        /**
-         * Returns whether this event size mode represents a properly set event
-         * size.
-         * 
-         * @return whether this event size mode represents a properly set event
-         *         size
-         */
-        public boolean isSet() {
-            return IS_SET[mode];
-        }
+		final transient int mode;
 
-        /**
-         * Indicates the parameter count has been set implicitly by using CNAF
-         * commands.
-         */
-        public static final EventSizeMode CNAF = new EventSizeMode(SET_BY_CNAF);
+		private EventSizeMode(int value) {
+			super();
+			mode = value;
+		}
 
-        /**
-         * Indicates the parameter count has been set implicitly by specifying a
-         * VME map.
-         */
-        public static final EventSizeMode VME_MAP = new EventSizeMode(
-                SET_VME_MAP);
+		/**
+		 * Returns whether this event size mode represents a properly set event
+		 * size.
+		 * 
+		 * @return whether this event size mode represents a properly set event
+		 *         size
+		 */
+		public boolean isSet() {
+			return IS_SET[mode];
+		}
 
-        /**
-         * Indicates that the parameter count has been set explicitly.
-         */
-        public static final EventSizeMode EXPLICIT = new EventSizeMode(
-                SET_EXPLICIT);
+		/**
+		 * Indicates the parameter count has been set implicitly by using CNAF
+		 * commands.
+		 */
+		public static final EventSizeMode CNAF = new EventSizeMode(SET_BY_CNAF);
 
-        /**
-         * Indicates that the parameter count hasn't been set by any means.
-         */
-        public static final EventSizeMode INIT = new EventSizeMode(INIT_NO_MODE);
-    }
+		/**
+		 * Indicates the parameter count has been set implicitly by specifying a
+		 * VME map.
+		 */
+		public static final EventSizeMode VME_MAP = new EventSizeMode(
+				SET_VME_MAP);
+
+		/**
+		 * Indicates that the parameter count has been set explicitly.
+		 */
+		public static final EventSizeMode EXPLICIT = new EventSizeMode(
+				SET_EXPLICIT);
+
+		/**
+		 * Indicates that the parameter count hasn't been set by any means.
+		 */
+		public static final EventSizeMode INIT = new EventSizeMode(INIT_NO_MODE);
+	}
 
 	/**
 	 * constant to define a 1d histogram type int
@@ -133,7 +134,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	protected final static Histogram.Type HIST_2D_DBL = Histogram.Type.TWO_D_DOUBLE;
 
-
 	/**
 	 * Size of buffer to be used by event streams.
 	 */
@@ -142,24 +142,24 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Set to true when we're writing out events. (For presorting?)
 	 */
-	protected boolean writeOn;
+	private transient boolean writeOn;
 
 	/**
 	 * class which is given list of cnafs init(c,n,a,f); event(c,n,a,f);
 	 */
-	protected CamacCommands cnafCommands;
+	protected transient CamacCommands cnafCommands;
 
 	/**
 	 * Object which contains the VME addressing instructions.
 	 */
-	protected VME_Map vmeMap;
+	protected transient VME_Map vmeMap;
 
 	/**
 	 * Output stream to send pre-processed events to.
 	 */
-	private EventOutputStream eventOutput = null;
+	private transient EventOutputStream eventOutput = null;
 
-	private EventSizeMode evtSizeMode = EventSizeMode.INIT;
+	private transient EventSizeMode evtSizeMode = EventSizeMode.INIT;
 
 	/**
 	 * Size of an event to be used for offline sorting. The event size is the
@@ -167,25 +167,26 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	private int eventSize;
 
-	private final String classname = getClass().getName();
+	private transient final String classname = getClass().getName();
 
 	private final static String COLON = ": ";
 
 	private final static String ILLEGAL_MODE = "Illegal value for event size mode: ";
-	
+
 	/**
 	 * User may optionally use this to read in gain calibrations.
 	 */
-	protected final GainCalibration gains;
+	protected transient final GainCalibration gains;
 
 	/**
 	 * Creates a new sort routine object.
 	 */
 	public SortRoutine() {
-		writeOn = false;
+		super();
+		setWriteEnabled(false);
 		cnafCommands = new CamacCommands(this);
 		vmeMap = new VME_Map(this);
-		gains=new GainCalibration(this);
+		gains = new GainCalibration(this);
 	}
 
 	/**
@@ -216,7 +217,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @throws SortException
 	 *             in case this has been called inappropriately
 	 */
-	protected void setEventSize(int size) throws SortException {
+	protected void setEventSize(final int size) throws SortException {
 		setEventSizeMode(EventSizeMode.EXPLICIT);
 		synchronized (this) {
 			eventSize = size;
@@ -224,34 +225,34 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	}
 
 	/**
-     * Sets how the event size is determined. Generally not called explicitly by
-     * subclasses.
-     * 
-     * @param mode
-     *            how the event size is determined
-     * @throws SortException
-     *             if called inappropriately
-     */
-    void setEventSizeMode(EventSizeMode mode) throws SortException {
-        final StringBuffer mess = new StringBuffer(classname).append(COLON);
-        if ((evtSizeMode != mode) && (evtSizeMode != EventSizeMode.INIT)) {
-            final String part1 = "Illegal attempt to set event size a second time. ";
-            final String part2 = "Already set to ";
-            final String part3 = ", and attempted to set to ";
-            throw new SortException(mess.append(part1).append(part2).append(
-                    evtSizeMode).append(part3).append(mode).append('.')
-                    .toString());
-        }
-        if (mode == EventSizeMode.CNAF || mode == EventSizeMode.VME_MAP
-                || mode == EventSizeMode.EXPLICIT) {
-            synchronized (this) {
-                evtSizeMode = mode;
-            }
-        } else {
-            throw new SortException(mess.append(ILLEGAL_MODE).append(mode)
-                    .toString());
-        }
-    }
+	 * Sets how the event size is determined. Generally not called explicitly by
+	 * subclasses.
+	 * 
+	 * @param mode
+	 *            how the event size is determined
+	 * @throws SortException
+	 *             if called inappropriately
+	 */
+	void setEventSizeMode(final EventSizeMode mode) throws SortException {
+		final StringBuffer mess = new StringBuffer(classname).append(COLON);
+		if ((evtSizeMode != mode) && (evtSizeMode != EventSizeMode.INIT)) {
+			final String part1 = "Illegal attempt to set event size a second time. ";
+			final String part2 = "Already set to ";
+			final String part3 = ", and attempted to set to ";
+			throw new SortException(mess.append(part1).append(part2).append(
+					evtSizeMode).append(part3).append(mode).append('.')
+					.toString());
+		}
+		if (mode == EventSizeMode.CNAF || mode == EventSizeMode.VME_MAP
+				|| mode == EventSizeMode.EXPLICIT) {
+			synchronized (this) {
+				evtSizeMode = mode;
+			}
+		} else {
+			throw new SortException(mess.append(ILLEGAL_MODE).append(mode)
+					.toString());
+		}
+	}
 
 	/**
 	 * Returns the mode by which the event size was set.
@@ -273,14 +274,14 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	public int getEventSize() throws SortException {
 		final int rval;
 		final StringBuffer mess = new StringBuffer(classname).append(COLON);
-		if (evtSizeMode.isSet()){
-		    if (evtSizeMode == EventSizeMode.CNAF) {
+		if (evtSizeMode.isSet()) {
+			if (evtSizeMode == EventSizeMode.CNAF) {
 				rval = cnafCommands.getEventSize();
 			} else if (evtSizeMode == EventSizeMode.VME_MAP) {
 				rval = vmeMap.getEventSize();
 			} else {//==EXPLICIT
 				rval = eventSize;
-			}		    
+			}
 		} else {
 			final String sizeUnknown = "Event Size Unkown";
 			throw new SortException(mess.append(sizeUnknown).toString());
@@ -294,7 +295,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @param out
 	 *            stream to which presorted event output will go
 	 */
-	public final void setEventOutputStream(EventOutputStream out) {
+	public final void setEventOutputStream(final EventOutputStream out) {
 		synchronized (this) {
 			eventOutput = out;
 		}
@@ -306,9 +307,15 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @param state
 	 *            true to write out events.
 	 */
-	public final void setWriteEnabled(boolean state) {
+	public final void setWriteEnabled(final boolean state) {
 		synchronized (this) {
 			writeOn = state;
+		}
+	}
+
+	private boolean getWriteEnabled() {
+		synchronized (this) {
+			return writeOn;
 		}
 	}
 
@@ -322,8 +329,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 *             when an unnacceptable error condition occurs during sorting
 	 * @see #sort(int[])
 	 */
-	public final void writeEvent(int[] event) throws SortException {
-		if (writeOn) {
+	public final void writeEvent(final int[] event) throws SortException {
+		if (getWriteEnabled()) {
 			try {
 				eventOutput.writeEvent(event);
 			} catch (EventException e) {
@@ -352,188 +359,241 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * @see jam.global.Sorter#monitor(String)
 	 * @return floating point value of the monitor
 	 */
-	public double monitor(String name) {
+	public double monitor(final String name) {
 		return 0.0;
 	}
-	
+
 	/**
 	 * @see Beginner#begin()
 	 */
-	public void begin(){
+	public void begin() {
 		/* default begin() does nothing */
 	}
-	
+
 	/**
 	 * @see Ender#end()
 	 */
-	public void end(){
+	public void end() {
 		/* default end() does nothing */
 	}
-	
+
 	/**
 	 * Sets the buffer size in bytes to use.
 	 * 
-	 * @param size in bytes of event buffers
+	 * @param size
+	 *            in bytes of event buffers
 	 */
-	protected void setBufferSize(int size){
-		bufferSize=size;
+	protected void setBufferSize(final int size) {
+		bufferSize = size;
 	}
-	
+
 	/**
 	 * Gets the buffer size in bytes.
 	 * 
 	 * @return size in bytes of event buffers
 	 */
-	public int getBufferSize(){
+	public int getBufferSize() {
 		return bufferSize;
-	}
-	
-	/**
-	 * Creates a one-dimensional, integer-valued, histogram.
-	 * 
-	 * @param numCh number of bins
-	 * @param name unique name
-	 * @param title verbose title
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
-	 * @return a newly allocated histogram
-	 */
-	public static HistInt1D createHist1D(int numCh, String name, String title, String labelX,
-			String labelY){
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh], name,title,labelX,labelY);
-	}
-	
-	/**
-	 * Creates a one-dimensional, integer-valued, histogram.
-	 * 
-	 * @param numCh number of bins
-	 * @param name unique name
-	 * @param title verbose title
-	 * @return a newly allocated histogram
-	 */	
-	public static HistInt1D createHist1D(int numCh, String name, String title){
-		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh],name,title);
 	}
 
 	/**
 	 * Creates a one-dimensional, integer-valued, histogram.
 	 * 
-	 * @param numCh number of bins
-	 * @param name unique name
+	 * @param numCh
+	 *            number of bins
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
+	 * @param labelX
+	 *            x-axis label
+	 * @param labelY
+	 *            y-axis label
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt1D createHist1D(int numCh, String name){
+	protected static HistInt1D createHist1D(final int numCh, final String name,
+			final String title, final String labelX, final String labelY) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt1D)Histogram.createHistogram(sortGroup, new int[numCh],name);
+		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
+				name, title, labelX, labelY);
 	}
-	
+
 	/**
-	 * Creates a two-dimensional, integer-valued, histogram.
+	 * Creates a one-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal axis
-	 * @param chY number of bins along the vertical axis
-	 * @param name unique name
-	 * @param title verbose title
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
+	 * @param numCh
+	 *            number of bins
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, int chY, String name, String title, String labelX,
-			String labelY){
+	protected static HistInt1D createHist1D(final int numCh, final String name,
+			final String title) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name,title,labelX,labelY);
+		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
+				name, title);
 	}
-	
+
 	/**
-	 * Creates a two-dimensional, integer-valued, histogram.
+	 * Creates a one-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal axis
-	 * @param chY number of bins along the vertical axis
-	 * @param name unique name
-	 * @param title verbose title
+	 * @param numCh
+	 *            number of bins
+	 * @param name
+	 *            unique name
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, int chY, String name, String title){
+	protected static HistInt1D createHist1D(final int numCh, final String name) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name,title);
+		return (HistInt1D) Histogram.createHistogram(sortGroup, new int[numCh],
+				name);
 	}
-	
+
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chX number of bins along the horizontal axis
-	 * @param chY number of bins along the vertical axis
-	 * @param name unique name
+	 * @param chX
+	 *            number of bins along the horizontal axis
+	 * @param chY
+	 *            number of bins along the vertical axis
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
+	 * @param labelX
+	 *            x-axis label
+	 * @param labelY
+	 *            y-axis label
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chX, int chY, String name){
+	protected static HistInt2D createHist2D(final int chX, final int chY,
+			final String name, final String title, final String labelX,
+			final String labelY) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chX][chY],name);
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chX][chY], name, title, labelX, labelY);
 	}
-	
+
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chans number of bins along the horizontal and vertical axes
-	 * @param name unique name
-	 * @param title verbose title
-	 * @param labelX x-axis label
-	 * @param labelY y-axis label
+	 * @param chX
+	 *            number of bins along the horizontal axis
+	 * @param chY
+	 *            number of bins along the vertical axis
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chans, String name, String title, String labelX,
-			String labelY){
+	protected static HistInt2D createHist2D(final int chX, final int chY,
+			final String name, final String title) {
 		final Group sortGroup = Group.getSortGroup();
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name,title,labelX,labelY);
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chX][chY], name, title);
 	}
-	
+
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chans number of bins along the horizontal and vertical axes
-	 * @param name unique name
-	 * @param title verbose title
+	 * @param chX
+	 *            number of bins along the horizontal axis
+	 * @param chY
+	 *            number of bins along the vertical axis
+	 * @param name
+	 *            unique name
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chans, String name, String title){
-		final Group sortGroup = Group.getSortGroup();		
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name,title);
+	protected static HistInt2D createHist2D(final int chX, final int chY,
+			final String name) {
+		final Group sortGroup = Group.getSortGroup();
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chX][chY], name);
 	}
-	
+
 	/**
 	 * Creates a two-dimensional, integer-valued, histogram.
 	 * 
-	 * @param chans number of bins along the horizontal and vertical axes
-	 * @param name unique name
+	 * @param chans
+	 *            number of bins along the horizontal and vertical axes
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
+	 * @param labelX
+	 *            x-axis label
+	 * @param labelY
+	 *            y-axis label
 	 * @return a newly allocated histogram
 	 */
-	public static HistInt2D createHist2D(int chans, String name){
-		final Group sortGroup = Group.getSortGroup();		
-		return (HistInt2D)Histogram.createHistogram(sortGroup, new int[chans][chans],name);
+	protected static HistInt2D createHist2D(final int chans, final String name,
+			final String title, final String labelX, final String labelY) {
+		final Group sortGroup = Group.getSortGroup();
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chans][chans], name, title, labelX, labelY);
 	}
-	
+
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chans
+	 *            number of bins along the horizontal and vertical axes
+	 * @param name
+	 *            unique name
+	 * @param title
+	 *            verbose title
+	 * @return a newly allocated histogram
+	 */
+	protected static HistInt2D createHist2D(final int chans, final String name,
+			final String title) {
+		final Group sortGroup = Group.getSortGroup();
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chans][chans], name, title);
+	}
+
+	/**
+	 * Creates a two-dimensional, integer-valued, histogram.
+	 * 
+	 * @param chans
+	 *            number of bins along the horizontal and vertical axes
+	 * @param name
+	 *            unique name
+	 * @return a newly allocated histogram
+	 */
+	protected static HistInt2D createHist2D(final int chans, final String name) {
+		final Group sortGroup = Group.getSortGroup();
+		return (HistInt2D) Histogram.createHistogram(sortGroup,
+				new int[chans][chans], name);
+	}
+
 	/**
 	 * Creates a scaler
 	 * 
-	 * @param name unique name
-	 * @param number unique number
+	 * @param name
+	 *            unique name
+	 * @param number
+	 *            unique number
 	 * @return a newly allocated scaler
 	 */
-	public static Scaler createScaler(String name, int number){
-		final Group sortGroup = Group.getSortGroup();		
+	protected static Scaler createScaler(final String name, final int number) {
+		final Group sortGroup = Group.getSortGroup();
 		return new Scaler(sortGroup, name, number);
 	}
+
 	/**
 	 * Creates a data parameter
 	 * 
-	 * @param name unique name
-	 * @param number unique number
+	 * @param name
+	 *            unique name
+	 * @param number
+	 *            unique number
 	 * @return a newly allocated parameter
 	 */
-	public static DataParameter createParameter(String name){		
+	protected static DataParameter createParameter(final String name) {
 		return new DataParameter(name);
 	}
-	
+
 }
