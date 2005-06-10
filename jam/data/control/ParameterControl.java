@@ -6,6 +6,7 @@ import jam.util.StringUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
 /**
  * Sets and displays the Parameters (data.Parameters.class)
  * used for sorting
@@ -38,13 +40,15 @@ import javax.swing.border.EmptyBorder;
 public final class ParameterControl
 	extends AbstractControl {
 
+	private final int MAX_INITIAL_DISPLAY=15;
+	
 	//widgets for each parameter
+	JScrollPane scrollPane; 	
 	private JPanel pCenter;
 	private JPanel[] pParam;
 	private JLabel[] labelParam;
 	private JTextField[] textParam;
-
-	private final JPanel pButton;
+	private final int borderHeight=5;
 
 	private File lastFile; //last file referred to in a JFileChooser	
 
@@ -58,25 +62,51 @@ public final class ParameterControl
 	 */
 	public ParameterControl(
 		MessageHandler messageHandler) {
-		super("Sort Parameters", false);
+		super("Sort Parameters", true);
 		this.messageHandler = messageHandler;
 
 		// dialog box to display Parameters
-		setResizable(false);
+		setResizable(true);		
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
 
 		//Central Panel
-		pCenter =new JPanel(new GridLayout(0,1,5,5));
-		pCenter.setBorder(new EmptyBorder(10,10,10,10));
-		cddisp.add(pCenter, BorderLayout.CENTER);
+		pCenter =new JPanel(new GridLayout(0,1,borderHeight,5));
+		pCenter.setBorder(new EmptyBorder(borderHeight,10,borderHeight,10));
+		
+		scrollPane = new JScrollPane(pCenter);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		cddisp.add(scrollPane, BorderLayout.CENTER);
+
 
 		//Buttons for display dialog
-		pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		cddisp.add(pButton, BorderLayout.SOUTH);
+		JPanel pButtons = new JPanel(new GridLayout(0, 1, 0, 0));
+		cddisp.add(pButtons, BorderLayout.SOUTH);
+		
+		JPanel pLoad = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pButtons.add(pLoad);
+		JButton bsave = new JButton("Save");
+		bsave.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				save();
+			}
+		});
+		pLoad.add(bsave);
+		
+		JButton bload = new JButton("Load");
+		bload.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				load();
+			}
+		});
+		pLoad.add(bload);
+		
+		
+		JPanel pOKButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pButtons.add(pOKButton);
 		JPanel pbut = new JPanel(new GridLayout(1, 0, 5, 5));
-		pButton.add(pbut);
+		pOKButton.add(pbut);
 		JButton bread = new JButton("Read");
 		bread.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
@@ -92,21 +122,6 @@ public final class ParameterControl
 		});
 		pbut.add(bset);
 		
-		JButton bsave = new JButton("Save");
-		bsave.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				save();
-			}
-		});
-		pbut.add(bsave);
-		
-		JButton bload = new JButton("Load");
-		bload.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				load();
-			}
-		});
-		pbut.add(bload);
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -115,7 +130,12 @@ public final class ParameterControl
 		});
 		doSetup();
 	}
-
+	public void setVisible(boolean state) {
+		if (state) {
+			read();
+		}
+		super.setVisible(state);
+	}
 	/**
 	 * Setup the display dialog box.
 	 *
@@ -152,8 +172,12 @@ public final class ParameterControl
 			}
 		}
 		pack();
+		if (numberParameters>0) {
+			Dimension dialogDim=calculateScrollDialogSize(this, pParam[0], borderHeight, numberParameters, MAX_INITIAL_DISPLAY);
+			setSize(dialogDim);
+		}
+		
 	}
-
 	/**
 	 * Set the parameter values using the values
 	 * in the text fields

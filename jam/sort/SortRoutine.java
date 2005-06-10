@@ -1,5 +1,6 @@
 package jam.sort;
 
+import jam.data.DataParameter;
 import jam.data.Group;
 import jam.data.HistInt1D;
 import jam.data.HistInt2D;
@@ -514,14 +515,25 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	}
 	
 	/**
-	 * Creates a two-dimensional, integer-valued, histogram.
+	 * Creates a scaler
 	 * 
 	 * @param name unique name
 	 * @param number unique number
-	 * @return a newly allocated histogram
+	 * @return a newly allocated scaler
 	 */
 	public static Scaler createScaler(String name, int number){
 		final Group sortGroup = Group.getSortGroup();		
 		return new Scaler(sortGroup, name, number);
 	}
+	/**
+	 * Creates a data parameter
+	 * 
+	 * @param name unique name
+	 * @param number unique number
+	 * @return a newly allocated parameter
+	 */
+	public static DataParameter createParameter(String name){		
+		return new DataParameter(name);
+	}
+	
 }
