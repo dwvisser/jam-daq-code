@@ -16,6 +16,8 @@ import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Zero histograms dialog
@@ -35,9 +37,12 @@ public class HistogramZero extends AbstractControl {
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
 		setResizable(false);
+		setLocation(20, 50);		
 		dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
-		final JPanel pButton = new JPanel(new GridLayout(1, 0, 5, 5));
-		setLocation(20, 50);
+		final JPanel pButton = new JPanel(new GridLayout(1, 0, 10, 10));
+		Border border = new EmptyBorder(10, 10, 10, 10);
+		pButton.setBorder(border);
+
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {

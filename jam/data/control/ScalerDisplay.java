@@ -9,6 +9,7 @@ import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -40,15 +42,19 @@ import javax.swing.border.EmptyBorder;
 
 public final class ScalerDisplay extends AbstractControl implements Observer {
 
+	private final int MAX_INITIAL_DISPLAY=15;
+	
+	private final JScrollPane scrollPane;	
+	private final JPanel pScalers;
+	private JTextField[] textScaler;
+	
+	private final int borderHeight=5;
+	
+	private final ScalersCmd scalersCmd;
+	
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 	
 	private final JamStatus status = JamStatus.getSingletonInstance();	
-
-	private JTextField[] textScaler;
-
-	private final JPanel pScalers;
-	
-	private final ScalersCmd scalersCmd;
 
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
@@ -61,10 +67,16 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
-		pScalers = new JPanel(new GridLayout(0, 1, 10, 5));
-		Border borderScalers = new EmptyBorder(10, 10, 10, 10);
+		
+		pScalers = new JPanel(new GridLayout(0, 1, borderHeight, 5));
+		Border borderScalers = new EmptyBorder(borderHeight, 10, borderHeight, 10);
 		pScalers.setBorder(borderScalers);
-		cddisp.add(pScalers, BorderLayout.CENTER);
+		
+		scrollPane = new JScrollPane(pScalers);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		cddisp.add(scrollPane, BorderLayout.CENTER);
+		
+		cddisp.add(scrollPane, BorderLayout.CENTER);
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
 				10));
 		final JPanel pb = new JPanel(); // buttons for display dialog
@@ -115,7 +127,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		Group currentGroup = status.getCurrentGroup();
 		if (currentGroup==null)
 			return;
-		
+		JPanel ps=null;
 		List scalerList = currentGroup.getScalerList();
 		int numberScalers =scalerList.size();
 		pScalers.removeAll();
@@ -129,7 +141,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			while (enumScaler.hasNext()) {
 				Scaler currentScaler = (Scaler) enumScaler.next();
 				/* right justified, hgap, vgap */
-				final JPanel ps = new JPanel(new FlowLayout(FlowLayout.RIGHT,
+				ps = new JPanel(new FlowLayout(FlowLayout.RIGHT,
 						10, 0));
 				final JLabel labelScaler = new JLabel(currentScaler.getName()
 						.trim(), JLabel.RIGHT);
@@ -145,6 +157,11 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			}
 		}
 		pack();
+		if (numberScalers>0) {
+			Dimension dialogDim=calculateScrollDialogSize(this, ps, borderHeight, numberScalers, MAX_INITIAL_DISPLAY);
+			setSize(dialogDim);
+		}
+		
 		displayScalers();
 	}
 

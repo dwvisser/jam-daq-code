@@ -43,7 +43,7 @@ public final class ParameterControl
 	private final int MAX_INITIAL_DISPLAY=15;
 	
 	//widgets for each parameter
-	JScrollPane scrollPane; 	
+	private JScrollPane scrollPane; 	
 	private JPanel pCenter;
 	private JPanel[] pParam;
 	private JLabel[] labelParam;

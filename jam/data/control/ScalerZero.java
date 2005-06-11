@@ -4,6 +4,7 @@ import jam.commands.ScalersCmd;
 import jam.global.MessageHandler;
 
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,10 +41,13 @@ public class ScalerZero extends AbstractControl {
 		scalersCmd =new ScalersCmd();
 		Container dzc = getContentPane();
 		setResizable(false);
-		setLocation(20, 50);
-		final JPanel pZero = new JPanel(new GridLayout(1, 0, 20, 20));
-		Border border = new EmptyBorder(20, 20, 20, 20);
+		setLocation(20, 50); 
+		final JPanel pZero = new JPanel(new GridLayout(1, 0, 10, 10));
+		Border border = new EmptyBorder(10, 10, 10, 10);
 		pZero.setBorder(border);
+		
+		final JPanel pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pZero.add(pButton);
 		bzero2 = new JButton("Zero");
 		bzero2.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent event){
@@ -54,7 +58,8 @@ public class ScalerZero extends AbstractControl {
 			}
 		});
 		bzero2.setEnabled(false);
-		pZero.add(bzero2);
+		pButton.add(bzero2);	
+		
 		chkDisable = new JCheckBox("Disable Zero", true);
 		chkDisable.addItemListener(new ItemListener(){
 			public void itemStateChanged(ItemEvent event){
@@ -66,6 +71,7 @@ public class ScalerZero extends AbstractControl {
 			}
 		});
 		pZero.add(chkDisable);
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent event) {
 				dispose();
