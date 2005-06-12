@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -36,17 +37,20 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @since       JDK1.1
  */
-public final class MonitorControl
-	extends AbstractControl
+public final class MonitorControl extends AbstractControl
 	implements Runnable {	
 
+	private final int MAX_INITIAL_DISPLAY=15;
+	private final int DEFAULT_MAX=100;
+	private final int DEFAULT_THRESHOLD =10;
 	private final MessageHandler msgHandler;
 
 	//widgets for configuration
+	private final JPanel pUpper;
 	private final JPanel pMonitors;
 
 	private final JSpinner spinnerUpdate;
-
+	private final int borderHeight=5;
 
 	private int interval; //update interval
 	private GoodThread loopThread; //loop to update monitors
@@ -67,23 +71,43 @@ public final class MonitorControl
 	MonitorControl() {
 		super("Monitors Setup", false);
 		msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
-		final Container cdconfig = getContentPane();
-		setResizable(false);
+
+		setResizable(true);
 		setLocation(20, 50);
-		final int spacing = 5;
-		cdconfig.setLayout(new GridLayout(0, 1, spacing, spacing));
-		final JPanel pConfig = new JPanel(new BorderLayout());
-		Border border = new EmptyBorder(5, 10, 0, 10);
-		pConfig.setBorder(border);
-		cdconfig.add(pConfig);
-		JPanel pUpper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pConfig.add(pUpper, BorderLayout.CENTER);
+		final Container cddisp = getContentPane();	
+		
+		//cddisp.setLayout(new GridLayout(0, 1, spacing, spacing));
+		cddisp.setLayout(new BorderLayout());
+		
+		//final JPanel pConfig = new JPanel(new BorderLayout());
+		//Border border = new EmptyBorder(spacing, 0, spacing, 0);
+		//pConfig.setBorder(border);
+		//cddisp.add(pConfig);
+		
+		//Panel with column titles
+		//pUpper = new JPanel(new GridLayout(0, 4, 5, 5));
+		pUpper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
+		Border border = new EmptyBorder(10, 0, 5, 5);		
+		pUpper.setBorder(border);
+		cddisp.add(pUpper, BorderLayout.NORTH);
+        /* Add labels of columns */
+    	pUpper.add(new JLabel("Name", JLabel.CENTER));
+    	pUpper.add(new JLabel("Threshold", JLabel.CENTER));
+    	pUpper.add(new JLabel("Maximum", JLabel.CENTER));
+    	pUpper.add(new JLabel("Alarm", JLabel.LEFT));
+		
 		/* Panel to fill in with monitors */
-		pMonitors = new JPanel(new GridLayout(0, 4, 5, 5));
-		pUpper.add(pMonitors);
+		pMonitors = new JPanel(new GridLayout(0, 1, 5, borderHeight));
+		border = new EmptyBorder(borderHeight, 0, borderHeight, 0);
+		pMonitors.setBorder(border);
+		//Scroll Panel
+		JScrollPane scrollPane = new JScrollPane(pMonitors);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		cddisp.add(scrollPane, BorderLayout.CENTER);		
+		
 		/* Lower panel has widgets that do not change */
 		final JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
-		pConfig.add(pLower, BorderLayout.SOUTH);
+		cddisp.add(pLower, BorderLayout.SOUTH);
 		/* panel for update time */
 		final JPanel pupdate = new JPanel();
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -147,41 +171,57 @@ public final class MonitorControl
 	 * Setup all monitors.
 	 */
 	public void doSetup() {
+		int numberMonitors;
         final int cols = 6;
+        //JPanel pLabel=null;
+        JPanel pRow=null;
+		
+        numberMonitors = Monitor.getMonitorList().size();        
+        final Iterator monitorsIter = Monitor.getMonitorList().iterator();
+        
         /* Clear panel */
         pMonitors.removeAll();
+
+        if (numberMonitors>0) {
+            /* Add labels of columns */
+        	//pUpper.add(new JLabel("Name", JLabel.CENTER));
+        	//pUpper.add(new JLabel("Threshold", JLabel.CENTER));
+        	//pUpper.add(new JLabel("Maximum", JLabel.CENTER));
+        	//pUpper.add(new JLabel("Alarm", JLabel.LEFT));
+        }
         /*
          * for each monitor make a panel with label, threshold, maximum, and
          * alarm
-         */
-        final Iterator monitors = Monitor.getMonitorList().iterator();
-        if (monitors.hasNext()) {
-            /* Add labels of columns */
-            pMonitors.add(new JLabel("Name", JLabel.CENTER));
-            pMonitors.add(new JLabel("Threshold", JLabel.CENTER));
-            pMonitors.add(new JLabel("Maximum", JLabel.CENTER));
-            pMonitors.add(new JLabel("Alarm", JLabel.LEFT));
-        }
-        while (monitors.hasNext()) {
-            Monitor monitor = (Monitor) monitors.next();
+         */        
+        while (monitorsIter.hasNext()) {
+            Monitor monitor = (Monitor) monitorsIter.next();
+            pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+            pMonitors.add(pRow);
             final JLabel labelConfig = new JLabel(monitor.getName(),
                     JLabel.CENTER);
-            pMonitors.add(labelConfig);
+            JPanel pLabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+			pLabel.add(labelConfig);
+			pRow.add(pLabel);
             final JTextField textThreshold = new JTextField();
             textThreshold.setColumns(cols);
             textThreshold.setEditable(true);
-            textThreshold.setText("10");
-            pMonitors.add(textThreshold);
+            textThreshold.setText(""+DEFAULT_THRESHOLD);
+            pRow.add(textThreshold);
             final JTextField textMaximum = new JTextField();
             textMaximum.setColumns(cols);
             textMaximum.setEditable(true);
-            textMaximum.setText("100");
-            pMonitors.add(textMaximum);
+            textMaximum.setText(""+DEFAULT_MAX);
+            pRow.add(textMaximum);
             final JCheckBox checkAlarm = new JCheckBox();
             checkAlarm.setSelected(false);
-            pMonitors.add(checkAlarm);
+            pRow.add(checkAlarm);
         }
         pack();
+		if (numberMonitors>0) {
+			Dimension dialogDim=calculateScrollDialogSize(this, pRow, borderHeight, numberMonitors, MAX_INITIAL_DISPLAY);
+			setSize(dialogDim);
+		}
+        
     }
 
 	/**

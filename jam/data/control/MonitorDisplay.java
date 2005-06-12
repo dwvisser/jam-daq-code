@@ -6,6 +6,7 @@ import jam.global.JamStatus;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -16,6 +17,7 @@ import java.util.Observer;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
@@ -28,9 +30,12 @@ import javax.swing.border.EmptyBorder;
  */
 public class MonitorDisplay extends AbstractControl implements Observer {
 
+	private final int MAX_INITIAL_DISPLAY=15;
+	
 	private JToggleButton checkAudio;
 	private JPanel pTitles;
 	private JPanel pBars;
+	private final int borderHeight =5;
 
 	/**
 	 * Constructs a new monitor display dialog.
@@ -45,14 +50,14 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		cddisp.setLayout(new BorderLayout());
 
 		//Panel for the bars
-		pBars = new JPanel(new GridLayout(0, 1, 5, 5));
-		pBars.setBorder(new EmptyBorder(10, 0, 10, 0));
-		cddisp.add(pBars, BorderLayout.CENTER);
-		pTitles = new JPanel(new GridLayout(0, 1, 5, 5));
-		pTitles.setBorder(new EmptyBorder(10, 0, 10, 0));
-		cddisp.add(pTitles, BorderLayout.WEST);
+		pBars = new JPanel(new GridLayout(0, 1, borderHeight, 5));
+		pBars.setBorder(new EmptyBorder(borderHeight, 0, borderHeight, 0));
+		//Scroll Panel
+		JScrollPane scrollPane = new JScrollPane(pBars);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		cddisp.add(scrollPane, BorderLayout.CENTER);		
 
-		// alarm panel for display dialog
+		//Panel for alarm
 		final JPanel pal = new JPanel();
 		cddisp.add(pal, BorderLayout.SOUTH);
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
@@ -66,21 +71,31 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 	 * Setup the display of monitors, inherited for AbstractControl
 	 */	
 	public void doSetup(){
-		Iterator monitors = Monitor.getMonitorList().iterator();
-		pTitles.removeAll();
+		JPanel pm=null;
+		int numberMonitors;
+		
+		numberMonitors = Monitor.getMonitorList().size();		
+		Iterator monitorsIter = Monitor.getMonitorList().iterator();		
 		pBars.removeAll();
-		while (monitors.hasNext()) {
-			Monitor monitor = (Monitor) monitors.next();
-			final JPanel pm = new JPanel();
+
+		while (monitorsIter.hasNext()) {
+			Monitor monitor = (Monitor) monitorsIter.next();
+			pm = new JPanel();
 			pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-			pTitles.add(pm);
+			pBars.add(pm);
 			final JLabel labelDisp =
 				new JLabel(monitor.getName(), JLabel.RIGHT);
 			pm.add(labelDisp);
 			final PlotBar plotBar = new PlotBar(monitor);
-			pBars.add(plotBar);
+			pm.add(plotBar);
 		}
+		
 		pack();
+		if (numberMonitors>0) {
+			Dimension dialogDim=calculateScrollDialogSize(this, pm, borderHeight, numberMonitors, MAX_INITIAL_DISPLAY);
+			setSize(dialogDim);
+		}
+
 	}
 	
 	private void displayMonitors() {

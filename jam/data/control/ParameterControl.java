@@ -75,10 +75,10 @@ public final class ParameterControl
 		pCenter =new JPanel(new GridLayout(0,1,borderHeight,5));
 		pCenter.setBorder(new EmptyBorder(borderHeight,10,borderHeight,10));
 		
+		//Scroll Panel
 		scrollPane = new JScrollPane(pCenter);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
 		cddisp.add(scrollPane, BorderLayout.CENTER);
-
 
 		//Buttons for display dialog
 		JPanel pButtons = new JPanel(new GridLayout(0, 1, 0, 0));
@@ -142,7 +142,7 @@ public final class ParameterControl
 	 */
 	public void doSetup() {
 		DataParameter currentParameter;
-		Iterator enumParameter;
+		Iterator parameterIter;
 		int numberParameters;
 		int count;
 
@@ -156,10 +156,10 @@ public final class ParameterControl
 			pParam = new JPanel[numberParameters];
 			labelParam = new JLabel[numberParameters];
 			textParam = new JTextField[numberParameters];
-			enumParameter = DataParameter.getParameterList().iterator();
+			parameterIter = DataParameter.getParameterList().iterator();
 			count = 0;
-			while (enumParameter.hasNext()) {
-				currentParameter = (DataParameter) enumParameter.next();
+			while (parameterIter.hasNext()) {
+				currentParameter = (DataParameter) parameterIter.next();
 				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 				pCenter.add(pParam[count]);
 				labelParam[count] =new JLabel(currentParameter.getName().trim(), JLabel.RIGHT);
