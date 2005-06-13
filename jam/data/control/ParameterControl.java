@@ -1,5 +1,6 @@
 package jam.data.control;
 import jam.data.DataParameter;
+import jam.global.GoodThread;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 import jam.util.StringUtilities;
@@ -27,7 +28,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
 /**
  * Sets and displays the Parameters (data.Parameters.class)
@@ -49,7 +54,7 @@ public final class ParameterControl
 	private JLabel[] labelParam;
 	private JTextField[] textParam;
 	private final int borderHeight=5;
-
+	private String invalidNames;
 	private File lastFile; //last file referred to in a JFileChooser	
 
 	final StringUtilities stringUtil=StringUtilities.instance();
@@ -81,46 +86,83 @@ public final class ParameterControl
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 
 		//Buttons for display dialog
-		JPanel pButtons = new JPanel(new GridLayout(0, 1, 0, 0));
-		cddisp.add(pButtons, BorderLayout.SOUTH);
+		JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
+		pLower.setBorder(new EmptyBorder(5,0,0,0));
+		cddisp.add(pLower, BorderLayout.SOUTH);
 		
-		JPanel pLoad = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pButtons.add(pLoad);
-		JButton bsave = new JButton("Save");
-		bsave.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				save();
-			}
-		});
-		pLoad.add(bsave);
+		JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pLower.add(pButtonsTop);		
+		JPanel pLoadSave =  new JPanel(new GridLayout(1, 0, 5, 5));
+		pButtonsTop.add(pLoadSave);		
+		Border etchBorder = new EtchedBorder();
+		Border titledBorder =  new TitledBorder(etchBorder, "File");
+		//pLoadSave.setBorder(titledBorder);
 		
-		JButton bload = new JButton("Load");
+		JButton bload = new JButton("Load\u2026");
 		bload.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				load();
 			}
 		});
-		pLoad.add(bload);
+		pLoadSave.add(bload);
 		
-		
-		JPanel pOKButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pButtons.add(pOKButton);
-		JPanel pbut = new JPanel(new GridLayout(1, 0, 5, 5));
-		pOKButton.add(pbut);
+		JButton bsave = new JButton("Save\u2026");
+		bsave.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				save();
+			}
+		});
+		pLoadSave.add(bsave);
+				
+		JPanel pButtonsBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pLower.add(pButtonsBottom);
+		JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
+		pButtonsBottom.add(pOKApplyCancel);
+		/*
 		JButton bread = new JButton("Read");
 		bread.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				read();
 			}
 		});
-		pbut.add(bread);
+		pOKApplyCancel.add(bread);
 		JButton bset = new JButton("Set");
 		bset.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				set();
 			}
 		});
-		pbut.add(bset);
+		pOKApplyCancel.add(bset);
+		*/
+		
+		final JButton brecall = new JButton("Recall");
+		brecall.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				read();
+			}
+		});
+		pOKApplyCancel.add(brecall);
+		final JButton bok = new JButton("OK");
+		bok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				set();				
+				dispose();
+			}
+		});
+		pOKApplyCancel.add(bok);
+		final JButton bapply = new JButton("Apply");
+		bapply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				set();			}
+		});
+		pOKApplyCancel.add(bapply);
+		final JButton bcancel = new JButton("Cancel");
+		bcancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				dispose();				
+			}
+		});
+		pOKApplyCancel.add(bcancel);
 		
 		
 		addWindowListener(new WindowAdapter() {
@@ -185,36 +227,35 @@ public final class ParameterControl
 	 */
 	public void set() {
 		DataParameter currentParameter = null;
-		Iterator enumParameter;
 		int count;
 		String textValue;
 
-		enumParameter = DataParameter.getParameterList().iterator();
-
-		try {
-			count = 0;
-			while (enumParameter.hasNext()) {
-				currentParameter = (DataParameter) enumParameter.next();
-				textValue = textParam[count].getText().trim();
-				if (textValue.equals("")) {
-					currentParameter.setValue(0.0);
-				} else {
-					currentParameter.setValue(
-						(new Double(textValue).doubleValue()));
+		if (checkTextAreNumbers()) {		
+			Iterator parameterIter = DataParameter.getParameterList().iterator();
+			
+			try {			
+				count = 0;
+				while (parameterIter.hasNext()) {
+					currentParameter = (DataParameter) parameterIter.next();
+					textValue = textParam[count].getText().trim();
+					currentParameter.setValue(Double.parseDouble(textValue));
+					count++;
 				}
-				count++;
+				read();
+			} catch (NumberFormatException nfe) {
+				if (currentParameter != null) {
+					messageHandler.errorOutln(
+						"Not a valid number for parameter "+ currentParameter.getName());
+				} else {
+					messageHandler.errorOutln("Not a valid number, null parameter");
+				}
 			}
-			read();
-		} catch (NumberFormatException nfe) {
-			if (currentParameter != null) {
-				messageHandler.errorOutln(
-					"Not a valid number, parameter "
-						+ currentParameter.getName()
-						+ " [ParameterControl]");
-			} else {
-				messageHandler.errorOutln(
-					"Not a valid number, null parameter [ParameterControl]");
+		} else {
+			
+			if (!invalidNames.equals("")) {
+				messageHandler.errorOutln("Parameters not set, not a number for parameter(s) "+invalidNames+".");
 			}
+
 		}
 	}
 
@@ -317,5 +358,33 @@ public final class ParameterControl
 			
 		}
 	}
-	
+	/**
+	 * Check all text fields are numbers
+	 * @return
+	 */
+	private boolean checkTextAreNumbers() {
+		String textValue;
+		boolean allValid =true;
+		//Check all fields are numbers
+		invalidNames ="";
+		for (int i=0;i<textParam.length;i++) {
+			try {
+				textValue = textParam[i].getText().trim();
+				if (textValue.equals("")) {
+					textValue ="0.0";
+					textParam[i].setText(textValue);	
+				}
+				double value= Double.parseDouble(textValue);					
+			} catch (NumberFormatException nfe) {
+				allValid=false;
+				if (!invalidNames.equals("")) {												
+					invalidNames = invalidNames+", "+labelParam[i].getText();; 	
+				}else {
+					invalidNames = labelParam[i].getText();
+				}
+			}			
+		}
+		
+		return allValid;
+	}
 }
