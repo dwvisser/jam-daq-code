@@ -17,31 +17,30 @@ import javax.swing.JPanel;
  */
 public class Display extends JPanel implements Observer{
 
-		private final String KEY_PLOT="plot";
+		private static final String KEY_PLOT="plot";
 		
-		private String KEY_TABLE="table";
+		private static final String KEY_TABLE="table";
 		
-		JPanel plotDisplay;
+		private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		
-		JPanel summaryTable;
-	
 		private final CardLayout displaySwapPanelLayout;
-		
-		private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();		
-		
+	
+        /**
+         * Constructor.
+         * 
+         * @param plotDisplay plot panel
+         * @param summaryTable summary panel
+         */
 		public Display(JPanel plotDisplay, JPanel summaryTable) {
-
 			displaySwapPanelLayout = new CardLayout();
-			this.setLayout(displaySwapPanelLayout);
-			this.add(KEY_PLOT, plotDisplay);
-
-			this.add(KEY_TABLE, summaryTable);
-			// Initial show plot
+			setLayout(displaySwapPanelLayout);
+			add(KEY_PLOT, plotDisplay);
+			add(KEY_TABLE, summaryTable);
+			/* Initial show plot. */
 			displaySwapPanelLayout.show(this, KEY_PLOT);
-			
 			broadcaster.addObserver(this);
-			
 		}
+        
 		/**
 		 * Show plots in the main panel
 		 */
