@@ -4,7 +4,6 @@ import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
 import jam.global.RTSI;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
@@ -85,8 +84,6 @@ public final class SetupSortOn extends AbstractSetup {
 			textPathData;
 
 	private final JTextField textPathLog;
-
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/* strings of data entered */
 	private String exptName;
