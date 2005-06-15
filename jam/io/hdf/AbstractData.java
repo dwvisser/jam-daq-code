@@ -181,8 +181,8 @@ public abstract class AbstractData implements Constants {
 	 */
 	public static List ofType(final short tagType) {
 		final List rval=new ArrayList();
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
+		final List localList = getDataObjectList();
+		final Iterator iter = localList.iterator();
 		while(iter.hasNext()){
 			final AbstractData dataObject=(AbstractData)iter.next();
 			if (tagType == dataObject.getTag()){
