@@ -46,34 +46,9 @@ import javax.swing.JToggleButton;
  */
 abstract class AbstractSetup {
     /**
-     * User sort routine must extend this abstract class
+     * Handle to event broadcaster.
      */
-    protected transient SortRoutine sortRoutine;//the actual sort routine
-
-    /**
-     * Name of class. Ultimately used to create messages.
-     */
-    protected transient final String classname;
-
-    private transient Class sortClass;
-
-    /**
-     * When toggled, means that a user-supplied path should be used for
-     * populating the sort chooser.
-     */
-    protected transient final JToggleButton specify;
-
-    /**
-     * Combo box for selecting a sort routine.
-     * 
-     * @see jam.sort.SortRoutine
-     */
-    protected transient final JComboBox sortChoice = new JComboBox();
-
-    /**
-     * path to base of sort routines' classpath
-     */
-    protected transient File classPath;
+	protected static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
 
     /**
      * JamStatus instance.
@@ -83,29 +58,79 @@ abstract class AbstractSetup {
     protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
     /**
-     * Handle to event broadcaster.
+     * Finds a class matching the given string in the collection, and attempts
+     * to select it from the chooser.
+     * 
+     * @param jcb
+     *            chooser
+     * @param collection
+     *            of <code>Class</code> objects
+     * @param defInStream
+     *            name of class to try to select
      */
-	protected static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
-    
+    protected static void selectName(JComboBox jcb, Collection collection,
+            String defInStream) {
+        final Iterator iter = collection.iterator();
+        while (iter.hasNext()) {
+            final Class clazz = (Class) iter.next();
+            final String name = clazz.getName();
+            final boolean match = name.equals(defInStream);
+            if (match) {
+                jcb.setSelectedItem(clazz);
+                break;
+            }
+        }
+    }
+
     /**
      * Press to browse for a classpath.
      */
     protected transient final AbstractButton bbrowsef = new JButton("Browse...");
 
     /**
-     * Text field showing the sort class path.
+     * Name of class. Ultimately used to create messages.
      */
-    protected transient final JTextField textSortPath;
+    protected transient final String classname;
 
     /**
-     * The dialog.
+     * path to base of sort routines' classpath
      */
-    protected transient final JDialog dialog;
+    protected transient File classPath;
 
     /**
      * Toggle button for the default class path.
      */
     protected transient final JToggleButton defaultPath;
+
+    /**
+     * The dialog.
+     */
+    protected transient final JDialog dialog;
+    
+    /**
+     * Combo box for selecting a sort routine.
+     * 
+     * @see jam.sort.SortRoutine
+     */
+    protected transient final JComboBox sortChoice = new JComboBox();
+
+    private transient Class sortClass;
+
+    /**
+     * User sort routine must extend this abstract class
+     */
+    protected transient SortRoutine sortRoutine;//the actual sort routine
+
+    /**
+     * When toggled, means that a user-supplied path should be used for
+     * populating the sort chooser.
+     */
+    protected transient final JToggleButton specify;
+
+    /**
+     * Text field showing the sort class path.
+     */
+    protected transient final JTextField textSortPath;
 
     AbstractSetup(String dialogName) {
         super();
@@ -161,6 +186,46 @@ abstract class AbstractSetup {
                 }
             }
         });
+    }
+
+    /**
+     * Returns the dialog for setting up offline sorting.
+     * 
+     * @return the dialog for setting up offline sorting
+     */
+    public final JDialog getDialog() {
+        return dialog;
+    }
+
+    /**
+     * Get the sort classes using the given file as the class path.
+     * 
+     * @param path
+     *            class path
+     * @return set of available sort routines
+     */
+    protected final Set getSortClasses(File path) {
+        return RTSI.find(path, Sorter.class);
+    }
+
+    /**
+     * Browses for the sort file.
+     * 
+     * @return the directory to look in for event files
+     */
+    protected final File getSortPath() {
+        File rval = classPath;
+        final JFileChooser chooser = new JFileChooser(classPath);
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        final int option = chooser.showOpenDialog(STATUS.getFrame());
+        /* save current values */
+        if (option == JFileChooser.APPROVE_OPTION
+                && chooser.getSelectedFile() != null) {
+            synchronized (this) {
+                rval = chooser.getSelectedFile();//save current directory
+            }
+        }
+        return rval;
     }
 
     /**
@@ -242,16 +307,22 @@ abstract class AbstractSetup {
     }
 
     /**
-     * Get the sort classes using the given file as the class path.
-     * 
-     * @param path
-     *            class path
-     * @return set of available sort routines
+     * Do what it takes to open up the tree to the first histogram
+     * in the sort routine.
      */
-    protected final Set getSortClasses(File path) {
-        return RTSI.find(path, Sorter.class);
+    protected void selectFirstSortHistogram() {
+		//Select first histogram
+		final Group sortGroup = Group.getSortGroup();
+		STATUS.setCurrentGroup(sortGroup);
+		final List histList = sortGroup.getHistogramList();
+		if (!histList.isEmpty()) {
+			final Histogram firstHist =  (Histogram)histList.get(0);
+			STATUS.setCurrentHistogram(firstHist);
+		}			
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);			
     }
-
+    
     /**
      * Sets whether to use the default classpath or a user-specified one.
      * 
@@ -272,27 +343,7 @@ abstract class AbstractSetup {
         sortChoice.setModel(new DefaultComboBoxModel(vector));
         return vector;
     }
-
-    /**
-     * Browses for the sort file.
-     * 
-     * @return the directory to look in for event files
-     */
-    protected final File getSortPath() {
-        File rval = classPath;
-        final JFileChooser chooser = new JFileChooser(classPath);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        final int option = chooser.showOpenDialog(STATUS.getFrame());
-        /* save current values */
-        if (option == JFileChooser.APPROVE_OPTION
-                && chooser.getSelectedFile() != null) {
-            synchronized (this) {
-                rval = chooser.getSelectedFile();//save current directory
-            }
-        }
-        return rval;
-    }
-
+    
     /**
      * Sets the class path for loading sort routines.
      * 
@@ -309,57 +360,6 @@ abstract class AbstractSetup {
             }
             textSortPath.setText(classPath.getAbsolutePath());
         }
-    }
-
-    /**
-     * Finds a class matching the given string in the collection, and attempts
-     * to select it from the chooser.
-     * 
-     * @param jcb
-     *            chooser
-     * @param collection
-     *            of <code>Class</code> objects
-     * @param defInStream
-     *            name of class to try to select
-     */
-    protected static void selectName(JComboBox jcb, Collection collection,
-            String defInStream) {
-        final Iterator iter = collection.iterator();
-        while (iter.hasNext()) {
-            final Class clazz = (Class) iter.next();
-            final String name = clazz.getName();
-            final boolean match = name.equals(defInStream);
-            if (match) {
-                jcb.setSelectedItem(clazz);
-                break;
-            }
-        }
-    }
-    
-    /**
-     * Do what it takes to open up the tree to the first histogram
-     * in the sort routine.
-     */
-    protected void selectFirstSortHistogram() {
-		//Select first histogram
-		final Group sortGroup = Group.getSortGroup();
-		STATUS.setCurrentGroup(sortGroup);
-		final List histList = sortGroup.getHistogramList();
-		if (!histList.isEmpty()) {
-			final Histogram firstHist =  (Histogram)histList.get(0);
-			STATUS.setCurrentHistogram(firstHist);
-		}			
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);			
-    }
-    
-    /**
-     * Returns the dialog for setting up offline sorting.
-     * 
-     * @return the dialog for setting up offline sorting
-     */
-    public final JDialog getDialog() {
-        return dialog;
     }
 }
 
