@@ -257,7 +257,7 @@ public final class HDFIO implements DataIO, JamFileFields {
         String fileFullName = path+File.separator+fileName;        
         File appendFile = new File(fileFullName);
         
-        if (overWriteExistsConfirm(appendFile)) {
+        if (FILE_UTIL.overWriteExistsConfirm(appendFile)) {
             spawnAsyncWriteFile(appendFile, groupsToUse, histsToUse, writeData, wrtSettings);
         }
     }
@@ -906,23 +906,6 @@ public final class HDFIO implements DataIO, JamFileFields {
         return lstHistAtt;
     }
 
-    /*
-     * non-javadoc: Confirm overwrite if file exits
-     */
-    private boolean overWriteExistsConfirm(File file) {
-        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
-                .showConfirmDialog(frame, "Replace the existing file? \n"
-                        + file.getName(), "Save " + file.getName(),
-                        JOptionPane.YES_NO_OPTION)
-                : true;
-        if (writeConfirm) {
-            /* we've confirmed overwrite with the user. */
-            file.delete();
-        }
-
-        return writeConfirm;
-    }
-    
     /**
      * Determines whether a <code>List</code> passed to it
      * <ol>

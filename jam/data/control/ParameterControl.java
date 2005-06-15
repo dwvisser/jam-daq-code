@@ -2,6 +2,7 @@ package jam.data.control;
 import jam.data.DataParameter;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
+import jam.util.FileUtilities;
 import jam.util.StringUtilities;
 
 import java.awt.BorderLayout;
@@ -59,6 +60,8 @@ public final class ParameterControl
 	final StringUtilities stringUtil=StringUtilities.instance();
 	
 	private final MessageHandler messageHandler;
+	
+    private final FileUtilities FILE_UTIL = FileUtilities.getInstance();	
 	
 	/**
 	 * Constructs a new parameter dialog.
@@ -294,23 +297,27 @@ public final class ParameterControl
 		// save current values 
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
-			File outputFile = fd.getSelectedFile();
-			Properties saveProperties = new Properties();			
-			final Iterator iterParameter =
-				DataParameter.getParameterList().iterator();
-			while (iterParameter.hasNext()) {
-				DataParameter parameter= (DataParameter)iterParameter.next();
-				String valueString = (new Double(parameter.getValue())).toString();
-				saveProperties.put(parameter.getName().trim(),valueString );
-			}
-			try {
-				FileOutputStream fos = new FileOutputStream(outputFile);
-				saveProperties.store(fos, "Jam Sort Parameters");
-				messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());				
-			} catch (FileNotFoundException fnfe) {
-				messageHandler.errorOutln("Saving Parameters. Cannot create file "+outputFile.getName());
-			} catch (IOException ioe) {				
-				messageHandler.errorOutln("Saving Parameters. Cannot write to file "+outputFile.getName());				
+
+			File selectFile = fd.getSelectedFile();			
+			File outputFile =FILE_UTIL.changeExtension(selectFile, FILE_EXTENSION, FileUtilities.APPEND_ONLY );
+			if (FILE_UTIL.overWriteExistsConfirm(outputFile)) {
+				Properties saveProperties = new Properties();			
+				final Iterator iterParameter =
+					DataParameter.getParameterList().iterator();
+				while (iterParameter.hasNext()) {
+					DataParameter parameter= (DataParameter)iterParameter.next();
+					String valueString = (new Double(parameter.getValue())).toString();
+					saveProperties.put(parameter.getName().trim(),valueString );
+				}
+				try {
+					FileOutputStream fos = new FileOutputStream(outputFile);
+					saveProperties.store(fos, "Jam Sort Parameters");
+					messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());				
+				} catch (FileNotFoundException fnfe) {
+					messageHandler.errorOutln("Saving Parameters. Cannot create file "+outputFile.getName());
+				} catch (IOException ioe) {				
+					messageHandler.errorOutln("Saving Parameters. Cannot write to file "+outputFile.getName());				
+				}
 			}
 		}
 	}

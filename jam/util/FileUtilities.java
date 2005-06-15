@@ -1,5 +1,10 @@
 package jam.util;
 
+import java.io.File;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  * Utility class for file dialogs.
  * 
@@ -31,10 +36,35 @@ public class FileUtilities {
 	private FileUtilities(){
 		super();
 	}
-
 	/**
-	 * Takes a file name and extension and makes the file name to have the
-	 * extension. If the filename has no extension, the extension is appended.
+	 * Takes a file and extension and appends the extension to the file name.
+	 * If the file has no extension, the extension is appended.
+	 * If it does have an extension, it is replaced. By extension, we mean the
+	 * usual <code>DOS/Unix</code> filenaming convention:
+	 * 
+	 * @param fileIn 	the file to add extension to.
+	 * @param extension
+	 *            file extension; everything up to any decimal is thrown away
+	 * @param mode
+	 *            <code>FORCE</code>,<code>APPEND_ONLY</code> or
+	 *            <code>NO_CHANGE</code>
+	 * @return a filename with the desired extension
+	 * @throws IllegalArgumentException
+	 *             if an unrecognized mode is given
+	 * 
+	 */
+	public File changeExtension(File fileIn,
+			final String extension, final int mode) {
+
+	    String path =fileIn.getParent();        
+	    String fileName = changeExtension(fileIn.getName(), extension, mode);
+	    String fileFullName = path+File.separator+fileName;        
+	    File appendFile = new File(fileFullName);
+	    return appendFile;
+	}	
+	/**
+	 * Takes a file name and extension and appends the extension to the file name.
+	 * If the filename has no extension, the extension is appended.
 	 * If it does have an extension, it is replaced. By extension, we mean the
 	 * usual <code>DOS/Unix</code> filenaming convention:
 	 * <P>
@@ -105,4 +135,26 @@ public class FileUtilities {
 
 		return fileName;
 	}
+    /**
+     * Check if a file already exist and 
+     * display dialog to confirm overwritting of the file
+     * 
+     * @param file The file to check exists
+     * @return		True if file does not exist or overwrite confirmed
+     */
+    public boolean overWriteExistsConfirm(File file) {
+    	JFrame frame=null;
+        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
+                .showConfirmDialog(frame, "Replace the existing file? \n"
+                        + file.getName(), "Save " + file.getName(),
+                        JOptionPane.YES_NO_OPTION)
+                : true;
+        if (writeConfirm) {
+            // we've confirmed overwrite with the user.
+            file.delete();
+        }
+
+        return writeConfirm;
+    }
+	
 }
