@@ -640,10 +640,8 @@ public class BatchExport extends JDialog implements Observer {
 			dialog.setVisible(true);
 		}
 		
-		void addToSelection() {
-			
+		void addToSelection() {			
 			selected = histList.getSelectedValues();
-			Object [] alreadySelected = lstHists.getSelectedValues();
 			final HashSet histFullSet = new HashSet();
 			/* now combine this with stuff already in list. */
 			final ListModel model = lstHists.getModel();
