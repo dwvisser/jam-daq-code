@@ -1,7 +1,6 @@
 package jam;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
-import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.MessageHandler;
@@ -64,66 +63,13 @@ public final class SetupSortOff extends AbstractSetup {
     	}
     }
 
-    private void doApply(boolean dispose){
-		try{
-			if (STATUS.canSetup()) {
-				resetSort();//clear current data areas and kill daemons
-				loadSorter();
-		        loadEventInput();
-		        loadEventOutput();
-				msgHandler.messageOutln("Loaded sort class '"+
-				sortRoutine.getClass().getName()+
-				"', event instream class '"
-				+eventInput.getClass().getName()+
-				"', and event outstream class '"+
-				eventOutput.getClass().getName()+"'");
-				if (sortRoutine != null) {
-					setupSort();      //create data areas and daemons
-					msgHandler.messageOutln("Daemons and dialogs initialized.");
-				}
-				selectFirstSortHistogram();		
-				if (dispose) {
-					dialog.dispose();
-				}
-			} else {
-				throw new JamException(classname+
-				"Can't set up sorting, mode locked.");
-			}
-		} catch (Exception ex){
-			msgHandler.errorOutln(ex.getMessage());
-			ex.printStackTrace();
-		}
-    }
+    private final static String APPLY="Apply";
 
-	private final static String OK_TEXT="OK";
-	private final static String APPLY="Apply";
 	private final static String CANCEL="Cancel";
+	private static SetupSortOff instance=null;
+	private final static String OK_TEXT="OK";
 	private final static String SETUP_LOCKED="Setup Locked";
 
-	private transient final String defSortRout,
-	defInStream,
-    defOutStream;
-
-    /* handles we need */
-    final transient private SortControl sortControl;
-    final transient private DisplayCounters dispCount;
-    final static private Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
-    final transient private MessageHandler msgHandler;
-    private transient SortDaemon sortDaemon;
-
-    /** Input stream, how tells how to read an event */
-    private transient EventInputStream eventInput;
-
-    /** Output stream, tells how to write an event */
-    private transient EventOutputStream eventOutput;
-
-    /* dialog box widgets */
-    private transient final JCheckBox checkLock;
-    private transient final JButton bok, bapply;
-    private transient final JComboBox inChooser, outChooser;
-
-	private static SetupSortOff instance=null;
-	
 	/**
 	 * Returns the only instance of this class.
 	 * 
@@ -136,7 +82,28 @@ public final class SetupSortOff extends AbstractSetup {
 		return instance;
 	}
 
-    private SetupSortOff() {
+    private transient final JButton bok, bapply;
+    /* dialog box widgets */
+    private transient final JCheckBox checkLock;
+    private transient final String defSortRout,
+	defInStream,
+    defOutStream;
+    final transient private DisplayCounters dispCount;
+
+    /** Input stream, how tells how to read an event */
+    private transient EventInputStream eventInput;
+
+    /** Output stream, tells how to write an event */
+    private transient EventOutputStream eventOutput;
+
+    private transient final JComboBox inChooser, outChooser;
+    final transient private MessageHandler msgHandler;
+    /* handles we need */
+    final transient private SortControl sortControl;
+
+	private transient SortDaemon sortDaemon;
+	
+	private SetupSortOff() {
         super("Setup Offline");
         defSortRout = JamProperties.getPropString(
         JamProperties.SORT_ROUTINE);
@@ -242,6 +209,37 @@ public final class SetupSortOff extends AbstractSetup {
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.pack();
     }
+
+    private void doApply(boolean dispose){
+		try{
+			if (STATUS.canSetup()) {
+				resetSort();//clear current data areas and kill daemons
+				loadSorter();
+		        loadEventInput();
+		        loadEventOutput();
+				msgHandler.messageOutln("Loaded sort class '"+
+				sortRoutine.getClass().getName()+
+				"', event instream class '"
+				+eventInput.getClass().getName()+
+				"', and event outstream class '"+
+				eventOutput.getClass().getName()+"'");
+				if (sortRoutine != null) {
+					setupSort();      //create data areas and daemons
+					msgHandler.messageOutln("Daemons and dialogs initialized.");
+				}
+				selectFirstSortHistogram();		
+				if (dispose) {
+					dialog.dispose();
+				}
+			} else {
+				throw new JamException(classname+
+				"Can't set up sorting, mode locked.");
+			}
+		} catch (Exception ex){
+			msgHandler.errorOutln(ex.getMessage());
+			ex.printStackTrace();
+		}
+    }
     
     private void loadEventInput() throws JamException {
         try {//create new event input stream class
@@ -281,6 +279,64 @@ public final class SetupSortOff extends AbstractSetup {
     }
 
     /**
+     * Lock the setup if it is unlocked than the sort is stopped
+     * Set the title bar to indicate offline sort and wether from tape
+     * or disk
+     *
+     * @param lock true if the locking the dialog, false if unlocking
+     */
+    private void lockMode(boolean lock) {
+    	final boolean notLock=!lock;
+    	checkLock.setEnabled(lock);
+    	checkLock.setSelected(lock);
+    	textSortPath.setEnabled(notLock);
+    	inChooser.setEnabled(notLock);
+    	outChooser.setEnabled(notLock);
+    	bok.setEnabled(notLock);
+    	bapply.setEnabled(notLock);
+    	specify.setEnabled(notLock);
+    	defaultPath.setEnabled(notLock);
+    	sortChoice.setEnabled(notLock);
+        if(lock){
+            STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass().getName() );
+            bbrowsef.setEnabled(false);
+        } else{
+            STATUS.setSortMode(SortMode.NO_SORT,"No Sort");
+            bbrowsef.setEnabled(specify.isSelected());
+        }
+    }
+
+    /**
+     * Resets offline data aquisition.
+     * Kills sort daemon. Clears all data areas: histograms, gates,
+     * scalers and monitors.
+     */
+    private void resetSort() {
+        if (sortDaemon != null) {
+            sortDaemon.setState(GoodThread.State.STOP);
+            sortDaemon.setSorter(null);
+        }
+        sortRoutine=null;
+        DataBase.getInstance().clearAllLists();
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);        
+        lockMode(false);
+    }
+
+
+    private final void selectSortRoutine(String srName, boolean useDefault){
+		final java.util.List sortList=setChooserDefault(useDefault);
+		final Iterator iter = sortList.iterator();
+		while (iter.hasNext()) {
+			final Class clazz = (Class) iter.next();
+			final String name = clazz.getName();
+			if (name.equals(srName)) {
+				sortChoice.setSelectedItem(clazz);
+				break;
+			}
+		}
+	}
+
+    /**
      * Sets up the offline sort.
      *
      * @throws SortException if there's a problem
@@ -315,71 +371,13 @@ public final class SetupSortOff extends AbstractSetup {
         lockMode(true);
     }
 
-    /**
-     * Resets offline data aquisition.
-     * Kills sort daemon. Clears all data areas: histograms, gates,
-     * scalers and monitors.
-     */
-    private void resetSort() {
-        if (sortDaemon != null) {
-            sortDaemon.setState(GoodThread.State.STOP);
-            sortDaemon.setSorter(null);
-        }
-        sortRoutine=null;
-        DataBase.getInstance().clearAllLists();
-        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);        
-        lockMode(false);
-    }
-
-
-    /**
-     * Lock the setup if it is unlocked than the sort is stopped
-     * Set the title bar to indicate offline sort and wether from tape
-     * or disk
-     *
-     * @param lock true if the locking the dialog, false if unlocking
-     */
-    private void lockMode(boolean lock) {
-    	final boolean notLock=!lock;
-    	checkLock.setEnabled(lock);
-    	checkLock.setSelected(lock);
-    	textSortPath.setEnabled(notLock);
-    	inChooser.setEnabled(notLock);
-    	outChooser.setEnabled(notLock);
-    	bok.setEnabled(notLock);
-    	bapply.setEnabled(notLock);
-    	specify.setEnabled(notLock);
-    	defaultPath.setEnabled(notLock);
-    	sortChoice.setEnabled(notLock);
-        if(lock){
-            STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass().getName() );
-            bbrowsef.setEnabled(false);
-        } else{
-            STATUS.setSortMode(SortMode.NO_SORT,"No Sort");
-            bbrowsef.setEnabled(specify.isSelected());
-        }
-    }
-
-    void setupSort(File classPath, String sortName,
+	void setupSort(File classPath, String sortName,
 	Class inStream, Class outStream){
 		setSortClassPath(classPath);
 		selectSortRoutine(sortName, false);
 		inChooser.setSelectedItem(inStream);
 		outChooser.setSelectedItem(outStream);
 		doApply(false);
-	}
-
-	private final void selectSortRoutine(String srName, boolean useDefault){
-		final java.util.List sortList=setChooserDefault(useDefault);
-		final Iterator iter = sortList.iterator();
-		while (iter.hasNext()) {
-			final Class clazz = (Class) iter.next();
-			final String name = clazz.getName();
-			if (name.equals(srName)) {
-				sortChoice.setSelectedItem(clazz);
-				break;
-			}
-		}
 	}
 }
 
