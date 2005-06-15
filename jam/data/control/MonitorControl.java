@@ -40,7 +40,6 @@ import javax.swing.border.EmptyBorder;
 public final class MonitorControl extends AbstractControl
 	implements Runnable {	
 
-	private final int MAX_INITIAL_DISPLAY=15;
 	private final int DEFAULT_MAX=100;
 	private final int DEFAULT_THRESHOLD =10;
 	private final MessageHandler msgHandler;
@@ -218,7 +217,7 @@ public final class MonitorControl extends AbstractControl
         }
         pack();
 		if (numberMonitors>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pRow, borderHeight, numberMonitors, MAX_INITIAL_DISPLAY);
+			Dimension dialogDim=calculateScrollDialogSize(this, pRow, borderHeight, numberMonitors);
 			setSize(dialogDim);
 		}
         

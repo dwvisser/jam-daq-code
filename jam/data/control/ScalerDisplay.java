@@ -41,8 +41,6 @@ import javax.swing.border.EmptyBorder;
  */
 
 public final class ScalerDisplay extends AbstractControl implements Observer {
-
-	private final int MAX_INITIAL_DISPLAY=15;
 	
 	private final JScrollPane scrollPane;	
 	private final JPanel pScalers;
@@ -158,7 +156,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		}
 		pack();
 		if (numberScalers>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, ps, borderHeight, numberScalers, MAX_INITIAL_DISPLAY);
+			Dimension dialogDim=calculateScrollDialogSize(this, ps, borderHeight, numberScalers);
 			setSize(dialogDim);
 		}
 		

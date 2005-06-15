@@ -1,6 +1,5 @@
 package jam.data.control;
 import jam.data.DataParameter;
-import jam.global.GoodThread;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 import jam.util.StringUtilities;
@@ -45,7 +44,7 @@ import javax.swing.JScrollPane;
 public final class ParameterControl
 	extends AbstractControl {
 
-	private final int MAX_INITIAL_DISPLAY=15;
+	private final String FILE_EXTENSION ="par";
 	
 	//widgets for each parameter
 	private JScrollPane scrollPane; 	
@@ -215,7 +214,7 @@ public final class ParameterControl
 		}
 		pack();
 		if (numberParameters>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pParam[0], borderHeight, numberParameters, MAX_INITIAL_DISPLAY);
+			Dimension dialogDim=calculateScrollDialogSize(this, pParam[0], borderHeight, numberParameters);
 			setSize(dialogDim);
 		}
 		
@@ -289,8 +288,8 @@ public final class ParameterControl
 		
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
+		fd.setFileFilter(new ExtensionFileFilter(new String[] { FILE_EXTENSION },
+				"List Files (*."+FILE_EXTENSION+")"));
 		int option = fd.showSaveDialog(frame);
 		// save current values 
 		if (option == JFileChooser.APPROVE_OPTION
@@ -307,34 +306,35 @@ public final class ParameterControl
 			try {
 				FileOutputStream fos = new FileOutputStream(outputFile);
 				saveProperties.store(fos, "Jam Sort Parameters");
+				messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());				
 			} catch (FileNotFoundException fnfe) {
 				messageHandler.errorOutln("Saving Parameters. Cannot create file "+outputFile.getName());
 			} catch (IOException ioe) {				
 				messageHandler.errorOutln("Saving Parameters. Cannot write to file "+outputFile.getName());				
 			}
-			messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());
 		}
 	}
 
 	private void load() {
-		JFrame frame =null;
-		
+		JFrame frame =null;		
 		String name=null;
+		String listNotLoaded="";
 		
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
+		fd.setFileFilter(new ExtensionFileFilter(new String[] {FILE_EXTENSION },
+				"List Files (*."+FILE_EXTENSION+")"));
 		int option = fd.showOpenDialog(frame);
 		// save current values 
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fd.getSelectedFile() != null) {
 			File inputFile =fd.getSelectedFile(); 
 			try {			
+				//Load properties from file
 				Properties saveProperties = new Properties();
 				FileInputStream fos = new FileInputStream( inputFile);
 				saveProperties.load(fos);					
-			
+				//copy from properties to parameters
 				final Iterator iterParameter =
 					DataParameter.getParameterList().iterator();
 				while (iterParameter.hasNext()) {
@@ -345,16 +345,23 @@ public final class ParameterControl
 						double valueDouble = Double.parseDouble(valueString);
 						parameter.setValue(valueDouble);						
 					} else {
-						//add to list of not loaded
+						if (listNotLoaded.equals("")) {
+							listNotLoaded=name;							
+						} else {
+							listNotLoaded+=", "+name;							
+						}
 					}
+				}
+				read();
+				messageHandler.messageOutln("Load Parameters from file "+inputFile.getName());
+				if (!listNotLoaded.equals("")){
+					messageHandler.warningOutln("Did not load parameter(s) "+listNotLoaded+".");
 				}
 			} catch (IOException ioe) {				
 				messageHandler.errorOutln("Loading Parameters. Cannot write to file "+inputFile.getName());				
 			} catch (NumberFormatException nfe) {
 				messageHandler.errorOutln("Loading Parameters. Cannot convert value for Parameter: "+name);
 			}					
-			read();
-			messageHandler.messageOutln("Load Parameters from file "+inputFile.getName());
 			
 		}
 	}

@@ -29,8 +29,6 @@ import javax.swing.border.EmptyBorder;
  *
  */
 public class MonitorDisplay extends AbstractControl implements Observer {
-
-	private final int MAX_INITIAL_DISPLAY=15;
 	
 	private JToggleButton checkAudio;
 	private JPanel pTitles;
@@ -92,7 +90,7 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		
 		pack();
 		if (numberMonitors>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pm, borderHeight, numberMonitors, MAX_INITIAL_DISPLAY);
+			Dimension dialogDim=calculateScrollDialogSize(this, pm, borderHeight, numberMonitors);
 			setSize(dialogDim);
 		}
 

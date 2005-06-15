@@ -20,6 +20,11 @@ import javax.swing.JPanel;
  */
 public abstract class AbstractControl extends JDialog implements Observer {
 	
+	/**
+	 * Default number of rows to display 
+	 */
+	private final int MAX_INITIAL_DISPLAY=15;
+	
 	private static List controllers = Collections.synchronizedList(new ArrayList());
 	
 	/**
@@ -70,6 +75,17 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	public void update(Observable observable, Object object) {
 		/* do-nothing implementation for those subclasses that
 		 * don't care */
+	}
+	/**
+	 * Calculate dimension for a dialog that can scroll a number of field rows
+	 * @param dialog			Dialog
+	 * @param panelField		Panel for a field
+	 * @param border			Border for a field panel
+	 * @param numberFields		Number of fields
+	 * @return					New Dialog size
+	 */
+	protected Dimension calculateScrollDialogSize(JDialog dialog, JPanel panelField, int border, int numberFields) {
+		return calculateScrollDialogSize(dialog, panelField, border, numberFields, MAX_INITIAL_DISPLAY);
 	}
 	/**
 	 * Calculate dimension for a dialog that can scroll a number of field rows
