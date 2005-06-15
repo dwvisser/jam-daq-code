@@ -387,10 +387,10 @@ public class ImpExpORNL extends AbstractImpExp {
 			final Histogram hist = ((Histogram) allHists.get(i));
 			final int sizeX = hist.getSizeX();
 			final int sizeY = hist.getSizeY(); //will be zero for 1-d
-			final int dim=hist.getDimensionality();
-			if (dim==1) {
+			final int histDim=hist.getDimensionality();
+			if (histDim==1) {
 				numHalfWords = numHalfWords + 2 * sizeX;
-			} else if (dim == 2) {
+			} else if (histDim == 2) {
 				numHalfWords = numHalfWords + 2 * sizeX
 						* sizeY;
 			} else {
@@ -451,11 +451,11 @@ public class ImpExpORNL extends AbstractImpExp {
 			dosDrr.writeFloat(0.0f); //dummy calibration
 			/* subtitle */
 			dosDrr.writeBytes(util.makeLength(hist.getTitle(), 40));
-			final int dim=hist.getDimensionality();
+			final int histDim=hist.getDimensionality();
 			/* increment disk offset for .his file */
-			if (dim==1) {
+			if (histDim==1) {
 				diskOffSet += 2 * sizeX;
-			} else if (dim==2) {
+			} else if (histDim==2) {
 				diskOffSet += 2 * sizeX * sizeY;
 			} else {
 				throw new IOException(
