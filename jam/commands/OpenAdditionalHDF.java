@@ -23,7 +23,6 @@ import javax.swing.JFileChooser;
  */
 public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncListener {
 
-	private File file=null;
 	final HDFIO	hdfio;			
 	
 	OpenAdditionalHDF(){
@@ -116,6 +115,5 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
 		notifyApp();
-		file=null;		
 	}
 }
