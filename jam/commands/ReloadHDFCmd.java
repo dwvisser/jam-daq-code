@@ -34,13 +34,12 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
 
     protected final void execute(final Object[] cmdParams) {
         final File file = null;
-        Group loadGroup;
         /*
          * FIXME KBS parse correctly if (cmdParams!=null) { file
          * =(File)cmdParams[0]; //loadGroup=(Group)cmdParams[1]; }
          */
-        loadGroup = Group.getSortGroup();
-        loadHDFFile(file, loadGroup);
+        final Group load = Group.getSortGroup();
+        loadHDFFile(file, load);
     }
 
     public void update(Observable observe, Object obj) {
