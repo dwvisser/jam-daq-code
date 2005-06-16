@@ -26,117 +26,111 @@ import javax.swing.border.EmptyBorder;
  * Displays the monitors
  * 
  * @author Ken Swartz
- *
+ * 
  */
 public class MonitorDisplay extends AbstractControl implements Observer {
-	
+
+	private final int borderHeight = 5;
+
 	private JToggleButton checkAudio;
-	private JPanel pTitles;
+
 	private JPanel pBars;
-	private final int borderHeight =5;
 
 	/**
 	 * Constructs a new monitor display dialog.
 	 */
 	public MonitorDisplay() {
 		super("Monitors Disabled", false);
-		
-		//>> dialog box to display Monitors
+		// >> dialog box to display Monitors
 		setResizable(true);
 		setLocation(20, 50);
 		Container cddisp = this.getContentPane();
 		cddisp.setLayout(new BorderLayout());
-
-		//Panel for the bars
+		// Panel for the bars
 		pBars = new JPanel(new GridLayout(0, 1, borderHeight, 5));
 		pBars.setBorder(new EmptyBorder(borderHeight, 0, borderHeight, 0));
-		//Scroll Panel
+		// Scroll Panel
 		JScrollPane scrollPane = new JScrollPane(pBars);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
-		cddisp.add(scrollPane, BorderLayout.CENTER);		
-
-		//Panel for alarm
+		scrollPane
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		cddisp.add(scrollPane, BorderLayout.CENTER);
+		// Panel for alarm
 		final JPanel pal = new JPanel();
 		cddisp.add(pal, BorderLayout.SOUTH);
 		pal.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		checkAudio = new JCheckBox("Audio Alarm", true);
 		pal.add(checkAudio);
-
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
 	}
-	/** 
-	 * Setup the display of monitors, inherited for AbstractControl
-	 */	
-	public void doSetup(){
-		JPanel pm=null;
-		int numberMonitors;
-		
-		numberMonitors = Monitor.getMonitorList().size();		
-		Iterator monitorsIter = Monitor.getMonitorList().iterator();		
-		pBars.removeAll();
 
+	private void disableMonitors() {
+		setTitle("Monitors Disabled");
+		pBars.repaint();
+	}
+
+	private void displayMonitors() {
+		// loop for each monitor check if we should sound alarm
+		for (Iterator it = Monitor.getMonitorList().iterator(); it.hasNext();) {
+			final Monitor monitor = (Monitor) it.next();
+			// If the audio on and are we taking data
+			if (checkAudio.isSelected()
+					&& JamStatus.getSingletonInstance().isAcqOn()
+					&& monitor.getAlarm() && (!monitor.isAcceptable())) {
+				Toolkit.getDefaultToolkit().beep();
+			}
+		}
+		// display monitors
+		pBars.repaint();
+	}
+
+	/**
+	 * Setup the display of monitors, inherited for AbstractControl
+	 */
+	public void doSetup() {
+		JPanel pm = null;
+		int numberMonitors;
+		numberMonitors = Monitor.getMonitorList().size();
+		Iterator monitorsIter = Monitor.getMonitorList().iterator();
+		pBars.removeAll();
 		while (monitorsIter.hasNext()) {
 			Monitor monitor = (Monitor) monitorsIter.next();
 			pm = new JPanel();
 			pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 			pBars.add(pm);
-			final JLabel labelDisp =
-				new JLabel(monitor.getName(), JLabel.RIGHT);
+			final JLabel labelDisp = new JLabel(monitor.getName(), JLabel.RIGHT);
 			pm.add(labelDisp);
 			final PlotBar plotBar = new PlotBar(monitor);
 			pm.add(plotBar);
 		}
-		
 		pack();
-		if (numberMonitors>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pm, borderHeight, numberMonitors);
+		if (numberMonitors > 0) {
+			Dimension dialogDim = calculateScrollDialogSize(this, pm,
+					borderHeight, numberMonitors);
 			setSize(dialogDim);
 		}
-
 	}
-	
-	private void displayMonitors() {
-		//loop for each monitor check if we should sound alarm
-		for (Iterator it = Monitor.getMonitorList().iterator();
-			it.hasNext();
-			) {
-			final Monitor monitor = (Monitor) it.next();		
-			//If the audio on and are we taking data
-			if (checkAudio.isSelected()
-				&& JamStatus.getSingletonInstance().isAcqOn()
-				&& monitor.getAlarm()
-				&& (!monitor.isAcceptable())) {
-				Toolkit.getDefaultToolkit().beep();
-			}
-		}
-		//display monitors
-		pBars.repaint();
 
-	}
-	
 	private void enableMonitors() {
 		setTitle("Monitors Enabled");
-		pBars.repaint();		
+		pBars.repaint();
 	}
-	private void disableMonitors() {
-		setTitle("Monitors Disabled");
-		pBars.repaint();		
-	}
-	
-	/** Implementation of Observable interface.
-	 * @param observable not sure
-	 * @param o not sure
+
+	/**
+	 * Implementation of Observable interface.
+	 * 
+	 * @param observable
+	 *            not sure
+	 * @param o
+	 *            not sure
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
 		if (be.getCommand() == BroadcastEvent.Command.MONITORS_UPDATE) {
 			displayMonitors();
-		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED)  {
+		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_ENABLED) {
 			enableMonitors();
-		}else if (be.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED)  {
+		} else if (be.getCommand() == BroadcastEvent.Command.MONITORS_DISABLED) {
 			disableMonitors();
 		}
 	}
-
 }
