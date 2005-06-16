@@ -1,9 +1,9 @@
 package jam.data.control;
+
 import jam.data.DataParameter;
 import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 import jam.util.FileUtilities;
-import jam.util.StringUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -27,42 +27,42 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
 /**
- * Sets and displays the Parameters (data.Parameters.class)
- * used for sorting
- *
- * @version	0.5 October 98
- * @author 	Ken Swartz
- *
+ * Sets and displays the Parameters (data.Parameters.class) used for sorting
+ * 
+ * @version 0.5 October 98
+ * @author Ken Swartz
+ * 
  */
-public final class ParameterControl
-	extends AbstractControl {
+public final class ParameterControl extends AbstractControl {
 
-	private final String FILE_EXTENSION ="par";
-	
-	//widgets for each parameter
-	private JScrollPane scrollPane; 	
-	private JPanel pCenter;
-	private JPanel[] pParam;
-	private JLabel[] labelParam;
-	private JTextField[] textParam;
-	private final int borderHeight=5;
+	private final int borderHeight = 5;
+
+	private final String FILE_EXTENSION = "par";
+
+	private final FileUtilities FILE_UTIL = FileUtilities.getInstance();
+
 	private String invalidNames;
-	private File lastFile; //last file referred to in a JFileChooser	
 
-	final StringUtilities stringUtil=StringUtilities.instance();
-	
+	private JLabel[] labelParam;
+
+	private File lastFile; // last file referred to in a JFileChooser
+
 	private final MessageHandler messageHandler;
-	
-    private final FileUtilities FILE_UTIL = FileUtilities.getInstance();	
-	
+
+	private JPanel pCenter;
+
+	private JPanel[] pParam;
+
+	// widgets for each parameter
+	private JScrollPane scrollPane;
+
+	private JTextField[] textParam;
+
 	/**
 	 * Constructs a new parameter dialog.
 	 * @param messageHandler where to print messages
@@ -158,29 +158,52 @@ public final class ParameterControl
 		});
 		doSetup();
 	}
-	public void setVisible(boolean state) {
-		if (state) {
-			read();
+
+	/**
+	 * Check all text fields are numbers
+	 * 
+	 * @return
+	 */
+	private boolean checkTextAreNumbers() {
+		String textValue;
+		boolean allValid = true;
+		// Check all fields are numbers
+		invalidNames = "";
+		for (int i = 0; i < textParam.length; i++) {
+			try {
+				textValue = textParam[i].getText().trim();
+				if (textValue.equals("")) {
+					textValue = "0.0";
+					textParam[i].setText(textValue);
+				}
+			} catch (NumberFormatException nfe) {
+				allValid = false;
+				if (!invalidNames.equals("")) {
+					invalidNames = invalidNames + ", "
+							+ labelParam[i].getText();
+					;
+				} else {
+					invalidNames = labelParam[i].getText();
+				}
+			}
 		}
-		super.setVisible(state);
+		return allValid;
 	}
+
 	/**
 	 * Setup the display dialog box.
-	 *
+	 * 
 	 */
 	public void doSetup() {
 		DataParameter currentParameter;
 		Iterator parameterIter;
 		int numberParameters;
 		int count;
-
 		numberParameters = DataParameter.getParameterList().size();
-		//Container cddisp = ddisp.getContentPane();
-		//cddisp.removeAll();
 		pCenter.removeAll();
 		// we have some elements in the parameter list
 		if (numberParameters != 0) {
-			//widgets for each parameter
+			// widgets for each parameter
 			pParam = new JPanel[numberParameters];
 			labelParam = new JLabel[numberParameters];
 			textParam = new JTextField[numberParameters];
@@ -188,9 +211,11 @@ public final class ParameterControl
 			count = 0;
 			while (parameterIter.hasNext()) {
 				currentParameter = (DataParameter) parameterIter.next();
-				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
+						0));
 				pCenter.add(pParam[count]);
-				labelParam[count] =new JLabel(currentParameter.getName().trim(), JLabel.RIGHT);
+				labelParam[count] = new JLabel(currentParameter.getName()
+						.trim(), JLabel.RIGHT);
 				pParam[count].add(labelParam[count]);
 				textParam[count] = new JTextField("");
 				textParam[count].setColumns(10);
@@ -200,26 +225,155 @@ public final class ParameterControl
 			}
 		}
 		pack();
-		if (numberParameters>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pParam[0], borderHeight, numberParameters);
+		if (numberParameters > 0) {
+			Dimension dialogDim = calculateScrollDialogSize(this, pParam[0],
+					borderHeight, numberParameters);
 			setSize(dialogDim);
 		}
-		
 	}
+
+	private void load() {
+		JFrame frame = null;
+		String name = null;
+		String listNotLoaded = "";
+
+		JFileChooser fd = new JFileChooser(lastFile);
+		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fd.setFileFilter(new ExtensionFileFilter(
+				new String[] { FILE_EXTENSION }, "List Files (*."
+						+ FILE_EXTENSION + ")"));
+		int option = fd.showOpenDialog(frame);
+		// save current values
+		if (option == JFileChooser.APPROVE_OPTION
+				&& fd.getSelectedFile() != null) {
+			File inputFile = fd.getSelectedFile();
+			try {
+				// Load properties from file
+				Properties saveProperties = new Properties();
+				FileInputStream fos = new FileInputStream(inputFile);
+				saveProperties.load(fos);
+				// copy from properties to parameters
+				final Iterator iterParameter = DataParameter.getParameterList()
+						.iterator();
+				while (iterParameter.hasNext()) {
+					DataParameter parameter = (DataParameter) iterParameter
+							.next();
+					name = parameter.getName().trim();
+					if (saveProperties.containsKey(name)) {
+						String valueString = (String) saveProperties.get(name);
+						double valueDouble = Double.parseDouble(valueString);
+						parameter.setValue(valueDouble);
+					} else {
+						if (listNotLoaded.equals("")) {
+							listNotLoaded = name;
+						} else {
+							listNotLoaded += ", " + name;
+						}
+					}
+				}
+				read();
+				messageHandler.messageOutln("Load Parameters from file "
+						+ inputFile.getName());
+				if (!listNotLoaded.equals("")) {
+					messageHandler.warningOutln("Did not load parameter(s) "
+							+ listNotLoaded + ".");
+				}
+			} catch (IOException ioe) {
+				messageHandler
+						.errorOutln("Loading Parameters. Cannot write to file "
+								+ inputFile.getName());
+			} catch (NumberFormatException nfe) {
+				messageHandler
+						.errorOutln("Loading Parameters. Cannot convert value for Parameter: "
+								+ name);
+			}
+
+		}
+	}
+
 	/**
-	 * Set the parameter values using the values
-	 * in the text fields
-	 *
+	 * Read the values from the Parameter Objects and display them.
+	 */
+	public void read() {
+		if (DataParameter.getParameterList().size() != 0) {
+			DataParameter.getParameterList().size();// number of parameters
+			final Iterator enumParameter = DataParameter.getParameterList()
+					.iterator();
+			int count = 0;
+			while (enumParameter.hasNext()) {
+				final DataParameter currentParameter = (DataParameter) enumParameter
+						.next();
+				textParam[count].setText(String.valueOf(currentParameter
+						.getValue()));
+				count++;
+			}
+		}
+	}
+
+	/**
+	 * Save the parameters to a file
+	 * 
+	 */
+	private void save() {
+
+		JFrame frame = null;
+
+		set();
+
+		JFileChooser fd = new JFileChooser(lastFile);
+		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fd.setFileFilter(new ExtensionFileFilter(
+				new String[] { FILE_EXTENSION }, "List Files (*."
+						+ FILE_EXTENSION + ")"));
+		int option = fd.showSaveDialog(frame);
+		// save current values
+		if (option == JFileChooser.APPROVE_OPTION
+				&& fd.getSelectedFile() != null) {
+
+			File selectFile = fd.getSelectedFile();
+			File outputFile = FILE_UTIL.changeExtension(selectFile,
+					FILE_EXTENSION, FileUtilities.APPEND_ONLY);
+			if (FILE_UTIL.overWriteExistsConfirm(outputFile)) {
+				Properties saveProperties = new Properties();
+				final Iterator iterParameter = DataParameter.getParameterList()
+						.iterator();
+				while (iterParameter.hasNext()) {
+					DataParameter parameter = (DataParameter) iterParameter
+							.next();
+					String valueString = (new Double(parameter.getValue()))
+							.toString();
+					saveProperties.put(parameter.getName().trim(), valueString);
+				}
+				try {
+					FileOutputStream fos = new FileOutputStream(outputFile);
+					saveProperties.store(fos, "Jam Sort Parameters");
+					messageHandler.messageOutln("Saved Parameters to file "
+							+ outputFile.getName());
+				} catch (FileNotFoundException fnfe) {
+					messageHandler
+							.errorOutln("Saving Parameters. Cannot create file "
+									+ outputFile.getName());
+				} catch (IOException ioe) {
+					messageHandler
+							.errorOutln("Saving Parameters. Cannot write to file "
+									+ outputFile.getName());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Set the parameter values using the values in the text fields
+	 * 
 	 */
 	public void set() {
 		DataParameter currentParameter = null;
 		int count;
 		String textValue;
-
-		if (checkTextAreNumbers()) {		
-			Iterator parameterIter = DataParameter.getParameterList().iterator();
-			
-			try {			
+		if (checkTextAreNumbers()) {
+			Iterator parameterIter = DataParameter.getParameterList()
+					.iterator();
+			try {
 				count = 0;
 				while (parameterIter.hasNext()) {
 					currentParameter = (DataParameter) parameterIter.next();
@@ -230,159 +384,29 @@ public final class ParameterControl
 				read();
 			} catch (NumberFormatException nfe) {
 				if (currentParameter != null) {
-					messageHandler.errorOutln(
-						"Not a valid number for parameter "+ currentParameter.getName());
+					messageHandler
+							.errorOutln("Not a valid number for parameter "
+									+ currentParameter.getName());
 				} else {
-					messageHandler.errorOutln("Not a valid number, null parameter");
+					messageHandler
+							.errorOutln("Not a valid number, null parameter");
 				}
 			}
 		} else {
-			
+
 			if (!invalidNames.equals("")) {
-				messageHandler.errorOutln("Parameters not set, not a number for parameter(s) "+invalidNames+".");
+				messageHandler
+						.errorOutln("Parameters not set, not a number for parameter(s) "
+								+ invalidNames + ".");
 			}
 
 		}
 	}
 
-	/**
-	 * Read the values from the Parameter Objects
-	 * and display them.
-	 */
-	public void read() {
-		if (DataParameter.getParameterList().size() != 0) {
-			DataParameter.getParameterList().size();//number of parameters
-			final Iterator enumParameter =
-			DataParameter.getParameterList().iterator();
-			int count = 0;
-			while (enumParameter.hasNext()) {
-				final DataParameter currentParameter = (DataParameter) enumParameter.next();
-				textParam[count].setText(
-					String.valueOf(currentParameter.getValue()));
-				count++;
-			}
+	public void setVisible(boolean state) {
+		if (state) {
+			read();
 		}
-	}
-	/**
-	 * Save the parameters to a file
-	 *
-	 */
-	private void save() {
-		
-		JFrame frame =null;
-		
-		set();
-		
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { FILE_EXTENSION },
-				"List Files (*."+FILE_EXTENSION+")"));
-		int option = fd.showSaveDialog(frame);
-		// save current values 
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-
-			File selectFile = fd.getSelectedFile();			
-			File outputFile =FILE_UTIL.changeExtension(selectFile, FILE_EXTENSION, FileUtilities.APPEND_ONLY );
-			if (FILE_UTIL.overWriteExistsConfirm(outputFile)) {
-				Properties saveProperties = new Properties();			
-				final Iterator iterParameter =
-					DataParameter.getParameterList().iterator();
-				while (iterParameter.hasNext()) {
-					DataParameter parameter= (DataParameter)iterParameter.next();
-					String valueString = (new Double(parameter.getValue())).toString();
-					saveProperties.put(parameter.getName().trim(),valueString );
-				}
-				try {
-					FileOutputStream fos = new FileOutputStream(outputFile);
-					saveProperties.store(fos, "Jam Sort Parameters");
-					messageHandler.messageOutln("Saved Parameters to file "+outputFile.getName());				
-				} catch (FileNotFoundException fnfe) {
-					messageHandler.errorOutln("Saving Parameters. Cannot create file "+outputFile.getName());
-				} catch (IOException ioe) {				
-					messageHandler.errorOutln("Saving Parameters. Cannot write to file "+outputFile.getName());				
-				}
-			}
-		}
-	}
-
-	private void load() {
-		JFrame frame =null;		
-		String name=null;
-		String listNotLoaded="";
-		
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] {FILE_EXTENSION },
-				"List Files (*."+FILE_EXTENSION+")"));
-		int option = fd.showOpenDialog(frame);
-		// save current values 
-		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			File inputFile =fd.getSelectedFile(); 
-			try {			
-				//Load properties from file
-				Properties saveProperties = new Properties();
-				FileInputStream fos = new FileInputStream( inputFile);
-				saveProperties.load(fos);					
-				//copy from properties to parameters
-				final Iterator iterParameter =
-					DataParameter.getParameterList().iterator();
-				while (iterParameter.hasNext()) {
-					DataParameter parameter= (DataParameter)iterParameter.next();
-					name = parameter.getName().trim();
-					if (saveProperties.containsKey(name)) {
-						String valueString = (String) saveProperties.get(name);						
-						double valueDouble = Double.parseDouble(valueString);
-						parameter.setValue(valueDouble);						
-					} else {
-						if (listNotLoaded.equals("")) {
-							listNotLoaded=name;							
-						} else {
-							listNotLoaded+=", "+name;							
-						}
-					}
-				}
-				read();
-				messageHandler.messageOutln("Load Parameters from file "+inputFile.getName());
-				if (!listNotLoaded.equals("")){
-					messageHandler.warningOutln("Did not load parameter(s) "+listNotLoaded+".");
-				}
-			} catch (IOException ioe) {				
-				messageHandler.errorOutln("Loading Parameters. Cannot write to file "+inputFile.getName());				
-			} catch (NumberFormatException nfe) {
-				messageHandler.errorOutln("Loading Parameters. Cannot convert value for Parameter: "+name);
-			}					
-			
-		}
-	}
-	/**
-	 * Check all text fields are numbers
-	 * @return
-	 */
-	private boolean checkTextAreNumbers() {
-		String textValue;
-		boolean allValid =true;
-		//Check all fields are numbers
-		invalidNames ="";
-		for (int i=0;i<textParam.length;i++) {
-			try {
-				textValue = textParam[i].getText().trim();
-				if (textValue.equals("")) {
-					textValue ="0.0";
-					textParam[i].setText(textValue);	
-				}
-				double value= Double.parseDouble(textValue);					
-			} catch (NumberFormatException nfe) {
-				allValid=false;
-				if (!invalidNames.equals("")) {												
-					invalidNames = invalidNames+", "+labelParam[i].getText();; 	
-				}else {
-					invalidNames = labelParam[i].getText();
-				}
-			}			
-		}
-		
-		return allValid;
+		super.setVisible(state);
 	}
 }
