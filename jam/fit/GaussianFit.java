@@ -115,38 +115,38 @@ public final class GaussianFit extends NonLinearFit implements
      */
     public void estimate() {
         orderParameters();
-        final int minCH = getParameter(FIT_LOW).getIntValue();
-        final int maxCH = getParameter(FIT_HIGH).getIntValue();
-        final double centroid = getParameter(CENTROID).getDoubleValue();
-        double width = getParameter(WIDTH).getDoubleValue();
+        final int lowChan = getParameter(FIT_LOW).getIntValue();
+        final int highChan = getParameter(FIT_HIGH).getIntValue();
+        final double center = getParameter(CENTROID).getDoubleValue();
+        double peakWidth = getParameter(WIDTH).getDoubleValue();
         double backLevel = getParameter("A").getDoubleValue();
-        double area = getParameter(AREA).getDoubleValue();
+        double intensity = getParameter(AREA).getDoubleValue();
         /* estimated level of background */
         if (getParameter("A").isEstimate()) {
-            backLevel = (counts[minCH] + counts[maxCH]) * 0.5;
+            backLevel = (counts[lowChan] + counts[highChan]) * 0.5;
             getParameter("A").setValue(backLevel);
             textInfo.messageOutln("Estimated A = " + backLevel);
         }
         /* sum up counts */
         if (getParameter(AREA).isEstimate()) {
-            area = 0.0;
-            for (int i = minCH; i <= maxCH; i++) {
-                area += counts[i] - backLevel;
+            intensity = 0.0;
+            for (int i = lowChan; i <= highChan; i++) {
+                intensity += counts[i] - backLevel;
             }
-            getParameter(AREA).setValue(area);
-            textInfo.messageOutln("Estimated area = " + area);
+            getParameter(AREA).setValue(intensity);
+            textInfo.messageOutln("Estimated area = " + intensity);
         }
         /* find width */
         double variance = 0.0;
         if (getParameter(WIDTH).isEstimate()) {
-            for (int i = minCH; i <= maxCH; i++) {
-                final double distance = i - centroid;
-                variance += (counts[i] / area) * (distance * distance);
+            for (int i = lowChan; i <= highChan; i++) {
+                final double distance = i - center;
+                variance += (counts[i] / intensity) * (distance * distance);
             }
             final double sigma = Math.sqrt(variance);
-            width = SIG_TO_FWHM * sigma;
-            getParameter(WIDTH).setValue(width);
-            textInfo.messageOutln("Estimated width = " + width);
+            peakWidth = SIG_TO_FWHM * sigma;
+            getParameter(WIDTH).setValue(peakWidth);
+            textInfo.messageOutln("Estimated width = " + peakWidth);
         }
     }
 
