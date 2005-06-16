@@ -1,7 +1,6 @@
 package jam.data.control;
 
 import jam.commands.ScalersCmd;
-import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -27,30 +26,30 @@ import javax.swing.border.EmptyBorder;
  */
 public class ScalerZero extends AbstractControl {
 
-	private transient final JCheckBox chkDisable;
 	private transient final JButton bzero2;
+
+	private transient final JCheckBox chkDisable;
+
 	private final ScalersCmd scalersCmd;
-	private MessageHandler msgHandler;
 
 	/**
 	 * Constructs a new dialog for zeroing scaler values.
 	 */
 	public ScalerZero() {
 		super("Zero Scalers", true);
-		msgHandler = STATUS.getMessageHandler();
-		scalersCmd =new ScalersCmd();
+		scalersCmd = new ScalersCmd();
 		Container dzc = getContentPane();
 		setResizable(false);
-		setLocation(20, 50); 
+		setLocation(20, 50);
 		final JPanel pZero = new JPanel(new GridLayout(1, 0, 10, 10));
 		Border border = new EmptyBorder(10, 10, 10, 10);
 		pZero.setBorder(border);
-		
+
 		final JPanel pButton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pZero.add(pButton);
 		bzero2 = new JButton("Zero");
-		bzero2.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
+		bzero2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
 				chkDisable.setSelected(true);
 				bzero2.setEnabled(false);
 				zero();
@@ -58,12 +57,12 @@ public class ScalerZero extends AbstractControl {
 			}
 		});
 		bzero2.setEnabled(false);
-		pButton.add(bzero2);	
-		
+		pButton.add(bzero2);
+
 		chkDisable = new JCheckBox("Disable Zero", true);
-		chkDisable.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent event){
-				if(chkDisable.isSelected()){
+		chkDisable.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent event) {
+				if (chkDisable.isSelected()) {
 					bzero2.setEnabled(false);
 				} else {
 					bzero2.setEnabled(true);
@@ -71,7 +70,7 @@ public class ScalerZero extends AbstractControl {
 			}
 		});
 		pZero.add(chkDisable);
-		
+
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent event) {
 				dispose();
@@ -82,17 +81,17 @@ public class ScalerZero extends AbstractControl {
 	}
 
 	/**
-	 * zero scalers, call broadcast which will sent it to
-	 * the class that will zero the camac crate scalers.
-	 */
-	private void zero() {
-		scalersCmd.zeroScalers();
-	}
-
-	/**
 	 * @see jam.data.control.AbstractControl#doSetup()
 	 */
 	public void doSetup() {
 		/* nothing to set up */
+	}
+
+	/**
+	 * zero scalers, call broadcast which will sent it to the class that will
+	 * zero the camac crate scalers.
+	 */
+	private void zero() {
+		scalersCmd.zeroScalers();
 	}
 }
