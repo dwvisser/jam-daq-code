@@ -296,15 +296,15 @@ public class JamProperties {
 			 * for normal use jam.home should be defined by -D parameter in command line
 			 * try jam.home */
 			if (System.getProperty(JAM_HOME) != null) {
-				final File configFile = new File(
+				final File file = new File(
 					System.getProperty(JAM_HOME),FILE_CONFIG);
-				fileName = configFile.getPath();
-				if (configFile.exists()) {
-					fis = new FileInputStream(configFile);
+				fileName = file.getPath();
+				if (file.exists()) {
+					fis = new FileInputStream(file);
 					jamProperties.load(fis);
 					configLoadMessage =
 						"Read configuration properties from file: "
-							+ configFile.getPath();
+							+ file.getPath();
 					//could not find default		    		
 				} else {
 					configLoadWarning =
@@ -418,20 +418,20 @@ public class JamProperties {
 	/**
 	 * Request to print output messages to console.
 	 * 
-	 * @param msgHandler the console
+	 * @param console the console
 	 */
-	public void outputMessages(MessageHandler msgHandler) {
+	public void outputMessages(MessageHandler console) {
 		if (loadError != NO_ERRORS) {
-			msgHandler.warningOutln(loadError);
+			console.warningOutln(loadError);
 		}
 		if (configLoadWarning != NO_WARNINGS) {
-			msgHandler.warningOutln(configLoadWarning);
+			console.warningOutln(configLoadWarning);
 		}
-		msgHandler.messageOutln(configLoadMessage);
+		console.messageOutln(configLoadMessage);
 		if (userLoadWarning != NO_WARNINGS) {
-			msgHandler.warningOutln(userLoadWarning);
+			console.warningOutln(userLoadWarning);
 		}
-		msgHandler.messageOutln(userLoadMessage);
+		console.messageOutln(userLoadMessage);
 	}
 
 	/**
