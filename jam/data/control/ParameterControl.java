@@ -120,22 +120,6 @@ public final class ParameterControl
 		pLower.add(pButtonsBottom);
 		JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsBottom.add(pOKApplyCancel);
-		/*
-		JButton bread = new JButton("Read");
-		bread.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				read();
-			}
-		});
-		pOKApplyCancel.add(bread);
-		JButton bset = new JButton("Set");
-		bset.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
-				set();
-			}
-		});
-		pOKApplyCancel.add(bset);
-		*/
 		
 		final JButton brecall = new JButton("Recall");
 		brecall.addActionListener(new ActionListener() {
