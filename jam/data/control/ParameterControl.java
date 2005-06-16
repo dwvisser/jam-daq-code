@@ -65,62 +65,60 @@ public final class ParameterControl extends AbstractControl {
 
 	/**
 	 * Constructs a new parameter dialog.
-	 * @param messageHandler where to print messages
+	 * 
+	 * @param messageHandler
+	 *            where to print messages
 	 */
-	public ParameterControl(
-		MessageHandler messageHandler) {
+	public ParameterControl(MessageHandler messageHandler) {
 		super("Sort Parameters", true);
 		this.messageHandler = messageHandler;
 
 		// dialog box to display Parameters
-		setResizable(true);		
+		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
 
-		//Central Panel
-		pCenter =new JPanel(new GridLayout(0,1,borderHeight,5));
-		pCenter.setBorder(new EmptyBorder(borderHeight,10,borderHeight,10));
-		
-		//Scroll Panel
+		// Central Panel
+		pCenter = new JPanel(new GridLayout(0, 1, borderHeight, 5));
+		pCenter.setBorder(new EmptyBorder(borderHeight, 10, borderHeight, 10));
+
+		// Scroll Panel
 		scrollPane = new JScrollPane(pCenter);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		scrollPane
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 
-		//Buttons for display dialog
+		// Buttons for display dialog
 		JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
-		pLower.setBorder(new EmptyBorder(5,0,0,0));
+		pLower.setBorder(new EmptyBorder(5, 0, 0, 0));
 		cddisp.add(pLower, BorderLayout.SOUTH);
-		
+
 		JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pLower.add(pButtonsTop);		
-		JPanel pLoadSave =  new JPanel(new GridLayout(1, 0, 5, 5));
-		pButtonsTop.add(pLoadSave);		
-		Border etchBorder = new EtchedBorder();
-		Border titledBorder =  new TitledBorder(etchBorder, "File");
-		//pLoadSave.setBorder(titledBorder);
-		
+		pLower.add(pButtonsTop);
+		JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
+		pButtonsTop.add(pLoadSave);
 		JButton bload = new JButton("Load\u2026");
-		bload.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
+		bload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				load();
 			}
 		});
 		pLoadSave.add(bload);
-		
+
 		JButton bsave = new JButton("Save\u2026");
-		bsave.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ae){
+		bsave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
 				save();
 			}
 		});
 		pLoadSave.add(bsave);
-				
+
 		JPanel pButtonsBottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pLower.add(pButtonsBottom);
 		JPanel pOKApplyCancel = new JPanel(new GridLayout(1, 0, 5, 5));
 		pButtonsBottom.add(pOKApplyCancel);
-		
+
 		final JButton brecall = new JButton("Recall");
 		brecall.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -131,7 +129,7 @@ public final class ParameterControl extends AbstractControl {
 		final JButton bok = new JButton("OK");
 		bok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				set();				
+				set();
 				dispose();
 			}
 		});
@@ -139,18 +137,18 @@ public final class ParameterControl extends AbstractControl {
 		final JButton bapply = new JButton("Apply");
 		bapply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				set();			}
+				set();
+			}
 		});
 		pOKApplyCancel.add(bapply);
 		final JButton bcancel = new JButton("Cancel");
 		bcancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				dispose();				
+				dispose();
 			}
 		});
 		pOKApplyCancel.add(bcancel);
-		
-		
+
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				dispose();
