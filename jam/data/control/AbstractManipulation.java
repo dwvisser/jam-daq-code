@@ -29,7 +29,7 @@ abstract class AbstractManipulation extends AbstractControl {
 	protected static final int TEXT_LENGTH=15;
 	
 	/** String to prepend to new histogram group in combobox */ 
-	final static String NEW_HIST = "NEW: ";
+	protected final static String NEW_HIST = "NEW: ";
 	
 	/** String to append to new histogram group in combobox */	
 	private final static String WILD_CARD="/.";	
