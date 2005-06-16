@@ -85,7 +85,7 @@ public final class VDataDescription extends AbstractData {
     /**
      * Offset in bytes of field.
      */
-    private short[] offset;
+    private short[] fieldOffsets;
 
     /**
      * Order (number of separate items of _type) of field.
@@ -129,19 +129,19 @@ public final class VDataDescription extends AbstractData {
         this.name = name;
         dataTypeName = classtype;
         isize = new short[nfields];
-        offset = new short[nfields];
+        fieldOffsets = new short[nfields];
         ivsize = 0;
         for (int i = 0; i < nfields; i++) {
             isize[i] = getColumnByteLength(types[i], order[i]);
             ivsize += isize[i];
         }
-        offset[0] = 0;
+        fieldOffsets[0] = 0;
         // see p. 6-42 HDF 4.1r2 specs
         int byteLength = 23 + 10 * nfields + name.length()
                 + dataTypeName.length();
         byteLength += fldnm[0].length();
         for (int i = 1; i < nfields; i++) {
-            offset[i] = (short) (offset[i - 1] + isize[i - 1]);
+            fieldOffsets[i] = (short) (fieldOffsets[i - 1] + isize[i - 1]);
             byteLength += fldnm[i].length();
         }
         bytes = ByteBuffer.allocate(byteLength);
@@ -156,7 +156,7 @@ public final class VDataDescription extends AbstractData {
             bytes.putShort(isize[i]);
         }
         for (int i = 0; i < nfields; i++) {
-            bytes.putShort(offset[i]);
+            bytes.putShort(fieldOffsets[i]);
         }
         for (int i = 0; i < nfields; i++) {
             bytes.putShort(order[i]);
@@ -218,7 +218,7 @@ public final class VDataDescription extends AbstractData {
         nfields = bytes.getShort();
         datatypes = new short[nfields];
         isize = new short[nfields];
-        offset = new short[nfields];
+        fieldOffsets = new short[nfields];
         order = new short[nfields];
         fldnm = new String[nfields];
         for (int i = 0; i < nfields; i++) {
@@ -228,7 +228,7 @@ public final class VDataDescription extends AbstractData {
             isize[i] = bytes.getShort();
         }
         for (int i = 0; i < nfields; i++) {
-            offset[i] = bytes.getShort();
+            fieldOffsets[i] = bytes.getShort();
         }
         for (int i = 0; i < nfields; i++) {
             order[i] = bytes.getShort();
@@ -311,9 +311,9 @@ public final class VDataDescription extends AbstractData {
     }
 
     short[] getDataOffsets() {
-        final int len = offset.length;
+        final int len = fieldOffsets.length;
         final short[] rval = new short[len];
-        System.arraycopy(offset, 0, rval, 0, len);
+        System.arraycopy(fieldOffsets, 0, rval, 0, len);
         return rval;
     }
 

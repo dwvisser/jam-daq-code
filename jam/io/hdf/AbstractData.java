@@ -302,12 +302,12 @@ public abstract class AbstractData implements Constants {
 	 * @param	r   The unique value specifying the type of data object.
 	 * @throws IllegalArgumentException if the data is null or empty
 	 */
-	void init(byte[] data, short tag, short ref) {
+	void init(byte[] data, short tagType, short reference) {
 	    if (data == null || data.length==0){
 	        throw new IllegalArgumentException("Can't init DataObject with empty data.");
 	    }
-		setTag(tag);
-		setRef(ref);
+		setTag(tagType);
+		setRef(reference);
 		bytes = ByteBuffer.wrap(data);
 	}
 
@@ -319,11 +319,11 @@ public abstract class AbstractData implements Constants {
 	 * @param	offset	    The location in <code>file</code>
 	 * @param	reference   The unique value specifying the type of data object.
 	 */
-	void init(int offset, int length, short tag, short reference)  {
-		this.tag=tag;
+	void init(int byteOffset, int len, short tagType, short reference)  {
+		tag=tagType;
 		setRef(reference);
-		this.offset = offset;
-		this.length = length;
+		offset = byteOffset;
+		length = len;
 	}
 	
 	private final void setTag(short newTag){

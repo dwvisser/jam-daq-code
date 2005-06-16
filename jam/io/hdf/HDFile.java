@@ -46,8 +46,6 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	/** Count number of data object that have been lazy loaded */
 	private int lazyCount;
 	
-	private int refCounter;
-	
 	/**
 	 * variable for marking position in file
 	 */
@@ -214,19 +212,15 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * 
 	 *  @exception HDFException unrecoverable error
 	 */
-	public void readFile() throws HDFException {
-		
+	public void readFile() throws HDFException {		
 		int numObjSteps;
 		int countObjct=0;		
 		lazyLoadNum=0;
 		lazyCount=0;	
-		refCounter=0;
-		
 		try {
 			if (!checkMagicWord()) {
 				throw new HDFException("Not an hdf file");
-			}
-			
+			}		
 			if (lazyLoadData)
 				numObjSteps=getNumberObjctProgressStep(countHDFOjects(), FRACTION_TIME_READ_NOT_HISTOGRAM);
 			else 
@@ -286,7 +280,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @param ref
 	 * @return
 	 */
-	private void debugDumpDD(short tag, short ref, int offset, int length) throws IOException {
+	void debugDumpDD(short tag, short ref, int offset, int length) throws IOException {
 		mark();
 		seek(offset);
 		System.out.println("Read Tag "+tag+" ref "+ref+" offset "+offset+" length "+length );		

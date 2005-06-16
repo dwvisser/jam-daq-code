@@ -48,10 +48,10 @@ final class NumericalDataGroup extends AbstractData {
         final int numItems = bytes.capacity() / 4;
         elements = new ArrayList(numItems);
         for (int i = 0; i < numItems; i++) {
-            final short tag = bytes.getShort();
-            final short ref = bytes.getShort();
+            final short tagType = bytes.getShort();
+            final short reference = bytes.getShort();
             /* look up tag/ref in file and add object */
-            addDataObject(getObject(tag, ref));
+            addDataObject(getObject(tagType, reference));
         }
     }
 

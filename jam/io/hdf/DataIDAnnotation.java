@@ -98,10 +98,10 @@ final class DataIDAnnotation extends AbstractData {
 	 */
 	protected void interpretBytes() {
         bytes.position(0);
-        final short tag = bytes.getShort();
-        final short ref = bytes.getShort();
+        final short tagType = bytes.getShort();
+        final short reference = bytes.getShort();
         note=getString(bytes.remaining());
-        object = getObject(tag, ref);
+        object = getObject(tagType, reference);
     }
 
 	String getNote() {
