@@ -41,11 +41,11 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
      * 
      * @param file
      *            a file reference or null
-     * @param loadGroup
+     * @param load
      * @return whether file was read
      */
-    protected final boolean loadHDFFile(File file, Group loadGroup) {
-        this.loadGroup = loadGroup;
+    protected final boolean loadHDFFile(File file, Group load) {
+        loadGroup = load;
         final boolean fileRead;
         if (file == null) {//No file given
             final JFileChooser jfile = new JFileChooser(HDFIO
@@ -58,12 +58,12 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
                 final File selectedFile = jfile.getSelectedFile();
                 hdfio.setListener(this);
                 fileRead = hdfio
-                        .readFile(fileOpenMode, selectedFile, loadGroup);
+                        .readFile(fileOpenMode, selectedFile, load);
             } else {
                 fileRead = false;
             }
         } else {
-            fileRead = hdfio.readFile(fileOpenMode, file, loadGroup);
+            fileRead = hdfio.readFile(fileOpenMode, file, load);
         }
         return fileRead;
     }
