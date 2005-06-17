@@ -17,7 +17,7 @@ import javax.swing.JToolBar;
  * @author Ken Swartz
  *
  */
-public class SummaryTableToolbar extends JToolBar {
+class SummaryTableToolbar extends JToolBar {
 
 	private JCheckBox chkShowScaler; 
 	
@@ -25,16 +25,11 @@ public class SummaryTableToolbar extends JToolBar {
 	
 	private JCheckBox chkShowGate;
 	
-	private SummaryTable summaryTable;
-	
 	private SummaryTableModel summaryTableModel;
 	
-	public SummaryTableToolbar(SummaryTable sm, SummaryTableModel stm) {
-		summaryTable = sm;
-		summaryTableModel=stm;
-		
+	SummaryTableToolbar(SummaryTableModel stm) {
+		summaryTableModel=stm;		
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
-		
 		final JButton bupdate = iUpdate == null ? 
 				new JButton(getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
 		this.add(bupdate);				
@@ -45,20 +40,7 @@ public class SummaryTableToolbar extends JToolBar {
 				refresh();
 			}
 		});
-
 		addSeparator();
-		
-		/*
-		final JToggleButton bShowScaler =new JToggleButton("Scalers");
-		add(bShowScaler);		
-		
-		final JToggleButton bShowHistogram =new JToggleButton("Histograms");
-		add(bShowHistogram);		
-		
-		final JToggleButton bShowGate =new JToggleButton("Gates");
-		add(bShowGate);		
-		*/
-				
 		chkShowScaler =new JCheckBox("Scalers");
 		chkShowScaler.setSelected(true);
 		chkShowScaler.addActionListener(new ActionListener() {
@@ -66,8 +48,7 @@ public class SummaryTableToolbar extends JToolBar {
 				refresh();
 			}
 		});
-		add(chkShowScaler);
-		
+		add(chkShowScaler);		
 		chkShowHistogram =new JCheckBox("Histograms");
 		chkShowHistogram.setSelected(true);
 		chkShowHistogram.addActionListener(new ActionListener() {
@@ -75,9 +56,7 @@ public class SummaryTableToolbar extends JToolBar {
 				refresh();
 			}
 		});
-		
 		add(chkShowHistogram);		
-		
 		chkShowGate =new JCheckBox("Gates");
 		chkShowGate.setSelected(true);
 		chkShowGate.addActionListener(new ActionListener() {
@@ -85,10 +64,9 @@ public class SummaryTableToolbar extends JToolBar {
 				refresh();
 			}
 		});
-		
 		add(chkShowGate);		
-		
 	}
+	
 	/**
 	 * Refresh display of table
 	 *
