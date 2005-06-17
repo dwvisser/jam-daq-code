@@ -17,103 +17,105 @@ import java.util.Observer;
 import javax.swing.JFileChooser;
 
 /**
- * Export the summary table 
+ * Export the summary table
  * 
  * @author Kennneth Swartz
- *
+ * 
  */
 public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 
-	protected final static int BUFFER_SIZE = 256 * 2;
-	
-	private static final String [] EXTS={"dat","txt"};	
-	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter(EXTS, 
-	"Text file");
-	
-	public void initCommand(){
-		putValue(NAME,"Table");		
-	}
-			
-	protected void execute(Object[] cmdParams) throws CommandException {
-		File file=null;
-		if (cmdParams!=null) {
-			if (cmdParams.length>0){
-				file =(File)cmdParams[0];
-			}
-		}
-		//No file given
-		if (file == null) { 		
-			file = chooseFile();
-		}
-		//No file chosen		
-		if (file!= null) { 
-			saveTable(file);
-		}		
-	}	
+    private final static int BUFFER_SIZE = 256 * 2;
 
-	protected void executeParse(String[] cmdTokens)
-		throws CommandListenerException {
-		// TODO Auto-generated method stub
-	}
-	
-	private void saveTable (File file) {
-		
-		final SummaryTable summaryTable = STATUS.getTable();
-		
-    	try {
-    		
-            if (msghdlr != null) {
-            	msghdlr.messageOut("Write out table to " + file, MessageHandler.NEW);
+    private static final String[] EXTS = { "dat", "txt" };
+
+    private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
+            EXTS, "Text file");
+
+    private File chooseFile() {
+        File file = null;
+        final JFileChooser jfile = new JFileChooser();
+
+        jfile.setFileFilter(FILTER);
+        final int option = jfile.showSaveDialog(STATUS.getFrame());
+        /* don't do anything if it was cancel */
+        if (option == JFileChooser.APPROVE_OPTION
+                && jfile.getSelectedFile() != null) {
+            file = jfile.getSelectedFile();
+        }
+
+        return file;
+    }
+
+    protected void execute(Object[] cmdParams) throws CommandException {
+        File file = null;
+        if (cmdParams != null) {
+            if (cmdParams.length > 0) {
+                file = (File) cmdParams[0];
             }
-    		
-        	//Create writer stream		        	
+        }
+        // No file given
+        if (file == null) {
+            file = chooseFile();
+        }
+        // No file chosen
+        if (file != null) {
+            saveTable(file);
+        }
+    }
+
+    protected void executeParse(String[] cmdTokens)
+            throws CommandListenerException {
+        // TODO Auto-generated method stub
+    }
+
+    public void initCommand() {
+        putValue(NAME, "Table");
+    }
+
+    private void saveTable(File file) {
+
+        final SummaryTable summaryTable = STATUS.getTable();
+
+        try {
+
+            if (msghdlr != null) {
+                msghdlr.messageOut("Write out table to " + file,
+                        MessageHandler.NEW);
+            }
+
+            // Create writer stream
             final FileOutputStream outStream = new FileOutputStream(file);
             final BufferedOutputStream buffStream = new BufferedOutputStream(
                     outStream, BUFFER_SIZE);
-            
+
             summaryTable.writeTable(buffStream);
-            
+
             buffStream.flush();
             outStream.flush();
             outStream.close();
-            
+
             if (msghdlr != null) {
-            	msghdlr.messageOut(" done!", MessageHandler.END);
+                msghdlr.messageOut(" done!", MessageHandler.END);
             }
-            
-    	} catch (FileNotFoundException fnfe) {
-    		msghdlr.errorOutln("Cannot open file: "+file);
-    	} catch (IOException ioe) {
-    		msghdlr.errorOutln("Writing table to file: "+file);
-    	}
 
-	}
-	
-	private File chooseFile() {
-		File file=null;
-		final JFileChooser jfile = new JFileChooser();
+        } catch (FileNotFoundException fnfe) {
+            msghdlr.errorOutln("Cannot open file: " + file);
+        } catch (IOException ioe) {
+            msghdlr.errorOutln("Writing table to file: " + file);
+        }
 
-	    jfile.setFileFilter(FILTER);
-	    final int option = jfile.showSaveDialog(STATUS.getFrame());
-	    /* don't do anything if it was cancel */
-	    if (option == JFileChooser.APPROVE_OPTION
-	            && jfile.getSelectedFile() != null) {
-	    	file =jfile.getSelectedFile();
-	    }	     
-	    
-	    return file;
-	}
+    }
 
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
-		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
-			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
-			setEnabled(true);
-		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
-				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			setEnabled(false);
-		}
-	}
+    public void update(Observable observe, Object obj) {
+        final BroadcastEvent be = (BroadcastEvent) obj;
+        final BroadcastEvent.Command command = be.getCommand();
+        if ((command == BroadcastEvent.Command.GROUP_SELECT)
+                || (command == BroadcastEvent.Command.ROOT_SELECT)) {
+            setEnabled(true);
+        } else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
+                || (command == BroadcastEvent.Command.GATE_SELECT)) {
+            setEnabled(false);
+        }
+    }
 
 }
