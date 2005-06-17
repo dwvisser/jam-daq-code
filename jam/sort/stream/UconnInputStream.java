@@ -46,7 +46,6 @@ public final class UconnInputStream extends EventInputStream {
 	int[] scalerValues = new int[NUMBER_SCALERS];
 
 	private int eventId;
-	private short eventSize;
 	private short eventState;
 	private short eventNumWord;
 
