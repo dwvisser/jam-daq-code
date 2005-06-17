@@ -41,7 +41,7 @@ public class SummaryTable extends JPanel implements Observer {
 	    JScrollPane scrollPane = new JScrollPane(table);	
 	    this.add(scrollPane);
 	    
-		summaryTableToolbar = new SummaryTableToolbar(this, summaryTableModel);
+		summaryTableToolbar = new SummaryTableToolbar(summaryTableModel);
 		summaryTableModel.setOptions(true, true, true);
 		
 		this.add(summaryTableToolbar,BorderLayout.NORTH);
