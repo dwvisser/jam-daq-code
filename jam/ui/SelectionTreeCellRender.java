@@ -19,74 +19,74 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  */
 public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
-    private Color defaultBackgroundColor;
+	private Color defaultBackgroundColor;
 
-    /**
-     * Constructs a new renderer.
-     */
-    public SelectionTreeCellRender() {
-        super();
-        defaultBackgroundColor = getBackgroundSelectionColor();
-    }
+	/**
+	 * Constructs a new renderer.
+	 */
+	public SelectionTreeCellRender() {
+		super();
+		defaultBackgroundColor = getBackgroundSelectionColor();
+	}
 
-    /**
-     * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
-     *      java.lang.Object, boolean, boolean, boolean, int, boolean)
-     */
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-            boolean selected, boolean expanded, boolean leaf, int row,
-            boolean hasFocus) {
-        super.getTreeCellRendererComponent(tree, value, selected, expanded,
-                leaf, row, hasFocus);
-        Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
-        if (nodeObject instanceof Group) {
-        	  Group group = (Group)nodeObject;
-        	  if (group.getType()==Group.Type.FILE) {
-        	  	setIcon(Icons.GROUP_FILE);
-        	  }else if (group.getType()==Group.Type.SORT) {
-        	  	setIcon(Icons.GROUP_SORT);        	  	
-        	  } else {
-        	  	setIcon(Icons.GROUP_TEMP);
-        	  }        	  	
-        	  setText(group.getName());
-        } else if (nodeObject instanceof Histogram) {
-            Histogram hist = (Histogram) nodeObject;
-            setBackgroundSelectionColor(defaultBackgroundColor);
-            final StringBuffer tip=new StringBuffer();
-            tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
-            tip.append(" (").append(hist.getSizeX());
-            if (hist.getDimensionality() == 1) {
-                setIcon(Icons.HIST1D);
-            } else {
-                setIcon(Icons.HIST2D);
-                tip.append('x').append(hist.getSizeY());
-            }
-            tip.append(')');
-            setText(hist.getName());
-            setToolTipText(tip.toString());
-        } else if (nodeObject instanceof Gate) {
-            Gate gate = (Gate) nodeObject;
-            setBackgroundSelectionColor(defaultBackgroundColor);
-            //setBackgroundSelectionColor(Color.CYAN);
-            setText(gate.getName());
-            if (gate.getDimensionality() == 1) {
-                if (gate.isDefined()) {
-                    setIcon(Icons.GATE_DEF1D);
-                } else {
-                    setIcon(Icons.GATE1D);
-                }
-            } else {
-                if (gate.isDefined()) {
-                    setIcon(Icons.GATE_DEF2D);
-                } else {
-                    setIcon(Icons.GATE2D);
-                }
-            }
-        } else {
-            String name = (String) nodeObject;
-            setIcon(null);
-            setText(name);
-        }
-        return this;
-    }
+	/**
+	 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
+	 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
+	 */
+	public Component getTreeCellRendererComponent(JTree tree, Object value,
+			boolean isSelected, boolean expanded, boolean leaf, int row,
+			boolean hasTheFocus) {
+		super.getTreeCellRendererComponent(tree, value, isSelected, expanded,
+				leaf, row, hasTheFocus);
+		Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
+		if (nodeObject instanceof Group) {
+			Group group = (Group) nodeObject;
+			if (group.getType() == Group.Type.FILE) {
+				setIcon(Icons.GROUP_FILE);
+			} else if (group.getType() == Group.Type.SORT) {
+				setIcon(Icons.GROUP_SORT);
+			} else {
+				setIcon(Icons.GROUP_TEMP);
+			}
+			setText(group.getName());
+		} else if (nodeObject instanceof Histogram) {
+			Histogram hist = (Histogram) nodeObject;
+			setBackgroundSelectionColor(defaultBackgroundColor);
+			final StringBuffer tip = new StringBuffer();
+			tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
+			tip.append(" (").append(hist.getSizeX());
+			if (hist.getDimensionality() == 1) {
+				setIcon(Icons.HIST1D);
+			} else {
+				setIcon(Icons.HIST2D);
+				tip.append('x').append(hist.getSizeY());
+			}
+			tip.append(')');
+			setText(hist.getName());
+			setToolTipText(tip.toString());
+		} else if (nodeObject instanceof Gate) {
+			Gate gate = (Gate) nodeObject;
+			setBackgroundSelectionColor(defaultBackgroundColor);
+			// setBackgroundSelectionColor(Color.CYAN);
+			setText(gate.getName());
+			if (gate.getDimensionality() == 1) {
+				if (gate.isDefined()) {
+					setIcon(Icons.GATE_DEF1D);
+				} else {
+					setIcon(Icons.GATE1D);
+				}
+			} else {
+				if (gate.isDefined()) {
+					setIcon(Icons.GATE_DEF2D);
+				} else {
+					setIcon(Icons.GATE2D);
+				}
+			}
+		} else {
+			String name = (String) nodeObject;
+			setIcon(null);
+			setText(name);
+		}
+		return this;
+	}
 }
