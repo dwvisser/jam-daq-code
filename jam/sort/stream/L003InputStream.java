@@ -1,4 +1,5 @@
 package jam.sort.stream;
+
 import jam.global.MessageHandler;
 
 import java.io.EOFException;
@@ -6,31 +7,34 @@ import java.io.IOException;
 
 /**
  * This class knows how to handle Oak Ridge tape format (with special headers as
- * used by Charles Barton's group).  It extends 
- * EventInputStream, adding methods for reading events and returning them
- * as int arrays which the sorter can handle.
- *
- * @version	0.5 April 98
- * @author 	Dale Visser, Ken Swartz
- * @see         EventInputStream
- * @since       JDK1.1
+ * used by Charles Barton's group). It extends EventInputStream, adding methods
+ * for reading events and returning them as int arrays which the sorter can
+ * handle.
+ * 
+ * @version 0.5 April 98
+ * @author Dale Visser, Ken Swartz
+ * @see EventInputStream
+ * @since JDK1.1
  */
-public final class L003InputStream
-	extends EventInputStream
-	implements L003Parameters {
+public final class L003InputStream extends EventInputStream implements
+		L003Parameters {
+
+	private int eventValue;
+
+	private int parameter;
 
 	int recordByteCounter = 0;
-	int tapeByteCounter = 0;
+
+	String scalers;
 
 	private EventInputStatus status;
-	private int parameter;
-	private int eventValue;
-	String scalers;
+
+	int tapeByteCounter = 0;
 
 	/**
 	 * Needed to create an instance with newInstance().
 	 */
-	public L003InputStream(){
+	public L003InputStream() {
 		super();
 	}
 
@@ -41,7 +45,7 @@ public final class L003InputStream
 		super(console);
 	}
 
-	/** 
+	/**
 	 * @see EventInputStream#EventInputStream(MessageHandler, int)
 	 */
 	public L003InputStream(MessageHandler console, int eventSize) {
@@ -49,14 +53,21 @@ public final class L003InputStream
 	}
 
 	/**
-	 * Reads an event from the input stream.
-	 * Expects the stream position to be the beginning of an event.  
-	 * It is up to the user to ensure this.
-	 *
-	 * @exception   EventException    thrown for errors in the event stream
+	 * Implementation of an <code>EventInputStream</code> abstract method.
+	 */
+	public synchronized boolean isEndRun(short dataWord) {
+		return (dataWord == L002Parameters.RUN_END_MARKER);
+	}
+
+	/**
+	 * Reads an event from the input stream. Expects the stream position to be
+	 * the beginning of an event. It is up to the user to ensure this.
+	 * 
+	 * @exception EventException
+	 *                thrown for errors in the event stream
 	 */
 	public synchronized EventInputStatus readEvent(int[] input)
-		throws EventException {
+			throws EventException {
 		try {
 			while (readParameter()) {
 				input[parameter] = eventValue;
@@ -64,26 +75,70 @@ public final class L003InputStream
 
 		} catch (IOException io) {
 			status = EventInputStatus.ERROR;
-			throw new EventException(
-				"Reading Event from IOException "
-					+ io.getMessage()
-					+ " [L003InputStream]");
+			throw new EventException("Reading Event from IOException "
+					+ io.getMessage() + " [L003InputStream]");
 
 		}
-		return status; //if event read return ok 
+		return status; // if event read return ok
 	}
 
-    /* non-javadoc:
-	 * Read a event parameter
+	/**
+	 * Implementation of <code>EventInputStream</code> abstract method. Note,
+	 * this reads a Vax byte order version of L002 headers unlike
+	 * L002HeaderRecord.
+	 * 
+	 * @throws EventException
+	 *             thrown for errors in the event stream
+	 */
+	public boolean readHeader() throws EventException {
+		byte[] headerStart = new byte[32];
+		byte[] date = new byte[16];
+		byte[] title = new byte[80];
+		byte[] reserved1 = new byte[8];
+		byte[] reserved2 = new byte[92];
+		int number = 0;
+		int size = 0;
+
+		try {
+			dataInput.readFully(headerStart);
+			dataInput.readFully(date);
+			dataInput.readFully(title);
+			number = readVaxInt();
+			dataInput.readFully(reserved1);
+			readVaxInt();// number of secondary headers
+			readVaxInt(); // header record length
+			readVaxInt();// number of image records
+			readVaxInt(); // IMAGE_RECORD_LENGTH
+			size = readVaxInt();// event size
+			readVaxInt(); // DATA_RECORD_LENGTH
+			dataInput.readFully(reserved2);
+
+			// save reads to header variables
+			headerKey = String.valueOf(headerStart);
+			headerRunNumber = number;
+			headerTitle = String.valueOf(title);
+			headerEventSize = size;
+			headerDate = String.valueOf(date);
+
+			loadRunInfo();
+			return (headerKey.equals(HEADER_START));
+		} catch (IOException ioe) {
+			throw new EventException("Reading event header -"
+					+ ioe.getMessage());
+		}
+	}
+
+	/*
+	 * non-javadoc: Read a event parameter
 	 */
 	private boolean readParameter() throws EventException, IOException {
 		boolean parameterSuccess;
 		int paramWord;
 		try {
-			paramWord = readVaxShort(); //read parameter word
-			//check special types parameter	
+			paramWord = readVaxShort(); // read parameter word
+			// check special types parameter
 			if (paramWord == L002Parameters.EVENT_END_MARKER) {
-				//need another read as marker is 2 shorts
+				// need another read as marker is 2 shorts
 				paramWord = readVaxShort();
 				numberEvents++;
 				parameterSuccess = false;
@@ -94,21 +149,19 @@ public final class L003InputStream
 			} else if (paramWord == L002Parameters.RUN_END_MARKER) {
 				parameterSuccess = false;
 				status = EventInputStatus.END_RUN;
-				//get parameter value if not special type
+				// get parameter value if not special type
 			} else if (0 != (paramWord & L002Parameters.EVENT_PARAMETER_MARKER)) {
 				parameter = (paramWord & EVENT_PARAMETER_MASK) - 1;
-				//parameter number	
+				// parameter number
 				eventValue = readVaxShort();
-				//read event word			
+				// read event word
 				parameterSuccess = true;
 				status = EventInputStatus.PARTIAL_EVENT;
 			} else {
 				parameterSuccess = false;
 				status = EventInputStatus.UNKNOWN_WORD;
-				throw new EventException(
-					"L003InputStream parameter value: "
-						+ paramWord
-						+ " [L003InputStream]");
+				throw new EventException("L003InputStream parameter value: "
+						+ paramWord + " [L003InputStream]");
 			}
 			// we got to the end of a file
 		} catch (EOFException eof) {
@@ -127,109 +180,9 @@ public final class L003InputStream
 		}
 		return parameterSuccess;
 	}
-	
-    /* non-javadoc:
-	 * read in a scaler dump
-	 * this is a 32000 byte ascii record
-	 */
-	private boolean scalerRead() throws IOException {
-		boolean readStatus = true;
-		byte[] scalerDump = new byte[SCALER_BUFFER_SIZE];
-		String scalers = null;
-		int scalerByteCounter = 0;
-		int bytesRead = 0;
 
-		while ((scalerByteCounter < SCALER_RECORD_SIZE) && bytesRead >= 0) {
-
-			if (scalerByteCounter < SCALER_RECORD_SIZE - SCALER_BUFFER_SIZE) {
-				bytesRead = dataInput.read(scalerDump);
-			} else {
-				bytesRead =
-					dataInput.read(
-						scalerDump,
-						0,
-						SCALER_RECORD_SIZE - scalerByteCounter);
-			}
-
-			if (bytesRead != SCALER_BUFFER_SIZE) {
-				showWarningMessage(
-					"scaler Not a full read, only read in "
-						+ bytesRead
-						+ " bytes");
-			}
-			if (bytesRead > 0) {
-				tapeByteCounter += bytesRead;
-				scalerByteCounter += bytesRead;
-			}
-			//save first read
-			if (scalerByteCounter < SCALER_BUFFER_SIZE + 1) {
-				scalers = String.valueOf(scalerDump);
-			}
-		}
-
-		System.out.println("scaler dump total bytes read " + scalerByteCounter);
-		System.out.println("scaler dump = " + scalers);
-		if (bytesRead < 0) {
-			readStatus = false;
-			System.out.println("End of file in scaler read");
-		}
-		return readStatus;
-	}
-
-	/**
-	 * Implementation of <code>EventInputStream</code> abstract method.
-	 * Note, this reads a Vax byte order version of L002 headers unlike
-	 * L002HeaderRecord.
-	 * 
-	 * @throws   EventException    thrown for errors in the event stream
-	 */
-	public boolean readHeader() throws EventException {
-		byte[] headerStart = new byte[32];
-		byte[] date = new byte[16];
-		byte[] title = new byte[80];
-		byte[] reserved1 = new byte[8];
-		byte[] reserved2 = new byte[92];
-		int number = 0;
-		int size = 0;
-
-		try {
-			dataInput.readFully(headerStart);
-			dataInput.readFully(date);
-			dataInput.readFully(title);
-			number = readVaxInt();
-			dataInput.readFully(reserved1);
-			readVaxInt();//number of secondary headers
-			readVaxInt(); //header record length
-			readVaxInt();//number of image records
-			readVaxInt(); //IMAGE_RECORD_LENGTH
-			size = readVaxInt();//event size
-			readVaxInt(); //DATA_RECORD_LENGTH
-			dataInput.readFully(reserved2);
-
-			//save reads to header variables
-			headerKey = String.valueOf(headerStart);
-			headerRunNumber = number;
-			headerTitle = String.valueOf(title);
-			headerEventSize = size;
-			headerDate = String.valueOf(date);
-
-			loadRunInfo();
-			return (headerKey.equals(HEADER_START));
-		} catch (IOException ioe) {
-			throw new EventException(
-				"Reading event header -" + ioe.getMessage());
-		}
-	}
-
-	/**
-	 * Implementation of an <code>EventInputStream</code> abstract method.
-	 */
-	public synchronized boolean isEndRun(short dataWord) {
-		return (dataWord == L002Parameters.RUN_END_MARKER);
-	}
-
-    /* non-javadoc:
-	 * reads a little endian integer (4 bytes)
+	/*
+	 * non-javadoc: reads a little endian integer (4 bytes)
 	 */
 	private int readVaxInt() throws IOException {
 		final int ch1 = dataInput.read();
@@ -238,10 +191,10 @@ public final class L003InputStream
 		final int ch4 = dataInput.read();
 		return (ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0);
 	}
-	
-    /* non-javadoc:
-	 * reads a little endian short (2 bytes)
-	 * but return a 4 byte integer
+
+	/*
+	 * non-javadoc: reads a little endian short (2 bytes) but return a 4 byte
+	 * integer
 	 */
 	private short readVaxShort() throws IOException {
 		int ch1 = dataInput.read();
@@ -250,5 +203,43 @@ public final class L003InputStream
 			return -1;
 		}
 		return (short) ((ch2 << 8) + (ch1 << 0));
+	}
+
+	/*
+	 * non-javadoc: read in a scaler dump this is a 32000 byte ascii record
+	 */
+	private boolean scalerRead() throws IOException {
+		boolean readStatus = true;
+		byte[] scalerDump = new byte[SCALER_BUFFER_SIZE];
+		String scalerString = null;
+		int scalerByteCounter = 0;
+		int bytesRead = 0;
+		while ((scalerByteCounter < SCALER_RECORD_SIZE) && bytesRead >= 0) {
+			if (scalerByteCounter < SCALER_RECORD_SIZE - SCALER_BUFFER_SIZE) {
+				bytesRead = dataInput.read(scalerDump);
+			} else {
+				bytesRead = dataInput.read(scalerDump, 0, SCALER_RECORD_SIZE
+						- scalerByteCounter);
+			}
+			if (bytesRead != SCALER_BUFFER_SIZE) {
+				showWarningMessage("scaler Not a full read, only read in "
+						+ bytesRead + " bytes");
+			}
+			if (bytesRead > 0) {
+				tapeByteCounter += bytesRead;
+				scalerByteCounter += bytesRead;
+			}
+			// save first read
+			if (scalerByteCounter < SCALER_BUFFER_SIZE + 1) {
+				scalerString = String.valueOf(scalerDump);
+			}
+		}
+		System.out.println("scaler dump total bytes read " + scalerByteCounter);
+		System.out.println("scaler dump = " + scalerString);
+		if (bytesRead < 0) {
+			readStatus = false;
+			System.out.println("End of file in scaler read");
+		}
+		return readStatus;
 	}
 }
