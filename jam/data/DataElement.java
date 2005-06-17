@@ -7,16 +7,37 @@ package jam.data;
  */
 public interface DataElement {
 
-	public static final int ELEMENT_TYPE_HISTOGRAM=0;
+    /**
+     * Means the element is a gate.
+     */
+	int ELEMENT_TYPE_GATE=1;
 	
-	public static final int ELEMENT_TYPE_GATE=1;
+    /**
+     * Means the element is a histogram.
+     */
+	int ELEMENT_TYPE_HISTOGRAM=0;
 	
-	public static final int ELEMENT_TYPE_SCALER=2;
+    /**
+     * Means the element is a scaler.
+     */
+	int ELEMENT_TYPE_SCALER=2;
 		
-    public String getName();
+	/**
+     * 
+     * @return ???
+     */
+    double getCount();
     
-    public double getCount();
+    /**
+     * 
+     * @return which kind of element this is
+     */
+    int getElementType();
     
-    public int getElementType();
+    /**
+     * 
+     * @return name of the element
+	 */
+    String getName();
 	
 }
