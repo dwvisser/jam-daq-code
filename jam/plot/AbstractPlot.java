@@ -371,8 +371,8 @@ abstract class AbstractPlot implements PlotPrefs,
 	/*
 	 * non-javadoc: add scrollbars
 	 */
-	void addScrollBars(Scroller scrollbars) {
-		this.scrollbars = scrollbars;
+	void addScrollBars(Scroller scroller) {
+		scrollbars = scroller;
 	}
 
 	/**

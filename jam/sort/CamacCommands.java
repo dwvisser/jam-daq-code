@@ -204,9 +204,9 @@ public class CamacCommands {
     /* non-javadoc:
      * Used internally to package the parts of a command into a byte array.
      */
-    private int [] cnaf(int paramId, int crate, int number, int address, int function, int data){
+    private int [] cnaf(int idParam, int crate, int number, int address, int function, int data){
         int [] out = new int[6];
-        out[0] = paramId;
+        out[0] = idParam;
         out[1] = crate;
         out[2] = number;
         out[3] = address;
