@@ -57,14 +57,14 @@ public abstract class AbstractL002HeaderReader extends EventInputStream implemen
 			dataInput.readInt();//header record length
 			dataInput.readInt();//Block line image records
 			dataInput.readInt();//IMAGE_RECORD_LENGTH
-			final int eventSize=dataInput.readInt();
+			final int paramsPerEvent=dataInput.readInt();
 			dataInput.readInt();//DATA_RECORD_LENGTH
 			dataInput.readFully(reserved2);
 			/* save reads to header variables */
 			headerKey=String.valueOf(headerStart);
 			headerRunNumber=number;
 			headerTitle=String.valueOf(title);
-			headerEventSize=eventSize;
+			headerEventSize=paramsPerEvent;
 			headerDate=String.valueOf(date);
 			loadRunInfo();
 			/* read secondary headers */
