@@ -337,7 +337,7 @@ public class CalibrationFit extends AbstractControl {
         BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
     }
     
-	/**
+	/* non-javadoc:
 	 * sets fields to be active
 	 */
 	private void setPointFieldActive(final int number, final boolean state) {

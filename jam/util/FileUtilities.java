@@ -29,6 +29,10 @@ public class FileUtilities {
 	
 	private static final FileUtilities instance = new FileUtilities();
 
+    /**
+     * 
+     * @return the singleton instance
+     */
 	public static FileUtilities getInstance(){
 		return instance;
 	}

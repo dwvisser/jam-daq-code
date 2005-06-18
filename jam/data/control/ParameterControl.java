@@ -158,9 +158,7 @@ public final class ParameterControl extends AbstractControl {
 	}
 
 	/**
-	 * Check all text fields are numbers
-	 * 
-	 * @return
+	 * @return whether all text fields are numbers
 	 */
 	private boolean checkTextAreNumbers() {
 		String textValue;

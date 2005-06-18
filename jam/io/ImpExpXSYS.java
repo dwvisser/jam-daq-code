@@ -247,7 +247,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 		return !endOfFile;
 	}
 
-	/**
+	/* non-javadoc:
 	 * Unpacks a XSYS histogram 1d type INTEGER.
 	 * 
 	 * @param buffin

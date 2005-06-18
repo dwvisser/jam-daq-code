@@ -275,10 +275,9 @@ public final class HDFile extends RandomAccessFile implements Constants {
 				"Problem reading HDF file objects. ",e);
 		}
 	}
-	/**
+	/* non-javadoc:
 	 * Fixes reference for old files
 	 * @param ref
-	 * @return
 	 */
 	void debugDumpDD(short tag, short ref, int offset, int length) throws IOException {
 		mark();
@@ -331,7 +330,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		return localBytes;
 	}
 	
-	/**
+	/* non-javadoc:
 	 * Count objects in file
 	 * 
 	 * @return

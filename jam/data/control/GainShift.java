@@ -301,6 +301,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 *            desired size of output array
 	 * @return new array of size <code>npts</code> re-binned for new gain
 	 *         coefficients
+     * @throws DataException if there's a problem
 	 */
 	private double[] errorGainShift(double[] y1, double constIn, double slopeIn,
 			double constOut, double slopeOut, int npts2) throws DataException {
@@ -393,6 +394,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 *            desired size of output array
 	 * @return new array of size <code>npts</code> re-binned for new gain
 	 *         coefficients
+     * @throws DataException if there's a problem
 	 */
 	private double[] gainShift(double[] y1, double constIn, double slopeIn,
 			double constOut, double slopeOut, int npts2) throws DataException {

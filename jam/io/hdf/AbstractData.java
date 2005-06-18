@@ -244,7 +244,7 @@ public abstract class AbstractData implements Constants {
 				dataObject.interpretBytes();
 			}
 	}
-	/**
+	/* non-javadoc:
 	 * Create a new ref that is unque for the given tag 
 	 * The HDF standard requires that for a particular tag type, 
 	 * each instance have a unique ref. 

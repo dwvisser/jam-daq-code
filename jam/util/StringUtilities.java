@@ -75,16 +75,15 @@ public final class StringUtilities {
 	 * 
 	 * @param name name to make unique
 	 * @param nameSet contains the existing names
+     * @param nameLength target length of name
 	 * @return unique name
 	 */
 	public String makeUniqueName(String name, Set nameSet, int nameLength) {
-		
 		String nameTemp = makeLength(name, nameLength);
 		boolean warn=name.length()>nameTemp.length();
 		boolean isUnique=false;
 		int prime = 1;
 		boolean copyFound;
-		
 		/* find a name that does not conflict with existing names */
 		while(!isUnique) {
 			copyFound=false;
@@ -141,6 +140,11 @@ public final class StringUtilities {
 	    return charBuffer.toString();
 	}	
 	
+    /**
+     * 
+     * @param input a string object
+     * @return array of ASCII bytes representing the input string
+     */
 	public byte [] getASCIIarray(String input){
 	    final ByteBuffer buffer = ASCII.encode(input);
 	    return buffer.array();

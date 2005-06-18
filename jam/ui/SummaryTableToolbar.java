@@ -78,8 +78,9 @@ class SummaryTableToolbar extends JToolBar {
 		summaryTableModel.setOptions(showScalers, showHistograms, showGates);
 		
 	}
-	/** 
-	 * Load icons for tool bar
+    
+	/* non-javadoc:
+	 * Load icons for tool bar.
 	 */
 	private Icon loadToolbarIcon(String path) {
 		final Icon toolbarIcon;

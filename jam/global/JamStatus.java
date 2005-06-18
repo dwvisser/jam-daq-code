@@ -127,10 +127,10 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets the display.
+	 * Sets the table.
 	 * 
-	 * @param d
-	 *            the display
+	 * @param t
+	 *            the table
 	 */
 	public synchronized void setTable(SummaryTable t) {
 		summaryTable = t;
@@ -366,7 +366,7 @@ public final class JamStatus {
 	/**
 	 * Sets the current <code>Gate</code> name.
 	 * 
-	 * @param name
+	 * @param gate
 	 *            of current gate
 	 */
 	public synchronized void setCurrentGate(Gate gate) {

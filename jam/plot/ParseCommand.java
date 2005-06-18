@@ -145,8 +145,8 @@ final class ParseCommand implements CommandListener {
 	/**
 	 * Parse a string go a number
 	 * 
-	 * @param s
-	 * @return
+	 * @param s string rep of the number
+	 * @return the number
 	 * @throws NumberFormatException
 	 */
 	private double convertNumber(String s) throws NumberFormatException {
