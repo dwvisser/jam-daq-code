@@ -197,14 +197,14 @@ public final class ScalerScan implements JamFileFields {
 						in.readFile();
 						if (i == firstRun) {
 							outText.append("Run");
-							String[] names = getScalerNames(in);
+							String[] names = getScalerNames();
 							for (int j = 0; j < names.length; j++) {
 								outText.append(TAB).append(names[j]);
 							}
 							outText.append(cr);
 						}
 						outText.append(i);
-						int[] values = getScalerValues(in);
+						int[] values = getScalerValues();
 						for (int j = 0; j < values.length; j++) {
 							outText.append(TAB).append(values[j]);
 						}
@@ -232,7 +232,7 @@ public final class ScalerScan implements JamFileFields {
 		}
 	}
 
-	private String[] getScalerNames(HDFile in) {
+	private String[] getScalerNames() {
 		String[] sname = null;
 		final VDataDescription VH =
 			VDataDescription.ofName(
@@ -261,7 +261,7 @@ public final class ScalerScan implements JamFileFields {
 		return sname;
 	}
 
-	private int[] getScalerValues(HDFile in) throws HDFException {
+	private int[] getScalerValues() throws HDFException {
 		int[] values = null;
 		final VDataDescription VH =
 			VDataDescription.ofName(
