@@ -21,8 +21,14 @@ import javax.swing.JScrollPane;
  */
 public class SummaryTable extends JPanel implements Observer {
 
+    /**
+     * All groups are selected?
+     */
 	public final static int ALL_GROUPS_SELECTED=0;
 	
+    /**
+     * One group is selected?
+     */
 	public final static int SINGLE_GROUP_SELECTED=1;
 	
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
@@ -33,28 +39,29 @@ public class SummaryTable extends JPanel implements Observer {
 	
 	private SummaryTableModel summaryTableModel;
 	
+    /**
+     * Default constructor.
+     *
+     */
 	public SummaryTable() {
+        super();
 		setLayout(new BorderLayout());
-
 		summaryTableModel = new SummaryTableModel();			
 	    JTable table = new JTable(summaryTableModel);
 	    JScrollPane scrollPane = new JScrollPane(table);	
 	    this.add(scrollPane);
-	    
 		summaryTableToolbar = new SummaryTableToolbar(summaryTableModel);
 		summaryTableModel.setOptions(true, true, true);
-		
 		this.add(summaryTableToolbar,BorderLayout.NORTH);
 		broadcaster.addObserver(this);
 	}
+    
 	/**
 	 * Write out the table to a writer stream
-	 * @param writer
+	 * @param outputStream to write to
 	 */
 	public void writeTable(OutputStream outputStream) {
-		
 		final PrintWriter writer = new PrintWriter(outputStream);
-		
 		int numCols = summaryTableModel.getColumnCount();
 		int numRows = summaryTableModel.getRowCount();
 		//write header
@@ -65,7 +72,6 @@ public class SummaryTable extends JPanel implements Observer {
 			}
 		}
 		writer.println();
-		
 		//write data
 		for (int i=0;i<numRows;i++) {
 			for (int j=0;j<numCols;j++) {
@@ -76,7 +82,6 @@ public class SummaryTable extends JPanel implements Observer {
 			}
 			writer.println();			
 		}
-
 		writer.flush();
 	}
  
