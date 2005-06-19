@@ -88,7 +88,7 @@ public final class View {
 	 * 
 	 * @return list of the names of the existing views
 	 */
-	public static List getNameList(){
+	public static List<String> getNameList(){
 		return Collections.unmodifiableList(NAME_LIST);
 	}
 	
