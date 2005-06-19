@@ -48,7 +48,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @return the list of histograms
 	 * @throws RemoteException if there's a problem
 	 */
-	public List getHistogramList() throws RemoteException {
+	public List<Histogram> getHistogramList() throws RemoteException {
 		return Histogram.getHistogramList();
 	}
 	
@@ -78,7 +78,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 * @return the list of all gates
 	 * @throws RemoteException if there's a problem
 	 */
-	public List getGateList() throws RemoteException {
+	public List<Gate> getGateList() throws RemoteException {
 		return Gate.getGateList();
 	}
 	

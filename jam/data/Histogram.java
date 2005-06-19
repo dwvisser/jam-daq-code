@@ -188,7 +188,7 @@ public abstract class Histogram implements DataElement {
 	private final static SortedMap NUMBER_MAP = new TreeMap();
 
 	/* histogramList is ordered by the creation of the histograms */
-	private final static List LIST = new ArrayList();
+	private final static List<Histogram> LIST = new ArrayList<Histogram>();
 
 	private final static List[] DIM_LIST = new List[2];
 	static {
@@ -445,7 +445,7 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return all histograms
 	 */
-	public static List getHistogramList() {
+	public static List<Histogram> getHistogramList() {
 		return Collections.unmodifiableList(LIST);
 	}
 

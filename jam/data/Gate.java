@@ -80,7 +80,7 @@ public final class Gate implements DataElement {
      * 
      * @return ordered list of all <code>Gate</code> objects
      */
-    public static List getGateList() {
+    public static List<Gate> getGateList() {
         return Collections.unmodifiableList(LIST);
     }
 

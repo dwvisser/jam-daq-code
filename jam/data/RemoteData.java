@@ -33,7 +33,7 @@ public interface RemoteData extends Remote {
      * @return the list of all histograms
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    List getHistogramList() throws RemoteException ;
+    List<Histogram> getHistogramList() throws RemoteException ;
 
     /**
      * Returns the list of histogram names.
@@ -58,7 +58,7 @@ public interface RemoteData extends Remote {
      * @return the list of all gates
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    List getGateList() throws RemoteException;
+    List<Gate> getGateList() throws RemoteException;
 
     /**
      * Gets the list of gate names assiciated with the given histogram name.
