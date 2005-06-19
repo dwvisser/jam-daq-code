@@ -48,7 +48,8 @@ abstract class AbstractSetup {
     /**
      * Handle to event broadcaster.
      */
-	protected static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
+    protected static final Broadcaster BROADCASTER = Broadcaster
+            .getSingletonInstance();
 
     /**
      * JamStatus instance.
@@ -106,7 +107,7 @@ abstract class AbstractSetup {
      * The dialog.
      */
     protected transient final JDialog dialog;
-    
+
     /**
      * Combo box for selecting a sort routine.
      * 
@@ -119,7 +120,7 @@ abstract class AbstractSetup {
     /**
      * User sort routine must extend this abstract class
      */
-    protected transient SortRoutine sortRoutine;//the actual sort routine
+    protected transient SortRoutine sortRoutine;// the actual sort routine
 
     /**
      * When toggled, means that a user-supplied path should be used for
@@ -148,14 +149,14 @@ abstract class AbstractSetup {
         specify = new JRadioButton("Specify a classpath", !useDefault);
         specify
                 .setToolTipText("Specify a path to load your sort routine from.");
-		specify.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
-				if (specify.isSelected()) {
-					bbrowsef.setEnabled(true);
-					setChooserDefault(false);
-				}
-			}
-		});
+        specify.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent itemEvent) {
+                if (specify.isSelected()) {
+                    bbrowsef.setEnabled(true);
+                    setChooserDefault(false);
+                }
+            }
+        });
         classname = getClass().getName() + "--";
         if (!useDefault) {
             classPath = new File(defSortPath);
@@ -204,7 +205,7 @@ abstract class AbstractSetup {
      *            class path
      * @return set of available sort routines
      */
-    protected final Set getSortClasses(File path) {
+    protected final Set<Class<?>> getSortClasses(File path) {
         return RTSI.find(path, Sorter.class);
     }
 
@@ -222,7 +223,7 @@ abstract class AbstractSetup {
         if (option == JFileChooser.APPROVE_OPTION
                 && chooser.getSelectedFile() != null) {
             synchronized (this) {
-                rval = chooser.getSelectedFile();//save current directory
+                rval = chooser.getSelectedFile();// save current directory
             }
         }
         return rval;
@@ -280,19 +281,19 @@ abstract class AbstractSetup {
         if (sortClass == null) {
             sortClass = (Class) sortChoice.getSelectedItem();
         }
-        //FIXME maybe we should do DataBase.clearAll(); here
+        // FIXME maybe we should do DataBase.clearAll(); here
         Group.clearList();
-        final String sortName = Group.parseSortClassName( sortClass.getName() );
+        final String sortName = Group.parseSortClassName(sortClass.getName());
         Group.createGroup(sortName, Group.Type.SORT);
-        try {        	
+        try {
             if (specify.isSelected()) {
                 /* we call loadClass() in order to guarantee latest version */
                 synchronized (this) {
                     sortRoutine = (SortRoutine) RTSI.loadClass(classPath,
                             sortClass.getName()).newInstance();// create sort
-                                                               // class
+                    // class
                 }
-            } else {//use default loader
+            } else {// use default loader
                 synchronized (this) {
                     sortRoutine = (SortRoutine) sortClass.newInstance();
                 }
@@ -307,22 +308,22 @@ abstract class AbstractSetup {
     }
 
     /**
-     * Do what it takes to open up the tree to the first histogram
-     * in the sort routine.
+     * Do what it takes to open up the tree to the first histogram in the sort
+     * routine.
      */
     protected void selectFirstSortHistogram() {
-		//Select first histogram
-		final Group sortGroup = Group.getSortGroup();
-		STATUS.setCurrentGroup(sortGroup);
-		final List histList = sortGroup.getHistogramList();
-		if (!histList.isEmpty()) {
-			final Histogram firstHist =  (Histogram)histList.get(0);
-			STATUS.setCurrentHistogram(firstHist);
-		}			
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);			
+        // Select first histogram
+        final Group sortGroup = Group.getSortGroup();
+        STATUS.setCurrentGroup(sortGroup);
+        final List histList = sortGroup.getHistogramList();
+        if (!histList.isEmpty()) {
+            final Histogram firstHist = (Histogram) histList.get(0);
+            STATUS.setCurrentHistogram(firstHist);
+        }
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
     }
-    
+
     /**
      * Sets whether to use the default classpath or a user-specified one.
      * 
@@ -331,9 +332,9 @@ abstract class AbstractSetup {
      * @return a list of the available sort routines
      */
     protected final List setChooserDefault(boolean isDefault) {
-        final Vector vector = new Vector();
+        final Vector<Class<?>> vector = new Vector<Class<?>>();
         if (isDefault) {
-            final Set set = new LinkedHashSet();
+            final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
             set.addAll(RTSI.find("help", Sorter.class, true));
             set.addAll(RTSI.find("sort", Sorter.class, true));
             vector.addAll(set);
@@ -343,7 +344,7 @@ abstract class AbstractSetup {
         sortChoice.setModel(new DefaultComboBoxModel(vector));
         return vector;
     }
-    
+
     /**
      * Sets the class path for loading sort routines.
      * 
@@ -353,7 +354,7 @@ abstract class AbstractSetup {
     protected final void setSortClassPath(File file) {
         if (file.exists()) {
             classPath = file;
-            sortChoice.setModel(new DefaultComboBoxModel(new Vector(
+            sortChoice.setModel(new DefaultComboBoxModel(new Vector<Class<?>>(
                     getSortClasses(classPath))));
             if (sortChoice.getModel().getSize() > 0) {
                 sortChoice.setSelectedIndex(0);
@@ -362,5 +363,3 @@ abstract class AbstractSetup {
         }
     }
 }
-
-

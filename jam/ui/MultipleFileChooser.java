@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -204,8 +205,13 @@ public final class MultipleFileChooser extends JPanel {
 	 * Returns the list of files in the data model.
 	 * @return the list of files in the data model
 	 */
-	public List getFileList() {
-		return Collections.list(listFilesModel.elements());
+	public List<File> getFileList() {
+		final List<?> tempList = Collections.list(listFilesModel.elements());
+        final List<File> rval = new ArrayList<File>(tempList.size());
+        for (Object object : tempList){
+            rval.add((File)object);
+        }
+        return Collections.unmodifiableList(rval);
 	}	
 	
 	/**

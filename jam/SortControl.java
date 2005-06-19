@@ -288,11 +288,7 @@ public final class SortControl extends JDialog implements Controller {
 	 * deamon
 	 */
 	private void loadNames() {
-		final List fileList = multiFile.getFileList();
-		for (int count = 0; count < fileList.size(); count++) {
-			final File file = (File) fileList.get(count);
-			fileList.add(file);
-		}
+		final List<File> fileList = multiFile.getFileList();
 		/* tell storage daemon list of files */
 		inputDaemon.setEventInputList(fileList);
 		/* save output file */

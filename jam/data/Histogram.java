@@ -754,7 +754,7 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return the list of gates that belong to this histogram
 	 */
-	public List getGates() {
+	public List<Gate> getGates() {
 		return Collections.unmodifiableList(gates);
 	}
 

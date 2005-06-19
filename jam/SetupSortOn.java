@@ -62,528 +62,524 @@ import javax.swing.border.EmptyBorder;
  */
 public final class SetupSortOn extends AbstractSetup {
 
-	private final RunControl runControl;
+    private final RunControl runControl;
 
-	private final DisplayCounters counters;
+    private final DisplayCounters counters;
 
-	private final Console jamConsole;
+    private final Console jamConsole;
 
-	private final FrontEndCommunication frontEnd;
+    private final FrontEndCommunication frontEnd;
 
-	/* stuff for dialog box */
-	private final AbstractButton cdisk; //save events to disk
+    /* stuff for dialog box */
+    private final AbstractButton cdisk; // save events to disk
 
-	private final AbstractButton clog; //create a log file
+    private final AbstractButton clog; // create a log file
 
-	private final AbstractButton bok, bapply, checkLock, bbrowseh,
-			bbrowsed, bbrowsel;
+    private final AbstractButton bok, bapply, checkLock, bbrowseh, bbrowsed,
+            bbrowsel;
 
-	private final JComboBox inChooser, outChooser;
+    private final JComboBox inChooser, outChooser;
 
-	private final JTextField textExpName, textPathHist,
-			textPathData;
+    private final JTextField textExpName, textPathHist, textPathData;
 
-	private final JTextField textPathLog;
+    private final JTextField textPathLog;
 
-	/* strings of data entered */
-	private String exptName;
+    /* strings of data entered */
+    private String exptName;
 
-	private File histFolder;
+    private File histFolder;
 
-	private File dataFolder;
+    private File dataFolder;
 
-	private File logDirectory;
+    private File logDirectory;
 
-	/* sorting classes */
-	private SortDaemon sortDaemon;
+    /* sorting classes */
+    private SortDaemon sortDaemon;
 
-	private NetDaemon netDaemon;
+    private NetDaemon netDaemon;
 
-	private DiskDaemon diskDaemon;
+    private DiskDaemon diskDaemon;
 
-	/* streams to read and write events */
-	private EventInputStream inStream;
+    /* streams to read and write events */
+    private EventInputStream inStream;
 
-	private EventOutputStream outStream;
+    private EventOutputStream outStream;
 
-	private static SetupSortOn instance = null;
+    private static SetupSortOn instance = null;
 
-	/**
-	 * Returns the only instance of this class.
-	 * 
-	 * @return the only instance of this class
-	 */
-	public static SetupSortOn getInstance() {
-		if (instance == null) {
-			throw new IllegalStateException("Object not created yet.");
-		}
-		return instance;
-	}
+    /**
+     * Returns the only instance of this class.
+     * 
+     * @return the only instance of this class
+     */
+    public static SetupSortOn getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Object not created yet.");
+        }
+        return instance;
+    }
 
-	/**
-	 * Creates the only instance of this class.
-	 * 
-	 * @param console the console to use
-	 */
-	public static void createInstance(Console console) {
-		if (instance == null) {
-			instance = new SetupSortOn(console);
-		} else {
-			throw new IllegalStateException("Object already created.");
-		}
-	}
+    /**
+     * Creates the only instance of this class.
+     * 
+     * @param console
+     *            the console to use
+     */
+    public static void createInstance(Console console) {
+        if (instance == null) {
+            instance = new SetupSortOn(console);
+        } else {
+            throw new IllegalStateException("Object already created.");
+        }
+    }
 
-	private SetupSortOn(Console console) {
-	    super("Setup Online");
-		final int fileTextCols = 25;
-		final String defaultName = JamProperties
-				.getPropString(JamProperties.EXP_NAME);
-		final String defaultSortRoutine = JamProperties
-				.getPropString(JamProperties.SORT_ROUTINE);
-		final String defaultSortPath = JamProperties
-				.getPropString(JamProperties.SORT_CLASSPATH);
-		final String defaultEventInStream = JamProperties
-				.getPropString(JamProperties.EVENT_INSTREAM);
-		final String defaultEventOutStream = JamProperties
-				.getPropString(JamProperties.EVENT_OUTSTREAM);
-		final String defaultEvents = JamProperties
-				.getPropString(JamProperties.EVENT_OUTPATH);
-		histFolder = new File(JamProperties.getPropString(JamProperties.HIST_PATH));
-		final String defaultLog = JamProperties
-				.getPropString(JamProperties.LOG_PATH);
-		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
-		runControl = RunControl.getSingletonInstance();
-		counters = DisplayCounters.getSingletonInstance();
-		jamConsole = console;
-		frontEnd = STATUS.getFrontEndCommunication();
-		dialog.setResizable(false);
-		dialog.setLocation(20, 50);
-		final Container dcp = dialog.getContentPane();
-		dcp.setLayout(new BorderLayout(5, 5));
-		final int gap = 5;
-		final JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
-		final int topInset = 10;
-		final int leftInset = 10;
-		final int noSpace = 0;
-		pLabels
-				.setBorder(new EmptyBorder(topInset, leftInset, noSpace,
-						noSpace));
-		dcp.add(pLabels, BorderLayout.WEST);
-		final JLabel expName = new JLabel("Experiment Name", JLabel.RIGHT);
-		pLabels.add(expName);
-		final JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
-		pLabels.add(lsc);
-		final JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
-		pLabels.add(lscs);
-		final JLabel lSortRoutine = new JLabel("Sort Routine", JLabel.RIGHT);
-		pLabels.add(lSortRoutine);
-		final JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
-		pLabels.add(leis);
-		final JLabel leos = new JLabel("Event output stream", JLabel.RIGHT);
-		pLabels.add(leos);
-		final JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
-		pLabels.add(lhdfp);
-		final JLabel lep = new JLabel("Event path", JLabel.RIGHT);
-		pLabels.add(lep);
-		final JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
-		pLabels.add(llfp);
-		/* blank label balances out the grid */
-		final JLabel lssf = new JLabel(/* "Sort sample fraction", JLabel.RIGHT */);
-		pLabels.add(lssf);
-		/* Entries Panel */
-		final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
-		pEntries
-				.setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
-		dcp.add(pEntries, BorderLayout.CENTER);
-		textExpName = new JTextField(defaultName);
-		textExpName
-				.setToolTipText("Used to name data files. Only 20 characters get written to event files.");
-		textExpName.setColumns(20);
-		pEntries.add(textExpName);
-		/* Radio buttons for path */
-		JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
-				noSpace));
-		pEntries.add(pradio);
-		ButtonGroup pathType = new ButtonGroup();
-		pathType.add(defaultPath);
-		pradio.add(defaultPath);
-		pathType.add(specify);
-		pradio.add(specify);
-		/* Class path text */
-		pEntries.add(textSortPath);
-		/* Sort classes chooser */
-		Iterator iterator = setChooserDefault(useDefaultPath).iterator();
-		while (iterator.hasNext()) {
-			final Class clazz = (Class) iterator.next();
-			final String name = clazz.getName();
-			if (name.equals(defaultSortRoutine)) {
-				sortChoice.setSelectedItem(clazz);
-				break;
-			}
-		}
-		pEntries.add(sortChoice);
-		/* Input stream classes */
-		Set lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
-				EventInputStream.class, false));
-		lhs.remove(EventInputStream.class);
-		inChooser = new JComboBox(new Vector(lhs));
-		inChooser
-				.setToolTipText("Select the reader for your event data format.");
-		selectName(inChooser,lhs,defaultEventInStream);
-		pEntries.add(inChooser);
-		/* Output stream classes */
-		lhs = new LinkedHashSet(RTSI.find("jam.sort.stream",
-				EventOutputStream.class, false));
-		lhs.remove(EventOutputStream.class);
-		outChooser = new JComboBox(new Vector(lhs));
-		outChooser
-				.setToolTipText("Select the writer for your output event format.");
-		selectName(outChooser,lhs,defaultEventOutStream);		
-		pEntries.add(outChooser);
-		textPathHist = new JTextField(histFolder.getPath());
-		textPathHist.setColumns(fileTextCols);
-		textPathHist
-				.setToolTipText("Path to save HDF summary files at the end of each run.");
-		textPathHist.setEditable(false);
-		pEntries.add(textPathHist);
-		textPathData = new JTextField(defaultEvents);
-		textPathData.setColumns(fileTextCols);
-		textPathData.setToolTipText("Path to save event data.");
-		textPathData.setEditable(false);
-		pEntries.add(textPathData);
-		textPathLog = new JTextField(defaultLog);
-		textPathLog.setColumns(fileTextCols);
-		textPathLog.setToolTipText("Path to save the console log.");
-		textPathLog.setEditable(false);
-		pEntries.add(textPathLog);
-		JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
-		pEntries.add(pInterval);
-		cdisk = new JCheckBox("Events to Disk", true);
-		cdisk.setToolTipText("Send events to disk.");
-		cdisk.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				boolean store = cdisk.isSelected();
-				if (!store) {
-					final boolean oops = JOptionPane.showConfirmDialog(
-					        dialog,
-							"De-selecting this checkbox means Jam won't store events to disk.\n"
-									+ "Is this what you really want?",
-							"Event Storage Disabled",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
-					if (oops) {
-						cdisk.setSelected(true);
-						store = true;
-					}
-				}
-				textPathData.setEnabled(store);
-				bbrowsed.setEnabled(store);
-			}
-		});
-		pInterval.add(cdisk);
-		clog = new JCheckBox("Log Commands", false);
-		clog.setSelected(true);
-		/* Browse panel */
-		JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
-		pBrowse.setBorder(new EmptyBorder(10, 0, 0, 10));
-		dcp.add(pBrowse, BorderLayout.EAST);
-		final Dimension dummyDim = new Dimension(10, 10);
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		pBrowse.add(bbrowsef);
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		bbrowseh = new JButton("Browse...");
-		bbrowseh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				histFolder = getPath(histFolder);
-				textPathHist.setText(histFolder.getPath());
-			}
-		});
-		pBrowse.add(bbrowseh);
-		bbrowsed = new JButton("Browse...");
-		bbrowsed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dataFolder = getPath(dataFolder);
-				textPathData.setText(dataFolder.getPath());
-			}
-		});
-		pBrowse.add(bbrowsed);
-		bbrowsel = new JButton("Browse...");
-		bbrowsel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				logDirectory = getPath(logDirectory);
-				textPathLog.setText(logDirectory.getPath());
-			}
-		});
-		pBrowse.add(bbrowsel);
-		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		/*  panel for buttons */
-		JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		dcp.add(pbutton, BorderLayout.SOUTH);
-		final JPanel pBottom = new JPanel(new GridLayout(1, 4, 5, 5));
-		pbutton.add(pBottom);
-		bok = new JButton("OK");
-		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				apply(true);
-			}
-		});
-		pBottom.add(bok);
-		bapply = new JButton("Apply");
-		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				apply(false);
-			}
-		});
-		pBottom.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
-		pBottom.add(bcancel);
-		bcancel.setActionCommand("cancel");
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-			    dialog.dispose();
-			}
-		});
-		checkLock = new JCheckBox("Setup Locked", false);
-		checkLock.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent ie) {
-				if (!checkLock.isSelected()) {
-					try {
-						/* kill daemons, clear data areas */
-						resetAcq(true);
-						/* unlock sort mode */
-						lockMode(false);
-						jamConsole.closeLogFile();
-					} catch (Exception e) {
-						jamConsole.errorOutln(e.getMessage());
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		checkLock.setEnabled(false);
-		pBottom.add(checkLock);
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.pack();
-	}
+    private SetupSortOn(Console console) {
+        super("Setup Online");
+        final int fileTextCols = 25;
+        final String defaultName = JamProperties
+                .getPropString(JamProperties.EXP_NAME);
+        final String defaultSortRoutine = JamProperties
+                .getPropString(JamProperties.SORT_ROUTINE);
+        final String defaultSortPath = JamProperties
+                .getPropString(JamProperties.SORT_CLASSPATH);
+        final String defaultEventInStream = JamProperties
+                .getPropString(JamProperties.EVENT_INSTREAM);
+        final String defaultEventOutStream = JamProperties
+                .getPropString(JamProperties.EVENT_OUTSTREAM);
+        final String defaultEvents = JamProperties
+                .getPropString(JamProperties.EVENT_OUTPATH);
+        histFolder = new File(JamProperties
+                .getPropString(JamProperties.HIST_PATH));
+        final String defaultLog = JamProperties
+                .getPropString(JamProperties.LOG_PATH);
+        boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
+        runControl = RunControl.getSingletonInstance();
+        counters = DisplayCounters.getSingletonInstance();
+        jamConsole = console;
+        frontEnd = STATUS.getFrontEndCommunication();
+        dialog.setResizable(false);
+        dialog.setLocation(20, 50);
+        final Container dcp = dialog.getContentPane();
+        dcp.setLayout(new BorderLayout(5, 5));
+        final int gap = 5;
+        final JPanel pLabels = new JPanel(new GridLayout(0, 1, gap, gap));
+        final int topInset = 10;
+        final int leftInset = 10;
+        final int noSpace = 0;
+        pLabels
+                .setBorder(new EmptyBorder(topInset, leftInset, noSpace,
+                        noSpace));
+        dcp.add(pLabels, BorderLayout.WEST);
+        final JLabel expName = new JLabel("Experiment Name", JLabel.RIGHT);
+        pLabels.add(expName);
+        final JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
+        pLabels.add(lsc);
+        final JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
+        pLabels.add(lscs);
+        final JLabel lSortRoutine = new JLabel("Sort Routine", JLabel.RIGHT);
+        pLabels.add(lSortRoutine);
+        final JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
+        pLabels.add(leis);
+        final JLabel leos = new JLabel("Event output stream", JLabel.RIGHT);
+        pLabels.add(leos);
+        final JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
+        pLabels.add(lhdfp);
+        final JLabel lep = new JLabel("Event path", JLabel.RIGHT);
+        pLabels.add(lep);
+        final JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
+        pLabels.add(llfp);
+        /* blank label balances out the grid */
+        final JLabel lssf = new JLabel(/* "Sort sample fraction", JLabel.RIGHT */);
+        pLabels.add(lssf);
+        /* Entries Panel */
+        final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));
+        pEntries
+                .setBorder(new EmptyBorder(topInset, noSpace, noSpace, noSpace));
+        dcp.add(pEntries, BorderLayout.CENTER);
+        textExpName = new JTextField(defaultName);
+        textExpName
+                .setToolTipText("Used to name data files. Only 20 characters get written to event files.");
+        textExpName.setColumns(20);
+        pEntries.add(textExpName);
+        /* Radio buttons for path */
+        JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER, noSpace,
+                noSpace));
+        pEntries.add(pradio);
+        ButtonGroup pathType = new ButtonGroup();
+        pathType.add(defaultPath);
+        pradio.add(defaultPath);
+        pathType.add(specify);
+        pradio.add(specify);
+        /* Class path text */
+        pEntries.add(textSortPath);
+        /* Sort classes chooser */
+        Iterator iterator = setChooserDefault(useDefaultPath).iterator();
+        while (iterator.hasNext()) {
+            final Class clazz = (Class) iterator.next();
+            final String name = clazz.getName();
+            if (name.equals(defaultSortRoutine)) {
+                sortChoice.setSelectedItem(clazz);
+                break;
+            }
+        }
+        pEntries.add(sortChoice);
+        /* Input stream classes */
+        Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(RTSI.find(
+                "jam.sort.stream", EventInputStream.class, false));
+        lhs.remove(EventInputStream.class);
+        inChooser = new JComboBox(new Vector<Class<?>>(lhs));
+        inChooser
+                .setToolTipText("Select the reader for your event data format.");
+        selectName(inChooser, lhs, defaultEventInStream);
+        pEntries.add(inChooser);
+        /* Output stream classes */
+        lhs = new LinkedHashSet<Class<?>>(RTSI.find("jam.sort.stream",
+                EventOutputStream.class, false));
+        lhs.remove(EventOutputStream.class);
+        outChooser = new JComboBox(new Vector<Class<?>>(lhs));
+        outChooser
+                .setToolTipText("Select the writer for your output event format.");
+        selectName(outChooser, lhs, defaultEventOutStream);
+        pEntries.add(outChooser);
+        textPathHist = new JTextField(histFolder.getPath());
+        textPathHist.setColumns(fileTextCols);
+        textPathHist
+                .setToolTipText("Path to save HDF summary files at the end of each run.");
+        textPathHist.setEditable(false);
+        pEntries.add(textPathHist);
+        textPathData = new JTextField(defaultEvents);
+        textPathData.setColumns(fileTextCols);
+        textPathData.setToolTipText("Path to save event data.");
+        textPathData.setEditable(false);
+        pEntries.add(textPathData);
+        textPathLog = new JTextField(defaultLog);
+        textPathLog.setColumns(fileTextCols);
+        textPathLog.setToolTipText("Path to save the console log.");
+        textPathLog.setEditable(false);
+        pEntries.add(textPathLog);
+        JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
+        pEntries.add(pInterval);
+        cdisk = new JCheckBox("Events to Disk", true);
+        cdisk.setToolTipText("Send events to disk.");
+        cdisk.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                boolean store = cdisk.isSelected();
+                if (!store) {
+                    final boolean oops = JOptionPane.showConfirmDialog(dialog,
+                            "De-selecting this checkbox means Jam won't store events to disk.\n"
+                                    + "Is this what you really want?",
+                            "Event Storage Disabled",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
+                    if (oops) {
+                        cdisk.setSelected(true);
+                        store = true;
+                    }
+                }
+                textPathData.setEnabled(store);
+                bbrowsed.setEnabled(store);
+            }
+        });
+        pInterval.add(cdisk);
+        clog = new JCheckBox("Log Commands", false);
+        clog.setSelected(true);
+        /* Browse panel */
+        JPanel pBrowse = new JPanel(new GridLayout(0, 1, 5, 5));
+        pBrowse.setBorder(new EmptyBorder(10, 0, 0, 10));
+        dcp.add(pBrowse, BorderLayout.EAST);
+        final Dimension dummyDim = new Dimension(10, 10);
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        pBrowse.add(bbrowsef);
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        bbrowseh = new JButton("Browse...");
+        bbrowseh.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                histFolder = getPath(histFolder);
+                textPathHist.setText(histFolder.getPath());
+            }
+        });
+        pBrowse.add(bbrowseh);
+        bbrowsed = new JButton("Browse...");
+        bbrowsed.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dataFolder = getPath(dataFolder);
+                textPathData.setText(dataFolder.getPath());
+            }
+        });
+        pBrowse.add(bbrowsed);
+        bbrowsel = new JButton("Browse...");
+        bbrowsel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logDirectory = getPath(logDirectory);
+                textPathLog.setText(logDirectory.getPath());
+            }
+        });
+        pBrowse.add(bbrowsel);
+        pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
+        /* panel for buttons */
+        JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        dcp.add(pbutton, BorderLayout.SOUTH);
+        final JPanel pBottom = new JPanel(new GridLayout(1, 4, 5, 5));
+        pbutton.add(pBottom);
+        bok = new JButton("OK");
+        bok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                apply(true);
+            }
+        });
+        pBottom.add(bok);
+        bapply = new JButton("Apply");
+        bapply.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                apply(false);
+            }
+        });
+        pBottom.add(bapply);
+        final JButton bcancel = new JButton("Cancel");
+        pBottom.add(bcancel);
+        bcancel.setActionCommand("cancel");
+        bcancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                dialog.dispose();
+            }
+        });
+        checkLock = new JCheckBox("Setup Locked", false);
+        checkLock.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent ie) {
+                if (!checkLock.isSelected()) {
+                    try {
+                        /* kill daemons, clear data areas */
+                        resetAcq(true);
+                        /* unlock sort mode */
+                        lockMode(false);
+                        jamConsole.closeLogFile();
+                    } catch (Exception e) {
+                        jamConsole.errorOutln(e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        checkLock.setEnabled(false);
+        pBottom.add(checkLock);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.pack();
+    }
 
-	private void apply(boolean dispose) {
-		try {
-			/* lock setup so fields cant be edited */
-			if (STATUS.canSetup()) {
-				loadNames();
-				if (clog.isSelected()) { //if needed start logging to file
-					final String logFile = jamConsole
-							.setLogFileName(logDirectory + exptName);
-					jamConsole.messageOutln("Logging to file: " + logFile);
-					jamConsole.setLogFileOn(true);
-				} else {
-					jamConsole.setLogFileOn(false);
-				}
-				jamConsole
-						.messageOutln("Setup Online Data Acquisition,  Experiment Name: "
-								+ exptName);
-				/* Kill all existing Daemons and clear data areas */
-				resetAcq(false);
-				loadSorter(); //load sorting routine
-				if (sortRoutine != null) {
-					lockMode(true);
-					setupAcq(); //create daemons
-					jamConsole.messageOutln("Loaded "
-							+ sortRoutine.getClass().getName()
-							+ ", "
-							+ inStream.getClass().getName()
-							+ " and "
-							+ outStream.getClass().getName());
-					jamConsole.messageOutln("Communications and processing daemons successfully initiated.");
-					if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.CNAF) {
-						setupCamac(); //set the camac crate
-						jamConsole.messageOutln("CAMAC command lists sent.");
-					} else if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.VME_MAP) {
-						setupVMEmap();
-						jamConsole.messageOutln("VME map sent.");
-					}
-				}
-				selectFirstSortHistogram();					
-				if (dispose) {
-					dialog.dispose();
-				}
-			} else {
-				throw new JamException("Can't setup sorting, mode locked ");
-			}
-		} catch (SortException je) {
-			jamConsole.errorOutln(je.getMessage());
-		} catch (JamException je) {
-			jamConsole.errorOutln(je.getMessage());
-		} catch (Exception e) {
-			jamConsole.errorOutln(e.getMessage());
-		}
-	}
+    private void apply(boolean dispose) {
+        try {
+            /* lock setup so fields cant be edited */
+            if (STATUS.canSetup()) {
+                loadNames();
+                if (clog.isSelected()) { // if needed start logging to file
+                    final String logFile = jamConsole
+                            .setLogFileName(logDirectory + exptName);
+                    jamConsole.messageOutln("Logging to file: " + logFile);
+                    jamConsole.setLogFileOn(true);
+                } else {
+                    jamConsole.setLogFileOn(false);
+                }
+                jamConsole
+                        .messageOutln("Setup Online Data Acquisition,  Experiment Name: "
+                                + exptName);
+                /* Kill all existing Daemons and clear data areas */
+                resetAcq(false);
+                loadSorter(); // load sorting routine
+                if (sortRoutine != null) {
+                    lockMode(true);
+                    setupAcq(); // create daemons
+                    jamConsole.messageOutln("Loaded "
+                            + sortRoutine.getClass().getName() + ", "
+                            + inStream.getClass().getName() + " and "
+                            + outStream.getClass().getName());
+                    jamConsole
+                            .messageOutln("Communications and processing daemons successfully initiated.");
+                    if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.CNAF) {
+                        setupCamac(); // set the camac crate
+                        jamConsole.messageOutln("CAMAC command lists sent.");
+                    } else if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.VME_MAP) {
+                        setupVMEmap();
+                        jamConsole.messageOutln("VME map sent.");
+                    }
+                }
+                selectFirstSortHistogram();
+                if (dispose) {
+                    dialog.dispose();
+                }
+            } else {
+                throw new JamException("Can't setup sorting, mode locked ");
+            }
+        } catch (SortException je) {
+            jamConsole.errorOutln(je.getMessage());
+        } catch (JamException je) {
+            jamConsole.errorOutln(je.getMessage());
+        } catch (Exception e) {
+            jamConsole.errorOutln(e.getMessage());
+        }
+    }
 
-	/**
-	 * Save the names of the experiment, the sort file and the event and
-	 * histogram directories.
-	 */
-	private void loadNames() {
-		exptName = textExpName.getText().trim();
-	}
+    /**
+     * Save the names of the experiment, the sort file and the event and
+     * histogram directories.
+     */
+    private void loadNames() {
+        exptName = textExpName.getText().trim();
+    }
 
-	/* non-javadoc
-	 * Sets up the online sort process. Creates the necessary daemons and link
-	 * pipes between the processes.
-	 * 
-	 * @author Ken Swartz
-	 * @author Dale Visser
-	 */
-	private void setupAcq() throws SortException, JamException {
-	    initializeSorter();
-		/* interprocess buffering between daemons */
-		final RingBuffer sortingRing = new RingBuffer();
-		final RingBuffer storageRing = cdisk.isSelected() ? new RingBuffer()
-				: null;
-		/* typical setup of event streams */
-		try { //create new event input stream class
-			inStream = (EventInputStream) ((Class) inChooser
-					.getSelectedItem()).newInstance();
-			inStream.setConsole(jamConsole);
-		} catch (InstantiationException ie) {
-			//            eventInputStream=null;
-			ie.printStackTrace();
-			throw new JamException(getClass().getName()
-					+ ": can't instantiate EventInputStream: "
-					+ inChooser.getSelectedItem());
-		} catch (IllegalAccessException iae) {
-			//            eventInputStream=null;
-			throw new JamException(getClass().getName()
-					+ ": illegal access to EventInputStream: "
-					+ inChooser.getSelectedItem());
-		}
-		try { //create new event input stream class
-			outStream = (EventOutputStream) ((Class) outChooser
-					.getSelectedItem()).newInstance();
-			outStream.setEventSize(sortRoutine.getEventSize());
-		} catch (InstantiationException ie) {
-			//            eventOutputStream=null;
-			ie.printStackTrace();
-			throw new JamException(getClass().getName()
-					+ ": can't instantiate EventOutputStream class: "
-					+ outChooser.getSelectedItem());
-		} catch (IllegalAccessException iae) {
-			throw new JamException(getClass().getName()
-					+ ": illegal access to EventOutputStream class: "
-					+ outChooser.getSelectedItem());
-		}
-		//create sorter daemon
-		sortDaemon = new SortDaemon(runControl, jamConsole);
-		final boolean useDisk = cdisk.isSelected();
-		sortDaemon
-				.setup(inStream, sortRoutine.getEventSize());
-		sortDaemon.setRingBuffer(sortingRing);
-		sortDaemon.setSorter(sortRoutine);
-		//create storage daemon
-		if (cdisk.isSelected()) { // don't create storage daemon otherwise
-			diskDaemon = new DiskDaemon(runControl, jamConsole);
-			diskDaemon.setupOn(inStream, outStream);
-			diskDaemon.setRingBuffer(storageRing);
-		}
-		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, jamConsole,
-				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
-				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
-		/* Tell control about everything. */
-		runControl.setupOn(exptName, dataFolder, histFolder,
-				sortDaemon, netDaemon, diskDaemon);
-		/* Tell the status dialog. */
-		counters.setupOn(netDaemon, sortDaemon, diskDaemon);
-		/* Startup the daemons. */
-		if (useDisk) {
-			diskDaemon.start();
-		}
-		sortDaemon.start();
-		netDaemon.start();
-	}
+    /*
+     * non-javadoc Sets up the online sort process. Creates the necessary
+     * daemons and link pipes between the processes.
+     * 
+     * @author Ken Swartz @author Dale Visser
+     */
+    private void setupAcq() throws SortException, JamException {
+        initializeSorter();
+        /* interprocess buffering between daemons */
+        final RingBuffer sortingRing = new RingBuffer();
+        final RingBuffer storageRing = cdisk.isSelected() ? new RingBuffer()
+                : null;
+        /* typical setup of event streams */
+        try { // create new event input stream class
+            inStream = (EventInputStream) ((Class) inChooser.getSelectedItem())
+                    .newInstance();
+            inStream.setConsole(jamConsole);
+        } catch (InstantiationException ie) {
+            // eventInputStream=null;
+            ie.printStackTrace();
+            throw new JamException(getClass().getName()
+                    + ": can't instantiate EventInputStream: "
+                    + inChooser.getSelectedItem());
+        } catch (IllegalAccessException iae) {
+            // eventInputStream=null;
+            throw new JamException(getClass().getName()
+                    + ": illegal access to EventInputStream: "
+                    + inChooser.getSelectedItem());
+        }
+        try { // create new event input stream class
+            outStream = (EventOutputStream) ((Class) outChooser
+                    .getSelectedItem()).newInstance();
+            outStream.setEventSize(sortRoutine.getEventSize());
+        } catch (InstantiationException ie) {
+            // eventOutputStream=null;
+            ie.printStackTrace();
+            throw new JamException(getClass().getName()
+                    + ": can't instantiate EventOutputStream class: "
+                    + outChooser.getSelectedItem());
+        } catch (IllegalAccessException iae) {
+            throw new JamException(getClass().getName()
+                    + ": illegal access to EventOutputStream class: "
+                    + outChooser.getSelectedItem());
+        }
+        // create sorter daemon
+        sortDaemon = new SortDaemon(runControl, jamConsole);
+        final boolean useDisk = cdisk.isSelected();
+        sortDaemon.setup(inStream, sortRoutine.getEventSize());
+        sortDaemon.setRingBuffer(sortingRing);
+        sortDaemon.setSorter(sortRoutine);
+        // create storage daemon
+        if (cdisk.isSelected()) { // don't create storage daemon otherwise
+            diskDaemon = new DiskDaemon(runControl, jamConsole);
+            diskDaemon.setupOn(inStream, outStream);
+            diskDaemon.setRingBuffer(storageRing);
+        }
+        /* Create the net daemon. */
+        netDaemon = new NetDaemon(sortingRing, storageRing, jamConsole,
+                JamProperties.getPropString(JamProperties.HOST_DATA_IP),
+                JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
+        /* Tell control about everything. */
+        runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
+                netDaemon, diskDaemon);
+        /* Tell the status dialog. */
+        counters.setupOn(netDaemon, sortDaemon, diskDaemon);
+        /* Startup the daemons. */
+        if (useDisk) {
+            diskDaemon.start();
+        }
+        sortDaemon.start();
+        netDaemon.start();
+    }
 
-	private void setupCamac() throws JamException {
-		frontEnd.setupAcquisition();
-		frontEnd.setupCamac(sortRoutine.getCamacCommands());
-	}
+    private void setupCamac() throws JamException {
+        frontEnd.setupAcquisition();
+        frontEnd.setupCamac(sortRoutine.getCamacCommands());
+    }
 
-	private void setupVMEmap() throws JamException {
-		frontEnd.setupAcquisition();
-		final VME_Map map = sortRoutine.getVMEmap();
-		frontEnd.setupVMEmap(map);
-		frontEnd.sendScalerInterval(map.getScalerInterval());
-	}
+    private void setupVMEmap() throws JamException {
+        frontEnd.setupAcquisition();
+        final VME_Map map = sortRoutine.getVMEmap();
+        frontEnd.setupVMEmap(map);
+        frontEnd.sendScalerInterval(map.getScalerInterval());
+    }
 
-	/* non-javadoc:
-	 * reset online data Aquisition kill all daemons closes data network clear
-	 * all data areas Histograms, Gates, Scalers, Monitors, Parameters
-	 */
-	private void resetAcq(boolean killSort) {
-		if (diskDaemon != null) {
-			diskDaemon.setState(GoodThread.State.STOP);
-		}
-		if (sortDaemon != null) {
-			sortDaemon.setSorter(null);
-			//make sure sorter Daemon does not have a handle to sortClass
-			sortDaemon.setState(GoodThread.State.STOP);
-			//this line should be sufficient but above line is needed
-		}
-		if (netDaemon != null) {
-			netDaemon.setState(GoodThread.State.STOP);
-			netDaemon.closeNet();
-		}
-		if (killSort) {
-			sortRoutine = null;
-		}
-		DataBase.getInstance().clearAllLists();
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
-	}
+    /*
+     * non-javadoc: reset online data Aquisition kill all daemons closes data
+     * network clear all data areas Histograms, Gates, Scalers, Monitors,
+     * Parameters
+     */
+    private void resetAcq(boolean killSort) {
+        if (diskDaemon != null) {
+            diskDaemon.setState(GoodThread.State.STOP);
+        }
+        if (sortDaemon != null) {
+            sortDaemon.setSorter(null);
+            // make sure sorter Daemon does not have a handle to sortClass
+            sortDaemon.setState(GoodThread.State.STOP);
+            // this line should be sufficient but above line is needed
+        }
+        if (netDaemon != null) {
+            netDaemon.setState(GoodThread.State.STOP);
+            netDaemon.closeNet();
+        }
+        if (killSort) {
+            sortRoutine = null;
+        }
+        DataBase.getInstance().clearAllLists();
+        BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
+    }
 
-	/* non-javadoc:
-	 * Is the Browse for the Path Name where the events file will be saved.
-	 * 
-	 * @author Ken Swartz
-	 * @author Dale Visser
-	 */
-	private File getPath(File file) {
-		final JFileChooser fileChooser = new JFileChooser(file);
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
-		final boolean approval = option == JFileChooser.APPROVE_OPTION;
-		final boolean selected = fileChooser.getSelectedFile() != null;
-		return (approval && selected) ? fileChooser.getSelectedFile() : file;
-	}
+    /*
+     * non-javadoc: Is the Browse for the Path Name where the events file will
+     * be saved.
+     * 
+     * @author Ken Swartz @author Dale Visser
+     */
+    private File getPath(File file) {
+        final JFileChooser fileChooser = new JFileChooser(file);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        final int option = fileChooser.showOpenDialog(STATUS.getFrame());
+        final boolean approval = option == JFileChooser.APPROVE_OPTION;
+        final boolean selected = fileChooser.getSelectedFile() != null;
+        return (approval && selected) ? fileChooser.getSelectedFile() : file;
+    }
 
-	/* non-javadoc:
-	 * Locks up the Online setup so the fields cannot be edited.
-	 * 
-	 * @param lock
-	 *            is true if the fields are to be locked
-	 */
-	private void lockMode(boolean lock) {
-		final boolean notlock = !lock;
-		checkLock.setEnabled(lock);
-		textExpName.setEnabled(notlock);
-		inChooser.setEnabled(notlock);
-		outChooser.setEnabled(notlock);
-		sortChoice.setEnabled(notlock);
-		bok.setEnabled(notlock);
-		bapply.setEnabled(notlock);
-		bbrowseh.setEnabled(notlock);
-		bbrowsel.setEnabled(notlock);
-		bbrowsed.setEnabled(notlock);
-		specify.setEnabled(notlock);
-		defaultPath.setEnabled(notlock);
-		final SortMode sortMode =notlock ? SortMode.NO_SORT : (
-				           cdisk.isSelected() ? SortMode.ONLINE_DISK: SortMode.ON_NO_DISK);
-		final String name=sortRoutine==null ? "No Data" : sortRoutine.getClass().getName();
-		STATUS.setSortMode(sortMode, name);
-		bbrowsef.setEnabled(notlock && specify.isSelected());
-		checkLock.setSelected(lock);
-	}
+    /*
+     * non-javadoc: Locks up the Online setup so the fields cannot be edited.
+     * 
+     * @param lock is true if the fields are to be locked
+     */
+    private void lockMode(boolean lock) {
+        final boolean notlock = !lock;
+        checkLock.setEnabled(lock);
+        textExpName.setEnabled(notlock);
+        inChooser.setEnabled(notlock);
+        outChooser.setEnabled(notlock);
+        sortChoice.setEnabled(notlock);
+        bok.setEnabled(notlock);
+        bapply.setEnabled(notlock);
+        bbrowseh.setEnabled(notlock);
+        bbrowsel.setEnabled(notlock);
+        bbrowsed.setEnabled(notlock);
+        specify.setEnabled(notlock);
+        defaultPath.setEnabled(notlock);
+        final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
+                .isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
+        final String name = sortRoutine == null ? "No Data" : sortRoutine
+                .getClass().getName();
+        STATUS.setSortMode(sortMode, name);
+        bbrowsef.setEnabled(notlock && specify.isSelected());
+        checkLock.setSelected(lock);
+    }
 }
-
-

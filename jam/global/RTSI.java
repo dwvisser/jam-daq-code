@@ -121,7 +121,7 @@ public class RTSI {
 	 * @param tosubclass the superclass we desire implementations of
 	 * @param recurse whether to recurse through sub-packages
 	 */
-	public static Set find(
+	public static Set<Class<?>> find(
 		String pckgname,
 		Class tosubclass,
 		boolean recurse) {
@@ -132,7 +132,7 @@ public class RTSI {
 		"or moved/renamed an existing .class file.\n");
 		final Iterator it =
 			findClassNames(pckgname, tosubclass, recurse).iterator();
-		final Set rval = new LinkedHashSet(); //preserves order of add()'s
+		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>(); //preserves order of add()'s
 		try {
 			while (it.hasNext()) {
 				rval.add(DEF_LOADER.loadClass((String) (it.next())));
@@ -354,8 +354,8 @@ public class RTSI {
 	 * @return an alphabetically ordered set of classes assignable as 
 	 * requested
 	 */
-	public static Set find(File classpath, Class tosubclass) {
-		final Set rval = new LinkedHashSet(); //to guarantee order is preserved
+	public static Set<Class<?>> find(File classpath, Class tosubclass) {
+		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>(); //to guarantee order is preserved
 		ClassLoader loader = DEF_LOADER;
 		URL url = null;
 		if (classpath != null) {
