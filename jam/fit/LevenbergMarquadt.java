@@ -2,9 +2,8 @@ package jam.fit;
 import jam.global.MessageHandler;
 
 import java.text.NumberFormat;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This uses the Levenberg-Marquadt prescription for finding the local minimum of chi-squared
@@ -147,10 +146,8 @@ final class LevenbergMarquadt {
 	public LevenbergMarquadt(NonLinearFit nlf) {
 		nonLinFit = nlf;
 		messages = nlf.getTextInfo();
-		Iterator it = nonLinFit.getParameters().iterator();
-		List temp2 = new Vector();
-		while (it.hasNext()){
-			Parameter param=(Parameter)it.next();
+		List<Parameter> temp2 = new ArrayList<Parameter>();
+		for (Parameter param : nonLinFit.getParameters()) {
 			if (param.isDouble()) {
 				boolean variableParameter=!(param.isOutputOnly() || param.isKnown());
 				if (variableParameter) {
@@ -160,8 +157,8 @@ final class LevenbergMarquadt {
 		}
 		parameters = new Parameter[temp2.size()];
 		int i=0;
-		for (it=temp2.iterator(); it.hasNext();) {
-			parameters[i] = (Parameter)it.next();
+		for (Parameter element : temp2) {
+			parameters[i] = element;
 			i++;
 		}
 		nPar = parameters.length;

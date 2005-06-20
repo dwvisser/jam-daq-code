@@ -6,7 +6,6 @@ import java.applet.AudioClip;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,106 +21,29 @@ import java.util.Map;
  */
 public final class Monitor {
 
-	/**
-	 * Lookup table for all monitors.
-	 */
-	public static Map monitorTable = Collections.synchronizedMap(new HashMap());
+	/** The update interval */
+	private static int interval;
 
 	/**
 	 * List of all monitors.
 	 */
-	public static List monitorList = Collections
-			.synchronizedList(new ArrayList());
-
-	/** The update interval */
-	private static int interval;
-
-	private transient final String name; //name
-
-	private transient final Object source;
-
-	private double threshold;
-
-	private double maximum;
-
-	private boolean alarm;
-
-	private java.applet.AudioClip audioClip;
-
-	private transient double valueNew; //the newest value set
-
-	private transient double valueOld; //the previous value set
-
-	private double value; //value for testing
+	public static List<Monitor> monitorList = Collections
+			.synchronizedList(new ArrayList<Monitor>());
 
 	/**
-	 * Constructs an monitor object which delegates to a given
-	 * <code>Sorter</code> for the caluclation of its current
-	 * value.
-	 * 
-	 * @param monitorName
-	 *            name of the monitor for display in dialog
-	 * @param sort
-	 *            the sort routine which produces the monitor values
+	 * Lookup table for all monitors.
 	 */
-	public Monitor(String monitorName, Sorter sort) {
-		name = monitorName;
-		source = sort;
-		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
-		}
-		addToCollections();
-	}
-
-	private final void addToCollections() {
-		monitorTable.put(name, this);
-		monitorList.add(this);
-	}
+	public static Map<String, Monitor> monitorTable = Collections
+			.synchronizedMap(new HashMap<String, Monitor>());
 
 	/**
-	 * Constructs an object which monitors rate of increase
-	 * in the given <code>Scaler</code>.
-	 * 
-	 * @param monitorName
-	 *            name of the monitor for display in dialog
-	 * @param scaler
-	 *            the scaler which is monitored
+	 * Clears the list of monitors.
 	 */
-	public Monitor(String monitorName, Scaler scaler) {
-		name = monitorName;
-		source = scaler;
-		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
-		}
-		addToCollections();
-	}
-
-	/**
-	 * Constructs an object which monitors the rate of counts
-	 * in a particular <code>Gate</code>.
-	 * 
-	 * @param monitorName
-	 *            name of the monitor for display in dialog
-	 * @param gate
-	 *            the gate whose area is monitored
-	 */
-	public Monitor(String monitorName, Gate gate) {
-		name = monitorName;
-		source = gate;
-		if (source==null){
-			throw new IllegalArgumentException("Monitor \""+monitorName+"\": source must be non-null.");
-		}
-		addToCollections();
-	}
-
-	/**
-	 * Set the interval in seconds at which updates occur.
-	 * 
-	 * @param intervalIn
-	 *            interval in seconds
-	 */
-	public synchronized static void setInterval(int intervalIn) {
-		interval = intervalIn;
+	public static void clearList() {
+		monitorTable.clear();
+		monitorList.clear();
+		/* run garbage collector */
+		System.gc();
 	}
 
 	/**
@@ -138,8 +60,18 @@ public final class Monitor {
 	 * 
 	 * @return the list of monitors
 	 */
-	public static List getMonitorList() {
+	public static List<Monitor> getMonitorList() {
 		return Collections.unmodifiableList(monitorList);
+	}
+
+	/**
+	 * Set the interval in seconds at which updates occur.
+	 * 
+	 * @param intervalIn
+	 *            interval in seconds
+	 */
+	public synchronized static void setInterval(int intervalIn) {
+		interval = intervalIn;
 	}
 
 	/**
@@ -148,25 +80,125 @@ public final class Monitor {
 	 * @param inMonList
 	 *            must contain all <code>Monitor</code> objects
 	 */
-	public static void setMonitorList(List inMonList) {
+	public static void setMonitorList(List<Monitor> inMonList) {
 		clearList();
-		for (final Iterator allMonitors = inMonList.iterator(); allMonitors
-				.hasNext();) {
-			final Monitor monitor = (Monitor) allMonitors.next();
+		for (Monitor monitor : inMonList) {
 			final String name = monitor.getName();
 			monitorTable.put(name, monitor);
 			monitorList.add(monitor);
 		}
 	}
 
+	private boolean alarm;
+
+	private java.applet.AudioClip audioClip;
+
+	private double maximum;
+
+	private transient final String name; // name
+
+	private transient final Object source;
+
+	private double threshold;
+
+	private double value; // value for testing
+
+	private transient double valueNew; // the newest value set
+
+	private transient double valueOld; // the previous value set
+
 	/**
-	 * Clears the list of monitors.
+	 * Constructs an object which monitors the rate of counts in a particular
+	 * <code>Gate</code>.
+	 * 
+	 * @param monitorName
+	 *            name of the monitor for display in dialog
+	 * @param gate
+	 *            the gate whose area is monitored
 	 */
-	public static void clearList() {
-		monitorTable.clear();
-		monitorList.clear();
-		/* run garbage collector */
-		System.gc();
+	public Monitor(String monitorName, Gate gate) {
+		name = monitorName;
+		source = gate;
+		if (source == null) {
+			throw new IllegalArgumentException("Monitor \"" + monitorName
+					+ "\": source must be non-null.");
+		}
+		addToCollections();
+	}
+
+	/**
+	 * Constructs an object which monitors rate of increase in the given
+	 * <code>Scaler</code>.
+	 * 
+	 * @param monitorName
+	 *            name of the monitor for display in dialog
+	 * @param scaler
+	 *            the scaler which is monitored
+	 */
+	public Monitor(String monitorName, Scaler scaler) {
+		name = monitorName;
+		source = scaler;
+		if (source == null) {
+			throw new IllegalArgumentException("Monitor \"" + monitorName
+					+ "\": source must be non-null.");
+		}
+		addToCollections();
+	}
+
+	/**
+	 * Constructs an monitor object which delegates to a given
+	 * <code>Sorter</code> for the caluclation of its current value.
+	 * 
+	 * @param monitorName
+	 *            name of the monitor for display in dialog
+	 * @param sort
+	 *            the sort routine which produces the monitor values
+	 */
+	public Monitor(String monitorName, Sorter sort) {
+		name = monitorName;
+		source = sort;
+		if (source == null) {
+			throw new IllegalArgumentException("Monitor \"" + monitorName
+					+ "\": source must be non-null.");
+		}
+		addToCollections();
+	}
+
+	private final void addToCollections() {
+		monitorTable.put(name, this);
+		monitorList.add(this);
+	}
+
+	/**
+	 * Returns whether alarm is activated or not.
+	 * 
+	 * @return <code>true</code> if an audible alarm is desired,
+	 *         <code>false</code> if not
+	 */
+	public synchronized boolean getAlarm() {
+		return alarm;
+	}
+
+	/**
+	 * NOT YET IMPLEMENTED, Gets the current <code>AudioClip</code> object to
+	 * be played for alarms if the alarm is enabled. Currently, the plan is to
+	 * fully implement this when the JDK 1.2 <code>javax.media</code> packeage
+	 * is available.
+	 * 
+	 * @return the sound clip for this monitor's alarm, <code>null</code>
+	 *         indicates that a default system beep is desired
+	 */
+	public synchronized AudioClip getAudioClip() {
+		return audioClip;
+	}
+
+	/**
+	 * Returns the maximum value for this monitor.
+	 * 
+	 * @return the maximum value for this monitor
+	 */
+	public synchronized double getMaximum() {
+		return maximum;
 	}
 
 	/**
@@ -180,62 +212,6 @@ public final class Monitor {
 	}
 
 	/**
-	 * Returns this monitor's current value.
-	 * 
-	 * @return this monitor's current value
-	 */
-	public synchronized double getValue() {
-		return value;
-	}
-
-	/**
-	 * Sets this monitor's latest value.
-	 * 
-	 * @param valueIn
-	 *            the new value
-	 */
-	public synchronized void setValue(int valueIn) {
-		valueNew = valueIn;
-	}
-
-	/**
-	 * Sets this monitor's value to zero.
-	 */
-	public synchronized void reset() {
-		value = 0;
-	}
-
-	/**
-	 * Updates this monitor, calculating the latest monitor values. Keeps the
-	 * most recent value, too, for rate determination.
-	 */
-	public void update() {
-		if (source instanceof Scaler) {
-			valueNew = ((Scaler)source).getValue();
-			value = (valueNew - valueOld) / interval;
-			valueOld = valueNew;
-		} else if (source instanceof Gate) {
-			valueNew = ((Gate)source).getArea();
-			value = (valueNew - valueOld) / interval;
-			valueOld = valueNew;
-		} else if (source instanceof Sorter) {
-			value = ((Sorter)source).monitor(name);
-		}
-	}
-
-	/**
-	 * Sets the threshold value, which is the minimum value for a monitor to
-	 * have without <code>MonitorControl</code> issuing a warning beep.
-	 * 
-	 * @param inThreshold
-	 *            the new minimum
-	 * @see jam.data.control.MonitorControl
-	 */
-	public synchronized void setThreshold(double inThreshold) {
-		threshold = inThreshold;
-	}
-
-	/**
 	 * Returns the threshold value for this monitor.
 	 * 
 	 * @return the threshold value
@@ -245,24 +221,29 @@ public final class Monitor {
 	}
 
 	/**
-	 * Sets the maximum value, which is the maximum value for a monitor to have
-	 * without <code>MonitorControl</code> issuing a warning beep.
+	 * Returns this monitor's current value.
 	 * 
-	 * @param inMaximum
-	 *            the new maximum
-	 * @see jam.data.control.MonitorControl
+	 * @return this monitor's current value
 	 */
-	public synchronized void setMaximum(double inMaximum) {
-		maximum = inMaximum;
+	public synchronized double getValue() {
+		return value;
 	}
 
 	/**
-	 * Returns the maximum value for this monitor.
+	 * Gets whether this monitor value falls within the user-specified
+	 * acceptable range.
 	 * 
-	 * @return the maximum value for this monitor
+	 * @return <code>true</code> if acceptable
 	 */
-	public synchronized double getMaximum() {
-		return maximum;
+	public synchronized boolean isAcceptable() {
+		return value > maximum || value < threshold;
+	}
+
+	/**
+	 * Sets this monitor's value to zero.
+	 */
+	public synchronized void reset() {
+		value = 0;
 	}
 
 	/**
@@ -280,47 +261,67 @@ public final class Monitor {
 	}
 
 	/**
-	 * Returns whether alarm is activated or not.
-	 * 
-	 * @return <code>true</code> if an audible alarm is desired,
-	 *         <code>false</code> if not
-	 */
-	public synchronized boolean getAlarm() {
-		return alarm;
-	}
-
-	/**
 	 * NOT YET IMPLEMENTED, Sets an <code>AudioClip</code> object to be played
 	 * for alarms if the alarm is enabled. Currently, the plan is to fully
 	 * implement this when the JDK 1.2 <code>javax.media</code> package is
 	 * available.
 	 * 
-	 * @param clip sound to play for alarm
+	 * @param clip
+	 *            sound to play for alarm
 	 */
 	public synchronized void setAudioClip(AudioClip clip) {
 		audioClip = clip;
 	}
 
 	/**
-	 * NOT YET IMPLEMENTED, Gets the current <code>AudioClip</code> object to
-	 * be played for alarms if the alarm is enabled. Currently, the plan is to
-	 * fully implement this when the JDK 1.2 <code>javax.media</code> packeage
-	 * is available.
+	 * Sets the maximum value, which is the maximum value for a monitor to have
+	 * without <code>MonitorControl</code> issuing a warning beep.
 	 * 
-	 * @return the sound clip for this monitor's alarm, <code>null</code>
-	 *         indicates that a default system beep is desired
+	 * @param inMaximum
+	 *            the new maximum
+	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized AudioClip getAudioClip() {
-		return audioClip;
+	public synchronized void setMaximum(double inMaximum) {
+		maximum = inMaximum;
 	}
 
 	/**
-	 * Gets whether this monitor value falls within the user-specified
-	 * acceptable range.
+	 * Sets the threshold value, which is the minimum value for a monitor to
+	 * have without <code>MonitorControl</code> issuing a warning beep.
 	 * 
-	 * @return <code>true</code> if acceptable
+	 * @param inThreshold
+	 *            the new minimum
+	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized boolean isAcceptable() {
-		return value > maximum || value < threshold;
+	public synchronized void setThreshold(double inThreshold) {
+		threshold = inThreshold;
+	}
+
+	/**
+	 * Sets this monitor's latest value.
+	 * 
+	 * @param valueIn
+	 *            the new value
+	 */
+	public synchronized void setValue(int valueIn) {
+		valueNew = valueIn;
+	}
+
+	/**
+	 * Updates this monitor, calculating the latest monitor values. Keeps the
+	 * most recent value, too, for rate determination.
+	 */
+	public void update() {
+		if (source instanceof Scaler) {
+			valueNew = ((Scaler) source).getValue();
+			value = (valueNew - valueOld) / interval;
+			valueOld = valueNew;
+		} else if (source instanceof Gate) {
+			valueNew = ((Gate) source).getArea();
+			value = (valueNew - valueOld) / interval;
+			valueOld = valueNew;
+		} else if (source instanceof Sorter) {
+			value = ((Sorter) source).monitor(name);
+		}
 	}
 }

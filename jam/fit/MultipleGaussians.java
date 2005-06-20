@@ -208,20 +208,20 @@ public class MultipleGaussians extends NonLinearFit implements GaussianConstants
 	 * Allows the fit limits and centroids to be clicked in any order.
 	 */
 	private void orderParameters()  {
-		final SortedSet list = new TreeSet();
+		final SortedSet<Double> list = new TreeSet<Double>();
 		/* must use Double so Comparator interface works */
-		list.add(new Double(lo.getIntValue()));
-		list.add(new Double(hi.getIntValue()));
+		list.add((double)lo.getIntValue());
+		list.add((double)hi.getIntValue());
 		final int n=numPeaks.getIntValue();
 		for (int i = 0; i < n; i++) {
-			list.add(new Double(centroid[i].getDoubleValue()));
+			list.add(centroid[i].getDoubleValue());
 		}
-		final Iterator it = list.iterator();
-		lo.setValue(((Number) it.next()).intValue());
+		final Iterator<Double> it = list.iterator();
+		lo.setValue(it.next());
 		for (int i = 0; i < n; i++) {
-			centroid[i].setValue(((Number) it.next()).doubleValue());
+			centroid[i].setValue(it.next());
 		}
-		hi.setValue(((Number) it.next()).intValue());
+		hi.setValue(it.next());
 	}
 
 	/**

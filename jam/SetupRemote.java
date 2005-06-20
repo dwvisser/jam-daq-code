@@ -79,7 +79,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 
     transient RemoteAccess remoteAccess;
 
-    private transient List histList, gateList;
+    private transient List<Histogram> histList;
+    private transient List<Gate> gateList;
 
     private transient final boolean inApplet; //are we running in a applet
 

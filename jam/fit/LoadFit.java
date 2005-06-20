@@ -123,7 +123,7 @@ public class LoadFit {
 	private Object [] getFitClasses() {
 		final String package1="jam.fit";
 		final String package2="fit";
-		final Set set = RTSI.find(package1, AbstractFit.class,false);
+		final Set<Class<?>> set = RTSI.find(package1, AbstractFit.class,false);
 		set.addAll(RTSI.find(package2, AbstractFit.class,false));
 		return set.toArray();
 	}

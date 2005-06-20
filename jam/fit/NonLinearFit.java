@@ -70,7 +70,7 @@ public abstract class NonLinearFit extends AbstractFit {
      */
     public NonLinearFit(String name){
         super(name);
-        parameters=new Vector();
+        parameters=new Vector<Parameter>();
         chisq = new Parameter("ChiSq/dof",Parameter.DOUBLE,
         Parameter.KNOWN, Parameter.OUTPUT);
         addParameter(chisq);
@@ -122,9 +122,9 @@ public abstract class NonLinearFit extends AbstractFit {
 
 
         //function.setParameters(parameters);
-        minCH=((Parameter)(parameterTable.get(FIT_LOW))).getIntValue();
+        minCH=((Parameter)getParameter(FIT_LOW)).getIntValue();
         lowerLimit=minCH;
-        maxCH=((Parameter)(parameterTable.get(FIT_HIGH))).getIntValue();
+        maxCH=((Parameter)getParameter(FIT_HIGH)).getIntValue();
         upperLimit=maxCH;
         lm.setup(counts,errors,minCH,maxCH);
 
@@ -155,7 +155,7 @@ public abstract class NonLinearFit extends AbstractFit {
         } catch (Exception e) {
             returnVal=e.toString();
         }
-        ((Parameter)(parameterTable.get("ChiSq/dof"))).setValue(newChiSq);
+        ((Parameter)getParameter("ChiSq/dof")).setValue(newChiSq);
         return returnVal;
     }
 

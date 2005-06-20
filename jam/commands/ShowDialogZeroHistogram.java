@@ -13,36 +13,35 @@ import javax.swing.Icon;
 
 /**
  * Show the zero histograms dialog
- *  
+ * 
  * @author Ken Swartz
- *
+ * 
  */
-final class ShowDialogZeroHistogram extends AbstractShowDialog 
-implements Observer {
+final class ShowDialogZeroHistogram extends AbstractShowDialog implements
+		Observer {
 
-	private final List histogramList=Histogram.getHistogramList();
+	private final List<Histogram> histogramList = Histogram.getHistogramList();
 
 	/**
 	 * Initialize command
 	 */
-	public void initCommand(){
+	public void initCommand() {
 		putValue(NAME, "Zero\u2026");
-	   final Icon iZero = loadToolbarIcon("jam/ui/Zero.png");
-	   putValue(Action.SMALL_ICON, iZero);
-	   putValue(Action.SHORT_DESCRIPTION, "Zero Histograms.");	    
-	   dialog= new HistogramZero(msghdlr);		
+		final Icon iZero = loadToolbarIcon("jam/ui/Zero.png");
+		putValue(Action.SMALL_ICON, iZero);
+		putValue(Action.SHORT_DESCRIPTION, "Zero Histograms.");
+		dialog = new HistogramZero(msghdlr);
 	}
 
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
-		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
-			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
-			setEnabled(false);			
-		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
-				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
+	public void update(Observable observe, Object obj) {
+		final BroadcastEvent be = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = be.getCommand();
+		if ((command == BroadcastEvent.Command.GROUP_SELECT)
+				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
+			setEnabled(false);
+		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
+				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
 			setEnabled(!histogramList.isEmpty());
-		} 
-	}			
+		}
+	}
 }
- 
