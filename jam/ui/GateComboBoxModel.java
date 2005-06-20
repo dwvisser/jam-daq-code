@@ -58,8 +58,8 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 
 	private Object selection = null;
 	private JamStatus status;
-	private final List lastValue =
-		Collections.synchronizedList(new ArrayList());
+	private final List<Object> lastValue =
+		Collections.synchronizedList(new ArrayList<Object>());
 	private final Mode mode;
 
 	/**

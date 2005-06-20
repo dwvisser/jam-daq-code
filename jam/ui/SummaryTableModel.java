@@ -20,327 +20,327 @@ import javax.swing.table.TableModel;
  */
 public final class SummaryTableModel implements TableModel {
 
-    /**
-     * Class with data for a row
-     */
-    class RowDataElement {
+	/**
+	 * Class with data for a row
+	 */
+	class RowDataElement {
 
-        private DataElement dataElement;
+		private DataElement dataElement;
 
-        private String groupName;
+		private String groupName;
 
-        RowDataElement(String groupName, DataElement dataElement) {
-            this.groupName = groupName;
-            this.dataElement = dataElement;
-        }
+		RowDataElement(String groupName, DataElement dataElement) {
+			this.groupName = groupName;
+			this.dataElement = dataElement;
+		}
 
-        DataElement getDataElement() {
-            return dataElement;
-        }
+		DataElement getDataElement() {
+			return dataElement;
+		}
 
-        String getGroupName() {
-            return groupName;
-        }
-    }
+		String getGroupName() {
+			return groupName;
+		}
+	}
 
-    private String COL_NAME_GROUP = "Group";
+	private String COL_NAME_GROUP = "Group";
 
-    private String COL_NAME_NAME = "Name";
+	private String COL_NAME_NAME = "Name";
 
-    private String COL_NAME_TYPE = "Type";
+	private String COL_NAME_TYPE = "Type";
 
-    private String COL_NAME_VALUE = "Counts";
+	private String COL_NAME_VALUE = "Counts";
 
-    /** The titles of the columns */
-    private String[] columnTitles;
+	/** The titles of the columns */
+	private String[] columnTitles;
 
-    private List dataList = new ArrayList();
+	private List<RowDataElement> dataList = new ArrayList<RowDataElement>();
 
-    private List listenerList = new ArrayList();
+	private List<TableModelListener> listenerList = new ArrayList<TableModelListener>();
 
-    /** The number of columns */
-    int numColumns;
+	/** The number of columns */
+	int numColumns;
 
-    NumberFormat numFormat;
+	NumberFormat numFormat;
 
-    Group selectedGroup;
+	Group selectedGroup;
 
-    /** The selection type, single group or all groups */
-    int selectionType;
+	/** The selection type, single group or all groups */
+	int selectionType;
 
-    /** Flag to show gates */
-    boolean showGates;
+	/** Flag to show gates */
+	boolean showGates;
 
-    /** Flag to show histograms */
-    boolean showHistograms;
+	/** Flag to show histograms */
+	boolean showHistograms;
 
-    /** Flag to show scalers */
-    boolean showScalers;
+	/** Flag to show scalers */
+	boolean showScalers;
 
-    SummaryTableModel() {
-        setSelectionType(SummaryTable.SINGLE_GROUP_SELECTED);
+	SummaryTableModel() {
+		setSelectionType(SummaryTable.SINGLE_GROUP_SELECTED);
 
-        numFormat = NumberFormat.getInstance();
-        numFormat.setGroupingUsed(false);
-        final int fracDigits = 2;
-        numFormat.setMinimumFractionDigits(fracDigits);
-        numFormat.setMaximumFractionDigits(fracDigits);
+		numFormat = NumberFormat.getInstance();
+		numFormat.setGroupingUsed(false);
+		final int fracDigits = 2;
+		numFormat.setMinimumFractionDigits(fracDigits);
+		numFormat.setMaximumFractionDigits(fracDigits);
 
-    }
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#addTableModelListener(javax.swing.event.TableModelListener)
-     */
-    public void addTableModelListener(TableModelListener listener) {
-        listenerList.add(listener);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#addTableModelListener(javax.swing.event.TableModelListener)
+	 */
+	public void addTableModelListener(TableModelListener listener) {
+		listenerList.add(listener);
+	}
 
-    /**
-     * Create the list of data elements needed given a group
-     * 
-     * @param group
-     */
-    private void createGroupDataList(Group group) {
-        if (group != null) {
-            // Scalers
-            if (showScalers) {
-                Iterator scalIter = group.getScalerList().iterator();
-                while (scalIter.hasNext()) {
-                    DataElement dataElement = (DataElement) scalIter.next();
-                    dataList.add(new RowDataElement(group.getName(),
-                            dataElement));
-                }
-            }
-            // Histograms
-            Iterator histIter = group.getHistogramList().iterator();
-            while (histIter.hasNext()) {
-                Histogram hist = (Histogram) histIter.next();
-                if (showHistograms) {
-                    final DataElement dataElement = hist;
-                    dataList.add(new RowDataElement(group.getName(),
-                            dataElement));
-                }
+	/**
+	 * Create the list of data elements needed given a group
+	 * 
+	 * @param group
+	 */
+	private void createGroupDataList(Group group) {
+		if (group != null) {
+			// Scalers
+			if (showScalers) {
+				Iterator scalIter = group.getScalerList().iterator();
+				while (scalIter.hasNext()) {
+					DataElement dataElement = (DataElement) scalIter.next();
+					dataList.add(new RowDataElement(group.getName(),
+							dataElement));
+				}
+			}
+			// Histograms
+			Iterator histIter = group.getHistogramList().iterator();
+			while (histIter.hasNext()) {
+				Histogram hist = (Histogram) histIter.next();
+				if (showHistograms) {
+					final DataElement dataElement = hist;
+					dataList.add(new RowDataElement(group.getName(),
+							dataElement));
+				}
 
-                // Gates
-                if (showGates) {
-                    Iterator gateIter = hist.getGates().iterator();
-                    while (gateIter.hasNext()) {
-                        DataElement dataElementGate = (DataElement) gateIter
-                                .next();
-                        dataList.add(new RowDataElement(group.getName(),
-                                dataElementGate));
-                    }
-                }
-            }
-        }
-    }
+				// Gates
+				if (showGates) {
+					Iterator gateIter = hist.getGates().iterator();
+					while (gateIter.hasNext()) {
+						DataElement dataElementGate = (DataElement) gateIter
+								.next();
+						dataList.add(new RowDataElement(group.getName(),
+								dataElementGate));
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * Fire table event to listeners
-     * 
-     * @param tableModelEvent
-     */
-    private void fireTableEvent(TableModelEvent tableModelEvent) {
+	/**
+	 * Fire table event to listeners
+	 * 
+	 * @param tableModelEvent
+	 */
+	private void fireTableEvent(TableModelEvent tableModelEvent) {
 
-        final Iterator listenerIter = listenerList.iterator();
-        while (listenerIter.hasNext()) {
-            final TableModelListener tml = (TableModelListener) listenerIter
-                    .next();
-            tml.tableChanged(tableModelEvent);
-        }
-    }
+		final Iterator listenerIter = listenerList.iterator();
+		while (listenerIter.hasNext()) {
+			final TableModelListener tml = (TableModelListener) listenerIter
+					.next();
+			tml.tableChanged(tableModelEvent);
+		}
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#getColumnClass(int)
-     */
-    public Class getColumnClass(int arg0) {
-        return String.class;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#getColumnClass(int)
+	 */
+	public Class<?> getColumnClass(int arg0) {
+		return String.class;
+	}
 
-    /**
-     * Get the number of columns
-     * 
-     * @see javax.swing.table.TableModel#getColumnCount()
-     */
-    public int getColumnCount() {
-        return numColumns;
-    }
+	/**
+	 * Get the number of columns
+	 * 
+	 * @see javax.swing.table.TableModel#getColumnCount()
+	 */
+	public int getColumnCount() {
+		return numColumns;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#getColumnName(int)
-     */
-    public String getColumnName(int col) {
-        return columnTitles[col];
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#getColumnName(int)
+	 */
+	public String getColumnName(int col) {
+		return columnTitles[col];
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#getRowCount()
-     */
-    public int getRowCount() {
-        return dataList.size();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#getRowCount()
+	 */
+	public int getRowCount() {
+		return dataList.size();
+	}
 
-    /**
-     * Get the value of a cell
-     * 
-     * @see javax.swing.table.TableModel#getValueAt(int, int)
-     */
-    public Object getValueAt(int row, int col) {
+	/**
+	 * Get the value of a cell
+	 * 
+	 * @see javax.swing.table.TableModel#getValueAt(int, int)
+	 */
+	public Object getValueAt(int row, int col) {
 
-        Object retValue = null;
-        int offsetCol;
+		Object retValue = null;
+		int offsetCol;
 
-        RowDataElement rowDataElement = (RowDataElement) dataList.get(row);
-        String groupName = rowDataElement.getGroupName();
-        DataElement dataElement = rowDataElement.getDataElement();
+		RowDataElement rowDataElement = (RowDataElement) dataList.get(row);
+		String groupName = rowDataElement.getGroupName();
+		DataElement dataElement = rowDataElement.getDataElement();
 
-        if (selectionType == SummaryTable.ALL_GROUPS_SELECTED) {
-            offsetCol = 1;
-            // Group
-            if (col == 0) {
-                retValue = groupName;
-            }
+		if (selectionType == SummaryTable.ALL_GROUPS_SELECTED) {
+			offsetCol = 1;
+			// Group
+			if (col == 0) {
+				retValue = groupName;
+			}
 
-        } else {
-            offsetCol = 0;
-        }
+		} else {
+			offsetCol = 0;
+		}
 
-        // Type
-        if (col == offsetCol) {
+		// Type
+		if (col == offsetCol) {
 
-            if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_HISTOGRAM) {
-                retValue = "Histogram";
-            } else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_GATE) {
-                retValue = "Gate";
-            } else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_SCALER) {
-                retValue = "Scaler";
-            }
+			if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_HISTOGRAM) {
+				retValue = "Histogram";
+			} else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_GATE) {
+				retValue = "Gate";
+			} else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_SCALER) {
+				retValue = "Scaler";
+			}
 
-            // Name
-        } else if (col == offsetCol + 1) {
-            retValue = dataElement.getName();
+			// Name
+		} else if (col == offsetCol + 1) {
+			retValue = dataElement.getName();
 
-            // Value
-        } else if (col == offsetCol + 2) {
-            // Cheap format as integer
-            // int countInt = (int)Math.round(dataElement.getCount());
-            // retValue = new Integer(countInt);
+			// Value
+		} else if (col == offsetCol + 2) {
+			// Cheap format as integer
+			// int countInt = (int)Math.round(dataElement.getCount());
+			// retValue = new Integer(countInt);
 
-            retValue = numFormat.format(dataElement.getCount());
+			retValue = numFormat.format(dataElement.getCount());
 
-        }
+		}
 
-        return retValue;
-    }
+		return retValue;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#isCellEditable(int, int)
-     */
-    public boolean isCellEditable(int arg0, int arg1) {
-        return false;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#isCellEditable(int, int)
+	 */
+	public boolean isCellEditable(int arg0, int arg1) {
+		return false;
+	}
 
-    /**
-     * Refresh the model data.
-     * 
-     */
-    public void refresh() {
-        dataList.clear();
-        if ((selectionType == SummaryTable.SINGLE_GROUP_SELECTED)
-                && (selectedGroup != null)) {
-            createGroupDataList(selectedGroup);
-        } else {
-            Iterator groupIter = Group.getGroupList().iterator();
-            while (groupIter.hasNext()) {
-                Group group = (Group) groupIter.next();
-                createGroupDataList(group);
-            }
-        }
-        fireTableEvent(new TableModelEvent(this));
-    }
+	/**
+	 * Refresh the model data.
+	 * 
+	 */
+	public void refresh() {
+		dataList.clear();
+		if ((selectionType == SummaryTable.SINGLE_GROUP_SELECTED)
+				&& (selectedGroup != null)) {
+			createGroupDataList(selectedGroup);
+		} else {
+			Iterator groupIter = Group.getGroupList().iterator();
+			while (groupIter.hasNext()) {
+				Group group = (Group) groupIter.next();
+				createGroupDataList(group);
+			}
+		}
+		fireTableEvent(new TableModelEvent(this));
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
-     */
-    public void removeTableModelListener(TableModelListener listenerRemove) {
-        for (int i = 0; i < listenerList.size(); i++) {
-            TableModelListener listener = (TableModelListener) listenerList
-                    .get(i);
-            if (listenerRemove == listener) {
-                listenerList.remove(i);
-            }
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
+	 */
+	public void removeTableModelListener(TableModelListener listenerRemove) {
+		for (int i = 0; i < listenerList.size(); i++) {
+			TableModelListener listener = (TableModelListener) listenerList
+					.get(i);
+			if (listenerRemove == listener) {
+				listenerList.remove(i);
+			}
+		}
+	}
 
-    /**
-     * Set the current group and refresh.
-     * 
-     * @param groupIn
-     *            new current group
-     */
-    public void setGroup(Group groupIn) {
-        selectedGroup = groupIn;
-        refresh();
-    }
+	/**
+	 * Set the current group and refresh.
+	 * 
+	 * @param groupIn
+	 *            new current group
+	 */
+	public void setGroup(Group groupIn) {
+		selectedGroup = groupIn;
+		refresh();
+	}
 
-    /**
-     * Set options of which data elements to show
-     * 
-     * @param showScalers
-     * @param showHistograms
-     * @param showGates
-     */
-    public void setOptions(boolean showScalers, boolean showHistograms,
-            boolean showGates) {
-        this.showScalers = showScalers;
-        this.showHistograms = showHistograms;
-        this.showGates = showGates;
-        refresh();
-    }
+	/**
+	 * Set options of which data elements to show
+	 * 
+	 * @param showScalers
+	 * @param showHistograms
+	 * @param showGates
+	 */
+	public void setOptions(boolean showScalers, boolean showHistograms,
+			boolean showGates) {
+		this.showScalers = showScalers;
+		this.showHistograms = showHistograms;
+		this.showGates = showGates;
+		refresh();
+	}
 
-    /* non-javadoc:
-     * Set the selection type
-     */
-    final void setSelectionType(int type) {
-        selectionType = type;
-        if (type == SummaryTable.ALL_GROUPS_SELECTED) {
-            numColumns = 4;
-            columnTitles = new String[numColumns];
-            columnTitles[0] = COL_NAME_GROUP;
-            columnTitles[1] = COL_NAME_TYPE;
-            columnTitles[2] = COL_NAME_NAME;
-            columnTitles[3] = COL_NAME_VALUE;
-        } else {
-            numColumns = 3;
-            columnTitles = new String[numColumns];
-            columnTitles[0] = COL_NAME_TYPE;
-            columnTitles[1] = COL_NAME_NAME;
-            columnTitles[2] = COL_NAME_VALUE;
-        }
-        fireTableEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
-        refresh();
-    }
+	/*
+	 * non-javadoc: Set the selection type
+	 */
+	final void setSelectionType(int type) {
+		selectionType = type;
+		if (type == SummaryTable.ALL_GROUPS_SELECTED) {
+			numColumns = 4;
+			columnTitles = new String[numColumns];
+			columnTitles[0] = COL_NAME_GROUP;
+			columnTitles[1] = COL_NAME_TYPE;
+			columnTitles[2] = COL_NAME_NAME;
+			columnTitles[3] = COL_NAME_VALUE;
+		} else {
+			numColumns = 3;
+			columnTitles = new String[numColumns];
+			columnTitles[0] = COL_NAME_TYPE;
+			columnTitles[1] = COL_NAME_NAME;
+			columnTitles[2] = COL_NAME_VALUE;
+		}
+		fireTableEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+		refresh();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int, int)
-     */
-    public void setValueAt(Object arg0, int arg1, int arg2) {
-        // TODO Auto-generated method stub
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int, int)
+	 */
+	public void setValueAt(Object arg0, int arg1, int arg2) {
+		// TODO Auto-generated method stub
 
-    }
+	}
 
 }

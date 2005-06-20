@@ -69,8 +69,8 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	private static final String END_LINE = System.getProperty("line.separator");
 
-	private transient final java.util.List listenerList = Collections
-			.synchronizedList(new ArrayList());
+	private transient final List<CommandListener> listenerList = Collections
+			.synchronizedList(new ArrayList<CommandListener>());
 
 	private transient final JTextPane textLog = new JTextPane(); //output text
 																 // area
@@ -84,7 +84,7 @@ public class Console extends JPanel implements MessageHandler {
 
 	private transient final JScrollPane jsp;
 
-	private transient final LinkedList cmdStack = new LinkedList();
+	private transient final LinkedList<String> cmdStack = new LinkedList<String>();
 
 	private transient int lastCmdIndex;
 
@@ -450,7 +450,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @return a array of the command tokens
 	 */
 	private String[] parseExpression(final String strCmd) {
-		final List cmdTokenList = new ArrayList();
+		final List<String> cmdTokenList = new ArrayList<String>();
 		/* match anything between quotes or words (not spaces) */
 		final String regex = "\"([^\"]*?)\"|(\\S+)\\s*";
 		final Pattern pattern = Pattern.compile(regex);

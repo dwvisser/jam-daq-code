@@ -47,8 +47,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     /**
      * Hashtable keys are the event numbers, objects are the array indices.
      */
-    private transient final Map eventNumMap=Collections.synchronizedMap(
-    		new HashMap(BUFFER_DEPTH));
+    private transient final Map<Integer, Integer> eventNumMap=Collections.synchronizedMap(
+    		new HashMap<Integer, Integer>(BUFFER_DEPTH));
     
     /**
      * Make sure to issue a setConsole() after using this constructor.
