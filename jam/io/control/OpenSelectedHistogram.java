@@ -40,54 +40,59 @@ import javax.swing.border.EmptyBorder;
  * indicator to the histogram name
  * 
  * @author Ken
- *  
+ * 
  */
-public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
+public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 
 	private final JDialog dialog;
 
 	private final JTextField txtFile;
 
 	private final JList histList;
-	
+
 	private final DefaultListModel histListData;
 
 	/**
 	 * File to read histogram information from
 	 */
 	private File fileOpen;
-	
-    private final List histAttrList = new ArrayList();	
+
+	private final List<HistogramAttributes> histAttrList = new ArrayList<HistogramAttributes>();
 
 	/** HDF file reader */
 	private final HDFIO hdfio;
+
 	/** Messages output */
 	private final MessageHandler msgHandler;
-	
+
 	private final Frame frame;
 
-	private static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();;
+	private static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();;
 
-	private static final JamStatus STATUS =JamStatus.getSingletonInstance();;
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();;
 
 	/**
-	 * Constructs an object which uses a dialog to open a selected histogram out of an
-	 * HDF file.
-	 *  
-	 * @param frame parent frame
-	 * @param msgHandler where to print messages
+	 * Constructs an object which uses a dialog to open a selected histogram out
+	 * of an HDF file.
+	 * 
+	 * @param frame
+	 *            parent frame
+	 * @param msgHandler
+	 *            where to print messages
 	 */
 	public OpenSelectedHistogram(Frame frame, MessageHandler msgHandler) {
-	    this.frame=frame;
+		this.frame = frame;
 		this.msgHandler = msgHandler;
 		hdfio = new HDFIO(frame, msgHandler);
 
 		dialog = new JDialog(frame, "Open Selected Histograms", false);
-		dialog.setLocation(frame.getLocation().x + 50, frame.getLocation().y + 50);
+		dialog.setLocation(frame.getLocation().x + 50,
+				frame.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);		
+		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);
 		pFileInd.add(filelabel);
 		txtFile = new JTextField(20);
 		txtFile.setEditable(false);
@@ -107,101 +112,98 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 		final JPanel pLower = new JPanel();
 		container.add(pLower, BorderLayout.SOUTH);
 		final PanelOKApplyCancelButtons.Listener listener = new PanelOKApplyCancelButtons.Listener() {
-            public void doOK() {
-                apply();
-                cancel();
-            }
+			public void doOK() {
+				apply();
+				cancel();
+			}
 
-            /**
-             * Apply Button
-             *  
-             */
-            public void apply() {
-               loadHistograms();
-            }
+			/**
+			 * Apply Button
+			 * 
+			 */
+			public void apply() {
+				loadHistograms();
+			}
 
-            /**
-             * Cancel Button
-             *  
-             */
-            public void cancel() {
-                /* Clear memory */
-                histListData.clear();
-                dialog.dispose();
-            }
-        };
-        final PanelOKApplyCancelButtons pButtons=new PanelOKApplyCancelButtons(listener);
+			/**
+			 * Cancel Button
+			 * 
+			 */
+			public void cancel() {
+				/* Clear memory */
+				histListData.clear();
+				dialog.dispose();
+			}
+		};
+		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
+				listener);
 		pLower.add(pButtons.getComponent());
 		dialog.setResizable(false);
 		dialog.pack();
 	}
 
-
-
-
 	/**
 	 * Entry points show the dialog if a file is chosen to open
-	 *  
+	 * 
 	 */
 	public void open() {
 		if (chooseFile()) {
-        	if (loadHistNames(fileOpen)) {					
-        		txtFile.setText(fileOpen.getAbsolutePath());				
-        		dialog.setVisible(true);
-        	}
-        }
-	}
-	
-	/* non-javadoc:
-	 * Load name of histograms from the selected file.
-	 */
-	private boolean loadHistNames(File fileSelect) {	
-		boolean loadState;
-		/* Read in histogram names attributes */	
-		try {
-			final List histAttr= hdfio.readHistogramAttributes(fileSelect);
-			final Iterator iter = histAttr.iterator(); 
-			while (iter.hasNext()) {
-				final HistogramAttributes histAtt= (HistogramAttributes)iter.next();
-				histListData.addElement(histAtt.getFullName());				
+			if (loadHistNames(fileOpen)) {
+				txtFile.setText(fileOpen.getAbsolutePath());
+				dialog.setVisible(true);
 			}
-			loadState=true;
-		}catch (HDFException hdfe){
+		}
+	}
+
+	/*
+	 * non-javadoc: Load name of histograms from the selected file.
+	 */
+	private boolean loadHistNames(File fileSelect) {
+		boolean loadState;
+		/* Read in histogram names attributes */
+		try {
+			final List histAttr = hdfio.readHistogramAttributes(fileSelect);
+			final Iterator iter = histAttr.iterator();
+			while (iter.hasNext()) {
+				final HistogramAttributes histAtt = (HistogramAttributes) iter
+						.next();
+				histListData.addElement(histAtt.getFullName());
+			}
+			loadState = true;
+		} catch (HDFException hdfe) {
 			msgHandler.errorOutln(hdfe.toString());
-			loadState=false;
+			loadState = false;
 		}
 		histList.clearSelection();
-		
+
 		return loadState;
 	}
 
-
-	/* non-javadoc:
-	 * Load the histograms in the selected list.
+	/*
+	 * non-javadoc: Load the histograms in the selected list.
 	 */
 	private void loadHistograms() {
-
-        final Object[] selected = histList.getSelectedValues();
-        histAttrList.clear();
-        //No histograms selected
-        if (selected.length == 0) {
-            msgHandler.errorOutln("No histograms selected");
-        } else {
-            /* Put selected histograms into a list */
-            final List selectNames = new ArrayList();
-
-            for (int i = 0; i < selected.length; i++) {
-            	final String histFullName = (String)selected[i];
-            	final HistogramAttributes histAttrib = HistogramAttributes.getHistogramAttribute(histFullName);
-            	histAttrList.add(histAttrib);          	
-            	final String histName = histAttrib.getName();
-                selectNames.add(histName);
-            }
-            /* Read in histograms */
-            hdfio.setListener(this);
-            hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, histAttrList);
-        }
-    }
+		final Object[] selected = histList.getSelectedValues();
+		histAttrList.clear();
+		// No histograms selected
+		if (selected.length == 0) {
+			msgHandler.errorOutln("No histograms selected");
+		} else {
+			/* Put selected histograms into a list */
+			final List<String> selectNames = new ArrayList<String>();
+			for (int i = 0; i < selected.length; i++) {
+				final String histFullName = (String) selected[i];
+				final HistogramAttributes histAttrib = HistogramAttributes
+						.getHistogramAttribute(histFullName);
+				histAttrList.add(histAttrib);
+				final String histName = histAttrib.getName();
+				selectNames.add(histName);
+			}
+			/* Read in histograms */
+			hdfio.setListener(this);
+			hdfio.readFile(FileOpenMode.OPEN_MORE, fileOpen, histAttrList);
+		}
+	}
 
 	/**
 	 * Read in an unspecified file by opening up a dialog box.
@@ -220,7 +222,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 				fileOpen = jfile.getSelectedFile();
 			}
 			openF = true;
-		} else { //dialog didn't return a file
+		} else { // dialog didn't return a file
 			openF = false;
 		}
 		return openF;
@@ -228,33 +230,34 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener{
 
 	private void notifyApp() {
 		Histogram firstHist = null;
-		//Update app status		
+		// Update app status
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		//Set the current histogram to the first opened histogram		
-		final Group firstGroup =hdfio.getFirstLoadGroup();		
-        if (firstGroup!=null) {
-            STATUS.setCurrentGroup(firstGroup);
+		// Set the current histogram to the first opened histogram
+		final Group firstGroup = hdfio.getFirstLoadGroup();
+		if (firstGroup != null) {
+			STATUS.setCurrentGroup(firstGroup);
 
-            /* Set the current histogram to the first opened histogram. */
-            if (firstGroup.getHistogramList().size() > 0) {
-            	firstHist = (Histogram) firstGroup.getHistogramList().get(0);
-            }
-        }
-		
-		if (firstHist!=null) {
-			STATUS.setCurrentHistogram(firstHist);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
+			/* Set the current histogram to the first opened histogram. */
+			if (firstGroup.getHistogramList().size() > 0) {
+				firstHist = (Histogram) firstGroup.getHistogramList().get(0);
+			}
 		}
-		
-	}			
-	
+
+		if (firstHist != null) {
+			STATUS.setCurrentHistogram(firstHist);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+					firstHist);
+		}
+
+	}
+
 	/**
-	 * Called by HDFIO when asynchronized IO is completed  
+	 * Called by HDFIO when asynchronized IO is completed
 	 */
 	public void completedIO(String message, String errorMessage) {
 		hdfio.removeListener();
-		notifyApp();		
+		notifyApp();
 	}
-	
+
 }

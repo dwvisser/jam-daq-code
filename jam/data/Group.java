@@ -107,7 +107,7 @@ public final class Group {
 	 * 
 	 * @return list of all groups
 	 */
-	public static List getGroupList() {
+	public static List<Group> getGroupList() {
 		return Collections.unmodifiableList(LIST);
 	}
 
@@ -251,14 +251,14 @@ public final class Group {
 	/**
 	 * @return list of histograms in this group
 	 */
-	public List getHistogramList() {
+	public List<Histogram> getHistogramList() {
 		return Collections.unmodifiableList(histList);
 	}
 
 	/**
 	 * @return map of histograms in this group keyed by name
 	 */
-	public Map getHistogramMap() {
+	public Map<String, Histogram> getHistogramMap() {
 		return Collections.unmodifiableMap(histogramMap);
 	}
 

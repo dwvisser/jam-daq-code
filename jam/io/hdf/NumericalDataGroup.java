@@ -18,11 +18,11 @@ final class NumericalDataGroup extends AbstractData {
     /**
      * List of data elements this NDG ties together.
      */
-    private List elements;
+    private List<AbstractData> elements;
 
     NumericalDataGroup() {
         super(DFTAG_NDG); //sets tag
-        elements = Collections.synchronizedList(new ArrayList());
+        elements = Collections.synchronizedList(new ArrayList<AbstractData>());
     }
 
     /**
@@ -46,7 +46,7 @@ final class NumericalDataGroup extends AbstractData {
         bytes.rewind();
         /* 2 for each tag, 2 for each ref */
         final int numItems = bytes.capacity() / 4;
-        elements = new ArrayList(numItems);
+        elements = new ArrayList<AbstractData>(numItems);
         for (int i = 0; i < numItems; i++) {
             final short tagType = bytes.getShort();
             final short reference = bytes.getShort();
@@ -68,7 +68,7 @@ final class NumericalDataGroup extends AbstractData {
     /*
      * non-javadoc: Passes the internal vector back.
      */
-    List getObjects() {
+    List<AbstractData> getObjects() {
         return elements;
     }
     

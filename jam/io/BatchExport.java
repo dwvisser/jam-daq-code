@@ -106,8 +106,8 @@ public class BatchExport extends JDialog implements Observer {
 		}
 
 		void addToSelection() {
-			final Object [] selected = histList.getSelectedValues();
-			final HashSet histFullSet = new HashSet();
+			final Object[] selected = histList.getSelectedValues();
+			final HashSet<Object> histFullSet = new HashSet<Object>();
 			/* now combine this with stuff already in list. */
 			final ListModel model = lstHists.getModel();
 			for (int i = 0; i < model.getSize(); i++) {
@@ -150,7 +150,8 @@ public class BatchExport extends JDialog implements Observer {
 
 	private final MessageHandler console;
 
-	private final Map exportMap = Collections.synchronizedMap(new HashMap());
+	private final Map<AbstractButton, AbstractImpExp> exportMap = Collections
+			.synchronizedMap(new HashMap<AbstractButton, AbstractImpExp>());
 
 	private File lastListFile = null;
 
@@ -196,7 +197,7 @@ public class BatchExport extends JDialog implements Observer {
 	 */
 	private void addSelectedHist() {
 		final String name = cbHist.getSelectedItem().toString();
-		final HashSet histSet = new HashSet();
+		final HashSet<Object> histSet = new HashSet<Object>();
 		/* now combine this with stuff already in list. */
 		final ListModel model = lstHists.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
@@ -305,7 +306,7 @@ public class BatchExport extends JDialog implements Observer {
 	}
 
 	private List createExportClassesList() {
-		final List rval = new ArrayList();
+		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
 		final String here = getClass().getName() + ".getClasses(): ";
 		final Set set = RTSI.find("jam.io", AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
@@ -362,20 +363,16 @@ public class BatchExport extends JDialog implements Observer {
 	private void export() {
 		boolean status;
 		boolean already = false;
-		List exportGroupDirList = new ArrayList();
-
+		List<String> exportGroupDirList = new ArrayList<String>();
 		/* select the format */
 		AbstractImpExp exportFormat = selectedExportFormat();
-
 		// Check or create export dir
 		String exportDir = txtDirectory.getText().trim();
 		// final File exportDirFile = new File(exportDir);
-
 		// Create list of export histograms and files
 		final ListModel model = lstHists.getModel();
 		Histogram[] exportHistograms = new Histogram[model.getSize()];
 		File[] exportFiles = new File[model.getSize()];
-
 		// Create array of histograms and files
 		for (int i = 0; i < exportHistograms.length; i++) {
 			AbstractHist1D hist1D = (AbstractHist1D) model.getElementAt(i);
@@ -390,11 +387,9 @@ public class BatchExport extends JDialog implements Observer {
 			}
 			already |= exportFiles[i].exists();
 		}
-
 		status = true;
 		// Root directory
 		status = createExportDir(exportDir);
-
 		// Check for overwrite
 		if (status && already) {
 			int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
@@ -405,7 +400,6 @@ public class BatchExport extends JDialog implements Observer {
 				status = false;
 			}
 		}
-
 		// create group directoris
 		if (status) {
 			for (int i = 0; i < exportGroupDirList.size(); i++) {
@@ -414,7 +408,6 @@ public class BatchExport extends JDialog implements Observer {
 				status = status && statusTemp;
 			}
 		}
-
 		// write out histograms
 		if (status) {
 			console.messageOut("Exporting to " + exportDir + ": ",
@@ -435,7 +428,6 @@ public class BatchExport extends JDialog implements Observer {
 			}
 			console.messageOut(".", MessageHandler.END);
 		}
-
 	}
 
 	private AbstractButton getButton(AbstractImpExp impExp) {
@@ -517,7 +509,7 @@ public class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void loadList() {
-		Object listItem;
+		Histogram listItem;
 		final JFileChooser chooser = new JFileChooser(lastListFile);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
@@ -527,8 +519,8 @@ public class BatchExport extends JDialog implements Observer {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& chooser.getSelectedFile() != null) {
 			lastListFile = chooser.getSelectedFile(); // save current
-														// directory
-			final List list = new Vector();
+			// directory
+			final List<Histogram> list = new ArrayList<Histogram>();
 			try {
 				final BufferedReader reader = new BufferedReader(
 						new FileReader(lastListFile));
@@ -560,7 +552,7 @@ public class BatchExport extends JDialog implements Observer {
 	private void removeSelectedHist() {
 		final Object[] removeList = lstHists.getSelectedValues();
 		final ListModel model = lstHists.getModel();
-		final List list = new ArrayList();
+		final List<Object> list = new ArrayList<Object>();
 		for (int i = 0; i < model.getSize(); i++) {
 			list.add(model.getElementAt(i));
 		}
@@ -581,7 +573,7 @@ public class BatchExport extends JDialog implements Observer {
 		if (option == JFileChooser.APPROVE_OPTION
 				&& chooser.getSelectedFile() != null) {
 			lastListFile = chooser.getSelectedFile(); // save current
-														// directory
+			// directory
 
 			try {
 				final ListModel model = lstHists.getModel();

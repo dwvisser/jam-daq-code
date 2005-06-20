@@ -1,6 +1,7 @@
 package jam.io;
 
 import jam.data.Group;
+import jam.data.Histogram;
 
 import java.io.File;
 import java.util.List;
@@ -38,7 +39,7 @@ public interface  DataIO {
      * @param file to write to
      * @param histList list of histograms to write
      */
-    void writeFile(File file, List histList);
+    void writeFile(File file, List<Histogram> histList);
                 
     /**
      * Read a file in.

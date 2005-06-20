@@ -253,7 +253,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         final String title = dataNote.getNote();
 
         /* only the "histograms" VG (only one element) */
-        final List tempVec = AbstractData.ofType(histGroup.getObjects(),
+        final List<AbstractData> tempVec = AbstractData.ofType(histGroup.getObjects(),
                 AbstractData.DFTAG_NDG);
         final NumericalDataGroup[] dataGroups = list2ArrayNumericalGroups(tempVec);
         if (dataGroups.length == 1) {
@@ -283,21 +283,18 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
     Histogram convertHistogram(Group group, VirtualGroup histGroup,
             List histAttributes, FileOpenMode mode) throws HDFException {
-
         Histogram hist = null;
         NumericalDataGroup ndg;
-        NumericalDataGroup ndgErr = null; // check ndgErr==null to determine
-        // if error bars exist
-
+        /* check ndgErr==null to determine if error bars exist */
+        NumericalDataGroup ndgErr = null; 
         final DataIDLabel dataLabel = DataIDLabel.withTagRef(
                 histGroup.getTag(), histGroup.getRef());
         final String name = dataLabel.getLabel();
         final DataIDAnnotation dataNote = DataIDAnnotation.withTagRef(histGroup
                 .getTag(), histGroup.getRef());
         final String title = dataNote.getNote();
-
         /* only the "histograms" VG (only one element) */
-        final List tempVec = AbstractData.ofType(histGroup.getObjects(),
+        final List<AbstractData> tempVec = AbstractData.ofType(histGroup.getObjects(),
                 AbstractData.DFTAG_NDG);
         final NumericalDataGroup[] dataGroups = list2ArrayNumericalGroups(tempVec);
         if (dataGroups.length == 1) {
@@ -321,7 +318,6 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
             }
             return hist;
         }
-
         final DataIDLabel numLabel = DataIDLabel.withTagRef(ndg.getTag(), ndg
                 .getRef());
         final int number = Integer.parseInt(numLabel.getLabel());
@@ -516,7 +512,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
      * dimensions @return number of histograms
      */
     List findGroups(List existingGroupList) {
-        final List groupList = new ArrayList();
+        final List<VirtualGroup> groupList = new ArrayList<VirtualGroup>();
         /* Get VirtualGroup that is root of all groups */
         final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);
         // Found root node
@@ -574,9 +570,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return vdd;
     }
 
-    private List findSubGroups(VirtualGroup virtualGroupGroup,
+    private List<VirtualGroup> findSubGroups(VirtualGroup virtualGroupGroup,
             String groupType, List groupNameList) {
-        final List groupSubList = new ArrayList();
+        final List<VirtualGroup> groupSubList = new ArrayList<VirtualGroup>();
         final Iterator iter = virtualGroupGroup.getObjects().iterator();
         while (iter.hasNext()) {
             AbstractData hData = (AbstractData) iter.next();
@@ -598,9 +594,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return groupSubList;
     }
 
-    private List findSubGroupsName(VirtualGroup virtualGroupGroup,
+    private List<VirtualGroup> findSubGroupsName(VirtualGroup virtualGroupGroup,
             String groupName) {
-        final List groupSubList = new ArrayList();
+        final List<VirtualGroup> groupSubList = new ArrayList<VirtualGroup>();
         final Iterator iter = virtualGroupGroup.getObjects().iterator();
         while (iter.hasNext()) {
             AbstractData hData = (AbstractData) iter.next();
@@ -636,11 +632,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
     boolean hasHistogramsInList(VirtualGroup virtualGroup, String groupName,
             List histAttributeList) {
-
         boolean rtnVal = true;
-
-        List nameList = new ArrayList();
-
+        List<String> nameList = new ArrayList<String>();
         // Check group has histograms
         if (histAttributeList != null) {
             Iterator iterHistAtt = histAttributeList.iterator();
@@ -679,7 +672,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
         return hasRoot;
     }
 
-    private NumericalDataGroup[] list2ArrayNumericalGroups(List list) {
+    private NumericalDataGroup[] list2ArrayNumericalGroups(List<AbstractData> list) {
         final NumericalDataGroup[] rval = new NumericalDataGroup[list.size()];
         list.toArray(rval);
         return rval;

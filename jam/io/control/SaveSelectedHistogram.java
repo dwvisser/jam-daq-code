@@ -27,37 +27,37 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
-
 /**
  * Save a selection of histograms
  * 
  * @author Ken Swartz
- *
+ * 
  */
 public final class SaveSelectedHistogram {
 
-	
 	private final Frame frame;
-	
+
 	private final JDialog dialog;
-	
+
 	private final JList listHist;
-	
+
 	/** Messages output */
 	private final MessageHandler console;
 
 	/**
-	 * Constructs a dialog to save a selection of histograms out of an
-	 * HDF file.
-	 *  
-	 * @param frame parent frame
-	 * @param msgHandler where to print messages
+	 * Constructs a dialog to save a selection of histograms out of an HDF file.
+	 * 
+	 * @param frame
+	 *            parent frame
+	 * @param msgHandler
+	 *            where to print messages
 	 */
 	public SaveSelectedHistogram(Frame frame, MessageHandler msgHandler) {
 		this.frame = frame;
 		console = msgHandler;
 		dialog = new JDialog(frame, "Save Selected Histograms", false);
-		dialog.setLocation(frame.getLocation().x + 50, frame.getLocation().y + 50);
+		dialog.setLocation(frame.getLocation().x + 50,
+				frame.getLocation().y + 50);
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		/* Selection list */
@@ -91,18 +91,18 @@ public final class SaveSelectedHistogram {
 		pButtons.add(bCancel);
 		dialog.setResizable(false);
 		dialog.pack();
-		
+
 	}
-	
+
 	/**
 	 * Show the dialog.
-	 *
+	 * 
 	 */
-	public void show(){
+	public void show() {
 		loadHistogramList();
 		dialog.setVisible(true);
 	}
-	
+
 	/**
 	 * Save histogram list to a file.
 	 */
@@ -113,48 +113,48 @@ public final class SaveSelectedHistogram {
 
 	/**
 	 * Cancel Button
-	 *  
+	 * 
 	 */
 	private void doCancel() {
 		/* clear memory */
 		dialog.dispose();
 	}
-	
-	private void loadHistogramList(){
-		final List histList= Histogram.getHistogramList();
-		final String [] histNames = new String[histList.size()];
-		final Iterator histIter=histList.iterator();
-		int index=0;
-		while(histIter.hasNext()) {
-			histNames[index]=((Histogram)histIter.next()).getFullName();
+
+	private void loadHistogramList() {
+		final List histList = Histogram.getHistogramList();
+		final String[] histNames = new String[histList.size()];
+		final Iterator histIter = histList.iterator();
+		int index = 0;
+		while (histIter.hasNext()) {
+			histNames[index] = ((Histogram) histIter.next()).getFullName();
 			index++;
 		}
 		listHist.setListData(histNames);
 	}
-	
+
 	/**
 	 * Save list to file
-	 *
+	 * 
 	 */
-	private void saveHistListToFile(){
-		final HDFIO hdfio= new HDFIO(frame, console);
-		final List listSelected = new ArrayList();
-		File file=null;
+	private void saveHistListToFile() {
+		final HDFIO hdfio = new HDFIO(frame, console);
+		final List<Histogram> listSelected = new ArrayList<Histogram>();
+		File file = null;
 		/* Add selected histgrams to a list. */
-		final Object[] selected = listHist.getSelectedValues();		
-		for (int  i=0;i<selected.length;i++) {
-			listSelected.add(Histogram.getHistogram((String)selected[i]));			
+		final Object[] selected = listHist.getSelectedValues();
+		for (int i = 0; i < selected.length; i++) {
+			listSelected.add(Histogram.getHistogram((String) selected[i]));
 		}
 		/* Select file */
-        final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());
-        chooser.setFileFilter(new HDFileFilter(true));
-        final int option = chooser.showSaveDialog(frame);
-        /* don't do anything if it was cancel */
-        if (option == JFileChooser.APPROVE_OPTION
-                && chooser.getSelectedFile() != null) {
-        	file = chooser.getSelectedFile();
-        	/* write out histograms */
-        	hdfio.writeFile(file, listSelected);
-        }
+		final JFileChooser chooser = new JFileChooser(HDFIO.getLastValidFile());
+		chooser.setFileFilter(new HDFileFilter(true));
+		final int option = chooser.showSaveDialog(frame);
+		/* don't do anything if it was cancel */
+		if (option == JFileChooser.APPROVE_OPTION
+				&& chooser.getSelectedFile() != null) {
+			file = chooser.getSelectedFile();
+			/* write out histograms */
+			hdfio.writeFile(file, listSelected);
+		}
 	}
 }
