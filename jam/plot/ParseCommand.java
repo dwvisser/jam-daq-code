@@ -19,7 +19,7 @@ final class ParseCommand implements CommandListener {
 
 	private final Action action;
 
-	private final Map commandMap = new HashMap();
+	private final Map<String,String> commandMap = new HashMap<String,String>();
 	{
 		commandMap.put("help", Action.HELP);
 		commandMap.put("ex", Action.EXPAND);

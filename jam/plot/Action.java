@@ -116,7 +116,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	private final Bin cursor;
 
-	private final List clicks = new ArrayList();
+	private final List<Bin> clicks = new ArrayList<Bin>();
 
 	private int countLow, countHigh;
 

@@ -216,7 +216,7 @@ abstract class AbstractPlot implements PlotPrefs,
 	/**
 	 * Channels that have been marked by clicking or typing.
 	 */
-	protected final List markedChannels = new ArrayList();
+	protected final List<Bin> markedChannels = new ArrayList<Bin>();
 
 	//TODO don't handle change of fonts yet
 	//protected Font screenFont;

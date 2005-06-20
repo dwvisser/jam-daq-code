@@ -20,13 +20,13 @@ import java.util.TreeMap;
  */
 public final class View {
 
-	private final static List NAME_LIST;
+	private final static List<String> NAME_LIST;
 	
-	private final static Map MAP;	
+	private final static Map<String, View> MAP;	
 
 	static {
-		NAME_LIST= new ArrayList();
-		MAP = new TreeMap();
+		NAME_LIST= new ArrayList<String>();
+		MAP = new TreeMap<String, View>();
 	}
 	
 	/**

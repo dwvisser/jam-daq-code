@@ -63,7 +63,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	private boolean isScrolling;
 
 	/** Array of all available plots */
-	private ArrayList plotList;
+	private List<PlotContainer> plotList;
 
 	private final Object plotLock = new Object();
 
@@ -85,7 +85,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		/* display event handler */
 		action = new Action(this, jc);
 		PREFS.addPreferenceChangeListener(this);
-		plotList = new ArrayList();
+		plotList = new ArrayList<PlotContainer>();
 		createGridPanel();
 		toolbar = new Toolbar(this, action);
 		initPrefs();
