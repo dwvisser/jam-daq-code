@@ -11,8 +11,10 @@ import jam.plot.PlotDisplay;
 import jam.ui.SummaryTable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
@@ -33,7 +35,7 @@ public final class JamStatus {
 
 	private static Gate currentGate;
 
-	private static Set overlayNames = new HashSet();
+	private static Set<String> overlayNames = new HashSet<String>();
 
 	private static JFrame frame;
 
@@ -340,19 +342,15 @@ public final class JamStatus {
 	 * 
 	 * @return the histograms being overlaid
 	 */
-	public synchronized Histogram[] getOverlayHistograms() {
-		final Set rval = new HashSet();
-		final Iterator iter = overlayNames.iterator();
-		while (iter.hasNext()) {
-			final String name = (String) iter.next();
+	public synchronized List<Histogram> getOverlayHistograms() {
+		final Set<Histogram> rval = new HashSet<Histogram>();
+		for (String name : overlayNames) {
 			final Histogram hist = Histogram.getHistogram(name);
 			if (hist != null) {
 				rval.add(hist);
 			}
 		}
-		final Histogram[] array = new Histogram[rval.size()];
-		rval.toArray(array);
-		return array;
+		return Collections.unmodifiableList(new ArrayList<Histogram>(rval));
 	}
 
 	/**

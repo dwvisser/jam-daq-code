@@ -15,40 +15,44 @@ import javax.swing.JPanel;
 
 /**
  * A class to do overall control of the Jam data classes.
- *
+ * 
  * @author Ken Swartz
  */
 public abstract class AbstractControl extends JDialog implements Observer {
-	
+
 	/**
-	 * Default number of rows to display 
+	 * Default number of rows to display
 	 */
-	private final int MAX_INITIAL_DISPLAY=15;
-	
-	private static List controllers = Collections.synchronizedList(new ArrayList());
-	
+	private final int MAX_INITIAL_DISPLAY = 15;
+
+	private static List<AbstractControl> controllers = Collections
+			.synchronizedList(new ArrayList<AbstractControl>());
+
 	/**
 	 * Reference to instance of JamStatus.
 	 */
-	protected static final JamStatus STATUS=JamStatus.getSingletonInstance();
-	
+	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
 	/**
 	 * Reference to instance of Broadcaster.
 	 */
-	protected static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
+	protected static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
 
 	/**
 	 * Default constructor for implementation classes.
 	 * 
-	 * @param title title of dialog
-	 * @param modal whether dialog is modal
+	 * @param title
+	 *            title of dialog
+	 * @param modal
+	 *            whether dialog is modal
 	 */
 	protected AbstractControl(String title, boolean modal) {
 		super(STATUS.getFrame(), title, modal);
 		controllers.add(this);
 		BROADCASTER.addObserver(this);
 	}
-	
+
 	/**
 	 * Remove self from list of controllers
 	 */
@@ -57,7 +61,7 @@ public abstract class AbstractControl extends JDialog implements Observer {
 		BROADCASTER.deleteObserver(this);
 		super.finalize();
 	}
-	
+
 	/**
 	 * Setup all instances of <code>AbstractControl</code>.
 	 */
@@ -73,46 +77,64 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	public abstract void doSetup();
 
 	public void update(Observable observable, Object object) {
-		/* do-nothing implementation for those subclasses that
-		 * don't care */
+		/*
+		 * do-nothing implementation for those subclasses that don't care
+		 */
 	}
+
 	/**
 	 * Calculate dimension for a dialog that can scroll a number of field rows
-	 * @param dialog			Dialog
-	 * @param panelField		Panel for a field
-	 * @param border			Border for a field panel
-	 * @param numberFields		Number of fields
-	 * @return					New Dialog size
+	 * 
+	 * @param dialog
+	 *            Dialog
+	 * @param panelField
+	 *            Panel for a field
+	 * @param border
+	 *            Border for a field panel
+	 * @param numberFields
+	 *            Number of fields
+	 * @return New Dialog size
 	 */
-	protected Dimension calculateScrollDialogSize(JDialog dialog, JPanel panelField, int border, int numberFields) {
-		return calculateScrollDialogSize(dialog, panelField, border, numberFields, MAX_INITIAL_DISPLAY);
+	protected Dimension calculateScrollDialogSize(JDialog dialog,
+			JPanel panelField, int border, int numberFields) {
+		return calculateScrollDialogSize(dialog, panelField, border,
+				numberFields, MAX_INITIAL_DISPLAY);
 	}
+
 	/**
 	 * Calculate dimension for a dialog that can scroll a number of field rows
-	 * @param dialog			Dialog
-	 * @param panelField		Panel for a field
-	 * @param border			Border for a field panel
-	 * @param numberFields		Number of fields
-	 * @param maxNumField		Maximum number of fields
-	 * @return					New Dialog size
+	 * 
+	 * @param dialog
+	 *            Dialog
+	 * @param panelField
+	 *            Panel for a field
+	 * @param border
+	 *            Border for a field panel
+	 * @param numberFields
+	 *            Number of fields
+	 * @param maxNumField
+	 *            Maximum number of fields
+	 * @return New Dialog size
 	 */
-	protected Dimension calculateScrollDialogSize(JDialog dialog, JPanel panelField, int border, int numberFields, int maxNumField) {
-		
-		Dimension dimDialog=null;
-		//Size of one parameter
+	protected Dimension calculateScrollDialogSize(JDialog dialog,
+			JPanel panelField, int border, int numberFields, int maxNumField) {
+
+		Dimension dimDialog = null;
+		// Size of one parameter
 		if (numberFields >= 1) {
-				
-			if (numberFields>maxNumField) {
+
+			if (numberFields > maxNumField) {
 				dimDialog = dialog.getSize();
-				Dimension dimParam=panelField.getSize();					
-				int height=dimParam.height;
-				dimDialog.height=dimDialog.height-(height+border)*(numberFields-maxNumField)-border;
-			}else {
+				Dimension dimParam = panelField.getSize();
+				int height = dimParam.height;
+				dimDialog.height = dimDialog.height - (height + border)
+						* (numberFields - maxNumField) - border;
+			} else {
 				dimDialog = dialog.getSize();
 			}
-		}			
+		}
 		return dimDialog;
-		
+
 	}
-		 
+
 }

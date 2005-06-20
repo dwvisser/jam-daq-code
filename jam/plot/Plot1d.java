@@ -62,14 +62,12 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms(Histogram []  overlayHists) {
+	void overlayHistograms(List<Histogram> overlayHists) {
 		displayingOverlay = true;
 		/* retain any items in list in the map Performance improvement */
-		//Set retain =countsOverlay.keySet().retainAll(overlayHists.getName());
 		overlayCounts.clear();
 		overlayNumber.clear();
-		for(int i=0;i<overlayHists.length; i++){
-			final Histogram hOver = overlayHists[i];
+		for (Histogram hOver : overlayHists) {
 			final int sizex = hOver.getSizeX();
 			double []ctOver = new double[sizex];
 			final Histogram.Type hoType = hOver.getType();
@@ -81,7 +79,6 @@ final class Plot1d extends AbstractPlot {
 			} else if (hoType == Histogram.Type.ONE_D_DOUBLE) {
 				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
 			}
-
 			overlayCounts.add(ctOver);
 			overlayNumber.add(new Integer(hOver.getNumber())); 			
 		}

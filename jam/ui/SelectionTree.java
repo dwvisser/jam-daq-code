@@ -1,8 +1,8 @@
 package jam.ui;
 
 import jam.data.Gate;
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -191,7 +192,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		} // End loop for all nodes
 	}
 
-	private void refreshOverlaySelection(Histogram[] overlayHists) {
+	private void refreshOverlaySelection(List<Histogram> overlayHists) {
 		final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
 				.getModel().getRoot();
 		/* Iterate over all nodes below root node. */
@@ -202,8 +203,8 @@ public final class SelectionTree extends JPanel implements Observer {
 			final Object currentObj = currentNode.getUserObject();
 			if (currentObj instanceof Histogram) {
 				// Loop over histograms
-				for (int i = 0; i < overlayHists.length; i++) {
-					if (currentObj == overlayHists[i]) {
+				for (int i = 0; i < overlayHists.size(); i++) {
+					if (currentObj == overlayHists.get(i)) {
 						final TreePath gateTreePath = new TreePath(currentNode
 								.getPath());
 						tree.addSelectionPath(gateTreePath);
@@ -219,13 +220,13 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void refreshSelection() {
 		final Histogram hist = STATUS.getCurrentHistogram();
 		final Gate gate = STATUS.getCurrentGate();
-		final Histogram[] overlayHists = STATUS.getOverlayHistograms();
+		final List<Histogram> overlayHists = STATUS.getOverlayHistograms();
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
 		if (gate != null) {
 			refreshGateSelection(gate, histTreePath);
 		}
-		if (0 < overlayHists.length) {
+		if (!overlayHists.isEmpty()) {
 			refreshOverlaySelection(overlayHists);
 		}
 		repaint();

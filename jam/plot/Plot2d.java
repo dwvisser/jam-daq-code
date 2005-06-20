@@ -1,5 +1,6 @@
 package jam.plot;
 
+import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -14,6 +15,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
+import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
 import javax.swing.SwingUtilities;
@@ -25,21 +27,21 @@ import javax.swing.SwingUtilities;
  * @author Ken Swartz
  */
 
-final class Plot2d extends AbstractPlot implements ColorPrefs{
+final class Plot2d extends AbstractPlot implements ColorPrefs {
 
 	/** last pixel point added to gate list */
 	private final Point lastGatePoint = new Point();
 
 	/** areaMark is a rectangle in channel space */
 	private final Rectangle areaMark = new Rectangle();
-	
-	private final PlotColorMap plotColorMap=PlotColorMap.getInstance();
+
+	private final PlotColorMap plotColorMap = PlotColorMap.getInstance();
 
 	private boolean smoothScale = true;
-	
+
 	private static final String X_LABEL_2D = "Channels";
 
-	private static final String Y_LABEL_2D = "Channels"; 
+	private static final String Y_LABEL_2D = "Channels";
 
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
@@ -47,7 +49,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	Plot2d() {
 		super();
 		COLOR_PREFS.addPreferenceChangeListener(this);
-		setSmoothColorScale(PREFS.getBoolean(ColorPrefs.SMOOTH_COLOR_SCALE, true));
+		setSmoothColorScale(PREFS.getBoolean(ColorPrefs.SMOOTH_COLOR_SCALE,
+				true));
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
@@ -160,11 +163,11 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 			if (pointsGate.npoints > 0) {
 				/* decide clip before removing point */
 				final Rectangle clip = getClipBounds(pointsGate, true);
-				pointsGate.npoints--;//effectively removes last point
-				if ((pointsGate.npoints > 0)) {//go back a point
+				pointsGate.npoints--;// effectively removes last point
+				if ((pointsGate.npoints > 0)) {// go back a point
 					final int last = pointsGate.npoints - 1;
-					final Bin lpoint = Bin.Factory.create(pointsGate.xpoints[last],
-							pointsGate.ypoints[last]);
+					final Bin lpoint = Bin.Factory.create(
+							pointsGate.xpoints[last], pointsGate.ypoints[last]);
 					/* update variables */
 					final Point tempP = graph.toViewLin(lpoint);
 					setLastGatePoint(tempP);
@@ -173,7 +176,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 				panel.repaint(clip);
 			}
 		} else if (mode == GateSetMode.GATE_SAVE
-				|| mode == GateSetMode.GATE_CANCEL) { //draw a saved gate
+				|| mode == GateSetMode.GATE_CANCEL) { // draw a saved gate
 			/* decide clip before clearing pointsGate */
 			final Rectangle clip = getClipBounds(pointsGate, true);
 			setSettingGate(false);
@@ -192,7 +195,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	/**
 	 * Called by mouse movement while setting a gate
 	 * 
-	 * @param gc graphics context
+	 * @param gc
+	 *            graphics context
 	 */
 	protected void paintSettingGate(Graphics gc) {
 		final Graphics2D g = (Graphics2D) gc;
@@ -230,13 +234,13 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	double getEnergy(double channel) {
 		return 0.0;
 	}
-	
+
 	/**
 	 * Get the counts for the displayed 2d histogram.
 	 * 
 	 * @return the counts for the displayed 2d histogram
 	 */
-	protected Object getCounts() { 
+	protected Object getCounts() {
 		return counts2d;
 	}
 
@@ -307,7 +311,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 		}
 		return minCounts;
 	}
-	
+
 	private final Rectangle clipBounds = new Rectangle();
 
 	/**
@@ -316,17 +320,17 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	 * 
 	 * @param g
 	 *            the graphics context to paint to
-	 */ 
+	 */
 	protected void paintHistogram(Graphics g) {
-		Histogram plotHist=getHistogram();
-		final Scale scale=plotLimits.getScale();
+		Histogram plotHist = getHistogram();
+		final Scale scale = plotLimits.getScale();
 		g.setColor(plotColorMap.getHistogram());
 		g.getClipBounds(clipBounds);
 		final int minX = graph.toDataHorz((int) clipBounds.getMinX());
 		final int maxX = graph.toDataHorz((int) clipBounds.getMaxX());
 		final int minY = graph.toDataVert((int) clipBounds.getMaxY());
 		final int maxY = graph.toDataVert((int) clipBounds.getMinY());
-		final DiscreteColorScale dcs=DiscreteColorScale.getScale(scale);
+		final DiscreteColorScale dcs = DiscreteColorScale.getScale(scale);
 		if (getSmoothColorScale()) {
 			graph.drawHist2d(counts2d, minX, minY, maxX, maxY);
 			g.setPaintMode();
@@ -346,13 +350,13 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 		graph.drawLabels(PlotGraphics.BOTTOM);
 		graph.drawTicks(PlotGraphics.LEFT);
 		graph.drawLabels(PlotGraphics.LEFT);
-		final String axisLabelX=plotHist.getLabelX();
+		final String axisLabelX = plotHist.getLabelX();
 		if (axisLabelX != null) {
 			graph.drawAxisLabel(axisLabelX, PlotGraphics.BOTTOM);
 		} else {
 			graph.drawAxisLabel(X_LABEL_2D, PlotGraphics.BOTTOM);
 		}
-		final String axisLabelY=plotHist.getLabelY();
+		final String axisLabelY = plotHist.getLabelY();
 		if (axisLabelY != null) {
 			graph.drawAxisLabel(axisLabelY, PlotGraphics.LEFT);
 		} else {
@@ -370,8 +374,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	 */
 	protected void paintGate(Graphics graphics) {
 		final Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.setComposite(AlphaComposite
-				.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+		graphics2d.setComposite(AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, 0.5f));
 		graphics2d.setColor(plotColorMap.getGateShow());
 		if (isNoFillMode()) {
 			paintPolyGate(graphics2d);
@@ -461,11 +465,13 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 		} else if (selectingArea) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
-					addToSelectClip(selectionStartPoint, Bin.Factory.create(lastMovePoint));
+					addToSelectClip(selectionStartPoint, Bin.Factory
+							.create(lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint())
 						.getPoint());
-				addToSelectClip(selectionStartPoint, Bin.Factory.create(lastMovePoint));
+				addToSelectClip(selectionStartPoint, Bin.Factory
+						.create(lastMovePoint));
 			}
 			setMouseMoved(true);
 			synchronized (selectingAreaClip) {
@@ -504,44 +510,47 @@ final class Plot2d extends AbstractPlot implements ColorPrefs{
 	 * @return a bounding rectangle in the graphics coordinates
 	 */
 	private Rectangle getClipBounds(Shape clipShape,
-            boolean shapeInChannelCoords) {
-        final Rectangle r = clipShape.getBounds();
-        if (shapeInChannelCoords) {//shape is in channel coordinates
-            /* add one more plot channel around the edges */
-            r.add(r.x + r.width + 1, r.y + r.height + 1);
-            r.add(r.x - 1, r.y - 1);
-            final Bin p1 = Bin.Factory.create(r.getLocation());
-            final Bin p2 = Bin.Factory.create(p1.getX() + r.width, p1.getY()
-                    + r.height);
-            /* now do conversion */
-            r.setBounds(graph.getRectangleOutline2d(p1, p2));
-            r.width+=1;
-            r.height+=1;
-            return r;
-        }
-        /*
-         * The shape is in view coordinates. Recursively call back with a
-         * polygon using channel coordinates.
-         */
-        final Polygon p = new Polygon();
-        final Bin p1 = graph.toData(r.getLocation());
-        final Bin p2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
-        p.addPoint(p1.getX(), p1.getY());
-        p.addPoint(p2.getX(), p2.getY());
-        return getClipBounds(p, true);
-    }
+			boolean shapeInChannelCoords) {
+		final Rectangle r = clipShape.getBounds();
+		if (shapeInChannelCoords) {// shape is in channel coordinates
+			/* add one more plot channel around the edges */
+			r.add(r.x + r.width + 1, r.y + r.height + 1);
+			r.add(r.x - 1, r.y - 1);
+			final Bin p1 = Bin.Factory.create(r.getLocation());
+			final Bin p2 = Bin.Factory.create(p1.getX() + r.width, p1.getY()
+					+ r.height);
+			/* now do conversion */
+			r.setBounds(graph.getRectangleOutline2d(p1, p2));
+			r.width += 1;
+			r.height += 1;
+			return r;
+		}
+		/*
+		 * The shape is in view coordinates. Recursively call back with a
+		 * polygon using channel coordinates.
+		 */
+		final Polygon p = new Polygon();
+		final Bin p1 = graph.toData(r.getLocation());
+		final Bin p2 = graph.toData(new Point(r.x + r.width, r.y + r.height));
+		p.addPoint(p1.getX(), p1.getY());
+		p.addPoint(p2.getX(), p2.getY());
+		return getClipBounds(p, true);
+	}
 
 	void displayFit(double[][] signals, double[] background,
-			double[] residuals, int ll){
-		//NOP
-	} 
-	void overlayHistograms(Histogram [] overlayHists){ 
-		//NOP
+			double[] residuals, int ll) {
+		// NOP
 	}
+
+	void overlayHistograms(List<Histogram> overlayHists) {
+		// NOP
+	}
+
 	void removeOverlays() {
-		//NOP
+		// NOP
 	}
-	int getChannel(double energy){
+
+	int getChannel(double energy) {
 		return 0;
 	}
 

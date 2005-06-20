@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.print.PageFormat;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -201,7 +202,7 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param hists
 	 *            to overlay
 	 */
-	void overlayHistograms(Histogram [] hists) {
+	void overlayHistograms(List<Histogram> hists) {
 		currentSubPlot.overlayHistograms(hists);
 	}
 	

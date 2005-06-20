@@ -15,8 +15,10 @@ import java.awt.GridLayout;
 import java.awt.print.PageFormat;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
@@ -218,11 +220,11 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param hists
 	 *            histogram to overlay
 	 */
-	private void overlayHistogram(Histogram[] hists) {
-		if (hists.length > 0) {
-			currentPlot.overlayHistograms(hists);
-		} else {
+	private void overlayHistogram(List<Histogram> hists) {
+		if (hists.isEmpty()) {
 			removeOverlays();
+		} else {
+			currentPlot.overlayHistograms(hists);
 		}
 	}
 
@@ -243,10 +245,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
-		Histogram[] hists = new Histogram[1];
-		hists[0] = hist;
-		overlayHistogram(hists);
-
+		overlayHistogram(Collections.singletonList(hist));
 	}
 
 	/**
@@ -460,7 +459,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			final Histogram hist = status.getCurrentHistogram();
 			displayHistogram(hist);
-			final Histogram[] overHists = status.getOverlayHistograms();
+			final List<Histogram> overHists = status.getOverlayHistograms();
 			overlayHistogram(overHists);
 		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_NEW, null, null);

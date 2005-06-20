@@ -407,7 +407,7 @@ abstract class AbstractPlot implements PlotPrefs,
 	 */
 	abstract void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel);
 	
-	abstract void overlayHistograms(Histogram [] overlayHists);
+	abstract void overlayHistograms(List<Histogram> overlayHists);
 	
 	abstract void removeOverlays();
 	
