@@ -7,20 +7,11 @@ package jam.data;
  */
 public interface DataElement {
 
-    /**
-     * Means the element is a gate.
-     */
-	int ELEMENT_TYPE_GATE=1;
-	
-    /**
-     * Means the element is a histogram.
-     */
-	int ELEMENT_TYPE_HISTOGRAM=0;
-	
-    /**
-     * Means the element is a scaler.
-     */
-	int ELEMENT_TYPE_SCALER=2;
+	/**
+	 * Possible types of data elements.
+	 * @author Dale Visser
+	 */
+	enum Type{GATE, HISTOGRAM, SCALER};
 		
 	/**
      * 
@@ -32,7 +23,7 @@ public interface DataElement {
      * 
      * @return which kind of element this is
      */
-    int getElementType();
+    Type getElementType();
     
     /**
      * 
