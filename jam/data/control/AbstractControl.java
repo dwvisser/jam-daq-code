@@ -66,8 +66,8 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 * Setup all instances of <code>AbstractControl</code>.
 	 */
 	public static void setupAll() {
-		for (int i = 0; i < controllers.size(); i++) {
-			((AbstractControl) controllers.get(i)).doSetup();
+		for (AbstractControl control : controllers) {
+			control.doSetup();
 		}
 	}
 
