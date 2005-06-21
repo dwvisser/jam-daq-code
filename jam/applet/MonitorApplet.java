@@ -164,20 +164,6 @@ public class MonitorApplet
 	}
 
 	/**
-	 * Called to stop the applet.  This is called when the applet's document is
-	 * no longer on the screen.  It is guaranteed to be called before destroy()
-	 * is called.  You never need to call this method directly
-	 */
-	public void stop() {
-	}
-
-	/**
-	 * Cleans up whatever resources are being held.  If the applet is active
-	 * it is stopped.
-	 */
-	public void destroy() {
-	}
-	/**
 	 * Receive action frow awt widgets
 	 */
 	public void actionPerformed(ActionEvent e) {
