@@ -194,50 +194,33 @@ public final class SummaryTableModel implements TableModel {
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	public Object getValueAt(int row, int col) {
-
 		Object retValue = null;
 		int offsetCol;
-
 		RowDataElement rowDataElement = (RowDataElement) dataList.get(row);
 		String groupName = rowDataElement.getGroupName();
 		DataElement dataElement = rowDataElement.getDataElement();
-
 		if (selectionType == SummaryTable.ALL_GROUPS_SELECTED) {
 			offsetCol = 1;
 			// Group
 			if (col == 0) {
 				retValue = groupName;
 			}
-
 		} else {
 			offsetCol = 0;
 		}
-
-		// Type
-		if (col == offsetCol) {
-
-			if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_HISTOGRAM) {
+		if (col == offsetCol) {//Type
+			if (dataElement.getElementType() == DataElement.Type.HISTOGRAM) {
 				retValue = "Histogram";
-			} else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_GATE) {
+			} else if (dataElement.getElementType() == DataElement.Type.GATE) {
 				retValue = "Gate";
-			} else if (dataElement.getElementType() == DataElement.ELEMENT_TYPE_SCALER) {
+			} else if (dataElement.getElementType() == DataElement.Type.SCALER) {
 				retValue = "Scaler";
 			}
-
-			// Name
-		} else if (col == offsetCol + 1) {
+		} else if (col == offsetCol + 1) {// Name
 			retValue = dataElement.getName();
-
-			// Value
-		} else if (col == offsetCol + 2) {
-			// Cheap format as integer
-			// int countInt = (int)Math.round(dataElement.getCount());
-			// retValue = new Integer(countInt);
-
+		} else if (col == offsetCol + 2) {//Value
 			retValue = numFormat.format(dataElement.getCount());
-
 		}
-
 		return retValue;
 	}
 
