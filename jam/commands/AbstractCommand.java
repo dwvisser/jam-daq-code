@@ -15,79 +15,83 @@ import javax.swing.JOptionPane;
 
 /**
  * Implementation of <code>Commandable</code> interface in which
- * <code>actionPerformed()</code> executes 
- * <code>performCommand(null)</code>, which in turn executes the
- * abstract method, <code>execute(null)</code.
+ * <code>actionPerformed()</code> executes <code>performCommand(null)</code>,
+ * which in turn executes the abstract method, <code>execute(null)</code.
  * 
  * @author Ken Swartz
  */
-public abstract class AbstractCommand extends AbstractAction implements 
-Commandable {
+public abstract class AbstractCommand extends AbstractAction implements
+		Commandable {
 
-    /**
-     * Reference to <code>JamStatus</code> singleton available to 
-     * all implementing classes.
-     */
-	protected static final JamStatus STATUS=JamStatus.getSingletonInstance();
-	
-    /**
-     * Reference to <code>Broadcaster</code> singleton available to 
-     * all implementing classes.
-     */	
-	protected static final Broadcaster BROADCASTER=Broadcaster.getSingletonInstance();
-	
-    /**
-     * Reference to global <code>MessageHandler</code> available to 
-     * all implementing classes.
-     */	
+	/**
+	 * Reference to <code>JamStatus</code> singleton available to all
+	 * implementing classes.
+	 */
+	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	/**
+	 * Reference to <code>Broadcaster</code> singleton available to all
+	 * implementing classes.
+	 */
+	protected static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
+
+	/**
+	 * Reference to global <code>MessageHandler</code> available to all
+	 * implementing classes.
+	 */
 	protected final MessageHandler msghdlr;
-	
+
 	/**
 	 * Constructor.
 	 */
-	AbstractCommand(){
+	AbstractCommand() {
 		super();
-		msghdlr=STATUS.getMessageHandler();
+		msghdlr = STATUS.getMessageHandler();
 	}
-	
+
 	/**
 	 * Default implementation that does nothing.
 	 */
-	public void initCommand(){
+	public void initCommand() {
+		// default do-nothing
 	}
-	
+
 	public final void actionPerformed(ActionEvent actionEvent) {
-        try {
-            performCommand(null);
-        } catch (CommandException e) {
-            msghdlr.errorOutln(e.toString());
-        }
-    }
-	
+		try {
+			performCommand(null);
+		} catch (CommandException e) {
+			msghdlr.errorOutln(e.toString());
+		}
+	}
+
 	/**
-	 * Perform a command and log it. This calls 
-	 * <code>execute()</code> with the given parameters.
-	 *
-	 * @param cmdParams the command parameters
+	 * Perform a command and log it. This calls <code>execute()</code> with
+	 * the given parameters.
+	 * 
+	 * @param cmdParams
+	 *            the command parameters
 	 */
-	public void performCommand(Object [] cmdParams)  throws CommandException {
+	public void performCommand(Object[] cmdParams) throws CommandException {
 		try {
 			execute(cmdParams);
 			logCommand();
-		} catch (CommandException e) {			
+		} catch (CommandException e) {
 			logError();
 			throw new CommandException(e);
 		}
 	}
 
 	/**
-	 * Perform a command and log it. This calls 
-	 * <code>executeParse()</code> with the given parameters.
-	 *
-	 * @param strCmdParams the command parameters as strings
+	 * Perform a command and log it. This calls <code>executeParse()</code>
+	 * with the given parameters.
+	 * 
+	 * @param strCmdParams
+	 *            the command parameters as strings
 	 */
-	public void performParseCommand(String [] strCmdParams) throws CommandListenerException{			
-		try {	
+	public void performParseCommand(String[] strCmdParams)
+			throws CommandListenerException {
+		try {
 			executeParse(strCmdParams);
 			logCommand();
 		} catch (Exception e) {
@@ -95,60 +99,62 @@ Commandable {
 			throw new CommandListenerException(e);
 		}
 	}
-	
+
 	/**
 	 * Log the command, does nothing yet.
-	 *
+	 * 
 	 */
 	public void logCommand() {
-		
+		// does nothing at the moment
 	}
-	
+
 	/**
 	 * Log a command error, does nothing yet.
-	 *
+	 * 
 	 */
-	public void logError(){
-			
+	public void logError() {
+		// does nothing at the moment
 	}
-	
-	/** 
+
+	/**
 	 * Load an icon from the given path and return it.
 	 * 
-	 * @param path that the icon lies at
+	 * @param path
+	 *            that the icon lies at
 	 * @return the icon if successful, <code>null</code> if not
 	 */
 	protected Icon loadToolbarIcon(String path) {
-	    /* buttons initialized with text if icon==null */
-		Icon rval=null;
+		/* buttons initialized with text if icon==null */
+		Icon rval = null;
 		final ClassLoader loader = this.getClass().getClassLoader();
 		final URL urlResource = loader.getResource(path);
 		if (urlResource == null) {
-			JOptionPane.showInputDialog(
-					null,
-					"Can't load resource: " + path,
-					"Missing Icon",
-					JOptionPane.ERROR_MESSAGE);
-		} else { //instead use path, ugly but lets us see button
+			JOptionPane.showInputDialog(null, "Can't load resource: " + path,
+					"Missing Icon", JOptionPane.ERROR_MESSAGE);
+		} else { // instead use path, ugly but lets us see button
 			rval = new ImageIcon(urlResource);
 		}
 		return rval;
 	}
-	
+
 	/**
 	 * Execute a command with the given command parameters.
 	 * 
-	 * @param cmdParams command parameters
-	 * @throws CommandException if an error occurs
+	 * @param cmdParams
+	 *            command parameters
+	 * @throws CommandException
+	 *             if an error occurs
 	 */
-	protected abstract void execute(Object [] cmdParams) throws CommandException;
-		
-	
+	protected abstract void execute(Object[] cmdParams) throws CommandException;
+
 	/**
 	 * Execute a command with the given command string tokens.
 	 * 
-	 * @param cmdTokens command parameters as string
-	 * @throws CommandListenerException if an error occurs
+	 * @param cmdTokens
+	 *            command parameters as string
+	 * @throws CommandListenerException
+	 *             if an error occurs
 	 */
-	protected abstract void executeParse(String [] cmdTokens) throws CommandListenerException;
+	protected abstract void executeParse(String[] cmdTokens)
+			throws CommandListenerException;
 }
