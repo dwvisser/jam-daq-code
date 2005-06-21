@@ -13,6 +13,7 @@ import junit.framework.TestSuite;
 public class AllTests {
 	
 	private AllTests(){
+		super();
 	}
 
 	/**
