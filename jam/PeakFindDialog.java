@@ -14,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -47,9 +48,9 @@ public class PeakFindDialog extends JDialog {
 		final JPanel fields=new JPanel(new GridLayout(0,1,5,5));
 		contents.add(fields,BorderLayout.CENTER);		
 		fields.setBorder(new EmptyBorder(10,10,0,0));
-		fields.add(new JLabel("Width", JLabel.RIGHT));
-		fields.add(new JLabel("Sensitivity", JLabel.RIGHT));
-		fields.add(new JLabel("Display", JLabel.RIGHT));	
+		fields.add(new JLabel("Width", SwingConstants.RIGHT));
+		fields.add(new JLabel("Sensitivity", SwingConstants.RIGHT));
+		fields.add(new JLabel("Display", SwingConstants.RIGHT));	
 		final JPanel center=new JPanel(new GridLayout(0,1,5,5));
 		contents.add(center,BorderLayout.EAST);
 		center.setBorder(new EmptyBorder(10,0,0,10));		

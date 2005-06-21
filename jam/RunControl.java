@@ -1,7 +1,7 @@
 package jam;
 
-import jam.data.Histogram;
 import jam.data.Group;
+import jam.data.Histogram;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -163,13 +164,13 @@ public class RunControl extends JDialog implements Controller {
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 		pLabels.setBorder(new EmptyBorder(10, 10, 10, 0));
 		contents.add(pLabels, BorderLayout.WEST);
-		final JLabel len = new JLabel("Experiment Name", JLabel.RIGHT);
+		final JLabel len = new JLabel("Experiment Name", SwingConstants.RIGHT);
 		pLabels.add(len);
-		final JLabel lrn = new JLabel("Run", JLabel.RIGHT);
+		final JLabel lrn = new JLabel("Run", SwingConstants.RIGHT);
 		pLabels.add(lrn);
-		final JLabel lTitle = new JLabel("Title", JLabel.RIGHT);
+		final JLabel lTitle = new JLabel("Title", SwingConstants.RIGHT);
 		pLabels.add(lTitle);
-		final JLabel lCheck = new JLabel("Zero on Begin?", JLabel.RIGHT);
+		final JLabel lCheck = new JLabel("Zero on Begin?", SwingConstants.RIGHT);
 		pLabels.add(lCheck);
 		/* panel for text fields */
 		final JPanel pCenter = new JPanel(new GridLayout(0, 1, 5, 5));

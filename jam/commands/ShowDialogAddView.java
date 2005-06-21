@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -57,11 +58,11 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 			pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 			cdnew.add(pLabels, BorderLayout.WEST);
-			final JLabel ln = new JLabel("Name", JLabel.RIGHT);
+			final JLabel ln = new JLabel("Name", SwingConstants.RIGHT);
 			pLabels.add(ln);
-			final JLabel lrw = new JLabel("Rows", JLabel.RIGHT);
+			final JLabel lrw = new JLabel("Rows", SwingConstants.RIGHT);
 			pLabels.add(lrw);
-			final JLabel lcl = new JLabel("Columns", JLabel.RIGHT);
+			final JLabel lcl = new JLabel("Columns", SwingConstants.RIGHT);
 			pLabels.add(lcl);
 			/* Entries */
 			final JPanel pEntires = new JPanel(new GridLayout(0, 1, 5, 5));

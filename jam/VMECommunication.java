@@ -310,7 +310,7 @@ FrontEndCommunication {
         } else {
             throw new IllegalStateException("No event parameters in map.");
         }
-        sendToVME(VMECommunication.VME_ADDRESS,temp);
+        sendToVME(FrontEndCommunication.VME_ADDRESS,temp);
     }
 
     /**
@@ -331,7 +331,7 @@ FrontEndCommunication {
      * @param message   string to send
      */
     private void sendToVME(String message) {
-        sendToVME(VMECommunication.OK_MESSAGE, message);
+        sendToVME(FrontEndCommunication.OK_MESSAGE, message);
     }
 
     /**

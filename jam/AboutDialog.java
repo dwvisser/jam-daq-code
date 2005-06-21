@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -44,15 +45,15 @@ public class AboutDialog {
 		pcenter.setBorder(border);
 		cad.add(pcenter, BorderLayout.CENTER);
 		pcenter.add(
-			new JLabel("Jam v" + Version.getInstance().getName(), JLabel.CENTER));
-		pcenter.add(new JLabel("by", JLabel.CENTER));
+			new JLabel("Jam v" + Version.getInstance().getName(), SwingConstants.CENTER));
+		pcenter.add(new JLabel("by", SwingConstants.CENTER));
 		pcenter.add(
 			new JLabel(
 				"Ken Swartz, Dale Visser, and John Baris",
-				JLabel.CENTER));
+				SwingConstants.CENTER));
 		final String HOME_URL="http://jam-daq.sourceforge.net/";
 		pcenter.add(
-			new JLabel(HOME_URL, JLabel.CENTER));
+			new JLabel(HOME_URL, SwingConstants.CENTER));
 		final JPanel pbut = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cad.add(pbut, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");

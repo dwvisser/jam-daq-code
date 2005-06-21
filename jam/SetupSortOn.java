@@ -43,6 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -170,26 +171,26 @@ public final class SetupSortOn extends AbstractSetup {
                 .setBorder(new EmptyBorder(topInset, leftInset, noSpace,
                         noSpace));
         dcp.add(pLabels, BorderLayout.WEST);
-        final JLabel expName = new JLabel("Experiment Name", JLabel.RIGHT);
+        final JLabel expName = new JLabel("Experiment Name", SwingConstants.RIGHT);
         pLabels.add(expName);
-        final JLabel lsc = new JLabel("Sort classpath", JLabel.RIGHT);
+        final JLabel lsc = new JLabel("Sort classpath", SwingConstants.RIGHT);
         pLabels.add(lsc);
-        final JLabel lscs = new JLabel("Selected sort classpath", JLabel.RIGHT);
+        final JLabel lscs = new JLabel("Selected sort classpath", SwingConstants.RIGHT);
         pLabels.add(lscs);
-        final JLabel lSortRoutine = new JLabel("Sort Routine", JLabel.RIGHT);
+        final JLabel lSortRoutine = new JLabel("Sort Routine", SwingConstants.RIGHT);
         pLabels.add(lSortRoutine);
-        final JLabel leis = new JLabel("Event input stream", JLabel.RIGHT);
+        final JLabel leis = new JLabel("Event input stream", SwingConstants.RIGHT);
         pLabels.add(leis);
-        final JLabel leos = new JLabel("Event output stream", JLabel.RIGHT);
+        final JLabel leos = new JLabel("Event output stream", SwingConstants.RIGHT);
         pLabels.add(leos);
-        final JLabel lhdfp = new JLabel("HDF path", JLabel.RIGHT);
+        final JLabel lhdfp = new JLabel("HDF path", SwingConstants.RIGHT);
         pLabels.add(lhdfp);
-        final JLabel lep = new JLabel("Event path", JLabel.RIGHT);
+        final JLabel lep = new JLabel("Event path", SwingConstants.RIGHT);
         pLabels.add(lep);
-        final JLabel llfp = new JLabel("Log file path", JLabel.RIGHT);
+        final JLabel llfp = new JLabel("Log file path", SwingConstants.RIGHT);
         pLabels.add(llfp);
         /* blank label balances out the grid */
-        final JLabel lssf = new JLabel(/* "Sort sample fraction", JLabel.RIGHT */);
+        final JLabel lssf = new JLabel(/* "Sort sample fraction", SwingConstants.RIGHT */);
         pLabels.add(lssf);
         /* Entries Panel */
         final JPanel pEntries = new JPanel(new GridLayout(0, 1, gap, gap));

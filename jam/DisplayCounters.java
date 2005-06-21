@@ -21,6 +21,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -137,7 +138,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 		final int flowgaph = 10;
 		final int flowgapv = 0;
 		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, flowgaph, flowgapv));
-		final JLabel label = new JLabel(text, JLabel.RIGHT);
+		final JLabel label = new JLabel(text, SwingConstants.RIGHT);
 		field.setText(emptyString);
 		field.setColumns(cols);
 		field.setEditable(false);

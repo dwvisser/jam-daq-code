@@ -37,6 +37,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -118,7 +119,7 @@ public final class SortControl extends JDialog implements Controller {
 		final JPanel ptop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		ptop.setBorder(new EmptyBorder(10, 0, 0, 0));
 		contents.add(ptop, BorderLayout.NORTH);
-		ptop.add(new JLabel("Event Files to Sort", JLabel.RIGHT));
+		ptop.add(new JLabel("Event Files to Sort", SwingConstants.RIGHT));
 		/* List Panel */
 		multiFile = new MultipleFileChooser(STATUS.getFrame(), msgHandler);
 		multiFile.showListSaveLoadButtons(true);

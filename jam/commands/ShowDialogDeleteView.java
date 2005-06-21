@@ -23,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -53,7 +54,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
                     20, 20));
             pNames.setBorder(new EmptyBorder(0, 10, 0, 10));
             cdnew.add(pNames, BorderLayout.CENTER);
-            final JLabel ln = new JLabel("Name", JLabel.RIGHT);
+            final JLabel ln = new JLabel("Name", SwingConstants.RIGHT);
             pNames.add(ln);
             /* Name combo box */
             comboNames = new JComboBox();

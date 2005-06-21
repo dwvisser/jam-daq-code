@@ -36,6 +36,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -147,9 +148,9 @@ public final class SetupSortOff extends AbstractSetup {
         pLabels.setBorder(new EmptyBorder(2, 10, 0, 0)); // down so browse
         // button lines up
         contents.add(pLabels, BorderLayout.WEST);
-        pLabels.add(new JLabel("Sort classpath", JLabel.RIGHT));
-        pLabels.add(new JLabel("Sort Routine", JLabel.RIGHT));
-        final JLabel lis = new JLabel("Event input stream", JLabel.RIGHT);
+        pLabels.add(new JLabel("Sort classpath", SwingConstants.RIGHT));
+        pLabels.add(new JLabel("Sort Routine", SwingConstants.RIGHT));
+        final JLabel lis = new JLabel("Event input stream", SwingConstants.RIGHT);
         pLabels.add(lis);
         final JLabel los = new JLabel("Event output stream", Label.RIGHT);
         pLabels.add(los);
