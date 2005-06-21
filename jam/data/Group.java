@@ -99,7 +99,7 @@ public final class Group {
 	 * @return the group
 	 */
 	public static Group getGroup(String name) {
-		return (Group) (NAME_MAP.get(name));
+		return NAME_MAP.get(name);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public final class Group {
 	 * @return the histogram
 	 */
 	public Histogram getHistogram(String name) {
-		return (Histogram) histogramMap.get(name);
+		return histogramMap.get(name);
 	}
 
 	/**

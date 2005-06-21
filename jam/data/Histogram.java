@@ -324,7 +324,7 @@ public abstract class Histogram implements DataElement {
 	 * @return the histogram, if it exists, null otherwise
 	 */
 	public static Histogram getHistogram(int num) {
-		return (Histogram) NUMBER_MAP.get(new Integer(num));
+		return NUMBER_MAP.get(num);
 	}
 
 	/**
@@ -387,9 +387,7 @@ public abstract class Histogram implements DataElement {
 	 */
 	public static void setHistogramList(List<Histogram> inHistList) {
 		clearList();
-		final Iterator iter = inHistList.iterator();
-		while (iter.hasNext()) { // loop for all histograms
-			final Histogram hist = (Histogram) iter.next();
+		for (Histogram hist : inHistList){
 			NAME_MAP.put(hist.getFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(hist.getNumber(), hist);
@@ -402,9 +400,7 @@ public abstract class Histogram implements DataElement {
 	 * @see #setZero()
 	 */
 	public synchronized static void setZeroAll() {
-		final Iterator iter = getHistogramList().iterator();
-		while (iter.hasNext()) {
-			final Histogram histogram = (Histogram) iter.next();
+		for (Histogram histogram : getHistogramList()) {
 			histogram.setZero();
 		}
 	}
@@ -617,7 +613,7 @@ public abstract class Histogram implements DataElement {
 	/* instantized methods */
 
 	private void assignNewNumber() {
-		final int last = NUMBER_MAP.isEmpty() ? 0 : ((Integer) NUMBER_MAP
+		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP
 				.lastKey()).intValue();
 		number = last + 1;
 		NUMBER_MAP.put(new Integer(number), this);
@@ -667,8 +663,8 @@ public abstract class Histogram implements DataElement {
 		return type.getDimensionality();
 	}
 
-	public int getElementType() {
-		return DataElement.ELEMENT_TYPE_HISTOGRAM;
+	public DataElement.Type getElementType() {
+		return DataElement.Type.HISTOGRAM;
 	}
 
 	/**
@@ -787,7 +783,7 @@ public abstract class Histogram implements DataElement {
 	public synchronized boolean hasGate(Gate gate) {
 		boolean rval = false;// default return value
 		for (int i = 0; i < gates.size(); i++) {
-			if ((Gate) gates.get(i) == gate) {
+			if (gates.get(i) == gate) {
 				rval = true;
 				break;// drop out of loop
 			}
@@ -851,7 +847,7 @@ public abstract class Histogram implements DataElement {
 	public void setNumber(int num) {
 		final Integer newKey = new Integer(num);
 		if (NUMBER_MAP.containsKey(newKey)) {
-			final Histogram collider = (Histogram) NUMBER_MAP.get(newKey);
+			final Histogram collider = NUMBER_MAP.get(newKey);
 			if (!collider.equals(this)) {
 				collider.assignNewNumber();
 			}

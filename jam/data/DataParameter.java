@@ -4,7 +4,6 @@ import jam.util.StringUtilities;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,8 @@ import java.util.Map;
 
 public class DataParameter {
 
-	private static final Map TABLE = Collections.synchronizedMap(new HashMap());
-	private static final List LIST = Collections.synchronizedList(new ArrayList());
+	private static final Map<String, DataParameter> TABLE = Collections.synchronizedMap(new HashMap<String,DataParameter>());
+	private static final List<DataParameter> LIST = Collections.synchronizedList(new ArrayList<DataParameter>());
 
 	/**
 	 * Limit on name length.
@@ -76,7 +75,7 @@ public class DataParameter {
 	 *
 	 * @return the list of all currently defined parameters.
 	 */
-	public static List getParameterList() {
+	public static List<DataParameter> getParameterList() {
 		return Collections.unmodifiableList(LIST);
 	}
 
@@ -85,14 +84,11 @@ public class DataParameter {
 	 *
 	 * @param inList list of all parameters
 	 */
-	public static void setParameterList(List inList) {
-		DataParameter parameter;
+	public static void setParameterList(List<DataParameter> inList) {
 		/* clear current lists */
 		TABLE.clear();
 		LIST.clear();
-		final Iterator iter = inList.iterator();
-		while (iter.hasNext()) {
-			parameter = (DataParameter) iter.next();
+		for (DataParameter parameter : inList){
 			TABLE.put(parameter.getName(), parameter);
 			LIST.add(parameter);
 		}
@@ -114,7 +110,7 @@ public class DataParameter {
 	* @return the parameter with the specified name
 	*/
 	public static DataParameter getParameter(String name) {
-		return (DataParameter) TABLE.get(name);
+		return TABLE.get(name);
 	}
 
 	/**

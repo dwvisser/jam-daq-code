@@ -41,7 +41,8 @@ public final class Gate implements DataElement {
 
 	static {
 		for (int i = 0; i < 2; i++) {
-			DIM_LIST.add(i, Collections.synchronizedList(new ArrayList<Gate>()));
+			DIM_LIST
+					.add(i, Collections.synchronizedList(new ArrayList<Gate>()));
 		}
 	}
 
@@ -55,7 +56,7 @@ public final class Gate implements DataElement {
 			gate.bananaGate.reset();
 		}
 		LIST.clear();
-		for (List<Gate> list : DIM_LIST){
+		for (List<Gate> list : DIM_LIST) {
 			list.clear();
 		}
 		TABLE.clear();
@@ -73,7 +74,7 @@ public final class Gate implements DataElement {
 	public static Gate getGate(String fullName) {
 		Gate rval = null;
 		if (fullName != null && TABLE.containsKey(fullName)) {
-			rval = (Gate) TABLE.get(fullName);
+			rval = TABLE.get(fullName);
 		}
 		return rval;
 	}
@@ -114,12 +115,9 @@ public final class Gate implements DataElement {
 	 * @param inGateList
 	 *            must contain all histogram objects
 	 */
-	public static void setGateList(List inGateList) {
+	public static void setGateList(List<Gate> inGateList) {
 		clearList();
-		/* loop for all histograms */
-		for (final Iterator allGates = inGateList.iterator(); allGates
-				.hasNext();) {
-			final Gate gate = (Gate) allGates.next();
+		for (Gate gate : inGateList) {
 			final String fullName = gate.getFullName();
 			TABLE.put(fullName, gate);
 			LIST.add(gate);
@@ -320,8 +318,8 @@ public final class Gate implements DataElement {
 		return dimensions;
 	}
 
-	public int getElementType() {
-		return DataElement.ELEMENT_TYPE_GATE;
+	public Type getElementType() {
+		return Type.GATE;
 	}
 
 	private String getFullName() {

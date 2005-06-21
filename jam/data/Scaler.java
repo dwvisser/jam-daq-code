@@ -54,7 +54,7 @@ public class Scaler implements DataElement {
 	 * @return the scaler with the specified name
 	 */
 	public static Scaler getScaler(String name) {
-		return (Scaler) TABLE.get(name);
+		return TABLE.get(name);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class Scaler implements DataElement {
 	 * 
 	 * @return the list of all scalers
 	 */
-	public static List getScalerList() {
+	public static List<Scaler> getScalerList() {
 		return Collections.unmodifiableList(LIST);
 	}
 
@@ -77,7 +77,7 @@ public class Scaler implements DataElement {
 		/* check we do not try to update mores scalers than there are */
 		final int numScalers = Math.min(inValue.length, LIST.size());
 		for (int i = 0; i < numScalers; i++) {
-			final Scaler scaler = (Scaler) LIST.get(i);
+			final Scaler scaler = LIST.get(i);
 			scaler.setValue(inValue[scaler.getNumber()]);
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_UPDATE);
@@ -124,8 +124,8 @@ public class Scaler implements DataElement {
 		return value;
 	}
 
-	public int getElementType() {
-		return DataElement.ELEMENT_TYPE_SCALER;
+	public Type getElementType() {
+		return Type.SCALER;
 	}
 
 	/**
