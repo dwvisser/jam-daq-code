@@ -5,6 +5,7 @@ import jam.JamException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
+import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
 
@@ -148,67 +149,27 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
     }
 
     /**
-     * Called to start the applet. You never need to call this directly; it is
-     * called when the applet's document is visited.
-     */
-    public void start() {
-        // System.out.println("view start");
-    }
-
-    /**
-     * Called to stop the applet. This is called when the applet's document is
-     * no longer on the screen. It is guaranteed to be called before destroy()
-     * is called. You never need to call this method directly
-     */
-    public void stop() {
-    }
-
-    /**
-     * Cleans up whatever resources are being held. If the applet is active it
-     * is stopped.
-     */
-    public void destroy() {
-    }
-
-    /**
      * Receive action frow awt widgets
      */
     public void actionPerformed(ActionEvent e) {
-
         String incommand;
         String hostName;
-
         incommand = e.getActionCommand();
-
         if ((e.getSource() == textHost)) {
             incommand = "link";
         }
-
         try {
-
             if (incommand == "link") {
                 hostName = textHost.getText().trim();
                 console.messageOutln("Trying " + hostName);
                 link(hostName);
                 console.messageOutln("Remote link made to: " + hostName);
             }
-
         } catch (JamException je) {
             console.errorOutln(je.getMessage());
         } catch (SecurityException se) {
             console.errorOutln("Security Exception: " + se.getMessage());
         }
-        // readfile(file);
-        /*
-         * try { // histogramURL=new URL("http", host, file);
-         * System.out.println(" >url "+histogramURL); //
-         * System.out.println(histogramURL.openStream()); //
-         * histIO.readSpeFile(histogramURL.openStream());
-         *  } catch (MalformedURLException me){ System.out.println("Error URL"); }
-         * catch (IOException ioe){ System.out.println("Error io"); }
-         */
-        // display.setHistogramList( Histogram.getHistograms() );
-        // }
     }
 
     /**
@@ -254,12 +215,12 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
                     lowerLimit = limits[0];
                     upperLimit = limits[1];
                     console.messageOut("Gate: " + gate.getName() + ", Ch. "
-                            + lowerLimit + " to " + upperLimit, Console.NEW);
-                    console.messageOut("  Area = " + area, Console.END);
+                            + lowerLimit + " to " + upperLimit, MessageHandler.NEW);
+                    console.messageOut("  Area = " + area, MessageHandler.END);
                 } else {
                     area = gate.getArea();
-                    console.messageOut("Gate " + gate.getName(), Console.NEW);
-                    console.messageOut(", Area = " + area, Console.END);
+                    console.messageOut("Gate " + gate.getName(), MessageHandler.NEW);
+                    console.messageOut(", Area = " + area, MessageHandler.END);
                 }
             }
         }
