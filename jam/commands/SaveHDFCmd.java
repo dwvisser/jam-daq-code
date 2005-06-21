@@ -4,6 +4,7 @@ import jam.global.BroadcastEvent;
 import jam.global.SortMode;
 import jam.io.hdf.HDFIO;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Observable;
@@ -28,7 +29,7 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 			ACCELERATOR_KEY,
 			KeyStroke.getKeyStroke(
 				KeyEvent.VK_S,
-				CTRL_MASK | KeyEvent.SHIFT_MASK));
+				CTRL_MASK | InputEvent.SHIFT_MASK));
 	    final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
 	    putValue(Action.SMALL_ICON, iSave);
 		putValue(Action.SHORT_DESCRIPTION, "Save histograms to a hdf data file.");	    

@@ -68,7 +68,7 @@ final class ReloadHDFCmd extends AbstractLoaderHDF {
         }
         /* Set the current histogram to the first opened histogram. */
         if (currentGroup.getHistogramList().size() > 0) {
-            firstHist = (Histogram) currentGroup.getHistogramList().get(0);
+            firstHist = currentGroup.getHistogramList().get(0);
         }
         STATUS.setCurrentHistogram(firstHist);
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
