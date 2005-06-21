@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.util.Scanner;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -137,11 +137,9 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < counts.length; i++) {
-            tokens.nextToken();
-            counts[i] = tokens.nval;
+            counts[i] = scanner.nextDouble();
         }
         Histogram.createHistogram(importGroup, counts, name, title);
     }
@@ -155,14 +153,13 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < rows; i++) {
-            tokens.nextToken();
-            if (tokens.nval > maxX) {
-                maxX = (int) tokens.nval;
+            double nval = scanner.nextDouble();
+            if (nval > maxX) {
+                maxX = (int) nval;
             }
-            tokens.nextToken();
+            scanner.nextDouble();
         }
     }
 
@@ -174,18 +171,17 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < rows; i++) {
-            tokens.nextToken();
-            if (tokens.nval > maxX) {
-                maxX = (int) tokens.nval;
+            double nval = scanner.nextDouble();
+            if (nval > maxX) {
+                maxX = (int) nval;
             }
-            tokens.nextToken();
-            if (tokens.nval > maxY) {
-                maxY = (int) tokens.nval;
+            nval = scanner.nextDouble();
+            if (nval > maxY) {
+                maxY = (int) nval;
             }
-            tokens.nextToken();
+            scanner.nextDouble();
         }
     }
 
@@ -196,13 +192,10 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < rows; i++) {
-            tokens.nextToken();
-            final int channel = (int) tokens.nval;
-            tokens.nextToken();
-            counts[channel] = tokens.nval;
+            final int channel = (int) scanner.nextDouble();
+            counts[channel] = scanner.nextDouble();
         }
         Histogram.createHistogram(importGroup, counts, name, title);
     }
@@ -214,15 +207,11 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < rows; i++) {
-            tokens.nextToken();
-            final int channelX = (int) tokens.nval;
-            tokens.nextToken();
-            final int channelY = (int) tokens.nval;
-            tokens.nextToken();
-            counts[channelX][channelY] = tokens.nval;
+            final int channelX = (int) scanner.nextDouble();
+            final int channelY = (int) scanner.nextDouble();
+            counts[channelX][channelY] = scanner.nextDouble();
         }
         Histogram.createHistogram(importGroup, counts, name, title);
     }
@@ -234,12 +223,10 @@ public class ImpExpASCII extends AbstractImpExp {
         if (this.line1isTitle) {
             lnr.readLine();
         }
-        final StreamTokenizer tokens = new StreamTokenizer(lnr);
-        tokens.eolIsSignificant(false);
+        final Scanner scanner = new Scanner(lnr);
         for (int i = 0; i < counts.length; i++) {
             for (int j = 0; j < counts[0].length; j++) {
-                tokens.nextToken();
-                counts[i][j] = tokens.nval;
+                counts[i][j] = scanner.nextDouble();
             }
         }
         Histogram.createHistogram(importGroup, counts, name, title);
@@ -251,14 +238,13 @@ public class ImpExpASCII extends AbstractImpExp {
         final InputStreamReader isr = new InputStreamReader(
                 new FileInputStream(getLastFile()));
         /* Make a tokenizer for input stream. */
-        final StreamTokenizer tokens = new StreamTokenizer(isr);
-        tokens.eolIsSignificant(true); //Grab end of line markers
+        final Scanner scanner = new Scanner(isr);
         /*
          * Read in header lines, header are lines that start with a non-number
          * token.
          */
-        if (tokens.nextToken() == StreamTokenizer.TT_WORD) {
-            rval = tokens.sval;
+        if (scanner.hasNext("[a-zA-Z]\\w*")) {
+            rval = scanner.next();
             line1isTitle = true;
         } else {
             rval = getFileName(getLastFile());
@@ -294,17 +280,17 @@ public class ImpExpASCII extends AbstractImpExp {
          * Read in header lines. Headers are lines that start with a non-number
          * token.
          */
-        if (this.line1isTitle) {
+        if (line1isTitle) {
             lnr.readLine();
         }
         final String line = lnr.readLine();
         lnr.close();
         if (line != null) {
-            final StreamTokenizer tokens = new StreamTokenizer(
-                    new StringReader(line));
-            while (tokens.nextToken() == StreamTokenizer.TT_NUMBER) {
-                rval++;
-            }
+        	final Scanner scanner = new Scanner(new StringReader(line));
+        	while (scanner.hasNextDouble()){
+        		scanner.nextDouble();
+        		rval++;
+        	}
         }
         return rval;
     }
