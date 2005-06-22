@@ -68,7 +68,7 @@ final class ParseCommand implements CommandListener {
 			}
 		} else if (commandMap.containsKey(command)) {
 			accept = true;
-			final String inCommand = (String) commandMap.get(command);
+			final String inCommand = commandMap.get(command);
 			action.doCommand(inCommand,true);
 			if (action.getIsCursorCommand()) {
 				boolean vertical = Action.RANGE.equals(inCommand);

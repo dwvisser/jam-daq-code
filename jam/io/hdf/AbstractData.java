@@ -159,7 +159,7 @@ public abstract class AbstractData implements Constants {
 		AbstractData match = null;
 		final Integer key = calculateKey(tag, ref);
 		if (tagRefMap.containsKey(key)) {
-			match = (AbstractData) tagRefMap.get(key);
+			match = tagRefMap.get(key);
 		}
 		return match;
 	}
@@ -235,7 +235,7 @@ public abstract class AbstractData implements Constants {
 		AbstractData rval = null;
 		final Short shortTag = new Short(tag);
 		if (INITABLE.containsKey(shortTag)) {
-			final Class dataClass = (Class) INITABLE.get(shortTag);
+			final Class dataClass = INITABLE.get(shortTag);
 			try {
 				rval = (AbstractData) dataClass.newInstance();
 			} catch (InstantiationException ie) {
@@ -391,7 +391,7 @@ public abstract class AbstractData implements Constants {
 	 * size or writing out. Override when an update of is needed.
 	 */
 	void refreshBytes() {
-
+		//default is do nothing
 	}
 
 	/**

@@ -295,7 +295,7 @@ final class Plot1d extends AbstractPlot {
 			while (iter.hasNext()) {
 				overlayInts[i] = ((Integer) iter.next()).intValue();
 				g2.setColor(colorMap.getOverlay(i));
-				graph.drawHist((double[]) overlayCounts.get(i), binWidth);
+				graph.drawHist(overlayCounts.get(i), binWidth);
 				i++;
 			}
 			Histogram plotHist = getHistogram();
