@@ -6,7 +6,7 @@ package jam.io.hdf;
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  * @version 1.0
  */
-interface Constants{
+public interface Constants{
 
     /**
      * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
