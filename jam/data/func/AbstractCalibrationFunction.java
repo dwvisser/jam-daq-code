@@ -25,9 +25,9 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 */
     public final static String NOT_CALIB ="Not Calibrated";	
     
-	private static final Map  FUNCTIONS =new HashMap();	
-	private static final List NAMES =new ArrayList();	
-	private static final Map  ICONS =new HashMap();
+	private static final Map<String, Class<?>>  FUNCTIONS =new HashMap<String, Class<?>>();	
+	private static final List<String> NAMES =new ArrayList<String>();	
+	private static final Map<String, ImageIcon>  ICONS =new HashMap<String, ImageIcon>();
 
 	static {
 		clearAll();
@@ -92,7 +92,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Returns the list of function names.
 	 * @return the list of function names
 	 */
-	static List getListNames() {
+	static List<String> getListNames() {
 		return Collections.unmodifiableList(NAMES);
 	}
 	
@@ -100,7 +100,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Returns the map of function names to functions.
 	 * @return the map of function names to functions
 	 */
-	public static Map getMapFunctions() {
+	public static Map<String, Class<?>> getMapFunctions() {
 		return Collections.unmodifiableMap(FUNCTIONS);
 	}
 	
@@ -131,7 +131,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	}
 
 	static ImageIcon getIcon(final String name){
-		return (ImageIcon)ICONS.get(name);
+		return ICONS.get(name);
 	}	
 
 	/**
@@ -248,8 +248,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 	public void setPoints(final double[] ptsChannelIn,
 			final double[] ptsEnergyIn) {
 		setIsFitPoints(true);
-		ptsChannel = (double[]) ptsChannelIn.clone();
-		ptsEnergy = (double[]) ptsEnergyIn.clone();
+		ptsChannel = ptsChannelIn.clone();
+		ptsEnergy = ptsEnergyIn.clone();
 	}
 
 	/**

@@ -45,7 +45,7 @@ public class PeakFinder {
     static private Multiplet [] peakFind(){
         Multiplet peaks = new Multiplet();
         Multiplet current=new Multiplet();
-        Vector multiplets = new Vector();
+        Vector<Multiplet> multiplets = new Vector<Multiplet>();
         Multiplet [] rval;
         double [] sum1 = new double[spectrum.length];//defined by Java spec to be zeroes initially
         double [] sum2 = new double[spectrum.length];
@@ -95,7 +95,7 @@ public class PeakFinder {
         //create return value array and correct peak positions within multiplets
         rval = new Multiplet[multiplets.size()];
         for (int i = 0; i< rval.length; i++) {
-            rval[i]=(Multiplet)multiplets.elementAt(i);
+            rval[i]=multiplets.elementAt(i);
             if (rval[i].size()>1){
                 Multiplet temp=new Multiplet();
                 for (int j=0; j<rval[i].size(); j++){
