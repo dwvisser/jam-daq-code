@@ -19,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -52,7 +54,7 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 		// Scroll Panel
 		JScrollPane scrollPane = new JScrollPane(pBars);
 		scrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		// Panel for alarm
 		final JPanel pal = new JPanel();
@@ -97,7 +99,8 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 			pm = new JPanel();
 			pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 			pBars.add(pm);
-			final JLabel labelDisp = new JLabel(monitor.getName(), JLabel.RIGHT);
+			final JLabel labelDisp = new JLabel(monitor.getName(),
+					SwingConstants.RIGHT);
 			pm.add(labelDisp);
 			final PlotBar plotBar = new PlotBar(monitor);
 			pm.add(plotBar);

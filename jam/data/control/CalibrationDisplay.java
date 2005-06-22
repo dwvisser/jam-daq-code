@@ -2,8 +2,8 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.Histogram;
-import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.global.MessageHandler;
 
@@ -23,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  * Displays a calibration function.
@@ -91,7 +92,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		cdialogCalib.add(pChoose);
 
 		//calibFunction=new LinearFunction();
-		lcalibEq = new JLabel(BLANK_TITLE, JLabel.CENTER);
+		lcalibEq = new JLabel(BLANK_TITLE, SwingConstants.CENTER);
 		cdialogCalib.add(lcalibEq);
 
 		pcoeff = new JPanel[MAX_NUMBER_TERMS];
@@ -101,7 +102,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		for (int i = 0; i < MAX_NUMBER_TERMS; i++) {
 			pcoeff[i] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 			cdialogCalib.add(pcoeff[i]);
-			lcoeff[i] = new JLabel(BLANK_LABEL, JLabel.RIGHT);
+			lcoeff[i] = new JLabel(BLANK_LABEL, SwingConstants.RIGHT);
 			pcoeff[i].add(lcoeff[i]);
 			tcoeff[i] = new JTextField(" ");
 			tcoeff[i].setColumns(10);

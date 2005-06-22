@@ -29,6 +29,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -95,13 +96,13 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(20, 10, 0, 0));
 		cdgain.add(pLabels, BorderLayout.WEST);
-		pLabels.add(new JLabel("Shift histogram", JLabel.RIGHT));
-		pLabels.add(new JLabel("Using", JLabel.RIGHT));
-		label1 = new JLabel("", JLabel.RIGHT); // set by setUILabels
+		pLabels.add(new JLabel("Shift histogram", SwingConstants.RIGHT));
+		pLabels.add(new JLabel("Using", SwingConstants.RIGHT));
+		label1 = new JLabel("", SwingConstants.RIGHT); // set by setUILabels
 		pLabels.add(label1);
-		label3 = new JLabel("", JLabel.RIGHT); // set by setUILabels
+		label3 = new JLabel("", SwingConstants.RIGHT); // set by setUILabels
 		pLabels.add(label3);
-		pLabels.add(new JLabel("To  histogram", JLabel.RIGHT));
+		pLabels.add(new JLabel("To  histogram", SwingConstants.RIGHT));
 		// Entries Panel
 		JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pEntries.setBorder(new EmptyBorder(20, 0, 0, 10));

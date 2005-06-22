@@ -29,6 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -72,28 +74,23 @@ public final class ParameterControl extends AbstractControl {
 	public ParameterControl(MessageHandler messageHandler) {
 		super("Sort Parameters", true);
 		this.messageHandler = messageHandler;
-
-		// dialog box to display Parameters
+		/* dialog box to display Parameters */
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
-
-		// Central Panel
+		/* Central Panel */
 		pCenter = new JPanel(new GridLayout(0, 1, borderHeight, 5));
 		pCenter.setBorder(new EmptyBorder(borderHeight, 10, borderHeight, 10));
-
-		// Scroll Panel
+		/* Scroll Panel */
 		scrollPane = new JScrollPane(pCenter);
 		scrollPane
-				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
-
-		// Buttons for display dialog
+		/* Buttons for display dialog */
 		JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
 		pLower.setBorder(new EmptyBorder(5, 0, 0, 0));
 		cddisp.add(pLower, BorderLayout.SOUTH);
-
 		JPanel pButtonsTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pLower.add(pButtonsTop);
 		JPanel pLoadSave = new JPanel(new GridLayout(1, 0, 5, 5));
@@ -211,7 +208,7 @@ public final class ParameterControl extends AbstractControl {
 						0));
 				pCenter.add(pParam[count]);
 				labelParam[count] = new JLabel(currentParameter.getName()
-						.trim(), JLabel.RIGHT);
+						.trim(), SwingConstants.RIGHT);
 				pParam[count].add(labelParam[count]);
 				textParam[count] = new JTextField("");
 				textParam[count].setColumns(10);

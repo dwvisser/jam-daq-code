@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -92,7 +93,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 10));
 		final JPanel pFileInd = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		final JLabel filelabel = new JLabel("File: ", JLabel.RIGHT);
+		final JLabel filelabel = new JLabel("File: ", SwingConstants.RIGHT);
 		pFileInd.add(filelabel);
 		txtFile = new JTextField(20);
 		txtFile.setEditable(false);
@@ -237,19 +238,16 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		final Group firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
 			STATUS.setCurrentGroup(firstGroup);
-
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.getHistogramList().size() > 0) {
-				firstHist = (Histogram) firstGroup.getHistogramList().get(0);
+				firstHist = firstGroup.getHistogramList().get(0);
 			}
 		}
-
 		if (firstHist != null) {
 			STATUS.setCurrentHistogram(firstHist);
 			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 					firstHist);
 		}
-
 	}
 
 	/**
@@ -259,5 +257,4 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		hdfio.removeListener();
 		notifyApp();
 	}
-
 }

@@ -23,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -71,11 +72,11 @@ public class Combine extends AbstractManipulation implements Observer {
 		JPanel pLabels = new JPanel(new GridLayout(0, 1, hgap, vgap));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdmanip.add(pLabels, BorderLayout.WEST);
-		lWith = new JLabel("With histogram", JLabel.RIGHT);
-		pLabels.add(new JLabel("From  histogram", JLabel.RIGHT));
-		pLabels.add(new JLabel("Operation", JLabel.RIGHT));
+		lWith = new JLabel("With histogram", SwingConstants.RIGHT);
+		pLabels.add(new JLabel("From  histogram", SwingConstants.RIGHT));
+		pLabels.add(new JLabel("Operation", SwingConstants.RIGHT));
 		pLabels.add(lWith);
-		pLabels.add(new JLabel("To histogram", JLabel.RIGHT));
+		pLabels.add(new JLabel("To histogram", SwingConstants.RIGHT));
 
 		// Entries Panel
 		JPanel pEntries = new JPanel(new GridLayout(0, 1, hgap, vgap));

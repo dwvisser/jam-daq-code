@@ -29,6 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -65,15 +67,12 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
-		
 		pScalers = new JPanel(new GridLayout(0, 1, borderHeight, 5));
 		Border borderScalers = new EmptyBorder(borderHeight, 10, borderHeight, 10);
 		pScalers.setBorder(borderScalers);
-		
 		scrollPane = new JScrollPane(pScalers);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);		
 		cddisp.add(scrollPane, BorderLayout.CENTER);
-		
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
 				10));
@@ -142,7 +141,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 				ps = new JPanel(new FlowLayout(FlowLayout.RIGHT,
 						10, 0));
 				final JLabel labelScaler = new JLabel(currentScaler.getName()
-						.trim(), JLabel.RIGHT);
+						.trim(), SwingConstants.RIGHT);
 				textScaler[count] = new JTextField("  ");
 				textScaler[count].setColumns(12);
 				textScaler[count].setEditable(false);

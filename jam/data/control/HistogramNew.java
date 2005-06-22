@@ -26,6 +26,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import static javax.swing.SwingConstants.RIGHT;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -73,15 +74,15 @@ public class HistogramNew extends AbstractControl {
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdialogNew.add(pLabels, BorderLayout.WEST);
-		final JLabel lg = new JLabel("Group", JLabel.RIGHT);
+		final JLabel lg = new JLabel("Group", RIGHT);
 		pLabels.add(lg);		
-		final JLabel ln = new JLabel("Name", JLabel.RIGHT);
+		final JLabel ln = new JLabel("Name", RIGHT);
 		pLabels.add(ln);
-		final JLabel lti = new JLabel("Title", JLabel.RIGHT);
+		final JLabel lti = new JLabel("Title", RIGHT);
 		pLabels.add(lti);
-		final JLabel lt = new JLabel("Type", JLabel.RIGHT);
+		final JLabel lt = new JLabel("Type", RIGHT);
 		pLabels.add(lt);
-		final JLabel ls = new JLabel("Size", JLabel.RIGHT);
+		final JLabel ls = new JLabel("Size", RIGHT);
 		pLabels.add(ls);
 		/* Entires panel */
 		final JPanel pEntires = new JPanel(new GridLayout(0, 1, 5, 5));

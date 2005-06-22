@@ -22,6 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -64,7 +65,7 @@ public class LoadFit {
 		final JPanel pFit = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		Border border = new EmptyBorder(20,20,20,20);
 		pFit.setBorder(border);
-		final JLabel lFit = new JLabel("Fit class: ", JLabel.RIGHT);
+		final JLabel lFit = new JLabel("Fit class: ", SwingConstants.RIGHT);
 		pFit.add(lFit);
 		final JComboBox chooseFit = new JComboBox(this.getFitClasses());
 		Dimension dim = chooseFit.getPreferredSize();

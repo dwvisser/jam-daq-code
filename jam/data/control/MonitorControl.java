@@ -1,5 +1,8 @@
 package jam.data.control;
 
+import static javax.swing.SwingConstants.CENTER;
+import static javax.swing.SwingConstants.LEFT;
+import static javax.swing.SwingConstants.RIGHT;
 import jam.data.DataException;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
@@ -24,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -31,38 +35,43 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * Reads and displays the monitors.
- *
- * @version  September 2000
- * @author   Ken Swartz
+ * 
+ * @version September 2000
+ * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
- * @since       JDK1.1
+ * @since JDK1.1
  */
-public final class MonitorControl extends AbstractControl
-	implements Runnable {	
+public final class MonitorControl extends AbstractControl implements Runnable {
 
-	private final int DEFAULT_MAX=100;
-	private final int DEFAULT_THRESHOLD =10;
+	private final int DEFAULT_MAX = 100;
+
+	private final int DEFAULT_THRESHOLD = 10;
+
 	private final MessageHandler msgHandler;
 
-	//widgets for configuration
+	// widgets for configuration
 	private final JPanel pUpper;
+
 	private final JPanel pMonitors;
 
 	private final JSpinner spinnerUpdate;
-	private final int borderHeight=5;
 
-	private int interval; //update interval
-	private GoodThread loopThread; //loop to update monitors
-	private boolean configured = false; //monitors have been configured
-	
-	private static MonitorControl mc=null;
-	
+	private final int borderHeight = 5;
+
+	private int interval; // update interval
+
+	private GoodThread loopThread; // loop to update monitors
+
+	private boolean configured = false; // monitors have been configured
+
+	private static MonitorControl mc = null;
+
 	/**
 	 * @return the only instance of this class
 	 */
-	static public MonitorControl getSingletonInstance(){
-		if (mc==null){
-			mc=new MonitorControl();
+	static public MonitorControl getSingletonInstance() {
+		if (mc == null) {
+			mc = new MonitorControl();
 		}
 		return mc;
 	}
@@ -70,40 +79,29 @@ public final class MonitorControl extends AbstractControl
 	MonitorControl() {
 		super("Monitors Setup", false);
 		msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
-
 		setResizable(true);
 		setLocation(20, 50);
-		final Container cddisp = getContentPane();	
-		
-		//cddisp.setLayout(new GridLayout(0, 1, spacing, spacing));
+		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
-		
-		//final JPanel pConfig = new JPanel(new BorderLayout());
-		//Border border = new EmptyBorder(spacing, 0, spacing, 0);
-		//pConfig.setBorder(border);
-		//cddisp.add(pConfig);
-		
-		//Panel with column titles
-		//pUpper = new JPanel(new GridLayout(0, 4, 5, 5));
+		/* Panel with column titles */
 		pUpper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
-		Border border = new EmptyBorder(10, 0, 5, 5);		
+		Border border = new EmptyBorder(10, 0, 5, 5);
 		pUpper.setBorder(border);
 		cddisp.add(pUpper, BorderLayout.NORTH);
-        /* Add labels of columns */
-    	pUpper.add(new JLabel("Name", JLabel.CENTER));
-    	pUpper.add(new JLabel("Threshold", JLabel.CENTER));
-    	pUpper.add(new JLabel("Maximum", JLabel.CENTER));
-    	pUpper.add(new JLabel("Alarm", JLabel.LEFT));
-		
+		/* Add labels of columns */
+		pUpper.add(new JLabel("Name", CENTER));
+		pUpper.add(new JLabel("Threshold", CENTER));
+		pUpper.add(new JLabel("Maximum", CENTER));
+		pUpper.add(new JLabel("Alarm", LEFT));
 		/* Panel to fill in with monitors */
 		pMonitors = new JPanel(new GridLayout(0, 1, 5, borderHeight));
 		border = new EmptyBorder(borderHeight, 0, borderHeight, 0);
 		pMonitors.setBorder(border);
-		//Scroll Panel
+		// Scroll Panel
 		JScrollPane scrollPane = new JScrollPane(pMonitors);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);		
-		cddisp.add(scrollPane, BorderLayout.CENTER);		
-		
+		scrollPane
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		cddisp.add(scrollPane, BorderLayout.CENTER);
 		/* Lower panel has widgets that do not change */
 		final JPanel pLower = new JPanel(new GridLayout(0, 1, 0, 0));
 		cddisp.add(pLower, BorderLayout.SOUTH);
@@ -111,18 +109,18 @@ public final class MonitorControl extends AbstractControl
 		final JPanel pupdate = new JPanel();
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pLower.add(pupdate);
-		pupdate.add(new JLabel("Update every", JLabel.RIGHT));
+		pupdate.add(new JLabel("Update every", RIGHT));
 		final Integer one = new Integer(1);
 		final Integer init = new Integer(1);
-		spinnerUpdate =
-			new JSpinner(new SpinnerNumberModel(init, one, null, one));
-		spinnerUpdate.setPreferredSize(new Dimension(50, 
-		spinnerUpdate.getPreferredSize().height));
+		spinnerUpdate = new JSpinner(new SpinnerNumberModel(init, one, null,
+				one));
+		spinnerUpdate.setPreferredSize(new Dimension(50, spinnerUpdate
+				.getPreferredSize().height));
 		pupdate.add(spinnerUpdate);
-		pupdate.add(new JLabel("sec", JLabel.LEFT));
+		pupdate.add(new JLabel("sec", LEFT));
 		/* panel for buttons */
-		final JPanel pbutton =
-			new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER, 5,
+				5));
 		pLower.add(pbutton);
 		JPanel pb = new JPanel(new GridLayout(1, 0, 5, 5));
 		pbutton.add(pb);
@@ -155,7 +153,7 @@ public final class MonitorControl extends AbstractControl
 			public void actionPerformed(ActionEvent ae) {
 				configured = false;
 				/* stop monitor thread if running */
-				if (loopThread != null){
+				if (loopThread != null) {
 					loopThread.setState(GoodThread.State.STOP);
 				}
 			}
@@ -171,77 +169,63 @@ public final class MonitorControl extends AbstractControl
 	 */
 	public void doSetup() {
 		int numberMonitors;
-        final int cols = 6;
-        //JPanel pLabel=null;
-        JPanel pRow=null;
-		
-        numberMonitors = Monitor.getMonitorList().size();        
-        final Iterator monitorsIter = Monitor.getMonitorList().iterator();
-        
-        /* Clear panel */
-        pMonitors.removeAll();
-
-        if (numberMonitors>0) {
-            /* Add labels of columns */
-        	//pUpper.add(new JLabel("Name", JLabel.CENTER));
-        	//pUpper.add(new JLabel("Threshold", JLabel.CENTER));
-        	//pUpper.add(new JLabel("Maximum", JLabel.CENTER));
-        	//pUpper.add(new JLabel("Alarm", JLabel.LEFT));
-        }
-        /*
-         * for each monitor make a panel with label, threshold, maximum, and
-         * alarm
-         */        
-        while (monitorsIter.hasNext()) {
-            Monitor monitor = (Monitor) monitorsIter.next();
-            pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-            pMonitors.add(pRow);
-            final JLabel labelConfig = new JLabel(monitor.getName(),
-                    JLabel.CENTER);
-            JPanel pLabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		final int cols = 6;
+		JPanel pRow = null;
+		numberMonitors = Monitor.getMonitorList().size();
+		/* Clear panel */
+		pMonitors.removeAll();
+		/*
+		 * for each monitor make a panel with label, threshold, maximum, and
+		 * alarm
+		 */
+		for (Monitor monitor : Monitor.getMonitorList()) {
+			pRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+			pMonitors.add(pRow);
+			final JLabel labelConfig = new JLabel(monitor.getName(), CENTER);
+			JPanel pLabel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 			pLabel.add(labelConfig);
 			pRow.add(pLabel);
-            final JTextField textThreshold = new JTextField();
-            textThreshold.setColumns(cols);
-            textThreshold.setEditable(true);
-            textThreshold.setText(""+DEFAULT_THRESHOLD);
-            pRow.add(textThreshold);
-            final JTextField textMaximum = new JTextField();
-            textMaximum.setColumns(cols);
-            textMaximum.setEditable(true);
-            textMaximum.setText(""+DEFAULT_MAX);
-            pRow.add(textMaximum);
-            final JCheckBox checkAlarm = new JCheckBox();
-            checkAlarm.setSelected(false);
-            pRow.add(checkAlarm);
-        }
-        pack();
-		if (numberMonitors>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, pRow, borderHeight, numberMonitors);
+			final JTextField textThreshold = new JTextField();
+			textThreshold.setColumns(cols);
+			textThreshold.setEditable(true);
+			textThreshold.setText("" + DEFAULT_THRESHOLD);
+			pRow.add(textThreshold);
+			final JTextField textMaximum = new JTextField();
+			textMaximum.setColumns(cols);
+			textMaximum.setEditable(true);
+			textMaximum.setText("" + DEFAULT_MAX);
+			pRow.add(textMaximum);
+			final JCheckBox checkAlarm = new JCheckBox();
+			checkAlarm.setSelected(false);
+			pRow.add(checkAlarm);
+		}
+		pack();
+		if (numberMonitors > 0) {
+			Dimension dialogDim = calculateScrollDialogSize(this, pRow,
+					borderHeight, numberMonitors);
 			setSize(dialogDim);
 		}
-        
-    }
+
+	}
 
 	/**
-	 * Recall the monitor's parameters
-	 * and set the input fields.
+	 * Recall the monitor's parameters and set the input fields.
 	 */
 	void recall() {
 		/* update interval */
 		spinnerUpdate.setValue(new Integer(interval));
 		final Iterator mList = Monitor.getMonitorList().iterator();
-		/*get the Monitor parameters */
+		/* get the Monitor parameters */
 		int base = 0;
 		while (mList.hasNext()) {
 			final Monitor monitor = (Monitor) mList.next();
 			base += 4;
-			final JTextField textThreshold =
-				(JTextField) pMonitors.getComponent(base + 1);
-			final JTextField textMaximum =
-				(JTextField) pMonitors.getComponent(base + 2);
-			final JCheckBox checkAlarm =
-				(JCheckBox) pMonitors.getComponent(base + 3);
+			final JTextField textThreshold = (JTextField) pMonitors
+					.getComponent(base + 1);
+			final JTextField textMaximum = (JTextField) pMonitors
+					.getComponent(base + 2);
+			final JCheckBox checkAlarm = (JCheckBox) pMonitors
+					.getComponent(base + 3);
 			textThreshold.setText(String.valueOf(monitor.getThreshold()));
 			textMaximum.setText(String.valueOf(monitor.getMaximum()));
 			checkAlarm.setSelected(monitor.getAlarm());
@@ -249,37 +233,39 @@ public final class MonitorControl extends AbstractControl
 	}
 
 	/**
-	 * Configure the monitors, i.e. set the values their parameters
-	 * according to the input fields.
-	 *
-	 * @throws DataException for invalid number input
+	 * Configure the monitors, i.e. set the values their parameters according to
+	 * the input fields.
+	 * 
+	 * @throws DataException
+	 *             for invalid number input
 	 */
 	void configure() {
 		try {
-			//set update interval
+			// set update interval
 			interval = ((Integer) spinnerUpdate.getValue()).intValue();
 			if (interval < 1) {
-				throw new IllegalArgumentException("Update interval must be greater than 1");
+				throw new IllegalArgumentException(
+						"Update interval must be greater than 1");
 			}
 			Monitor.setInterval(interval);
-			//set Monitor parameters
+			// set Monitor parameters
 			final Iterator it = Monitor.getMonitorList().iterator();
-			/*get the Monitor parameters */
+			/* get the Monitor parameters */
 			int base = 0;
 			while (it.hasNext()) {
 				base += 4;
 				final Monitor monitor = (Monitor) it.next();
-				final JTextField textThreshold =
-					(JTextField) pMonitors.getComponent(base + 1);
-				final JTextField textMaximum =
-					(JTextField) pMonitors.getComponent(base + 2);
-				final JCheckBox checkAlarm =
-					(JCheckBox) pMonitors.getComponent(base + 3);
-				final double threshold =
-					Double.parseDouble(textThreshold.getText().trim());
+				final JTextField textThreshold = (JTextField) pMonitors
+						.getComponent(base + 1);
+				final JTextField textMaximum = (JTextField) pMonitors
+						.getComponent(base + 2);
+				final JCheckBox checkAlarm = (JCheckBox) pMonitors
+						.getComponent(base + 3);
+				final double threshold = Double.parseDouble(textThreshold
+						.getText().trim());
 				monitor.setThreshold(threshold);
-				final double maximum =
-					Double.parseDouble(textMaximum.getText().trim());
+				final double maximum = Double.parseDouble(textMaximum.getText()
+						.trim());
 				monitor.setMaximum(maximum);
 				monitor.setAlarm(checkAlarm.isSelected());
 			}
@@ -291,23 +277,22 @@ public final class MonitorControl extends AbstractControl
 
 	/**
 	 * Start monitors interval updating loop.
-	 *
-	 * @throws IllegalStateException if the monitors aren't configured yet
+	 * 
+	 * @throws IllegalStateException
+	 *             if the monitors aren't configured yet
 	 */
 	private void startLoopThread() {
 		if (configured) {
 			if (loopThread == null) {
-				loopThread = new GoodThread(this);//defaults to RUN state
+				loopThread = new GoodThread(this);// defaults to RUN state
 				loopThread.setPriority(ThreadPriorities.MESSAGING);
 				loopThread.setName("Monitor Thread");
 				loopThread.setDaemon(true);
 				loopThread.start();
 			}
-			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);			
+			BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_ENABLED);
 		} else {
-			throw new IllegalStateException(
-				getClass().getName()
-					+ ".start(): "
+			throw new IllegalStateException(getClass().getName() + ".start(): "
 					+ "called before the monitors were configured.");
 		}
 	}
@@ -317,44 +302,42 @@ public final class MonitorControl extends AbstractControl
 	 */
 	private void loopThreadStopped() {
 		loopThread = null;
-		for (Iterator it = Monitor.getMonitorList().iterator();
-			it.hasNext();
-			) {
+		for (Iterator it = Monitor.getMonitorList().iterator(); it.hasNext();) {
 			((Monitor) it.next()).reset();
 		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);		
+		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
 	}
 
 	/**
 	 * method to run and update monitors
-	 *
+	 * 
 	 */
 	public void run() {
-		try { 
-			while (loopThread.checkState()) { //loop until stopped
+		try {
+			while (loopThread.checkState()) { // loop until stopped
 				final int waitForResults = 500;
 				final int waitAfterRepaint = interval * 1000 - waitForResults;
 				/* read scalers and wait */
 				BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 				Thread.sleep(waitForResults);
-				//loop for each monitor
-				for (Iterator it = Monitor.getMonitorList().iterator();
-					it.hasNext();
-					) {
+				// loop for each monitor
+				for (Iterator it = Monitor.getMonitorList().iterator(); it
+						.hasNext();) {
 					final Monitor monitor = (Monitor) it.next();
-					monitor.update();//update the monitor
-				} //end loop monitors
+					monitor.update();// update the monitor
+				} // end loop monitors
 				/* Broadcast event on UI thread */
-				SwingUtilities.invokeLater(new Runnable(){
+				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
+						BROADCASTER
+								.broadcast(BroadcastEvent.Command.MONITORS_UPDATE);
 					}
 				});
 				Thread.sleep(waitAfterRepaint);
-			} //loop until stopped
+			} // loop until stopped
 		} catch (InterruptedException ie) {
 			msgHandler.errorOutln("Monitor Interupted");
-		} 
+		}
 		loopThreadStopped();
 	}
 }

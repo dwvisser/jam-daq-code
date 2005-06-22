@@ -13,6 +13,7 @@ import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  *  * Class create a new group
@@ -37,7 +38,7 @@ public class GroupRename extends AbstractControl {
 		cdialog.setLayout(new BorderLayout(10, 10));
 		JPanel pMiddle = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
 		cdialog.add(pMiddle, BorderLayout.CENTER);
-		final JLabel lName = new JLabel("Name", JLabel.RIGHT);
+		final JLabel lName = new JLabel("Name", SwingConstants.RIGHT);
 		pMiddle.add(lName);
 		final String space = " ";
 		textName = new JTextField(space);
@@ -58,7 +59,7 @@ public class GroupRename extends AbstractControl {
 	 * Does nothing. It is here to match other contollers.
 	 */
 	public void doSetup() {
-
+		//do-nothing implementation of AbstractControl method
 	}
 	
 	public void setVisible(final boolean show) {
