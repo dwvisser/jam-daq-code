@@ -13,12 +13,14 @@ import java.awt.event.ItemListener;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -85,22 +87,22 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 						COLOR_PREFS.putDouble(ColorPrefs.X0R, x0red);
 					}
 				});
-		x0RSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0R);
+		x0RSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0R);
 		x0RSlider.addChangeListener(this);
 		x0RSlider.setPreferredSize(new Dimension(20, 130));
-		x0GSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0G);
+		x0GSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0G);
 		x0GSlider.addChangeListener(this);
 		x0GSlider.setPreferredSize(new Dimension(20, 130));
-		x0BSlider = new JSlider(JSlider.VERTICAL, 0, 100, x0B);
+		x0BSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0B);
 		x0BSlider.addChangeListener(this);
 		x0BSlider.setPreferredSize(new Dimension(20, 130));
-		aRSlider = new JSlider(JSlider.VERTICAL, 0, 100, aR);
+		aRSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aR);
 		aRSlider.addChangeListener(this);
 		aRSlider.setPreferredSize(new Dimension(20, 130));
-		aGSlider = new JSlider(JSlider.VERTICAL, 0, 100, aG);
+		aGSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aG);
 		aGSlider.addChangeListener(this);
 		aGSlider.setPreferredSize(new Dimension(20, 130));
-		aBSlider = new JSlider(JSlider.VERTICAL, 0, 100, aB);
+		aBSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aB);
 		aBSlider.addChangeListener(this);
 		aBSlider.setPreferredSize(new Dimension(20, 130));
 		final JComponent redLabel = new JLabel("Red");
@@ -189,8 +191,8 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		colorSchemeComboBox.setSelectedItem(rainbow);
 		colorSchemeComboBox.setSelectedItem(current);
 		final JScrollPane sp = new JScrollPane(rainbowPanel,
-				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		sp.setPreferredSize(new Dimension(50, 100));
 		final JPanel colorPanel = new JPanel(new GridBagLayout());
 		// final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
@@ -253,7 +255,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		setGrid(gbc, 0, 2, 3);
 		c.add(buttons.getComponent(), gbc);
 		gbc.gridwidth = 1;
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		pack();
 	}
 

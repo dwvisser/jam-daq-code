@@ -155,41 +155,5 @@ public abstract class AbstractSortControl {
 	 */
 	public int getSortSample(){
 	    return sortSample;
-	}
-		
-	/**
-	 * Sets up online sorting
-	 */
-	public void setupOnlineSort(){
-	}
-	
-	/**
-	 * Resest, cancels online sorting
-	 */	
-	public void resetOnlineSort(){
-	}
-
-	/**
-	 * Sets up offline sorting
-	 */
-	public void setupOfflineSort(){
-	}
-		
-	/**
-	 * Resest, cancels offline sorting
-	 */
-	public void resetOfflineSort(){
-	}
-	
-	/**
-	 * Begin run
-	 */
-	public void beginRun(){	
-	}
-	
-	/**
-	 * End run
-	 */
-	public void endRun(){	
-	}
+	}		
 }

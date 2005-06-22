@@ -22,6 +22,7 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,26 +36,26 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * This program takes the first data block of a specified event file,
- * removes it, and appends it to the end of a second specified
- * event file.  The first file is typically run number "x" and 
- * the second file is for run number "x-1".
+ * This program takes the first data block of a specified event file, removes
+ * it, and appends it to the end of a second specified event file. The first
+ * file is typically run number "x" and the second file is for run number "x-1".
  * 
  * @author <a href="mailto:dale@visser.name">Dale W. Visser</a>
  */
 public class FixEventFile {
 
-	File directory;
-	String expName;
-	File outDir;
-	Set runNumberSet; //Collections class for unique,sorted elements
+	private File directory;
+
+	private String expName;
+
+	private File outDir;
+
+	private Set<Integer> runNumberSet; // Collections class for unique,sorted elements
 
 	FixEventFile(File inputFile) {
-		/* the input file has the format:
-		  		event directory
-		  		experiment name
-		  		output directory
-		  		list of run#'s
+		/*
+		 * the input file has the format: event directory experiment name output
+		 * directory list of run#'s
 		 */
 		try {
 			FileReader fr = new FileReader(inputFile);
@@ -65,22 +66,24 @@ public class FixEventFile {
 			st.quoteChar('\"');
 			st.nextToken();
 			String dir = st.sval;
-			System.out.println("Directory containing input event files: "+dir);
+			System.out
+					.println("Directory containing input event files: " + dir);
 			directory = getDir(dir);
 			st.nextToken();
 			expName = st.sval;
-			System.out.println("Experiment name: "+expName);
+			System.out.println("Experiment name: " + expName);
 			st.nextToken();
 			dir = st.sval;
-			System.out.println("Directory containing output event files: "+dir);
+			System.out.println("Directory containing output event files: "
+					+ dir);
 			outDir = getDir(dir);
-			runNumberSet = new TreeSet();
+			runNumberSet = new TreeSet<Integer>();
 			System.out.print("Run numbers to move 1st buffer from: ");
 			do {
 				st.nextToken();
 				if (st.ttype == StreamTokenizer.TT_NUMBER) {
 					int temp = (int) st.nval;
-					System.out.print(temp+" ");
+					System.out.print(temp + " ");
 					runNumberSet.add(new Integer(temp));
 				}
 			} while (st.ttype != StreamTokenizer.TT_EOF);
@@ -89,8 +92,8 @@ public class FixEventFile {
 			System.err.println(e);
 		}
 		if (directory.equals(outDir)) {
-			System.err.println(
-				"Can't have input directory the same as output directory!");
+			System.err
+					.println("Can't have input directory the same as output directory!");
 		} else {
 			processFiles();
 		}
@@ -110,11 +113,11 @@ public class FixEventFile {
 		byte[] block = new byte[16 * 1024];
 		System.out.println("Copying " + from.getPath() + " to " + to.getPath());
 		try {
-			BufferedInputStream bis =
-				new BufferedInputStream(new FileInputStream(from));
-			BufferedOutputStream bos =
-				new BufferedOutputStream(new FileOutputStream(to));
-			//copy rest of data blocks to mod file
+			BufferedInputStream bis = new BufferedInputStream(
+					new FileInputStream(from));
+			BufferedOutputStream bos = new BufferedOutputStream(
+					new FileOutputStream(to));
+			// copy rest of data blocks to mod file
 			int numBytesRead = bis.read(block);
 			while (numBytesRead != -1) {
 				bos.write(block, 0, numBytesRead);
@@ -130,7 +133,7 @@ public class FixEventFile {
 	private void processFiles() {
 		String evn = ".evn";
 		final int bufferSize = 8192;
-		//make array of run numbers running from lowest to highest run number
+		// make array of run numbers running from lowest to highest run number
 		int[] runNumberList = new int[runNumberSet.size()];
 		int i = 0;
 		for (Iterator it = runNumberSet.iterator(); it.hasNext(); i++) {
@@ -139,19 +142,16 @@ public class FixEventFile {
 		for (i = 0; i < runNumberList.length; i++) {
 			int currentRun = runNumberList[i];
 			int priorRun = currentRun - 1;
-			File priorSourceFile =
-				new File(directory, expName + priorRun + evn);
+			File priorSourceFile = new File(directory, expName + priorRun + evn);
 			File priorDestFile = new File(outDir, expName + priorRun + evn);
 			if (!priorDestFile.exists())
 				copyFile(priorSourceFile, priorDestFile);
-			File currentSourceFile =
-				new File(directory, expName + currentRun + evn);
+			File currentSourceFile = new File(directory, expName + currentRun
+					+ evn);
 			File currentDestFile = new File(outDir, expName + currentRun + evn);
 
-			System.out.println(
-				"Pulling first data block from "
-					+ currentSourceFile.getPath()
-					+ " and appending to "
+			System.out.println("Pulling first data block from "
+					+ currentSourceFile.getPath() + " and appending to "
 					+ priorDestFile.getPath()
 					+ ", and file with block removed will be called "
 					+ currentDestFile.getPath());
@@ -162,26 +162,27 @@ public class FixEventFile {
 				appendFile = new FileOutputStream(priorDestFile, true);
 				modFile = new FileOutputStream(currentDestFile);
 
-				BufferedInputStream fromStream =
-					new BufferedInputStream(fromFile);
-				BufferedOutputStream modStream =
-					new BufferedOutputStream(modFile);
-				BufferedOutputStream appendStream =
-					new BufferedOutputStream(appendFile);
+				BufferedInputStream fromStream = new BufferedInputStream(
+						fromFile);
+				BufferedOutputStream modStream = new BufferedOutputStream(
+						modFile);
+				BufferedOutputStream appendStream = new BufferedOutputStream(
+						appendFile);
 
 				byte[] header = new byte[256];
 				byte[] dataBlock = new byte[bufferSize];
 
-				//copy header from input stream to mod file
+				// copy header from input stream to mod file
 				fromStream.read(header);
 				modStream.write(header);
 
-				//copy first data block to end of append file, close append file
+				// copy first data block to end of append file, close append
+				// file
 				fromStream.read(dataBlock);
 				appendStream.write(dataBlock);
 				appendStream.close();
 
-				//copy rest of data blocks to mod file
+				// copy rest of data blocks to mod file
 				int numBytesRead = fromStream.read(dataBlock);
 				while (numBytesRead != -1) {
 					modStream.write(dataBlock, 0, numBytesRead);
@@ -192,31 +193,36 @@ public class FixEventFile {
 			} catch (IOException e) {
 				System.err.println(e);
 			}
-			System.out.println("Done with run "+currentRun);
-		} //for
+			System.out.println("Done with run " + currentRun);
+		} // for
 		System.out.println("Done with everything.");
 	}
 
 	/**
 	 * Launches the task to fix an event file.
 	 * 
-	 * @param args input file name
+	 * @param args
+	 *            input file name
 	 */
 	public static void main(String[] args) {
-		if (args.length==0) {
+		if (args.length == 0) {
 			System.out.println("Supply an input file argument.");
 			System.out.println("The input file format is as follows.");
-			System.out.println("Line 1: Directory containing input event files");
+			System.out
+					.println("Line 1: Directory containing input event files");
 			System.out.println("Line 2: Experiment name");
-			System.out.println("Line 3: Directory for output event files, must be different than input");
-			System.out.println("Line 4-: List of run numbers of files containing end-of-run as first buffer");
+			System.out
+					.println("Line 3: Directory for output event files, must be different than input");
+			System.out
+					.println("Line 4-: List of run numbers of files containing end-of-run as first buffer");
 		} else {
 			File input = new File(args[0]);
-			if (input.exists()){
+			if (input.exists()) {
 				if (input.isFile()) {
 					new FixEventFile(input);
 				} else {
-					System.err.println("Need to supply a file, not a directory!");
+					System.err
+							.println("Need to supply a file, not a directory!");
 				}
 			} else {
 				System.err.println("File for given filename does not exist!");

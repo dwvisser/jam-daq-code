@@ -214,12 +214,12 @@ public class Console extends JPanel implements MessageHandler {
 			if (lastCmdIndex > 0) {
 				lastCmdIndex = lastCmdIndex - 1;
 			}
-			textIn.setText((String) cmdStack.get(lastCmdIndex));
+			textIn.setText(cmdStack.get(lastCmdIndex));
 		} else {
 			if (lastCmdIndex < cmdStack.size()) {
 				lastCmdIndex = lastCmdIndex + 1;
 				if (lastCmdIndex < cmdStack.size()) {
-					textIn.setText((String) cmdStack.get(lastCmdIndex));
+					textIn.setText(cmdStack.get(lastCmdIndex));
 				} else {
 					textIn.setText("");
 				}
@@ -414,14 +414,15 @@ public class Console extends JPanel implements MessageHandler {
 	 * Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(final String _inString) {
-		final String[] cmdTokens = parseExpression(_inString);
-		final int numWords = cmdTokens.length;
+		final List<String> cmdTokens = parseExpression(_inString);
+		final int numWords = cmdTokens.size();
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
-		if (cmdTokens.length > 0) { //check at least something was entered
+		if (numWords > 0) { //check at least something was entered
 			final String command;
 			final String[] parameters;
 			final int countWrd;
-			if (isNumber(cmdTokens[0])) {
+			final String first = cmdTokens.get(0);
+			if (isNumber(first)) {
 				/*
 				 * first token is a number, command is NUMBER_ONLY and params
 				 * starts with first token
@@ -431,7 +432,7 @@ public class Console extends JPanel implements MessageHandler {
 				countWrd = 0;
 			} else {
 				/* parameter list to hold one less */
-				command = cmdTokens[0];
+				command = first;
 				parameters = new String[numWords - 1];
 				countWrd = 1;
 			}
@@ -449,8 +450,8 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param strCmd
 	 * @return a array of the command tokens
 	 */
-	private String[] parseExpression(final String strCmd) {
-		final List<String> cmdTokenList = new ArrayList<String>();
+	private List<String> parseExpression(final String strCmd) {
+		final List<String> rval = new ArrayList<String>();
 		/* match anything between quotes or words (not spaces) */
 		final String regex = "\"([^\"]*?)\"|(\\S+)\\s*";
 		final Pattern pattern = Pattern.compile(regex);
@@ -461,14 +462,10 @@ public class Console extends JPanel implements MessageHandler {
 				cmdToken = cmdToken.substring(1, cmdToken.length() - 1);
 			}
 			if (cmdToken != null) {
-				cmdTokenList.add(cmdToken);
+				rval.add(cmdToken);
 			}
 		}
-		final String[] cmdTokens = new String[cmdTokenList.size()];
-		for (int i = 0; i < cmdTokenList.size(); i++) {
-			cmdTokens[i] = (String) cmdTokenList.get(i);
-		}
-		return cmdTokens;
+		return rval;
 	}
 
 	private boolean isNumber(String string) {

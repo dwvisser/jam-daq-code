@@ -196,7 +196,7 @@ public final class SummaryTableModel implements TableModel {
 	public Object getValueAt(int row, int col) {
 		Object retValue = null;
 		int offsetCol;
-		RowDataElement rowDataElement = (RowDataElement) dataList.get(row);
+		RowDataElement rowDataElement = dataList.get(row);
 		String groupName = rowDataElement.getGroupName();
 		DataElement dataElement = rowDataElement.getDataElement();
 		if (selectionType == SummaryTable.ALL_GROUPS_SELECTED) {
@@ -208,7 +208,7 @@ public final class SummaryTableModel implements TableModel {
 		} else {
 			offsetCol = 0;
 		}
-		if (col == offsetCol) {//Type
+		if (col == offsetCol) {// Type
 			if (dataElement.getElementType() == DataElement.Type.HISTOGRAM) {
 				retValue = "Histogram";
 			} else if (dataElement.getElementType() == DataElement.Type.GATE) {
@@ -218,7 +218,7 @@ public final class SummaryTableModel implements TableModel {
 			}
 		} else if (col == offsetCol + 1) {// Name
 			retValue = dataElement.getName();
-		} else if (col == offsetCol + 2) {//Value
+		} else if (col == offsetCol + 2) {// Value
 			retValue = numFormat.format(dataElement.getCount());
 		}
 		return retValue;
@@ -258,13 +258,7 @@ public final class SummaryTableModel implements TableModel {
 	 * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
 	 */
 	public void removeTableModelListener(TableModelListener listenerRemove) {
-		for (int i = 0; i < listenerList.size(); i++) {
-			TableModelListener listener = (TableModelListener) listenerList
-					.get(i);
-			if (listenerRemove == listener) {
-				listenerList.remove(i);
-			}
-		}
+		listenerList.remove(listenerRemove);
 	}
 
 	/**

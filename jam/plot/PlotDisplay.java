@@ -185,7 +185,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	private String getDate() {
 		final Date date = new Date(); // getDate and time
 		final DateFormat datef = DateFormat.getDateTimeInstance(); // default
-																	// format
+		// format
 		datef.setTimeZone(TimeZone.getDefault()); // set time zone
 		return datef.format(date); // format date
 	}
@@ -340,7 +340,6 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param p
 	 */
 	private void setPlot(PlotContainer p) {
-		int i;
 		synchronized (plotLock) {
 			/* Only do something if the plot has changed */
 			if (p != currentPlot) {
@@ -357,8 +356,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 					p.addPlotMouseListener(action);
 				}
 				/* Change selected plot */
-				for (i = 0; i < plotList.size(); i++) {
-					((PlotContainer) plotList.get(i)).select(false);
+				for (PlotContainer plotContainer : plotList) {
+					plotContainer.select(false);
 				}
 				action.setDefiningGate(false);
 				p.select(true);
@@ -402,7 +401,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		PlotContainer plotContainer = null;
 		/* Set initial states for all plots */
 		for (int i = 0; i < numberPlots; i++) {
-			plotContainer = (PlotContainer) plotList.get(i);
+			plotContainer = plotList.get(i);
 			plotContainer.removeAllPlotMouseListeners();
 			plotContainer.setNumber(i);
 			plotContainer.select(false);
@@ -414,7 +413,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		updateLayout();
 		// Default set to first plot
 		currentPlot = null;
-		plotContainer = (PlotContainer) plotList.get(0);
+		plotContainer = plotList.get(0);
 		plotSelected(plotContainer);
 	}
 
@@ -443,19 +442,15 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		if (command == BroadcastEvent.Command.REFRESH) {
 			update();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			// Clear plots select first plot
-			final int numberPlots = currentView.getNumberHists();
-			PlotContainer plots = null;
+			/* Clear plots select first plot */
 			/* Set initial states for all plots */
-			for (int i = 0; i < numberPlots; i++) {
-				plots = (PlotContainer) plotList.get(i);
+			for (PlotContainer plots : plotList) {
 				plots.removeAllPlotMouseListeners();
 				plots.select(false);
 				plots.reset();
 				plots.displayHistogram(null);
 			}
-			plots = (PlotContainer) plotList.get(0);
-			plotSelected(plots);
+			plotSelected(plotList.get(0));
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			final Histogram hist = status.getCurrentHistogram();
 			displayHistogram(hist);
@@ -504,8 +499,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			plotLayout = PlotContainer.LAYOUT_TYPE_NO_LABELS_BORDER;
 			scrollTemp = isScrolling;
 		}
-		for (int i = 0; i < numberPlots; i++) {
-			final PlotContainer plot = (PlotContainer) (plotList.get(i));
+		for (PlotContainer plot : plotList) {
 			plot.setLayoutType(plotLayout);
 			plot.enableScrolling(scrollTemp);
 		}

@@ -80,13 +80,13 @@ class Scroller
 		//plot in middle panel
 		add(plot.getComponent(), BorderLayout.CENTER);
 		//scroll bar to move along the x axis
-		scrollHorz = new JScrollBar(JScrollBar.HORIZONTAL, 0, 255, 0, 255);
+		scrollHorz = new JScrollBar(Adjustable.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
 		scrollHorz.addAdjustmentListener(this);
 		//if 2d plot add y scrollers
 		if (isPlot2d) {
 			//scroll bar to move along the y axis
-			scrollVert = new JScrollBar(JScrollBar.VERTICAL, 0, 255, 0, 255);
+			scrollVert = new JScrollBar(Adjustable.VERTICAL, 0, 255, 0, 255);
 			this.add(scrollVert, BorderLayout.WEST);
 			scrollVert.addAdjustmentListener(this);
 		} else {
@@ -95,7 +95,7 @@ class Scroller
 		//scrollbar to change scale
 		scrollCount =
 			new JScrollBar(
-				JScrollBar.VERTICAL,
+				Adjustable.VERTICAL,
 				COUNT_SCROLL_MID,
 				COUNT_SCROLL_VIEW,
 				COUNT_SCROLL_MIN,

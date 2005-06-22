@@ -85,17 +85,17 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     }
     
     private boolean eventInFIFO(final int eventNumber){
-        return eventNumMap.containsKey(new Integer(eventNumber));
+        return eventNumMap.containsKey(eventNumber);
     }
     
     private int getEventIndex(final int eventNumber){
-        return ((Integer)(eventNumMap.get(new Integer(eventNumber)))).intValue();
+        return eventNumMap.get(eventNumber);
     }
     
     private void addEventIndex(final int eventNumber){
         eventNumbers[posPut] = eventNumber;
         System.arraycopy(zeros,0,fifo[posPut],0,zeros.length);
-        eventNumMap.put(new Integer(eventNumber), new Integer(posPut));
+        eventNumMap.put(eventNumber, posPut);
         incrementPut();
         if (fifoFull()) {
         	internalStat=BufferStatus.FIFO_FULL;
@@ -112,7 +112,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements L0
     
     private void getFirstEvent(final int [] data){
         final int eventNumber = eventNumbers[posGet];
-        eventNumMap.remove(new Integer(eventNumber));
+        eventNumMap.remove(eventNumber);
         final int [] rval = fifo[posGet];
         System.arraycopy(rval,0,data,0,data.length);
         incrementGet();

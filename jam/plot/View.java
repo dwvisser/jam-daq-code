@@ -98,7 +98,7 @@ public final class View {
 	 * @return the view
 	 */
 	public static synchronized View getView(String name){
-		return (View)MAP.get(name);
+		return MAP.get(name);
 	}
 	
 	/**

@@ -10,7 +10,7 @@ import java.io.OutputStream;
  * @version 0.5
  * @since JDK 1.1
  */
-public abstract class EventOutputStream /*extends OutputStream*/ {
+public abstract class EventOutputStream {
 
 	//status variables
 
@@ -58,7 +58,7 @@ public abstract class EventOutputStream /*extends OutputStream*/ {
 	 * Creates a new event output stream.
 	 */
 	protected EventOutputStream() {
-
+		super();
 	}
 
 	/** 

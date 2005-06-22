@@ -23,10 +23,10 @@ import java.util.List;
  * @see jam.sort.SortRoutine#cnafCommands
  */
 public class CamacCommands {
-    private final List eventCmds=new ArrayList();
-    private final List initCommands=new ArrayList();
-	private final List scalerCmds=new ArrayList();
-	private final List clearCmds=new ArrayList();
+    private final List<int []> eventCmds=new ArrayList<int []>();
+    private final List<int []> initCommands=new ArrayList<int []>();
+	private final List<int []> scalerCmds=new ArrayList<int []>();
+	private final List<int []> clearCmds=new ArrayList<int []>();
 	private final SortRoutine sortRoutine;
     private int eventSize=0;
     private int paramId=0;
@@ -169,28 +169,28 @@ public class CamacCommands {
     /** Get the list of init cnafs
      * @return list of
      */
-    public List getInitCommands(){
+    public List<int []> getInitCommands(){
         return Collections.unmodifiableList(initCommands);
     }
     
     /** Get the list of event cnafs
      * @return list of event CNAF commands
      */
-    public List getEventCommands(){
+    public List<int []> getEventCommands(){
         return Collections.unmodifiableList(eventCmds);
     }
     
     /** Get the list of scaler cnafs
      * @return list of scaler read CNAF commands
      */
-    public List getScalerCommands(){
+    public List<int []> getScalerCommands(){
         return Collections.unmodifiableList(scalerCmds);
     }
     
     /** Get the list of clear cnafs
      * @return list of "clear" CNAF commands
      */
-    public List getClearCommands(){
+    public List<int []> getClearCommands(){
         return Collections.unmodifiableList(clearCmds);
     }
     

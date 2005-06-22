@@ -22,10 +22,14 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
+
+import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.hdf.AbstractData;
+import static jam.io.hdf.Constants.DFTAG_VS;
+import static jam.io.hdf.Constants.DFTAG_VH;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
 import jam.io.hdf.JamFileFields;
@@ -58,21 +62,30 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public final class ScalerScan implements JamFileFields {
-	
+
 	private static final char TAB = '\t';
-	
+
 	private final JTextField txtFirst, txtLast;
+
 	private ProgressMonitor pBstatus;
+
 	private final MessageHandler console;
+
 	private final Frame frame;
+
 	private final JDialog dialog;
-	
-	private File pathToRuns=new File(JamProperties.getPropString(
-	JamProperties.HIST_PATH));
+
+	private File pathToRuns = new File(JamProperties
+			.getPropString(JamProperties.HIST_PATH));
+
 	private final JTextField txtPath;
+
 	private final JTextField txtRunName;
-	private final static JamStatus STATUS=JamStatus.getSingletonInstance();
+
+	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
+
 	private final PanelOKApplyCancelButtons buttons;
+
 	/**
 	 * Constructor.
 	 */
@@ -81,99 +94,99 @@ public final class ScalerScan implements JamFileFields {
 		frame = STATUS.getFrame();
 		console = STATUS.getMessageHandler();
 		final Container container = dialog.getContentPane();
-		container.setLayout(new BorderLayout(10,5));
-		
-		final JPanel pLabels = new JPanel(new GridLayout(0,1,0,5));
-		pLabels.setBorder(new EmptyBorder(10,10,0,0));
+		container.setLayout(new BorderLayout(10, 5));
+
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 0, 5));
+		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		container.add(pLabels, BorderLayout.WEST);
-	
-		final JLabel runlabel = new JLabel("Experiment Name", JLabel.RIGHT);
+
+		final JLabel runlabel = new JLabel("Experiment Name", RIGHT);
 		pLabels.add(runlabel);
-		final JLabel pathlabel = new JLabel("Path", JLabel.RIGHT);
+		final JLabel pathlabel = new JLabel("Path", RIGHT);
 		pLabels.add(pathlabel);
-		final JLabel labelfirst = new JLabel("First Run", JLabel.RIGHT);
-		pLabels.add(labelfirst);		
-		final JLabel labellast = new JLabel("Last Run", JLabel.RIGHT);
-		pLabels.add(labellast);						
-						
-		final JPanel pEntries = new JPanel(new GridLayout(0,1,5,5));		
-		pEntries.setBorder(new EmptyBorder(10,0,0,5));		
-		container.add(pEntries, BorderLayout.CENTER);		
-		
-		final JPanel pRunName = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
-		pEntries.add(pRunName);				
+		final JLabel labelfirst = new JLabel("First Run", RIGHT);
+		pLabels.add(labelfirst);
+		final JLabel labellast = new JLabel("Last Run", RIGHT);
+		pLabels.add(labellast);
+
+		final JPanel pEntries = new JPanel(new GridLayout(0, 1, 5, 5));
+		pEntries.setBorder(new EmptyBorder(10, 0, 0, 5));
+		container.add(pEntries, BorderLayout.CENTER);
+
+		final JPanel pRunName = new JPanel(
+				new FlowLayout(FlowLayout.LEFT, 5, 0));
+		pEntries.add(pRunName);
 		txtRunName = new JTextField(10);
 		txtRunName.setText(JamProperties.getPropString(JamProperties.EXP_NAME));
 		pRunName.add(txtRunName);
-				
-		final JPanel pPath = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+
+		final JPanel pPath = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pEntries.add(pPath);
-				
+
 		txtPath = new JTextField(30);
 		txtPath.setText(pathToRuns.getAbsolutePath());
-		pPath.add(txtPath);		
-			
+		pPath.add(txtPath);
+
 		final JButton browse = new JButton("Browse...");
 		browse.setActionCommand("browse");
-		browse.addActionListener(new ActionListener(){
+		browse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final String command = e.getActionCommand();
 				if (command.equals("browse")) {
 					final File temp = getFile(true);
 					if (temp != null) {
 						txtPath.setText(temp.getAbsolutePath());
-						pathToRuns=temp;
+						pathToRuns = temp;
 					}
 				}
 			}
 		});
 		pPath.add(browse);
-				
-		final JPanel pFirst = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+
+		final JPanel pFirst = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pEntries.add(pFirst);
 		txtFirst = new JTextField(4);
 		pFirst.add(txtFirst);
-		 
-		final JPanel pLast = new JPanel(new FlowLayout(FlowLayout.LEFT,5,0));
+
+		final JPanel pLast = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pEntries.add(pLast);
 		txtLast = new JTextField(4);
-		pLast.add(txtLast);		
-		buttons = new PanelOKApplyCancelButtons(new
-		        PanelOKApplyCancelButtons.DefaultListener(dialog){
-		    public void apply(){
-				setButtonsEnable(false);
-				final Runnable runnable=new Runnable(){
-					public void run(){
-						doIt();
-						setButtonsEnable(true);
+		pLast.add(txtLast);
+		buttons = new PanelOKApplyCancelButtons(
+				new PanelOKApplyCancelButtons.DefaultListener(dialog) {
+					public void apply() {
+						setButtonsEnable(false);
+						final Runnable runnable = new Runnable() {
+							public void run() {
+								doIt();
+								setButtonsEnable(true);
+							}
+						};
+						final Thread thread = new Thread(runnable);
+						thread.start();
 					}
-				};
-				final Thread thread=new Thread(runnable);
-				thread.start();		        
-		    }
-		});
+				});
 		container.add(buttons.getComponent(), BorderLayout.SOUTH);
-		dialog.setResizable(false);				
+		dialog.setResizable(false);
 		dialog.pack();
 	}
 
-	private void setButtonsEnable(boolean b){
-		buttons.setButtonsEnabled(b,b,b);
+	private void setButtonsEnable(boolean b) {
+		buttons.setButtonsEnabled(b, b, b);
 	}
-
 
 	/**
 	 * Browse for a file or directory.
 	 * 
-	 * @param dir select directories if true, files if false
+	 * @param dir
+	 *            select directories if true, files if false
 	 * @return ref to file of interest, null if none selected
 	 */
 	private File getFile(boolean dir) {
 		final JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(
-			dir ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
-		final boolean approved =
-			chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION;
+		chooser.setFileSelectionMode(dir ? JFileChooser.DIRECTORIES_ONLY
+				: JFileChooser.FILES_ONLY);
+		final boolean approved = chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION;
 		return approved ? chooser.getSelectedFile() : null;
 	}
 
@@ -183,15 +196,16 @@ public final class ScalerScan implements JamFileFields {
 		try {
 			int firstRun = Integer.parseInt(txtFirst.getText().trim());
 			int lastRun = Integer.parseInt(txtLast.getText().trim());
-			pBstatus=new ProgressMonitor(frame, "Scanning HDF Files for scaler values", 
-			"Initializing", firstRun, lastRun);
+			pBstatus = new ProgressMonitor(frame,
+					"Scanning HDF Files for scaler values", "Initializing",
+					firstRun, lastRun);
 			if (pathToRuns.exists() && pathToRuns.isDirectory()) {
 				for (int i = firstRun; i <= lastRun && !pBstatus.isCanceled(); i++) {
 					String runText = txtRunName.getText().trim();
 					String filename = runText + i + ".hdf";
 					final File infile = new File(pathToRuns, filename);
 					if (infile.exists()) {
-						updateProgressBar("Processing " + infile.getName(),i);
+						updateProgressBar("Processing " + infile.getName(), i);
 						final HDFile in = new HDFile(infile, "r");
 						in.seek(0);
 						in.readFile();
@@ -210,21 +224,18 @@ public final class ScalerScan implements JamFileFields {
 						}
 						outText.append(cr);
 					} else {
-						console.warningOutln(
-							infile.getPath() + " does not exist.  Skipping.");
+						console.warningOutln(infile.getPath()
+								+ " does not exist.  Skipping.");
 					}
 				}
-				if (!pBstatus.isCanceled()){
-					final String title =
-						txtRunName.getText()
-							+ ", runs "
-							+ txtFirst.getText()
-							+ " to "
-							+ txtLast.getText();
-					new TextDisplayDialog(frame, title, false, outText.toString());
+				if (!pBstatus.isCanceled()) {
+					final String title = txtRunName.getText() + ", runs "
+							+ txtFirst.getText() + " to " + txtLast.getText();
+					new TextDisplayDialog(frame, title, false, outText
+							.toString());
 				}
-				updateProgressBar("Done",lastRun);
-			} 
+				updateProgressBar("Done", lastRun);
+			}
 		} catch (IOException e) {
 			console.errorOutln(e.getMessage());
 		} catch (HDFException e) {
@@ -234,14 +245,12 @@ public final class ScalerScan implements JamFileFields {
 
 	private String[] getScalerNames() {
 		String[] sname = null;
-		final VDataDescription VH =
-			VDataDescription.ofName(
-					AbstractData.ofType(AbstractData.DFTAG_VH),
-				SCALER_SECT);
-		//only the "scalers" VH (only one element) in the file
+		final VDataDescription VH = VDataDescription.ofName(AbstractData
+				.ofType(DFTAG_VH), SCALER_SECT);
+		// only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			final VData VS =
-				(VData) (AbstractData.getObject(AbstractData.DFTAG_VS, VH.getRef()));
+			final VData VS = (VData) (AbstractData.getObject(DFTAG_VS, VH
+					.getRef()));
 			final int numScalers = VH.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -263,15 +272,13 @@ public final class ScalerScan implements JamFileFields {
 
 	private int[] getScalerValues() throws HDFException {
 		int[] values = null;
-		final VDataDescription VH =
-			VDataDescription.ofName(
-					AbstractData.ofType(AbstractData.DFTAG_VH),
-				SCALER_SECT);
-		//only the "scalers" VH (only one element) in the file
+		final VDataDescription VH = VDataDescription.ofName(AbstractData
+				.ofType(DFTAG_VH), SCALER_SECT);
+		// only the "scalers" VH (only one element) in the file
 		if (VH != null) {
-			final VData VS =
-				(VData) (AbstractData.getObject(AbstractData.DFTAG_VS, VH.getRef()));
-			//corresponding VS
+			final VData VS = (VData) (AbstractData.getObject(DFTAG_VS, VH
+					.getRef()));
+			// corresponding VS
 			final int numScalers = VH.getNumRows();
 			values = new int[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -283,17 +290,18 @@ public final class ScalerScan implements JamFileFields {
 		return values;
 	}
 
-	private void updateProgressBar(final String text, final int value){
+	private void updateProgressBar(final String text, final int value) {
 		pBstatus.setNote(text);
 		pBstatus.setProgress(value);
 	}
-	
+
 	/**
 	 * Returns the dialog.
+	 * 
 	 * @return the dialog
 	 */
-	public JDialog getDialog(){
-	    return dialog;
+	public JDialog getDialog() {
+		return dialog;
 	}
-	
+
 }

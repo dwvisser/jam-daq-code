@@ -20,17 +20,17 @@ import java.util.Map;
  */
 public final class GainCalibration {
 
-	private final Map gains;
+	private final Map<Integer, Double> gains;
 
 	private final ClassLoader loader;
 
-	private final Map offsets;
+	private final Map<Integer, Double> offsets;
 
 	private boolean suppress = false;
 
 	GainCalibration(Object maker) {
-		gains = new HashMap();
-		offsets = new HashMap();
+		gains = new HashMap<Integer, Double>();
+		offsets = new HashMap<Integer, Double>();
 		loader = maker.getClass().getClassLoader();
 	}
 
@@ -76,8 +76,8 @@ public final class GainCalibration {
 		final Integer key = new Integer(param);
 		double rval = suppress ? 0 : value;
 		if (gains.containsKey(key) && offsets.containsKey(key)) {
-			final double gain = ((Number) gains.get(key)).doubleValue();
-			final double offset = ((Number) gains.get(key)).doubleValue();
+			final double gain = gains.get(key);
+			final double offset = offsets.get(key);
 			rval = gain * value + offset;
 		}
 		return rval;
