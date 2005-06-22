@@ -12,12 +12,10 @@ import java.util.Vector;
  * 
  * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
  */
-final class Multiplet extends Vector {
+final class Multiplet extends Vector<Peak> {
 
     private Peak [] getAllPeaks(){
-        final Peak [] rval=new Peak[size()];
-        toArray(rval);
-        return rval;
+        return toArray(new Peak[0]);
     }
 
     double [] getAllCentroids(){
@@ -57,6 +55,6 @@ final class Multiplet extends Vector {
     }
     
     Peak getPeak(int index) {
-        return (Peak)elementAt(index);
+        return elementAt(index);
     }
 }
