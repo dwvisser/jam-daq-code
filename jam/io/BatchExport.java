@@ -122,7 +122,7 @@ public class BatchExport extends JDialog implements Observer {
 		}
 
 		void show() {
-			final HashSet histSet = new HashSet();
+			final Set<Histogram> histSet = new HashSet<Histogram>();
 			CollectionsUtil.instance().addConditional(
 					Histogram.getHistogramList(), histSet, HIST_COND_1D);
 			histList.setListData(histSet.toArray());
@@ -130,7 +130,7 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	}
 
-	private static final CollectionsUtil.Condition HIST_COND_1D = new CollectionsUtil.Condition() {
+	private static final CollectionsUtil.Condition<Histogram> HIST_COND_1D = new CollectionsUtil.Condition<Histogram>() {
 		public boolean accept(Object object) {
 			final Histogram hist = (Histogram) object;
 			return hist.getDimensionality() == 1;
@@ -185,7 +185,7 @@ public class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void addAllHists() {
-		final HashSet histSet = new HashSet();
+		final Set<Histogram> histSet = new HashSet<Histogram>();
 		CollectionsUtil.instance().addConditional(Histogram.getHistogramList(),
 				histSet, HIST_COND_1D);
 		lstHists.setListData(histSet.toArray());
@@ -403,8 +403,7 @@ public class BatchExport extends JDialog implements Observer {
 		// create group directoris
 		if (status) {
 			for (int i = 0; i < exportGroupDirList.size(); i++) {
-				boolean statusTemp = createExportDir((String) exportGroupDirList
-						.get(i));
+				boolean statusTemp = createExportDir(exportGroupDirList.get(i));
 				status = status && statusTemp;
 			}
 		}
@@ -595,7 +594,7 @@ public class BatchExport extends JDialog implements Observer {
 		while (iter.hasNext()) {
 			final AbstractButton button = (AbstractButton) iter.next();
 			if (button.isSelected()) {
-				out = (AbstractImpExp) exportMap.get(button);
+				out = exportMap.get(button);
 			}
 		}
 		return out;
