@@ -278,8 +278,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			msgHandler.errorOutln("No histograms selected");
 			return;
 		}
-		final File[] files = (File[]) multiChooser.getFileList().toArray(
-				new File[0]);
+		final File[] files = multiChooser.getFileList().toArray(new File[0]);
 		DataBase.getInstance().clearAllLists();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 
@@ -329,13 +328,13 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		AbstractControl.setupAll();
 		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		/* Set the current histogram to the first opened histogram. */
-		final List groupList = Group.getGroupList();
+		final List<Group> groupList = Group.getGroupList();
 		if (groupList.size() > 0) {
-			final Group firstGroup = (Group) Group.getGroupList().get(0);
+			final Group firstGroup = groupList.get(0);
 			STATUS.setCurrentGroup(firstGroup);
-			final List list = firstGroup.getHistogramList();
+			final List<Histogram> list = firstGroup.getHistogramList();
 			if (list.size() > 0) {
-				final Histogram firstHist = (Histogram) list.get(0);
+				final Histogram firstHist = list.get(0);
 				if (list != null) {
 					STATUS.setCurrentHistogram(firstHist);
 					broadcaster.broadcast(
@@ -352,5 +351,4 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		hdfio.removeListener();
 		notifyApp();
 	}
-
 }
