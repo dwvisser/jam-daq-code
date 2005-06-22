@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import static javax.swing.SwingConstants.RIGHT;
 import javax.swing.border.LineBorder;
 
 /**
@@ -259,8 +260,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 		/* top panel with histogram name */
 		JPanel pHistName = new JPanel(new BorderLayout());
 		pHistName.setBorder(LineBorder.createBlackLineBorder());
-		pHistName.add(new JLabel("Fit Histogram: ", JLabel.RIGHT),
-				BorderLayout.WEST);
+		pHistName.add(new JLabel("Fit Histogram: ", RIGHT), BorderLayout.WEST);
 		textHistName = new JLabel("     ");
 		pHistName.add(textHistName, BorderLayout.CENTER);
 		cp.add(pHistName, BorderLayout.NORTH);
@@ -271,8 +271,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 		/* status panel part of bottom panel */
 		JPanel statusPanel = new JPanel();
 		statusPanel.setLayout(new BorderLayout());
-		statusPanel
-				.add(new JLabel("Status: ", JLabel.RIGHT), BorderLayout.WEST);
+		statusPanel.add(new JLabel("Status: ", RIGHT), BorderLayout.WEST);
 		status = new JLabel(
 				"OK                                                          ");
 		statusPanel.add(status, BorderLayout.CENTER);
@@ -355,21 +354,21 @@ public abstract class AbstractFit implements PlotMouseListener {
 			final int index = i;
 			JPanel middle = new JPanel(new GridLayout(1, 3));
 			center.add(middle);
-			final Parameter parameter = (Parameter) parameters.get(i);
+			final Parameter parameter = parameters.get(i);
 			final String parName = parameter.getName();
 			if (parameter.isDouble()) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
 				textData[i].setEnabled(true);
-				west.add(new JLabel(parName, JLabel.RIGHT));
+				west.add(new JLabel(parName, RIGHT));
 				middle.add(textData[i]);
 			} else if (parameter.isInteger()) {
 				textData[i] = new JTextField(formatValue(parameter), 8);
 				textData[i].setEnabled(true);
-				west.add(new JLabel(parName, JLabel.RIGHT));
+				west.add(new JLabel(parName, RIGHT));
 				middle.add(textData[i]);
 			} else if (parameter.isText()) {
 				text[i] = new JLabel(formatValue(parameter));
-				west.add(new JLabel(parName, JLabel.RIGHT));
+				west.add(new JLabel(parName, RIGHT));
 				middle.add(text[i]);
 			} else if (parameter.isBoolean()) {
 				cOption[i] = new JCheckBox(parName, parameter.getBooleanValue());
@@ -467,9 +466,9 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 */
 	private void initializeMouse() {
 		mouseClickCount = 0;
-		ArrayList<Parameter> tempList = new ArrayList<Parameter>();
+		final List<Parameter> tempList = new ArrayList<Parameter>();
 		for (int i = 0; i < parameters.size(); i++) {
-			Parameter parameter = (Parameter) parameters.get(i);
+			Parameter parameter = parameters.get(i);
 			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
 				textData[i].setForeground(Color.RED);
 				tempList.add(parameter);
@@ -477,14 +476,12 @@ public abstract class AbstractFit implements PlotMouseListener {
 		}
 		if (tempList.size() > 0) {
 			String temp = "Click spectrum to set: ";
-			temp += ((Parameter) tempList.get(0)).getName();
+			temp += tempList.get(0).getName();
 			if (tempList.size() > 1) {
 				for (int i = 1; i < (tempList.size() - 1); i++) {
-					temp += ", " + ((Parameter) tempList.get(i)).getName();
+					temp += ", " + tempList.get(i).getName();
 				}
-				temp += " and "
-						+ ((Parameter) tempList.get(tempList.size() - 1))
-								.getName();
+				temp += " and " + tempList.get(tempList.size() - 1).getName();
 			}
 			status.setText(temp);
 		}
@@ -499,7 +496,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 		Parameter parameter = null;
 		for (int i = 0; i < parameters.size(); i++) {
 			try {
-				parameter = (Parameter) parameters.get(i);
+				parameter = parameters.get(i);
 				if (parameter.isDouble()) {
 					parameter.setValue(Double.valueOf(
 							textData[i].getText().trim()).doubleValue());
@@ -528,7 +525,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 	private void updateDisplay() {
 		updateHist();
 		for (int i = 0; i < parameters.size(); i++) {
-			Parameter parameter = (Parameter) parameters.get(i);
+			Parameter parameter = parameters.get(i);
 			if (parameter.isDouble() || parameter.isInteger()) {
 				textData[i].setText(formatValue(parameter));
 				if (parameter.canBeFixed()) {
@@ -552,7 +549,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 		Parameter parameter;
 
 		for (int i = 0; i < parameters.size(); i++) {
-			parameter = (Parameter) parameters.get(i);
+			parameter = parameters.get(i);
 			if (parameter.isDouble()) {
 				parameter.setValue(0.0);
 				textData[i].setText(formatValue(parameter));
@@ -570,7 +567,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 
 	private void clear() {
 		for (int i = 0; i < parameters.size(); i++) {
-			Parameter parameter = (Parameter) parameters.get(i);
+			Parameter parameter = parameters.get(i);
 			if (!parameter.isBoolean()) {
 				// text field backgrounds
 				if (parameter.isOutputOnly()) {
@@ -650,7 +647,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * @return the <code>Parameter</code> object going by that name
 	 */
 	protected final Parameter getParameter(String which) {
-		return (Parameter) (parameterTable.get(which));
+		return parameterTable.get(which);
 	}
 
 	/**
