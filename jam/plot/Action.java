@@ -584,11 +584,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 	
 	private void zoomvert(){
-		
+		//do-nothing
 	}
-
-
-
 
 	/**
 	 * Zoom in on the histogram
@@ -944,7 +941,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 
 	private Bin getClick(final int bin) {
-		return (Bin) clicks.get(bin);
+		return clicks.get(bin);
 	}
 
 	/**

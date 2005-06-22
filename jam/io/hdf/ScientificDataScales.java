@@ -45,5 +45,6 @@ final class ScientificDataScales extends AbstractData {
     }
 
     protected void interpretBytes() {
+    	//do-nothing
     }
 }

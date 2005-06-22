@@ -260,7 +260,9 @@ final class ScientificData extends AbstractData {
     /**
      * requires associated SDD, NT, NDG records
      */
-    public void interpretBytes() { }
+    public void interpretBytes() {
+    	//do-nothing
+    }
 
     void setNumberType(byte type) {
         synchronized (this) {
