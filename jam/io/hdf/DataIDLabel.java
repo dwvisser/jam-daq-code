@@ -14,89 +14,88 @@ import java.util.List;
  */
 final class DataIDLabel extends AbstractData {
 
-
-    static DataIDLabel withTagRef(int tag, int ref) {    	
-    	DataIDLabel dil =null;
+	static DataIDLabel withTagRef(int tag, int ref) {
+		DataIDLabel dil = null;
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
-		while(iter.hasNext()) {
-			final AbstractData dataObject=(AbstractData)iter.next();
-			if ( dataObject.getTag() ==AbstractData.DFTAG_DIL)  {
-				dil =  (DataIDLabel)dataObject;
-			    if ( (dil.getObject().getTag() == tag) &&
-                     (dil.getObject().getRef() == ref) ){			    		
-			    	break;
-			    }
+		while (iter.hasNext()) {
+			final AbstractData dataObject = (AbstractData) iter.next();
+			if (dataObject.getTag() == Constants.DFTAG_DIL) {
+				dil = (DataIDLabel) dataObject;
+				if ((dil.getObject().getTag() == tag)
+						&& (dil.getObject().getRef() == ref)) {
+					break;
+				}
 			}
 		}
 		return dil;
 	}
-    		
-    static DataIDLabel withTagRef(List labels, int tag, int ref) {
-        DataIDLabel output = null;
-        for (final Iterator temp = labels.iterator(); temp.hasNext();) {
-            final DataIDLabel dil = (DataIDLabel) (temp.next());
-            if ((dil.getObject().getTag() == tag)
-                    && (dil.getObject().getRef() == ref)) {
-                output = dil;
-            }
-        }
-        return output;
-    }
-    
-    /**
-     * Object being labelled.
-     */
-    private AbstractData object;
 
-    private String label;
+	static DataIDLabel withTagRef(List labels, int tag, int ref) {
+		DataIDLabel output = null;
+		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
+			final DataIDLabel dil = (DataIDLabel) (temp.next());
+			if ((dil.getObject().getTag() == tag)
+					&& (dil.getObject().getRef() == ref)) {
+				output = dil;
+			}
+		}
+		return output;
+	}
 
-    DataIDLabel(AbstractData obj, String label) {
-        super(DFTAG_DIL); //sets tag
-        object = obj;
-        this.label = label;
-        int byteLength = 4 + label.length();
-        bytes = ByteBuffer.allocate(byteLength);
-        bytes.putShort(object.getTag());
-        bytes.putShort(object.getRef());
-        putString(label);
-    }
+	/**
+	 * Object being labelled.
+	 */
+	private AbstractData object;
 
-    DataIDLabel() {
-        super(DFTAG_DIL);
-    }
+	private String label;
 
-    /**
-     * Implementation of <code>DataObject</code> abstract method.
-     * 
-     * @exception HDFException
-     *                thrown if there is a problem interpreting the bytes
-     */
-    protected void interpretBytes() throws HDFException {
-        bytes.position(0);
-        final short tagType = bytes.getShort();
-        final short reference = bytes.getShort();
-        label = getString(bytes.remaining());
-        object = getObject(tagType, reference);
-    }
+	DataIDLabel(AbstractData obj, String label) {
+		super(DFTAG_DIL); // sets tag
+		object = obj;
+		this.label = label;
+		int byteLength = 4 + label.length();
+		bytes = ByteBuffer.allocate(byteLength);
+		bytes.putShort(object.getTag());
+		bytes.putShort(object.getRef());
+		putString(label);
+	}
 
-    /**
-     * @return the text contained.
-     */
-    String getLabel() {
-        return label;
-    }
-    
-    public String toString(){
-        return label;
-    }
+	DataIDLabel() {
+		super(DFTAG_DIL);
+	}
 
-    /**
-     * 
-     * @return the object referred to
-     */
-    private AbstractData getObject() {
-        return object;
-    }
+	/**
+	 * Implementation of <code>DataObject</code> abstract method.
+	 * 
+	 * @exception HDFException
+	 *                thrown if there is a problem interpreting the bytes
+	 */
+	protected void interpretBytes() throws HDFException {
+		bytes.position(0);
+		final short tagType = bytes.getShort();
+		final short reference = bytes.getShort();
+		label = getString(bytes.remaining());
+		object = getObject(tagType, reference);
+	}
+
+	/**
+	 * @return the text contained.
+	 */
+	String getLabel() {
+		return label;
+	}
+
+	public String toString() {
+		return label;
+	}
+
+	/**
+	 * 
+	 * @return the object referred to
+	 */
+	private AbstractData getObject() {
+		return object;
+	}
 
 }
