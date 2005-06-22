@@ -345,7 +345,7 @@ public class GateSet extends AbstractControl implements Observer {
 			gatePoints.remove(gatePoints.size() - 1);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
 			if (!gatePoints.isEmpty()) {
-				final Bin lastBin = (Bin) gatePoints.get(gatePoints.size() - 1);
+				final Bin lastBin = gatePoints.get(gatePoints.size() - 1);
 				textLower.setText(String.valueOf(lastBin.getX()));
 				textUpper.setText(String.valueOf(lastBin.getY()));
 			} else {
@@ -380,8 +380,8 @@ public class GateSet extends AbstractControl implements Observer {
 					/* make a polygon from data points */
 					final Polygon gatePoly2d = new Polygon();
 					for (int i = 0; i < gatePoints.size(); i++) {
-						final int pointX = ((Bin) gatePoints.get(i)).getX();
-						final int pointY = ((Bin) gatePoints.get(i)).getY();
+						final int pointX = gatePoints.get(i).getX();
+						final int pointY = gatePoints.get(i).getY();
 						gatePoly2d.addPoint(pointX, pointY);
 					}
 					currentGate.setLimits(gatePoly2d);
