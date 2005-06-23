@@ -16,10 +16,21 @@ import java.util.Map;
 public final class Group {
 
 	/**
-	 * FILE = group comes from a file, SORT = group comes from a sort
-	 * routine, TEMP = temporary group until save
+	 * Enumeration of types of groups.
 	 */
-	public static enum Type {FILE, SORT, TEMP}
+	public static enum Type {
+        /**
+         * Group comes from a file.
+         */
+        FILE,
+        /**
+         * Group comes from a sort routine.
+         */
+        SORT, 
+        /**
+         * Temporary group until save.
+         */
+        TEMP}
 	
 	/** Default group name */
 	public final static String DEFAULT_NAME = "Default";
