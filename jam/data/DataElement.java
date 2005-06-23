@@ -11,7 +11,19 @@ public interface DataElement {
 	 * Possible types of data elements.
 	 * @author Dale Visser
 	 */
-	enum Type{GATE, HISTOGRAM, SCALER};
+	enum Type{
+        /**
+         * Represents a gate.
+         */   
+        GATE, 
+        /**
+         * Represents a histogram.
+         */
+        HISTOGRAM, 
+        /**
+         * Represents a scaler.
+         */
+        SCALER};
 		
 	/**
      * 
