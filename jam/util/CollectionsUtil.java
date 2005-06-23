@@ -27,12 +27,14 @@ public final class CollectionsUtil {
     /**
      * Used for conditional add of elements in a collection.
      * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+     * @param <T> type of element in the collection
      */
     public interface Condition<T> {
         
         /**
          * Gives whether to accept an object or not.
          * @param object to decide about
+         * @param <T> type of element in the collection
          * @return <code>true</code> if acceptable
          */
         <T> boolean accept(T object);
@@ -44,6 +46,7 @@ public final class CollectionsUtil {
      * @param source of objects to add
      * @param destination destination to add to
      * @param condition makes decision whether to add an item
+     * @param <T> element type of the collections
      */
     public <T> void addConditional(Collection<T> source, Collection<T> destination,
             Condition<T> condition) {
