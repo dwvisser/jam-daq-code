@@ -15,15 +15,9 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>net.sourceforge.pmd.eclipse.pmdBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.genady.rmi.RMINature</nature>
-		<nature>net.sourceforge.pmd.eclipse.pmdNature</nature>
 	</natures>
 </projectDescription>
