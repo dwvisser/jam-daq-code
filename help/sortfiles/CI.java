@@ -18,40 +18,38 @@ import jam.sort.SortRoutine;
 public class CI extends SortRoutine {
 
 	/** * GLOBAL DECLARATIONS ** */
-	static final int ADC_BASE = 0xe0000000;
+	private static final int ADC_BASE = 0xe0000000;
 
-	static final int THRESHOLDS = 100;
+	private static final int ADC_CHANNELS = 4096; //num of channels per ADC
 
-	static final int ADC_CHANNELS = 4096; //num of channels per ADC
+	private static final String DEAD_TIME = "Dead Time (%)";
+
+	private static final int THRESHOLDS = 100;
 
 	/* number of channels per dimension in 2-d histograms */
-	static final int TWO_D_CHANS = 512;
+	private static final int TWO_D_CHANS = 512;
 
 	/* amount of bits to shift for compression */
-	static final int TWO_D_FACTOR = Math.round((float) (Math.log(ADC_CHANNELS
+	private static final int TWO_D_FACTOR = Math.round((float) (Math.log(ADC_CHANNELS
 			/ TWO_D_CHANS) / Math.log(2.0)));
 
-	transient int idGe, idNaI, idTAC;//  id numbers for the signals
+	private transient final Gate gGeNaI;//2D gate
 
-	transient final HistInt1D hGe, hNaI, hTAC;//  ungated 1D spectra
+	private transient final Gate gTAC;//  1D gate
 
-	transient final HistInt2D hGeNaI;//  ungated 2D spectra
+	private transient final HistInt1D hGe, hNaI, hTAC;//  ungated 1D spectra
 
-	transient final HistInt1D hGe_TAC;//	gated on TAC
+	private transient final HistInt1D hGe_g2d, hTAC_g2d;//  gated on Ge vs. NaI
 
-	transient final HistInt1D hGe_g2d, hTAC_g2d;//  gated on Ge vs. NaI
+	private transient final HistInt1D hGe_TAC;//	gated on TAC
 
-	transient final Gate gTAC;//  1D gate
+	private transient final HistInt2D hGeNaI;//  ungated 2D spectra
 
-	transient final Gate gGeNaI;//2D gate
+	private transient int idGe, idNaI, idTAC;//  id numbers for the signals
 
-	transient final Scaler sClock, sBeam, sGe, sAccept, sNaI;//  scalers
+	private transient int lastGe, lastAccept;//for calculating dead time
 
-	transient final Monitor mDeadTime;
-
-	static final String DEAD_TIME = "Dead Time (%)";
-
-	transient int lastGe, lastAccept;//for calculating dead time
+	private transient final Scaler sGe, sAccept, sNaI;//  scalers
 
 	/** * END OF GLOBAL DECLARATIONS ** */
 	
@@ -79,8 +77,8 @@ public class CI extends SortRoutine {
 		new Monitor("TAC window", gTAC);
 		gGeNaI = new Gate("GeNaI", hGeNaI);
 		/** * SCALER SECTION ** */
-		sClock = createScaler("Clock", 0);// (name, position in scaler unit)
-		sBeam = createScaler("Beam", 1);
+		final Scaler sClock = createScaler("Clock", 0);// (name, position in scaler unit)
+		final Scaler sBeam = createScaler("Beam", 1);
 		sGe = createScaler("Ge", 2); //Ge provides trigger
 		sAccept = createScaler("Ge Accept", 3);
 		sNaI = createScaler(NAI, 4);
@@ -95,7 +93,7 @@ public class CI extends SortRoutine {
 		new Monitor(sAccept.getName(), sAccept);
 		new Monitor(sNaI.getName(), sNaI);
 		//User-defined monitor which is calculated in this sort routine
-		mDeadTime = new Monitor(DEAD_TIME, this);
+		new Monitor(DEAD_TIME, this);
 	}
 
 	/**
@@ -118,9 +116,24 @@ public class CI extends SortRoutine {
 	}//end of initialize()
 
 	/**
+	 * @see SortRoutine#monitor(String)
+	 */
+	public double monitor(final String name) {
+		double rval = 0.0;
+		if (name.equals(DEAD_TIME)) {
+			final double geVal = sGe.getValue();
+			final double acceptVal = sAccept.getValue();
+			rval = 100.0 * (1.0 - (lastAccept - acceptVal) / (geVal - lastGe));
+			lastGe = (int) geVal;
+			lastAccept = (int) acceptVal;
+		}
+		return rval;
+	}
+
+	/**
 	 * @see SortRoutine#sort(int[])
 	 */
-	public void sort(int[] data) {
+	public void sort(final int[] data) {
 		/** * EXTRACT DATA FROM ARRAY ** */
 		final int eGe = data[idGe];
 		final int eNaI = data[idNaI];
@@ -142,21 +155,6 @@ public class CI extends SortRoutine {
 			hGe_g2d.inc(eGe);
 			hTAC_g2d.inc(eTAC);
 		}
-	}
-
-	/**
-	 * @see SortRoutine#monitor(String)
-	 */
-	public double monitor(String name) {
-		double rval = 0.0;
-		if (name.equals(DEAD_TIME)) {
-			final double geVal = sGe.getValue();
-			final double acceptVal = sAccept.getValue();
-			rval = 100.0 * (1.0 - (lastAccept - acceptVal) / (geVal - lastGe));
-			lastGe = (int) geVal;
-			lastAccept = (int) acceptVal;
-		}
-		return rval;
 	}
 
 }//end of class CI
