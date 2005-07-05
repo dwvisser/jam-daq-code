@@ -104,7 +104,7 @@ public class EvsDE extends SortRoutine {
 	/**
 	 * @see SortRoutine#sort(int[])
 	 */
-	public void sort(int[] dataEvent) {
+	public void sort(final int[] dataEvent) {
 		/* Variables for the raw signal values. */
 		final int energy = dataEvent[0];
 		final int eDE = dataEvent[1];

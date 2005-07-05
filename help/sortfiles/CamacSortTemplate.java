@@ -72,7 +72,7 @@ public final class CamacSortTemplate extends SortRoutine {
 	/**
 	 * @see SortRoutine#sort(int[])
 	 */
-	public void sort(int[] eventData) {
+	public void sort(final int[] eventData) {
 		myHist.inc(eventData[PARAM_ID]); //increment myHist with word idHist;
 		if (myGate.inGate(eventData[PARAM_ID])) { //if event word is in myGate
 			myHistGated.inc(eventData[PARAM_ID]); //increment myHistGate

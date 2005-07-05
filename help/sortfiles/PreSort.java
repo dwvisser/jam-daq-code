@@ -14,6 +14,7 @@ import java.io.File;
 public class PreSort {
     
     private PreSort(String target, int angle){
+    	super();
         final Script scripter=new Script();
 		final File cpath=scripter.defineFile("");
 		final Class inStream=YaleCAEN_InputStream.class;
@@ -42,7 +43,7 @@ public class PreSort {
      *
      * @param args <i>target</i> and <i>angleDeg</i>
      */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
         new PreSort(args[0], Integer.parseInt(args[1]));
 	}
 }

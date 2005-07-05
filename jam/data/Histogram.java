@@ -97,7 +97,7 @@ public abstract class Histogram implements DataElement {
 		 *            a 1-d or 2-d int or double array
 		 * @return which type the array corresponds to
 		 */
-		static Type getArrayType(Object array) {
+		static Type getArrayType(final Object array) {
 			final Type rval;
 			final String error = "You may pass int or double arrays of up to two dimensions as histogram counts.";
 			final Class type = array.getClass();
@@ -123,17 +123,18 @@ public abstract class Histogram implements DataElement {
 			return rval;
 		}
 
-		private transient final int type;
+		private transient final int typeNum;
 
 		private Type(int num) {
-			type = num;
+			super();
+			typeNum = num;
 		}
 
 		/**
 		 * @return 1 or 2
 		 */
 		public int getDimensionality() {
-			return DIM[type];
+			return DIM[typeNum];
 		}
 
 		/**
@@ -143,7 +144,7 @@ public abstract class Histogram implements DataElement {
 		 *            vertical channels
 		 * @return array of the appropriate type and size
 		 */
-		public Object getSampleArray(int sizeX, int sizeY) {
+		public Object getSampleArray(final int sizeX, final int sizeY) {
 			final Object rval;
 			if (sizeY == 0) {
 				rval = isInteger() ? (Object) new int[sizeX]
@@ -160,18 +161,19 @@ public abstract class Histogram implements DataElement {
 		 * @return <code>true</true> if counts are integer, not floating point
 		 */
 		public boolean isInteger() {
-			return INT[type];
+			return INT[typeNum];
 		}
 
 		/**
 		 * @see Object#toString()
 		 */
 		public String toString() {
-			return STRING[type];
+			return STRING[typeNum];
 		}
 	}
 
-	private final static List<List<Histogram>> DIM_LIST = new ArrayList<List<Histogram>>(2);
+	private final static List<List<Histogram>> DIM_LIST = new ArrayList<List<Histogram>>(
+			2);
 
 	private static final String EMPTY_STRING = "";
 
@@ -195,6 +197,7 @@ public abstract class Histogram implements DataElement {
 	static final String X_LABEL_2D = "Channels";
 
 	static final String Y_LABEL_1D = "Counts";
+
 	static final String Y_LABEL_2D = "Channels";
 
 	static {
@@ -231,8 +234,8 @@ public abstract class Histogram implements DataElement {
 	 *            unique identifier
 	 * @return a newly created histogram
 	 */
-	static public Histogram createHistogram(Group group, Object array,
-			String name) {
+	static public Histogram createHistogram(final Group group,
+			final Object array, final String name) {
 		return createHistogram(group, array, name, name, null, null);
 	}
 
@@ -249,8 +252,8 @@ public abstract class Histogram implements DataElement {
 	 *            verbose description
 	 * @return a newly created histogram
 	 */
-	static public Histogram createHistogram(Group group, Object array,
-			String name, String title) {
+	static public Histogram createHistogram(final Group group,
+			final Object array, final String name, final String title) {
 		return createHistogram(group, array, name, title, null, null);
 	}
 
@@ -387,7 +390,7 @@ public abstract class Histogram implements DataElement {
 	 */
 	public static void setHistogramList(List<Histogram> inHistList) {
 		clearList();
-		for (Histogram hist : inHistList){
+		for (Histogram hist : inHistList) {
 			NAME_MAP.put(hist.getFullName(), hist);
 			LIST.add(hist);
 			NUMBER_MAP.put(hist.getNumber(), hist);
@@ -613,8 +616,8 @@ public abstract class Histogram implements DataElement {
 	/* instantized methods */
 
 	private void assignNewNumber() {
-		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP
-				.lastKey()).intValue();
+		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP.lastKey())
+				.intValue();
 		number = last + 1;
 		NUMBER_MAP.put(new Integer(number), this);
 	}
