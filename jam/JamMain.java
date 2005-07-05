@@ -54,17 +54,19 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
-	JamToolBar jamToolBar;
+	private transient final JamToolBar jamToolBar;
+    
 	/**
 	 * Display Panel
 	 */
-	Display display;
+	private transient final Display display;
+    
 	/**
 	 * Histogram displayer.
 	 */
 	private transient final PlotDisplay plotDisplay;
 	
-	private SummaryTable summaryTable;
+	private transient final SummaryTable summaryTable;
 
 	/**
 	 * Message output and text input.
