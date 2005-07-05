@@ -19,12 +19,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
@@ -332,17 +332,17 @@ abstract class AbstractSetup {
      * @return a list of the available sort routines
      */
     protected final List setChooserDefault(boolean isDefault) {
-        final Vector<Class<?>> vector = new Vector<Class<?>>();
+        final List<Class<?>> list = new ArrayList<Class<?>>();
         if (isDefault) {
             final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
             set.addAll(RTSI.find("help", Sorter.class, true));
             set.addAll(RTSI.find("sort", Sorter.class, true));
-            vector.addAll(set);
+            list.addAll(set);
         } else {
-            vector.addAll(getSortClasses(classPath));
+            list.addAll(getSortClasses(classPath));
         }
-        sortChoice.setModel(new DefaultComboBoxModel(vector));
-        return vector;
+        sortChoice.setModel(new DefaultComboBoxModel(list.toArray()));
+        return list;
     }
 
     /**
@@ -354,8 +354,8 @@ abstract class AbstractSetup {
     protected final void setSortClassPath(File file) {
         if (file.exists()) {
             classPath = file;
-            sortChoice.setModel(new DefaultComboBoxModel(new Vector<Class<?>>(
-                    getSortClasses(classPath))));
+            sortChoice.setModel(new DefaultComboBoxModel(
+                    getSortClasses(classPath).toArray()));
             if (sortChoice.getModel().getSize() > 0) {
                 sortChoice.setSelectedIndex(0);
             }
