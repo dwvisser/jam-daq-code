@@ -86,7 +86,8 @@ public final class SpectrographExample extends SortRoutine {
 	 */
 	private transient final HistInt2D hRearPH;
 
-	private transient final HistInt2D hSntrCthd, hFrntCthd, hFrntSntr, hFrntPRearP;
+	private transient final HistInt2D hSntrCthd, hFrntCthd, hFrntSntr,
+			hFrntPRearP;
 
 	/*
 	 * gate by scintillator cathode
@@ -111,12 +112,6 @@ public final class SpectrographExample extends SortRoutine {
 	private transient final Gate gSntrCthd, gFrntSntr, gFrntCthd, gFrntRear;
 
 	/*
-	 * Scalers and monitors
-	 */
-	private transient final Scaler sBic, sClck, sEvntRaw, sEvntAccpt, sScint,
-			sCathode, sNMR, sFCLR;
-
-	/*
 	 * number of FCLR's that went to ADC's
 	 */
 	private transient final Monitor mEvntRaw, mEvntAccept;
@@ -129,59 +124,58 @@ public final class SpectrographExample extends SortRoutine {
 
 	/**
 	 * Constructors for sort routines not necessary.
-	 *
+	 * 
 	 * @see #initialize()
 	 */
 	public SpectrographExample() {
 		super();
-		hCthd = createHist1D(ADC_CHANNELS, "Cathode     ",
-				"Cathode Raw ");
+		hCthd = createHist1D(ADC_CHANNELS, "Cathode     ", "Cathode Raw ");
 		hSntrSum = createHist1D(ADC_CHANNELS, "ScintSum    ",
 				"Scintillator Sum");
-		hFrntPsn = createHist1D(ADC_CHANNELS, "FrontPosn    ", 
+		hFrntPsn = createHist1D(ADC_CHANNELS, "FrontPosn    ",
 				"Front Wire Position");
 		final String FRONT_POS = "Front Position";
 		hFrntPH = createHist2D(CHAN_2D, "FrontPvsHeight",
 				"Pulse Height of FrontFront wire vs Front Position", FRONT_POS,
 				"Pulse Height");
-		hRearPH = createHist2D(CHAN_2D, "RearPvsHeight ", 
+		hRearPH = createHist2D(CHAN_2D, "RearPvsHeight ",
 				"Pulse Height of RearMiddle wire vs Rear Position",
 				"Rear Position", "Pulse Height");
 		final String SCINT = "Scintillator";
 		final String CATH = "Cathode";
-		hSntrCthd = createHist2D(CHAN_2D, "ScintCathode  ", 
+		hSntrCthd = createHist2D(CHAN_2D, "ScintCathode  ",
 				"Cathode vs Scintillator", SCINT, CATH);
-		hFrntCthd = createHist2D(CHAN_2D, "FrontCathode  ", 
+		hFrntCthd = createHist2D(CHAN_2D, "FrontCathode  ",
 				"Cathode vs Front Position", FRONT_POS, CATH);
-		hFrntSntr = createHist2D(CHAN_2D, "FrontScint ", 
+		hFrntSntr = createHist2D(CHAN_2D, "FrontScint ",
 				"Scintillator vs Front Position", FRONT_POS, SCINT);
-		hFrntPRearP = createHist2D(TWO_D_HIRES,"FrontRear  ", 
+		hFrntPRearP = createHist2D(TWO_D_HIRES, "FrontRear  ",
 				"Rear Position vs Front Position", FRONT_POS, "Rear Position");
-		//ScintCathode Gated on other
-		hSntrCthdGFC = createHist2D(CHAN_2D,"ScintCathodeGFC", 
+		// ScintCathode Gated on other
+		hSntrCthdGFC = createHist2D(CHAN_2D, "ScintCathodeGFC",
 				"Cathode vs Scintillator - FwCa gate", SCINT, CATH);
-		hSntrCthdGFS = createHist2D(CHAN_2D,"ScintCathodeGFS", 
+		hSntrCthdGFS = createHist2D(CHAN_2D, "ScintCathodeGFS",
 				"Cathode vs Scintillator - FwSc gate", SCINT, CATH);
-		//FrontCathode Gated on other
-		hFrntCthdGSC = createHist2D(CHAN_2D,"FrontCathodeGSC", 
+		// FrontCathode Gated on other
+		hFrntCthdGSC = createHist2D(CHAN_2D, "FrontCathodeGSC",
 				"Cathode vs Front Position - ScCa gate", FRONT_POS, CATH);
-		hFrntCthdGFS = createHist2D(CHAN_2D,"FrontCathodeGFS ", 
+		hFrntCthdGFS = createHist2D(CHAN_2D, "FrontCathodeGFS ",
 				"Cathode vs Front Position - FwSc gate ", FRONT_POS, CATH);
-		//FrontScint Gated on other
-		hFrntSntrGSC = createHist2D(CHAN_2D,"FrontScintGSC ", 
+		// FrontScint Gated on other
+		hFrntSntrGSC = createHist2D(CHAN_2D, "FrontScintGSC ",
 				"Scintillator vs Front Position - ScCa gate", FRONT_POS, SCINT);
-		hFrntSntrGFC = createHist2D(CHAN_2D,"FrontScintGFC", 
+		hFrntSntrGFC = createHist2D(CHAN_2D, "FrontScintGFC",
 				"Scintillator vs Front Position - FwCa gate", FRONT_POS, SCINT);
-		//gated on 4 gates
-		hFrntGAll = createHist1D(ADC_CHANNELS,"FrontGAll    ", 
+		// gated on 4 gates
+		hFrntGAll = createHist1D(ADC_CHANNELS, "FrontGAll    ",
 				"Front Position - ScCa,FwCa,FwSc,FwRw gates");
-		//gates 2d
+		// gates 2d
 		gSntrCthd = new Gate("Ca-Sc", hSntrCthd);
-		//gate on Scintillator Cathode
+		// gate on Scintillator Cathode
 		gFrntSntr = new Gate("Fw-Sc", hFrntSntr);
-		//gate on Front Scintillator
+		// gate on Front Scintillator
 		gFrntCthd = new Gate("Fw-Ca", hFrntCthd);
-		//gate on Front Cathode
+		// gate on Front Cathode
 		gFrntRear = new Gate("Fw-Rw", hFrntPRearP);
 		hFrntSntrGSC.addGate(gFrntSntr);
 		hFrntCthdGSC.addGate(gFrntCthd);
@@ -190,14 +184,14 @@ public final class SpectrographExample extends SortRoutine {
 		hSntrCthdGFS.addGate(gSntrCthd);
 		hFrntCthdGFS.addGate(gFrntCthd);
 		/* scalers */
-		sBic = createScaler("BIC", 0);
-		sClck = createScaler("Clock", 1);
-		sEvntRaw = createScaler("Event Raw", 2);
-		sEvntAccpt = createScaler("Event Accept", 3);
-		sScint = createScaler(SCINT, 4);
-		sCathode = createScaler(CATH, 5);
-		sFCLR = createScaler("FCLR", 6);
-		sNMR = createScaler("NMR", 14);
+		final Scaler sBic = createScaler("BIC", 0);
+		final Scaler sClck = createScaler("Clock", 1);
+		final Scaler sEvntRaw = createScaler("Event Raw", 2);
+		final Scaler sEvntAccpt = createScaler("Event Accept", 3);
+		final Scaler sScint = createScaler(SCINT, 4);
+		final Scaler sCathode = createScaler(CATH, 5);
+		final Scaler sFCLR = createScaler("FCLR", 6);
+		final Scaler sNMR = createScaler("NMR", 14);
 		/* monitors */
 		new Monitor("Beam ", sBic);
 		new Monitor("Clock", sClck);
@@ -271,7 +265,7 @@ public final class SpectrographExample extends SortRoutine {
 
 	}
 
-	public void sort(int[] dataEvent) throws SortException {
+	public void sort(final int[] dataEvent) throws SortException {
 		/*
 		 * unpack data into convenient names
 		 */
@@ -334,13 +328,9 @@ public final class SpectrographExample extends SortRoutine {
 			hSntrCthdGFS.inc(SCINT_COMPR, ECCTHD);
 			hFrntCthdGFS.inc(FPOS_COMPR, ECCTHD);
 		}
-		if (IN_PID_GATES) {
-			// gated on all 3 gate above
-			//writeEvent(dataEvent);
-			if (GOOD) {
-				writeEvent(dataEvent);
-				hFrntGAll.inc(FPOS);
-			}
+		if (IN_PID_GATES && GOOD) {
+			writeEvent(dataEvent);
+			hFrntGAll.inc(FPOS);
 		}
 	}
 
@@ -351,7 +341,7 @@ public final class SpectrographExample extends SortRoutine {
 	 *            name of monitor to calculate
 	 * @return floating point value of monitor
 	 */
-	public double monitor(String name) {
+	public double monitor(final String name) {
 		double rval = 0.0;
 		if (name.equals(DEAD_TIME)) {
 			final double ACCEPTRATE = mEvntAccept.getValue();
@@ -363,4 +353,3 @@ public final class SpectrographExample extends SortRoutine {
 		return rval;
 	}
 }
-
