@@ -70,7 +70,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 */
 	public synchronized double[] getErrors() {
 		final int length = countsDouble.length;
-		if (!errorsSet()) {
+		if (!hasErrorsSet()) {
 			errors = new double[length];
 			for (int i = 0; i < length; i++) {
 				if (countsDouble[i] <= 0.0) {

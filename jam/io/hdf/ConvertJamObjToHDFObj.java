@@ -187,11 +187,11 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
         if (type == Histogram.Type.ONE_DIM_INT) {
             sciData = new ScientificData((int[]) hist.getCounts());
             hist1d = (AbstractHist1D) hist;            
-            hasErrors=hist1d.errorsSet();
+            hasErrors=hist1d.hasErrorsSet();
         } else if (type == Histogram.Type.ONE_D_DOUBLE) {
             sciData = new ScientificData((double[]) hist.getCounts());
             hist1d = (AbstractHist1D) hist;
-            hasErrors=hist1d.errorsSet();
+            hasErrors=hist1d.hasErrorsSet();
         } else if (type == Histogram.Type.TWO_DIM_INT) {
             sciData = new ScientificData((int[][]) hist.getCounts());
         } else if (type == Histogram.Type.TWO_D_DOUBLE) {
