@@ -3,6 +3,7 @@ package jam.plot;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
+import jam.plot.color.GraphicsModes;
 import jam.plot.color.PlotColorMap;
 
 import java.awt.Color;
@@ -35,7 +36,7 @@ import javax.swing.event.MouseInputAdapter;
  * @author Ken Swartz
  */
 abstract class AbstractPlot implements PlotPrefs,
-		PreferenceChangeListener {
+		PreferenceChangeListener, GraphicsModes {
     
     final class PlotPanel extends JPanel {
         
@@ -46,13 +47,13 @@ abstract class AbstractPlot implements PlotPrefs,
     	/**
     	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
     	 */
-    	protected void paintComponent(Graphics graphics) {
+    	protected void paintComponent(final Graphics graphics) {
     		super.paintComponent(graphics);
     		final PlotColorMap pcm=PlotColorMap.getInstance();
     		if (printing) { //output to printer
     			//FIXME KBS font not set
     			//graph.setFont(printFont);
-    			pcm.setColorMap(PlotColorMap.PRINT);
+    			pcm.setColorMap(modes.PRINT);
     			graph.setView(pageformat);
     		} else { //output to screen
     			//graph.setFont(screenFont);
@@ -113,7 +114,7 @@ abstract class AbstractPlot implements PlotPrefs,
     /**
      * The actual panel.
      */
-    protected final PlotPanel panel=new PlotPanel();
+    protected transient final PlotPanel panel=new PlotPanel();
 
 	/**
 	 * Specifies how much to zoom, zoom is 1/ZOOM_FACTOR
@@ -126,31 +127,31 @@ abstract class AbstractPlot implements PlotPrefs,
 	private static final int FS_MAX = 1000000;
 
 	/** Number of Histogram to plot */
-	private int plotHistNum;
+	private transient int plotHistNum;
 	
-	private Scroller scrollbars;
+	private transient Scroller scrollbars;
 
 	/**
 	 * Plot graphics handler.
 	 */
-	protected final PlotGraphics graph;
+	protected transient final PlotGraphics graph;
 
 	/* Gives channels of mouse click. */
-	private PlotMouse plotMouse;
+	private transient PlotMouse plotMouse;
 
 	/**
 	 * Descriptor of domain and range of histogram to plot.
 	 */
-	protected Limits plotLimits;
+	protected transient Limits plotLimits;
 
-	private PageFormat pageformat = null;
+	private transient PageFormat pageformat = null;
 
 	/* Histogram related stuff. */
 
 	/**
 	 * Number of x-channels.
 	 */
-	protected int sizeX;
+	protected transient int sizeX;
 
 	/**
 	 * Number of y-channels.
@@ -224,7 +225,7 @@ abstract class AbstractPlot implements PlotPrefs,
 	//protected Font printFont;
 
 	/* Color mode for screen, one of PlotColorMap options. */
-	private int colorMode;
+	private modes colorMode;
 
 	private int runNumber;
 
@@ -939,8 +940,8 @@ abstract class AbstractPlot implements PlotPrefs,
 	 */
 	private final void setColorMode(boolean cm) {
 		synchronized (this) {
-			colorMode = cm ? PlotColorMap.W_ON_B
-					: PlotColorMap.B_ON_W;
+			colorMode = cm ? modes.W_ON_B
+					: modes.B_ON_W;
 		}
 		panel.setBackground(PlotColorMap.getInstance().getBackground());
 	}
