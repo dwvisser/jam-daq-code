@@ -51,24 +51,20 @@ final class ShowExitDialog extends AbstractCommand{
 	/**
 	 * Execute the command
 	 */
-	protected void executeParse(String [] cmdParams){
-		
-		if (cmdParams.length!=0) {
-			
+	protected void executeParse(final String [] cmdParams){
+		if (cmdParams.length==0) {
+			execute(null);
+		}else {
 			Boolean confirm;
-			if (cmdParams[0].equals("noconfirm"))
-				confirm = Boolean.valueOf(false);
-			else	
-				confirm =Boolean.valueOf(true);
-				 
+			if (cmdParams[0].equals("noconfirm")) {
+				confirm = Boolean.FALSE;
+			} else {	
+				confirm =Boolean.TRUE;
+			}	 
 			Object [] cmdParmObj=new Object[1];
 			cmdParmObj[0]=confirm;
 			execute(cmdParmObj);
-			
-		} else {
-			execute(null);	
-		}
-
+		} 
 	}
 	
 }

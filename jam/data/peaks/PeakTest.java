@@ -9,7 +9,7 @@ import junit.framework.TestCase;
  */
 public class PeakTest extends TestCase {
 
-	Peak p1,p2a,p2b,p3;
+	private transient Peak peak1,p2a,p2b,peak3;
 
 	/**
 	 * Constructor for PeakTest.
@@ -27,10 +27,10 @@ public class PeakTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		p1=new Peak(100,10,2);
+		peak1=new Peak(100,10,2);
 		p2a=new Peak(150,10,2);
 		p2b=new Peak(150,10,2);
-		p3=new Peak(200,10,2);
+		peak3=new Peak(200,10,2);
 	}
 
 	/**
@@ -39,18 +39,18 @@ public class PeakTest extends TestCase {
 	 * @see Peak#compareTo(Object)
 	 */
 	public void testCompareTo() {
-		assertEquals(-1,p1.compareTo(p2a));
-		assertEquals(-1,p1.compareTo(p2b));
-		assertEquals(-1,p1.compareTo(p3));
-		assertEquals(-1,p2a.compareTo(p3));
-		assertEquals(-1,p2b.compareTo(p3));
-		assertEquals(0,p2a.compareTo(p2b));
-		assertEquals(0,p2a.compareTo(p2b));
-		assertEquals(1,p2a.compareTo(p1));
-		assertEquals(1,p2b.compareTo(p1));
-		assertEquals(1,p3.compareTo(p1));
-		assertEquals(1,p3.compareTo(p2a));
-		assertEquals(1,p3.compareTo(p2b));
+		assertEquals("peak1 should have been < p2a",-1,peak1.compareTo(p2a));
+		assertEquals("peak1 should have been < p2b",-1,peak1.compareTo(p2b));
+		assertEquals("peak1 should have been < peak3",-1,peak1.compareTo(peak3));
+		assertEquals("p2a should have been < peak3",-1,p2a.compareTo(peak3));
+		assertEquals("p2b should have been < peak3",-1,p2b.compareTo(peak3));
+		assertEquals("p2a should have been = p2b",0,p2a.compareTo(p2b));
+		assertEquals("p2b should have been = p2a",0,p2b.compareTo(p2a));
+		assertEquals("p2a should have been > peak1",1,p2a.compareTo(peak1));
+		assertEquals("p2b should have been > peak1",1,p2b.compareTo(peak1));
+		assertEquals("peak3 should have been > peak1",1,peak3.compareTo(peak1));
+		assertEquals("peak3 should have been > p2a",1,peak3.compareTo(p2a));
+		assertEquals("peak3 should have been > p2b",1,peak3.compareTo(p2b));
 	}
 
 }

@@ -5,6 +5,8 @@
  */
 
 package jam.data.peaks;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -13,48 +15,41 @@ import java.util.Vector;
  * @author  <a href="mailto:dale@visser.name">Dale Visser</a>
  */
 final class Multiplet extends Vector<Peak> {
+	
+	Multiplet(){
+		super();
+	}
 
-    private Peak [] getAllPeaks(){
-        return toArray(new Peak[0]);
-    }
-
-    double [] getAllCentroids(){
-        Peak [] peaks=getAllPeaks();
-        double [] centroids=new double[peaks.length];
-        if (peaks.length >0){
-            for (int i=0;i<peaks.length;i++){
-                centroids[i]=peaks[i].getPosition();
-            }
+    List<Double> getAllCentroids(){
+        final List<Double> centroids=new ArrayList<Double>();
+        for (Peak peak : this){
+            centroids.add(peak.getPosition());
         }
         return centroids;
     }
 
-    private void addMultiplet(Multiplet madd){
-        addAll(madd);
-    }
-
-    static Multiplet combineMultiplets(Multiplet [] marray){
-        Multiplet rval = new Multiplet();
+    static Multiplet combineMultiplets(final Multiplet [] marray){
+        final Multiplet rval = new Multiplet();
         for (int i=0; i<marray.length; i++){
-            rval.addMultiplet(marray[i]);
+            rval.addAll(marray[i]);
         }
         return rval;
     }
 
-    static Multiplet combineMultiplets(Multiplet m0, Multiplet m1){
+    static Multiplet combineMultiplets(final Multiplet mult0, final Multiplet mult1){
         Multiplet [] temp = new Multiplet[2];
-        temp[0]=m0;
-        temp[1]=m1;
+        temp[0]=mult0;
+        temp[1]=mult1;
         return combineMultiplets(temp);
     }
 
-    void addPeak(Peak p) {
+    /*void addPeak(Peak p) {
         if (p != null){
             addElement(p);
         }
-    }
+    }*/
     
-    Peak getPeak(int index) {
+    /*Peak getPeak(int index) {
         return elementAt(index);
-    }
+    }*/
 }

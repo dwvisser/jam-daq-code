@@ -6,6 +6,8 @@ package jam.data;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.peaks.PeakFinder;
 
+import java.util.List;
+
 /**
  * The superclass of all 1-dimensional histograms.
  * 
@@ -114,20 +116,20 @@ public abstract class AbstractHist1D extends Histogram {
 				throw new UnsupportedOperationException(
 						"findPeaks() called on 2D hist");
 			}
-			final double[] posn = PeakFinder.getCentroids(histArray,
+			final List<Double> posn = PeakFinder.getCentroids(histArray,
 					sensitivity, width);
-			double[][] rval = new double[3][posn.length];
+			double[][] rval = new double[3][posn.size()];
 			if (cal && this.isCalibrated()) {
-				for (int i = 0; i < posn.length; i++) {
-					rval[0][i] = posn[i];
-					rval[1][i] = calibFunc.getValue(posn[i]);
-					rval[2][i] = histArray[(int) Math.round(posn[i])];
+				for (int i = 0; i < posn.size(); i++) {
+					rval[0][i] = posn.get(i);
+					rval[1][i] = calibFunc.getValue(posn.get(i));
+					rval[2][i] = histArray[(int) Math.round(posn.get(i))];
 				}
 			} else { // no calibration
-				for (int i = 0; i < posn.length; i++) {
-					rval[0][i] = posn[i];
-					rval[1][i] = posn[i];
-					rval[2][i] = histArray[(int) Math.round(posn[i])];
+				for (int i = 0; i < posn.size(); i++) {
+					rval[0][i] = posn.get(i);
+					rval[1][i] = posn.get(i);
+					rval[2][i] = histArray[(int) Math.round(posn.get(i))];
 				}
 			}
 			return rval;
