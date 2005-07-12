@@ -53,5 +53,5 @@ public interface ColorPrefs {
 	/**
 	 * Whether to use a continuous gradient or discrete color scale.
 	 */
-	String SMOOTH_COLOR_SCALE = "ContinuousColorScale";
+	String SMOOTH_SCALE = "ContinuousColorScale";
 }

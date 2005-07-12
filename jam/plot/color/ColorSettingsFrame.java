@@ -45,12 +45,12 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		return CSF;
 	}
 
-	private final RainbowPanel rainbowPanel = new RainbowPanel();
+	private transient final RainbowPanel rainbowPanel = new RainbowPanel();
 
-	private final JTextField x0RField, x0GField, x0BField, aRField, aGField,
+	private transient final JTextField x0RField, x0GField, x0BField, aRField, aGField,
 			aBField;
 
-	private final JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
+	private transient final JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
 			aBSlider;
 
 	private ColorSettingsFrame() {
@@ -60,15 +60,15 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 				ColorPrefs.X0G, .60));
 		final int x0B = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.X0B, .20));
-		final int aR = (int) Math.round(100 * COLOR_PREFS.getDouble(
+		final int aRed = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.ARED, .50));
-		final int aG = (int) Math.round(100 * COLOR_PREFS.getDouble(
+		final int aGreen = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.AGREEN, .40));
-		final int aB = (int) Math.round(100 * COLOR_PREFS.getDouble(
+		final int aBlue = (int) Math.round(100 * COLOR_PREFS.getDouble(
 				ColorPrefs.ABLUE, .30));
 		setTitle("Color Scale Settings");
-		final Container c = getContentPane();
-		c.setLayout(new GridBagLayout());
+		final Container contents = getContentPane();
+		contents.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
 				new PanelOKApplyCancelButtons.DefaultListener(this) {
@@ -76,12 +76,12 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 						final double x0red = x0RSlider.getValue() / 100.0;
 						final double x0green = x0GSlider.getValue() / 100.0;
 						final double x0blue = x0BSlider.getValue() / 100.0;
-						final double aRed = aRSlider.getValue() / 100.0;
-						final double aGreen = aGSlider.getValue() / 100.0;
-						final double aBlue = aBSlider.getValue() / 100.0;
-						COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aBlue);
-						COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aGreen);
-						COLOR_PREFS.putDouble(ColorPrefs.ARED, aRed);
+						final double aRedD = aRSlider.getValue() / 100.0;
+						final double aGreenD = aGSlider.getValue() / 100.0;
+						final double aBlueD = aBSlider.getValue() / 100.0;
+						COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aBlueD);
+						COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aGreenD);
+						COLOR_PREFS.putDouble(ColorPrefs.ARED, aRedD);
 						COLOR_PREFS.putDouble(ColorPrefs.X0B, x0blue);
 						COLOR_PREFS.putDouble(ColorPrefs.X0G, x0green);
 						COLOR_PREFS.putDouble(ColorPrefs.X0R, x0red);
@@ -96,13 +96,13 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		x0BSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0B);
 		x0BSlider.addChangeListener(this);
 		x0BSlider.setPreferredSize(new Dimension(20, 130));
-		aRSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aR);
+		aRSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aRed);
 		aRSlider.addChangeListener(this);
 		aRSlider.setPreferredSize(new Dimension(20, 130));
-		aGSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aG);
+		aGSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aGreen);
 		aGSlider.addChangeListener(this);
 		aGSlider.setPreferredSize(new Dimension(20, 130));
-		aBSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aB);
+		aBSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, aBlue);
 		aBSlider.addChangeListener(this);
 		aBSlider.setPreferredSize(new Dimension(20, 130));
 		final JComponent redLabel = new JLabel("Red");
@@ -124,22 +124,22 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		x0BField.setText(String.valueOf(x0B / 100.0));
 		x0BField.setEditable(false);
 		aRField = new JTextField(5);
-		aRField.setText(String.valueOf(aR / 100.0));
+		aRField.setText(String.valueOf(aRed / 100.0));
 		aRField.setEditable(false);
 		aGField = new JTextField(5);
-		aGField.setText(String.valueOf(aG / 100.0));
+		aGField.setText(String.valueOf(aGreen / 100.0));
 		aGField.setEditable(false);
 		aBField = new JTextField(5);
-		aBField.setText(String.valueOf(aB / 100.0));
+		aBField.setText(String.valueOf(aBlue / 100.0));
 		aBField.setEditable(false);
-		final JComponent colorSchemeLabel = new JLabel(
+		final JComponent csLabel = new JLabel(
 				"<html>Choose a<p>color scheme :</html>");
 		final String current = "Current";
 		final String rainbow = "Rainbow";
-		final JComboBox colorSchemeComboBox = new JComboBox();
-		colorSchemeComboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				final String selection = (String) colorSchemeComboBox
+		final JComboBox csChooser = new JComboBox();
+		csChooser.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent itemEvent) {
+				final String selection = (String) csChooser
 						.getSelectedItem();
 				if (selection.equals("Greyscale")) {
 					x0RSlider.setValue(100);
@@ -169,31 +169,31 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 							.getDouble(ColorPrefs.X0G, .60));
 					final int x0blue = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.X0B, .20));
-					final int aRed = (int) Math.round(100 * COLOR_PREFS
+					final int aRedD = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.ARED, .50));
-					final int aGreen = (int) Math.round(100 * COLOR_PREFS
+					final int aGreenD = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.AGREEN, .40));
-					final int aBlue = (int) Math.round(100 * COLOR_PREFS
+					final int aBlueD = (int) Math.round(100 * COLOR_PREFS
 							.getDouble(ColorPrefs.ABLUE, .30));
 					x0RSlider.setValue(x0red);
 					x0GSlider.setValue(x0green);
 					x0BSlider.setValue(x0blue);
-					aRSlider.setValue(aRed);
-					aGSlider.setValue(aGreen);
-					aBSlider.setValue(aBlue);
+					aRSlider.setValue(aRedD);
+					aGSlider.setValue(aGreenD);
+					aBSlider.setValue(aBlueD);
 				}
 			}
 		});
-		colorSchemeComboBox.addItem(current);
-		colorSchemeComboBox.addItem(rainbow);
-		colorSchemeComboBox.addItem("Purple Haze");
-		colorSchemeComboBox.addItem("Greyscale");
-		colorSchemeComboBox.setSelectedItem(rainbow);
-		colorSchemeComboBox.setSelectedItem(current);
-		final JScrollPane sp = new JScrollPane(rainbowPanel,
+		csChooser.addItem(current);
+		csChooser.addItem(rainbow);
+		csChooser.addItem("Purple Haze");
+		csChooser.addItem("Greyscale");
+		csChooser.setSelectedItem(rainbow);
+		csChooser.setSelectedItem(current);
+		final JScrollPane scrollpane = new JScrollPane(rainbowPanel,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		sp.setPreferredSize(new Dimension(50, 100));
+		scrollpane.setPreferredSize(new Dimension(50, 100));
 		final JPanel colorPanel = new JPanel(new GridBagLayout());
 		// final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		final JPanel sliderPanel = new JPanel(new GridBagLayout());
@@ -243,29 +243,29 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		gbc.insets = new Insets(5, 5, 20, 5);
 		gbc.insets = new Insets(5, 5, 5, 5);
 		setGrid(gbc, 0, 0, 1);
-		colorPanel.add(colorSchemeLabel, gbc);
+		colorPanel.add(csLabel, gbc);
 		setGrid(gbc, 0, 1, 1);
-		colorPanel.add(colorSchemeComboBox, gbc);
+		colorPanel.add(csChooser, gbc);
 		setGrid(gbc, 0, 2, 1);
-		colorPanel.add(sp, gbc);
+		colorPanel.add(scrollpane, gbc);
 		setGrid(gbc, 1, 1, 1);
-		c.add(colorPanel, gbc);
+		contents.add(colorPanel, gbc);
 		setGrid(gbc, 2, 1, 1);
-		c.add(sliderPanel, gbc);
+		contents.add(sliderPanel, gbc);
 		setGrid(gbc, 0, 2, 3);
-		c.add(buttons.getComponent(), gbc);
+		contents.add(buttons.getComponent(), gbc);
 		gbc.gridwidth = 1;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		pack();
 	}
 
-	private void setGrid(GridBagConstraints gbc, int x, int y, int width) {
-		gbc.gridx = x;
-		gbc.gridy = y;
+	private void setGrid(GridBagConstraints gbc, int gridx, int gridy, int width) {
+		gbc.gridx = gridx;
+		gbc.gridy = gridy;
 		gbc.gridwidth = width;
 	}
 
-	public void stateChanged(ChangeEvent ce) {
+	public void stateChanged(ChangeEvent changeEvent) {
 		x0RField.setText(String.valueOf(x0RSlider.getValue() / 100.0));
 		x0GField.setText(String.valueOf(x0GSlider.getValue() / 100.0));
 		x0BField.setText(String.valueOf(x0BSlider.getValue() / 100.0));

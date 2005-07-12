@@ -44,7 +44,7 @@ final class RainbowPanel extends JPanel {
 	public void paintComponent(Graphics graphics) {
 		final Graphics2D graph2d = (Graphics2D) graphics;
 		super.paintComponent(graph2d);
-		RenderingHints hints = new RenderingHints(
+		final RenderingHints hints = new RenderingHints(
 				RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		graph2d.setRenderingHints(hints);

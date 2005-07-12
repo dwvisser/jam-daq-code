@@ -115,7 +115,7 @@ public class CommandManager implements CommandListener, CommandNames {
         CMD_MAP.put(PlotPrefs.AUTO_IGNORE_FULL, SetAutoScaleIgnoreFull.class);
         CMD_MAP.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
         CMD_MAP.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
-        CMD_MAP.put(ColorPrefs.SMOOTH_COLOR_SCALE, SetSmoothColorScale.class);
+        CMD_MAP.put(ColorPrefs.SMOOTH_SCALE, SetSmoothColorScale.class);
         CMD_MAP.put(SHOW_GRADIENT_SETTINGS, ShowGradientSettings.class);
         CMD_MAP.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
         CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS,

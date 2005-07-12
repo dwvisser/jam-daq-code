@@ -13,11 +13,40 @@ import java.util.prefs.PreferenceChangeListener;
  */
 public final class GradientColorScale implements ColorScale, ColorPrefs {
 
-	private double min, max, constant;
+	private static final GradientColorScale LINEAR = new GradientColorScale(0,
+			100, Scale.LINEAR);
 
-	private boolean recalculateConstant = true;
+	private static final GradientColorScale LOG = new GradientColorScale(0,
+			100, Scale.LOG);
 
-	private boolean logScale;//linear if false, log if true
+	/**
+	 * Returns the appropriate gradient color scale for the given
+	 * scale type.
+	 * 
+	 * @param scale type of counts scale
+	 * @return a gradient color scale
+	 */
+	static public synchronized GradientColorScale getScale(Scale scale) {
+		return scale == Scale.LINEAR ? LINEAR : LOG;
+	}
+
+	private transient double blueCenter = COLOR_PREFS.getDouble(ColorPrefs.X0B,0.2);
+
+	private transient double blueSpread = COLOR_PREFS.getDouble(ColorPrefs.ABLUE,0.09);
+
+	private transient double greenCenter = COLOR_PREFS.getDouble(ColorPrefs.X0G,0.6);
+
+	private transient double greenSpread = COLOR_PREFS.getDouble(ColorPrefs.AGREEN,0.16);
+
+	private final transient boolean logScale;//linear if false, log if true
+
+	private transient double min, max, constant;
+
+	private transient boolean recalculate = true;
+
+	private transient double redCenter = COLOR_PREFS.getDouble(ColorPrefs.X0R,0.8);
+
+	private transient double redSpread = COLOR_PREFS.getDouble(ColorPrefs.ARED,0.25);
 
 	/**
 	 * Create a gradient color scale.
@@ -41,7 +70,7 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 		COLOR_PREFS.addPreferenceChangeListener(new PreferenceChangeListener() {
 			public void preferenceChange(PreferenceChangeEvent pce) {
 				final String key = pce.getKey();
-				if (!key.equals(ColorPrefs.SMOOTH_COLOR_SCALE)) {
+				if (!key.equals(ColorPrefs.SMOOTH_SCALE)) {
 					final double newValue = Double.parseDouble(pce
 							.getNewValue());
 					if (ColorPrefs.ABLUE.equals(key)) {
@@ -62,55 +91,23 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 		});
 	}
 
-	private static final GradientColorScale LINEAR = new GradientColorScale(0,
-			100, Scale.LINEAR);
-
-	private static final GradientColorScale LOG = new GradientColorScale(0,
-			100, Scale.LOG);
-
-	/**
-	 * Returns the appropriate gradient color scale for the given
-	 * scale type.
-	 * 
-	 * @param s type of counts scale
-	 * @return a gradient color scale
-	 */
-	static public synchronized GradientColorScale getScale(Scale s) {
-		return s == Scale.LINEAR ? LINEAR : LOG;
-	}
-
-	private void setMaxCounts(double maxCounts) {
-		max = maxCounts;
-		recalculateConstant = true;
-	}
-
-	private void setMinCounts(double minCounts) {
-		min = Math.max(1.0, minCounts);
-		recalculateConstant = true;
-	}
-
-	public synchronized void setRange(int min, int max) {
-		setMinCounts(min);
-		setMaxCounts(max);
-	}
-
-	public Color getColor(double counts) {
-		return returnRGB(getScaleValue(counts));
-	}
-
 	private void calculateConstant() {
 		if (logScale) {
 			constant = 1.0 / Math.log(max / min);
 		} else {
 			constant = 1.0 / (max - min);
 		}
-		recalculateConstant = false;
+		recalculate = false;
+	}
+
+	public Color getColor(double counts) {
+		return returnRGB(getScaleValue(counts));
 	}
 
 	private double getScaleValue(double counts) {
 		double normValue = 0.0;
 		if (counts != 0.0) {
-			if (recalculateConstant) {
+			if (recalculate) {
 				calculateConstant();
 			}
 			if (logScale) {
@@ -122,23 +119,26 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 		return normValue;
 	}
 
-	private transient double redCenter = COLOR_PREFS.getDouble(ColorPrefs.X0R,0.8);
-
-	private transient double greenCenter = COLOR_PREFS.getDouble(ColorPrefs.X0G,0.6);
-
-	private transient double blueCenter = COLOR_PREFS.getDouble(ColorPrefs.X0B,0.2);
-
-	private transient double redSpread = COLOR_PREFS.getDouble(ColorPrefs.ARED,0.25);
-
-	private transient double greenSpread = COLOR_PREFS.getDouble(ColorPrefs.AGREEN,0.16);
-
-	private transient double blueSpread = COLOR_PREFS.getDouble(ColorPrefs.ABLUE,0.09);
-
 	private Color returnRGB(double level) {
-		int red = (int) (255 * Math.exp(-(level - redCenter) * (level - redCenter) / redSpread));
-		int green = (int) (255 * Math.exp(-(level - greenCenter) * (level - greenCenter) / greenSpread));
-		int blue = (int) (255 * Math.exp(-(level - blueCenter) * (level - blueCenter) / blueSpread));
+		final int red = (int) (255 * Math.exp(-(level - redCenter) * (level - redCenter) / redSpread));
+		final int green = (int) (255 * Math.exp(-(level - greenCenter) * (level - greenCenter) / greenSpread));
+		final int blue = (int) (255 * Math.exp(-(level - blueCenter) * (level - blueCenter) / blueSpread));
 		return new Color(red, green, blue);
+	}
+
+	private void setMaxCounts(double maxCounts) {
+		max = maxCounts;
+		recalculate = true;
+	}
+
+	private void setMinCounts(double minCounts) {
+		min = Math.max(1.0, minCounts);
+		recalculate = true;
+	}
+
+	public synchronized void setRange(int min, int max) {
+		setMinCounts(min);
+		setMaxCounts(max);
 	}
 
 }

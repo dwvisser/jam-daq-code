@@ -8,5 +8,23 @@ package jam.plot.color;
  *
  */
 public interface GraphicsModes {
-	enum modes{B_ON_W,W_ON_B,PRINT};
+    
+    /**
+     * Three values.
+     * 
+     * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
+     */
+	enum modes{
+        /**
+         * : white background
+         */
+        B_ON_W,
+        /**
+         * black background
+         */
+        W_ON_B,
+        /**
+         * printing
+         */
+        PRINT};
 }

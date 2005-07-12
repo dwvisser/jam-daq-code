@@ -61,9 +61,6 @@ public class PlotColorMap implements GraphicsModes{
 	 * 
 	 * @param mode
 	 *            what type of graphics context
-	 * @see #B_ON_W
-	 * @see #W_ON_B
-	 * @see #PRINT
 	 */
 	public void setColorMap(final modes mode) {
 		synchronized (this) {

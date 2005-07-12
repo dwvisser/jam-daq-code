@@ -158,13 +158,13 @@ public class DiscreteColorScale implements ColorScale, GraphicsModes {
 	 */
 	private int[] colorThresholdsLin(final int lowerLimit, final int upperLimit) {
 		final int len = colors.length;
-		final int[] thresholdTemp = new int[len];
-		final int thresholdStep = thresholdStep(lowerLimit, upperLimit);
-		final int thresholdMin = getThresholdMin(lowerLimit, thresholdStep);
+		final int[] rval = new int[len];
+		final int step = thresholdStep(lowerLimit, upperLimit);
+		final int thresholdMin = getThresholdMin(lowerLimit, step);
 		for (int i = 0; i < len; i++) {
-			thresholdTemp[i] = thresholdMin + (i) * thresholdStep;
+			rval[i] = thresholdMin + i * step;
 		}
-		return thresholdTemp;
+		return rval;
 	}
 
 	/*
@@ -195,13 +195,13 @@ public class DiscreteColorScale implements ColorScale, GraphicsModes {
 	/*
 	 * non-javadoc: minimum thresold for linear 2d plot
 	 */
-	private int getThresholdMin(final int lowerLimit, final int thresholdStep) {
+	private int getThresholdMin(final int lowerLimit, final int step) {
 		final int rval;
-		if ((lowerLimit % thresholdStep) == 0) { // lower limit is on a step
-			rval = lowerLimit + thresholdStep;
+		if ((lowerLimit % step) == 0) { // lower limit is on a step
+			rval = lowerLimit + step;
 		} else { // threshold just above lower limit
 			/* round down and add one */
-			rval = (lowerLimit / thresholdStep + 1) * thresholdStep;
+			rval = (lowerLimit / step + 1) * step;
 		}
 		return rval;
 	}
