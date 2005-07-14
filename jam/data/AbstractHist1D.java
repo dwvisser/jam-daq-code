@@ -116,7 +116,7 @@ public abstract class AbstractHist1D extends Histogram {
 				throw new UnsupportedOperationException(
 						"findPeaks() called on 2D hist");
 			}
-			final List<Double> posn = PeakFinder.getCentroids(histArray,
+			final List<Double> posn = PeakFinder.getInstance().getCentroids(histArray,
 					sensitivity, width);
 			double[][] rval = new double[3][posn.size()];
 			if (cal && this.isCalibrated()) {

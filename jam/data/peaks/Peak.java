@@ -7,7 +7,7 @@ package jam.data.peaks;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 2001-02-14
  */
-final class Peak extends Object implements Comparable {
+final class Peak extends Object implements Comparable, Cloneable {
 
 	private double position, area, width;
 
@@ -50,6 +50,19 @@ final class Peak extends Object implements Comparable {
 		setArea(intensity, intErr);
 		setWidth(wid, widErr);
 	}
+	
+	protected Object clone() throws CloneNotSupportedException {
+		final Peak rval=(Peak)super.clone();
+		rval.setPosition(position,perr);
+		rval.setArea(area,aerr);
+		rval.setWidth(width,werr);
+		return rval;
+	}
+	
+	Peak offset(final double correction){
+		return new Peak(position+correction, perr, area, aerr, width, werr);
+	}
+
 
 	/**
 	 * @return centroid of peak
