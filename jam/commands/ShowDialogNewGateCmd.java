@@ -29,7 +29,7 @@ Observer {
 			setEnabled(false);			
 		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
 				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			Histogram hist =STATUS.getCurrentHistogram();
+			final Histogram hist =(Histogram)STATUS.getCurrentHistogram();
 			setEnabled(!histogramList.isEmpty() && hist!=null);
 		} 
 	}		

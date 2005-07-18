@@ -168,6 +168,7 @@ public class Projections extends AbstractManipulation implements Observer {
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 					STATUS.setCurrentHistogram(hto);
+					STATUS.setCurrentGroup(hto.getGroup());
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
 				} catch (DataException de) {
 					console.errorOutln(de.getMessage());
@@ -177,7 +178,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(listener);
 		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);		
 		cfrom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfromname = "";

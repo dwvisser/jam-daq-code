@@ -28,7 +28,7 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 
 	void setFields(PlotContainer p) {
 		plot = p;
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
 		if (hist != null) {
 			lim = Limits.getLimits(hist);
 		}

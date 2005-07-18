@@ -29,7 +29,8 @@ public class HistogramZero extends AbstractControl {
 	/**
 	 * Construct a new "zero histograms" dialog.
 	 * 
-	 * @param mh where to print messages
+	 * @param mh
+	 *            where to print messages
 	 */
 	public HistogramZero(MessageHandler mh) {
 		super("Zero Histograms", false);
@@ -37,7 +38,7 @@ public class HistogramZero extends AbstractControl {
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
 		setResizable(false);
-		setLocation(20, 50);		
+		setLocation(20, 50);
 		dzc.setLayout(new FlowLayout(FlowLayout.CENTER));
 		final JPanel pButton = new JPanel(new GridLayout(1, 0, 5, 10));
 		Border border = new EmptyBorder(10, 10, 10, 10);
@@ -45,12 +46,13 @@ public class HistogramZero extends AbstractControl {
 
 		final JButton one = new JButton("Displayed");
 		one.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				final Histogram currentHistogram =JamStatus.getSingletonInstance().getCurrentHistogram();
+			public void actionPerformed(final ActionEvent actionEvent) {
+				final Histogram currentHistogram = (Histogram) JamStatus
+						.getSingletonInstance().getCurrentHistogram();
 				currentHistogram.setZero();
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				msghdlr.messageOutln(
-					"Zero Histogram: " + currentHistogram.getTitle());
+				msghdlr.messageOutln("Zero Histogram: "
+						+ currentHistogram.getTitle());
 				dispose();
 			}
 		});
@@ -60,7 +62,7 @@ public class HistogramZero extends AbstractControl {
 			public void actionPerformed(ActionEvent ae) {
 				zeroAll();
 				dispose();
-			}			
+			}
 		});
 		pButton.add(all);
 		final JButton cancel = new JButton(" Cancel ");
@@ -93,7 +95,7 @@ public class HistogramZero extends AbstractControl {
 		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 		msghdlr.messageOut(" done!", MessageHandler.END);
 	}
-	
+
 	public void doSetup() {
 		/* nothing to do */
 	}

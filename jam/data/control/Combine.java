@@ -52,12 +52,12 @@ public class Combine extends AbstractManipulation implements Observer {
 	/**
 	 * Construct a new "manipilate histograms" dialog.
 	 * 
-	 * @param mh
+	 * @param console
 	 *            where to print messages
 	 */
-	public Combine(MessageHandler mh) {
+	public Combine(MessageHandler console) {
 		super("Manipulate 1-D Histograms", false);
-		messageHandler = mh;
+		messageHandler = console;
 		setResizable(false);
 		Dimension dim;
 		final int hgap = 5;
@@ -196,6 +196,7 @@ public class Combine extends AbstractManipulation implements Observer {
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							STATUS.setCurrentHistogram(hto);
+							STATUS.setCurrentGroup(hto.getGroup());
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);

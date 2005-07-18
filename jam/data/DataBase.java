@@ -1,10 +1,12 @@
 package jam.data;
 
+import jam.global.Validator;
+
 /**
  * Class that contains a <code>static</code>method to clear the lists
  * of all the data classes.
  */
-public class DataBase {
+public class DataBase implements Validator {
 	
 	private static final DataBase INSTANCE=new DataBase();
 	
@@ -39,5 +41,19 @@ public class DataBase {
 		Monitor.clearList();
 		DataParameter.clearList();
 		System.gc();
+	}
+	
+	public boolean isValid(final Object object){
+		boolean rval = false;
+		if (object != null){
+			if (object instanceof Group) {
+				rval = Group.isValid((Group)object);
+			} else if (object instanceof Histogram) {
+				rval = Histogram.isValid((Histogram)object);
+			} else if (object instanceof Gate) {
+				rval = Gate.isValid((Gate)object);
+			}
+		}
+		return rval;
 	}
 }

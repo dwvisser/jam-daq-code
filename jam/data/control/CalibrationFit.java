@@ -555,7 +555,7 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	private AbstractHist1D getCurrentHistogram() {
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
 		final AbstractHist1D rval = hist instanceof AbstractHist1D ? (AbstractHist1D) hist
 				: null;
 		return rval;

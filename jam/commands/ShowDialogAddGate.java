@@ -33,7 +33,7 @@ Observer {
 			setEnabled(false);
 		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
 				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			Histogram hist =STATUS.getCurrentHistogram();
+			Histogram hist =(Histogram)STATUS.getCurrentHistogram();
 			setEnabled(!gateList.isEmpty() && hist!=null);
 		} 
 	}	

@@ -24,7 +24,7 @@ class AbstractExportFile extends AbstractImportExport {
      */
     protected final void execute(Object[] cmdParams) throws CommandException {
         try {
-            final Histogram histogram = STATUS.getCurrentHistogram();
+            final Histogram histogram = (Histogram)STATUS.getCurrentHistogram();
             if (cmdParams == null) { //No file given
                 importExport.saveFile(histogram);
             } else { //File given

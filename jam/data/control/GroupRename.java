@@ -64,10 +64,8 @@ public class GroupRename extends AbstractControl {
 	
 	public void setVisible(final boolean show) {
 		if (show) {
-			currentGroup = STATUS.getCurrentGroup();
-			if (currentGroup == null) {
-				msgHandler.errorOutln("Need to select a group.");
-			} else {
+			currentGroup = (Group)STATUS.getCurrentGroup();
+			if (Group.isValid(currentGroup)) {
 				if (currentGroup.getType() == Group.Type.SORT) {
 					msgHandler
 							.errorOutln("Cannot rename sort groups, selected group "
@@ -76,6 +74,8 @@ public class GroupRename extends AbstractControl {
 					textName.setText(currentGroup.getName());
 					super.setVisible(true);
 				}
+			} else {
+				msgHandler.errorOutln("Need to select a group.");
 			}
 		} else {
 			super.setVisible(false);

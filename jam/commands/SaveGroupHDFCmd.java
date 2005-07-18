@@ -22,7 +22,7 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	
 	protected void execute(Object[] cmdParams) throws CommandException {
 		File file=null;
-		Group group=STATUS.getCurrentGroup();
+		Group group=(Group)STATUS.getCurrentGroup();
 		if (cmdParams!=null) {
 			if (cmdParams.length>0){
 				file =(File)cmdParams[0];

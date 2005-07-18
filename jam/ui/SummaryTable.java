@@ -1,5 +1,6 @@
 package jam.ui;
 
+import jam.data.Group;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -11,8 +12,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 /**
  * Create a summary table for a group
@@ -97,11 +98,9 @@ public class SummaryTable extends JPanel implements Observer {
 		BroadcastEvent be = (BroadcastEvent) o;
 		if	(be.getCommand() == BroadcastEvent.Command.ROOT_SELECT) {
 			summaryTableModel.setSelectionType(ALL_GROUPS_SELECTED);
-			//summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);
-			//summaryTableModel.setGroup(status.getCurrentGroup());			
 		} else if	(be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) {
 			summaryTableModel.setSelectionType(SINGLE_GROUP_SELECTED);			
-			summaryTableModel.setGroup(status.getCurrentGroup());			
+			summaryTableModel.setGroup((Group)status.getCurrentGroup());			
 		}		
 	}
 	

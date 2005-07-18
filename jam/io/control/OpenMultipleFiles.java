@@ -335,11 +335,9 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			final List<Histogram> list = firstGroup.getHistogramList();
 			if (list.size() > 0) {
 				final Histogram firstHist = list.get(0);
-				if (list != null) {
-					STATUS.setCurrentHistogram(firstHist);
-					broadcaster.broadcast(
-							BroadcastEvent.Command.HISTOGRAM_SELECT, firstHist);
-				}
+				STATUS.setCurrentHistogram(firstHist);
+				broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+						firstHist);
 			}
 		}
 	}

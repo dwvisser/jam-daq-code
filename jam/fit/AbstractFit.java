@@ -664,7 +664,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 * Update the name of the displayed histogram in the dialog box.
 	 */
 	private void updateHist() {
-		final Histogram histogram = STATUS.getCurrentHistogram();
+		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
 				final int[] temp = (int[]) histogram.getCounts();

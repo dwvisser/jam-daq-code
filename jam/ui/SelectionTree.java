@@ -218,9 +218,10 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * Refresh the selected node.
 	 */
 	private void refreshSelection() {
-		final Histogram hist = STATUS.getCurrentHistogram();
-		final Gate gate = STATUS.getCurrentGate();
-		final List<Histogram> overlayHists = STATUS.getOverlayHistograms();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final Gate gate = (Gate) STATUS.getCurrentGate();
+		final List<Histogram> overlayHists = Histogram.getHistogramList(STATUS
+				.getOverlayHistograms());
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
 		if (gate != null) {

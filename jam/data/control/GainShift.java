@@ -167,6 +167,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 							BROADCASTER
 									.broadcast(BroadcastEvent.Command.REFRESH);
 							STATUS.setCurrentHistogram(hto);
+							STATUS.setCurrentGroup(hto.getGroup());
 							BROADCASTER.broadcast(
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);

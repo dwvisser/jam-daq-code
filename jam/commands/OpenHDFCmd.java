@@ -100,7 +100,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
 		}
 	}
 
-	private void notifyApp(File file) {
+	private void notifyApp(final File file) {
         Group firstGroup;
         Histogram firstHist = null;
         /* Set general status. */
@@ -114,7 +114,6 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
         if (Group.getGroupList().size() > 0) {
         	firstGroup = Group.getGroupList().get(0);
             STATUS.setCurrentGroup(firstGroup);
-
 	        /* Set the current histogram to the first opened histogram. */
 	        if (firstGroup.getHistogramList().size() > 0) {
 	            firstHist = firstGroup.getHistogramList().get(0);
@@ -125,7 +124,7 @@ final class OpenHDFCmd extends AbstractCommand implements Observer, HDFIO.AsyncL
                 firstHist);
     }			
 	
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		final BroadcastEvent event=(BroadcastEvent)obj;
 		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){

@@ -22,7 +22,7 @@ final class ShowDialogCalibrationDisplayCmd
 		}
 
 		private void enable() {
-			final Histogram hist= STATUS.getCurrentHistogram();
+			final Histogram hist= (Histogram)STATUS.getCurrentHistogram();
 			final AbstractHist1D h1d=hist !=null && hist instanceof AbstractHist1D ? 
 					(AbstractHist1D)hist : null;
 			setEnabled(h1d != null && h1d.isCalibrated());

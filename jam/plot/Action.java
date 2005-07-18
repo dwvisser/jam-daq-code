@@ -57,7 +57,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	static final String ZOOMVERT = "zoomvert";
 
 	static final String ZOOMHORZ = "zoomhorz";
-	
+
 	static final String FULL = "full";
 
 	static final String LINEAR = "linear";
@@ -77,7 +77,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	static final String OVERLAY = "overlay";
 
 	static final String OVERLAY_STATE = "overlaystate";
-	
+
 	static final String CANCEL = "cancel";
 
 	static final String RANGE = "range";
@@ -109,7 +109,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	/** Command requires a cursor input */
 	private boolean isCursorCommand;
 
-	//private boolean overlayState;
+	// private boolean overlayState;
 
 	/** Class that parses commands */
 	private final ParseCommand parseCommand;
@@ -133,7 +133,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/** Broadcaster for event and gate change */
-	private static final Broadcaster BROADCASTER = Broadcaster.getSingletonInstance();
+	private static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -150,9 +151,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		jc.addCommandListener(parseCommand);
 		cursor = Bin.Factory.create();
 		commandPresent = false;
-		//overlayState = false;
+		// overlayState = false;
 		settingGate = false;
-		inquire = PlotFit.getInstance(); //class with area/centroid routines
+		inquire = PlotFit.getInstance(); // class with area/centroid routines
 		/* numFormat for formatting energy output */
 		numFormat = NumberFormat.getInstance();
 		numFormat.setGroupingUsed(false);
@@ -173,7 +174,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			done();
 		}
 		settingGate = false;
-		//overlayState = false;
+		// overlayState = false;
 	}
 
 	/**
@@ -198,8 +199,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
-	/* non-javadoc:
-	 * Command with no paramters
+	/*
+	 * non-javadoc: Command with no paramters
 	 * 
 	 * @param inCommand
 	 */
@@ -210,7 +211,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	/*
 	 * non-javadoc: does a command with parameters
 	 */
-	synchronized void doCommand(String inCommand, final double[] inParams, boolean console) {
+	synchronized void doCommand(String inCommand, final double[] inParams,
+			boolean console) {
 		/* if inCommand is null, keep currentCommand */
 		if (inCommand != null) {
 			if (!inCommand.equals(CURSOR)) {
@@ -229,19 +231,22 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 		/* check that a histogram is defined */
 		if (STATUS.getCurrentHistogram() != null) {
-			doCurrentCommand(inParams == null ? new double[0] : inParams, console);
+			doCurrentCommand(inParams == null ? new double[0] : inParams,
+					console);
 		}
 	}
-	
-	private void doCurrentCommand(double [] parameters, boolean console){
+
+	private void doCurrentCommand(double[] parameters, boolean console) {
 		if (CANCEL.equals(currentCommand)) {
 			cancel();
 		} else if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
 		} else if (OVERLAY.equals(currentCommand)) {
-			overlay(parameters);			
-		/*} else if (OVERLAY_STATE.equals(currentCommand)) {			
-			overlayEnable(parameters);*/
+			overlay(parameters);
+			/*
+			 * } else if (OVERLAY_STATE.equals(currentCommand)) {
+			 * overlayEnable(parameters);
+			 */
 		} else if (CURSOR.equals(currentCommand)) {
 			channelDisplay();
 		} else if (UPDATE.equals(currentCommand)) {
@@ -251,10 +256,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		} else if (ZOOMIN.equals(currentCommand)) {
 			zoomin();
 		} else if (ZOOMOUT.equals(currentCommand)) {
-			zoomout();			
+			zoomout();
 		} else if (ZOOMVERT.equals(currentCommand)) {
 			zoomvert();
-		} else if (ZOOMHORZ.equals(currentCommand)) {			
+		} else if (ZOOMHORZ.equals(currentCommand)) {
 			zoomhorz();
 		} else if (FULL.equals(currentCommand)) {
 			full();
@@ -297,32 +302,32 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void channelDisplay() {
 		/* output counts for the channel */
-        final double count;
-        final int xch;
-        final int ych;
-        String binText;
-        /* check that a histogram is defined */
-        final Histogram hist = STATUS.getCurrentHistogram();
-        final PlotContainer currentPlot = display.getPlotContainer();
-        synchronized (cursor) {
-            xch = cursor.getX();
-            ych = cursor.getY();
-            count = cursor.getCounts();
-        }
-        currentPlot.markChannel(cursor);
-        if (currentPlot.getDimensionality() == 1) {
-            binText = "Bin " + xch + ":  Counts = " + numFormat.format(count);
-            if (isCalibrated(hist)) {
-                final double energy = currentPlot.getEnergy(xch);
-                binText = binText + "  Energy = " + numFormat.format(energy);
-            }
-        } else {//2 Dim plot
-            binText = "Bin " + xch + "," + ych + ":  Counts = "
-                    + numFormat.format(count);
-        }
-        textOut.messageOutln(binText);
-        done();
-    }
+		final double count;
+		final int xch;
+		final int ych;
+		String binText;
+		/* check that a histogram is defined */
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
+		final PlotContainer currentPlot = display.getPlotContainer();
+		synchronized (cursor) {
+			xch = cursor.getX();
+			ych = cursor.getY();
+			count = cursor.getCounts();
+		}
+		currentPlot.markChannel(cursor);
+		if (currentPlot.getDimensionality() == 1) {
+			binText = "Bin " + xch + ":  Counts = " + numFormat.format(count);
+			if (isCalibrated(hist)) {
+				final double energy = currentPlot.getEnergy(xch);
+				binText = binText + "  Energy = " + numFormat.format(energy);
+			}
+		} else {// 2 Dim plot
+			binText = "Bin " + xch + "," + ych + ":  Counts = "
+					+ numFormat.format(count);
+		}
+		textOut.messageOutln(binText);
+		done();
+	}
 
 	/**
 	 * Call <code>update()</code> on the current plot, reset the command-line,
@@ -335,11 +340,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		isCursorCommand = false;
 		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 		display.update();
-		
-		//Reset rebin to 1
+
+		// Reset rebin to 1
 		final PlotContainer currentPlot = display.getPlotContainer();
-		currentPlot.setBinWidth(1.0);		
-		
+		currentPlot.setBinWidth(1.0);
+
 		done();
 		/*
 		 * following to recover the chooser if user just overlayed a histogram
@@ -362,38 +367,42 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 		if (hist.length > 0) {
 			final int num = (int) hist[0];
-			final Histogram h = Histogram.getHistogram(num);
-			if (h != null) {
-				JamStatus.getSingletonInstance().setCurrentHistogram(h);
+			final Histogram histogram = Histogram.getHistogram(num);
+			if (histogram == null) {
+				textOut.messageOut(Integer.toString(num), MessageHandler.END);
+				textOut.errorOutln("There is no histogram numbered " + num
+						+ ".");
+			} else {
+				final JamStatus status = JamStatus.getSingletonInstance();
+				status.setCurrentHistogram(histogram);
+				status.setCurrentGroup(histogram.getGroup());
 				textOut.messageOut(Integer.toString(num) + " ",
 						MessageHandler.END);
 				display.removeOverlays();
 				BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-						h);
-			} else {
-				textOut.messageOut(Integer.toString(num), MessageHandler.END);
-				textOut.errorOutln("There is no histogram numbered " + num
-						+ ".");
+						histogram);
 			}
 			if (hist.length > 1) {
-				if (h.getDimensionality() != 1) {
-					textOut
-							.errorOutln(h.getFullName().trim()
-									+ " is not 1D, so you may not overlay other histograms.");
-				} else {
+				if (histogram.getDimensionality() == 1) {
 					final int newlen = hist.length - 1;
 					final double[] pass = new double[newlen];
 					System.arraycopy(hist, 1, pass, 0, newlen);
 					overlay(pass);
+				} else {
+					textOut
+							.errorOutln(histogram.getFullName().trim()
+									+ " is not 1D, so you may not overlay other histograms.");
 				}
 			} else {
 				done();
 			}
 		}
 	}
+
 	/**
 	 * Overlay a histogram
+	 * 
 	 * @param hist
 	 */
 	void overlay(double[] hist) {
@@ -430,25 +439,22 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
-	/*void overlayEnable(double[] enable) {
-        init();
-        textOut.messageOut("Overlay histogram numbers: ", MessageHandler.NEW);
-        if (enable[0] < 1.0) {
-            overlayState = false;
-        } else {
-            overlayState = true;
-        }
-        display.setOverlay(overlayState);
-        done();
-    }*/
-	
+	/*
+	 * void overlayEnable(double[] enable) { init(); textOut.messageOut("Overlay
+	 * histogram numbers: ", MessageHandler.NEW); if (enable[0] < 1.0) {
+	 * overlayState = false; } else { overlayState = true; }
+	 * display.setOverlay(overlayState); done(); }
+	 */
+
 	private static final String S_TO = " to ";
+
 	/**
 	 * Display a gate
+	 * 
 	 * @param params
 	 */
-	void displayGate(Object []params ) {
-		final Gate gate =(Gate)params[0];
+	void displayGate(Object[] params) {
+		final Gate gate = (Gate) params[0];
 		STATUS.setCurrentGate(gate);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 		final double area = gate.getArea();
@@ -458,16 +464,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final int upperLimit = gate.getLimits1d()[1];
 			textOut.messageOut("Gate: " + gate.getName() + ", Ch. "
 					+ lowerLimit + S_TO + upperLimit, MessageHandler.NEW);
-			textOut.messageOut("  Area = " + area + ", Centroid = "
-					+ centroid, MessageHandler.END);
+			textOut.messageOut("  Area = " + area + ", Centroid = " + centroid,
+					MessageHandler.END);
 		} else {
-			textOut
-					.messageOut("Gate " + gate.getName(),
-							MessageHandler.NEW);
+			textOut.messageOut("Gate " + gate.getName(), MessageHandler.NEW);
 			textOut.messageOut(", Area = " + area, MessageHandler.END);
 		}
 	}
-	
+
 	/*
 	 * non-javadoc: Set the range for the counts scale.
 	 */
@@ -482,11 +486,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final boolean useCounts = twoD && !console;
 			final double cts = useCounts ? cursor.getCounts() : cursor.getY();
 			if (clicks.size() == 0) {
-				countLow = (int)cts;
+				countLow = (int) cts;
 				clicks.add(cursor);
 				textOut.messageOut("" + countLow + S_TO);
 			} else {
-				countHigh = (int)cts;
+				countHigh = (int) cts;
 				clicks.add(cursor);
 				plot.setRange(countLow, countHigh);
 				textOut.messageOut(String.valueOf(countHigh),
@@ -506,7 +510,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			textOut.messageOut("Rebin ", MessageHandler.NEW);
 		}
 		final PlotContainer currentPlot = display.getPlotContainer();
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
 		if (parameters.length > 0) {
 			final double binWidth = parameters[0];
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {
@@ -526,7 +530,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Expand the region to view.
 	 */
@@ -582,9 +586,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			done();
 		}
 	}
-	
-	private void zoomvert(){
-		//do-nothing
+
+	private void zoomvert() {
+		// do-nothing
 	}
 
 	/**
@@ -612,7 +616,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 		done();
 	}
-	
+
 	/**
 	 * Display the full histogram.
 	 */
@@ -656,7 +660,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		}
 	}
 
-	
 	/**
 	 * Auto scale the plot.
 	 */
@@ -679,7 +682,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 		final String intro = "Goto (click on spectrum or type the ";
 		final char lp = ')';
 		final PlotContainer currentPlot = display.getPlotContainer();
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
@@ -734,15 +737,16 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	}
 
 	/**
-     * Calculate the area and centroid for a region. Maybe we should copy
-     * inquire methods to this class?
-     */
+	 * Calculate the area and centroid for a region. Maybe we should copy
+	 * inquire methods to this class?
+	 */
 	private void areaCent() {
 		final PlotContainer currentPlot = display.getPlotContainer();
 		if (!commandPresent) {
 			isCursorCommand = true;
 			init();
-			final String name = STATUS.getCurrentHistogram().getFullName().trim();
+			final String name = ((Histogram) STATUS.getCurrentHistogram())
+					.getFullName().trim();
 			textOut.messageOut("Area for " + name + " from channel ",
 					MessageHandler.NEW);
 		} else if (clicks.size() == 0) {
@@ -770,7 +774,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 							+ ", FWHM = " + numFormat.format(fwhm),
 							MessageHandler.END);
 				}
-			} else {//2D histogram
+			} else {// 2D histogram
 				synchronized (cursor) {
 					textOut.messageOut(cursor.getCoordString());
 					double[][] counts = (double[][]) currentPlot.getCounts();
@@ -790,7 +794,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	 */
 	private void netArea() {
 		final PlotContainer currentPlot = display.getPlotContainer();
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
 		final double[] netArea = new double[1];
 		final double[] netAreaError = new double[1];
 		final double[] fwhm = new double[2];
@@ -810,7 +814,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 									+ ": select four background markers, then two region-of-interest markers. ",
 							MessageHandler.NEW);
 		} else if (nclicks == 0) {
-			//************ First background Marker
+			// ************ First background Marker
 			// ***********************************
 			synchronized (cursor) {
 				addClick(cursor);
@@ -824,7 +828,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		} else if (nclicks == 1) {
-			//************ Second Background marker
+			// ************ Second Background marker
 			// **********************************
 			synchronized (cursor) {
 				addClick(cursor);
@@ -839,7 +843,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		} else if (nclicks == 2) {
-			//************ Third Background Marker
+			// ************ Third Background Marker
 			// **********************************
 			synchronized (cursor) {
 				addClick(cursor);
@@ -853,7 +857,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		} else if (nclicks == 3) {
-			//************ Fourth Background Marker
+			// ************ Fourth Background Marker
 			// *********************************
 			synchronized (cursor) {
 				addClick(cursor);
@@ -869,7 +873,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		} else if (nclicks == 4) {
-			//************ First Region Marker
+			// ************ First Region Marker
 			// *********************************
 			synchronized (cursor) {
 				currentPlot.initializeSelectingArea(cursor);
@@ -885,7 +889,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 				}
 			}
 		} else if (nclicks == 5) {
-			//************ Second Region Marker
+			// ************ Second Region Marker
 			// *********************************
 			currentPlot.setSelectingArea(false);
 			final Bin p4;
@@ -934,7 +938,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 			final int lowerLimit = bgdPts[0];
 			final int upperLimit = bgdPts[3] + 1;
 			final double[] bkgd = new double[upperLimit - lowerLimit + 1];
-			System.arraycopy(channelBackground, lowerLimit, bkgd, 0, bkgd.length);
+			System.arraycopy(channelBackground, lowerLimit, bkgd, 0,
+					bkgd.length);
 			display.displayFit(null, bkgd, null, lowerLimit);
 			done();
 		}
@@ -946,7 +951,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 
 	/**
 	 * Cancel current command
-	 *  
+	 * 
 	 */
 	private void cancel() {
 		isCursorCommand = false;
@@ -1014,14 +1019,15 @@ class Action implements PlotMouseListener, PreferenceChangeListener {
 	String getCurrentCommand() {
 		return currentCommand;
 	}
-	
-	private static boolean isCalibrated(Histogram hist){
-		return hist != null && hist instanceof AbstractHist1D ?
-			((AbstractHist1D)hist).isCalibrated() : false;
+
+	private static boolean isCalibrated(Histogram hist) {
+		return hist != null && hist instanceof AbstractHist1D ? ((AbstractHist1D) hist)
+				.isCalibrated()
+				: false;
 	}
-	
-	/* non-javadoc:
-	 * Display help
+
+	/*
+	 * non-javadoc: Display help
 	 */
 	private void help() {
 		final StringBuffer sb = new StringBuffer("Commands:\t");

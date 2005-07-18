@@ -1,11 +1,13 @@
 package jam.data;
 
+import jam.global.Nameable;
+
 /**
  * Interface for all data objects
  * 
  * @author Ken Swartz
  */
-public interface DataElement {
+public interface DataElement extends Nameable {
 
 	/**
 	 * Possible types of data elements.
@@ -35,12 +37,5 @@ public interface DataElement {
      * 
      * @return which kind of element this is
      */
-    Type getElementType();
-    
-    /**
-     * 
-     * @return name of the element
-	 */
-    String getName();
-	
+    Type getElementType();    
 }

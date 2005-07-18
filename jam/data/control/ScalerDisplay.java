@@ -43,18 +43,20 @@ import javax.swing.border.EmptyBorder;
  */
 
 public final class ScalerDisplay extends AbstractControl implements Observer {
-	
-	private final JScrollPane scrollPane;	
+
+	private final JScrollPane scrollPane;
+
 	private final JPanel pScalers;
+
 	private JTextField[] textScaler;
-	
-	private final int borderHeight=5;
-	
+
+	private final int borderHeight = 5;
+
 	private final ScalersCmd scalersCmd;
-	
+
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-	
-	private final JamStatus status = JamStatus.getSingletonInstance();	
+
+	private final JamStatus status = JamStatus.getSingletonInstance();
 
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
@@ -68,10 +70,12 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
 		pScalers = new JPanel(new GridLayout(0, 1, borderHeight, 5));
-		Border borderScalers = new EmptyBorder(borderHeight, 10, borderHeight, 10);
+		Border borderScalers = new EmptyBorder(borderHeight, 10, borderHeight,
+				10);
 		pScalers.setBorder(borderScalers);
 		scrollPane = new JScrollPane(pScalers);
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);		
+		scrollPane
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
@@ -108,6 +112,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			public void windowClosing(WindowEvent e) {
 				dispose();
 			}
+
 			public void windowActivated(WindowEvent e) {
 				displayScalers();
 			}
@@ -121,45 +126,40 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * initializing a sort routine.
 	 */
 	public void doSetup() {
-		Group currentGroup = status.getCurrentGroup();
-		if (currentGroup==null)
-			return;
-		JPanel ps=null;
-		List scalerList = currentGroup.getScalerList();
-		int numberScalers =scalerList.size();
-		pScalers.removeAll();
-		if (numberScalers != 0) { // we have some elements in the scaler list
-			/* gui widgets for each scaler */
-			//ps = new JPanel[numberScalers];
-			//labelScaler = new JLabel[numberScalers];
-			textScaler = new JTextField[numberScalers];
-			Iterator enumScaler = scalerList.iterator();
-			int count = 0;
-			while (enumScaler.hasNext()) {
-				Scaler currentScaler = (Scaler) enumScaler.next();
-				/* right justified, hgap, vgap */
-				ps = new JPanel(new FlowLayout(FlowLayout.RIGHT,
-						10, 0));
-				final JLabel labelScaler = new JLabel(currentScaler.getName()
-						.trim(), SwingConstants.RIGHT);
-				textScaler[count] = new JTextField("  ");
-				textScaler[count].setColumns(12);
-				textScaler[count].setEditable(false);
-				textScaler[count].setText(String.valueOf(currentScaler
-						.getValue()));
-				ps.add(labelScaler);
-				ps.add(textScaler[count]);
-				pScalers.add(ps);
-				count++;
+		final Group currentGroup = (Group) status.getCurrentGroup();
+		if (Group.isValid(currentGroup)) {
+			JPanel panelS = null;
+			final List<Scaler> scalerList = currentGroup.getScalerList();
+			final int numberScalers = scalerList.size();
+			pScalers.removeAll();
+			if (numberScalers != 0) { // we have some elements in the scaler
+										// list
+				textScaler = new JTextField[numberScalers];
+				int count = 0;
+				for (Scaler currentScaler : scalerList) {
+					/* right justified, hgap, vgap */
+					panelS = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+					final JLabel labelScaler = new JLabel(currentScaler
+							.getName().trim(), SwingConstants.RIGHT);
+					textScaler[count] = new JTextField("  ");
+					textScaler[count].setColumns(12);
+					textScaler[count].setEditable(false);
+					textScaler[count].setText(String.valueOf(currentScaler
+							.getValue()));
+					panelS.add(labelScaler);
+					panelS.add(textScaler[count]);
+					pScalers.add(panelS);
+					count++;
+				}
 			}
+			pack();
+			if (numberScalers > 0) {
+				final Dimension dialogDim = calculateScrollDialogSize(this,
+						panelS, borderHeight, numberScalers);
+				setSize(dialogDim);
+			}
+			displayScalers();
 		}
-		pack();
-		if (numberScalers>0) {
-			Dimension dialogDim=calculateScrollDialogSize(this, ps, borderHeight, numberScalers);
-			setSize(dialogDim);
-		}
-		
-		displayScalers();
 	}
 
 	/**
@@ -199,15 +199,15 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 */
 	public void update(Observable observable, Object o) {
 		BroadcastEvent be = (BroadcastEvent) o;
-		if ( (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW) ||
-   		     (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT) ||
-			 (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT) ) {
+		if ((be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW)
+				|| (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)
+				|| (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT)) {
 			doSetup();
-			
+
 		}
-		
-		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) { 
-				displayScalers();
+
+		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
+			displayScalers();
 		}
 	}
 
@@ -215,14 +215,15 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * Get the values from the Scalers and display them
 	 */
 	public void displayScalers() {
-		Group currentGroup = status.getCurrentGroup(); 
-		if (currentGroup !=null) {
-			List scalerList = currentGroup.getScalerList();		
+		final Group currentGroup = (Group) status.getCurrentGroup();
+		if (Group.isValid(currentGroup)) {
+			final List scalerList = currentGroup.getScalerList();
 			final Iterator iter = scalerList.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
 				final Scaler currentScaler = (Scaler) iter.next();
-				textScaler[count].setText(String.valueOf(currentScaler.getValue()));
+				textScaler[count].setText(String.valueOf(currentScaler
+						.getValue()));
 				count++;
 			}
 		}

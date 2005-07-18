@@ -26,8 +26,7 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
-
-		Group currentGroup= STATUS.getCurrentGroup();
+		Group currentGroup= (Group)STATUS.getCurrentGroup();
 		Histogram.createHistogram(currentGroup, hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 

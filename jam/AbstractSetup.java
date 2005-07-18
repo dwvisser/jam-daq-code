@@ -315,9 +315,9 @@ abstract class AbstractSetup {
         // Select first histogram
         final Group sortGroup = Group.getSortGroup();
         STATUS.setCurrentGroup(sortGroup);
-        final List histList = sortGroup.getHistogramList();
+        final List<Histogram> histList = sortGroup.getHistogramList();
         if (!histList.isEmpty()) {
-            final Histogram firstHist = (Histogram) histList.get(0);
+            final Histogram firstHist = histList.get(0);
             STATUS.setCurrentHistogram(firstHist);
         }
         BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);

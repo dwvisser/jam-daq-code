@@ -227,7 +227,9 @@ public class HistogramNew extends AbstractControl {
 		}
 		final Histogram hist= Histogram.createHistogram(histGroup, array, name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		JamStatus.getSingletonInstance().setCurrentHistogram(hist);
+		final JamStatus status = JamStatus.getSingletonInstance();
+		status.setCurrentHistogram(hist);
+		status.setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");

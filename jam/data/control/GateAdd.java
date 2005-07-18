@@ -105,14 +105,14 @@ public final class GateAdd extends AbstractControl {
 	 * @throws GlobalException if there's a problem
 	 */
 	private void addGate() {
-		if (currentGateAdd!=null) {
-			final Histogram hist=STATUS.getCurrentHistogram();
+		if (currentGateAdd==null) {
+			messageHandler.errorOutln("Need to choose a gate to add ");
+		} else {
+			final Histogram hist=(Histogram)STATUS.getCurrentHistogram();
 			hist.addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
 			messageHandler.messageOutln("Added gate '"+
 			currentGateAdd.getName().trim()+"' to histogram '"+hist.getFullName()+"'");
-		} else {
-			messageHandler.errorOutln("Need to choose a gate to add ");
 		}
 	}
 

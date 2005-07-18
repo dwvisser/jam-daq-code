@@ -34,7 +34,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	 */
 	protected void execute(Object[] cmdParams) {
 		final JFrame frame =STATUS.getFrame();
-		final Histogram hist=STATUS.getCurrentHistogram();
+		final Histogram hist=(Histogram)STATUS.getCurrentHistogram();
 		final String name =hist.getFullName().trim();
 		final Group.Type type=hist.getGroup().getType();	
 		/* Cannot delete sort histograms */
@@ -60,7 +60,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 			setEnabled(false);			
 		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
 				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			Histogram hist =STATUS.getCurrentHistogram();
+			final Histogram hist =(Histogram)STATUS.getCurrentHistogram();
 			setEnabled(hist!=null);
 		} 
 	}			

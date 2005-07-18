@@ -1,6 +1,7 @@
 package jam;
 
 import jam.commands.CommandManager;
+import jam.data.DataBase;
 import jam.data.control.AbstractControl;
 import jam.global.AcquisitionStatus;
 import jam.global.BroadcastEvent;
@@ -84,6 +85,7 @@ public final class JamMain extends JFrame implements Observer {
 		/* Application initialization */
 		properties = new JamProperties(); //class that has properties
 		status.setFrame(this);
+		status.setValidator(DataBase.getInstance());
 		status.setAcqisitionStatus(new AcquisitionStatus() {
 			public boolean isAcqOn() {
 				return getRunState().isAcqOn();

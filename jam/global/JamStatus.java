@@ -4,9 +4,6 @@ import jam.FrontEndCommunication;
 import jam.JamPrefs;
 import jam.RunState;
 import jam.VMECommunication;
-import jam.data.Gate;
-import jam.data.Group;
-import jam.data.Histogram;
 import jam.plot.PlotDisplay;
 import jam.ui.SummaryTable;
 
@@ -29,11 +26,11 @@ public final class JamStatus {
 
 	private static AcquisitionStatus acqStatus;
 
-	private static Group currentGroup;
+	private static Nameable currentGroup;
 
-	private static Histogram currentHistogram;
+	private static Nameable currentHistogram;
 
-	private static Gate currentGate;
+	private static Nameable currentGate;
 
 	private static Set<String> overlayNames = new HashSet<String>();
 
@@ -53,7 +50,9 @@ public final class JamStatus {
 
 	private File openFile = null;
 
-	private String sortName = "";
+	private transient String sortName = "";
+
+	private transient Validator validator;
 
 	/**
 	 * The one instance of JamStatus.
@@ -107,6 +106,12 @@ public final class JamStatus {
 	 */
 	public synchronized void setFrame(JFrame f) {
 		frame = f;
+	}
+
+	public void setValidator(Validator valid) {
+		synchronized (this) {
+			validator = valid;
+		}
 	}
 
 	/**
@@ -287,8 +292,10 @@ public final class JamStatus {
 	 * @param group
 	 *            the current group
 	 */
-	public synchronized void setCurrentGroup(Group group) {
-		currentGroup = group;
+	public void setCurrentGroup(Nameable group) {
+		synchronized (this) {
+			currentGroup = group;
+		}
 	}
 
 	/**
@@ -296,11 +303,10 @@ public final class JamStatus {
 	 * 
 	 * @return the current histogram
 	 */
-	public synchronized Group getCurrentGroup() {
-		if (!Group.isValid(currentGroup)) {
-			currentGroup = null;
+	public Nameable getCurrentGroup() {
+		synchronized (this) {
+			return currentGroup;
 		}
-		return currentGroup;
 	}
 
 	/**
@@ -309,10 +315,10 @@ public final class JamStatus {
 	 * @param hist
 	 *            the current histogram
 	 */
-	public synchronized void setCurrentHistogram(Histogram hist) {
-		currentHistogram = hist;
-		if (hist != null)
-			currentGroup = hist.getGroup();
+	public void setCurrentHistogram(final Nameable hist) {
+		synchronized (this) {
+			currentHistogram = hist;
+		}
 	}
 
 	/**
@@ -320,11 +326,13 @@ public final class JamStatus {
 	 * 
 	 * @return the current histogram
 	 */
-	public synchronized Histogram getCurrentHistogram() {
-		if (!Histogram.isValid(currentHistogram)) {
-			currentHistogram = null;
+	public Nameable getCurrentHistogram() {
+		synchronized (this) {
+			if (!validator.isValid(currentHistogram)) {
+				currentHistogram = null;
+			}
+			return currentHistogram;
 		}
-		return currentHistogram;
 	}
 
 	/**
@@ -342,15 +350,16 @@ public final class JamStatus {
 	 * 
 	 * @return the histograms being overlaid
 	 */
-	public synchronized List<Histogram> getOverlayHistograms() {
-		final Set<Histogram> rval = new HashSet<Histogram>();
-		for (String name : overlayNames) {
-			final Histogram hist = Histogram.getHistogram(name);
-			if (hist != null) {
-				rval.add(hist);
-			}
+	public List<String> getOverlayHistograms() {
+		/*
+		 * final Set<Histogram> rval = new HashSet<Histogram>(); for (String
+		 * name : overlayNames) { final Histogram hist =
+		 * Histogram.getHistogram(name); if (hist != null) { rval.add(hist); } }
+		 */
+		synchronized (this) {
+			return Collections.unmodifiableList(new ArrayList<String>(
+					overlayNames));
 		}
-		return Collections.unmodifiableList(new ArrayList<Histogram>(rval));
 	}
 
 	/**
@@ -362,25 +371,27 @@ public final class JamStatus {
 	}
 
 	/**
-	 * Sets the current <code>Gate</code> name.
+	 * Sets the current <code>Gate</code>.
 	 * 
 	 * @param gate
 	 *            of current gate
 	 */
-	public synchronized void setCurrentGate(Gate gate) {
+	public synchronized void setCurrentGate(Nameable gate) {
 		currentGate = gate;
 	}
 
 	/**
-	 * Gets the current <code>Gate</code> name.
+	 * Gets the current <code>Gate</code>.
 	 * 
 	 * @return name of current gate
 	 */
-	public synchronized Gate getCurrentGate() {
-		if (!Gate.isValid(currentGate)) {
-			currentGate = null;
+	public Nameable getCurrentGate() {
+		synchronized (this) {
+			if (!validator.isValid(currentGate)) {
+				currentGate = null;
+			}
+			return currentGate;
 		}
-		return currentGate;
 	}
 
 	/**

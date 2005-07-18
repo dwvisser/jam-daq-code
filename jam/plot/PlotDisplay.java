@@ -251,16 +251,15 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/**
 	 * @see PlotSelectListener#plotSelected(Object)
 	 */
-	public void plotSelected(Object selectedObject) {
+	public void plotSelected(final Object selectedObject) {
 		final PlotContainer selectedPlot = (PlotContainer) selectedObject;
 		if (selectedPlot != getPlotContainer()) {
 			setPlot(selectedPlot);
 			final Histogram hist = selectedPlot.getHistogram();
 			/* Tell the framework the current hist */
+			status.setCurrentHistogram(hist);
 			if (hist != null) {
-				status.setCurrentHistogram(hist);
-			} else {
-				status.setCurrentHistogram(null);
+				status.setCurrentGroup(hist.getGroup());
 			}
 			status.setCurrentGate(null);
 			status.clearOverlays();
@@ -452,9 +451,10 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			}
 			plotSelected(plotList.get(0));
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			final Histogram hist = status.getCurrentHistogram();
+			final Histogram hist = (Histogram) status.getCurrentHistogram();
 			displayHistogram(hist);
-			final List<Histogram> overHists = status.getOverlayHistograms();
+			final List<Histogram> overHists = Histogram.getHistogramList(status
+					.getOverlayHistograms());
 			overlayHistogram(overHists);
 		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_NEW, null, null);

@@ -365,6 +365,16 @@ public abstract class Histogram implements DataElement {
 		return Collections.unmodifiableList(DIM_LIST.get(dim - 1));
 	}
 
+	public static List<Histogram> getHistogramList(final List<String> names) {
+		final List<Histogram> rval = new ArrayList<Histogram>();
+		for (String name : names) {
+			if (NAME_MAP.containsKey(name)){
+				rval.add(getHistogram(name));
+			}
+		}
+		return Collections.unmodifiableList(rval);
+	}
+
 	/**
 	 * @return list of all histograms sorted by number
 	 */
@@ -424,10 +434,10 @@ public abstract class Histogram implements DataElement {
 
 	private transient boolean labelYset = false;
 
+	// end of constructors
+
 	/** abbreviation to refer to histogram */
 	private transient String name;
-
-	// end of constructors
 
 	/** Number of histogram */
 	private int number;
@@ -593,6 +603,8 @@ public abstract class Histogram implements DataElement {
 	 */
 	public abstract void addCounts(Object countsIn);
 
+	/* instantized methods */
+
 	/**
 	 * Add a <code>Gate</code> to this histogram.
 	 * 
@@ -612,8 +624,6 @@ public abstract class Histogram implements DataElement {
 					+ getDimensionality() + "D histogram.");
 		}
 	}
-
-	/* instantized methods */
 
 	private void assignNewNumber() {
 		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP.lastKey())
@@ -725,6 +735,8 @@ public abstract class Histogram implements DataElement {
 		return name;
 	}
 
+	/* -- set methods */
+
 	/**
 	 * Returns the number of the histogram, mostly used for export to ORNL
 	 * files. Histograms should always be assigned unique numbers.
@@ -734,8 +746,6 @@ public abstract class Histogram implements DataElement {
 	public final int getNumber() {
 		return number;
 	}
-
-	/* -- set methods */
 
 	/**
 	 * Get size of x-dimension, or the only dimension for 1-d histograms.

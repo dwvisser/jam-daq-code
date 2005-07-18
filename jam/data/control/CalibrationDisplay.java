@@ -184,7 +184,7 @@ public class CalibrationDisplay extends AbstractControl implements
 	}
 
 	private void setCurrentHistogram() {
-		final Histogram hist = STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
 		if (hist != currentHistogram && hist instanceof AbstractHist1D) {
 			currentHistogram = (AbstractHist1D) hist;
 		}

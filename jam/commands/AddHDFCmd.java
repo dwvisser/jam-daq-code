@@ -23,7 +23,7 @@ final class AddHDFCmd extends AbstractLoaderHDF {
 	
 	protected final void execute(final Object[] cmdParams) {
         File file = null;
-        loadGroup = STATUS.getCurrentGroup();
+        loadGroup = (Group)STATUS.getCurrentGroup();
         //Parse commad parameters if given
         if (cmdParams != null) {
             if (cmdParams.length > 0) {

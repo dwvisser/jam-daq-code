@@ -21,8 +21,8 @@ Observer {
 	}
 
 	private void enable() {
-		final Histogram h=STATUS.getCurrentHistogram();
-		setEnabled(h !=null && h.getDimensionality()==1);
+		final Histogram histogram=(Histogram)STATUS.getCurrentHistogram();
+		setEnabled(histogram !=null && histogram.getDimensionality()==1);
 	}
 
 	public void update(Observable observe, Object obj){

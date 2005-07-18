@@ -450,7 +450,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			final JamStatus status = JamStatus.getSingletonInstance();
 			final Group sortGroup = Group.getSortGroup();
 			status.setCurrentGroup(sortGroup);
-			currentGroup = status.getCurrentGroup();
+			currentGroup = (Group)status.getCurrentGroup();
 		}
 		/* Keep track of first loaded group */
 		if (firstLoadedGroup == null) {

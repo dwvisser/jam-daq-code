@@ -24,15 +24,15 @@ public class DeleteGroup extends AbstractCommand {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(final Object[] cmdParams) throws CommandException {
 		final JFrame frame =STATUS.getFrame();
-		Group group = STATUS.getCurrentGroup();
-		if (null==group){
+		final Group group = (Group)STATUS.getCurrentGroup();
+		if (Group.isValid(group)){
 			msghdlr.errorOutln("Need to select a group.");
 			return;
 		}
 		final Group.Type type=group.getType();
-		String name = group.getName();
+		final String name = group.getName();
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
 			msghdlr.errorOutln("Cannot delete '"+name+"', it is sort group.");
@@ -50,7 +50,7 @@ public class DeleteGroup extends AbstractCommand {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub
 

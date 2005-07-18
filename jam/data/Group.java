@@ -1,5 +1,6 @@
 package jam.data;
 
+import jam.global.Nameable;
 import jam.util.StringUtilities;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.Map;
  * A group of histograms, A node in the tree
  * 
  */
-public final class Group {
+public final class Group implements Nameable {
 
 	/**
 	 * Enumeration of types of groups.

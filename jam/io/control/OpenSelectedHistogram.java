@@ -230,7 +230,6 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	}
 
 	private void notifyApp() {
-		Histogram firstHist = null;
 		// Update app status
 		AbstractControl.setupAll();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
@@ -240,13 +239,11 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			STATUS.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.getHistogramList().size() > 0) {
-				firstHist = firstGroup.getHistogramList().get(0);
+				final Histogram firstHist = firstGroup.getHistogramList().get(0);
+				STATUS.setCurrentHistogram(firstHist);
+				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+						firstHist);
 			}
-		}
-		if (firstHist != null) {
-			STATUS.setCurrentHistogram(firstHist);
-			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-					firstHist);
 		}
 	}
 

@@ -23,6 +23,7 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
 /**
  * 
  * Jam's menu bar. Separated from JamMain to reduce its size and separate
@@ -44,13 +45,14 @@ public final class MenuBar implements Observer, CommandNames {
 	/** Fit menu needed as members so we can add a fit */
 	final transient private JMenu view = new JMenu("View");
 
-	final transient private JMenuBar menubar=new JMenuBar();
+	final transient private JMenuBar menubar = new JMenuBar();
 
 	final transient private JMenu calHist = new JMenu("Calibrate");
 
-	final transient private CommandManager commands = CommandManager.getInstance();
-	
-	private static final MenuBar INSTANCE=new MenuBar();
+	final transient private CommandManager commands = CommandManager
+			.getInstance();
+
+	private static final MenuBar INSTANCE = new MenuBar();
 
 	/**
 	 * Jam's menu bar. It has the following menus:
@@ -90,13 +92,12 @@ public final class MenuBar implements Observer, CommandNames {
 
 		file.add(getMenuItem(CLEAR));
 		file.add(getMenuItem(OPEN_HDF));
-		
+
 		final JMenuItem openSpecial = new JMenu("Open Special");
 		file.add(openSpecial);
-		openSpecial.add(getMenuItem(OPEN_MULTIPLE_HDF));		
+		openSpecial.add(getMenuItem(OPEN_MULTIPLE_HDF));
 		openSpecial.add(getMenuItem(OPEN_ADDITIONAL_HDF));
 		openSpecial.add(getMenuItem(OPEN_SELECTED));
-		
 
 		file.add(getMenuItem(RELOAD_HDF));
 		file.add(getMenuItem(ADD_HDF));
@@ -108,7 +109,7 @@ public final class MenuBar implements Observer, CommandNames {
 		saveSpecial.add(getMenuItem(SAVE_GROUP));
 		saveSpecial.add(getMenuItem(SAVE_HISTOGRAMS));
 		saveSpecial.add(getMenuItem(SAVE_GATES));
-		
+
 		file.add(saveSpecial);
 		file.addSeparator();
 
@@ -164,13 +165,13 @@ public final class MenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu createHistogramMenu() {
-		final JMenu histogram = new JMenu("Histogram");	
-			final JMenuItem group = new JMenu("Group");
-			histogram.add(group);
-			group.add(getMenuItem(SHOW_NEW_GROUP));
-			group.add(getMenuItem(SHOW_RENAME_GROUP));
-			group.add(getMenuItem(DELETE_GROUP));
-		
+		final JMenu histogram = new JMenu("Histogram");
+		final JMenuItem group = new JMenu("Group");
+		histogram.add(group);
+		group.add(getMenuItem(SHOW_NEW_GROUP));
+		group.add(getMenuItem(SHOW_RENAME_GROUP));
+		group.add(getMenuItem(DELETE_GROUP));
+
 		histogram.add(getMenuItem(SHOW_NEW_HIST));
 		histogram.add(getMenuItem(SHOW_HIST_ZERO));
 		histogram.add(getMenuItem(DELETE_HISTOGRAM));
@@ -179,7 +180,6 @@ public final class MenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
 		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
 
-		
 		return histogram;
 	}
 
@@ -194,7 +194,7 @@ public final class MenuBar implements Observer, CommandNames {
 	}
 
 	private JMenu createViewMenu() {
-		
+
 		updateViews();
 		return view;
 
@@ -258,25 +258,25 @@ public final class MenuBar implements Observer, CommandNames {
 	 *            name of the command
 	 * @return JMenuItem that invokes the associated action
 	 */
-	private final JMenuItem getMenuItem(String name) {
+	private JMenuItem getMenuItem(final String name) {
 		return new JMenuItem(commands.getAction(name));
 	}
 
 	/**
 	 * @see Observer#update(java.util.Observable, java.lang.Object)
 	 */
-	public void update(Observable observe, Object obj) {
+	public void update(final Observable observe, final Object obj) {
 		final BroadcastEvent event = (BroadcastEvent) obj;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
 		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			final Object content = event.getContent();
-			final Histogram hist = content == null ? status.getCurrentHistogram()
-					: (Histogram) content;
+			final Histogram hist = content == null ? (Histogram) status
+					.getCurrentHistogram() : (Histogram) content;
 			adjustHistogramItems(hist);
 		} else if (command == BroadcastEvent.Command.FIT_NEW) {
-			Action fitAction = (Action) (event.getContent());
+			final Action fitAction = (Action) (event.getContent());
 			fitting.add(new JMenuItem(fitAction));
 		} else if (command == BroadcastEvent.Command.VIEW_NEW) {
 			updateViews();
@@ -289,20 +289,20 @@ public final class MenuBar implements Observer, CommandNames {
 		impHist.setEnabled(file);
 	}
 
-	private void adjustHistogramItems(Histogram hist) {
+	private void adjustHistogramItems(final Histogram hist) {
 		final boolean hExists = hist != null;
 		final boolean oneDops = hExists && hist.getDimensionality() == 1;
 		calHist.setEnabled(oneDops);
 	}
-	
-	private void updateViews(){
-		view.removeAll();	
+
+	private void updateViews() {
+		view.removeAll();
 		view.add(getMenuItem(SHOW_VIEW_NEW));
 		view.add(getMenuItem(SHOW_VIEW_DELETE));
-		view.addSeparator();		
-		final Iterator viewNames =View.getNameList().iterator(); 
-		while(viewNames.hasNext()){
-			final String name=(String)viewNames.next();
+		view.addSeparator();
+		final Iterator viewNames = View.getNameList().iterator();
+		while (viewNames.hasNext()) {
+			final String name = (String) viewNames.next();
 			final JMenuItem viewItem = new JMenuItem(name);
 			view.add(viewItem);
 			viewItem.addActionListener(new ActionListener() {
@@ -311,12 +311,12 @@ public final class MenuBar implements Observer, CommandNames {
 				}
 			});
 		}
-	}	
-	
+	}
+
 	/**
 	 * @return the only menubar created by this class
 	 */
-	static public JMenuBar getMenuBar(){
-	    return INSTANCE.menubar;
+	static public JMenuBar getMenuBar() {
+		return INSTANCE.menubar;
 	}
 }
