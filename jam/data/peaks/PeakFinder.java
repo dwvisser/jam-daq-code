@@ -1,6 +1,6 @@
 package jam.data.peaks;
 
-import jam.fit.GaussianConstants;
+import jam.global.GaussianConstants;
 
 import java.util.ArrayList;
 import java.util.List;

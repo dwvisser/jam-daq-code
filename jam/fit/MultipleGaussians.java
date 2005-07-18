@@ -2,6 +2,8 @@
  *
  */
 package jam.fit;
+import jam.global.GaussianConstants;
+
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;

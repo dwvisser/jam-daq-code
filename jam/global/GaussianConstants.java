@@ -1,7 +1,7 @@
 /*
  * Created on Nov 30, 2004
  */
-package jam.fit;
+package jam.global;
 
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>

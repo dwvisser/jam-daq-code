@@ -3,6 +3,8 @@
  */
 package jam.fit;
 
+import jam.global.GaussianConstants;
+
 import java.util.Arrays;
 
 /**

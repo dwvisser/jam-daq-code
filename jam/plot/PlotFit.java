@@ -1,6 +1,6 @@
 package jam.plot;
 
-import jam.fit.GaussianConstants;
+import jam.global.GaussianConstants;
 
 import java.util.Arrays;
 
