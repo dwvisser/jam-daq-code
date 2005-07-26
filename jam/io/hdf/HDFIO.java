@@ -11,7 +11,7 @@ import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.FileUtilities;
-import jam.util.SwingWorker;
+import jam.util.AbstractSwingWorker;
 
 import java.awt.Frame;
 import java.io.File;
@@ -840,7 +840,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 		uiMessage = "";
 		uiErrorMsg = "";
 
-		final SwingWorker worker = new SwingWorker() {
+		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			public Object construct() {
 				File infile = null;
 				// FIXME KBS Test change thread priority to make monitor pop up
@@ -908,7 +908,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			final boolean wrtSettings) {
 		uiMessage = "";
 		uiErrorMsg = "";
-		final SwingWorker worker = new SwingWorker() {
+		final AbstractSwingWorker worker = new AbstractSwingWorker() {
 			public Object construct() {
 				asyncWriteFile(file, groups, histograms, writeData, wrtSettings);
 				System.gc();
