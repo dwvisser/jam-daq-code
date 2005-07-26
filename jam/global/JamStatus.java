@@ -85,8 +85,10 @@ public final class JamStatus {
 	 * @param state
 	 *            <code>false</code> if suppressin
 	 */
-	public synchronized void setShowGUI(boolean state) {
-		showGUI = state;
+	public void setShowGUI(final boolean state) {
+		synchronized (this) {
+			showGUI = state;
+		}
 	}
 
 	/**
@@ -94,21 +96,25 @@ public final class JamStatus {
 	 * 
 	 * @return <code>true</code> if the Jam window is showing
 	 */
-	public synchronized boolean isShowGUI() {
-		return showGUI;
+	public boolean isShowGUI() {
+		synchronized (this) {
+			return showGUI;
+		}
 	}
 
 	/**
 	 * Set the application frame.
 	 * 
-	 * @param f
+	 * @param window
 	 *            the frame of the current Jam application
 	 */
-	public synchronized void setFrame(JFrame f) {
-		frame = f;
+	public void setFrame(final JFrame window) {
+		synchronized (this) {
+			frame = window;
+		}
 	}
 
-	public void setValidator(Validator valid) {
+	public void setValidator(final Validator valid) {
 		synchronized (this) {
 			validator = valid;
 		}
@@ -117,11 +123,13 @@ public final class JamStatus {
 	/**
 	 * Sets the display.
 	 * 
-	 * @param d
+	 * @param plotDisplay
 	 *            the display
 	 */
-	public synchronized void setDisplay(PlotDisplay d) {
-		display = d;
+	public void setDisplay(final PlotDisplay plotDisplay) {
+		synchronized (this) {
+			display = plotDisplay;
+		}
 	}
 
 	/**
@@ -129,18 +137,22 @@ public final class JamStatus {
 	 * 
 	 * @return the display
 	 */
-	public synchronized PlotDisplay getDisplay() {
-		return display;
+	public PlotDisplay getDisplay() {
+		synchronized (this) {
+			return display;
+		}
 	}
 
 	/**
 	 * Sets the table.
 	 * 
-	 * @param t
+	 * @param table
 	 *            the table
 	 */
-	public synchronized void setTable(SummaryTable t) {
-		summaryTable = t;
+	public void setTable(final SummaryTable table) {
+		synchronized (this) {
+			summaryTable = table;
+		}
 	}
 
 	/**
@@ -148,8 +160,10 @@ public final class JamStatus {
 	 * 
 	 * @return the display
 	 */
-	public synchronized SummaryTable getTable() {
-		return summaryTable;
+	public SummaryTable getTable() {
+		synchronized (this) {
+			return summaryTable;
+		}
 	}
 
 	/**
@@ -157,8 +171,10 @@ public final class JamStatus {
 	 * 
 	 * @return the frame of the current Jam application
 	 */
-	public synchronized JFrame getFrame() {
-		return frame;
+	public JFrame getFrame() {
+		synchronized (this) {
+			return frame;
+		}
 	}
 
 	/**
@@ -171,24 +187,23 @@ public final class JamStatus {
 	 * @throws UnsupportedOperationException
 	 *             if we can't change mode
 	 */
-	public void setSortMode(SortMode mode, String sortName) {
+	public void setSortMode(final SortMode mode, final String sortName) {
 		this.sortName = sortName;
 		synchronized (sortMode) {
-			if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
-					|| mode == SortMode.OFFLINE || mode == SortMode.REMOTE) {
-				if (!canSetup()) {
-					final StringBuffer etext = new StringBuffer(
-							"Can't setup, setup is locked for ");
-					if (sortMode == SortMode.ONLINE_DISK
-							|| sortMode == SortMode.ON_NO_DISK) {
-						etext.append("online");
-					} else if (sortMode == SortMode.OFFLINE) {
-						etext.append("offline");
-					} else { // SortMode.REMOTE
-						etext.append("remote");
-					}
-					throw new UnsupportedOperationException(etext.toString());
+			if ((mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
+					|| mode == SortMode.OFFLINE || mode == SortMode.REMOTE)
+					&& !canSetup()) {
+				final StringBuffer etext = new StringBuffer(
+						"Can't setup, setup is locked for ");
+				if (sortMode == SortMode.ONLINE_DISK
+						|| sortMode == SortMode.ON_NO_DISK) {
+					etext.append("online");
+				} else if (sortMode == SortMode.OFFLINE) {
+					etext.append("offline");
+				} else { // SortMode.REMOTE
+					etext.append("remote");
 				}
+				throw new UnsupportedOperationException(etext.toString());
 			}
 			sortMode = mode;
 		}
@@ -202,10 +217,10 @@ public final class JamStatus {
 	 * @param file
 	 *            the file just loaded or saved
 	 */
-	public void setOpenFile(File file) {
+	public void setOpenFile(final File file) {
 		synchronized (sortMode) {
 			openFile = file;
-			final String name = file == null ? "" : file.getPath();
+			final String name = (file == null) ? "" : file.getPath();
 			setSortMode(SortMode.FILE, name);
 		}
 	}
@@ -222,11 +237,12 @@ public final class JamStatus {
 	/**
 	 * Set the current run state.
 	 * 
-	 * @param rs
+	 * @param runState
 	 *            new run state
 	 */
-	public void setRunState(RunState rs) {
-		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED, rs);
+	public void setRunState(final RunState runState) {
+		BROADCASTER.broadcast(BroadcastEvent.Command.RUN_STATE_CHANGED,
+				runState);
 	}
 
 	/**
@@ -259,11 +275,11 @@ public final class JamStatus {
 	/**
 	 * Set the acquisition status.
 	 * 
-	 * @param as
+	 * @param status
 	 *            the current status of the Jam application
 	 */
-	public void setAcqisitionStatus(AcquisitionStatus as) {
-		acqStatus = as;
+	public void setAcqisitionStatus(final AcquisitionStatus status) {
+		acqStatus = status;
 	}
 
 	/**
@@ -292,7 +308,7 @@ public final class JamStatus {
 	 * @param group
 	 *            the current group
 	 */
-	public void setCurrentGroup(Nameable group) {
+	public void setCurrentGroup(final Nameable group) {
 		synchronized (this) {
 			currentGroup = group;
 		}
@@ -341,8 +357,10 @@ public final class JamStatus {
 	 * @param name
 	 *            name of a histogram to add to overlay
 	 */
-	public synchronized void addOverlayHistogramName(String name) {
-		overlayNames.add(name);
+	public void addOverlayHistogramName(final String name) {
+		synchronized (this) {
+			overlayNames.add(name);
+		}
 	}
 
 	/**
@@ -366,8 +384,10 @@ public final class JamStatus {
 	 * Clear all overlay histogram names from list.
 	 * 
 	 */
-	public synchronized void clearOverlays() {
-		overlayNames.clear();
+	public void clearOverlays() {
+		synchronized (this) {
+			overlayNames.clear();
+		}
 	}
 
 	/**
@@ -376,8 +396,10 @@ public final class JamStatus {
 	 * @param gate
 	 *            of current gate
 	 */
-	public synchronized void setCurrentGate(Nameable gate) {
-		currentGate = gate;
+	public void setCurrentGate(Nameable gate) {
+		synchronized (this) {
+			currentGate = gate;
+		}
 	}
 
 	/**
@@ -397,19 +419,22 @@ public final class JamStatus {
 	/**
 	 * Sets the global message handler.
 	 * 
-	 * @param mh
+	 * @param msgHandler
 	 *            the message handler
 	 * @throws IllegalStateException
 	 *             if called a second time
 	 */
-	public synchronized void setMessageHandler(MessageHandler mh) {
-		if (console != null) {
-			throw new IllegalStateException("Can't set message handler twice!");
+	public void setMessageHandler(final MessageHandler msgHandler) {
+		synchronized (this) {
+			if (console != null) {
+				throw new IllegalStateException(
+						"Can't set message handler twice!");
+			}
+			console = msgHandler;
+			frontEnd = new VMECommunication();
+			JamPrefs.PREFS.addPreferenceChangeListener(frontEnd);
+			BROADCASTER.addObserver(frontEnd);
 		}
-		console = mh;
-		frontEnd = new VMECommunication();
-		JamPrefs.PREFS.addPreferenceChangeListener(frontEnd);
-		BROADCASTER.addObserver(frontEnd);
 	}
 
 	/**
@@ -417,8 +442,10 @@ public final class JamStatus {
 	 * 
 	 * @return the message handler
 	 */
-	public synchronized MessageHandler getMessageHandler() {
-		return console;
+	public MessageHandler getMessageHandler() {
+		synchronized (this) {
+			return console;
+		}
 	}
 
 	/**
@@ -426,7 +453,9 @@ public final class JamStatus {
 	 * 
 	 * @return the front end communicator
 	 */
-	public synchronized FrontEndCommunication getFrontEndCommunication() {
-		return frontEnd;
+	public FrontEndCommunication getFrontEndCommunication() {
+		synchronized (this) {
+			return frontEnd;
+		}
 	}
 }
