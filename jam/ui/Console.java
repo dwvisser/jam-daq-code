@@ -72,15 +72,17 @@ public class Console extends JPanel implements MessageHandler {
 	private transient final List<CommandListener> listenerList = Collections
 			.synchronizedList(new ArrayList<CommandListener>());
 
-	private transient final JTextPane textLog = new JTextPane(); //output text
-																 // area
+	private transient final JTextPane textLog = new JTextPane(); // output
+																	// text
+
+	// area
 
 	private transient final Document doc = textLog.getStyledDocument();
 
 	private transient final SimpleAttributeSet attr_normal, attr_warning,
 			attr_error;
 
-	private transient final JTextField textIn; //input text field
+	private transient final JTextField textIn; // input text field
 
 	private transient final JScrollPane jsp;
 
@@ -100,28 +102,28 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	private transient final int maxLines;
 
-	private transient int numberLines; //number of lines in output
+	private transient int numberLines; // number of lines in output
 
 	/**
 	 * Private.
 	 * 
 	 * @serial
 	 */
-	private transient BufferedWriter logWriter; //output stream
+	private transient BufferedWriter logWriter; // output stream
 
 	/**
 	 * Private.
 	 * 
 	 * @serial
 	 */
-	private transient boolean logFileOn; //are we logging to a file
+	private transient boolean logFileOn; // are we logging to a file
 
 	/**
 	 * Private.
 	 * 
 	 * @serial
 	 */
-	private transient String messageFile; //message for file
+	private transient String messageFile; // message for file
 
 	/**
 	 * Create a JamConsole which has an text area for output a text field for
@@ -132,10 +134,11 @@ public class Console extends JPanel implements MessageHandler {
 	}
 
 	/**
-	 * Constructs a JamConsole which has an text area for output a text
-	 * field for intput.
+	 * Constructs a JamConsole which has an text area for output a text field
+	 * for intput.
 	 * 
-	 * @param linesLog number of lines to retain in onscreen display
+	 * @param linesLog
+	 *            number of lines to retain in onscreen display
 	 */
 	public Console(int linesLog) {
 
@@ -281,7 +284,7 @@ public class Console extends JPanel implements MessageHandler {
 					errorOutln("Unable to write to log file, logging turned off [JamConsole]");
 				}
 			}
-			//unlock text area and notify others they can use it
+			// unlock text area and notify others they can use it
 			msgLock = false;
 			notifyAll();
 		} else {
@@ -293,7 +296,8 @@ public class Console extends JPanel implements MessageHandler {
 	/**
 	 * Output a message so it will be continued on the same line.
 	 * 
-	 * @param message text to output
+	 * @param message
+	 *            text to output
 	 */
 	public synchronized void messageOut(String message) {
 		messageOut(message, CONTINUE);
@@ -318,7 +322,7 @@ public class Console extends JPanel implements MessageHandler {
 		}
 		trimLog();
 		textLog.setCaretPosition(doc.getLength());
-		//if file logging on write to file
+		// if file logging on write to file
 		if (logFileOn) {
 			try {
 				logWriter.write(messageFile, 0, messageFile.length());
@@ -328,7 +332,7 @@ public class Console extends JPanel implements MessageHandler {
 				errorOutln("Unable to write to log file, logging turned off [JamConsole]");
 			}
 		}
-		//unlock text area and notify others they can use it
+		// unlock text area and notify others they can use it
 		msgLock = false;
 		notifyAll();
 	}
@@ -345,7 +349,8 @@ public class Console extends JPanel implements MessageHandler {
 	/**
 	 * Writes an error message to the console immediately.
 	 * 
-	 * @param message error
+	 * @param message
+	 *            error
 	 */
 	public synchronized void errorOutln(String message) {
 		promptOutln("Error: " + message, attr_error);
@@ -354,7 +359,8 @@ public class Console extends JPanel implements MessageHandler {
 	/**
 	 * Outputs a warning message to the console immediately.
 	 * 
-	 * @param message warning
+	 * @param message
+	 *            warning
 	 */
 	public synchronized void warningOutln(String message) {
 		promptOutln("Warning: " + message, attr_warning);
@@ -366,11 +372,11 @@ public class Console extends JPanel implements MessageHandler {
 		/*
 		 * Dont wait for lock. Output message right away.
 		 */
-		if (msgLock) { //if locked add extra returns
+		if (msgLock) { // if locked add extra returns
 			messageFile = END_LINE + getDate() + ">" + _message + END_LINE;
 			mbuff.append(END_LINE).append(getTime()).append('>').append(
 					_message).append(END_LINE);
-		} else { //normal message
+		} else { // normal message
 			messageFile = getDate() + ">" + _message + END_LINE;
 			mbuff.append(END_LINE).append(getTime()).append('>').append(
 					_message);
@@ -385,7 +391,7 @@ public class Console extends JPanel implements MessageHandler {
 		textLog.setCaretPosition(doc.getLength());
 		/* beep */
 		Toolkit.getDefaultToolkit().beep();
-		if (logFileOn) { //if file logging on write to file
+		if (logFileOn) { // if file logging on write to file
 			try {
 				logWriter.write(messageFile, 0, messageFile.length());
 				logWriter.flush();
@@ -398,8 +404,9 @@ public class Console extends JPanel implements MessageHandler {
 
 	/**
 	 * Where to send commands that are input need to add types.
-	 *  
-	 * @param msgCommand listener to add
+	 * 
+	 * @param msgCommand
+	 *            listener to add
 	 */
 	public final void addCommandListener(CommandListener msgCommand) {
 		listenerList.add(msgCommand);
@@ -410,17 +417,17 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	public static final String NUMBERS_ONLY = "int";
 
-	/* non-javadoc:
-	 * Parses the command and issues it to the current listener.
+	/*
+	 * non-javadoc: Parses the command and issues it to the current listener.
 	 */
 	private void parseCommand(final String _inString) {
 		final List<String> cmdTokens = parseExpression(_inString);
 		final int numWords = cmdTokens.size();
 		/* make string tokenizer use spaces, commas, and returns as delimiters */
-		if (numWords > 0) { //check at least something was entered
+		if (numWords > 0) { // check at least something was entered
 			final String command;
 			final String[] parameters;
-			final int countWrd;
+			final int initIndex;
 			final String first = cmdTokens.get(0);
 			if (isNumber(first)) {
 				/*
@@ -429,16 +436,18 @@ public class Console extends JPanel implements MessageHandler {
 				 */
 				command = NUMBERS_ONLY;
 				parameters = new String[numWords];
-				countWrd = 0;
+				initIndex = 0;
 			} else {
 				/* parameter list to hold one less */
 				command = first;
 				parameters = new String[numWords - 1];
-				countWrd = 1;
+				initIndex = 1;
 			}
 			/* Load parameter tokens */
-			System.arraycopy(cmdTokens, countWrd, parameters, 0, numWords
-					- countWrd);
+			if (parameters.length > 0) {
+				System.arraycopy(cmdTokens.toArray(), initIndex, parameters, 0, numWords
+						- initIndex);
+			}
 			/* perform command */
 			notifyListeners(command, parameters);
 		}
@@ -487,7 +496,8 @@ public class Console extends JPanel implements MessageHandler {
 	 * Create a file for the log to be saved to. The method appends a number
 	 * (starting at 1) to the file name if the file already exists.
 	 * 
-	 * @param name name to try
+	 * @param name
+	 *            name to try
 	 * @return actual name used
 	 * @exception JamException
 	 *                exceptions that go to the console
@@ -507,8 +517,8 @@ public class Console extends JPanel implements MessageHandler {
 		try {
 			logWriter = new BufferedWriter(new FileWriter(file));
 		} catch (IOException ioe) {
-			throw new JamException("Problem opening log file " + file.getAbsolutePath()+
-			        ": "+ioe.getMessage());
+			throw new JamException("Problem opening log file "
+					+ file.getAbsolutePath() + ": " + ioe.getMessage());
 		}
 		return newName;
 	}
@@ -528,10 +538,11 @@ public class Console extends JPanel implements MessageHandler {
 		}
 	}
 
-	/** 
+	/**
 	 * Turn on the logging to a file
 	 * 
-	 * @param state <code>true</code> to be logging
+	 * @param state
+	 *            <code>true</code> to be logging
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
@@ -550,7 +561,7 @@ public class Console extends JPanel implements MessageHandler {
 	 */
 	private void trimLog() {
 		numberLines++;
-		if (numberLines > maxLines) { //get rid of top line
+		if (numberLines > maxLines) { // get rid of top line
 			numberLines--;
 			try {
 				doc.remove(0, textLog.getText().indexOf(END_LINE)
@@ -562,25 +573,26 @@ public class Console extends JPanel implements MessageHandler {
 		}
 	}
 
-	/* non-javadoc: formatted version of the current time
+	/*
+	 * non-javadoc: formatted version of the current time
 	 */
 	private String getTime() {
-		final Date date = new java.util.Date(); //get time
+		final Date date = new java.util.Date(); // get time
 		final DateFormat datef = DateFormat.getTimeInstance(DateFormat.MEDIUM);
-		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		final String stime = datef.format(date); //format time
+		datef.setTimeZone(TimeZone.getDefault()); // set time zone
+		final String stime = datef.format(date); // format time
 		return stime;
 	}
 
-	/* non-javadoc:
-	 * Get the current date and time
+	/*
+	 * non-javadoc: Get the current date and time
 	 */
 	private String getDate() {
-		final Date date = new java.util.Date(); //get time
+		final Date date = new java.util.Date(); // get time
 		final DateFormat datef = DateFormat.getDateTimeInstance();
-		//medium date time format
-		datef.setTimeZone(TimeZone.getDefault()); //set time zone
-		final String stime = datef.format(date); //format time
+		// medium date time format
+		datef.setTimeZone(TimeZone.getDefault()); // set time zone
+		final String stime = datef.format(date); // format time
 		return stime;
 	}
 
@@ -600,8 +612,8 @@ public class Console extends JPanel implements MessageHandler {
 			found |= listener.performParseCommand(cmd, params);
 		}
 		if (!found) {
-			final StringBuffer buffer = new StringBuffer('"');
-			buffer.append(cmd).append("\" is an invalid command. ");
+			final StringBuffer buffer = new StringBuffer();
+			buffer.append("\"").append(cmd).append("\" is an invalid command. ");
 			final String[] offer = CommandManager.getInstance()
 					.getSimilarCommnands(cmd, true);
 			if (offer.length > 0) {
