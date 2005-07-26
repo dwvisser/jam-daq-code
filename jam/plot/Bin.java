@@ -1,6 +1,5 @@
 package jam.plot;
 
-
 import java.awt.Point;
 
 /**
@@ -9,150 +8,156 @@ import java.awt.Point;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 2004-10-04
  */
-public final class Bin {
+public final class Bin implements Cloneable {
 	/**
 	 * For 1d hists, y-coordinate is arbitrary.
 	 */
-	private final Point channel=new Point();
-	private static PlotDisplay display=null;
-	
+	private transient final Point channel = new Point();
+
+	private static PlotDisplay display = null;
+
 	/**
 	 * Class for producing instances of <code>Bin</code>.
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 * @see Bin
 	 */
-	public static class Factory{
-		static void init(PlotDisplay disp){
-			display=disp;
+	public static class Factory {
+		static void init(final PlotDisplay disp) {
+			display = disp;
 		}
-		
+
 		/**
-		 * Constructs a bin with coordinates identical to 
-		 * those of the given <code>Point</code>.
+		 * Constructs a bin with coordinates identical to those of the given
+		 * <code>Point</code>.
 		 * 
-		 * @param p coordinates
+		 * @param point
+		 *            coordinates
 		 * @return bin at the given coordinates
 		 */
-		public static Bin create(Point p){
-			if (display==null){
+		public static Bin create(final Point point) {
+			if (display == null) {
 				throw new IllegalStateException("Bin not initialized.");
 			}
-			return new Bin(p);
+			return new Bin(point);
 		}
-		
+
 		/**
 		 * Constructs a bin at the coordinate (x,y)
-		 * @param x x-coordinate
-		 * @param y y-coordinate
+		 * 
+		 * @param xCoord
+		 *            x-coordinate
+		 * @param yCoord
+		 *            y-coordinate
 		 * @return bin at (x,y)
 		 */
-		public static Bin create(int x, int y){
-			return create(new Point(x,y));
-		}
-		
-		/**
-		 * Constructs a bin at the coordinate (x,0).
-		 * 
-		 * @param x x-coordinate
-		 * @return bin at (x,0)
-		 */
-		public static Bin create(int x){
-			return create(x,0);
-		}
-		
-		/**
-		 * Constructs a bin at the coordinate (0,0).
-		 * 
-		 * @return bin at (0,0)
-		 */
-		public static Bin create(){
-			return create(0,0);
+		public static Bin create(final int... coords) {
+			final int xCoord = coords.length > 0 ? coords[0] : 0;
+			final int yCoord = coords.length > 1 ? coords[1] : 0;
+			return create(new Point(xCoord, yCoord));
 		}
 	}
-	
-	private Bin(Point p){
-		setChannel(p);
+
+	private Bin(Point point) {
+		super();
+		setChannel(point);
 	}
-	
-	/**
-	 * Create a new <code>Bin</code> with contents identical to the
-	 * given <code>Bin</code>.
-	 * 
-	 * @param c original 
-	 * @return copy of the original
-	 */
-	static Bin copy(Bin c){
-		return Factory.create(c.getPoint());
+
+	public Object clone() {
+		return Factory.create(channel);
 	}
-	
-	synchronized void setChannel(Point p){
-		channel.setLocation(p);
+
+	void setChannel(final Point point) {
+		synchronized (this) {
+			channel.setLocation(point);
+		}
 	}
-	
-	synchronized void setChannel(Bin c){
-		channel.setLocation(c.getPoint());
+
+	void setChannel(final Bin bin) {
+		synchronized (this) {
+			channel.setLocation(bin.getPoint());
+		}
 	}
-	
-	synchronized void setChannel(int x, int y){
-		channel.setLocation(x,y);
+
+	void setChannel(final int xChan, final int yChan) {
+		synchronized (this) {
+			channel.setLocation(xChan, yChan);
+		}
 	}
-	
-	synchronized double getCounts(){
-		return display.getPlotContainer().getCount(this);		
+
+	double getCounts() {
+		synchronized (this) {
+			return display.getPlotContainer().getCount(this);
+		}
 	}
-	
-	synchronized Point getPoint(){
-		return new Point(channel);
+
+	Point getPoint() {
+		synchronized (this) {
+			return new Point(channel);
+		}
 	}
-	
+
 	/**
 	 * Gets the x-coordinate of this bin.
+	 * 
 	 * @return the x-channel
 	 */
-	public synchronized int getX(){
-		return channel.x;
+	public int getX() {
+		synchronized (this) {
+			return channel.x;
+		}
 	}
-	
+
 	/**
 	 * Gets the y-coordinate of this bin.
+	 * 
 	 * @return the y-channel
 	 */
-	public synchronized int getY(){
-		return channel.y;
+	public int getY() {
+		synchronized (this) {
+			return channel.y;
+		}
 	}
-	
-	synchronized String getCoordString() {
-		final StringBuffer rval = new StringBuffer().append(channel.x);
-		if (display.getPlotContainer().getDimensionality()==2) {
-			rval.append(',').append(channel.y);
+
+	String getCoordString() {
+		synchronized (this) {
+			final StringBuffer rval = new StringBuffer().append(channel.x);
+			if (display.getPlotContainer().getDimensionality() == 2) {
+				rval.append(',').append(channel.y);
+			}
+			return rval.toString();
 		}
-		return rval.toString();
-	}	
-	
-	public boolean equals(Object object) {
-        boolean rval = object instanceof Bin;
-        if (rval) {
-            final Bin that = (Bin) object;
-            rval &= channel.equals(that.channel);
-        }
-        return rval;
-    }
-	
-	synchronized Bin closestInsideBin() {
-		int x=channel.x;
-		int y=channel.y;
-		final PlotContainer currentPlot = display.getPlotContainer();
-		if (x < 0) {
-			x = 0;
-		} else if (x >= currentPlot.getSizeX()) {
-			x = currentPlot.getSizeX() - 1;
+	}
+
+	public boolean equals(final Object object) {
+		boolean rval = object instanceof Bin;
+		if (rval) {
+			final Bin that = (Bin) object;
+			rval &= channel.equals(that.channel);
 		}
-		if (y < 0) {
-			y = 0;
-		} else if (y >= currentPlot.getSizeY()) {
-			y = currentPlot.getSizeY() - 1;
+		return rval;
+	}
+
+	public int hashCode() {
+		return channel.hashCode();
+	}
+
+	Bin closestInsideBin() {
+		synchronized (this) {
+			int xChan = channel.x;
+			int yChan = channel.y;
+			final PlotContainer currentPlot = display.getPlotContainer();
+			if (xChan < 0) {
+				xChan = 0;
+			} else if (xChan >= currentPlot.getSizeX()) {
+				xChan = currentPlot.getSizeX() - 1;
+			}
+			if (yChan < 0) {
+				yChan = 0;
+			} else if (yChan >= currentPlot.getSizeY()) {
+				yChan = currentPlot.getSizeY() - 1;
+			}
+			return Factory.create(xChan, yChan);
 		}
-		return Factory.create(x,y);
-	}	
+	}
 }

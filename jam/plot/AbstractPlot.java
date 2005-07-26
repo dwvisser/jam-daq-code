@@ -487,7 +487,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener,
 	 */
 	final void markChannel(final Bin bin) {
 		markingChannels = true;
-		markedChannels.add(Bin.copy(bin));
+		markedChannels.add((Bin)bin.clone());
 		panel.repaint();
 	}
 
