@@ -197,7 +197,7 @@ final class Plot1d extends AbstractPlot {
 	protected void paintSelectingArea(Graphics gc) {
 		Graphics2D g = (Graphics2D) gc;
 		g.setColor(colorMap.getArea());
-		graph.markAreaOutline1d(selectionStartPoint.getX(), lastMovePoint.x);
+		graph.markAreaOutline1d(selectStart.getX(), lastMovePoint.x);
 		setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
@@ -212,8 +212,8 @@ final class Plot1d extends AbstractPlot {
 	 */
 	public void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
-			markArea = (p1 != null) && (p2 != null);
-			if (markArea) {
+			areaMarked = (p1 != null) && (p2 != null);
+			if (areaMarked) {
 				final int x1 = p1.getX();
 				final int x2 = p2.getX();
 				areaMark1 = Math.min(x1, x2);
@@ -429,11 +429,11 @@ final class Plot1d extends AbstractPlot {
 			if (isSelectingAreaClipClear()) {
 				synchronized (selectingAreaClip) {
 					selectingAreaClip.setBounds(graph.getRectangleOutline1d(
-							selectionStartPoint.getX(), lastMovePoint.x));
+							selectStart.getX(), lastMovePoint.x));
 				}
 			}
 			setLastMovePoint(graph.toData(me.getPoint()).getPoint());
-			addToSelectClip(selectionStartPoint, Bin.Factory
+			addToSelectClip(selectStart, Bin.Factory
 					.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
 				panel.repaint(getClipBounds(selectingAreaClip, false));

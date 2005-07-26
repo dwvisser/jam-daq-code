@@ -92,7 +92,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		final Graphics2D g = (Graphics2D) gc;
 		g.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(selectionStartPoint, Bin.Factory
+			graph.markArea2dOutline(selectStart, Bin.Factory
 					.create(lastMovePoint));
 		}
 		setMouseMoved(false);
@@ -109,9 +109,9 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 */
 	void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
-			markArea = (p1 != null) && (p2 != null);
+			areaMarked = (p1 != null) && (p2 != null);
 		}
-		if (markArea) {
+		if (areaMarked) {
 			synchronized (areaMark) {
 				areaMark.setSize(0, 0);
 				areaMark.setLocation(p1.getPoint());
@@ -465,12 +465,12 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		} else if (selectingArea) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
-					addToSelectClip(selectionStartPoint, Bin.Factory
+					addToSelectClip(selectStart, Bin.Factory
 							.create(lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint())
 						.getPoint());
-				addToSelectClip(selectionStartPoint, Bin.Factory
+				addToSelectClip(selectStart, Bin.Factory
 						.create(lastMovePoint));
 			}
 			setMouseMoved(true);

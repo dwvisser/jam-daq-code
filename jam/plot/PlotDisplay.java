@@ -3,6 +3,7 @@ package jam.plot;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import static jam.global.BroadcastEvent.Command;
 import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
@@ -40,52 +41,49 @@ import javax.swing.JPanel;
 public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		PreferenceChangeListener, PlotPrefs, Observer {
 
-	private final Action action; // handles display events
-
-	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private transient final Action action; // handles display events
 
 	/** Current plot of plotList */
-	private PlotContainer currentPlot;
+	private transient PlotContainer currentPlot;
 
 	/** Current view */
-	private View currentView;
+	private transient View currentView;
 
 	/** Grid panel that contains plots */
-	private JPanel gridPanel;
+	private transient JPanel gridPanel;
 
 	/** show axis lables */
-	private boolean isAxisLabels;
+	private transient boolean isAxisLabels;
 
 	/** Overlay histograms */
-	private boolean isOverlay;
+	private transient boolean isOverlay;
 
 	/** Is scrolling enabled */
-	private boolean isScrolling;
+	private transient boolean isScrolling;
 
 	/** Array of all available plots */
-	private List<PlotContainer> plotList;
+	private transient final List<PlotContainer> plotList = new ArrayList<PlotContainer>();
 
-	private final Object plotLock = new Object();
+	private transient final Object plotLock = new Object();
 
-	private final JamStatus status = JamStatus.getSingletonInstance();
+	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	/** Tool bar with plot controls (zoom...) */
-	private final Toolbar toolbar;
+	private transient final Toolbar toolbar;
 
 	/**
 	 * Constructor called by all constructors
 	 * 
-	 * @param jc
+	 * @param console
 	 *            the class to call to print out messages
 	 */
-	public PlotDisplay(Console jc) {
-
+	public PlotDisplay(final Console console) {
+		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		Bin.Factory.init(this);
 		/* display event handler */
-		action = new Action(this, jc);
+		action = new Action(this, console);
 		PREFS.addPreferenceChangeListener(this);
-		plotList = new ArrayList<PlotContainer>();
 		createGridPanel();
 		toolbar = new Toolbar(this, action);
 		initPrefs();
@@ -102,7 +100,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            the class to notify when the mouse in pressed in the plot
 	 * @see #removePlotMouseListener
 	 */
-	public void addPlotMouseListener(PlotMouseListener listener) {
+	public void addPlotMouseListener(final PlotMouseListener listener) {
 		getPlotContainer().addPlotMouseListener(listener);
 	}
 
@@ -127,7 +125,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param numberPlots
 	 *            the number of plots to create
 	 */
-	private void createPlots(int numberPlots) {
+	private void createPlots(final int numberPlots) {
 		for (int i = plotList.size(); i < numberPlots; i++) {
 			plotList.add(PlotContainer.createPlotContainer(this));
 		}
@@ -142,11 +140,12 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            background function
 	 * @param residuals
 	 *            total fit minus actual counts
-	 * @param ll ??
+	 * @param start
+	 *            channel where curves start
 	 */
-	public void displayFit(double[][] signals, double[] background,
-			double[] residuals, int ll) {
-		currentPlot.displayFit(signals, background, residuals, ll);
+	public void displayFit(final double[][] signals, final double[] background,
+			final double[] residuals, final int start) {
+		currentPlot.displayFit(signals, background, residuals, start);
 	}
 
 	/**
@@ -155,7 +154,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param hist
 	 *            the histogram to display
 	 */
-	public void displayHistogram(Histogram hist) {
+	public void displayHistogram(final Histogram hist) {
 		if (hist != null) {
 			currentPlot.removeAllPlotMouseListeners();
 			currentPlot.addPlotMouseListener(action);
@@ -208,7 +207,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		}
 	}
 
-	private final void initPrefs() {
+	private void initPrefs() {
 		PREFS.addPreferenceChangeListener(this);
 		isScrolling = PREFS.getBoolean(ENABLE_SCROLLING_TILED, false);
 		isAxisLabels = PREFS.getBoolean(DISPLAY_AXIS_LABELS, true);
@@ -220,7 +219,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param hists
 	 *            histogram to overlay
 	 */
-	private void overlayHistogram(List<Histogram> hists) {
+	private void overlayHistogram(final List<Histogram> hists) {
 		if (hists.isEmpty()) {
 			removeOverlays();
 		} else {
@@ -234,7 +233,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param num
 	 *            the number of the hist to overlay
 	 */
-	public void overlayHistogram(int num) {
+	public void overlayHistogram(final int num) {
 		final Histogram hist = Histogram.getHistogram(num);
 		/* Check we can overlay. */
 		if (!(getPlotContainer().getDimensionality() == 1)) {
@@ -263,15 +262,15 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			}
 			status.setCurrentGate(null);
 			status.clearOverlays();
-			broadcaster
-					.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+			Broadcaster.getSingletonInstance().broadcast(
+					Command.HISTOGRAM_SELECT, hist);
 		}
 	}
 
 	/**
 	 * @see PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
 	 */
-	public void preferenceChange(PreferenceChangeEvent pce) {
+	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 
@@ -298,7 +297,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 *            the class to notify when the mouse in pressed in the plot
 	 * @see #addPlotMouseListener
 	 */
-	public void removePlotMouseListener(PlotMouseListener listener) {
+	public void removePlotMouseListener(final PlotMouseListener listener) {
 		getPlotContainer().removePlotMouseListener(listener);
 	}
 
@@ -308,9 +307,9 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param overlayState
 	 *            <code>true</code> if we are overlaying other histograms
 	 */
-	public void setOverlay(boolean overlayState) {
+	public void setOverlay(final boolean overlayState) {
 		isOverlay = overlayState;
-		if (isOverlay == false) {
+		if (!isOverlay) {
 			currentPlot.removeOverlays();
 		}
 	}
@@ -325,8 +324,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param cal
 	 *            whether to display channel or energy
 	 */
-	public void setPeakFindProperties(double width, double sensitivity,
-			boolean cal) {
+	public void setPeakFindProperties(final double width,
+			final double sensitivity, final boolean cal) {
 		Plot1d.setWidth(width);
 		Plot1d.setSensitivity(sensitivity);
 		Plot1d.setPeakFindDisplayCal(cal);
@@ -336,12 +335,12 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	/**
 	 * Set a plot as the current plot
 	 * 
-	 * @param p
+	 * @param container
 	 */
-	private void setPlot(PlotContainer p) {
+	private void setPlot(final PlotContainer container) {
 		synchronized (plotLock) {
 			/* Only do something if the plot has changed */
-			if (p != currentPlot) {
+			if (!container.equals(currentPlot)) {
 				/* Change plot mouse listener source */
 				if (currentPlot != null) {
 					// / Cancel area setting
@@ -351,18 +350,18 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 							null);
 					currentPlot.removeAllPlotMouseListeners();
 				}
-				if (p.hasHistogram()) {
-					p.addPlotMouseListener(action);
+				if (container.hasHistogram()) {
+					container.addPlotMouseListener(action);
 				}
 				/* Change selected plot */
 				for (PlotContainer plotContainer : plotList) {
 					plotContainer.select(false);
 				}
 				action.setDefiningGate(false);
-				p.select(true);
+				container.select(true);
 				/* Cancel all current actions */
 				action.plotChanged();
-				currentPlot = p;
+				currentPlot = container;
 			}
 			toolbar.setHistogramProperties(currentPlot.getDimensionality(),
 					currentPlot.getBinWidth());
@@ -373,11 +372,11 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * Prepare to print to a page.
 	 * 
 	 * @param rfp ??
-	 * @param pf
+	 * @param format
 	 *            page layout
 	 */
-	public void setRenderForPrinting(boolean rfp, PageFormat pf) {
-		getPlotContainer().setRenderForPrinting(rfp, pf);
+	public void setRenderForPrinting(final boolean rfp, final PageFormat format) {
+		getPlotContainer().setRenderForPrinting(rfp, format);
 	}
 
 	/**
@@ -386,7 +385,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param viewIn
 	 *            the view to use now
 	 */
-	public void setView(View viewIn) {
+	public void setView(final View viewIn) {
 		currentView = viewIn;
 		final int numberPlots = currentView.getNumberHists();
 		final GridLayout gridLayout = new GridLayout(currentView.getRows(),
@@ -406,7 +405,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			plotContainer.select(false);
 			plotContainer.reset();
 			gridPanel.add(plotContainer.getComponent());
-			Histogram hist = currentView.getHistogram(i);
+			final Histogram hist = currentView.getHistogram(i);
 			plotContainer.displayHistogram(hist);
 		}
 		updateLayout();
@@ -435,49 +434,59 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param object
 	 *            the message
 	 */
-	public void update(Observable observable, Object object) {
+	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
-		final BroadcastEvent.Command command = event.getCommand();
-		if (command == BroadcastEvent.Command.REFRESH) {
+		final Command command = event.getCommand();
+		if (command == Command.REFRESH) {
 			update();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_NEW) {
-			/* Clear plots select first plot */
-			/* Set initial states for all plots */
-			for (PlotContainer plots : plotList) {
-				plots.removeAllPlotMouseListeners();
-				plots.select(false);
-				plots.reset();
-				plots.displayHistogram(null);
-			}
-			plotSelected(plotList.get(0));
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
+		} else if (command == Command.GATE_SET_ADD) {
+			getPlotContainer().displaySetGate(GateSetMode.GATE_CONTINUE,
+					(Bin) event.getContent(), null);
+		} else if (command == Command.GATE_SELECT) {
+			final Gate gate = (Gate) (event.getContent());
+			getPlotContainer().displayGate(gate);
+		} else {
+			processCommand(command);
+		}
+	}
+	
+	private void processCommand(final Command command){
+		if (command == Command.HISTOGRAM_NEW) {
+			histogramsCleared();
+		} else if (command == Command.HISTOGRAM_SELECT) {
 			final Histogram hist = (Histogram) status.getCurrentHistogram();
 			displayHistogram(hist);
 			final List<Histogram> overHists = Histogram.getHistogramList(status
 					.getOverlayHistograms());
 			overlayHistogram(overHists);
-		} else if (command == BroadcastEvent.Command.GATE_SET_ON) {
+		} else if (command == Command.GATE_SET_ON) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);
-		} else if (command == BroadcastEvent.Command.GATE_SET_OFF) {
+		} else if (command == Command.GATE_SET_OFF) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_CANCEL, null,
 					null);
 			action.setDefiningGate(false);
 			getPlotContainer().repaint();
-		} else if (command == BroadcastEvent.Command.GATE_SET_SAVE) {
+		} else if (command == Command.GATE_SET_SAVE) {
 			getPlotContainer()
 					.displaySetGate(GateSetMode.GATE_SAVE, null, null);
 			action.setDefiningGate(false);
-		} else if (command == BroadcastEvent.Command.GATE_SET_ADD) {
-			getPlotContainer().displaySetGate(GateSetMode.GATE_CONTINUE,
-					(Bin) event.getContent(), null);
-		} else if (command == BroadcastEvent.Command.GATE_SET_REMOVE) {
+		} else if (command == Command.GATE_SET_REMOVE) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_REMOVE, null,
 					null);
-		} else if (command == BroadcastEvent.Command.GATE_SELECT) {
-			final Gate gate = (Gate) (event.getContent());
-			getPlotContainer().displayGate(gate);
 		}
+	}
+	
+	private void histogramsCleared(){
+		/* Clear plots select first plot */
+		/* Set initial states for all plots */
+		for (PlotContainer plots : plotList) {
+			plots.removeAllPlotMouseListeners();
+			plots.select(false);
+			plots.reset();
+			plots.displayHistogram(null);
+		}
+		plotSelected(plotList.get(0));
 	}
 
 	/**
