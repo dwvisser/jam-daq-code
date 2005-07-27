@@ -80,7 +80,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	public PlotDisplay(final Console console) {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		Bin.Factory.init(this);
+		Bin.init(this);
 		/* display event handler */
 		action = new Action(this, console);
 		PREFS.addPreferenceChangeListener(this);

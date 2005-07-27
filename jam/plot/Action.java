@@ -89,7 +89,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 				NO_ARG_MAP.put(command, method);
 			} catch (NoSuchMethodException nsme) {
 				nsme.printStackTrace();
-			} 
+			}
 		}
 	}
 
@@ -132,6 +132,10 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 
 	/** Output text to */
 	private transient final MessageHandler textOut;
+
+	// private transient final Bin.Factory binFactory =
+	// Bin.Factory.getInstance();
+
 	/**
 	 * Master constructor has no broadcaster.
 	 * 
@@ -146,7 +150,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 		textOut = console;
 		ParseCommand parseCommand = new ParseCommand(this);
 		console.addCommandListener(parseCommand);
-		cursorBin = Bin.Factory.create();
+		cursorBin = Bin.create();
 		commandPresent = false;
 		// overlayState = false;
 		settingGate = false;
@@ -162,7 +166,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 
 	private void addClick(final Bin bin) {
 		synchronized (this) {
-			clicks.add((Bin)bin.clone());
+			clicks.add((Bin) bin.clone());
 		}
 	}
 
@@ -523,8 +527,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 			final int halfRange = rangeToUse / 2;
 			final int channelLow = xCoord - halfRange;
 			final int channelHigh = channelLow + rangeToUse;
-			currentPlot.expand(Bin.Factory.create(channelLow), Bin.Factory
-					.create(channelHigh));
+			currentPlot.expand(Bin.create(channelLow), Bin.create(channelHigh));
 			textOut.messageOut(output.toString(), MessageHandler.END);
 		}
 		auto();

@@ -110,7 +110,7 @@ final class ParseCommand implements CommandListener {
         final int numParam = parameters.length;
         /* Must have at least 1 parameter */
         if (numParam > 0) {
-            final Bin cursor = Bin.Factory.create();
+            final Bin cursor = Bin.create();
             if (JamStatus.getSingletonInstance().getDisplay().getPlotContainer().getDimensionality() == 1) {
                 /* we have a 1D plot: only x dimension */
                 for (int i = 0; i < numParam; i++) {

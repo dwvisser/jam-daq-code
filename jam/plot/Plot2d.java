@@ -42,7 +42,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	private static final String X_LABEL_2D = "Channels";
 
 	private static final String Y_LABEL_2D = "Channels";
-
+	
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
 	 */
@@ -92,7 +92,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		final Graphics2D g = (Graphics2D) gc;
 		g.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(selectStart, Bin.Factory
+			graph.markArea2dOutline(selectStart, Bin
 					.create(lastMovePoint));
 		}
 		setMouseMoved(false);
@@ -166,7 +166,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 				pointsGate.npoints--;// effectively removes last point
 				if ((pointsGate.npoints > 0)) {// go back a point
 					final int last = pointsGate.npoints - 1;
-					final Bin lpoint = Bin.Factory.create(
+					final Bin lpoint = Bin.create(
 							pointsGate.xpoints[last], pointsGate.ypoints[last]);
 					/* update variables */
 					final Point tempP = graph.toViewLin(lpoint);
@@ -465,12 +465,12 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		} else if (selectingArea) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
-					addToSelectClip(selectStart, Bin.Factory
+					addToSelectClip(selectStart, Bin
 							.create(lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint())
 						.getPoint());
-				addToSelectClip(selectStart, Bin.Factory
+				addToSelectClip(selectStart, Bin
 						.create(lastMovePoint));
 			}
 			setMouseMoved(true);
@@ -516,8 +516,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			/* add one more plot channel around the edges */
 			r.add(r.x + r.width + 1, r.y + r.height + 1);
 			r.add(r.x - 1, r.y - 1);
-			final Bin p1 = Bin.Factory.create(r.getLocation());
-			final Bin p2 = Bin.Factory.create(p1.getX() + r.width, p1.getY()
+			final Bin p1 = Bin.create(r.getLocation());
+			final Bin p2 = Bin.create(p1.getX() + r.width, p1.getY()
 					+ r.height);
 			/* now do conversion */
 			r.setBounds(graph.getRectangleOutline2d(p1, p2));

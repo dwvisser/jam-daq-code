@@ -198,7 +198,7 @@ public class GateSet extends AbstractControl implements Observer {
 		try {
 			final int x = Integer.parseInt(textLower.getText().trim());
 			final int y = Integer.parseInt(textUpper.getText().trim());
-			final Bin p = Bin.Factory.create(x, y);
+			final Bin p = Bin.create(x, y);
 			addPoint(p);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ADD, p);
 		} catch (NumberFormatException ne) {

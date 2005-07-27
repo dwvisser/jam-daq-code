@@ -16,46 +16,38 @@ public final class Bin implements Cloneable {
 
 	private static PlotDisplay display = null;
 
+	static void init(final PlotDisplay disp) {
+		Bin.display = disp;
+	}
+
 	/**
-	 * Class for producing instances of <code>Bin</code>.
+	 * Constructs a bin with coordinates identical to those of the given
+	 * <code>Point</code>.
 	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
-	 * @see Bin
+	 * @param point
+	 *            coordinates
+	 * @return bin at the given coordinates
 	 */
-	public static class Factory {
-		static void init(final PlotDisplay disp) {
-			display = disp;
+	public static Bin create(final Point point) {
+		if (display == null) {
+			throw new IllegalStateException("Bin not initialized.");
 		}
+		return new Bin(point);
+	}
 
-		/**
-		 * Constructs a bin with coordinates identical to those of the given
-		 * <code>Point</code>.
-		 * 
-		 * @param point
-		 *            coordinates
-		 * @return bin at the given coordinates
-		 */
-		public static Bin create(final Point point) {
-			if (display == null) {
-				throw new IllegalStateException("Bin not initialized.");
-			}
-			return new Bin(point);
-		}
-
-		/**
-		 * Constructs a bin at the coordinate (x,y)
-		 * 
-		 * @param xCoord
-		 *            x-coordinate
-		 * @param yCoord
-		 *            y-coordinate
-		 * @return bin at (x,y)
-		 */
-		public static Bin create(final int... coords) {
-			final int xCoord = coords.length > 0 ? coords[0] : 0;
-			final int yCoord = coords.length > 1 ? coords[1] : 0;
-			return create(new Point(xCoord, yCoord));
-		}
+	/**
+	 * Constructs a bin at the coordinate (x,y)
+	 * 
+	 * @param xCoord
+	 *            x-coordinate
+	 * @param yCoord
+	 *            y-coordinate
+	 * @return bin at (x,y)
+	 */
+	public static Bin create(final int... coords) {
+		final int xCoord = coords.length > 0 ? coords[0] : 0;
+		final int yCoord = coords.length > 1 ? coords[1] : 0;
+		return create(new Point(xCoord, yCoord));
 	}
 
 	private Bin(Point point) {
@@ -64,7 +56,7 @@ public final class Bin implements Cloneable {
 	}
 
 	public Object clone() {
-		return Factory.create(channel);
+		return create(channel);
 	}
 
 	void setChannel(final Point point) {
@@ -157,7 +149,7 @@ public final class Bin implements Cloneable {
 			} else if (yChan >= currentPlot.getSizeY()) {
 				yChan = currentPlot.getSizeY() - 1;
 			}
-			return Factory.create(xChan, yChan);
+			return create(xChan, yChan);
 		}
 	}
 }

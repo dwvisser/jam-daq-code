@@ -193,7 +193,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener,
 	protected transient boolean settingGate = false;
 
 	/** selection start point in plot coordinates */
-	protected transient Bin selectStart = Bin.Factory.create();
+	protected transient Bin selectStart = Bin.create();
 
 	/** currently displaying a gate? */
 	protected transient boolean displayingGate = false;

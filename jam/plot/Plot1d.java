@@ -37,7 +37,8 @@ final class Plot1d extends AbstractPlot {
 	private List<Integer> overlayNumber = Collections
 			.synchronizedList(new ArrayList<Integer>());
 
-	private List<double []> overlayCounts = Collections.synchronizedList(new ArrayList<double []>());
+	private List<double[]> overlayCounts = Collections
+			.synchronizedList(new ArrayList<double[]>());
 
 	private final PlotColorMap colorMap = PlotColorMap.getInstance();
 
@@ -433,8 +434,7 @@ final class Plot1d extends AbstractPlot {
 				}
 			}
 			setLastMovePoint(graph.toData(me.getPoint()).getPoint());
-			addToSelectClip(selectStart, Bin.Factory
-					.create(lastMovePoint));
+			addToSelectClip(selectStart, Bin.create(lastMovePoint));
 			synchronized (selectingAreaClip) {
 				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}
@@ -444,13 +444,13 @@ final class Plot1d extends AbstractPlot {
 				/* draw new line */
 				synchronized (lastMovePoint) {
 					if (isMouseMoveClipClear()) {
-						final Point p1 = graph.toViewLin(Bin.Factory.create(
+						final Point p1 = graph.toViewLin(Bin.create(
 								pointsGate.xpoints[pointsGate.npoints - 1],
 								pointsGate.ypoints[pointsGate.npoints - 1]));
 						addToMouseMoveClip(p1.x, p1.y);
 						if (pointsGate.npoints > 1) {
 							final Point p2 = graph
-									.toViewLin(Bin.Factory
+									.toViewLin(Bin
 											.create(
 													pointsGate.xpoints[pointsGate.npoints - 2],
 													pointsGate.ypoints[pointsGate.npoints - 2]));

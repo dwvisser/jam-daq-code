@@ -1030,7 +1030,7 @@ final class PlotGraphics {
         clipPlot();
         g.draw(getRectangleOutline1d(x1, x2));
     }
-
+    
     /**
      * Given a rectangle in plot coordinates, return the bounding rectangle in
      * graphics coordinates.
@@ -1043,7 +1043,7 @@ final class PlotGraphics {
         final int highX = (int) channels.getMaxX();
         final int highY = (int) channels.getMaxY();
         return getRectangleOutline2d(
-                Bin.Factory.create(channels.getLocation()), Bin.Factory.create(
+                Bin.create(channels.getLocation()), Bin.create(
                         highX, highY));
     }
 
@@ -1275,7 +1275,7 @@ final class PlotGraphics {
      * often we want to go this way. The ones that return int are faster.
      */
     synchronized Bin toData(Point viewPoint) {
-        return Bin.Factory.create(toDataHorz(viewPoint.x),
+        return Bin.create(toDataHorz(viewPoint.x),
                 toDataVert(viewPoint.y));
     }
 
