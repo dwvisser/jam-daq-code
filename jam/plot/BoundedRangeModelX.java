@@ -1,9 +1,5 @@
 package jam.plot;
 
-import jam.data.Histogram;
-import jam.global.JamStatus;
-
-import javax.swing.DefaultBoundedRangeModel;
 
 /**
  * <code>Scroller</code> contains instance of this, and it is be handed to the
@@ -13,31 +9,15 @@ import javax.swing.DefaultBoundedRangeModel;
  * @author Dale Visser
  * @version 1.2
  */
-final class BoundedRangeModelX extends DefaultBoundedRangeModel {
+final class BoundedRangeModelX extends AbstractScrollBarRangeModel {
 
-	private Limits lim;
-
-	private PlotContainer plot;
-	
-	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
-
-	BoundedRangeModelX(PlotContainer p) {
-		super();
-		setFields(p);
-	}
-
-	void setFields(PlotContainer p) {
-		plot = p;
-		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
-		if (hist != null) {
-			lim = Limits.getLimits(hist);
-		}
-		setXDisplayLimits();
+	BoundedRangeModelX(PlotContainer container) {
+		super(container);
 	}
 
 	void scrollBarMoved() {
-		int maxX = getValue() + getExtent()/*-1*/;
-		int minX = getValue();
+		final int maxX = getValue() + getExtent();
+		final int minX = getValue();
 		if (lim != null) {
 			lim.setLimitsX(minX, maxX);
 		}
@@ -46,17 +26,17 @@ final class BoundedRangeModelX extends DefaultBoundedRangeModel {
 	/**
 	 * Set model using values in Limits object.
 	 */
-	void setXDisplayLimits() {
+	protected void setDisplayLimits() {
 		int min, max, extent, value;
 		min = 0;
 		max = plot.getSizeX() - 1;
-		if (lim != null) {
-			extent = lim.getMaximumX() - lim.getMinimumX()/* +1 */;
-			value = lim.getMinimumX();
-		} else {
+		if (lim == null) {
 			extent = max - min + 1;
 			value = 0;
-		}
+		} else {
+			extent = lim.getMaximumX() - lim.getMinimumX();
+			value = lim.getMinimumX();
+		} 
 		/*
 		 * BoundedRangeModel method, throws appropriate event up to scroll bar.
 		 */
