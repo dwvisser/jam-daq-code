@@ -97,8 +97,8 @@ public final class Script implements Observer {
 	 * @param inStream e.g., <code>jam.sort.stream.YaleInputStream.class</code>
 	 * @param outStream e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
 	 * @see jam.sort.SortRoutine
-	 * @see jam.sort.stream.EventInputStream
-	 * @see jam.sort.stream.EventOutputStream
+	 * @see jam.sort.stream.AbstractEventInputStream
+	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
 	public  void setupOffline(final File classPath, 
 	final String sortName, final Class inStream, final Class outStream){

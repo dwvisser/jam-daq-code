@@ -12,10 +12,10 @@ import java.io.IOException;
  *
  * @version	0.5 April 98
  * @author 	Ken Swartz Jim McDonald
- * @see         EventInputStream
+ * @see         AbstractEventInputStream
  * @since       JDK1.1
  */
-public final class UconnInputStream extends EventInputStream {
+public final class UconnInputStream extends AbstractEventInputStream {
 
 	static private final int HEAD_SIZE = 5; //size of header in 2 byte words
 
@@ -54,14 +54,14 @@ public final class UconnInputStream extends EventInputStream {
 	private boolean newBlock = true;
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
 	 */
 	public UconnInputStream(MessageHandler console) {
 		super(console);
 	}
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
 	 */
 	public UconnInputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);

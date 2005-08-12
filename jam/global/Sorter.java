@@ -1,7 +1,7 @@
 package jam.global; 
 
 import jam.sort.SortException;
-import jam.sort.stream.EventOutputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 /**
  * Interface for user-written sort classes.
@@ -80,6 +80,6 @@ import jam.sort.stream.EventOutputStream;
 	 * @param out
 	 *            stream to which presorted event output will go
 	 */
-	void setEventOutputStream(EventOutputStream out);
+	void setEventOutputStream(AbstractEventOutputStream out);
 
 }

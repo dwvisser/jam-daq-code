@@ -8,7 +8,7 @@ import java.io.EOFException;
  *
  * @version	0.5 April 98
  * @author 	Dale Visser, Ken Swartz
- * @see         EventInputStream
+ * @see         AbstractEventInputStream
  * @since       JDK1.1
  */
 public class L00XInputStream extends AbstractL002HeaderReader implements L002Parameters {

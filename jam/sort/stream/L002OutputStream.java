@@ -13,10 +13,10 @@ import java.util.TimeZone;
  *
  * @version	0.5 April 98
  * @author 	Dale Visser, Ken Swartz
- * @see         EventOutputStream
+ * @see         AbstractEventOutputStream
  * @since       JDK1.1
  */
-public final class L002OutputStream extends EventOutputStream implements L002Parameters {
+public final class L002OutputStream extends AbstractEventOutputStream implements L002Parameters {
     
     private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
     {

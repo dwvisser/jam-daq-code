@@ -5,7 +5,7 @@ package jam.sort.stream;
  * the running <code>EventInputStream</code>.
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
- * @see EventInputStream
+ * @see AbstractEventInputStream
  */
 public class EventInputStatus{
     /**

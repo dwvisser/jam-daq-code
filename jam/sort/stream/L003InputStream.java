@@ -13,10 +13,10 @@ import java.io.IOException;
  * 
  * @version 0.5 April 98
  * @author Dale Visser, Ken Swartz
- * @see EventInputStream
+ * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public final class L003InputStream extends EventInputStream implements
+public final class L003InputStream extends AbstractEventInputStream implements
 		L003Parameters {
 
 	private int eventValue;
@@ -39,14 +39,14 @@ public final class L003InputStream extends EventInputStream implements
 	}
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
 	 */
 	public L003InputStream(MessageHandler console) {
 		super(console);
 	}
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
 	 */
 	public L003InputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);

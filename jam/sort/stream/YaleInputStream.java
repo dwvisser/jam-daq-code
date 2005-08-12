@@ -8,7 +8,7 @@ import java.io.EOFException;
  *
  * @version	0.5 April 98
  * @author 	Dale Visser, Ken Swartz
- * @see         EventInputStream
+ * @see         AbstractEventInputStream
  * @since       JDK1.1
  */
 public class YaleInputStream extends AbstractL002HeaderReader implements L002Parameters {
@@ -19,21 +19,21 @@ public class YaleInputStream extends AbstractL002HeaderReader implements L002Par
     //make sure to issue a setConsole() after using this constructor
     //It is here to satisfy the requirements of Class.newInstance()
     /**
-     * @see EventInputStream#EventInputStream()
+     * @see AbstractEventInputStream#EventInputStream()
      */
     public YaleInputStream(){
         super();
     }
 
     /**
-     * @see EventInputStream#EventInputStream(MessageHandler)
+     * @see AbstractEventInputStream#EventInputStream(MessageHandler)
      */
     public YaleInputStream(MessageHandler console) {
         super(console);
     }
 
     /**
-     * @see EventInputStream#EventInputStream(MessageHandler, int)
+     * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
      */
     public YaleInputStream(MessageHandler console,int eventSize) {
         super(console, eventSize);

@@ -12,12 +12,12 @@ import java.io.IOException;
  * 
  * @version 0.4 June 2001
  * @author Ralph France
- * @see jam.sort.stream.EventInputStream
+ * @see jam.sort.stream.AbstractEventInputStream
  * @see jam.sort.stream.L002InputStream
  * @see jam.sort.stream.UconnInputStream
  * @since JDK1.3
  */
-public final class Kmax6InputStream extends EventInputStream {
+public final class Kmax6InputStream extends AbstractEventInputStream {
 
 	private int blockEventType;
 

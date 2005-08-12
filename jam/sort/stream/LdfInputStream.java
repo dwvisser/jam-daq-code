@@ -9,10 +9,10 @@ import java.io.IOException;
  *
  * @version	0.5 April 98
  * @author 	Dale Visser, Ken Swartz
- * @see         EventInputStream
+ * @see         AbstractEventInputStream
  * @since       JDK1.1
  */
-public class LdfInputStream extends EventInputStream implements L002Parameters {
+public class LdfInputStream extends AbstractEventInputStream implements L002Parameters {
 
     private EventInputStatus status;
     private int parameter;

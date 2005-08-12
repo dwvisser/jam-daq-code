@@ -10,7 +10,7 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.Sorter;
 import jam.sort.stream.EventInputStatus;
-import jam.sort.stream.EventInputStream;
+import jam.sort.stream.AbstractEventInputStream;
 
 import java.util.Arrays;
 
@@ -44,7 +44,7 @@ public class SortDaemon extends GoodThread {
 
 	private Sorter sorter;
 
-	private EventInputStream eventInputStream;
+	private AbstractEventInputStream eventInputStream;
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -84,7 +84,7 @@ public class SortDaemon extends GoodThread {
 	 * @param eventSize
 	 *            number of parameters per event
 	 */
-	public void setup(EventInputStream eventInputStream, int eventSize) {
+	public void setup(AbstractEventInputStream eventInputStream, int eventSize) {
 		//this.mode = mode;
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);

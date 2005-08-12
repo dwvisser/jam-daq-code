@@ -1,8 +1,8 @@
 package jam.sort;
 
 import jam.global.Sorter;
-import jam.sort.stream.EventInputStream;
-import jam.sort.stream.EventOutputStream;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 import java.io.File;
 
@@ -17,8 +17,8 @@ public abstract class AbstractSortControl {
 
 	/* these private fields aren't in use yet. */
 	private Sorter sorter;
-	private EventOutputStream eventOutputStream;
-	private EventInputStream eventInputStream;
+	private AbstractEventOutputStream eventOutputStream;
+	private AbstractEventInputStream eventInputStream;
 	private String experimentName;
 	private File pathHistogram;
 	private File pathEvent;
@@ -45,7 +45,7 @@ public abstract class AbstractSortControl {
 	 * Sets the event input stream
 	 * @param eventInputStream
 	 */
-	public void setInputStream(EventInputStream eventInputStream){
+	public void setInputStream(AbstractEventInputStream eventInputStream){
 		this.eventInputStream=eventInputStream;
 	}
 	
@@ -54,7 +54,7 @@ public abstract class AbstractSortControl {
 	 * 
 	 * @return the event input stream
 	 */
-	public EventInputStream getInputStream(){
+	public AbstractEventInputStream getInputStream(){
 	    return eventInputStream;
 	}
 	
@@ -62,7 +62,7 @@ public abstract class AbstractSortControl {
 	 * Sets the event output stream
 	 * @param eventOutputStream
 	 */
-	public void setOutputStream(EventOutputStream eventOutputStream){
+	public void setOutputStream(AbstractEventOutputStream eventOutputStream){
 		this.eventOutputStream=eventOutputStream;
 	}
 	
@@ -71,7 +71,7 @@ public abstract class AbstractSortControl {
 	 * 
 	 * @return the event output stream
 	 */
-	public EventOutputStream getOutputStream(){
+	public AbstractEventOutputStream getOutputStream(){
 	    return eventOutputStream;
 	}
 

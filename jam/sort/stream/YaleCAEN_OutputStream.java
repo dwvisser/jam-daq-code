@@ -14,7 +14,7 @@ import java.util.TimeZone;
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  * @see YaleCAEN_InputStream
  */
-public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
+public abstract class YaleCAEN_OutputStream extends AbstractEventOutputStream implements
 		L002Parameters {
 
 	SimpleDateFormat formatter;
@@ -41,7 +41,7 @@ public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
 	}
 
 	/**
-	 * @see jam.sort.stream.EventOutputStream#writeHeader()
+	 * @see jam.sort.stream.AbstractEventOutputStream#writeHeader()
 	 */
 	public void writeHeader() throws EventException {
 		String dateString = formatter.format(RunInfo.runStartTime); // date
@@ -78,7 +78,7 @@ public abstract class YaleCAEN_OutputStream extends EventOutputStream implements
 	}
 
 	/**
-	 * @see jam.sort.stream.EventOutputStream#isEndRun(short)
+	 * @see jam.sort.stream.AbstractEventOutputStream#isEndRun(short)
 	 */
 	public boolean isEndRun(short event) {
 		final short endRun = (short) (YaleCAEN_InputStream.BUFFER_END & 0xffff);

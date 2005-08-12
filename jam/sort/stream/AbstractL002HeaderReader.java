@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 2, 2004
  */
-public abstract class AbstractL002HeaderReader extends EventInputStream implements L002Parameters {
+public abstract class AbstractL002HeaderReader extends AbstractEventInputStream implements L002Parameters {
 
 	/**
 	 * Creates the input stream given an event size.
@@ -31,14 +31,14 @@ public abstract class AbstractL002HeaderReader extends EventInputStream implemen
 	}
 	
 	/**
-	 * @see EventInputStream#EventInputStream()
+	 * @see AbstractEventInputStream#EventInputStream()
 	 */
 	public AbstractL002HeaderReader(){
 		super();
 	}
 
 	/**
-	 * @see jam.sort.stream.EventInputStream#readHeader()
+	 * @see jam.sort.stream.AbstractEventInputStream#readHeader()
 	 */
 	public final boolean readHeader() throws EventException {
 		final byte[] headerStart=new byte[32];//header key

@@ -14,10 +14,10 @@ import java.util.TimeZone;
  * 
  * @version 0.5 April 98
  * @author Dale Visser, Ken Swartz
- * @see EventOutputStream
+ * @see AbstractEventOutputStream
  * @since JDK1.1
  */
-public final class YaleOutputStream extends EventOutputStream implements
+public final class YaleOutputStream extends AbstractEventOutputStream implements
 		L002Parameters {
 	private final SimpleDateFormat formatter = new SimpleDateFormat(
 			"MM/dd/yy HH:mm  ");
@@ -33,7 +33,7 @@ public final class YaleOutputStream extends EventOutputStream implements
 	}
 
 	/**
-	 * @see EventOutputStream#EventOutputStream(int)
+	 * @see AbstractEventOutputStream#EventOutputStream(int)
 	 */
 	public YaleOutputStream(int eventSize) {
 		super(eventSize);

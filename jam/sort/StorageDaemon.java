@@ -2,8 +2,8 @@ package jam.sort;
 import jam.global.GoodThread;
 import jam.global.MessageHandler;
 import jam.sort.stream.EventException;
-import jam.sort.stream.EventInputStream;
-import jam.sort.stream.EventOutputStream;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 import java.io.File;
 import java.io.InputStream;
@@ -86,10 +86,10 @@ public abstract class StorageDaemon extends GoodThread {
 	/**
 	 * The output stream used to write events.
 	 */
-	protected EventOutputStream eventOutput;
+	protected AbstractEventOutputStream eventOutput;
 
 	/** The input stream used to read events. */       
-	protected EventInputStream eventInput;
+	protected AbstractEventInputStream eventInput;
 
 	/**
 	 * Number of buffers processed.
@@ -128,8 +128,8 @@ public abstract class StorageDaemon extends GoodThread {
 	 * @param eventInputStream needed in order to determine end-of-run
 	 * @param eventOutputStream presumably same format as input stream(?)
 	 */
-	public void setupOn(EventInputStream eventInputStream,
-	EventOutputStream eventOutputStream) {
+	public void setupOn(AbstractEventInputStream eventInputStream,
+	AbstractEventOutputStream eventOutputStream) {
 		this.mode = ONLINE;
 		this.eventInput = eventInputStream;
 		this.eventOutput = eventOutputStream;
@@ -142,8 +142,8 @@ public abstract class StorageDaemon extends GoodThread {
 	 * @param eventOutputStream type of outgoing data
 	 */
 	public void setupOff(
-		EventInputStream eventInputStream,
-		EventOutputStream eventOutputStream) {
+		AbstractEventInputStream eventInputStream,
+		AbstractEventOutputStream eventOutputStream) {
 		this.mode = OFFLINE;
 		this.eventInput = eventInputStream;
 		this.eventOutput = eventOutputStream;

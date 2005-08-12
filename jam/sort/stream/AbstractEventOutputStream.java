@@ -10,7 +10,7 @@ import java.io.OutputStream;
  * @version 0.5
  * @since JDK 1.1
  */
-public abstract class EventOutputStream {
+public abstract class AbstractEventOutputStream {
 
 	//status variables
 
@@ -57,7 +57,7 @@ public abstract class EventOutputStream {
 	/** 
 	 * Creates a new event output stream.
 	 */
-	protected EventOutputStream() {
+	protected AbstractEventOutputStream() {
 		super();
 	}
 
@@ -66,7 +66,7 @@ public abstract class EventOutputStream {
 	 *
 	 * @param eventSize the number of values per event
 	 */
-	protected EventOutputStream(int eventSize) {
+	protected AbstractEventOutputStream(int eventSize) {
 		setEventSize(eventSize);
 	}
 

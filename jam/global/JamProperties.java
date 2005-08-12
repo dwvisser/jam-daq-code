@@ -116,14 +116,14 @@ public class JamProperties {
 	/**
 	 * Fully qualified name of the default <code>EventInputStream</code>.
 	 * 
-	 * @see jam.sort.stream.EventInputStream
+	 * @see jam.sort.stream.AbstractEventInputStream
 	 */	
 	public final static String EVENT_INSTREAM = "event.instream";
 	
 	/**
 	 * Fully qualified name of the default <code>EventOutputStream</code>.
 	 * 
-	 * @see jam.sort.stream.EventOutputStream
+	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
 	public final static String EVENT_OUTSTREAM = "event.outstream";
 	

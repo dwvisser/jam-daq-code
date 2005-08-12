@@ -10,8 +10,8 @@ import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.stream.EventInputStream;
-import jam.sort.stream.EventOutputStream;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -98,10 +98,10 @@ public final class SetupSortOff extends AbstractSetup {
     final transient private DisplayCounters dispCount;
 
     /** Input stream, how tells how to read an event */
-    private transient EventInputStream eventInput;
+    private transient AbstractEventInputStream eventInput;
 
     /** Output stream, tells how to write an event */
-    private transient EventOutputStream eventOutput;
+    private transient AbstractEventOutputStream eventOutput;
 
     private transient final JComboBox inChooser, outChooser;
 
@@ -166,16 +166,16 @@ public final class SetupSortOff extends AbstractSetup {
         pEntry.add(sortChoice);
         /* Input stream */
         Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(RTSI.find(
-                "jam.sort.stream", EventInputStream.class, false));
-        lhs.remove(EventInputStream.class);
+                "jam.sort.stream", AbstractEventInputStream.class, false));
+        lhs.remove(AbstractEventInputStream.class);
         inChooser = new JComboBox(new Vector<Class<?>>(lhs));
         inChooser.setToolTipText("Select input event data format.");
         selectName(inChooser, lhs, defInStream);
         pEntry.add(inChooser);
         // Output stream
         lhs = new LinkedHashSet<Class<?>>(RTSI.find("jam.sort.stream",
-                EventOutputStream.class, false));
-        lhs.remove(EventOutputStream.class);
+                AbstractEventOutputStream.class, false));
+        lhs.remove(AbstractEventOutputStream.class);
         outChooser = new JComboBox(new Vector<Class<?>>(lhs));
         outChooser.setToolTipText("Select output event format.");
         selectName(outChooser, lhs, defOutStream);
@@ -255,7 +255,7 @@ public final class SetupSortOff extends AbstractSetup {
     private void loadEventInput() throws JamException {
         try {// create new event input stream class
             synchronized (this) {
-                eventInput = (EventInputStream) ((Class) inChooser
+                eventInput = (AbstractEventInputStream) ((Class) inChooser
                         .getSelectedItem()).newInstance();
             }
             eventInput.setConsole(msgHandler);
@@ -274,7 +274,7 @@ public final class SetupSortOff extends AbstractSetup {
     private void loadEventOutput() throws JamException {
         try {// create new event output stream class
             synchronized (this) {
-                eventOutput = (EventOutputStream) ((Class) outChooser
+                eventOutput = (AbstractEventOutputStream) ((Class) outChooser
                         .getSelectedItem()).newInstance();
             }
         } catch (InstantiationException ie) {

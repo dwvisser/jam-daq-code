@@ -10,10 +10,10 @@ import java.io.IOException;
  *
  * @version	0.5 April 98
  * @author 	Ken Swartz
- * @see         EventInputStream
+ * @see         AbstractEventInputStream
  * @since       JDK1.1
  */
-public class XsysInputStream extends EventInputStream {
+public class XsysInputStream extends AbstractEventInputStream {
 
 	static private final int END_REC = 0x0a;
 
@@ -21,7 +21,7 @@ public class XsysInputStream extends EventInputStream {
 	int bufferNumber;
 	
 	/**
-	 * @see EventInputStream#EventInputStream()
+	 * @see AbstractEventInputStream#EventInputStream()
 	 *
 	 */
 	public XsysInputStream(){
@@ -29,7 +29,7 @@ public class XsysInputStream extends EventInputStream {
 	}
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
 	 */
 	public XsysInputStream(MessageHandler console) {
 		super(console);
@@ -37,7 +37,7 @@ public class XsysInputStream extends EventInputStream {
 	}
 
 	/**
-	 * @see EventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
 	 */
 	public XsysInputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);

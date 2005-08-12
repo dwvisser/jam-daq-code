@@ -13,8 +13,8 @@ import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
 import jam.sort.VME_Map;
-import jam.sort.stream.EventInputStream;
-import jam.sort.stream.EventOutputStream;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.Console;
 
 import java.awt.BorderLayout;
@@ -102,9 +102,9 @@ public final class SetupSortOn extends AbstractSetup {
     private DiskDaemon diskDaemon;
 
     /* streams to read and write events */
-    private EventInputStream inStream;
+    private AbstractEventInputStream inStream;
 
-    private EventOutputStream outStream;
+    private AbstractEventOutputStream outStream;
 
     private static SetupSortOn instance = null;
 
@@ -226,8 +226,8 @@ public final class SetupSortOn extends AbstractSetup {
         pEntries.add(sortChoice);
         /* Input stream classes */
         Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(RTSI.find(
-                "jam.sort.stream", EventInputStream.class, false));
-        lhs.remove(EventInputStream.class);
+                "jam.sort.stream", AbstractEventInputStream.class, false));
+        lhs.remove(AbstractEventInputStream.class);
         inChooser = new JComboBox(new Vector<Class<?>>(lhs));
         inChooser
                 .setToolTipText("Select the reader for your event data format.");
@@ -235,8 +235,8 @@ public final class SetupSortOn extends AbstractSetup {
         pEntries.add(inChooser);
         /* Output stream classes */
         lhs = new LinkedHashSet<Class<?>>(RTSI.find("jam.sort.stream",
-                EventOutputStream.class, false));
-        lhs.remove(EventOutputStream.class);
+                AbstractEventOutputStream.class, false));
+        lhs.remove(AbstractEventOutputStream.class);
         outChooser = new JComboBox(new Vector<Class<?>>(lhs));
         outChooser
                 .setToolTipText("Select the writer for your output event format.");
@@ -444,7 +444,7 @@ public final class SetupSortOn extends AbstractSetup {
                 : null;
         /* typical setup of event streams */
         try { // create new event input stream class
-            inStream = (EventInputStream) ((Class) inChooser.getSelectedItem())
+            inStream = (AbstractEventInputStream) ((Class) inChooser.getSelectedItem())
                     .newInstance();
             inStream.setConsole(jamConsole);
         } catch (InstantiationException ie) {
@@ -460,7 +460,7 @@ public final class SetupSortOn extends AbstractSetup {
                     + inChooser.getSelectedItem());
         }
         try { // create new event input stream class
-            outStream = (EventOutputStream) ((Class) outChooser
+            outStream = (AbstractEventOutputStream) ((Class) outChooser
                     .getSelectedItem()).newInstance();
             outStream.setEventSize(sortRoutine.getEventSize());
         } catch (InstantiationException ie) {
