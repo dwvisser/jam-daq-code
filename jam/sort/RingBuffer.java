@@ -21,32 +21,41 @@ public final class RingBuffer {
 	/**
 	 * Number of buffers in ring, a power of 2.
 	 */
-	protected static final int NUMBER_BUFFERS = 1 << 6; //64 buffers in ring
+	static final int NUMBER_BUFFERS = 1 << 6; //64 buffers in ring
 
 	private static final int CLOSE_TO_CAPACITY = NUMBER_BUFFERS >> 5;
 
 	/**
 	 * Mask that makes counter less than Number buffers
 	 */
-	protected static final int MASK = NUMBER_BUFFERS - 1;
+	private static final int MASK = NUMBER_BUFFERS - 1;
 
-	private final byte[][] ringBuffer = new byte[NUMBER_BUFFERS][BUFFER_SIZE];;
+	private transient final byte[][] buffer;
 
 	/**
 	 * where we will put the next buffer
 	 */
-	private int posPut = 0;
+	private transient int posPut = 0;
 
 	/**
 	 * where we will get the next buffer from
 	 */
-	private int posGet = 0;
+	private transient int posGet = 0;
 
 	/**
 	 * Creates a new ring buffer.
 	 */
 	public RingBuffer() {
-		clear();
+		this(false);
+	}
+	
+	public RingBuffer(boolean empty) {
+		super();
+		buffer = empty ? new byte[0][0] : new byte[NUMBER_BUFFERS][BUFFER_SIZE];
+	}
+	
+	public boolean isNull(){
+		return buffer.length==0;
 	}
 
 	/**
@@ -56,8 +65,9 @@ public final class RingBuffer {
 	 * @exception RingFullException
 	 *                thrown when the ring is too full to be written to
 	 */
-	public synchronized void putBuffer(byte[] inBuffer)
+	public synchronized void putBuffer(final byte[] inBuffer)
 			throws RingFullException {
+		assert !isNull() : "Attempted putBuffer() on 'null' ring buffer.";
 		if (isFull()) {
 			final StringBuffer message = new StringBuffer();
 			message.append("Lost a buffer in thread \"");
@@ -65,7 +75,7 @@ public final class RingBuffer {
 			message.append("\" when putBuffer() called while already full.");
 			throw new RingFullException(message.toString());
 		}
-		System.arraycopy(inBuffer, 0, ringBuffer[posPut & MASK], 0,
+		System.arraycopy(inBuffer, 0, buffer[posPut & MASK], 0,
 				inBuffer.length);
 		final boolean emptyBeforePut = isEmpty();
 		posPut++;
@@ -108,7 +118,7 @@ public final class RingBuffer {
 			}
 		}
 		/* & MASK serves to keep index accessed running 0..63,0..63, etc. */
-		System.arraycopy(ringBuffer[(posGet++) & MASK], 0, out, 0, out.length);
+		System.arraycopy(buffer[(posGet++) & MASK], 0, out, 0, out.length);
 	}
 
 	/**
@@ -127,7 +137,7 @@ public final class RingBuffer {
 	 * @return <code>true</code> if there are no more available buffers
 	 */
 	public synchronized boolean isFull() {
-		return posPut - posGet + 1 > NUMBER_BUFFERS;
+		return isNull() || (posPut - posGet + 1 > NUMBER_BUFFERS);
 	}
 
 	/**
@@ -135,7 +145,13 @@ public final class RingBuffer {
 	 * @return the number of available buffers
 	 */
 	public synchronized int getAvailableBuffers() {
-		return NUMBER_BUFFERS - getUsedBuffers();
+		final int rval;
+		if (isNull()){
+			rval=0;
+		} else {
+			rval = NUMBER_BUFFERS - getUsedBuffers();
+		}
+		return rval;
 	}
 
 	/**
