@@ -206,12 +206,12 @@ public class NetDaemon extends GoodThread {
 	 *            <code>true</code> if write events, <code>false</code> if
 	 *            not
 	 */
-	public void setWriter(boolean writerOn) {
-		if (storageRing != null) {
-			this.writerOn = writerOn;
-		} else {
+	public void setWriter(final boolean writerOn) {
+		if (storageRing.isNull()) {
 			msgHandler
-					.warningOutln("Can't write out events no ring buffer [NetDaemon].");
+			.warningOutln(getClass().getName()+": Can't write out events. There is no ring buffer.");
+		} else {
+			this.writerOn = writerOn;
 		}
 	}
 
