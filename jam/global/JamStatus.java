@@ -396,7 +396,7 @@ public final class JamStatus {
 	 * @param gate
 	 *            of current gate
 	 */
-	public void setCurrentGate(Nameable gate) {
+	public void setCurrentGate(final Nameable gate) {
 		synchronized (this) {
 			currentGate = gate;
 		}
