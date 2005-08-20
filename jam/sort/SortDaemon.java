@@ -9,8 +9,8 @@ import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.Sorter;
-import jam.sort.stream.EventInputStatus;
 import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
 
 import java.util.Arrays;
 
@@ -38,13 +38,13 @@ public class SortDaemon extends GoodThread {
 	 */
 	final static int BUFFER_SIZE = 8 * 1024;
 
-	private final Controller controller;
+	private transient final Controller controller;
 
-	private final MessageHandler msgHandler;
+	private transient final MessageHandler msgHandler;
 
-	private Sorter sorter;
+	private transient Sorter sorter;
 
-	private AbstractEventInputStream eventInputStream;
+	private transient AbstractEventInputStream eventInputStream;
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -59,7 +59,7 @@ public class SortDaemon extends GoodThread {
 
 	private int eventCount;
 
-	private int eventSortedCount;
+	private transient int eventSortedCount;
 
 	private int bufferCount;
 
@@ -68,24 +68,26 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @param con
 	 *            the sort control process
-	 * @param mh
+	 * @param messageHandler
 	 *            the console for writing out messages to the user
 	 */
-	public SortDaemon(Controller con, MessageHandler mh) {
+	public SortDaemon(Controller con, MessageHandler messageHandler) {
+		super();
 		controller = con;
-		msgHandler = mh;
+		msgHandler = messageHandler;
 		setName("Event Sorter");
 	}
 
 	/**
 	 * setup the sort deamon tell it the mode and stream
+	 * 
 	 * @param eventInputStream
 	 *            the source of event data
 	 * @param eventSize
 	 *            number of parameters per event
 	 */
-	public void setup(AbstractEventInputStream eventInputStream, int eventSize) {
-		//this.mode = mode;
+	public void setup(final AbstractEventInputStream eventInputStream,
+			final int eventSize) {
 		this.eventInputStream = eventInputStream;
 		setEventSize(eventSize);
 		/* Set the event size for the stream. */
@@ -101,7 +103,7 @@ public class SortDaemon extends GoodThread {
 	 * @param newSorter
 	 *            an object capable of sorting event data
 	 */
-	public void setSorter(Sorter newSorter) {
+	public void setSorter(final Sorter newSorter) {
 		sorter = newSorter;
 	}
 
@@ -111,7 +113,7 @@ public class SortDaemon extends GoodThread {
 	 * @param ringBuffer
 	 *            the source of event data
 	 */
-	public void setRingBuffer(RingBuffer ringBuffer) {
+	public void setRingBuffer(final RingBuffer ringBuffer) {
 		this.ringBuffer = ringBuffer;
 	}
 
@@ -123,26 +125,33 @@ public class SortDaemon extends GoodThread {
 	 * @param sample
 	 *            the sample interval
 	 */
-	public synchronized void setSortInterval(int sample) {
-		sortInterval = sample;
+	public void setSortInterval(final int sample) {
+		synchronized (this) {
+			sortInterval = sample;
+		}
 	}
 
 	private boolean callSort = true;
 
-	private synchronized void setCallSort(boolean state) {
-		callSort = state;
+	private void setCallSort(final boolean state) {
+		synchronized (this) {
+			callSort = state;
+		}
 	}
 
-	private synchronized boolean getCallSort() {
-		return callSort;
+	private boolean getCallSort() {
+		synchronized (this) {
+			return callSort;
+		}
 	}
 
 	/**
 	 * Sets whether to write selected events to disk.
 	 * 
-	 * @param state whether writing of selected events to disk is enabled
+	 * @param state
+	 *            whether writing of selected events to disk is enabled
 	 */
-	public void setWriteEnabled(boolean state) {
+	public void setWriteEnabled(final boolean state) {
 		sorter.setWriteEnabled(state);
 	}
 
@@ -152,7 +161,7 @@ public class SortDaemon extends GoodThread {
 	 * @param size
 	 *            the number of parameters per event
 	 */
-	public void setEventSize(int size) {
+	public void setEventSize(final int size) {
 		eventSize = size;
 	}
 
@@ -170,7 +179,8 @@ public class SortDaemon extends GoodThread {
 	 */
 	public void run() {
 		try {
-			if (JamStatus.getSingletonInstance().isOnline()) {//which type of sort to do
+			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
+				// sort to do
 				sortOnline();
 			} else {
 				sortOffline();
@@ -187,9 +197,11 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @see jam.global.Beginner
 	 */
-	public synchronized void userBegin() {
-		if (sorter instanceof Beginner) {
-			((Beginner) sorter).begin();
+	public void userBegin() {
+		synchronized (this) {
+			if (sorter instanceof Beginner) {
+				((Beginner) sorter).begin();
+			}
 		}
 	}
 
@@ -199,9 +211,11 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @see jam.global.Ender
 	 */
-	public synchronized void userEnd() {
-		if (sorter instanceof Ender) {
-			((Ender) sorter).end();
+	public void userEnd() {
+		synchronized (this) {
+			if (sorter instanceof Ender) {
+				((Ender) sorter).end();
+			}
 		}
 	}
 
@@ -216,7 +230,7 @@ public class SortDaemon extends GoodThread {
 		final RingInputStream ringInputStream = new RingInputStream();
 		final int[] eventData = new int[eventSize];
 		final byte[] buffer = RingBuffer.freshBuffer();
-		while (true) { //loop while acquisition on
+		while (true) { // loop while acquisition on
 			/* Get a new buffer and make an input stream out of it. */
 			if (ringBuffer.isCloseToFull()) {
 				increaseSortInterval();
@@ -245,7 +259,8 @@ public class SortDaemon extends GoodThread {
 					incrementEventCount();
 					/* Zero event array and get ready for next event. */
 					Arrays.fill(eventData, 0);
-				} //else SCALER_VALUE, assume sort stream took care and move on
+				} // else SCALER_VALUE, assume sort stream took care and move
+				// on
 			}
 			/* We have reached the end of a buffer. */
 			if (status == EventInputStatus.END_BUFFER) {
@@ -259,37 +274,37 @@ public class SortDaemon extends GoodThread {
 			} else if (status == EventInputStatus.END_FILE) {
 				msgHandler
 						.warningOutln("Tried to read past end of event input stream.");
-			} else {//we have unknown status
+			} else {// we have unknown status
 				/* unrecoverable error should not be here */
 				throw new SortException(
 						"Sorter stopped due to unknown status: " + status);
 			}
 			yield();
-		}//end infinite loop
+		}// end infinite loop
 	}
 
-	private boolean osc = false;
+	private transient boolean osc = false;
 
-	private final Object offlineSortingLock = new Object();
+	private transient final Object offlineSortLock = new Object();
 
 	/**
 	 * Call to gracefully interrupt and end the current offline sort. This is
 	 * used as one of the conditions to read in the next buffer
 	 */
 	public void cancelOfflineSorting() {
-		synchronized (offlineSortingLock) {
+		synchronized (offlineSortLock) {
 			osc = true;
 		}
 	}
 
 	private void resumeOfflineSorting() {
-		synchronized (offlineSortingLock) {
+		synchronized (offlineSortLock) {
 			osc = false;
 		}
 	}
 
 	private boolean offlineSortingCanceled() {
-		synchronized (offlineSortingLock) {
+		synchronized (offlineSortLock) {
 			return osc;
 		}
 	}
@@ -302,23 +317,23 @@ public class SortDaemon extends GoodThread {
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
 	public void sortOffline() throws Exception {
-	    final SortControl sortControl=(SortControl)controller;
+		final SortControl sortControl = (SortControl) controller;
 		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
-		boolean atBuffer = false; //are we at a buffer word
+		boolean atBuffer = false; // are we at a buffer word
 		/*
 		 * Next statement causes checkState() to immediately suspend this
 		 * thread.
 		 */
 		sortControl.atSortStart();
-		while (checkState()) {//checkstate loop
+		while (checkState()) {// checkstate loop
 			/* suspends this thread when we're done sorting all files */
 			sortControl.atSortStart();
-			resumeOfflineSorting();//after we come out of suspend
+			resumeOfflineSorting();// after we come out of suspend
 			/* Loop for each new sort file. */
 			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
 				boolean endSort = false;
-				while (!offlineSortingCanceled() && !endSort) {//buffer loop
+				while (!offlineSortingCanceled() && !endSort) {// buffer loop
 					/* Zero the event container. */
 					Arrays.fill(eventData, 0);
 					/* Loop to read & sort one event at a time. */
@@ -326,7 +341,9 @@ public class SortDaemon extends GoodThread {
 							&& (((status = eventInputStream
 									.readEvent(eventData)) == EventInputStatus.EVENT)
 									|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
-						if (!offlineSortingCanceled()) {
+						if (offlineSortingCanceled()) {
+							status = EventInputStatus.END_RUN;
+						} else {
 							if (status == EventInputStatus.EVENT) {
 								sorter.sort(eventData);
 								incrementEventCount();
@@ -342,15 +359,13 @@ public class SortDaemon extends GoodThread {
 									yield();
 								}
 							}
-						} else {//cause us to exit smoothly
-							status = EventInputStatus.END_RUN;
 						}
 						/*
 						 * else SCALER_VALUE, assume sort stream took care and
 						 * move on or IGNORE which means something ignorable in
 						 * the event stream
 						 */
-					}//end read&sort event-at-a-time loop
+					}// end read&sort event-at-a-time loop
 					/* we get to this point if status was not EVENT */
 					if (status == EventInputStatus.END_BUFFER) {
 						if (!atBuffer) {
@@ -360,11 +375,11 @@ public class SortDaemon extends GoodThread {
 						endSort = false;
 					} else if (status == EventInputStatus.END_RUN) {
 						updateCounters();
-						endSort = true; //tell control we are done
+						endSort = true; // tell control we are done
 					} else if (status == EventInputStatus.END_FILE) {
 						msgHandler.messageOutln("End of file reached");
 						updateCounters();
-						endSort = true; //tell control we are done
+						endSort = true; // tell control we are done
 					} else if (status == EventInputStatus.UNKNOWN_WORD) {
 						msgHandler
 								.warningOutln(getClass().getName()
@@ -379,17 +394,17 @@ public class SortDaemon extends GoodThread {
 						}
 					}
 					yield();
-				}//end buffer loop
-			}//end isSortNext loop
+				}// end buffer loop
+			}// end isSortNext loop
 			sortControl.atSortEnd();
-		}//end checkstate loop
+		}// end checkstate loop
 	}
 
 	/**
 	 * Returns whether we are caught up in the ring buffer.
 	 * 
-	 * @return <code>true</code> if there are no unsorted
-	 * buffers in the ring buffer
+	 * @return <code>true</code> if there are no unsorted buffers in the ring
+	 *         buffer
 	 */
 	public boolean caughtUp() {
 		return ringBuffer.isEmpty();
@@ -407,8 +422,10 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @return the number of events processed
 	 */
-	public synchronized int getEventCount() {
-		return eventCount;
+	public int getEventCount() {
+		synchronized (this) {
+			return eventCount;
+		}
 	}
 
 	/**
@@ -416,14 +433,17 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @return number of events actually sorted
 	 */
-	public synchronized int getSortedCount() {
-		return eventSortedCount;
+	public int getSortedCount() {
+		synchronized (this) {
+			return eventSortedCount;
+		}
 	}
 
 	/**
 	 * Set the number of events actually sorted.
 	 * 
-	 * @param count new value
+	 * @param count
+	 *            new value
 	 */
 	public synchronized void setSortedCount(int count) {
 		eventSortedCount = count;
@@ -483,7 +503,7 @@ public class SortDaemon extends GoodThread {
 			sortInterval--;
 		}
 	}
-	
+
 	/**
 	 * Returns the sort sample interval.
 	 * 
