@@ -16,32 +16,21 @@ public class GoodThread extends Thread {
 	 * The possible thread states for a <code>GoodThread</code>.
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public static class State {
-		private transient final int value;
-		private static final String [] MODES = {"RUN","SUSPEND","STOP"};
-		
-		private State (int val){
-			value=val;
-		}
-		
-		public String toString(){
-			return MODES[value];
-		}
-		
-		/**
+	public enum State {
+		/*
 		 * Represents a running thread.
 		 */
-		public static final State RUN=new State(0);
+		RUN,
 		
-		/**
+		/*
 		 * Represents a temporarily suspended thread.
 		 */
-		public static final State SUSPEND=new State(1);
+		SUSPEND,
 		
-		/**
+		/*
 		 * Represents a fully stopped thread.
 		 */
-		public static final State STOP=new State(2);
+		STOP
 	}
 
     private transient State state = State.RUN;
@@ -70,7 +59,7 @@ public class GoodThread extends Thread {
      *
      * @param newState <code>STOP, SUSPEND,</code> or <code>RUN</code>
      */
-    public void setState(State newState) {
+    public void setState(final State newState) {
         synchronized (stateLock){
 			state = newState;
 			if (state != State.SUSPEND) {
@@ -108,7 +97,7 @@ public class GoodThread extends Thread {
     }
 
     public String toString() {
-    	StringBuffer rval=new StringBuffer(super.toString());
+    	final StringBuffer rval=new StringBuffer(super.toString());
     	rval.append(": state=");
     	synchronized (stateLock){
 			return rval.append(state).toString();
