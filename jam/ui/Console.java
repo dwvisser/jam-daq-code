@@ -1,7 +1,6 @@
 package jam.ui;
 
 import jam.JamException;
-import jam.SetupSortOn;
 import jam.commands.CommandManager;
 import jam.global.CommandListener;
 import jam.global.MessageHandler;
@@ -141,8 +140,7 @@ public class Console extends JPanel implements MessageHandler {
 	 *            number of lines to retain in onscreen display
 	 */
 	public Console(int linesLog) {
-
-		SetupSortOn.createInstance(this);
+		super();
 		maxLines = linesLog;
 		setLayout(new BorderLayout());
 		textLog
@@ -164,7 +162,7 @@ public class Console extends JPanel implements MessageHandler {
 		this.add(textIn, BorderLayout.SOUTH);
 		textIn.addActionListener(new ActionListener() {
 			/* Processes event when a return is hit in input field */
-			public void actionPerformed(ActionEvent event) {
+			public void actionPerformed(final ActionEvent event) {
 				addCommand(textIn.getText());
 				parseCommand(textIn.getText());
 				textIn.setText(null);
@@ -172,8 +170,8 @@ public class Console extends JPanel implements MessageHandler {
 		});
 		/* Handle up and down arrows */
 		textIn.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent evt) {
-				int keyCode = evt.getKeyCode();
+			public void keyPressed(final KeyEvent evt) {
+				final int keyCode = evt.getKeyCode();
 				if (keyCode == KeyEvent.VK_UP) {
 					previousCommand(-1);
 				} else if (keyCode == KeyEvent.VK_DOWN) {
@@ -198,7 +196,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * 
 	 * @param cmdStr
 	 */
-	private void addCommand(String cmdStr) {
+	private void addCommand(final String cmdStr) {
 		cmdStack.add(cmdStr);
 		if (cmdStack.size() > STACK_SIZE) {
 			cmdStack.removeFirst();
@@ -212,7 +210,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param direction
 	 *            >0 forward, <0 backward
 	 */
-	private void previousCommand(int direction) {
+	private void previousCommand(final int direction) {
 		if (direction < 0) {
 			if (lastCmdIndex > 0) {
 				lastCmdIndex = lastCmdIndex - 1;
@@ -239,7 +237,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param part
 	 *            one of NEW, CONTINUE, or END
 	 */
-	public synchronized void messageOut(String _message, int part) {
+	public synchronized void messageOut(final String _message, final int part) {
 		final StringBuffer message = new StringBuffer(_message);
 		if (part == NEW) {
 			msgLock = true;
@@ -299,7 +297,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param message
 	 *            text to output
 	 */
-	public synchronized void messageOut(String message) {
+	public synchronized void messageOut(final String message) {
 		messageOut(message, CONTINUE);
 	}
 
@@ -309,7 +307,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param _message
 	 *            the message to be printed to the console
 	 */
-	public synchronized void messageOutln(String _message) {
+	public synchronized void messageOutln(final String _message) {
 		final StringBuffer mbuff = new StringBuffer();
 		msgLock = true;
 		messageFile = getDate() + ">" + _message + END_LINE;
@@ -352,7 +350,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param message
 	 *            error
 	 */
-	public synchronized void errorOutln(String message) {
+	public synchronized void errorOutln(final String message) {
 		promptOutln("Error: " + message, attr_error);
 	}
 

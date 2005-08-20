@@ -50,23 +50,6 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
-	/**
-	 * Event distributor.
-	 */
-	private transient final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
-
-	private transient final JamToolBar jamToolBar;
-    
-	/**
-	 * Display Panel
-	 */
-	private transient final Display display;
-    
-	/**
-	 * Histogram displayer.
-	 */
-	private transient final PlotDisplay plotDisplay;
-	
 	private transient final SummaryTable summaryTable;
 
 	/**
@@ -92,6 +75,7 @@ public final class JamMain extends JFrame implements Observer {
 			}
 		});
 		/* class to distrute events to all listeners */
+		final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
 		/* Create main window GUI */
 		loadIcon();
@@ -102,16 +86,16 @@ public final class JamMain extends JFrame implements Observer {
 		console = new Console();
 		console.messageOutln("Welcome to Jam v" + Version.getInstance().getName());
 		JamStatus.getSingletonInstance().setMessageHandler(console);
-		
-		jamToolBar = new JamToolBar();
+		SetupSortOn.createInstance(console);
+		final JamToolBar jamToolBar = new JamToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		
 		/* histogram displayer */
-		plotDisplay = new PlotDisplay(console);
+		final PlotDisplay plotDisplay = new PlotDisplay(console);
 		JamStatus.getSingletonInstance().setDisplay(plotDisplay);
 		summaryTable = new SummaryTable();		
 		JamStatus.getSingletonInstance().setTable(summaryTable); 
-		display =new Display(plotDisplay, summaryTable);
+		final Display display =new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.9);
@@ -128,11 +112,11 @@ public final class JamMain extends JFrame implements Observer {
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
+			public void windowClosing(final WindowEvent event) {
 				exit();
 			}
 
-			public void windowClosed(WindowEvent event) {
+			public void windowClosed(final WindowEvent event) {
 				exit();
 			}
 		});
@@ -152,7 +136,7 @@ public final class JamMain extends JFrame implements Observer {
 	 * @param showGUI
 	 *            to to show splash screen
 	 */
-	private void showSplashScreen(boolean showGUI) {
+	private void showSplashScreen(final boolean showGUI) {
 		if (showGUI) {
 			final int displayTime = 10000; //milliseconds
 			new SplashWindow(this, displayTime);
@@ -256,7 +240,7 @@ public final class JamMain extends JFrame implements Observer {
 	 * @param state
 	 *            one of the possible run states control dialog box
 	 */
-	private void setRunState(RunState state) {
+	private void setRunState(final RunState state) {
 		synchronized (runState) {
 			runState = state;
 		}
@@ -301,7 +285,7 @@ public final class JamMain extends JFrame implements Observer {
 	/**
 	 * @see Observer#update(java.util.Observable, java.lang.Object)
 	 */
-	public void update(Observable event, Object param) {
+	public void update(final Observable event, final Object param) {
 		final BroadcastEvent beParam = (BroadcastEvent) param;
 		final BroadcastEvent.Command command = beParam.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
@@ -317,7 +301,7 @@ public final class JamMain extends JFrame implements Observer {
 	 * @param args
 	 *            not used currently
 	 */
-	public static void main(String args[]) {
+	public static void main(final String args[]) {
 		//RepaintManager.setCurrentManager(new ThreadCheckingRepaintManager());
 		new JamMain(true);
 	}
