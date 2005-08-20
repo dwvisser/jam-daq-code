@@ -17,13 +17,7 @@ import java.util.TimeZone;
  * @see AbstractEventOutputStream
  * @since JDK1.1
  */
-public final class YaleOutputStream extends AbstractEventOutputStream implements
-		L002Parameters {
-	private final SimpleDateFormat formatter = new SimpleDateFormat(
-			"MM/dd/yy HH:mm  ");
-	{
-		formatter.setTimeZone(TimeZone.getDefault());
-	}
+public final class YaleOutputStream extends AbstractL002HeaderWriter {
 
 	/**
 	 * Default constructor.
@@ -40,56 +34,17 @@ public final class YaleOutputStream extends AbstractEventOutputStream implements
 	}
 
 	/**
-	 * Writes the header block.
-	 * 
-	 * @exception EventException
-	 *                thrown for errors in the event stream
-	 */
-	public void writeHeader() throws EventException {
-		String dateString = formatter.format(RunInfo.runStartTime); // date
-		String title = RunInfo.runTitle; // title
-		int number = RunInfo.runNumber; // header number
-		byte[] reserved1 = new byte[8]; // reserved 1
-		int numSecHead = 0; // number of secondary headers
-		int recLen = 0; // record length
-		int blckImgRec = 0; // block line image rec
-		int recLen2 = IMAGE_RECORD_LENGTH; // record length
-		int paramsPerEvent = RunInfo.runEventSize; // parameters per event
-		int dataRecLen = RunInfo.runRecordLength; // data record length
-		byte[] reserved2 = new byte[92]; // reserved 2
-		try {
-			final StringUtilities su = StringUtilities.instance();
-			dataOutput.writeBytes(HEADER_START); // header
-			dataOutput.writeBytes(su.makeLength(dateString, 16)); // date
-			// //date
-			dataOutput.writeBytes(su.makeLength(title, TITLE_MAX)); // title
-			dataOutput.writeInt(number); // header number
-			dataOutput.write(reserved1, 0, reserved1.length); // reserved
-			// space
-			dataOutput.writeInt(numSecHead); // number secondary headers
-			dataOutput.writeInt(recLen); // record length
-			dataOutput.writeInt(blckImgRec); // block line image rec
-			dataOutput.writeInt(recLen2); // record length
-			dataOutput.writeInt(paramsPerEvent); // parameters / event
-			dataOutput.writeInt(dataRecLen); // data record length
-			dataOutput.write(reserved2, 0, reserved2.length); // reserved 2
-			dataOutput.flush();
-		} catch (IOException io) {
-			throw new EventException("Exception while writing header", io);
-		}
-	}
-
-	/**
 	 * Implemented <code>EventOutputStream</code> abstract method.
 	 * 
 	 * @exception EventException
 	 *                thrown for unrecoverable errors
 	 */
-	public void writeEvent(int[] input) throws EventException {
+	public void writeEvent(final int[] input) throws EventException {
 		try {
 			for (short i = 0; i < eventSize; i++) {
-				if (input[i] != 0)
+				if (input[i] != 0) {
 					writeParameter(i, (short) input[i]);
+				}
 			}
 			dataOutput.writeShort(EVENT_END_MARKER);
 		} catch (IOException ie) {
@@ -97,18 +52,19 @@ public final class YaleOutputStream extends AbstractEventOutputStream implements
 		}
 	}
 
-	/**
-	 * Writes out a event in the L002 format Implemented
-	 * <code>EventOutputStream</code> abstract method.
-	 * 
-	 * @exception EventException
-	 *                thrown for unrecoverable errors
-	 */
-	public void writeEvent(short[] input) throws EventException {
+	 /**
+		 * Writes out a event in the L002 format Implemented
+		 * <code>EventOutputStream</code> abstract method.
+		 * 
+		 * @exception EventException
+		 *                thrown for unrecoverable errors
+		 */
+	public void writeEvent(final short[] input) throws EventException {
 		try {
 			for (short i = 0; i < eventSize; i++) {
-				if (input[i] != 0)
+				if (input[i] != 0) {
 					writeParameter(i, input[i]);
+				}
 			}
 			dataOutput.writeShort(EVENT_END_MARKER);
 		} catch (IOException ie) {
@@ -121,7 +77,8 @@ public final class YaleOutputStream extends AbstractEventOutputStream implements
 	 * be called by writeEvent @exception EventException thrown for errors in
 	 * the event stream
 	 */
-	private void writeParameter(short param, short value) throws EventException {
+	private void writeParameter(final short param, final short value)
+			throws EventException {
 		try {
 			if (isValidParameterNumber(param)) {
 				dataOutput.writeShort(parameterMarker(param));
@@ -165,6 +122,6 @@ public final class YaleOutputStream extends AbstractEventOutputStream implements
 	 * non-javadoc: Converts a short to a valid parameter marker for the stream.
 	 */
 	private short parameterMarker(short number) {
-		return (short) ((EVENT_PARAMETER_MARKER | number) & 0xFFFF);
+		return (short) ((EVENT_PARAMETER | number) & 0xFFFF);
 	}
 }

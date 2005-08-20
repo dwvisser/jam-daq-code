@@ -20,8 +20,47 @@ import java.util.Map;
  * @since JDK1.1
  */
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
-		L002Parameters, CAEN_StreamFields {
+		CAEN_StreamFields {
 
+	private enum BufferStatus {
+	    /*
+	     * State for when buffer is still filling and no output is available yet.
+	     */
+	    FIFO_FILLING,
+	    
+	    /*
+	     * In this state every new read from the stream requires that the oldest 
+	     * event in the the "FIFO" buffer be pulled to be returned so as to make room
+	     * for a new event counter.
+	     */
+	    FIFO_FULL,
+	    
+	    /*
+	     * This is the state when the EventStream has characters in it indicating that
+	     * acquisition has been stopped or ended.  In this situation, all data has been 
+	     * read out from the ADC's and been sent to Jam.  So the stream needs to empty out
+	     * it's remaining contents to the sort routine.
+	     */
+	    FIFO_FLUSH,
+	    
+	    /*
+	     * Indicates the state where flushing of the remaining contents of the
+	     * buffer is occuring.
+	     */
+	    FIFO_ENDRUN_FLUSH,
+	    
+	    /*
+	     * Indicates the state where a scaler block is being read.
+	     */
+	    SCALER,
+	    
+	    /*
+	     * Indicates the state where we're reading through end-of-buffer
+	     * padding characters.
+	     */
+	    PADDING
+	}
+	
 	private transient BufferStatus internalStat = BufferStatus.FIFO_FILLING;
 
 	private transient int nScalrBlocks = 0; // for counting number of scaler
@@ -42,7 +81,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	// from
 
 	private transient FifoPointer lastIncr;// last incremented
-	
+
 	/**
 	 * Hashtable keys are the event numbers, objects are the array indices.
 	 */
@@ -57,7 +96,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		super();
 		posPut = 0;
 		posGet = 0;
-		lastIncr = FifoPointer.GET;// initially empty requires last incremented to be GET
+		lastIncr = FifoPointer.GET;// initially empty requires last incremented
+									// to be GET
 	}
 
 	private void incrementPut() {
@@ -226,15 +266,16 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 			return rval;
 		}
 	}
-	
+
 	/*
-	 * We've dropped out of the while loop, which means either that
-	 * the internal status is not FIFO_FILLING, or that eventReady
-	 * is set to true (i.e. encountered buffer pad or scaler) The
-	 * first case is handled here, if it's true.
+	 * We've dropped out of the while loop, which means either that the internal
+	 * status is not FIFO_FILLING, or that eventReady is set to true (i.e.
+	 * encountered buffer pad or scaler) The first case is handled here, if it's
+	 * true.
 	 */
-	private EventInputStatus readWhenNotFilling(final int [] data, final EventInputStatus init){
-		EventInputStatus rval=init;
+	private EventInputStatus readWhenNotFilling(final int[] data,
+			final EventInputStatus init) {
+		EventInputStatus rval = init;
 		if (inFlushState()) {// in one of the 2 flush states
 			if (fifoEmpty()) {
 				if (internalStat == BufferStatus.FIFO_FLUSH) {
@@ -248,8 +289,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 				rval = EventInputStatus.EVENT;
 			}
 			/*
-			 * The other possibility is that the FIFO is full and we
-			 * need to output an event.
+			 * The other possibility is that the FIFO is full and we need to
+			 * output an event.
 			 */
 		} else if (internalStat == BufferStatus.FIFO_FULL) {
 			getFirstEvent(data);// routine retrieves data and updates
@@ -263,8 +304,8 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/*
-	 * If we really have end-of-block like we should, stick
-	 * event data in the appropriate space in our FIFO.
+	 * If we really have end-of-block like we should, stick event data in the
+	 * appropriate space in our FIFO.
 	 */
 	private void handleEndBlock(final int endblock, final int numParams)
 			throws EventException {
@@ -289,8 +330,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 							+ Integer.toHexString(endblock));
 		}
 	}
-	
-	private EventInputStatus handleSpecialHeaders(final int header, final EventInputStatus init){
+
+	private EventInputStatus handleSpecialHeaders(final int header,
+			final EventInputStatus init) {
 		EventInputStatus rval = init;
 		if (header == BUFFER_END) {// return end of buffer
 			// to

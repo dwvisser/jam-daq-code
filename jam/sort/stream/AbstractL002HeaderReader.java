@@ -1,5 +1,6 @@
 package jam.sort.stream;
 import jam.global.MessageHandler;
+import jam.util.StringUtilities;
 
 import java.io.IOException;
 
@@ -45,8 +46,9 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 		final byte[] date=new byte[16];//date mo/da/yr hr:mn
 		final byte[] title=new byte[80];//title
 		final byte[] reserved1=new byte[8];//reserved set to 0
-		byte[] reserved2=new byte[92];//reserved set to 0
-		byte[] secHead=new byte[256];//read buffer for secondary headers
+		final byte[] reserved2=new byte[92];//reserved set to 0
+		final byte[] secHead=new byte[256];//read buffer for secondary headers
+		final StringUtilities stringUtilities = StringUtilities.getInstance();
 		try {
 			dataInput.readFully(headerStart);		//key
 			dataInput.readFully(date);			//date
@@ -61,11 +63,11 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 			dataInput.readInt();//DATA_RECORD_LENGTH
 			dataInput.readFully(reserved2);
 			/* save reads to header variables */
-			headerKey=String.valueOf(headerStart);
+			headerKey=stringUtilities.getASCIIstring(headerStart);
 			headerRunNumber=number;
-			headerTitle=String.valueOf(title);
+			headerTitle=stringUtilities.getASCIIstring(title);
 			headerEventSize=paramsPerEvent;
-			headerDate=String.valueOf(date);
+			headerDate=stringUtilities.getASCIIstring(date);
 			loadRunInfo();
 			/* read secondary headers */
 			for (int i=0; i<numSecHead; i++) {

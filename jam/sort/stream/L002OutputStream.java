@@ -1,10 +1,5 @@
 package jam.sort.stream;
-import jam.global.RunInfo;
-import jam.util.StringUtilities;
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 /**
  * This class knows how to handle Oak Ridge tape format.  It extends
@@ -16,13 +11,8 @@ import java.util.TimeZone;
  * @see         AbstractEventOutputStream
  * @since       JDK1.1
  */
-public final class L002OutputStream extends AbstractEventOutputStream implements L002Parameters {
+public final class L002OutputStream extends AbstractL002HeaderWriter {
     
-    private final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yy HH:mm  ");
-    {
-        formatter.setTimeZone(TimeZone.getDefault());        
-    }
-
     /**
      * Default constructor.
      */
@@ -42,22 +32,22 @@ public final class L002OutputStream extends AbstractEventOutputStream implements
     /**
      * Check for end of run word
      */
-    public boolean isEndRun(short dataWord){
+    public boolean isEndRun(final short dataWord){
         return (dataWord==RUN_END_MARKER);
     }
 
     /* non-javadoc:
      * Checks whether a valid parameter number (should be 1 to 512 according to ORNL documentation).
      */
-    private boolean isValidParameterNumber(short number){
+    private boolean isValidParameterNumber(final short number){
         return ((number>=1 )&& (number <= 512));
     }
 
     /* non-javadoc:
      * Converts a short to a valid parameter marker for the stream.
      */
-    private  short parameterMarker(short number) {
-        return (short)((EVENT_PARAMETER_MARKER | number)&0xFFFF);
+    private  short parameterMarker(final short number) {
+        return (short)((EVENT_PARAMETER | number)&0xFFFF);
     }
 
     /**
@@ -77,7 +67,7 @@ public final class L002OutputStream extends AbstractEventOutputStream implements
      *
      * @exception EventException thrown for unrecoverable errors
      */
-    public void writeEvent(int[] input) throws EventException {
+    public void writeEvent(final int[] input) throws EventException {
         try{
             for (short i=0;i<eventSize;i++){
                 writeParameter((short)(i+1),(short)input[i]);
@@ -94,55 +84,16 @@ public final class L002OutputStream extends AbstractEventOutputStream implements
      *
      * @exception EventException thrown for unrecoverable errors
      */
-    public void writeEvent(short[] input) throws EventException {
+    public void writeEvent(final short[] input) throws EventException {
         try{
             for (short i=0;i<eventSize;i++){
-                if (input[i]!=0) writeParameter((short)(i+1), input[i]);
+                if (input[i]!=0) {
+                	writeParameter((short)(i+1), input[i]);
+                }
             }
             dataOutput.writeShort(EVENT_END_MARKER);
         } catch (IOException ie) {
             throw new EventException("Can't write event: "+ie.toString());
-        }
-    }
-
-    /**
-     * Writes the header block.
-     *
-     * @exception   EventException    thrown for errors in the event stream
-     */
-    public void writeHeader() throws EventException {
-		final StringUtilities su=StringUtilities.instance();
-        String dateString = formatter.format(RunInfo.runStartTime);	    //date
-        String title=RunInfo.runTitle;					    //title
-        int number=RunInfo.runNumber;					    //header number
-        byte [] reserved1=new byte [8];					    //reserved 1
-        int numSecHead=0;						    //number of secondary headers
-        int recLen=0;							    //record length
-        int blckImgRec=0;						    //block line image rec
-        int recLen2=IMAGE_RECORD_LENGTH;				    //record length
-        int paramsPerEvent=RunInfo.runEventSize;				    //parameters per event
-        int dataRecLen=RunInfo.runRecordLength;				    //data record length
-        byte [] reserved2=new byte [92];				    //reserved 2
-        try {
-
-            dataOutput.writeBytes(HEADER_START);				    //header
-            dataOutput.writeBytes(su.makeLength(dateString,16));	    //date				    //date
-            dataOutput.writeBytes(su.makeLength(title, TITLE_MAX));    //title
-            dataOutput.writeInt(number);					    //header number
-            dataOutput.write(reserved1, 0, reserved1.length);			    // reserved space
-            dataOutput.writeInt(numSecHead);					    //number secondary headers
-            dataOutput.writeInt(recLen);					    //record length
-            dataOutput.writeInt(blckImgRec);					    //block line image rec
-            dataOutput.writeInt(recLen2);					    //record length
-            dataOutput.writeInt(paramsPerEvent);					    //parameters / event
-            dataOutput.writeInt(dataRecLen);					    //data record length
-            dataOutput.write(reserved2, 0, reserved2.length);			    //reserved 2
-
-            dataOutput.flush();
-
-        } catch (IOException io){
-            throw new EventException("Writing header IOException "+io.getMessage()+" [L002OutputStream]");
-
         }
     }
 
@@ -151,7 +102,7 @@ public final class L002OutputStream extends AbstractEventOutputStream implements
      *  would be called by writeEvent
      * @exception   EventException    thrown for errors in the event stream
      */
-    private void writeParameter(short param, short value)  throws EventException {
+    private void writeParameter(final short param, final short value)  throws EventException {
         try{
             if (isValidParameterNumber(param)){
                 dataOutput.writeShort(parameterMarker(param));

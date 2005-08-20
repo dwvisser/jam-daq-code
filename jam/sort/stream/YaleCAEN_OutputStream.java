@@ -43,39 +43,39 @@ public abstract class YaleCAEN_OutputStream extends AbstractEventOutputStream im
 	/**
 	 * @see jam.sort.stream.AbstractEventOutputStream#writeHeader()
 	 */
-	public void writeHeader() throws EventException {
-		String dateString = formatter.format(RunInfo.runStartTime); // date
-		String title = RunInfo.runTitle; // title
-		int number = RunInfo.runNumber; // header number
-		byte[] reserved1 = new byte[8]; // reserved 1
-		int numSecHead = 0; // number of secondary headers
-		int recLen = 0; // record length
-		int blckImgRec = 0; // block line image rec
-		int recLen2 = IMAGE_RECORD_LENGTH; // record length
-		int paramsPerEvent = RunInfo.runEventSize; // parameters per event
-		int dataRecLen = RunInfo.runRecordLength; // data record length
-		byte[] reserved2 = new byte[92]; // reserved 2
-		try {
-			final StringUtilities su = StringUtilities.instance();
-			dataOutput.writeBytes(HEADER_START); // header
-			dataOutput.writeBytes(su.makeLength(dateString, 16)); // date
-			dataOutput.writeBytes(su.makeLength(title, TITLE_MAX)); // title
-			dataOutput.writeInt(number); // header number
-			/* reserved space */
-			dataOutput.write(reserved1, 0, reserved1.length); 
-			dataOutput.writeInt(numSecHead); // number secondary headers
-			dataOutput.writeInt(recLen); // record length
-			dataOutput.writeInt(blckImgRec); // block line image rec
-			dataOutput.writeInt(recLen2); // record length
-			dataOutput.writeInt(paramsPerEvent); // parameters / event
-			dataOutput.writeInt(dataRecLen); // data record length
-			dataOutput.write(reserved2, 0, reserved2.length); // reserved 2
-			dataOutput.flush();
-		} catch (IOException io) {
-			throw new EventException("Writing header IOException "
-					+ io.getMessage() + " [L002OutputStream]");
-		}
-	}
+//	public void writeHeader() throws EventException {
+//		String dateString = formatter.format(RunInfo.runStartTime); // date
+//		String title = RunInfo.runTitle; // title
+//		int number = RunInfo.runNumber; // header number
+//		byte[] reserved1 = new byte[8]; // reserved 1
+//		int numSecHead = 0; // number of secondary headers
+//		int recLen = 0; // record length
+//		int blckImgRec = 0; // block line image rec
+//		int recLen2 = IMAGE_LENGTH; // record length
+//		int paramsPerEvent = RunInfo.runEventSize; // parameters per event
+//		int dataRecLen = RunInfo.runRecordLength; // data record length
+//		byte[] reserved2 = new byte[92]; // reserved 2
+//		try {
+//			final StringUtilities su = StringUtilities.getInstance();
+//			dataOutput.writeBytes(HEADER_START); // header
+//			dataOutput.writeBytes(su.makeLength(dateString, 16)); // date
+//			dataOutput.writeBytes(su.makeLength(title, TITLE_MAX)); // title
+//			dataOutput.writeInt(number); // header number
+//			/* reserved space */
+//			dataOutput.write(reserved1, 0, reserved1.length); 
+//			dataOutput.writeInt(numSecHead); // number secondary headers
+//			dataOutput.writeInt(recLen); // record length
+//			dataOutput.writeInt(blckImgRec); // block line image rec
+//			dataOutput.writeInt(recLen2); // record length
+//			dataOutput.writeInt(paramsPerEvent); // parameters / event
+//			dataOutput.writeInt(dataRecLen); // data record length
+//			dataOutput.write(reserved2, 0, reserved2.length); // reserved 2
+//			dataOutput.flush();
+//		} catch (IOException io) {
+//			throw new EventException("Writing header IOException "
+//					+ io.getMessage() + " [L002OutputStream]");
+//		}
+//	}
 
 	/**
 	 * @see jam.sort.stream.AbstractEventOutputStream#isEndRun(short)

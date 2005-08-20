@@ -19,7 +19,58 @@ import javax.swing.JOptionPane;
  */
 
 public abstract class AbstractEventInputStream {
+	public enum EventInputStatus {
+	    /*
+	     * Status if just read an event.
+	     */
+	    EVENT,
 
+	    /*
+	     * Status if just reached the end of a buffer.
+	     */
+	    END_BUFFER,
+
+	    /*
+	     * Status if just reached the end of a run.
+	     */
+	    END_RUN,
+
+	    /*
+	     * Status if just reached the end of a file.
+	     */
+	    END_FILE,
+
+	    /*
+	     * Status if just reached the end of the stream.
+	     */
+	    END_STREAM,
+
+	    /*
+	     * Status if only a partial event was just read.
+	     */
+	    PARTIAL_EVENT,
+
+	    /*
+	     * Status if unidentified word was just read.
+	     */
+	    UNKNOWN_WORD,
+
+	    /*
+	     * Status if there is an unrecoverable error when reading the stream.
+	     */
+	    ERROR,
+
+	    /*
+	     * Status if the most recent read parameter is actually a scaler value.
+	     */
+	    SCALER_VALUE,
+
+	    /*
+	     * Status if the last bit of the stream was ignorable.
+	     */
+	    IGNORE
+	}
+	
 	/**
 	 * Number of signal values for each event.
 	 */

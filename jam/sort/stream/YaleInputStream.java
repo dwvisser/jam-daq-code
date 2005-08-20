@@ -84,9 +84,9 @@ public class YaleInputStream extends AbstractL002HeaderReader implements L002Par
         } else if (paramWord==RUN_END_MARKER){
             parameterSuccess=false;
             status=EventInputStatus.END_RUN;
-        } else if ((paramWord & EVENT_PARAMETER_MARKER) != 0) {
+        } else if ((paramWord & EVENT_PARAMETER) != 0) {
 			/* extract parameter id, too */
-            int paramNumber = paramWord & EVENT_PARAMETER_MASK;
+            int paramNumber = paramWord & EVENT_MASK;
             if (paramNumber < 2048) {
                 parameter=paramNumber;//parameter index used in array
                 parameterSuccess=true;

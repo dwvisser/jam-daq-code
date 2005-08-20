@@ -110,8 +110,8 @@ public class LdfInputStream extends AbstractEventInputStream implements L002Para
             parameterSuccess=false;
             status=EventInputStatus.END_RUN;
             //get parameter value if not special type
-        } else if ((paramWord & EVENT_PARAMETER_MARKER) != 0) {
-            int paramNumber = paramWord & EVENT_PARAMETER_MASK;
+        } else if ((paramWord & EVENT_PARAMETER) != 0) {
+            int paramNumber = paramWord & EVENT_MASK;
             if (paramNumber < 2048) {
                 parameter=paramNumber;//parameter number used in array
                 parameterSuccess=true;

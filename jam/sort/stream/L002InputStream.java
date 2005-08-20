@@ -103,7 +103,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 			status = EventInputStatus.END_RUN;
 			/* get parameter value if not special type */
 		} else if (passesParamMask(paramWord)) {
-			final int paramNumber = paramWord & EVENT_PARAMETER_MASK;
+			final int paramNumber = paramWord & EVENT_MASK;
 			if (paramNumber < 2048) {
 				parameter = paramNumber - 1;// parameter number used in array
 				parameterSuccess = true;
@@ -121,7 +121,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 	}
 
 	private boolean passesParamMask(final short paramWord) {
-		return (paramWord & EVENT_PARAMETER_MARKER) != 0;
+		return (paramWord & EVENT_PARAMETER) != 0;
 	}
 
 	/**

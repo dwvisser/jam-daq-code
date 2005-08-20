@@ -1,6 +1,5 @@
 package jam.sort.stream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 /** 
@@ -11,33 +10,6 @@ import java.io.OutputStream;
  * @since JDK 1.1
  */
 public abstract class AbstractEventOutputStream {
-
-	//status variables
-
-	/**
-	 * Status value indicating event write ok.
-	 */
-	static public final int OK = 0;
-
-	/**
-	 * Status value indicating end of event reached.
-	 */
-	static public final int EVENT_END = 1;
-
-	/**
-	 * Status value indicating end of buffer reached.
-	 */
-	static public final int BUFFER_END = 2;
-
-	/**
-	 * Status value indicating end of run reached.
-	 */
-	static public final int RUN_END = 3;
-
-	/**
-	 * Status value indicating a problem writing the stream.
-	 */
-	static public final int ERROR = 10;
 
 	/**
 	 * The number of parameters per event.
@@ -52,7 +24,7 @@ public abstract class AbstractEventOutputStream {
 	/**
 	 * Where to write the data.
 	 */
-	protected DataOutputStream dataOutput;
+	protected transient DataOutputStream dataOutput;
 
 	/** 
 	 * Creates a new event output stream.
@@ -67,6 +39,7 @@ public abstract class AbstractEventOutputStream {
 	 * @param eventSize the number of values per event
 	 */
 	protected AbstractEventOutputStream(int eventSize) {
+		super();
 		setEventSize(eventSize);
 	}
 
@@ -74,7 +47,7 @@ public abstract class AbstractEventOutputStream {
 	 * Sets the event size.
 	 * @param size the number of values per event
 	 */
-	public final void setEventSize(int size) {
+	public final void setEventSize(final int size) {
 		eventSize = size;
 	}
 
@@ -92,7 +65,7 @@ public abstract class AbstractEventOutputStream {
 	 *
 	 * @param size the size of the output buffer in bytes
 	 */
-	public void setBufferSize(int size) {
+	public void setBufferSize(final int size) {
 		this.bufferSize = size;
 	}
 
@@ -110,17 +83,8 @@ public abstract class AbstractEventOutputStream {
 	 *
 	 * @param outputStream where events and headers will be written
 	 */
-	public void setOutputStream(OutputStream outputStream) {
+	public void setOutputStream(final OutputStream outputStream) {
 		dataOutput = new DataOutputStream(outputStream);
-	}
-
-	/**
-	 * Implemented for <code>OutputStream</code> requirement.
-	 * @param word to write the output stream
-	 * @throws IOException if there's a problem writing
-	 */
-	public void write(int word) throws IOException {
-		dataOutput.write(word);
 	}
 
 	/* Abstract methods of class */

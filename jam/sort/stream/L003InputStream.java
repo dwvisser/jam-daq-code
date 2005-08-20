@@ -19,17 +19,13 @@ import java.io.IOException;
 public final class L003InputStream extends AbstractEventInputStream implements
 		L003Parameters {
 
-	private int eventValue;
+	private transient int eventValue;
 
-	private int parameter;
+	private transient int parameter;
 
-	int recordByteCounter = 0;
+	private transient EventInputStatus status;
 
-	String scalers;
-
-	private EventInputStatus status;
-
-	int tapeByteCounter = 0;
+	private transient int tapeByteCounter = 0;
 
 	/**
 	 * Needed to create an instance with newInstance().
@@ -55,8 +51,10 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	/**
 	 * Implementation of an <code>EventInputStream</code> abstract method.
 	 */
-	public synchronized boolean isEndRun(short dataWord) {
-		return (dataWord == L002Parameters.RUN_END_MARKER);
+	public boolean isEndRun(final short dataWord) {
+		synchronized (this) {
+			return (dataWord == L002Parameters.RUN_END_MARKER);
+		}
 	}
 
 	/**
@@ -66,20 +64,21 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
-	public synchronized EventInputStatus readEvent(int[] input)
-			throws EventException {
-		try {
-			while (readParameter()) {
-				input[parameter] = eventValue;
+	public EventInputStatus readEvent(int[] input) throws EventException {
+		synchronized (this) {
+			try {
+				while (readParameter()) {
+					input[parameter] = eventValue;
+				}
+
+			} catch (IOException io) {
+				status = EventInputStatus.ERROR;
+				throw new EventException("Reading Event from IOException "
+						+ io.getMessage() + " [L003InputStream]");
+
 			}
-
-		} catch (IOException io) {
-			status = EventInputStatus.ERROR;
-			throw new EventException("Reading Event from IOException "
-					+ io.getMessage() + " [L003InputStream]");
-
+			return status; // if event read return ok
 		}
-		return status; // if event read return ok
 	}
 
 	/**
@@ -91,11 +90,11 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	 *             thrown for errors in the event stream
 	 */
 	public boolean readHeader() throws EventException {
-		byte[] headerStart = new byte[32];
-		byte[] date = new byte[16];
-		byte[] title = new byte[80];
-		byte[] reserved1 = new byte[8];
-		byte[] reserved2 = new byte[92];
+		final byte[] headerStart = new byte[32];
+		final byte[] date = new byte[16];
+		final byte[] title = new byte[80];
+		final byte[] reserved1 = new byte[8];
+		final byte[] reserved2 = new byte[92];
 		int number = 0;
 		int size = 0;
 
@@ -121,7 +120,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 			headerDate = String.valueOf(date);
 
 			loadRunInfo();
-			return (headerKey.equals(HEADER_START));
+			return headerKey.equals(HEADER_START);
 		} catch (IOException ioe) {
 			throw new EventException("Reading event header -"
 					+ ioe.getMessage());
@@ -150,8 +149,8 @@ public final class L003InputStream extends AbstractEventInputStream implements
 				parameterSuccess = false;
 				status = EventInputStatus.END_RUN;
 				// get parameter value if not special type
-			} else if (0 != (paramWord & L002Parameters.EVENT_PARAMETER_MARKER)) {
-				parameter = (paramWord & EVENT_PARAMETER_MASK) - 1;
+			} else if (0 != (paramWord & L002Parameters.EVENT_PARAMETER)) {
+				parameter = (paramWord & EVENT_MASK) - 1;
 				// parameter number
 				eventValue = readVaxShort();
 				// read event word
@@ -197,12 +196,9 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	 * integer
 	 */
 	private short readVaxShort() throws IOException {
-		int ch1 = dataInput.read();
-		int ch2 = dataInput.read();
-		if ((ch1 | ch2) < 0) {
-			return -1;
-		}
-		return (short) ((ch2 << 8) + (ch1 << 0));
+		final int ch1 = dataInput.read();
+		final int ch2 = dataInput.read();
+		return ((ch1 | ch2) < 0) ? -1 : (short) ((ch2 << 8) + (ch1 << 0));
 	}
 
 	/*
@@ -210,18 +206,18 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	 */
 	private boolean scalerRead() throws IOException {
 		boolean readStatus = true;
-		byte[] scalerDump = new byte[SCALER_BUFFER_SIZE];
+		final byte[] scalerDump = new byte[SCALER_BUFF_SIZE];
 		String scalerString = null;
 		int scalerByteCounter = 0;
 		int bytesRead = 0;
-		while ((scalerByteCounter < SCALER_RECORD_SIZE) && bytesRead >= 0) {
-			if (scalerByteCounter < SCALER_RECORD_SIZE - SCALER_BUFFER_SIZE) {
+		while ((scalerByteCounter < SCALER_REC_SIZE) && bytesRead >= 0) {
+			if (scalerByteCounter < SCALER_REC_SIZE - SCALER_BUFF_SIZE) {
 				bytesRead = dataInput.read(scalerDump);
 			} else {
-				bytesRead = dataInput.read(scalerDump, 0, SCALER_RECORD_SIZE
+				bytesRead = dataInput.read(scalerDump, 0, SCALER_REC_SIZE
 						- scalerByteCounter);
 			}
-			if (bytesRead != SCALER_BUFFER_SIZE) {
+			if (bytesRead != SCALER_BUFF_SIZE) {
 				showWarningMessage("scaler Not a full read, only read in "
 						+ bytesRead + " bytes");
 			}
@@ -230,7 +226,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 				scalerByteCounter += bytesRead;
 			}
 			// save first read
-			if (scalerByteCounter < SCALER_BUFFER_SIZE + 1) {
+			if (scalerByteCounter < SCALER_BUFF_SIZE + 1) {
 				scalerString = String.valueOf(scalerDump);
 			}
 		}

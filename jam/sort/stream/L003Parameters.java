@@ -13,7 +13,7 @@ public interface L003Parameters {
      * Any word for a parameter number value bitwise 'and'ed with this gives the event 
      * parameter number.
      */
-    short EVENT_PARAMETER_MASK  =(short)0x07FF;
+    short EVENT_MASK  =(short)0x07FF;
 
     
     /**
@@ -30,11 +30,11 @@ public interface L003Parameters {
     /**
      * Size of scaler records in bytes. (?)
      */
-    int SCALER_RECORD_SIZE=32000;
+    int SCALER_REC_SIZE=32000;
     
     /**
      * Size of scaler buffers in bytes. (?) 
      */
-    int SCALER_BUFFER_SIZE=256;
+    int SCALER_BUFF_SIZE=256;
 }
     

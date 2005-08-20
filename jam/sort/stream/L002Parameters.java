@@ -32,20 +32,20 @@ public interface L002Parameters {
      * 0x8000 thru 0x87ff are event 
      * parameters, while 0x8800 thru 0x8fff are scaler parameters.
      */
-    short EVENT_PARAMETER_MARKER=(short)0x8000;    
+    short EVENT_PARAMETER=(short)0x8000;    
     
     /**
      * Any value bitwise and'ed with this that is not zero (not counting special
      * values denoted above) is the special kind of event parameter containing
      * a scaler value inserted in the event stream.
      */
-    short SCALER_PARAMETER_MARKER=(short)0x8800;
+    short SCALER_PARAMETER=(short)0x8800;
     
     /**
      * Any word for a parameter number value bitwise 'and'ed with this gives the event 
      * parameter number.
      */
-    short EVENT_PARAMETER_MASK  =(short)0x0FFF;
+    short EVENT_MASK  =(short)0x0FFF;
 
     //header stuff
     
@@ -81,12 +81,12 @@ public interface L002Parameters {
     /**
      * Length of a event data record on tape.
      */
-    int DATA_RECORD_LENGTH=0x10000; //64 kbytes	 //must be an even number
+    int DATA_LENGTH=0x10000; //64 kbytes	 //must be an even number
     
     /**
      * Length of an image record on tape.  An image record contains any additional comments about the run
      * that the experimenter wishes to store on tape.
      */
-    int IMAGE_RECORD_LENGTH=1600;	//20 lines of 8-bit chars
+    int IMAGE_LENGTH=1600;	//20 lines of 8-bit chars
 }
     
