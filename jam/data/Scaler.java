@@ -105,7 +105,7 @@ public class Scaler implements DataElement {
 	 *             if name ><code>NAME_LENGTH</code> characters
 	 */
 	public Scaler(Group group, String nameIn, int idNum) {
-		final StringUtilities stringUtil = StringUtilities.instance();
+		final StringUtilities stringUtil = StringUtilities.getInstance();
 		// Set of names of gates for histogram this gate belongs to
 		Set<String> scalerNames = new TreeSet<String>();
 		for (Scaler scaler : group.getScalerList()){

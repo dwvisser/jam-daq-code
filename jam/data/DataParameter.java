@@ -40,7 +40,7 @@ public class DataParameter {
      * @throws IllegalArgumentException if name >NAME_LENGTH characters
 	 */
 	public DataParameter(String name)  {
-		final StringUtilities stringUtil=StringUtilities.instance();
+		final StringUtilities stringUtil=StringUtilities.getInstance();
 		//give error if name is too long
 		if (name.length() > NAME_LENGTH) {
 			throw new IllegalArgumentException(

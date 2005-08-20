@@ -10,7 +10,7 @@ import junit.framework.TestCase;
  */
 public class StringUtilitiesTest extends TestCase {
 
-    private final StringUtilities util = StringUtilities.instance();
+    private final StringUtilities util = StringUtilities.getInstance();
 
     /**
      * Tests whether makeLength() works properly.

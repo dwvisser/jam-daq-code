@@ -17,7 +17,8 @@ public final class StringUtilities {
 
 	private static final StringUtilities INSTANCE = new StringUtilities();
 
-	private final Charset ASCII = Charset.availableCharsets().get("US-ASCII");
+	private static final Charset ASCII = Charset.availableCharsets().get(
+			"US-ASCII");
 
 	private StringUtilities() {
 		super();
@@ -28,7 +29,7 @@ public final class StringUtilities {
 	 * 
 	 * @return the only instance of this class
 	 */
-	public static final StringUtilities instance() {
+	public static StringUtilities getInstance() {
 		return INSTANCE;
 	}
 
@@ -42,19 +43,17 @@ public final class StringUtilities {
 	 *            contains the existing names
 	 * @return unique name
 	 */
-	public String makeUniqueName(String name, Set nameSet) {
-
+	public String makeUniqueName(final String name, final Set<String> nameSet) {
 		String nameTemp = name.trim();
 		boolean isUnique = false;
 		int prime = 1;
 		boolean copyFound;
-
 		/* find a name that does not conflict with existing names */
 		while (!isUnique) {
 			copyFound = false;
-			Iterator nameIter = nameSet.iterator();
+			final Iterator<String> nameIter = nameSet.iterator();
 			while (nameIter.hasNext()) {
-				String nameNext = (String) nameIter.next();
+				final String nameNext = nameIter.next();
 				if (nameTemp.compareTo(nameNext) == 0) {
 					copyFound = true;
 					break;
@@ -68,7 +67,6 @@ public final class StringUtilities {
 				isUnique = true;
 			}
 		}
-
 		return nameTemp;
 	}
 
@@ -84,7 +82,8 @@ public final class StringUtilities {
 	 *            target length of name
 	 * @return unique name
 	 */
-	public String makeUniqueName(String name, Set nameSet, int nameLength) {
+	public String makeUniqueName(final String name, final Set<String> nameSet,
+			final int nameLength) {
 		String nameTemp = makeLength(name, nameLength);
 		boolean warn = name.length() > nameTemp.length();
 		boolean isUnique = false;
@@ -93,9 +92,9 @@ public final class StringUtilities {
 		/* find a name that does not conflict with existing names */
 		while (!isUnique) {
 			copyFound = false;
-			Iterator nameIter = nameSet.iterator();
+			final Iterator<String> nameIter = nameSet.iterator();
 			while (nameIter.hasNext()) {
-				String nameNext = (String) nameIter.next();
+				final String nameNext = nameIter.next();
 				if (nameTemp.compareTo(nameNext) == 0) {
 					copyFound = true;
 					break;
@@ -130,7 +129,7 @@ public final class StringUtilities {
 	 *            desired number of characters in the <code>String</code>
 	 * @return <code>String</code> with <code>length</code> characters
 	 */
-	public String makeLength(String input, int length) {
+	public String makeLength(final String input, final int length) {
 		final StringBuffer temp = new StringBuffer(input);
 		for (int i = input.length(); i < length; i++) {
 			temp.append(' ');
@@ -145,7 +144,7 @@ public final class StringUtilities {
 	 *            US-ASCII characters as bytes
 	 * @return representation of the given array
 	 */
-	public String getASCIIstring(byte[] input) {
+	public String getASCIIstring(final byte[] input) {
 		final ByteBuffer buffer = ByteBuffer.wrap(input);
 		final CharBuffer charBuffer = ASCII.decode(buffer);
 		return charBuffer.toString();
@@ -157,7 +156,7 @@ public final class StringUtilities {
 	 *            a string object
 	 * @return array of ASCII bytes representing the input string
 	 */
-	public byte[] getASCIIarray(String input) {
+	public byte[] getASCIIarray(final String input) {
 		final ByteBuffer buffer = ASCII.encode(input);
 		return buffer.array();
 	}

@@ -196,7 +196,7 @@ public final class Group implements Nameable {
 	 *            name of file this group is associated with
 	 */
 	private Group(String groupName, Type type, String fileName) {
-		final StringUtilities stringUtil = StringUtilities.instance();
+		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
 		if (fileName != null && groupName != null) {
 			tempFullName = fileName + "/" + groupName;

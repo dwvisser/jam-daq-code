@@ -485,7 +485,7 @@ public abstract class Histogram implements DataElement {
 		this.title = title;
 		/* Make a unique name in the group */
 		final Map groupHistMap = group.getHistogramMap();
-		final StringUtilities stringUtil = StringUtilities.instance();
+		final StringUtilities stringUtil = StringUtilities.getInstance();
 		name = stringUtil.makeUniqueName(nameIn, groupHistMap.keySet(),
 				NAME_LENGTH);
 		updateNames(group);// puts in name map as well

@@ -164,7 +164,7 @@ public final class Gate implements DataElement {
 	 *            the <code>Histogram</code> to which the gate will belong.
 	 */
 	public Gate(String nameIn, Histogram hist) {
-		final StringUtilities stringUtil = StringUtilities.instance();
+		final StringUtilities stringUtil = StringUtilities.getInstance();
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
 		Set<String> gateNames = new TreeSet<String>();
