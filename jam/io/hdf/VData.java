@@ -141,7 +141,7 @@ public final class VData extends AbstractData {
 			break;
 		case VDataDescription.DFNT_CHAR8:
 			final String string = (String) (cells[col][row]);
-			out.put(StringUtilities.instance().getASCIIarray(string));
+			out.put(StringUtilities.getInstance().getASCIIarray(string));
 			break;
 		default:
 			throw new IllegalStateException("Vdata.getBytes(" + row + "," + col
@@ -288,7 +288,7 @@ public final class VData extends AbstractData {
 			final int byteLength = order[col];
 			final byte[] temp = new byte[byteLength];
 			System.arraycopy(bytes.array(), location, temp, 0, byteLength);
-			out = StringUtilities.instance().getASCIIstring(temp);
+			out = StringUtilities.getInstance().getASCIIstring(temp);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getString(" + row + "," + col

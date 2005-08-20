@@ -372,7 +372,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	 * non-javadoc: write out a ORNL drr file
 	 */
 	private void writeDrr(OutputStream buffout) throws IOException {
-		final StringUtilities util = StringUtilities.instance();
+		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
 		final List allHists = Histogram.getHistogramList();

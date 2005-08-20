@@ -28,7 +28,7 @@ final class LibVersion extends AbstractData {
 	 */
 	static final private int RELEASE = 2;
 	
-	private static final StringUtilities UTIL=StringUtilities.instance();
+	private static final StringUtilities UTIL=StringUtilities.getInstance();
 
 	/**
      * Descriptive String

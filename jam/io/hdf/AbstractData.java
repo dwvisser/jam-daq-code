@@ -289,7 +289,7 @@ public abstract class AbstractData implements Constants {
 		return new Integer(key);
 	}
 
-	private final StringUtilities UTIL = StringUtilities.instance();
+	private final StringUtilities UTIL = StringUtilities.getInstance();
 
 	/**
 	 * Creates a new HDF DataObject, belonging to the specified

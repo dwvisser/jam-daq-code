@@ -63,7 +63,7 @@ public final class View {
 		String tempName=viewName;
 		nRows=rows;
 		nCols=cols;
-		StringUtilities su = StringUtilities.instance();
+		StringUtilities su = StringUtilities.getInstance();
 		int prime;
 		final int numHists=rows*cols;
 		histogramNames= new String[numHists];

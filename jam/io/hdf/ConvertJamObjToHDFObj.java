@@ -24,7 +24,7 @@ import java.util.List;
  */
 final class ConvertJamObjToHDFObj implements JamFileFields{
 
-	private final StringUtilities STRING_UTIL = StringUtilities.instance();
+	private final StringUtilities STRING_UTIL = StringUtilities.getInstance();
     /**
      * Constructs a Jam-to-HDF object converter.
      */
@@ -418,7 +418,7 @@ final class ConvertJamObjToHDFObj implements JamFileFields{
 	            PAR_TYPE, size, PARAM_COLS, types, orders);
 	    final VData data = new VData(desc);
 	    for (int i = 0; i < size; i++) {
-	        final StringUtilities util = StringUtilities.instance();
+	        final StringUtilities util = StringUtilities.getInstance();
 	        final DataParameter param = (DataParameter) (parameters.get(i));
 	        data.addChars(0, i, util.makeLength(param.getName(), orders[0]));
 	        data.addFloat(1, i, (float) param.getValue());

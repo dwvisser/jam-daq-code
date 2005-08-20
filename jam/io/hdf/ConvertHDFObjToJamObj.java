@@ -32,7 +32,7 @@ import java.util.Map;
 final class ConvertHDFObjToJamObj implements JamFileFields {
 
 	private static final StringUtilities STRING_UTIL = StringUtilities
-			.instance();
+			.getInstance();
 
 	private HDFile inHDF;
 
