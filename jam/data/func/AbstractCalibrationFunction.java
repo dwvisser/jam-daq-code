@@ -76,7 +76,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	/**
 	 * Fit energy
 	 */
-	protected transient double[] ptsEnergy;
+	protected transient double[] ptsEnergy = new double[0];
 	
 	/**
 	 * Coeffiecient values.
@@ -274,9 +274,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * @return the input point energies
 	 */
 	public double[] getPtsEnergy() {
-		final double[] rval = ptsEnergy == null ? new double[0]
-				: (double[]) ptsEnergy.clone();
-		return rval;
+		return ptsEnergy.clone();
 	}
 	
 	/**
