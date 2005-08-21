@@ -12,11 +12,11 @@
 	<property name = "winbin" value="${windows}/bin" />
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="2" />
-	<property name = "MINOR" value="2" />
-	<property name = "RELEASE" value="1" />
-	<property name = "SOURCE_GUID" value="f99b5632-b91d-4443-95d3-f7c695ca6c7b" />
-	<property name = "LIB_GUID" value="8b8f00b7-5cf3-479d-9eee-b9e64a63579e" />
-	<property name = "BIN_GUID" value="35ab7ecf-fc97-4f89-936c-65ada5bb796f" />
+	<property name = "MINOR" value="3" />
+	<property name = "RELEASE" value="0" />
+	<property name = "SOURCE_GUID" value="27b8b3f4-3262-4aa0-a6bb-d6e5a2581fab" />
+	<property name = "LIB_GUID" value="9ba7762e-17a1-42fc-b2d0-51fbc9fefc91" />
+	<property name = "BIN_GUID" value="27649cbe-f116-4071-baf6-d84f2d7c99c3" />
 	<property name = "keyPassword" value="s4b14xto" />
     
 	<!-- task definition for windows executable builder -->
