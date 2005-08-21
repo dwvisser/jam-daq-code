@@ -54,14 +54,14 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	private boolean newBlock = true;
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
 	 */
 	public UconnInputStream(MessageHandler console) {
 		super(console);
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler, int)
 	 */
 	public UconnInputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);

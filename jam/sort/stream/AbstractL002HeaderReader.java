@@ -32,7 +32,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	}
 	
 	/**
-	 * @see AbstractEventInputStream#EventInputStream()
+	 * @see AbstractEventInputStream#AbstractEventInputStream()
 	 */
 	public AbstractL002HeaderReader(){
 		super();
@@ -48,7 +48,7 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 		final byte[] reserved1=new byte[8];//reserved set to 0
 		final byte[] reserved2=new byte[92];//reserved set to 0
 		final byte[] secHead=new byte[256];//read buffer for secondary headers
-		final StringUtilities stringUtilities = StringUtilities.getInstance();
+		final StringUtilities stringUtil = StringUtilities.getInstance();
 		try {
 			dataInput.readFully(headerStart);		//key
 			dataInput.readFully(date);			//date
@@ -59,15 +59,15 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 			dataInput.readInt();//header record length
 			dataInput.readInt();//Block line image records
 			dataInput.readInt();//IMAGE_RECORD_LENGTH
-			final int paramsPerEvent=dataInput.readInt();
+			final int eventParams=dataInput.readInt();
 			dataInput.readInt();//DATA_RECORD_LENGTH
 			dataInput.readFully(reserved2);
 			/* save reads to header variables */
-			headerKey=stringUtilities.getASCIIstring(headerStart);
+			headerKey=stringUtil.getASCIIstring(headerStart);
 			headerRunNumber=number;
-			headerTitle=stringUtilities.getASCIIstring(title);
-			headerEventSize=paramsPerEvent;
-			headerDate=stringUtilities.getASCIIstring(date);
+			headerTitle=stringUtil.getASCIIstring(title);
+			headerEventSize=eventParams;
+			headerDate=stringUtil.getASCIIstring(date);
 			loadRunInfo();
 			/* read secondary headers */
 			for (int i=0; i<numSecHead; i++) {

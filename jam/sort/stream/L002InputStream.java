@@ -30,7 +30,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
 	 */
 	public L002InputStream(MessageHandler console) {
 		super(console);
@@ -90,34 +90,34 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 	 * non-javadoc: Read an event parameter.
 	 */
 	private boolean isParameter(final short paramWord) {
-		boolean parameterSuccess;
+		boolean rval;
 		/* check if it's a special type of parameter */
 		if (paramWord == EVENT_END_MARKER) {
-			parameterSuccess = false;
+			rval = false;
 			status = EventInputStatus.EVENT;
 		} else if (paramWord == BUFFER_END_MARKER) {
-			parameterSuccess = false;
+			rval = false;
 			status = EventInputStatus.END_BUFFER;
 		} else if (paramWord == RUN_END_MARKER) {
-			parameterSuccess = false;
+			rval = false;
 			status = EventInputStatus.END_RUN;
 			/* get parameter value if not special type */
 		} else if (passesParamMask(paramWord)) {
 			final int paramNumber = paramWord & EVENT_MASK;
 			if (paramNumber < 2048) {
 				parameter = paramNumber - 1;// parameter number used in array
-				parameterSuccess = true;
+				rval = true;
 				status = EventInputStatus.PARTIAL_EVENT;
 			} else {// 2048-4095 assumed
-				parameterSuccess = true;
+				rval = true;
 				status = EventInputStatus.SCALER_VALUE;
 			}
 		} else {// unknown word
 			parameter = paramWord;
-			parameterSuccess = false;
+			rval = false;
 			status = EventInputStatus.UNKNOWN_WORD;
 		}
-		return parameterSuccess;
+		return rval;
 	}
 
 	private boolean passesParamMask(final short paramWord) {

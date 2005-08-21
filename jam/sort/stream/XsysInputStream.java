@@ -1,117 +1,114 @@
 package jam.sort.stream;
+
 import jam.global.MessageHandler;
 
 import java.io.IOException;
 
 /**
- * This class knows how to handle Xsys event data format .  It extends 
- * EventInputStream, adding methods for reading events and returning them
- * as int arrays which the sorter can handle.
- *
- * @version	0.5 April 98
- * @author 	Ken Swartz
- * @see         AbstractEventInputStream
- * @since       JDK1.1
+ * This class knows how to handle Xsys event data format . It extends
+ * EventInputStream, adding methods for reading events and returning them as int
+ * arrays which the sorter can handle.
+ * 
+ * @version 0.5 April 98
+ * @author Ken Swartz
+ * @see AbstractEventInputStream
+ * @since JDK1.1
  */
 public class XsysInputStream extends AbstractEventInputStream {
 
-	static private final int END_REC = 0x0a;
+    static private final int END_REC = 0x0a;
 
-	int bufferMarker;
-	int bufferNumber;
-	
-	/**
-	 * @see AbstractEventInputStream#EventInputStream()
-	 *
-	 */
-	public XsysInputStream(){
-		super();
-	}
+    private transient int bufferMarker;
 
-	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
-	 */
-	public XsysInputStream(MessageHandler console) {
-		super(console);
-		bufferNumber = 0;
-	}
+    /**
+     * @see AbstractEventInputStream#AbstractEventInputStream()
+     * 
+     */
+    public XsysInputStream() {
+        super();
+    }
 
-	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
-	 */
-	public XsysInputStream(MessageHandler console, int eventSize) {
-		super(console, eventSize);
-	}
+    /**
+     * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+     */
+    public XsysInputStream(MessageHandler console) {
+        super(console);
+    }
 
-	/**
-	 * Reads an event from the input stream
-	 * Expects the stream position to be the beginning of an event.  
-	 * It is up to the user to ensure this.
-	 *
-	 * @exception   EventException   thrown when there is a problem with the event stream
-	 */
-	public synchronized EventInputStatus readEvent(int[] input)
-		throws EventException {
-		EventInputStatus status = EventInputStatus.ERROR;
-		try {
-			if (bufferCount < bufferSize) {
-				for (int i = 0; i < eventSize; i++) {
-					input[i] = readVaxShort();
-					bufferCount++;
-					if (input[i] < 0) {
-						status = EventInputStatus.END_FILE;
-						break; //jumps out of for-loop
-					} 
-					status = EventInputStatus.EVENT;
-				}
-			} else {
-				if ((bufferMarker = dataInput.read()) != END_REC) {
-					throw new EventException("Incorrect end of record marker");
-				}
-				status = EventInputStatus.END_BUFFER;
-				bufferCount = 0;
-			}
-		} catch (IOException io) {
-			status = EventInputStatus.ERROR;
-			throw new EventException(
-				"Reading Event from IOException "
-					+ io.getMessage()
-					+ " [XsysInputStream]");
+    /**
+     * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler,
+     *      int)
+     */
+    public XsysInputStream(MessageHandler console, int eventSize) {
+        super(console, eventSize);
+    }
 
-		}
-		return status;
-	}
-	
-	/**
-	 * Read a event stream header.
-	 *
-	 * @exception   EventException   thrown when there is a problem with the event stream
-	 */
-	public boolean readHeader() throws EventException {
-		headerRunNumber = 0;
-		headerTitle = "No Title for Xsys";
-		headerDate = "No Date";
-		loadRunInfo();
-		return true;
-	}
+    /**
+     * Reads an event from the input stream Expects the stream position to be
+     * the beginning of an event. It is up to the user to ensure this.
+     * 
+     * @exception EventException
+     *                thrown when there is a problem with the event stream
+     */
+    public synchronized EventInputStatus readEvent(int[] input)
+            throws EventException {
+        EventInputStatus status = EventInputStatus.ERROR;
+        try {
+            if (bufferCount < bufferSize) {
+                for (int i = 0; i < eventSize; i++) {
+                    input[i] = readVaxShort();
+                    bufferCount++;
+                    if (input[i] < 0) {
+                        status = EventInputStatus.END_FILE;
+                        break; // jumps out of for-loop
+                    }
+                    status = EventInputStatus.EVENT;
+                }
+            } else {
+                bufferMarker = dataInput.read();
+                if (bufferMarker != END_REC) {
+                    throw new EventException("Incorrect end of record marker");
+                }
+                status = EventInputStatus.END_BUFFER;
+                bufferCount = 0;
+            }
+        } catch (IOException io) {
+            status = EventInputStatus.ERROR;
+            throw new EventException("Reading Event from IOException "
+                    + io.getMessage() + " [XsysInputStream]");
 
-	/**
-	 * Is the word a end of run word
-	 * Xsys event stream has no end of event marker 
-	 */
-	public boolean isEndRun(short dataWord) {
-		return false;
-	}
+        }
+        return status;
+    }
 
-	/* non-javadoc:
-	 * reads a little endian short, 2 bytes
-	 */
-	private int readVaxShort() throws IOException {
-		int ch1 = dataInput.read();
-		int ch2 = dataInput.read();
-		if ((ch1 | ch2) < 0) {
-			return -1;
-		}
-		return (ch2 << 8) + (ch1 << 0);
-	}
+    /**
+     * Read a event stream header.
+     * 
+     * @exception EventException
+     *                thrown when there is a problem with the event stream
+     */
+    public boolean readHeader() throws EventException {
+        headerRunNumber = 0;
+        headerTitle = "No Title for Xsys";
+        headerDate = "No Date";
+        loadRunInfo();
+        return true;
+    }
+
+    /**
+     * Is the word a end of run word Xsys event stream has no end of event
+     * marker
+     */
+    public boolean isEndRun(short dataWord) {
+        return false;
+    }
+
+    /*
+     * non-javadoc: reads a little endian short, 2 bytes
+     */
+    private int readVaxShort() throws IOException {
+        final int ch1 = dataInput.read();
+        final int ch2 = dataInput.read();
+        return ((ch1 | ch2) < 0) ? -1 : (ch2 << 8) + (ch1 << 0);
+    }
 }

@@ -1,11 +1,6 @@
 package jam.sort.stream;
 
-import jam.global.RunInfo;
-import jam.util.StringUtilities;
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 /**
  * This class knows how to handle Oak Ridge tape format. It extends
@@ -27,7 +22,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	}
 
 	/**
-	 * @see AbstractEventOutputStream#EventOutputStream(int)
+	 * @see AbstractEventOutputStream#AbstractEventOutputStream(int)
 	 */
 	public YaleOutputStream(int eventSize) {
 		super(eventSize);

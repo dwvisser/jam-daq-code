@@ -25,7 +25,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 
 	private transient EventInputStatus status;
 
-	private transient int tapeByteCounter = 0;
+	private transient int byteCounter = 0;
 
 	/**
 	 * Needed to create an instance with newInstance().
@@ -35,14 +35,14 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
 	 */
 	public L003InputStream(MessageHandler console) {
 		super(console);
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler, int)
 	 */
 	public L003InputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
@@ -131,7 +131,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	 * non-javadoc: Read a event parameter
 	 */
 	private boolean readParameter() throws EventException, IOException {
-		boolean parameterSuccess;
+		boolean rval;
 		int paramWord;
 		try {
 			paramWord = readVaxShort(); // read parameter word
@@ -140,44 +140,44 @@ public final class L003InputStream extends AbstractEventInputStream implements
 				// need another read as marker is 2 shorts
 				paramWord = readVaxShort();
 				numberEvents++;
-				parameterSuccess = false;
+				rval = false;
 				status = EventInputStatus.EVENT;
 			} else if (paramWord == L002Parameters.BUFFER_END_MARKER) {
-				parameterSuccess = false;
+				rval = false;
 				status = EventInputStatus.END_BUFFER;
 			} else if (paramWord == L002Parameters.RUN_END_MARKER) {
-				parameterSuccess = false;
+				rval = false;
 				status = EventInputStatus.END_RUN;
 				// get parameter value if not special type
-			} else if (0 != (paramWord & L002Parameters.EVENT_PARAMETER)) {
+			} else if (0 == (paramWord & L002Parameters.EVENT_PARAMETER)) {
+                rval = false;
+                status = EventInputStatus.UNKNOWN_WORD;
+                throw new EventException("L003InputStream parameter value: "
+                        + paramWord + " [L003InputStream]");
+            } else {
 				parameter = (paramWord & EVENT_MASK) - 1;
 				// parameter number
 				eventValue = readVaxShort();
 				// read event word
-				parameterSuccess = true;
+				rval = true;
 				status = EventInputStatus.PARTIAL_EVENT;
-			} else {
-				parameterSuccess = false;
-				status = EventInputStatus.UNKNOWN_WORD;
-				throw new EventException("L003InputStream parameter value: "
-						+ paramWord + " [L003InputStream]");
 			}
 			// we got to the end of a file
 		} catch (EOFException eof) {
 			showErrorMessage(eof);
-			parameterSuccess = false;
+			rval = false;
 			status = EventInputStatus.END_FILE;
 		} catch (IOException ioe) {
 			showErrorMessage(ioe);
-			parameterSuccess = scalerRead();
-			if (parameterSuccess) {
+			rval = scalerRead();
+			if (rval) {
 				status = EventInputStatus.END_BUFFER;
 			} else {
 				status = EventInputStatus.END_FILE;
 			}
 
 		}
-		return parameterSuccess;
+		return rval;
 	}
 
 	/*
@@ -208,29 +208,29 @@ public final class L003InputStream extends AbstractEventInputStream implements
 		boolean readStatus = true;
 		final byte[] scalerDump = new byte[SCALER_BUFF_SIZE];
 		String scalerString = null;
-		int scalerByteCounter = 0;
+		int nScalerBytes = 0;
 		int bytesRead = 0;
-		while ((scalerByteCounter < SCALER_REC_SIZE) && bytesRead >= 0) {
-			if (scalerByteCounter < SCALER_REC_SIZE - SCALER_BUFF_SIZE) {
+		while ((nScalerBytes < SCALER_REC_SIZE) && bytesRead >= 0) {
+			if (nScalerBytes < SCALER_REC_SIZE - SCALER_BUFF_SIZE) {
 				bytesRead = dataInput.read(scalerDump);
 			} else {
 				bytesRead = dataInput.read(scalerDump, 0, SCALER_REC_SIZE
-						- scalerByteCounter);
+						- nScalerBytes);
 			}
 			if (bytesRead != SCALER_BUFF_SIZE) {
 				showWarningMessage("scaler Not a full read, only read in "
 						+ bytesRead + " bytes");
 			}
 			if (bytesRead > 0) {
-				tapeByteCounter += bytesRead;
-				scalerByteCounter += bytesRead;
+				byteCounter += bytesRead;
+				nScalerBytes += bytesRead;
 			}
 			// save first read
-			if (scalerByteCounter < SCALER_BUFF_SIZE + 1) {
+			if (nScalerBytes < SCALER_BUFF_SIZE + 1) {
 				scalerString = String.valueOf(scalerDump);
 			}
 		}
-		System.out.println("scaler dump total bytes read " + scalerByteCounter);
+		System.out.println("scaler dump total bytes read " + nScalerBytes);
 		System.out.println("scaler dump = " + scalerString);
 		if (bytesRead < 0) {
 			readStatus = false;

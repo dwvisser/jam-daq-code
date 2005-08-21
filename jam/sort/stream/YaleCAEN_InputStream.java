@@ -23,19 +23,19 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		CAEN_StreamFields {
 
 	private enum BufferStatus {
-	    /*
+	    /**
 	     * State for when buffer is still filling and no output is available yet.
 	     */
 	    FIFO_FILLING,
 	    
-	    /*
+	    /**
 	     * In this state every new read from the stream requires that the oldest 
 	     * event in the the "FIFO" buffer be pulled to be returned so as to make room
 	     * for a new event counter.
 	     */
 	    FIFO_FULL,
 	    
-	    /*
+	    /**
 	     * This is the state when the EventStream has characters in it indicating that
 	     * acquisition has been stopped or ended.  In this situation, all data has been 
 	     * read out from the ADC's and been sent to Jam.  So the stream needs to empty out
@@ -43,18 +43,18 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	     */
 	    FIFO_FLUSH,
 	    
-	    /*
+	    /**
 	     * Indicates the state where flushing of the remaining contents of the
 	     * buffer is occuring.
 	     */
 	    FIFO_ENDRUN_FLUSH,
 	    
-	    /*
+	    /**
 	     * Indicates the state where a scaler block is being read.
 	     */
 	    SCALER,
 	    
-	    /*
+	    /**
 	     * Indicates the state where we're reading through end-of-buffer
 	     * padding characters.
 	     */
@@ -117,7 +117,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
 	 */
 	public YaleCAEN_InputStream(MessageHandler console) {
 		super(console);
@@ -168,7 +168,7 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#EventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler, int)
 	 */
 	public YaleCAEN_InputStream(MessageHandler console, int eventSize) {
 		super(console, eventSize);
