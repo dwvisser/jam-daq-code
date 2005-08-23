@@ -17,9 +17,13 @@ import java.util.List;
  */
 final class Multiplet extends ArrayList<Peak> {
 	
-	Multiplet(){
+	private Multiplet(){
 		super();
 	}
+    
+    static Multiplet createMultiplet(){
+        return new Multiplet();
+    }
 
     List<Double> getAllCentroids(){
         final List<Double> centroids=new ArrayList<Double>();

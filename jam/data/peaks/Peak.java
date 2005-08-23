@@ -23,9 +23,13 @@ final class Peak extends Object implements Comparable, Cloneable {
 	 * @param width
 	 *            Full width at half max of the peak
 	 */
-	Peak(double position, double area, double width) {
+	private Peak(double position, double area, double width) {
 		this(position, 0.0, area, 0.0, width, 0.0);
 	}
+    
+    static Peak createPeak(double position, double area, double width) {
+        return new Peak(position, area, width);
+    }
 
 	/**
 	 * Generates a peak with error bars on its parameters.
