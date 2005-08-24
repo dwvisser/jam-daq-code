@@ -22,9 +22,6 @@ public class Display extends JPanel implements Observer {
 
     private static final String KEY_TABLE = "table";
 
-    private transient final Broadcaster broadcaster = Broadcaster
-            .getSingletonInstance();
-
     private transient final CardLayout cardLayout;
 
     /**
@@ -36,13 +33,14 @@ public class Display extends JPanel implements Observer {
      *            summary panel
      */
     public Display(JPanel plotDisplay, JPanel summaryTable) {
+    	super();
         cardLayout = new CardLayout();
         setLayout(cardLayout);
         add(KEY_PLOT, plotDisplay);
         add(KEY_TABLE, summaryTable);
         /* Initial show plot. */
         cardLayout.show(this, KEY_PLOT);
-        broadcaster.addObserver(this);
+        Broadcaster.getSingletonInstance().addObserver(this);
     }
 
     /**
@@ -59,7 +57,7 @@ public class Display extends JPanel implements Observer {
         cardLayout.show(this, KEY_TABLE);
     }
 
-    public void update(Observable observable, Object object) {
+    public void update(final Observable observable, final Object object) {
         final BroadcastEvent event = (BroadcastEvent) object;
         final Command command = event.getCommand();
         if ((command == BroadcastEvent.Command.GROUP_SELECT)
