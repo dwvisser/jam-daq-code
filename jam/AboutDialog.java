@@ -33,6 +33,7 @@ public class AboutDialog {
 	 * @param frame parent of the dialog
 	 */
 	public AboutDialog(Frame frame) {
+		super();
 		dialog=new JDialog(frame, "About Jam", false);
 		final Container cad = dialog.getContentPane();
 		dialog.setResizable(false);
