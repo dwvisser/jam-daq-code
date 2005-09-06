@@ -16,6 +16,7 @@ import jam.sort.VME_Map;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 import jam.ui.Console;
+import jam.ui.PathBrowseButton;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -37,7 +38,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -93,14 +93,57 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final AbstractButton bok, bapply, checkLock, bbrowseh,
 			bbrowsed, bbrowsel;
 
-	/* stuff for dialog box */
-	private transient final AbstractButton cdisk; // save events to disk
+	{
+		checkLock = new JCheckBox("Setup Locked", false);
+		checkLock.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent itemEvent) {
+				if (!checkLock.isSelected()) {
+					try {
+						/* kill daemons, clear data areas */
+						resetAcq(true);
+						/* unlock sort mode */
+						lockMode(false);
+						jamConsole.closeLogFile();
+					} catch (Exception e) {
+						jamConsole.errorOutln(e.getMessage());
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		checkLock.setEnabled(false);
+	}
 
-	private transient final AbstractButton clog; // create a log file
+	/* stuff for dialog box */
+	private transient final AbstractButton cdisk, clog;
+
+	{
+		cdisk = new JCheckBox("Events to Disk", true);
+		cdisk.setToolTipText("Send events to disk.");
+		cdisk.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent itemEvent) {
+				boolean store = cdisk.isSelected();
+				if (!store) {
+					final boolean oops = JOptionPane.showConfirmDialog(dialog,
+							"De-selecting this checkbox means Jam won't store events to disk.\n"
+									+ "Is this what you really want?",
+							"Event Storage Disabled",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
+					if (oops) {
+						cdisk.setSelected(true);
+						store = true;
+					}
+				}
+				textPathData.setEnabled(store);
+				bbrowsed.setEnabled(store);
+			}
+		});
+	}
 
 	private transient final DisplayCounters counters;
 
-	private transient File dataFolder;
+	private transient File dataFolder, histFolder, logDirectory;
 
 	private transient DiskDaemon diskDaemon;
 
@@ -109,16 +152,12 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private transient final FrontEndCommunication frontEnd;
 
-	private transient File histFolder;
-
 	private transient final JComboBox inChooser, outChooser;
 
 	/* streams to read and write events */
 	private transient AbstractEventInputStream inStream;
 
 	private transient final Console jamConsole;
-
-	private transient File logDirectory;
 
 	private transient NetDaemon netDaemon;
 
@@ -129,9 +168,8 @@ public final class SetupSortOn extends AbstractSetup {
 	/* sorting classes */
 	private transient SortDaemon sortDaemon;
 
-	private transient final JTextField textExpName, textPathHist, textPathData;
-
-	private transient final JTextField textPathLog;
+	private transient final JTextField textExpName, textPathHist, textPathData,
+			textPathLog;
 
 	private SetupSortOn(Console console) {
 		super("Setup Online");
@@ -146,12 +184,12 @@ public final class SetupSortOn extends AbstractSetup {
 				.getPropString(JamProperties.EVENT_INSTREAM);
 		final String defaultOutStream = JamProperties
 				.getPropString(JamProperties.EVENT_OUTSTREAM);
-		final String defaultEvents = JamProperties
-				.getPropString(JamProperties.EVENT_OUTPATH);
+		dataFolder = new File(JamProperties
+				.getPropString(JamProperties.EVENT_OUTPATH));
 		histFolder = new File(JamProperties
 				.getPropString(JamProperties.HIST_PATH));
-		final String defaultLog = JamProperties
-				.getPropString(JamProperties.LOG_PATH);
+		logDirectory = new File(JamProperties
+				.getPropString(JamProperties.LOG_PATH));
 		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
 		runControl = RunControl.getSingletonInstance();
 		counters = DisplayCounters.getSingletonInstance();
@@ -221,13 +259,15 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Class path text */
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
-		Iterator iterator = setChooserDefault(useDefaultPath).iterator();
-		while (iterator.hasNext()) {
-			final Class clazz = (Class) iterator.next();
+		Iterator<Class<?>> iterator = setChooserDefault(useDefaultPath)
+				.iterator();
+		boolean done = false;
+		while (!done && iterator.hasNext()) {
+			final Class clazz = iterator.next();
 			final String name = clazz.getName();
-			if (name.equals(defaultRoutine)) {
+			done = name.equals(defaultRoutine);
+			if (done) {
 				sortChoice.setSelectedItem(clazz);
-				break;
 			}
 		}
 		pEntries.add(sortChoice);
@@ -255,39 +295,18 @@ public final class SetupSortOn extends AbstractSetup {
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
 		textPathHist.setEditable(false);
 		pEntries.add(textPathHist);
-		textPathData = new JTextField(defaultEvents);
+		textPathData = new JTextField();
 		textPathData.setColumns(fileTextCols);
 		textPathData.setToolTipText("Path to save event data.");
 		textPathData.setEditable(false);
 		pEntries.add(textPathData);
-		textPathLog = new JTextField(defaultLog);
+		textPathLog = new JTextField();
 		textPathLog.setColumns(fileTextCols);
 		textPathLog.setToolTipText("Path to save the console log.");
 		textPathLog.setEditable(false);
 		pEntries.add(textPathLog);
 		JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
 		pEntries.add(pInterval);
-		cdisk = new JCheckBox("Events to Disk", true);
-		cdisk.setToolTipText("Send events to disk.");
-		cdisk.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				boolean store = cdisk.isSelected();
-				if (!store) {
-					final boolean oops = JOptionPane.showConfirmDialog(dialog,
-							"De-selecting this checkbox means Jam won't store events to disk.\n"
-									+ "Is this what you really want?",
-							"Event Storage Disabled",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION;
-					if (oops) {
-						cdisk.setSelected(true);
-						store = true;
-					}
-				}
-				textPathData.setEnabled(store);
-				bbrowsed.setEnabled(store);
-			}
-		});
 		pInterval.add(cdisk);
 		clog = new JCheckBox("Log Commands", false);
 		clog.setSelected(true);
@@ -302,29 +321,11 @@ public final class SetupSortOn extends AbstractSetup {
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		bbrowseh = new JButton("Browse...");
-		bbrowseh.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				histFolder = getPath(histFolder);
-				textPathHist.setText(histFolder.getPath());
-			}
-		});
+		bbrowseh = new PathBrowseButton(histFolder,textPathHist);
 		pBrowse.add(bbrowseh);
-		bbrowsed = new JButton("Browse...");
-		bbrowsed.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				dataFolder = getPath(dataFolder);
-				textPathData.setText(dataFolder.getPath());
-			}
-		});
+		bbrowsed = new PathBrowseButton(dataFolder,textPathData);
 		pBrowse.add(bbrowsed);
-		bbrowsel = new JButton("Browse...");
-		bbrowsel.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				logDirectory = getPath(logDirectory);
-				textPathLog.setText(logDirectory.getPath());
-			}
-		});
+		bbrowsel = new PathBrowseButton(logDirectory,textPathLog);
 		pBrowse.add(bbrowsel);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		/* panel for buttons */
@@ -354,24 +355,6 @@ public final class SetupSortOn extends AbstractSetup {
 				dialog.dispose();
 			}
 		});
-		checkLock = new JCheckBox("Setup Locked", false);
-		checkLock.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
-				if (!checkLock.isSelected()) {
-					try {
-						/* kill daemons, clear data areas */
-						resetAcq(true);
-						/* unlock sort mode */
-						lockMode(false);
-						jamConsole.closeLogFile();
-					} catch (Exception e) {
-						jamConsole.errorOutln(e.getMessage());
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		checkLock.setEnabled(false);
 		pBottom.add(checkLock);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
@@ -429,20 +412,6 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 	}
 
-	/*
-	 * non-javadoc: Is the Browse for the Path Name where the events file will
-	 * be saved.
-	 * 
-	 * @author Ken Swartz @author Dale Visser
-	 */
-	private File getPath(final File file) {
-		final JFileChooser fileChooser = new JFileChooser(file);
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
-		final boolean approval = option == JFileChooser.APPROVE_OPTION;
-		final boolean selected = fileChooser.getSelectedFile() != null;
-		return (approval && selected) ? fileChooser.getSelectedFile() : file;
-	}
 
 	/**
 	 * Save the names of the experiment, the sort file and the event and
@@ -510,7 +479,7 @@ public final class SetupSortOn extends AbstractSetup {
 		initializeSorter();
 		/* interprocess buffering between daemons */
 		final RingBuffer sortingRing = new RingBuffer();
-		//if disk not selected than storage ring is made in "null/empty" state
+		// if disk not selected than storage ring is made in "null/empty" state
 		final RingBuffer storageRing = new RingBuffer(!cdisk.isSelected());
 		/* typical setup of event streams */
 		try { // create new event input stream class

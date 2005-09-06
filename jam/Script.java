@@ -76,7 +76,7 @@ public final class Script implements Observer {
 	 * base path given by the system property <code>user.dir</code>
 	 * at startup
 	 */
-	public File defineFile(String fname){
+	public File defineFile(final String fname){
 		return new File(base,fname);
 	}
 
@@ -123,7 +123,7 @@ public final class Script implements Observer {
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet 
 	 */
-	public void addEventFile(File fileOrDir){
+	public void addEventFile(final File fileOrDir){
 		if (!isSetup){
 			throw new IllegalStateException(
 			"You may not call addEventFile() before calling setupOffline().");
@@ -154,7 +154,7 @@ public final class Script implements Observer {
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet
 	 */
-	public void loadFileList(File list){
+	public void loadFileList(final File list){
 		if (!isSetup){
 			throw new IllegalStateException(
 			"You may not call loadFileList() before calling setupOffline().");
@@ -176,7 +176,7 @@ public final class Script implements Observer {
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet
 	 */
-	public  void setEventOutput(File eventsOut){
+	public  void setEventOutput(final File eventsOut){
 		if (!isSetup){
 			throw new IllegalStateException(
 			"You may not call setEventOutput() before calling setupOffline().");
@@ -236,7 +236,7 @@ public final class Script implements Observer {
 	}
 	
 	private transient RunState state=RunState.NO_ACQ;
-	public void update(Observable event, Object param){
+	public void update(final Observable event, final Object param){
 		final BroadcastEvent bEvent=(BroadcastEvent)param;
 		final BroadcastEvent.Command command=bEvent.getCommand();
 		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
@@ -254,7 +254,7 @@ public final class Script implements Observer {
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet
 	 */
-	public void loadHDF(File hdf){
+	public void loadHDF(final File hdf){
 		if (!isSetup){
 			throw new IllegalStateException(
 			"You may not call loadHDF() before calling setupOffline().");
@@ -274,7 +274,7 @@ public final class Script implements Observer {
 	 * @throws IllegalStateException if <code>setupOffline()</code>
 	 * hasn't been called yet
 	 */
-	public void addHDF(File hdf){
+	public void addHDF(final File hdf){
 		final FileFilter filter=new HDFileFilter(false);
 		if (!isSetup){
 			throw new IllegalStateException(
@@ -299,7 +299,7 @@ public final class Script implements Observer {
 	 * 
 	 * @param hdf an HDF file
 	 */
-	public void saveHDF(File hdf){
+	public void saveHDF(final File hdf){
 		hdfio.writeFile(hdf);
 		System.out.println("Saved HDF file: "+hdf);
 	}

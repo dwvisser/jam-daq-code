@@ -7,7 +7,7 @@ import java.awt.Color;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4, 2003-12-31
  */
-public class RunState {
+public final class RunState {
 	
 	private static final String [] NAMES={"NO_ACQ","ACQ_ON",
 	"ACQ_OFF","RUN_ON","REMOTE"};
@@ -29,6 +29,7 @@ public class RunState {
 	private transient final boolean acquireOn,acquireMode;
 
 	private RunState(int index){
+		super();
 		name=NAMES[index];
 		label=LABELS[index];
 		color=COLORS[index];
@@ -67,13 +68,13 @@ public class RunState {
 	 * @param run run number
 	 * @return a new state object
 	 */
-	public static final RunState runOnline(int run){
+	public static RunState runOnline(final int run){
 		final RunState rval=new RunState(3);
 		rval.setLabel("   Run "+run+"   ");
 		return rval;
 	}
 	
-	private void setLabel(String string){
+	private void setLabel(final String string){
 		label=string;
 	}
 	
