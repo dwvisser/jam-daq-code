@@ -63,71 +63,23 @@ import javax.swing.border.EmptyBorder;
  */
 public class RunControl extends JDialog implements Controller {
 
-	/**
-	 * Indicates running to or from disk.
-	 */
-	private static final int DISK = 0;
+	private static enum Device {
+		/**
+		 * Indicates running to or from disk.
+		 */
+		DISK,
 
-	/**
-	 * Indicates events being stored by front end.
-	 */
-	private static final int FRONT_END = 2;
+		/**
+		 * Indicates events being stored by front end.
+		 */
+		FRONT_END
+	}
 
 	final static String EVENT_EXT = ".evn";
 
-	private transient final DataIO dataio;
-
-	private transient final FrontEndCommunication vmeComm;
-
-	private transient final MessageHandler console;
+	private static RunControl instance = null;
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private transient int device;
-
-	/* daemon threads */
-	private transient NetDaemon netDaemon;
-
-	private transient DiskDaemon diskDaemon;
-
-	private transient SortDaemon sortDaemon;
-
-	/**
-	 * event file information
-	 */
-	private transient String exptName;
-
-	private transient File dataPath;
-
-	private transient File dataFile;
-
-	/**
-	 * histogram file information
-	 */
-	private transient File histFilePath;
-
-	/**
-	 * run Number, is append to experiment name to create event file
-	 */
-	private transient int runNumber;
-
-	/**
-	 * run Title
-	 */
-	private transient String runTitle;
-
-	/**
-	 * Are we currently in a run, saving event data
-	 */
-	private boolean runOn = false;
-
-	private transient final JTextField tRunNumber, textRunTitle, textExptName;
-
-	private transient final JCheckBox cHistZero;
-
-	private transient final JCheckBox zeroScalers;
-
-	private static RunControl instance = null;
 
 	/**
 	 * @return the only instance of this class
@@ -138,6 +90,99 @@ public class RunControl extends JDialog implements Controller {
 		}
 		return instance;
 	}
+
+	private transient final Action beginAction = new AbstractAction() {
+		{
+			putValue(Action.NAME, "Begin Run");
+			putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
+			final ClassLoader loader = ClassLoader.getSystemClassLoader();
+			final ImageIcon icon = new ImageIcon(loader
+					.getResource("jam/begin.png"));
+			putValue(Action.SMALL_ICON, icon);
+			setEnabled(false);
+		}
+
+		public void actionPerformed(final ActionEvent event) {
+			runTitle = textRunTitle.getText().trim();
+			final boolean confirm = (JOptionPane.showConfirmDialog(
+					RunControl.this, "Is this title OK? :\n" + runTitle,
+					"Run Title Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+			if (confirm) {
+				try {
+					beginRun();
+				} catch (SortException se) {
+					console.errorOutln(se.getMessage());
+				} catch (JamException je) {
+					console.errorOutln(je.getMessage());
+				}
+
+			}
+		}
+	};
+
+	private transient final JCheckBox cHistZero;
+
+	private transient final MessageHandler console;
+
+	private transient File dataFile, dataPath;
+
+	private transient final DataIO dataio;
+
+	private transient Device device;
+
+	private transient DiskDaemon diskDaemon;
+
+	private transient final Action endAction = new AbstractAction() {
+		{
+			putValue(Action.NAME, "End Run");
+			putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
+			final ClassLoader loader = ClassLoader.getSystemClassLoader();
+			final ImageIcon icon = new ImageIcon(loader
+					.getResource("jam/end.png"));
+			putValue(Action.SMALL_ICON, icon);
+			setEnabled(false);
+		}
+
+		public void actionPerformed(final ActionEvent event) {
+			endRun();
+		}
+	};
+
+	/**
+	 * event file information
+	 */
+	private transient String exptName;
+
+	/**
+	 * histogram file information
+	 */
+	private transient File histFilePath;
+
+	/* daemon threads */
+	private transient NetDaemon netDaemon;
+
+	/**
+	 * run Number, is append to experiment name to create event file
+	 */
+	private transient int runNumber;
+
+	/**
+	 * Are we currently in a run, saving event data
+	 */
+	private boolean runOn = false;
+
+	/**
+	 * run Title
+	 */
+	private transient String runTitle;
+
+	private transient SortDaemon sortDaemon;
+
+	private transient final JTextField tRunNumber, textRunTitle, textExptName;
+
+	private transient final FrontEndCommunication vmeComm;
+
+	private transient final JCheckBox zeroScalers;
 
 	/**
 	 * Creates the run control dialog box.
@@ -213,153 +258,48 @@ public class RunControl extends JDialog implements Controller {
 		pack();
 	}
 
-	private transient final Action endAction = new AbstractAction() {
-
-		{
-			putValue(Action.NAME, "End Run");
-			putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
-			final ClassLoader loader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(loader
-					.getResource("jam/end.png"));
-			putValue(Action.SMALL_ICON, icon);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent event) {
-			endRun();
-		}
-	};
-
-	private transient final Action beginAction = new AbstractAction() {
-
-		{
-			putValue(Action.NAME, "Begin Run");
-			putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-			final ClassLoader loader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(loader
-					.getResource("jam/begin.png"));
-			putValue(Action.SMALL_ICON, icon);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent event) {
-			runTitle = textRunTitle.getText().trim();
-			final boolean confirm = (JOptionPane.showConfirmDialog(
-					RunControl.this, "Is this title OK? :\n" + runTitle,
-					"Run Title Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-			if (confirm) {
-				try {
-					beginRun();
-				} catch (SortException se) {
-					console.errorOutln(se.getMessage());
-				} catch (JamException je) {
-					console.errorOutln(je.getMessage());
-				}
-
-			}
-		}
-	};
-
 	/**
-	 * Setup for online acquisition.
+	 * Only here for the controller interface.
 	 * 
-	 * @see jam.SetupSortOn
-	 * @param name
-	 *            name of the current experiment
-	 * @param datapath
-	 *            path to event files
-	 * @param histpath
-	 *            path to HDF files
-	 * @param sortD
-	 *            the sorter thread
-	 * @param netD
-	 *            the network communication thread
-	 * @param diskD
-	 *            the storage thread
+	 * @deprecated
 	 */
-	public void setupOn(final String name, final File datapath,
-			final File histpath, final SortDaemon sortD, final NetDaemon netD,
-			final DiskDaemon diskD) {
-		exptName = name;
-		dataPath = datapath;
-		histFilePath = histpath;
-		sortDaemon = sortD;
-		netDaemon = netD;
-		netD.setEndRunAction(endAction);
-		textExptName.setText(name);
-		if (diskD == null) {// case if front end is taking care of storing
-			// events
-			device = FRONT_END;
-		} else {
-			diskDaemon = diskD;
-			device = DISK;
-		}
-		beginAction.setEnabled(true);
-	}
-
-	private boolean isRunOn() {
-		synchronized (this) {
-			return runOn;
-		}
-	}
-
-	private void setRunOn(final boolean val) {
-		synchronized (this) {
-			runOn = val;
-		}
+	public void atSortEnd() {
+		/* Nothing needed here at the moment. */
 	}
 
 	/**
-	 * Starts acquisition of data. Figure out if online or offline an run
-	 * appropriate method.
+	 * Called by sorter when it starts up. Nnot used for online data taking.
 	 */
-	public void startAcq() {
-		netDaemon.setState(GoodThread.State.RUN);
-		vmeComm.startAcquisition();
-		// if we are in a run, display run number
-		if (isRunOn()) {// runOn is true if the current state is a run
-			STATUS.setRunState(RunState.runOnline(runNumber));
-			// see stopAcq() for reason for this next line.
-			endAction.setEnabled(true);
-			console.messageOutln("Started Acquisition, continuing Run #"
-					+ runNumber);
-		} else {// just viewing events, not running to disk
-			STATUS.setRunState(RunState.ACQ_ON);
-			beginAction.setEnabled(false);// don't want to try to begin run
-			// while going
-			console
-					.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
-		}
+	public void atSortStart() {
+		/* does nothing for on line */
 	}
 
 	/**
-	 * Tells VME to stop acquisition, and suspends the net listener.
+	 * Method called back from sort package when we are done writing out the
+	 * event data and have closed the event file.
+	 * 
+	 * @throws IllegalStateException
+	 *             if the device is not an expected value
 	 */
-	public void stopAcq() {
-		vmeComm.stopAcquisition();
-		/*
-		 * Commented out next line to see if this stops our problem of
-		 * "leftover" buffers DWV 15 Nov 2001
-		 */
-		STATUS.setRunState(RunState.ACQ_OFF);
-		/*
-		 * done to avoid "last buffer in this run becomes first and last buffer
-		 * in next run" problem
-		 */
-		endAction.setEnabled(false);
-		if (!isRunOn()) {// not running to disk
-			beginAction.setEnabled(true);// since it was disabled during
-			// start
+	public void atWriteEnd() {
+		if (device != Device.FRONT_END) {
+			netDaemon.setWriter(false);
 		}
-		console.warningOutln("Stopped Acquisition...if you are doing a run, "
-				+ "you will need to start again before clicking \"End Run\".");
-	}
-
-	/**
-	 * flush the vme buffer
-	 */
-	public void flushAcq() {
-		vmeComm.flush();
+		try {
+			if (device == Device.DISK) {
+				diskDaemon.closeEventOutputFile();
+				console.messageOutln("Event file closed " + dataFile.getPath());
+			} else if (device == Device.FRONT_END) {
+				console.errorOutln(getClass().getName() + ".atWriteEnd()"
+						+ " device=FRONT_END not implemented");
+				// **** send message to indicate end of run file? ****
+			} else {
+				throw new IllegalStateException(
+						"Expect device to be DISK or FRONT_END.");
+			}
+		} catch (SortException je) {
+			console.errorOutln(je.getMessage());
+		}
 	}
 
 	/**
@@ -390,7 +330,7 @@ public class RunControl extends JDialog implements Controller {
 		} catch (NumberFormatException nfe) {
 			throw new JamException("Run number not an integer [RunControl]");
 		}
-		if (device == DISK) {// saving to disk
+		if (device == Device.DISK) {// saving to disk
 			final String dataFileName = exptName + runNumber + EVENT_EXT;
 			dataFile = new File(dataPath, dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
@@ -408,16 +348,15 @@ public class RunControl extends JDialog implements Controller {
 		if (zeroScalers.isSelected()) {// should we zero scalers
 			vmeComm.clearScalers();
 		}
-		if (device != FRONT_END) {// tell net daemon to write events to
-			// storage
-			// daemon
+		if (device != Device.FRONT_END) {
+			// tell net daemon to write events to storage daemon
 			netDaemon.setWriter(true);
 		}
 		// enable end button, display run number
 		endAction.setEnabled(true);
 		beginAction.setEnabled(false);
 		STATUS.setRunState(RunState.runOnline(runNumber));
-		if (device == DISK) {
+		if (device == Device.DISK) {
 			console.messageOutln("Began run " + runNumber
 					+ ", events being written to file: " + dataFile.getPath());
 		} else {
@@ -484,53 +423,111 @@ public class RunControl extends JDialog implements Controller {
 		beginAction.setEnabled(true);// set begin button state for next run
 	}
 
+	/**
+	 * flush the vme buffer
+	 */
+	public void flushAcq() {
+		vmeComm.flush();
+	}
+
+	private boolean isRunOn() {
+		synchronized (this) {
+			return runOn;
+		}
+	}
+
+	private void setRunOn(final boolean val) {
+		synchronized (this) {
+			runOn = val;
+		}
+	}
+
+	/**
+	 * Setup for online acquisition.
+	 * 
+	 * @see jam.SetupSortOn
+	 * @param name
+	 *            name of the current experiment
+	 * @param datapath
+	 *            path to event files
+	 * @param histpath
+	 *            path to HDF files
+	 * @param sortD
+	 *            the sorter thread
+	 * @param netD
+	 *            the network communication thread
+	 * @param diskD
+	 *            the storage thread
+	 */
+	public void setupOn(final String name, final File datapath,
+			final File histpath, final SortDaemon sortD, final NetDaemon netD,
+			final DiskDaemon diskD) {
+		exptName = name;
+		dataPath = datapath;
+		histFilePath = histpath;
+		sortDaemon = sortD;
+		netDaemon = netD;
+		netD.setEndRunAction(endAction);
+		textExptName.setText(name);
+		if (diskD == null) {// case if front end is taking care of storing
+			// events
+			device = Device.FRONT_END;
+		} else {
+			diskDaemon = diskD;
+			device = Device.DISK;
+		}
+		beginAction.setEnabled(true);
+	}
+
+	/**
+	 * Starts acquisition of data. Figure out if online or offline an run
+	 * appropriate method.
+	 */
+	public void startAcq() {
+		netDaemon.setState(GoodThread.State.RUN);
+		vmeComm.startAcquisition();
+		// if we are in a run, display run number
+		if (isRunOn()) {// runOn is true if the current state is a run
+			STATUS.setRunState(RunState.runOnline(runNumber));
+			// see stopAcq() for reason for this next line.
+			endAction.setEnabled(true);
+			console.messageOutln("Started Acquisition, continuing Run #"
+					+ runNumber);
+		} else {// just viewing events, not running to disk
+			STATUS.setRunState(RunState.ACQ_ON);
+			beginAction.setEnabled(false);// don't want to try to begin run
+			// while going
+			console
+					.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
+		}
+	}
+
+	/**
+	 * Tells VME to stop acquisition, and suspends the net listener.
+	 */
+	public void stopAcq() {
+		vmeComm.stopAcquisition();
+		/*
+		 * Commented out next line to see if this stops our problem of
+		 * "leftover" buffers DWV 15 Nov 2001
+		 */
+		STATUS.setRunState(RunState.ACQ_OFF);
+		/*
+		 * done to avoid "last buffer in this run becomes first and last buffer
+		 * in next run" problem
+		 */
+		endAction.setEnabled(false);
+		if (!isRunOn()) {// not running to disk
+			beginAction.setEnabled(true);// since it was disabled during
+			// start
+		}
+		console.warningOutln("Stopped Acquisition...if you are doing a run, "
+				+ "you will need to start again before clicking \"End Run\".");
+	}
+
 	private boolean storageCaughtUp() {
-		final boolean rval = device == FRONT_END ? true : diskDaemon
+		final boolean rval = device == Device.FRONT_END ? true : diskDaemon
 				.caughtUpOnline();
 		return rval;
-	}
-
-	/**
-	 * Called by sorter when it starts up. Nnot used for online data taking.
-	 */
-	public void atSortStart() {
-		/* does nothing for on line */
-	}
-
-	/**
-	 * Only here for the controller interface.
-	 * 
-	 * @deprecated
-	 */
-	public void atSortEnd() {
-		/* Nothing needed here at the moment. */
-	}
-
-	/**
-	 * Method called back from sort package when we are done writing out the
-	 * event data and have closed the event file.
-	 * 
-	 * @throws IllegalStateException
-	 *             if the device is not an expected value
-	 */
-	public void atWriteEnd() {
-		if (device != FRONT_END) {
-			netDaemon.setWriter(false);
-		}
-		try {
-			if (device == DISK) {
-				diskDaemon.closeEventOutputFile();
-				console.messageOutln("Event file closed " + dataFile.getPath());
-			} else if (device == FRONT_END) {
-				console.errorOutln(getClass().getName() + ".atWriteEnd()"
-						+ " device=FRONT_END not implemented");
-				// **** send message to indicate end of run file? ****
-			} else {
-				throw new IllegalStateException(
-						"Expect device to be DISK or FRONT_END.");
-			}
-		} catch (SortException je) {
-			console.errorOutln(je.getMessage());
-		}
 	}
 }
