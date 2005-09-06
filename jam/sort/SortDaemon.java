@@ -247,7 +247,8 @@ public class SortDaemon extends GoodThread {
 			/* Zero event array. */
 			Arrays.fill(eventData, 0);
 			EventInputStatus status;
-			while ((((status = eventInputStream.readEvent(eventData)) == EventInputStatus.EVENT)
+			status = eventInputStream.readEvent(eventData);
+			while (((status == EventInputStatus.EVENT)
 					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
 				if (status == EventInputStatus.EVENT) {
 					/* Sort only the sortInterval'th events. */
@@ -259,28 +260,34 @@ public class SortDaemon extends GoodThread {
 					incrementEventCount();
 					/* Zero event array and get ready for next event. */
 					Arrays.fill(eventData, 0);
-				} // else SCALER_VALUE, assume sort stream took care and move
-				// on
+				}
+				// else SCALER_VALUE, assume sort stream took care and move on
+				status = eventInputStream.readEvent(eventData);
 			}
-			/* We have reached the end of a buffer. */
-			if (status == EventInputStatus.END_BUFFER) {
-				incrementBufferCount();
-				yield();
-			} else if (status == EventInputStatus.END_RUN) {
-				incrementBufferCount();
-				yield();
-			} else if (status == EventInputStatus.UNKNOWN_WORD) {
-				msgHandler.warningOutln("Unknown word in event stream.");
-			} else if (status == EventInputStatus.END_FILE) {
-				msgHandler
-						.warningOutln("Tried to read past end of event input stream.");
-			} else {// we have unknown status
-				/* unrecoverable error should not be here */
-				throw new SortException(
-						"Sorter stopped due to unknown status: " + status);
-			}
+			handleStatusOnline(status);
 			yield();
 		}// end infinite loop
+	}
+
+	private void handleStatusOnline(final EventInputStatus status)
+			throws SortException {
+		if (status == EventInputStatus.END_BUFFER) {
+			/* We have reached the end of a buffer. */
+			incrementBufferCount();
+			yield();
+		} else if (status == EventInputStatus.END_RUN) {
+			incrementBufferCount();
+			yield();
+		} else if (status == EventInputStatus.UNKNOWN_WORD) {
+			msgHandler.warningOutln("Unknown word in event stream.");
+		} else if (status == EventInputStatus.END_FILE) {
+			msgHandler
+					.warningOutln("Tried to read past end of event input stream.");
+		} else {// we have unknown status
+			/* unrecoverable error should not be here */
+			throw new SortException("Sorter stopped due to unknown status: "
+					+ status);
+		}
 	}
 
 	private transient boolean osc = false;
@@ -309,6 +316,9 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
+	private transient boolean atBuffer = false; // are we at a buffer word
+	private transient boolean endSort = false;	
+	
 	/**
 	 * Performs the offline sorting until an end-of-run state is reached in the
 	 * event stream.
@@ -320,7 +330,6 @@ public class SortDaemon extends GoodThread {
 		final SortControl sortControl = (SortControl) controller;
 		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
-		boolean atBuffer = false; // are we at a buffer word
 		/*
 		 * Next statement causes checkState() to immediately suspend this
 		 * thread.
@@ -332,15 +341,14 @@ public class SortDaemon extends GoodThread {
 			resumeOfflineSorting();// after we come out of suspend
 			/* Loop for each new sort file. */
 			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
-				boolean endSort = false;
 				while (!offlineSortingCanceled() && !endSort) {// buffer loop
 					/* Zero the event container. */
 					Arrays.fill(eventData, 0);
 					/* Loop to read & sort one event at a time. */
+					status = eventInputStream.readEvent(eventData);
 					while (!offlineSortingCanceled()
-							&& (((status = eventInputStream
-									.readEvent(eventData)) == EventInputStatus.EVENT)
-									|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
+							&& (status == EventInputStatus.EVENT
+									|| status == EventInputStatus.SCALER_VALUE || status == EventInputStatus.IGNORE)) {
 						if (offlineSortingCanceled()) {
 							status = EventInputStatus.END_RUN;
 						} else {
@@ -365,39 +373,46 @@ public class SortDaemon extends GoodThread {
 						 * move on or IGNORE which means something ignorable in
 						 * the event stream
 						 */
+						if (!offlineSortingCanceled()){
+							status = eventInputStream.readEvent(eventData);
+						}
 					}// end read&sort event-at-a-time loop
 					/* we get to this point if status was not EVENT */
-					if (status == EventInputStatus.END_BUFFER) {
-						if (!atBuffer) {
-							atBuffer = true;
-							bufferCount++;
-						}
-						endSort = false;
-					} else if (status == EventInputStatus.END_RUN) {
-						updateCounters();
-						endSort = true; // tell control we are done
-					} else if (status == EventInputStatus.END_FILE) {
-						msgHandler.messageOutln("End of file reached");
-						updateCounters();
-						endSort = true; // tell control we are done
-					} else if (status == EventInputStatus.UNKNOWN_WORD) {
-						msgHandler
-								.warningOutln(getClass().getName()
-										+ ".sortOffline(): Unknown word in event stream.");
-					} else {
-						updateCounters();
-						endSort = true;
-						if (!offlineSortingCanceled()) {
-							throw new IllegalStateException(
-									"Illegal post-readEvent() status = "
-											+ status);
-						}
-					}
+					handleStatusOffline(status);
 					yield();
 				}// end buffer loop
 			}// end isSortNext loop
 			sortControl.atSortEnd();
 		}// end checkstate loop
+	}
+	
+	private void handleStatusOffline(final EventInputStatus status){
+		if (status == EventInputStatus.END_BUFFER) {
+			if (!atBuffer) {
+				atBuffer = true;
+				bufferCount++;
+			}
+			endSort = false;
+		} else if (status == EventInputStatus.END_RUN) {
+			updateCounters();
+			endSort = true; // tell control we are done
+		} else if (status == EventInputStatus.END_FILE) {
+			msgHandler.messageOutln("End of file reached");
+			updateCounters();
+			endSort = true; // tell control we are done
+		} else if (status == EventInputStatus.UNKNOWN_WORD) {
+			msgHandler
+					.warningOutln(getClass().getName()
+							+ ".sortOffline(): Unknown word in event stream.");
+		} else {
+			updateCounters();
+			endSort = true;
+			if (!offlineSortingCanceled()) {
+				throw new IllegalStateException(
+						"Illegal post-readEvent() status = "
+								+ status);
+			}
+		}
 	}
 
 	/**
