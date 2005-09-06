@@ -18,7 +18,7 @@ public class JamMainTest extends TestCase {
      * Try running Jam with thread checking repaint manager.
      * @param args passed to Jam's main()
      */
-	public static void main(String [] args){
+	public static void main(final String [] args){
 		RepaintManager.setCurrentManager(new ThreadCheckingRepaintManager());
 		JamMain.main(args);
 	}

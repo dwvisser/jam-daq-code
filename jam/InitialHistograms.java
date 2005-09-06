@@ -17,41 +17,43 @@ import jam.global.Broadcaster;
 public final class InitialHistograms {
 
 	private transient final Histogram histInitial;
-	private transient final Group groupInitial;
-	
-    /**
-     * Constructs an instance of this class.
-     */
-	public InitialHistograms() {
-		Group group =Group.createGroup("Initial", Group.Type.FILE);
 
+	private transient final Group groupInitial;
+
+	/**
+	 * Constructs an instance of this class.
+	 */
+	public InitialHistograms() {
+		super();
+		Group group = Group.createGroup("Initial", Group.Type.FILE);
 		/* histogram with Jam name 2d */
-		final Histogram histJam2d = Histogram.createHistogram(group, histNameJam2d(),
-				"Histogram2D", "Jam Name 2D");
+		final Histogram histJam2d = Histogram.createHistogram(group,
+				histNameJam2d(), "Histogram2D", "Jam Name 2D");
 		/* histogram with Jam name */
-		final Histogram histJam1d = Histogram.createHistogram(group, histNameJam1d(),
-				"Histogram1D", "Jam Name 1D");
+		final Histogram histJam1d = Histogram.createHistogram(group,
+				histNameJam1d(), "Histogram1D", "Jam Name 1D");
 		/* histogram with triangles */
 		Histogram.createHistogram(group, histTriangle(), "Triangle");
-		new Gate("Letter A", histJam1d); //gate
-		new Gate("Letter B", histJam1d); //gate
-		new Gate("Letter C", histJam1d); //gate
-		new Gate("Area A", histJam2d); //gate 2d
-		new Gate("Area B", histJam2d); //gate 2d
-		new Gate("Area C", histJam2d); //gate 2d
-		Broadcaster.getSingletonInstance().broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		histInitial =histJam2d;
+		new Gate("Letter A", histJam1d); // gate
+		new Gate("Letter B", histJam1d); // gate
+		new Gate("Letter C", histJam1d); // gate
+		new Gate("Area A", histJam2d); // gate 2d
+		new Gate("Area B", histJam2d); // gate 2d
+		new Gate("Area C", histJam2d); // gate 2d
+		Broadcaster.getSingletonInstance().broadcast(
+				BroadcastEvent.Command.HISTOGRAM_ADD);
+		histInitial = histJam2d;
 		groupInitial = group;
 	}
 
-	Group getInitialGroup(){
+	Group getInitialGroup() {
 		return groupInitial;
 	}
-	
-	Histogram getInitialHist(){
+
+	Histogram getInitialHist() {
 		return histInitial;
 	}
-	
+
 	/**
 	 * @return counts for a 1d histogram that says JAM.
 	 */
@@ -94,18 +96,19 @@ public final class InitialHistograms {
 		return counts;
 	}
 
-	private void setRange(int[] array, int first, int numCh, int value) {
+	private void setRange(int[] array, final int first, final int numCh,
+			final int value) {
 		final int last = first + numCh;
 		for (int i = first; i < last; i++) {
 			array[i] = value;
 		}
 	}
 
-	private void markChannel(int[][] counts, int chX, int chY) {
+	private void markChannel(int[][] counts, final int chX, final int chY) {
 		counts[chX][chY] = (int) Math.exp(1 + chY / 20.0);
 	}
 
-	private void rectangles(int[][] counts) {
+	private void rectangles(final int[][] counts) {
 		final int[] xlow = { 20, 40, 50, 100, 170, 220 };
 		final int[] xhigh = { 40, 70, 70, 140, 190, 240 };
 		final int[] ylow = { 30, 30, 50, 80, 30, 30 };

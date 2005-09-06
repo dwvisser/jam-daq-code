@@ -32,6 +32,7 @@ public class PeakFindDialog extends JDialog {
 	 *
 	 */
 	public PeakFindDialog() {
+		super();
 		final JamStatus status=JamStatus.getSingletonInstance();
 		display = status.getDisplay();
 		console = status.getMessageHandler();

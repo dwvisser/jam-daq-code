@@ -135,7 +135,7 @@ public class Help extends JDialog {
 	 * 
 	 * @param args ignored
 	 */
-	public static void main(String [] args){
+	public static void main(final String [] args){
 		final String helpsetName = "help/jam.hs";
 		setLookAndFeel();
 		try {
