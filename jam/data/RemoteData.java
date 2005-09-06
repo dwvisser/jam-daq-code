@@ -67,7 +67,7 @@ public interface RemoteData extends Remote {
      * @return list of the gates associated with the specified histogram
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    String [] getGateNames(String histName) throws RemoteException;
+    List<String> getGateNames(String histName) throws RemoteException;
 
     /**
      * Returns a gate given its name.
@@ -84,7 +84,7 @@ public interface RemoteData extends Remote {
      * @return the list of all scalers
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    List getScalerList() throws RemoteException ;
+    List<Scaler> getScalerList() throws RemoteException ;
 
     /**
      * Returns the list of monitors.
@@ -92,7 +92,7 @@ public interface RemoteData extends Remote {
      * @return the list of all monitors
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    List getMonitorList() throws RemoteException ;
+    List<Monitor> getMonitorList() throws RemoteException ;
     
     /**
      * Returns the values of monitors.
@@ -100,5 +100,5 @@ public interface RemoteData extends Remote {
      * @return the values of all monitors
      * @exception RemoteException thrown if there is a problem accessing the remote data
      */
-    double [] getMonitorValues() throws RemoteException ;
+    List<Double> getMonitorValues() throws RemoteException ;
 }
