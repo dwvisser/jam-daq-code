@@ -19,10 +19,10 @@ import java.io.OutputStream;
  */
 public final class DiskDaemon extends StorageDaemon {
 
-	private FileOutputStream fos;
-	private BufferedOutputStream bos;
-	private FileInputStream fis;
-	private BufferedInputStream bis;
+	private transient FileOutputStream fos;
+	private transient BufferedOutputStream bos;
+	private transient FileInputStream fis;
+	private transient BufferedInputStream bis;
 	
     /**
      * @see StorageDaemon#StorageDaemon(Controller, MessageHandler)
@@ -37,9 +37,10 @@ public final class DiskDaemon extends StorageDaemon {
 	 *
 	 * @exception   SortException    exception that sends message to console
 	 */
-	public void openEventInputFile(File file) throws SortException {
-		if (file == null)
-			throw new SortException("Cannot open input event file, null name [DiskDaemon]");
+	public void openEventInputFile(final File file) throws SortException {
+		if (file == null) {
+			throw new SortException(getClass().getName()+": Cannot open input event file, null name.");
+		}
 		try {
 			fis = new FileInputStream(file);
 			bis = new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
@@ -57,9 +58,10 @@ public final class DiskDaemon extends StorageDaemon {
 	 *
 	 * @exception   SortException    exception that sends message to console
 	 */
-	public void openEventOutputFile(File file) throws SortException {
-		if (file == null)
-			throw new SortException("Cannot open output event file, file name is null [DiskDaemon]");
+	public void openEventOutputFile(final File file) throws SortException {
+		if (file == null) {
+			throw new SortException(getClass().getName()+": Cannot open output event file, file name is null.");
+		}
 		try {
 			fos = new FileOutputStream(file);
 			bos = new BufferedOutputStream(fos, RingBuffer.BUFFER_SIZE);
@@ -115,8 +117,8 @@ public final class DiskDaemon extends StorageDaemon {
 		}
 	}
 	
-	private boolean reachedRunEnd=false;
-	private final Object rreLock=new Object();
+	private transient boolean reachedRunEnd=false;
+	private transient final Object rreLock=new Object();
 	
 	/* non-javadoc:
 	 * Take data from ring buffer and write it out to a file 
@@ -162,25 +164,25 @@ public final class DiskDaemon extends StorageDaemon {
 	 * Open next file in list.
 	 */
 	public boolean openEventInputListFile() {
-		boolean goodHeader = false;
+		boolean rval = false;
 		final File file = (File)sortFiles.next();
 		try {
 			openEventInputFile(file);// local open file method
-			goodHeader = eventInput.readHeader();
-			if (goodHeader) {
+			rval = eventInput.readHeader();
+			if (rval) {
 				fileCount++;
 			} else {
 				msgHandler.errorOutln(
 					"File does not have correct header. File: " + file.getAbsolutePath());
 			}
-			return goodHeader;
 		} catch (EventException ee) {
 			msgHandler.errorOutln(ee.getMessage());
-			return false;
+			rval = false;
 		} catch (SortException je) {
 			msgHandler.errorOutln(je.getMessage());
-			return false;
-		}
+			rval = false;
+		} 
+		return rval;
 	}
 	
 	/**
@@ -188,14 +190,15 @@ public final class DiskDaemon extends StorageDaemon {
 	 * if one from the list is open.
 	 */
 	public boolean closeEventInputListFile() {
+		boolean rval = true;
 		try {
 			closeEventInputFile();
-			return true;
 		} catch (SortException ioe) {
-			msgHandler.errorOutln(
-				"Unable to close file: " + inputFile.getPath() + "[DiskDaemon]");
-			return false;
+			msgHandler.errorOutln(getClass().getName()+
+				": Unable to close file: " + inputFile.getPath());
+			rval = false;
 		}
+		return rval;
 	}
 
 	/**
@@ -239,7 +242,7 @@ public final class DiskDaemon extends StorageDaemon {
 			new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
 		try {
 			eventInput.setInputStream(headerInputStream);
-			boolean goodHeader = eventInput.readHeader();
+			final boolean goodHeader = eventInput.readHeader();
 			return goodHeader;
 		} catch (EventException ioe) {
 			throw new SortException("Could not read Header Record [DiskDaemon]");

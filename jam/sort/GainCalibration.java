@@ -20,17 +20,16 @@ import java.util.Map;
  */
 public final class GainCalibration {
 
-	private final Map<Integer, Double> gains;
+	private transient final Map<Integer, Double> gains = new HashMap<Integer, Double>();
 
-	private final ClassLoader loader;
+	private transient final ClassLoader loader;
 
-	private final Map<Integer, Double> offsets;
+	private transient final Map<Integer, Double> offsets = new HashMap<Integer, Double>();
 
-	private boolean suppress = false;
+	private transient boolean suppress = false;
 
 	GainCalibration(Object maker) {
-		gains = new HashMap<Integer, Double>();
-		offsets = new HashMap<Integer, Double>();
+		super();
 		loader = maker.getClass().getClassLoader();
 	}
 
@@ -48,7 +47,7 @@ public final class GainCalibration {
 	 * @return exact gain-adjusted value
 	 * @see #adjustExact(int, int)
 	 */
-	public int adjust(int param, int value) {
+	public int adjust(final int param, final int value) {
 		final Integer key = new Integer(param);
 		int rval = suppress ? 0 : value;
 		if (gains.containsKey(key) && offsets.containsKey(key)) {
@@ -72,7 +71,7 @@ public final class GainCalibration {
 	 *            channel datum
 	 * @return exact gain-adjusted value
 	 */
-	public double adjustExact(int param, int value) {
+	public double adjustExact(final int param, final int value) {
 		final Integer key = new Integer(param);
 		double rval = suppress ? 0 : value;
 		if (gains.containsKey(key) && offsets.containsKey(key)) {
@@ -97,7 +96,7 @@ public final class GainCalibration {
 	 * @throws SortException
 	 *             if there's a problem reading the gain file
 	 */
-	public void gainFile(String name, boolean autoSuppress)
+	public void gainFile(final String name, final boolean autoSuppress)
 			throws SortException {
 		try {
 			suppress = autoSuppress;
@@ -121,24 +120,26 @@ public final class GainCalibration {
 		}
 	}
 
-	private int getNumberOfColumns(InputStream in) throws IOException {
+	private int getNumberOfColumns(final InputStream input) throws IOException {
 		int rval = 0;
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		String line = lnr.readLine();
+		final LineNumberReader lnr = new LineNumberReader(
+				new InputStreamReader(input));
+		final String line = lnr.readLine();
 		lnr.close();
 		if (line != null) {
-			StreamTokenizer st = new StreamTokenizer(new StringReader(line));
-			while (st.nextToken() == StreamTokenizer.TT_NUMBER) {
+			final StreamTokenizer tokenizer = new StreamTokenizer(
+					new StringReader(line));
+			while (tokenizer.nextToken() == StreamTokenizer.TT_NUMBER) {
 				rval++;
 			}
 		}
 		return rval;
 	}
 
-	private int getNumberOfRows(InputStream in) throws IOException {
+	private int getNumberOfRows(final InputStream input) throws IOException {
 		int rval = 0;
 		final LineNumberReader lnr = new LineNumberReader(
-				new InputStreamReader(in));
+				new InputStreamReader(input));
 		// read in header lines, header are lines that start with a non-number
 		// token
 		while (lnr.readLine() != null) {
@@ -148,26 +149,26 @@ public final class GainCalibration {
 		return rval;
 	}
 
-	private void readGains(InputStream in, int rows, int columns)
-			throws IOException {
-		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-		StreamTokenizer st = new StreamTokenizer(lnr);
-		st.eolIsSignificant(false);
+	private void readGains(final InputStream input, final int rows,
+			final int columns) throws IOException {
+		final LineNumberReader lnr = new LineNumberReader(
+				new InputStreamReader(input));
+		final StreamTokenizer tokenizer = new StreamTokenizer(lnr);
+		tokenizer.eolIsSignificant(false);
 		for (int i = 0; i < rows; i++) {
-			st.nextToken();
-			final int parameter = (int) st.nval;
-			st.nextToken();
-			final double gain = st.nval;
+			tokenizer.nextToken();
+			final int parameter = (int) tokenizer.nval;
+			tokenizer.nextToken();
+			final double gain = tokenizer.nval;
 			final double offset;
 			if (columns == 3) {
-				st.nextToken();
-				offset = st.nval;
+				tokenizer.nextToken();
+				offset = tokenizer.nval;
 			} else {
 				offset = 0.0;
 			}
-			final Integer iParam = new Integer(parameter);
-			gains.put(iParam, new Double(gain));
-			offsets.put(iParam, new Double(offset));
+			gains.put(parameter, gain);
+			offsets.put(parameter, offset);
 		}
 	}
 
