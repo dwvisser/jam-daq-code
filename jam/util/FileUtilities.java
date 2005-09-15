@@ -2,7 +2,6 @@ package jam.util;
 
 import java.io.File;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -26,27 +25,29 @@ public class FileUtilities {
 	 * Don't change the given filename.
 	 */
 	public static final int NO_CHANGE = 2;
-	
+
 	private static final FileUtilities instance = new FileUtilities();
 
-    /**
-     * 
-     * @return the singleton instance
-     */
-	public static FileUtilities getInstance(){
+	/**
+	 * 
+	 * @return the singleton instance
+	 */
+	public static FileUtilities getInstance() {
 		return instance;
 	}
-	
-	private FileUtilities(){
+
+	private FileUtilities() {
 		super();
 	}
+
 	/**
-	 * Takes a file and extension and appends the extension to the file name.
-	 * If the file has no extension, the extension is appended.
-	 * If it does have an extension, it is replaced. By extension, we mean the
-	 * usual <code>DOS/Unix</code> filenaming convention:
+	 * Takes a file and extension and appends the extension to the file name. If
+	 * the file has no extension, the extension is appended. If it does have an
+	 * extension, it is replaced. By extension, we mean the usual
+	 * <code>DOS/Unix</code> filenaming convention:
 	 * 
-	 * @param fileIn 	the file to add extension to.
+	 * @param fileIn
+	 *            the file to add extension to.
 	 * @param extension
 	 *            file extension; everything up to any decimal is thrown away
 	 * @param mode
@@ -57,20 +58,21 @@ public class FileUtilities {
 	 *             if an unrecognized mode is given
 	 * 
 	 */
-	public File changeExtension(File fileIn,
-			final String extension, final int mode) {
+	public File changeExtension(final File fileIn, final String extension,
+			final int mode) {
+		final String path = fileIn.getParent();
+		final String fileName = changeExtension(fileIn.getName(), extension,
+				mode);
+		final String fileFullName = path + File.separator + fileName;
+		final File appendFile = new File(fileFullName);
+		return appendFile;
+	}
 
-	    String path =fileIn.getParent();        
-	    String fileName = changeExtension(fileIn.getName(), extension, mode);
-	    String fileFullName = path+File.separator+fileName;        
-	    File appendFile = new File(fileFullName);
-	    return appendFile;
-	}	
 	/**
-	 * Takes a file name and extension and appends the extension to the file name.
-	 * If the filename has no extension, the extension is appended.
-	 * If it does have an extension, it is replaced. By extension, we mean the
-	 * usual <code>DOS/Unix</code> filenaming convention:
+	 * Takes a file name and extension and appends the extension to the file
+	 * name. If the filename has no extension, the extension is appended. If it
+	 * does have an extension, it is replaced. By extension, we mean the usual
+	 * <code>DOS/Unix</code> filenaming convention:
 	 * <P>
 	 * <code><i>filename</i>.ext</code><br>
 	 * where <code>ext</code> is usually three characters indicating filetype.
@@ -100,15 +102,15 @@ public class FileUtilities {
 						"Invalid call to setExtension().");
 			}
 			int index = extension.indexOf('.');
-			if (index >= 0) { //period occurs in extension
+			if (index >= 0) { // period occurs in extension
 				extNoPeriod = extension.substring(index + 1);
 			}
 			index = fileName.indexOf('.');
-			if (index >= 0) { //period occurs in filename
+			if (index >= 0) { // period occurs in filename
 				if (mode == FORCE) {
 					rval = fileName.substring(0, index + 1) + extNoPeriod;
 				}
-			} else { //add period
+			} else { // add period
 				rval = fileName + '.' + extNoPeriod;
 			}
 		}
@@ -126,7 +128,7 @@ public class FileUtilities {
 		String fileName;
 		int index;
 		index = fileNameIn.lastIndexOf(".");
-		//Extension 3 or less characters, index -1 if not found
+		// Extension 3 or less characters, index -1 if not found
 		if (index > 0) {
 			if (index >= fileNameIn.length() - 4) {
 				fileName = fileNameIn.substring(0, index);
@@ -139,26 +141,27 @@ public class FileUtilities {
 
 		return fileName;
 	}
-    /**
-     * Check if a file already exist and 
-     * display dialog to confirm overwritting of the file
-     * 
-     * @param file The file to check exists
-     * @return		True if file does not exist or overwrite confirmed
-     */
-    public boolean overWriteExistsConfirm(File file) {
-    	JFrame frame=null;
-        final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
-                .showConfirmDialog(frame, "Replace the existing file? \n"
-                        + file.getName(), "Save " + file.getName(),
-                        JOptionPane.YES_NO_OPTION)
-                : true;
-        if (writeConfirm) {
-            // we've confirmed overwrite with the user.
-            file.delete();
-        }
 
-        return writeConfirm;
-    }
-	
+	/**
+	 * Check if a file already exist and display dialog to confirm overwritting
+	 * of the file
+	 * 
+	 * @param file
+	 *            The file to check exists
+	 * @return True if file does not exist or overwrite confirmed
+	 */
+	public boolean overWriteExistsConfirm(final File file) {
+		final boolean writeConfirm = file.exists() ? JOptionPane.YES_OPTION == JOptionPane
+				.showConfirmDialog(null, "Replace the existing file? \n"
+						+ file.getName(), "Save " + file.getName(),
+						JOptionPane.YES_NO_OPTION)
+				: true;
+		if (writeConfirm) {
+			// we've confirmed overwrite with the user.
+			file.delete();
+		}
+
+		return writeConfirm;
+	}
+
 }

@@ -1,5 +1,7 @@
 package jam.sort;
 
+import java.io.InputStream;
+
 /**
  * This class takes a buffer and creates from it a InputStream. The buffers are
  * not copied but referenced so you must make sure not to remove the buffer
@@ -13,22 +15,26 @@ package jam.sort;
  * 
  * @author Ken Swartz
  */
-public final class RingInputStream extends java.io.InputStream {
+final class RingInputStream extends InputStream {
 
 	/**
 	 * The buffer where data is stored.
 	 */
-	private byte buf[];
+	private transient byte buf[];
 
 	/**
 	 * The current position in the buffer.
 	 */
-	private int pos;
+	private transient int pos;
 
 	/**
 	 * The number of characters to use in the buffer.
 	 */
-	private int count;
+	private transient int count;
+
+	RingInputStream() {
+		super();
+	}
 
 	/**
 	 * Load a buffer to read.
@@ -36,8 +42,8 @@ public final class RingInputStream extends java.io.InputStream {
 	 * @param bufferIn
 	 *            the input buffer (not copied)
 	 */
-	public void setBuffer(byte[] bufferIn) {
-		buf = bufferIn;
+	public void setBuffer(final byte[] bufferIn) {
+		buf = bufferIn.clone();
 		pos = 0;
 		count = bufferIn.length;
 	}
@@ -45,17 +51,18 @@ public final class RingInputStream extends java.io.InputStream {
 	/**
 	 * Load a buffer to read but read only specified bytes
 	 * 
-	 * @param buf
+	 * @param bufferIn
 	 *            The input buffer (not copied)
 	 * @param offset
 	 *            The offset of the first byte to read
 	 * @param length
 	 *            The number of bytes to read
 	 */
-	public void setBuffer(byte buf[], int offset, int length) {
-		this.buf = buf;
-		this.pos = offset;
-		this.count = Math.min(offset + length, buf.length);
+	public void setBuffer(final byte[] bufferIn, final int offset,
+			final int length) {
+		buf = bufferIn.clone();
+		pos = offset;
+		count = Math.min(offset + length, bufferIn.length);
 	}
 
 	/**
@@ -70,7 +77,7 @@ public final class RingInputStream extends java.io.InputStream {
 	/**
 	 * Reads into an array of bytes.
 	 * 
-	 * @param b
+	 * @param out
 	 *            the buffer into which the data is read
 	 * @param off
 	 *            the start offset of the data
@@ -79,9 +86,9 @@ public final class RingInputStream extends java.io.InputStream {
 	 * @return the actual number of bytes read; -1 is returned when the end of
 	 *         the stream is reached.
 	 */
-	public int read(byte b[], final int off, final int len) {
-		int rval = 0; //by default, read nothing
-		//check we are not passed the end of the buffer
+	public int read(final byte[] out, final int off, final int len) {
+		int rval = 0; // by default, read nothing
+		// check we are not passed the end of the buffer
 		if (pos >= count) {
 			rval = -1;
 		} else {
@@ -94,7 +101,7 @@ public final class RingInputStream extends java.io.InputStream {
 			}
 		}
 		if (rval > 0) {
-			System.arraycopy(buf, pos, b, off, rval);
+			System.arraycopy(buf, pos, out, off, rval);
 			pos += rval;
 		}
 		return rval;
@@ -103,17 +110,17 @@ public final class RingInputStream extends java.io.InputStream {
 	/**
 	 * Skips n bytes of input.
 	 * 
-	 * @param n
+	 * @param nSkip
 	 *            the number of bytes to be skipped
 	 * @return the actual number of bytes skipped.
 	 */
-	public long skip(long n) {
-		long rval = n;
+	public long skip(final long nSkip) {
+		long rval = nSkip;
 		if (pos + rval > count) {
 			rval = count - pos;
 		}
 		if (rval < 0) {
-			return 0;
+			rval = 0;
 		}
 		pos += rval;
 		return rval;

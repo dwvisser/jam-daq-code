@@ -12,21 +12,23 @@ import java.util.Map;
  * with channels and thresholds.
  * </p>
  */
-public class VME_Map {
+public final class VME_Map {
 
 	/* contains all event parameters */
-	private final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
+	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
 
-	private final SortRoutine sortRoutine;
+	private transient final SortRoutine sortRoutine;
 
-	private int interval = 1;// interval in milliseconds for the VME to
-								// insert scalers into the event stream
+	private transient int interval = 1;// interval in milliseconds for the VME
+										// to
 
-	private final Map<Integer, Byte> V775ranges = new HashMap<Integer, Byte>();
+	// insert scalers into the event stream
 
-	private int maxParamNum = 0;
+	private transient final Map<Integer, Byte> V775ranges = new HashMap<Integer, Byte>();
 
-	private final StringBuffer messages = new StringBuffer();
+	private transient int maxParamNum = 0;
+
+	private transient final StringBuffer messages = new StringBuffer();
 
 	/**
 	 * Constructs a new VME map for the given <code>SortRoutine</code>.
@@ -35,6 +37,7 @@ public class VME_Map {
 	 *            the owner of this map
 	 */
 	VME_Map(SortRoutine sorter) {
+		super();
 		sortRoutine = sorter;
 		messages.append(sortRoutine.getClass().getName());
 		messages.append(": \n");
@@ -59,14 +62,14 @@ public class VME_Map {
 	 * @throws SortException
 	 *             if there's a problem defining the parameter
 	 */
-	public int eventParameter(int slot, int baseAddress, int channel,
-			int threshold) throws SortException {
+	public int eventParameter(final int slot, final int baseAddress,
+			final int channel, final int threshold) throws SortException {
 		final VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
 				channel, threshold);
 		eventParams.add(vmec);
 		sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.VME_MAP);
 		final int paramNumber = vmec.getParameterNumber();// ADC's and TDC's
-															// in
+		// in
 		// slots 2-7
 		if (paramNumber > maxParamNum) {
 			maxParamNum = paramNumber;
@@ -81,7 +84,7 @@ public class VME_Map {
 	 * @param seconds
 	 *            between scaler blocks
 	 */
-	public void setScalerInterval(int seconds) {
+	public void setScalerInterval(final int seconds) {
 		interval = seconds;
 	}
 
@@ -122,7 +125,8 @@ public class VME_Map {
 	 * @throws SortException
 	 *             for an invalid given range
 	 */
-	public void setV775Range(final int baseAddress, final int range) throws SortException {
+	public void setV775Range(final int baseAddress, final int range)
+			throws SortException {
 		final String hexBase = "0x" + Integer.toHexString(baseAddress);
 		if (range < 141 || range > 1200) {
 			throw new SortException("Requested invalid TDC range: " + range
@@ -153,7 +157,7 @@ public class VME_Map {
 		return Collections.unmodifiableMap(V775ranges);
 	}
 
-	void appendMessage(String string) {
+	void appendMessage(final String string) {
 		messages.append(string);
 	}
 }

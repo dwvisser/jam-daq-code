@@ -33,11 +33,6 @@ public class SortDaemon extends GoodThread {
 	 */
 	private final static int COUNT_UPDATE = 1000;
 
-	/**
-	 * The size of buffers to read in.
-	 */
-	final static int BUFFER_SIZE = 8 * 1024;
-
 	private transient final Controller controller;
 
 	private transient final MessageHandler msgHandler;
@@ -317,8 +312,9 @@ public class SortDaemon extends GoodThread {
 	}
 
 	private transient boolean atBuffer = false; // are we at a buffer word
-	private transient boolean endSort = false;	
-	
+
+	private transient boolean endSort = false;
+
 	/**
 	 * Performs the offline sorting until an end-of-run state is reached in the
 	 * event stream.
@@ -373,7 +369,7 @@ public class SortDaemon extends GoodThread {
 						 * move on or IGNORE which means something ignorable in
 						 * the event stream
 						 */
-						if (!offlineSortingCanceled()){
+						if (!offlineSortingCanceled()) {
 							status = eventInputStream.readEvent(eventData);
 						}
 					}// end read&sort event-at-a-time loop
@@ -385,8 +381,8 @@ public class SortDaemon extends GoodThread {
 			sortControl.atSortEnd();
 		}// end checkstate loop
 	}
-	
-	private void handleStatusOffline(final EventInputStatus status){
+
+	private void handleStatusOffline(final EventInputStatus status) {
 		if (status == EventInputStatus.END_BUFFER) {
 			if (!atBuffer) {
 				atBuffer = true;
@@ -401,16 +397,14 @@ public class SortDaemon extends GoodThread {
 			updateCounters();
 			endSort = true; // tell control we are done
 		} else if (status == EventInputStatus.UNKNOWN_WORD) {
-			msgHandler
-					.warningOutln(getClass().getName()
-							+ ".sortOffline(): Unknown word in event stream.");
+			msgHandler.warningOutln(getClass().getName()
+					+ ".sortOffline(): Unknown word in event stream.");
 		} else {
 			updateCounters();
 			endSort = true;
 			if (!offlineSortingCanceled()) {
 				throw new IllegalStateException(
-						"Illegal post-readEvent() status = "
-								+ status);
+						"Illegal post-readEvent() status = " + status);
 			}
 		}
 	}
@@ -460,12 +454,16 @@ public class SortDaemon extends GoodThread {
 	 * @param count
 	 *            new value
 	 */
-	public synchronized void setSortedCount(int count) {
-		eventSortedCount = count;
+	public void setSortedCount(final int count) {
+		synchronized (this) {
+			eventSortedCount = count;
+		}
 	}
 
-	private synchronized void incrementSortedCount() {
-		eventSortedCount++;
+	private void incrementSortedCount() {
+		synchronized (this) {
+			eventSortedCount++;
+		}
 	}
 
 	/**
@@ -474,12 +472,16 @@ public class SortDaemon extends GoodThread {
 	 * @param count
 	 *            the number of events processed
 	 */
-	public synchronized void setEventCount(int count) {
-		eventCount = count;
+	public void setEventCount(final int count) {
+		synchronized (this) {
+			eventCount = count;
+		}
 	}
 
-	private synchronized void incrementEventCount() {
-		eventCount++;
+	private void incrementEventCount() {
+		synchronized (this) {
+			eventCount++;
+		}
 	}
 
 	/**
@@ -487,8 +489,10 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @return the number of buffers processed
 	 */
-	public synchronized int getBufferCount() {
-		return bufferCount;
+	public int getBufferCount() {
+		synchronized (this) {
+			return bufferCount;
+		}
 	}
 
 	/**
@@ -497,25 +501,33 @@ public class SortDaemon extends GoodThread {
 	 * @param count
 	 *            the number of buffers processed
 	 */
-	public synchronized void setBufferCount(int count) {
-		bufferCount = count;
+	public void setBufferCount(final int count) {
+		synchronized (this) {
+			bufferCount = count;
+		}
 	}
 
-	private synchronized void incrementBufferCount() {
-		bufferCount++;
+	private void incrementBufferCount() {
+		synchronized (this) {
+			bufferCount++;
+		}
 	}
 
 	private int sortInterval = 1;
 
-	private synchronized void increaseSortInterval() {
-		sortInterval++;
-		msgHandler.warningOutln("Sorting ring buffer half-full."
-				+ " Sort interval increased to " + sortInterval + ".");
+	private void increaseSortInterval() {
+		synchronized (this) {
+			sortInterval++;
+			msgHandler.warningOutln("Sorting ring buffer half-full."
+					+ " Sort interval increased to " + sortInterval + ".");
+		}
 	}
 
-	private synchronized void decreaseSortInterval() {
-		if (sortInterval > 1) {
-			sortInterval--;
+	private void decreaseSortInterval() {
+		synchronized (this) {
+			if (sortInterval > 1) {
+				sortInterval--;
+			}
 		}
 	}
 
@@ -525,8 +537,10 @@ public class SortDaemon extends GoodThread {
 	 * @see #setSortInterval(int)
 	 * @return the total number of packets sent
 	 */
-	public synchronized int getSortInterval() {
-		return sortInterval;
+	public int getSortInterval() {
+		synchronized (this) {
+			return sortInterval;
+		}
 	}
 
 }

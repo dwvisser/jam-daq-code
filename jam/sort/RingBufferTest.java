@@ -18,7 +18,7 @@ public class RingBufferTest extends TestCase {
 
 	private transient final byte[] buffer = new byte[RingBuffer.BUFFER_SIZE];
 
-	private transient final byte[] out = new byte[RingBuffer.BUFFER_SIZE];
+	//private transient final byte[] out = new byte[RingBuffer.BUFFER_SIZE];
 
 	/**
 	 * Constructor for HistogramTest.
@@ -44,6 +44,7 @@ public class RingBufferTest extends TestCase {
 	 * @see RingBuffer#putBuffer(byte [])
 	 */
 	public void testPut() {
+		final byte[] out = new byte[RingBuffer.BUFFER_SIZE];
 		for (int i = 0; i < RingBuffer.NUMBER_BUFFERS / 2; i++) {
 			Arrays.fill(buffer, (byte) i);
 			try {

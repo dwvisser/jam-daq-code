@@ -26,40 +26,35 @@ import javax.swing.JOptionPane;
  * @version 0.5
  * @since JDK 1.1
  */
-public class NetDaemon extends GoodThread {
+public final class NetDaemon extends GoodThread {
 
-	private final MessageHandler msgHandler;
+	private transient final MessageHandler msgHandler;
 
-	private final DatagramSocket dataSocket;
+	private transient final DatagramSocket dataSocket;
 
 	/**
 	 * ring buffers for passing events to sorting
 	 */
-	private final RingBuffer sortingRing;
+	private transient final RingBuffer sortingRing;
 
 	/**
 	 * ring buffers for passing events to storage
 	 */
-	private final RingBuffer storageRing;
+	private transient final RingBuffer storageRing;
 
 	/**
 	 * set if we want data to be put is writing pipe writting out data
 	 */
-	private boolean writerOn = false;
-
-	/**
-	 * set if we sorting data
-	 */
-	private boolean sorterOn = true;
+	private transient boolean writerOn = false;
 
 	/**
 	 * number of packets counter
 	 */
-	private int packetCount = 0; //number of packets received
+	private int packetCount = 0; // number of packets received
 
-	private int notSortCount = 0; //number of packets not sorted
+	private transient int notSortCount = 0; // number of packets not sorted
 
-	private int notStorCount = 0;//number of packets not stored
+	private transient int notStorCount = 0;// number of packets not stored
 
 	/**
 	 * Constructor passed both storage and sorting pipes.
@@ -70,18 +65,21 @@ public class NetDaemon extends GoodThread {
 	 *            buffer the events are sent to for storage
 	 * @param msgHandle
 	 *            where messages can be sent to the console
-	 * @param host front end IP address
-	 * @param port port to listen for front end on
+	 * @param host
+	 *            front end IP address
+	 * @param port
+	 *            port to listen for front end on
 	 * @exception SortException
 	 *                thrown if there's a problem setting up the pipes
 	 */
 	public NetDaemon(RingBuffer sortRing, RingBuffer storeRing,
 			MessageHandler msgHandle, String host, int port)
 			throws SortException {
+		super();
 		sortingRing = sortRing;
 		storageRing = storeRing;
 		msgHandler = msgHandle;
-		try {//ceate a port listener
+		try {// ceate a port listener
 			final InetAddress dataAddress = InetAddress.getByName(host);
 			dataSocket = new DatagramSocket(port, dataAddress);
 		} catch (UnknownHostException e) {
@@ -96,7 +94,7 @@ public class NetDaemon extends GoodThread {
 					+ ": Could not create data socket.");
 		}
 		setPriority(ThreadPriorities.NET);
-		setDaemon(true);//the user doesn't interact with this thread
+		setDaemon(true);// the user doesn't interact with this thread
 		setName("UDP Data Receiver");
 	}
 
@@ -120,33 +118,42 @@ public class NetDaemon extends GoodThread {
 	private boolean emptyBefore = false;
 
 	/**
-	 * Called when we've definitely lost a buffer we were meant to receive
-	 * due to a full ringbuffer.
+	 * Called when we've definitely lost a buffer we were meant to receive due
+	 * to a full ringbuffer.
 	 * 
-	 * @param state <code>true</code> if we lost a buffer, <code>false</code> to reset
+	 * @param state
+	 *            <code>true</code> if we lost a buffer, <code>false</code>
+	 *            to reset
 	 */
-	public synchronized void setEmptyBefore(boolean state) {
-		if (!emptyBefore && state) {
-			final StringBuffer mesg = new StringBuffer();
-			mesg.append("The sorting process lost a buffer. Click 'OK' to\n");
-			mesg
-					.append("end the current run, 'Cancel' to have Jam attempt to\n");
-			mesg
-					.append("continue automatically sampling events in order to keep\n");
-			mesg.append("up with the acquisition with no further warnings.\n");
-			final boolean confirmed = JOptionPane.showConfirmDialog(JamStatus
-					.getSingletonInstance().getFrame(), mesg.toString(),
-					"Buffer lost. End run?", JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
-			if (confirmed) {
-				new JButton(endAction).doClick();
-			} 
+	public void setEmptyBefore(final boolean state) {
+		synchronized (this) {
+			if (!emptyBefore && state) {
+				final StringBuffer mesg = new StringBuffer();
+				mesg
+						.append("The sorting process lost a buffer. Click 'OK' to\n");
+				mesg
+						.append("end the current run, 'Cancel' to have Jam attempt to\n");
+				mesg
+						.append("continue automatically sampling events in order to keep\n");
+				mesg
+						.append("up with the acquisition with no further warnings.\n");
+				final boolean confirmed = JOptionPane.showConfirmDialog(
+						JamStatus.getSingletonInstance().getFrame(), mesg
+								.toString(), "Buffer lost. End run?",
+						JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
+				if (confirmed) {
+					new JButton(endAction).doClick();
+				}
+			}
+			emptyBefore = state;
 		}
-		emptyBefore = state;
 	}
 
-	synchronized boolean isEmptyBefore() {
-		return emptyBefore;
+	boolean isEmptyBefore() {
+		synchronized (this) {
+			return emptyBefore;
+		}
 	}
 
 	/**
@@ -166,20 +173,18 @@ public class NetDaemon extends GoodThread {
 		final byte[] bufferOut = RingBuffer.freshBuffer();
 		final DatagramPacket dataIn = new DatagramPacket(bufferOut,
 				bufferOut.length);
-		while (this.checkState()) {//loop as long as state is RUN
+		while (this.checkState()) {// loop as long as state is RUN
 			/* wait for packet */
 			dataSocket.receive(dataIn);
 			if (checkState()) {
-				dataIn.getData();//data goes to bufferOut
+				dataIn.getData();// data goes to bufferOut
 				packetCount++;
 				/* Put buffer into to sorting ring with sample fraction */
-				if (sorterOn) {
-					try {
-						sortingRing.putBuffer(bufferOut);
-					} catch (RingFullException rfe) {
-						notSortCount++;
-						setEmptyBefore(true);
-					}
+				try {
+					sortingRing.putBuffer(bufferOut);
+				} catch (RingFullException rfe) {
+					notSortCount++;
+					setEmptyBefore(true);
 				}
 				/* put buffer into to storage ring */
 				if (writerOn) {
@@ -191,12 +196,12 @@ public class NetDaemon extends GoodThread {
 								+ rfe.getMessage());
 					}
 				}
-			} else {//received a packet while thread state not RUN
+			} else {// received a packet while thread state not RUN
 				msgHandler
 						.warningOutln("Warning: recevied buffer while NetDaemon thread"
 								+ " state was not RUN: state=" + this);
 			}
-		}//end RUN loop
+		}// end RUN loop
 	}
 
 	/**
@@ -208,8 +213,8 @@ public class NetDaemon extends GoodThread {
 	 */
 	public void setWriter(final boolean writerOn) {
 		if (storageRing.isNull()) {
-			msgHandler
-			.warningOutln(getClass().getName()+": Can't write out events. There is no ring buffer.");
+			msgHandler.warningOutln(getClass().getName()
+					+ ": Can't write out events. There is no ring buffer.");
 		} else {
 			this.writerOn = writerOn;
 		}
@@ -239,7 +244,7 @@ public class NetDaemon extends GoodThread {
 	 * @param count
 	 *            the total number of packets sent
 	 */
-	public void setPacketCount(int count) {
+	public void setPacketCount(final int count) {
 		packetCount = count;
 	}
 
@@ -268,14 +273,15 @@ public class NetDaemon extends GoodThread {
 		}
 	}
 
-	private Action endAction;
-	
+	private transient Action endAction;
+
 	/**
 	 * Called by RunControl to give NetDaemon access to the "end run" action.
 	 * 
-	 * @param a the action which ends the current run
+	 * @param action
+	 *            the action which ends the current run
 	 */
-	public void setEndRunAction(Action a) {
-		endAction = a;
-	}	
+	public void setEndRunAction(final Action action) {
+		endAction = action;
+	}
 }
