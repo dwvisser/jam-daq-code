@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public class JamMainTest extends TestCase {
+public class JamRepaintTest extends TestCase {
 	
     /**
      * Try running Jam with thread checking repaint manager.
