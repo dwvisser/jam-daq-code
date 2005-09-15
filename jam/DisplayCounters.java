@@ -5,7 +5,7 @@ import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
-import jam.sort.StorageDaemon;
+import jam.sort.AbstractStorageDaemon;
 import jam.ui.CounterPanel;
 
 import java.awt.BorderLayout;
@@ -37,7 +37,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 
 	private transient NetDaemon netDaemon;
 
-	private transient StorageDaemon storeDaemon;
+	private transient AbstractStorageDaemon storeDaemon;
 
 	private transient final Broadcaster broadcaster;
 
@@ -192,7 +192,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 	 *            event record storage process
 	 */
 	public void setupOn(final NetDaemon net, final SortDaemon sod,
-			final StorageDaemon std) {
+			final AbstractStorageDaemon std) {
 		synchronized (this) {
 			netDaemon = net;
 			sortDaemon = sod;
@@ -219,7 +219,7 @@ public final class DisplayCounters extends JDialog implements Observer {
 	 * @param std
 	 *            the event record storage process
 	 */
-	public void setupOff(final SortDaemon sod, final StorageDaemon std) {
+	public void setupOff(final SortDaemon sod, final AbstractStorageDaemon std) {
 		synchronized (this) {
 			sortDaemon = sod;
 			storeDaemon = std;

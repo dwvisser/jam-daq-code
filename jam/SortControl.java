@@ -9,7 +9,7 @@ import jam.io.ExtensionFileFilter;
 import jam.sort.Controller;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.StorageDaemon;
+import jam.sort.AbstractStorageDaemon;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
@@ -113,11 +113,11 @@ public final class SortControl extends JDialog implements Controller {
 	};
 
 	/* daemon threads */
-	private transient StorageDaemon inputDaemon;
+	private transient AbstractStorageDaemon inputDaemon;
 
 	private transient final MultipleFileChooser multiFile;
 
-	private transient StorageDaemon outputDaemon;
+	private transient AbstractStorageDaemon outputDaemon;
 
 	private transient SortDaemon sortDaemon;
 
@@ -457,7 +457,7 @@ public final class SortControl extends JDialog implements Controller {
 	 *            the process that accepts data for storage
 	 */
 	public void setup(final SortDaemon sortDaemon,
-			final StorageDaemon fromDaemon, final StorageDaemon toDaemon) {
+			final AbstractStorageDaemon fromDaemon, final AbstractStorageDaemon toDaemon) {
 		this.sortDaemon = sortDaemon;
 		this.inputDaemon = fromDaemon;
 		this.outputDaemon = toDaemon;

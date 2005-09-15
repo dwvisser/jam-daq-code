@@ -58,7 +58,7 @@ import javax.swing.border.EmptyBorder;
  * @author Dale Visser
  * @version 05 newest done 9-98
  * @see jam.sort.NetDaemon
- * @see jam.sort.StorageDaemon
+ * @see jam.sort.AbstractStorageDaemon
  */
 public final class SetupSortOn extends AbstractSetup {
 
