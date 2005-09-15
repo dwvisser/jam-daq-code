@@ -3,6 +3,7 @@ package jam.io;
 import jam.data.Histogram;
 import jam.global.MessageHandler;
 import jam.util.FileUtilities;
+import jam.util.NumberUtilities;
 import jam.util.StringUtilities;
 
 import java.io.BufferedInputStream;
@@ -46,6 +47,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	static final String SIGNATURE = "HHIRFDIR0001";
 
 	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+	
+	private static final NumberUtilities NUM_UTIL = NumberUtilities.getInstance();
 
 	/**
 	 * input steam for drr file
@@ -163,7 +166,7 @@ public class ImpExpORNL extends AbstractImpExp {
 		disDrr.read(numHistByte); //number of histograms
 		byteOrder = ByteOrder.nativeOrder(); //assume file was created locally
 		msgHandler.messageOut(", native byte order: " + byteOrder + ", ");
-		if (!isCorrectByteOrder(byteArrayToInt(numHistByte, 0))) {
+		if (!isCorrectByteOrder(NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder))) {
 			if (byteOrder == ByteOrder.BIG_ENDIAN) {
 				byteOrder = ByteOrder.LITTLE_ENDIAN;
 			} else {
@@ -171,7 +174,7 @@ public class ImpExpORNL extends AbstractImpExp {
 			}
 		}
 		msgHandler.messageOut("file byte order: " + byteOrder + ", ");
-		totalHist = byteArrayToInt(numHistByte, 0); //number of histograms
+		totalHist = NUM_UTIL.bytesToInt(numHistByte, 0, byteOrder); //number of histograms
 		numHalfWords = readInt(disDrr); //total number of 16 bit words
 		readInt(disDrr); //space nothing defined
 		readInt(disDrr); //year
@@ -283,7 +286,7 @@ public class ImpExpORNL extends AbstractImpExp {
 				int offset = 0;
 				for (int j = 0; j < sizeY; j++) {
 					for (int i = 0; i < sizeX; i++) {
-						counts2d[i][j] = byteArrayToInt(inBuffer, offset);
+						counts2d[i][j] = NUM_UTIL.bytesToInt(inBuffer, offset, byteOrder);
 						offset += 4;
 					}
 				}
@@ -291,7 +294,7 @@ public class ImpExpORNL extends AbstractImpExp {
 				int offset = 0;
 				for (int j = 0; j < sizeY; j++) {
 					for (int i = 0; i < sizeX; i++) {
-						counts2d[i][j] = byteArrayToShort(inBuffer, offset);
+						counts2d[i][j] = NUM_UTIL.bytesToShort(inBuffer, offset, byteOrder);
 						offset += 2;
 					}
 				}
@@ -313,13 +316,13 @@ public class ImpExpORNL extends AbstractImpExp {
 			if (wordCh == 2) { //four byte data
 				int offset = 0;
 				for (int i = 0; i < sizeX; i++) {
-					counts[i] = byteArrayToInt(inBuffer, offset);
+					counts[i] = NUM_UTIL.bytesToInt(inBuffer, offset, byteOrder);
 					offset += 4;
 				}
 			} else if (wordCh == 1) { //two byte data
 				int offset = 0;
 				for (int i = 0; i < sizeX; i++) {
-					counts[i] = byteArrayToShort(inBuffer, offset);
+					counts[i] = NUM_UTIL.bytesToShort(inBuffer, offset, byteOrder);
 					offset += 2;
 				}
 			} else { //unable to handle data type
@@ -548,49 +551,16 @@ public class ImpExpORNL extends AbstractImpExp {
         }
 	}
 
-	/*
-	 * non-javadoc: Get a int from an array of byes
-	 */
-	private int byteArrayToInt(byte[] array, int offset) {
-        final byte byte0 = array[offset];
-        final byte byte1 = array[offset + 1];
-        final byte byte2 = array[offset + 2];
-        final byte byte3 = array[offset + 3];
-        final int rval = byteOrder == ByteOrder.BIG_ENDIAN ? constructInt(
-                byte0, byte1, byte2, byte3) : constructInt(byte3, byte2, byte1,
-                byte0);
-        return rval;
-    }
-
-	private final int constructInt(byte highest, byte high, byte low,
-			byte lowest) {
-		return ((highest & 0xFF) << 24) | ((high & 0xFF) << 16)
-				| ((low & 0xFF) << 8) | (lowest & 0xFF);
-	}
-
-	/* non-javadoc:
-	 * Get a short from an array of byes
-	 */
-	private short byteArrayToShort(byte[] array, int offset) {
-		short rval; //return value
-		if (byteOrder == ByteOrder.BIG_ENDIAN) {
-			rval = (short) (((array[offset] & 0xFF) << 8) + ((array[offset + 1] & 0xFF)));
-		} else { //byteOrder is LITTLE_ENDIAN
-			rval = (short) (((array[offset] & 0xFF)) + ((array[offset + 1] & 0xFF) << 8));
-		}
-		return rval;
-	}
-
 	private int readInt(DataInput dataInput) throws IOException {
 		final byte[] rval = new byte[4];
 		dataInput.readFully(rval);
-		return byteArrayToInt(rval, 0);
+		return NUM_UTIL.bytesToInt(rval, 0, byteOrder);
 	}
 
 	private short readShort(DataInput dataInput) throws IOException {
 	    final byte [] rval=new byte[2];
 		dataInput.readFully(rval);
-		return byteArrayToShort(rval, 0);
+		return NUM_UTIL.bytesToShort(rval, 0, byteOrder);
 	}
 
 	public boolean canExport() {
