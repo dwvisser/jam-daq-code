@@ -8,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,11 +23,9 @@ import java.nio.ByteOrder;
  */
 public final class DiskDaemon extends AbstractStorageDaemon {
 
-	private transient FileOutputStream fos;
-
 	private transient BufferedOutputStream bos;
 
-	private transient FileInputStream fis;
+	// private transient FileInputStream fis;
 
 	private transient BufferedInputStream bis;
 
@@ -50,10 +49,10 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 					+ ": Cannot open input event file, null name.");
 		}
 		try {
-			fis = new FileInputStream(file);
+			final FileInputStream fis = new FileInputStream(file);
 			bis = new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
 			eventInput.setInputStream(bis);
-			this.inputFile = file;
+			inputFile = file;
 			inputFileOpen = true;
 		} catch (IOException ioe) {
 			throw new SortException("Unable to open file: " + file.getPath()
@@ -73,7 +72,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 					+ ": Cannot open output event file, file name is null.");
 		}
 		try {
-			fos = new FileOutputStream(file);
+			final FileOutputStream fos = new FileOutputStream(file);
 			bos = new BufferedOutputStream(fos, RingBuffer.BUFFER_SIZE);
 			eventOutput.setOutputStream(bos);
 			this.outputFile = file;
@@ -96,8 +95,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 				if (mode == Mode.OFFLINE) {
 					eventOutput.writeEndRun();
 				}
-				bos.flush();
-				fos.close();
+				bos.close();// flushes bos, then closes underlying stream
 				outputFileOpen = false;
 			} catch (EventException ee) {
 				throw new SortException("Unable to close file EventException:"
@@ -117,7 +115,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	public void closeEventInputFile() throws SortException {
 		if (inputFileOpen) {
 			try {
-				fis.close();
+				bis.close();
 				inputFileOpen = false;
 			} catch (IOException ioe) {
 				throw new SortException("Unable to close file [DiskDaemon]");
@@ -134,7 +132,9 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 * you see a end of run marker, then inform controller.
 	 */
 	private void writeLoop() throws IOException {
+		final NumberUtilities numberUtilities = NumberUtilities.getInstance();
 		final byte[] buffer = RingBuffer.freshBuffer();
+		final int offset = buffer.length - 2;
 		/*
 		 * checkState() waits until state is STOP (return value=false) or RUN
 		 * (return value=true)
@@ -145,9 +145,8 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			bos.write(buffer);
 			bufferCount++;
 			// check for end-of-run marker
-			final int offset = buffer.length - 2;
-			final short last2bytes = NumberUtilities.getInstance()
-					.bytesToShort(buffer, offset, ByteOrder.BIG_ENDIAN);
+			final short last2bytes = numberUtilities.bytesToShort(buffer,
+					offset, ByteOrder.BIG_ENDIAN);
 			if (eventInput.isEndRun(last2bytes)) {
 				// tell control we are done
 				fileCount++;
@@ -254,14 +253,19 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	 *                thrown for unrecoverable errors
 	 */
 	public boolean readHeader() throws SortException {
-		final BufferedInputStream headerInputStream = new BufferedInputStream(
-				fis, RingBuffer.BUFFER_SIZE);
 		try {
+			final BufferedInputStream headerInputStream = new BufferedInputStream(
+					new FileInputStream(inputFile), eventInput.getHeaderSize());
 			eventInput.setInputStream(headerInputStream);
 			final boolean goodHeader = eventInput.readHeader();
+			headerInputStream.close();
 			return goodHeader;
 		} catch (EventException ioe) {
-			throw new SortException("Could not read Header Record [DiskDaemon]");
+			throw new SortException("Could not read header record.", ioe);
+		} catch (FileNotFoundException fnf) {
+			throw new SortException("Event file not found.", fnf);
+		} catch (IOException ioe) {
+			throw new SortException("Problem closing event file.", ioe);
 		}
 
 	}
