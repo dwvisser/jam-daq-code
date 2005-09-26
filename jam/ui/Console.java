@@ -21,7 +21,6 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
@@ -365,7 +364,7 @@ public class Console extends JPanel implements MessageHandler {
 	}
 
 	private synchronized void promptOutln(final String _message,
-			AttributeSet attr) {
+			final AttributeSet attr) {
 		final StringBuffer mbuff = new StringBuffer();
 		/*
 		 * Dont wait for lock. Output message right away.
@@ -406,7 +405,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param msgCommand
 	 *            listener to add
 	 */
-	public final void addCommandListener(CommandListener msgCommand) {
+	public final void addCommandListener(final CommandListener msgCommand) {
 		listenerList.add(msgCommand);
 	}
 
@@ -475,7 +474,7 @@ public class Console extends JPanel implements MessageHandler {
 		return rval;
 	}
 
-	private boolean isNumber(String string) {
+	private boolean isNumber(final String string) {
 		boolean rval;
 		try {
 			if (string.indexOf('.') >= 0) {
@@ -500,7 +499,7 @@ public class Console extends JPanel implements MessageHandler {
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
-	public String setLogFileName(String name) throws JamException {
+	public String setLogFileName(final String name) throws JamException {
 		String newName = name + ".log";
 		File file = new File(newName);
 		/*
@@ -544,14 +543,14 @@ public class Console extends JPanel implements MessageHandler {
 	 * @exception JamException
 	 *                exceptions that go to the console
 	 */
-	public void setLogFileOn(boolean state) throws JamException {
-		if (logWriter != null) {
-			logFileOn = state;
-		} else {
+	public void setLogFileOn(final boolean state) throws JamException {
+		logFileOn = state;
+		if (logWriter == null) {
 			logFileOn = false;
 			throw new JamException(
-					"Cannot turn on logging to file, log file does not exits  [JamConsole]");
-		}
+					getClass().getSimpleName()+
+					": Cannot turn on logging to file, log file does not exist.");
+		} 
 	}
 
 	/**
@@ -602,11 +601,9 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param params
 	 *            list of parameters
 	 */
-	private void notifyListeners(String cmd, String[] params) {
-		final Iterator iter = listenerList.iterator();
+	private void notifyListeners(final String cmd, final String[] params) {
 		boolean found = false;
-		while (iter.hasNext()) {
-			CommandListener listener = (CommandListener) (iter.next());
+		for (CommandListener listener : listenerList) {
 			found |= listener.performParseCommand(cmd, params);
 		}
 		if (!found) {
