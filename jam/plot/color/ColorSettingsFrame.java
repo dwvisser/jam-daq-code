@@ -71,7 +71,7 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		contents.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
 		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(this) {
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
 					public void apply() {
 						final double x0red = x0RSlider.getValue() / 100.0;
 						final double x0green = x0GSlider.getValue() / 100.0;

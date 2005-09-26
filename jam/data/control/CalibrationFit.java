@@ -174,7 +174,7 @@ public class CalibrationFit extends AbstractControl {
 		tabPane.addTab("Coefficients", null, histPanel, "Fit coefficients.");
 		/* button panel */
 		pButtons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(this) {
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
 					public void apply() {
 						if (rbFitPoints.isSelected()) {
 							doApplyCalib();

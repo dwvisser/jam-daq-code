@@ -153,7 +153,7 @@ public final class ScalerScan implements JamFileFields {
 		txtLast = new JTextField(4);
 		pLast.add(txtLast);
 		buttons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(dialog) {
+				new PanelOKApplyCancelButtons.AbstractListener(dialog) {
 					public void apply() {
 						setButtonsEnable(false);
 						final Runnable runnable = new Runnable() {

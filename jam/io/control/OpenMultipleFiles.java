@@ -142,7 +142,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 			}
 		});
 		okApply = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(dialog) {
+				new PanelOKApplyCancelButtons.AbstractListener(dialog) {
 					public void apply() {
 						defaultSelection();
 						loadFiles();

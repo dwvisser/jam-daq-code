@@ -160,7 +160,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		pEntries.add(pto);
 		/* button panel */
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(this) {
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
 					public void apply() {
 						try {
 							doGainShift();

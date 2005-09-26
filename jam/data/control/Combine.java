@@ -189,7 +189,7 @@ public class Combine extends AbstractManipulation implements Observer {
 		pto.add(ttextto);
 		/* button panel */
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-				new PanelOKApplyCancelButtons.DefaultListener(this) {
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
 					public void apply() {
 						try {
 							combine();

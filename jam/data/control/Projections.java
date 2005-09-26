@@ -162,7 +162,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
 		final PanelOKApplyCancelButtons.Listener listener = 
-		    new PanelOKApplyCancelButtons.DefaultListener(this){
+		    new PanelOKApplyCancelButtons.AbstractListener(this){
 			public void apply(){
 				try {
 					project();

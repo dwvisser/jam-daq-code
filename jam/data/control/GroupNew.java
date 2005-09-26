@@ -41,7 +41,7 @@ public class GroupNew extends AbstractControl {
 		textName.setColumns(15);
 		pMiddle.add(textName);
 		final PanelOKApplyCancelButtons pButtons = new PanelOKApplyCancelButtons(
-		        new PanelOKApplyCancelButtons.DefaultListener(this){
+		        new PanelOKApplyCancelButtons.AbstractListener(this){
 		            public void apply(){
 		        		createGroup();
 		            }

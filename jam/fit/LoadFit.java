@@ -73,7 +73,7 @@ public class LoadFit {
 		chooseFit.setPreferredSize(dim);
 		pFit.add(chooseFit);
 		final PanelOKApplyCancelButtons.Listener callback = new 
-		PanelOKApplyCancelButtons.DefaultListener(dialog){
+		PanelOKApplyCancelButtons.AbstractListener(dialog){
 		    public void apply(){
 				final Class fit = (Class)chooseFit.getSelectedItem();
 				try {
