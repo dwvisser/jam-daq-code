@@ -41,8 +41,8 @@ public final class SelectionTree extends JPanel implements Observer {
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-	private final TreeSelectionListener listener = new TreeSelectionListener() {
-		public void valueChanged(TreeSelectionEvent e) {
+	private transient final TreeSelectionListener listener = new TreeSelectionListener() {
+		public void valueChanged(final TreeSelectionEvent event) {
 			final TreePath[] path = tree.getSelectionPaths();
 			if (path != null) {
 				select(path);
@@ -50,16 +50,16 @@ public final class SelectionTree extends JPanel implements Observer {
 		}
 	};
 
-	private final MessageHandler msgHandler;
+	private transient final MessageHandler msgHandler;
 
-	private DefaultMutableTreeNode rootNode;
+	private transient DefaultMutableTreeNode rootNode;
 
 	/** Is sync event so don't */
 	private boolean syncEvent = false;
 
-	private final JTree tree;
+	private transient final JTree tree;
 
-	private final DefaultTreeModel treeModel;
+	private transient final DefaultTreeModel treeModel;
 
 	/**
 	 * Constructs a new <code>SelectionTree</code>.
@@ -90,7 +90,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		}
 	}
 
-	private Histogram getAssociatedHist(TreePath path) {
+	private Histogram getAssociatedHist(final TreePath path) {
 		if (!isGate(path)) {
 			throw new IllegalArgumentException("Only call with a gate path.");
 		}
@@ -98,13 +98,15 @@ public final class SelectionTree extends JPanel implements Observer {
 				.getPathCount() - 2)).getUserObject();
 	}
 
-	private boolean isGate(TreePath path) {
+	private boolean isGate(final TreePath path) {
 		return ((DefaultMutableTreeNode) path.getLastPathComponent())
 				.getUserObject() instanceof Gate;
 	}
 
-	private synchronized boolean isSyncEvent() {
-		return syncEvent;
+	private boolean isSyncEvent() {
+		synchronized (this) {
+			return syncEvent;
+		}
 	}
 
 	/**
@@ -130,22 +132,17 @@ public final class SelectionTree extends JPanel implements Observer {
 		treeModel.setRoot(rootNode);
 
 		// Loop through all groups
-		final Iterator iterGroup = Group.getGroupList().iterator();
-		while (iterGroup.hasNext()) {
-			final Group group = (Group) iterGroup.next();
+		for (Group group : Group.getGroupList()) {
 			final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
 					group);
 			// Loop through histograms and load them
-			final Iterator iterHist = group.getHistogramList().iterator();
-			while (iterHist.hasNext()) {
-				final Histogram hist = (Histogram) iterHist.next();
+			for (Histogram hist : group.getHistogramList()) {
 				final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
 						hist);
 				groupNode.add(histNode);
 				// Loop through gates and load them
-				final Iterator iterGate = hist.getGates().iterator();
-				while (iterGate.hasNext()) {
-					histNode.add(new DefaultMutableTreeNode(iterGate.next()));
+				for (Gate gate : hist.getGates()) {
+					histNode.add(new DefaultMutableTreeNode(gate));
 				}
 			}
 			rootNode.add(groupNode);
@@ -156,7 +153,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	/*
 	 * non-javadoc: Helper method to get TreePath for a data object
 	 */
-	private TreePath pathForDataObject(Object dataObject) {
+	private TreePath pathForDataObject(final Object dataObject) {
 		TreePath treePath = null;
 		final Enumeration nodeEnum = ((DefaultMutableTreeNode) treeModel
 				.getRoot()).breadthFirstEnumeration();
@@ -175,7 +172,8 @@ public final class SelectionTree extends JPanel implements Observer {
 	/*
 	 * non-javadoc
 	 */
-	private void refreshGateSelection(Gate gate, TreePath histTreePath) {
+	private void refreshGateSelection(final Gate gate,
+			final TreePath histTreePath) {
 		/* Iterate over all nodes below histogram node. */
 		final Enumeration nodeEnum = ((DefaultMutableTreeNode) histTreePath
 				.getLastPathComponent()).breadthFirstEnumeration();
@@ -192,7 +190,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		} // End loop for all nodes
 	}
 
-	private void refreshOverlaySelection(List<Histogram> overlayHists) {
+	private void refreshOverlaySelection(final List<Histogram> overlayHists) {
 		final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
 				.getModel().getRoot();
 		/* Iterate over all nodes below root node. */
@@ -203,8 +201,8 @@ public final class SelectionTree extends JPanel implements Observer {
 			final Object currentObj = currentNode.getUserObject();
 			if (currentObj instanceof Histogram) {
 				// Loop over histograms
-				for (int i = 0; i < overlayHists.size(); i++) {
-					if (currentObj == overlayHists.get(i)) {
+				for (Histogram hist : overlayHists) {
+					if (currentObj == hist) {
 						final TreePath gateTreePath = new TreePath(currentNode
 								.getPath());
 						tree.addSelectionPath(gateTreePath);
@@ -241,61 +239,63 @@ public final class SelectionTree extends JPanel implements Observer {
 	/*
 	 * non-javadoc: A node has been selected in the tree Set selected object
 	 */
-	private synchronized void select(TreePath[] paths) {
-		/* Syncronize events should not fire events */
-		if (!isSyncEvent()) {
-			/*
-			 * Remove listener so we don't get repeated callbacks while
-			 * selecting other objects
-			 */
-			removeSelectionListener();
-			final TreePath prime = paths[0];
-			final DefaultMutableTreeNode firstNode = ((DefaultMutableTreeNode) prime
-					.getLastPathComponent());
-			final Object firstNodeObject = firstNode.getUserObject();
+	private void select(final TreePath[] paths) {
+		synchronized (this) {
+			/* Syncronize events should not fire events */
+			if (!isSyncEvent()) {
+				/*
+				 * Remove listener so we don't get repeated callbacks while
+				 * selecting other objects
+				 */
+				removeSelectionListener();
+				final TreePath prime = paths[0];
+				final DefaultMutableTreeNode firstNode = ((DefaultMutableTreeNode) prime
+						.getLastPathComponent());
+				final Object firstNodeObject = firstNode.getUserObject();
 
-			if (firstNode == rootNode) {
-				BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
-			} else if (firstNodeObject instanceof Group) {
-				final Group group = (Group) firstNodeObject;
-				// Group.setCurrentGroup(group);
-				STATUS.setCurrentGroup(group);
-				BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT,
-						group);
-			} else if (firstNodeObject instanceof Histogram) {
-				/* Histogram selected */
-				final Histogram hist = (Histogram) firstNodeObject;
-				STATUS.setCurrentGroup(hist.getGroup());
-				STATUS.setCurrentHistogram(hist);
-				STATUS.setCurrentGate(null);
-				/* Do we have overlays ? */
-				if (paths.length > 1) {
-					if (hist.getDimensionality() == 1) {
-						selectOverlay(paths);
+				if (firstNode == rootNode) {
+					BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
+				} else if (firstNodeObject instanceof Group) {
+					final Group group = (Group) firstNodeObject;
+					// Group.setCurrentGroup(group);
+					STATUS.setCurrentGroup(group);
+					BROADCASTER.broadcast(BroadcastEvent.Command.GROUP_SELECT,
+							group);
+				} else if (firstNodeObject instanceof Histogram) {
+					/* Histogram selected */
+					final Histogram hist = (Histogram) firstNodeObject;
+					STATUS.setCurrentGroup(hist.getGroup());
+					STATUS.setCurrentHistogram(hist);
+					STATUS.setCurrentGate(null);
+					/* Do we have overlays ? */
+					if (paths.length > 1) {
+						if (hist.getDimensionality() == 1) {
+							selectOverlay(paths);
+						} else {
+							msgHandler
+									.errorOutln("Cannot overlay on a 2D histogram.");
+						}
 					} else {
-						msgHandler
-								.errorOutln("Cannot overlay on a 2D histogram.");
+						STATUS.clearOverlays();
 					}
-				} else {
+					BROADCASTER.broadcast(
+							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+				} else if (firstNodeObject instanceof Gate) {
+					/* Gate selected */
+					final Gate gate = (Gate) firstNodeObject;
+					final Histogram hist = getAssociatedHist(prime);
+					tree.addSelectionPath(pathForDataObject(hist));
+					STATUS.setCurrentGroup(hist.getGroup());
+					STATUS.setCurrentHistogram(hist);
+					STATUS.setCurrentGate(gate);
 					STATUS.clearOverlays();
+					BROADCASTER.broadcast(
+							BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
+					selectGate(gate);
 				}
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-						hist);
-			} else if (firstNodeObject instanceof Gate) {
-				/* Gate selected */
-				final Gate gate = (Gate) firstNodeObject;
-				final Histogram hist = getAssociatedHist(prime);
-				tree.addSelectionPath(pathForDataObject(hist));
-				STATUS.setCurrentGroup(hist.getGroup());
-				STATUS.setCurrentHistogram(hist);
-				STATUS.setCurrentGate(gate);
-				STATUS.clearOverlays();
-				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-						hist);
-				selectGate(gate);
+				/* Re-add listener now that we have set selection. */
+				addSelectionListener();
 			}
-			/* Re-add listener now that we have set selection. */
-			addSelectionListener();
 		}
 	}
 
@@ -307,7 +307,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	 *            to select
 	 * @see jam.data.Gate
 	 */
-	private void selectGate(Gate gate) {
+	private void selectGate(final Gate gate) {
 		final String methodname = "selectGate(): ";
 		try {
 			STATUS.setCurrentGate(gate);
@@ -327,7 +327,7 @@ public final class SelectionTree extends JPanel implements Observer {
 				msgHandler.messageOut(", Area = " + area, MessageHandler.END);
 			}
 		} catch (Exception de) {
-			String classname = getClass().getName() + "--";
+			final String classname = getClass().getName() + "--";
 			msgHandler.errorOutln(classname + methodname + de.getMessage());
 		}
 	}
@@ -335,7 +335,7 @@ public final class SelectionTree extends JPanel implements Observer {
 	/*
 	 * non-javadoc
 	 */
-	private void selectOverlay(TreePath[] paths) {
+	private void selectOverlay(final TreePath[] paths) {
 		DefaultMutableTreeNode overlayNode = null;
 		Object overlayObj = null;
 		Histogram overlayHist;
@@ -358,8 +358,10 @@ public final class SelectionTree extends JPanel implements Observer {
 		}
 	}
 
-	private synchronized void setSyncEvent(boolean state) {
-		syncEvent = state;
+	private void setSyncEvent(final boolean state) {
+		synchronized (this) {
+			syncEvent = state;
+		}
 	}
 
 	/**
@@ -370,20 +372,22 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * @param object
 	 *            the message
 	 */
-	public synchronized void update(Observable observable, Object object) {
-		final BroadcastEvent event = (BroadcastEvent) object;
-		final BroadcastEvent.Command command = event.getCommand();
-		setSyncEvent(true);
-		if (command == BroadcastEvent.Command.HISTOGRAM_SELECT
-				|| command == BroadcastEvent.Command.GATE_SELECT) {
-			refreshSelection();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_NEW
-				|| command == BroadcastEvent.Command.HISTOGRAM_ADD
-				|| command == BroadcastEvent.Command.GATE_ADD
-				|| command == BroadcastEvent.Command.RUN_STATE_CHANGED
-				|| command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
-			loadTree();
+	public void update(final Observable observable, final Object object) {
+		synchronized (this) {
+			final BroadcastEvent event = (BroadcastEvent) object;
+			final BroadcastEvent.Command command = event.getCommand();
+			setSyncEvent(true);
+			if (command == BroadcastEvent.Command.HISTOGRAM_SELECT
+					|| command == BroadcastEvent.Command.GATE_SELECT) {
+				refreshSelection();
+			} else if (command == BroadcastEvent.Command.HISTOGRAM_NEW
+					|| command == BroadcastEvent.Command.HISTOGRAM_ADD
+					|| command == BroadcastEvent.Command.GATE_ADD
+					|| command == BroadcastEvent.Command.RUN_STATE_CHANGED
+					|| command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
+				loadTree();
+			}
+			setSyncEvent(false);
 		}
-		setSyncEvent(false);
 	}
 }

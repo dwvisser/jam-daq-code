@@ -29,8 +29,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
-
-
 /**
  * Panel to select multiple files.
  * 
@@ -38,133 +36,115 @@ import javax.swing.filechooser.FileFilter;
  */
 public final class MultipleFileChooser extends JPanel {
 
-	private  JList listFiles;
-		
-	private DefaultListModel listFilesModel;
-	
-	private File lastFile; //last file referred to in a JFileChooser
-	
-	private JPanel pButtons;
-	
-	private JButton bSaveList;
-	
-	private JButton bLoadList;
-	
-	private JButton bAddfile, bAddDir, bRemove, bRemoveAll;
-	
-	private FileFilter fileFilter;
-	
+	private transient final DefaultListModel listFilesModel = new DefaultListModel();
+
+	private transient final JList listFiles = new JList(listFilesModel);
+
+	private transient File lastFile; // last file referred to in a
+										// JFileChooser
+
+	private transient final JPanel pButtons = new JPanel(new GridLayout(0, 1,
+			5, 2));
+
+	private transient final JButton bSaveList = new JButton("Save List");
+
+	private transient final JButton bLoadList = new JButton("Load List");
+
+	private transient final JButton bAddfile = new JButton("Add File");
+
+	private transient final JButton bAddDir = new JButton("Add Directory");
+
+	private transient final JButton bRemove = new JButton("Remove File");
+
+	private transient final JButton bRemoveAll = new JButton("Remove All");
+
+	private transient FileFilter fileFilter;
+
 	/** Main Frame */
-	private final Frame frame;
+	private transient final Frame frame;
+
 	/** Messages output */
-	private MessageHandler msgHandler;
-	
+	private transient final MessageHandler msgHandler;
+
 	/**
 	 * Constructs a multiple file chooser panel.
-	 * @param frame parent frame
-	 * @param msgHandler where to print messages
+	 * 
+	 * @param frame
+	 *            parent frame
+	 * @param msgHandler
+	 *            where to print messages
 	 */
 	public MultipleFileChooser(Frame frame, MessageHandler msgHandler) {
-		this.frame =frame;
-		this.msgHandler=msgHandler;		
-	
-		this.setLayout(new BorderLayout(5,5));
-		//Panel with list 
-		listFilesModel = new DefaultListModel();
-		listFiles = new JList(listFilesModel);
-		//listFiles.setBounds()
+		super(new BorderLayout(5, 5));
+		this.frame = frame;
+		this.msgHandler = msgHandler;
+		// Panel with list
 		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
-
-		//Commands Panel		
+		// Commands Panel
 		JPanel pLeft = new JPanel();
-		pLeft.setLayout(new BoxLayout(pLeft, BoxLayout.Y_AXIS));		
+		pLeft.setLayout(new BoxLayout(pLeft, BoxLayout.Y_AXIS));
 		pLeft.setBorder(new EmptyBorder(0, 5, 0, 0));
 		this.add(pLeft, BorderLayout.WEST);
-		
-		pButtons = new JPanel(new GridLayout(0, 1, 5, 2));
-		
-		pLeft.add(Box.createVerticalGlue());				
-		pLeft.add(Box.createVerticalGlue());		
+		pLeft.add(Box.createVerticalGlue());
+		pLeft.add(Box.createVerticalGlue());
 		pLeft.add(Box.createVerticalGlue());
 		pLeft.add(pButtons);
 		pLeft.add(Box.createVerticalGlue());
 		pLeft.add(Box.createVerticalGlue());
-		pLeft.add(Box.createVerticalGlue());		
-		
-		bAddfile = new JButton("Add File");
+		pLeft.add(Box.createVerticalGlue());
 		pButtons.add(bAddfile);
 		bAddfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				selectFile(true);
 			}
 		});
-	
-		bAddDir = new JButton("Add Directory");
 		pButtons.add(bAddDir);
 		bAddDir.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				selectFile(false);
 			}
 		});
-	
-		bRemove = new JButton("Remove File");
 		pButtons.add(bRemove);
 		bRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				removeFile();
 			}
 		});
-		
-		bRemoveAll = new JButton("Remove All");
-		pButtons.add(bRemoveAll);		
+		pButtons.add(bRemoveAll);
 		bRemoveAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				removeAllFiles();
 			}
 		});
-		
-		bLoadList = new JButton("Load List");
 		bLoadList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				loadList();
 			}
 		});
-
-		bSaveList = new JButton("Save List");
 		bSaveList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				saveList();
 			}
 		});
-		
 	}
-	
 
 	/**
 	 * Sets the file filter to browse for
-	 * @param filter type to browse for
+	 * 
+	 * @param filter
+	 *            type to browse for
 	 */
-	public void setFileFilter(FileFilter filter) {
-		fileFilter=filter;
-	}
-	
-	/**
-	 * Sets the file extension to browse for, creates a default
-	 * file filter
-	 * @param extension file extension
-	 * @param extensionName label for file type
-	 */
-	public void setFileFilter(String extensionName, String extension) {	
-		fileFilter =new ExtensionFileFilter(extension ,
-						extensionName);
+	public void setFileFilter(final FileFilter filter) {
+		fileFilter = filter;
 	}
 
 	/**
 	 * Activate the save and load list buttons
+	 * 
 	 * @param state
 	 */
-	public void showListSaveLoadButtons(boolean state){
+	public void showListSaveLoadButtons(final boolean state) {
 		if (state) {
 			pButtons.add(bLoadList);
 			pButtons.add(bSaveList);
@@ -173,12 +153,14 @@ public final class MultipleFileChooser extends JPanel {
 			pButtons.remove(bSaveList);
 		}
 	}
-	
+
 	/**
 	 * Lock or unlock the buttons.
-	 * @param state <code>true</code> to enable the buttons
+	 * 
+	 * @param state
+	 *            <code>true</code> to enable the buttons
 	 */
-	public void setLocked(boolean state){
+	public void setLocked(final boolean state) {
 		bAddfile.setEnabled(state);
 		bAddDir.setEnabled(state);
 		bRemove.setEnabled(state);
@@ -186,166 +168,166 @@ public final class MultipleFileChooser extends JPanel {
 		bLoadList.setEnabled(state);
 		bSaveList.setEnabled(state);
 	}
-	
+
 	/**
-	 * Get selected file, no selection set first file
-	 * as selected
+	 * Get selected file, no selection set first file as selected
+	 * 
 	 * @return the selected file
 	 */
 	public File getSelectedFile() {
-		File file = (File)listFiles.getSelectedValue();
-		if (file ==null && listFilesModel.getSize()>0) {
+		File file = (File) listFiles.getSelectedValue();
+		if (file == null && listFilesModel.getSize() > 0) {
 			listFiles.setSelectedIndex(0);
-			file = (File)listFiles.getSelectedValue();
+			file = (File) listFiles.getSelectedValue();
 		}
 		return file;
 	}
-	
+
 	/**
 	 * Returns the list of files in the data model.
+	 * 
 	 * @return the list of files in the data model
 	 */
 	public List<File> getFileList() {
 		final List<?> tempList = Collections.list(listFilesModel.elements());
-        final List<File> rval = new ArrayList<File>(tempList.size());
-        for (Object object : tempList){
-            rval.add((File)object);
-        }
-        return Collections.unmodifiableList(rval);
-	}	
-	
+		final List<File> rval = new ArrayList<File>(tempList.size());
+		for (Object object : tempList) {
+			rval.add((File) object);
+		}
+		return Collections.unmodifiableList(rval);
+	}
+
 	/**
 	 * Add a file to the list.
 	 * 
-	 * @param file to add
+	 * @param file
+	 *            to add
 	 */
-	public void addFile(File file){
+	public void addFile(final File file) {
 		listFilesModel.addElement(file);
 	}
-	
+
 	/**
 	 * save list of items to sort
 	 */
 	public void saveList() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
+		final JFileChooser fileChooser = new JFileChooser(lastFile);
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
 				"List Files (*.lst)"));
-		int option = fd.showSaveDialog(frame);
-		// save current values 
+		final int option = fileChooser.showSaveDialog(frame);
+		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			lastFile = fd.getSelectedFile(); //save current directory
+				&& fileChooser.getSelectedFile() != null) {
+			lastFile = fileChooser.getSelectedFile(); // save current directory
 			try {
-				FileWriter saveStream = new FileWriter(lastFile);
+				final FileWriter saveStream = new FileWriter(lastFile);
 				for (int i = 0; i < listFilesModel.size(); i++) {
-					final File f = (File) listFilesModel.elementAt(i);
-					saveStream.write(f.getAbsolutePath());
+					final File file = (File) listFilesModel.elementAt(i);
+					saveStream.write(file.getAbsolutePath());
 					saveStream.write("\n");
 				}
 				saveStream.close();
 			} catch (IOException ioe) {
-				msgHandler
-						.errorOutln("Unable to save list to file "
-								+ lastFile.getName());
+				msgHandler.errorOutln("Unable to save list to file "
+						+ lastFile.getName());
 			}
 		}
 	}
+
 	/**
 	 * load a list of items to sort from a file
-	 *  
+	 * 
 	 */
 	public void loadList() {
-		JFileChooser fd = new JFileChooser(lastFile);
-		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fd.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
+		final JFileChooser fileChooser = new JFileChooser(lastFile);
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
 				"List Files (*.lst)"));
-		int option = fd.showOpenDialog(frame);
+		final int option = fileChooser.showOpenDialog(frame);
 		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-			readFileList(fd.getSelectedFile());
+				&& fileChooser.getSelectedFile() != null) {
+			readFileList(fileChooser.getSelectedFile());
 		}
 	}
-	
-	int readFileList(File f) {
+
+	int readFileList(final File file) {
 		int numFiles = 0;
-		lastFile = f;
+		lastFile = file;
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(lastFile));
+			final BufferedReader reader = new BufferedReader(new FileReader(lastFile));
 			String listItem;
 			do {
-				listItem = br.readLine();
+				listItem = reader.readLine();
 				if (listItem != null) {
 					final File fEvn = new File(listItem);
 					listFilesModel.addElement(fEvn);
 					numFiles++;
 				}
 			} while (listItem != null);
-			br.close();
+			reader.close();
 		} catch (IOException ioe) {
-			msgHandler.errorOutln("Unable to load list from file "
-					+ f);
+			msgHandler.errorOutln("Unable to load list from file " + file);
 		}
 		return numFiles;
 	}
-	
-	/* non-javadoc:
-	 * Select a file, browse for data files.
+
+	/*
+	 * non-javadoc: Select a file, browse for data files.
 	 */
-	private void selectFile(boolean selectFileOnly) {
+	private void selectFile(final boolean selectFileOnly) {
 		int chooserMode;
-
-		final JFileChooser fd = new JFileChooser(lastFile);		
+		final JFileChooser fileChooser = new JFileChooser(lastFile);
 		if (selectFileOnly) {
-			chooserMode=JFileChooser.FILES_ONLY;
-			fd.setMultiSelectionEnabled(true);			
+			chooserMode = JFileChooser.FILES_ONLY;
+			fileChooser.setMultiSelectionEnabled(true);
 		} else {
-			chooserMode=JFileChooser.DIRECTORIES_ONLY;
-			fd.setMultiSelectionEnabled(false);			
-		}		
-		fd.setFileSelectionMode(chooserMode);
-
-		//fd.setFileFilter(fileFilter));
-		if (selectFileOnly){
-		    fd.setFileFilter(fileFilter);
+			chooserMode = JFileChooser.DIRECTORIES_ONLY;
+			fileChooser.setMultiSelectionEnabled(false);
 		}
-		final int option = fd.showOpenDialog(frame);
+		fileChooser.setFileSelectionMode(chooserMode);
+		if (selectFileOnly) {
+			fileChooser.setFileFilter(fileFilter);
+		}
+		final int option = fileChooser.showOpenDialog(frame);
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
-				&& fd.getSelectedFile() != null) {
-		    if (selectFileOnly){				
-		    	if (fd.isMultiSelectionEnabled()) {
-		    		File [] files =fd.getSelectedFiles();
-		    		for (int i=0; i<files.length;i++ ) {
-		    			listFilesModel.addElement(files[i]);
-		    		}
-		    	}else {
-		    		addFile(fd.getSelectedFile());
-		    	}
-		    } else {
-				lastFile = fd.getSelectedFile(); //save current directory
+				&& fileChooser.getSelectedFile() != null) {
+			if (selectFileOnly) {
+				if (fileChooser.isMultiSelectionEnabled()) {
+					final File[] files = fileChooser.getSelectedFiles();
+					for (int i = 0; i < files.length; i++) {
+						listFilesModel.addElement(files[i]);
+					}
+				} else {
+					addFile(fileChooser.getSelectedFile());
+				}
+			} else {
+				lastFile = fileChooser.getSelectedFile(); // save current directory
 				addDirFiles(lastFile);
-		    }
-		    listFiles.setSelectedIndex(0);
+			}
+			listFiles.setSelectedIndex(0);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Adds a directory of files
-	 * @param f the directory to add
+	 * 
+	 * @param file
+	 *            the directory to add
 	 * @return number of files
 	 */
-	private int addDirFiles(File f) {
+	private int addDirFiles(final File file) {
 		int numFiles = 0;
-		if (f != null && f.exists()) {
-			if (f.isFile() && fileFilter.accept(f)) {
-				addFile(f);
+		if (file != null && file.exists()) {
+			if (file.isFile() && fileFilter.accept(file)) {
+				addFile(file);
 				numFiles++;
-			} else if (f.isDirectory()) {
-				File[] dirArray = f.listFiles();
+			} else if (file.isDirectory()) {
+				final File[] dirArray = file.listFiles();
 				for (int i = 0; i < dirArray.length; i++) {
-					if (fileFilter.accept(dirArray[i])){
+					if (fileFilter.accept(dirArray[i])) {
 						addFile(dirArray[i]);
 					}
 					numFiles++;
@@ -354,23 +336,23 @@ public final class MultipleFileChooser extends JPanel {
 		}
 		return numFiles;
 	}
-	
+
 	/**
 	 * remove a file from the list
 	 */
 	private void removeFile() {
-		Object[] removeList = listFiles.getSelectedValues();
+		final Object[] removeList = listFiles.getSelectedValues();
 		for (int i = 0; i < removeList.length; i++) {
 			listFilesModel.removeElement(removeList[i]);
 		}
 	}
-	
+
 	/**
 	 * remove all file from the list
-	 *  
+	 * 
 	 */
 	private void removeAllFiles() {
 		listFilesModel.removeAllElements();
 	}
-	
+
 }

@@ -22,13 +22,14 @@ import javax.swing.SwingConstants;
  * @see jam.RunState
  */
 public final class RunStateBox implements Observer {
-	private final JLabel lrunState = new JLabel("   Welcome   ",
+	private transient final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
-	final JPanel pRunState = new JPanel();
+	private transient final JPanel pRunState = new JPanel();
 	
 	private static final RunStateBox INSTANCE=new RunStateBox();
 	
 	private RunStateBox(){
+		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
 		pRunState.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		pRunState.add(new JLabel(" Status: "));
@@ -51,9 +52,9 @@ public final class RunStateBox implements Observer {
 		return pRunState;
 	}
 	
-	private void setRunState(RunState rs) {
-		lrunState.setBackground(rs.getColor());
-		lrunState.setText(rs.getLabel());
+	private void setRunState(final RunState runState) {
+		lrunState.setBackground(runState.getColor());
+		lrunState.setText(runState.getLabel());
 	}
 	
 	/**
@@ -61,14 +62,14 @@ public final class RunStateBox implements Observer {
 	 * 
 	 * @param observable
 	 *            the sender
-	 * @param o
+	 * @param object
 	 *            the message
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observable, final Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
-			setRunState((RunState) be.getContent());
+			setRunState((RunState) event.getContent());
 		} 
 	}
 

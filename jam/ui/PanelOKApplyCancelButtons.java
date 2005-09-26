@@ -16,13 +16,13 @@ import javax.swing.JPanel;
  * @author Ken Swartz
  *
  */
-public class PanelOKApplyCancelButtons {
+public final class PanelOKApplyCancelButtons {
 
-	private final Listener callback;
-	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
-	private final JButton bok = new JButton("OK");
-	private final JButton bapply = new JButton("Apply");
-	private final JButton bcancel = new JButton("Cancel");
+	private transient final Listener callback;
+	private transient final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
+	private transient final JButton bok = new JButton("OK");
+	private transient final JButton bapply = new JButton("Apply");
+	private transient final JButton bcancel = new JButton("Cancel");
 	
 	/**
 	 * Constructs a Swing component which has OK, Apply, and Cancel buttons.
@@ -30,23 +30,24 @@ public class PanelOKApplyCancelButtons {
 	 * @param listener object with methods to be called when the buttons get pressed
 	 */
 	public PanelOKApplyCancelButtons(Listener listener) {
+		super();
 		callback=listener;
 		final JPanel grid = new JPanel(new GridLayout(1, 0, 5, 5));
 		panel.add(grid);
 		bok.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				callback.doOK();
 			}
 		});
 		grid.add(bok);
 		bapply.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				callback.apply();
 			}
 		});
 		grid.add(bapply);
 		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				callback.cancel();
 			}
 		});
@@ -68,7 +69,7 @@ public class PanelOKApplyCancelButtons {
 	 * @param apply the enable state of "Apply" button
 	 * @param cancel the enable state of "Cancel" button
 	 */
-	public void setButtonsEnabled(boolean okEnable, boolean apply, boolean cancel){
+	public void setButtonsEnabled(final boolean okEnable, final boolean apply, final boolean cancel){
 	    bok.setEnabled(okEnable);
 	    bapply.setEnabled(apply);
 	    bcancel.setEnabled(cancel);
@@ -105,8 +106,8 @@ public class PanelOKApplyCancelButtons {
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public static abstract class DefaultListener implements Listener {
-	    private final Window parent;
+	public static abstract class AbstractListener implements Listener {
+	    private transient final Window parent;
 	    
 	    /**
 	     * Constructs a listener.
@@ -114,7 +115,8 @@ public class PanelOKApplyCancelButtons {
 	     * @param window the ultimate container we wish to make disappear
 	     * on cancel and OK
 	     */
-	    public DefaultListener(Window window){
+	    public AbstractListener(Window window){
+	    	super();
 	        parent = window; 
 	    }
 	    

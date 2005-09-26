@@ -2,7 +2,6 @@ package jam.ui;
 
 import jam.JamPrefs;
 import jam.commands.CommandManager;
-import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.CommandNames;
@@ -15,7 +14,6 @@ import jam.plot.color.ColorPrefs;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -45,12 +43,7 @@ public final class MenuBar implements Observer, CommandNames {
 	/** Fit menu needed as members so we can add a fit */
 	final transient private JMenu view = new JMenu("View");
 
-	final transient private JMenuBar menubar = new JMenuBar();
-
-	final transient private JMenu calHist = new JMenu("Calibrate");
-
-	final transient private CommandManager commands = CommandManager
-			.getInstance();
+	final transient private JMenuBar menus = new JMenuBar();
 
 	private static final MenuBar INSTANCE = new MenuBar();
 
@@ -74,16 +67,16 @@ public final class MenuBar implements Observer, CommandNames {
 	private MenuBar() {
 		super();
 		Broadcaster.getSingletonInstance().addObserver(this);
-		menubar.add(createFileMenu());
-		menubar.add(createSetupMenu());
-		menubar.add(createControlMenu());
-		menubar.add(createHistogramMenu());
-		menubar.add(createGateMenu());
-		menubar.add(createScalerMenu());
-		menubar.add(createViewMenu());
-		menubar.add(createPreferencesMenu());
-		menubar.add(createFitMenu());
-		menubar.add(createHelp());
+		menus.add(createFileMenu());
+		menus.add(createSetupMenu());
+		menus.add(createControlMenu());
+		menus.add(createHistogramMenu());
+		menus.add(createGateMenu());
+		menus.add(createScalerMenu());
+		menus.add(createViewMenu());
+		menus.add(createPreferencesMenu());
+		menus.add(createFitMenu());
+		menus.add(createHelp());
 	}
 
 	private JMenu createFileMenu() {
@@ -186,7 +179,7 @@ public final class MenuBar implements Observer, CommandNames {
 	private JMenu createGateMenu() {
 
 		final JMenu gate = new JMenu("Gate");
-		menubar.add(gate);
+		menus.add(gate);
 		gate.add(getMenuItem(SHOW_NEW_GATE));
 		gate.add(getMenuItem(SHOW_ADD_GATE));
 		gate.add(getMenuItem(SHOW_SET_GATE));
@@ -202,7 +195,7 @@ public final class MenuBar implements Observer, CommandNames {
 
 	private JMenu createScalerMenu() {
 		final JMenu scalers = new JMenu("Scaler");
-		menubar.add(scalers);
+		menus.add(scalers);
 		scalers.add(getMenuItem(DISPLAY_SCALERS));
 		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
 		scalers.addSeparator();
@@ -220,7 +213,7 @@ public final class MenuBar implements Observer, CommandNames {
 	private JMenu createHelp() {
 
 		final JMenu helpMenu = new JMenu("Help");
-		menubar.add(helpMenu);
+		menus.add(helpMenu);
 		helpMenu.add(getMenuItem(HELP_ABOUT));
 		helpMenu.add(getMenuItem(USER_GUIDE));
 		helpMenu.add(getMenuItem(HELP_LICENSE));
@@ -259,7 +252,7 @@ public final class MenuBar implements Observer, CommandNames {
 	 * @return JMenuItem that invokes the associated action
 	 */
 	private JMenuItem getMenuItem(final String name) {
-		return new JMenuItem(commands.getAction(name));
+		return new JMenuItem(CommandManager.getInstance().getAction(name));
 	}
 
 	/**
@@ -270,11 +263,6 @@ public final class MenuBar implements Observer, CommandNames {
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			sortModeChanged();
-		} else if (command == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			final Object content = event.getContent();
-			final Histogram hist = content == null ? (Histogram) status
-					.getCurrentHistogram() : (Histogram) content;
-			adjustHistogramItems(hist);
 		} else if (command == BroadcastEvent.Command.FIT_NEW) {
 			final Action fitAction = (Action) (event.getContent());
 			fitting.add(new JMenuItem(fitAction));
@@ -289,20 +277,12 @@ public final class MenuBar implements Observer, CommandNames {
 		impHist.setEnabled(file);
 	}
 
-	private void adjustHistogramItems(final Histogram hist) {
-		final boolean hExists = hist != null;
-		final boolean oneDops = hExists && hist.getDimensionality() == 1;
-		calHist.setEnabled(oneDops);
-	}
-
 	private void updateViews() {
 		view.removeAll();
 		view.add(getMenuItem(SHOW_VIEW_NEW));
 		view.add(getMenuItem(SHOW_VIEW_DELETE));
 		view.addSeparator();
-		final Iterator viewNames = View.getNameList().iterator();
-		while (viewNames.hasNext()) {
-			final String name = (String) viewNames.next();
+		for (final String name : View.getNameList()) {
 			final JMenuItem viewItem = new JMenuItem(name);
 			view.add(viewItem);
 			viewItem.addActionListener(new ActionListener() {
@@ -317,6 +297,6 @@ public final class MenuBar implements Observer, CommandNames {
 	 * @return the only menubar created by this class
 	 */
 	static public JMenuBar getMenuBar() {
-		return INSTANCE.menubar;
+		return INSTANCE.menus;
 	}
 }
