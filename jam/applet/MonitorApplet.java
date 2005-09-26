@@ -23,6 +23,8 @@ import java.net.URL;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An applet to allow remote viewing of Jam Monitors.
@@ -54,10 +56,10 @@ public class MonitorApplet
 	private String expname;
 	private String hostName;
 
-	private java.util.List monitorList;
+	private List<Monitor> monitorList;
 	private Monitor monitor[];
 	private int numberMonitors;
-	private double monitorValues[];
+	private List<Double> monitorValues = new ArrayList<Double>();
 	private int interval;
 	private boolean audioOn = false;
 
@@ -292,15 +294,18 @@ public class MonitorApplet
 	 * creat a set of example monitors for debugging
 	 */
 	private void createExample() {
-		Group testGroup = Group.createGroup("Test" , Group.Type.TEMP);
+		final Group testGroup = Group.createGroup("Test" , Group.Type.TEMP);
 		numberMonitors = 3;
 		monitor = new Monitor[numberMonitors];
-		monitorValues = new double[numberMonitors];
-		Scaler scal = new Scaler(testGroup, "ex", 0);
+		monitorValues.clear();
+		final Scaler scal = new Scaler(testGroup, "ex", 0);
 		monitor[0] = new Monitor("test", scal);
 		monitor[0].setThreshold(10);
 		monitor[1] = new Monitor("help", scal);
 		monitor[2] = new Monitor("damn", scal);
+		for (int i=0; i<numberMonitors; i++){
+			monitorValues.set(i,monitor[i].getValue());
+		}
 		interval = 5;
 	}
 	
@@ -324,9 +329,9 @@ public class MonitorApplet
 				//is the alarm for this monitor set set
 				for (int i = 0; i < numberMonitors; i++) {
 					System.out.println(
-						"mon value " + i + " " + monitorValues[i]);
+						"mon value " + i + " " + monitorValues.get(i));
 					if (((monitor[i].getAlarm())
-						&& (monitorValues[i]) < monitor[i].getThreshold())) {
+						&& (monitorValues.get(i)) < monitor[i].getThreshold())) {
 						if (audioOn) {
 							System.out.println("beep for " + i);
 							Toolkit.getDefaultToolkit().beep();
