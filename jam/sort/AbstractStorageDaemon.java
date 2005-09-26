@@ -24,21 +24,15 @@ import java.util.List;
  */
 public abstract class AbstractStorageDaemon extends GoodThread {
 
-	/**
-	 * Mode value indicating this daemon is set for online
-	 */
-	// public static final int ONLINE = 1;
-	/**
-	 * Mode value indicating this daemon is set for offline
-	 */
-	// public static final int OFFLINE = 2;
-	/**
-	 * @see #ONLINE
-	 * @see #OFFLINE
-	 */
-	// protected int mode;
 	enum Mode {
-		ONLINE, OFFLINE
+		/**
+		 * Mode value indicating this daemon is set for online
+		 */
+		ONLINE, 
+		/**
+		 * Mode value indicating this daemon is set for offline
+		 */		
+		OFFLINE
 	};
 
 	protected transient Mode mode;
