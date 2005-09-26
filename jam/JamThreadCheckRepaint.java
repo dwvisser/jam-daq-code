@@ -7,12 +7,14 @@ import jam.util.ThreadCheckingRepaintManager;
 
 import javax.swing.RepaintManager;
 
-import junit.framework.TestCase;
-
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public class JamRepaintTest extends TestCase {
+public class JamThreadCheckRepaint  {
+	
+	private JamThreadCheckRepaint(){
+		super();
+	}
 	
     /**
      * Try running Jam with thread checking repaint manager.
