@@ -14,15 +14,12 @@ import javax.swing.JToolBar;
  */
 public final class JamToolBar extends JToolBar implements CommandNames {
 
-	final transient private CommandManager commands = CommandManager
-			.getInstance();
-
-    /**
-     * Constructor.
-     *
-     */
+	/**
+	 * Constructor.
+	 * 
+	 */
 	public JamToolBar() {
-        super();
+		super();
 		add(createButton(OPEN_HDF));
 		add(createButton(OPEN_ADDITIONAL_HDF));
 		add(createButton(OPEN_MULTIPLE_HDF));
@@ -37,7 +34,8 @@ public final class JamToolBar extends JToolBar implements CommandNames {
 		add(createButton(SHOW_SET_GATE));
 	}
 
-	private JButton createButton(String command) {
+	private JButton createButton(final String command) {
+		final CommandManager commands = CommandManager.getInstance();
 		final JButton rval = new JButton();
 		rval.setAction(commands.getAction(command));
 		rval.setText("");

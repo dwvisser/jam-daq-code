@@ -11,35 +11,36 @@ import javax.swing.JList;
 import javax.swing.UIManager;
 
 /**
- * Renders representations for a JComboBox list entry of
- * a <code>jam.data.Histogram</code> object.
+ * Renders representations for a JComboBox list entry of a
+ * <code>jam.data.Histogram</code> object.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 17 Dec 2003
  */
-public class HistogramListCellRenderer
-	extends DefaultListCellRenderer {
+public class HistogramListCellRenderer extends DefaultListCellRenderer {
 
 	/**
-	 * <p>Returns a <code>JPanel</code> representing the given object.
-	 * Given a <code>Histogram</code>, returns a 
-	 * <code>JPanel</code> with the following information:</p>
+	 * <p>
+	 * Returns a <code>JPanel</code> representing the given object. Given a
+	 * <code>Histogram</code>, returns a <code>JPanel</code> with the
+	 * following information:
+	 * </p>
 	 * <ul>
 	 * <li>histogram number, name and dimensionality</li>
 	 * <li>an icon if any gates are associated with it</li>
 	 * <li>an X on the icon if the gates aren't all defined</li>
-	 * </ul> 
-	 * <p>Given a <code>String</code>,
-	 * returns a JPanel with the words centered as a <code>JLabel</code>.</p>
+	 * </ul>
+	 * <p>
+	 * Given a <code>String</code>, returns a JPanel with the words centered
+	 * as a <code>JLabel</code>.
+	 * </p>
 	 * 
-	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+	 * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList,
+	 *      java.lang.Object, int, boolean, boolean)
 	 */
-	public Component getListCellRendererComponent(
-		JList list,
-		Object value,
-		int index,
-		boolean isSelected,
-		boolean cellHasFocus) {
+	public Component getListCellRendererComponent(final JList list,
+			final Object value, final int index, final boolean isSelected,
+			final boolean cellHasFocus) {
 		setComponentOrientation(list.getComponentOrientation());
 		if (isSelected) {
 			setBackground(list.getSelectionBackground());
@@ -48,17 +49,18 @@ public class HistogramListCellRenderer
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
+		final Icons icons = Icons.getInstance();
 		if (value instanceof Histogram) {
 			final Histogram histogram = (Histogram) value;
 			final String name = histogram.getFullName();
 			final int dimension = histogram.getDimensionality();
 			final List gates = histogram.getGates();
 			final boolean hasGates = gates.size() > 0;
-			boolean allGatesSet = hasGates;//possibly true if has gates
-			boolean anyGatesSet = false;//possibly true if has gates
+			boolean allGatesSet = hasGates;// possibly true if has gates
+			boolean anyGatesSet = false;// possibly true if has gates
 			if (hasGates) {
 				for (int i = gates.size() - 1; i >= 0; i--) {
-					final boolean defined=((Gate) gates.get(i)).isDefined();
+					final boolean defined = ((Gate) gates.get(i)).isDefined();
 					allGatesSet &= defined;
 					anyGatesSet |= defined;
 				}
@@ -70,26 +72,24 @@ public class HistogramListCellRenderer
 			setText(text.toString());
 			if (hasGates) {
 				if (allGatesSet) {
-					setIcon(Icons.GO);
+					setIcon(icons.GO_GREEN);
 				} else if (anyGatesSet) {
-					setIcon(Icons.CAUTION);
+					setIcon(icons.CAUTION);
 				} else {
-					setIcon(Icons.STOP);
+					setIcon(icons.STOP);
 				}
 			} else {
-				setIcon(Icons.CLEAR);
+				setIcon(icons.CLEAR);
 			}
-		} else { //String
+		} else { // String
 			setText((String) value);
-			setIcon(Icons.CLEAR);
+			setIcon(icons.CLEAR);
 		}
-		boolean enable=Histogram.getHistogramList().size()>0;
+		final boolean enable = Histogram.getHistogramList().size() > 0;
 		list.setEnabled(enable);
 		setEnabled(enable);
-		setBorder(
-			(cellHasFocus)
-				? UIManager.getBorder("List.focusCellHighlightBorder")
-				: noFocusBorder);
+		setBorder((cellHasFocus) ? UIManager
+				.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
 		return this;
 	}
 }

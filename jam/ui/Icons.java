@@ -11,12 +11,19 @@ import javax.swing.JOptionPane;
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-class Icons {
+final class Icons {
+	
+	private static final Icons instance = new Icons();
+	
+	static public Icons getInstance() {
+		return instance;
+	}
 
-	static final ImageIcon STOP, GO, CAUTION, CLEAR, GROUP_SORT, GROUP_FILE, GROUP_TEMP, HIST1D,  HIST2D, GATE1D,
+	final transient ImageIcon STOP, GO_GREEN, CAUTION, CLEAR, GROUP_SORT, GROUP_FILE, GROUP_TEMP, HIST1D,  HIST2D, GATE1D,
 			GATE2D, GATE_DEF1D, GATE_DEF2D;
 
-	static {
+	private Icons() {
+		super();
 		final ClassLoader LOADER = ClassLoader.getSystemClassLoader();
 		URL urlStop = LOADER.getResource("jam/ui/stop.png");
 		URL urlGo = LOADER.getResource("jam/ui/go.png");
@@ -37,10 +44,10 @@ class Icons {
 				|| urlGateDef1D == null || urlGateDef2D == null) {
 			JOptionPane.showMessageDialog(null,
 					"Can't load resource: jam/ui/*.png");
-			STOP = GO = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = null;
+			STOP = GO_GREEN = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = null;
 		} else {
 			STOP = new ImageIcon(urlStop);
-			GO = new ImageIcon(urlGo);
+			GO_GREEN = new ImageIcon(urlGo);
 			CAUTION = new ImageIcon(urlCaution);
 			CLEAR = new ImageIcon(urlClear);
 			GROUP_SORT = new ImageIcon(urlSort);			
