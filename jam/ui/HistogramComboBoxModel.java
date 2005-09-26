@@ -1,4 +1,5 @@
 package jam.ui;
+
 import jam.data.Histogram;
 
 import java.util.Collection;
@@ -8,59 +9,44 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 /**
- * This class takes care of properly displaying the histogram chooser
- * in Jam's main window.
+ * This class takes care of properly displaying the histogram chooser in Jam's
+ * main window.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC3
  */
 public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
-	private Object selection = null;
-	private int lastSize=0;
-	
+	private transient Object selection = null;
+
+	private transient int lastSize = 0;
+
 	/**
 	 * The possible modes for a histogram combo box.
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	static public class Mode{
-		final int value;
-		
-		private Mode(int i){
-			value=i;
-		}
-		
+	static public enum Mode {
 		/**
 		 * Show 1D histograms only.
 		 */
-		static final public Mode ONE_D = new Mode(1);
-		
+		ONE_D,
+
 		/**
 		 * Show 2D histograms only.
 		 */
-		static final public Mode TWO_D = new Mode(2);
-		
+		TWO_D,
+
 		/**
 		 * Show all histograms.
 		 */
-		static final public Mode ALL = new Mode(0);
-		
-		boolean acceptHistogram(Histogram h){
-			boolean rval= value==0;
-			if (h != null){
-				if (value > 0){
-					rval = h.getDimensionality()==value;
-				}
-			}
-			return rval;
-		}
+		ALL
 	}
-	
+
 	/**
 	 * Unmodifiable Collection.
 	 */
-	private final Collection histograms;
+	private transient final Collection<Histogram> histograms;
 
 	/**
 	 * Create a data model for any JComboBox wishing to display the available
@@ -69,26 +55,28 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	public HistogramComboBoxModel() {
 		this(Mode.ALL);
 	}
-	
+
 	/**
-	 * Constructs a histogram combo box model for the given
-	 * mode.
+	 * Constructs a histogram combo box model for the given mode.
 	 * 
-	 * @param m which histograms to display
+	 * @param mode
+	 *            which histograms to display
 	 */
-	public HistogramComboBoxModel(Mode m){
+	public HistogramComboBoxModel(Mode mode) {
 		super();
-		if (Mode.ALL.equals(m)){
-			histograms=Histogram.getListSortedByNumber();
-		} else {
-			histograms=Histogram.getHistogramList(m.value);
+		if (Mode.ALL.equals(mode)) {
+			histograms = Histogram.getListSortedByNumber();
+		} else if (Mode.ONE_D.equals(mode)) {
+			histograms = Histogram.getHistogramList(1);
+		} else {// TWO_D
+			histograms = Histogram.getHistogramList(2);
 		}
 	}
 
 	/**
-	 * Needs to be called after every action that changes the list of 
-	 * histograms. Utility method added so that JamMain could notify 
-	 * when things have changed.
+	 * Needs to be called after every action that changes the list of
+	 * histograms. Utility method added so that JamMain could notify when things
+	 * have changed.
 	 */
 	void changeOccured() {
 		fireContentsChanged(this, 0, getSize());
@@ -96,29 +84,27 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	/**
 	 * @return the list element at the specified index
-	 * @param index the index of the element to get
+	 * @param index
+	 *            the index of the element to get
 	 */
-	public Object getElementAt(int index) {
+	public Object getElementAt(final int index) {
 		final String NO_HISTS = "No Histograms";
-		Object rval = NO_HISTS; //default value if no histograms
+		Object rval = NO_HISTS; // default value if no histograms
 		final int size = getSize();
 		if (index < 0 || index >= size) {
-			JOptionPane.showMessageDialog(null,
-				"WARNING: "
-					+ getClass().getName()
-					+ ".getElementAt("
-					+ index
-					+ "): index out of range.",getClass().getName(),
+			JOptionPane.showMessageDialog(null, "WARNING: "
+					+ getClass().getName() + ".getElementAt(" + index
+					+ "): index out of range.", getClass().getName(),
 					JOptionPane.WARNING_MESSAGE);
 		} else if (size > 0) {
-			final int numhists=numHists();
-			if (size>1 || (size==1 && numhists==1)){
+			final int numhists = numHists();
+			if (size > 1 || (size == 1 && numhists == 1)) {
 				rval = getHistogram(index);
 			}
 		}
 		return rval;
 	}
-	
+
 	/**
 	 * The size of the list is guaranteed to be >=1.
 	 * 
@@ -126,9 +112,9 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public int getSize() {
 		final int rval = Math.max(1, numHists());
-		if (rval != lastSize){
-			synchronized (this){
-				lastSize=rval;
+		if (rval != lastSize) {
+			synchronized (this) {
+				lastSize = rval;
 			}
 			changeOccured();
 		}
@@ -138,10 +124,11 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	/**
 	 * Set the selected item in the list.
 	 * 
-	 * @param anItem the item to select
+	 * @param anItem
+	 *            the item to select
 	 */
-	public void setSelectedItem(Object anItem) {
-		synchronized(this){
+	public void setSelectedItem(final Object anItem) {
+		synchronized (this) {
 			selection = anItem;
 		}
 	}
@@ -156,13 +143,14 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	private int numHists() {
 		return histograms.size();
 	}
-	
-	private Object getHistogram(int index){
-		Object rval=null;
-		int n=index;
-		for (Iterator it=histograms.iterator(); n>=0 && it.hasNext(); n--){
-			rval=it.next();
+
+	private Object getHistogram(final int index) {
+		Object rval = null;
+		int countDown = index;
+		for (final Iterator it = histograms.iterator(); countDown >= 0
+				&& it.hasNext(); countDown--) {
+			rval = it.next();
 		}
 		return rval;
-	}	
+	}
 }

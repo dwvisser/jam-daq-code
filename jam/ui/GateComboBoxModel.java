@@ -25,55 +25,35 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @version 1.4.2 (RC3)
 	 * @author <a href="mailto:dale@visser.name">Dale Visser</a>
 	 */
-	static public class Mode {
-		private static final int I_DISP = 0;
-
-		private static final int I_ALL = 1;
-
+	static public enum Mode {
 		/**
 		 * The mode for which only gates belonging to the displayed histogram
 		 * are listed.
 		 */
-		static final public Mode DISPLAYED_HIST = new Mode(I_DISP);
+		DISPLAYED_HIST,
 
 		/**
 		 * The mode for which all gates of the same dimensionality of the
 		 * displayed histogram.
 		 */
-		static final public Mode ALL = new Mode(I_ALL);
+		ALL
+	};
 
-		private final int mode;
+	private transient Object selection = null;
 
-		private Mode(int i) {
-			mode = i;
-		}
+	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
-		/**
-		 * @see Object#equals(java.lang.Object)
-		 */
-		public boolean equals(Object object) {
-			return object instanceof Mode ? mode == ((Mode) object).mode
-					: false;
-		}
-	}
-
-	private Object selection = null;
-
-	private JamStatus status;
-
-	private final List<Object> lastValue = Collections
+	private transient final List<Object> lastValue = Collections
 			.synchronizedList(new ArrayList<Object>());
 
-	private final Mode mode;
+	private transient final Mode mode;
 
 	/**
 	 * Create the default model that shows gates for the currently displayed
 	 * histogram.
 	 */
 	public GateComboBoxModel() {
-		super();
-		status = JamStatus.getSingletonInstance();
-		mode = Mode.DISPLAYED_HIST;
+		this(Mode.DISPLAYED_HIST);
 	}
 
 	/**
@@ -85,7 +65,6 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 */
 	public GateComboBoxModel(Mode listmode) {
 		super();
-		status = JamStatus.getSingletonInstance();
 		mode = listmode;
 	}
 
@@ -102,8 +81,8 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param index
 	 *            the index of the desired element
 	 */
-	public Object getElementAt(int index) {
-		int i = Math.max(index, 0);
+	public Object getElementAt(final int index) {
+		final int nonNegIndex = Math.max(index, 0);
 		final String NO_GATES = "No Gates";
 		final String CHOOSE_A_GATE = "Choose a gate";
 		Object rval = NO_GATES; // default value if no gates
@@ -121,10 +100,10 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 				}
 			}
 		}
-		if (!rval.equals(lastValue.get(i))) {
-			changeOccured();
-		} else {
+		if (rval.equals(lastValue.get(nonNegIndex))) {
 			lastValue.set(index, rval);
+		} else {
+			changeOccured();
 		}
 		return rval;
 	}
@@ -151,7 +130,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * @param anItem
 	 *            the item to set the selection to
 	 */
-	public void setSelectedItem(Object anItem) {
+	public void setSelectedItem(final Object anItem) {
 		synchronized (this) {
 			selection = anItem;
 		}
