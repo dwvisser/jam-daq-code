@@ -28,8 +28,8 @@ import javax.swing.SwingUtilities;
  */
 class SplashWindow extends JWindow {
 
-	private transient URL urlNukeIcon;
-	private transient URL urlOSIGif;
+	private transient final URL urlNukeIcon;
+	private transient final URL urlOSIGif;
 	/**
 	 * Creates the splash window which will exist for as long
 	 * as the specified wait time in milliseconds.
@@ -39,20 +39,20 @@ class SplashWindow extends JWindow {
 	 */
 	public SplashWindow(Frame frame, int waitTime) {
 		super(frame);
-		ClassLoader cl = this.getClass().getClassLoader();
-		urlNukeIcon= cl.getResource("jam/nukeicon.png");
+		ClassLoader classLoader = getClass().getClassLoader();
+		urlNukeIcon= classLoader.getResource("jam/nukeicon.png");
 		if (urlNukeIcon==null) {
 			JOptionPane.showMessageDialog(frame, "Can't load resource: jam/nukeicon.png");
 			System.exit(0);
 		}
-		urlOSIGif = cl.getResource("jam/OSI.png");
+		urlOSIGif = classLoader.getResource("jam/OSI.png");
 		if (urlOSIGif==null) {
 			JOptionPane.showMessageDialog(frame, "Can't load resource: jam/OSI.gif");
 			System.exit(0);
 		}
 		drawWindow();
 		addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(final MouseEvent mouseEvent) {
 				setVisible(false);
 				dispose();
 			}
@@ -83,16 +83,16 @@ class SplashWindow extends JWindow {
 
 	private void drawWindow() {
 		final Container contents = getContentPane();
-		JPanel west = new JPanel(new FlowLayout());
+		final JPanel west = new JPanel(new FlowLayout());
 		west.setBackground(Color.white);
 		west.setBorder(BorderFactory.createMatteBorder(1,1,0,0,Color.black));
 
-		ImageIcon nukeicon=new ImageIcon(urlNukeIcon);
+		final ImageIcon nukeicon=new ImageIcon(urlNukeIcon);
 		final int sizexy=80;
 		nukeicon.setImage(nukeicon.getImage().getScaledInstance(
 		sizexy,sizexy,Image.SCALE_SMOOTH));
 		west.add(new JLabel(nukeicon));
-		JPanel center = new JPanel(new GridLayout(0,1));
+		final JPanel center = new JPanel(new GridLayout(0,1));
 		center.setBackground(Color.white);
 		center.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
 		center.add(new JLabel(
@@ -101,15 +101,15 @@ class SplashWindow extends JWindow {
 		center.add(new JLabel("University of Illinois/NCSA Open Source License"));
 
 		center.add(new JLabel("See Help|License... for license text."));
-		JPanel east=new JPanel(new FlowLayout());
+		final JPanel east=new JPanel(new FlowLayout());
 		east.setBackground(Color.white);
 		east.setBorder(BorderFactory.createMatteBorder(1,0,0,1,Color.black));
-		JLabel osi = new JLabel(
+		final JLabel osi = new JLabel(
 		new ImageIcon(urlOSIGif));
 		osi.setToolTipText("Open Source Initiative. See http://www.opensource.org/");
 		east.add(osi);
-		JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel versionLabel = new JLabel("v. " + Version.getInstance().getName(),SwingConstants.RIGHT);
+		final JPanel panelSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		final JLabel versionLabel = new JLabel("v. " + Version.getInstance().getName(),SwingConstants.RIGHT);
 		panelSouth.add(versionLabel);
 		panelSouth.setBackground(Color.cyan);
 		panelSouth.setBorder(
@@ -119,8 +119,8 @@ class SplashWindow extends JWindow {
 		contents.add(center,BorderLayout.CENTER);
 		contents.add(east,BorderLayout.EAST);
 		pack();
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension labelSize = getSize();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		final Dimension labelSize = getSize();
 		setLocation(
 			screenSize.width / 2 - (labelSize.width / 2),
 			screenSize.height / 2 - (labelSize.height / 2));
@@ -131,7 +131,7 @@ class SplashWindow extends JWindow {
 	 * 
 	 * @param args ignored
 	 */
-	static public void main(String[] args) {
+	static public void main(final String[] args) {
 		new SplashWindow(null, 60000);
 	}
 
