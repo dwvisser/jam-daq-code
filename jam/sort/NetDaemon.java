@@ -173,7 +173,7 @@ public final class NetDaemon extends GoodThread {
 		final byte[] bufferOut = RingBuffer.freshBuffer();
 		final DatagramPacket dataIn = new DatagramPacket(bufferOut,
 				bufferOut.length);
-		while (this.checkState()) {// loop as long as state is RUN
+		while (checkState()) {// loop as long as state is RUN
 			/* wait for packet */
 			dataSocket.receive(dataIn);
 			if (checkState()) {
@@ -198,7 +198,7 @@ public final class NetDaemon extends GoodThread {
 				}
 			} else {// received a packet while thread state not RUN
 				msgHandler
-						.warningOutln("Warning: recevied buffer while NetDaemon thread"
+						.warningOutln("Warning: received buffer while NetDaemon thread"
 								+ " state was not RUN: state=" + this);
 			}
 		}// end RUN loop
