@@ -71,7 +71,8 @@ public class Console extends JPanel implements MessageHandler {
 			.synchronizedList(new ArrayList<CommandListener>());
 
 	private transient final JTextPane textLog = new JTextPane(); // output
-																	// text
+
+	// text
 
 	// area
 
@@ -80,9 +81,11 @@ public class Console extends JPanel implements MessageHandler {
 	private transient final SimpleAttributeSet attr_normal, attr_warning,
 			attr_error;
 
-	private transient final JTextField textIn; // input text field
+	private transient final JTextField textIn = new JTextField();
 
-	private transient final JScrollPane jsp;
+	private transient final JScrollPane jsp = new JScrollPane(textLog,
+			ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+			ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 	private transient final LinkedList<String> cmdStack = new LinkedList<String>();
 
@@ -150,12 +153,7 @@ public class Console extends JPanel implements MessageHandler {
 		attr_error = new SimpleAttributeSet();
 		StyleConstants.setForeground(attr_error, Color.red);
 		textLog.setEditable(false);
-		jsp = new JScrollPane(textLog,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(jsp, BorderLayout.CENTER);
-
-		textIn = new JTextField();
 		textIn
 				.setToolTipText("Enter underlined characters from buttons to start a command.");
 		this.add(textIn, BorderLayout.SOUTH);
@@ -442,8 +440,8 @@ public class Console extends JPanel implements MessageHandler {
 			}
 			/* Load parameter tokens */
 			if (parameters.length > 0) {
-				System.arraycopy(cmdTokens.toArray(), initIndex, parameters, 0, numWords
-						- initIndex);
+				System.arraycopy(cmdTokens.toArray(), initIndex, parameters, 0,
+						numWords - initIndex);
 			}
 			/* perform command */
 			notifyListeners(command, parameters);
@@ -515,7 +513,7 @@ public class Console extends JPanel implements MessageHandler {
 			logWriter = new BufferedWriter(new FileWriter(file));
 		} catch (IOException ioe) {
 			throw new JamException("Problem opening log file "
-					+ file.getAbsolutePath() + ": " + ioe.getMessage());
+					+ file.getAbsolutePath(),ioe);
 		}
 		return newName;
 	}
@@ -531,7 +529,7 @@ public class Console extends JPanel implements MessageHandler {
 			logWriter.flush();
 			logWriter.close();
 		} catch (IOException ioe) {
-			throw new JamException("Could not close log file  [JamConsole]");
+			throw new JamException("Could not close log file.", ioe);
 		}
 	}
 
@@ -548,9 +546,9 @@ public class Console extends JPanel implements MessageHandler {
 		if (logWriter == null) {
 			logFileOn = false;
 			throw new JamException(
-					getClass().getSimpleName()+
-					": Cannot turn on logging to file, log file does not exist.");
-		} 
+					getClass().getSimpleName()
+							+ ": Cannot turn on logging to file, log file does not exist.");
+		}
 	}
 
 	/**
@@ -608,7 +606,8 @@ public class Console extends JPanel implements MessageHandler {
 		}
 		if (!found) {
 			final StringBuffer buffer = new StringBuffer();
-			buffer.append("\"").append(cmd).append("\" is an invalid command. ");
+			buffer.append("\"").append(cmd)
+					.append("\" is an invalid command. ");
 			final String[] offer = CommandManager.getInstance()
 					.getSimilarCommnands(cmd, true);
 			if (offer.length > 0) {

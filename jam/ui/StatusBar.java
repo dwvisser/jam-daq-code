@@ -18,12 +18,13 @@ import javax.swing.JPanel;
  */
 public final class StatusBar {
 	
-	private final JLabel info=new JLabel();
-	private final JPanel panel=new JPanel(new FlowLayout(FlowLayout.LEFT));
+	private transient final JLabel info=new JLabel();
+	private transient final JPanel panel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 	private static final StatusBar INSTANCE=new StatusBar();
 
 	private StatusBar(){
+		super();
 		panel.setBorder(BorderFactory.createLoweredBevelBorder());
 		/* Run status */
 		panel.add(info);
@@ -51,7 +52,7 @@ public final class StatusBar {
 	 * Set the info text to display.
 	 * @param text the text to display
 	 */
-	public void setInfo(CharSequence text){
+	public void setInfo(final CharSequence text){
 		info.setText(text.toString());
 	}
 	
