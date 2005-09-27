@@ -17,77 +17,87 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  * @author Ken Swartz
  * @version Nov 26, 2004
  */
-public class SelectionTreeCellRender extends DefaultTreeCellRenderer {
+public final class SelectionTreeCellRender extends DefaultTreeCellRenderer {
 
-	private Color defaultBackgroundColor;
+	private transient final Color defaultBackground;
+	private static final Icons ICONS = Icons.getInstance();
 
 	/**
 	 * Constructs a new renderer.
 	 */
 	public SelectionTreeCellRender() {
 		super();
-		defaultBackgroundColor = getBackgroundSelectionColor();
+		defaultBackground = getBackgroundSelectionColor();
 	}
 
 	/**
 	 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
 	 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
 	 */
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean isSelected, boolean expanded, boolean leaf, int row,
-			boolean hasTheFocus) {
+	public Component getTreeCellRendererComponent(final JTree tree,
+			final Object value, final boolean isSelected,
+			final boolean expanded, final boolean leaf, final int row,
+			final boolean hasTheFocus) {
 		super.getTreeCellRendererComponent(tree, value, isSelected, expanded,
 				leaf, row, hasTheFocus);
-		Object nodeObject = ((DefaultMutableTreeNode) value).getUserObject();
-		final Icons icons = Icons.getInstance();
+		final Object nodeObject = ((DefaultMutableTreeNode) value)
+				.getUserObject();
 		if (nodeObject instanceof Group) {
-			Group group = (Group) nodeObject;
-			if (group.getType() == Group.Type.FILE) {
-				setIcon(icons.GROUP_FILE);
-			} else if (group.getType() == Group.Type.SORT) {
-				setIcon(icons.GROUP_SORT);
-			} else {
-				setIcon(icons.GROUP_TEMP);
-			}
-			setText(group.getName());
+			renderGroup((Group) nodeObject);
 		} else if (nodeObject instanceof Histogram) {
-			Histogram hist = (Histogram) nodeObject;
-			setBackgroundSelectionColor(defaultBackgroundColor);
-			final StringBuffer tip = new StringBuffer();
-			tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
-			tip.append(" (").append(hist.getSizeX());
-			if (hist.getDimensionality() == 1) {
-				setIcon(icons.HIST1D);
-			} else {
-				setIcon(icons.HIST2D);
-				tip.append('x').append(hist.getSizeY());
-			}
-			tip.append(')');
-			setText(hist.getName());
-			setToolTipText(tip.toString());
+			renderHistogram((Histogram) nodeObject);
 		} else if (nodeObject instanceof Gate) {
-			Gate gate = (Gate) nodeObject;
-			setBackgroundSelectionColor(defaultBackgroundColor);
-			// setBackgroundSelectionColor(Color.CYAN);
-			setText(gate.getName());
-			if (gate.getDimensionality() == 1) {
-				if (gate.isDefined()) {
-					setIcon(icons.GATE_DEF1D);
-				} else {
-					setIcon(icons.GATE1D);
-				}
-			} else {
-				if (gate.isDefined()) {
-					setIcon(icons.GATE_DEF2D);
-				} else {
-					setIcon(icons.GATE2D);
-				}
-			}
-		} else {
-			String name = (String) nodeObject;
+			renderGate((Gate) nodeObject);
+		} else {//must be String
+			final String name = (String) nodeObject;
 			setIcon(null);
 			setText(name);
 		}
 		return this;
+	}
+	
+	private void renderGroup(final Group group){
+		if (group.getType() == Group.Type.FILE) {
+			setIcon(ICONS.GROUP_FILE);
+		} else if (group.getType() == Group.Type.SORT) {
+			setIcon(ICONS.GROUP_SORT);
+		} else {
+			setIcon(ICONS.GROUP_TEMP);
+		}
+		setText(group.getName());
+	}
+	
+	private void renderGate(final Gate gate) {
+		setBackgroundSelectionColor(defaultBackground);
+		setText(gate.getName());
+		if (gate.getDimensionality() == 1) {
+			if (gate.isDefined()) {
+				setIcon(ICONS.GATE_DEF1D);
+			} else {
+				setIcon(ICONS.GATE1D);
+			}
+		} else {
+			if (gate.isDefined()) {
+				setIcon(ICONS.GATE_DEF2D);
+			} else {
+				setIcon(ICONS.GATE2D);
+			}
+		}
+	}
+	
+	private void renderHistogram(final Histogram hist) {
+		setBackgroundSelectionColor(defaultBackground);
+		final StringBuffer tip = new StringBuffer();
+		tip.append(hist.getNumber()).append(". ").append(hist.getTitle());
+		tip.append(" (").append(hist.getSizeX());
+		if (hist.getDimensionality() == 1) {
+			setIcon(ICONS.HIST1D);
+		} else {
+			setIcon(ICONS.HIST2D);
+			tip.append('x').append(hist.getSizeY());
+		}
+		tip.append(')');
+		setText(hist.getName());
+		setToolTipText(tip.toString());
 	}
 }
