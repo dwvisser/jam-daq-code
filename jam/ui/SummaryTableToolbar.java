@@ -15,94 +15,86 @@ import javax.swing.JToolBar;
  * Toolbar for summary table
  * 
  * @author Ken Swartz
- *
+ * 
  */
 class SummaryTableToolbar extends JToolBar {
 
-	private JCheckBox chkShowScaler; 
-	
-	private JCheckBox chkShowHistogram;
-	
-	private JCheckBox chkShowGate;
-	
-	private SummaryTableModel summaryTableModel;
-	
+	private transient final JCheckBox chkShowScaler = new JCheckBox("Scalers",
+			true);
+
+	private transient final JCheckBox chkShowHistogram = new JCheckBox(
+			"Histograms", true);
+
+	private transient final JCheckBox chkShowGate = new JCheckBox("Gates", true);
+
+	private transient final SummaryTableModel summaryTableModel;
+
 	SummaryTableToolbar(SummaryTableModel stm) {
-		summaryTableModel=stm;		
+		super();
+		summaryTableModel = stm;
 		final Icon iUpdate = loadToolbarIcon("jam/plot/Update.png");
-		final JButton bupdate = iUpdate == null ? 
-				new JButton(getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
-		this.add(bupdate);				
-		bupdate.setToolTipText(
-			getHTML("<u>U</u>pdate display with most current data."));
+		final JButton bupdate = (iUpdate == null) ? new JButton(
+				getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
+		add(bupdate);
+		bupdate
+				.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
 		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				refresh();
 			}
 		});
 		addSeparator();
-		chkShowScaler =new JCheckBox("Scalers");
-		chkShowScaler.setSelected(true);
 		chkShowScaler.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				refresh();
 			}
 		});
-		add(chkShowScaler);		
-		chkShowHistogram =new JCheckBox("Histograms");
-		chkShowHistogram.setSelected(true);
+		add(chkShowScaler);
 		chkShowHistogram.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				refresh();
 			}
 		});
-		add(chkShowHistogram);		
-		chkShowGate =new JCheckBox("Gates");
-		chkShowGate.setSelected(true);
+		add(chkShowHistogram);
 		chkShowGate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				refresh();
 			}
 		});
-		add(chkShowGate);		
+		add(chkShowGate);
 	}
-	
+
 	/**
 	 * Refresh display of table
-	 *
+	 * 
 	 */
 	private void refresh() {
-		boolean showScalers = chkShowScaler.isSelected();
-		boolean showHistograms = chkShowHistogram.isSelected();
-		boolean showGates =chkShowGate.isSelected();
+		final boolean showScalers = chkShowScaler.isSelected();
+		final boolean showHistograms = chkShowHistogram.isSelected();
+		final boolean showGates = chkShowGate.isSelected();
 		summaryTableModel.setOptions(showScalers, showHistograms, showGates);
-		
+
 	}
-    
-	/* non-javadoc:
-	 * Load icons for tool bar.
+
+	/*
+	 * non-javadoc: Load icons for tool bar.
 	 */
-	private Icon loadToolbarIcon(String path) {
-		final Icon toolbarIcon;
-		final ClassLoader cl = this.getClass().getClassLoader();
-		final URL urlResource = cl.getResource(path);
-		if (!(urlResource == null)) {
+	private Icon loadToolbarIcon(final String path) {
+		Icon toolbarIcon=null;//no icon if URL doesn't exist
+		final ClassLoader loader = this.getClass().getClassLoader();
+		final URL urlResource = loader.getResource(path);
+		if (urlResource == null) {
+			JOptionPane.showMessageDialog(this, "Can't load resource: " + path,
+					"Missing Icon", JOptionPane.ERROR_MESSAGE);
+		} else { 
 			toolbarIcon = new ImageIcon(urlResource);
-		} else { //instead use path, ugly but lets us see button
-			JOptionPane.showMessageDialog(
-				this,
-				"Can't load resource: " + path,
-				"Missing Icon",
-				JOptionPane.ERROR_MESSAGE);
-			toolbarIcon = null; //buttons initialized with text if icon==null
 		}
 		return toolbarIcon;
 	}
-	
-	private String getHTML(String body) {
-		final StringBuffer rval =
-			new StringBuffer("<html><body>").append(body).append(
-				"</html></body>");
+
+	private String getHTML(final String body) {
+		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
+				.append("</html></body>");
 		return rval.toString();
 	}
 
