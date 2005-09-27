@@ -187,7 +187,7 @@ public class CommandManager implements CommandListener, CommandNames {
                      * creating an instance. This should never happen if
                      * exists==true.
                      */
-                    throw new IllegalArgumentException(e.getMessage());
+                    throw new IllegalArgumentException(e.getMessage(),e);
                 }
                 INSTANCES.put(strCmd, currentCom);
             }
