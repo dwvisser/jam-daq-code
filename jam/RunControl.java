@@ -1,18 +1,15 @@
 package jam;
 
-import jam.data.Group;
-import jam.data.Histogram;
-import jam.global.GoodThread;
+import static jam.global.GoodThread.State;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RunInfo;
 import jam.io.DataIO;
-import jam.io.hdf.HDFIO;
-import jam.sort.Controller;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
+import jam.ui.Icons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -25,7 +22,6 @@ import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -61,7 +57,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
-public class RunControl extends JDialog implements Controller {
+public class RunControl extends JDialog implements jam.sort.Controller {
 
 	private static enum Device {
 		/**
@@ -95,10 +91,7 @@ public class RunControl extends JDialog implements Controller {
 		{
 			putValue(Action.NAME, "Begin Run");
 			putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-			final ClassLoader loader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(loader
-					.getResource("jam/begin.png"));
-			putValue(Action.SMALL_ICON, icon);
+			putValue(Action.SMALL_ICON, Icons.getInstance().BEGIN);
 			setEnabled(false);
 		}
 
@@ -120,7 +113,7 @@ public class RunControl extends JDialog implements Controller {
 		}
 	};
 
-	private transient final JCheckBox cHistZero;
+	private transient final JCheckBox cHistZero = new JCheckBox("Histograms", true);
 
 	private transient final MessageHandler console;
 
@@ -136,10 +129,7 @@ public class RunControl extends JDialog implements Controller {
 		{
 			putValue(Action.NAME, "End Run");
 			putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
-			final ClassLoader loader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(loader
-					.getResource("jam/end.png"));
-			putValue(Action.SMALL_ICON, icon);
+			putValue(Action.SMALL_ICON, Icons.getInstance().END);
 			setEnabled(false);
 		}
 
@@ -195,7 +185,7 @@ public class RunControl extends JDialog implements Controller {
 		console = STATUS.getMessageHandler();
 		vmeComm = STATUS.getFrontEndCommunication();
 		final Frame jamMain = STATUS.getFrame();
-		this.dataio = new HDFIO(jamMain, console);
+		this.dataio = new jam.io.hdf.HDFIO(jamMain, console);
 		runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);
@@ -240,7 +230,6 @@ public class RunControl extends JDialog implements Controller {
 		pRunTitle.add(textRunTitle);
 		/* Zero Panel */
 		JPanel pZero = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, -2));
-		cHistZero = new JCheckBox("Histograms", true);
 		pZero.add(cHistZero);
 		zeroScalers = new JCheckBox("Scalers", true);
 		pZero.add(zeroScalers);
@@ -343,7 +332,7 @@ public class RunControl extends JDialog implements Controller {
 		}
 		sortDaemon.userBegin();
 		if (cHistZero.isSelected()) {// should we zero histograms
-			Histogram.setZeroAll();
+			jam.data.Histogram.setZeroAll();
 		}
 		if (zeroScalers.isSelected()) {// should we zero scalers
 			vmeComm.clearScalers();
@@ -365,7 +354,7 @@ public class RunControl extends JDialog implements Controller {
 		}
 		setRunOn(true);
 		netDaemon.setEmptyBefore(false);// fresh slate
-		netDaemon.setState(GoodThread.State.RUN);
+		netDaemon.setState(State.RUN);
 		vmeComm.startAcquisition();// VME start last because other thread have
 		// higher priority
 	}
@@ -408,7 +397,7 @@ public class RunControl extends JDialog implements Controller {
 			}
 		} while (!sortDaemon.caughtUp() && !storageCaughtUp());
 		diskDaemon.resetReachedRunEnd();
-		netDaemon.setState(GoodThread.State.SUSPEND);
+		netDaemon.setState(State.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
 		final String histFileName = exptName + runNumber + ".hdf";
@@ -416,7 +405,7 @@ public class RunControl extends JDialog implements Controller {
 		final File histFile = new File(histFilePath, histFileName);
 		console.messageOutln("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
-		dataio.writeFile(histFile, Group.getSortGroup());
+		dataio.writeFile(histFile, jam.data.Group.getSortGroup());
 		runNumber++;// increment run number
 		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);
@@ -484,7 +473,7 @@ public class RunControl extends JDialog implements Controller {
 	 * appropriate method.
 	 */
 	public void startAcq() {
-		netDaemon.setState(GoodThread.State.RUN);
+		netDaemon.setState(State.RUN);
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {// runOn is true if the current state is a run

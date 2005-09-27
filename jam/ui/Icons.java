@@ -11,16 +11,17 @@ import javax.swing.JOptionPane;
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-final class Icons {
-	
+public final class Icons {
+
 	private static final Icons instance = new Icons();
-	
+
 	static public Icons getInstance() {
 		return instance;
 	}
 
-	final transient ImageIcon STOP, GO_GREEN, CAUTION, CLEAR, GROUP_SORT, GROUP_FILE, GROUP_TEMP, HIST1D,  HIST2D, GATE1D,
-			GATE2D, GATE_DEF1D, GATE_DEF2D;
+	public final transient ImageIcon STOP, GO_GREEN, CAUTION, CLEAR, GROUP_SORT,
+			GROUP_FILE, GROUP_TEMP, HIST1D, HIST2D, GATE1D, GATE2D, GATE_DEF1D,
+			GATE_DEF2D, BEGIN, END;
 
 	private Icons() {
 		super();
@@ -29,28 +30,31 @@ final class Icons {
 		URL urlGo = LOADER.getResource("jam/ui/go.png");
 		URL urlClear = LOADER.getResource("jam/ui/clear.png");
 		URL urlCaution = LOADER.getResource("jam/ui/caution.png");
-		URL urlSort = LOADER.getResource("jam/ui/groupsort.png");		
+		URL urlSort = LOADER.getResource("jam/ui/groupsort.png");
 		URL urlFile = LOADER.getResource("jam/ui/groupfile.png");
-		URL urlTemp = LOADER.getResource("jam/ui/grouptemp.png");		
+		URL urlTemp = LOADER.getResource("jam/ui/grouptemp.png");
 		URL urlHist1D = LOADER.getResource("jam/ui/hist1D.png");
 		URL urlGate1D = LOADER.getResource("jam/ui/gate1D.png");
 		URL urlHist2D = LOADER.getResource("jam/ui/hist2D.png");
 		URL urlGate2D = LOADER.getResource("jam/ui/gate2D.png");
 		URL urlGateDef1D = LOADER.getResource("jam/ui/gateDefined1D.png");
 		URL urlGateDef2D = LOADER.getResource("jam/ui/gateDefined2D.png");
+		URL urlBegin = LOADER.getResource("jam/ui/begin.png");
+		URL urlEnd = LOADER.getResource("jam/ui/end.png");
 		if (urlStop == null || urlGo == null || urlClear == null
 				|| urlCaution == null || urlHist1D == null || urlGate1D == null
 				|| urlHist2D == null || urlGate2D == null
-				|| urlGateDef1D == null || urlGateDef2D == null) {
+				|| urlGateDef1D == null || urlGateDef2D == null
+				|| urlBegin == null || urlEnd == null) {
 			JOptionPane.showMessageDialog(null,
 					"Can't load resource: jam/ui/*.png");
-			STOP = GO_GREEN = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = null;
+			STOP = GO_GREEN = CLEAR = CAUTION = GROUP_SORT = GROUP_FILE = GROUP_TEMP = HIST1D = HIST2D = GATE1D = GATE2D = GATE_DEF1D = GATE_DEF2D = BEGIN = END = null;
 		} else {
 			STOP = new ImageIcon(urlStop);
 			GO_GREEN = new ImageIcon(urlGo);
 			CAUTION = new ImageIcon(urlCaution);
 			CLEAR = new ImageIcon(urlClear);
-			GROUP_SORT = new ImageIcon(urlSort);			
+			GROUP_SORT = new ImageIcon(urlSort);
 			GROUP_FILE = new ImageIcon(urlFile);
 			GROUP_TEMP = new ImageIcon(urlTemp);
 			HIST1D = new ImageIcon(urlHist1D);
@@ -59,6 +63,8 @@ final class Icons {
 			GATE2D = new ImageIcon(urlGate2D);
 			GATE_DEF1D = new ImageIcon(urlGateDef1D);
 			GATE_DEF2D = new ImageIcon(urlGateDef2D);
+			BEGIN = new ImageIcon(urlBegin);
+			END = new ImageIcon(urlEnd);
 		}
 	}
 }

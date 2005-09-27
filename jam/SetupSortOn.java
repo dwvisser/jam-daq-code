@@ -396,7 +396,7 @@ public final class SetupSortOn extends AbstractSetup {
 						jamConsole.messageOutln("VME map sent.");
 					}
 				}
-				selectFirstSortHistogram();
+				STATUS.selectFirstSortHistogram();
 				if (dispose) {
 					dialog.dispose();
 				}

@@ -6,10 +6,11 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.global.RunInfo;
 import jam.io.ExtensionFileFilter;
+import jam.sort.AbstractStorageDaemon;
 import jam.sort.Controller;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.AbstractStorageDaemon;
+import jam.ui.Icons;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
@@ -29,7 +30,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -79,10 +79,7 @@ public final class SortControl extends JDialog implements Controller {
 			putValue(Action.NAME, "Begin");
 			putValue(Action.SHORT_DESCRIPTION, "Begin sort of all files."
 					+ " If a sort was halted, we start over.");
-			final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(classLoader
-					.getResource("jam/begin.png"));
-			putValue(Action.SMALL_ICON, icon);
+			putValue(Action.SMALL_ICON, Icons.getInstance().BEGIN);
 			setEnabled(false);
 		}
 
@@ -100,10 +97,7 @@ public final class SortControl extends JDialog implements Controller {
 		{
 			putValue(Action.NAME, "Halt");
 			putValue(Action.SHORT_DESCRIPTION, "Halt sort in process.");
-			final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-			final ImageIcon icon = new ImageIcon(classLoader
-					.getResource("jam/end.png"));
-			putValue(Action.SMALL_ICON, icon);
+			putValue(Action.SMALL_ICON, Icons.getInstance().END);
 			setEnabled(false);
 		}
 

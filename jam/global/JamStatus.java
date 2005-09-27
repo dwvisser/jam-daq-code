@@ -4,6 +4,8 @@ import jam.FrontEndCommunication;
 import jam.JamPrefs;
 import jam.RunState;
 import jam.VMECommunication;
+import jam.data.Group;
+import jam.data.Histogram;
 import jam.plot.PlotDisplay;
 import jam.ui.SummaryTable;
 
@@ -458,4 +460,22 @@ public final class JamStatus {
 			return frontEnd;
 		}
 	}
+	
+	/**
+	 * Do what it takes to open up the tree to the first histogram in the sort
+	 * routine.
+	 */
+	public void selectFirstSortHistogram() {
+		// Select first histogram
+		final Group sortGroup = Group.getSortGroup();
+		setCurrentGroup(sortGroup);
+		final List<Histogram> histList = sortGroup.getHistogramList();
+		if (!histList.isEmpty()) {
+			final Histogram firstHist = histList.get(0);
+			setCurrentHistogram(firstHist);
+		}
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
+		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
+	}
+
 }

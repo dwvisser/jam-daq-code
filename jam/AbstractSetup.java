@@ -4,9 +4,7 @@
 package jam;
 
 import jam.data.Group;
-import jam.data.Histogram;
 import jam.data.control.AbstractControl;
-import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -321,23 +319,6 @@ abstract class AbstractSetup {
 	 * @param lock is true if the fields are to be locked
 	 */
 	protected abstract void lockMode(boolean lock);
-
-	/**
-	 * Do what it takes to open up the tree to the first histogram in the sort
-	 * routine.
-	 */
-	protected void selectFirstSortHistogram() {
-		// Select first histogram
-		final Group sortGroup = Group.getSortGroup();
-		STATUS.setCurrentGroup(sortGroup);
-		final List<Histogram> histList = sortGroup.getHistogramList();
-		if (!histList.isEmpty()) {
-			final Histogram firstHist = histList.get(0);
-			STATUS.setCurrentHistogram(firstHist);
-		}
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT);
-	}
 	
 	/**
 	 * Sets whether to use the default classpath or a user-specified one.
