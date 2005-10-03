@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.Method;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -29,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -57,7 +59,6 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private transient final Console console;
 
-
 	private RunState runState = RunState.NO_ACQ;
 
 	JamMain(final boolean showGUI) {
@@ -66,7 +67,7 @@ public final class JamMain extends JFrame implements Observer {
 		setLookAndFeel();
 		showSplashScreen(showGUI);
 		/* Application initialization */
-		properties = new JamProperties(); //class that has properties
+		properties = new JamProperties(); // class that has properties
 		status.setFrame(this);
 		status.setValidator(DataBase.getInstance());
 		status.setAcqisitionStatus(new AcquisitionStatus() {
@@ -81,34 +82,35 @@ public final class JamMain extends JFrame implements Observer {
 		loadIcon();
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
-		
+
 		/* Ouput/Input text console */
 		console = new Console();
-		console.messageOutln("Welcome to Jam v" + Version.getInstance().getName());
+		console.messageOutln("Welcome to Jam v"
+				+ Version.getInstance().getName());
 		JamStatus.getSingletonInstance().setMessageHandler(console);
 		SetupSortOn.createInstance(console);
 		final JamToolBar jamToolBar = new JamToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
-		
+
 		/* histogram displayer */
 		final PlotDisplay plotDisplay = new PlotDisplay(console);
 		JamStatus.getSingletonInstance().setDisplay(plotDisplay);
-		summaryTable = new SummaryTable();		
-		JamStatus.getSingletonInstance().setTable(summaryTable); 
-		final Display display =new Display(plotDisplay, summaryTable);
+		summaryTable = new SummaryTable();
+		JamStatus.getSingletonInstance().setTable(summaryTable);
+		final Display display = new Display(plotDisplay, summaryTable);
 		final JSplitPane splitCenter = new JSplitPane(
 				JSplitPane.VERTICAL_SPLIT, true, display, console);
 		splitCenter.setResizeWeight(0.9);
 		/* fraction of resize space that goes to display */
 		contents.add(splitCenter, BorderLayout.CENTER);
 		setJMenuBar(MenuBar.getMenuBar());
-		/* Histogram selection tree */ 
+		/* Histogram selection tree */
 		SelectionTree selectTree = new SelectionTree();
 		contents.add(selectTree, BorderLayout.WEST);
 		final JSplitPane splitTree = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT, true, selectTree, splitCenter);
 		splitTree.setResizeWeight(0.1);
-		contents.add(splitTree, BorderLayout.CENTER);	
+		contents.add(splitTree, BorderLayout.CENTER);
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -122,11 +124,12 @@ public final class JamMain extends JFrame implements Observer {
 		});
 		/* Initial histograms and setup */
 		final InitialHistograms initHists = new InitialHistograms();
-		AbstractControl.setupAll(); //setup jam.data.control dialog boxes
+		AbstractControl.setupAll(); // setup jam.data.control dialog boxes
 		status.setSortMode(SortMode.NO_SORT, "Jam Startup");
 		status.setCurrentGroup(initHists.getInitialGroup());
 		status.setCurrentHistogram(initHists.getInitialHist());
-		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, initHists.getInitialHist());
+		broadcaster.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+				initHists.getInitialHist());
 		showMainWindow(showGUI);
 	}
 
@@ -138,7 +141,7 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private void showSplashScreen(final boolean showGUI) {
 		if (showGUI) {
-			final int displayTime = 10000; //milliseconds
+			final int displayTime = 10000; // milliseconds
 			new SplashWindow(this, displayTime);
 		}
 	}
@@ -210,10 +213,10 @@ public final class JamMain extends JFrame implements Observer {
 				title.append(" FROM ").append(disk);
 			}
 			this.setTitle(title.toString());
-		} else if (mode == SortMode.REMOTE) { //remote display
+		} else if (mode == SortMode.REMOTE) { // remote display
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append("Remote Mode").toString());
-		} else if (mode == SortMode.FILE) { //just read in a file
+		} else if (mode == SortMode.FILE) { // just read in a file
 			setRunState(RunState.NO_ACQ);
 			this.setTitle(title.append(status.getSortName()).toString());
 		} else if (mode == SortMode.NO_SORT) {
@@ -255,31 +258,57 @@ public final class JamMain extends JFrame implements Observer {
 		}
 	}
 
-	private void setLookAndFeel() {
-		final String linux = "Linux";
-		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
-		boolean bKunststoff = linux.equals(System.getProperty("os.name"));
-		if (bKunststoff) {
-			try {
-				UIManager.setLookAndFeel(kunststoff);
-			} catch (ClassNotFoundException e) {
-				bKunststoff = false;
-			} catch (Exception e) { //all other exceptions
-				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(null, e.getMessage(), title,
-						JOptionPane.WARNING_MESSAGE);
-			}
+	private boolean exists(final String classname) {
+		boolean rval = true;
+		try {
+			getClass().getClassLoader().loadClass(classname);
+		} catch (ClassNotFoundException cnf) {
+			rval = false;
 		}
-		if (!bKunststoff) {
+		return rval;
+	}
+
+	private void setLookAndFeel() {
+		final String osName = System.getProperty("os.name").toLowerCase();
+		final boolean bMac = osName.contains("mac");// use system L&F if mac
+		final String trendyLaF = "com.Trendy.swing.plaf.TrendyLookAndFeel";
+		final boolean bTrendy = bMac ? false
+				: exists(trendyLaF);
+		if (bTrendy) {
+			try {
+				final String violetTheme = "com.Trendy.swing.plaf.Themes.TrendyVioletTheme";
+				final ClassLoader classLoader = getClass().getClassLoader();
+				final Class<?> tlfClass = classLoader.loadClass(trendyLaF);
+				final Object tlf = tlfClass.newInstance();
+				final Class<?> tvtClass = classLoader.loadClass(violetTheme);
+				final Object tvt = tvtClass.newInstance();
+				final String setCurrentTheme = "setCurrentTheme";
+				final Method [] methods = tlfClass.getMethods();
+				Method setTheme=null;
+				for (Method method : methods){
+					if (method.getName().contains(setCurrentTheme)) {
+						setTheme=method;
+						break;
+					}
+				}
+				setTheme.invoke(tlf,tvt);
+				UIManager.setLookAndFeel((LookAndFeel)tlf);
+			} catch (Exception e) {
+				warning(e,"Jam--error setting GUI appearance");
+			}
+		} else {
 			try {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 			} catch (Exception e) {
-				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(null, e.getMessage(), title,
-						JOptionPane.WARNING_MESSAGE);
+				warning(e,"Jam--error setting GUI appearance");
 			}
 		}
+	}
+	
+	void warning(final Exception exception, final String title){
+		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
+				JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
@@ -302,7 +331,6 @@ public final class JamMain extends JFrame implements Observer {
 	 *            not used currently
 	 */
 	public static void main(final String args[]) {
-		//RepaintManager.setCurrentManager(new ThreadCheckingRepaintManager());
 		new JamMain(true);
 	}
 }
