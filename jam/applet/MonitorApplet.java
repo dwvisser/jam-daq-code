@@ -42,7 +42,7 @@ public class MonitorApplet
 	private RemoteData remoteData;
 
 	private TextField textHost;
-
+ 
 	private Panel pm[];
 	private Label labelDisp[];
 	private TextField textValue[];
