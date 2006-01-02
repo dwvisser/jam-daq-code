@@ -278,7 +278,7 @@ public class MonitorApplet
 			numberMonitors = monitorList.size();
 			monitor = new Monitor[numberMonitors];
 			for (int i = 0; i < numberMonitors; i++) {
-				monitor[i] = (Monitor) monitorList.get(i);
+				monitor[i] = monitorList.get(i);
 			}
 			interval = 10;
 			System.out.println("interval " + interval);
