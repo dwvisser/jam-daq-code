@@ -143,6 +143,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
 	Gate convertGate(Histogram hist, VDataDescription vdd, String gateName,
 			FileOpenMode mode) throws HDFException {
+
 		final Gate gate;
 		final Polygon shape = new Polygon();
 		final VData data = (VData) (AbstractData.getObject(DFTAG_VS, vdd
@@ -152,8 +153,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		if (mode.isOpenMode()) {
 			gate = makeGate(hist, gateName);
 		} else { // reload
-			gate = Gate.getGate(STRING_UTIL.makeLength(gateName,
-					Gate.NAME_LENGTH));
+			String histName =hist.getFullName();
+			gateName=STRING_UTIL.makeLength(gateName, Gate.NAME_LENGTH);
+			String gateFullName = STRING_UTIL.makeFullName(histName, gateName);
+			gate = Gate.getGate(gateFullName);
 		}
 		if (gate != null) {
 			if (gate.getDimensionality() == 1) { // 1-d gate

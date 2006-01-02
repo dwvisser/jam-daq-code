@@ -890,9 +890,10 @@ public abstract class Histogram implements DataElement {
 
     /* Create the full histogram name with group name. */
     final void updateNames(Group group) {
+        final StringUtilities stringUtil = StringUtilities.getInstance();    	
         groupName = group.getName();
         NAME_MAP.remove(uniqueName);
-        uniqueName = groupName + "/" + name;
+        uniqueName=stringUtil.makeFullName(groupName, name);
         NAME_MAP.put(uniqueName, this);
     }
 }

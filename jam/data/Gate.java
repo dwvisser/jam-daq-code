@@ -174,7 +174,7 @@ public final class Gate implements DataElement {
 			gateNames.add(gate.getName());
 		}
 		this.name = stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);
-		this.uniqueName = histUniqueName + "/" + name;
+		this.uniqueName=stringUtil.makeFullName(histUniqueName, name);
 		dimensions = hist.getDimensionality();
 		sizeX = hist.getSizeX();
 		sizeY = hist.getSizeY();

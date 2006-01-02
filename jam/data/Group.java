@@ -199,7 +199,7 @@ public final class Group implements Nameable {
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
 		if (fileName != null && groupName != null) {
-			tempFullName = fileName + "/" + groupName;
+			tempFullName = stringUtil.makeFullName(fileName, groupName);
 		} else if (fileName != null) {
 			tempFullName = fileName;
 		} else if (groupName != null) {

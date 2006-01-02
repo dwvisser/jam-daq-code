@@ -112,7 +112,7 @@ public class Scaler implements DataElement {
 			scalerNames.add(scaler.getName());
 		}
 		name = stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
-		uniqueName = group.getName() + "/" + name;
+		uniqueName = stringUtil.makeFullName(group.getName(), name );
 		group.addScaler(this);
 		number = idNum;
 		/* Add to list of scalers */
