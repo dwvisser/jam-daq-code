@@ -19,6 +19,8 @@ public final class StringUtilities {
 
 	private static final Charset ASCII = Charset.availableCharsets().get(
 			"US-ASCII");
+	
+	public static String ELEMENT_SEPARATOR ="/"; 
 
 	private StringUtilities() {
 		super();
@@ -31,6 +33,17 @@ public final class StringUtilities {
 	 */
 	public static StringUtilities getInstance() {
 		return INSTANCE;
+	}
+
+	/**
+	 * Make the full path to a data element
+	 * @param parentName name of parent element
+	 * @param name name of element 
+	 * @return fullName
+	 */
+	public String makeFullName(String parentName, String name)
+	{
+		return parentName+ELEMENT_SEPARATOR+name;
 	}
 
 	/**
