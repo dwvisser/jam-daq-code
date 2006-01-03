@@ -34,13 +34,14 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	private static final StringUtilities STRING_UTIL = StringUtilities
 			.getInstance();
 
-	private HDFile inHDF;
+	private transient HDFile inHDF;
 
 	ConvertHDFObjToJamObj() {
 		super();
 	}
 
-	private Histogram addHistogram(Group group, String name, Object histData) {
+	private Histogram addHistogram(final Group group, final String name,
+			final Object histData) {
 		final Histogram histogram = group.getHistogram(STRING_UTIL.makeLength(
 				name, Histogram.NAME_LENGTH));
 		if (histogram != null) {
@@ -49,49 +50,40 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		return histogram;
 	}
 
-	private HistogramAttributes attributesHistogram(String groupName,
-			String name, String title, int number) {
+	private HistogramAttributes attributesHistogram(final String groupName,
+			final String name, final String title, final int number) {
 		return new HistogramAttributes(groupName, name, title, number);
 	}
 
-	boolean containsGroup(String groupName, List groupList) {
-		boolean inList = false;
-
-		Iterator groupIter = groupList.iterator();
-		while (groupIter.hasNext()) {
-			Group group = (Group) groupIter.next();
+	boolean containsGroup(final String groupName, final List<Group> groups) {
+		boolean rval = false;
+		for (Group group : groups) {
 			if (groupName.equals(group.getGroupName())) {
-				inList = true;
+				rval = true;
 				break;
 			}
 		}
-
-		return inList;
+		return rval;
 	}
 
-	private boolean containsHistogramAttribute(String groupName,
-			String histName, List histogramAttributeList) {
-		boolean inList = false;
-
-		Iterator histAttIter = histogramAttributeList.iterator();
-		while (histAttIter.hasNext()) {
-			HistogramAttributes histAttribute = (HistogramAttributes) histAttIter
-					.next();
-			if (groupName != null) {
-				if (groupName.equals(histAttribute.getGroupName())
-						&& histName.equals(histAttribute.getName())) {
-					inList = true;
+	private boolean containsHistogramAttribute(final String groupName,
+			final String histName, final List<HistogramAttributes> attributes) {
+		boolean rval = false;
+		for (HistogramAttributes histAttribute : attributes) {
+			if (groupName == null) {
+				if (histName.equals(histAttribute.getName())) {
+					rval = true;
 					break;
 				}
 			} else {
-				if (histName.equals(histAttribute.getName())) {
-					inList = true;
+				if (groupName.equals(histAttribute.getGroupName())
+						&& histName.equals(histAttribute.getName())) {
+					rval = true;
 					break;
 				}
 			}
 		}
-
-		return inList;
+		return rval;
 	}
 
 	AbstractCalibrationFunction convertCalibration(Histogram hist,
@@ -141,8 +133,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		return calibrationFunction;
 	}
 
-	Gate convertGate(Histogram hist, VDataDescription vdd, String gateName,
-			FileOpenMode mode) throws HDFException {
+	Gate convertGate(final Histogram hist, final VDataDescription vdd,
+			final String gateName, final FileOpenMode mode) throws HDFException {
 
 		final Gate gate;
 		final Polygon shape = new Polygon();
@@ -153,9 +145,11 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		if (mode.isOpenMode()) {
 			gate = makeGate(hist, gateName);
 		} else { // reload
-			String histName =hist.getFullName();
-			gateName=STRING_UTIL.makeLength(gateName, Gate.NAME_LENGTH);
-			String gateFullName = STRING_UTIL.makeFullName(histName, gateName);
+			final String histName = hist.getFullName();
+			final String gateNameMod = STRING_UTIL.makeLength(gateName,
+					Gate.NAME_LENGTH);
+			final String gateFullName = STRING_UTIL.makeFullName(histName,
+					gateNameMod);
 			gate = Gate.getGate(gateFullName);
 		}
 		if (gate != null) {
@@ -292,8 +286,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		return histAttributes;
 	}
 
-	Histogram convertHistogram(Group group, VirtualGroup histGroup,
-			List histAttributes, FileOpenMode mode) throws HDFException {
+	Histogram convertHistogram(final Group group, final VirtualGroup histGroup,
+			final List<HistogramAttributes> histAttributes,
+			final FileOpenMode mode) throws HDFException {
 		Histogram hist = null;
 		NumericalDataGroup ndg;
 		/* check ndgErr==null to determine if error bars exist */
@@ -386,8 +381,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	 * IllegalStateException if any histogram apparently has more than 2
 	 * dimensions @return number of histograms
 	 */
-	int convertHistogramsOriginal(Group group, FileOpenMode mode,
-			List histAttributes) throws HDFException {
+	int convertHistogramsOriginal(final Group group, final FileOpenMode mode,
+			final List<HistogramAttributes> histAttributes) throws HDFException {
 		int numHists = 0;
 		final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
 		/* only the "histograms" VG (only one element) */
@@ -398,10 +393,11 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 			while (histIter.hasNext()) {
 				final VirtualGroup currHistGrp = (VirtualGroup) (histIter
 						.next());
-				Histogram hist = convertHistogram(group, currHistGrp,
+				final Histogram hist = convertHistogram(group, currHistGrp,
 						histAttributes, mode);
-				if (hist != null)
+				if (hist != null) {
 					numHists++;
+				}
 			}
 			// after loop
 		}
