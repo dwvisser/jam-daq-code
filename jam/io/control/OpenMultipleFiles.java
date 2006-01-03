@@ -273,7 +273,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 */
 	private void loadFiles() {
 		checkHistogramsLoaded();
-		final List selectAttrib = createSelectedHistogramNamesList();
+		final List<HistogramAttributes> selectAttrib = createSelectedHistogramNamesList();
 		if (selectAttrib.size() == 0) {// No histograms selected
 			msgHandler.errorOutln("No histograms selected");
 			return;
@@ -295,7 +295,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		}
 	}
 
-	private List createSelectedHistogramNamesList() {
+	private List<HistogramAttributes> createSelectedHistogramNamesList() {
 		checkSelectionIsNone();
 		final Object[] selected = histList.getSelectedValues();
 		histAttrList.clear();
