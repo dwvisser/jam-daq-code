@@ -64,7 +64,7 @@ public final class JamMain extends JFrame implements Observer {
 	JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
-		setLookAndFeel();
+		//setLookAndFeel();
 		showSplashScreen(showGUI);
 		/* Application initialization */
 		properties = new JamProperties(); // class that has properties

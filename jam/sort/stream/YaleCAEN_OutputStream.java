@@ -1,9 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.RunInfo;
-import jam.util.StringUtilities;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -81,7 +77,7 @@ public abstract class YaleCAEN_OutputStream extends AbstractEventOutputStream im
 	 * @see jam.sort.stream.AbstractEventOutputStream#isEndRun(short)
 	 */
 	public boolean isEndRun(short event) {
-		final short endRun = (short) (YaleCAEN_InputStream.BUFFER_END & 0xffff);
+		final short endRun = (short) (CAEN_StreamFields.BUFFER_END & 0xffff);
 		return (endRun == event);
 	}
 

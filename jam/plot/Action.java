@@ -174,6 +174,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	 * Calculate the area and centroid for a region. Maybe we should copy
 	 * inquire methods to this class?
 	 */
+	@SuppressWarnings("unused")
 	private void area() {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
@@ -243,6 +244,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	 * Cancel current command
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	private void cancel() {
 		isCursorCommand = false;
 		textOut.messageOutln();
@@ -252,6 +254,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/*
 	 * non-javadoc: display the counts at cursor
 	 */
+	@SuppressWarnings("unused")
 	private void cursor() {
 		/* output counts for the channel */
 		final double count;
@@ -410,6 +413,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Expand the region to view.
 	 */
+	@SuppressWarnings("unused")
 	private void expand() {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (commandPresent) {
@@ -441,6 +445,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Display the full histogram.
 	 */
+	@SuppressWarnings("unused")
 	private void full() {
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
@@ -468,6 +473,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Goto input channel
 	 */
+	@SuppressWarnings("unused")
 	private void go() {
 		final String cal = "calibrated";
 		final char space = ' ';
@@ -537,6 +543,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/*
 	 * non-javadoc: Display help
 	 */
+	@SuppressWarnings("unused")
 	private void help() {
 		final StringBuffer buffer = new StringBuffer("Commands:\t");
 		buffer
@@ -583,6 +590,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Background subtracted intensity of 1-d plots
 	 */
+	@SuppressWarnings("unused")
 	private void netarea() {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
@@ -891,6 +899,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Change the scale for linear to log or log to linear
 	 */
+	@SuppressWarnings("unused")
 	private void scale() {
 		isCursorCommand = false;
 		if (plotDisplay.getPlotContainer().getLimits().getScale() == Scale.LINEAR) {
@@ -937,6 +946,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	 * 
 	 * @see PlotContainer#update()
 	 */
+	@SuppressWarnings("unused")
 	private void update() {
 		isCursorCommand = false;
 		BROADCASTER.broadcast(BroadcastEvent.Command.OVERLAY_OFF);
@@ -956,6 +966,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Expand the region to view.
 	 */
+	@SuppressWarnings("unused")
 	private void zoomhorz() {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		if (!commandPresent) {
@@ -985,6 +996,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Zoom in on the histogram
 	 */
+	@SuppressWarnings("unused")
 	private void zoomin() {
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
@@ -998,6 +1010,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 	/**
 	 * Zoom out on the histogram.
 	 */
+	@SuppressWarnings("unused")
 	private void zoomout() {
 		isCursorCommand = false;
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
@@ -1008,6 +1021,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 		done();
 	}
 
+	@SuppressWarnings("unused")
 	private void zoomvert() {
 		// do-nothing
 	}
