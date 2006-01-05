@@ -309,7 +309,7 @@ class Toolbar extends JToolBar implements ActionListener {
 		double[] parameters = new double[1];
 		parameters[0] = Double.parseDouble(ratio);
 		if (!isSyncEvent)
-			action.doCommand(Action.REBIN, parameters, false);
+			action.doCommand(PlotCommands.REBIN, parameters, false);
 	}
 
 	/**

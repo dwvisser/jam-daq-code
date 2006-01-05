@@ -186,7 +186,6 @@ public class JamProperties {
 	private final static String NO_ERRORS="No error messages.";
 	private final static String NO_WARNINGS="No warning messages.";
 		
-	private String fileSep = System.getProperty("file.separator");
 	private String userHomeDir = System.getProperty("user.home");
 	final String userCurrentDir = System.getProperty("user.dir"); 
 	private static String os=null;
