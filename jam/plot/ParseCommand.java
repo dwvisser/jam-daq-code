@@ -21,26 +21,26 @@ final class ParseCommand implements CommandListener {
 
 	private final Map<String,String> commandMap = new HashMap<String,String>();
 	{
-		commandMap.put("help", Action.HELP);
-		commandMap.put("ex", Action.EXPAND);
-		commandMap.put("zi", Action.ZOOMIN);
-		commandMap.put("zo", Action.ZOOMOUT);
-		commandMap.put("f", Action.FULL);
-		commandMap.put("li", Action.LINEAR);
-		commandMap.put("lo", Action.LOG);
-		commandMap.put("ar", Action.AREA);
-		commandMap.put("g", Action.GOTO);
-		commandMap.put("n", Action.NETAREA);
-		commandMap.put("u", Action.UPDATE);
-		commandMap.put("a", Action.AUTO);
-		commandMap.put("o", Action.OVERLAY);
-		commandMap.put("c", Action.CANCEL);
-		commandMap.put("x", Action.EXPAND);
-		commandMap.put("y", Action.EXPAND);
-		commandMap.put("ra", Action.RANGE);
-		commandMap.put("d", Action.DISPLAY);
-		commandMap.put("re", Action.REBIN);
-		commandMap.put("s", Action.SCALE);
+		commandMap.put("help", PlotCommands.HELP);
+		commandMap.put("ex", PlotCommands.EXPAND);
+		commandMap.put("zi", PlotCommands.ZOOMIN);
+		commandMap.put("zo", PlotCommands.ZOOMOUT);
+		commandMap.put("f", PlotCommands.FULL);
+		commandMap.put("li", PlotCommands.LINEAR);
+		commandMap.put("lo", PlotCommands.LOG);
+		commandMap.put("ar", PlotCommands.AREA);
+		commandMap.put("g", PlotCommands.GOTO);
+		commandMap.put("n", PlotCommands.NETAREA);
+		commandMap.put("u", PlotCommands.UPDATE);
+		commandMap.put("a", PlotCommands.AUTO);
+		commandMap.put("o", PlotCommands.OVERLAY);
+		commandMap.put("c", PlotCommands.CANCEL);
+		commandMap.put("x", PlotCommands.EXPAND);
+		commandMap.put("y", PlotCommands.EXPAND);
+		commandMap.put("ra", PlotCommands.RANGE);
+		commandMap.put("d", PlotCommands.DISPLAY);
+		commandMap.put("re", PlotCommands.REBIN);
+		commandMap.put("s", PlotCommands.SCALE);
 	}
 
 	ParseCommand(Action action) {
@@ -60,7 +60,7 @@ final class ParseCommand implements CommandListener {
 		if (command.equals(Console.NUMBERS_ONLY)) {
 			accept = true;
 			if (action.getIsCursorCommand()) {
-				boolean vertical = Action.RANGE.equals(action
+				boolean vertical = PlotCommands.RANGE.equals(action
 						.getCurrentCommand());
 				cursorChannel(parameters, vertical);
 			} else {
@@ -71,7 +71,7 @@ final class ParseCommand implements CommandListener {
 			final String inCommand = commandMap.get(command);
 			action.doCommand(inCommand,true);
 			if (action.getIsCursorCommand()) {
-				boolean vertical = Action.RANGE.equals(inCommand);
+				boolean vertical = PlotCommands.RANGE.equals(inCommand);
 				cursorChannel(parameters, vertical);
 			} else {
 				action.doCommand(null, parameters,true);
@@ -120,14 +120,14 @@ final class ParseCommand implements CommandListener {
                         cursor.setChannel((int) parameters[i], 0);
                     }
                     action.setCursor(cursor);
-                    action.doCommand(Action.CURSOR, true);
+                    action.doCommand(PlotCommands.CURSOR, true);
                 }
             } else {
                 if (vertical) {//use 0,counts
                     for (int i = 0; i < numParam; i++) {
                         cursor.setChannel(0, (int) parameters[i]);
                         action.setCursor(cursor);
-                        action.doCommand(Action.CURSOR, true);
+                        action.doCommand(PlotCommands.CURSOR, true);
                     }
                 } else {
                     /* 2D: x and y dimensions */
@@ -135,7 +135,7 @@ final class ParseCommand implements CommandListener {
                         cursor.setChannel((int) parameters[i],
                                 (int) parameters[i + 1]);
                         action.setCursor(cursor);
-                        action.doCommand(Action.CURSOR, true);
+                        action.doCommand(PlotCommands.CURSOR, true);
                     }
                 }
             }

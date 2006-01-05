@@ -47,7 +47,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
+class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommands {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -270,8 +270,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener, Commands {
 		if (currentPlot.getDimensionality() == 1) {
 			binText = "Bin " + xch + ":  Counts = " + numFormat.format(count);
 			if (isCalibrated(hist)) {
-				final double energy = currentPlot.getEnergy(xch);
-				binText = binText + "  Energy = " + numFormat.format(energy);
+				final double chEnergy = currentPlot.getEnergy(xch);
+				binText = binText + "  Energy = " + numFormat.format(chEnergy);
 			}
 		} else {// 2 Dim plot
 			binText = "Bin " + xch + "," + ych + ":  Counts = "

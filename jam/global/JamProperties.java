@@ -11,9 +11,13 @@ import javax.swing.JOptionPane;
  * This is an class that is used to get and set the properties for Jam.
  * As the properties are loaded before a way to print out messages has
  * been constructed we save the messages so they can be later retrieved.
- *
- * For config we try jam.home which if null we try DEFAULT_JAM_HOME
- * For user we try user.home then jam.home then DEFAULT_JAM_HOME then 
+ * 
+ * Diretory for loading configuration is give by define jam.home.
+ * jam.home should be defined by -D parameter in command line.
+ * 
+ * For config we try jam.home which if null we try DEFAULT_USER_HOME
+ * For user we try user.home defined in JamConfig.ini 
+ * then jam.home defined on the command line then DEFAULT_USER_HOME then 
  * Properties
  * <ul>
  * <li>jam.home
@@ -41,9 +45,14 @@ import javax.swing.JOptionPane;
  */
 public class JamProperties {
 
+	/** 
+	 * Machine configuration file name 
+	 */
 	static final String FILE_CONFIG = "JamConfig.ini";
+	/** 
+	 * User configuration file name 
+	 */
 	static final String FILE_USER = "JamUser.ini";
-	static final String DEFAULT_JAM_HOME = System.getProperty("user.home");
 
 	/**
 	 * Path to search for <code>JamConfig.ini</code>
@@ -178,7 +187,8 @@ public class JamProperties {
 	private final static String NO_WARNINGS="No warning messages.";
 		
 	private String fileSep = System.getProperty("file.separator");
-	private String userHome = System.getProperty("user.home");
+	private String userHomeDir = System.getProperty("user.home");
+	final String userCurrentDir = System.getProperty("user.dir"); 
 	private static String os=null;
 	private static boolean macosx=false;
 
@@ -193,8 +203,10 @@ public class JamProperties {
 	/** file user properties read from */
 	private File userFile;
 	/** */
+	private boolean jamHomeDefined;
+	/** message for loading config */
 	private String configLoadMessage;
-	/** */
+	/** message for loading user config*/
 	private String userLoadMessage;
 	/** warning when loading config */
 	private String configLoadWarning;
@@ -283,19 +295,45 @@ public class JamProperties {
 	 * necessary.
 	 */
 	private final void loadProperties() {
+		
+		if (System.getProperty(JAM_HOME) != null)
+		{
+			jamHomeDefined=true;
+		}
+		else
+		{
+			jamHomeDefined=false;
+		}
+		
+		//load default configuration
+		loadDefaultConfig();
+		//load default user
+		loadDefaultUser();
+		//load config
+		loadConfig();
+		//load user
+		loadUser();
+			
+	}
+
+	/**
+	 * Read in jam config properties 
+	 * for normal use jam.home should be defined by -D parameter in command line
+	 * 
+	 */
+	
+	private void loadConfig() {
+		
+		configLoadWarning = NO_WARNINGS;
+		loadError = NO_ERRORS;
 		String fileName = "";
 		FileInputStream fis;
-		configLoadWarning = NO_WARNINGS;
-		userLoadWarning = NO_WARNINGS;
-		loadError = NO_ERRORS;
+		boolean fileRead=false;
+		
 		try {
-			//load default configuration
-			loadDefaultConfig();
-			loadDefaultUser();
-			/* read in jam config properties 
-			 * for normal use jam.home should be defined by -D parameter in command line
-			 * try jam.home */
-			if (System.getProperty(JAM_HOME) != null) {
+			
+			//if jam.home is property given we must use it. 
+			if (jamHomeDefined) {
 				final File file = new File(
 					System.getProperty(JAM_HOME),FILE_CONFIG);
 				fileName = file.getPath();
@@ -305,91 +343,34 @@ public class JamProperties {
 					configLoadMessage =
 						"Read configuration properties from file: "
 							+ file.getPath();
+					 fileRead=true;
 					//could not find default		    		
 				} else {
 					configLoadWarning =
-						"Cannot find file JamConfig.ini, in directory defined by jam.home = "
+						"Cannot find machine configuration file: JamConfig.ini, in directory defined by jam.home = "
 							+ System.getProperty("jam.home")
 							+ " ";
 					configLoadMessage = "Using default configuration";
 				}
-			} else {//try DEFAULT_JAM_HOME no jam.home defined
+			} 
+//			try userCurrentDir no jam.home defined			
+			if (!fileRead){
 				configFile =
-					new File(DEFAULT_JAM_HOME,FILE_CONFIG);
+					new File(userCurrentDir,FILE_CONFIG);
 				fileName = configFile.getPath();
 				if (configFile.exists()) {
 					fis = new FileInputStream(configFile);
 					jamProperties.load(fis);
-					configLoadWarning = "Property " + JAM_HOME + " not defined";
 					configLoadMessage =
 						"Read configuration properties from file: "
 							+ configFile.getPath();
+					fileRead=true;
 				} else {
 					configLoadWarning =
-						"Cannot find file "
-							+ FILE_CONFIG
-							+ ", in default directory "
-							+ DEFAULT_JAM_HOME
-							+ " ";
+						"Cannot find machine configuration file "
+							+ FILE_CONFIG+", in current directory "
+							+ userCurrentDir;
 					configLoadMessage = "Using default configuration";
-				}
-			}
-			//read in user jam properties
-			//try user.home	
-			try {
-				userFile = new File(
-					userHome,FILE_USER);
-				fileName = userFile.getPath();
-			} catch (Exception e) {
-				fileName =
-					JAM_HOME + fileSep + FILE_USER;
-			}
-
-			if (userFile.exists()) {
-				fis = new FileInputStream(userFile);
-				jamProperties.load(fis);
-				userLoadMessage =
-					"Read user properties from file: " + 
-					userFile.getPath();
-			} else {
-				//try jam.home directory
-				if (System.getProperty(JAM_HOME) != null) {
-					userFile =new File(
-						System.getProperty(JAM_HOME),FILE_USER);
-					fileName = userFile.getPath();
-					if (userFile.exists()) {
-						fis = new FileInputStream(userFile);
-						jamProperties.load(fis);
-						userLoadWarning =
-							"Cannot find file "
-								+ FILE_USER
-								+ " file in directory user.home = "
-								+ userHome;
-						userLoadMessage =
-							"Read user properties from file " + userFile.getPath();
-					}
-					//try  DEFAULT_JAM_HOME		    
-				} else {
-					userFile = new File(
-						DEFAULT_JAM_HOME,FILE_USER);
-					fileName = userFile.getPath();
-					if (userFile.exists()) {
-						fis = new FileInputStream(userFile);
-						jamProperties.load(fis);
-						userLoadWarning =
-							"Cannot find file "
-								+ FILE_USER
-								+ " file in user home and jam.home not defined";
-						userLoadMessage =
-							"Read user properties from file " + userFile.getPath();
-						//use default properties			   
-					} else {
-						userLoadWarning =
-							"Cannot find user config file "
-								+ FILE_USER
-								+ ", in jam home or user home directories";
-						userLoadMessage = "Using default user properties";
-					}
 				}
 			}
 		} catch (FileNotFoundException fnfe) {
@@ -399,6 +380,80 @@ public class JamProperties {
 		} catch (IOException ioe) {
 			loadError =
 				"Could not read configuration file, "
+					+ fileName+".";
+			showErrorMessage(ioe, loadError);
+		}
+			
+	}
+	/**
+	 * read in user jam properties
+	 * try user.home from JamConfig.ini first 	
+	 *
+	 */
+	private void loadUser() {
+		
+		userLoadWarning = NO_WARNINGS;
+		loadError = NO_ERRORS;
+		String fileName = "";
+		FileInputStream fis;
+		boolean fileRead=false;
+						
+		try {
+			//try  userHomeDir			
+			userFile = new File(userHomeDir,FILE_USER);
+	        fileName = userFile.getPath();			
+			if (userFile.exists()) {
+				fis = new FileInputStream(userFile);
+				jamProperties.load(fis);
+				userLoadMessage =
+					"Read user configuration file: " + 
+					userFile.getPath();
+				fileRead=true;
+						    
+			}  
+			
+			//try  userCurrentDir
+			if (!fileRead) {
+				userFile = new File(userCurrentDir, FILE_USER);
+				fileName = userFile.getPath(); 
+				if (userFile.exists()) {
+					fis = new FileInputStream(userFile);
+					jamProperties.load(fis);
+					userLoadWarning =
+						"Cannot find user configuration file "
+							+ FILE_USER
+							+ " in user home directory "+userHomeDir;
+					userLoadMessage =
+						"Read user configuration from file " + userFile.getPath();
+					fileRead=true;
+					//use default properties			   
+				} else {
+					userLoadWarning =
+						"Cannot find user configuration file "+ FILE_USER+
+							  ", in user home directory "+userHomeDir+
+							  " or in current directory "+userCurrentDir;
+						userLoadMessage = "Using default user properties";
+				}
+			}
+            // try variable jam.home directory
+			if (!fileRead && jamHomeDefined) {
+					userFile =new File(System.getProperty(JAM_HOME),FILE_USER);
+					fileName = userFile.getPath();
+					if (userFile.exists()) {
+						fis = new FileInputStream(userFile);
+						jamProperties.load(fis);
+						userLoadMessage =
+							"Read user configuration file: " + userFile.getPath();
+						fileRead=true;
+					}
+			}
+		} catch (FileNotFoundException fnfe) {
+			loadError =
+				"Jam user configuration file, "+fileName+",  not found.";
+			showErrorMessage(fnfe, loadError);
+		} catch (IOException ioe) {
+			loadError =
+				"Could not read user configuration file, "
 					+ fileName+".";
 			showErrorMessage(ioe, loadError);
 		}
@@ -421,6 +476,11 @@ public class JamProperties {
 	 * @param console the console
 	 */
 	public void outputMessages(MessageHandler console) {
+		
+		if (!jamHomeDefined) {
+			console.warningOutln("Jam home variable not defined, to define use -Djam.home=<directory>");
+		}
+
 		if (loadError != NO_ERRORS) {
 			console.warningOutln(loadError);
 		}
@@ -438,7 +498,7 @@ public class JamProperties {
 	 * Load default configuration properties.
 	 */
 	private void loadDefaultConfig() {
-		jamProperties.setProperty(JAM_HOME,(new File(DEFAULT_JAM_HOME)).getPath());
+		jamProperties.setProperty(JAM_HOME,(new File(userCurrentDir)).getPath());
 		jamProperties.setProperty(HOST_IP,"calvin");
 		jamProperties.setProperty(HOST_PORT_SEND,"5003");
 		jamProperties.setProperty(HOST_PORT_SEND,"5002");
@@ -456,14 +516,14 @@ public class JamProperties {
 		jamProperties.setProperty(EXP_NAME,"default_");
 		jamProperties.setProperty(SORT_ROUTINE,"jam.sort.Example");
 		jamProperties.setProperty(SORT_CLASSPATH,DEFAULT_SORT_CLASSPATH);
-		jamProperties.setProperty(HIST_PATH,(new File(userHome,"spectra")).getPath());
+		jamProperties.setProperty(HIST_PATH,(new File(userHomeDir,"spectra")).getPath());
 		jamProperties.setProperty(EVENT_INPATH,
-		(new File(userHome,"events")).getPath());
+		(new File(userHomeDir,"events")).getPath());
 		jamProperties.setProperty(EVENT_OUTPATH,
-		(new File(userHome,"presort")).getPath());
+		(new File(userHomeDir,"presort")).getPath());
 		jamProperties.setProperty(EVENT_OUTFILE,"sortout.evn");
 		jamProperties.setProperty(TAPE_DEV,"/dev/rmt/0");
-		jamProperties.setProperty(LOG_PATH,(new File(userHome)).getPath());
+		jamProperties.setProperty(LOG_PATH,(new File(userHomeDir)).getPath());
 		jamProperties.setProperty(EVENT_INSTREAM,
 		"jam.sort.stream.YaleCAEN_InputStream");
 		jamProperties.setProperty(EVENT_OUTSTREAM,"jam.sort.stream.YaleOutputStream");

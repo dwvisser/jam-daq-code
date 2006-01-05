@@ -1,6 +1,7 @@
 package jam.plot;
 
-interface Commands {
+interface PlotCommands {
+	
 	String HELP = "help";
 
 	String EXPAND = "expand";

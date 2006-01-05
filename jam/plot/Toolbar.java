@@ -91,7 +91,7 @@ class Toolbar extends JToolBar implements ActionListener {
 					getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
 			bupdate
 					.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
-			bupdate.setActionCommand(Action.UPDATE);
+			bupdate.setActionCommand(PlotCommands.UPDATE);
 			bupdate.addActionListener(this);
 			add(bupdate);
 
@@ -99,21 +99,21 @@ class Toolbar extends JToolBar implements ActionListener {
 					getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
 			blinear
 					.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
-			blinear.setActionCommand(Action.SCALE);
+			blinear.setActionCommand(PlotCommands.SCALE);
 			blinear.addActionListener(this);
 			add(blinear);
 			final JButton bauto = iAutoScale == null ? new JButton(
 					getHTML("<u>A</u>utoscale")) : new JButton(iAutoScale);
 			bauto
 					.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
-			bauto.setActionCommand(Action.AUTO);
+			bauto.setActionCommand(PlotCommands.AUTO);
 			bauto.addActionListener(this);
 			add(bauto);
 
 			final JButton brange = iRange == null ? new JButton(
 					getHTML("<u>Ra</u>nge")) : new JButton(iRange);
 			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
-			brange.setActionCommand(Action.RANGE);
+			brange.setActionCommand(PlotCommands.RANGE);
 			brange.addActionListener(this);
 			add(brange);
 
@@ -141,26 +141,26 @@ class Toolbar extends JToolBar implements ActionListener {
 			addSeparator();
 			final JButton bfull = iFullScale == null ? new JButton(
 					getHTML("<u>F</u>ull")) : new JButton(iFullScale);
-			bfull.setActionCommand(Action.FULL);
+			bfull.setActionCommand(PlotCommands.FULL);
 			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
 			bfull.addActionListener(this);
 			add(bfull);
 			final JButton bexpand = iExpand == null ? new JButton(
 					getHTML("<u>E</u>xpand")) : new JButton(iExpand);
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
-			bexpand.setActionCommand(Action.EXPAND);
+			bexpand.setActionCommand(PlotCommands.EXPAND);
 			bexpand.addActionListener(this);
 			add(bexpand);
 			final JButton bzoomin = iZoomIn == null ? new JButton(
 					getHTML("<u>Z</u>oom<u>i</u>n")) : new JButton(iZoomIn);
 			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
-			bzoomin.setActionCommand(Action.ZOOMIN);
+			bzoomin.setActionCommand(PlotCommands.ZOOMIN);
 			bzoomin.addActionListener(this);
 			add(bzoomin);
 			final JButton bzoomout = iZoomOut == null ? new JButton(
 					getHTML("<u>Z</u>oom<u>o</u>ut")) : new JButton(iZoomOut);
 			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
-			bzoomout.setActionCommand(Action.ZOOMOUT);
+			bzoomout.setActionCommand(PlotCommands.ZOOMOUT);
 			bzoomout.addActionListener(this);
 			add(bzoomout);
 			/*
@@ -178,7 +178,7 @@ class Toolbar extends JToolBar implements ActionListener {
 			 */
 			bgoto = iGoto == null ? new JButton(getHTML("<u>G</u>oto"))
 					: new JButton(iGoto);
-			bgoto.setActionCommand(Action.GOTO);
+			bgoto.setActionCommand(PlotCommands.GOTO);
 			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
 			bgoto.addActionListener(this);
 			add(bgoto);
@@ -186,21 +186,21 @@ class Toolbar extends JToolBar implements ActionListener {
 			final JButton barea = iArea == null ? new JButton(
 					getHTML("<u>Ar</u>ea")) : new JButton(iArea);
 			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
-			barea.setActionCommand(Action.AREA);
+			barea.setActionCommand(PlotCommands.AREA);
 			barea.addActionListener(this);
 			add(barea);
 			bnetarea = iNetArea == null ? new JButton(
 					getHTML("<u>N</u>et Area")) : new JButton(iNetArea);
 			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
-			bnetarea.setActionCommand(Action.NETAREA);
+			bnetarea.setActionCommand(PlotCommands.NETAREA);
 			bnetarea.addActionListener(this);
 			add(bnetarea);
 			addSeparator();
 			final JButton bcancel = iCancel == null ? new JButton(
 					getHTML("<u>C</u>ancel")) : new JButton(iCancel);
-			bcancel.setActionCommand(Action.CANCEL);
+			bcancel.setActionCommand(PlotCommands.CANCEL);
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
-			bcancel.addActionListener(this);
+			bcancel.addActionListener(this); 
 			add(bcancel);
 			/* Listen for changes in orientation */
 			addPropertyChangeListener("orientation",
