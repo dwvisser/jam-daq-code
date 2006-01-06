@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class which exposes an API for scripting offline sorting sessions.
@@ -79,6 +81,8 @@ public final class Script implements Observer {
 	public File defineFile(final String fname){
 		return new File(base,fname);
 	}
+	
+	static final Logger LOG = Logger.getLogger("jam");
 
 	/**
 	 * Completes the task equivalent of specifying the settings in
@@ -100,13 +104,13 @@ public final class Script implements Observer {
 	 * @see jam.sort.stream.AbstractEventInputStream
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
-	public  void setupOffline(final File classPath, 
+	public void setupOffline(final File classPath, 
 	final String sortName, final Class inStream, final Class outStream){
 		sso.setupSort(classPath, sortName, inStream, outStream);
-		System.out.println("Setup online sorting:");
-		System.out.println("\t"+classPath+": "+sortName);
-		System.out.println("\tin: "+inStream);
-		System.out.println("\tout: "+outStream);
+		LOG.log(Level.INFO,"Setup online sorting:");
+		LOG.log(Level.INFO,"\t"+classPath+": "+sortName);
+		LOG.log(Level.INFO,"\tin: "+inStream);
+		LOG.log(Level.INFO,"\tout: "+outStream);
 		isSetup=true;
 	}
 	
@@ -130,16 +134,16 @@ public final class Script implements Observer {
 		}
 		final int numFiles=sortControl.addEventFile(fileOrDir);
 		if (fileOrDir.isFile()){
-			System.out.println("Added event file to sort: "+fileOrDir.getName());
+			LOG.log(Level.INFO,"Added event file to sort: "+fileOrDir.getName());
 		}
 		if (fileOrDir.isDirectory()){
-			System.out.println("Added event files in folder: "+
+			LOG.log(Level.INFO,"Added event files in folder: "+
 			fileOrDir.getName());
 		}
 		if (numFiles>0){
 			filesGiven=true;
 		} else {
-			System.err.println(fileOrDir.getName()+" didn't contain any usable files.");
+			LOG.log(Level.WARNING, fileOrDir.getName()+" didn't contain any usable files.");
 		}
 	}
 	
@@ -163,7 +167,7 @@ public final class Script implements Observer {
 		if (numFiles>0){
 			filesGiven=true;
 		} else {
-			System.err.println(list.getName()+" didn't contain any usable filenames.");
+			LOG.log(Level.WARNING, list.getName()+" didn't contain any usable filenames.");
 		}
 	}
 	
@@ -182,7 +186,7 @@ public final class Script implements Observer {
 			"You may not call setEventOutput() before calling setupOffline().");
 		}
 		sortControl.setEventOutput(eventsOut);
-		System.out.println("Set file for pre-sorted events"+
+		LOG.log(Level.INFO,"Set file for pre-sorted events"+
 		eventsOut.getAbsolutePath());
 	}
 	
@@ -219,7 +223,7 @@ public final class Script implements Observer {
 		}
 		try{
 			sortControl.beginSort();
-			System.out.println("Began sort. Waiting for finish...");
+			LOG.log(Level.INFO,"Began sort. Waiting for finish...");
 			final Object lock=new Object();
 			synchronized (lock) {
 				final long millisec=2500;
@@ -227,11 +231,11 @@ public final class Script implements Observer {
 					lock.wait(millisec);
 				}
 			}
-			System.out.println("Reached end of sort.");
+			LOG.log(Level.INFO,"Reached end of sort.");
 		} catch (InterruptedException e) {
-			System.err.println("Interrupted while waiting for sort to finish.");
+			LOG.log(Level.SEVERE, "Interrupted while waiting for sort to finish.", e);
 		} catch (Exception e){
-			System.err.println("Error while beginning sort: "+e.getMessage());
+			LOG.log(Level.SEVERE, "Error while beginning sort: ",e);
 		}
 	}
 	
@@ -260,7 +264,7 @@ public final class Script implements Observer {
 			"You may not call loadHDF() before calling setupOffline().");
 		}
 		hdfio.readFile(FileOpenMode.RELOAD, hdf);
-		System.out.println("Loaded HDF file: "+hdf);
+		LOG.log(Level.INFO,"Loaded HDF file: "+hdf);
 	}
 	
 	
@@ -284,13 +288,13 @@ public final class Script implements Observer {
 			final File [] files=hdf.listFiles(filter);
 			for (int i=0; i< files.length; i++){
 				hdfio.readFile(FileOpenMode.ADD, files[i]);
-				System.out.println("Added HDF file: "+files[i]);
+				LOG.log(Level.INFO,"Added HDF file: "+files[i]);
 			}
 		} else if (filter.accept(hdf)){
 			hdfio.readFile(FileOpenMode.ADD, hdf);
-			System.out.println("Added HDF file: "+hdf);
+			LOG.log(Level.INFO,"Added HDF file: "+hdf);
 		} else {
-			System.out.println(hdf+" isn't an HDF file, not added.");
+			LOG.log(Level.INFO,hdf+" isn't an HDF file, not added.");
 		}
 	}
 
@@ -301,7 +305,7 @@ public final class Script implements Observer {
 	 */
 	public void saveHDF(final File hdf){
 		hdfio.writeFile(hdf);
-		System.out.println("Saved HDF file: "+hdf);
+		LOG.log(Level.INFO,"Saved HDF file: "+hdf);
 	}
 	
 	/**

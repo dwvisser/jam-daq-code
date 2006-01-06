@@ -1,5 +1,6 @@
 package jam;
 
+import static jam.Script.LOG;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -93,6 +95,7 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final AbstractButton bok, bapply, checkLock, bbrowseh,
 			bbrowsed, bbrowsel;
 
+
 	{
 		checkLock = new JCheckBox("Setup Locked", false);
 		checkLock.addItemListener(new ItemListener() {
@@ -106,7 +109,7 @@ public final class SetupSortOn extends AbstractSetup {
 						jamConsole.closeLogFile();
 					} catch (Exception e) {
 						jamConsole.errorOutln(e.getMessage());
-						e.printStackTrace();
+						LOG.log(Level.SEVERE, e.getMessage(), e);
 					}
 				}
 			}
@@ -487,13 +490,12 @@ public final class SetupSortOn extends AbstractSetup {
 					.getSelectedItem()).newInstance();
 			inStream.setConsole(jamConsole);
 		} catch (InstantiationException ie) {
-			// eventInputStream=null;
-			ie.printStackTrace();
-			throw new JamException(getClass().getName()
-					+ ": can't instantiate EventInputStream: "
-					+ inChooser.getSelectedItem());
+			final String msg = getClass().getName()
+			+ ": can't instantiate EventInputStream: "
+			+ inChooser.getSelectedItem();
+			LOG.log(Level.SEVERE, msg, ie);
+			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
-			// eventInputStream=null;
 			throw new JamException(getClass().getName()
 					+ ": illegal access to EventInputStream: "
 					+ inChooser.getSelectedItem());
@@ -503,15 +505,17 @@ public final class SetupSortOn extends AbstractSetup {
 					.getSelectedItem()).newInstance();
 			outStream.setEventSize(sortRoutine.getEventSize());
 		} catch (InstantiationException ie) {
-			// eventOutputStream=null;
-			ie.printStackTrace();
-			throw new JamException(getClass().getName()
-					+ ": can't instantiate EventOutputStream class: "
-					+ outChooser.getSelectedItem());
+			final String msg = getClass().getName()
+			+ ": can't instantiate EventOutputStream class: "
+			+ outChooser.getSelectedItem();
+			LOG.log(Level.SEVERE, msg, ie);
+			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
-			throw new JamException(getClass().getName()
-					+ ": illegal access to EventOutputStream class: "
-					+ outChooser.getSelectedItem());
+			final String msg = getClass().getName()
+			+ ": illegal access to EventOutputStream class: "
+			+ outChooser.getSelectedItem();
+			LOG.log(Level.SEVERE, msg, iae);
+			throw new JamException(msg, iae);
 		}
 		// create sorter daemon
 		sortDaemon = new SortDaemon(runControl, jamConsole);

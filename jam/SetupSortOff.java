@@ -1,5 +1,6 @@
 package jam;
 
+import static jam.Script.LOG;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -38,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+;
 
 /**
  * Class to setup the offline sort process.
@@ -248,7 +251,7 @@ public final class SetupSortOff extends AbstractSetup {
 			}
 		} catch (Exception ex) {
 			msgHandler.errorOutln(ex.getMessage());
-			ex.printStackTrace();
+			LOG.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}
 
@@ -260,14 +263,17 @@ public final class SetupSortOff extends AbstractSetup {
 			}
 			eventInput.setConsole(msgHandler);
 		} catch (InstantiationException ie) {
-			ie.printStackTrace();
-			throw new JamException(classname
-					+ "Cannot instantize event input stream: "
-					+ inChooser.getSelectedItem());
+			final String msg = classname
+			+ "Cannot instantize event input stream: "
+			+ inChooser.getSelectedItem();
+			LOG.log(Level.SEVERE, msg,ie);
+			throw new JamException(msg,ie);
 		} catch (IllegalAccessException iae) {
-			throw new JamException(classname
-					+ "Cannot access event input stream: "
-					+ inChooser.getSelectedItem());
+			final String msg = classname
+			+ "Cannot access event input stream: "
+			+ inChooser.getSelectedItem();
+			LOG.log(Level.SEVERE, msg,iae);
+			throw new JamException(msg,iae);
 		}
 	}
 
