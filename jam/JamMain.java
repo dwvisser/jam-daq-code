@@ -21,16 +21,18 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
-import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -64,7 +66,7 @@ public final class JamMain extends JFrame implements Observer {
 	JamMain(final boolean showGUI) {
 		super("Jam");
 		status.setShowGUI(showGUI);
-		//setLookAndFeel();
+		setLookAndFeel();
 		showSplashScreen(showGUI);
 		/* Application initialization */
 		properties = new JamProperties(); // class that has properties
@@ -258,55 +260,15 @@ public final class JamMain extends JFrame implements Observer {
 		}
 	}
 
-	private boolean exists(final String classname) {
-		boolean rval = true;
+	private void setLookAndFeel() {
 		try {
-			getClass().getClassLoader().loadClass(classname);
-		} catch (ClassNotFoundException cnf) {
-			rval = false;
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			warning(e, "Jam--error setting GUI appearance");
 		}
-		return rval;
 	}
 
-	private void setLookAndFeel() {
-		final String osName = System.getProperty("os.name").toLowerCase();
-		final boolean bMac = osName.contains("mac");// use system L&F if mac
-		final String trendyLaF = "com.Trendy.swing.plaf.TrendyLookAndFeel";
-		final boolean bTrendy = bMac ? false
-				: exists(trendyLaF);
-		if (bTrendy) {
-			try {
-				final String violetTheme = "com.Trendy.swing.plaf.Themes.TrendyVioletTheme";
-				final ClassLoader classLoader = getClass().getClassLoader();
-				final Class<?> tlfClass = classLoader.loadClass(trendyLaF);
-				final Object tlf = tlfClass.newInstance();
-				final Class<?> tvtClass = classLoader.loadClass(violetTheme);
-				final Object tvt = tvtClass.newInstance();
-				final String setCurrentTheme = "setCurrentTheme";
-				final Method [] methods = tlfClass.getMethods();
-				Method setTheme=null;
-				for (Method method : methods){
-					if (method.getName().contains(setCurrentTheme)) {
-						setTheme=method;
-						break;
-					}
-				}
-				setTheme.invoke(tlf,tvt);
-				UIManager.setLookAndFeel((LookAndFeel)tlf);
-			} catch (Exception e) {
-				warning(e,"Jam--error setting GUI appearance");
-			}
-		} else {
-			try {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				warning(e,"Jam--error setting GUI appearance");
-			}
-		}
-	}
-	
-	void warning(final Exception exception, final String title){
+	void warning(final Exception exception, final String title) {
 		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
 				JOptionPane.WARNING_MESSAGE);
 	}
@@ -331,6 +293,12 @@ public final class JamMain extends JFrame implements Observer {
 	 *            not used currently
 	 */
 	public static void main(final String args[]) {
-		new JamMain(true);
+		try {
+			final Handler handler = new FileHandler("%t/jam.log");
+			Logger.getLogger("").addHandler(handler);
+			new JamMain(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
