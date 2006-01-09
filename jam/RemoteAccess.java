@@ -156,7 +156,7 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 		return Collections.unmodifiableList(values);
 	}
 
-	private static final Logger logger = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	/**
 	 * A test routine for this class.
@@ -165,16 +165,16 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 	 *            ignored
 	 */
 	public static void main(final String args[]) {
-		logger.fine("Test starting up Server");
+		LOGGER.fine("Test starting up Server");
 		try {
 			final String name = "jam";
 			final RemoteAccess remote = new RemoteAccess();
 			Naming.rebind(name, remote);
-			logger.fine("Server setup");
+			LOGGER.fine("Server setup");
 		} catch (RemoteException re) {
-			logger.log(Level.SEVERE, "Error constructing Server", re);
+			LOGGER.log(Level.SEVERE, "Error constructing Server", re);
 		} catch (java.net.MalformedURLException mue) {
-			logger.log(Level.SEVERE, "Error malformed URL", mue);
+			LOGGER.log(Level.SEVERE, "Error malformed URL", mue);
 		}
 	}
 }
