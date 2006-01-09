@@ -18,8 +18,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -134,8 +132,7 @@ public final class SetupSortOff extends AbstractSetup {
 		dialog.setLocation(posx, posy);
 		contents.setLayout(new BorderLayout(5, 5));
 		final int space = 5;
-		final LayoutManager verticalGrid = new GridLayout(0, 1, space, space);
-		final JPanel pNorth = new JPanel(verticalGrid);
+		final JPanel pNorth = new JPanel(new GridLayout(0, 1, space, space));
 		contents.add(pNorth, BorderLayout.NORTH);
 		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER,
 				space, space));
@@ -146,7 +143,7 @@ public final class SetupSortOff extends AbstractSetup {
 		pradio.add(specify);
 		pNorth.add(pradio);
 		/* Labels */
-		final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
+		final JPanel pLabels = new JPanel(new GridLayout(0, 1, space, space));
 		pLabels.setBorder(new EmptyBorder(2, 10, 0, 0)); // down so browse
 		// button lines up
 		contents.add(pLabels, BorderLayout.WEST);
@@ -155,10 +152,10 @@ public final class SetupSortOff extends AbstractSetup {
 		final JLabel lis = new JLabel("Event input stream",
 				SwingConstants.RIGHT);
 		pLabels.add(lis);
-		final JLabel los = new JLabel("Event output stream", Label.RIGHT);
+		final JLabel los = new JLabel("Event output stream", SwingConstants.RIGHT);
 		pLabels.add(los);
 		/* Entry fields */
-		final JPanel pEntry = new JPanel(new GridLayout(0, 1, 5, 5));
+		final JPanel pEntry = new JPanel(new GridLayout(0, 1, space, space));
 		pEntry.setBorder(new EmptyBorder(2, 0, 0, 0));// down so browse button
 		// lines up
 		contents.add(pEntry, BorderLayout.CENTER);
