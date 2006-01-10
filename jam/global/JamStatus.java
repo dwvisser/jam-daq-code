@@ -346,8 +346,12 @@ public final class JamStatus {
 	 */
 	public Nameable getCurrentHistogram() {
 		synchronized (this) {
+			if (validator == null) {
+				throw new IllegalStateException(
+						"Can't get current histogram without a defined validator.");
+			}
 			if (!validator.isValid(currentHistogram)) {
-				currentHistogram = null;
+				currentHistogram = UnNamed.getSingletonInstance();
 			}
 			return currentHistogram;
 		}
@@ -411,8 +415,12 @@ public final class JamStatus {
 	 */
 	public Nameable getCurrentGate() {
 		synchronized (this) {
+			if (validator == null) {
+				throw new IllegalStateException(
+						"Can't get current histogram without a defined validator.");
+			}
 			if (!validator.isValid(currentGate)) {
-				currentGate = null;
+				currentGate = UnNamed.getSingletonInstance();
 			}
 			return currentGate;
 		}
@@ -460,7 +468,7 @@ public final class JamStatus {
 			return frontEnd;
 		}
 	}
-	
+
 	/**
 	 * Do what it takes to open up the tree to the first histogram in the sort
 	 * routine.
