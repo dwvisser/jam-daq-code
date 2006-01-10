@@ -7,6 +7,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.global.Nameable;
 import jam.global.SortMode;
 
 import java.awt.BorderLayout;
@@ -215,14 +216,14 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * Refresh the selected node.
 	 */
 	private void refreshSelection() {
-		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
-		final Gate gate = (Gate) STATUS.getCurrentGate();
+		final Nameable hist = STATUS.getCurrentHistogram();
+		final Nameable gate = STATUS.getCurrentGate();
 		final List<Histogram> overlayHists = Histogram.getHistogramList(STATUS
 				.getOverlayHistograms());
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
-		if (gate != null) {
-			refreshGateSelection(gate, histTreePath);
+		if (gate instanceof Gate) {
+			refreshGateSelection((Gate)gate, histTreePath);
 		}
 		if (!overlayHists.isEmpty()) {
 			refreshOverlaySelection(overlayHists);
