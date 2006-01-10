@@ -26,17 +26,60 @@ import java.util.List;
  * @see jam.sort.SortRoutine#cnafCommands
  */
 public class CamacCommands {
-	private transient final List<int[]> eventCmds = new ArrayList<int[]>();
+	private transient final List<CNAF> eventCmds = new ArrayList<CNAF>();
 
-	private transient final List<int[]> initCommands = new ArrayList<int[]>();
+	private transient final List<CNAF> initCommands = new ArrayList<CNAF>();
 
-	private transient final List<int[]> scalerCmds = new ArrayList<int[]>();
+	private transient final List<CNAF> scalerCmds = new ArrayList<CNAF>();
 
-	private transient final List<int[]> clearCmds = new ArrayList<int[]>();
+	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
 
 	private transient final SortRoutine sortRoutine;
 
 	private transient int eventSize = 0;
+
+	public class CNAF {
+
+		private final transient byte paramID, crate, number, address, function;
+
+		private final transient int data;
+
+		CNAF(int paramID, int crate, int number, int address, int function,
+				int data) {
+			super();
+			this.paramID = (byte)paramID;
+			this.crate = (byte) crate;
+			this.number = (byte) number;
+			this.address = (byte) address;
+			this.function = (byte) function;
+			this.data = data;
+		}
+
+		public byte getAddress() {
+			return address;
+		}
+
+		public byte getCrate() {
+			return crate;
+		}
+
+		public int getData() {
+			return data;
+		}
+
+		public byte getFunction() {
+			return function;
+		}
+
+		public byte getNumber() {
+			return number;
+		}
+
+		public byte getParamID() {
+			return paramID;
+		}
+
+	};
 
 	/**
 	 * <p>
@@ -77,7 +120,8 @@ public class CamacCommands {
 		// paramId+1 since stream has 1 for first element
 		final int paramId = eventCmds.size() + 1;
 		eventSize++;
-		eventCmds.add(cnaf(paramId, crate, number, address, function, data));
+		eventCmds
+				.add(new CNAF(paramId, crate, number, address, function, data));
 		sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.CNAF);
 		return (paramId - 1);
 	}
@@ -118,7 +162,7 @@ public class CamacCommands {
 	 */
 	public void eventCommand(final int crate, final int number,
 			final int address, final int function) {
-		eventCmds.add(cnaf(0, crate, number, address, function, 0));
+		eventCmds.add(new CNAF(0, crate, number, address, function, 0));
 	}
 
 	/**
@@ -138,7 +182,7 @@ public class CamacCommands {
 	 */
 	public void init(final int crate, final int number, final int address,
 			final int function, final int data) {
-		initCommands.add(cnaf(0, crate, number, address, function, data));
+		initCommands.add(new CNAF(0, crate, number, address, function, data));
 	}
 
 	/**
@@ -156,7 +200,7 @@ public class CamacCommands {
 	 */
 	public void init(final int crate, final int number, final int address,
 			final int function) {
-		initCommands.add(cnaf(0, crate, number, address, function, 0));
+		initCommands.add(new CNAF(0, crate, number, address, function, 0));
 	}
 
 	/**
@@ -178,7 +222,8 @@ public class CamacCommands {
 	public int scaler(final int crate, final int number, final int address,
 			final int function, final int data) {
 		final int scalerId = scalerCmds.size();
-		scalerCmds.add(cnaf(scalerId, crate, number, address, function, data));
+		scalerCmds.add(new CNAF(scalerId, crate, number, address, function,
+				data));
 		return scalerId + 1;
 	}
 
@@ -218,7 +263,7 @@ public class CamacCommands {
 	 */
 	public void clear(final int crate, final int number, final int address,
 			final int function, final int data) {
-		clearCmds.add(cnaf(0, crate, number, address, function, data));
+		clearCmds.add(new CNAF(0, crate, number, address, function, data));
 	}
 
 	/**
@@ -236,7 +281,7 @@ public class CamacCommands {
 	 */
 	public void clear(final int crate, final int number, final int address,
 			final int function) {
-		clearCmds.add(cnaf(0, crate, number, address, function, 0));
+		clearCmds.add(new CNAF(0, crate, number, address, function, 0));
 	}
 
 	/**
@@ -244,7 +289,7 @@ public class CamacCommands {
 	 * 
 	 * @return list of
 	 */
-	public List<int[]> getInitCommands() {
+	public List<CNAF> getInitCommands() {
 		return Collections.unmodifiableList(initCommands);
 	}
 
@@ -253,7 +298,7 @@ public class CamacCommands {
 	 * 
 	 * @return list of event CNAF commands
 	 */
-	public List<int[]> getEventCommands() {
+	public List<CNAF> getEventCommands() {
 		return Collections.unmodifiableList(eventCmds);
 	}
 
@@ -262,7 +307,7 @@ public class CamacCommands {
 	 * 
 	 * @return list of scaler read CNAF commands
 	 */
-	public List<int[]> getScalerCommands() {
+	public List<CNAF> getScalerCommands() {
 		return Collections.unmodifiableList(scalerCmds);
 	}
 
@@ -271,7 +316,7 @@ public class CamacCommands {
 	 * 
 	 * @return list of "clear" CNAF commands
 	 */
-	public List<int[]> getClearCommands() {
+	public List<CNAF> getClearCommands() {
 		return Collections.unmodifiableList(clearCmds);
 	}
 
@@ -282,21 +327,5 @@ public class CamacCommands {
 	 */
 	public int getEventSize() {
 		return eventSize;
-	}
-
-	/*
-	 * non-javadoc: Used internally to package the parts of a command into a
-	 * byte array.
-	 */
-	private int[] cnaf(final int idParam, final int crate, final int number,
-			final int address, final int function, final int data) {
-		int[] out = new int[6];
-		out[0] = idParam;
-		out[1] = crate;
-		out[2] = number;
-		out[3] = address;
-		out[4] = function;
-		out[5] = data;
-		return out;
 	}
 }
