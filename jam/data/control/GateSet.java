@@ -5,6 +5,8 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
+import jam.global.Nameable;
+import jam.global.UnNamed;
 import jam.plot.Bin;
 import jam.ui.GateComboBoxModel;
 import jam.ui.GateListCellRenderer;
@@ -279,7 +281,10 @@ public class GateSet extends AbstractControl implements Observer {
 	 */
 	private void checkHistogram() {
 		/* has histogram changed? */
-		if (currentHistogram != STATUS.getCurrentHistogram()) {
+		final Nameable named = STATUS.getCurrentHistogram();
+		final boolean doIt = (named == UnNamed.getSingletonInstance()) ?
+			currentHistogram != null : currentHistogram != named;
+		if (doIt) {
 			doSetup(); // setup chooser list
 			cancel(); // cancel current gate if was setting
 		}
@@ -293,7 +298,9 @@ public class GateSet extends AbstractControl implements Observer {
 	public void doSetup() {
 		/* get current state */
 		synchronized (this) {
-			currentHistogram = (Histogram)STATUS.getCurrentHistogram();
+			final Nameable named = STATUS.getCurrentHistogram();
+			currentHistogram = (named instanceof Histogram) ? (Histogram) named
+					: null;
 		}
 		if (currentHistogram == null) {
 			/* There are many normal situations with no current histogram. */

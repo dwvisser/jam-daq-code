@@ -2,7 +2,6 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
-import jam.data.Histogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
@@ -10,6 +9,7 @@ import jam.data.func.LinearFunction;
 import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
 import jam.global.MessageHandler;
+import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -555,7 +555,7 @@ public class CalibrationFit extends AbstractControl {
 	}
 
 	private AbstractHist1D getCurrentHistogram() {
-		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
+		final Nameable hist = STATUS.getCurrentHistogram();
 		final AbstractHist1D rval = hist instanceof AbstractHist1D ? (AbstractHist1D) hist
 				: null;
 		return rval;

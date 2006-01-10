@@ -3,11 +3,12 @@ package jam.plot;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import static jam.global.BroadcastEvent.Command;
 import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
+import jam.global.Nameable;
 import jam.global.RunInfo;
+import jam.global.BroadcastEvent.Command;
 import jam.ui.Console;
 
 import java.awt.BorderLayout;
@@ -449,16 +450,19 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			processCommand(command);
 		}
 	}
-	
-	private void processCommand(final Command command){
+
+	private void processCommand(final Command command) {
 		if (command == Command.HISTOGRAM_NEW) {
 			histogramsCleared();
 		} else if (command == Command.HISTOGRAM_SELECT) {
-			final Histogram hist = (Histogram) status.getCurrentHistogram();
-			displayHistogram(hist);
-			final List<Histogram> overHists = Histogram.getHistogramList(status
-					.getOverlayHistograms());
-			overlayHistogram(overHists);
+			final Nameable named = status.getCurrentHistogram();
+			if (named instanceof Histogram) {
+				final Histogram hist = (Histogram) named;
+				displayHistogram(hist);
+				final List<Histogram> overHists = Histogram
+						.getHistogramList(status.getOverlayHistograms());
+				overlayHistogram(overHists);
+			}
 		} else if (command == Command.GATE_SET_ON) {
 			getPlotContainer().displaySetGate(GateSetMode.GATE_NEW, null, null);
 			action.setDefiningGate(true);
@@ -476,8 +480,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 					null);
 		}
 	}
-	
-	private void histogramsCleared(){
+
+	private void histogramsCleared() {
 		/* Clear plots select first plot */
 		/* Set initial states for all plots */
 		for (PlotContainer plots : plotList) {

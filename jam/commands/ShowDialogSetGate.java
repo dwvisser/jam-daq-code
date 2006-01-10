@@ -3,6 +3,7 @@ package jam.commands;
 import jam.data.Histogram;
 import jam.data.control.GateSet;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -18,6 +19,10 @@ import javax.swing.Icon;
  */
 final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 
+	ShowDialogSetGate() {
+		super();
+	}
+
 	public void initCommand() {
 		putValue(NAME, "Set\u2026");
 		dialog = new GateSet();
@@ -26,17 +31,25 @@ final class ShowDialogSetGate extends AbstractShowDialog implements Observer {
 		putValue(Action.SHORT_DESCRIPTION, "Set Gate.");
 	}
 
-	public void update(Observable observe, Object obj) {
-		final BroadcastEvent be = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observe, final Object obj) {
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(false);
 		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
-			Histogram hist = (Histogram)STATUS.getCurrentHistogram();
-			if (hist != null)
+			decideEnable();
+		}
+	}
+	
+	private void decideEnable() {
+		final Nameable named = STATUS.getCurrentHistogram();
+		if (named instanceof Histogram) {
+			final Histogram hist = (Histogram) named;
+			if (hist != null) {
 				setEnabled(!hist.getGates().isEmpty());
+			}
 		}
 	}
 }

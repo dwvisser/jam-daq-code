@@ -3,6 +3,7 @@ package jam.ui;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.JamStatus;
+import jam.global.Nameable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,8 +146,9 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 
 	private int numGates() {
 		int numG = 0;
-		final Histogram hist = (Histogram) status.getCurrentHistogram();
-		if (hist != null) {
+		final Nameable named = status.getCurrentHistogram();
+		if (named != null && named instanceof Histogram) {
+			final Histogram hist = (Histogram)named;
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
 				numG = hist.getGates().size();
 			} else { // ALL
