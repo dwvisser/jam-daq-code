@@ -10,6 +10,7 @@ import jam.global.MessageHandler;
 import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
 import jam.sort.VME_Map;
+import jam.sort.CamacCommands.CNAF;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -21,6 +22,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -48,21 +51,21 @@ public class VMECommunication extends GoodThread implements
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
-	private final MessageHandler console;
+	private transient final MessageHandler console;
 
-	private InetAddress addressVME;
+	private transient InetAddress addressVME;
 
-	private int vmePort;
+	private transient int vmePort;
 
-	private DatagramSocket socketSend, socketReceive;
+	private transient DatagramSocket socketSend, socketReceive;
 
-	private boolean active; //
+	private transient boolean active; //
 
-	private int[] scalerValues; // scaler values, loaded when a scaler packet is
-								// received.
+	// scaler values, loaded when a scaler packet is received.
+	private transient final List<Integer> scalerValues = new ArrayList<Integer>();
 
-	private int[] counterValues; // counter values, loaded when a counter
-									// packet is received.
+	// counter values, loaded when a counter packet is received.
+	private transient final List<Integer> counterValues = new ArrayList<Integer>();
 
 	/**
 	 * Creates the instance of this class for handling IP communications with
@@ -146,12 +149,12 @@ public class VMECommunication extends GoodThread implements
 	 * 
 	 * @param observable
 	 *            object being observed
-	 * @param o
+	 * @param message
 	 *            additional parameter from <CODE>Observable</CODE> object
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observable, final Object message) {
+		final BroadcastEvent event = (BroadcastEvent) message;
+		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SCALERS_READ) {
 			readScalers();
 		} else if (command == BroadcastEvent.Command.SCALERS_CLEAR) {
@@ -170,7 +173,7 @@ public class VMECommunication extends GoodThread implements
 	 * @param file
 	 *            the filename to open
 	 */
-	public void openFile(String file) {
+	public void openFile(final String file) {
 		final String OPENFILE = "OPENFILE ";// add filename as an argument
 		sendToVME(OPENFILE + file);
 	}
@@ -250,7 +253,7 @@ public class VMECommunication extends GoodThread implements
 	 * @param state
 	 *            true if we want debug messages from the VME
 	 */
-	public void debug(boolean state) {
+	public void debug(final boolean state) {
 		final String DEBUG_ON = "debug on";
 		final String DEBUG_OFF = "debug off";
 		if (state) {
@@ -267,7 +270,7 @@ public class VMECommunication extends GoodThread implements
 	 * @param state
 	 *            true if user wants VME to be verbose
 	 */
-	public void verbose(boolean state) {
+	public void verbose(final boolean state) {
 		final String VERBOSE_ON = "verbose on";
 		final String VERBOSE_OFF = "verbose off";
 		if (state) {
@@ -286,23 +289,18 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	public void setupCamac(CamacCommands camacCommands) throws JamException {
+	public void setupCamac(final CamacCommands camacCommands)
+			throws JamException {
 		final String RUN_INIT = "list init";
 		final String CNAF_INIT = "cnaf init";
 		final String CNAF_EVENT = "cnaf event";
 		final String CNAF_SCALER = "cnaf scaler";
 		final String CNAF_CLEAR = "cnaf clear";
-		sendCNAFList(CNAF_INIT, camacCommands.getInitCommands()); // load
-																	// initialize
-																	// CNAFs
-		sendCNAFList(CNAF_EVENT, camacCommands.getEventCommands()); // load
-																	// eventCNAFs
-		sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands()); // load
-																		// scaler
-																		// CNAFs
-		sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands()); // load
-																	// clear
-																	// CNAFs
+		// load CNAF's
+		sendCNAFList(CNAF_INIT, camacCommands.getInitCommands());
+		sendCNAFList(CNAF_EVENT, camacCommands.getEventCommands());
+		sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands());
+		sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands());
 		this.sendToVME(RUN_INIT); // initialize camac
 		console
 				.messageOutln("Loaded CAMAC command lists, and initialized VME.");
@@ -316,33 +314,35 @@ public class VMECommunication extends GoodThread implements
 	 * @throws IllegalStateException
 	 *             if there are no parameters in the map
 	 */
-	public void setupVMEmap(VME_Map vmeMap) {
-		String temp = "";
+	public void setupVMEmap(final VME_Map vmeMap) {
+		final StringBuffer temp = new StringBuffer();
 		final List<VME_Channel> eventParams = vmeMap.getEventParameters();
 		final Map<Integer, Byte> hRanges = vmeMap.getV775Ranges();
 		if (eventParams.isEmpty()) {
 			throw new IllegalStateException("No event parameters in map.");
 		}
 		final int totalParams = eventParams.size();
-		temp += totalParams + "\n";
-		// for (int i=0; i < eventParams.length; i++) {
+		final char endl = '\n';
+		final char space = ' ';
+		final String hex = "0x";
+		temp.append(totalParams).append(endl);
 		for (VME_Channel channel : eventParams) {
-			temp += channel.getSlot() + " ";
-			temp += "0x" + Integer.toHexString(channel.getBaseAddress()) + " ";
-			temp += channel.getChannel() + " ";
-			temp += channel.getThreshold() + "\n";
+			temp.append(channel.getSlot()).append(space).append(hex).append(
+					Integer.toHexString(channel.getBaseAddress()))
+					.append(space).append(channel.getChannel()).append(space)
+					.append(channel.getThreshold()).append(endl);
 		}
 		final int numRanges = hRanges.size();
-		temp += numRanges + "\n";
+		temp.append(numRanges).append(endl);
 		if (numRanges > 0) {
 			for (Map.Entry<Integer, Byte> entry : hRanges.entrySet()) {
 				final int base = entry.getKey();
-				temp += "0x" + Integer.toHexString(base) + " "
-						+ entry.getValue() + "\n";
+				temp.append(hex).append(Integer.toHexString(base))
+						.append(space).append(entry.getValue()).append(endl);
 			}
 		}
-		temp += "\0";
-		sendToVME(FrontEndCommunication.VME_ADDRESS, temp);
+		temp.append('\0');
+		sendToVME(FrontEndCommunication.VME_ADDRESS, temp.toString());
 	}
 
 	/**
@@ -351,7 +351,7 @@ public class VMECommunication extends GoodThread implements
 	 * @param seconds
 	 *            the interval between scaler blocks
 	 */
-	public void sendScalerInterval(int seconds) {
+	public void sendScalerInterval(final int seconds) {
 		final String message = seconds + "\n\0";
 		sendToVME(INTERVAL, message);
 	}
@@ -363,7 +363,7 @@ public class VMECommunication extends GoodThread implements
 	 * @param message
 	 *            string to send
 	 */
-	private void sendToVME(String message) {
+	private void sendToVME(final String message) {
 		sendToVME(FrontEndCommunication.OK_MESSAGE, message);
 	}
 
@@ -381,7 +381,7 @@ public class VMECommunication extends GoodThread implements
 	 * @throws IllegalStateException
 	 *             if we haven't established a connection yet
 	 */
-	private void sendToVME(int status, String message) {
+	private void sendToVME(final int status, final String message) {
 		final DatagramPacket packetMessage;
 		/* byte arrays initialized with zeros by definition */
 		final byte[] byteMessage = new byte[message.length() + 5];
@@ -390,24 +390,23 @@ public class VMECommunication extends GoodThread implements
 					+ ".vmeSend() with invalid status: " + status);
 		}
 		byteMessage[3] = (byte) status;// first four bytes interpreted together
-										// as this number
+		// as this number
 		System.arraycopy(message.getBytes(), 0, byteMessage, 4, message
 				.length());
 		byteMessage[byteMessage.length - 1] = STRING_NULL;
 		packetMessage = new DatagramPacket(byteMessage, byteMessage.length,
 				addressVME, vmePort);
-		if (socketSend != null) {
-			try {// create and send packet
-				socketSend.send(packetMessage);
-			} catch (IOException e) {
-				console
-						.errorOutln(getClass().getName()
-								+ ".VMEsend(): "
-								+ "Jam encountered a network communication error attempting to send a packet.");
-			}
-		} else {
+		if (socketSend == null) {
 			throw new IllegalStateException(
 					"Attempted to send a message without a connection.");
+		}
+		try {// create and send packet
+			socketSend.send(packetMessage);
+		} catch (IOException e) {
+			console
+					.errorOutln(getClass().getName()
+							+ ".sendToVME(): "
+							+ "Jam encountered a network communication error attempting to send a packet.");
 		}
 	}
 
@@ -424,8 +423,8 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void sendCNAFList(String listName, List cnafList)
-			throws JamException {
+	private void sendCNAFList(final String listName,
+			final List<CNAF> cnafList) throws JamException {
 		final int COMMAND_SIZE = 16;
 		final int CNAF_SIZE = 9;
 		byte[] byteName = new byte[COMMAND_SIZE];
@@ -450,24 +449,21 @@ public class VMECommunication extends GoodThread implements
 		// put list of cnaf commands into packet
 		for (int i = 0; i < cnafList.size(); i++) {
 			final int offset = 4 + COMMAND_SIZE + 4 + CNAF_SIZE * i;
-			final int[] cnaf = (int[]) cnafList.get(i);
-			byteMessage[offset + 0] = (byte) (cnaf[0] & 0xFF); // id
-			byteMessage[offset + 1] = (byte) (cnaf[1] & 0xFF); // c
-			byteMessage[offset + 2] = (byte) (cnaf[2] & 0xFF); // n
-			byteMessage[offset + 3] = (byte) (cnaf[3] & 0xFF); // a
-			byteMessage[offset + 4] = (byte) (cnaf[4] & 0xFF); // f
-			byteMessage[offset + 5] = (byte) ((cnaf[5] >>> 24) & 0xFF); // data
-																		// byte
-																		// msb
-			byteMessage[offset + 6] = (byte) ((cnaf[5] >>> 16) & 0xFF); // data
-																		// byte
-																		// 1
-			byteMessage[offset + 7] = (byte) ((cnaf[5] >>> 8) & 0xFF); // data
-																		// byte
-																		// 2
-			byteMessage[offset + 8] = (byte) ((cnaf[5] >>> 0) & 0xFF); // data
-																		// byte
-																		// lsb
+			final CNAF cnaf = cnafList.get(i);
+			byteMessage[offset + 0] = cnaf.getParamID(); 
+			byteMessage[offset + 1] = cnaf.getCrate();
+			byteMessage[offset + 2] = cnaf.getNumber();
+			byteMessage[offset + 3] = cnaf.getAddress(); 
+			byteMessage[offset + 4] = cnaf.getFunction();
+			final int data = cnaf.getData();
+			// data byte msb
+			byteMessage[offset + 5] = (byte) ((data >>> 24) & 0xFF);
+			// data byte 1
+			byteMessage[offset + 6] = (byte) ((data >>> 16) & 0xFF);
+			// data byte 2
+			byteMessage[offset + 7] = (byte) ((data >>> 8) & 0xFF);
+			// data byte lsb
+			byteMessage[offset + 8] = (byte) ((data >>> 0) & 0xFF);
 		}
 		// add a null character
 		byteMessage[byteMessage.length - 1] = STRING_NULL;
@@ -482,19 +478,18 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void sendPacket(byte[] byteMessage) throws JamException {
+	private void sendPacket(final byte[] byteMessage) throws JamException {
 		try {// create and send packet
 			final DatagramPacket packetMessage = new DatagramPacket(
 					byteMessage, byteMessage.length, addressVME, vmePort);
-			if (socketSend != null) {
-				socketSend.send(packetMessage);
-			} else {
-				throw new JamException(
-						"Network communication, send socket not setup [VMECommunication]");
+			if (socketSend == null) {
+				throw new JamException(getClass().getName()+
+						": Send socket not setup.");
 			}
+			socketSend.send(packetMessage);
 		} catch (IOException e) {
-			throw new JamException(
-					"Network communication, sending packet [VMECommnunication]");
+			throw new JamException(getClass().getName()+
+					": Error while sending packet.", e);
 		}
 	}
 
@@ -510,9 +505,9 @@ public class VMECommunication extends GoodThread implements
 				final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 						bufferIn.length);
 				socketReceive.receive(packetIn);
-				ByteArrayInputStream messageBais = new ByteArrayInputStream(
+				final ByteArrayInputStream messageBais = new ByteArrayInputStream(
 						packetIn.getData());
-				DataInput messageDis = new DataInputStream(messageBais);
+				final DataInput messageDis = new DataInputStream(messageBais);
 				final int status = messageDis.readInt();
 				if (status == OK_MESSAGE) {
 					console.messageOutln(getClass().getName() + ": "
@@ -555,7 +550,7 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private String unPackMessage(DataInput messageDis) throws JamException {
+	private String unPackMessage(final DataInput messageDis) throws JamException {
 		final char[] errorChar = new char[MAX_MESSAGE_SIZE];
 		String errorMessage = "Undecypherable Message";
 		int numChar = 0;
@@ -584,13 +579,13 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void unPackScalers(DataInput messageDis) throws JamException {
+	private void unPackScalers(final DataInput messageDis) throws JamException {
 		try {
 			synchronized (this) {
 				final int numScaler = messageDis.readInt();// number of scalers
-				scalerValues = new int[numScaler];
+				scalerValues.clear();
 				for (int i = 0; i < numScaler; i++) {
-					scalerValues[i] = messageDis.readInt();
+					scalerValues.add(messageDis.readInt());
 				}
 			}
 		} catch (IOException ioe) {
@@ -615,15 +610,14 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void unPackCounters(DataInput messageDis) throws JamException {
-		final int COUNT_NUMBER = 3;
+	private void unPackCounters(final DataInput messageDis) throws JamException {
 		try {
 			synchronized (this) {
 				final int numCounter = messageDis.readInt(); // number of
-																// counters
-				counterValues = new int[COUNT_NUMBER];
+				// counters
+				counterValues.clear();
 				for (int i = 0; i < numCounter; i++) {
-					counterValues[i] = messageDis.readInt();
+					counterValues.add(messageDis.readInt());
 				}
 			}
 		} catch (IOException ioe) {
@@ -637,8 +631,8 @@ public class VMECommunication extends GoodThread implements
 	 * 
 	 * @return the values of the scalers
 	 */
-	public int[] getScalers() {
-		return scalerValues;
+	public List<Integer> getScalers() {
+		return Collections.unmodifiableList(scalerValues);
 	}
 
 	/**
@@ -648,7 +642,7 @@ public class VMECommunication extends GoodThread implements
 	 *            to be checked
 	 * @return true if valid, false if not
 	 */
-	private boolean validStatus(int status) {
+	private boolean validStatus(final int status) {
 		return (status == OK_MESSAGE || status == ERROR || status == SCALER
 				|| status == CNAF || status == COUNTER || status == VME_ADDRESS || status == INTERVAL);
 	}
@@ -656,7 +650,7 @@ public class VMECommunication extends GoodThread implements
 	/**
 	 * @see java.util.prefs.PreferenceChangeListener#preferenceChange(java.util.prefs.PreferenceChangeEvent)
 	 */
-	public void preferenceChange(PreferenceChangeEvent pce) {
+	public void preferenceChange(final PreferenceChangeEvent pce) {
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 		final boolean state = Boolean.valueOf(newValue).booleanValue();
