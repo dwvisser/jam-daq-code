@@ -2,9 +2,11 @@ package jam.applet;
 
 import jam.InitialHistograms;
 import jam.JamException;
+import jam.data.DataBase;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
+import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
@@ -14,7 +16,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Label;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -25,7 +26,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -33,6 +37,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  * An applet to allow remote viewing of Jam Histograms
@@ -43,315 +48,311 @@ import javax.swing.JTextField;
  */
 public class HistApplet extends JApplet implements ActionListener, ItemListener {
 
-    private PlotDisplay display;
+	private transient PlotDisplay display;
 
-    private Console console;
+	private transient Console console;
 
-    private RemoteData remoteData;
+	private transient JTextField textHost;
 
-    private JTextField textHost;
+	/* select panel controls */
+	private transient JPanel pselect;
 
-    private JButton blink;
+	private transient FlowLayout flselect;
 
-    private String documentHost;
+	private transient JLabel lrunState; // run state label
 
-    /* select panel controls */
-    private JPanel pselect;
+	private transient JLabel lhist; // label for histogram Chooser
 
-    FlowLayout flselect;
+	private transient JComboBox histogramChooser; // reference needed by
 
-    private JLabel lrunState; // run state label
+	// command
 
-    private JLabel lhist; // label for histogram Chooser
+	private transient JButton boverLay; // button for overlay
 
-    JComboBox histogramChooser; // reference needed by command
+	private transient JLabel lgate; // label for gate choicer
 
-    private JButton boverLay; // button for overlay
+	private transient JComboBox gateChooser; // reference needed by command
 
-    private JLabel lgate; // label for gate choicer
+	private static final Logger LOGGER = Logger.getLogger("jam.applet");
 
-    JComboBox gateChooser; // reference needed by command
+	/**
+	 * Initializes the applet. You never need to call this directly; it is
+	 * called automatically by the system once the applet is created.
+	 */
+	public void init() {
+		int sizeX = 500;
+		int sizeY = 300;
+		String expname = "expname";
+		try {// setup applet size
+			sizeY = Integer.parseInt(this.getParameter("height"));
+			sizeX = Integer.parseInt(this.getParameter("width"));
+			expname = this.getParameter("expname");
+		} catch (NumberFormatException nfe) {
+			LOGGER.log(Level.SEVERE, "height and width not numbers", nfe);
+		}
 
-    private int sizeX;
+		// applet layout
+		this.setLayout(new BorderLayout(0, 0));
+		resize(sizeX, sizeY);
+		setBackground(Color.lightGray);
+		setForeground(Color.black);
 
-    private int sizeY;
+		final JPanel ptop = new JPanel();
+		ptop.setLayout(new GridLayout(0, 1, 3, 5));
+		this.add(BorderLayout.NORTH, ptop);
 
-    private String expname;
+		final JPanel pHost = new JPanel();
+		pHost.setLayout(new FlowLayout(FlowLayout.LEFT, 3, 5));
+		ptop.add(pHost);
 
-    /**
-     * Initializes the applet. You never need to call this directly; it is
-     * called automatically by the system once the applet is created.
-     */
-    public void init() {
-        try {// setup applet size
-            sizeY = Integer.parseInt(this.getParameter("height"));
-            sizeX = Integer.parseInt(this.getParameter("width"));
-            expname = this.getParameter("expname");
-        } catch (NumberFormatException nfe) {
-            System.err.println("height and width not numbers");
-        }
+		final JLabel llink = new JLabel("Link to URL: ", Label.RIGHT);
+		pHost.add(llink);
 
-        // applet layout
-        this.setLayout(new BorderLayout(0, 0));
-        resize(sizeX, sizeY);
-        setBackground(Color.lightGray);
-        setForeground(Color.black);
+		textHost = new JTextField("rmi:// ");
+		textHost.setColumns(30);
+		textHost.setBackground(Color.white);
+		textHost.addActionListener(this);
+		pHost.add(textHost);
 
-        Panel ptop = new Panel();
-        ptop.setLayout(new GridLayout(0, 1, 3, 5));
-        this.add(BorderLayout.NORTH, ptop);
+		final AbstractButton blink = new JButton("Link");
+		blink.setActionCommand("link");
+		blink.addActionListener(this);
+		pHost.add(blink);
+		/* output console at bottome */
+		console = new Console(20);
+		this.add(BorderLayout.SOUTH, console);
+		/* display in middle */
+		JamStatus.getSingletonInstance().setValidator(DataBase.getInstance());
+		display = new PlotDisplay(console);
+		this.add(display);
+		addToolbarSelect(ptop);// tool bar for selecting
+		/*
+		 * where did we come from, set host url, and setup applet document path
+		 */
+		final URL localPath = this.getDocumentBase();
+		String documentHost = localPath.getHost();
+		if (documentHost == null) {
+			documentHost = "hostname";
+		}
+		textHost.setText("rmi://" + documentHost + "/" + expname);
+		Histogram.clearList();
+		try {
+			new InitialHistograms();// load initial histograms
+			setHistogramList(Histogram.getHistogramList());
+			// display.setPreference(Display.JamPrefs.WHITE_BACKGROUND, true);
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error create histograms ", e);
+		}
 
-        Panel pHost = new Panel();
-        pHost.setLayout(new FlowLayout(FlowLayout.LEFT, 3, 5));
-        ptop.add(pHost);
+	}
 
-        Label llink = new Label("Link to URL: ", Label.RIGHT);
-        pHost.add(llink);
+	/**
+	 * Receive action frow awt widgets
+	 */
+	public void actionPerformed(final ActionEvent actionEvent) {
+		String incommand;
+		String hostName;
+		incommand = actionEvent.getActionCommand();
+		if ((actionEvent.getSource() == textHost)) {
+			incommand = "link";
+		}
+		try {
+			if (incommand == "link") {
+				hostName = textHost.getText().trim();
+				console.messageOutln("Trying " + hostName);
+				link(hostName);
+				console.messageOutln("Remote link made to: " + hostName);
+			}
+		} catch (JamException je) {
+			console.errorOutln(je.getMessage());
+		} catch (SecurityException se) {
+			console.errorOutln("Security Exception: " + se.getMessage());
+		}
+	}
 
-        textHost = new JTextField("rmi:// ");
-        textHost.setColumns(30);
-        textHost.setBackground(Color.white);
-        textHost.addActionListener(this);
-        pHost.add(textHost);
+	/**
+	 * Recieves the inputs from the pull down menus that are choice changes
+	 * 
+	 * @param itemEvent
+	 *            event from pull down menus
+	 * @since Version 0.5
+	 */
+	public void itemStateChanged(final ItemEvent itemEvent) {
 
-        blink = new JButton("Link");
-        blink.setActionCommand("link");
-        blink.addActionListener(this);
-        pHost.add(blink);
-        /* output console at bottome */
-        console = new Console(20);
-        this.add(BorderLayout.SOUTH, console);
-        /* display in middle */
-        display = new PlotDisplay(console);
-        this.add(display);
-        addToolbarSelect(ptop);// tool bar for selecting
-        /*
-         * where did we come from, set host url, and setup applet document path
-         */
-        final URL localPath = this.getDocumentBase();
-        documentHost = localPath.getHost();
-        if (documentHost == null) {
-            documentHost = "hostname";
-        }
-        if (expname == null) {
-            expname = "expname";
-        }
-        textHost.setText("rmi://" + documentHost + "/" + expname);
-        Histogram.clearList();
-        try {
-            new InitialHistograms();// load initial histograms
-            setHistogramList(Histogram.getHistogramList());
-            // display.setPreference(Display.JamPrefs.WHITE_BACKGROUND, true);
-        } catch (Exception e) {
-            System.out.println("Error create histograms ");
-        }
+		Histogram hist;
+		Gate gate;
+		double area;
+		int lowerLimit;
+		int upperLimit;
 
-    }
+		// a histogram has been choicen
+		if (itemEvent.getItemSelectable() == histogramChooser) {
+			if ((itemEvent.getItem() == null)) {
+				// error no such histogram
+				LOGGER.log(Level.WARNING,
+						"Error: no item in histogram chooser "
+								+ itemEvent.getItem());
+			} else {
+				hist = Histogram.getHistogram((String) itemEvent.getItem());
+				if (hist == null) {
+					// error no such histogram
+					LOGGER.log(Level.WARNING, "Error: histogram null");
+				} else {
+					display.displayHistogram(hist);
+					setGateList(hist.getGates());
+				}
+			}
 
-    /**
-     * Receive action frow awt widgets
-     */
-    public void actionPerformed(ActionEvent e) {
-        String incommand;
-        String hostName;
-        incommand = e.getActionCommand();
-        if ((e.getSource() == textHost)) {
-            incommand = "link";
-        }
-        try {
-            if (incommand == "link") {
-                hostName = textHost.getText().trim();
-                console.messageOutln("Trying " + hostName);
-                link(hostName);
-                console.messageOutln("Remote link made to: " + hostName);
-            }
-        } catch (JamException je) {
-            console.errorOutln(je.getMessage());
-        } catch (SecurityException se) {
-            console.errorOutln("Security Exception: " + se.getMessage());
-        }
-    }
+			// a gate has been choicen
+		} else if (itemEvent.getItemSelectable() == gateChooser
+				&& !(itemEvent.getItem().equals("none"))) {
+			gate = Gate.getGate((String) itemEvent.getItem());
+			if (gate.getDimensionality() == 1) {
+				area = gate.getArea();
+				final int[] limits = gate.getLimits1d();
+				lowerLimit = limits[0];
+				upperLimit = limits[1];
+				console.messageOut("Gate: " + gate.getName() + ", Ch. "
+						+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
+				console.messageOut("  Area = " + area, MessageHandler.END);
+			} else {
+				area = gate.getArea();
+				console
+						.messageOut("Gate " + gate.getName(),
+								MessageHandler.NEW);
+				console.messageOut(", Area = " + area, MessageHandler.END);
+			}
+		}
+	}
 
-    /**
-     * Recieves the inputs from the pull down menus that are choice changes
-     * 
-     * @param ie
-     *            event from pull down menus
-     * @since Version 0.5
-     */
-    public void itemStateChanged(ItemEvent ie) {
+	/*
+	 * non-javadoc: link to host with rmi
+	 */
+	private void link(final String stringURL) throws JamException {
+		LOGGER.fine("open a link to " + stringURL);
+		String[] histogramNames;
+		List<Histogram> histogramList;
+		List<Gate> gateList;
+		RemoteData remoteData;
+		try {
+			remoteData = (RemoteData) Naming.lookup(stringURL);
+		} catch (RemoteException re) {
+			throw new JamException("Remote lookup up failed URL: " + stringURL,
+					re);
+		} catch (java.net.MalformedURLException mue) {
+			throw new JamException(
+					"Remote look up malformed URL: " + stringURL, mue);
+		} catch (NotBoundException nbe) {
+			throw new JamException("Remote look up could not find name "
+					+ stringURL, nbe);
+		}
+		try {
+			LOGGER.fine("get hist names");
+			histogramNames = remoteData.getHistogramNames();
+			LOGGER.fine("got hist names");
+			LOGGER.fine("names 0 " + histogramNames[0]);
+			// load histogram list
+			histogramList = remoteData.getHistogramList();
+			Histogram.setHistogramList(histogramList);
+			// load gate list
+			gateList = remoteData.getGateList();
+			Gate.setGateList(gateList);
+			// jam client
+			setHistogramList(histogramList);
+		} catch (RemoteException re) {
+			LOGGER.log(Level.SEVERE, re.getMessage(), re);
+			throw new JamException("Remote getting histogram list", re);
+		}
+		LOGGER.fine("link made ");
+	}
 
-        Histogram hist;
-        Gate gate;
-        double area;
-        int lowerLimit;
-        int upperLimit;
+	/**
+	 * Sets the chooser to the current list of histograms.
+	 * 
+	 * @param histogramList
+	 *            the list of histograms.
+	 */
+	public void setHistogramList(final List<Histogram> histogramList) {
+		histogramChooser.removeAll();
+		histogramChooser.setModel(new DefaultComboBoxModel(
+				new Vector<Histogram>(histogramList)));
+		final Histogram firstHist = histogramList.isEmpty() ? null
+				: (Histogram) histogramList.get(0);
+		if (firstHist != null) {
+			display.displayHistogram(firstHist);
+			setGateList(firstHist.getGates());
+		}
+		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
+		pselect.setLayout(flselect);
+		pselect.removeAll();
+		pselect.add(lrunState);
+		pselect.add(lhist);
+		pselect.add(histogramChooser);
+		pselect.add(boverLay);
+		pselect.add(lgate);
+		pselect.add(gateChooser);
+		pselect.doLayout();
 
-        // a histogram has been choicen
-        if (ie.getItemSelectable() == histogramChooser) {
-            if ((ie.getItem() != null)) {
-                hist = Histogram.getHistogram((String) ie.getItem());
-                if (hist != null) {
-                    display.displayHistogram(hist);
-                    setGateList(hist.getGates());
-                } else {
-                    // error no such histogram
-                    System.err.println("Error: histogram null [JamCommand]");
-                }
-            } else {
-                // error no such histogram
-                System.err.println("Error: no item in histogram chooser "
-                        + ie.getItem());
-            }
+	}
 
-            // a gate has been choicen
-        } else if (ie.getItemSelectable() == gateChooser) {
-            // if none ignore
-            if (!(ie.getItem().equals("none"))) {
-                gate = Gate.getGate((String) ie.getItem());
-                if (gate.getDimensionality() == 1) {
-                    area = gate.getArea();
-                    final int[] limits = gate.getLimits1d();
-                    lowerLimit = limits[0];
-                    upperLimit = limits[1];
-                    console.messageOut("Gate: " + gate.getName() + ", Ch. "
-                            + lowerLimit + " to " + upperLimit, MessageHandler.NEW);
-                    console.messageOut("  Area = " + area, MessageHandler.END);
-                } else {
-                    area = gate.getArea();
-                    console.messageOut("Gate " + gate.getName(), MessageHandler.NEW);
-                    console.messageOut(", Area = " + area, MessageHandler.END);
-                }
-            }
-        }
-    }
+	/**
+	 * Sets the chooser to the current list of gates
+	 * 
+	 * @param gates
+	 *            the list of gates
+	 */
+	public void setGateList(final List<Gate> gates) {
+		/* if we have gates load gates of current histogram into chooser */
+		if (gateChooser != null) {
+			gateChooser.removeAll();
+			/* set proper model */
+			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(
+					gates)));
+		}
+	}
 
-    /*
-     * non-javadoc: link to host with rmi
-     */
-    private void link(String stringURL) throws JamException {
-        System.out.println("open a link to " + stringURL);
-        String[] histogramNames;
-        List<Histogram> histogramList;
-        List<Gate> gateList;
-        try {
-            remoteData = (RemoteData) Naming.lookup(stringURL);
-        } catch (RemoteException re) {
-            throw new JamException("Remote lookup up failed URL: " + stringURL
-                    + "Excpetion:" + re.getMessage());
-        } catch (java.net.MalformedURLException mue) {
-            throw new JamException("Remote look up malformed URL: " + stringURL);
-        } catch (NotBoundException nbe) {
-            throw new JamException("Remote look up could not find name "
-                    + stringURL);
-        }
-        try {
-            System.out.println("get hist names");
-            histogramNames = remoteData.getHistogramNames();
-            System.out.println("got hist names");
-            System.out.println("names 0 " + histogramNames[0]);
-            // load histogram list
-            histogramList = remoteData.getHistogramList();
-            Histogram.setHistogramList(histogramList);
-            // load gate list
-            gateList = remoteData.getGateList();
-            Gate.setGateList(gateList);
-            // jam client
-            setHistogramList(histogramList);
-        } catch (RemoteException re) {
-            System.out.println(re.getMessage());
-            throw new JamException(
-                    "Remote getting histogram list [SetupRemote]");
-        }
-        System.out.println("link made ");
-    }
+	/**
+	 * Adds the tool bar the at the top of the plot.
+	 * 
+	 * @param pAdd
+	 *            panel to add toolbar to
+	 * @since Version 0.5
+	 */
+	public void addToolbarSelect(final JPanel pAdd) {
 
-    /**
-     * Sets the chooser to the current list of histograms.
-     * 
-     * @param histogramList
-     *            the list of histograms.
-     */
-    public void setHistogramList(List<Histogram> histogramList) {
-        histogramChooser.removeAll();
-        histogramChooser.setModel(new DefaultComboBoxModel(
-                new Vector<Histogram>(histogramList)));
-        final Histogram firstHist = histogramList.isEmpty() ? null
-                : (Histogram) histogramList.get(0);
-        if (firstHist != null) {
-            display.displayHistogram(firstHist);
-            setGateList(firstHist.getGates());
-        }
-        flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
-        pselect.setLayout(flselect);
-        pselect.removeAll();
-        pselect.add(lrunState);
-        pselect.add(lhist);
-        pselect.add(histogramChooser);
-        pselect.add(boverLay);
-        pselect.add(lgate);
-        pselect.add(gateChooser);
-        pselect.doLayout();
+		// panel with selection and print ect..
+		pselect = new JPanel();
+		flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
+		pselect.setLayout(flselect);
+		pselect.setBackground(Color.lightGray);
+		pselect.setForeground(Color.black);
+		pAdd.add(BorderLayout.NORTH, pselect);
 
-    }
+		// >>setup select panel
+		lrunState = new JLabel("      ", SwingConstants.CENTER);
 
-    /**
-     * Sets the chooser to the current list of gates
-     * 
-     * @param gates
-     *            the list of gates
-     */
-    public void setGateList(List<Gate> gates) {
-        /* if we have gates load gates of current histogram into chooser */
-        if (gateChooser != null) {
-            gateChooser.removeAll();
-            /* set proper model */
-            gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(gates)));
-        }
-    }
+		lhist = new JLabel("Histogram", SwingConstants.RIGHT);
 
-    /**
-     * Adds the tool bar the at the top of the plot.
-     * 
-     * @param p
-     *            panel to add toolbar to
-     * @since Version 0.5
-     */
-    public void addToolbarSelect(Panel p) {
+		histogramChooser = new JComboBox();
+		histogramChooser.addItem("HISTOGRAMNAMES");
+		histogramChooser.addItemListener(this);
 
-        // panel with selection and print ect..
-        pselect = new JPanel();
-        flselect = new FlowLayout(FlowLayout.LEFT, 10, 5);
-        pselect.setLayout(flselect);
-        pselect.setBackground(Color.lightGray);
-        pselect.setForeground(Color.black);
-        p.add(BorderLayout.NORTH, pselect);
+		boverLay = new JButton("Overlay");
+		boverLay.setActionCommand("overlay");
+		boverLay.addActionListener(this);
 
-        // >>setup select panel
-        lrunState = new JLabel("      ", Label.CENTER);
+		lgate = new JLabel("Gate", SwingConstants.RIGHT);
 
-        lhist = new JLabel("Histogram", Label.RIGHT);
+		gateChooser = new JComboBox();
+		gateChooser.addItem("GATENAMES");
+		gateChooser.addItemListener(this);
 
-        histogramChooser = new JComboBox();
-        histogramChooser.addItem("HISTOGRAMNAMES");
-        histogramChooser.addItemListener(this);
-
-        boverLay = new JButton("Overlay");
-        boverLay.setActionCommand("overlay");
-        boverLay.addActionListener(this);
-
-        lgate = new JLabel("Gate", Label.RIGHT);
-
-        gateChooser = new JComboBox();
-        gateChooser.addItem("GATENAMES");
-        gateChooser.addItemListener(this);
-
-        pselect.add(lrunState);
-        pselect.add(lhist);
-        pselect.add(histogramChooser);
-        pselect.add(boverLay);
-        pselect.add(lgate);
-        pselect.add(gateChooser);
-    }
+		pselect.add(lrunState);
+		pselect.add(lhist);
+		pselect.add(histogramChooser);
+		pselect.add(boverLay);
+		pselect.add(lgate);
+		pselect.add(gateChooser);
+	}
 
 }
