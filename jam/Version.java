@@ -43,7 +43,7 @@ public final class Version {
 	private static final Version INSTANCE=new Version();
 	
 	private Version(){
-		//nothing to do;
+		super();
 	}
 	
 	/**
