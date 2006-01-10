@@ -32,6 +32,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
     protected transient FileOpenMode fileOpenMode;
 
     AbstractLoaderHDF() {
+    	super();
         Frame frame = STATUS.getFrame();
         hdfio = new HDFIO(frame, msghdlr);
     }
@@ -44,7 +45,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
      * @param load
      * @return whether file was read
      */
-    protected final boolean loadHDFFile(File file, Group load) {
+    protected final boolean loadHDFFile(final File file, final Group load) {
         loadGroup = load;
         final boolean fileRead;
         if (file == null) {//No file given
@@ -68,7 +69,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
         return fileRead;
     }
 
-    protected final void executeParse(String[] cmdTokens) {
+    protected final void executeParse(final String[] cmdTokens) {
         //LATER KBS needs to be implemented
         //execute(null); //has unhandled exception
     }
@@ -101,7 +102,7 @@ abstract class AbstractLoaderHDF extends AbstractCommand implements Observer,
     /**
      * Called by HDFIO when asynchronized IO is completed
      */
-    public void completedIO(String message, String errorMessage) {
+    public void completedIO(final String message, final String errorMessage) {
         hdfio.removeListener();
         notifyApp();
     }

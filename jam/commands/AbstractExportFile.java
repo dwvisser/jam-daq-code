@@ -13,6 +13,10 @@ import java.io.File;
  * @author Ken Swartz
  */
 class AbstractExportFile extends AbstractImportExport {
+	
+	AbstractExportFile() {
+		super();
+	}
 
     /**
      * Saves the given file, or opens a save dialog if given <code>null</code>.
@@ -22,7 +26,7 @@ class AbstractExportFile extends AbstractImportExport {
      * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
      * @see java.io.File
      */
-    protected final void execute(Object[] cmdParams) throws CommandException {
+    protected final void execute(final Object[] cmdParams) throws CommandException {
         try {
             final Histogram histogram = (Histogram)STATUS.getCurrentHistogram();
             if (cmdParams == null) { //No file given
@@ -44,7 +48,7 @@ class AbstractExportFile extends AbstractImportExport {
      * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
      * @see java.io.File
      */
-    protected final void executeParse(String[] cmdTokens)
+    protected final void executeParse(final String[] cmdTokens)
             throws CommandListenerException {
         try {
             if (cmdTokens.length == 0) {

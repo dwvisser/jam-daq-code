@@ -10,6 +10,10 @@ import java.awt.print.PrinterJob;
  * @author Ken Swartz
  */
 abstract class AbstractPrintingCommand extends AbstractCommand {
+	
+	AbstractPrintingCommand() {
+		super();
+	}
 
     // stuff for printing, margins in inches, font
 	 static final double MARGIN_TOP=0.5;

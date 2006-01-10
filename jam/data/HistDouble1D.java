@@ -40,7 +40,7 @@ final class HistDouble1D extends AbstractHist1D {
 		initCounts(countsIn);
 	}
 	
-	private void initCounts(double [] countsIn){
+	private void initCounts(final double [] countsIn){
 		countsDouble = new double[getSizeX()];
 		System.arraycopy(countsIn, 0, countsDouble, 0, countsIn.length);
 	}
@@ -50,7 +50,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.AbstractHist1D#getCounts(int)
 	 */
-	public synchronized double getCounts(int channel) {
+	public synchronized double getCounts(final int channel) {
 		return countsDouble[channel];
 	}
 
@@ -59,7 +59,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.AbstractHist1D#setCounts(int, double)
 	 */
-	public synchronized void setCounts(int channel, double counts) {
+	public synchronized void setCounts(final int channel, final double counts) {
 		countsDouble[channel] = counts;
 	}
 
@@ -124,7 +124,7 @@ final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#setCounts(java.lang.Object)
 	 */
-	public void setCounts(Object countsIn) {
+	public void setCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn)!=getType()){
 			throw new IllegalArgumentException("Expected array for type "+getType());
 		}
@@ -138,14 +138,14 @@ final class HistDouble1D extends AbstractHist1D {
 	 * 
 	 * @see jam.data.Histogram#addCounts(java.lang.Object)
 	 */
-	public synchronized void addCounts(Object countsIn) {
+	public synchronized void addCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn)!=getType()){
 			throw new IllegalArgumentException("Expected array for type "+getType());
 		}
 		addCounts((double[]) countsIn);
 	}
 
-	private void addCounts(double[] countsIn) {
+	private void addCounts(final double[] countsIn) {
 		final int max = Math.min(countsIn.length, getSizeX()) - 1;
 		for (int i = max; i >= 0; i--) {
 			countsDouble[i] += countsIn[i];

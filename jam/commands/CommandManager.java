@@ -50,7 +50,7 @@ public class CommandManager implements CommandListener, CommandNames {
         CMD_MAP.put(SAVE_SORT, SaveSortGroupHDFCmd.class);
         CMD_MAP.put(SAVE_HISTOGRAMS, SaveSelectHistogramsHDFCmd.class);
 
-        CMD_MAP.put(ADD_HDF, AddHDFCmd.class);
+        CMD_MAP.put(ADD_HDF, AddHDF.class);
         CMD_MAP.put(RELOAD_HDF, ReloadHDFCmd.class);
 
         CMD_MAP.put(SHOW_NEW_GROUP, ShowDialogNewGroup.class);
@@ -142,18 +142,17 @@ public class CommandManager implements CommandListener, CommandNames {
         return instance;
     }
 
-    private Commandable currentCom;
+    private transient Commandable currentCom;
 
-    private final MessageHandler msghdlr;
-
-    private final JamStatus status = JamStatus.getSingletonInstance();
+    private transient final MessageHandler msghdlr;
 
     /**
      * Constructor private as singleton
      * 
      */
     private CommandManager() {
-        msghdlr = status.getMessageHandler();
+    	super();
+        msghdlr = JamStatus.getSingletonInstance().getMessageHandler();
     }
 
     /**
@@ -165,7 +164,7 @@ public class CommandManager implements CommandListener, CommandNames {
      * @return <code>true</code> if successful, <code>false</code> if the
      *         given command doesn't exist
      */
-    private boolean createCmd(String strCmd) {
+    private boolean createCmd(final String strCmd) {
         final boolean exists = CMD_MAP.containsKey(strCmd);
         if (exists) {
             final Class cmdClass = CMD_MAP.get(strCmd);
@@ -201,7 +200,7 @@ public class CommandManager implements CommandListener, CommandNames {
      *            the command to type
      * @return the action
      */
-    public Action getAction(String strCmd) {
+    public Action getAction(final String strCmd) {
         return createCmd(strCmd) ? currentCom : null;
     }
 
@@ -224,7 +223,7 @@ public class CommandManager implements CommandListener, CommandNames {
      *            <code>true</code> means only return enabled commands
      * @return list of similar commands
      */
-    public String[] getSimilarCommnands(final String string, boolean onlyEnabled) {
+    public String[] getSimilarCommnands(final String string, final boolean onlyEnabled) {
         final SortedSet<String> sim = new TreeSet<String>();
         final Set<String> keys = CMD_MAP.keySet();
         for (int i = string.length(); i >= 1; i--) {
@@ -257,7 +256,7 @@ public class CommandManager implements CommandListener, CommandNames {
      *            Command parameters as strings
      * @return <code>true</code> if successful
      */
-    public boolean performParseCommand(String strCmd, String[] strCmdParams) {
+    public boolean performParseCommand(final String strCmd, final String[] strCmdParams) {
         boolean validCommand = false;
         if (createCmd(strCmd)) {
             if (currentCom.isEnabled()) {
@@ -282,7 +281,7 @@ public class CommandManager implements CommandListener, CommandNames {
      * @param enable
      *            <code>true</code> if enabled
      */
-    public void setEnabled(String cmd, boolean enable) {
+    public void setEnabled(final String cmd, final boolean enable) {
         getAction(cmd).setEnabled(enable);
     }
 }

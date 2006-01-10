@@ -17,28 +17,32 @@ import javax.swing.ImageIcon;
  */
 public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	
+	AbstractSetBooleanPreference(){
+		super();
+	}
+	
 	/**
 	 * Preference node which must be defined in full implementations.
 	 */
-	protected Preferences prefsNode;
+	protected transient Preferences prefsNode;
 	
 	/**
 	 * Name of the preference must be defined in full implementations.
 	 */
-	protected String key;
+	protected transient String key;
 	
 	/**
 	 * Placeholder for the previous/next state.
 	 */
-	protected boolean state;
+	protected transient boolean state;
 	
-	private final ImageIcon checkMark, clear;
+	private final static ImageIcon CHECK_MARK, CLEAR;
 	
-	{
+	static {
 		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-		checkMark=new ImageIcon(loader.getResource(
+		CHECK_MARK=new ImageIcon(loader.getResource(
 		"jam/commands/checkmark.png"));
-		clear=new ImageIcon(loader.getResource(
+		CLEAR=new ImageIcon(loader.getResource(
 		"jam/ui/clear.png"));
 	}
 	
@@ -46,7 +50,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	 * Set to <code>true</code> here. Set differently in 
 	 * <em>constructor</em> if necessary.
 	 */
-	protected boolean defaultState=true;
+	protected transient boolean defaultState=true;
 
 	/**
 	 * Subclass initialization must be in initialization blocks or
@@ -68,7 +72,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected final void execute(Object[] cmdParams) {
+	protected final void execute(final Object[] cmdParams) {
 		synchronized(this){
 			if (cmdParams !=null && cmdParams.length>0 && cmdParams[0] 
 			instanceof Boolean){
@@ -83,7 +87,7 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	
 	private void changeIcon(){
 		synchronized (this){
-			putValue(SMALL_ICON, state ? checkMark : clear);
+			putValue(SMALL_ICON, state ? CHECK_MARK : CLEAR);
 		}
 	}
 
@@ -100,14 +104,14 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {
 	 * </ul>
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected final void executeParse(String[] cmdTokens)
+	protected final void executeParse(final String[] cmdTokens)
 		throws CommandListenerException {
 		final Boolean [] pass=new Boolean[1];
 		synchronized(this){
 			if (cmdTokens.length>0){
-			final String s=cmdTokens[0];
-			if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("yes") ||
-			s.equalsIgnoreCase("on") || s.equalsIgnoreCase("1")){
+			final String token=cmdTokens[0];
+			if (token.equalsIgnoreCase("true") || token.equalsIgnoreCase("yes") ||
+			token.equalsIgnoreCase("on") || token.equalsIgnoreCase("1")){
 				pass[0]=Boolean.TRUE;				
 			} else {
 				pass[0]=Boolean.FALSE;

@@ -40,7 +40,7 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 * Reference to global <code>MessageHandler</code> available to all
 	 * implementing classes.
 	 */
-	protected final MessageHandler msghdlr;
+	protected transient final MessageHandler msghdlr;
 
 	/**
 	 * Constructor.
@@ -57,7 +57,7 @@ public abstract class AbstractCommand extends AbstractAction implements
 		// default do-nothing
 	}
 
-	public final void actionPerformed(ActionEvent actionEvent) {
+	public final void actionPerformed(final ActionEvent actionEvent) {
 		try {
 			performCommand(null);
 		} catch (CommandException e) {
@@ -72,7 +72,7 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 * @param cmdParams
 	 *            the command parameters
 	 */
-	public void performCommand(Object[] cmdParams) throws CommandException {
+	public void performCommand(final Object[] cmdParams) throws CommandException {
 		try {
 			execute(cmdParams);
 			logCommand();
@@ -89,7 +89,7 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 * @param strCmdParams
 	 *            the command parameters as strings
 	 */
-	public void performParseCommand(String[] strCmdParams)
+	public void performParseCommand(final String[] strCmdParams)
 			throws CommandListenerException {
 		try {
 			executeParse(strCmdParams);
@@ -123,7 +123,7 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 *            that the icon lies at
 	 * @return the icon if successful, <code>null</code> if not
 	 */
-	protected Icon loadToolbarIcon(String path) {
+	protected Icon loadToolbarIcon(final String path) {
 		/* buttons initialized with text if icon==null */
 		Icon rval = null;
 		final ClassLoader loader = this.getClass().getClassLoader();

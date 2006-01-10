@@ -13,15 +13,18 @@ import java.util.Observable;
  * 
  * @author Ken Swartz
  */
-final class AddHDFCmd extends AbstractLoaderHDF {
-
+final class AddHDF extends AbstractLoaderHDF {
+	
+	AddHDF(){
+		super();
+	}
 	 
 	public void initCommand(){
 		putValue(NAME,"Add Group Counts\u2026");
 		fileOpenMode=FileOpenMode.ADD;
 	}
 	
-	protected final void execute(final Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
         File file = null;
         loadGroup = (Group)STATUS.getCurrentGroup();
         //Parse commad parameters if given
@@ -36,7 +39,7 @@ final class AddHDFCmd extends AbstractLoaderHDF {
         loadHDFFile(file, loadGroup);
     }
 	
-	public void update(Observable observe, Object obj) {
+	public void update(final Observable observe, final Object obj) {
         final BroadcastEvent event = (BroadcastEvent) obj;
         final BroadcastEvent.Command command = event.getCommand();
         if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {

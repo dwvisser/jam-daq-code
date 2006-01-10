@@ -39,11 +39,9 @@ public final class Gate implements DataElement {
 	private static final Map<String, Gate> TABLE = Collections
 			.synchronizedMap(new HashMap<String, Gate>());
 
-	static {
-		for (int i = 0; i < 2; i++) {
-			DIM_LIST
-					.add(i, Collections.synchronizedList(new ArrayList<Gate>()));
-		}
+	static {//1- and 2-dimensional gate lists
+		DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
+		DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
 	}
 
 	/**
@@ -71,7 +69,7 @@ public final class Gate implements DataElement {
 	 *            name of the desired gate
 	 * @return <code>Gate</code> with the given name, null if non-existent
 	 */
-	public static Gate getGate(String fullName) {
+	public static Gate getGate(final String fullName) {
 		Gate rval = null;
 		if (fullName != null && TABLE.containsKey(fullName)) {
 			rval = TABLE.get(fullName);
@@ -95,7 +93,12 @@ public final class Gate implements DataElement {
 	 *            of gates
 	 * @return list of gates with the given dimensionality
 	 */
-	public static List getGateList(int dimension) {
+	public static List getGateList(final int dimension) {
+		if (dimension < 1 || dimension > 2) {
+			throw new IllegalArgumentException(
+					"Gates may only have 1 or 2 dimensions, not " + dimension
+							+ ".");
+		}
 		return Collections.unmodifiableList(DIM_LIST.get(dimension - 1));
 	}
 
@@ -105,7 +108,7 @@ public final class Gate implements DataElement {
 	 * @param gate
 	 * @return <code>true</code> if this gate remains in the name mapping
 	 */
-	public static boolean isValid(Gate gate) {
+	public static boolean isValid(final Gate gate) {
 		return TABLE.containsValue(gate);
 	}
 
@@ -115,7 +118,7 @@ public final class Gate implements DataElement {
 	 * @param inGateList
 	 *            must contain all histogram objects
 	 */
-	public static void setGateList(List<Gate> inGateList) {
+	public static void setGateList(final List<Gate> inGateList) {
 		clearList();
 		for (Gate gate : inGateList) {
 			final String fullName = gate.getFullName();
@@ -148,7 +151,7 @@ public final class Gate implements DataElement {
 
 	private transient final int sizeY; // size used for 2d histograms only
 
-	private transient String uniqueName;// unique name of group
+	private transient final String uniqueName;// unique name of group
 
 	private transient int upperLimit; // upper limit for 1d gate
 
@@ -164,6 +167,7 @@ public final class Gate implements DataElement {
 	 *            the <code>Histogram</code> to which the gate will belong.
 	 */
 	public Gate(String nameIn, Histogram hist) {
+		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
@@ -174,7 +178,7 @@ public final class Gate implements DataElement {
 			gateNames.add(gate.getName());
 		}
 		this.name = stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);
-		this.uniqueName=stringUtil.makeFullName(histUniqueName, name);
+		this.uniqueName = stringUtil.makeFullName(histUniqueName, name);
 		dimensions = hist.getDimensionality();
 		sizeX = hist.getSizeX();
 		sizeY = hist.getSizeY();
@@ -183,7 +187,7 @@ public final class Gate implements DataElement {
 		hist.addGate(this);
 	}
 
-	private final void addToCollections() {
+	private void addToCollections() {
 		TABLE.put(uniqueName, this);
 		LIST.add(this);
 		DIM_LIST.get(dimensions - 1).add(this);
@@ -407,7 +411,7 @@ public final class Gate implements DataElement {
 	 * @throws UnsupportedOperationException
 	 *             thrown if called for 2d gate
 	 */
-	public boolean inGate(int channel) {
+	public boolean inGate(final int channel) {
 		if (dimensions != 1) {
 			throw new UnsupportedOperationException(
 					"inGate(int): can only be called for 1D gates.");
@@ -427,17 +431,15 @@ public final class Gate implements DataElement {
 	 * @throws UnsupportedOperationException
 	 *             thrown if called for 1d gate
 	 */
-	public boolean inGate(int channelX, int channelY) {
+	public boolean inGate(final int channelX, final int channelY) {
 		boolean inside = false; // default value if not all conditions are met
 		if (dimensions != 2) {
 			throw new UnsupportedOperationException(
 					"inGate(int,int): can only be called for 2D gates");
 		}
-		if (isSet) {
-			if ((channelX >= 0) && (channelX < sizeX) && (channelY >= 0)
-					&& (channelY < sizeY)) {
-				inside = insideGate[channelX][channelY];
-			}
+		if (isSet && (channelX >= 0) && (channelX < sizeX) && (channelY >= 0)
+				&& (channelY < sizeY)) {
+			inside = insideGate[channelX][channelY];
 		}
 		return inside;
 	}
@@ -462,7 +464,7 @@ public final class Gate implements DataElement {
 	 * @throws UnsupportedOperationException
 	 *             if called for 2d gate
 	 */
-	public void setLimits(int lower, int upper) {
+	public void setLimits(final int lower, final int upper) {
 		if (dimensions != 1) {
 			throw new UnsupportedOperationException(
 					"setLimits(int,int): can only be called for 1D gates");
@@ -485,7 +487,7 @@ public final class Gate implements DataElement {
 	 * @throws UnsupportedOperationException
 	 *             thrown if called for 1d gate
 	 */
-	public void setLimits(Polygon gatePoly) {
+	public void setLimits(final Polygon gatePoly) {
 		bananaGate.reset();
 		for (int i = 0; i < gatePoly.npoints; i++) {
 			bananaGate.addPoint(gatePoly.xpoints[i], gatePoly.ypoints[i]);
@@ -542,7 +544,7 @@ public final class Gate implements DataElement {
 	 * "Removes" the gate's limits, so that it will return false for all calls
 	 * to <code>inGate()</code>.
 	 */
-	public final void unsetLimits() {
+	public void unsetLimits() {
 		isSet = false;
 		if (dimensions == 1) {
 			lowerLimit = 0;

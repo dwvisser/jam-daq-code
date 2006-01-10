@@ -53,7 +53,7 @@ public final class Group implements Nameable {
 	 * 
 	 * @param group
 	 */
-	public static void clearGroup(Group group) {
+	public static void clearGroup(final Group group) {
 		NAME_MAP.remove(group);
 		LIST.remove(group);
 	}
@@ -79,8 +79,8 @@ public final class Group implements Nameable {
 	 *            name of the file that this group belongs to
 	 * @return the created <code>Group</code> object
 	 */
-	public synchronized static Group createGroup(String groupName,
-			String fileName, Type type) {
+	public synchronized static Group createGroup(final String groupName,
+			final String fileName, final Type type) {
 		final Group group = new Group(groupName, type, fileName);
 		/* Only one sort group */
 		if (type == Type.SORT) {
@@ -99,7 +99,7 @@ public final class Group implements Nameable {
 	 *            of group
 	 * @return the created <code>Group</code> object
 	 */
-	public synchronized static Group createGroup(String groupName, Type type) {
+	public synchronized static Group createGroup(final String groupName, final Type type) {
 		return Group.createGroup(groupName, null, type);
 	}
 
@@ -110,7 +110,7 @@ public final class Group implements Nameable {
 	 *            of group
 	 * @return the group
 	 */
-	public static Group getGroup(String name) {
+	public static Group getGroup(final String name) {
 		return NAME_MAP.get(name);
 	}
 
@@ -148,7 +148,7 @@ public final class Group implements Nameable {
 	 *            the group to test
 	 * @return <code>true</code> if this group remains in the name mapping
 	 */
-	public static boolean isValid(Group group) {
+	public static boolean isValid(final Group group) {
 		return NAME_MAP.containsValue(group);
 	}
 
@@ -159,31 +159,31 @@ public final class Group implements Nameable {
 	 *            the full sort class name
 	 * @return the classname, minus any packages
 	 */
-	public static String parseSortClassName(String name) {
+	public static String parseSortClassName(final String name) {
 		final int index = name.lastIndexOf(".");
 		return name.substring(index + 1, name.length());
 	}
 
 	/** Name of file that group belongs to. */
-	private String fileName;
+	private transient final String fileName;
 
 	/** Name of file and group concatenated. */
-	private String fullName;
+	private transient String fullName;
 
 	/** Origonal group name */
-	private String groupName;
+	private transient final String groupName;
 
 	/** children histograms of group */
-	private final List<Histogram> histList = new ArrayList<Histogram>();
+	private transient final List<Histogram> histList = new ArrayList<Histogram>();
 
 	/** children of group */
-	private final Map<String, Histogram> histogramMap = new HashMap<String, Histogram>();
+	private transient final Map<String, Histogram> histogramMap = new HashMap<String, Histogram>();
 
 	/** children scalers of group */
-	private final List<Scaler> scalerList = new ArrayList<Scaler>();
+	private transient final List<Scaler> scalerList = new ArrayList<Scaler>();
 
 	/** Type of group, file or sort */
-	private Type type;
+	private transient final Type type;
 
 	/**
 	 * Constructor
@@ -196,6 +196,7 @@ public final class Group implements Nameable {
 	 *            name of file this group is associated with
 	 */
 	private Group(String groupName, Type type, String fileName) {
+		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
 		if (fileName != null && groupName != null) {
@@ -220,7 +221,7 @@ public final class Group implements Nameable {
 	 * 
 	 * @param hist
 	 */
-	public void addHistogram(Histogram hist) {
+	public void addHistogram(final Histogram hist) {
 		histList.add(hist);
 		histogramMap.put(hist.getName(), hist);
 	}
@@ -231,7 +232,7 @@ public final class Group implements Nameable {
 	 * @param scaler
 	 *            to add
 	 */
-	public void addScaler(Scaler scaler) {
+	public void addScaler(final Scaler scaler) {
 		scalerList.add(scaler);
 	}
 
@@ -256,7 +257,7 @@ public final class Group implements Nameable {
 	 *            the histogram name
 	 * @return the histogram
 	 */
-	public Histogram getHistogram(String name) {
+	public Histogram getHistogram(final String name) {
 		return histogramMap.get(name);
 	}
 
@@ -311,7 +312,7 @@ public final class Group implements Nameable {
 	 * 
 	 * @param hist
 	 */
-	public void removeHistogram(Histogram hist) {
+	public void removeHistogram(final Histogram hist) {
 		histList.remove(hist);
 		histogramMap.remove(hist.getName());
 	}
@@ -324,7 +325,7 @@ public final class Group implements Nameable {
 	 * @throws DataException
 	 *             if an attempt is made to rename to an existing name
 	 */
-	public void setName(String name) throws DataException {
+	public void setName(final String name) throws DataException {
 		if (NAME_MAP.containsKey(name)) {
 			throw new DataException("You may not rename to an existing name.");
 		}

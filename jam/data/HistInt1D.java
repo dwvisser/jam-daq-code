@@ -71,7 +71,7 @@ public final class HistInt1D extends AbstractHist1D {
      * @throws IllegalArgumentException
      *             if the parameter is the wrong type
      */
-    public synchronized void addCounts(Object add) {
+    public synchronized void addCounts(final Object add) {
         if (Type.getArrayType(add) != getType()) {
             throw new IllegalArgumentException("Expected array for type "
                     + getType());
@@ -79,7 +79,7 @@ public final class HistInt1D extends AbstractHist1D {
         addCountsArray((int[]) add);
     }
 
-    private synchronized void addCountsArray(int[] countsIn) {
+    private synchronized void addCountsArray(final int[] countsIn) {
         final int max = Math.min(countsIn.length, getSizeX()) - 1;
         for (int i = max; i >= 0; i--) {
             counts[i] += countsIn[i];
@@ -127,7 +127,7 @@ public final class HistInt1D extends AbstractHist1D {
      *            that we are interested in
      * @return number of counts
      */
-    public synchronized double getCounts(int channel) {
+    public synchronized double getCounts(final int channel) {
         return counts[channel];
     }
 
@@ -176,7 +176,7 @@ public final class HistInt1D extends AbstractHist1D {
         }
     }
 
-    private void initCounts(int[] countsIn) {
+    private void initCounts(final int[] countsIn) {
         counts = new int[getSizeX()];
         System.arraycopy(countsIn, 0, counts, 0, countsIn.length);
     }
@@ -190,7 +190,7 @@ public final class HistInt1D extends AbstractHist1D {
      *            to be in the channel, rounded to <code>int</code>, if
      *            necessary
      */
-    public synchronized void setCounts(int channel, double count) {
+    public synchronized void setCounts(final int channel, final double count) {
         counts[channel] = (int) Math.round(count);
     }
 
@@ -202,7 +202,7 @@ public final class HistInt1D extends AbstractHist1D {
      * @throws IllegalArgumentException
      *             if countsIn is the wrong type.
      */
-    public synchronized void setCounts(Object countsIn) {
+    public synchronized void setCounts(final Object countsIn) {
         if (Type.getArrayType(countsIn) != getType()) {
             throw new IllegalArgumentException("Expected array for type "
                     + getType());

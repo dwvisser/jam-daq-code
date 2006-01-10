@@ -70,7 +70,7 @@ public final class Monitor {
 	 * @param intervalIn
 	 *            interval in seconds
 	 */
-	public synchronized static void setInterval(int intervalIn) {
+	public synchronized static void setInterval(final int intervalIn) {
 		interval = intervalIn;
 	}
 
@@ -80,7 +80,7 @@ public final class Monitor {
 	 * @param inMonList
 	 *            must contain all <code>Monitor</code> objects
 	 */
-	public static void setMonitorList(List<Monitor> inMonList) {
+	public static void setMonitorList(final List<Monitor> inMonList) {
 		clearList();
 		for (Monitor monitor : inMonList) {
 			final String name = monitor.getName();
@@ -117,6 +117,7 @@ public final class Monitor {
 	 *            the gate whose area is monitored
 	 */
 	public Monitor(String monitorName, Gate gate) {
+		super();
 		name = monitorName;
 		source = gate;
 		if (source == null) {
@@ -136,6 +137,7 @@ public final class Monitor {
 	 *            the scaler which is monitored
 	 */
 	public Monitor(String monitorName, Scaler scaler) {
+		super();
 		name = monitorName;
 		source = scaler;
 		if (source == null) {
@@ -155,6 +157,7 @@ public final class Monitor {
 	 *            the sort routine which produces the monitor values
 	 */
 	public Monitor(String monitorName, Sorter sort) {
+		super();
 		name = monitorName;
 		source = sort;
 		if (source == null) {
@@ -164,7 +167,7 @@ public final class Monitor {
 		addToCollections();
 	}
 
-	private final void addToCollections() {
+	private void addToCollections() {
 		monitorTable.put(name, this);
 		monitorList.add(this);
 	}
@@ -256,7 +259,7 @@ public final class Monitor {
 	 *            <code>true</code> if an audible alarm is desired,
 	 *            <code>false</code> if not
 	 */
-	public synchronized void setAlarm(boolean inAlarm) {
+	public synchronized void setAlarm(final boolean inAlarm) {
 		alarm = inAlarm;
 	}
 
@@ -269,7 +272,7 @@ public final class Monitor {
 	 * @param clip
 	 *            sound to play for alarm
 	 */
-	public synchronized void setAudioClip(AudioClip clip) {
+	public synchronized void setAudioClip(final AudioClip clip) {
 		audioClip = clip;
 	}
 
@@ -281,7 +284,7 @@ public final class Monitor {
 	 *            the new maximum
 	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized void setMaximum(double inMaximum) {
+	public synchronized void setMaximum(final double inMaximum) {
 		maximum = inMaximum;
 	}
 
@@ -293,7 +296,7 @@ public final class Monitor {
 	 *            the new minimum
 	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized void setThreshold(double inThreshold) {
+	public synchronized void setThreshold(final double inThreshold) {
 		threshold = inThreshold;
 	}
 
@@ -303,7 +306,7 @@ public final class Monitor {
 	 * @param valueIn
 	 *            the new value
 	 */
-	public synchronized void setValue(int valueIn) {
+	public synchronized void setValue(final int valueIn) {
 		valueNew = valueIn;
 	}
 

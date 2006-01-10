@@ -32,7 +32,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
 		final JFrame frame =STATUS.getFrame();
 		final Histogram hist=(Histogram)STATUS.getCurrentHistogram();
 		final String name =hist.getFullName().trim();
@@ -49,12 +49,12 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		}
 	}
 	
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);		
 	}
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
 			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
 			setEnabled(false);			

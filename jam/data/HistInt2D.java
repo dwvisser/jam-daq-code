@@ -62,7 +62,7 @@ public final class HistInt2D extends AbstractHist2D {
 		initCounts(countsIn);
 	}
 	
-	private void initCounts(int [][] countsIn){
+	private void initCounts(final int [][] countsIn){
 		counts2d=new int[getSizeX()][getSizeY()];
 		for (int i = 0; i < countsIn.length; i++) { //copy arrays
 			System
@@ -78,7 +78,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param chY y-channel that we are interested in
 	 * @return number of counts
 	 */
-	public double getCounts(int chX, int chY) {
+	public double getCounts(final int chX, final int chY) {
 		return counts2d[chX][chY];
 	}
 
@@ -136,7 +136,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @throws IllegalArgumentException
 	 *             if countsIn is the wrong type.
 	 */
-	public void setCounts(Object countsIn) {
+	public void setCounts(final Object countsIn) {
 	    final Type givenType = Type.getArrayType(countsIn);
 	    final Type expectedType = getType();
 		if (givenType != expectedType) {
@@ -155,7 +155,7 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @throws IllegalArgumentException
 	 *             if the parameter is the wrong type
 	 */
-	public void addCounts(Object countsIn) {
+	public void addCounts(final Object countsIn) {
 		if (Type.getArrayType(countsIn) != getType()) {
 			throw new IllegalArgumentException("Expected array for type "
 					+ getType());
@@ -180,7 +180,7 @@ public final class HistInt2D extends AbstractHist2D {
 		return sum;
 	}
 
-	private synchronized void setCountsArray(int[][] countsIn) {
+	private synchronized void setCountsArray(final int[][] countsIn) {
 		final int loopLen = Math.min(counts2d.length, countsIn.length);
 		for (int i = 0; i < loopLen; i++) {
 			System.arraycopy(countsIn[i], 0, counts2d[i], 0, Math.min(
@@ -188,7 +188,7 @@ public final class HistInt2D extends AbstractHist2D {
 		}
 	}
 
-	private synchronized void addCountsArray(int[][] countsIn) {
+	private synchronized void addCountsArray(final int[][] countsIn) {
 		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
 		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
 		for (int x = maxX; x >= 0; x--) {

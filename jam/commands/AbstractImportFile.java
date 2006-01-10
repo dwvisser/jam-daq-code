@@ -14,6 +14,10 @@ import java.io.File;
  * @author Ken Swartz
  */
 class AbstractImportFile extends AbstractImportExport {
+	
+	AbstractImportFile(){
+		super();
+	}
 
     /**
      * Loads the given file, or opens a load dialog if given <code>null</code>.
@@ -23,7 +27,7 @@ class AbstractImportFile extends AbstractImportExport {
      * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
      * @see java.io.File
      */
-    protected final void execute(Object[] cmdParams) throws CommandException {
+    protected final void execute(final Object[] cmdParams) throws CommandException {
         try {
             if (cmdParams == null) { //No file given
                 if (importExport.openFile(null)) {
@@ -48,7 +52,7 @@ class AbstractImportFile extends AbstractImportExport {
      * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
      * @see java.io.File
      */
-    protected final void executeParse(String[] cmdTokens)
+    protected final void executeParse(final String[] cmdTokens)
             throws CommandListenerException {
         try {
             if (cmdTokens.length == 0) {

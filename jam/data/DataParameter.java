@@ -40,6 +40,7 @@ public class DataParameter {
      * @throws IllegalArgumentException if name >NAME_LENGTH characters
 	 */
 	public DataParameter(String name)  {
+		super();
 		final StringUtilities stringUtil=StringUtilities.getInstance();
 		//give error if name is too long
 		if (name.length() > NAME_LENGTH) {
@@ -84,7 +85,7 @@ public class DataParameter {
 	 *
 	 * @param inList list of all parameters
 	 */
-	public static void setParameterList(List<DataParameter> inList) {
+	public static void setParameterList(final List<DataParameter> inList) {
 		/* clear current lists */
 		TABLE.clear();
 		LIST.clear();
@@ -109,7 +110,7 @@ public class DataParameter {
 	* @param name the name of the desired parameter 
 	* @return the parameter with the specified name
 	*/
-	public static DataParameter getParameter(String name) {
+	public static DataParameter getParameter(final String name) {
 		return TABLE.get(name);
 	}
 
@@ -136,7 +137,7 @@ public class DataParameter {
 	 *
 	 * @param valueIn new value for this parameter
 	 */
-	public void setValue(double valueIn) {
+	public void setValue(final double valueIn) {
 		value = valueIn;
 	}
 }

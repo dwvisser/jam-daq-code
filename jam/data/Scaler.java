@@ -53,7 +53,7 @@ public class Scaler implements DataElement {
 	 *            the name of the desired scaler
 	 * @return the scaler with the specified name
 	 */
-	public static Scaler getScaler(String name) {
+	public static Scaler getScaler(final String name) {
 		return TABLE.get(name);
 	}
 
@@ -73,12 +73,12 @@ public class Scaler implements DataElement {
 	 * @param inValue
 	 *            the list of all the new values for the scalers
 	 */
-	public static void update(int[] inValue) {
+	public static void update(final List<Integer> inValue) {
 		/* check we do not try to update mores scalers than there are */
-		final int numScalers = Math.min(inValue.length, LIST.size());
+		final int numScalers = Math.min(inValue.size(), LIST.size());
 		for (int i = 0; i < numScalers; i++) {
 			final Scaler scaler = LIST.get(i);
-			scaler.setValue(inValue[scaler.getNumber()]);
+			scaler.setValue(inValue.get(scaler.getNumber()));
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_UPDATE);
 	}
@@ -86,8 +86,6 @@ public class Scaler implements DataElement {
 	private transient final String name; // name of scaler
 
 	private transient final int number; // number in list
-
-	private transient final String uniqueName; // unique name in all groups
 
 	private int value; // value of scaler
 
@@ -105,6 +103,7 @@ public class Scaler implements DataElement {
 	 *             if name ><code>NAME_LENGTH</code> characters
 	 */
 	public Scaler(Group group, String nameIn, int idNum) {
+		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		// Set of names of gates for histogram this gate belongs to
 		Set<String> scalerNames = new TreeSet<String>();
@@ -112,10 +111,10 @@ public class Scaler implements DataElement {
 			scalerNames.add(scaler.getName());
 		}
 		name = stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
-		uniqueName = stringUtil.makeFullName(group.getName(), name );
 		group.addScaler(this);
 		number = idNum;
 		/* Add to list of scalers */
+		final String uniqueName = stringUtil.makeFullName(group.getName(), name );
 		TABLE.put(uniqueName, this);
 		LIST.add(this);
 	}

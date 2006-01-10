@@ -14,17 +14,21 @@ import javax.swing.JDialog;
  */
 public class AbstractShowDialog
 	extends AbstractCommand {
+	
+	AbstractShowDialog(){
+		super();
+	}
 
 	/**
 	 * Dialog to show.
 	 */
-	protected JDialog dialog;
+	protected transient JDialog dialog;
 	
-	protected final void execute(Object[] cmdParams) {
+	protected final void execute(final Object[] cmdParams) {
 		dialog.setVisible(true);
 	}
 
-	protected final void executeParse(String[] cmdTokens)
+	protected final void executeParse(final String[] cmdTokens)
 		throws CommandListenerException {
 		execute(null);
 	}
@@ -35,7 +39,7 @@ public class AbstractShowDialog
 	 * 
 	 * @see javax.swing.Action#setEnabled(boolean)
 	 */
-	public final void setEnabled(boolean state){
+	public final void setEnabled(final boolean state){
 		super.setEnabled(state);
 		if (!state){
 			dialog.dispose();

@@ -47,7 +47,7 @@ final class HistDouble2D extends AbstractHist2D {
      * 
      * @see jam.data.Histogram#addCounts(java.lang.Object)
      */
-    public void addCounts(Object countsIn) {
+    public void addCounts(final Object countsIn) {
         if (Type.getArrayType(countsIn) != getType()) {
             throw new IllegalArgumentException("Expected array for type "
                     + getType());
@@ -109,11 +109,11 @@ final class HistDouble2D extends AbstractHist2D {
      * 
      * @see jam.data.AbstractHist2D#getCounts(int, int)
      */
-    public double getCounts(int chX, int chY) {
+    public double getCounts(final int chX, final int chY) {
         return counts2dD[chX][chY];
     }
 
-    private void initCounts(double[][] countsIn) {
+    private void initCounts(final double[][] countsIn) {
         counts2dD = new double[getSizeX()][getSizeY()];
         for (int i = 0; i < countsIn.length; i++) { // copy arrays
             System.arraycopy(countsIn[i], 0, counts2dD[i], 0,
@@ -126,7 +126,7 @@ final class HistDouble2D extends AbstractHist2D {
      * 
      * @see jam.data.AbstractHist2D#setCounts(int, int, double)
      */
-    public void setCounts(int chX, int chY, double counts) {
+    public void setCounts(final int chX, final int chY, final double counts) {
         counts2dD[chX][chY] = counts;
     }
 
@@ -135,7 +135,7 @@ final class HistDouble2D extends AbstractHist2D {
      * 
      * @see jam.data.Histogram#setCounts(java.lang.Object)
      */
-    public void setCounts(Object countsIn) {
+    public void setCounts(final Object countsIn) {
         if (Type.getArrayType(countsIn) != getType()) {
             throw new IllegalArgumentException("Expected array for type "
                     + getType());
@@ -143,7 +143,7 @@ final class HistDouble2D extends AbstractHist2D {
         setCountsArray((double[][]) countsIn);
     }
 
-    private synchronized void setCountsArray(double[][] countsIn) {
+    private synchronized void setCountsArray(final double[][] countsIn) {
         final int loopLen = Math.min(countsIn.length, counts2dD.length);
         for (int i = 0; i < loopLen; i++) {
             System.arraycopy(countsIn[i], 0, counts2dD[i], 0, Math.min(
