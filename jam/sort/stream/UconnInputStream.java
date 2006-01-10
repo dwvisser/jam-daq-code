@@ -4,6 +4,8 @@ import jam.global.MessageHandler;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class knows how to handle Uconn Be7.  It extends 
@@ -43,7 +45,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	int blockCurrSize;
 	int blockNumber;
 	int blockNumEvnt;
-	int[] scalerValues = new int[NUMBER_SCALERS];
+	private final List<Integer> scalerValues = new ArrayList<Integer>(NUMBER_SCALERS);
 
 	private int eventId;
 	private short eventState;
@@ -149,7 +151,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 					+ blockNumEvnt);
 			/* read in scalers */
 			for (int i = 0; i < NUMBER_SCALERS; i++) {
-				scalerValues[i] = dataInput.readInt() & SCALER_MASK;
+				scalerValues.add(dataInput.readInt() & SCALER_MASK);
 			}
 			Scaler.update(scalerValues);
 			return true;
