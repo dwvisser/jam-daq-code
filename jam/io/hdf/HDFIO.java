@@ -10,8 +10,8 @@ import jam.global.JamStatus;
 import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
-import jam.util.FileUtilities;
 import jam.util.AbstractSwingWorker;
+import jam.util.FileUtilities;
 
 import java.awt.Frame;
 import java.io.File;
@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
@@ -34,6 +36,7 @@ import javax.swing.SwingUtilities;
  * @since JDK1.1
  */
 public final class HDFIO implements DataIO, JamFileFields {
+	private static final Logger LOGGER = Logger.getLogger("jam.io.hdf");
 
 	/**
 	 * Interface to be called when asynchronized IO is completed.
@@ -98,59 +101,54 @@ public final class HDFIO implements DataIO, JamFileFields {
 		}
 	}
 
-	private static void setLastValidFile(File file) {
+	private static void setLastValidFile(final File file) {
 		synchronized (LVF_MONITOR) {
 			lastGoodFile = file;
 			PREFS.put(LFILE_KEY, file.getAbsolutePath());
 		}
 	}
 
-	AsyncProgressMonitor asyncMonitor;
+	private transient final AsyncProgressMonitor asyncMonitor;
 
-	private final AsyncListener doNothing = new AsyncListener() {
-		public void completedIO(String message, String errorMessage) {
+	private static final AsyncListener doNothing = new AsyncListener() {
+		public void completedIO(final String message, final String errorMessage) {
 			// do nothing
 		}
 	};
 
-	private AsyncListener asListener = doNothing;
+	private transient AsyncListener asListener = doNothing;
 
-	private Group firstLoadedGroup;
+	private transient Group firstLoadedGroup;
 
-	/**
-	 * Parent frame.
-	 */
-	private final Frame frame;
+	private transient int gateCount = 0;
 
-	private int gateCount = 0;
+	private transient int groupCount = 0;
 
-	private int groupCount = 0;
+	private transient final ConvertHDFObjToJamObj hdfToJam;
 
-	private final ConvertHDFObjToJamObj hdfToJam;
-
-	private int histCount = 0;
+	private transient int histCount = 0;
 
 	/**
 	 * <code>HDFile<code> object to read from.
 	 */
-	private HDFile inHDF;
+	private transient HDFile inHDF;
 
-	private final ConvertJamObjToHDFObj jamToHDF;
+	private transient final ConvertJamObjToHDFObj jamToHDF;
 
 	/**
 	 * Where messages get sent (presumably the console).
 	 */
-	private final MessageHandler msgHandler;
+	private transient final MessageHandler msgHandler;
 
-	private int paramCount = 0;
+	private transient int paramCount = 0;
 
-	private int scalerCount = 0;
+	private transient int scalerCount = 0;
 
 	/* --------------------- Begin DataIO Interface Methods ------------------ */
 
-	private String uiErrorMsg;
+	private transient String uiErrorMsg;
 
-	private String uiMessage;
+	private transient String uiMessage;
 
 	/**
 	 * Class constructor handed references to the main class and message
@@ -162,9 +160,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 	 *            where to send output
 	 */
 	public HDFIO(Frame parent, MessageHandler console) {
-		frame = parent;
 		msgHandler = console;
-		asyncMonitor = new AsyncProgressMonitor(frame);
+		asyncMonitor = new AsyncProgressMonitor(parent);
 		jamToHDF = new ConvertJamObjToHDFObj();
 		hdfToJam = new ConvertHDFObjToJamObj();
 	}
@@ -602,7 +599,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 		try {
 			SwingUtilities.invokeAndWait(runner);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 
 	}
@@ -889,7 +886,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 				} catch (Exception e) {
 					uiErrorMsg = "Unknown Error reading file "
 							+ infile.getName() + ", " + e;
-					e.printStackTrace();
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
 					asyncMonitor.close();
 				}
 				asyncMonitor.close();
