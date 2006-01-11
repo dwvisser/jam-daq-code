@@ -212,7 +212,7 @@ abstract class AbstractSetup {
 	 * @return set of available sort routines
 	 */
 	protected final Set<Class<?>> getSortClasses(final File path) {
-		return RTSI.find(path, Sorter.class);
+		return RTSI.getSingletonInstance().find(path, Sorter.class);
 	}
 
 	/**
@@ -295,7 +295,7 @@ abstract class AbstractSetup {
 			if (specify.isSelected()) {
 				/* we call loadClass() in order to guarantee latest version */
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RTSI.loadClass(classPath,
+					sortRoutine = (SortRoutine) RTSI.getSingletonInstance().loadClass(classPath,
 							sortClass.getName()).newInstance();// create sort
 					// class
 				}
@@ -331,8 +331,9 @@ abstract class AbstractSetup {
 		final List<Class<?>> list = new ArrayList<Class<?>>();
 		if (isDefault) {
 			final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-			set.addAll(RTSI.find("help", Sorter.class, true));
-			set.addAll(RTSI.find("sort", Sorter.class, true));
+			final RTSI rtsi=RTSI.getSingletonInstance();
+			set.addAll(rtsi.find("help", Sorter.class, true));
+			set.addAll(rtsi.find("sort", Sorter.class, true));
 			list.addAll(set);
 		} else {
 			list.addAll(getSortClasses(classPath));

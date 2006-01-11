@@ -9,12 +9,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import javax.swing.JOptionPane;
@@ -32,9 +32,112 @@ public class RTSI {
 
 	static final ClassLoader DEF_LOADER = ClassLoader.getSystemClassLoader();
 
+	private static final RTSI instance = new RTSI();
+
+	private static final Logger LOGGER = Logger.getLogger("jam.global");
+
 	static final String PERIOD = ".";
 
 	static final String SLASH = "/";
+
+	/**
+	 * @return true if <code>c</code> can have instances and is assignable as
+	 *         <code>tosubclass</code>
+	 * @param tosubclass
+	 *            to superclass we desire instances of
+	 * @param clazz
+	 *            the candidate class to check
+	 */
+	public static boolean canUseClassAs(final Class<?> tosubclass,
+			final Class<?> clazz) {
+		return tosubclass.isAssignableFrom(clazz)
+				&& ((clazz.getModifiers() & Modifier.ABSTRACT) == 0);
+	}
+
+	/**
+	 * @param fileName
+	 *            filename minus any path
+	 * @param pckg
+	 *            the string representing the package for the filename
+	 * @return representation of the proper full reference to the class
+	 */
+	private static String filenameToClassname(final String fileName,
+			final String pckg) {
+		final StringBuffer rval = new StringBuffer(pckg);
+		rval.append('.');
+		rval.append(fileName.substring(0, fileName.length()
+				- CLASS_EXT.length()));
+		return rval.toString();
+	}
+
+	/**
+	 * 
+	 * @param file
+	 *            file containing the class
+	 * @param classpath
+	 *            representation of the proper classpath for loading this file
+	 * @return representation of the proper full reference to the class
+	 */
+	private static String fileToClassname(final File file,
+			final String classpath) {
+		final String fullpath = file.getPath();
+		String temp = fullpath.substring(0, fullpath.length()
+				- CLASS_EXT.length());
+		if (temp.startsWith(classpath)) {
+			temp = temp.substring(classpath.length(), temp.length());
+		}
+		temp = temp.replace(File.separatorChar, '.');
+		if (temp.startsWith(PERIOD)) {
+			temp = temp.substring(1);
+		}
+		return temp;
+	}
+
+	static public RTSI getSingletonInstance() {
+		return instance;
+	}
+
+	private static String jarEntryToClassname(final ZipEntry entry,
+			final String starts) {
+		final String entryname = entry.getName();
+		String classname = null;
+		if (entryname.startsWith(starts) && entryname.endsWith(CLASS_EXT)) {
+			classname = entryname.substring(0, entryname.length()
+					- CLASS_EXT.length());
+			classname = classname.replace('/', '.');
+		}
+		return classname;
+	}
+
+	/**
+	 * Find all valid instantiatable subclasses of the given classname. The
+	 * first argument is the classname, and it is assumed the whole classpath
+	 * will be searched if no other argument is given. If a second argument is
+	 * given, the first argument is the package to search.
+	 * 
+	 * @param args
+	 *            the command-line arguments
+	 */
+	public static void main(final String[] args) {
+		final String usage = "Usage: java RTSI [<package>] <subclass>";
+		final int minargs = 1;
+		if (args.length > minargs) {
+			instance.find(args[0], args[1], true);
+		} else {
+			if (args.length == minargs) {
+				instance.find(args[0], true);
+			} else {
+				LOGGER.info(usage);
+			}
+		}
+	}
+
+	private transient final String rtsiName;
+
+	private RTSI() {
+		super();
+		rtsiName = getClass().getName();
+	}
 
 	/**
 	 * Adds class name to the given collection if it instances of the given
@@ -49,66 +152,18 @@ public class RTSI {
 	 * @param coll
 	 *            the collection to add to
 	 */
-	private static void addToCollection(String classname, Class tosubclass,
-			ClassLoader loader, Collection<String> coll) {
+	private void addToCollection(final String classname,
+			final Class tosubclass, final ClassLoader loader,
+			final Collection<String> coll) {
 		try {
-			final Class cl = loader.loadClass(classname);
-			if (canUseClassAs(tosubclass, cl)) {
+			final Class clazz = loader.loadClass(classname);
+			if (canUseClassAs(tosubclass, clazz)) {
 				coll.add(classname);
 			}
 		} catch (ClassNotFoundException cnfex) {
-			JOptionPane.showMessageDialog(null, cnfex.getMessage(),
-					"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, cnfex.getMessage(), rtsiName,
+					JOptionPane.ERROR_MESSAGE);
 		}
-	}
-
-	/**
-	 * @return true if <code>c</code> can have instances and is assignable as
-	 *         <code>tosubclass</code>
-	 * @param tosubclass
-	 *            to superclass we desire instances of
-	 * @param cl
-	 *            the candidate class to check
-	 */
-	public static boolean canUseClassAs(Class<?> tosubclass, Class<?> cl) {
-		return tosubclass.isAssignableFrom(cl)
-				&& ((cl.getModifiers() & Modifier.ABSTRACT) == 0);
-	}
-
-	/**
-	 * @param f
-	 *            filename minus any path
-	 * @param pckg
-	 *            the string representing the package for the filename
-	 * @return representation of the proper full reference to the class
-	 */
-	private static String filenameToClassname(String f, String pckg) {
-		final StringBuffer rval = new StringBuffer(pckg);
-		rval.append('.');
-		rval.append(f.substring(0, f.length() - CLASS_EXT.length()));
-		return rval.toString();
-	}
-
-	/**
-	 * 
-	 * @param f
-	 *            file containing the class
-	 * @param classpath
-	 *            representation of the proper classpath for loading this file
-	 * @return representation of the proper full reference to the class
-	 */
-	private static String fileToClassname(File f, String classpath) {
-		final String fullpath = f.getPath();
-		String temp = fullpath.substring(0, fullpath.length()
-				- CLASS_EXT.length());
-		if (temp.startsWith(classpath)) {
-			temp = temp.substring(classpath.length(), temp.length());
-		}
-		temp = temp.replace(File.separatorChar, '.');
-		if (temp.startsWith(PERIOD)) {
-			temp = temp.substring(1);
-		}
-		return temp;
 	}
 
 	/**
@@ -122,7 +177,7 @@ public class RTSI {
 	 *            the Class object to be assignable to
 	 * @return an alphabetically ordered set of classes assignable as requested
 	 */
-	public static Set<Class<?>> find(File classpath, Class tosubclass) {
+	public Set<Class<?>> find(final File classpath, final Class tosubclass) {
 		/* used linked hash set to guarantee order is preserved */
 		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>();
 		ClassLoader loader = DEF_LOADER;
@@ -131,8 +186,8 @@ public class RTSI {
 			try {
 				url = classpath.toURL();
 			} catch (MalformedURLException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(),
-						"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
+						JOptionPane.ERROR_MESSAGE);
 			}
 			if (url != null) {
 				loader = new URLClassLoader(new URL[] { url });
@@ -155,23 +210,17 @@ public class RTSI {
 	 * @param recurse
 	 *            whether to recurse into subfolders
 	 */
-	private static void find(String tosubclassname, boolean recurse) {
+	private void find(final String tosubclassname, final boolean recurse) {
 		final Class tosubclass = resolveClass(tosubclassname);
 		if (tosubclass != null) {
 			final Package[] pcks = Package.getPackages();
-			System.out.println("Packages:");
+			LOGGER.info("Packages:");
 			for (int i = 0; i < pcks.length; i++) {
-				System.out.println("\t" + pcks[i].getName());
+				LOGGER.info("\t" + pcks[i].getName());
 			}
 			for (int i = 0; i < pcks.length; i++) {
-				final Collection coll = find(pcks[i].getName(), tosubclass,
-						recurse);
-				if (!coll.isEmpty()) {
-					final Iterator it = coll.iterator();
-					while (it.hasNext()) {
-						final Class cl = (Class) it.next();
-						System.out.println("Found class: " + cl.getName());
-					}
+				for (Class clazz : find(pcks[i].getName(), tosubclass, recurse)) {
+					LOGGER.info("Found class: " + clazz.getName());
 				}
 			}
 		}
@@ -188,30 +237,29 @@ public class RTSI {
 	 * @param recurse
 	 *            whether to recurse through sub-packages
 	 */
-	public static Set<Class<?>> find(String pckgname, Class tosubclass,
-			boolean recurse) {
+	public Set<Class<?>> find(final String pckgname, final Class tosubclass,
+			final boolean recurse) {
 		final StringBuffer errmessage = new StringBuffer("Searching in ")
 				.append(pckgname)
 				.append(
 						"\nYou've probably incorrectly specified a classpath,\n")
 				.append("or moved/renamed an existing .class file.\n");
-		final Iterator it = findClassNames(pckgname, tosubclass, recurse)
-				.iterator();
+		final Set<String> names = findClassNames(pckgname, tosubclass, recurse);
 		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>(); // preserves
-																	// order of
-																	// add()'s
+		// order of
+		// add()'s
 		try {
-			while (it.hasNext()) {
-				rval.add(DEF_LOADER.loadClass((String) (it.next())));
+			for (String name : names) {
+				rval.add(DEF_LOADER.loadClass(name));
 			}
 		} catch (ClassNotFoundException e) {
 			errmessage.append(e.getMessage());
 			JOptionPane.showMessageDialog(null, errmessage.toString(),
-					"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+					rtsiName, JOptionPane.ERROR_MESSAGE);
 		} catch (LinkageError e) {
 			errmessage.append(e.getMessage());
 			JOptionPane.showMessageDialog(null, errmessage.toString(),
-					"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+					rtsiName, JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
 	}
@@ -227,16 +275,16 @@ public class RTSI {
 	 * @param recurse
 	 *            try all sub-packages as well if true
 	 */
-	private static void find(String pckname, String tosubclassname,
-			boolean recurse) {
+	private void find(final String pckname, final String tosubclassname,
+			final boolean recurse) {
 		final Class tosubclass = resolveClass(tosubclassname);
-		final Iterator result = find(pckname, tosubclass, recurse).iterator();
-		System.out.println("Find classes assignable as " + tosubclass.getName()
+		final Set<Class<?>> result = find(pckname, tosubclass, recurse);
+		LOGGER.info("Find classes assignable as " + tosubclass.getName()
 				+ " in \"" + pckname + "\"");
-		while (result.hasNext()) {
-			System.out.println("\t" + ((Class) result.next()).getName());
+		for (Class clazz : result) {
+			LOGGER.info("\t" + clazz.getName());
 		}
-		System.out.println("done.");
+		LOGGER.info("done.");
 	}
 
 	/**
@@ -251,8 +299,8 @@ public class RTSI {
 	 *            whether to traverse subpackages recursively
 	 * @return an unordered list of classes assignable as requested
 	 */
-	private static Set<String> findClassNames(final String pckgname,
-			Class tosubclass, boolean recurse) {
+	private Set<String> findClassNames(final String pckgname,
+			final Class tosubclass, final boolean recurse) {
 		/*
 		 * Code from JWhich Translate the package name into an absolute path
 		 */
@@ -275,8 +323,9 @@ public class RTSI {
 			 */
 			/* replace any URL space codes with actual spaces */
 			final String urlsp = "%20";
-			final String sp = " ";
-			final File directory = new File(url.getFile().replaceAll(urlsp, sp));
+			final String space = " ";
+			final File directory = new File(url.getFile().replaceAll(urlsp,
+					space));
 			if (directory.exists()) {
 				final File[] files = directory.listFiles();
 				for (int i = 0; i < files.length; i++) {
@@ -303,11 +352,12 @@ public class RTSI {
 		return rval;
 	}
 
-	private static Set<String> findClassNamesFromJarConnection(Enumeration e,
-			Class tosubclass, String starts) {
+	private Set<String> findClassNamesFromJarConnection(
+			final Enumeration enumeration, final Class tosubclass,
+			final String starts) {
 		final SortedSet<String> rval = new TreeSet<String>();
-		while (e.hasMoreElements()) {
-			final ZipEntry entry = (ZipEntry) e.nextElement();
+		while (enumeration.hasMoreElements()) {
+			final ZipEntry entry = (ZipEntry) enumeration.nextElement();
 			final String classname = jarEntryToClassname(entry, starts);
 			if (classname != null) {
 				addToCollection(classname, tosubclass, DEF_LOADER, rval);
@@ -316,8 +366,8 @@ public class RTSI {
 		return rval;
 	}
 
-	private static Set<String> findClassNamesFromJarURL(URL url,
-			Class tosubclass, String starts) {
+	private Set<String> findClassNamesFromJarURL(final URL url,
+			final Class tosubclass, final String starts) {
 		JarURLConnection conn = null;
 		JarFile jfile = null;
 		final SortedSet<String> rval = new TreeSet<String>();
@@ -331,8 +381,8 @@ public class RTSI {
 			jfile = conn.getJarFile();
 			success = true;
 		} catch (IOException ioex) {
-			JOptionPane.showMessageDialog(null, ioex.getMessage(),
-					"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, ioex.getMessage(), rtsiName,
+					JOptionPane.ERROR_MESSAGE);
 			success = false;
 		}
 		if (success) {
@@ -358,8 +408,8 @@ public class RTSI {
 	 * @return an alphabetically ordered set of classes assignable as
 	 *         <code>tosubclass</code>
 	 */
-	private static SortedSet<String> getClassesRecursively(Class tosubclass,
-			String classpath, File file, ClassLoader loader) {
+	private SortedSet<String> getClassesRecursively(final Class tosubclass,
+			final String classpath, final File file, final ClassLoader loader) {
 		final StringBuffer errmessage = new StringBuffer(
 				"Searching in the classpath: ").append(classpath).append(
 				"\nYou've probably incorrectly specified a classpath,\n")
@@ -375,33 +425,22 @@ public class RTSI {
 			if (file.getName().endsWith(CLASS_EXT)) {
 				final String temp = fileToClassname(file, classpath);
 				try {
-					final Class cl = loader.loadClass(temp);
-					if (canUseClassAs(tosubclass, cl)) {
+					final Class clazz = loader.loadClass(temp);
+					if (canUseClassAs(tosubclass, clazz)) {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
 					errmessage.append(cnfex.getMessage());
 					JOptionPane.showMessageDialog(null, errmessage.toString(),
-							"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+							rtsiName, JOptionPane.ERROR_MESSAGE);
 				} catch (LinkageError le) {
 					errmessage.append(le.getMessage());
 					JOptionPane.showMessageDialog(null, errmessage.toString(),
-							"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+							rtsiName, JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}
 		return rval;
-	}
-
-	private static String jarEntryToClassname(ZipEntry entry, String starts) {
-		final String entryname = entry.getName();
-		String classname = null;
-		if (entryname.startsWith(starts) && entryname.endsWith(CLASS_EXT)) {
-			classname = entryname.substring(0, entryname.length()
-					- CLASS_EXT.length());
-			classname = classname.replace('/', '.');
-		}
-		return classname;
 	}
 
 	/**
@@ -414,7 +453,7 @@ public class RTSI {
 	 *            fully qualified classname
 	 * @return the object referring to the Class, null if not found
 	 */
-	public static Class loadClass(File path, String className) {
+	public Class loadClass(final File path, final String className) {
 		Class rval = null;
 		URL url = null;
 		try {
@@ -422,8 +461,8 @@ public class RTSI {
 				url = path.toURL();
 			}
 		} catch (MalformedURLException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(),
-					"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
+					JOptionPane.ERROR_MESSAGE);
 		}
 		if (url == null) {
 			rval = null;
@@ -432,62 +471,38 @@ public class RTSI {
 			try {
 				rval = loader.loadClass(className);
 			} catch (ClassNotFoundException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(),
-						"jam.global.RTSI", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		return rval;
 	}
 
-	/**
-	 * Find all valid instantiatable subclasses of the given classname. The
-	 * first argument is the classname, and it is assumed the whole classpath
-	 * will be searched if no other argument is given. If a second argument is
-	 * given, the first argument is the package to search.
-	 * 
-	 * @param args
-	 *            the command-line arguments
-	 */
-	public static void main(String[] args) {
-		final String usage = "Usage: java RTSI [<package>] <subclass>";
-		final int minargs = 1;
-		if (args.length > minargs) {
-			find(args[0], args[1], true);
-		} else {
-			if (args.length == minargs) {
-				find(args[0], true);
-			} else {
-				System.out.println(usage);
-			}
-		}
-	}
-
-	private static Set<Class<?>> nameSetToClassSet(SortedSet<String> ns,
-			ClassLoader loader) {
+	private Set<Class<?>> nameSetToClassSet(final SortedSet<String> names,
+			final ClassLoader loader) {
 		final Set<Class<?>> rval = new LinkedHashSet<Class<?>>();
-		final Iterator it = ns.iterator();
 		final StringBuffer errmessage = new StringBuffer(
 				"\nYou've probably incorrectly specified a classpath,\n")
 				.append("or moved/renamed an existing .class file.\n");
 		try {
-			while (it.hasNext()) {
-				rval.add(loader.loadClass((String) it.next()));
+			for (String name : names) {
+				rval.add(loader.loadClass(name));
 			}
 		} catch (ClassNotFoundException e) {
 			errmessage.append(e.getMessage());
-			JOptionPane.showMessageDialog(null, errmessage, "jam.global.RTSI",
+			JOptionPane.showMessageDialog(null, errmessage, rtsiName,
 					JOptionPane.ERROR_MESSAGE);
 		}
 		return rval;
 	}
 
-	private static Class resolveClass(String name) {
+	private Class resolveClass(final String name) {
 		Class tosubclass = null;
 		try {
 			tosubclass = Class.forName(name);
 		} catch (ClassNotFoundException ex) {
 			JOptionPane.showMessageDialog(null,
-					"Class " + name + " not found!", "jam.global.RTSI",
+					"Class " + name + " not found!", rtsiName,
 					JOptionPane.ERROR_MESSAGE);
 			tosubclass = null;
 		}

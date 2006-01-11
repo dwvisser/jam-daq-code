@@ -165,7 +165,8 @@ public final class SetupSortOff extends AbstractSetup {
 		selectSortRoutine(defSortRout, useDefault);
 		pEntry.add(sortChoice);
 		/* Input stream */
-		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(RTSI.find(
+		final RTSI rtsi=RTSI.getSingletonInstance();
+		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(rtsi.find(
 				"jam.sort.stream", AbstractEventInputStream.class, false));
 		lhs.remove(AbstractEventInputStream.class);
 		inChooser = new JComboBox(lhs.toArray());
@@ -173,7 +174,7 @@ public final class SetupSortOff extends AbstractSetup {
 		selectName(inChooser, lhs, defInStream);
 		pEntry.add(inChooser);
 		// Output stream
-		lhs = new LinkedHashSet<Class<?>>(RTSI.find("jam.sort.stream",
+		lhs = new LinkedHashSet<Class<?>>(rtsi.find("jam.sort.stream",
 				AbstractEventOutputStream.class, false));
 		lhs.remove(AbstractEventOutputStream.class);
 		outChooser = new JComboBox(lhs.toArray());
