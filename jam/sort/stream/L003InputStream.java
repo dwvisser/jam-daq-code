@@ -230,11 +230,11 @@ public final class L003InputStream extends AbstractEventInputStream implements
 				scalerString = String.valueOf(scalerDump);
 			}
 		}
-		System.out.println("scaler dump total bytes read " + nScalerBytes);
-		System.out.println("scaler dump = " + scalerString);
+		showMessage("scaler dump total bytes read " + nScalerBytes);
+		showMessage("scaler dump = " + scalerString);
 		if (bytesRead < 0) {
 			readStatus = false;
-			System.out.println("End of file in scaler read");
+			showMessage("End of file in scaler read");
 		}
 		return readStatus;
 	}

@@ -4,23 +4,27 @@
 package jam.plot;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import javax.swing.*;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 
 /**
  * The toolbar that goes with the display.
@@ -29,24 +33,56 @@ import javax.swing.JToolBar;
  */
 class Toolbar extends JToolBar implements ActionListener {
 
-	static final String[] REBIN_RATIOS = { "1", "2", "4", "8", "16" };
+	/**
+	 * Class to render rebin selections
+	 */
+	class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
+		transient Icon icon = iRebin;
 
-	private final Action action;
+		ReBinComboBoxRenderer() {
+			super();
+			setOpaque(true);
+			setHorizontalAlignment(LEFT);
+		}
 
-	private JButton bnetarea, bgoto;
+		/*
+		 * This method finds the image and text corresponding to the selected
+		 * value and returns the label, set up to display the text and image.
+		 */
+		public Component getListCellRendererComponent(final JList list,
+				final Object value, final int index, final boolean isSelected,
+				final boolean cellHasFocus) {
+			// Get the selected index. (The index param isn't
+			// always valid, so just use the value.)
+			final int selectedIndex = ((Integer) value).intValue();
+			// Set foreground and background
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+			// Set font
+			setFont(list.getFont());
 
-	private JComboBox comboBinRatio;
+			// Set the icon and text.
+			setIcon(icon);
+			setText(REBIN_RATIOS[selectedIndex]);
 
-	private static final int ORIENTATION;
+			return this;
+		}
+	}
 
 	private static final String LOCATION, KEY;
 
+	private static final Logger LOGGER = Logger.getLogger("jam.plot");
+
+	private static final int ORIENTATION;
+
 	private static final Preferences PREFS;
 
-	final Icon iRebin;
-
-	/** Is a syncronize event, so don't fire events */
-	private boolean isSyncEvent;
+	static final String[] REBIN_RATIOS = { "1", "2", "4", "8", "16" };
 
 	static {
 		final String defaultVal = BorderLayout.NORTH;
@@ -57,6 +93,17 @@ class Toolbar extends JToolBar implements ActionListener {
 				.equals(LOCATION)) ? SwingConstants.HORIZONTAL
 				: SwingConstants.VERTICAL;
 	}
+
+	private transient final Action action;
+
+	private transient JButton bnetarea, bgoto;
+
+	private transient JComboBox comboBinRatio;
+
+	final transient Icon iRebin;
+
+	/** Is a syncronize event, so don't fire events */
+	private transient boolean isSyncEvent;
 
 	/*
 	 * non-javadoc: Adds the tool bar the left hand side of the plot.
@@ -86,7 +133,6 @@ class Toolbar extends JToolBar implements ActionListener {
 		container.add(this, LOCATION);
 		setRollover(false);
 		try {
-
 			final JButton bupdate = iUpdate == null ? new JButton(
 					getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
 			bupdate
@@ -118,11 +164,11 @@ class Toolbar extends JToolBar implements ActionListener {
 			add(brange);
 
 			// Combox for Re Bin
-			Integer[] intArray = new Integer[REBIN_RATIOS.length];
+			Vector<Integer> intVector = new Vector<Integer>(REBIN_RATIOS.length);
 			for (int i = 0; i < REBIN_RATIOS.length; i++) {
-				intArray[i] = new Integer(i);
+				intVector.add(i,i);
 			}
-			comboBinRatio = new JComboBox(intArray);
+			comboBinRatio = new JComboBox(intVector);
 			Dimension dimMax = comboBinRatio.getMaximumSize();
 			Dimension dimPref = comboBinRatio.getPreferredSize();
 			dimMax.width = dimPref.width + 40;
@@ -131,7 +177,7 @@ class Toolbar extends JToolBar implements ActionListener {
 			comboBinRatio
 					.setToolTipText(getHTML("<u>Re</u>bin, enter a bin width in the console."));
 			comboBinRatio.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+				public void actionPerformed(final ActionEvent ae) {
 					final Object item = ((JComboBox) ae.getSource())
 							.getSelectedItem();
 					selectionReBin((Integer) item);
@@ -200,15 +246,16 @@ class Toolbar extends JToolBar implements ActionListener {
 					getHTML("<u>C</u>ancel")) : new JButton(iCancel);
 			bcancel.setActionCommand(PlotCommands.CANCEL);
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
-			bcancel.addActionListener(this); 
+			bcancel.addActionListener(this);
 			add(bcancel);
 			/* Listen for changes in orientation */
 			addPropertyChangeListener("orientation",
 					new java.beans.PropertyChangeListener() {
 						public void propertyChange(
-								java.beans.PropertyChangeEvent evt) {
+								final java.beans.PropertyChangeEvent evt) {
 							/* Get the new orientation */
-							Integer newValue = (Integer) evt.getNewValue();
+							final Integer newValue = (Integer) evt
+									.getNewValue();
 							/* place an appropriate value in the user prefs */
 							PREFS
 									.put(
@@ -220,13 +267,20 @@ class Toolbar extends JToolBar implements ActionListener {
 					});
 			fitToolbar();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
-	// private void addButton(){
-	//		
-	// }
+	/**
+	 * Routine called by pressing a button on the action toolbar.
+	 * 
+	 * @param actionEvent
+	 *            the event created by the button press
+	 */
+	public void actionPerformed(final ActionEvent actionEvent) {
+		final String command = actionEvent.getActionCommand();
+		action.doCommand(command, false);
+	}
 
 	private void fitToolbar() {
 		final boolean vertical = getOrientation() == SwingConstants.VERTICAL;
@@ -247,30 +301,43 @@ class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
-	/*
-	 * non-javadoc: Load icons for tool bar
-	 */
-	private Icon loadToolbarIcon(String path) {
-		final Icon toolbarIcon;
-		final ClassLoader cl = this.getClass().getClassLoader();
-		final URL urlResource = cl.getResource(path);
-		if (!(urlResource == null)) {
-			toolbarIcon = new ImageIcon(urlResource);
-		} else { // instead use path, ugly but lets us see button
-			JOptionPane.showMessageDialog(this, "Can't load resource: " + path,
-					"Missing Icon", JOptionPane.ERROR_MESSAGE);
-			toolbarIcon = null; // buttons initialized with text if icon==null
-		}
-		return toolbarIcon;
-	}
-
-	private String getHTML(String body) {
+	private String getHTML(final String body) {
 		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
 				.append("</html></body>");
 		return rval.toString();
 	}
 
-	void setHistogramProperties(int dimension, double binWidth) {
+	/*
+	 * non-javadoc: Load icons for tool bar
+	 */
+	private Icon loadToolbarIcon(final String path) {
+		Icon rval = null;
+		final ClassLoader classLoader = this.getClass().getClassLoader();
+		final URL urlResource = classLoader.getResource(path);
+		if (urlResource == null) {
+			JOptionPane.showMessageDialog(this, "Can't load resource: " + path,
+					"Missing Icon", JOptionPane.ERROR_MESSAGE);
+		} else {
+			rval = new ImageIcon(urlResource);
+		}
+		return rval;
+	}
+
+	/**
+	 * Called by a combo box rebin selection
+	 * 
+	 * @param rebinIndex
+	 */
+	public void selectionReBin(final int index) {
+		final String ratio = REBIN_RATIOS[index];
+		double[] parameters = new double[1];
+		parameters[0] = Double.parseDouble(ratio);
+		if (!isSyncEvent) {
+			action.doCommand(PlotCommands.REBIN, parameters, false);
+		}
+	}
+
+	void setHistogramProperties(final int dimension, final double binWidth) {
 		final boolean enable1D = dimension == 1;
 		bgoto.setEnabled(enable1D);
 		bnetarea.setEnabled(enable1D);
@@ -280,76 +347,11 @@ class Toolbar extends JToolBar implements ActionListener {
 				.toString();
 		comboBinRatio.setSelectedIndex(0);
 		for (int i = 0; i < REBIN_RATIOS.length; i++) {
-			if (strBinWidth.equals(REBIN_RATIOS[i]))
+			if (strBinWidth.equals(REBIN_RATIOS[i])) {
 				comboBinRatio.setSelectedIndex(i);
+			}
 		}
 		comboBinRatio.setEnabled(enable1D);
 		isSyncEvent = false;
-	}
-
-	/**
-	 * Routine called by pressing a button on the action toolbar.
-	 * 
-	 * @param e
-	 *            the event created by the button press
-	 */
-	public void actionPerformed(ActionEvent e) {
-		final String command = e.getActionCommand();
-		action.doCommand(command, false);
-	}
-
-	/**
-	 * Called by a combo box rebin selection
-	 * 
-	 * @param rebinIndex
-	 */
-	public void selectionReBin(Integer rebinIndex) {
-		int index = rebinIndex.intValue();
-		String ratio = REBIN_RATIOS[index];
-		double[] parameters = new double[1];
-		parameters[0] = Double.parseDouble(ratio);
-		if (!isSyncEvent)
-			action.doCommand(PlotCommands.REBIN, parameters, false);
-	}
-
-	/**
-	 * Class to render rebin selections
-	 */
-	class ReBinComboBoxRenderer extends JLabel implements ListCellRenderer {
-
-		Icon icon = iRebin;
-
-		ReBinComboBoxRenderer() {
-			setOpaque(true);
-			setHorizontalAlignment(LEFT);
-			// setVerticalAlignment(CENTER);
-		}
-
-		/*
-		 * This method finds the image and text corresponding to the selected
-		 * value and returns the label, set up to display the text and image.
-		 */
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			// Get the selected index. (The index param isn't
-			// always valid, so just use the value.)
-			int selectedIndex = ((Integer) value).intValue();
-			// Set foreground and background
-			if (isSelected) {
-				setBackground(list.getSelectionBackground());
-				setForeground(list.getSelectionForeground());
-			} else {
-				setBackground(list.getBackground());
-				setForeground(list.getForeground());
-			}
-			// Set font
-			setFont(list.getFont());
-
-			// Set the icon and text.
-			setIcon(icon);
-			setText(REBIN_RATIOS[selectedIndex]);
-
-			return this;
-		}
 	}
 }

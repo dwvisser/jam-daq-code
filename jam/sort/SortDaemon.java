@@ -13,6 +13,8 @@ import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The daemon (background thread) which sorts data. It takes an
@@ -28,35 +30,49 @@ import java.util.Arrays;
  */
 public class SortDaemon extends GoodThread {
 
+	private static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
+
 	/**
 	 * Number of events to occur before updating counters.
 	 */
 	private final static int COUNT_UPDATE = 1000;
 
+	private static final Logger LOGGER = Logger.getLogger("jam.sort");
+
+	private transient boolean atBuffer = false; // are we at a buffer word
+
+	private int bufferCount;
+
+	private boolean callSort = true;
+
 	private transient final Controller controller;
 
-	private transient final MessageHandler msgHandler;
+	private transient boolean endSort = false;
 
-	private transient Sorter sorter;
+	private int eventCount;
 
 	private transient AbstractEventInputStream eventInputStream;
 
-	private static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	/* event information */
+	private int eventSize;
+
+	private transient int eventSortedCount;
+
+	private transient final MessageHandler msgHandler;
+
+	private transient final Object offlineSortLock = new Object();
+
+	private transient boolean osc = false;
 
 	/**
 	 * Used for online only, holds data buffers from network.
 	 */
 	private transient RingBuffer ringBuffer;
 
-	/* event information */
-	private int eventSize;
+	private transient Sorter sorter;
 
-	private int eventCount;
-
-	private transient int eventSortedCount;
-
-	private int bufferCount;
+	private int sortInterval = 1;
 
 	/**
 	 * Creates a new <code>SortDaemon</code> process.
@@ -74,63 +90,40 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * setup the sort deamon tell it the mode and stream
-	 * 
-	 * @param eventInputStream
-	 *            the source of event data
-	 * @param eventSize
-	 *            number of parameters per event
+	 * Call to gracefully interrupt and end the current offline sort. This is
+	 * used as one of the conditions to read in the next buffer
 	 */
-	public void setup(final AbstractEventInputStream eventInputStream,
-			final int eventSize) {
-		this.eventInputStream = eventInputStream;
-		setEventSize(eventSize);
-		/* Set the event size for the stream. */
-		eventInputStream.setEventSize(eventSize);
-		setEventCount(0);
-		setPriority(ThreadPriorities.SORT);
-		setDaemon(true);
-	}
-
-	/**
-	 * Load the sorting class.
-	 * 
-	 * @param newSorter
-	 *            an object capable of sorting event data
-	 */
-	public void setSorter(final Sorter newSorter) {
-		sorter = newSorter;
-	}
-
-	/**
-	 * Sets the ring buffer to pull event data from.
-	 * 
-	 * @param ringBuffer
-	 *            the source of event data
-	 */
-	public void setRingBuffer(final RingBuffer ringBuffer) {
-		this.ringBuffer = ringBuffer;
-	}
-
-	/**
-	 * Sets the sort sample interval This is the frequeny of buffers sent to the
-	 * sort routine. For example if this is set to 2 only every second buffer is
-	 * sent to the sort routine.
-	 * 
-	 * @param sample
-	 *            the sample interval
-	 */
-	public void setSortInterval(final int sample) {
-		synchronized (this) {
-			sortInterval = sample;
+	public void cancelOfflineSorting() {
+		synchronized (offlineSortLock) {
+			osc = true;
 		}
 	}
 
-	private boolean callSort = true;
+	/**
+	 * Returns whether we are caught up in the ring buffer.
+	 * 
+	 * @return <code>true</code> if there are no unsorted buffers in the ring
+	 *         buffer
+	 */
+	public boolean caughtUp() {
+		return ringBuffer.isEmpty();
+	}
 
-	private void setCallSort(final boolean state) {
+	private void decreaseSortInterval() {
 		synchronized (this) {
-			callSort = state;
+			if (sortInterval > 1) {
+				sortInterval--;
+			}
+		}
+	}
+	/**
+	 * Returns the number of buffers processed.
+	 * 
+	 * @return the number of buffers processed
+	 */
+	public int getBufferCount() {
+		synchronized (this) {
+			return bufferCount;
 		}
 	}
 
@@ -141,23 +134,14 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Sets whether to write selected events to disk.
+	 * Returns the number of events processed.
 	 * 
-	 * @param state
-	 *            whether writing of selected events to disk is enabled
+	 * @return the number of events processed
 	 */
-	public void setWriteEnabled(final boolean state) {
-		sorter.setWriteEnabled(state);
-	}
-
-	/**
-	 * Sets the event size.
-	 * 
-	 * @param size
-	 *            the number of parameters per event
-	 */
-	public void setEventSize(final int size) {
-		eventSize = size;
+	public int getEventCount() {
+		synchronized (this) {
+			return eventCount;
+		}
 	}
 
 	/**
@@ -170,98 +154,53 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Reads events from the event stream.
-	 */
-	public void run() {
-		try {
-			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
-				// sort to do
-				sortOnline();
-			} else {
-				sortOffline();
-			}
-		} catch (Exception e) {
-			msgHandler.errorOutln("Sorter stopped Exception " + e.toString());
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Invokes begin() in the user's sort routine if it implements the
-	 * <code>Beginner</code> interface.
+	 * Returns the number of events actually sorted.
 	 * 
-	 * @see jam.global.Beginner
+	 * @return number of events actually sorted
 	 */
-	public void userBegin() {
+	public int getSortedCount() {
 		synchronized (this) {
-			if (sorter instanceof Beginner) {
-				((Beginner) sorter).begin();
-			}
+			return eventSortedCount;
 		}
 	}
 
 	/**
-	 * Invokes end() in the user's sort routine if it implements the
-	 * <code>Ender</code> interface.
+	 * Returns the sort sample interval.
 	 * 
-	 * @see jam.global.Ender
+	 * @see #setSortInterval(int)
+	 * @return the total number of packets sent
 	 */
-	public void userEnd() {
+	public int getSortInterval() {
 		synchronized (this) {
-			if (sorter instanceof Ender) {
-				((Ender) sorter).end();
-			}
+			return sortInterval;
 		}
 	}
 
-	/**
-	 * Performs the online sorting until an end-of-run state is reached in the
-	 * event stream.
-	 * 
-	 * @exception Exception
-	 *                thrown if an unrecoverable error occurs during sorting
-	 */
-	public void sortOnline() throws Exception {
-		final RingInputStream ringInputStream = new RingInputStream();
-		final int[] eventData = new int[eventSize];
-		final byte[] buffer = RingBuffer.freshBuffer();
-		while (true) { // loop while acquisition on
-			/* Get a new buffer and make an input stream out of it. */
-			if (ringBuffer.isCloseToFull()) {
-				increaseSortInterval();
-				setCallSort(false);
-			} else {
-				setCallSort(true);
-				if (ringBuffer.isEmpty()) {
-					decreaseSortInterval();
-				}
+	private void handleStatusOffline(final EventInputStatus status) {
+		if (status == EventInputStatus.END_BUFFER) {
+			if (!atBuffer) {
+				atBuffer = true;
+				bufferCount++;
 			}
-			ringBuffer.getBuffer(buffer);
-			ringInputStream.setBuffer(buffer);
-			eventInputStream.setInputStream(ringInputStream);
-			/* Zero event array. */
-			Arrays.fill(eventData, 0);
-			EventInputStatus status;
-			status = eventInputStream.readEvent(eventData);
-			while (((status == EventInputStatus.EVENT)
-					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
-				if (status == EventInputStatus.EVENT) {
-					/* Sort only the sortInterval'th events. */
-					if (getCallSort()
-							&& getEventCount() % getSortInterval() == 0) {
-						sorter.sort(eventData);
-						incrementSortedCount();
-					}
-					incrementEventCount();
-					/* Zero event array and get ready for next event. */
-					Arrays.fill(eventData, 0);
-				}
-				// else SCALER_VALUE, assume sort stream took care and move on
-				status = eventInputStream.readEvent(eventData);
+			endSort = false;
+		} else if (status == EventInputStatus.END_RUN) {
+			updateCounters();
+			endSort = true; // tell control we are done
+		} else if (status == EventInputStatus.END_FILE) {
+			msgHandler.messageOutln("End of file reached");
+			updateCounters();
+			endSort = true; // tell control we are done
+		} else if (status == EventInputStatus.UNKNOWN_WORD) {
+			msgHandler.warningOutln(getClass().getName()
+					+ ".sortOffline(): Unknown word in event stream.");
+		} else {
+			updateCounters();
+			endSort = true;
+			if (!offlineSortingCanceled()) {
+				throw new IllegalStateException(
+						"Illegal post-readEvent() status = " + status);
 			}
-			handleStatusOnline(status);
-			yield();
-		}// end infinite loop
+		}
 	}
 
 	private void handleStatusOnline(final EventInputStatus status)
@@ -285,23 +224,29 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private transient boolean osc = false;
-
-	private transient final Object offlineSortLock = new Object();
-
-	/**
-	 * Call to gracefully interrupt and end the current offline sort. This is
-	 * used as one of the conditions to read in the next buffer
-	 */
-	public void cancelOfflineSorting() {
-		synchronized (offlineSortLock) {
-			osc = true;
+	private void increaseSortInterval() {
+		synchronized (this) {
+			sortInterval++;
+			msgHandler.warningOutln("Sorting ring buffer half-full."
+					+ " Sort interval increased to " + sortInterval + ".");
 		}
 	}
 
-	private void resumeOfflineSorting() {
-		synchronized (offlineSortLock) {
-			osc = false;
+	private void incrementBufferCount() {
+		synchronized (this) {
+			bufferCount++;
+		}
+	}
+
+	private void incrementEventCount() {
+		synchronized (this) {
+			eventCount++;
+		}
+	}
+
+	private void incrementSortedCount() {
+		synchronized (this) {
+			eventSortedCount++;
 		}
 	}
 
@@ -311,9 +256,143 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private transient boolean atBuffer = false; // are we at a buffer word
+	private void resumeOfflineSorting() {
+		synchronized (offlineSortLock) {
+			osc = false;
+		}
+	}
 
-	private transient boolean endSort = false;
+	/**
+	 * Reads events from the event stream.
+	 */
+	public void run() {
+		try {
+			if (JamStatus.getSingletonInstance().isOnline()) {// which type of
+				// sort to do
+				sortOnline();
+			} else {
+				sortOffline();
+			}
+		} catch (Exception e) {
+			msgHandler.errorOutln("Sorter stopped Exception " + e.toString());
+			LOGGER.log(Level.SEVERE, "Sorter stopped due to exception.", e);
+		}
+	}
+
+	/**
+	 * Sets the number of buffers processed.
+	 * 
+	 * @param count
+	 *            the number of buffers processed
+	 */
+	public void setBufferCount(final int count) {
+		synchronized (this) {
+			bufferCount = count;
+		}
+	}
+
+	private void setCallSort(final boolean state) {
+		synchronized (this) {
+			callSort = state;
+		}
+	}
+
+	/**
+	 * Sets the number of events processed.
+	 * 
+	 * @param count
+	 *            the number of events processed
+	 */
+	public void setEventCount(final int count) {
+		synchronized (this) {
+			eventCount = count;
+		}
+	}
+
+	/**
+	 * Sets the event size.
+	 * 
+	 * @param size
+	 *            the number of parameters per event
+	 */
+	public void setEventSize(final int size) {
+		eventSize = size;
+	}
+
+	/**
+	 * Sets the ring buffer to pull event data from.
+	 * 
+	 * @param ringBuffer
+	 *            the source of event data
+	 */
+	public void setRingBuffer(final RingBuffer ringBuffer) {
+		this.ringBuffer = ringBuffer;
+	}
+
+	/**
+	 * Set the number of events actually sorted.
+	 * 
+	 * @param count
+	 *            new value
+	 */
+	public void setSortedCount(final int count) {
+		synchronized (this) {
+			eventSortedCount = count;
+		}
+	}
+
+	/**
+	 * Load the sorting class.
+	 * 
+	 * @param newSorter
+	 *            an object capable of sorting event data
+	 */
+	public void setSorter(final Sorter newSorter) {
+		sorter = newSorter;
+	}
+
+	/**
+	 * Sets the sort sample interval This is the frequeny of buffers sent to the
+	 * sort routine. For example if this is set to 2 only every second buffer is
+	 * sent to the sort routine.
+	 * 
+	 * @param sample
+	 *            the sample interval
+	 */
+	public void setSortInterval(final int sample) {
+		synchronized (this) {
+			sortInterval = sample;
+		}
+	}
+
+	/**
+	 * setup the sort deamon tell it the mode and stream
+	 * 
+	 * @param eventInputStream
+	 *            the source of event data
+	 * @param eventSize
+	 *            number of parameters per event
+	 */
+	public void setup(final AbstractEventInputStream eventInputStream,
+			final int eventSize) {
+		this.eventInputStream = eventInputStream;
+		setEventSize(eventSize);
+		/* Set the event size for the stream. */
+		eventInputStream.setEventSize(eventSize);
+		setEventCount(0);
+		setPriority(ThreadPriorities.SORT);
+		setDaemon(true);
+	}
+
+	/**
+	 * Sets whether to write selected events to disk.
+	 * 
+	 * @param state
+	 *            whether writing of selected events to disk is enabled
+	 */
+	public void setWriteEnabled(final boolean state) {
+		sorter.setWriteEnabled(state);
+	}
 
 	/**
 	 * Performs the offline sorting until an end-of-run state is reached in the
@@ -382,41 +461,54 @@ public class SortDaemon extends GoodThread {
 		}// end checkstate loop
 	}
 
-	private void handleStatusOffline(final EventInputStatus status) {
-		if (status == EventInputStatus.END_BUFFER) {
-			if (!atBuffer) {
-				atBuffer = true;
-				bufferCount++;
-			}
-			endSort = false;
-		} else if (status == EventInputStatus.END_RUN) {
-			updateCounters();
-			endSort = true; // tell control we are done
-		} else if (status == EventInputStatus.END_FILE) {
-			msgHandler.messageOutln("End of file reached");
-			updateCounters();
-			endSort = true; // tell control we are done
-		} else if (status == EventInputStatus.UNKNOWN_WORD) {
-			msgHandler.warningOutln(getClass().getName()
-					+ ".sortOffline(): Unknown word in event stream.");
-		} else {
-			updateCounters();
-			endSort = true;
-			if (!offlineSortingCanceled()) {
-				throw new IllegalStateException(
-						"Illegal post-readEvent() status = " + status);
-			}
-		}
-	}
-
 	/**
-	 * Returns whether we are caught up in the ring buffer.
+	 * Performs the online sorting until an end-of-run state is reached in the
+	 * event stream.
 	 * 
-	 * @return <code>true</code> if there are no unsorted buffers in the ring
-	 *         buffer
+	 * @exception Exception
+	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public boolean caughtUp() {
-		return ringBuffer.isEmpty();
+	public void sortOnline() throws Exception {
+		final RingInputStream ringInputStream = new RingInputStream();
+		final int[] eventData = new int[eventSize];
+		final byte[] buffer = RingBuffer.freshBuffer();
+		while (true) { // loop while acquisition on
+			/* Get a new buffer and make an input stream out of it. */
+			if (ringBuffer.isCloseToFull()) {
+				increaseSortInterval();
+				setCallSort(false);
+			} else {
+				setCallSort(true);
+				if (ringBuffer.isEmpty()) {
+					decreaseSortInterval();
+				}
+			}
+			ringBuffer.getBuffer(buffer);
+			ringInputStream.setBuffer(buffer);
+			eventInputStream.setInputStream(ringInputStream);
+			/* Zero event array. */
+			Arrays.fill(eventData, 0);
+			EventInputStatus status;
+			status = eventInputStream.readEvent(eventData);
+			while (((status == EventInputStatus.EVENT)
+					|| (status == EventInputStatus.SCALER_VALUE) || (status == EventInputStatus.IGNORE))) {
+				if (status == EventInputStatus.EVENT) {
+					/* Sort only the sortInterval'th events. */
+					if (getCallSort()
+							&& getEventCount() % getSortInterval() == 0) {
+						sorter.sort(eventData);
+						incrementSortedCount();
+					}
+					incrementEventCount();
+					/* Zero event array and get ready for next event. */
+					Arrays.fill(eventData, 0);
+				}
+				// else SCALER_VALUE, assume sort stream took care and move on
+				status = eventInputStream.readEvent(eventData);
+			}
+			handleStatusOnline(status);
+			yield();
+		}// end infinite loop
 	}
 
 	/**
@@ -427,119 +519,30 @@ public class SortDaemon extends GoodThread {
 	}
 
 	/**
-	 * Returns the number of events processed.
+	 * Invokes begin() in the user's sort routine if it implements the
+	 * <code>Beginner</code> interface.
 	 * 
-	 * @return the number of events processed
+	 * @see jam.global.Beginner
 	 */
-	public int getEventCount() {
+	public void userBegin() {
 		synchronized (this) {
-			return eventCount;
-		}
-	}
-
-	/**
-	 * Returns the number of events actually sorted.
-	 * 
-	 * @return number of events actually sorted
-	 */
-	public int getSortedCount() {
-		synchronized (this) {
-			return eventSortedCount;
-		}
-	}
-
-	/**
-	 * Set the number of events actually sorted.
-	 * 
-	 * @param count
-	 *            new value
-	 */
-	public void setSortedCount(final int count) {
-		synchronized (this) {
-			eventSortedCount = count;
-		}
-	}
-
-	private void incrementSortedCount() {
-		synchronized (this) {
-			eventSortedCount++;
-		}
-	}
-
-	/**
-	 * Sets the number of events processed.
-	 * 
-	 * @param count
-	 *            the number of events processed
-	 */
-	public void setEventCount(final int count) {
-		synchronized (this) {
-			eventCount = count;
-		}
-	}
-
-	private void incrementEventCount() {
-		synchronized (this) {
-			eventCount++;
-		}
-	}
-
-	/**
-	 * Returns the number of buffers processed.
-	 * 
-	 * @return the number of buffers processed
-	 */
-	public int getBufferCount() {
-		synchronized (this) {
-			return bufferCount;
-		}
-	}
-
-	/**
-	 * Sets the number of buffers processed.
-	 * 
-	 * @param count
-	 *            the number of buffers processed
-	 */
-	public void setBufferCount(final int count) {
-		synchronized (this) {
-			bufferCount = count;
-		}
-	}
-
-	private void incrementBufferCount() {
-		synchronized (this) {
-			bufferCount++;
-		}
-	}
-
-	private int sortInterval = 1;
-
-	private void increaseSortInterval() {
-		synchronized (this) {
-			sortInterval++;
-			msgHandler.warningOutln("Sorting ring buffer half-full."
-					+ " Sort interval increased to " + sortInterval + ".");
-		}
-	}
-
-	private void decreaseSortInterval() {
-		synchronized (this) {
-			if (sortInterval > 1) {
-				sortInterval--;
+			if (sorter instanceof Beginner) {
+				((Beginner) sorter).begin();
 			}
 		}
 	}
 
 	/**
-	 * Returns the sort sample interval.
+	 * Invokes end() in the user's sort routine if it implements the
+	 * <code>Ender</code> interface.
 	 * 
-	 * @see #setSortInterval(int)
-	 * @return the total number of packets sent
+	 * @see jam.global.Ender
 	 */
-	public int getSortInterval() {
+	public void userEnd() {
 		synchronized (this) {
-			return sortInterval;
+			if (sorter instanceof Ender) {
+				((Ender) sorter).end();
+			}
 		}
 	}
 

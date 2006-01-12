@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -63,6 +65,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 
 	/** Jam status to get current histogram */
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.plot");
 
 	static {
 		final List<String> NO_ARG_CMDS = new ArrayList<String>();
@@ -88,7 +92,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 				final Method method = Action.class.getDeclaredMethod(command);
 				NO_ARG_MAP.put(command, method);
 			} catch (NoSuchMethodException nsme) {
-				nsme.printStackTrace();
+				LOGGER.log(Level.SEVERE, nsme.getMessage(), nsme);
 			}
 		}
 	}

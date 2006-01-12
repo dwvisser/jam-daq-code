@@ -6,6 +6,8 @@ import jam.global.RunInfo;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -20,71 +22,58 @@ import javax.swing.JOptionPane;
 
 public abstract class AbstractEventInputStream {
 	public enum EventInputStatus {
-	    /*
-	     * Status if just read an event.
-	     */
-	    EVENT,
+		/*
+		 * Status if just read an event.
+		 */
+		END_BUFFER,
 
-	    /*
-	     * Status if just reached the end of a buffer.
-	     */
-	    END_BUFFER,
+		/*
+		 * Status if just reached the end of a buffer.
+		 */
+		END_FILE,
 
-	    /*
-	     * Status if just reached the end of a run.
-	     */
-	    END_RUN,
+		/*
+		 * Status if just reached the end of a run.
+		 */
+		END_RUN,
 
-	    /*
-	     * Status if just reached the end of a file.
-	     */
-	    END_FILE,
+		/*
+		 * Status if just reached the end of a file.
+		 */
+		END_STREAM,
 
-	    /*
-	     * Status if just reached the end of the stream.
-	     */
-	    END_STREAM,
+		/*
+		 * Status if just reached the end of the stream.
+		 */
+		ERROR,
 
-	    /*
-	     * Status if only a partial event was just read.
-	     */
-	    PARTIAL_EVENT,
+		/*
+		 * Status if only a partial event was just read.
+		 */
+		EVENT,
 
-	    /*
-	     * Status if unidentified word was just read.
-	     */
-	    UNKNOWN_WORD,
+		/*
+		 * Status if unidentified word was just read.
+		 */
+		IGNORE,
 
-	    /*
-	     * Status if there is an unrecoverable error when reading the stream.
-	     */
-	    ERROR,
+		/*
+		 * Status if there is an unrecoverable error when reading the stream.
+		 */
+		PARTIAL_EVENT,
 
-	    /*
-	     * Status if the most recent read parameter is actually a scaler value.
-	     */
-	    SCALER_VALUE,
+		/*
+		 * Status if the most recent read parameter is actually a scaler value.
+		 */
+		SCALER_VALUE,
 
-	    /*
-	     * Status if the last bit of the stream was ignorable.
-	     */
-	    IGNORE
+		/*
+		 * Status if the last bit of the stream was ignorable.
+		 */
+		UNKNOWN_WORD
 	}
-	
-	/**
-	 * Number of signal values for each event.
-	 */
-	protected int eventSize;
 
-	/**
-	 * Size of a buffer, if appropriate
-	 */
-	protected int bufferSize;
-
-	/**
-	 * 
-	 */
-	protected int numberEvents;
+	private static final Logger LOGGER = Logger.getLogger("jam.sort.stream");
 
 	/**
 	 * 
@@ -92,9 +81,14 @@ public abstract class AbstractEventInputStream {
 	protected transient int bufferCount;
 
 	/**
-	 * 
+	 * Size of a buffer, if appropriate
 	 */
-	protected transient int eventCount;
+	protected int bufferSize;
+
+	/**
+	 * The place to print messages.
+	 */
+	protected transient MessageHandler console;
 
 	/**
 	 * Stream events are read from
@@ -102,24 +96,14 @@ public abstract class AbstractEventInputStream {
 	protected transient DataInputStream dataInput;
 
 	/**
-	 * Number of bytes in header
-	 */
-	protected transient int headerSize;
-
-	/**
-	 * Header information
-	 */
-	protected String headerKey;
-
-	/**
 	 * 
 	 */
-	public transient int headerRunNumber;
+	protected transient int eventCount;
 
 	/**
-	 * 
+	 * Number of signal values for each event.
 	 */
-	protected transient String headerTitle = "No Title";
+	protected int eventSize;
 
 	/**
 	 * 
@@ -132,14 +116,34 @@ public abstract class AbstractEventInputStream {
 	protected transient int headerEventSize = 0;
 
 	/**
+	 * Header information
+	 */
+	protected String headerKey;
+
+	/**
 	 * 
 	 */
 	protected transient int headerLength = 0;
 
 	/**
-	 * The place to print messages.
+	 * 
 	 */
-	protected transient MessageHandler console;
+	public transient int headerRunNumber;
+
+	/**
+	 * Number of bytes in header
+	 */
+	protected transient int headerSize;
+
+	/**
+	 * 
+	 */
+	protected transient String headerTitle = "No Title";
+
+	/**
+	 * 
+	 */
+	protected int numberEvents;
 
 	/**
 	 * Make sure to issue a setConsole() after using this constructor It is here
@@ -176,23 +180,12 @@ public abstract class AbstractEventInputStream {
 	}
 
 	/**
-	 * Define the console.
+	 * Returns the size of the input buffer.
 	 * 
-	 * @param console
-	 *            where to write text output to the user
+	 * @return the size of the input buffer
 	 */
-	public final void setConsole(final MessageHandler console) {
-		this.console = console;
-	}
-
-	/**
-	 * Sets the event size.
-	 * 
-	 * @param size
-	 *            the number of signals per event
-	 */
-	public void setEventSize(final int size) {
-		this.eventSize = size;
+	public int getBufferSize() {
+		return bufferSize;
 	}
 
 	/**
@@ -205,25 +198,6 @@ public abstract class AbstractEventInputStream {
 	}
 
 	/**
-	 * Sets the size of the input buffer.
-	 * 
-	 * @param size
-	 *            the size in bytes of the input buffer
-	 */
-	public void setBufferSize(final int size) {
-		this.bufferSize = size;
-	}
-
-	/**
-	 * Returns the size of the input buffer.
-	 * 
-	 * @return the size of the input buffer
-	 */
-	public int getBufferSize() {
-		return bufferSize;
-	}
-
-	/**
 	 * @return the size of the header block
 	 */
 	public int getHeaderSize() {
@@ -231,14 +205,23 @@ public abstract class AbstractEventInputStream {
 	}
 
 	/**
-	 * Sets the input stream which will be used as the source of events (and
-	 * headers).
+	 * Checks if a word is an end-of-run marker.
 	 * 
-	 * @param inputStream
-	 *            source of event data
+	 * @param word
+	 *            to be checked whether it is an end-of-run marker
+	 * @return <code>true</code> if yes, <code>false</code> if no
 	 */
-	public void setInputStream(final InputStream inputStream) {
-		dataInput = new DataInputStream(inputStream);
+	abstract public boolean isEndRun(short word);
+
+	/**
+	 * Loads the run information, usually after it is read from a header.
+	 */
+	public void loadRunInfo() {
+		RunInfo.runNumber = headerRunNumber;
+		RunInfo.runTitle = headerTitle;
+		RunInfo.runStartTimeSt = headerDate;
+		RunInfo.runEventSize = headerEventSize;
+		RunInfo.runRecordLength = headerLength;
 	}
 
 	/**
@@ -267,19 +250,6 @@ public abstract class AbstractEventInputStream {
 	public short readDataWord() throws IOException {
 		return dataInput.readShort();
 	}
-
-	/**
-	 * Loads the run information, usually after it is read from a header.
-	 */
-	public void loadRunInfo() {
-		RunInfo.runNumber = headerRunNumber;
-		RunInfo.runTitle = headerTitle;
-		RunInfo.runStartTimeSt = headerDate;
-		RunInfo.runEventSize = headerEventSize;
-		RunInfo.runRecordLength = headerLength;
-	}
-
-	// abstract methods for class
 
 	/**
 	 * Reads an event into the passed array and returns a status flag. This can
@@ -311,14 +281,48 @@ public abstract class AbstractEventInputStream {
 	 */
 	abstract public boolean readHeader() throws EventException;
 
+	// abstract methods for class
+
 	/**
-	 * Checks if a word is an end-of-run marker.
+	 * Sets the size of the input buffer.
 	 * 
-	 * @param word
-	 *            to be checked whether it is an end-of-run marker
-	 * @return <code>true</code> if yes, <code>false</code> if no
+	 * @param size
+	 *            the size in bytes of the input buffer
 	 */
-	abstract public boolean isEndRun(short word);
+	public void setBufferSize(final int size) {
+		this.bufferSize = size;
+	}
+
+	/**
+	 * Define the console.
+	 * 
+	 * @param console
+	 *            where to write text output to the user
+	 */
+	public final void setConsole(final MessageHandler console) {
+		this.console = console;
+	}
+
+	/**
+	 * Sets the event size.
+	 * 
+	 * @param size
+	 *            the number of signals per event
+	 */
+	public void setEventSize(final int size) {
+		this.eventSize = size;
+	}
+
+	/**
+	 * Sets the input stream which will be used as the source of events (and
+	 * headers).
+	 * 
+	 * @param inputStream
+	 *            source of event data
+	 */
+	public void setInputStream(final InputStream inputStream) {
+		dataInput = new DataInputStream(inputStream);
+	}
 
 	/**
 	 * Pops up an error dialog.
@@ -328,11 +332,26 @@ public abstract class AbstractEventInputStream {
 	 */
 	protected final void showErrorMessage(final Exception exception) {
 		final String cname = getClass().getName();
+		final String message = exception.getMessage();
+		LOGGER.log(Level.SEVERE, message, exception);
 		if (console == null) {
-			JOptionPane.showMessageDialog(null, exception.getMessage(), cname,
+			JOptionPane.showMessageDialog(null, message, cname,
 					JOptionPane.ERROR_MESSAGE);
 		} else {
-			console.errorOutln(cname + "--" + exception.getMessage());
+			console.errorOutln(cname + "--" + message);
+		}
+	}
+
+	/**
+	 * Prints a message to the console.
+	 * 
+	 * @param message
+	 *            message
+	 */
+	protected final void showMessage(final String message) {
+		LOGGER.info(message);
+		if (console != null) {
+			console.messageOutln(message);
 		}
 	}
 
@@ -344,25 +363,12 @@ public abstract class AbstractEventInputStream {
 	 */
 	protected final void showWarningMessage(final String string) {
 		final String cname = getClass().getName();
+		LOGGER.warning(string);
 		if (console == null) {
 			JOptionPane.showMessageDialog(null, string, cname,
 					JOptionPane.WARNING_MESSAGE);
 		} else {
 			console.errorOutln(cname + "--" + string);
-		}
-	}
-
-	/**
-	 * Prints a message to the console.
-	 * 
-	 * @param message
-	 *            message
-	 */
-	protected final void showMessage(final String message) {
-		if (console == null) {
-			System.out.println(message);
-		} else {
-			console.messageOutln(message);
 		}
 	}
 
