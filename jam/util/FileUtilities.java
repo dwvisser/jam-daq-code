@@ -163,5 +163,23 @@ public class FileUtilities {
 
 		return writeConfirm;
 	}
+	
+	/**
+	 * 
+	 * @param dir
+	 * @return given file if a directory, parent directory otherwise, null if given file
+	 * doesn't exist
+	 */
+	public File getDir(final String dir) {
+		File rval = new File(dir);
+		if (rval.exists()) {
+			if (!rval.isDirectory()) {
+				rval = rval.getParentFile();
+			}
+		} else {
+			rval = null;
+		}
+		return rval;
+	}
 
 }
