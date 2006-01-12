@@ -23,6 +23,8 @@
  **************************************************************/
 package jam.util;
 
+import jam.global.LoggerConfig;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -33,8 +35,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,6 +50,10 @@ import java.util.logging.Logger;
  */
 public class CheckEventFiles {
 
+	static {
+		new LoggerConfig();
+	}
+
 	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
 	/**
@@ -57,12 +61,6 @@ public class CheckEventFiles {
 	 *            one argument--directory where event files are to be checked
 	 */
 	public static void main(final String[] args) {
-		LOGGER.addHandler(new ConsoleHandler());
-		try {
-			LOGGER.addHandler(new FileHandler());
-		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-		}
 		boolean printHelp = false;
 		if (args.length >= 2) {
 			final FileUtilities fileUtil = FileUtilities.getInstance();
@@ -101,8 +99,7 @@ public class CheckEventFiles {
 		LOGGER.info("Checking File " + eventFile);
 		try {
 			final DataInputStream instream = new DataInputStream(
-					new BufferedInputStream(new FileInputStream(
-							eventFile)));
+					new BufferedInputStream(new FileInputStream(eventFile)));
 			/* skip header and all but last word of first data buffer */
 			final boolean skipSuccess = (bytesToSkip == instream
 					.skip(bytesToSkip));
@@ -115,15 +112,14 @@ public class CheckEventFiles {
 					LOGGER.info("...[" + sWord + "]...OK");
 				}
 			} else {
-				LOGGER
-						.warning("...file not long enough for one data buffer");
+				LOGGER.warning("...file not long enough for one data buffer");
 			}
 			instream.close();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-	
+
 	private void checkFirstBuffer(final File[] eventFiles) {
 		for (int i = 0; i < eventFiles.length; i++) {
 			checkFirstBuffer(eventFiles[i]);
@@ -154,8 +150,7 @@ public class CheckEventFiles {
 		DataInputStream fromStream = null;
 		try {
 			final FileInputStream fromFile = new FileInputStream(infile);
-			fromStream = new DataInputStream(
-					new BufferedInputStream(fromFile));
+			fromStream = new DataInputStream(new BufferedInputStream(fromFile));
 			LOGGER.info("Reading file: " + infile.getPath());
 			LOGGER.info("Scaler summary in: " + csvFile.getPath());
 			csvStream = new FileWriter(csvFile);

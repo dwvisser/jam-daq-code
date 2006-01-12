@@ -23,6 +23,8 @@
  **************************************************************/
 package jam.util;
 
+import jam.global.LoggerConfig;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -33,8 +35,6 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +47,10 @@ import java.util.logging.Logger;
  */
 public class FixEventFile {
 
+	static {
+		new LoggerConfig();
+	}
+
 	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
 	/**
@@ -56,19 +60,15 @@ public class FixEventFile {
 	 *            input file name
 	 */
 	public static void main(final String[] args) {
-		LOGGER.addHandler(new ConsoleHandler());
-		try {
-			LOGGER.addHandler(new FileHandler());
-		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-		}
 		if (args.length == 0) {
 			LOGGER.info("Supply an input file argument.");
 			LOGGER.info("The input file format is as follows.");
 			LOGGER.info("Line 1: Directory containing input event files");
 			LOGGER.info("Line 2: Experiment name");
-			LOGGER.info("Line 3: Directory for output event files, must be different than input");
-			LOGGER.info("Line 4-: List of run numbers of files containing end-of-run as first buffer");
+			LOGGER
+					.info("Line 3: Directory for output event files, must be different than input");
+			LOGGER
+					.info("Line 4-: List of run numbers of files containing end-of-run as first buffer");
 		} else {
 			final File input = new File(args[0]);
 			if (input.exists()) {
@@ -89,7 +89,8 @@ public class FixEventFile {
 
 	private transient File outDir;
 
-	private transient Set<Integer> runNumberSet; // Collections class for unique,sorted elements
+	private transient Set<Integer> runNumberSet; // Collections class for
+													// unique,sorted elements
 
 	FixEventFile(File inputFile) {
 		super();
@@ -114,8 +115,7 @@ public class FixEventFile {
 			LOGGER.info("Experiment name: " + expName);
 			tokenizer.nextToken();
 			dir = tokenizer.sval;
-			LOGGER.info("Directory containing output event files: "
-					+ dir);
+			LOGGER.info("Directory containing output event files: " + dir);
 			outDir = fileUtil.getDir(dir);
 			runNumberSet = new TreeSet<Integer>();
 			LOGGER.info("Run numbers to move 1st buffer from: ");
@@ -131,12 +131,13 @@ public class FixEventFile {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		if (directory.equals(outDir)) {
-			LOGGER.severe("Can't have input directory the same as output directory!");
+			LOGGER
+					.severe("Can't have input directory the same as output directory!");
 		} else {
 			processFiles();
 		}
 	}
-	
+
 	private void copyFile(final File src, final File dest) {
 		final byte[] block = new byte[16 * 1024];
 		LOGGER.info("Copying " + src.getPath() + " to " + dest.getPath());
@@ -157,17 +158,20 @@ public class FixEventFile {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-	private void processCurrentRun(final int currentRun){
+
+	private void processCurrentRun(final int currentRun) {
 		final String evn = ".evn";
 		final int priorRun = currentRun - 1;
-		final File priorSourceFile = new File(directory, expName + priorRun + evn);
+		final File priorSourceFile = new File(directory, expName + priorRun
+				+ evn);
 		final File priorDestFile = new File(outDir, expName + priorRun + evn);
 		if (!priorDestFile.exists()) {
 			copyFile(priorSourceFile, priorDestFile);
 		}
 		final File currentSourceFile = new File(directory, expName + currentRun
 				+ evn);
-		final File currentDestFile = new File(outDir, expName + currentRun + evn);
+		final File currentDestFile = new File(outDir, expName + currentRun
+				+ evn);
 		LOGGER.info("Pulling first data block from "
 				+ currentSourceFile.getPath() + " and appending to "
 				+ priorDestFile.getPath()

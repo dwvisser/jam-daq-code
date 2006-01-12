@@ -5,6 +5,7 @@ import jam.data.Monitor;
 import jam.data.RemoteData;
 import jam.data.Scaler;
 import jam.data.control.PlotBar;
+import jam.global.LoggerConfig;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -63,6 +64,10 @@ public class MonitorApplet extends JApplet implements ActionListener,
 	private transient boolean audioOn = false;
 
 	private Thread loopThread;
+
+	static {
+		new LoggerConfig();
+	}
 
 	private static final Logger LOGGER = Logger.getLogger("jam.applet");
 

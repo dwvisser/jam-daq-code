@@ -7,6 +7,7 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.global.JamStatus;
+import jam.global.LoggerConfig;
 import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
@@ -72,6 +73,10 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	private transient JLabel lgate; // label for gate choicer
 
 	private transient JComboBox gateChooser; // reference needed by command
+
+	static {
+		new LoggerConfig();
+	}
 
 	private static final Logger LOGGER = Logger.getLogger("jam.applet");
 
@@ -276,8 +281,10 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		histogramChooser.removeAll();
 		histogramChooser.setModel(new DefaultComboBoxModel(
 				new Vector<Histogram>(histogramList)));
-		final Histogram firstHist = histogramList.isEmpty() ? null
-				: (Histogram) histogramList.get(0);
+		Histogram firstHist = null;
+		if (!histogramList.isEmpty()) {
+			firstHist = histogramList.get(0);
+		}
 		if (firstHist != null) {
 			display.displayHistogram(firstHist);
 			setGateList(firstHist.getGates());

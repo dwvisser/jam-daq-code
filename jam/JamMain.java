@@ -9,6 +9,7 @@ import jam.global.Broadcaster;
 import jam.global.CommandNames;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
+import jam.global.LoggerConfig;
 import jam.global.SortMode;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
@@ -21,11 +22,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -45,9 +43,27 @@ import javax.swing.UIManager;
  */
 public final class JamMain extends JFrame implements Observer {
 	/**
+	 * Main method that is run to start up full Jam process
+	 * 
+	 * @param args
+	 *            not used currently
+	 */
+	public static void main(final String args[]) {
+		new LoggerConfig();
+		new JamMain(true);
+	}
+
+	/**
+	 * Message output and text input.
+	 */
+	private transient final Console console;
+
+	/**
 	 * Configuration information for Jam.
 	 */
 	private transient final JamProperties properties;
+
+	private RunState runState = RunState.NO_ACQ;
 
 	/**
 	 * Overall status of Jam.
@@ -55,13 +71,6 @@ public final class JamMain extends JFrame implements Observer {
 	private transient final JamStatus status = JamStatus.getSingletonInstance();
 
 	private transient final SummaryTable summaryTable;
-
-	/**
-	 * Message output and text input.
-	 */
-	private transient final Console console;
-
-	private RunState runState = RunState.NO_ACQ;
 
 	JamMain(final boolean showGUI) {
 		super("Jam");
@@ -116,11 +125,11 @@ public final class JamMain extends JFrame implements Observer {
 		/* operations to close window */
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(final WindowEvent event) {
+			public void windowClosed(final WindowEvent event) {
 				exit();
 			}
 
-			public void windowClosed(final WindowEvent event) {
+			public void windowClosing(final WindowEvent event) {
 				exit();
 			}
 		});
@@ -135,16 +144,18 @@ public final class JamMain extends JFrame implements Observer {
 		showMainWindow(showGUI);
 	}
 
+	private void exit() {
+		final JButton temp = new JButton(CommandManager.getInstance()
+				.getAction(CommandNames.EXIT));
+		temp.doClick();
+	}
+
 	/**
-	 * Show the splash screen
-	 * 
-	 * @param showGUI
-	 *            to to show splash screen
+	 * @return the current run state
 	 */
-	private void showSplashScreen(final boolean showGUI) {
-		if (showGUI) {
-			final int displayTime = 10000; // milliseconds
-			new SplashWindow(this, displayTime);
+	private RunState getRunState() {
+		synchronized (runState) {
+			return runState;
 		}
 	}
 
@@ -156,6 +167,37 @@ public final class JamMain extends JFrame implements Observer {
 		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
 				.getImage()));
 
+	}
+
+	private void setLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			warning(e, "Jam--error setting GUI appearance");
+		}
+	}
+
+	/**
+	 * <p>
+	 * Sets run state when taking data online. The run state mostly determints
+	 * the state of control JMenu items. This method uses imformation set by
+	 * <code>setSortMode()</code>. In addition:
+	 * </p>
+	 * <ul>
+	 * <li>Control JMenu items are enabled and disabled as appropriate.</li>
+	 * <li>Control JMenu items are states are set and unset as appropriate.
+	 * </li>
+	 * <li>The JMenu bar is to show online sort.</li>
+	 * <li>Updates display status label .</li>
+	 * </ul>
+	 * 
+	 * @param state
+	 *            one of the possible run states control dialog box
+	 */
+	private void setRunState(final RunState state) {
+		synchronized (runState) {
+			runState = state;
+		}
 	}
 
 	/**
@@ -185,10 +227,17 @@ public final class JamMain extends JFrame implements Observer {
 		SwingUtilities.invokeLater(showWindow);
 	}
 
-	private void exit() {
-		final JButton temp = new JButton(CommandManager.getInstance()
-				.getAction(CommandNames.EXIT));
-		temp.doClick();
+	/**
+	 * Show the splash screen
+	 * 
+	 * @param showGUI
+	 *            to to show splash screen
+	 */
+	private void showSplashScreen(final boolean showGUI) {
+		if (showGUI) {
+			final int displayTime = 10000; // milliseconds
+			new SplashWindow(this, displayTime);
+		}
 	}
 
 	/**
@@ -229,51 +278,6 @@ public final class JamMain extends JFrame implements Observer {
 	}
 
 	/**
-	 * <p>
-	 * Sets run state when taking data online. The run state mostly determints
-	 * the state of control JMenu items. This method uses imformation set by
-	 * <code>setSortMode()</code>. In addition:
-	 * </p>
-	 * <ul>
-	 * <li>Control JMenu items are enabled and disabled as appropriate.</li>
-	 * <li>Control JMenu items are states are set and unset as appropriate.
-	 * </li>
-	 * <li>The JMenu bar is to show online sort.</li>
-	 * <li>Updates display status label .</li>
-	 * </ul>
-	 * 
-	 * @param state
-	 *            one of the possible run states control dialog box
-	 */
-	private void setRunState(final RunState state) {
-		synchronized (runState) {
-			runState = state;
-		}
-	}
-
-	/**
-	 * @return the current run state
-	 */
-	private RunState getRunState() {
-		synchronized (runState) {
-			return runState;
-		}
-	}
-
-	private void setLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			warning(e, "Jam--error setting GUI appearance");
-		}
-	}
-
-	void warning(final Exception exception, final String title) {
-		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
-				JOptionPane.WARNING_MESSAGE);
-	}
-
-	/**
 	 * @see Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	public void update(final Observable event, final Object param) {
@@ -286,19 +290,8 @@ public final class JamMain extends JFrame implements Observer {
 		}
 	}
 
-	/**
-	 * Main method that is run to start up full Jam process
-	 * 
-	 * @param args
-	 *            not used currently
-	 */
-	public static void main(final String args[]) {
-		try {
-			final Handler handler = new FileHandler();
-			Logger.getLogger("").addHandler(handler);
-			new JamMain(true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	void warning(final Exception exception, final String title) {
+		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
+				JOptionPane.WARNING_MESSAGE);
 	}
 }
