@@ -1,5 +1,7 @@
 package jam.util;
 
+import java.util.logging.Logger;
+
 import javax.swing.JComponent;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
@@ -12,6 +14,16 @@ import javax.swing.SwingUtilities;
  */
 public final class ThreadCheckingRepaintManager extends RepaintManager {
 
+	private static final Logger LOGGER = Logger.getLogger("jam.util");
+
+	public void addDirtyRegion(final JComponent component, final int xcoord,
+			final int ycoord, final int width, final int height) {
+		synchronized (this) {
+			checkThread(component);
+			super.addDirtyRegion(component, xcoord, ycoord, width, height);
+		}
+	}
+
 	public void addInvalidComponent(final JComponent jComponent) {
 		synchronized (this) {
 			checkThread(jComponent);
@@ -21,16 +33,8 @@ public final class ThreadCheckingRepaintManager extends RepaintManager {
 
 	private void checkThread(final JComponent component) {
 		if (!SwingUtilities.isEventDispatchThread() && component.isShowing()) {
-			System.err.println("Wrong Thread");
+			LOGGER.severe("Wrong Thread");
 			Thread.dumpStack();
-		}
-	}
-
-	public void addDirtyRegion(final JComponent component, final int xcoord,
-			final int ycoord, final int width, final int height) {
-		synchronized (this) {
-			checkThread(component);
-			super.addDirtyRegion(component, xcoord, ycoord, width, height);
 		}
 	}
 }

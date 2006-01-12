@@ -1,6 +1,10 @@
 package jam.sort;
 
+import jam.global.LoggerConfig;
+
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -11,14 +15,18 @@ import junit.framework.TestCase;
  * @see RingBuffer
  */
 public class RingBufferTest extends TestCase {
+	
+	static {
+		new LoggerConfig();
+	}
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.sort");
 
 	private transient final RingBuffer ring = new RingBuffer();
 
 	private transient final RingBuffer emptyRing = new RingBuffer(true);
 
 	private transient final byte[] buffer = new byte[RingBuffer.BUFFER_SIZE];
-
-	//private transient final byte[] out = new byte[RingBuffer.BUFFER_SIZE];
 
 	/**
 	 * Constructor for HistogramTest.
@@ -50,7 +58,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				re.printStackTrace();
+				LOGGER.log(Level.SEVERE, re.getMessage(), re);
 			}
 			ring.getBuffer(out);
 		}
@@ -65,7 +73,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				re.printStackTrace();
+				LOGGER.log(Level.SEVERE, re.getMessage(), re);
 			}
 		}
 		assertFalse(ring.isEmpty());
@@ -92,7 +100,7 @@ public class RingBufferTest extends TestCase {
 			try {
 				ring.putBuffer(buffer);
 			} catch (RingFullException re) {
-				re.printStackTrace();
+				LOGGER.log(Level.SEVERE, re.getMessage(), re);
 			}
 		}
 		assertEquals("After filling buffer, expected zero available buffers.",
