@@ -31,6 +31,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -48,29 +50,24 @@ import java.util.logging.Logger;
  */
 public class CheckEventFiles {
 
-	private static final Logger logger = Logger.getLogger("jam.sort.stream");
-
-	static private File getDir(final String dir) {
-		File rval = new File(dir);
-		if (rval.exists()) {
-			if (!rval.isDirectory()) {
-				rval = rval.getParentFile();
-			}
-		} else {
-			rval = null;
-		}
-		return null;
-	}
+	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
 	/**
 	 * @param args
 	 *            one argument--directory where event files are to be checked
 	 */
 	public static void main(final String[] args) {
+		LOGGER.addHandler(new ConsoleHandler());
+		try {
+			LOGGER.addHandler(new FileHandler());
+		} catch (IOException ioe) {
+			LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
+		}
 		boolean printHelp = false;
 		if (args.length >= 2) {
-			final File file1 = getDir(args[0]);
-			final File file2 = getDir(args[1]);
+			final FileUtilities fileUtil = FileUtilities.getInstance();
+			final File file1 = fileUtil.getDir(args[0]);
+			final File file2 = fileUtil.getDir(args[1]);
 			if (file1 == null || file2 == null) {
 				printHelp = true;
 			} else {
@@ -80,58 +77,56 @@ public class CheckEventFiles {
 			printHelp = true;
 		}
 		if (printHelp) {
-			System.out.println("CheckEventFiles needs 2 arguments:");
-			System.out.println("\t1st arg: directory containing event files");
-			System.out.println("\t2nd arg: directory for output files");
+			LOGGER.info("CheckEventFiles needs 2 arguments:");
+			LOGGER.info("\t1st arg: directory containing event files");
+			LOGGER.info("\t2nd arg: directory for output files");
 		}
 	}
 
 	private CheckEventFiles(File dir, File outDir) {
 		super();
-		try {
-			logger.addHandler(new FileHandler());
-			logger.addHandler(new ConsoleHandler());
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
 		File[] eventFiles = getEventFiles(dir);
 		if (eventFiles.length > 0) {
-			logger.info("Found event files, starting to examine...");
+			LOGGER.info("Found event files, starting to examine...");
 			checkFirstBuffer(eventFiles);
 			makeScalerSummaries(eventFiles, outDir);
 		} else {
-			logger.warning("Didn't find event files in " + dir);
+			LOGGER.warning("Didn't find event files in " + dir);
 		}
-		logger.info("Done.");
+		LOGGER.info("Done.");
 	}
 
+	private void checkFirstBuffer(final File eventFile) {
+		final int bytesToSkip = 256 + 8192 - 4;
+		LOGGER.info("Checking File " + eventFile);
+		try {
+			final DataInputStream instream = new DataInputStream(
+					new BufferedInputStream(new FileInputStream(
+							eventFile)));
+			/* skip header and all but last word of first data buffer */
+			final boolean skipSuccess = (bytesToSkip == instream
+					.skip(bytesToSkip));
+			if (skipSuccess) {
+				final int word = instream.readInt();
+				final String sWord = "0x" + Integer.toHexString(word);
+				if (word == 0x01EEEEEE) { // end-of-run word
+					LOGGER.info("...[" + sWord + "]...needs fixing");
+				} else {
+					LOGGER.info("...[" + sWord + "]...OK");
+				}
+			} else {
+				LOGGER
+						.warning("...file not long enough for one data buffer");
+			}
+			instream.close();
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+	}
+	
 	private void checkFirstBuffer(final File[] eventFiles) {
 		for (int i = 0; i < eventFiles.length; i++) {
-			final int bytesToSkip = 256 + 8192 - 4;
-			logger.info("Checking File " + eventFiles[i]);
-			try {
-				final DataInputStream instream = new DataInputStream(
-						new BufferedInputStream(new FileInputStream(
-								eventFiles[i])));
-				/* skip header and all but last word of first data buffer */
-				final boolean skipSuccess = (bytesToSkip == instream
-						.skip(bytesToSkip));
-				if (skipSuccess) {
-					final int word = instream.readInt();
-					final String sWord = "0x" + Integer.toHexString(word);
-					if (word == 0x01EEEEEE) { // end-of-run word
-						logger.info("...[" + sWord + "]...needs fixing");
-					} else {
-						logger.info("...[" + sWord + "]...OK");
-					}
-				} else {
-					logger
-							.warning("...file not long enough for one data buffer");
-				}
-				instream.close();
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage(), e);
-			}
+			checkFirstBuffer(eventFiles[i]);
 		}
 	}
 
@@ -144,73 +139,73 @@ public class CheckEventFiles {
 	}
 
 	private void makeScalerSummaries(final File[] infiles, final File outPath) {
-		final int SCALER_HEADER = 0x01cccccc;
-		DataInputStream fromStream = null;
-		FileWriter csvStream = null;
-		FileInputStream fromFile;
-		File csvFile;
 		for (int j = 0; j < infiles.length; j++) {
-			try {
-				fromFile = new FileInputStream(infiles[j]);
-				csvFile = new File(outPath, infiles[j].getName().substring(0,
-						infiles[j].getName().lastIndexOf(".evn"))
-						+ "_scalers.csv");
-				logger.info("Reading file: " + infiles[j].getPath());
-				logger.info("Scaler summary in: " + csvFile.getPath());
-				fromStream = new DataInputStream(new BufferedInputStream(
-						fromFile));
-				csvStream = new FileWriter(csvFile);
-				// skip header from input stream
-				fromStream.skipBytes(256);
-				int blockNum = 0;
-				int[] lastVal = new int[16];
-				int[] val = new int[16];
-				while (true) {
-					final int readVal = fromStream.readInt();
-					if (readVal == SCALER_HEADER) {
-						blockNum++;
-						final int numScalers = fromStream.readInt();
-						if (blockNum == 1) {
-							lastVal = new int[numScalers];
-							val = new int[numScalers];
-							for (int i = 0; i < numScalers; i++){
-								lastVal[i] = -1;
-							}
-						}
+			makeScalerSummary(infiles[j], outPath);
+		}
+		LOGGER.info("Done.");
+	}
+
+	private void makeScalerSummary(final File infile, final File outPath) {
+		final int SCALER_HEADER = 0x01cccccc;
+		final File csvFile = new File(outPath, infile.getName().substring(0,
+				infile.getName().lastIndexOf(".evn"))
+				+ "_scalers.csv");
+		FileWriter csvStream = null;
+		DataInputStream fromStream = null;
+		try {
+			final FileInputStream fromFile = new FileInputStream(infile);
+			fromStream = new DataInputStream(
+					new BufferedInputStream(fromFile));
+			LOGGER.info("Reading file: " + infile.getPath());
+			LOGGER.info("Scaler summary in: " + csvFile.getPath());
+			csvStream = new FileWriter(csvFile);
+			// skip header from input stream
+			fromStream.skipBytes(256);
+			int blockNum = 0;
+			final List<Integer> lastVal = new ArrayList<Integer>(16);
+			final List<Integer> val = new ArrayList<Integer>(16);
+			while (true) {
+				final int readVal = fromStream.readInt();
+				if (readVal == SCALER_HEADER) {
+					blockNum++;
+					final int numScalers = fromStream.readInt();
+					if (blockNum == 1) {
+						val.clear();
+						lastVal.clear();
 						for (int i = 0; i < numScalers; i++) {
-							val[i] = fromStream.readInt();
-							csvStream.write(Integer.toString(val[i]));
-							if (i < numScalers) {
-								csvStream.write(",");
-							}
-							if (val[i] < lastVal[i]) {
-								logger
-										.info("Scaler " + i
-												+ " out of sequence, block "
-												+ blockNum);
-							}
-							lastVal[i] = val[i];
+							lastVal.add(-1);
+							val.add(-1);
 						}
-						csvStream.write("\n");
 					}
+					for (int i = 0; i < numScalers; i++) {
+						final int value = fromStream.readInt();
+						val.set(i, value);
+						csvStream.write(Integer.toString(value));
+						if (i < numScalers) {
+							csvStream.write(",");
+						}
+						if (value < lastVal.get(i)) {
+							LOGGER.info("Scaler " + i
+									+ " out of sequence, block " + blockNum);
+						}
+						lastVal.set(i, value);
+					}
+					csvStream.write("\n");
 				}
-				// System.out.println("End of event file reached. Closing
-				// file.");
-			} catch (EOFException e) {
-				logger
-						.warning("EOFException: End of event file reached. Closing file.");
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage(), e);
 			}
+		} catch (EOFException e) {
+			LOGGER
+					.warning("EOFException: End of event file reached. Closing file.");
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
 			try {
 				fromStream.close();
 				csvStream.flush();
 				csvStream.close();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage(), e);
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			}
-
 		}
-		logger.info("Done.");
 	}
 }
