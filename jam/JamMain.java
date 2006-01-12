@@ -294,7 +294,7 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	public static void main(final String args[]) {
 		try {
-			final Handler handler = new FileHandler("%t/jam.log");
+			final Handler handler = new FileHandler();
 			Logger.getLogger("").addHandler(handler);
 			new JamMain(true);
 		} catch (IOException e) {
