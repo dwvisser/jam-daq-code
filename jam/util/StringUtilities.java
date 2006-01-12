@@ -5,6 +5,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Contains utilities for manipulating <code>String</code> objects.
@@ -15,16 +16,14 @@ import java.util.Set;
  */
 public final class StringUtilities {
 
-	private static final StringUtilities INSTANCE = new StringUtilities();
-
 	private static final Charset ASCII = Charset.availableCharsets().get(
 			"US-ASCII");
-	
-	public static String ELEMENT_SEPARATOR ="/"; 
 
-	private StringUtilities() {
-		super();
-	}
+	public static final String ELEMENT_SEPARATOR = "/";
+
+	private static final StringUtilities INSTANCE = new StringUtilities();
+
+	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
 	/**
 	 * Get the only instance of this class.
@@ -35,15 +34,63 @@ public final class StringUtilities {
 		return INSTANCE;
 	}
 
+	private StringUtilities() {
+		super();
+	}
+
+	/**
+	 * 
+	 * @param input
+	 *            a string object
+	 * @return array of ASCII bytes representing the input string
+	 */
+	public byte[] getASCIIarray(final String input) {
+		final ByteBuffer buffer = ASCII.encode(input);
+		return buffer.array();
+	}
+
+	/**
+	 * Creates a <code>String</code> from the given US-ASCII byte array.
+	 * 
+	 * @param input
+	 *            US-ASCII characters as bytes
+	 * @return representation of the given array
+	 */
+	public String getASCIIstring(final byte[] input) {
+		final ByteBuffer buffer = ByteBuffer.wrap(input);
+		final CharBuffer charBuffer = ASCII.decode(buffer);
+		return charBuffer.toString();
+	}
+
 	/**
 	 * Make the full path to a data element
-	 * @param parentName name of parent element
-	 * @param name name of element 
+	 * 
+	 * @param parentName
+	 *            name of parent element
+	 * @param name
+	 *            name of element
 	 * @return fullName
 	 */
-	public String makeFullName(String parentName, String name)
-	{
-		return parentName+ELEMENT_SEPARATOR+name;
+	public String makeFullName(final String parentName, final String name) {
+		return parentName + ELEMENT_SEPARATOR + name;
+	}
+
+	/**
+	 * Truncates a <code>String</code> or pads the end with spaces to make it
+	 * a certain length.
+	 * 
+	 * @param input
+	 *            <code>String</code> to modify
+	 * @param length
+	 *            desired number of characters in the <code>String</code>
+	 * @return <code>String</code> with <code>length</code> characters
+	 */
+	public String makeLength(final String input, final int length) {
+		final StringBuffer temp = new StringBuffer(input);
+		for (int i = input.length(); i < length; i++) {
+			temp.append(' ');
+		}
+		return temp.substring(0, length);
 	}
 
 	/**
@@ -97,28 +144,28 @@ public final class StringUtilities {
 	 */
 	public String makeUniqueName(final String name, final Set<String> nameSet,
 			final int nameLength) {
-		String nameTemp = makeLength(name, nameLength);
-		boolean warn = name.length() > nameTemp.length();
+		final StringBuffer rval = new StringBuffer(makeLength(name, nameLength));
+		boolean warn = name.length() > rval.length();
 		boolean isUnique = false;
 		int prime = 1;
 		boolean copyFound;
 		/* find a name that does not conflict with existing names */
 		while (!isUnique) {
 			copyFound = false;
-			final Iterator<String> nameIter = nameSet.iterator();
-			while (nameIter.hasNext()) {
-				final String nameNext = nameIter.next();
-				if (nameTemp.compareTo(nameNext) == 0) {
+			for (String nameNext : nameSet) {
+				if (rval.toString().compareTo(nameNext) == 0) {
 					copyFound = true;
 					break;
 				}
 			}
 			if (copyFound) {
 				final String nameAddition = "[" + prime + "]";
-				nameTemp = makeLength(nameTemp, nameLength
+				final String temp = makeLength(rval.toString(), nameLength
 						- nameAddition.length());
-				warn |= name.length() > nameTemp.length();
-				nameTemp += nameAddition;
+				rval.setLength(0);
+				rval.append(temp);
+				warn |= name.length() > rval.length();
+				rval.append(nameAddition);
 				prime++;
 			} else {
 				isUnique = true;
@@ -126,51 +173,9 @@ public final class StringUtilities {
 		}
 
 		if (warn) {
-			System.err.println("\"" + name
-					+ "\" truncated to produce new name \"" + nameTemp + "\".");
+			LOGGER.warning("\"" + name + "\" truncated to produce new name \""
+					+ rval + "\".");
 		}
-		return nameTemp;
-	}
-
-	/**
-	 * Truncates a <code>String</code> or pads the end with spaces to make it
-	 * a certain length.
-	 * 
-	 * @param input
-	 *            <code>String</code> to modify
-	 * @param length
-	 *            desired number of characters in the <code>String</code>
-	 * @return <code>String</code> with <code>length</code> characters
-	 */
-	public String makeLength(final String input, final int length) {
-		final StringBuffer temp = new StringBuffer(input);
-		for (int i = input.length(); i < length; i++) {
-			temp.append(' ');
-		}
-		return temp.substring(0, length);
-	}
-
-	/**
-	 * Creates a <code>String</code> from the given US-ASCII byte array.
-	 * 
-	 * @param input
-	 *            US-ASCII characters as bytes
-	 * @return representation of the given array
-	 */
-	public String getASCIIstring(final byte[] input) {
-		final ByteBuffer buffer = ByteBuffer.wrap(input);
-		final CharBuffer charBuffer = ASCII.decode(buffer);
-		return charBuffer.toString();
-	}
-
-	/**
-	 * 
-	 * @param input
-	 *            a string object
-	 * @return array of ASCII bytes representing the input string
-	 */
-	public byte[] getASCIIarray(final String input) {
-		final ByteBuffer buffer = ASCII.encode(input);
-		return buffer.array();
+		return rval.toString();
 	}
 }
