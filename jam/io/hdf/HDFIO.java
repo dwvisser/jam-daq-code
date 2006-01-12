@@ -7,7 +7,6 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
 import jam.util.AbstractSwingWorker;
@@ -135,11 +134,6 @@ public final class HDFIO implements DataIO, JamFileFields {
 
 	private transient final ConvertJamObjToHDFObj jamToHDF;
 
-	/**
-	 * Where messages get sent (presumably the console).
-	 */
-	private transient final MessageHandler msgHandler;
-
 	private transient int paramCount = 0;
 
 	private transient int scalerCount = 0;
@@ -159,8 +153,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	 * @param console
 	 *            where to send output
 	 */
-	public HDFIO(Frame parent, MessageHandler console) {
-		msgHandler = console;
+	public HDFIO(Frame parent) {
 		asyncMonitor = new AsyncProgressMonitor(parent);
 		jamToHDF = new ConvertJamObjToHDFObj();
 		hdfToJam = new ConvertHDFObjToJamObj();
@@ -587,9 +580,9 @@ public final class HDFIO implements DataIO, JamFileFields {
 		final Runnable runner = new Runnable() {
 			public void run() {
 				if (uiErrorMsg.equals("")) {
-					msgHandler.messageOutln(uiMessage);
+					LOGGER.info(uiMessage);
 				} else {
-					msgHandler.errorOutln(uiErrorMsg);
+					LOGGER.severe(uiErrorMsg);
 				}
 				uiMessage = "";
 				uiErrorMsg = "";
@@ -745,12 +738,12 @@ public final class HDFIO implements DataIO, JamFileFields {
 		fileLoop: for (int i = 0; i < inFiles.length; i++) {
 			final File infile = inFiles[i];
 			if (!infile.isFile()) {
-				msgHandler.errorOutln("Cannot find file " + infile + ".");
+				LOGGER.severe("Cannot find file " + infile + ".");
 				rval = false;
 				break fileLoop;
 			}
 			if (!HDFile.isHDFFile(infile)) {
-				msgHandler.errorOutln("File " + infile
+				LOGGER.severe("File " + infile
 						+ " is not a valid HDF file.");
 				rval = false;
 				break fileLoop;
@@ -896,7 +889,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			/* Runs on the event-dispatching thread. */
 			public void finished() {
 				if (!uiErrorMsg.equals("")) {
-					msgHandler.errorOutln(uiErrorMsg);
+					LOGGER.severe(uiErrorMsg);
 				}
 				synchronized (asListener) {
 					asListener.completedIO(uiMessage, uiErrorMsg);
@@ -923,9 +916,9 @@ public final class HDFIO implements DataIO, JamFileFields {
 
 			public void finished() {
 				if (uiErrorMsg.equals("")) {
-					msgHandler.messageOutln(uiMessage);
+					LOGGER.info(uiMessage);
 				} else {
-					msgHandler.errorOutln(uiErrorMsg);
+					LOGGER.severe(uiErrorMsg);
 				}
 			}
 		};

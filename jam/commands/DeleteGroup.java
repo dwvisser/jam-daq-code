@@ -28,14 +28,14 @@ public class DeleteGroup extends AbstractCommand {
 		final JFrame frame =STATUS.getFrame();
 		final Group group = (Group)STATUS.getCurrentGroup();
 		if (Group.isValid(group)){
-			msghdlr.errorOutln("Need to select a group.");
+			LOGGER.severe("Need to select a group.");
 			return;
 		}
 		final Group.Type type=group.getType();
 		final String name = group.getName();
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
-			msghdlr.errorOutln("Cannot delete '"+name+"', it is sort group.");
+			LOGGER.severe("Cannot delete '"+name+"', it is sort group.");
 		} else {
 			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 					"Delete "+name+"?","Delete group",JOptionPane.YES_NO_OPTION)){

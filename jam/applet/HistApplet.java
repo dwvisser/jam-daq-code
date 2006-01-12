@@ -51,7 +51,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	private transient PlotDisplay display;
 
-	private transient Console console;
+	private static final Console console = new Console(20);
 
 	private transient JTextField textHost;
 
@@ -75,7 +75,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	private transient JComboBox gateChooser; // reference needed by command
 
 	static {
-		new LoggerConfig();
+		new LoggerConfig(console);
 	}
 
 	private static final Logger LOGGER = Logger.getLogger("jam.applet");
@@ -124,7 +124,6 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		blink.addActionListener(this);
 		pHost.add(blink);
 		/* output console at bottome */
-		console = new Console(20);
 		this.add(BorderLayout.SOUTH, console);
 		/* display in middle */
 		JamStatus.getSingletonInstance().setValidator(DataBase.getInstance());
@@ -144,7 +143,6 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		try {
 			new InitialHistograms();// load initial histograms
 			setHistogramList(Histogram.getHistogramList());
-			// display.setPreference(Display.JamPrefs.WHITE_BACKGROUND, true);
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error create histograms ", e);
 		}
@@ -169,9 +167,11 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 				console.messageOutln("Remote link made to: " + hostName);
 			}
 		} catch (JamException je) {
-			console.errorOutln(je.getMessage());
+			LOGGER.throwing(getClass().getName(), "actionPerformed", je);
+			LOGGER.severe(je.getMessage());
 		} catch (SecurityException se) {
-			console.errorOutln("Security Exception: " + se.getMessage());
+			LOGGER.throwing(getClass().getName(), "actionPerformed", se);
+			LOGGER.severe(se.getMessage());
 		}
 	}
 
@@ -217,15 +217,11 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 				final int[] limits = gate.getLimits1d();
 				lowerLimit = limits[0];
 				upperLimit = limits[1];
-				console.messageOut("Gate: " + gate.getName() + ", Ch. "
-						+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
-				console.messageOut("  Area = " + area, MessageHandler.END);
+				LOGGER.info("Gate: " + gate.getName() + ", Ch. " + lowerLimit
+						+ " to " + upperLimit + "  Area = " + area);
 			} else {
 				area = gate.getArea();
-				console
-						.messageOut("Gate " + gate.getName(),
-								MessageHandler.NEW);
-				console.messageOut(", Area = " + area, MessageHandler.END);
+				LOGGER.info("Gate " + gate.getName() + ", Area = " + area);
 			}
 		}
 	}

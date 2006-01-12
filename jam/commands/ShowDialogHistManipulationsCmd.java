@@ -11,6 +11,6 @@ final class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
 	public void initCommand() {
 		putValue(NAME, "Combine\u2026");
-		dialog = new Combine(msghdlr);
+		dialog = new Combine();
 	}
 }

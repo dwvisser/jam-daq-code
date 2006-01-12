@@ -22,7 +22,7 @@ Observer {
 	
 	public void initCommand(){
 		putValue(NAME,"Add\u2026");
-		dialog=new GateAdd(msghdlr);
+		dialog=new GateAdd();
 	}
 
 	public void update(Observable observe, Object obj){

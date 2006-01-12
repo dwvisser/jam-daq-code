@@ -54,8 +54,6 @@ public final class ParameterControl extends AbstractControl {
 
 	private File lastFile; // last file referred to in a JFileChooser
 
-	private final MessageHandler messageHandler;
-
 	private JPanel pCenter;
 
 	private JPanel[] pParam;
@@ -71,9 +69,8 @@ public final class ParameterControl extends AbstractControl {
 	 * @param messageHandler
 	 *            where to print messages
 	 */
-	public ParameterControl(MessageHandler messageHandler) {
+	public ParameterControl() {
 		super("Sort Parameters", true);
-		this.messageHandler = messageHandler;
 		/* dialog box to display Parameters */
 		setResizable(true);
 		setLocation(20, 50);
@@ -265,19 +262,16 @@ public final class ParameterControl extends AbstractControl {
 					}
 				}
 				read();
-				messageHandler.messageOutln("Load Parameters from file "
-						+ inputFile.getName());
+				LOGGER.info("Load Parameters from file " + inputFile.getName());
 				if (!listNotLoaded.equals("")) {
-					messageHandler.warningOutln("Did not load parameter(s) "
+					LOGGER.warning("Did not load parameter(s) "
 							+ listNotLoaded + ".");
 				}
 			} catch (IOException ioe) {
-				messageHandler
-						.errorOutln("Loading Parameters. Cannot write to file "
+				LOGGER.severe("Loading Parameters. Cannot write to file "
 								+ inputFile.getName());
 			} catch (NumberFormatException nfe) {
-				messageHandler
-						.errorOutln("Loading Parameters. Cannot convert value for Parameter: "
+				LOGGER.severe("Loading Parameters. Cannot convert value for Parameter: "
 								+ name);
 			}
 
@@ -340,15 +334,13 @@ public final class ParameterControl extends AbstractControl {
 				try {
 					FileOutputStream fos = new FileOutputStream(outputFile);
 					saveProperties.store(fos, "Jam Sort Parameters");
-					messageHandler.messageOutln("Saved Parameters to file "
+					LOGGER.info("Saved Parameters to file "
 							+ outputFile.getName());
 				} catch (FileNotFoundException fnfe) {
-					messageHandler
-							.errorOutln("Saving Parameters. Cannot create file "
-									+ outputFile.getName());
+					LOGGER.severe("Saving Parameters. Cannot create file "
+							+ outputFile.getName());
 				} catch (IOException ioe) {
-					messageHandler
-							.errorOutln("Saving Parameters. Cannot write to file "
+					LOGGER.severe("Saving Parameters. Cannot write to file "
 									+ outputFile.getName());
 				}
 			}
@@ -377,19 +369,16 @@ public final class ParameterControl extends AbstractControl {
 				read();
 			} catch (NumberFormatException nfe) {
 				if (currentParameter != null) {
-					messageHandler
-							.errorOutln("Not a valid number for parameter "
+					LOGGER.severe("Not a valid number for parameter "
 									+ currentParameter.getName());
 				} else {
-					messageHandler
-							.errorOutln("Not a valid number, null parameter");
+					LOGGER.severe("Not a valid number, null parameter");
 				}
 			}
 		} else {
 
 			if (!invalidNames.equals("")) {
-				messageHandler
-						.errorOutln("Parameters not set, not a number for parameter(s) "
+				LOGGER.severe("Parameters not set, not a number for parameter(s) "
 								+ invalidNames + ".");
 			}
 

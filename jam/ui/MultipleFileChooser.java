@@ -1,6 +1,5 @@
 package jam.ui;
 
-import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 
 import java.awt.BorderLayout;
@@ -16,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,6 +36,8 @@ import javax.swing.filechooser.FileFilter;
  * @author Ken Swartz
  */
 public final class MultipleFileChooser extends JPanel {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.ui");
 
 	private transient final DefaultListModel listFilesModel = new DefaultListModel();
 
@@ -63,9 +66,6 @@ public final class MultipleFileChooser extends JPanel {
 	/** Main Frame */
 	private transient final Frame frame;
 
-	/** Messages output */
-	private transient final MessageHandler msgHandler;
-
 	/**
 	 * Constructs a multiple file chooser panel.
 	 * 
@@ -74,10 +74,9 @@ public final class MultipleFileChooser extends JPanel {
 	 * @param msgHandler
 	 *            where to print messages
 	 */
-	public MultipleFileChooser(Frame frame, MessageHandler msgHandler) {
+	public MultipleFileChooser(Frame frame) {
 		super(new BorderLayout(5, 5));
 		this.frame = frame;
-		this.msgHandler = msgHandler;
 		// Panel with list
 		listFiles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.add(new JScrollPane(listFiles), BorderLayout.CENTER);
@@ -229,8 +228,8 @@ public final class MultipleFileChooser extends JPanel {
 				}
 				saveStream.close();
 			} catch (IOException ioe) {
-				msgHandler.errorOutln("Unable to save list to file "
-						+ lastFile.getName());
+				LOGGER.log(Level.SEVERE, "Unable to save list to file "
+						+ lastFile.getName(), ioe);
 			}
 		}
 	}
@@ -267,7 +266,7 @@ public final class MultipleFileChooser extends JPanel {
 			} while (listItem != null);
 			reader.close();
 		} catch (IOException ioe) {
-			msgHandler.errorOutln("Unable to load list from file " + file);
+			LOGGER.log(Level.SEVERE, "Unable to load list from file " + file, ioe);
 		}
 		return numFiles;
 	}

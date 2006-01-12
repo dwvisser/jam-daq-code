@@ -8,7 +8,6 @@ import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
 import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.global.Nameable;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -21,6 +20,8 @@ import java.awt.event.ItemListener;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -105,17 +106,14 @@ public class CalibrationFit extends AbstractControl {
 
 	private transient final NumberFormat numFormat;
 
-	private transient final MessageHandler msghdlr;
-
 	/**
 	 * Constructs a calibration fitting dialog.
 	 * 
 	 * @param console
 	 *            the console for printing text output
 	 */
-	public CalibrationFit(MessageHandler console) {
+	public CalibrationFit() {
 		super("Calibration Fit", false);
-		msghdlr = console;
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogCalib = getContentPane();
@@ -266,6 +264,8 @@ public class CalibrationFit extends AbstractControl {
 			selectFunction(funcName);
 		}
 	}
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.data.control");
 
 	/*
 	 * Function selected
@@ -286,11 +286,11 @@ public class CalibrationFit extends AbstractControl {
 			}
 			updateFields(calibFunc, rbFitPoints.isSelected());
 		} catch (InstantiationException e) {
-			msghdlr.errorOutln("Creating fit function " + getClass().getName()
-					+ " " + e.toString());
+			LOGGER.log(Level.SEVERE,"Creating fit function " + getClass().getName()
+					+ " " + e.toString(),e);
 		} catch (IllegalAccessException e) {
-			msghdlr.errorOutln("Creating fit function " + getClass().getName()
-					+ " " + e.toString());
+			LOGGER.log(Level.SEVERE,"Creating fit function " + getClass().getName()
+					+ " " + e.toString(),e);
 		}
 	}
 
@@ -343,11 +343,11 @@ public class CalibrationFit extends AbstractControl {
 		AbstractHist1D currentHistogram = getCurrentHistogram();
 		if (currentHistogram != null && calibFunc == null) {
 			currentHistogram.setCalibration(null);
-			msghdlr.messageOutln("Uncalibrated histogram "
+			LOGGER.info("Uncalibrated histogram "
 					+ currentHistogram.getFullName());
 		} else {
 			if (currentHistogram == null) {
-				msghdlr.errorOutln("Need a 1 Dimension histogram");
+				LOGGER.severe("Need a 1 Dimension histogram");
 			}
 			doFitCalibration();
 		}
@@ -411,21 +411,20 @@ public class CalibrationFit extends AbstractControl {
 				fitText = calibFunc.getFormula();
 				currentHist.setCalibration(calibFunc);
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				msghdlr
-						.messageOutln("Calibrated histogram "
+				LOGGER.info("Calibrated histogram "
 								+ currentHist.getFullName().trim() + " with "
 								+ fitText);
 			} else {
-				msghdlr.errorOutln("Need at least 2 points");
+				LOGGER.severe("Need at least 2 points");
 			}
 		} catch (NumberFormatException nfe) {
 			currentHist.setCalibration(null); // Make sure hisogram no longer
 			// has calibration
-			msghdlr.errorOutln("Invalid input, not a number");
+			LOGGER.severe("Invalid input, not a number");
 		} catch (DataException de) {
 			currentHist.setCalibration(null); // Make sure hisogram no longer
 			// has calibration
-			msghdlr.errorOutln(de.getMessage());
+			LOGGER.severe(de.getMessage());
 		}
 	}
 
@@ -437,7 +436,7 @@ public class CalibrationFit extends AbstractControl {
 		final AbstractHist1D currentHist = getCurrentHistogram();
 		/* silently ignore if histogram null */
 		if (calibFunc == null) {
-			msghdlr.errorOutln("Calibration function not defined.");
+			LOGGER.severe("Calibration function not defined.");
 		} else {
 			int index = 0;
 			try {
@@ -447,12 +446,12 @@ public class CalibrationFit extends AbstractControl {
 				calibFunc.setCoeff(coeff);
 				currentHist.setCalibration(calibFunc);
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				msghdlr.messageOutln("Calibrated histogram "
+				LOGGER.info("Calibrated histogram "
 						+ currentHist.getFullName().trim() + " with "
 						+ calibFunc.getFormula());
 
 			} catch (NumberFormatException nfe) {
-				msghdlr.errorOutln("Invalid input, coefficient "
+				LOGGER.severe("Invalid input, coefficient "
 						+ calibFunc.getLabels()[index]);
 			}
 		}

@@ -6,7 +6,6 @@ import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFIO;
@@ -22,6 +21,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
@@ -44,6 +45,8 @@ import javax.swing.border.EmptyBorder;
  * 
  */
 public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.io.control");
 
 	private final JDialog dialog;
 
@@ -63,9 +66,6 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	/** HDF file reader */
 	private final HDFIO hdfio;
 
-	/** Messages output */
-	private final MessageHandler msgHandler;
-
 	private final Frame frame;
 
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -82,10 +82,9 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	 * @param msgHandler
 	 *            where to print messages
 	 */
-	public OpenSelectedHistogram(Frame frame, MessageHandler msgHandler) {
+	public OpenSelectedHistogram(Frame frame) {
 		this.frame = frame;
-		this.msgHandler = msgHandler;
-		hdfio = new HDFIO(frame, msgHandler);
+		hdfio = new HDFIO(frame);
 
 		dialog = new JDialog(frame, "Open Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
@@ -172,7 +171,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			}
 			loadState = true;
 		} catch (HDFException hdfe) {
-			msgHandler.errorOutln(hdfe.toString());
+			LOGGER.log(Level.SEVERE, hdfe.getMessage(), hdfe);
 			loadState = false;
 		}
 		histList.clearSelection();
@@ -188,7 +187,7 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 		histAttrList.clear();
 		// No histograms selected
 		if (selected.length == 0) {
-			msgHandler.errorOutln("No histograms selected");
+			LOGGER.severe("No histograms selected");
 		} else {
 			/* Put selected histograms into a list */
 			final List<String> selectNames = new ArrayList<String>();

@@ -17,7 +17,7 @@ final class ShowDialogCalibrationDisplayCmd
 
 		public void initCommand(){
 			putValue(NAME,"Coefficients\u2026");			
-			dialog=new CalibrationDisplay(msghdlr);
+			dialog=new CalibrationDisplay();
 			enable();
 		}
 

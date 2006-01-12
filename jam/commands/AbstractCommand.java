@@ -3,10 +3,10 @@ package jam.commands;
 import jam.global.Broadcaster;
 import jam.global.CommandListenerException;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
@@ -23,6 +23,8 @@ import javax.swing.JOptionPane;
 public abstract class AbstractCommand extends AbstractAction implements
 		Commandable {
 
+	protected static final Logger LOGGER = Logger.getLogger("jam.commands");
+	
 	/**
 	 * Reference to <code>JamStatus</code> singleton available to all
 	 * implementing classes.
@@ -37,17 +39,10 @@ public abstract class AbstractCommand extends AbstractAction implements
 			.getSingletonInstance();
 
 	/**
-	 * Reference to global <code>MessageHandler</code> available to all
-	 * implementing classes.
-	 */
-	protected transient final MessageHandler msghdlr;
-
-	/**
 	 * Constructor.
 	 */
 	AbstractCommand() {
 		super();
-		msghdlr = STATUS.getMessageHandler();
 	}
 
 	/**
@@ -61,7 +56,8 @@ public abstract class AbstractCommand extends AbstractAction implements
 		try {
 			performCommand(null);
 		} catch (CommandException e) {
-			msghdlr.errorOutln(e.toString());
+			LOGGER.throwing(getClass().getName(), "actionPerformed", e);
+			LOGGER.severe(e.getMessage());
 		}
 	}
 

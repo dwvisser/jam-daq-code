@@ -4,7 +4,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.CommandListenerException;
 import jam.global.ComponentPrintable;
-import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 
 import java.awt.event.KeyEvent;
@@ -12,6 +11,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -43,7 +43,7 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	 */
 	protected void execute(Object[] cmdParams) {
 		if (firstTime){
-			msghdlr.warningOutln("On some systems, it will be necessary to first "+
+			LOGGER.warning("On some systems, it will be necessary to first "+
 			"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");
 			display=STATUS.getDisplay();
 			firstTime=false;
@@ -53,20 +53,19 @@ final class Print extends AbstractPrintingCommand implements Observer {
 		pj.setPrintable(cp, mPageFormat);
 		if (pj.printDialog()) {
 			String name =((Histogram)STATUS.getCurrentHistogram()).getFullName();
-			msghdlr.messageOut("Preparing to send histogram '" + 
-					name+"' to printer\u2026",
-			MessageHandler.NEW);
+			LOGGER.info("Preparing to send histogram '" + 
+					name+"' to printer\u2026");
 			try {
 				display.setRenderForPrinting(true, mPageFormat);
 				pj.print();
-				msghdlr.messageOut("sent.", MessageHandler.END);
+				LOGGER.info("Page sent.");
 				display.setRenderForPrinting(false, null);
 			} catch (PrinterException e) {
 				final StringBuffer mess=new StringBuffer(getClass().getName());
 				final String colon=": ";
 				mess.append(colon);
 				mess.append(e.getMessage());
-				msghdlr.errorOutln(mess.toString());
+				LOGGER.log(Level.SEVERE, mess.toString(), e);
 			}
 		}
 	}

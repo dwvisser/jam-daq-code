@@ -25,11 +25,9 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	
 	OpenMultipleHDFCmd(){
 		putValue(NAME,"Open Multiple\u2026");
-		openMultiple=new OpenMultipleFiles(STATUS.getFrame(), msghdlr);
+		openMultiple=new OpenMultipleFiles(STATUS.getFrame());
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenMultiHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
-
-		//broadcaster.addObserver(this);
 	}
 	
 	protected void execute(Object[] cmdParams) throws CommandException {

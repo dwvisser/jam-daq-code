@@ -35,9 +35,9 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 	}
 
 	private void saveGroup (final File file, Group group) {
-		final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+		final HDFIO hdfio = new HDFIO(STATUS.getFrame());
 		if (group==null) {
-			msghdlr.errorOutln("Need to select a group.");
+			LOGGER.severe("Need to select a group.");
 		} else {
 			if (file== null) { //No file given		
 		        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());

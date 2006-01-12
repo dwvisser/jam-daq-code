@@ -5,7 +5,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
@@ -37,6 +36,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -63,6 +64,8 @@ import javax.swing.border.EmptyBorder;
  * @author <a href=mailto:dale@visser.name>Dale Visser </a>
  */
 public class BatchExport extends JDialog implements Observer {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.io");
 
 	private class SelectHistogramDialog {
 
@@ -148,8 +151,6 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	};
 
-	private final MessageHandler console;
-
 	private final Map<AbstractButton, AbstractImpExp> exportMap = Collections
 			.synchronizedMap(new HashMap<AbstractButton, AbstractImpExp>());
 
@@ -168,11 +169,10 @@ public class BatchExport extends JDialog implements Observer {
 	 * @param msgHandler
 	 *            console to print messages to
 	 */
-	public BatchExport(MessageHandler msgHandler) {
+	public BatchExport() {
 
 		super(JamStatus.getSingletonInstance().getFrame(),
 				"Batch Histogram Export");
-		console = msgHandler;
 		Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 		broadcaster.addObserver(this);
 		buildGUI();
@@ -321,9 +321,9 @@ public class BatchExport extends JDialog implements Observer {
 					impExp.setSilent();
 				}
 			} catch (InstantiationException e) {
-				console.errorOutln(here + e.getMessage());
+				LOGGER.log(Level.SEVERE, here + e.getMessage(), e);
 			} catch (IllegalAccessException e) {
-				console.errorOutln(here + e.getMessage());
+				LOGGER.log(Level.SEVERE, here + e.getMessage(), e);
 			}
 
 		}
@@ -337,13 +337,13 @@ public class BatchExport extends JDialog implements Observer {
 		if (!exportDirFile.exists()) {
 			// Cannot create export dir
 			if (!exportDirFile.mkdirs()) {
-				console.errorOutln("Could not create the directory "
+				LOGGER.severe("Could not create the directory "
 						+ exportDirFile.getPath() + " .");
 				status = false;
 			}
 			// Export dir exists, check it is a directory.
 		} else if (!exportDirFile.isDirectory()) {
-			console.errorOutln("The path " + exportDirFile.getPath()
+			LOGGER.severe("The path " + exportDirFile.getPath()
 					+ " is not a directory.");
 			status = false;
 		}
@@ -410,23 +410,17 @@ public class BatchExport extends JDialog implements Observer {
 		}
 		// write out histograms
 		if (status) {
-			console.messageOut("Exporting to " + exportDir + ": ",
-					MessageHandler.NEW);
+			LOGGER.info("Exporting to " + exportDir + ": ");
 			for (int i = 0; i < exportFiles.length; i++) {
-				console.messageOut(exportFiles[i].getName(),
-						MessageHandler.CONTINUE);
-				if (i < exportFiles.length - 1) {
-					console.messageOut(", ", MessageHandler.CONTINUE);
-				}
-
+				LOGGER.info("\t"+exportFiles[i].getName());
 				try {
 					exportFormat.saveFile(exportFiles[i], exportHistograms[i]);
 				} catch (ImpExpException e) {
-					console.errorOutln("Exporting file: "
-							+ exportFiles[i].getPath() + " " + e.getMessage());
+					LOGGER.log(Level.SEVERE, "Exporting file: "
+							+ exportFiles[i].getPath() + " " + e.getMessage(), e);
 				}
 			}
-			console.messageOut(".", MessageHandler.END);
+			LOGGER.info("Exporting complete.");
 		}
 	}
 
@@ -532,7 +526,7 @@ public class BatchExport extends JDialog implements Observer {
 				} while (listItem != null);
 				reader.close();
 			} catch (IOException ioe) {
-				console.errorOutln(ioe.getMessage());
+				LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
 			}
 			lstHists.setListData(list.toArray());
 		}
@@ -584,7 +578,7 @@ public class BatchExport extends JDialog implements Observer {
 				}
 				saveStream.close();
 			} catch (IOException ioe) {
-				console.errorOutln(ioe.getMessage());
+				LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
 			}
 		}
 	}

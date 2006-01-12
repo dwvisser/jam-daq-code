@@ -18,7 +18,7 @@ Observer {
 	public void initCommand(){
 		putValue(NAME, "New\u2026");
 		/* Super class member next line */
-		dialog= new GateNew(msghdlr);		
+		dialog= new GateNew();		
 	}
 	
 	public void update(Observable observe, Object obj){

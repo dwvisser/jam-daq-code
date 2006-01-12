@@ -40,8 +40,6 @@ public class HistogramNew extends AbstractControl {
 
 	final int CHOOSER_SIZE = 200;
 	
-	private final MessageHandler msghdlr;
-
 	private final JComboBox comboGroup;	
 	
 	private DefaultComboBoxModel comboGroupModel;	
@@ -62,9 +60,8 @@ public class HistogramNew extends AbstractControl {
 	 * 
 	 * @param msghdlr where to print messages
 	 */
-	public HistogramNew(MessageHandler msghdlr) {
+	public HistogramNew() {
 		super("New Histogram ", false);
-		this.msghdlr = msghdlr;
 		/* dialog box */
 		setResizable(false);
 		setLocation(30, 30);
@@ -234,13 +231,13 @@ public class HistogramNew extends AbstractControl {
 		final StringBuffer msg=new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {
-			msghdlr.messageOutln(msg.append(coneInt.getText()).toString());
+			LOGGER.info(msg.append(coneInt.getText()).toString());
 		} else if (coneDbl.isSelected()) {
-			msghdlr.messageOutln(msg.append(coneDbl.getText()).toString());
+			LOGGER.info(msg.append(coneDbl.getText()).toString());
 		} else if (ctwoInt.isSelected()) {
-			msghdlr.messageOutln(msg.append(ctwoInt.getText()).toString());
+			LOGGER.info(msg.append(ctwoInt.getText()).toString());
 		} else  {
-			msghdlr.messageOutln(msg.append(ctwoDbl.getText()).toString());
+			LOGGER.info(msg.append(ctwoDbl.getText()).toString());
 		}
 	}
 }

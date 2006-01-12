@@ -10,7 +10,7 @@ final class ShowDialogHistProjectionCmd extends AbstractShowDialog {
 	
 	public void initCommand(){
 		putValue(NAME,"Projections\u2026");
-		dialog=new Projections(msghdlr);
+		dialog=new Projections();
 	}
 
 }

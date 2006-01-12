@@ -30,7 +30,7 @@ final class ShowDialogZeroHistogram extends AbstractShowDialog implements
 		final Icon iZero = loadToolbarIcon("jam/ui/Zero.png");
 		putValue(Action.SMALL_ICON, iZero);
 		putValue(Action.SHORT_DESCRIPTION, "Zero Histograms.");
-		dialog = new HistogramZero(msghdlr);
+		dialog = new HistogramZero();
 	}
 
 	public void update(Observable observe, Object obj) {

@@ -26,16 +26,15 @@ public class GateNew extends AbstractControl {
 
 	/* new gate dialog box */
 	private final JTextField textNew;
-	private final MessageHandler messageHandler;
 
 	/**
 	 * Construct a new "new gate" dialog.
 	 * 
-	 * @param mh where to send messages
+	 * @param mh
+	 *            where to send messages
 	 */
-	public GateNew(MessageHandler mh) {
+	public GateNew() {
 		super("New Gate", false);
-		messageHandler = mh;
 		final Container cdnew = getContentPane();
 		setResizable(false);
 		cdnew.setLayout(new BorderLayout(5, 5));
@@ -47,7 +46,7 @@ public class GateNew extends AbstractControl {
 		ptnew.add(new JLabel("Name"));
 		textNew = new JTextField("", 20);
 		ptnew.add(textNew);
-		/*  panel for buttons */
+		/* panel for buttons */
 		final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		cdnew.add(pbutton, BorderLayout.SOUTH);
 		final JPanel pbnew = new JPanel();
@@ -81,17 +80,15 @@ public class GateNew extends AbstractControl {
 
 	/**
 	 * Make a new gate, and add it to the current histogram.
-	 *
-	 * @throws GlobalException if there's a problem
+	 * 
+	 * @throws GlobalException
+	 *             if there's a problem
 	 */
 	private void makeGate() {
-		final Histogram hist=(Histogram)STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
 		new Gate(textNew.getText(), hist);
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
-		messageHandler.messageOutln(
-			"New gate "
-				+ textNew.getText()
-				+ " created for histogram "
+		LOGGER.info("New gate " + textNew.getText() + " created for histogram "
 				+ hist.getFullName());
 	}
 

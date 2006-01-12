@@ -139,7 +139,7 @@ public final class SortControl extends JDialog implements Controller {
 		contents.add(ptop, BorderLayout.NORTH);
 		ptop.add(new JLabel("Event Files to Sort", SwingConstants.RIGHT));
 		/* List Panel */
-		multiFile = new MultipleFileChooser(STATUS.getFrame(), msgHandler);
+		multiFile = new MultipleFileChooser(STATUS.getFrame());
 		multiFile.showListSaveLoadButtons(true);
 		multiFile.setFileFilter(new ExtensionFileFilter("evn","Event Files"));
 		contents.add(multiFile, BorderLayout.CENTER);

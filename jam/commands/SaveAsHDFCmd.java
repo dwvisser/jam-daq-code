@@ -50,7 +50,7 @@ final class SaveAsHDFCmd extends AbstractCommand {
 	}
 	
 	private void saveHDFFile(final File file) {
-	final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+	final HDFIO hdfio = new HDFIO(STATUS.getFrame());
 		if (file == null) { //No file given		
 	        final JFileChooser jfile = new JFileChooser(HDFIO.getLastValidFile());
 	        jfile.setFileFilter(new HDFileFilter(true));

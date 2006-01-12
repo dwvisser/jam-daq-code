@@ -1,10 +1,10 @@
 package jam.data.control;
 
+import static javax.swing.SwingConstants.RIGHT;
 import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -22,6 +22,7 @@ import java.awt.event.WindowEvent;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -29,7 +30,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import static javax.swing.SwingConstants.RIGHT;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -44,8 +44,6 @@ public class Projections extends AbstractManipulation implements Observer {
 	private static final String FULL = "Full Histogram";
 
 	private static final String BETWEEN = "Between Channels";
-
-	private final MessageHandler console;
 
 	private final JComboBox cfrom, cto, cchan;
 
@@ -64,9 +62,8 @@ public class Projections extends AbstractManipulation implements Observer {
 	 * 
 	 * @param msgHandler where to print messages
 	 */
-	public Projections(MessageHandler msgHandler) {
+	public Projections() {
 		super("Project 2D Histogram", false);
-		console = msgHandler;
 		setResizable(false);
 		final int hgap = 5;
 		final int vgap = 10;
@@ -171,7 +168,7 @@ public class Projections extends AbstractManipulation implements Observer {
 					STATUS.setCurrentGroup(hto.getGroup());
 					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
 				} catch (DataException de) {
-					console.errorOutln(de.getMessage());
+					LOGGER.log(Level.SEVERE, de.getMessage(), de);
 				}
 			}
 		};
@@ -309,8 +306,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
 			hto = createNewHistogram(groupName, histName, size);
-			console
-			.messageOutln("New Histogram created: '" + groupName+"/"+histName + "'");
+			LOGGER.info("New Histogram created: '" + groupName+"/"+histName + "'");
 		} else {
 			hto = Histogram.getHistogram(name);
 		}
@@ -346,7 +342,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			throw new DataException(
 			"Need to project to 1 dimension histogram");
 		}
-		console.messageOutln("Project " + hfrom.getFullName().trim()
+		LOGGER.info("Project " + hfrom.getFullName().trim()
 				+ " to " + hto.getFullName() + " " + typeProj);
 	}
 

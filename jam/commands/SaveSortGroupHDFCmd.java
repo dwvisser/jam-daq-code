@@ -40,7 +40,7 @@ final class SaveSortGroupHDFCmd extends AbstractCommand implements Observer {
 	}
 
 	private void saveSortGroup(final File file) {
-        final HDFIO hdfio = new HDFIO(STATUS.getFrame(), msghdlr);
+        final HDFIO hdfio = new HDFIO(STATUS.getFrame());
         final SortMode mode = STATUS.getSortMode();
         if (mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK
                 || mode == SortMode.OFFLINE) {

@@ -4,7 +4,6 @@ import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.ui.HistogramComboBoxModel;
 import jam.ui.PanelOKApplyCancelButtons;
 
@@ -22,6 +21,8 @@ import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -57,23 +58,20 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 
 	private final JLabel lname;
 
-	private final MessageHandler messageHandler;
-
 	private final JTextField text1, text2, text3, text4, ttextto;
-
+	
 	/**
 	 * Constructs a gain shift dialog.
 	 * 
 	 * @param mh
 	 *            where to print messages
 	 */
-	public GainShift(MessageHandler mh) {
+	public GainShift() {
 		super("Gain Shift 1-D Histogram", false);
 		chan1i = 0.0;
 		chan2i = 1.0;
 		chan1f = 0.0;
 		chan2f = 1.0;
-		messageHandler = mh;
 		int hgap = 5;
 		int vgap = 10;
 		int meanCharWidth;
@@ -172,7 +170,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
 						} catch (DataException je) {
-							messageHandler.errorOutln(je.getMessage());
+							LOGGER.log(Level.SEVERE, je.getMessage(), je);
 						}
 					}
 				});
@@ -243,7 +241,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			String groupName = parseGroupName(name);
 			hto = (AbstractHist1D) createNewHistogram(groupName, histName,
 					hfrom.getSizeX());
-			messageHandler.messageOutln("New Histogram created: '" + groupName
+			LOGGER.info("New Histogram created: '" + groupName
 					+ "/" + histName + "'");
 
 		} else {
@@ -264,7 +262,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		}
 		hto.setErrors(errOut);
 
-		messageHandler.messageOutln("Gain shift " + hfrom.getFullName().trim()
+		LOGGER.info("Gain shift " + hfrom.getFullName().trim()
 				+ " with gain: " + format(a1) + " + " + format(b1)
 				+ " x ch; to " + hto.getFullName() + " with gain: "
 				+ format(a2) + " + " + format(b2) + " x ch");
@@ -508,7 +506,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			try {
 				setUseCoeff(ccoeff.isSelected());
 			} catch (DataException de) {
-				messageHandler.errorOutln(de.getMessage());
+				LOGGER.log(Level.SEVERE, de.getMessage(), de);
 			}
 		} else if (ie.getSource() == cto) {
 			if (cto.getSelectedItem() != null) {

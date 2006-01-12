@@ -10,6 +10,6 @@ final class ShowDialogGainShiftCmd extends AbstractShowDialog {
 
 	public void initCommand(){
 		putValue(NAME,"Gain Shift\u2026");
-		dialog=new GainShift(msghdlr);
+		dialog=new GainShift();
 	}
 }

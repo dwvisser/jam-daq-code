@@ -18,7 +18,7 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 
 	public void initCommand() {
 		putValue(NAME, "Calibration\u2026");
-		dialog = new CalibrationFit(msghdlr);
+		dialog = new CalibrationFit();
 		enable();
 	}
 

@@ -39,7 +39,7 @@ final class DeleteHistogram extends AbstractCommand implements Observer {
 		final Group.Type type=hist.getGroup().getType();	
 		/* Cannot delete sort histograms */
 		if (type == Group.Type.SORT) {
-			msghdlr.errorOutln("Cannot delete '"+name+"', it is sort histogram.");
+			LOGGER.severe("Cannot delete '"+name+"', it is sort histogram.");
 		} else {
 			if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 					"Delete "+name+"?","Delete histogram",JOptionPane.YES_NO_OPTION)){

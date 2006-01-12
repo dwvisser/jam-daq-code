@@ -4,7 +4,6 @@ import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.ui.GateComboBoxModel;
 import jam.ui.GateListCellRenderer;
 
@@ -17,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,15 +32,13 @@ public final class GateAdd extends AbstractControl {
 	
 	private Gate currentGateAdd;
 	private final JComboBox cadd;
-	private final MessageHandler messageHandler;
 	
 	/**
 	 * Create a new "add gate" dialog.
 	 * @param mh where to print messages
 	 */
-	public GateAdd(MessageHandler mh){
+	public GateAdd(){
 		super("Add Gate",false);
-		messageHandler=mh;
 		final Container cdadd=getContentPane();
 		setResizable(false);
 		setLocation(20,50);
@@ -106,12 +104,12 @@ public final class GateAdd extends AbstractControl {
 	 */
 	private void addGate() {
 		if (currentGateAdd==null) {
-			messageHandler.errorOutln("Need to choose a gate to add ");
+			LOGGER.severe("Need to choose a gate to add ");
 		} else {
 			final Histogram hist=(Histogram)STATUS.getCurrentHistogram();
 			hist.addGate(currentGateAdd);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_ADD);
-			messageHandler.messageOutln("Added gate '"+
+			LOGGER.info("Added gate '"+
 			currentGateAdd.getName().trim()+"' to histogram '"+hist.getFullName()+"'");
 		}
 	}

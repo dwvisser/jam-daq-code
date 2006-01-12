@@ -7,7 +7,6 @@ import jam.data.control.AbstractControl;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.SortMode;
 import jam.io.FileOpenMode;
 import jam.io.hdf.HDFException;
@@ -28,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -52,6 +52,7 @@ import javax.swing.event.ChangeListener;
  */
 public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
+	private static final Logger LOGGER = Logger.getLogger("jam.io.control");
 	// UI components
 	private final Frame frame;
 
@@ -74,9 +75,6 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	/** HDF file reader */
 	private final HDFIO hdfio;
 
-	/** Messages output */
-	private final MessageHandler msgHandler;
-
 	/** Broadcaster */
 	private final Broadcaster broadcaster;
 
@@ -91,11 +89,10 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 	 * @param console
 	 *            where to print messages
 	 */
-	public OpenMultipleFiles(Frame parent, MessageHandler console) {
+	public OpenMultipleFiles(Frame parent) {
 		frame = parent;
-		msgHandler = console;
 		broadcaster = Broadcaster.getSingletonInstance();
-		hdfio = new HDFIO(frame, msgHandler);
+		hdfio = new HDFIO(frame);
 		dialog = new JDialog(frame, "Open Multiple Files");
 		dialog.setLocation(parent.getLocation().x + 50,
 				parent.getLocation().y + 50);
@@ -103,7 +100,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		container.setLayout(new BorderLayout(10, 10));
 		JTabbedPane tabPane = new JTabbedPane();
 		container.add(tabPane, BorderLayout.CENTER);
-		multiChooser = new MultipleFileChooser(frame, msgHandler);
+		multiChooser = new MultipleFileChooser(frame);
 		multiChooser.setFileFilter(new HDFileFilter(true));
 		tabPane.addTab("Files", null, multiChooser, "Select Files to open");
 		JPanel histPanel = createHistSelectPanel();
@@ -259,7 +256,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
 			loadState = true;
 		} catch (HDFException hdfe) {
-			msgHandler.errorOutln(hdfe.getMessage());
+			LOGGER.severe(hdfe.getMessage());
 			loadState = false;
 		}
 		histList.clearSelection();
@@ -275,7 +272,7 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		checkHistogramsLoaded();
 		final List<HistogramAttributes> selectAttrib = createSelectedHistogramNamesList();
 		if (selectAttrib.size() == 0) {// No histograms selected
-			msgHandler.errorOutln("No histograms selected");
+			LOGGER.severe("No histograms selected");
 			return;
 		}
 		final File[] files = multiChooser.getFileList().toArray(new File[0]);

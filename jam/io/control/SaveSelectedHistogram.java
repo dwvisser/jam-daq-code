@@ -1,7 +1,6 @@
 package jam.io.control;
 
 import jam.data.Histogram;
-import jam.global.MessageHandler;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
 
@@ -41,9 +40,6 @@ public final class SaveSelectedHistogram {
 
 	private final JList listHist;
 
-	/** Messages output */
-	private final MessageHandler console;
-
 	/**
 	 * Constructs a dialog to save a selection of histograms out of an HDF file.
 	 * 
@@ -52,9 +48,8 @@ public final class SaveSelectedHistogram {
 	 * @param msgHandler
 	 *            where to print messages
 	 */
-	public SaveSelectedHistogram(Frame frame, MessageHandler msgHandler) {
+	public SaveSelectedHistogram(Frame frame) {
 		this.frame = frame;
-		console = msgHandler;
 		dialog = new JDialog(frame, "Save Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
 				frame.getLocation().y + 50);
@@ -137,7 +132,7 @@ public final class SaveSelectedHistogram {
 	 * 
 	 */
 	private void saveHistListToFile() {
-		final HDFIO hdfio = new HDFIO(frame, console);
+		final HDFIO hdfio = new HDFIO(frame);
 		final List<Histogram> listSelected = new ArrayList<Histogram>();
 		File file = null;
 		/* Add selected histgrams to a list. */

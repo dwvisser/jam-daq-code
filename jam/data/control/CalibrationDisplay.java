@@ -5,7 +5,6 @@ import jam.data.Histogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
-import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -17,6 +16,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.text.NumberFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,14 +34,14 @@ import javax.swing.SwingConstants;
  */
 public class CalibrationDisplay extends AbstractControl implements
 		ActionListener, ItemListener, WindowListener {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.data.control");
 
 	private final static int MAX_NUMBER_TERMS = 5;
 
 	private final static String BLANK_TITLE = " Histogram not calibrated ";
 
 	private final static String BLANK_LABEL = "    --     ";
-
-	private final MessageHandler msghdlr;
 
 	private final JComboBox cFunc = new JComboBox(
 			new CalibrationComboBoxModel());
@@ -73,9 +74,8 @@ public class CalibrationDisplay extends AbstractControl implements
 	 * 
 	 * @param mh where to put messages
 	 */
-	public CalibrationDisplay(MessageHandler mh) {
+	public CalibrationDisplay() {
 		super("Histogram Calibration", false);
-		msghdlr = mh;
 		setResizable(false);
 		setLocation(30, 30);
 		final Container cdialogCalib = getContentPane();
@@ -200,7 +200,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		//commands for calibration
 		if ((command == "okcalib") || (command == "applycalib")) {
 			setCoefficients();
-			msghdlr.messageOutln("Calibrated histogram "
+			LOGGER.info("Calibrated histogram "
 					+ currentHistogram.getFullName().trim() + " with "
 					+ currentHistogram.getCalibration().getFormula());
 			if (command == "okcalib") {
@@ -210,7 +210,7 @@ public class CalibrationDisplay extends AbstractControl implements
 			doSetup();
 		} else if (command == "cancelcalib") {
 			cancelCalib();
-			msghdlr.messageOutln("Uncalibrated histogram "
+			LOGGER.info("Uncalibrated histogram "
 					+ currentHistogram.getFullName());
 			dispose();
 		} else {
@@ -232,12 +232,12 @@ public class CalibrationDisplay extends AbstractControl implements
 						.getSelectedItem());
 				calibFunction = (AbstractCalibrationFunction) calClass.newInstance();
 			} catch (Exception e) {
-				msghdlr.errorOutln(getClass().getName()
-						+ ".itemStateChanged(): " + ie.toString());
+				LOGGER.log(Level.SEVERE, getClass().getName()
+						+ ".itemStateChanged(): " + ie.toString(), ie);
 			}
 			lcalibEq.setText(calibFunction.getTitle());
 		} else {
-			msghdlr.errorOutln(getClass().getName()
+			LOGGER.severe(getClass().getName()
 					+ ".itemStateChanged(): unknown source: " + ie.toString());
 		}
 	}
@@ -257,13 +257,12 @@ public class CalibrationDisplay extends AbstractControl implements
 				}
 				calibFunction.setCoeff(coeff);
 			} catch (NumberFormatException nfe) {
-				msghdlr.errorOutln("Invalid input, coefficient "
-						+ calibFunction.getLabels()[i]);
+				LOGGER.log(Level.SEVERE, "Invalid input, coefficient "
+						+ calibFunction.getLabels()[i], nfe);
 			}
 			doSetup();
 		} else {
-			msghdlr
-					.errorOutln("Calibration function not defined [CalibrationDisplay]");
+			LOGGER.severe("Calibration function not defined [CalibrationDisplay]");
 		}
 	}
 

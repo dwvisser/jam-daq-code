@@ -23,7 +23,7 @@ implements Observer {
 	 */
 	public void initCommand(){
 		putValue(NAME, "Parameters\u2026");
-		dialog = new ParameterControl(msghdlr);
+		dialog = new ParameterControl();
 	}
 		
 	public void update(Observable observe, Object obj){

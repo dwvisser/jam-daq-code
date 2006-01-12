@@ -3,7 +3,6 @@ package jam.data.control;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -12,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -24,17 +23,14 @@ import javax.swing.border.EmptyBorder;
  */
 public class HistogramZero extends AbstractControl {
 
-	private final MessageHandler msghdlr;
-
 	/**
 	 * Construct a new "zero histograms" dialog.
 	 * 
 	 * @param mh
 	 *            where to print messages
 	 */
-	public HistogramZero(MessageHandler mh) {
+	public HistogramZero() {
 		super("Zero Histograms", false);
-		msghdlr = mh;
 		/* zero histogram dialog box */
 		final Container dzc = getContentPane();
 		setResizable(false);
@@ -51,7 +47,7 @@ public class HistogramZero extends AbstractControl {
 						.getSingletonInstance().getCurrentHistogram();
 				currentHistogram.setZero();
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-				msghdlr.messageOutln("Zero Histogram: "
+				LOGGER.info("Zero Histogram: "
 						+ currentHistogram.getTitle());
 				dispose();
 			}
@@ -85,15 +81,16 @@ public class HistogramZero extends AbstractControl {
 	 * Zero all the histograms.
 	 */
 	public void zeroAll() {
-		msghdlr.messageOut("Zero All", MessageHandler.NEW);
-		final Iterator allHistograms = Histogram.getHistogramList().iterator();
-		while (allHistograms.hasNext()) {
-			final Histogram hist = ((Histogram) allHistograms.next());
-			msghdlr.messageOut(" .", MessageHandler.CONTINUE);
+		final String classname= getClass().getName();
+		final String methname = "zeroAll";
+		LOGGER.entering(classname,methname);
+		LOGGER.info("Zero All");
+		final List<Histogram> allHistograms = Histogram.getHistogramList();
+		for (Histogram hist : allHistograms) {
 			hist.setZero();
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
-		msghdlr.messageOut(" done!", MessageHandler.END);
+		LOGGER.exiting(classname,methname);
 	}
 
 	public void doSetup() {

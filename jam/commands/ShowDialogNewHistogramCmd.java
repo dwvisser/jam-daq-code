@@ -14,6 +14,6 @@ final class ShowDialogNewHistogramCmd extends AbstractShowDialog {
 	 */
 	public void initCommand(){
 		putValue(NAME, "New\u2026");
-		dialog= new HistogramNew(msghdlr);
+		dialog= new HistogramNew();
 	}
 }

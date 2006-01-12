@@ -19,7 +19,7 @@ public final class ScalersCmd extends AbstractCommand {
 		}else if (param==ZERO) {
 			zeroScalers();
 		} else {
-			msghdlr.errorOutln(
+			LOGGER.severe(
 			"Incomplete command: need 'scaler zero' or 'scaler read'.");	
 		}
 	}
@@ -43,7 +43,7 @@ public final class ScalersCmd extends AbstractCommand {
 			BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 			
 		}else {
-			msghdlr.errorOutln("Can only Zero Scalers when in Online mode.");			
+			LOGGER.severe("Can only Zero Scalers when in Online mode.");			
 		}
 
 	}

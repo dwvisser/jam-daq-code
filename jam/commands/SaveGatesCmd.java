@@ -43,7 +43,7 @@ final class SaveGatesCmd extends AbstractCommand {
 	
 	private void saveGates(final File file) {
         final Frame frame = STATUS.getFrame();
-        final HDFIO hdfio = new HDFIO(frame, msghdlr);
+        final HDFIO hdfio = new HDFIO(frame);
         if (file == null) { //No file given
             final JFileChooser jfile = new JFileChooser(HDFIO
                     .getLastValidFile());

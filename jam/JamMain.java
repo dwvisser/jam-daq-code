@@ -42,6 +42,17 @@ import javax.swing.UIManager;
  * @since JDK1.1
  */
 public final class JamMain extends JFrame implements Observer {
+	
+	/**
+	 * Message output and text input.
+	 */
+	private static final Console console = new Console();
+	private static final Logger LOGGER;
+	static {
+		new LoggerConfig(console);
+		LOGGER = Logger.getLogger("jam");
+	}
+	
 	/**
 	 * Main method that is run to start up full Jam process
 	 * 
@@ -49,14 +60,9 @@ public final class JamMain extends JFrame implements Observer {
 	 *            not used currently
 	 */
 	public static void main(final String args[]) {
-		new LoggerConfig();
 		new JamMain(true);
 	}
 
-	/**
-	 * Message output and text input.
-	 */
-	private transient final Console console;
 
 	/**
 	 * Configuration information for Jam.
@@ -95,8 +101,7 @@ public final class JamMain extends JFrame implements Observer {
 		contents.setLayout(new BorderLayout());
 
 		/* Ouput/Input text console */
-		console = new Console();
-		console.messageOutln("Welcome to Jam v"
+		LOGGER.info("Welcome to Jam v"
 				+ Version.getInstance().getName());
 		JamStatus.getSingletonInstance().setMessageHandler(console);
 		SetupSortOn.createInstance(console);
@@ -219,8 +224,7 @@ public final class JamMain extends JFrame implements Observer {
 					setVisible(true);
 				}
 				/* print out where config files were read from */
-				properties.setMessageHandler(console);
-				properties.outputMessages(console);
+				properties.outputMessages();
 				summaryTable.repaint();
 			}
 		};

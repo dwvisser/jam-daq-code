@@ -28,7 +28,7 @@ public class OpenAdditionalHDF extends AbstractCommand implements HDFIO.AsyncLis
 	OpenAdditionalHDF(){
 		putValue(NAME,"Open Additional\u2026");
 		Frame frame= STATUS.getFrame();
-		hdfio = new HDFIO(frame, msghdlr);			
+		hdfio = new HDFIO(frame);			
 	    final Icon iOpenAdd = loadToolbarIcon("jam/ui/OpenAddHDF.png");
 	    putValue(Action.SMALL_ICON, iOpenAdd);
 		putValue(Action.SHORT_DESCRIPTION, "Open an additional hdf data file");	    

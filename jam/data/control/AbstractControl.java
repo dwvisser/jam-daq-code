@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -20,6 +21,8 @@ import javax.swing.JPanel;
  */
 public abstract class AbstractControl extends JDialog implements Observer {
 
+	protected static final Logger LOGGER = Logger.getLogger("jam.data.control");
+	
 	/**
 	 * Default number of rows to display
 	 */

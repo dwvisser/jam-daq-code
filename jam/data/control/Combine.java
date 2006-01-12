@@ -4,7 +4,6 @@ import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -16,6 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
@@ -45,8 +45,6 @@ public class Combine extends AbstractManipulation implements Observer {
 
 	private JLabel lname, lWith;
 
-	private final MessageHandler messageHandler;
-
 	private JTextField ttextto, ttimes1, ttimes2;
 
 	/**
@@ -55,9 +53,8 @@ public class Combine extends AbstractManipulation implements Observer {
 	 * @param console
 	 *            where to print messages
 	 */
-	public Combine(MessageHandler console) {
+	public Combine() {
 		super("Manipulate 1-D Histograms", false);
-		messageHandler = console;
 		setResizable(false);
 		Dimension dim;
 		final int hgap = 5;
@@ -201,7 +198,7 @@ public class Combine extends AbstractManipulation implements Observer {
 									BroadcastEvent.Command.HISTOGRAM_SELECT,
 									hto);
 						} catch (DataException je) {
-							messageHandler.errorOutln(je.getMessage());
+							LOGGER.log(Level.SEVERE, je.getMessage(), je);
 						}
 					}
 				});
@@ -246,7 +243,7 @@ public class Combine extends AbstractManipulation implements Observer {
 			String groupName = parseGroupName(name);
 			hto = (AbstractHist1D) createNewHistogram(groupName, histName,
 					hfrom1.getSizeX());
-			messageHandler.messageOutln("New Histogram created: '" + groupName
+			LOGGER.info("New Histogram created: '" + groupName
 					+ "/" + histName + "'");
 		} else {
 			hto = (AbstractHist1D) Histogram.getHistogram(name);
@@ -312,15 +309,13 @@ public class Combine extends AbstractManipulation implements Observer {
 		}
 
 		if (hfrom2 != null) {
-			messageHandler.messageOutln("Combine "
+			LOGGER.info("Combine "
 					+ hfrom1.getFullName().trim() + operation
 					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
 		} else {
-			messageHandler.messageOutln("Normalize "
+			LOGGER.info("Normalize "
 					+ hfrom1.getFullName().trim() + " to " + hto.getFullName());
-
 		}
-
 	}
 
 	/**

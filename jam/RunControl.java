@@ -185,7 +185,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		console = STATUS.getMessageHandler();
 		vmeComm = STATUS.getFrontEndCommunication();
 		final Frame jamMain = STATUS.getFrame();
-		this.dataio = new jam.io.hdf.HDFIO(jamMain, console);
+		this.dataio = new jam.io.hdf.HDFIO(jamMain);
 		runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);

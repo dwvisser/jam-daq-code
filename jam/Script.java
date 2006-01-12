@@ -194,7 +194,7 @@ public final class Script implements Observer {
 	 * Zero all histograms in memory.
 	 */
 	public void zeroHistograms(){
-		(new HistogramZero(null)).zeroAll();
+		(new HistogramZero()).zeroAll();
 	}
 		
 		
@@ -203,7 +203,7 @@ public final class Script implements Observer {
 	private void initFields(){
 		sso=SetupSortOff.getInstance();
 		sortControl=SortControl.getInstance();
-		hdfio=new HDFIO(STATUS.getFrame(),null);
+		hdfio=new HDFIO(STATUS.getFrame());
 	}
 	
 	/**

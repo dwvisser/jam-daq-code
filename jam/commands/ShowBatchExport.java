@@ -15,6 +15,6 @@ final class ShowBatchExport extends AbstractShowDialog {
 	
 	public void initCommand(){
 		putValue(NAME, "Batch Export\u2026");
-		dialog=new jam.io.BatchExport(msghdlr);
+		dialog=new jam.io.BatchExport();
 	}
 }
