@@ -1,6 +1,5 @@
 package jam;
 
-import static jam.Script.LOG;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -95,7 +94,6 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final AbstractButton bok, bapply, checkLock, bbrowseh,
 			bbrowsed, bbrowsel;
 
-
 	{
 		checkLock = new JCheckBox("Setup Locked", false);
 		checkLock.addItemListener(new ItemListener() {
@@ -108,8 +106,7 @@ public final class SetupSortOn extends AbstractSetup {
 						lockMode(false);
 						jamConsole.closeLogFile();
 					} catch (Exception e) {
-						jamConsole.errorOutln(e.getMessage());
-						LOG.log(Level.SEVERE, e.getMessage(), e);
+						LOGGER.log(Level.SEVERE, e.getMessage(), e);
 					}
 				}
 			}
@@ -275,7 +272,7 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 		pEntries.add(sortChoice);
 		/* Input stream classes */
-		final RTSI rtsi=RTSI.getSingletonInstance();
+		final RTSI rtsi = RTSI.getSingletonInstance();
 		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(rtsi.find(
 				"jam.sort.stream", AbstractEventInputStream.class, false));
 		lhs.remove(AbstractEventInputStream.class);
@@ -325,11 +322,11 @@ public final class SetupSortOn extends AbstractSetup {
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
-		bbrowseh = new PathBrowseButton(histFolder,textPathHist);
+		bbrowseh = new PathBrowseButton(histFolder, textPathHist);
 		pBrowse.add(bbrowseh);
-		bbrowsed = new PathBrowseButton(dataFolder,textPathData);
+		bbrowsed = new PathBrowseButton(dataFolder, textPathData);
 		pBrowse.add(bbrowsed);
-		bbrowsel = new PathBrowseButton(logDirectory,textPathLog);
+		bbrowsel = new PathBrowseButton(logDirectory, textPathLog);
 		pBrowse.add(bbrowsel);
 		pBrowse.add(new Box.Filler(dummyDim, dummyDim, dummyDim));
 		/* panel for buttons */
@@ -408,14 +405,13 @@ public final class SetupSortOn extends AbstractSetup {
 				throw new JamException("Can't setup sorting, mode locked ");
 			}
 		} catch (SortException je) {
-			jamConsole.errorOutln(je.getMessage());
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		} catch (JamException je) {
-			jamConsole.errorOutln(je.getMessage());
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		} catch (Exception e) {
-			jamConsole.errorOutln(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-
 
 	/**
 	 * Save the names of the experiment, the sort file and the event and
@@ -489,12 +485,12 @@ public final class SetupSortOn extends AbstractSetup {
 		try { // create new event input stream class
 			inStream = (AbstractEventInputStream) ((Class) inChooser
 					.getSelectedItem()).newInstance();
-			inStream.setConsole(jamConsole);
+			inStream.setConsoleExists(true);
 		} catch (InstantiationException ie) {
 			final String msg = getClass().getName()
-			+ ": can't instantiate EventInputStream: "
-			+ inChooser.getSelectedItem();
-			LOG.log(Level.SEVERE, msg, ie);
+					+ ": can't instantiate EventInputStream: "
+					+ inChooser.getSelectedItem();
+			LOGGER.log(Level.SEVERE, msg, ie);
 			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
 			throw new JamException(getClass().getName()
@@ -507,15 +503,15 @@ public final class SetupSortOn extends AbstractSetup {
 			outStream.setEventSize(sortRoutine.getEventSize());
 		} catch (InstantiationException ie) {
 			final String msg = getClass().getName()
-			+ ": can't instantiate EventOutputStream class: "
-			+ outChooser.getSelectedItem();
-			LOG.log(Level.SEVERE, msg, ie);
+					+ ": can't instantiate EventOutputStream class: "
+					+ outChooser.getSelectedItem();
+			LOGGER.log(Level.SEVERE, msg, ie);
 			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
 			final String msg = getClass().getName()
-			+ ": illegal access to EventOutputStream class: "
-			+ outChooser.getSelectedItem();
-			LOG.log(Level.SEVERE, msg, iae);
+					+ ": illegal access to EventOutputStream class: "
+					+ outChooser.getSelectedItem();
+			LOGGER.log(Level.SEVERE, msg, iae);
 			throw new JamException(msg, iae);
 		}
 		// create sorter daemon
