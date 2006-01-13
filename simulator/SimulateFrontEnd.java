@@ -64,8 +64,8 @@ public final class SimulateFrontEnd  {
 	final String LOCAL_HOST="localhost";
 	final String HOST_IP="localhost";
 	final String TARGET_IP="localhost"; 
-	final int PORT_RECIEVE=5003;
-	final int PORT_SEND=5002; 
+	final int PORT_RECIEVE=6002;
+	final int PORT_SEND=6003; 
 	
 	private transient DatagramSocket socketSend; 
 	private transient DatagramSocket socketReceive;
