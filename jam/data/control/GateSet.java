@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -198,13 +199,13 @@ public class GateSet extends AbstractControl implements Observer {
 	 */
 	private void addPoint() {
 		try {
-			final int x = Integer.parseInt(textLower.getText().trim());
-			final int y = Integer.parseInt(textUpper.getText().trim());
-			final Bin p = Bin.create(x, y);
-			addPoint(p);
-			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ADD, p);
+			final int xbin = Integer.parseInt(textLower.getText().trim());
+			final int ybin = Integer.parseInt(textUpper.getText().trim());
+			final Bin bin = Bin.create(xbin, ybin);
+			addPoint(bin);
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ADD, bin);
 		} catch (NumberFormatException ne) {
-			messageHandler.errorOutln("Invalid input not a number [GateSet]");
+			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
 	}
 
@@ -230,8 +231,7 @@ public class GateSet extends AbstractControl implements Observer {
 					gatePoints.add(pChannel);
 					textUpper.setText(String.valueOf(pChannel.getX()));
 				} else {
-					messageHandler
-							.errorOutln(getClass().getName()
+					LOGGER.severe(getClass().getName()
 									+ ".addPoint(): setting 1 d gate should not be here.");
 				}
 			} else if (type == TWO_DIMENSION) {
@@ -240,7 +240,7 @@ public class GateSet extends AbstractControl implements Observer {
 				textUpper.setText(String.valueOf(pChannel.getY()));
 			}
 		} else {
-			messageHandler.errorOutln(getClass().getName()
+			LOGGER.severe(getClass().getName()
 					+ ".addPoint(Point): an expected condition was not true. "
 					+ "Contact the developer.");
 		}
@@ -310,7 +310,7 @@ public class GateSet extends AbstractControl implements Observer {
 		} else if (currentHistogram.getDimensionality() == 2) {
 			setType(2);
 		} else {
-			messageHandler.errorOutln(getClass().getName()
+			LOGGER.severe(getClass().getName()
 					+ ".setup(): undefined histogram type.");
 			setType(NONE);
 		}
@@ -402,7 +402,7 @@ public class GateSet extends AbstractControl implements Observer {
 				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_SAVE);
 			}
 		} catch (NumberFormatException ne) {
-			messageHandler.errorOutln("Invalid input not a number [GateSet]");
+			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
 		cancel();
 	}

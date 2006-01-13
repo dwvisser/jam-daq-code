@@ -3,7 +3,6 @@ package jam.data.control;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

@@ -4,7 +4,6 @@ import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -55,7 +54,6 @@ public class LoadFit {
 		super();
 		broadcaster = Broadcaster.getSingletonInstance();
 		final JamStatus jamStatus = JamStatus.getSingletonInstance();
-		final MessageHandler msgHandler = jamStatus.getMessageHandler();
 		jamMain = jamStatus.getFrame();
 		display = jamStatus.getDisplay();
 		final String dialogName = "Load Fit Routine";
@@ -84,7 +82,6 @@ public class LoadFit {
 				try {
 					makeFit(fit);
 				} catch (JamException je) {
-					msgHandler.errorOutln(je.getMessage());
 					LOGGER.log(Level.SEVERE, je.getMessage(), je);
 				}
 			}

@@ -82,7 +82,7 @@ public final class Script implements Observer {
 		return new File(base,fname);
 	}
 	
-	static final Logger LOG = Logger.getLogger("jam");
+	private static final Logger LOG = Logger.getLogger("jam");
 
 	/**
 	 * Completes the task equivalent of specifying the settings in

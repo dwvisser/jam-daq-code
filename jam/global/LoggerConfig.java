@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 public class LoggerConfig {
 	private static final Logger LOGGER = Logger.getLogger("");
-
 	
 	public LoggerConfig(){
 		super();
@@ -30,6 +29,13 @@ public class LoggerConfig {
 	
 	public LoggerConfig(final MessageHandler msgHandler) {
 		this();
+		List<Handler> handlers = Arrays.asList(LOGGER.getHandlers());
+		for (Handler handler : handlers) {
+			if (handler instanceof ConsoleHandler) {
+				LOGGER.removeHandler(handler);
+				break;
+			}
+		}
 		LOGGER.addHandler(new Handler(){
 			public void close() {
 				//do-nothing
@@ -40,13 +46,13 @@ public class LoggerConfig {
 			}
 			
 			public void publish(final LogRecord record){
-				final Level level = record.getLevel();
+				final int level = record.getLevel().intValue();
 				final String message = record.getMessage();
-				if (level==Level.SEVERE) {
+				if (level >= Level.SEVERE.intValue()) {
 					msgHandler.errorOutln(message);
-				} else if (level==Level.WARNING) {
+				} else if (level >= Level.WARNING.intValue()) {
 					msgHandler.warningOutln(message);
-				} else if (level==Level.INFO) {
+				} else if (level >= Level.INFO.intValue()) {
 					msgHandler.messageOutln(message);
 				}
 			}

@@ -15,8 +15,7 @@ import java.io.StreamTokenizer;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Imports banana gate files used by the ORPHLIB
- * software at the HRIBF at ORNL.
+ * Imports banana gate files used by the ORPHLIB software at the HRIBF at ORNL.
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version Feb 13, 2004
@@ -34,16 +33,17 @@ public final class ImportBanGates extends AbstractImpExp {
 	 * @see jam.io.AbstractImpExp#saveFile(jam.data.Histogram)
 	 */
 	public void saveFile(Histogram hist) throws ImpExpException {
-		msgHandler.warningOutln("Save BAN not implemented.");
+		LOGGER.warning("Save BAN not implemented.");
 	}
 
-	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("ban", 
-	"ORNL Banana Gates");
+	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
+			"ban", "ORNL Banana Gates");
+
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
-	
-	protected String getDefaultExtension(){
+
+	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
@@ -80,41 +80,40 @@ public final class ImportBanGates extends AbstractImpExp {
 				gates[i] = n;
 				i++;
 			}
-		} //fall out when we've read "INP"
+		} // fall out when we've read "INP"
 		st.pushBack();
 		final int[] rval = new int[i];
 		System.arraycopy(gates, 0, rval, 0, i);
 		return rval;
 	}
 
-	private void readGate(StreamTokenizer st)
-		throws IOException {
-		final String CXY="CXY";
-		final String INP="INP";
+	private void readGate(StreamTokenizer st) throws IOException {
+		final String CXY = "CXY";
+		final String INP = "INP";
 		/* first advance to start of record */
 		do {
 			st.nextToken();
 		} while (!INP.equals(st.sval));
-		st.nextToken(); //hisfilename
-		st.nextToken(); //hist #
+		st.nextToken(); // hisfilename
+		st.nextToken(); // hist #
 		final int hisNum = (int) st.nval;
 		final Histogram his = Histogram.getHistogram(hisNum);
-		st.nextToken(); //gate number
+		st.nextToken(); // gate number
 		final int gateNum = (int) st.nval;
-		st.nextToken(); //0
-		st.nextToken(); //# points
+		st.nextToken(); // 0
+		st.nextToken(); // # points
 		final int numPoints = (int) st.nval;
 		while (!CXY.equals(st.sval)) {
 			st.nextToken();
 		}
 		final Polygon p = new Polygon();
 		for (int i = 0; i < numPoints; i++) {
-			st.nextToken(); //x
+			st.nextToken(); // x
 			if (st.ttype == StreamTokenizer.TT_WORD) {
-				st.nextToken(); //skip "CXY" 's
+				st.nextToken(); // skip "CXY" 's
 			}
 			final int x = (int) st.nval;
-			st.nextToken(); //y
+			st.nextToken(); // y
 			final int y = (int) st.nval;
 			p.addPoint(x, y);
 		}
@@ -126,28 +125,25 @@ public final class ImportBanGates extends AbstractImpExp {
 			}
 			g.setLimits(p);
 		} else {
-			this.msgHandler.warningOutln(
-				"Couldn't load gate "
-					+ name
-					+ ". Expected histogram # "
-					+ hisNum
-					+ ".");
+			LOGGER.warning("Couldn't load gate " + name
+					+ ". Expected histogram # " + hisNum + ".");
 		}
 	}
 
 	/**
-	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream, jam.data.Histogram)
+	 * @see jam.io.AbstractImpExp#writeHist(java.io.OutputStream,
+	 *      jam.data.Histogram)
 	 */
 	protected void writeHist(OutputStream outStream, Histogram hist)
-		throws ImpExpException {
-			//not implementing
+			throws ImpExpException {
+		// not implementing
 	}
-	
-	public boolean canExport(){
+
+	public boolean canExport() {
 		return false;
 	}
 
-	boolean batchExportAllowed(){
+	boolean batchExportAllowed() {
 		return false;
 	}
 }

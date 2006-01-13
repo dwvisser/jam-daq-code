@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
@@ -44,6 +45,9 @@ import javax.swing.JToggleButton;
  * @version 2004-12-21
  */
 abstract class AbstractSetup {
+
+	protected static final Logger LOGGER = Logger.getLogger("jam");
+
 	/**
 	 * Handle to event broadcaster.
 	 */
@@ -191,7 +195,8 @@ abstract class AbstractSetup {
 	/**
 	 * Should be called when OK or Apply is actuated.
 	 * 
-	 * @param dispose whether to dispose of the dialog
+	 * @param dispose
+	 *            whether to dispose of the dialog
 	 */
 	protected abstract void doApply(boolean dispose);
 
@@ -287,6 +292,9 @@ abstract class AbstractSetup {
 		if (sortClass == null) {
 			sortClass = (Class) sortChoice.getSelectedItem();
 		}
+		if (sortClass == null) {
+			throw new JamException("No sort routine has been selected.");
+		}
 		// FIXME maybe we should do DataBase.clearAll(); here
 		Group.clearList();
 		final String sortName = Group.parseSortClassName(sortClass.getName());
@@ -295,8 +303,9 @@ abstract class AbstractSetup {
 			if (specify.isSelected()) {
 				/* we call loadClass() in order to guarantee latest version */
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RTSI.getSingletonInstance().loadClass(classPath,
-							sortClass.getName()).newInstance();// create sort
+					sortRoutine = (SortRoutine) RTSI.getSingletonInstance()
+							.loadClass(classPath, sortClass.getName())
+							.newInstance();// create sort
 					// class
 				}
 			} else {// use default loader
@@ -316,10 +325,11 @@ abstract class AbstractSetup {
 	/**
 	 * Locks up the setup so the fields cannot be edited.
 	 * 
-	 * @param lock is true if the fields are to be locked
+	 * @param lock
+	 *            is true if the fields are to be locked
 	 */
 	protected abstract void lockMode(boolean lock);
-	
+
 	/**
 	 * Sets whether to use the default classpath or a user-specified one.
 	 * 
@@ -331,7 +341,7 @@ abstract class AbstractSetup {
 		final List<Class<?>> list = new ArrayList<Class<?>>();
 		if (isDefault) {
 			final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-			final RTSI rtsi=RTSI.getSingletonInstance();
+			final RTSI rtsi = RTSI.getSingletonInstance();
 			set.addAll(rtsi.find("help", Sorter.class, true));
 			set.addAll(rtsi.find("sort", Sorter.class, true));
 			list.addAll(set);
@@ -341,7 +351,7 @@ abstract class AbstractSetup {
 		sortChoice.setModel(new DefaultComboBoxModel(list.toArray()));
 		return list;
 	}
-	
+
 	/**
 	 * Sets the class path for loading sort routines.
 	 * 
@@ -359,7 +369,7 @@ abstract class AbstractSetup {
 			textSortPath.setText(classPath.getAbsolutePath());
 		}
 	}
-	
+
 	/**
 	 * Sets up the sort.
 	 * 

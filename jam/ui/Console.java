@@ -509,11 +509,16 @@ public class Console extends JPanel implements MessageHandler {
 			file = new File(newName);
 			index++;
 		}
-		try {
-			logWriter = new BufferedWriter(new FileWriter(file));
-		} catch (IOException ioe) {
-			throw new JamException("Problem opening log file "
-					+ file.getAbsolutePath(),ioe);
+		if (file.canWrite()) {
+			try {
+				logWriter = new BufferedWriter(new FileWriter(file));
+			} catch (IOException ioe) {
+				throw new JamException("Problem opening log file "
+						+ file.getAbsolutePath(), ioe);
+			}
+		} else {
+			throw new JamException(file.getParent()
+					+ " is not writable by you. Choose a log path that is.");
 		}
 		return newName;
 	}

@@ -123,6 +123,8 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 
 		try {
 			// read in data until end of file
+			int specRead = 0;
+			int specNotRead = 0;
 			while (unPackHeaderXSYS(buffin)) {
 				// histogram 1d int 4 words
 				if (areaDataType == XSYS1DI4) {
@@ -137,9 +139,7 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 					if (calibFlag == CALIB_ENERGY) {
 						calibHist(calibCoef, hist);
 					}
-					if (msgHandler != null)
-						msgHandler.messageOut(" .");
-					// dot indicating a spectrum read
+					specRead++;
 
 					// histogram 2d int 4 words
 				} else if (areaDataType == XSYS2DI4) {
@@ -149,23 +149,24 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 					Histogram hist = Histogram.createHistogram(importGroup,
 							counts2d, areaName, areaTitle);
 					hist.setNumber(areaNumber);
-					if (msgHandler != null) {
-						msgHandler.messageOut(" .");
-					}
+					specRead++;
 				} else if (areaDataType == XSYS1DR4) {
 					unPackUnknown(buffin, areaLengthPage);
-					if (msgHandler != null) {
-						msgHandler.messageOut(" X");// cross indicating a
-													// spectrum NOT read
-					}
+					specNotRead++;
 				} else if (areaDataType == XSYSEVAL) {
 					unPackEVAL(buffin, areaLengthPage);
 				} else {
 					unPackUnknown(buffin, areaLengthPage);
-					if (msgHandler != null)
-						msgHandler.messageOut("X");
+					specNotRead++;
 				}
 			}
+			final StringBuilder msg = new StringBuilder();
+			msg.append(specRead).append(" spectra read");
+			if (specNotRead > 0){
+				msg.append(", ").append(specNotRead).append(" spectra not read");
+			}
+			msg.append('.');
+			LOGGER.info(msg.toString());
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
@@ -227,9 +228,10 @@ public class ImpExpXSYS extends AbstractImpExp implements XsysHeader {
 			}
 			/* if header before first histogram */
 			if (firstHeader) {
-				if (msgHandler != null)
-					msgHandler.messageOutln("  Run number: " + runNumber
+				if (!silent){
+					LOGGER.info("  Run number: " + runNumber
 							+ " Title: " + runTitle.trim() + " ");
+				}
 				/* read in scalers values */
 				for (int i = 0; i < NUMBER_SCALERS; i++) {
 					scalers[i] = bufferToBigEndian(buffer, P_SCALERS + L_INT

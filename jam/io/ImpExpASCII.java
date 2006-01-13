@@ -332,9 +332,6 @@ public class ImpExpASCII extends AbstractImpExp {
 			}
 			writer.flush();
 			buffout.flush();
-			if (msgHandler != null){
-				msgHandler.messageOut(" . ");
-			}
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}

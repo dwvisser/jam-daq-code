@@ -253,12 +253,11 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 			} catch (EOFException eofe) {// we got to the end of a file or
 				// stream
 				rval = EventInputStatus.END_FILE;
-				console
-						.warningOutln(getClass().getName()
+				LOGGER.warning(getClass().getName()
 								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 			} catch (IOException ioe) {// we got to the end of a file or stream
 				rval = EventInputStatus.UNKNOWN_WORD;
-				console.warningOutln(getClass().getName()
+				LOGGER.warning(getClass().getName()
 						+ ".readEvent(): Problem reading integer from stream.");
 			} catch (EventException e) {
 				rval = EventInputStatus.UNKNOWN_WORD;

@@ -7,8 +7,6 @@ import jam.data.DataException;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.sort.ThreadPriorities;
 
 import java.awt.BorderLayout;
@@ -19,6 +17,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -46,8 +45,6 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	private final int DEFAULT_MAX = 100;
 
 	private final int DEFAULT_THRESHOLD = 10;
-
-	private final MessageHandler msgHandler;
 
 	// widgets for configuration
 	private final JPanel pUpper;
@@ -78,7 +75,6 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 
 	MonitorControl() {
 		super("Monitors Setup", false);
-		msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
 		setResizable(true);
 		setLocation(20, 50);
 		final Container cddisp = getContentPane();
@@ -270,7 +266,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 				monitor.setAlarm(checkAlarm.isSelected());
 			}
 		} catch (NumberFormatException nfe) {
-			msgHandler.errorOutln("Invalid number input [MonitorControl]");
+			LOGGER.log(Level.SEVERE, "Invalid number input.", nfe);
 		}
 		configured = true;
 	}
@@ -336,7 +332,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 				Thread.sleep(waitAfterRepaint);
 			} // loop until stopped
 		} catch (InterruptedException ie) {
-			msgHandler.errorOutln("Monitor Interupted");
+			LOGGER.log(Level.SEVERE, "Monitor Interupted", ie);
 		}
 		loopThreadStopped();
 	}

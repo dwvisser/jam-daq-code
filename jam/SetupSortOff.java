@@ -1,6 +1,5 @@
 package jam;
 
-import static jam.Script.LOG;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -249,7 +248,7 @@ public final class SetupSortOff extends AbstractSetup {
 			}
 		} catch (Exception ex) {
 			msgHandler.errorOutln(ex.getMessage());
-			LOG.log(Level.SEVERE, ex.getMessage(), ex);
+			LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}
 
@@ -259,18 +258,18 @@ public final class SetupSortOff extends AbstractSetup {
 				eventInput = (AbstractEventInputStream) ((Class) inChooser
 						.getSelectedItem()).newInstance();
 			}
-			eventInput.setConsole(msgHandler);
+			eventInput.setConsoleExists(true);
 		} catch (InstantiationException ie) {
 			final String msg = classname
 			+ "Cannot instantize event input stream: "
 			+ inChooser.getSelectedItem();
-			LOG.log(Level.SEVERE, msg,ie);
+			LOGGER.log(Level.SEVERE, msg,ie);
 			throw new JamException(msg,ie);
 		} catch (IllegalAccessException iae) {
 			final String msg = classname
 			+ "Cannot access event input stream: "
 			+ inChooser.getSelectedItem();
-			LOG.log(Level.SEVERE, msg,iae);
+			LOGGER.log(Level.SEVERE, msg,iae);
 			throw new JamException(msg,iae);
 		}
 	}

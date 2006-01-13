@@ -73,8 +73,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 			} catch (EOFException eofe) {
 				// we got to the end of a file or stream
 				status = EventInputStatus.END_FILE;
-				console
-						.warningOutln(getClass().getName()
+				LOGGER.warning(getClass().getName()
 								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
 			} catch (Exception e) {
 				status = EventInputStatus.UNKNOWN_WORD;

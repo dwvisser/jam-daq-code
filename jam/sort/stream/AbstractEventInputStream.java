@@ -73,7 +73,7 @@ public abstract class AbstractEventInputStream {
 		UNKNOWN_WORD
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam.sort.stream");
+	protected static final Logger LOGGER = Logger.getLogger("jam.sort.stream");
 
 	/**
 	 * 
@@ -88,7 +88,7 @@ public abstract class AbstractEventInputStream {
 	/**
 	 * The place to print messages.
 	 */
-	protected transient MessageHandler console;
+	//protected transient MessageHandler console;
 
 	/**
 	 * Stream events are read from
@@ -163,7 +163,7 @@ public abstract class AbstractEventInputStream {
 	 */
 	public AbstractEventInputStream(MessageHandler console) {
 		this();
-		setConsole(console);
+		setConsoleExists(true);
 	}
 
 	/**
@@ -293,14 +293,16 @@ public abstract class AbstractEventInputStream {
 		this.bufferSize = size;
 	}
 
+	protected transient boolean consoleExists = false;
+	
 	/**
 	 * Define the console.
 	 * 
 	 * @param console
 	 *            where to write text output to the user
 	 */
-	public final void setConsole(final MessageHandler console) {
-		this.console = console;
+	public final void setConsoleExists(final boolean exists) {
+		this.consoleExists = exists;
 	}
 
 	/**
@@ -334,12 +336,10 @@ public abstract class AbstractEventInputStream {
 		final String cname = getClass().getName();
 		final String message = exception.getMessage();
 		LOGGER.log(Level.SEVERE, message, exception);
-		if (console == null) {
+		if (!consoleExists) {
 			JOptionPane.showMessageDialog(null, message, cname,
 					JOptionPane.ERROR_MESSAGE);
-		} else {
-			console.errorOutln(cname + "--" + message);
-		}
+		} 
 	}
 
 	/**
@@ -350,9 +350,6 @@ public abstract class AbstractEventInputStream {
 	 */
 	protected final void showMessage(final String message) {
 		LOGGER.info(message);
-		if (console != null) {
-			console.messageOutln(message);
-		}
 	}
 
 	/**
@@ -364,11 +361,9 @@ public abstract class AbstractEventInputStream {
 	protected final void showWarningMessage(final String string) {
 		final String cname = getClass().getName();
 		LOGGER.warning(string);
-		if (console == null) {
+		if (!consoleExists) {
 			JOptionPane.showMessageDialog(null, string, cname,
 					JOptionPane.WARNING_MESSAGE);
-		} else {
-			console.errorOutln(cname + "--" + string);
 		}
 	}
 

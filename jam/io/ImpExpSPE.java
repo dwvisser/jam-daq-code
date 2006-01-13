@@ -54,11 +54,10 @@ public final class ImpExpSPE extends AbstractImpExp {
      *                all exceptions given to <code>ImpExpException</code>
      *                display on the MessageHandler
      */
-    public void saveFile(Histogram hist) throws ImpExpException {
+    public void saveFile(final Histogram hist) throws ImpExpException {
         if (hist.getDimensionality() == 2) {
-            if (msgHandler != null) {
-                msgHandler
-                        .errorOutln("Cannot write out 2 dimensional spe files");
+            if (!silent) {
+                LOGGER.severe("Cannot write out 2 dimensional spe files");
             }
         } else {
             saveFile("Export RadWare .spe file ", hist);
@@ -104,9 +103,6 @@ public final class ImpExpSPE extends AbstractImpExp {
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
 			Histogram.createHistogram(importGroup, counts, nameHist);
-			if (msgHandler != null) {
-				msgHandler.messageOut(" .");
-			}
 			dis.close();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
@@ -159,9 +155,6 @@ public final class ImpExpSPE extends AbstractImpExp {
 			/* next character found experimentally end of record?
 			 * seems to be necessary */
 			dos.writeInt(4*size); 
-			if (msgHandler != null){
-				msgHandler.messageOut(" .");
-			}
 			dos.flush();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());

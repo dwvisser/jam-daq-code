@@ -3,12 +3,12 @@ package jam.data.control;
 import jam.data.DataException;
 import jam.data.Group;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.util.logging.Level;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,10 +23,9 @@ import javax.swing.SwingConstants;
  */
 public class GroupRename extends AbstractControl {
 
-	private final JTextField textName;
-	private Group currentGroup; 
+	private transient final JTextField textName;
+	private transient Group currentGroup; 
 
-	MessageHandler msgHandler=STATUS.getMessageHandler();	
 	/**
 	 * Constructs a "new group" dialog command.
 	 */
@@ -67,15 +66,14 @@ public class GroupRename extends AbstractControl {
 			currentGroup = (Group)STATUS.getCurrentGroup();
 			if (Group.isValid(currentGroup)) {
 				if (currentGroup.getType() == Group.Type.SORT) {
-					msgHandler
-							.errorOutln("Cannot rename sort groups, selected group "
+					LOGGER.severe("Cannot rename sort groups, selected group "
 									+ currentGroup.getName() + ".");
 				} else {
 					textName.setText(currentGroup.getName());
 					super.setVisible(true);
 				}
 			} else {
-				msgHandler.errorOutln("Need to select a group.");
+				LOGGER.severe("Need to select a group.");
 			}
 		} else {
 			super.setVisible(false);
@@ -92,7 +90,7 @@ public class GroupRename extends AbstractControl {
             currentGroup.setName(name);
             BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
         } catch (DataException dataError) {
-            msgHandler.errorOutln("Can't rename to existing name: " + name);
+            LOGGER.log(Level.SEVERE,"Can't rename to existing name: " + name, dataError);
         }
     }
 }

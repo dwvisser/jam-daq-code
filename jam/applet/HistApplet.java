@@ -8,7 +8,6 @@ import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.global.JamStatus;
 import jam.global.LoggerConfig;
-import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.Console;
 

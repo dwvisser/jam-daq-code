@@ -4,6 +4,7 @@ import jam.global.MessageHandler;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * This class knows how to handle the Kmax data format. It extends
@@ -141,13 +142,11 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 			// we got to the end of a file or stream
 		} catch (EOFException e) {
 			return EventInputStatus.END_FILE;
-			// throw new EventException("Reading event "+e.toString()+"
-			// [KmaxInputStream]");
 		} catch (IOException ioe) {
-			console.errorOutln(ioe.toString());
+			LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
 			return EventInputStatus.ERROR;
 		} catch (Exception e) {
-			console.errorOutln(e.toString());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 			return EventInputStatus.ERROR;
 		}
 	}
