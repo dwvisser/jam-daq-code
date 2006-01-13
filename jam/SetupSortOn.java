@@ -370,11 +370,10 @@ public final class SetupSortOn extends AbstractSetup {
 			if (STATUS.canSetup()) {
 				loadNames();
 				if (clog.isSelected()) { // if needed start logging to file
-					//KBS uncomment
-					//final String logFile = jamConsole
-					//		.setLogFileName(logDirectory + exptName);
-					//jamConsole.messageOutln("Logging to file: " + logFile);
-					//jamConsole.setLogFileOn(true);
+					final String logFile = jamConsole
+							.setLogFileName(logDirectory + exptName);
+					jamConsole.messageOutln("Logging to file: " + logFile);
+					jamConsole.setLogFileOn(true);
 				} else {
 					jamConsole.setLogFileOn(false);
 				}
