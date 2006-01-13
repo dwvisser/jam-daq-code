@@ -25,6 +25,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnknownHostException;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -41,6 +42,8 @@ import javax.swing.JTextField;
  */
 public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private static enum Mode {
 		LINK, SERVER, SNAP
@@ -155,15 +158,15 @@ public class SetupRemote extends JDialog implements ActionListener,
 			if (command == "ok" || command == "apply") {
 				if (mode == Mode.SERVER) {
 					server(name);
-					msgHandler.messageOutln("Jam made as server: " + name);
+					LOGGER.info("Jam made as server: " + name);
 				} else if (mode == Mode.SNAP) {
-					msgHandler.messageOutln("Trying " + name);
+					LOGGER.info("Trying " + name);
 					snap(name);
-					msgHandler.messageOutln("Jam remote snapShot: " + name);
+					LOGGER.info("Jam remote snapShot: " + name);
 				} else if (mode == Mode.LINK) {
-					msgHandler.messageOutln("Trying " + name);
+					LOGGER.info("Trying " + name);
 					link(textName.getText().trim());
-					msgHandler.messageOutln("Jam remote link: " + name);
+					LOGGER.info("Jam remote link: " + name);
 				}
 
 				setActive(true);
@@ -304,7 +307,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 		try {
 			if (STATUS.canSetup()) {
 				remoteData = (RemoteData) Naming.lookup(url);
-				msgHandler.messageOutln("Remote lookup OK!");
+				LOGGER.info("Remote lookup OK!");
 			} else {
 				throw new JamException(
 						"Can't view remotely, sort mode locked [SetupRemote]");

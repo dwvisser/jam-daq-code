@@ -378,7 +378,7 @@ public class GateSet extends AbstractControl implements Observer {
 					final int lim1 = Integer.parseInt(textLower.getText());
 					final int lim2 = Integer.parseInt(textUpper.getText());
 					currentGate.setLimits(lim1, lim2);
-					messageHandler.messageOutln("Gate Set "
+					LOGGER.info("Gate Set "
 							+ currentGate.getName() + " Limits=" + lim1 + ","
 							+ lim2);
 				} else if (type == TWO_DIMENSION) {
@@ -455,7 +455,7 @@ public class GateSet extends AbstractControl implements Observer {
 	private void unset() {
 		currentGate.unsetLimits();
 		cgate.repaint();
-		messageHandler.messageOutln("Gate UnSet: " + currentGate.getName());
+		LOGGER.info("Gate UnSet: " + currentGate.getName());
 		cancel();
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}

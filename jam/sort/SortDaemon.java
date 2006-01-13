@@ -7,7 +7,6 @@ import jam.global.Broadcaster;
 import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.Sorter;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
@@ -59,8 +58,6 @@ public class SortDaemon extends GoodThread {
 
 	private transient int eventSortedCount;
 
-	private transient final MessageHandler msgHandler;
-
 	private transient final Object offlineSortLock = new Object();
 
 	private transient boolean osc = false;
@@ -82,10 +79,9 @@ public class SortDaemon extends GoodThread {
 	 * @param messageHandler
 	 *            the console for writing out messages to the user
 	 */
-	public SortDaemon(Controller con, MessageHandler messageHandler) {
+	public SortDaemon(Controller con) {
 		super();
 		controller = con;
-		msgHandler = messageHandler;
 		setName("Event Sorter");
 	}
 
@@ -116,6 +112,7 @@ public class SortDaemon extends GoodThread {
 			}
 		}
 	}
+
 	/**
 	 * Returns the number of buffers processed.
 	 * 
@@ -187,11 +184,11 @@ public class SortDaemon extends GoodThread {
 			updateCounters();
 			endSort = true; // tell control we are done
 		} else if (status == EventInputStatus.END_FILE) {
-			msgHandler.messageOutln("End of file reached");
+			LOGGER.info("End of file reached");
 			updateCounters();
 			endSort = true; // tell control we are done
 		} else if (status == EventInputStatus.UNKNOWN_WORD) {
-			msgHandler.warningOutln(getClass().getName()
+			LOGGER.warning(getClass().getName()
 					+ ".sortOffline(): Unknown word in event stream.");
 		} else {
 			updateCounters();
@@ -213,10 +210,9 @@ public class SortDaemon extends GoodThread {
 			incrementBufferCount();
 			yield();
 		} else if (status == EventInputStatus.UNKNOWN_WORD) {
-			msgHandler.warningOutln("Unknown word in event stream.");
+			LOGGER.warning("Unknown word in event stream.");
 		} else if (status == EventInputStatus.END_FILE) {
-			msgHandler
-					.warningOutln("Tried to read past end of event input stream.");
+			LOGGER.warning("Tried to read past end of event input stream.");
 		} else {// we have unknown status
 			/* unrecoverable error should not be here */
 			throw new SortException("Sorter stopped due to unknown status: "
@@ -227,7 +223,7 @@ public class SortDaemon extends GoodThread {
 	private void increaseSortInterval() {
 		synchronized (this) {
 			sortInterval++;
-			msgHandler.warningOutln("Sorting ring buffer half-full."
+			LOGGER.warning("Sorting ring buffer half-full."
 					+ " Sort interval increased to " + sortInterval + ".");
 		}
 	}
@@ -274,7 +270,6 @@ public class SortDaemon extends GoodThread {
 				sortOffline();
 			}
 		} catch (Exception e) {
-			msgHandler.errorOutln("Sorter stopped Exception " + e.toString());
 			LOGGER.log(Level.SEVERE, "Sorter stopped due to exception.", e);
 		}
 	}

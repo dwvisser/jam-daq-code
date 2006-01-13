@@ -161,16 +161,14 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		try {
 			if (incommand == "link") {
 				hostName = textHost.getText().trim();
-				console.messageOutln("Trying " + hostName);
+				LOGGER.info("Trying " + hostName);
 				link(hostName);
-				console.messageOutln("Remote link made to: " + hostName);
+				LOGGER.info("Remote link made to: " + hostName);
 			}
 		} catch (JamException je) {
-			LOGGER.throwing(getClass().getName(), "actionPerformed", je);
-			LOGGER.severe(je.getMessage());
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		} catch (SecurityException se) {
-			LOGGER.throwing(getClass().getName(), "actionPerformed", se);
-			LOGGER.severe(se.getMessage());
+			LOGGER.log(Level.SEVERE, se.getMessage(), se);
 		}
 	}
 

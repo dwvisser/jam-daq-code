@@ -23,13 +23,12 @@
  **************************************************************/
 package jam.util;
 
+import static jam.io.hdf.Constants.DFTAG_VH;
+import static jam.io.hdf.Constants.DFTAG_VS;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.io.hdf.AbstractData;
-import static jam.io.hdf.Constants.DFTAG_VS;
-import static jam.io.hdf.Constants.DFTAG_VH;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
 import jam.io.hdf.JamFileFields;
@@ -46,6 +45,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -62,14 +63,14 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public final class ScalerScan implements JamFileFields {
+	
+	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
 	private static final char TAB = '\t';
 
 	private final JTextField txtFirst, txtLast;
 
 	private ProgressMonitor pBstatus;
-
-	private final MessageHandler console;
 
 	private final Frame frame;
 
@@ -92,7 +93,6 @@ public final class ScalerScan implements JamFileFields {
 	public ScalerScan() {
 		dialog = new JDialog(STATUS.getFrame(), "HDF Scaler Values Scan", false);
 		frame = STATUS.getFrame();
-		console = STATUS.getMessageHandler();
 		final Container container = dialog.getContentPane();
 		container.setLayout(new BorderLayout(10, 5));
 
@@ -224,7 +224,7 @@ public final class ScalerScan implements JamFileFields {
 						}
 						outText.append(cr);
 					} else {
-						console.warningOutln(infile.getPath()
+						LOGGER.warning(infile.getPath()
 								+ " does not exist.  Skipping.");
 					}
 				}
@@ -237,9 +237,9 @@ public final class ScalerScan implements JamFileFields {
 				updateProgressBar("Done", lastRun);
 			}
 		} catch (IOException e) {
-			console.errorOutln(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		} catch (HDFException e) {
-			console.errorOutln(e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -265,7 +265,7 @@ public final class ScalerScan implements JamFileFields {
 				}
 			}
 		} else {
-			console.warningOutln("No Scalers section in HDF file.");
+			LOGGER.warning("No Scalers section in HDF file.");
 		}
 		return sname;
 	}
@@ -285,7 +285,7 @@ public final class ScalerScan implements JamFileFields {
 				values[i] = VS.getInteger(i, 2).intValue();
 			}
 		} else {
-			console.warningOutln("No Scalers section in HDF file.");
+			LOGGER.warning("No Scalers section in HDF file.");
 		}
 		return values;
 	}

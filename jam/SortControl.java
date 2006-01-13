@@ -3,7 +3,6 @@ package jam;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RunInfo;
 import jam.io.ExtensionFileFilter;
 import jam.sort.AbstractStorageDaemon;
@@ -27,6 +26,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -50,13 +51,13 @@ import javax.swing.filechooser.FileFilter;
  */
 public final class SortControl extends JDialog implements Controller {
 
+	private static final Logger LOGGER = Logger.getLogger("jam");
+
 	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	private static final Frame frame = STATUS.getFrame();
 
 	private static SortControl instance = null;
-
-	private static final MessageHandler msgHandler = STATUS.getMessageHandler();
 
 	/**
 	 * 
@@ -141,7 +142,7 @@ public final class SortControl extends JDialog implements Controller {
 		/* List Panel */
 		multiFile = new MultipleFileChooser(STATUS.getFrame());
 		multiFile.showListSaveLoadButtons(true);
-		multiFile.setFileFilter(new ExtensionFileFilter("evn","Event Files"));
+		multiFile.setFileFilter(new ExtensionFileFilter("evn", "Event Files"));
 		contents.add(multiFile, BorderLayout.CENTER);
 		/* Bottom Panel */
 		final JPanel pbottom = new JPanel(new GridLayout(0, 1, 5, 5));
@@ -235,23 +236,21 @@ public final class SortControl extends JDialog implements Controller {
 	 */
 	public void atSortEnd() {
 		try {
-			msgHandler.messageOutln("Sorting all done");
+			LOGGER.info("Sorting all done");
 			STATUS.setRunState(RunState.ACQ_OFF);
 			if (!inputDaemon.closeEventInputListFile()) {
-				msgHandler.errorOutln("Couldn't close file [SortControl]");
+				LOGGER.severe("Couldn't close file [SortControl]");
 			}
 			if (writeEvents) {
 				outputDaemon.closeEventOutputFile();
-				msgHandler.messageOutln("Closed pre-sorted file: "
-						+ fileOut.getPath());
+				LOGGER.info("Closed pre-sorted file: " + fileOut.getPath());
 			}
 			beginAction.setEnabled(true);
 			lockFields(false);
 			/* let other thread (i.e., jam.Script) know we are finished */
 			haltAction.setEnabled(false);
 		} catch (SortException se) {
-			msgHandler
-					.errorOutln("Unable to close event output file [SortControl]");
+			LOGGER.log(Level.SEVERE, "Unable to close event output file.", se);
 		}
 	}
 
@@ -288,8 +287,9 @@ public final class SortControl extends JDialog implements Controller {
 			try {
 				outputDaemon.openEventOutputFile(fileOut);
 			} catch (SortException e) {
-				msgHandler
-						.errorOutln("Sort|Control.Begin: couldn't open event output file.");
+				LOGGER.log(Level.SEVERE,
+						"Sort|Control.Begin: couldn't open event output file.",
+						e);
 				sortDaemon.setWriteEnabled(false);
 				openSuccess = false;
 			}
@@ -297,14 +297,17 @@ public final class SortControl extends JDialog implements Controller {
 				try {
 					outputDaemon.writeHeader();
 				} catch (Exception e) {
-					msgHandler
-							.errorOutln("Sort|Control.Begin: couldn't write header to event output file.");
+					LOGGER
+							.log(
+									Level.SEVERE,
+									"Sort|Control.Begin: couldn't write header to event output file.",
+									e);
 				}
 			}
 		} else {
 			sortDaemon.setWriteEnabled(false);
 		}
-		msgHandler.messageOutln("Starting sorting from Disk");
+		LOGGER.info("Starting sorting from Disk");
 		beginAction.setEnabled(false);
 		haltAction.setEnabled(true);
 		sortDaemon.setState(GoodThread.State.RUN);
@@ -318,22 +321,23 @@ public final class SortControl extends JDialog implements Controller {
 	private void endSort() {
 		sortDaemon.cancelOfflineSorting();
 		if (!inputDaemon.closeEventInputListFile()) {
-			msgHandler.errorOutln("Closing sort input event file: "
+			LOGGER.severe("Closing sort input event file: "
 					+ inputDaemon.getEventInputFileName());
 		}
 		if (writeEvents) {
 			try {
 				outputDaemon.closeEventOutputFile();
 			} catch (SortException e) {
-				msgHandler
-						.errorOutln("Sort|Control...: couldn't close event output file.");
+				LOGGER
+						.log(
+								Level.SEVERE,
+								"Sort|Control...: couldn't close event output file.",
+								e);
 			}
-			msgHandler.messageOutln("Closed pre-sorted file: "
-					+ fileOut.getPath());
+			LOGGER.info("Closed pre-sorted file: " + fileOut.getPath());
 		}
 		STATUS.setRunState(RunState.ACQ_OFF);
-		msgHandler
-				.warningOutln("Ended offline sorting before reading all events.");
+		LOGGER.warning("Ended offline sorting before reading all events.");
 		beginAction.setEnabled(false);
 	}
 
@@ -370,7 +374,7 @@ public final class SortControl extends JDialog implements Controller {
 		inputDaemon.setEventInputList(fileList);
 		/* save output file */
 		fileOut = new File(textOutFile.getText().trim());
-		msgHandler.messageOutln("Loaded list of sort files");
+		LOGGER.info("Loaded list of sort files");
 	}
 
 	/*
@@ -394,17 +398,17 @@ public final class SortControl extends JDialog implements Controller {
 	public boolean openNextFile() {
 		boolean sortNext = false;
 		if (!inputDaemon.closeEventInputListFile()) {
-			msgHandler.errorOutln("Could not close file: "
+			LOGGER.severe("Could not close file: "
 					+ inputDaemon.getEventInputFileName());
 		}
 		if (inputDaemon.hasMoreFiles()) {
 			if (inputDaemon.openEventInputListFile()) {
-				msgHandler.messageOutln("Sorting next file: "
+				LOGGER.info("Sorting next file: "
 						+ inputDaemon.getEventInputFileName());
-				msgHandler.messageOutln("  Run number: " + RunInfo.runNumber
-						+ " title: " + RunInfo.runTitle);
+				LOGGER.info("  Run number: " + RunInfo.runNumber + " title: "
+						+ RunInfo.runTitle);
 			} else {
-				msgHandler.errorOutln("Could not open file: "
+				LOGGER.severe("Could not open file: "
 						+ inputDaemon.getEventInputFileName());
 			}
 			sortNext = true;// try next file no matter what
@@ -428,8 +432,8 @@ public final class SortControl extends JDialog implements Controller {
 			} while (listItem != null);
 			reader.close();
 		} catch (IOException ioe) {
-			msgHandler.errorOutln("Jam|Sort...: Unable to load list from file "
-					+ file);
+			LOGGER.log(Level.SEVERE,
+					"Jam|Sort...: Unable to load list from file " + file, ioe);
 		}
 		return numFiles;
 	}
@@ -451,7 +455,8 @@ public final class SortControl extends JDialog implements Controller {
 	 *            the process that accepts data for storage
 	 */
 	public void setup(final SortDaemon sortDaemon,
-			final AbstractStorageDaemon fromDaemon, final AbstractStorageDaemon toDaemon) {
+			final AbstractStorageDaemon fromDaemon,
+			final AbstractStorageDaemon toDaemon) {
 		this.sortDaemon = sortDaemon;
 		this.inputDaemon = fromDaemon;
 		this.outputDaemon = toDaemon;

@@ -369,7 +369,7 @@ public final class SetupSortOn extends AbstractSetup {
 				if (clog.isSelected()) { // if needed start logging to file
 					final String logFile = jamConsole
 							.setLogFileName(logDirectory + exptName);
-					jamConsole.messageOutln("Logging to file: " + logFile);
+					LOGGER.info("Logging to file: " + logFile);
 					jamConsole.setLogFileOn(true);
 				} else {
 					jamConsole.setLogFileOn(false);
@@ -515,7 +515,7 @@ public final class SetupSortOn extends AbstractSetup {
 			throw new JamException(msg, iae);
 		}
 		// create sorter daemon
-		sortDaemon = new SortDaemon(runControl, jamConsole);
+		sortDaemon = new SortDaemon(runControl);
 		final boolean useDisk = cdisk.isSelected();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		sortDaemon.setRingBuffer(sortingRing);
@@ -527,7 +527,7 @@ public final class SetupSortOn extends AbstractSetup {
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, jamConsole,
+		netDaemon = new NetDaemon(sortingRing, storageRing, 
 				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
 				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
 		/* Tell control about everything. */

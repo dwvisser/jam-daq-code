@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -28,7 +29,7 @@ import javax.swing.JOptionPane;
  */
 public final class NetDaemon extends GoodThread {
 
-	private transient final MessageHandler msgHandler;
+	private static final Logger LOGGER = Logger.getLogger("jam.sort");
 
 	private transient final DatagramSocket dataSocket;
 
@@ -72,13 +73,11 @@ public final class NetDaemon extends GoodThread {
 	 * @exception SortException
 	 *                thrown if there's a problem setting up the pipes
 	 */
-	public NetDaemon(RingBuffer sortRing, RingBuffer storeRing,
-			MessageHandler msgHandle, String host, int port)
-			throws SortException {
+	public NetDaemon(RingBuffer sortRing, RingBuffer storeRing, String host,
+			int port) throws SortException {
 		super();
 		sortingRing = sortRing;
 		storageRing = storeRing;
-		msgHandler = msgHandle;
 		try {// ceate a port listener
 			final InetAddress dataAddress = InetAddress.getByName(host);
 			dataSocket = new DatagramSocket(port, dataAddress);
@@ -111,7 +110,7 @@ public final class NetDaemon extends GoodThread {
 		} catch (Exception e) {
 			message.append(e.getClass().getName()).append(':').append(
 					e.getMessage());
-			msgHandler.warningOutln(message.toString());
+			LOGGER.warning(message.toString());
 		}
 	}
 
@@ -192,13 +191,13 @@ public final class NetDaemon extends GoodThread {
 						storageRing.putBuffer(bufferOut);
 					} catch (RingFullException rfe) {
 						notStorCount++;
-						msgHandler.errorOutln("Storage Buffer "
+						LOGGER.severe("Storage Buffer "
 								+ rfe.getMessage());
 					}
 				}
 			} else {// received a packet while thread state not RUN
-				msgHandler
-						.warningOutln("Warning: received buffer while NetDaemon thread"
+				LOGGER
+						.warning("Warning: received buffer while NetDaemon thread"
 								+ " state was not RUN: state=" + this);
 			}
 		}// end RUN loop
@@ -213,7 +212,7 @@ public final class NetDaemon extends GoodThread {
 	 */
 	public void setWriter(final boolean writerOn) {
 		if (storageRing.isNull()) {
-			msgHandler.warningOutln(getClass().getName()
+			LOGGER.warning(getClass().getName()
 					+ ": Can't write out events. There is no ring buffer.");
 		} else {
 			this.writerOn = writerOn;

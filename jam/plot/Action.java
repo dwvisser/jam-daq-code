@@ -893,8 +893,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 				textOut
 						.messageOut(String.valueOf(binWidth),
 								MessageHandler.END);
-				textOut
-						.warningOutln("Rebin command ignored. Bin value must be \u2265 1.0 and smaller than the histogram.");
+				LOGGER.warning("Rebin command ignored. Bin value must be \u2265 1.0 and smaller than the histogram.");
 				done();
 			}
 		}

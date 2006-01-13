@@ -12,15 +12,15 @@ import junit.framework.TestCase;
 public class NetDaemonTest extends TestCase {
 
 	private transient NetDaemon netDaemon;
-	
+
 	/*
 	 * @see TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		final RunControl runControl=RunControl.getSingletonInstance();
-		netDaemon=new NetDaemon(null,null,null,"localhost",8080);
-		runControl.setupOn("Test",null,null,null,netDaemon,null);
+		final RunControl runControl = RunControl.getSingletonInstance();
+		netDaemon = new NetDaemon(null, null, "localhost", 8080);
+		runControl.setupOn("Test", null, null, null, netDaemon, null);
 	}
 
 	/*
@@ -32,9 +32,9 @@ public class NetDaemonTest extends TestCase {
 
 	/**
 	 * JUnit test.
-	 *
+	 * 
 	 */
-	public void testSetEmptyBefore(){
+	public void testSetEmptyBefore() {
 		netDaemon.setEmptyBefore(true);
 	}
 }

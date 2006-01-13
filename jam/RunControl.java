@@ -1,9 +1,8 @@
 package jam;
 
-import static jam.global.GoodThread.State;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.RunInfo;
+import jam.global.GoodThread.State;
 import jam.io.DataIO;
 import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
@@ -19,6 +18,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -58,6 +59,8 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
 public class RunControl extends JDialog implements jam.sort.Controller {
+
+	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private static enum Device {
 		/**
@@ -104,18 +107,17 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 				try {
 					beginRun();
 				} catch (SortException se) {
-					console.errorOutln(se.getMessage());
+					LOGGER.log(Level.SEVERE, se.getMessage(), se);
 				} catch (JamException je) {
-					console.errorOutln(je.getMessage());
+					LOGGER.log(Level.SEVERE, je.getMessage(), je);
 				}
 
 			}
 		}
 	};
 
-	private transient final JCheckBox cHistZero = new JCheckBox("Histograms", true);
-
-	private transient final MessageHandler console;
+	private transient final JCheckBox cHistZero = new JCheckBox("Histograms",
+			true);
 
 	private transient File dataFile, dataPath;
 
@@ -182,7 +184,6 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 */
 	private RunControl(Frame frame) {
 		super(frame, "Run", false);
-		console = STATUS.getMessageHandler();
 		vmeComm = STATUS.getFrontEndCommunication();
 		final Frame jamMain = STATUS.getFrame();
 		this.dataio = new jam.io.hdf.HDFIO(jamMain);
@@ -277,9 +278,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		try {
 			if (device == Device.DISK) {
 				diskDaemon.closeEventOutputFile();
-				console.messageOutln("Event file closed " + dataFile.getPath());
+				LOGGER.info("Event file closed " + dataFile.getPath());
 			} else if (device == Device.FRONT_END) {
-				console.errorOutln(getClass().getName() + ".atWriteEnd()"
+				LOGGER.severe(getClass().getName() + ".atWriteEnd()"
 						+ " device=FRONT_END not implemented");
 				// **** send message to indicate end of run file? ****
 			} else {
@@ -287,7 +288,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 						"Expect device to be DISK or FRONT_END.");
 			}
 		} catch (SortException je) {
-			console.errorOutln(je.getMessage());
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		}
 	}
 
@@ -346,11 +347,10 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		beginAction.setEnabled(false);
 		STATUS.setRunState(RunState.runOnline(runNumber));
 		if (device == Device.DISK) {
-			console.messageOutln("Began run " + runNumber
+			LOGGER.info("Began run " + runNumber
 					+ ", events being written to file: " + dataFile.getPath());
 		} else {
-			console
-					.messageOutln("Began run, events being written out be front end.");
+			LOGGER.info("Began run, events being written out be front end.");
 		}
 		setRunOn(true);
 		netDaemon.setEmptyBefore(false);// fresh slate
@@ -373,7 +373,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		vmeComm.readScalers(); // read scalers
 		endAction.setEnabled(false); // toggle button states
 		STATUS.setRunState(RunState.ACQ_OFF);
-		console.messageOutln("Ending run " + runNumber
+		LOGGER.info("Ending run " + runNumber
 				+ ", waiting for sorting to finish.");
 		int numSeconds = 0;
 		do {// wait for sort to catch up
@@ -381,8 +381,8 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 				Thread.sleep(1000); // sleep 1 second
 				numSeconds++;
 				if (numSeconds % 3 == 0) {
-					console
-							.warningOutln("Waited "
+					LOGGER
+							.warning("Waited "
 									+ numSeconds
 									+ " seconds for "
 									+ "sorter and file writer to finish. Sending commands to "
@@ -391,9 +391,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 					vmeComm.readScalers();
 				}
 			} catch (InterruptedException ie) {
-				console.errorOutln(getClass().getName()
+				LOGGER.log(Level.SEVERE, getClass().getName()
 						+ ".endRun(), Error: Interrupted while"
-						+ " waiting for sort to finish.");
+						+ " waiting for sort to finish.", ie);
 			}
 		} while (!sortDaemon.caughtUp() && !storageCaughtUp());
 		diskDaemon.resetReachedRunEnd();
@@ -403,7 +403,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		final String histFileName = exptName + runNumber + ".hdf";
 		// only write a histogram file
 		final File histFile = new File(histFilePath, histFileName);
-		console.messageOutln("Sorting finished writing out histogram file: "
+		LOGGER.info("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
 		dataio.writeFile(histFile, jam.data.Group.getSortGroup());
 		runNumber++;// increment run number
@@ -480,14 +480,12 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			STATUS.setRunState(RunState.runOnline(runNumber));
 			// see stopAcq() for reason for this next line.
 			endAction.setEnabled(true);
-			console.messageOutln("Started Acquisition, continuing Run #"
-					+ runNumber);
+			LOGGER.info("Started Acquisition, continuing Run #" + runNumber);
 		} else {// just viewing events, not running to disk
 			STATUS.setRunState(RunState.ACQ_ON);
 			beginAction.setEnabled(false);// don't want to try to begin run
 			// while going
-			console
-					.messageOutln("Started Acquisition...to begin a run, first stop acquisition.");
+			LOGGER.info("Started Acquisition...to begin a run, first stop acquisition.");
 		}
 	}
 
@@ -510,7 +508,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			beginAction.setEnabled(true);// since it was disabled during
 			// start
 		}
-		console.warningOutln("Stopped Acquisition...if you are doing a run, "
+		LOGGER.warning("Stopped Acquisition...if you are doing a run, "
 				+ "you will need to start again before clicking \"End Run\".");
 	}
 

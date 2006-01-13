@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.logging.Logger;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 
@@ -41,6 +42,8 @@ import java.util.prefs.Preferences;
  */
 public class VMECommunication extends GoodThread implements
 		FrontEndCommunication {
+
+	private static final Logger LOGGER = Logger.getLogger("jam.sort");
 
 	private static final int MAX_PACKET_SIZE = 1024;
 
@@ -510,7 +513,7 @@ public class VMECommunication extends GoodThread implements
 				final DataInput messageDis = new DataInputStream(messageBais);
 				final int status = messageDis.readInt();
 				if (status == OK_MESSAGE) {
-					console.messageOutln(getClass().getName() + ": "
+					LOGGER.info(getClass().getName() + ": "
 							+ unPackMessage(messageDis));
 				} else if (status == SCALER) {
 					unPackScalers(messageDis);

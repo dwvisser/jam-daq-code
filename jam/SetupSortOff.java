@@ -228,7 +228,7 @@ public final class SetupSortOff extends AbstractSetup {
 				loadSorter();
 				loadEventInput();
 				loadEventOutput();
-				msgHandler.messageOutln("Loaded sort class '"
+				LOGGER.info("Loaded sort class '"
 						+ sortRoutine.getClass().getName()
 						+ "', event instream class '"
 						+ eventInput.getClass().getName()
@@ -346,7 +346,7 @@ public final class SetupSortOff extends AbstractSetup {
 		initializeSorter();
 		/* setup sorting */
 		synchronized (this) {
-			sortDaemon = new SortDaemon(sortControl, msgHandler);
+			sortDaemon = new SortDaemon(sortControl);
 		}
 		sortDaemon.setup(eventInput, sortRoutine.getEventSize());
 		sortDaemon.setSorter(sortRoutine);
