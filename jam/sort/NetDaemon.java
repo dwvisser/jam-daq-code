@@ -29,8 +29,6 @@ import javax.swing.JOptionPane;
  */
 public final class NetDaemon extends GoodThread {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.sort");
-
 	private transient final DatagramSocket dataSocket;
 
 	/**

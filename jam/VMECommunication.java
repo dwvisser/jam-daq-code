@@ -43,8 +43,6 @@ import java.util.prefs.Preferences;
 public class VMECommunication extends GoodThread implements
 		FrontEndCommunication {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.sort");
-
 	private static final int MAX_PACKET_SIZE = 1024;
 
 	private static final int MAX_MESSAGE_SIZE = 80;

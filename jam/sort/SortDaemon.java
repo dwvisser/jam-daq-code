@@ -37,8 +37,6 @@ public class SortDaemon extends GoodThread {
 	 */
 	private final static int COUNT_UPDATE = 1000;
 
-	private static final Logger LOGGER = Logger.getLogger("jam.sort");
-
 	private transient boolean atBuffer = false; // are we at a buffer word
 
 	private int bufferCount;
