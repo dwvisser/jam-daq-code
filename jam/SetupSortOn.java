@@ -367,8 +367,10 @@ public final class SetupSortOn extends AbstractSetup {
 			if (STATUS.canSetup()) {
 				loadNames();
 				if (clog.isSelected()) { // if needed start logging to file
-					final String logFile = jamConsole
-							.setLogFileName(logDirectory + exptName);
+					final File logPathTry = new File(textPathLog.getText(),
+							exptName);
+					final String logFile = jamConsole.setLogFileName(logPathTry
+							.getCanonicalPath());
 					LOGGER.info("Logging to file: " + logFile);
 					jamConsole.setLogFileOn(true);
 				} else {
@@ -404,12 +406,12 @@ public final class SetupSortOn extends AbstractSetup {
 			} else {
 				throw new JamException("Can't setup sorting, mode locked ");
 			}
-		} catch (SortException je) {
-			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		} catch (JamException je) {
 			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			resetAcq(true);
+			lockMode(false);
 		}
 	}
 
@@ -527,9 +529,9 @@ public final class SetupSortOn extends AbstractSetup {
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, 
-				JamProperties.getPropString(JamProperties.HOST_DATA_IP),
-				JamProperties.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
+		netDaemon = new NetDaemon(sortingRing, storageRing, JamProperties
+				.getPropString(JamProperties.HOST_DATA_IP), JamProperties
+				.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
 		/* Tell control about everything. */
 		runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
 				netDaemon, diskDaemon);
