@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 
 /**
  * Simulator of front end
+ *  start up with "java jam.simulator.SimulateFrontEnd"
  * 
  * @author Ken Swartz
  */
