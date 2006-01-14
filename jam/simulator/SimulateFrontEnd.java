@@ -26,38 +26,38 @@ public final class SimulateFrontEnd  {
 	/**
 	 * Standard informational message.
 	 */
-	int OK_MESSAGE=0;//standard message
+	final int OK_MESSAGE=0;//standard message
 	
 	/**
 	 * Error message.
 	 */
-	int ERROR=1;//message indicating error condition
+	final int ERROR=1;//message indicating error condition
 	
 	/**
 	 * Message containing scaler values.
 	 */
-	int SCALER=2;//received from VME, contains scaler values
+	final int SCALER=2;//received from VME, contains scaler values
 	
 	/**
 	 * Message containing CNAF commands.
 	 */
-	int CNAF=3;//sent to VME, contains CNAF commands
+	final int CNAF=3;//sent to VME, contains CNAF commands
 	
 	/**
 	 * Message containing front end event and buffer counters.
 	 */
-	int COUNTER=4;
+	final int COUNTER=4;
 	
 	/**
 	 * Message containing CAEN VME electronics configuration info.
 	 */
-	int VME_ADDRESS=5;//sent to VME, contains VME addressing information
+	final int VME_ADDRESS=5;//sent to VME, contains VME addressing information
 	
 	/**
 	 * Message containing the interval in seconds at which to 
 	 * insert scalers in the event stream.
 	 */
-	int INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
+	final int INTERVAL=6;//sent to VME, contains interval to insert scalers in event stream
 	
 
 	private static final int MAX_PACKET_SIZE = 1024;
