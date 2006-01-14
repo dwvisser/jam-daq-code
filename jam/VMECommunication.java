@@ -5,16 +5,11 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
-import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
 import jam.sort.VME_Map;
 import jam.sort.CamacCommands.CNAF;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -22,12 +17,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 
@@ -52,7 +48,7 @@ public class VMECommunication extends GoodThread implements
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
-	private transient final MessageHandler console;
+	// private transient final MessageHandler console;
 
 	private transient InetAddress addressVME;
 
@@ -74,7 +70,6 @@ public class VMECommunication extends GoodThread implements
 	 */
 	public VMECommunication() {
 		super();
-		console = JamStatus.getSingletonInstance().getMessageHandler();
 		active = false;
 		setName("Network Messenger");
 	}
@@ -86,61 +81,63 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if something goes wrong
 	 */
-	public synchronized void setupAcquisition() throws JamException {
+	public void setupAcquisition() throws JamException {
 		final InetAddress addressLocal;
 
-		final String LOCAL_IP = JamProperties
-				.getPropString(JamProperties.HOST_IP);
-		final int portSend = JamProperties
-				.getPropInt(JamProperties.HOST_PORT_SEND);
-		final int portRecv = JamProperties
-				.getPropInt(JamProperties.HOST_PORT_RECV);
-		final String VME_IP = JamProperties
-				.getPropString(JamProperties.TARGET_IP);
-		final int PORT_VME_SEND = JamProperties
-				.getPropInt(JamProperties.TARGET_PORT);
-		vmePort = PORT_VME_SEND;
-		if (!active) {
-			try {// ceate a ports to send and receive
-				addressLocal = InetAddress.getByName(LOCAL_IP);
-			} catch (UnknownHostException ue) {
-				throw new JamException(getClass().getName()
-						+ ": Unknown local host " + LOCAL_IP);
+		synchronized (this) {
+			final String LOCAL_IP = JamProperties
+					.getPropString(JamProperties.HOST_IP);
+			final int portSend = JamProperties
+					.getPropInt(JamProperties.HOST_PORT_SEND);
+			final int portRecv = JamProperties
+					.getPropInt(JamProperties.HOST_PORT_RECV);
+			final String VME_IP = JamProperties
+					.getPropString(JamProperties.TARGET_IP);
+			final int PORT_VME_SEND = JamProperties
+					.getPropInt(JamProperties.TARGET_PORT);
+			vmePort = PORT_VME_SEND;
+			if (!active) {
+				try {// ceate a ports to send and receive
+					addressLocal = InetAddress.getByName(LOCAL_IP);
+				} catch (UnknownHostException ue) {
+					throw new JamException(getClass().getName()
+							+ ": Unknown local host " + LOCAL_IP);
+				}
+				try {
+					addressVME = InetAddress.getByName(VME_IP);
+				} catch (UnknownHostException ue) {
+					throw new JamException(getClass().getName()
+							+ ": Unknown VME host " + VME_IP);
+				}
+				try {
+					socketSend = new DatagramSocket(portSend, addressLocal);
+				} catch (BindException be) {
+					throw new JamException(
+							getClass().getName()
+									+ ": Problem binding send socket (another Jam online running)");
+				} catch (SocketException se) {
+					throw new JamException(getClass().getName()
+							+ ": problem creating send socket");
+				}
+				try {
+					socketReceive = new DatagramSocket(portRecv, addressLocal);
+				} catch (BindException be) {
+					throw new JamException(
+							getClass().getName()
+									+ ": Problem binding receive socket (another Jam online running)");
+				} catch (SocketException se) {
+					throw new JamException(getClass().getName()
+							+ ": Problem creating receive socket");
+				}
+				// setup and start receiving deamon
+				setDaemon(true);
+				setPriority(jam.sort.ThreadPriorities.MESSAGING);
+				start();
+				active = true;
+				final Preferences prefs = JamPrefs.PREFS;
+				debug(prefs.getBoolean(JamPrefs.DEBUG, false));
+				verbose(prefs.getBoolean(JamPrefs.VERBOSE, false));
 			}
-			try {
-				addressVME = InetAddress.getByName(VME_IP);
-			} catch (UnknownHostException ue) {
-				throw new JamException(getClass().getName()
-						+ ": Unknown VME host " + VME_IP);
-			}
-			try {
-				socketSend = new DatagramSocket(portSend, addressLocal);
-			} catch (BindException be) {
-				throw new JamException(
-						getClass().getName()
-								+ ": Problem binding send socket (another Jam online running)");
-			} catch (SocketException se) {
-				throw new JamException(getClass().getName()
-						+ ": problem creating send socket");
-			}
-			try {
-				socketReceive = new DatagramSocket(portRecv, addressLocal);
-			} catch (BindException be) {
-				throw new JamException(
-						getClass().getName()
-								+ ": Problem binding receive socket (another Jam online running)");
-			} catch (SocketException se) {
-				throw new JamException(getClass().getName()
-						+ ": Problem creating receive socket");
-			}
-			// setup and start receiving deamon
-			setDaemon(true);
-			setPriority(jam.sort.ThreadPriorities.MESSAGING);
-			start();
-			active = true;
-			final Preferences prefs = JamPrefs.PREFS;
-			debug(prefs.getBoolean(JamPrefs.DEBUG, false));
-			verbose(prefs.getBoolean(JamPrefs.VERBOSE, false));
 		}
 	}
 
@@ -303,8 +300,7 @@ public class VMECommunication extends GoodThread implements
 		sendCNAFList(CNAF_SCALER, camacCommands.getScalerCommands());
 		sendCNAFList(CNAF_CLEAR, camacCommands.getClearCommands());
 		this.sendToVME(RUN_INIT); // initialize camac
-		console
-				.messageOutln("Loaded CAMAC command lists, and initialized VME.");
+		LOGGER.info("Loaded CAMAC command lists, and initialized VME.");
 	}
 
 	/**
@@ -404,10 +400,9 @@ public class VMECommunication extends GoodThread implements
 		try {// create and send packet
 			socketSend.send(packetMessage);
 		} catch (IOException e) {
-			console
-					.errorOutln(getClass().getName()
-							+ ".sendToVME(): "
-							+ "Jam encountered a network communication error attempting to send a packet.");
+			LOGGER.log(Level.SEVERE,
+					"Jam encountered a network communication error attempting to send a packet: "
+							+ e.getMessage(), e);
 		}
 	}
 
@@ -424,8 +419,8 @@ public class VMECommunication extends GoodThread implements
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void sendCNAFList(final String listName,
-			final List<CNAF> cnafList) throws JamException {
+	private void sendCNAFList(final String listName, final List<CNAF> cnafList)
+			throws JamException {
 		final int COMMAND_SIZE = 16;
 		final int CNAF_SIZE = 9;
 		byte[] byteName = new byte[COMMAND_SIZE];
@@ -451,10 +446,10 @@ public class VMECommunication extends GoodThread implements
 		for (int i = 0; i < cnafList.size(); i++) {
 			final int offset = 4 + COMMAND_SIZE + 4 + CNAF_SIZE * i;
 			final CNAF cnaf = cnafList.get(i);
-			byteMessage[offset + 0] = cnaf.getParamID(); 
+			byteMessage[offset + 0] = cnaf.getParamID();
 			byteMessage[offset + 1] = cnaf.getCrate();
 			byteMessage[offset + 2] = cnaf.getNumber();
-			byteMessage[offset + 3] = cnaf.getAddress(); 
+			byteMessage[offset + 3] = cnaf.getAddress();
 			byteMessage[offset + 4] = cnaf.getFunction();
 			final int data = cnaf.getData();
 			// data byte msb
@@ -484,13 +479,13 @@ public class VMECommunication extends GoodThread implements
 			final DatagramPacket packetMessage = new DatagramPacket(
 					byteMessage, byteMessage.length, addressVME, vmePort);
 			if (socketSend == null) {
-				throw new JamException(getClass().getName()+
-						": Send socket not setup.");
+				throw new JamException(getClass().getName()
+						+ ": Send socket not setup.");
 			}
 			socketSend.send(packetMessage);
 		} catch (IOException e) {
-			throw new JamException(getClass().getName()+
-					": Error while sending packet.", e);
+			throw new JamException(getClass().getName()
+					+ ": Error while sending packet.", e);
 		}
 	}
 
@@ -502,71 +497,67 @@ public class VMECommunication extends GoodThread implements
 	public void run() {
 		final byte[] bufferIn = new byte[MAX_PACKET_SIZE];
 		try {
+			final DatagramPacket packetIn = new DatagramPacket(bufferIn,
+					bufferIn.length);
 			while (true) {// loop forever receiving packets
-				final DatagramPacket packetIn = new DatagramPacket(bufferIn,
-						bufferIn.length);
 				socketReceive.receive(packetIn);
-				final ByteArrayInputStream messageBais = new ByteArrayInputStream(
-						packetIn.getData());
-				final DataInput messageDis = new DataInputStream(messageBais);
-				final int status = messageDis.readInt();
+				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn
+						.getData());
+				final int status = byteBuffer.getInt();// .readInt();
 				if (status == OK_MESSAGE) {
 					LOGGER.info(getClass().getName() + ": "
-							+ unPackMessage(messageDis));
+							+ unPackMessage(byteBuffer));
 				} else if (status == SCALER) {
-					unPackScalers(messageDis);
+					unPackScalers(byteBuffer);
 					Scaler.update(scalerValues);
 				} else if (status == COUNTER) {
-					unPackCounters(messageDis);
+					unPackCounters(byteBuffer);
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.COUNTERS_UPDATE,
 							counterValues);
 				} else if (status == ERROR) {
-					console.errorOutln(getClass().getName() + ": "
-							+ unPackMessage(messageDis));
+					LOGGER.severe(getClass().getName() + ": "
+							+ unPackMessage(byteBuffer));
 				} else {
-					console.errorOutln(getClass().getName()
+					LOGGER.severe(getClass().getName()
 							+ ": packet with unknown message type received");
 				}
 			}// end of receive message forever loop
 		} catch (IOException ioe) {
-			console
-					.errorOutln("Unable to read datagram status word [VMECommnunication]");
-			console
-					.messageOutln("Network receive daemon stopped, need to restart Online [VMECommunication]");
-		} catch (JamException je) {
-			console.errorOutln(je.getMessage());
-			console
-					.messageOutln("Network receive daemon stopped, need to restart Online [VMECommunication]");
-		}
+			LOGGER.log(Level.SEVERE,
+					"Unable to read datagram status word [VMECommnunication]",
+					ioe);
+			LOGGER
+					.warning("Network receive daemon stopped, need to restart Online [VMECommunication]");
+		} 
 	}
 
 	/**
 	 * Unpack a datagram with a message. Message packets have an ASCII character
 	 * array terminated with \0.
 	 * 
-	 * @param messageDis
+	 * @param buffer
 	 *            packet contents passed in readable form
 	 * @return the string contained in the message
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private String unPackMessage(final DataInput messageDis) throws JamException {
-		final char[] errorChar = new char[MAX_MESSAGE_SIZE];
-		String errorMessage = "Undecypherable Message";
-		int numChar = 0;
-		try {
-			while ((errorChar[numChar] = (char) messageDis.readByte()) != '\0') {
-				numChar++;
-			}
-			errorMessage = new String(errorChar, 0, numChar);
-		} catch (IOException ioe) {
-			throw new JamException(getClass().getName()
-					+ ": unable to unpack message datagram.");
+private String unPackMessage(final ByteBuffer buffer) {
+		final StringBuilder rval = new StringBuilder();
+		char next;
+		do {
+			next = (char)buffer.get();
+			rval.append(next);
+		} while (next != '\0');
+		final int len = rval.length()-1;
+		if (len > MAX_MESSAGE_SIZE) {// exclude null
+			final IllegalArgumentException exception = new IllegalArgumentException(
+					"Message length, "+len+", greater than max allowed, "+MAX_MESSAGE_SIZE+".");
+			LOGGER.throwing("VMECommunication", "unPackMessage", exception);
+			throw exception;
 		}
-		return errorMessage;
+		return rval.substring(0, len);
 	}
-
 	/**
 	 * Unpack scalers from udp packet. Packet format:
 	 * <ul>
@@ -575,23 +566,18 @@ public class VMECommunication extends GoodThread implements
 	 * <li>int [] values scaler values
 	 * </ul>
 	 * 
-	 * @param messageDis
+	 * @param buffer
 	 *            message in readable form
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void unPackScalers(final DataInput messageDis) throws JamException {
-		try {
-			synchronized (this) {
-				final int numScaler = messageDis.readInt();// number of scalers
-				scalerValues.clear();
-				for (int i = 0; i < numScaler; i++) {
-					scalerValues.add(messageDis.readInt());
-				}
+	private void unPackScalers(final ByteBuffer buffer) {
+		synchronized (this) {
+			final int numScaler = buffer.getInt();// number of scalers
+			scalerValues.clear();
+			for (int i = 0; i < numScaler; i++) {
+				scalerValues.add(buffer.getInt());
 			}
-		} catch (IOException ioe) {
-			throw new JamException(getClass().getName()
-					+ ": unable to unpack scaler datagram.");
 		}
 	}
 
@@ -606,24 +592,19 @@ public class VMECommunication extends GoodThread implements
 	 * <dd>scaler values
 	 * </dl>
 	 * 
-	 * @param messageDis
+	 * @param buffer
 	 *            message in readable form
 	 * @throws JamException
 	 *             if there's a problem
 	 */
-	private void unPackCounters(final DataInput messageDis) throws JamException {
-		try {
-			synchronized (this) {
-				final int numCounter = messageDis.readInt(); // number of
-				// counters
-				counterValues.clear();
-				for (int i = 0; i < numCounter; i++) {
-					counterValues.add(messageDis.readInt());
-				}
+	private void unPackCounters(final ByteBuffer buffer) {
+		synchronized (this) {
+			final int numCounter = buffer.getInt(); // number of
+			// counters
+			counterValues.clear();
+			for (int i = 0; i < numCounter; i++) {
+				counterValues.add(buffer.getInt());
 			}
-		} catch (IOException ioe) {
-			throw new JamException(getClass().getName()
-					+ ".unpackCounters(): unable to unpack count datagram.");
 		}
 	}
 
