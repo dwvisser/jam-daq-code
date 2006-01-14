@@ -6,7 +6,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.Nameable;
 import jam.global.SortMode;
 
@@ -16,6 +15,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,9 +36,10 @@ import javax.swing.tree.TreeSelectionModel;
  * @author Ken Swartz
  */
 public final class SelectionTree extends JPanel implements Observer {
-
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
+
+	private static final Logger LOGGER = Logger.getLogger("jam.ui");
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
@@ -49,8 +51,6 @@ public final class SelectionTree extends JPanel implements Observer {
 			}
 		}
 	};
-
-	private transient final MessageHandler msgHandler;
 
 	private transient DefaultMutableTreeNode rootNode;
 
@@ -67,7 +67,6 @@ public final class SelectionTree extends JPanel implements Observer {
 	 */
 	public SelectionTree() {
 		super(new BorderLayout());
-		msgHandler = STATUS.getMessageHandler();
 		BROADCASTER.addObserver(this);
 		final Dimension dim = getMinimumSize();
 		dim.width = 160;
@@ -82,6 +81,26 @@ public final class SelectionTree extends JPanel implements Observer {
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		addSelectionListener();
 		add(new JScrollPane(tree), BorderLayout.CENTER);
+	}
+
+	private void addGroupNodes(final Group group){
+		final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
+				group);
+		// Loop through histograms and load them
+		for (Histogram hist : group.getHistogramList()) {
+			addHistNodes(groupNode, hist);
+		}
+		rootNode.add(groupNode);
+	}
+
+	private void addHistNodes(final DefaultMutableTreeNode groupNode, final Histogram hist){
+		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
+				hist);
+		groupNode.add(histNode);
+		// Loop through gates and load them
+		for (Gate gate : hist.getGates()) {
+			histNode.add(new DefaultMutableTreeNode(gate));
+		}
 	}
 
 	private void addSelectionListener() {
@@ -102,20 +121,18 @@ public final class SelectionTree extends JPanel implements Observer {
 		return ((DefaultMutableTreeNode) path.getLastPathComponent())
 				.getUserObject() instanceof Gate;
 	}
-
+	
 	private boolean isSyncEvent() {
 		synchronized (this) {
 			return syncEvent;
 		}
 	}
-
+	
 	/**
 	 * Load the tree for the data objects.
 	 */
 	private void loadTree() {
-
 		final SortMode sortMode = STATUS.getSortMode();
-
 		if (sortMode == SortMode.FILE) {
 			final String fileName = STATUS.getSortName();
 			rootNode = new DefaultMutableTreeNode("File: " + fileName);
@@ -130,22 +147,9 @@ public final class SelectionTree extends JPanel implements Observer {
 			rootNode = new DefaultMutableTreeNode("No Data");
 		}
 		treeModel.setRoot(rootNode);
-
 		// Loop through all groups
 		for (Group group : Group.getGroupList()) {
-			final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
-					group);
-			// Loop through histograms and load them
-			for (Histogram hist : group.getHistogramList()) {
-				final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
-						hist);
-				groupNode.add(histNode);
-				// Loop through gates and load them
-				for (Gate gate : hist.getGates()) {
-					histNode.add(new DefaultMutableTreeNode(gate));
-				}
-			}
-			rootNode.add(groupNode);
+			addGroupNodes(group);
 		}
 		tree.expandRow(tree.getRowCount() - 1);
 	}
@@ -181,7 +185,7 @@ public final class SelectionTree extends JPanel implements Observer {
 			final DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) nodeEnum
 					.nextElement();
 			final Object currentObj = currentNode.getUserObject();
-			if (currentObj instanceof Gate && currentObj == gate) {
+			if (currentObj instanceof Gate && currentObj.equals(gate)) {
 				final TreePath gateTreePath = new TreePath(currentNode
 						.getPath());
 				tree.addSelectionPath(gateTreePath);
@@ -223,7 +227,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
 		if (gate instanceof Gate) {
-			refreshGateSelection((Gate)gate, histTreePath);
+			refreshGateSelection((Gate) gate, histTreePath);
 		}
 		if (!overlayHists.isEmpty()) {
 			refreshOverlaySelection(overlayHists);
@@ -272,8 +276,7 @@ public final class SelectionTree extends JPanel implements Observer {
 						if (hist.getDimensionality() == 1) {
 							selectOverlay(paths);
 						} else {
-							msgHandler
-									.errorOutln("Cannot overlay on a 2D histogram.");
+							LOGGER.severe("Cannot overlay on a 2D histogram.");
 						}
 					} else {
 						STATUS.clearOverlays();
@@ -308,27 +311,25 @@ public final class SelectionTree extends JPanel implements Observer {
 	 * @see jam.data.Gate
 	 */
 	private void selectGate(final Gate gate) {
-		final String methodname = "selectGate(): ";
 		try {
 			STATUS.setCurrentGate(gate);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT, gate);
 			final double area = gate.getArea();
+			final StringBuilder message = new StringBuilder();
 			if (gate.getDimensionality() == 1) {
 				final double centroid = ((int) (gate.getCentroid() * 100.0)) / 100.0;
 				final int lowerLimit = gate.getLimits1d()[0];
 				final int upperLimit = gate.getLimits1d()[1];
-				msgHandler.messageOut("Gate: " + gate.getName() + ", Ch. "
-						+ lowerLimit + " to " + upperLimit, MessageHandler.NEW);
-				msgHandler.messageOut("  Area = " + area + ", Centroid = "
-						+ centroid, MessageHandler.END);
+				message.append("Gate: ").append(gate.getName()).append(", Ch. ").append(
+						lowerLimit).append(" to ").append(upperLimit).append(
+						"  Area = ").append(area).append(", Centroid = ")
+						.append(centroid);
 			} else {
-				msgHandler.messageOut("Gate " + gate.getName(),
-						MessageHandler.NEW);
-				msgHandler.messageOut(", Area = " + area, MessageHandler.END);
+				message.append("Gate ").append(gate.getName()).append(", Area = ").append(area);
 			}
+			LOGGER.info(message.toString());
 		} catch (Exception de) {
-			final String classname = getClass().getName() + "--";
-			msgHandler.errorOutln(classname + methodname + de.getMessage());
+			LOGGER.log(Level.SEVERE, de.getMessage(), de);
 		}
 	}
 
@@ -352,7 +353,7 @@ public final class SelectionTree extends JPanel implements Observer {
 					STATUS.addOverlayHistogramName(overlayHist.getFullName());
 				} else {
 					tree.removeSelectionPath(paths[i]);
-					msgHandler.errorOutln("Cannot overlay 2D histograms.");
+					LOGGER.warning("Cannot overlay 2D histograms.");
 				}
 			}
 		}
