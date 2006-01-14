@@ -6,7 +6,6 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.RemoteData;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.global.SortMode;
 
 import java.awt.Button;
@@ -25,6 +24,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.UnknownHostException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
@@ -42,8 +42,6 @@ import javax.swing.JTextField;
  */
 public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
-	
-	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private static enum Mode {
 		LINK, SERVER, SNAP
@@ -54,6 +52,8 @@ public class SetupRemote extends JDialog implements ActionListener,
 	static final String DEFAULT_URL = "rmi://meitner.physics.yale.edu/jam";
 
 	private static SetupRemote instance;
+
+	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
@@ -78,8 +78,6 @@ public class SetupRemote extends JDialog implements ActionListener,
 
 	private transient Mode mode; // mode server, snap or link
 
-	private transient final MessageHandler msgHandler;
-
 	transient RemoteAccess remoteAccess;
 
 	transient RemoteData remoteData;
@@ -92,7 +90,6 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 */
 	public SetupRemote() {
 		super(STATUS.getFrame(), "Remote Hookup ", false);
-		msgHandler = STATUS.getMessageHandler();
 		// create dialog box
 		setResizable(false);
 		setLocation(20, 50);
@@ -179,7 +176,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 				dispose();
 			}
 		} catch (JamException je) {
-			msgHandler.errorOutln(je.getMessage());
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
 		}
 	}
 

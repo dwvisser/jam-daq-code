@@ -22,8 +22,8 @@
  * not, see http://www.opensource.org/
  **************************************************************/
 package jam.util;
+
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
 import java.awt.Frame;
 import java.io.BufferedInputStream;
@@ -32,6 +32,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.swing.ProgressMonitor;
 
@@ -41,108 +42,89 @@ import javax.swing.ProgressMonitor;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public class YaleCAENgetScalers {
+	private static final Logger LOGGER = Logger.getLogger("jam.util");
 
-	private ProgressMonitor pBstatus;
-	private final Frame frame;
-	private final MessageHandler console;
-	private String strScalerText;
-	private String fileName;
-	private final StringBuffer strError=new StringBuffer();
+	private transient String fileName;
+
+	private transient final Frame frame;
+
+	private transient ProgressMonitor pBstatus;
+
+	private transient final StringBuffer strError = new StringBuffer();
+
+	private transient String strScalerText;
 
 	/**
-	 * Constructs an object that can scan YaleCAEN event files
-	 * for scaler blocks.
+	 * Constructs an object that can scan YaleCAEN event files for scaler
+	 * blocks.
 	 */
 	public YaleCAENgetScalers() {
-		JamStatus js = JamStatus.getSingletonInstance();
-		frame = js.getFrame();
-		console = js.getMessageHandler();
+		super();
+		frame = JamStatus.getSingletonInstance().getFrame();
 	}
 
 	private void display() {
 		new TextDisplayDialog(frame, fileName, false, strScalerText);
 	}
-	
+
 	/**
-	 * Scans the given event file for scaler blocks.
+	 * Takes an event file, searches for scaler blocks in it and creates
+	 * tab-delimited text listing each scaler block on one row of text.
 	 * 
-	 * @param events file to scan
-	 */
-	public void processEventFile(final File events){
-		final Runnable r=new Runnable(){
-			public void run(){
-				if (doIt(events)) {
-					display();				
-				} else {  
-					console.errorOutln("Reading Yale CAEN Scalers "+getErrorTxt());
-				}
-			}
-		};
-		final Thread t=new Thread(r);
-		t.start();		
-	}
-	
-	/**
-	 * Takes an event file, searches for scaler blocks in it and 
-	 * creates tab-delimited text listing each scaler block on one
-	 * row of text.
-	 * 
-	 * @param events the file to search
+	 * @param events
+	 *            the file to search
 	 * @return whether we were successful
 	 */
-	private boolean doIt(File events) {
-		final int mega=1024*1024;
-		final long fileLength=events.length();
-		final int lengthMB=(int)(fileLength/mega);
-		pBstatus=new ProgressMonitor(frame, "Scanning " +events.getName()+
-		" for scaler blocks", "Initializing", 0, lengthMB);
+	private boolean doIt(final File events) {
+		final int mega = 1024 * 1024;
+		final long fileLength = events.length();
+		final int lengthMB = (int) (fileLength / mega);
+		pBstatus = new ProgressMonitor(frame, "Scanning " + events.getName()
+				+ " for scaler blocks", "Initializing", 0, lengthMB);
 		boolean rtnState = true;
 		final StringBuffer strBuff = new StringBuffer();
 		final int SCALER_HEADER = 0x01cccccc;
 		DataInputStream dis = null;
 		strError.delete(0, strError.length());
-		int counter=0;
-		int megaCounter=0;
+		int counter = 0;
+		int megaCounter = 0;
 		try {
-			dis =
-				new DataInputStream(
-					new BufferedInputStream(new FileInputStream(events)));
+			dis = new DataInputStream(new BufferedInputStream(
+					new FileInputStream(events)));
 			counter += dis.skipBytes(256);
-			int blockNum = 0;
 			while (true) {
-				int readVal = dis.readInt();
-				counter+=4;
+				final int readVal = dis.readInt();
+				counter += 4;
 				if (readVal == SCALER_HEADER) {
-					blockNum++;
-					int numScalers = dis.readInt();
-					counter+=4;
+					final int numScalers = dis.readInt();
+					counter += 4;
 					for (int i = 1; i <= numScalers; i++) {
 						strBuff.append(dis.readInt());
-						counter+=4;
+						counter += 4;
 						if (i < numScalers) {
 							strBuff.append('\t');
 						}
 					}
 					strBuff.append('\n');
 				}
-				if (counter >= mega){
+				if (counter >= mega) {
 					counter -= mega;
 					megaCounter++;
-					updateProgressBar(megaCounter+" of "+lengthMB+" MB read.", 
-					megaCounter);
+					updateProgressBar(megaCounter + " of " + lengthMB
+							+ " MB read.", megaCounter);
 				}
 			}
-			//End of file reached	
+			// End of file reached
 		} catch (EOFException eofe) {
 			if (dis != null) {
-				//Bury close exception
+				// Bury close exception
 				try {
 					dis.close();
-					updateProgressBar("Done.",lengthMB);
+					updateProgressBar("Done.", lengthMB);
 					rtnState = true;
 				} catch (Exception e) {
 					strError.append(e.getMessage());
-					rtnState=false;
+					rtnState = false;
 				}
 			}
 		} catch (IOException ioe) {
@@ -158,10 +140,29 @@ public class YaleCAENgetScalers {
 		return strError.toString();
 	}
 
-	private void updateProgressBar(final String text, final int value){
+	/**
+	 * Scans the given event file for scaler blocks.
+	 * 
+	 * @param events
+	 *            file to scan
+	 */
+	public void processEventFile(final File events) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				if (doIt(events)) {
+					display();
+				} else {
+					LOGGER.severe("Reading Yale CAEN Scalers " + getErrorTxt());
+				}
+			}
+		};
+		final Thread thread = new Thread(runnable);
+		thread.start();
+	}
+
+	private void updateProgressBar(final String text, final int value) {
 		pBstatus.setNote(text);
 		pBstatus.setProgress(value);
 	}
-	
 
 }

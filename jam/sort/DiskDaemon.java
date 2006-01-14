@@ -1,6 +1,5 @@
 package jam.sort;
 
-import jam.global.MessageHandler;
 import jam.sort.stream.EventException;
 import jam.util.NumberUtilities;
 
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
+import java.util.logging.Level;
 
 /**
  * Writes events to disk and reads them back.
@@ -23,64 +23,74 @@ import java.nio.ByteOrder;
  */
 public final class DiskDaemon extends AbstractStorageDaemon {
 
+	private transient BufferedInputStream bis;
+
 	private transient BufferedOutputStream bos;
 
-	// private transient FileInputStream fis;
+	private transient boolean reachedRunEnd = false;
 
-	private transient BufferedInputStream bis;
+	private transient final Object rreLock = new Object();
 
 	/**
 	 * @see AbstractStorageDaemon#StorageDaemon(Controller, MessageHandler)
 	 */
-	public DiskDaemon(Controller controller, MessageHandler msgHandler) {
-		super(controller, msgHandler);
+	public DiskDaemon(Controller controller) {
+		super(controller);
 		setName("Disk I/O for Event Data");
 	}
 
 	/**
-	 * Open file to write events to.
+	 * Returns whether online sorting is all caught up with incoming buffers.
+	 * 
+	 * @return <code>true</code> if all received buffers have been sorted
+	 */
+	public boolean caughtUpOnline() {
+		if (ringBuffer == null) {
+			throw new IllegalStateException(
+					"Should always have a ring buffer here.");
+		}
+		boolean rval = false;
+		if (ringBuffer.isEmpty()) {
+			synchronized (rreLock) {
+				if (reachedRunEnd) {
+					rval = true;
+				}
+			}
+		}
+		return rval;
+	}
+
+	/**
+	 * Closes file that was written to or read from.
 	 * 
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
-	public void openEventInputFile(final File file) throws SortException {
-		if (file == null) {
-			throw new SortException(getClass().getName()
-					+ ": Cannot open input event file, null name.");
-		}
-		try {
-			final FileInputStream fis = new FileInputStream(file);
-			bis = new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
-			eventInput.setInputStream(bis);
-			inputFile = file;
-			inputFileOpen = true;
-		} catch (IOException ioe) {
-			throw new SortException("Unable to open file: " + file.getPath()
-					+ " [DiskDaemon]");
+	public void closeEventInputFile() throws SortException {
+		if (inputFileOpen) {
+			try {
+				bis.close();
+				inputFileOpen = false;
+			} catch (IOException ioe) {
+				throw new SortException("Unable to close file [DiskDaemon]");
+			}
 		}
 	}
 
 	/**
-	 * Open file to write events to.
-	 * 
-	 * @exception SortException
-	 *                exception that sends message to console
+	 * Close event input file that is from the list, if one from the list is
+	 * open.
 	 */
-	public void openEventOutputFile(final File file) throws SortException {
-		if (file == null) {
-			throw new SortException(getClass().getName()
-					+ ": Cannot open output event file, file name is null.");
-		}
+	public boolean closeEventInputListFile() {
+		boolean rval = true;
 		try {
-			final FileOutputStream fos = new FileOutputStream(file);
-			bos = new BufferedOutputStream(fos, RingBuffer.BUFFER_SIZE);
-			eventOutput.setOutputStream(bos);
-			this.outputFile = file;
-			outputFileOpen = true;
-		} catch (IOException ioe) {
-			throw new SortException("Unable to open file: " + file.getPath()
-					+ " [DiskDaemon]");
+			closeEventInputFile();
+		} catch (SortException ioe) {
+			LOGGER.log(Level.SEVERE, "Unable to close file: "
+					+ inputFile.getPath(), ioe);
+			rval = false;
 		}
+		return rval;
 	}
 
 	/**
@@ -107,25 +117,172 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	}
 
 	/**
-	 * Closes file that was written to or read from.
+	 * Implementation of <code>StorageDaemon</code> abstract method.
+	 * 
+	 * @exception SortException
+	 *                thrown for unrecoverable errors
+	 */
+	public InputStream getEventInputFileStream() throws SortException {
+		return bis;
+	}
+
+	/* implementations of StorageDeamon abstract methods */
+
+	/**
+	 * Implementation of <code>StorageDaemon</code> abstract method.
+	 * 
+	 * @exception SortException
+	 *                thrown for unrecoverable errors
+	 */
+	public OutputStream getEventOutputFileStream() throws SortException {
+		return bos;
+	}
+
+	/**
+	 * Need to implement such that sets a variable to stop write loop.
+	 */
+	public boolean hasMoreFiles() {
+		return sortFiles.hasNext();
+	}
+
+	/**
+	 * Open file to write events to.
 	 * 
 	 * @exception SortException
 	 *                exception that sends message to console
 	 */
-	public void closeEventInputFile() throws SortException {
-		if (inputFileOpen) {
-			try {
-				bis.close();
-				inputFileOpen = false;
-			} catch (IOException ioe) {
-				throw new SortException("Unable to close file [DiskDaemon]");
-			}
+	public void openEventInputFile(final File file) throws SortException {
+		if (file == null) {
+			final SortException exception = new SortException(getClass().getName()
+					+ ": Cannot open input event file, null name."); 
+			LOGGER.throwing("DiskDaemon", "openEventInputFile", exception);
+			throw exception;
+		}
+		try {
+			final FileInputStream fis = new FileInputStream(file);
+			bis = new BufferedInputStream(fis, RingBuffer.BUFFER_SIZE);
+			eventInput.setInputStream(bis);
+			inputFile = file;
+			inputFileOpen = true;
+		} catch (IOException ioe) {
+			throw new SortException("Unable to open file: " + file.getPath()
+					+ " [DiskDaemon]");
 		}
 	}
 
-	private transient boolean reachedRunEnd = false;
+	/**
+	 * Open next file in list.
+	 */
+	public boolean openEventInputListFile() {
+		boolean rval = false;
+		final File file = sortFiles.next();
+		try {
+			openEventInputFile(file);// local open file method
+			rval = eventInput.readHeader();
+			if (rval) {
+				fileCount++;
+			} else {
+				LOGGER.severe("File does not have correct header. File: "
+								+ file.getAbsolutePath());
+			}
+		} catch (EventException ee) {
+			LOGGER.log(Level.SEVERE, ee.getMessage(), ee);
+			rval = false;
+		} catch (SortException je) {
+			LOGGER.log(Level.SEVERE, je.getMessage(), je);
+			rval = false;
+		}
+		return rval;
+	}
 
-	private transient final Object rreLock = new Object();
+	/**
+	 * Open file to write events to.
+	 * 
+	 * @exception SortException
+	 *                exception that sends message to console
+	 */
+	public void openEventOutputFile(final File file) throws SortException {
+		if (file == null) {
+			throw new SortException(getClass().getName()
+					+ ": Cannot open output event file, file name is null.");
+		}
+		try {
+			final FileOutputStream fos = new FileOutputStream(file);
+			bos = new BufferedOutputStream(fos, RingBuffer.BUFFER_SIZE);
+			eventOutput.setOutputStream(bos);
+			this.outputFile = file;
+			outputFileOpen = true;
+		} catch (IOException ioe) {
+			throw new SortException("Unable to open file: " + file.getPath()
+					+ " [DiskDaemon]");
+		}
+	}
+
+	/**
+	 * Implementation of <code>StorageDaemon</code> abstract method.
+	 * 
+	 * @exception SortException
+	 *                thrown for unrecoverable errors
+	 */
+	public boolean readHeader() throws SortException {
+		try {
+			final BufferedInputStream headerInputStream = new BufferedInputStream(
+					new FileInputStream(inputFile), eventInput.getHeaderSize());
+			eventInput.setInputStream(headerInputStream);
+			final boolean goodHeader = eventInput.readHeader();
+			headerInputStream.close();
+			return goodHeader;
+		} catch (EventException ioe) {
+			throw new SortException("Could not read header record.", ioe);
+		} catch (FileNotFoundException fnf) {
+			throw new SortException("Event file not found.", fnf);
+		} catch (IOException ioe) {
+			throw new SortException("Problem closing event file.", ioe);
+		}
+
+	}
+
+	/**
+	 * Reset the "reached run end" state to <code>false</code>.
+	 * 
+	 */
+	public void resetReachedRunEnd() {
+		synchronized (rreLock) {
+			reachedRunEnd = false;
+		}
+	}
+
+	/**
+	 * Starting point of thread for online writing to disk
+	 */
+	public void run() {
+		try {
+			if (mode == Mode.ONLINE) {
+				writeLoop();
+			} else {
+				throw new IllegalStateException(
+						"run() called when mode not ONLINE");
+			}
+		} catch (IOException ioe) {
+			LOGGER.log(Level.SEVERE, "Error while writing data to file: "
+							+ ioe.getMessage(), ioe);
+		}
+	}
+
+	/**
+	 * Implementation of <code>StorageDaemon</code> abstract method.
+	 * 
+	 * @exception SortException
+	 *                thrown for unrecoverable errors
+	 */
+	public void writeHeader() throws SortException {
+		try {
+			eventOutput.writeHeader();
+		} catch (EventException ioe) {
+			throw new SortException(
+					"Could not write Header Record [DiskDaemon]");
+		}
+	}
 
 	/*
 	 * non-javadoc: Take data from ring buffer and write it out to a file until
@@ -158,164 +315,5 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 			yield();
 		}
 		// end loop forever
-	}
-
-	/* implementations of StorageDeamon abstract methods */
-
-	/**
-	 * Need to implement such that sets a variable to stop write loop.
-	 */
-	public boolean hasMoreFiles() {
-		return sortFiles.hasNext();
-	}
-
-	/**
-	 * Open next file in list.
-	 */
-	public boolean openEventInputListFile() {
-		boolean rval = false;
-		final File file = sortFiles.next();
-		try {
-			openEventInputFile(file);// local open file method
-			rval = eventInput.readHeader();
-			if (rval) {
-				fileCount++;
-			} else {
-				msgHandler
-						.errorOutln("File does not have correct header. File: "
-								+ file.getAbsolutePath());
-			}
-		} catch (EventException ee) {
-			msgHandler.errorOutln(ee.getMessage());
-			rval = false;
-		} catch (SortException je) {
-			msgHandler.errorOutln(je.getMessage());
-			rval = false;
-		}
-		return rval;
-	}
-
-	/**
-	 * Close event input file that is from the list, if one from the list is
-	 * open.
-	 */
-	public boolean closeEventInputListFile() {
-		boolean rval = true;
-		try {
-			closeEventInputFile();
-		} catch (SortException ioe) {
-			msgHandler.errorOutln(getClass().getName()
-					+ ": Unable to close file: " + inputFile.getPath());
-			rval = false;
-		}
-		return rval;
-	}
-
-	/**
-	 * Implementation of <code>StorageDaemon</code> abstract method.
-	 * 
-	 * @exception SortException
-	 *                thrown for unrecoverable errors
-	 */
-	public InputStream getEventInputFileStream() throws SortException {
-		return bis;
-	}
-
-	/**
-	 * Implementation of <code>StorageDaemon</code> abstract method.
-	 * 
-	 * @exception SortException
-	 *                thrown for unrecoverable errors
-	 */
-	public OutputStream getEventOutputFileStream() throws SortException {
-		return bos;
-	}
-
-	/**
-	 * Implementation of <code>StorageDaemon</code> abstract method.
-	 * 
-	 * @exception SortException
-	 *                thrown for unrecoverable errors
-	 */
-	public void writeHeader() throws SortException {
-		try {
-			eventOutput.writeHeader();
-		} catch (EventException ioe) {
-			throw new SortException(
-					"Could not write Header Record [DiskDaemon]");
-		}
-	}
-
-	/**
-	 * Implementation of <code>StorageDaemon</code> abstract method.
-	 * 
-	 * @exception SortException
-	 *                thrown for unrecoverable errors
-	 */
-	public boolean readHeader() throws SortException {
-		try {
-			final BufferedInputStream headerInputStream = new BufferedInputStream(
-					new FileInputStream(inputFile), eventInput.getHeaderSize());
-			eventInput.setInputStream(headerInputStream);
-			final boolean goodHeader = eventInput.readHeader();
-			headerInputStream.close();
-			return goodHeader;
-		} catch (EventException ioe) {
-			throw new SortException("Could not read header record.", ioe);
-		} catch (FileNotFoundException fnf) {
-			throw new SortException("Event file not found.", fnf);
-		} catch (IOException ioe) {
-			throw new SortException("Problem closing event file.", ioe);
-		}
-
-	}
-
-	/**
-	 * Starting point of thread for online writing to disk
-	 */
-	public void run() {
-		try {
-			if (mode == Mode.ONLINE) {
-				writeLoop();
-			} else {
-				throw new IllegalStateException(
-						"run() called when mode not ONLINE");
-			}
-		} catch (IOException ioe) {
-			msgHandler
-					.errorOutln("[DiskDaemon] Error while writing data to file: "
-							+ ioe.getMessage());
-		}
-	}
-
-	/**
-	 * Returns whether online sorting is all caught up with incoming buffers.
-	 * 
-	 * @return <code>true</code> if all received buffers have been sorted
-	 */
-	public boolean caughtUpOnline() {
-		if (ringBuffer == null) {
-			throw new IllegalStateException(
-					"Should always have a ring buffer here.");
-		}
-		boolean rval = false;
-		if (ringBuffer.isEmpty()) {
-			synchronized (rreLock) {
-				if (reachedRunEnd) {
-					rval = true;
-				}
-			}
-		}
-		return rval;
-	}
-
-	/**
-	 * Reset the "reached run end" state to <code>false</code>.
-	 * 
-	 */
-	public void resetReachedRunEnd() {
-		synchronized (rreLock) {
-			reachedRunEnd = false;
-		}
 	}
 }

@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.help.CSH;
@@ -30,52 +32,50 @@ import javax.swing.UIManager;
 
 /**
  * Deals with JavaHelp-based User Guide and an "About" dialog.
- *
+ * 
  * @author Ken Swartz
  * @author Dale Visser
  * @version version 0.5 November 98
  */
 public class Help extends JDialog {
-	
-	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
-	private final static int POS_X=20;
+	private static final Logger LOGGER = Logger.getLogger("jam");
+
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	private final static int POS_X = 20;
 
 	/**
 	 * Constructor.
 	 */
 	public Help() {
 		super(STATUS.getFrame(),
-		"University of Illinois/NCSA Open Source License",
-		true);
+				"University of Illinois/NCSA Open Source License", true);
 		layoutLicenseDialog();
-		final String defaultVal="notseen";
-		final String version=Version.getInstance().getName();
-		final String key="license";
-		final Preferences helpnode=Preferences.userNodeForPackage(getClass());
-		if (STATUS.isShowGUI() && 
-		!version.equals(helpnode.get(key,defaultVal))){
+		final String defaultVal = "notseen";
+		final String version = Version.getInstance().getName();
+		final String key = "license";
+		final Preferences helpnode = Preferences.userNodeForPackage(getClass());
+		if (STATUS.isShowGUI()
+				&& !version.equals(helpnode.get(key, defaultVal))) {
 			setVisible(true);
-			helpnode.put(key,version);
+			helpnode.put(key, version);
 		}
 	}
 
-
 	private void layoutLicenseDialog() {
-		final String hyphen = " - ";
 		final Container contents = this.getContentPane();
 		this.setResizable(true);
 		contents.setLayout(new BorderLayout());
 		final JPanel center = new JPanel(new GridLayout(0, 1));
-		final InputStream license_in =
-			getClass().getClassLoader().getResourceAsStream("license.txt");
+		final InputStream license_in = getClass().getClassLoader()
+				.getResourceAsStream("license.txt");
 		final Reader reader = new InputStreamReader(license_in);
 		int length = 0;
-		final char [] textarray=new char[2000];
+		final char[] textarray = new char[2000];
 		try {
 			length = reader.read(textarray);
 		} catch (IOException e) {
-			STATUS.getMessageHandler().errorOutln(getClass().getName()+hyphen+
-			e.getMessage());
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 		final String text = new String(textarray, 0, length);
 		center.add(new JScrollPane(new JTextArea(text)));
@@ -83,73 +83,67 @@ public class Help extends JDialog {
 		final JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		contents.add(south, BorderLayout.SOUTH);
 		final JButton bok = new JButton("OK");
-		bok.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent event){
+		bok.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
 				dispose();
 			}
 		});
 		south.add(bok);
 		this.pack();
-		final Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
-		this.setSize(this.getWidth(),screen.height/2);
-		this.setLocation(POS_X,screen.height/4);
+		final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setSize(this.getWidth(), screen.height / 2);
+		this.setLocation(POS_X, screen.height / 4);
 	}
 
-	
-	private static void setLookAndFeel(){
+	private static void setLookAndFeel() {
 		final String linux = "Linux";
-		final String kunststoff =
-			"com.incors.plaf.kunststoff.KunststoffLookAndFeel";
+		final String kunststoff = "com.incors.plaf.kunststoff.KunststoffLookAndFeel";
 		boolean bKunststoff = linux.equals(System.getProperty("os.name"));
 		if (bKunststoff) {
 			try {
 				UIManager.setLookAndFeel(kunststoff);
 			} catch (ClassNotFoundException e) {
 				bKunststoff = false;
-			} catch (Exception e) { //all other exceptions
+			} catch (Exception e) { // all other exceptions
 				final String title = "Jam--error setting GUI appearance";
-				JOptionPane.showMessageDialog(
-					null,
-					e.getMessage(),
-					title,
-					JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		if (!bKunststoff) {
 			try {
-				UIManager.setLookAndFeel(
-					UIManager.getSystemLookAndFeelClassName());
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
 			} catch (Exception e) {
 				final String title = "Error setting GUI appearance";
-				JOptionPane.showMessageDialog(
-					null,
-					e.getMessage(),
-					title,
-					JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), title,
+						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
-	
+
 	/**
 	 * Launches the User Guide, with an Exit button in an auxiliary frame.
 	 * 
-	 * @param args ignored
+	 * @param args
+	 *            ignored
 	 */
-	public static void main(final String [] args){
+	public static void main(final String[] args) {
 		final String helpsetName = "help/jam.hs";
 		setLookAndFeel();
 		try {
-			final URL hsURL =
-				ClassLoader.getSystemClassLoader().getResource(helpsetName);
+			final URL hsURL = ClassLoader.getSystemClassLoader().getResource(
+					helpsetName);
 			final HelpSet helpset = new HelpSet(null, hsURL);
-			final ActionListener listener=new CSH.DisplayHelpFromSource(helpset.createHelpBroker());
-			final JButton proxy=new JButton("Proxy");
+			final ActionListener listener = new CSH.DisplayHelpFromSource(
+					helpset.createHelpBroker());
+			final JButton proxy = new JButton("Proxy");
 			proxy.addActionListener(listener);
-			final JFrame frame=new JFrame("Jam User Guide");
-			final JButton exit=new JButton("Exit");
-			frame.getContentPane().add(exit,BorderLayout.CENTER);
-			exit.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e){
+			final JFrame frame = new JFrame("Jam User Guide");
+			final JButton exit = new JButton("Exit");
+			frame.getContentPane().add(exit, BorderLayout.CENTER);
+			exit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					System.exit(0);
 				}
 			});
@@ -157,9 +151,9 @@ public class Help extends JDialog {
 			frame.setVisible(true);
 			proxy.doClick();
 		} catch (Exception ee) {
-			JOptionPane.showMessageDialog(null,ee.getMessage(),ee.getClass().getName(),
-			JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, ee.getMessage(), ee.getClass()
+					.getName(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
-		
+
 }

@@ -524,7 +524,7 @@ public final class SetupSortOn extends AbstractSetup {
 		sortDaemon.setSorter(sortRoutine);
 		// create storage daemon
 		if (cdisk.isSelected()) { // don't create storage daemon otherwise
-			diskDaemon = new DiskDaemon(runControl, jamConsole);
+			diskDaemon = new DiskDaemon(runControl);
 			diskDaemon.setupOn(inStream, outStream);
 			diskDaemon.setRingBuffer(storageRing);
 		}

@@ -49,7 +49,8 @@ import java.util.prefs.PreferenceChangeListener;
  * @version 0.5
  */
 
-class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommands {
+class Action implements PlotMouseListener, PreferenceChangeListener,
+		PlotCommands {
 
 	/** Broadcaster for event and gate change */
 	private static final Broadcaster BROADCASTER = Broadcaster
@@ -65,7 +66,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 
 	/** Jam status to get current histogram */
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-	
+
 	private static final Logger LOGGER = Logger.getLogger("jam.plot");
 
 	static {
@@ -306,8 +307,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 			final Histogram histogram = Histogram.getHistogram(num);
 			if (histogram == null) {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
-				textOut.errorOutln("There is no histogram numbered " + num
-						+ ".");
+				LOGGER.severe("There is no histogram numbered " + num + ".");
 			} else {
 				final JamStatus status = JamStatus.getSingletonInstance();
 				status.setCurrentHistogram(histogram);
@@ -390,13 +390,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 				final Method method = NO_ARG_MAP.get(currentCommand);
 				method.invoke(this);
 			} catch (IllegalAccessException iae) {
-				textOut.errorOutln(iae.getMessage());
+				LOGGER.log(Level.SEVERE, iae.getMessage(), iae);
 			} catch (InvocationTargetException ite) {
-				textOut.errorOutln(ite.getMessage());
+				LOGGER.log(Level.SEVERE, ite.getMessage(), ite);
 			}
 		} else {
 			done();
-			textOut.errorOutln("Plot command not recognized.");
+			LOGGER.severe("Plot command, \"" + currentCommand
+					+ "\", not recognized.");
 		}
 	}
 
@@ -765,7 +766,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 			final int num = (int) hist[i];
 			final Histogram histogram = Histogram.getHistogram(num);
 			if (histogram == null) {
-				textOut.errorOutln("There is no histogram numbered " + num
+				LOGGER.warning("There is no histogram numbered " + num
 						+ ".");
 			} else {
 				if (histogram.getDimensionality() == 1) {
@@ -774,12 +775,11 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 						textOut.messageOut(Integer.toString(num) + ' ',
 								MessageHandler.CONTINUE);
 					} else {
-						textOut
-								.errorOutln(" Current histogram not 1D, so it cannot be overlaid.");
+						LOGGER.warning(" Current histogram not 1D, so it cannot be overlaid.");
 
 					}
 				} else {
-					textOut.errorOutln(histogram.getFullName().trim()
+					LOGGER.warning(histogram.getFullName().trim()
 							+ " is not 1D, so it cannot be overlaid.");
 				}
 			}
@@ -893,7 +893,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener, PlotCommand
 				textOut
 						.messageOut(String.valueOf(binWidth),
 								MessageHandler.END);
-				LOGGER.warning("Rebin command ignored. Bin value must be \u2265 1.0 and smaller than the histogram.");
+				LOGGER
+						.warning("Rebin command ignored. Bin value must be \u2265 1.0 and smaller than the histogram.");
 				done();
 			}
 		}

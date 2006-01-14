@@ -4,7 +4,6 @@ import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
-import jam.global.MessageHandler;
 import jam.global.RTSI;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
@@ -37,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+
 ;
 
 /**
@@ -102,7 +102,7 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient final JComboBox inChooser, outChooser;
 
-	final transient private MessageHandler msgHandler;
+	// final transient private MessageHandler msgHandler;
 
 	/* handles we need */
 	final transient private SortControl sortControl;
@@ -123,7 +123,6 @@ public final class SetupSortOff extends AbstractSetup {
 				.equals(JamProperties.DEFAULT_SORT_CLASSPATH));
 		sortControl = SortControl.getInstance();
 		dispCount = DisplayCounters.getSingletonInstance();
-		msgHandler = STATUS.getMessageHandler();
 		final Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
 		final int posx = 20;
@@ -151,7 +150,8 @@ public final class SetupSortOff extends AbstractSetup {
 		final JLabel lis = new JLabel("Event input stream",
 				SwingConstants.RIGHT);
 		pLabels.add(lis);
-		final JLabel los = new JLabel("Event output stream", SwingConstants.RIGHT);
+		final JLabel los = new JLabel("Event output stream",
+				SwingConstants.RIGHT);
 		pLabels.add(los);
 		/* Entry fields */
 		final JPanel pEntry = new JPanel(new GridLayout(0, 1, space, space));
@@ -164,7 +164,7 @@ public final class SetupSortOff extends AbstractSetup {
 		selectSortRoutine(defSortRout, useDefault);
 		pEntry.add(sortChoice);
 		/* Input stream */
-		final RTSI rtsi=RTSI.getSingletonInstance();
+		final RTSI rtsi = RTSI.getSingletonInstance();
 		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(rtsi.find(
 				"jam.sort.stream", AbstractEventInputStream.class, false));
 		lhs.remove(AbstractEventInputStream.class);
@@ -211,7 +211,7 @@ public final class SetupSortOff extends AbstractSetup {
 					try {
 						resetSort();
 					} catch (Exception e) {
-						msgHandler.errorOutln(classname + e.getMessage());
+						LOGGER.log(Level.SEVERE, e.getMessage(), e);
 					}
 				}
 			}
@@ -236,18 +236,19 @@ public final class SetupSortOff extends AbstractSetup {
 						+ eventOutput.getClass().getName() + "'");
 				if (sortRoutine != null) {
 					setupSort(); // create data areas and daemons
-					msgHandler.messageOutln("Daemons and dialogs initialized.");
+					LOGGER.info("Daemons and dialogs initialized.");
 				}
 				STATUS.selectFirstSortHistogram();
 				if (dispose) {
 					dialog.dispose();
 				}
 			} else {
-				throw new JamException(classname
-						+ "Can't set up sorting, mode locked.");
+				final JamException exception = new JamException(
+						"Can't set up sorting, mode locked.");
+				LOGGER.throwing("SetupSortOff", "doApply", exception);
+				throw exception;
 			}
 		} catch (Exception ex) {
-			msgHandler.errorOutln(ex.getMessage());
 			LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
 		}
 	}
@@ -261,16 +262,15 @@ public final class SetupSortOff extends AbstractSetup {
 			eventInput.setConsoleExists(true);
 		} catch (InstantiationException ie) {
 			final String msg = classname
-			+ "Cannot instantize event input stream: "
-			+ inChooser.getSelectedItem();
-			LOGGER.log(Level.SEVERE, msg,ie);
-			throw new JamException(msg,ie);
+					+ "Cannot instantize event input stream: "
+					+ inChooser.getSelectedItem();
+			LOGGER.log(Level.SEVERE, msg, ie);
+			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
-			final String msg = classname
-			+ "Cannot access event input stream: "
-			+ inChooser.getSelectedItem();
-			LOGGER.log(Level.SEVERE, msg,iae);
-			throw new JamException(msg,iae);
+			final String msg = classname + "Cannot access event input stream: "
+					+ inChooser.getSelectedItem();
+			LOGGER.log(Level.SEVERE, msg, iae);
+			throw new JamException(msg, iae);
 		}
 	}
 
@@ -358,7 +358,7 @@ public final class SetupSortOff extends AbstractSetup {
 		eventOutput.setBufferSize(sortRoutine.getBufferSize());
 		sortRoutine.setEventOutputStream(eventOutput);
 		/* always setup diskDaemon */
-		final DiskDaemon diskDaemon = new DiskDaemon(sortControl, msgHandler);
+		final DiskDaemon diskDaemon = new DiskDaemon(sortControl);
 		diskDaemon.setupOff(eventInput, eventOutput);
 		/* tell run control about all, disk always to device */
 		sortControl.setup(sortDaemon, diskDaemon, diskDaemon);
