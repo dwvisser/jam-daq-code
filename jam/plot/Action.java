@@ -7,6 +7,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
+import jam.global.UnNamed;
 import jam.ui.Console;
 
 import java.awt.Point;
@@ -60,14 +61,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 
 	private final static String energy = "energy";
 
+	private static final Logger LOGGER = Logger.getLogger("jam.plot");
+
 	private final static Map<String, Method> NO_ARG_MAP = new HashMap<String, Method>();
 
 	private static final String S_TO = " to ";
 
 	/** Jam status to get current histogram */
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private static final Logger LOGGER = Logger.getLogger("jam.plot");
 
 	static {
 		final List<String> NO_ARG_CMDS = new ArrayList<String>();
@@ -112,7 +113,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	/** Is there a command present */
 	private transient boolean commandPresent;
 
-	private transient int countLow, countHigh;
+	private transient int countLow, countHigh;// NOPMD
 
 	/** current command being processed */
 	private transient String currentCommand;
@@ -137,9 +138,6 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 
 	/** Output text to */
 	private transient final MessageHandler textOut;
-
-	// private transient final Bin.Factory binFactory =
-	// Bin.Factory.getInstance();
 
 	/**
 	 * Master constructor has no broadcaster.
@@ -294,7 +292,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 *            the first element of which is the number of the hist to
 	 *            display
 	 */
-	void display(final double[] hist) {
+	void display(final List<Double> hist) {
 		if (!commandPresent) {
 			isCursorCommand = false;
 			init();
@@ -302,8 +300,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 					.messageOut("Display histogram number: ",
 							MessageHandler.NEW);
 		}
-		if (hist.length > 0) {
-			final int num = (int) hist[0];
+		if (!hist.isEmpty()) {
+			final double dNum = hist.get(0);
+			final int num = (int) dNum;
 			final Histogram histogram = Histogram.getHistogram(num);
 			if (histogram == null) {
 				textOut.messageOut(Integer.toString(num), MessageHandler.END);
@@ -319,15 +318,14 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						histogram);
 			}
-			if (hist.length > 1) {
+			if (hist.size() > 1) {
 				if (histogram.getDimensionality() == 1) {
-					final int newlen = hist.length - 1;
-					final double[] pass = new double[newlen];
-					System.arraycopy(hist, 1, pass, 0, newlen);
+					final int newlen = hist.size() - 1;
+					final List<Double> pass = hist.subList(0, newlen);
 					overlay(pass);
 				} else {
-					textOut
-							.errorOutln(histogram.getFullName().trim()
+					LOGGER
+							.warning(histogram.getFullName().trim()
 									+ " is not 1D, so you may not overlay other histograms.");
 				}
 			} else {
@@ -348,7 +346,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	/*
 	 * non-javadoc: does a command with parameters
 	 */
-	void doCommand(final String inCommand, final double[] inParams,
+	void doCommand(final String inCommand, final List<Double> inParams,
 			final boolean console) {
 		synchronized (this) {
 			/* if inCommand is null, keep currentCommand */
@@ -368,14 +366,13 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				}
 			}
 			/* check that a histogram is defined */
-			if (STATUS.getCurrentHistogram() != null) {
-				doCurrentCommand(inParams == null ? new double[0] : inParams,
-						console);
+			if (STATUS.getCurrentHistogram() != UnNamed.getSingletonInstance()) {
+				doCurrentCommand(inParams, console);
 			}
 		}
 	}
 
-	private void doCurrentCommand(final double[] parameters,
+	private void doCurrentCommand(final List<Double> parameters,
 			final boolean console) {
 		if (DISPLAY.equals(currentCommand)) {
 			display(parameters);
@@ -754,20 +751,19 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	 * 
 	 * @param hist
 	 */
-	void overlay(final double[] hist) {
+	void overlay(final List<Double> hist) {
 		if (!commandPresent) {
 			isCursorCommand = false;
 			init();
 			textOut.messageOut("Overlay histogram numbers: ",
 					MessageHandler.NEW);
 		}
-		final boolean areHists = hist.length > 0;
-		for (int i = 0; i < hist.length; i++) {
-			final int num = (int) hist[i];
+		final boolean areHists = !hist.isEmpty();
+		for (double dNum : hist) {
+			final int num = (int) dNum;
 			final Histogram histogram = Histogram.getHistogram(num);
 			if (histogram == null) {
-				LOGGER.warning("There is no histogram numbered " + num
-						+ ".");
+				LOGGER.warning("There is no histogram numbered " + num + ".");
 			} else {
 				if (histogram.getDimensionality() == 1) {
 					if (plotDisplay.getPlotContainer().getDimensionality() == 1) {
@@ -775,7 +771,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 						textOut.messageOut(Integer.toString(num) + ' ',
 								MessageHandler.CONTINUE);
 					} else {
-						LOGGER.warning(" Current histogram not 1D, so it cannot be overlaid.");
+						LOGGER
+								.warning(" Current histogram not 1D, so it cannot be overlaid.");
 
 					}
 				} else {
@@ -872,7 +869,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	/*
 	 * non-javadoc: Set the range for the counts scale.
 	 */
-	private void rebin(final double[] parameters) {
+	private void rebin(final List<Double> parameters) {
 		if (!commandPresent) {
 			isCursorCommand = false;
 			init();
@@ -880,8 +877,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 		}
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
 		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
-		if (parameters.length > 0) {
-			final double binWidth = parameters[0];
+		if (!parameters.isEmpty()) {
+			final double binWidth = parameters.get(0);
 			if (binWidth >= 1.0 && binWidth < hist.getSizeX()) {
 				currentPlot.setBinWidth(binWidth);
 				textOut
@@ -973,7 +970,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	@SuppressWarnings("unused")
 	private void zoomhorz() {
 		final PlotContainer currentPlot = plotDisplay.getPlotContainer();
-		if (!commandPresent) {
+		final boolean noCommand = !commandPresent;
+		if (noCommand) {
 			isCursorCommand = true;
 			init();
 			textOut.messageOut("Expand from channel ", MessageHandler.NEW);
