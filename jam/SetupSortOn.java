@@ -256,6 +256,7 @@ public final class SetupSortOn extends AbstractSetup {
 		pradio.add(defaultPath);
 		pathType.add(specify);
 		pradio.add(specify);
+
 		/* Class path text */
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
@@ -294,17 +295,17 @@ public final class SetupSortOn extends AbstractSetup {
 		textPathHist.setColumns(fileTextCols);
 		textPathHist
 				.setToolTipText("Path to save HDF summary files at the end of each run.");
-		textPathHist.setEditable(false);
+		textPathHist.setEditable(true);
 		pEntries.add(textPathHist);
 		textPathData = new JTextField();
 		textPathData.setColumns(fileTextCols);
 		textPathData.setToolTipText("Path to save event data.");
-		textPathData.setEditable(false);
+		textPathData.setEditable(true);
 		pEntries.add(textPathData);
 		textPathLog = new JTextField();
 		textPathLog.setColumns(fileTextCols);
 		textPathLog.setToolTipText("Path to save the console log.");
-		textPathLog.setEditable(false);
+		textPathLog.setEditable(true);
 		pEntries.add(textPathLog);
 		JPanel pInterval = new JPanel(new GridLayout(1, 2, 40, 0));
 		pEntries.add(pInterval);
@@ -357,6 +358,7 @@ public final class SetupSortOn extends AbstractSetup {
 			}
 		});
 		pBottom.add(checkLock);
+		setChooserDefault(true);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
 	}
@@ -427,9 +429,20 @@ public final class SetupSortOn extends AbstractSetup {
 		final boolean notlock = !lock;
 		checkLock.setEnabled(lock);
 		textExpName.setEnabled(notlock);
+		
 		inChooser.setEnabled(notlock);
 		outChooser.setEnabled(notlock);
 		sortChoice.setEnabled(notlock);
+		textExpName.setEditable(notlock);
+		
+		textPathHist.setEditable(notlock); 
+		textPathData.setEditable(notlock);
+		textPathLog.setEditable(notlock);
+		textPathHist.setEnabled(notlock); 
+		textPathData.setEnabled(notlock);
+		textPathLog.setEnabled(notlock);		
+		
+		cdisk.setEnabled(notlock);
 		bok.setEnabled(notlock);
 		bapply.setEnabled(notlock);
 		bbrowseh.setEnabled(notlock);

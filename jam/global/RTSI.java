@@ -430,13 +430,15 @@ public class RTSI {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
-					errmessage.append(cnfex.getMessage());
-					JOptionPane.showMessageDialog(null, errmessage.toString(),
-							rtsiName, JOptionPane.ERROR_MESSAGE);
+					//errmessage.append(cnfex.getMessage());
+					//JOptionPane.showMessageDialog(null, errmessage.toString(),
+					//		rtsiName, JOptionPane.ERROR_MESSAGE);
+					return rval;
 				} catch (LinkageError le) {
-					errmessage.append(le.getMessage());
-					JOptionPane.showMessageDialog(null, errmessage.toString(),
-							rtsiName, JOptionPane.ERROR_MESSAGE);
+					//errmessage.append(le.getMessage());
+					//JOptionPane.showMessageDialog(null, errmessage.toString(),
+					//		rtsiName, JOptionPane.ERROR_MESSAGE);
+					return rval;
 				}
 			}
 		}

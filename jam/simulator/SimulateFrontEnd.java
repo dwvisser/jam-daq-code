@@ -1,8 +1,5 @@
 package jam.simulator;
 
-import jam.JamException;
-import jam.data.Scaler;
-import jam.global.BroadcastEvent;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -14,6 +11,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 /**
  * Simulator of front end
@@ -22,6 +20,8 @@ import java.net.UnknownHostException;
  * @author Ken Swartz
  */
 public final class SimulateFrontEnd  {
+	
+	private static final int MAX_MESSAGE_SIZE = 80;
 	
 	/**
 	 * Standard informational message.
@@ -125,18 +125,26 @@ public final class SimulateFrontEnd  {
 						bufferIn.length);
 				socketReceive.receive(packetIn);
 				System.out.println("Packet received");
-				final ByteArrayInputStream messageBais = new ByteArrayInputStream(
-						packetIn.getData());
-				final DataInput messageDis = new DataInputStream(messageBais);
-				final int status = messageDis.readInt();
-				if (status == OK_MESSAGE) {
-					System.out.println( "Mesage OK");						
-				} else if (status == SCALER) {
-					System.out.println( "Mesage Scaler");					
-				} else if (status == COUNTER) {
-					System.out.println( "Mesage Counter");					
+				final ByteArrayInputStream messageBais = new ByteArrayInputStream(packetIn.getData());
+				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn.getData());			
+				//final DataInput messageDis = new DataInputStream(messageBais);
+				final int status = byteBuffer.getInt(); 
+				if (status == OK_MESSAGE) {					
+					final String text=unPackMessage(byteBuffer);					
+					System.out.println( "Message: "+text );
 				} else if (status == ERROR) {
-					System.out.println( "Mesage Error");
+					final String text=unPackMessage(byteBuffer);					
+					System.out.println( "Error:"+text);					
+				} else if (status == SCALER) {
+					System.out.println( "Scaler:");	
+				} else if (status == CNAF) {
+					System.out.println( "CNAF: ");
+				} else if (status == COUNTER) {
+					System.out.println( "Counter");
+				} else if (status == VME_ADDRESS ){
+					System.out.println( "VME Address");
+				} else if (status == INTERVAL) {
+					System.out.println( "Message Counter");					
 				} else {
 					System.out.println( "Mesage Unknown");
 				}
@@ -145,6 +153,32 @@ public final class SimulateFrontEnd  {
 			System.out.println( "Error in receiving messages");
 		}
 	}
+	/**
+	 * Unpack a datagram with a message. Message packets have an ASCII character
+	 * array terminated with \0.
+	 * 
+	 * @param buffer
+	 *            packet contents passed in readable form
+	 * @return the string contained in the message
+	 * @throws JamException
+	 *             if there's a problem
+	 */
+	private String unPackMessage(final ByteBuffer buffer) {
+		final StringBuilder rval = new StringBuilder();
+		char next;
+		do {
+			next = (char)buffer.get();
+			rval.append(next);
+		} while (next != '\0');
+		final int len = rval.length()-1;
+		if (len > MAX_MESSAGE_SIZE) {// exclude null
+			final IllegalArgumentException exception = new IllegalArgumentException(
+					"Message length, "+len+", greater than max allowed, "+MAX_MESSAGE_SIZE+".");
+			throw exception;
+		}
+		return rval.substring(0, len);
+	}
+	 
 	
 	/**
 	 * Main method to run simulator

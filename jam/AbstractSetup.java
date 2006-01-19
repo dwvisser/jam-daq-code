@@ -135,6 +135,10 @@ abstract class AbstractSetup {
 	 * Text field showing the sort class path.
 	 */
 	protected transient final JTextField textSortPath;
+	/**
+	 * Last select path
+	 */
+	protected String lastSortPath="";
 
 	AbstractSetup(String dialogName) {
 		super();
@@ -157,6 +161,9 @@ abstract class AbstractSetup {
 				if (specify.isSelected()) {
 					bbrowsef.setEnabled(true);
 					setChooserDefault(false);
+					textSortPath.setEnabled(true);
+					textSortPath.setText(lastSortPath);
+
 				}
 			}
 		});
@@ -169,6 +176,7 @@ abstract class AbstractSetup {
 				setSortClassPath(getSortPath());
 			}
 		});
+		bbrowsef.setEnabled(false);
 		textSortPath = new JTextField(defSortPath);
 		textSortPath.setToolTipText("Use Browse button to change. \n"
 				+ "May fail if classes have unresolvable references."
@@ -176,6 +184,7 @@ abstract class AbstractSetup {
 				+ "file to set this automatically.");
 		textSortPath.setColumns(35);
 		textSortPath.setEditable(false);
+		textSortPath.setEnabled(false);
 		defaultPath = new JRadioButton(
 				"Use help.* and sort.* in default classpath", useDefault);
 		defaultPath
@@ -187,6 +196,10 @@ abstract class AbstractSetup {
 				if (defaultPath.isSelected()) {
 					bbrowsef.setEnabled(false);
 					setChooserDefault(true);
+					textSortPath.setEnabled(false);
+					lastSortPath=textSortPath.getText();
+					textSortPath.setText("default");
+
 				}
 			}
 		});
