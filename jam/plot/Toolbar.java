@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +33,7 @@ import javax.swing.SwingConstants;
  * 
  * @author Dale Visser
  */
-class Toolbar extends JToolBar implements ActionListener {
+final class Toolbar extends JToolBar implements ActionListener {
 
 	/**
 	 * Class to render rebin selections
@@ -133,40 +135,34 @@ class Toolbar extends JToolBar implements ActionListener {
 		container.add(this, LOCATION);
 		setRollover(false);
 		try {
-			final JButton bupdate = iUpdate == null ? new JButton(
-					getHTML("<u>U</u>pdate")) : new JButton(iUpdate);
+			final JButton bupdate = getButton(iUpdate, "<u>U</u>pdate");
 			bupdate
 					.setToolTipText(getHTML("<u>U</u>pdate display with most current data."));
 			bupdate.setActionCommand(PlotCommands.UPDATE);
 			bupdate.addActionListener(this);
 			add(bupdate);
-
-			final JButton blinear = iLinLog == null ? new JButton(
-					getHTML("<u>Li</u>near/<u>Lo</u>g")) : new JButton(iLinLog);
+			final JButton blinear = getButton(iLinLog,
+					"<u>Li</u>near/<u>Lo</u>g");
 			blinear
 					.setToolTipText(getHTML("<u>Li</u>near/<u>Lo</u>g scale toggle."));
 			blinear.setActionCommand(PlotCommands.SCALE);
 			blinear.addActionListener(this);
 			add(blinear);
-			final JButton bauto = iAutoScale == null ? new JButton(
-					getHTML("<u>A</u>utoscale")) : new JButton(iAutoScale);
+			final JButton bauto = getButton(iAutoScale, "<u>A</u>utoscale");
 			bauto
 					.setToolTipText(getHTML("<u>A</u>utomatically set the counts scale."));
 			bauto.setActionCommand(PlotCommands.AUTO);
 			bauto.addActionListener(this);
 			add(bauto);
-
-			final JButton brange = iRange == null ? new JButton(
-					getHTML("<u>Ra</u>nge")) : new JButton(iRange);
+			final JButton brange = getButton(iRange, "<u>Ra</u>nge");
 			brange.setToolTipText(getHTML("<u>Ra</u>nge set counts scale."));
 			brange.setActionCommand(PlotCommands.RANGE);
 			brange.addActionListener(this);
 			add(brange);
-
 			// Combox for Re Bin
-			Vector<Integer> intVector = new Vector<Integer>(REBIN_RATIOS.length);
+			Vector<Integer> intVector = new Vector<Integer>(REBIN_RATIOS.length);// NOPMD
 			for (int i = 0; i < REBIN_RATIOS.length; i++) {
-				intVector.add(i,i);
+				intVector.add(i, i);
 			}
 			comboBinRatio = new JComboBox(intVector);
 			Dimension dimMax = comboBinRatio.getMaximumSize();
@@ -185,26 +181,23 @@ class Toolbar extends JToolBar implements ActionListener {
 			});
 			add(comboBinRatio);
 			addSeparator();
-			final JButton bfull = iFullScale == null ? new JButton(
-					getHTML("<u>F</u>ull")) : new JButton(iFullScale);
+			final JButton bfull = getButton(iFullScale, "<u>F</u>ull");
 			bfull.setActionCommand(PlotCommands.FULL);
 			bfull.setToolTipText(getHTML("<u>F</u>ull plot view."));
 			bfull.addActionListener(this);
 			add(bfull);
-			final JButton bexpand = iExpand == null ? new JButton(
-					getHTML("<u>E</u>xpand")) : new JButton(iExpand);
+			final JButton bexpand = getButton(iExpand, "<u>E</u>xpand");
 			bexpand.setToolTipText(getHTML("<u>E</u>xpand plot region."));
 			bexpand.setActionCommand(PlotCommands.EXPAND);
 			bexpand.addActionListener(this);
 			add(bexpand);
-			final JButton bzoomin = iZoomIn == null ? new JButton(
-					getHTML("<u>Z</u>oom<u>i</u>n")) : new JButton(iZoomIn);
+			final JButton bzoomin = getButton(iZoomIn, "<u>Z</u>oom<u>i</u>n");
 			bzoomin.setToolTipText(getHTML("<u>Z</u>oom<u>i</u>n plot."));
 			bzoomin.setActionCommand(PlotCommands.ZOOMIN);
 			bzoomin.addActionListener(this);
 			add(bzoomin);
-			final JButton bzoomout = iZoomOut == null ? new JButton(
-					getHTML("<u>Z</u>oom<u>o</u>ut")) : new JButton(iZoomOut);
+			final JButton bzoomout = getButton(iZoomOut,
+					"<u>Z</u>oom<u>o</u>ut");
 			bzoomout.setToolTipText(getHTML("<u>Z</u>oom<u>o</u>ut plot."));
 			bzoomout.setActionCommand(PlotCommands.ZOOMOUT);
 			bzoomout.addActionListener(this);
@@ -222,28 +215,24 @@ class Toolbar extends JToolBar implements ActionListener {
 			 * plot.")); bzoomhorz.setActionCommand(Action.ZOOMHORZ);
 			 * bzoomhorz.addActionListener(this); add(bzoomhorz);
 			 */
-			bgoto = iGoto == null ? new JButton(getHTML("<u>G</u>oto"))
-					: new JButton(iGoto);
+			bgoto = getButton(iGoto, "<u>G</u>oto");
 			bgoto.setActionCommand(PlotCommands.GOTO);
 			bgoto.setToolTipText(getHTML("<u>G</u>oto selected."));
 			bgoto.addActionListener(this);
 			add(bgoto);
 			addSeparator();
-			final JButton barea = iArea == null ? new JButton(
-					getHTML("<u>Ar</u>ea")) : new JButton(iArea);
+			final JButton barea = getButton(iArea, "<u>Ar</u>ea");
 			barea.setToolTipText(getHTML("<u>Ar</u>ea display."));
 			barea.setActionCommand(PlotCommands.AREA);
 			barea.addActionListener(this);
 			add(barea);
-			bnetarea = iNetArea == null ? new JButton(
-					getHTML("<u>N</u>et Area")) : new JButton(iNetArea);
+			bnetarea = getButton(iNetArea, "<u>N</u>et Area");
 			bnetarea.setToolTipText(getHTML("<u>N</u>et Area display."));
 			bnetarea.setActionCommand(PlotCommands.NETAREA);
 			bnetarea.addActionListener(this);
 			add(bnetarea);
 			addSeparator();
-			final JButton bcancel = iCancel == null ? new JButton(
-					getHTML("<u>C</u>ancel")) : new JButton(iCancel);
+			final JButton bcancel = getButton(iCancel, "<u>C</u>ancel");
 			bcancel.setActionCommand(PlotCommands.CANCEL);
 			bcancel.setToolTipText(getHTML("<u>C</u>ancel plot action."));
 			bcancel.addActionListener(this);
@@ -301,6 +290,17 @@ class Toolbar extends JToolBar implements ActionListener {
 		}
 	}
 
+	private JButton getButton(final Icon icon, final String altText) {
+		final JButton rval;
+		if (icon == null) {
+			rval = new JButton(getHTML(altText));
+		} else {
+			rval = new JButton(icon);
+		}
+		return rval;
+
+	}
+
 	private String getHTML(final String body) {
 		final StringBuffer rval = new StringBuffer("<html><body>").append(body)
 				.append("</html></body>");
@@ -326,12 +326,13 @@ class Toolbar extends JToolBar implements ActionListener {
 	/**
 	 * Called by a combo box rebin selection
 	 * 
-	 * @param rebinIndex
+	 * @param index
+	 *            rebin width index from combo box list
 	 */
 	public void selectionReBin(final int index) {
 		final String ratio = REBIN_RATIOS[index];
-		double[] parameters = new double[1];
-		parameters[0] = Double.parseDouble(ratio);
+		final List<Double> parameters = Collections.singletonList(Double
+				.parseDouble(ratio));
 		if (!isSyncEvent) {
 			action.doCommand(PlotCommands.REBIN, parameters, false);
 		}
