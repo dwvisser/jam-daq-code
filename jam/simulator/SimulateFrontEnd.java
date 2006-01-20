@@ -30,6 +30,8 @@ public final class SimulateFrontEnd extends GoodThread {
 	
 	private static final int MAX_MESSAGE_SIZE = 80;
 	
+	private static final byte STRING_NULL = (byte) 0x0;
+	
 	/**
 	 * Standard informational message.
 	 */
@@ -75,9 +77,9 @@ public final class SimulateFrontEnd extends GoodThread {
 	final String FRONTEND_IP="localhost"; 
 	final int PORT_RECIEVE=6002;
 	final int PORT_SEND=6003;
-	final int PORT_SEND_HOST=6003;
+	final int PORT_SEND_HOST=5002;
 	final int PORT_DATA=6005;	
-	final int PORT_DATA_HOST=6006;
+	final int PORT_DATA_HOST=10205;
 	
 	private InetAddress addressHost=null;
 	private InetAddress addressFrontEnd=null;	
@@ -92,7 +94,7 @@ public final class SimulateFrontEnd extends GoodThread {
 	public SimulateFrontEnd()
 	{
 		System.out.println("Front End Simulator Started");		
-		start();		
+		
 	}
 	
 
@@ -202,13 +204,31 @@ public final class SimulateFrontEnd extends GoodThread {
 	private void performTask(String task) {
 		if (task.equals("START")) {
 			setRunState(true);
+			replyMessage("Performed Start");
 		} else if (task.equals("STOP")) {
 			setRunState(false);
 		}else if (task.equals("END")) {
 			setRunState(false);
 		}
 	}
-	 
+	private void replyMessage(String message)
+	{
+		final DatagramPacket packetMessage;
+		/* byte arrays initialized with zeros by definition */
+		final byte[] byteMessage = new byte[message.length() + 5];
+		byteMessage[3] = (byte) 0;// first four bytes interpreted together
+		// as this number
+		System.arraycopy(message.getBytes(), 0, byteMessage, 4, message
+				.length());
+		byteMessage[byteMessage.length - 1] = STRING_NULL;
+		packetMessage = new DatagramPacket(byteMessage, byteMessage.length,
+				addressHost, PORT_SEND_HOST);
+		try{
+		socketSend.send(packetMessage);
+		} catch (IOException e) {
+			System.out.println("Error sending packet "+e);
+		}
+	}
 	
 	/**
 	 * Thread method: is a deamon for sending data packets.
@@ -282,8 +302,11 @@ public final class SimulateFrontEnd extends GoodThread {
 	 */
 	public static void main(final String args[]) {
 		SimulateFrontEnd sfe= new SimulateFrontEnd();
-		
+
+		sfe.start();		
 		sfe.startCommunication();
+		
+		
 
 	}
 	
