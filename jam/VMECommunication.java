@@ -539,8 +539,6 @@ public class VMECommunication extends GoodThread implements
 	 * @param buffer
 	 *            packet contents passed in readable form
 	 * @return the string contained in the message
-	 * @throws JamException
-	 *             if there's a problem
 	 */
 private String unPackMessage(final ByteBuffer buffer) {
 		final StringBuilder rval = new StringBuilder();
@@ -568,8 +566,6 @@ private String unPackMessage(final ByteBuffer buffer) {
 	 * 
 	 * @param buffer
 	 *            message in readable form
-	 * @throws JamException
-	 *             if there's a problem
 	 */
 	private void unPackScalers(final ByteBuffer buffer) {
 		synchronized (this) {
@@ -594,8 +590,6 @@ private String unPackMessage(final ByteBuffer buffer) {
 	 * 
 	 * @param buffer
 	 *            message in readable form
-	 * @throws JamException
-	 *             if there's a problem
 	 */
 	private void unPackCounters(final ByteBuffer buffer) {
 		synchronized (this) {
