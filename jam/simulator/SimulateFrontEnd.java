@@ -1,6 +1,10 @@
 package jam.simulator;
 
 
+import jam.data.Scaler;
+import jam.global.BroadcastEvent;
+import jam.global.GoodThread;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -12,6 +16,9 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+
+import javax.swing.JOptionPane;
 
 /**
  * Simulator of front end
@@ -19,7 +26,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Ken Swartz
  */
-public final class SimulateFrontEnd  {
+public final class SimulateFrontEnd extends GoodThread {
 	
 	private static final int MAX_MESSAGE_SIZE = 80;
 	
@@ -62,53 +69,66 @@ public final class SimulateFrontEnd  {
 
 	private static final int MAX_PACKET_SIZE = 1024;
 	
-	final String LOCAL_HOST="localhost";
-	final String HOST_IP="localhost";
-	final String TARGET_IP="localhost"; 
-	final int PORT_RECIEVE=6002;
-	final int PORT_SEND=6003; 
+	//final String LOCAL_HOST="localhost";
 	
+	final String HOST_IP="localhost";
+	final String FRONTEND_IP="localhost"; 
+	final int PORT_RECIEVE=6002;
+	final int PORT_SEND=6003;
+	final int PORT_SEND_HOST=6003;
+	final int PORT_DATA=6005;	
+	final int PORT_DATA_HOST=6006;
+	
+	private InetAddress addressHost=null;
+	private InetAddress addressFrontEnd=null;	
+
 	private transient DatagramSocket socketSend; 
 	private transient DatagramSocket socketReceive;
+	
+	private Object isRun= new Object();
+	private boolean runState=false;
 	
 
 	public SimulateFrontEnd()
 	{
-		System.out.println("Front End Simulator Started");
-		
-		createNetworkConnections();
+		System.out.println("Front End Simulator Started");		
+		start();		
+	}
+	
 
+	public void startCommunication()
+	{
+		createNetworkConnections();
+		System.out.println("Created Sockets");
+		
 		receiveCommands();	
 	}
 	
 	private void createNetworkConnections()
 	{
-		InetAddress addressLocal=null;
+		
 		
 		try {// ceate a ports to send and receive
-			addressLocal = InetAddress.getByName(LOCAL_HOST);
+
+			addressHost = InetAddress.getByName(HOST_IP);
+			addressFrontEnd = InetAddress.getByName(FRONTEND_IP);			
 		} catch (UnknownHostException ue) {			
-			System.out.println( "Unknown local host " + LOCAL_HOST);
+			System.out.println( "Unknown local host " + FRONTEND_IP);
 			return;
 		}		
 		try {
-			socketSend = new DatagramSocket(PORT_SEND, addressLocal);
-		} catch (BindException be) {
-			System.out.println( "Problem binding send socket: ");			
-			//System.out.println( "Problem binding send socket: "+be.getMessage());
-			
+			socketSend = new DatagramSocket(PORT_SEND, addressHost);
+		} catch (BindException be) {			
+			System.out.println( "Problem binding send socket: "+be.getMessage());			
 		} catch (SocketException se) {
-			System.out.println( "Problem creating send socket ");
-			//System.out.println( "Problem creating send socket "+se.getMessage());			
+			System.out.println( "Problem creating send socket "+se.getMessage());			
 		}
 		try {
-			socketReceive = new DatagramSocket(PORT_RECIEVE, addressLocal);
+			socketReceive = new DatagramSocket(PORT_RECIEVE, addressHost);
 		} catch (BindException be) {
-			System.out.println( "Problem binding receive socket: ");
-			//System.out.println( "Problem binding receive socket: "+be.getMessage());			
+			System.out.println( "Problem binding receive socket: "+be.getMessage());			
 		} catch (SocketException se) {
-			System.out.println( "Problem creating receive socket ");
-			//System.out.println( "Problem creating receive socket "+se.getMessage());			
+			System.out.println( "Problem creating receive socket "+se.getMessage());			
 		}		
 		
 	}
@@ -124,35 +144,35 @@ public final class SimulateFrontEnd  {
 				final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 						bufferIn.length);
 				socketReceive.receive(packetIn);
-				System.out.println("Packet received");
-				final ByteArrayInputStream messageBais = new ByteArrayInputStream(packetIn.getData());
 				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn.getData());			
 				//final DataInput messageDis = new DataInputStream(messageBais);
 				final int status = byteBuffer.getInt(); 
-				if (status == OK_MESSAGE) {					
-					final String text=unPackMessage(byteBuffer);					
+				if (status == OK_MESSAGE) {					 
+					final String text=unPackMessage(byteBuffer);		 			
 					System.out.println( "Message: "+text );
+					performTask(text);
 				} else if (status == ERROR) {
 					final String text=unPackMessage(byteBuffer);					
 					System.out.println( "Error:"+text);					
 				} else if (status == SCALER) {
 					System.out.println( "Scaler:");	
 				} else if (status == CNAF) {
-					System.out.println( "CNAF: ");
+					System.out.println( "CNAF:");
 				} else if (status == COUNTER) {
-					System.out.println( "Counter");
+					System.out.println( "Counte:r");
 				} else if (status == VME_ADDRESS ){
-					System.out.println( "VME Address");
+					System.out.println( "VME Address:");
 				} else if (status == INTERVAL) {
-					System.out.println( "Message Counter");					
+					System.out.println( "Interval:");					
 				} else {
-					System.out.println( "Mesage Unknown");
+					System.out.println( "Message Unknown:");
 				}
 			}// end of receive message forever loop
 		} catch (IOException ioe) {
 			System.out.println( "Error in receiving messages");
 		}
 	}
+	
 	/**
 	 * Unpack a datagram with a message. Message packets have an ASCII character
 	 * array terminated with \0.
@@ -178,8 +198,82 @@ public final class SimulateFrontEnd  {
 		}
 		return rval.substring(0, len);
 	}
+	
+	private void performTask(String task) {
+		if (task.equals("START")) {
+			setRunState(true);
+		} else if (task.equals("STOP")) {
+			setRunState(false);
+		}else if (task.equals("END")) {
+			setRunState(false);
+		}
+	}
 	 
 	
+	/**
+	 * Thread method: is a deamon for sending data packets.
+	 */
+	public void run() {
+		System.out.println("Data Thread Started");
+		DatagramSocket socketData=null; 
+		
+		try {
+			socketData = new DatagramSocket(PORT_DATA, addressFrontEnd);
+		} catch (BindException be) {
+			System.out.println( "Problem binding data socket: "+be.getMessage());			
+		} catch (SocketException se) {
+			System.out.println( "Problem creating data socket "+se.getMessage());			
+		}		
+		
+		final byte[] bufferSend = new byte[MAX_PACKET_SIZE];
+		try {
+
+			while(true) {// loop forever 				
+				try {
+								
+					while (isRunState()) {
+						System.out.println("Data Send");
+						createData(bufferSend)	;
+						final DatagramPacket packetIn = new DatagramPacket(bufferSend, bufferSend.length, addressHost, PORT_DATA_HOST);				
+						socketData.send(packetIn);
+						sleep(1000);	//sleep for a second
+					}
+				} catch (InterruptedException ie) { 
+					System.out.println ("Thread Interruped");
+				}
+				
+			}// end of send data loop
+		} catch (IOException ioe) {
+			System.out.println("Unable to read datagram data Exception:"+ ioe);
+		} 
+	}
+	
+	private void createData(byte [] buffer)	{
+		buffer[0]=(byte)1;
+		buffer[1]=(byte)2;
+		buffer[2]=(byte)3;
+		buffer[3]=(byte)4;		
+	}
+	
+	private synchronized void setRunState(boolean state)
+	{
+		runState=state;
+		
+		if(runState) {
+			notifyAll(); 	
+		}
+	}
+	private synchronized boolean isRunState() {
+		try {		
+			if (!runState) {
+				wait();//wait till start again
+			}
+
+		} catch (InterruptedException ie) {
+			System.out.println ("Thread Interruped");
+		}
+		return runState;		
+	}
 	/**
 	 * Main method to run simulator
 	 * 
@@ -187,7 +281,10 @@ public final class SimulateFrontEnd  {
 	 *            not used currently
 	 */
 	public static void main(final String args[]) {
-		new SimulateFrontEnd();
+		SimulateFrontEnd sfe= new SimulateFrontEnd();
+		
+		sfe.startCommunication();
+
 	}
 	
 }

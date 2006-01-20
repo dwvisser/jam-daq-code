@@ -176,7 +176,12 @@ public final class JamMain extends JFrame implements Observer {
 
 	private void setLookAndFeel() {
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			String lookAndFeel= UIManager.getSystemLookAndFeelClassName();
+			//Override system look and feel for gtk
+			if (lookAndFeel.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")){
+				lookAndFeel=UIManager.getCrossPlatformLookAndFeelClassName();
+			}
+			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (Exception e) {
 			warning(e, "Jam--error setting GUI appearance");
 		}

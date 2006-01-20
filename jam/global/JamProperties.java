@@ -490,7 +490,7 @@ public class JamProperties {
 		properties.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
 				.getPath());
 		properties.setProperty(EVENT_OUTPATH,
-				(new File(userHomeDir, "presort")).getPath());
+				(new File(userHomeDir, "events")).getPath());
 		properties.setProperty(EVENT_OUTFILE, "sortout.evn");
 		properties.setProperty(TAPE_DEV, "/dev/rmt/0");
 		properties.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
