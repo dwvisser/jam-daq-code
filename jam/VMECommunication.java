@@ -339,7 +339,7 @@ public class VMECommunication extends GoodThread implements
 			}
 		}
 		temp.append('\0');
-		sendToVME(FrontEndCommunication.VME_ADDRESS, temp.toString());
+		sendToVME(PacketTypes.VME_ADDRESS, temp.toString());
 	}
 
 	/**
@@ -361,7 +361,7 @@ public class VMECommunication extends GoodThread implements
 	 *            string to send
 	 */
 	private void sendToVME(final String message) {
-		sendToVME(FrontEndCommunication.OK_MESSAGE, message);
+		sendToVME(PacketTypes.OK_MESSAGE, message);
 	}
 
 	/**
