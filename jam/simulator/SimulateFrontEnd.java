@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 
 	private static final int MAX_MESSAGE_SIZE = 80;
+	private static final int MAX_DATA_PACKET_SIZE = 8192; 
 
 	private static final byte STRING_NULL = (byte) 0x0;
 
@@ -195,7 +196,7 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 		} catch (SocketException se) {
 			LOGGER.info("Problem creating data socket " + se.getMessage());
 		}
-		final byte[] bufferSend = new byte[MAX_PACKET_SIZE];
+		final byte[] bufferSend = new byte[MAX_DATA_PACKET_SIZE];
 		try {
 			final DatagramPacket packetIn = new DatagramPacket(
 					bufferSend, bufferSend.length, addressHost,
@@ -204,7 +205,7 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 				try {
 					while (isRunState()) {
 						LOGGER.info("Data Send");
-						createData(bufferSend);
+						createDataPacket(bufferSend);
 						packetIn.setData(bufferSend, 0, bufferSend.length);
 						socketData.send(packetIn);
 						sleep(1000); // sleep for a second
@@ -219,12 +220,28 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 		}
 	}
 
-	private void createData(byte[] buffer) {
-		buffer[0] = (byte) 1;
-		buffer[1] = (byte) 2;
-		buffer[2] = (byte) 3;
-		buffer[3] = (byte) 4;
+	private void createDataPacket(byte[] buffer) {
+
+		final ByteBuffer byteBuffer= ByteBuffer.wrap(buffer);		
+		writeSimpleLOO2Events(byteBuffer);
+
 	}
+	
+	private void writeSimpleLOO2Events(final ByteBuffer byteBuffer){
+		//Write a LOO2 event with 2 data values
+		for (int i=0;i<400;i++) {
+			byteBuffer.putShort((short)0x8001);
+			byteBuffer.putShort((short)(500+i));
+			byteBuffer.putShort((short)0x8002);
+			byteBuffer.putShort((short)(500+i+4));
+			byteBuffer.putShort((short)0xFFFF);
+		}
+		byteBuffer.putShort((short)0xFFFF);		
+		byteBuffer.putShort((short)0xFFF0);
+		byteBuffer.putShort((short)0xFFF0);
+		
+	}
+	//private void writeEvent(final ByteBuffer byteBuffer)
 
 	private void setRunState(final boolean state) {
 		synchronized (this) {
