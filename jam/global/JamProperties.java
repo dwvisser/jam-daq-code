@@ -468,13 +468,13 @@ public class JamProperties {
 	 */
 	private void loadDefaultConfig() {
 		properties.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
-		properties.setProperty(HOST_IP, "calvin");
+		properties.setProperty(HOST_IP, "localhost");
 		properties.setProperty(HOST_PORT_SEND, "5003");
 		properties.setProperty(HOST_PORT_SEND, "5002");
 		properties.setProperty(HOST_PORT_RECV, "5005");
-		properties.setProperty(TARGET_IP, "hobbes");
+		properties.setProperty(TARGET_IP, "frontend");
 		properties.setProperty(TARGET_PORT, "5002");
-		properties.setProperty(HOST_DATA_IP, "calvin-data");
+		properties.setProperty(HOST_DATA_IP, "localhost-data");
 		properties.setProperty(HOST_DATA_PORT_RECV, "10205");
 	}
 

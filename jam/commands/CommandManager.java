@@ -105,6 +105,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
 		CMD_MAP.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
 		CMD_MAP.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
+		CMD_MAP.put(SHOW_CONFIGURATION, ShowDialogConfiguration.class);
 		/* View menu */
 		CMD_MAP.put(SHOW_VIEW_NEW, ShowDialogAddView.class);
 		CMD_MAP.put(SHOW_VIEW_DELETE, ShowDialogDeleteView.class);

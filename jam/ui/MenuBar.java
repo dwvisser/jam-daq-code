@@ -141,6 +141,7 @@ public final class MenuBar implements Observer, CommandNames {
 		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
 		setup.add(getMenuItem(SHOW_SETUP_OFFLINE));
 		setup.add(getMenuItem(SHOW_SETUP_REMOTE));
+		setup.add(getMenuItem(SHOW_CONFIGURATION));
 		return setup;
 	}
 

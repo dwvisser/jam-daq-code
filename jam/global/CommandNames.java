@@ -186,6 +186,9 @@ public interface CommandNames {
 	/** Show the offline sorting setup dialog. */
 	String SHOW_SETUP_REMOTE="showSetupRemote";
 
+	/** Show the configuration dialog. */
+	String SHOW_CONFIGURATION="showConfiguration";
+	
 	/** Show the dialog with event and buffer counts.*/
 	String SHOW_BUFFER_COUNT="showCounters";
 	
