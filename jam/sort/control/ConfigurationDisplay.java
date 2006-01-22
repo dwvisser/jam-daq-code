@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.*;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -81,16 +82,26 @@ public class ConfigurationDisplay extends JDialog {
 	 * @return jam properties as a formatted string
 	 */
 	private String propertyString() {
+		
+		List<String> keys= new ArrayList<String>(); 
 		StringBuffer strBuffProperties = new StringBuffer();
-		Properties properties = JamProperties.getProperties();
+		
+		Properties properties = JamProperties.getProperties(); 
 		Enumeration names = properties.propertyNames();
+		
 		while(names.hasMoreElements()){
-			String name=(String)names.nextElement();
-			String value = properties.getProperty(name);
-			strBuffProperties.append(name+" = "+value+"\n");
-
+			String key=(String)names.nextElement();
+			keys.add(key);
 		}
 		
+		Collections.sort(keys);
+		
+		 for(String key : keys) {
+				String value = properties.getProperty(key);
+				String entry=key+" = "+value+"\n";			 
+				strBuffProperties.append(entry);				
+		 }
+
 		return strBuffProperties.toString();
 		 
 	}
