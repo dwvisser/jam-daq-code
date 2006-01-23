@@ -345,6 +345,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		// enable end button, display run number
 		endAction.setEnabled(true);
 		beginAction.setEnabled(false);
+		setLockControls(true);
 		STATUS.setRunState(RunState.runOnline(runNumber));
 		if (device == Device.DISK) {
 			LOGGER.info("Began run " + runNumber
@@ -356,6 +357,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		netDaemon.setEmptyBefore(false);// fresh slate
 		netDaemon.setState(State.RUN);
 		vmeComm.startAcquisition();// VME start last because other thread have
+
 		// higher priority
 	}
 
@@ -371,7 +373,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		RunInfo.runEndTime = new Date();
 		vmeComm.end(); // stop Acq. flush buffer
 		vmeComm.readScalers(); // read scalers
-		endAction.setEnabled(false); // toggle button states
+
 		STATUS.setRunState(RunState.ACQ_OFF);
 		LOGGER.info("Ending run " + runNumber
 				+ ", waiting for sorting to finish.");
@@ -409,7 +411,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		runNumber++;// increment run number
 		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);
-		beginAction.setEnabled(true);// set begin button state for next run
+		endAction.setEnabled(false); // toggle button states
+		beginAction.setEnabled(true);// set begin button state for next run		
+		setLockControls(false);
 	}
 
 	/**
@@ -473,6 +477,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 * appropriate method.
 	 */
 	public void startAcq() {
+
 		netDaemon.setState(State.RUN);
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
@@ -508,10 +513,20 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			beginAction.setEnabled(true);// since it was disabled during
 			// start
 		}
+
 		LOGGER.warning("Stopped Acquisition...if you are doing a run, "
 				+ "you will need to start again before clicking \"End Run\".");
 	}
-
+	private void setLockControls(boolean state)
+	{
+		 boolean enable=!state;
+		 //tRunNumber.setEnabled(enable);
+		 tRunNumber.setEditable(enable);
+		 //textRunTitle.setEnabled(enable); 
+		 textRunTitle.setEditable(enable);
+		 cHistZero.setEnabled(enable);
+		 zeroScalers.setEnabled(enable);
+	}
 	private boolean storageCaughtUp() {
 		final boolean rval = device == Device.FRONT_END ? true : diskDaemon
 				.caughtUpOnline();
