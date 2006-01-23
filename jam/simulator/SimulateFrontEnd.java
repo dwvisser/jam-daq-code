@@ -240,6 +240,13 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 		byteBuffer.putShort((short)0xFFF0);
 		byteBuffer.putShort((short)0xFFF0);
 		
+		//Pad buffer
+		int pos = byteBuffer.position();		
+		for (int i=pos; i<MAX_DATA_PACKET_SIZE;i+=2){
+			byteBuffer.putShort((short)0xFFF0);
+		}
+			
+		
 	}
 	//private void writeEvent(final ByteBuffer byteBuffer)
 
