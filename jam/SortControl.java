@@ -161,7 +161,6 @@ public final class SortControl extends JDialog implements Controller {
 
 		textOutFile = new JTextField(eventDefault + File.separator + outDefault);
 		textOutFile.setColumns(28);
-		textOutFile.setEnabled(false);
 		pout.add(textOutFile);
 
 		bbrowse = new JButton("Browse..");
@@ -170,7 +169,6 @@ public final class SortControl extends JDialog implements Controller {
 				textOutFile.setText(getOutFile().getPath());
 			}
 		});
-		bbrowse.setEnabled(false);
 		pout.add(bbrowse);
 
 		// panel with begin and end bottoms
@@ -184,6 +182,10 @@ public final class SortControl extends JDialog implements Controller {
 		lastFile = new File(eventDefault); // default directory
 		writeEvents = false; // don't write out events
 		pack();
+		//Inital state
+		//cout is false
+		lockFields(false);
+		setWriteEvents(cout.isSelected());
 	}
 
 	/*
@@ -383,9 +385,14 @@ public final class SortControl extends JDialog implements Controller {
 	 * to unlock fields
 	 */
 	private void lockFields(final boolean lock) {
+		final boolean notLock = !lock;		
 		multiFile.setLocked(lock);
-		final boolean notLock = !lock;
-		textOutFile.setEditable(notLock);
+
+		//textOutFile.setEditable(notLock);
+		if (cout.isSelected()) {
+			textOutFile.setEnabled(notLock);
+			bbrowse.setEnabled(notLock);
+		}
 		cout.setEnabled(notLock);
 	}
 
@@ -464,6 +471,7 @@ public final class SortControl extends JDialog implements Controller {
 	}
 
 	void setWriteEvents(final boolean state) {
+		textOutFile.setEditable(state);
 		textOutFile.setEnabled(state);
 		bbrowse.setEnabled(state);
 		writeEvents = state;

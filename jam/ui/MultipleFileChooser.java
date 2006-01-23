@@ -160,12 +160,13 @@ public final class MultipleFileChooser extends JPanel {
 	 *            <code>true</code> to enable the buttons
 	 */
 	public void setLocked(final boolean state) {
-		bAddfile.setEnabled(state);
-		bAddDir.setEnabled(state);
-		bRemove.setEnabled(state);
-		bRemoveAll.setEnabled(state);
-		bLoadList.setEnabled(state);
-		bSaveList.setEnabled(state);
+		boolean enabled = !state;
+		bAddfile.setEnabled(enabled);
+		bAddDir.setEnabled(enabled);
+		bRemove.setEnabled(enabled);
+		bRemoveAll.setEnabled(enabled);
+		bLoadList.setEnabled(enabled);
+		bSaveList.setEnabled(enabled);
 	}
 
 	/**
