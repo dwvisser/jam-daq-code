@@ -341,7 +341,7 @@ public final class JamStatus {
 	/**
 	 * Gets the current histogram.
 	 * 
-	 * @return the current histogram
+	 * @return the current histogram, or the singleton instance of the class <code>UnNamed</code>
 	 */
 	public Nameable getCurrentHistogram() {
 		synchronized (this) {
