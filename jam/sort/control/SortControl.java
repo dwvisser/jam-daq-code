@@ -183,14 +183,18 @@ public final class SortControl extends JDialog implements Controller {
 		lastFile = new File(eventDefault); // default directory
 		writeEvents = false; // don't write out events
 		pack();
-		//Inital state
-		//cout is false
+		// Inital state
+		// cout is false
 		lockFields(false);
 		setWriteEvents(cout.isSelected());
 	}
 
-	/*
-	 * non-javadoc: For scripting
+	/**
+	 * For scripting.
+	 * 
+	 * @param file
+	 *            to add to files to sort, recurses if folder
+	 * @return number of files added
 	 */
 	public int addEventFile(final File file) {
 		int numFiles = 0;
@@ -386,10 +390,10 @@ public final class SortControl extends JDialog implements Controller {
 	 * to unlock fields
 	 */
 	private void lockFields(final boolean lock) {
-		final boolean notLock = !lock;		
+		final boolean notLock = !lock;
 		multiFile.setLocked(lock);
 
-		//textOutFile.setEditable(notLock);
+		// textOutFile.setEditable(notLock);
 		if (cout.isSelected()) {
 			textOutFile.setEnabled(notLock);
 			bbrowse.setEnabled(notLock);
@@ -424,8 +428,12 @@ public final class SortControl extends JDialog implements Controller {
 		return sortNext;
 	}
 
-	/*
-	 * non-javadoc: For scripting.
+	/**
+	 * Scripting. Reads a list of event files from a text file.
+	 * 
+	 * @param file
+	 *            with list of event files
+	 * @return number of files added
 	 */
 	public int readList(final File file) {
 		int numFiles = 0;
@@ -446,6 +454,12 @@ public final class SortControl extends JDialog implements Controller {
 		return numFiles;
 	}
 
+	/**
+	 * For scripting, sets an event output file for pre-sorting.
+	 * 
+	 * @param file
+	 *            for pre-sorted events to go to
+	 */
 	public void setEventOutput(final File file) {
 		outDirectory = file;
 		textOutFile.setText(file.getAbsolutePath());

@@ -374,6 +374,14 @@ public final class SetupSortOff extends AbstractSetup {
 		lockMode(true);
 	}
 
+	/**
+	 * Provided so setup offline sort can be scriptable.
+	 * 
+	 * @param classPath path to sort routine classpath base
+	 * @param sortName name of sort routine class
+	 * @param inStream event input stream class
+	 * @param outStream event output stream class
+	 */
 	public void setupSort(final File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
 		setSortClassPath(classPath);

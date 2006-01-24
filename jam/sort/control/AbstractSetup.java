@@ -21,7 +21,6 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +46,10 @@ import javax.swing.JToggleButton;
  */
 abstract class AbstractSetup {
 
-	protected static final Logger LOGGER = Logger.getLogger("jam");
+	/**
+	 * All text message output goes to this object.
+	 */
+	protected static final Logger LOGGER = Logger.getLogger("jam.sort.control");
 
 	/**
 	 * Handle to event broadcaster.
@@ -74,10 +76,9 @@ abstract class AbstractSetup {
 	 *            name of class to try to select
 	 */
 	protected static void selectName(final JComboBox jcb,
-			final Collection collection, final String defInStream) {
-		final Iterator iter = collection.iterator();
-		while (iter.hasNext()) {
-			final Class clazz = (Class) iter.next();
+			final Collection<Class<?>> collection, final String defInStream) {
+		//final Iterator iter = collection.iterator();
+		for (Class clazz : collection) {
 			final String name = clazz.getName();
 			final boolean match = name.equals(defInStream);
 			if (match) {
@@ -139,7 +140,7 @@ abstract class AbstractSetup {
 	/**
 	 * Last select path
 	 */
-	protected String lastSortPath="";
+	protected transient String lastSortPath="";
 
 	AbstractSetup(String dialogName) {
 		super();
@@ -282,7 +283,7 @@ abstract class AbstractSetup {
 					/ (1024.0 * 1024.0);
 			message.append(megabytes).append(" MB.");
 			throw new JamException(message.toString(), thrown);
-		} catch (Throwable thrown) {
+		} catch (Throwable thrown) {//NOPMD
 			message
 					.append("Couldn't load ")
 					.append(sortName)

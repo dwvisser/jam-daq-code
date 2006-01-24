@@ -431,19 +431,19 @@ public final class SetupSortOn extends AbstractSetup {
 		final boolean notlock = !lock;
 		checkLock.setEnabled(lock);
 		textExpName.setEnabled(notlock);
-		
+
 		inChooser.setEnabled(notlock);
 		outChooser.setEnabled(notlock);
 		sortChoice.setEnabled(notlock);
 		textExpName.setEditable(notlock);
-		
-		textPathHist.setEditable(notlock); 
+
+		textPathHist.setEditable(notlock);
 		textPathData.setEditable(notlock);
 		textPathLog.setEditable(notlock);
-		textPathHist.setEnabled(notlock); 
+		textPathHist.setEnabled(notlock);
 		textPathData.setEnabled(notlock);
-		textPathLog.setEnabled(notlock);		
-		
+		textPathLog.setEnabled(notlock);
+
 		cdisk.setEnabled(notlock);
 		bok.setEnabled(notlock);
 		bapply.setEnabled(notlock);
@@ -454,8 +454,13 @@ public final class SetupSortOn extends AbstractSetup {
 		defaultPath.setEnabled(notlock);
 		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
-		final String name = sortRoutine == null ? "No Data" : sortRoutine
-				.getClass().getName();
+		final String name;
+		if (sortRoutine == null) {
+			// instead of conditional assign to avoid PMD warning
+			name = "No Data";
+		} else {
+			name = sortRoutine.getClass().getName();
+		}
 		STATUS.setSortMode(sortMode, name);
 		bbrowsef.setEnabled(notlock && specify.isSelected());
 		checkLock.setSelected(lock);
