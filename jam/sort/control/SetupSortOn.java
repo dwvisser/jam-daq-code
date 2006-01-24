@@ -367,9 +367,14 @@ public final class SetupSortOn extends AbstractSetup {
 
 	protected void doApply(final boolean dispose) {
 		try {
+			if (!loadNames()) {
+				LOGGER.info("Cannot load sort as not all directories exist.");
+				return;
+			}
+
 			/* lock setup so fields cant be edited */
 			if (STATUS.canSetup()) {
-				loadNames();
+
 				if (clog.isSelected()) { // if needed start logging to file
 					final File logPathTry = new File(textPathLog.getText(),
 							exptName);
@@ -423,8 +428,46 @@ public final class SetupSortOn extends AbstractSetup {
 	 * Save the names of the experiment, the sort file and the event and
 	 * histogram directories.
 	 */
-	private void loadNames() {
+	private boolean loadNames() {
 		exptName = textExpName.getText().trim();
+		//Check directories exist
+		return checkDirectories();
+		
+
+	}
+	private boolean checkDirectories() {
+		
+		dataFolder= new File(textPathData.getText());		
+		histFolder = new File(textPathHist.getText());
+		logDirectory= new File(textPathLog.getText());
+		return (checkDir(dataFolder) 
+		        && checkDir(histFolder)
+				&& checkDir(logDirectory));
+
+	}
+	private boolean checkDir(File path) {
+		boolean exists;
+		if (path.exists() && path.isDirectory() ) {
+			exists=true;
+ 
+		} else {
+			if (!path.isDirectory()) {
+				final boolean confirm = (JOptionPane.showConfirmDialog(
+						dialog, "Create Directory :\n" + path.getAbsolutePath(),
+						"Directory does not Exist", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+				if (confirm) {
+					path.mkdir();
+					exists=true;
+				} else {
+					exists=false;
+				}
+			} else {
+				exists=false;
+			}
+			
+		}
+		return exists;
+		
 	}
 
 	protected void lockMode(final boolean lock) {
@@ -498,6 +541,7 @@ public final class SetupSortOn extends AbstractSetup {
 	}
 
 	protected void setupSort() throws SortException, JamException {
+		//
 		initializeSorter();
 		/* interprocess buffering between daemons */
 		final RingBuffer sortingRing = new RingBuffer();
@@ -564,7 +608,6 @@ public final class SetupSortOn extends AbstractSetup {
 		sortDaemon.start();
 		netDaemon.start();
 	}
-
 	private void setupVMEmap() throws JamException {
 		frontEnd.setupAcquisition();
 		final VME_Map map = sortRoutine.getVMEmap();
