@@ -42,8 +42,50 @@ import java.util.logging.Logger;
  * @version 1.4
  * @since 0.5 17 January 1999
  */
-public class JamProperties {
-	private static final Logger LOGGER = Logger.getLogger("jam.global");
+public final class JamProperties {
+	private static final String classname = "jam.global.JamProperties";
+
+	/**
+	 * Set <code>true</code> to default to the classpath used to launch Jam
+	 * instead of a given sort classpath.
+	 */
+	public final static String DEFAULT_SORT_CLASSPATH = "default";
+
+	/**
+	 * Default path to look in for event files to sort offline.
+	 */
+	public final static String EVENT_INPATH = "event.inpath";
+
+	/**
+	 * Fully qualified name of the default <code>EventInputStream</code>.
+	 * 
+	 * @see jam.sort.stream.AbstractEventInputStream
+	 */
+	public final static String EVENT_INSTREAM = "event.instream";
+
+	/**
+	 * Filename to use when writing a pre-sorted event file.
+	 */
+	public final static String EVENT_OUTFILE = "event.outfile";
+
+	/**
+	 * Default path to use for writing event files.
+	 */
+	public final static String EVENT_OUTPATH = "event.outpath";
+
+	/**
+	 * Fully qualified name of the default <code>EventOutputStream</code>.
+	 * 
+	 * @see jam.sort.stream.AbstractEventOutputStream
+	 */
+	public final static String EVENT_OUTSTREAM = "event.outstream";
+
+	/**
+	 * Default experiment name to use when naming data files.
+	 */
+	public final static String EXP_NAME = "exp.name";
+
+	private static final String FALSE = Boolean.toString(false);
 
 	/**
 	 * Machine configuration file name
@@ -56,36 +98,11 @@ public class JamProperties {
 	static final String FILE_USER = "JamUser.ini";
 
 	/**
-	 * Path to search for <code>JamConfig.ini</code>
-	 */
-	public final static String JAM_HOME = "jam.home";
-
-	/**
-	 * IP address of the socket used to communicate with the front end.
+	 * Default path for saving HDF files.
 	 * 
-	 * @see jam.FrontEndCommunication
+	 * @see jam.io.hdf.HDFIO
 	 */
-	public final static String HOST_IP = "host.IP";
-
-	/**
-	 * Port number for sending messages to the front end.
-	 */
-	public final static String HOST_PORT_SEND = "host.portSend";
-
-	/**
-	 * Port number for recieving messages from the front end.
-	 */
-	public final static String HOST_PORT_RECV = "host.portRecv";
-
-	/**
-	 * Front end's IP address for communicating with Jam.
-	 */
-	public final static String TARGET_IP = "target.IP";
-
-	/**
-	 * Front end's port number for communciating with Jam.
-	 */
-	public final static String TARGET_PORT = "target.port";
+	public final static String HIST_PATH = "hist.path";
 
 	/**
 	 * IP address of the socket used to receive data from the front end.
@@ -98,9 +115,51 @@ public class JamProperties {
 	public final static String HOST_DATA_PORT_RECV = "host-data.portRecv";
 
 	/**
-	 * Default experiment name to use when naming data files.
+	 * IP address of the socket used to communicate with the front end.
+	 * 
+	 * @see jam.FrontEndCommunication
 	 */
-	public final static String EXP_NAME = "exp.name";
+	public final static String HOST_IP = "host.IP";
+
+	/**
+	 * Port number for recieving messages from the front end.
+	 */
+	public final static String HOST_PORT_RECV = "host.portRecv";
+
+	/**
+	 * Port number for sending messages to the front end.
+	 */
+	public final static String HOST_PORT_SEND = "host.portSend";
+
+	/**
+	 * Path to search for <code>JamConfig.ini</code>
+	 */
+	public final static String JAM_HOME = "jam.home";
+
+	/**
+	 * Default path to the folder for writing out the console log.
+	 */
+	public final static String LOG_PATH = "log.path";
+
+	private static final Logger LOGGER = Logger.getLogger("jam.global");
+
+	private static boolean macosx = false;
+
+	private final static String NO_ERRORS = "No error messages.";
+
+	private final static String NO_WARNINGS = "No warning messages.";
+
+	private static String operatingSystem = null;
+
+	/**
+	 * Jam properties
+	 */
+	private static Properties properties = new Properties();
+
+	/**
+	 * Path to search for and load sort routines.
+	 */
+	public final static String SORT_CLASSPATH = "sort.classpath";
 
 	/**
 	 * Fully qualified name of the default sort routine.
@@ -110,125 +169,29 @@ public class JamProperties {
 	public final static String SORT_ROUTINE = "sort.routine";
 
 	/**
-	 * Path to search for and load sort routines.
+	 * Front end's IP address for communicating with Jam.
 	 */
-	public final static String SORT_CLASSPATH = "sort.classpath";
+	public final static String TARGET_IP = "target.IP";
 
 	/**
-	 * Set <code>true</code> to default to the classpath used to launch Jam
-	 * instead of a given sort classpath.
+	 * Front end's port number for communciating with Jam.
 	 */
-	public final static String DEFAULT_SORT_CLASSPATH = "default";
+	public final static String TARGET_PORT = "target.port";
+
+	private static final String TRUE = Boolean.toString(true);
+
+	private static final String userHomeDir = System.getProperty("user.home");
 
 	/**
-	 * Fully qualified name of the default <code>EventInputStream</code>.
+	 * Get the value of a boolean property.
 	 * 
-	 * @see jam.sort.stream.AbstractEventInputStream
+	 * @param key
+	 *            the name of the property
+	 * @return <code>true</code> if equal to
+	 *         <code>Boolean.toString(true)</code>
 	 */
-	public final static String EVENT_INSTREAM = "event.instream";
-
-	/**
-	 * Fully qualified name of the default <code>EventOutputStream</code>.
-	 * 
-	 * @see jam.sort.stream.AbstractEventOutputStream
-	 */
-	public final static String EVENT_OUTSTREAM = "event.outstream";
-
-	/**
-	 * Default path to look in for event files to sort offline.
-	 */
-	public final static String EVENT_INPATH = "event.inpath";
-
-	/**
-	 * Default path to use for writing event files.
-	 */
-	public final static String EVENT_OUTPATH = "event.outpath";
-
-	/**
-	 * Filename to use when writing a pre-sorted event file.
-	 */
-	public final static String EVENT_OUTFILE = "event.outfile";
-
-	/**
-	 * Default path for saving HDF files.
-	 * 
-	 * @see jam.io.hdf.HDFIO
-	 */
-	public final static String HIST_PATH = "hist.path";
-
-	/**
-	 * Default path to a tape device. This will probably never be used.
-	 * 
-	 * @deprecated
-	 */
-	public final static String TAPE_DEV = "tape.dev";
-
-	/**
-	 * Default path to the folder for writing out the console log.
-	 */
-	public final static String LOG_PATH = "log.path";
-
-	private final static String NO_ERRORS = "No error messages.";
-
-	private final static String NO_WARNINGS = "No warning messages.";
-
-	private String userHomeDir = System.getProperty("user.home");
-
-	final String userCurrentDir = System.getProperty("user.dir");
-
-	private static String os = null;
-
-	private static boolean macosx = false;
-
-	/**
-	 * Jam properties
-	 */
-	private static Properties properties = new Properties();
-
-	/** file jam config properties read from */
-	private File configFile;
-
-	/** file user properties read from */
-	private File userFile;
-
-	/** */
-	private boolean jamHomeDefined;
-
-	/** message for loading config */
-	private String configLoadMessage;
-
-	/** message for loading user config */
-	private String userLoadMessage;
-
-	/** warning when loading config */
-	private String configLoadWarning;
-
-	/** warning when loading user */
-	private String userLoadWarning;
-
-	private String loadError;
-
-	/** */
-	//private static MessageHandler msgHandler;
-
-	/**
-	 * Constructor
-	 */
-	public JamProperties() {
-		loadProperties();
-	}
-
-	/**
-	 * Returns whether we are running on MacOS X.
-	 * 
-	 * @return <code>true</code> if the operating system is MacOS X
-	 */
-	public static boolean isMacOSX() {
-		if (os == null) {
-			os = System.getProperty("os.name");
-			macosx = os.equals("Mac OS X");
-		}
-		return macosx;
+	static public boolean getBooleanProperty(final String key) {
+		return properties.getProperty(key).equals(TRUE);
 	}
 
 	/**
@@ -241,27 +204,9 @@ public class JamProperties {
 	/**
 	 * @param key
 	 *            which property to retrieve
-	 * @return the value for the given property
-	 */
-	public static String getPropString(String key) {
-		String rval = "undefined";// default return value
-		if (properties.getProperty(key) != null) {
-			rval = properties.getProperty(key).trim();
-		} else {
-			LOGGER.warning(classname + ".getPropString(): property for " + key
-					+ " is not defined.");
-		}
-		return rval;
-	}
-
-	private static final String classname = "jam.global.JamProperties";
-
-	/**
-	 * @param key
-	 *            which property to retrieve
 	 * @return the integer value of the property
 	 */
-	public static int getPropInt(String key) {
+	public static int getPropInt(final String key) {
 		int rval = 0;// default return value
 		try {
 			if (properties.getProperty(key) == null) {
@@ -279,26 +224,71 @@ public class JamProperties {
 	}
 
 	/**
-	 * Load the local specific properties from files, using defaults if
-	 * necessary.
+	 * @param key
+	 *            which property to retrieve
+	 * @return the value for the given property
 	 */
-	private final void loadProperties() {
-
-		if (System.getProperty(JAM_HOME) != null) {
-			jamHomeDefined = true;
+	public static String getPropString(final String key) {
+		String rval = "undefined";// default return value
+		final String property = properties.getProperty(key);
+		if (property == null) {
+			LOGGER.warning(classname + ".getPropString(): property for " + key
+					+ " is not defined.");
 		} else {
-			jamHomeDefined = false;
+			rval = property.trim();
 		}
+		return rval;
+	}
 
-		// load default configuration
-		loadDefaultConfig();
-		// load default user
-		loadDefaultUser();
-		// load config
-		loadConfig();
-		// load user
-		loadUser();
+	/**
+	 * Returns whether we are running on MacOS X.
+	 * 
+	 * @return <code>true</code> if the operating system is MacOS X
+	 */
+	public static boolean isMacOSX() {
+		if (operatingSystem == null) {
+			operatingSystem = System.getProperty("os.name");
+			macosx = operatingSystem.equals("Mac OS X");
+		}
+		return macosx;
+	}
 
+	/**
+	 * Set a boolean property.
+	 * 
+	 * @param key
+	 *            the name of the property
+	 * @param val
+	 *            the new value
+	 */
+	static public void setProperty(final String key, final boolean val) {
+		properties.setProperty(key, val ? TRUE : FALSE);
+	}
+
+	/** message for loading config */
+	private transient String configLoadMessage;
+
+	/** warning when loading config */
+	private transient String configLoadWarning;
+
+	private transient boolean jamHomeDefined;
+
+	private transient String loadError;
+
+	transient final String userCurrentDir = System.getProperty("user.dir");
+
+	/** message for loading user config */
+	private transient String userLoadMessage;
+
+	/** warning when loading user */
+	private transient String userLoadWarning;
+
+	/**
+	 * Constructor
+	 */
+	public JamProperties() {
+		super();
+		loadProperties();
 	}
 
 	/**
@@ -337,7 +327,7 @@ public class JamProperties {
 			}
 			// try userCurrentDir no jam.home defined
 			if (!fileRead) {
-				configFile = new File(userCurrentDir, FILE_CONFIG);
+				final File configFile = new File(userCurrentDir, FILE_CONFIG);
 				fileName = configFile.getPath();
 				if (configFile.exists()) {
 					fis = new FileInputStream(configFile);
@@ -364,20 +354,67 @@ public class JamProperties {
 	}
 
 	/**
+	 * Load default configuration properties.
+	 */
+	private void loadDefaultConfig() {
+		properties.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
+		properties.setProperty(HOST_IP, "localhost");
+		properties.setProperty(HOST_PORT_SEND, "5003");
+		properties.setProperty(HOST_PORT_SEND, "5002");
+		properties.setProperty(HOST_PORT_RECV, "5005");
+		properties.setProperty(TARGET_IP, "frontend");
+		properties.setProperty(TARGET_PORT, "5002");
+		properties.setProperty(HOST_DATA_IP, "localhost-data");
+		properties.setProperty(HOST_DATA_PORT_RECV, "10205");
+	}
+
+	/**
+	 * Load default user properties.
+	 */
+	private void loadDefaultUser() {
+		properties.setProperty(EXP_NAME, "default_");
+		properties.setProperty(SORT_ROUTINE, "jam.sort.Example");
+		properties.setProperty(SORT_CLASSPATH, DEFAULT_SORT_CLASSPATH);
+		properties.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
+				.getPath());
+		properties.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
+				.getPath());
+		properties.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
+				.getPath());
+		properties.setProperty(EVENT_OUTFILE, "sortout.evn");
+		properties.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
+		properties.setProperty(EVENT_INSTREAM,
+				"jam.sort.stream.YaleCAEN_InputStream");
+		properties.setProperty(EVENT_OUTSTREAM,
+				"jam.sort.stream.YaleOutputStream");
+	}
+
+	/**
+	 * Load the local specific properties from files, using defaults if
+	 * necessary.
+	 */
+	private void loadProperties() {
+		jamHomeDefined = (System.getProperty(JAM_HOME) != null);
+		loadDefaultConfig();
+		loadDefaultUser();
+		loadConfig();
+		loadUser();
+
+	}
+
+	/**
 	 * read in user jam properties try user.home from JamConfig.ini first
 	 * 
 	 */
 	private void loadUser() {
-
 		userLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
 		String fileName = "";
 		FileInputStream fis;
 		boolean fileRead = false;
-
 		try {
 			// try userHomeDir
-			userFile = new File(userHomeDir, FILE_USER);
+			File userFile = new File(userHomeDir, FILE_USER);
 			fileName = userFile.getPath();
 			if (userFile.exists()) {
 				fis = new FileInputStream(userFile);
@@ -387,7 +424,6 @@ public class JamProperties {
 				fileRead = true;
 
 			}
-
 			// try userCurrentDir
 			if (!fileRead) {
 				userFile = new File(userCurrentDir, FILE_USER);
@@ -433,23 +469,14 @@ public class JamProperties {
 		}
 	}
 
-	private void showErrorMessage(final Exception exception, final String extra) {
-		final String message = exception.getMessage() + "; " + extra;
-		LOGGER.severe(classname + "--" + message);
-	}
-
 	/**
 	 * Request to print output messages to console.
-	 * 
-	 * @param console
-	 *            the console
 	 */
 	public void outputMessages() {
-
 		if (!jamHomeDefined) {
-			LOGGER.warning("Jam home variable not defined, to define use -Djam.home=<directory>");
+			LOGGER
+					.warning("Jam home variable not defined, to define use -Djam.home=<directory>");
 		}
-
 		if (loadError != NO_ERRORS) {
 			LOGGER.warning(loadError);
 		}
@@ -463,72 +490,8 @@ public class JamProperties {
 		LOGGER.info(userLoadMessage);
 	}
 
-	/**
-	 * Load default configuration properties.
-	 */
-	private void loadDefaultConfig() {
-		properties.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
-		properties.setProperty(HOST_IP, "localhost");
-		properties.setProperty(HOST_PORT_SEND, "5003");
-		properties.setProperty(HOST_PORT_SEND, "5002");
-		properties.setProperty(HOST_PORT_RECV, "5005");
-		properties.setProperty(TARGET_IP, "frontend");
-		properties.setProperty(TARGET_PORT, "5002");
-		properties.setProperty(HOST_DATA_IP, "localhost-data");
-		properties.setProperty(HOST_DATA_PORT_RECV, "10205");
-	}
-
-	/**
-	 * Load default user properties.
-	 */
-	private void loadDefaultUser() {
-		properties.setProperty(EXP_NAME, "default_");
-		properties.setProperty(SORT_ROUTINE, "jam.sort.Example");
-		properties.setProperty(SORT_CLASSPATH, DEFAULT_SORT_CLASSPATH);
-		properties.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
-				.getPath());
-		properties.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
-				.getPath());
-		properties.setProperty(EVENT_OUTPATH,
-				(new File(userHomeDir, "events")).getPath());
-		properties.setProperty(EVENT_OUTFILE, "sortout.evn");
-		properties.setProperty(TAPE_DEV, "/dev/rmt/0");
-		properties.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
-		properties.setProperty(EVENT_INSTREAM,
-				"jam.sort.stream.YaleCAEN_InputStream");
-		properties.setProperty(EVENT_OUTSTREAM,
-				"jam.sort.stream.YaleOutputStream");
-	}
-
-	private static final String TRUE = Boolean.toString(true);
-
-	private static final String FALSE = Boolean.toString(false);
-
-	/**
-	 * Set a boolean property.
-	 * 
-	 * @param key
-	 *            the name of the property
-	 * @param val
-	 *            the new value
-	 */
-	static public void setProperty(String key, boolean val) {
-		if (val) {
-			properties.setProperty(key, TRUE);
-		} else {
-			properties.setProperty(key, FALSE);
-		}
-	}
-
-	/**
-	 * Get the value of a boolean property.
-	 * 
-	 * @param key
-	 *            the name of the property
-	 * @return <code>true</code> if equal to
-	 *         <code>Boolean.toString(true)</code>
-	 */
-	static public boolean getBooleanProperty(String key) {
-		return properties.getProperty(key).equals(TRUE);
+	private void showErrorMessage(final Exception exception, final String extra) {
+		final String message = exception.getMessage() + "; " + extra;
+		LOGGER.severe(classname + "--" + message);
 	}
 }
