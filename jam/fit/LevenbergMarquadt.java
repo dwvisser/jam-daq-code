@@ -13,7 +13,7 @@ import java.util.List;
  * @author  Dale Visser
  * @version 0.5, 8/28/98
  *
- * @see	NonLinearFit
+ * @see	AbstractNonLinearFit
  * @see GaussianFit
  */
 final class LevenbergMarquadt {
@@ -41,7 +41,7 @@ final class LevenbergMarquadt {
 	/**
 	 * reference to NonLinearFit object
 	 */
-	private NonLinearFit nonLinFit;
+	private AbstractNonLinearFit nonLinFit;
 
 	/**
 	 * proportional to second derivative of chi-squared with respect to parameters
@@ -143,7 +143,8 @@ final class LevenbergMarquadt {
 	 *
 	 * @param	nlf the parent <code>NonLinearFit</code> object creating this
 	 */
-	public LevenbergMarquadt(NonLinearFit nlf) {
+	public LevenbergMarquadt(AbstractNonLinearFit nlf) {
+		super();
 		nonLinFit = nlf;
 		messages = nlf.getTextInfo();
 		List<Parameter> temp2 = new ArrayList<Parameter>();
@@ -155,12 +156,7 @@ final class LevenbergMarquadt {
 				}
 			}
 		}
-		parameters = new Parameter[temp2.size()];
-		int i=0;
-		for (Parameter element : temp2) {
-			parameters[i] = element;
-			i++;
-		}
+		parameters = temp2.toArray(new Parameter[temp2.size()]);
 		nPar = parameters.length;
 	}
 
@@ -191,7 +187,7 @@ final class LevenbergMarquadt {
 	 * @see	    #FIRST_ITERATION
 	 * @see	    #NEXT_ITERATION
 	 * @see	    #LAST_ITERATION
-	 * @see	    NonLinearFit#doFit
+	 * @see	    AbstractNonLinearFit#doFit
 	 */
 	public void iterate(int iteration) throws Exception {
 		int j, l;

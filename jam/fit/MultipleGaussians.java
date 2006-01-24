@@ -18,9 +18,9 @@ import java.util.TreeSet;
  * @author  Dale Visser
  * @version 0.5, 8/31/98
  *
- * @see	    NonLinearFit
+ * @see	    AbstractNonLinearFit
  */
-public class MultipleGaussians extends NonLinearFit implements GaussianConstants{
+public class MultipleGaussians extends AbstractNonLinearFit implements GaussianConstants{
 
 	/**
 	 * function <code>Parameter</code>--constant background term

@@ -16,9 +16,9 @@ import java.util.Arrays;
  * @author Dale Visser
  * @version 0.5, 8/31/98
  * 
- * @see NonLinearFit
+ * @see AbstractNonLinearFit
  */
-public final class GaussianFit extends NonLinearFit implements
+public final class GaussianFit extends AbstractNonLinearFit implements
         GaussianConstants {
 
     /**

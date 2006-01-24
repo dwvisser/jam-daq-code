@@ -22,7 +22,7 @@ import java.util.Vector;
  * @see      GaussianFit
  * @see      AbstractFit#estimate
  */
-public abstract class NonLinearFit extends AbstractFit {
+public abstract class AbstractNonLinearFit extends AbstractFit {
 
 	/**
 	 * does the actual matrix algebra to find the best fit
@@ -71,7 +71,7 @@ public abstract class NonLinearFit extends AbstractFit {
 	 * @param name
 	 *            of the fit function
 	 */
-	public NonLinearFit(String name) {
+	public AbstractNonLinearFit(String name) {
 		super(name);
 		parameters = new Vector<Parameter>();
 		chisq = new Parameter("ChiSq/dof", Parameter.DOUBLE, Parameter.KNOWN,
