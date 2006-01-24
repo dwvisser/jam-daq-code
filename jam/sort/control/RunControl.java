@@ -1,7 +1,10 @@
-package jam;
+package jam.sort.control;
 
+import jam.FrontEndCommunication;
+import jam.JamException;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
+import jam.global.RunState;
 import jam.global.GoodThread.State;
 import jam.io.DataIO;
 import jam.sort.DiskDaemon;
@@ -438,7 +441,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	/**
 	 * Setup for online acquisition.
 	 * 
-	 * @see jam.SetupSortOn
+	 * @see jam.sort.control.SetupSortOn
 	 * @param name
 	 *            name of the current experiment
 	 * @param datapath

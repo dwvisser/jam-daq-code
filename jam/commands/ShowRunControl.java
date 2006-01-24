@@ -6,8 +6,8 @@
  */
 package jam.commands;
 
-import jam.RunControl;
 import jam.global.SortMode;
+import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;

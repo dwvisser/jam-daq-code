@@ -3,10 +3,10 @@
  */
 package jam.commands;
 
-import jam.RunControl;
-import jam.RunState;
 import jam.global.BroadcastEvent;
+import jam.global.RunState;
 import jam.global.SortMode;
+import jam.sort.control.RunControl;
 
 import java.util.Observable;
 import java.util.Observer;

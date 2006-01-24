@@ -1,7 +1,7 @@
 package jam.commands;
 
-import jam.SortControl;
 import jam.global.SortMode;
+import jam.sort.control.SortControl;
 
 import java.util.Observable;
 import java.util.Observer;

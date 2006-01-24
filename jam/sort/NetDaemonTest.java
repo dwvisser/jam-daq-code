@@ -1,6 +1,6 @@
 package jam.sort;
 
-import jam.RunControl;
+import jam.sort.control.RunControl;
 import junit.framework.TestCase;
 
 /**

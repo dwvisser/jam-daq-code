@@ -1,8 +1,9 @@
 /*
  * Created on Dec 21, 2004
  */
-package jam;
+package jam.sort.control;
 
+import jam.JamException;
 import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.Broadcaster;
@@ -39,8 +40,8 @@ import javax.swing.JToggleButton;
 /**
  * Takes care of some of the details for SetupSortOn and SetupSortOff.
  * 
- * @see jam.SetupSortOn
- * @see jam.SetupSortOff
+ * @see jam.sort.control.SetupSortOn
+ * @see jam.sort.control.SetupSortOff
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  * @version 2004-12-21
  */

@@ -132,7 +132,7 @@ public final class BroadcastEvent {
 		/**
 		 * Announces that the run state has changed.
 		 * 
-		 * @see jam.RunState
+		 * @see jam.global.RunState
 		 */
 		public static final Command RUN_STATE_CHANGED = new Command(51);
 

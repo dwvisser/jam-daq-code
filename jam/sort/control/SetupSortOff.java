@@ -1,5 +1,6 @@
-package jam;
+package jam.sort.control;
 
+import jam.JamException;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -373,7 +374,7 @@ public final class SetupSortOff extends AbstractSetup {
 		lockMode(true);
 	}
 
-	void setupSort(final File classPath, final String sortName,
+	public void setupSort(final File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
 		setSortClassPath(classPath);
 		selectSortRoutine(sortName, false);

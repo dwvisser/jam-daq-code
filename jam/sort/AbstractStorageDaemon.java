@@ -50,8 +50,8 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	//protected transient MessageHandler msgHandler;
 
 	/**
-	 * @see jam.SortControl
-	 * @see jam.RunControl
+	 * @see jam.sort.control.SortControl
+	 * @see jam.sort.control.RunControl
 	 */
 	protected transient Controller controller;
 

@@ -1,4 +1,4 @@
-package jam;
+package jam.sort.control;
 
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;

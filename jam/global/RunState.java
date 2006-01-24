@@ -1,4 +1,4 @@
-package jam;
+package jam.global;
 import java.awt.Color;
 
 /**

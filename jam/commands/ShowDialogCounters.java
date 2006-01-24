@@ -1,8 +1,8 @@
 package jam.commands;
 
-import jam.DisplayCounters;
 import jam.global.BroadcastEvent;
 import jam.global.SortMode;
+import jam.sort.control.DisplayCounters;
 
 import java.util.Observable;
 import java.util.Observer;

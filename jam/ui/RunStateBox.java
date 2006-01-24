@@ -1,8 +1,8 @@
 package jam.ui;
 
-import jam.RunState;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
+import jam.global.RunState;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,7 +19,7 @@ import javax.swing.SwingConstants;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  * @version 2004-12-09
- * @see jam.RunState
+ * @see jam.global.RunState
  */
 public final class RunStateBox implements Observer {
 	private transient final JLabel lrunState = new JLabel("   Welcome   ",

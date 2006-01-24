@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author Ken Swartz
  * @version 0.9
- * @see jam.RunControl
+ * @see jam.sort.control.RunControl
  * @since JDK1.1
  */
 

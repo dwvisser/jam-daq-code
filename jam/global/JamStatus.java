@@ -2,7 +2,6 @@ package jam.global;
 
 import jam.FrontEndCommunication;
 import jam.JamPrefs;
-import jam.RunState;
 import jam.VMECommunication;
 import jam.data.Group;
 import jam.data.Histogram;

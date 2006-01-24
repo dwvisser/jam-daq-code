@@ -1,6 +1,5 @@
 package jam.sort;
 
-import jam.SortControl;
 import jam.global.Beginner;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -8,6 +7,7 @@ import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.Sorter;
+import jam.sort.control.SortControl;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
 

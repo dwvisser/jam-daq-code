@@ -1,5 +1,7 @@
-package jam;
+package jam.sort.control;
 
+import jam.FrontEndCommunication;
+import jam.JamException;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;

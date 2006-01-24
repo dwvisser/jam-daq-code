@@ -1,9 +1,10 @@
-package jam;
+package jam.sort.control;
 
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
+import jam.global.RunState;
 import jam.io.ExtensionFileFilter;
 import jam.sort.AbstractStorageDaemon;
 import jam.sort.Controller;
@@ -191,7 +192,7 @@ public final class SortControl extends JDialog implements Controller {
 	/*
 	 * non-javadoc: For scripting
 	 */
-	int addEventFile(final File file) {
+	public int addEventFile(final File file) {
 		int numFiles = 0;
 		if (file != null && file.exists()) {
 			final ExtensionFileFilter fileFilter = new ExtensionFileFilter(
@@ -426,7 +427,7 @@ public final class SortControl extends JDialog implements Controller {
 	/*
 	 * non-javadoc: For scripting.
 	 */
-	int readList(final File file) {
+	public int readList(final File file) {
 		int numFiles = 0;
 		lastFile = file;
 		try {
@@ -445,7 +446,7 @@ public final class SortControl extends JDialog implements Controller {
 		return numFiles;
 	}
 
-	void setEventOutput(final File file) {
+	public void setEventOutput(final File file) {
 		outDirectory = file;
 		textOutFile.setText(file.getAbsolutePath());
 		setWriteEvents(true);
