@@ -49,6 +49,10 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 	private transient DatagramSocket socketReceive;
 
 	private boolean runState = false;
+	
+	private boolean runEnded=false;
+	
+	private ByteBuffer currentByteBuffer;
 
 	/**
 	 * Constructor.
@@ -203,13 +207,17 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 					PORT_DATA_HOST);
 			while (true) {// loop forever
 				try {
-					while (isRunState()) {
-						LOGGER.info("Data Send");
-						createDataPacket(bufferSend);
-						packetIn.setData(bufferSend, 0, bufferSend.length);
-						socketData.send(packetIn);
-						sleep(1000); // sleep for a second
+					while (waitRunState()) {						
+						while(isRunState()) {
+							LOGGER.info("Data Send");
+							createDataPacket(bufferSend, false);
+							packetIn.setData(bufferSend, 0, bufferSend.length);
+							socketData.send(packetIn);
+							sleep(1000); // sleep for a second
+						}
+						createDataPacket(bufferSend, true);						
 					}
+
 				} catch (InterruptedException ie) {
 					LOGGER.info("Thread Interruped");
 				}
@@ -220,14 +228,15 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 		}
 	}
 
-	private void createDataPacket(byte[] buffer) {
+	private void createDataPacket(byte[] buffer, boolean lastBuffer) {
 
-		final ByteBuffer byteBuffer= ByteBuffer.wrap(buffer);		
-		writeSimpleLOO2Events(byteBuffer);
+		currentByteBuffer= ByteBuffer.wrap(buffer);		
+		writeSimpleLOO2Events(currentByteBuffer, lastBuffer);
 
 	}
 	
-	private void writeSimpleLOO2Events(final ByteBuffer byteBuffer){
+	private void writeSimpleLOO2Events(final ByteBuffer byteBuffer, boolean lastBuffer){
+		short packWord;
 		//Write a LOO2 event with 2 data values
 		for (int i=0;i<400;i++) {
 			byteBuffer.putShort((short)0x8001);
@@ -235,17 +244,21 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 			byteBuffer.putShort((short)0x8002);
 			byteBuffer.putShort((short)(500+i+4));
 			byteBuffer.putShort((short)0xFFFF);
-		}
-		byteBuffer.putShort((short)0xFFFF);		
+		}		
 		byteBuffer.putShort((short)0xFFF0);
 		byteBuffer.putShort((short)0xFFF0);
 		
 		//Pad buffer
 		int pos = byteBuffer.position();		
-		for (int i=pos; i<MAX_DATA_PACKET_SIZE;i+=2){
-			byteBuffer.putShort((short)0xFFF0);
+		if (lastBuffer) {
+			packWord=(short)0xFF03;
+		}else {
+			packWord=(short)0xFFF0;
 		}
-			
+		for (int i=pos; i<MAX_DATA_PACKET_SIZE;i+=2){
+			byteBuffer.putShort(packWord);
+		}
+		
 		
 	}
 	//private void writeEvent(final ByteBuffer byteBuffer)
@@ -254,25 +267,28 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 		synchronized (this) {
 			runState = state;
 			if (runState) {
-				notifyAll();
+				notifyAll(); 
 			}
 		}
 	}
 
-	private boolean isRunState() {
+	private boolean waitRunState() {
 		synchronized (this) {
 			try {
-				if (!runState) {
+				while (!runState) {					
 					wait();// wait till start again
 				}
-
 			} catch (InterruptedException ie) {
 				LOGGER.info("Thread Interruped");
 			}
 			return runState;
 		}
 	}
-
+	private boolean isRunState() {
+		synchronized (this) {
+			return runState;
+		}
+	}
 	/**
 	 * Main method to run simulator
 	 * 
