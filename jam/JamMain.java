@@ -44,17 +44,18 @@ import javax.swing.UIManager;
  * @since JDK1.1
  */
 public final class JamMain extends JFrame implements Observer {
-	
+
 	/**
 	 * Message output and text input.
 	 */
 	private static final Console console = new Console();
+
 	private static final Logger LOGGER;
 	static {
 		new LoggerConfig(console);
-		LOGGER = Logger.getLogger("jam");
+		LOGGER = Logger.getLogger(JamMain.class.getPackage().getName());
 	}
-	
+
 	/**
 	 * Main method that is run to start up full Jam process
 	 * 
@@ -64,7 +65,6 @@ public final class JamMain extends JFrame implements Observer {
 	public static void main(final String args[]) {
 		new JamMain(true);
 	}
-
 
 	/**
 	 * Configuration information for Jam.
@@ -103,8 +103,7 @@ public final class JamMain extends JFrame implements Observer {
 		contents.setLayout(new BorderLayout());
 
 		/* Ouput/Input text console */
-		LOGGER.info("Welcome to Jam v"
-				+ Version.getInstance().getName());
+		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
 		JamStatus.getSingletonInstance().setMessageHandler(console);
 		SetupSortOn.createInstance(console);
 		final JamToolBar jamToolBar = new JamToolBar();
@@ -178,10 +177,11 @@ public final class JamMain extends JFrame implements Observer {
 
 	private void setLookAndFeel() {
 		try {
-			String lookAndFeel= UIManager.getSystemLookAndFeelClassName();
-			//Override system look and feel for gtk
-			if (lookAndFeel.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")){
-				lookAndFeel=UIManager.getCrossPlatformLookAndFeelClassName();
+			String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+			// Override system look and feel for gtk
+			if (lookAndFeel
+					.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
+				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
 			}
 			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (Exception e) {

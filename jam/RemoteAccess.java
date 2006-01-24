@@ -156,7 +156,8 @@ public class RemoteAccess extends UnicastRemoteObject implements RemoteData {
 		return Collections.unmodifiableList(values);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger(RemoteAccess.class
+			.getPackage().getName());
 
 	/**
 	 * A test routine for this class.

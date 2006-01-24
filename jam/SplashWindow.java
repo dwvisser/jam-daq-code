@@ -35,7 +35,8 @@ class SplashWindow extends JWindow {
 
 	private transient final URL urlOSIGif;
 
-	private static final Logger LOGGER = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger(SplashWindow.class
+			.getPackage().getName());
 
 	/**
 	 * Creates the splash window which will exist for as long as the specified

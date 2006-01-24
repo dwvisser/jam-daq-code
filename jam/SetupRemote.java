@@ -53,7 +53,7 @@ public class SetupRemote extends JDialog implements ActionListener,
 
 	private static SetupRemote instance;
 
-	private static final Logger LOGGER = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger(SetupRemote.class.getPackage().getName());
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 

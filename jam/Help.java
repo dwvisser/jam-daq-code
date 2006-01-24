@@ -38,7 +38,8 @@ import javax.swing.UIManager;
  * @version version 0.5 November 98
  */
 public class Help extends JDialog {
-	private static final Logger LOGGER = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger(Help.class
+			.getPackage().getName());
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
