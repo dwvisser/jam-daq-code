@@ -10,9 +10,18 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+/**
+ * Configures the handlers for the "root" logger.
+ * @author Dale Visser
+ *
+ */
 public class LoggerConfig {
 	private static final Logger LOGGER = Logger.getLogger("");
 	
+	/**
+	 * Default Constructor.
+	 *
+	 */
 	public LoggerConfig(){
 		super();
 		List<Handler> handlers = Arrays.asList(LOGGER.getHandlers());
@@ -27,6 +36,11 @@ public class LoggerConfig {
 		}
 	}
 	
+	/**
+	 * Configures logger to use message handler to output messages to user.
+	 * 
+	 * @param msgHandler for user readable screen output
+	 */
 	public LoggerConfig(final MessageHandler msgHandler) {
 		this();
 		List<Handler> handlers = Arrays.asList(LOGGER.getHandlers());
