@@ -73,11 +73,13 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	private transient JComboBox gateChooser; // reference needed by command
 
+	private static final String packageName = HistApplet.class.getPackage().getName();
+	
 	static {
-		new LoggerConfig(console);
+		new LoggerConfig(packageName, console);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(HistApplet.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	/**
 	 * Initializes the applet. You never need to call this directly; it is

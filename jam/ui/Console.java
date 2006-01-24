@@ -294,8 +294,10 @@ public class Console extends JPanel implements MessageHandler {
 	 * @param message
 	 *            text to output
 	 */
-	public synchronized void messageOut(final String message) {
-		messageOut(message, CONTINUE);
+	public void messageOut(final String message) {
+		synchronized (this) {
+			messageOut(message, CONTINUE);
+		}
 	}
 
 	/**

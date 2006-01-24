@@ -50,12 +50,14 @@ import java.util.logging.Logger;
  */
 public class CheckEventFiles {
 
+	private static final String packageName = CheckEventFiles.class
+			.getPackage().getName();
+
 	static {
-		new LoggerConfig();
+		new LoggerConfig(packageName);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(CheckEventFiles.class
-			.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	/**
 	 * @param args

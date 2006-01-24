@@ -65,11 +65,13 @@ public class MonitorApplet extends JApplet implements ActionListener,
 
 	private Thread loopThread;
 
+	private static final String packageName = MonitorApplet.class.getPackage().getName();
+	
 	static {
-		new LoggerConfig();
+		new LoggerConfig(packageName);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(MonitorApplet.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	/**
 	 * Initializes the applet. You never need to call this directly; it is

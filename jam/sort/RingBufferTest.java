@@ -16,12 +16,14 @@ import junit.framework.TestCase;
  */
 public class RingBufferTest extends TestCase {
 
+	private static final String packageName = RingBufferTest.class
+	.getPackage().getName();
+	
 	static {
-		new LoggerConfig();
+		new LoggerConfig(packageName);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(RingBufferTest.class
-			.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	private transient final RingBuffer ring = new RingBuffer();
 

@@ -16,41 +16,44 @@ import java.util.logging.Logger;
  *
  */
 public class LoggerConfig {
-	private static final Logger LOGGER = Logger.getLogger("");
+	private transient final Logger logger;//NOPMD
 	
 	/**
 	 * Default Constructor.
 	 *
+	 * @param name package name of logger
 	 */
-	public LoggerConfig(){
+	public LoggerConfig(String name){
 		super();
-		List<Handler> handlers = Arrays.asList(LOGGER.getHandlers());
+		logger = Logger.getLogger(name);
+		List<Handler> handlers = Arrays.asList(logger.getHandlers());
 		for (Handler handler : handlers) {
-			LOGGER.removeHandler(handler);
+			logger.removeHandler(handler);
 		}
-		LOGGER.addHandler(new ConsoleHandler());
+		logger.addHandler(new ConsoleHandler());
 		try {
-			LOGGER.addHandler(new FileHandler());
+			logger.addHandler(new FileHandler());
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
 	/**
 	 * Configures logger to use message handler to output messages to user.
 	 * 
+	 * @param name package name of logger
 	 * @param msgHandler for user readable screen output
 	 */
-	public LoggerConfig(final MessageHandler msgHandler) {
-		this();
-		List<Handler> handlers = Arrays.asList(LOGGER.getHandlers());
+	public LoggerConfig(String name, final MessageHandler msgHandler) {
+		this(name);
+		List<Handler> handlers = Arrays.asList(logger.getHandlers());
 		for (Handler handler : handlers) {
 			if (handler instanceof ConsoleHandler) {
-				LOGGER.removeHandler(handler);
+				logger.removeHandler(handler);
 				break;
 			}
 		}
-		LOGGER.addHandler(new Handler(){
+		logger.addHandler(new Handler(){
 			public void close() {
 				//do-nothing
 			}

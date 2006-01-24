@@ -47,12 +47,15 @@ import java.util.logging.Logger;
  * @version 6 August 2002
  */
 public class FullCheckEventFiles {
+
+	private static final String packageName = FullCheckEventFiles.class
+			.getPackage().getName();
+
 	static {
-		new LoggerConfig();
+		new LoggerConfig(packageName);
 	}
 
-	private static final Logger LOGGER = Logger
-			.getLogger(FullCheckEventFiles.class.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	private FullCheckEventFiles(File dir) {
 		super();

@@ -50,10 +50,13 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	private static final Console console = new Console();
 
+	private static final String packageName = JamMain.class.getPackage()
+			.getName();
+
 	private static final Logger LOGGER;
 	static {
-		new LoggerConfig(console);
-		LOGGER = Logger.getLogger(JamMain.class.getPackage().getName());
+		new LoggerConfig(packageName, console);
+		LOGGER = Logger.getLogger(packageName);
 	}
 
 	/**

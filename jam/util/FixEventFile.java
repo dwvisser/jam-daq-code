@@ -47,12 +47,14 @@ import java.util.logging.Logger;
  */
 public class FixEventFile {
 
+	private static final String packageName = FixEventFile.class
+	.getPackage().getName();
+	
 	static {
-		new LoggerConfig();
+		new LoggerConfig(packageName);
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(FixEventFile.class
-			.getPackage().getName());
+	private static final Logger LOGGER = Logger.getLogger(packageName);
 
 	/**
 	 * Launches the task to fix an event file.
