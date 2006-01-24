@@ -21,7 +21,6 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -265,8 +264,6 @@ public class CalibrationFit extends AbstractControl {
 		}
 	}
 	
-	private static final Logger LOGGER = Logger.getLogger("jam.data.control");
-
 	/*
 	 * Function selected
 	 */

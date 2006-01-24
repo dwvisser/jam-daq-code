@@ -17,7 +17,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.text.NumberFormat;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -35,8 +34,6 @@ import javax.swing.SwingConstants;
 public class CalibrationDisplay extends AbstractControl implements
 		ActionListener, ItemListener, WindowListener {
 	
-	private static final Logger LOGGER = Logger.getLogger("jam.data.control");
-
 	private final static int MAX_NUMBER_TERMS = 5;
 
 	private final static String BLANK_TITLE = " Histogram not calibrated ";
