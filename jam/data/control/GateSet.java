@@ -1,10 +1,9 @@
 package jam.data.control;
 
-import jam.data.DataException;
+import jam.data.AbstractHist1D;
+import jam.data.AbstractHist2D;
 import jam.data.Gate;
-import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.global.MessageHandler;
 import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
@@ -43,43 +42,29 @@ import javax.swing.border.EmptyBorder;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public class GateSet extends AbstractControl implements Observer {
+public final class GateSet extends AbstractControl implements Observer {//NOPMD
 
-	private static final int NONE = -1;
+	private transient final JButton addP, removeP, unset, save, cancel;
 
-	private static final int ONE_DIMENSION = 1;
+	private transient final JComboBox cgate;
 
-	private static final int TWO_DIMENSION = 2;
+	private transient Gate currentGate;
 
-	private final JButton addP, removeP, unset, save, cancel;
+	private transient Nameable currentHistogram;
 
-	private final JComboBox cgate;
+	private transient final List<Bin> gatePoints = new ArrayList<Bin>();
 
-	private Gate currentGate;
+	private transient final JLabel lLower, lUpper;
 
-	private Histogram currentHistogram;
+	private transient boolean newGate = false; // a gate has been chosen
 
-	private List<Bin> gatePoints;
-
-	private final JLabel lLower, lUpper;
-
-	private final MessageHandler messageHandler;
-
-	private boolean newGate = false; // a gate has been chosen
-
-	// number intial points, increment increase
-	private int numberPoints;
-
-	private final JTextField textLower, textUpper;
-
-	private int type;
+	private transient final JTextField textLower, textUpper;
 
 	/**
 	 * Creates an instance of the GateControl class.
 	 */
-	public GateSet() {
+	public GateSet() {//NOPMD
 		super("Gate setting <none>", false);
-		messageHandler = STATUS.getMessageHandler();
 		setResizable(false);
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
@@ -93,8 +78,8 @@ public class GateSet extends AbstractControl implements Observer {
 		cgate.setPreferredSize(dimset);
 		cgate.setRenderer(new GateListCellRenderer());
 		cgate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				Object item = cgate.getSelectedItem();
+			public void actionPerformed(final ActionEvent actionEvent) {
+				final Object item = cgate.getSelectedItem();
 				if (item instanceof Gate) {
 					selectGate((Gate) item);
 				}
@@ -123,7 +108,7 @@ public class GateSet extends AbstractControl implements Observer {
 		pedit.setBorder(border);
 		addP = new JButton("Add");
 		addP.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				addPoint();
 			}
 		});
@@ -131,7 +116,7 @@ public class GateSet extends AbstractControl implements Observer {
 		pedit.add(addP);
 		removeP = new JButton("Remove");
 		removeP.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				removePoint();
 			}
 		});
@@ -139,13 +124,12 @@ public class GateSet extends AbstractControl implements Observer {
 		pedit.add(removeP);
 		unset = new JButton("Unset");
 		unset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				unset();
 			}
 		});
 		unset.setEnabled(false);
 		pedit.add(unset);
-
 		// panel with OK, Cancel buttons
 		final JPanel pokcancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		final Panel pButtons = new Panel();
@@ -153,7 +137,7 @@ public class GateSet extends AbstractControl implements Observer {
 		pokcancel.add(pButtons);
 		save = new JButton("Save");
 		save.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				save();
 			}
 		});
@@ -161,28 +145,27 @@ public class GateSet extends AbstractControl implements Observer {
 		pButtons.add(save);
 		cancel = new JButton("Cancel");
 		cancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(final ActionEvent actionEvent) {
 				cancel();
 			}
 		});
 		cancel.setEnabled(false);
 		pButtons.add(cancel);
-
 		contents.add(pChooser, BorderLayout.NORTH);
 		contents.add(pFields, BorderLayout.CENTER);
 		contents.add(pedit, BorderLayout.EAST);
 		contents.add(pokcancel, BorderLayout.SOUTH);
 		addWindowListener(new WindowAdapter() {
-			public void windowActivated(WindowEvent windowEvent) {
+			public void windowActivated(final WindowEvent windowEvent) {
 				checkHistogram();
 			}
 
-			public void windowClosing(WindowEvent windowEvent) {
+			public void windowClosing(final WindowEvent windowEvent) {
 				cancel();
 				dispose();
 			}
 
-			public void windowOpened(WindowEvent windowEvent) {
+			public void windowOpened(final WindowEvent windowEvent) {
 				doSetup();
 			}
 		});
@@ -191,11 +174,6 @@ public class GateSet extends AbstractControl implements Observer {
 
 	/**
 	 * Add a point from the text fields.
-	 * 
-	 * @throws DataException
-	 *             if there's a problem with the number format
-	 * @throws GlobalException
-	 *             if there's additional problems
 	 */
 	private void addPoint() {
 		try {
@@ -208,36 +186,39 @@ public class GateSet extends AbstractControl implements Observer {
 			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
 	}
-
+	
 	/**
 	 * Add a point to the gate when we are setting a new gate.
 	 * 
 	 * @param pChannel
 	 *            the point corresponding to the channel to add
 	 */
-	private void addPoint(Bin pChannel) {
+	private void addPoint(final Bin pChannel) {
 		if (newGate) { // do nothing if no gate chosen
-			if (type == ONE_DIMENSION) {
-				if (numberPoints == 0) {
-					synchronized (this) {
-						numberPoints = 1;
+			if (currentHistogram instanceof AbstractHist1D) {
+				synchronized (gatePoints) {
+					if (gatePoints.isEmpty()) {
+						gatePoints.add(pChannel);
+						textLower.setText(String.valueOf(pChannel.getX()));
+					} else if (gatePoints.size() == 1) {
+						gatePoints.add(pChannel);
+						setLowerUpperText();
+					} else if (gatePoints.size() == 2) {
+						gatePoints.remove(0);
+						gatePoints.add(pChannel);
+						setLowerUpperText();
+					} else {
+						LOGGER
+								.severe(getClass().getName()
+										+ ".addPoint(): setting 1 d gate should not be here.");
 					}
+				}
+			} else if (currentHistogram instanceof AbstractHist2D) {
+				synchronized (gatePoints) {
 					gatePoints.add(pChannel);
 					textLower.setText(String.valueOf(pChannel.getX()));
-				} else if (numberPoints == 1) {
-					synchronized (this) {
-						numberPoints = 0;
-					}
-					gatePoints.add(pChannel);
-					textUpper.setText(String.valueOf(pChannel.getX()));
-				} else {
-					LOGGER.severe(getClass().getName()
-									+ ".addPoint(): setting 1 d gate should not be here.");
+					textUpper.setText(String.valueOf(pChannel.getY()));
 				}
-			} else if (type == TWO_DIMENSION) {
-				gatePoints.add(pChannel);
-				textLower.setText(String.valueOf(pChannel.getX()));
-				textUpper.setText(String.valueOf(pChannel.getY()));
 			}
 		} else {
 			LOGGER.severe(getClass().getName()
@@ -248,9 +229,6 @@ public class GateSet extends AbstractControl implements Observer {
 
 	/**
 	 * Cancel the setting of the gate and disable editting of all fields.
-	 * 
-	 * @throws GlobalException
-	 *             if there's a problem
 	 */
 	private void cancel() {
 		checkHistogram();
@@ -258,7 +236,7 @@ public class GateSet extends AbstractControl implements Observer {
 		setTitle("Gate setting <none>");
 		synchronized (this) {
 			newGate = false;
-			gatePoints = null;
+			gatePoints.clear();
 		}
 		textLower.setText(" ");
 		textLower.setEditable(false);
@@ -276,14 +254,12 @@ public class GateSet extends AbstractControl implements Observer {
 	 * make the plot's current histogram our current histogram.
 	 * 
 	 * @author Ken Swartz
-	 * @throws GlobalException
-	 *             if there's a problem
 	 */
 	private void checkHistogram() {
 		/* has histogram changed? */
 		final Nameable named = STATUS.getCurrentHistogram();
-		final boolean doIt = (named == UnNamed.getSingletonInstance()) ?
-			currentHistogram != null : currentHistogram != named;
+		final boolean doIt = (named == UnNamed.getSingletonInstance()) ? currentHistogram != null
+				: currentHistogram != named;
 		if (doIt) {
 			doSetup(); // setup chooser list
 			cancel(); // cancel current gate if was setting
@@ -296,35 +272,10 @@ public class GateSet extends AbstractControl implements Observer {
 	 * 
 	 */
 	public void doSetup() {
-		/* get current state */
 		synchronized (this) {
-			final Nameable named = STATUS.getCurrentHistogram();
-			currentHistogram = (named instanceof Histogram) ? (Histogram) named
-					: null;
-		}
-		if (currentHistogram == null) {
-			/* There are many normal situations with no current histogram. */
-			setType(NONE); // undefined type
-		} else if (currentHistogram.getDimensionality() == 1) {
-			setType(1);
-		} else if (currentHistogram.getDimensionality() == 2) {
-			setType(2);
-		} else {
-			LOGGER.severe(getClass().getName()
-					+ ".setup(): undefined histogram type.");
-			setType(NONE);
-		}
-		cgate.setSelectedIndex(0);
-		// change labels depending if we have a one or two D histogram
-		if (currentHistogram != null
-				&& currentHistogram.getDimensionality() == 1) {
-			setType(ONE_DIMENSION);
-			lLower.setText(" lower");
-			lUpper.setText(" upper");
-		} else {
-			setType(TWO_DIMENSION);
-			lLower.setText("  x  ");
-			lUpper.setText("  y  ");
+			currentHistogram = STATUS.getCurrentHistogram();
+			setupType();
+			cgate.setSelectedIndex(0);
 		}
 	}
 
@@ -334,14 +285,15 @@ public class GateSet extends AbstractControl implements Observer {
 	 * @param poly
 	 *            the points defining the gate
 	 */
-	private void printPoints(Polygon poly) {
-		final int x[] = poly.xpoints;
-		final int y[] = poly.ypoints;
-		messageHandler.messageOut("Gate points: ", MessageHandler.NEW);
+	private void printPoints(final Polygon poly) {
+		final int xcoord[] = poly.xpoints;
+		final int ycoord[] = poly.ypoints;
+		final StringBuilder msg = new StringBuilder("Gate points: ");
 		for (int i = 0; i < poly.npoints; i++) {
-			messageHandler.messageOut("[" + x[i] + "," + y[i] + "] ");
+			msg.append('[').append(xcoord[i]).append(',').append(ycoord[i])
+					.append("] ");
 		}
-		messageHandler.messageOut("", MessageHandler.END);
+		LOGGER.info(msg.toString());
 	}
 
 	/**
@@ -351,37 +303,31 @@ public class GateSet extends AbstractControl implements Observer {
 		if (!gatePoints.isEmpty()) {
 			gatePoints.remove(gatePoints.size() - 1);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_REMOVE);
-			if (!gatePoints.isEmpty()) {
+			if (gatePoints.isEmpty()) {
+				textLower.setText("");
+				textUpper.setText("");
+			} else {
 				final Bin lastBin = gatePoints.get(gatePoints.size() - 1);
 				textLower.setText(String.valueOf(lastBin.getX()));
 				textUpper.setText(String.valueOf(lastBin.getY()));
-			} else {
-				textLower.setText("");
-				textUpper.setText("");
 			}
 		}
 	}
 
 	/**
 	 * Save the gate value.
-	 * 
-	 * @throws DataException
-	 *             if there's a problem
-	 * @throws GlobalException
-	 *             if there's a problem
 	 */
 	private void save() {
 		checkHistogram(); // check we have same histogram
 		try { // check fields are numbers
 			if (currentGate != null) {
-				if (type == ONE_DIMENSION) {
+				if (currentHistogram instanceof AbstractHist1D) {
 					final int lim1 = Integer.parseInt(textLower.getText());
 					final int lim2 = Integer.parseInt(textUpper.getText());
 					currentGate.setLimits(lim1, lim2);
-					LOGGER.info("Gate Set "
-							+ currentGate.getName() + " Limits=" + lim1 + ","
-							+ lim2);
-				} else if (type == TWO_DIMENSION) {
+					LOGGER.info("Gate Set " + currentGate.getName()
+							+ " Limits=" + lim1 + "," + lim2);
+				} else if (currentHistogram instanceof AbstractHist2D) {
 					/* complete gate, adding a last point = first point */
 					gatePoints.add(gatePoints.get(0));
 					/* make a polygon from data points */
@@ -392,8 +338,7 @@ public class GateSet extends AbstractControl implements Observer {
 						gatePoly2d.addPoint(pointX, pointY);
 					}
 					currentGate.setLimits(gatePoly2d);
-					messageHandler.messageOutln("Gate Set "
-							+ currentGate.getName());
+					LOGGER.info("Gate Set " + currentGate.getName());
 					printPoints(gatePoly2d);
 				}
 				BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SELECT,
@@ -407,7 +352,7 @@ public class GateSet extends AbstractControl implements Observer {
 		cancel();
 	}
 
-	void selectGate(Gate gate) {
+	void selectGate(final Gate gate) {
 		cancel(); // cancel current state
 		synchronized (this) {
 			currentGate = gate;
@@ -415,24 +360,11 @@ public class GateSet extends AbstractControl implements Observer {
 		if (currentGate != null) {
 			synchronized (this) {
 				newGate = true; // setting a new gate
-				numberPoints = 0;
-			}
-			if (currentHistogram.getDimensionality() == 1) {
-				lLower.setText("lower");
-				lUpper.setText("upper");
-				synchronized (this) {
-					type = ONE_DIMENSION;
-					gatePoints = new ArrayList<Bin>(2);
+				gatePoints.clear();
+				if (currentHistogram instanceof AbstractHist2D) {
+					addP.setEnabled(true);
+					removeP.setEnabled(true);
 				}
-			} else {
-				lLower.setText("x");
-				lUpper.setText("y");
-				synchronized (this) {
-					type = TWO_DIMENSION;
-					gatePoints = new ArrayList<Bin>();
-				}
-				addP.setEnabled(true);
-				removeP.setEnabled(true);
 			}
 			unset.setEnabled(true);
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_ON);
@@ -448,8 +380,33 @@ public class GateSet extends AbstractControl implements Observer {
 		}
 	}
 
-	private synchronized void setType(int m) {
-		type = m;
+	private void setLowerUpperText() {
+		final int limA = gatePoints.get(0).getX();
+		final int limB = gatePoints.get(1).getX();
+		final int min = Math.min(limA, limB);
+		final int max = Math.max(limA, limB);
+		textLower.setText(String.valueOf(min));
+		textUpper.setText(String.valueOf(max));
+	}
+
+	private void setupType() {
+		synchronized (this) {
+			gatePoints.clear();
+			if (currentHistogram instanceof AbstractHist1D) {
+				lLower.setText(" lower");
+				lUpper.setText(" upper");
+			} else if (currentHistogram instanceof AbstractHist2D) {
+				lLower.setText("  x  ");
+				lUpper.setText("  y  ");
+			} else if (currentHistogram instanceof UnNamed) {
+				lLower.setText(null);
+				lUpper.setText(null);
+			} else {
+				LOGGER.severe(getClass().getName()
+						+ ".setup(): undefined histogram type "
+						+ currentHistogram.getClass().getName());
+			}
+		}
 	}
 
 	private void unset() {
@@ -465,12 +422,12 @@ public class GateSet extends AbstractControl implements Observer {
 	 * 
 	 * @param observable
 	 *            the event sender
-	 * @param o
+	 * @param object
 	 *            the message
 	 */
-	public void update(Observable observable, Object o) {
-		final BroadcastEvent be = (BroadcastEvent) o;
-		final BroadcastEvent.Command com = be.getCommand();
+	public void update(final Observable observable, final Object object) {
+		final BroadcastEvent event = (BroadcastEvent) object;
+		final BroadcastEvent.Command com = event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT) {
 			cancel();
 		} else if (com == BroadcastEvent.Command.HISTOGRAM_NEW
@@ -478,7 +435,7 @@ public class GateSet extends AbstractControl implements Observer {
 				|| com == BroadcastEvent.Command.GATE_ADD) {
 			doSetup();
 		} else if (com == BroadcastEvent.Command.GATE_SET_POINT) {
-			addPoint((Bin) be.getContent());
+			addPoint((Bin) event.getContent());
 		}
 	}
 }
