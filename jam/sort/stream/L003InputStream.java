@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -35,16 +33,16 @@ public final class L003InputStream extends AbstractEventInputStream implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public L003InputStream(MessageHandler console) {
+	public L003InputStream(boolean console) {
 		super(console);
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public L003InputStream(MessageHandler console, int eventSize) {
+	public L003InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

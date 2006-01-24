@@ -1,5 +1,4 @@
 package jam.sort.stream;
-import jam.global.MessageHandler;
 import jam.util.StringUtilities;
 
 import java.io.IOException;
@@ -18,17 +17,17 @@ public abstract class AbstractL002HeaderReader extends AbstractEventInputStream 
 	 * Creates the input stream given an event size.
 	 *
 	 * @param eventSize number of parameters per event.
-	 * @param console where to print messages
+	 * @param consoleExists whether a console exists
 	 */
-	AbstractL002HeaderReader(MessageHandler console, int eventSize) {
-		super(console, eventSize);
+	AbstractL002HeaderReader(boolean consoleExists, int eventSize) {
+		super(consoleExists, eventSize);
 	}
 
 	/**
-	 * @param console for printing messages
+	 * @param consoleExists whether a console exists
 	 */
-	public AbstractL002HeaderReader(MessageHandler console) {
-		super(console);
+	public AbstractL002HeaderReader(boolean consoleExists) {
+		super(consoleExists);
 	}
 	
 	/**

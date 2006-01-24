@@ -1,7 +1,6 @@
 package jam.sort.stream;
 
 import jam.data.Scaler;
-import jam.global.MessageHandler;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -119,9 +118,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public YaleCAEN_InputStream(MessageHandler console) {
+	public YaleCAEN_InputStream(boolean console) {
 		super(console);
 	}
 
@@ -170,9 +169,9 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler, int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
-	public YaleCAEN_InputStream(MessageHandler console, int eventSize) {
+	public YaleCAEN_InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

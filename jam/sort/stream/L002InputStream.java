@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 
 /**
@@ -30,9 +28,9 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public L002InputStream(MessageHandler console) {
+	public L002InputStream(boolean console) {
 		super(console);
 	}
 
@@ -44,7 +42,7 @@ public class L002InputStream extends AbstractL002HeaderReader implements
 	 * @param console
 	 *            the place to write messages
 	 */
-	public L002InputStream(MessageHandler console, int eventSize) {
+	public L002InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

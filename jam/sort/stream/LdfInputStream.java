@@ -1,6 +1,4 @@
 package jam.sort.stream;
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -33,7 +31,7 @@ public class LdfInputStream extends AbstractEventInputStream implements L002Para
     /** Default constructor.
      * @param console object where messages to the user are printed
      */
-    public LdfInputStream(MessageHandler console) {
+    public LdfInputStream(boolean console) {
         super(console);
     }
 
@@ -41,7 +39,7 @@ public class LdfInputStream extends AbstractEventInputStream implements L002Para
      * @param eventSize number of parameters per event.
      * @param console object where messages to the user are printed
      */
-    public LdfInputStream(MessageHandler console,int eventSize) {
+    public LdfInputStream(boolean console,int eventSize) {
         super(console, eventSize);
     }
 

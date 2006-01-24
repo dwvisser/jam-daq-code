@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -46,7 +44,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 * @param console
 	 *            where messages to the user go
 	 */
-	public Kmax6InputStream(MessageHandler console) {
+	public Kmax6InputStream(boolean console) {
 		super(console);
 	}
 
@@ -59,7 +57,7 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *            where messages to user go
 	 */
 
-	public Kmax6InputStream(MessageHandler console, int eventSize) {
+	public Kmax6InputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

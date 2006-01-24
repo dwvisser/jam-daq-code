@@ -1,7 +1,6 @@
 package jam.sort.stream;
 
 import jam.data.Scaler;
-import jam.global.MessageHandler;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -67,17 +66,17 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	private transient boolean newBlock = true;
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public UconnInputStream(MessageHandler console) {
+	public UconnInputStream(boolean console) {
 		super(console);
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler,
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean,
 	 *      int)
 	 */
-	public UconnInputStream(MessageHandler console, int eventSize) {
+	public UconnInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

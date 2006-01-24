@@ -1,6 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
 import jam.global.RunInfo;
 
 import java.io.DataInputStream;
@@ -21,59 +20,69 @@ import javax.swing.JOptionPane;
  */
 
 public abstract class AbstractEventInputStream {
+	
+	/**
+	 * Status type for event input streams.
+	 * @author Dale Visser
+	 *
+	 */
 	public enum EventInputStatus {
-		/*
+		/**
 		 * Status if just read an event.
 		 */
 		END_BUFFER,
 
-		/*
+		/**
 		 * Status if just reached the end of a buffer.
 		 */
 		END_FILE,
 
-		/*
+		/**
 		 * Status if just reached the end of a run.
 		 */
 		END_RUN,
 
-		/*
+		/**
 		 * Status if just reached the end of a file.
 		 */
 		END_STREAM,
 
-		/*
+		/**
 		 * Status if just reached the end of the stream.
 		 */
 		ERROR,
 
-		/*
+		/**
 		 * Status if only a partial event was just read.
 		 */
 		EVENT,
 
-		/*
+		/**
 		 * Status if unidentified word was just read.
 		 */
 		IGNORE,
 
-		/*
+		/**
 		 * Status if there is an unrecoverable error when reading the stream.
 		 */
 		PARTIAL_EVENT,
 
-		/*
+		/**
 		 * Status if the most recent read parameter is actually a scaler value.
 		 */
 		SCALER_VALUE,
 
-		/*
+		/**
 		 * Status if the last bit of the stream was ignorable.
 		 */
 		UNKNOWN_WORD
 	}
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.sort.stream");
+	/**
+	 * Handles logging messages.
+	 */
+	protected static final Logger LOGGER = Logger
+			.getLogger(AbstractEventInputStream.class.getPackage().getName());
 
 	/**
 	 * 
@@ -88,8 +97,7 @@ public abstract class AbstractEventInputStream {
 	/**
 	 * The place to print messages.
 	 */
-	//protected transient MessageHandler console;
-
+	// protected transient MessageHandler console;
 	/**
 	 * Stream events are read from
 	 */
@@ -158,24 +166,24 @@ public abstract class AbstractEventInputStream {
 	/**
 	 * Default constructor.
 	 * 
-	 * @param console
-	 *            where to print messages
+	 * @param consoleExists
+	 *            whether console exists
 	 */
-	public AbstractEventInputStream(MessageHandler console) {
+	public AbstractEventInputStream(boolean consoleExists) {
 		this();
-		setConsoleExists(true);
+		setConsoleExists(consoleExists);
 	}
 
 	/**
 	 * Constructor with event size given.
 	 * 
-	 * @param console
-	 *            where to write text output to the user
+	 * @param consoleExists
+	 *            whether console exists
 	 * @param size
 	 *            the number of signals per event
 	 */
-	public AbstractEventInputStream(MessageHandler console, int size) {
-		this(console);
+	public AbstractEventInputStream(boolean consoleExists, int size) {
+		this(consoleExists);
 		eventSize = size;
 	}
 
@@ -293,13 +301,16 @@ public abstract class AbstractEventInputStream {
 		this.bufferSize = size;
 	}
 
+	/**
+	 * Whether a console exists.
+	 */
 	protected transient boolean consoleExists = false;
-	
+
 	/**
 	 * Define the console.
 	 * 
-	 * @param console
-	 *            where to write text output to the user
+	 * @param exists
+	 *            whether the console exists
 	 */
 	public final void setConsoleExists(final boolean exists) {
 		this.consoleExists = exists;
@@ -339,7 +350,7 @@ public abstract class AbstractEventInputStream {
 		if (!consoleExists) {
 			JOptionPane.showMessageDialog(null, message, cname,
 					JOptionPane.ERROR_MESSAGE);
-		} 
+		}
 	}
 
 	/**

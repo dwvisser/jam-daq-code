@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 
 /**
@@ -29,17 +27,17 @@ public class YaleInputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
-	public YaleInputStream(MessageHandler console) {
+	public YaleInputStream(boolean console) {
 		super(console);
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler,
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean,
 	 *      int)
 	 */
-	public YaleInputStream(MessageHandler console, int eventSize) {
+	public YaleInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 

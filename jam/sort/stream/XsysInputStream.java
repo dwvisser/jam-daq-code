@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.IOException;
 
 /**
@@ -29,17 +27,17 @@ public class XsysInputStream extends AbstractEventInputStream {
     }
 
     /**
-     * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler)
+     * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
      */
-    public XsysInputStream(MessageHandler console) {
+    public XsysInputStream(boolean console) {
         super(console);
     }
 
     /**
-     * @see AbstractEventInputStream#AbstractEventInputStream(MessageHandler,
+     * @see AbstractEventInputStream#AbstractEventInputStream(boolean,
      *      int)
      */
-    public XsysInputStream(MessageHandler console, int eventSize) {
+    public XsysInputStream(boolean console, int eventSize) {
         super(console, eventSize);
     }
 

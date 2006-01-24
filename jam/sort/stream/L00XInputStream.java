@@ -1,7 +1,5 @@
 package jam.sort.stream;
 
-import jam.global.MessageHandler;
-
 import java.io.EOFException;
 
 /**
@@ -34,7 +32,7 @@ public class L00XInputStream extends AbstractL002HeaderReader implements
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public L00XInputStream(MessageHandler console) {
+	public L00XInputStream(boolean console) {
 		super(console);
 	}
 
@@ -46,7 +44,7 @@ public class L00XInputStream extends AbstractL002HeaderReader implements
 	 * @param console
 	 *            object where messages to the user are printed
 	 */
-	public L00XInputStream(MessageHandler console, int eventSize) {
+	public L00XInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
 	}
 
