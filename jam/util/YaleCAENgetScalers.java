@@ -42,7 +42,8 @@ import javax.swing.ProgressMonitor;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public class YaleCAENgetScalers {
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+	private static final Logger LOGGER = Logger
+			.getLogger(YaleCAENgetScalers.class.getPackage().getName());
 
 	private transient String fileName;
 

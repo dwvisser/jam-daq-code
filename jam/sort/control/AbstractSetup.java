@@ -49,7 +49,8 @@ abstract class AbstractSetup {
 	/**
 	 * All text message output goes to this object.
 	 */
-	protected static final Logger LOGGER = Logger.getLogger("jam.sort.control");
+	protected static final Logger LOGGER = Logger.getLogger(AbstractSetup.class
+			.getPackage().getName());
 
 	/**
 	 * Handle to event broadcaster.
@@ -77,7 +78,7 @@ abstract class AbstractSetup {
 	 */
 	protected static void selectName(final JComboBox jcb,
 			final Collection<Class<?>> collection, final String defInStream) {
-		//final Iterator iter = collection.iterator();
+		// final Iterator iter = collection.iterator();
 		for (Class clazz : collection) {
 			final String name = clazz.getName();
 			final boolean match = name.equals(defInStream);
@@ -137,10 +138,11 @@ abstract class AbstractSetup {
 	 * Text field showing the sort class path.
 	 */
 	protected transient final JTextField textSortPath;
+
 	/**
 	 * Last select path
 	 */
-	protected transient String lastSortPath="";
+	protected transient String lastSortPath = "";
 
 	AbstractSetup(String dialogName) {
 		super();
@@ -199,7 +201,7 @@ abstract class AbstractSetup {
 					bbrowsef.setEnabled(false);
 					setChooserDefault(true);
 					textSortPath.setEnabled(false);
-					lastSortPath=textSortPath.getText();
+					lastSortPath = textSortPath.getText();
 					textSortPath.setText("default");
 
 				}
@@ -283,7 +285,7 @@ abstract class AbstractSetup {
 					/ (1024.0 * 1024.0);
 			message.append(megabytes).append(" MB.");
 			throw new JamException(message.toString(), thrown);
-		} catch (Throwable thrown) {//NOPMD
+		} catch (Throwable thrown) {// NOPMD
 			message
 					.append("Couldn't load ")
 					.append(sortName)

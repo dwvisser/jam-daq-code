@@ -54,7 +54,8 @@ public class CheckEventFiles {
 		new LoggerConfig();
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+	private static final Logger LOGGER = Logger.getLogger(CheckEventFiles.class
+			.getPackage().getName());
 
 	/**
 	 * @param args

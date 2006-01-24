@@ -15,7 +15,8 @@ import javax.swing.SwingUtilities;
  */
 public class AsyncProgressMonitor {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.io.hdf");
+	private static final Logger LOGGER = Logger
+			.getLogger(AsyncProgressMonitor.class.getPackage().getName());
 
 	private static final int MIN = 0;
 

@@ -37,7 +37,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class LoadFit {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.fit");
+	private static final Logger LOGGER = Logger.getLogger(LoadFit.class
+			.getPackage().getName());
 
 	private transient final Broadcaster broadcaster;
 

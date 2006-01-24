@@ -52,7 +52,9 @@ import javax.swing.event.ChangeListener;
  */
 public class OpenMultipleFiles implements HDFIO.AsyncListener {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.io.control");
+	private static final Logger LOGGER = Logger
+			.getLogger(OpenMultipleFiles.class.getPackage().getName());
+
 	// UI components
 	private final Frame frame;
 

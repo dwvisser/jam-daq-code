@@ -35,7 +35,8 @@ import javax.swing.SwingUtilities;
  * @since JDK1.1
  */
 public final class HDFIO implements DataIO, JamFileFields {
-	private static final Logger LOGGER = Logger.getLogger("jam.io.hdf");
+	private static final Logger LOGGER = Logger.getLogger(HDFIO.class
+			.getPackage().getName());
 
 	/**
 	 * Interface to be called when asynchronized IO is completed.
@@ -743,8 +744,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 				break fileLoop;
 			}
 			if (!HDFile.isHDFFile(infile)) {
-				LOGGER.severe("File " + infile
-						+ " is not a valid HDF file.");
+				LOGGER.severe("File " + infile + " is not a valid HDF file.");
 				rval = false;
 				break fileLoop;
 			}

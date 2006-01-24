@@ -20,17 +20,17 @@ public class GoodThread extends Thread {
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
 	public enum State {
-		/*
+		/**
 		 * Represents a running thread.
 		 */
 		RUN,
 
-		/*
+		/**
 		 * Represents a temporarily suspended thread.
 		 */
 		SUSPEND,
 
-		/*
+		/**
 		 * Represents a fully stopped thread.
 		 */
 		STOP
@@ -59,7 +59,11 @@ public class GoodThread extends Thread {
 		super(runnable);
 	}
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.global");
+	/**
+	 * For logging messages.
+	 */
+	protected static final Logger LOGGER = Logger.getLogger(GoodThread.class
+			.getPackage().getName());
 
 	/**
 	 * To stop, suspend, or restart a GoodThread, call this.

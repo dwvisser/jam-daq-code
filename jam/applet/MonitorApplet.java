@@ -69,7 +69,7 @@ public class MonitorApplet extends JApplet implements ActionListener,
 		new LoggerConfig();
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam.applet");
+	private static final Logger LOGGER = Logger.getLogger(MonitorApplet.class.getPackage().getName());
 
 	/**
 	 * Initializes the applet. You never need to call this directly; it is

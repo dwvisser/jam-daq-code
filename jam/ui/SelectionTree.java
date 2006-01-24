@@ -39,7 +39,8 @@ public final class SelectionTree extends JPanel implements Observer {
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
-	private static final Logger LOGGER = Logger.getLogger("jam.ui");
+	private static final Logger LOGGER = Logger.getLogger(SelectionTree.class
+			.getPackage().getName());
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
@@ -83,7 +84,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		add(new JScrollPane(tree), BorderLayout.CENTER);
 	}
 
-	private void addGroupNodes(final Group group){
+	private void addGroupNodes(final Group group) {
 		final DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(
 				group);
 		// Loop through histograms and load them
@@ -93,9 +94,9 @@ public final class SelectionTree extends JPanel implements Observer {
 		rootNode.add(groupNode);
 	}
 
-	private void addHistNodes(final DefaultMutableTreeNode groupNode, final Histogram hist){
-		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(
-				hist);
+	private void addHistNodes(final DefaultMutableTreeNode groupNode,
+			final Histogram hist) {
+		final DefaultMutableTreeNode histNode = new DefaultMutableTreeNode(hist);
 		groupNode.add(histNode);
 		// Loop through gates and load them
 		for (Gate gate : hist.getGates()) {
@@ -121,13 +122,13 @@ public final class SelectionTree extends JPanel implements Observer {
 		return ((DefaultMutableTreeNode) path.getLastPathComponent())
 				.getUserObject() instanceof Gate;
 	}
-	
+
 	private boolean isSyncEvent() {
 		synchronized (this) {
 			return syncEvent;
 		}
 	}
-	
+
 	/**
 	 * Load the tree for the data objects.
 	 */
@@ -320,12 +321,13 @@ public final class SelectionTree extends JPanel implements Observer {
 				final double centroid = ((int) (gate.getCentroid() * 100.0)) / 100.0;
 				final int lowerLimit = gate.getLimits1d()[0];
 				final int upperLimit = gate.getLimits1d()[1];
-				message.append("Gate: ").append(gate.getName()).append(", Ch. ").append(
-						lowerLimit).append(" to ").append(upperLimit).append(
-						"  Area = ").append(area).append(", Centroid = ")
-						.append(centroid);
+				message.append("Gate: ").append(gate.getName())
+						.append(", Ch. ").append(lowerLimit).append(" to ")
+						.append(upperLimit).append("  Area = ").append(area)
+						.append(", Centroid = ").append(centroid);
 			} else {
-				message.append("Gate ").append(gate.getName()).append(", Area = ").append(area);
+				message.append("Gate ").append(gate.getName()).append(
+						", Area = ").append(area);
 			}
 			LOGGER.info(message.toString());
 		} catch (Exception de) {

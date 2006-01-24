@@ -15,12 +15,13 @@ import junit.framework.TestCase;
  * @see RingBuffer
  */
 public class RingBufferTest extends TestCase {
-	
+
 	static {
 		new LoggerConfig();
 	}
-	
-	private static final Logger LOGGER = Logger.getLogger("jam.sort");
+
+	private static final Logger LOGGER = Logger.getLogger(RingBufferTest.class
+			.getPackage().getName());
 
 	private transient final RingBuffer ring = new RingBuffer();
 
@@ -108,13 +109,18 @@ public class RingBufferTest extends TestCase {
 		assertEquals("Expect no available buffers in empty ring.", 0, emptyRing
 				.getAvailableBuffers());
 	}
-	
-	public void testIsNull(){
-		assertTrue("emptyRing explicitly 'null'",emptyRing.isNull());
-		assertFalse("Allocated ring not null.",ring.isNull());
+
+	/**
+	 * Test the properties of 'null' rings.
+	 *
+	 */
+	public void testIsNull() {
+		assertTrue("emptyRing explicitly 'null'", emptyRing.isNull());
+		assertFalse("Allocated ring not null.", ring.isNull());
 		assertTrue("'null' rings are full.", emptyRing.isFull());
 		assertTrue("'null' rings are nearly full.", emptyRing.isCloseToFull());
-		assertTrue("'null' rings are empty.",emptyRing.isEmpty());
-		assertEquals("'null' rings never have used buffers.",0,emptyRing.getUsedBuffers());
+		assertTrue("'null' rings are empty.", emptyRing.isEmpty());
+		assertEquals("'null' rings never have used buffers.", 0, emptyRing
+				.getUsedBuffers());
 	}
 }

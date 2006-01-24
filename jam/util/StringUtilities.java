@@ -19,11 +19,11 @@ public final class StringUtilities {
 	private static final Charset ASCII = Charset.availableCharsets().get(
 			"US-ASCII");
 
-	public static final String ELEMENT_SEPARATOR = "/";
+	private static final char ELEMENT_SEPARATOR = '/';
 
 	private static final StringUtilities INSTANCE = new StringUtilities();
 
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+	private static final Logger LOGGER = Logger.getLogger(StringUtilities.class.getPackage().getName());
 
 	/**
 	 * Get the only instance of this class.

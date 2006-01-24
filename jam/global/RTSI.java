@@ -34,7 +34,8 @@ public class RTSI {
 
 	private static final RTSI instance = new RTSI();
 
-	private static final Logger LOGGER = Logger.getLogger("jam.global");
+	private static final Logger LOGGER = Logger.getLogger(RTSI.class
+			.getPackage().getName());
 
 	static final String PERIOD = ".";
 
@@ -430,14 +431,16 @@ public class RTSI {
 						rval.add(temp);
 					}
 				} catch (ClassNotFoundException cnfex) {
-					//errmessage.append(cnfex.getMessage());
-					//JOptionPane.showMessageDialog(null, errmessage.toString(),
-					//		rtsiName, JOptionPane.ERROR_MESSAGE);
+					// errmessage.append(cnfex.getMessage());
+					// JOptionPane.showMessageDialog(null,
+					// errmessage.toString(),
+					// rtsiName, JOptionPane.ERROR_MESSAGE);
 					return rval;
 				} catch (LinkageError le) {
-					//errmessage.append(le.getMessage());
-					//JOptionPane.showMessageDialog(null, errmessage.toString(),
-					//		rtsiName, JOptionPane.ERROR_MESSAGE);
+					// errmessage.append(le.getMessage());
+					// JOptionPane.showMessageDialog(null,
+					// errmessage.toString(),
+					// rtsiName, JOptionPane.ERROR_MESSAGE);
 					return rval;
 				}
 			}

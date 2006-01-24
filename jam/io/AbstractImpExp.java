@@ -34,7 +34,11 @@ import javax.swing.filechooser.FileFilter;
  */
 public abstract class AbstractImpExp {
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.io");
+	/**
+	 * For logging messages.
+	 */
+	protected static final Logger LOGGER = Logger
+			.getLogger(AbstractImpExp.class.getPackage().getName());
 
 	/**
 	 * size of read/write buffers
@@ -85,12 +89,12 @@ public abstract class AbstractImpExp {
 	}
 
 	protected boolean silent = false;
-	
+
 	/**
 	 * Don't output messages to msgHandler
 	 */
 	public void setSilent() {
-		silent=true;
+		silent = true;
 	}
 
 	/**

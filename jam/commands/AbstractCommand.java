@@ -23,8 +23,9 @@ import javax.swing.JOptionPane;
 public abstract class AbstractCommand extends AbstractAction implements
 		Commandable {
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.commands");
-	
+	protected static final Logger LOGGER = Logger
+			.getLogger(AbstractCommand.class.getPackage().getName());
+
 	/**
 	 * Reference to <code>JamStatus</code> singleton available to all
 	 * implementing classes.
@@ -68,7 +69,8 @@ public abstract class AbstractCommand extends AbstractAction implements
 	 * @param cmdParams
 	 *            the command parameters
 	 */
-	public void performCommand(final Object[] cmdParams) throws CommandException {
+	public void performCommand(final Object[] cmdParams)
+			throws CommandException {
 		try {
 			execute(cmdParams);
 			logCommand();

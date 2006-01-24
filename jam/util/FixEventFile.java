@@ -51,7 +51,8 @@ public class FixEventFile {
 		new LoggerConfig();
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+	private static final Logger LOGGER = Logger.getLogger(FixEventFile.class
+			.getPackage().getName());
 
 	/**
 	 * Launches the task to fix an event file.
@@ -90,7 +91,8 @@ public class FixEventFile {
 	private transient File outDir;
 
 	private transient Set<Integer> runNumberSet; // Collections class for
-													// unique,sorted elements
+
+	// unique,sorted elements
 
 	FixEventFile(File inputFile) {
 		super();

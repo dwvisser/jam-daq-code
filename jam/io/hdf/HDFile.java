@@ -24,7 +24,8 @@ public final class HDFile extends RandomAccessFile implements Constants {
 
 	private static final float FRACTION_WRITE_ALL = 1.0f;
 
-	private static final Logger LOGGER = Logger.getLogger("jam.io.hdf");
+	private static final Logger LOGGER = Logger.getLogger(HDFile.class
+			.getPackage().getName());
 
 	/**
 	 * Check if a file is an HDF file

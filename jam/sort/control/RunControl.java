@@ -63,7 +63,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class RunControl extends JDialog implements jam.sort.Controller {
 
-	private static final Logger LOGGER = Logger.getLogger("jam");
+	private static final Logger LOGGER = Logger.getLogger(RunControl.class
+			.getPackage().getName());
 
 	private static enum Device {
 		/**
@@ -415,7 +416,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		tRunNumber.setText(Integer.toString(runNumber));
 		setRunOn(false);
 		endAction.setEnabled(false); // toggle button states
-		beginAction.setEnabled(true);// set begin button state for next run		
+		beginAction.setEnabled(true);// set begin button state for next run
 		setLockControls(false);
 	}
 
@@ -493,7 +494,8 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			STATUS.setRunState(RunState.ACQ_ON);
 			beginAction.setEnabled(false);// don't want to try to begin run
 			// while going
-			LOGGER.info("Started Acquisition...to begin a run, first stop acquisition.");
+			LOGGER
+					.info("Started Acquisition...to begin a run, first stop acquisition.");
 		}
 	}
 
@@ -520,16 +522,17 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		LOGGER.warning("Stopped Acquisition...if you are doing a run, "
 				+ "you will need to start again before clicking \"End Run\".");
 	}
-	private void setLockControls(boolean state)
-	{
-		 boolean enable=!state;
-		 //tRunNumber.setEnabled(enable);
-		 tRunNumber.setEditable(enable);
-		 //textRunTitle.setEnabled(enable); 
-		 textRunTitle.setEditable(enable);
-		 cHistZero.setEnabled(enable);
-		 zeroScalers.setEnabled(enable);
+
+	private void setLockControls(boolean state) {
+		boolean enable = !state;
+		// tRunNumber.setEnabled(enable);
+		tRunNumber.setEditable(enable);
+		// textRunTitle.setEnabled(enable);
+		textRunTitle.setEditable(enable);
+		cHistZero.setEnabled(enable);
+		zeroScalers.setEnabled(enable);
 	}
+
 	private boolean storageCaughtUp() {
 		final boolean rval = device == Device.FRONT_END ? true : diskDaemon
 				.caughtUpOnline();

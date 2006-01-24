@@ -64,8 +64,9 @@ import javax.swing.border.EmptyBorder;
  * @author <a href=mailto:dale@visser.name>Dale Visser </a>
  */
 public class BatchExport extends JDialog implements Observer {
-	
-	private static final Logger LOGGER = Logger.getLogger("jam.io");
+
+	private static final Logger LOGGER = Logger.getLogger(BatchExport.class
+			.getPackage().getName());
 
 	private class SelectHistogramDialog {
 
@@ -412,12 +413,13 @@ public class BatchExport extends JDialog implements Observer {
 		if (status) {
 			LOGGER.info("Exporting to " + exportDir + ": ");
 			for (int i = 0; i < exportFiles.length; i++) {
-				LOGGER.info("\t"+exportFiles[i].getName());
+				LOGGER.info("\t" + exportFiles[i].getName());
 				try {
 					exportFormat.saveFile(exportFiles[i], exportHistograms[i]);
 				} catch (ImpExpException e) {
 					LOGGER.log(Level.SEVERE, "Exporting file: "
-							+ exportFiles[i].getPath() + " " + e.getMessage(), e);
+							+ exportFiles[i].getPath() + " " + e.getMessage(),
+							e);
 				}
 			}
 			LOGGER.info("Exporting complete.");

@@ -61,7 +61,8 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 
 	private final static String energy = "energy";
 
-	private static final Logger LOGGER = Logger.getLogger("jam.plot");
+	private static final Logger LOGGER = Logger.getLogger(Action.class
+			.getPackage().getName());
 
 	private final static Map<String, Method> NO_ARG_MAP = new HashMap<String, Method>();
 

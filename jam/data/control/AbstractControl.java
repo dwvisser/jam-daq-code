@@ -21,15 +21,24 @@ import javax.swing.JPanel;
  */
 public abstract class AbstractControl extends JDialog implements Observer {
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.data.control");
-	
+	/**
+	 * Reference to instance of Broadcaster.
+	 */
+	protected static final Broadcaster BROADCASTER = Broadcaster
+			.getSingletonInstance();
+
 	/**
 	 * Default number of rows to display
 	 */
-	private final int MAX_INITIAL_DISPLAY = 15;
 
 	private static List<AbstractControl> controllers = Collections
 			.synchronizedList(new ArrayList<AbstractControl>());
+
+	/**
+	 * Logger for all subclasses of AbstractControl.
+	 */
+	protected static final Logger LOGGER = Logger
+			.getLogger(AbstractControl.class.getPackage().getName());
 
 	/**
 	 * Reference to instance of JamStatus.
@@ -37,10 +46,13 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
-	 * Reference to instance of Broadcaster.
+	 * Setup all instances of <code>AbstractControl</code>.
 	 */
-	protected static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	public static void setupAll() {
+		for (AbstractControl control : controllers) {
+			control.doSetup();
+		}
+	}
 
 	/**
 	 * Default constructor for implementation classes.
@@ -57,35 +69,6 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	}
 
 	/**
-	 * Remove self from list of controllers
-	 */
-	protected void finalize() throws Throwable {
-		controllers.remove(this);
-		BROADCASTER.deleteObserver(this);
-		super.finalize();
-	}
-
-	/**
-	 * Setup all instances of <code>AbstractControl</code>.
-	 */
-	public static void setupAll() {
-		for (AbstractControl control : controllers) {
-			control.doSetup();
-		}
-	}
-
-	/**
-	 * Setup the current instance of <code>AbstractControl</code>.
-	 */
-	public abstract void doSetup();
-
-	public void update(Observable observable, Object object) {
-		/*
-		 * do-nothing implementation for those subclasses that don't care
-		 */
-	}
-
-	/**
 	 * Calculate dimension for a dialog that can scroll a number of field rows
 	 * 
 	 * @param dialog
@@ -98,10 +81,11 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 *            Number of fields
 	 * @return New Dialog size
 	 */
-	protected Dimension calculateScrollDialogSize(JDialog dialog,
-			JPanel panelField, int border, int numberFields) {
+	protected Dimension calculateScrollDialogSize(final JDialog dialog,
+			final JPanel panelField, final int border, final int numberFields) {
+		final int maxInitDisplay = 15;
 		return calculateScrollDialogSize(dialog, panelField, border,
-				numberFields, MAX_INITIAL_DISPLAY);
+				numberFields, maxInitDisplay);
 	}
 
 	/**
@@ -119,17 +103,16 @@ public abstract class AbstractControl extends JDialog implements Observer {
 	 *            Maximum number of fields
 	 * @return New Dialog size
 	 */
-	protected Dimension calculateScrollDialogSize(JDialog dialog,
-			JPanel panelField, int border, int numberFields, int maxNumField) {
-
+	protected Dimension calculateScrollDialogSize(final JDialog dialog,
+			final JPanel panelField, final int border, final int numberFields,
+			final int maxNumField) {
 		Dimension dimDialog = null;
 		// Size of one parameter
 		if (numberFields >= 1) {
-
 			if (numberFields > maxNumField) {
 				dimDialog = dialog.getSize();
-				Dimension dimParam = panelField.getSize();
-				int height = dimParam.height;
+				final Dimension dimParam = panelField.getSize();
+				final int height = dimParam.height;
 				dimDialog.height = dimDialog.height - (height + border)
 						* (numberFields - maxNumField) - border;
 			} else {
@@ -137,7 +120,26 @@ public abstract class AbstractControl extends JDialog implements Observer {
 			}
 		}
 		return dimDialog;
+	}
 
+	/**
+	 * Setup the current instance of <code>AbstractControl</code>.
+	 */
+	public abstract void doSetup();
+
+	/**
+	 * Remove self from list of controllers
+	 */
+	protected void finalize() throws Throwable {
+		controllers.remove(this);
+		BROADCASTER.deleteObserver(this);
+		super.finalize();// NOPMD
+	}
+
+	public void update(final Observable observable, final Object object) {
+		/*
+		 * do-nothing implementation for those subclasses that don't care
+		 */
 	}
 
 }

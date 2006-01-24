@@ -36,15 +36,17 @@ import javax.swing.filechooser.FileFilter;
  * @author Ken Swartz
  */
 public final class MultipleFileChooser extends JPanel {
-	
-	private static final Logger LOGGER = Logger.getLogger("jam.ui");
+
+	private static final Logger LOGGER = Logger
+			.getLogger(MultipleFileChooser.class.getPackage().getName());
 
 	private transient final DefaultListModel listFilesModel = new DefaultListModel();
 
 	private transient final JList listFiles = new JList(listFilesModel);
 
 	private transient File lastFile; // last file referred to in a
-										// JFileChooser
+
+	// JFileChooser
 
 	private transient final JPanel pButtons = new JPanel(new GridLayout(0, 1,
 			5, 2));
@@ -71,8 +73,6 @@ public final class MultipleFileChooser extends JPanel {
 	 * 
 	 * @param frame
 	 *            parent frame
-	 * @param msgHandler
-	 *            where to print messages
 	 */
 	public MultipleFileChooser(Frame frame) {
 		super(new BorderLayout(5, 5));
@@ -160,7 +160,7 @@ public final class MultipleFileChooser extends JPanel {
 	 *            <code>true</code> to enable the buttons
 	 */
 	public void setLocked(final boolean state) {
-		boolean enabled = !state;
+		final boolean enabled = !state;
 		bAddfile.setEnabled(enabled);
 		bAddDir.setEnabled(enabled);
 		bRemove.setEnabled(enabled);
@@ -213,13 +213,14 @@ public final class MultipleFileChooser extends JPanel {
 	public void saveList() {
 		final JFileChooser fileChooser = new JFileChooser(lastFile);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
+		fileChooser.setFileFilter(new ExtensionFileFilter(
+				new String[] { "lst" }, "List Files (*.lst)"));
 		final int option = fileChooser.showSaveDialog(frame);
 		// save current values
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileChooser.getSelectedFile() != null) {
-			lastFile = fileChooser.getSelectedFile(); // save current directory
+			lastFile = fileChooser.getSelectedFile(); // save current
+														// directory
 			try {
 				final FileWriter saveStream = new FileWriter(lastFile);
 				for (int i = 0; i < listFilesModel.size(); i++) {
@@ -242,8 +243,8 @@ public final class MultipleFileChooser extends JPanel {
 	public void loadList() {
 		final JFileChooser fileChooser = new JFileChooser(lastFile);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setFileFilter(new ExtensionFileFilter(new String[] { "lst" },
-				"List Files (*.lst)"));
+		fileChooser.setFileFilter(new ExtensionFileFilter(
+				new String[] { "lst" }, "List Files (*.lst)"));
 		final int option = fileChooser.showOpenDialog(frame);
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileChooser.getSelectedFile() != null) {
@@ -255,7 +256,8 @@ public final class MultipleFileChooser extends JPanel {
 		int numFiles = 0;
 		lastFile = file;
 		try {
-			final BufferedReader reader = new BufferedReader(new FileReader(lastFile));
+			final BufferedReader reader = new BufferedReader(new FileReader(
+					lastFile));
 			String listItem;
 			do {
 				listItem = reader.readLine();
@@ -267,7 +269,8 @@ public final class MultipleFileChooser extends JPanel {
 			} while (listItem != null);
 			reader.close();
 		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, "Unable to load list from file " + file, ioe);
+			LOGGER.log(Level.SEVERE, "Unable to load list from file " + file,
+					ioe);
 		}
 		return numFiles;
 	}
@@ -303,7 +306,8 @@ public final class MultipleFileChooser extends JPanel {
 					addFile(fileChooser.getSelectedFile());
 				}
 			} else {
-				lastFile = fileChooser.getSelectedFile(); // save current directory
+				lastFile = fileChooser.getSelectedFile(); // save current
+															// directory
 				addDirFiles(lastFile);
 			}
 			listFiles.setSelectedIndex(0);

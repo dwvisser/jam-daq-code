@@ -141,7 +141,8 @@ public final class JamProperties {
 	 */
 	public final static String LOG_PATH = "log.path";
 
-	private static final Logger LOGGER = Logger.getLogger("jam.global");
+	private static final Logger LOGGER = Logger.getLogger(JamProperties.class
+			.getPackage().getName());
 
 	private static boolean macosx = false;
 

@@ -246,7 +246,8 @@ public class CommandManager implements CommandListener, CommandNames {
 		return rval;
 	}
 
-	private static final Logger LOGGER = Logger.getLogger("jam.commands");
+	private static final Logger LOGGER = Logger.getLogger(CommandManager.class
+			.getPackage().getName());
 
 	/**
 	 * Perform command with string parameters

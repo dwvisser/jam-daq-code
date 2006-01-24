@@ -45,8 +45,9 @@ import javax.swing.border.EmptyBorder;
  * 
  */
 public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
-	
-	private static final Logger LOGGER = Logger.getLogger("jam.io.control");
+
+	private static final Logger LOGGER = Logger
+			.getLogger(OpenSelectedHistogram.class.getPackage().getName());
 
 	private final JDialog dialog;
 
@@ -238,7 +239,8 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 			STATUS.setCurrentGroup(firstGroup);
 			/* Set the current histogram to the first opened histogram. */
 			if (firstGroup.getHistogramList().size() > 0) {
-				final Histogram firstHist = firstGroup.getHistogramList().get(0);
+				final Histogram firstHist = firstGroup.getHistogramList()
+						.get(0);
 				STATUS.setCurrentHistogram(firstHist);
 				BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
 						firstHist);

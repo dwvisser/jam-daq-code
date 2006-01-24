@@ -14,7 +14,9 @@ import javax.swing.SwingUtilities;
  */
 public final class ThreadCheckingRepaintManager extends RepaintManager {
 
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+	private static final Logger LOGGER = Logger
+			.getLogger(ThreadCheckingRepaintManager.class.getPackage()
+					.getName());
 
 	public void addDirtyRegion(final JComponent component, final int xcoord,
 			final int ycoord, final int width, final int height) {

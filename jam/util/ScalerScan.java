@@ -63,8 +63,9 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public final class ScalerScan implements JamFileFields {
-	
-	private static final Logger LOGGER = Logger.getLogger("jam.util");
+
+	private static final Logger LOGGER = Logger.getLogger(ScalerScan.class
+			.getPackage().getName());
 
 	private static final char TAB = '\t';
 

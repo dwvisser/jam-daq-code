@@ -78,7 +78,8 @@ final class Toolbar extends JToolBar implements ActionListener {
 
 	private static final String LOCATION, KEY;
 
-	private static final Logger LOGGER = Logger.getLogger("jam.plot");
+	private static final Logger LOGGER = Logger.getLogger(Toolbar.class
+			.getPackage().getName());
 
 	private static final int ORIENTATION;
 

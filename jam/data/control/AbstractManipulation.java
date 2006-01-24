@@ -6,7 +6,6 @@ import jam.global.BroadcastEvent;
 
 import java.awt.FontMetrics;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import javax.swing.JComboBox;
 
@@ -19,8 +18,6 @@ import javax.swing.JComboBox;
  */
 abstract class AbstractManipulation extends AbstractControl {
 
-	protected static final Logger LOGGER = Logger.getLogger("jam.data.control");
-	
 	/**
 	 * Width of choosers in characters.
 	 */
