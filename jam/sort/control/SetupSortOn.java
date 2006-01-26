@@ -436,15 +436,22 @@ public final class SetupSortOn extends AbstractSetup {
 
 	}
 	private boolean checkDirectories() {
-		
+
+
+		histFolder = new File(textPathHist.getText());		
 		dataFolder= new File(textPathData.getText());		
-		histFolder = new File(textPathHist.getText());
 		logDirectory= new File(textPathLog.getText());
-		return (checkDir(dataFolder) 
-		        && checkDir(histFolder)
+		
+		return (checkDir(histFolder) 
+		        && checkDir(dataFolder)
 				&& checkDir(logDirectory));
 
 	}
+	/**
+	 * Check a diretory exits
+	 * @param path of directory
+	 * @return true if directory exist
+	 */
 	private boolean checkDir(File path) {
 		boolean exists;
 		if (path.exists() && path.isDirectory() ) {
