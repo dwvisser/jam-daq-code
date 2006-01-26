@@ -1,5 +1,6 @@
 package jam.plot.color;
 
+import jam.global.JamStatus;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.Container;
@@ -47,26 +48,27 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 
 	private transient final RainbowPanel rainbowPanel = new RainbowPanel();
 
-	private transient final JTextField x0RField, x0GField, x0BField, aRField, aGField,
-			aBField;
+	private transient final JTextField x0RField, x0GField, x0BField, aRField,
+			aGField, aBField;
 
-	private transient final JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider, aGSlider,
-			aBSlider;
+	private transient final JSlider x0RSlider, x0GSlider, x0BSlider, aRSlider,
+			aGSlider, aBSlider;
 
 	private ColorSettingsFrame() {
+		super(JamStatus.getSingletonInstance().getFrame(),
+				"Color Scale Settings");
 		final int x0R = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.X0R, .80));
+				GradientSpecFieldsRGB.X0R.toString(), .80));
 		final int x0G = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.X0G, .60));
+				GradientSpecFieldsRGB.X0G.toString(), .60));
 		final int x0B = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.X0B, .20));
+				GradientSpecFieldsRGB.X0B.toString(), .20));
 		final int aRed = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.ARED, .50));
+				GradientSpecFieldsRGB.ARED.toString(), .50));
 		final int aGreen = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.AGREEN, .40));
+				GradientSpecFieldsRGB.AGREEN.toString(), .40));
 		final int aBlue = (int) Math.round(100 * COLOR_PREFS.getDouble(
-				ColorPrefs.ABLUE, .30));
-		setTitle("Color Scale Settings");
+				GradientSpecFieldsRGB.ABLUE.toString(), .30));
 		final Container contents = getContentPane();
 		contents.setLayout(new GridBagLayout());
 		final GridBagConstraints gbc = new GridBagConstraints();
@@ -79,12 +81,18 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 						final double aRedD = aRSlider.getValue() / 100.0;
 						final double aGreenD = aGSlider.getValue() / 100.0;
 						final double aBlueD = aBSlider.getValue() / 100.0;
-						COLOR_PREFS.putDouble(ColorPrefs.ABLUE, aBlueD);
-						COLOR_PREFS.putDouble(ColorPrefs.AGREEN, aGreenD);
-						COLOR_PREFS.putDouble(ColorPrefs.ARED, aRedD);
-						COLOR_PREFS.putDouble(ColorPrefs.X0B, x0blue);
-						COLOR_PREFS.putDouble(ColorPrefs.X0G, x0green);
-						COLOR_PREFS.putDouble(ColorPrefs.X0R, x0red);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ABLUE
+								.toString(), aBlueD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.AGREEN
+								.toString(), aGreenD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.ARED
+								.toString(), aRedD);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0B
+								.toString(), x0blue);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0G
+								.toString(), x0green);
+						COLOR_PREFS.putDouble(GradientSpecFieldsRGB.X0R
+								.toString(), x0red);
 					}
 				});
 		x0RSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, x0R);
@@ -138,9 +146,8 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		final String rainbow = "Rainbow";
 		final JComboBox csChooser = new JComboBox();
 		csChooser.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent itemEvent) {
-				final String selection = (String) csChooser
-						.getSelectedItem();
+			public void itemStateChanged(final ItemEvent itemEvent) {
+				final String selection = (String) csChooser.getSelectedItem();
 				if (selection.equals("Greyscale")) {
 					x0RSlider.setValue(100);
 					x0GSlider.setValue(100);
@@ -164,17 +171,23 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 					aBSlider.setValue(84);
 				} else {// current
 					final int x0red = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.X0R, .80));
+							.getDouble(GradientSpecFieldsRGB.X0R.toString(),
+									.80));
 					final int x0green = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.X0G, .60));
+							.getDouble(GradientSpecFieldsRGB.X0G.toString(),
+									.60));
 					final int x0blue = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.X0B, .20));
+							.getDouble(GradientSpecFieldsRGB.X0B.toString(),
+									.20));
 					final int aRedD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.ARED, .50));
+							.getDouble(GradientSpecFieldsRGB.ARED.toString(),
+									.50));
 					final int aGreenD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.AGREEN, .40));
+							.getDouble(GradientSpecFieldsRGB.AGREEN.toString(),
+									.40));
 					final int aBlueD = (int) Math.round(100 * COLOR_PREFS
-							.getDouble(ColorPrefs.ABLUE, .30));
+							.getDouble(GradientSpecFieldsRGB.ABLUE.toString(),
+									.30));
 					x0RSlider.setValue(x0red);
 					x0GSlider.setValue(x0green);
 					x0BSlider.setValue(x0blue);
@@ -259,25 +272,27 @@ public class ColorSettingsFrame extends JDialog implements ChangeListener,
 		pack();
 	}
 
-	private void setGrid(GridBagConstraints gbc, int gridx, int gridy, int width) {
+	private void setGrid(final GridBagConstraints gbc, final int gridx,
+			final int gridy, final int width) {
 		gbc.gridx = gridx;
 		gbc.gridy = gridy;
 		gbc.gridwidth = width;
 	}
 
-	public void stateChanged(ChangeEvent changeEvent) {
-		x0RField.setText(String.valueOf(x0RSlider.getValue() / 100.0));
-		x0GField.setText(String.valueOf(x0GSlider.getValue() / 100.0));
-		x0BField.setText(String.valueOf(x0BSlider.getValue() / 100.0));
-		aRField.setText(String.valueOf(aRSlider.getValue() / 100.0));
-		aGField.setText(String.valueOf(aGSlider.getValue() / 100.0));
-		aBField.setText(String.valueOf(aBSlider.getValue() / 100.0));
-		rainbowPanel.x0R = x0RSlider.getValue() / 100.0;
-		rainbowPanel.x0G = x0GSlider.getValue() / 100.0;
-		rainbowPanel.x0B = x0BSlider.getValue() / 100.0;
-		rainbowPanel.sigR = aRSlider.getValue() / 100.0;
-		rainbowPanel.sigG = aGSlider.getValue() / 100.0;
-		rainbowPanel.sigB = aBSlider.getValue() / 100.0;
+	public void stateChanged(final ChangeEvent changeEvent) {
+		final double x0R = x0RSlider.getValue() / 100.0;
+		final double x0G = x0GSlider.getValue() / 100.0;
+		final double x0B = x0BSlider.getValue() / 100.0;
+		final double sigR = aRSlider.getValue() / 100.0;
+		final double sigG = aGSlider.getValue() / 100.0;
+		final double sigB = aBSlider.getValue() / 100.0;
+		x0RField.setText(String.valueOf(x0R));
+		x0GField.setText(String.valueOf(x0G));
+		x0BField.setText(String.valueOf(x0B));
+		aRField.setText(String.valueOf(sigR));
+		aGField.setText(String.valueOf(sigG));
+		aBField.setText(String.valueOf(sigB));
+		rainbowPanel.setSpecs(x0R, x0G, x0B, sigR, sigG, sigB);
 		rainbowPanel.repaint();
 	}
 

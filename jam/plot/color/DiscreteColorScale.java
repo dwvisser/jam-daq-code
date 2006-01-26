@@ -140,16 +140,15 @@ public class DiscreteColorScale implements ColorScale, GraphicsModes {
 		}
 	}
 
-	static synchronized void setColors(final modes mode) {
-		if (mode == modes.B_ON_W) {
-			colors = B_ON_W;
-		} else if (mode == modes.W_ON_B) {
-			colors = W_ON_B;
-		} else if (mode == modes.PRINT) {
-			colors = GRAY;
-		} else {
-			throw new IllegalArgumentException(
-					"Given mode doesn't refer to an existing color scheme.");
+	static void setColors(final modes mode) {
+		synchronized (DiscreteColorScale.class) {
+			if (mode == modes.B_ON_W) {
+				colors = B_ON_W;
+			} else if (mode == modes.W_ON_B) {
+				colors = W_ON_B;
+			} else if (mode == modes.PRINT) {
+				colors = GRAY;
+			}
 		}
 	}
 

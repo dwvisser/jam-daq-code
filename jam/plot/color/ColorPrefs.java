@@ -21,37 +21,39 @@ public interface ColorPrefs {
 			.userNodeForPackage(ColorPrefs.class);
 
 	/**
+	 * Whether to use a continuous gradient or discrete color scale.
+	 */
+	String SMOOTH_SCALE = "ContinuousColorScale";
+}
+
+enum GradientSpecFieldsRGB {
+	/**
 	 * Centroid for red band.
 	 */
-	String X0R = "X0R";
+	X0R,
 
 	/**
 	 * Centroid for green band.
 	 */
-	String X0G = "X0G";
+	X0G,
 
 	/**
 	 * Centroid for blue band.
 	 */
-	String X0B = "X0B";
+	X0B,
 
 	/**
 	 * Diffuseness of red band.
 	 */
-	String ARED = "ARED";
+	ARED,
 
 	/**
 	 * Diffuseness of green band.
 	 */
-	String AGREEN = "AGREEN";
+	AGREEN,
 
 	/**
 	 * Diffuseness of blue band.
 	 */
-	String ABLUE = "ABLUE";
-
-	/**
-	 * Whether to use a continuous gradient or discrete color scale.
-	 */
-	String SMOOTH_SCALE = "ContinuousColorScale";
+	ABLUE
 }

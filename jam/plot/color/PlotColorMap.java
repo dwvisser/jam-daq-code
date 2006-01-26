@@ -8,44 +8,15 @@ import java.awt.Color;
  * @author Ken Swartz
  * @author Dale Visser
  */
-public class PlotColorMap implements GraphicsModes{
+public class PlotColorMap implements GraphicsModes {
 
 	private static final Color DARK_RED = new Color(192, 0, 0);
 
-	private transient Color background;
-
-	private transient Color foreground;
-
-	private transient Color hist;
+	static final private PlotColorMap MAP = new PlotColorMap(modes.B_ON_W);
 
 	private static final Color[] OVERLAY = { Color.RED, Color.GREEN,
 			Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE,
 			DARK_RED };
-
-	private transient Color gateDraw;
-
-	private transient Color gateShow;
-
-	private transient Color fitTotal;
-
-	private transient Color fitSignal;
-
-	private transient Color fitBkgd;
-
-	private transient Color fitResidual;
-
-	private transient Color mark;
-
-	private transient Color area;
-
-	private transient Color peakLabel;
-
-	static final private PlotColorMap MAP = new PlotColorMap(modes.B_ON_W);
-
-	private PlotColorMap(modes mode) {
-		super();
-		setColorMap(mode);
-	}
 
 	/**
 	 * Returns the only instance of this class.
@@ -54,6 +25,181 @@ public class PlotColorMap implements GraphicsModes{
 	 */
 	static public PlotColorMap getInstance() {
 		return MAP;
+	}
+
+	private transient Color area;
+
+	private transient Color background;
+
+	private transient Color fitBkgd;
+
+	private transient Color fitResidual;
+
+	private transient Color fitSignal;
+
+	private transient Color fitTotal;
+
+	private transient Color foreground;
+
+	private transient Color gateDraw;
+
+	private transient Color gateShow;
+
+	private transient Color hist;
+
+	private transient Color mark;
+
+	private transient Color peakLabel;
+
+	private PlotColorMap(modes mode) {
+		super();
+		setColorMap(mode);
+	}
+
+	/**
+	 * Returns the area highlight color.
+	 * 
+	 * @return area highlight color
+	 */
+	public Color getArea() {
+		synchronized (this) {
+			return area;
+		}
+	}
+
+	/**
+	 * Get the background color.
+	 * 
+	 * @return background color
+	 */
+	public Color getBackground() {
+		synchronized (this) {
+			return background;
+		}
+	}
+
+	/**
+	 * Returns the color used to draw the fit background function.
+	 * 
+	 * @return fit background curve color
+	 */
+	public Color getFitBackground() {
+		synchronized (this) {
+			return fitBkgd;
+		}
+	}
+
+	/**
+	 * Returns the color used to draw the fit residuals.
+	 * 
+	 * @return fit residuals color
+	 */
+	public Color getFitResidual() {
+		synchronized (this) {
+			return fitResidual;
+		}
+	}
+
+	/**
+	 * Returns the color used to draw the fit signal function.
+	 * 
+	 * @return fit signal curve color
+	 */
+	public Color getFitSignal() {
+		synchronized (this) {
+			return fitSignal;
+		}
+	}
+
+	/**
+	 * Returns the color used to draw the total (signal+background) fit
+	 * function.
+	 * 
+	 * @return fit total curve color
+	 */
+	public Color getFitTotal() {
+		synchronized (this) {
+			return fitTotal;
+		}
+	}
+
+	/**
+	 * Get the foreground color.
+	 * 
+	 * @return foreground color
+	 */
+	public Color getForeground() {
+		synchronized (this) {
+			return foreground;
+		}
+	}
+
+	/**
+	 * Returns the gate setting color.
+	 * 
+	 * @return the gate setting color
+	 */
+	public Color getGateDraw() {
+		synchronized (this) {
+			return gateDraw;
+		}
+	}
+
+	/**
+	 * Returns the gate display color.
+	 * 
+	 * @return the gate display color
+	 */
+	public Color getGateShow() {
+		synchronized (this) {
+			return gateShow;
+		}
+	}
+
+	/**
+	 * Returns the color to draw histogram lines.
+	 * 
+	 * @return histogram curve color
+	 */
+	public Color getHistogram() {
+		synchronized (this) {
+			return hist;
+		}
+	}
+
+	/**
+	 * Returns the color for marked channels.
+	 * 
+	 * @return marked channels color
+	 */
+	public Color getMark() {
+		synchronized (this) {
+			return mark;
+		}
+	}
+
+	/**
+	 * Returns the color for the index'th overlay curve.
+	 * 
+	 * @param index
+	 *            which overlay, counting starts at 0
+	 * @return overlay curve color
+	 */
+	public Color getOverlay(final int index) {
+		synchronized (this) {
+			return OVERLAY[index % OVERLAY.length];
+		}
+	}
+
+	/**
+	 * Returns the color used to label automatically found peaks.
+	 * 
+	 * @return peak label color
+	 */
+	public Color getPeakLabel() {
+		synchronized (this) {
+			return peakLabel;
+		}
 	}
 
 	/**
@@ -110,129 +256,5 @@ public class PlotColorMap implements GraphicsModes{
 			}
 			DiscreteColorScale.setColors(mode);
 		}
-	}
-
-	/**
-	 * Get the foreground color.
-	 * 
-	 * @return foreground color
-	 */
-	public Color getForeground() {
-		synchronized (this) {
-			return foreground;
-		}
-	}
-
-	/**
-	 * Get the background color.
-	 * 
-	 * @return background color
-	 */
-	public Color getBackground() {
-		synchronized (this){
-			return background;
-		}
-	}
-
-	/**
-	 * Returns the gate display color.
-	 * 
-	 * @return the gate display color
-	 */
-	synchronized public Color getGateShow() {
-		return gateShow;
-	}
-
-	/**
-	 * Returns the gate setting color.
-	 * 
-	 * @return the gate setting color
-	 */
-	synchronized public Color getGateDraw() {
-		return gateDraw;
-	}
-
-	/**
-	 * Returns the color for marked channels.
-	 * 
-	 * @return marked channels color
-	 */
-	synchronized public Color getMark() {
-		return mark;
-	}
-
-	/**
-	 * Returns the area highlight color.
-	 * 
-	 * @return area highlight color
-	 */
-	synchronized public Color getArea() {
-		return area;
-	}
-
-	/**
-	 * Returns the color to draw histogram lines.
-	 * 
-	 * @return histogram curve color
-	 */
-	synchronized public Color getHistogram() {
-		return hist;
-	}
-
-	/**
-	 * Returns the color used to draw the fit background function.
-	 * 
-	 * @return fit background curve color
-	 */
-	synchronized public Color getFitBackground() {
-		return fitBkgd;
-	}
-
-	/**
-	 * Returns the color used to draw the fit residuals.
-	 * 
-	 * @return fit residuals color
-	 */
-	synchronized public Color getFitResidual() {
-		return fitResidual;
-	}
-
-	/**
-	 * Returns the color used to draw the total (signal+background) fit
-	 * function.
-	 * 
-	 * @return fit total curve color
-	 */
-	synchronized public Color getFitTotal() {
-		return fitTotal;
-	}
-
-	/**
-	 * Returns the color used to draw the fit signal function.
-	 * 
-	 * @return fit signal curve color
-	 */
-	synchronized public Color getFitSignal() {
-		return fitSignal;
-	}
-
-	/**
-	 * Returns the color for the index'th overlay curve.
-	 * 
-	 * @param index
-	 *            which overlay, counting starts at 0
-	 * @return overlay curve color
-	 */
-	synchronized public Color getOverlay(final int index) {
-		return OVERLAY[index % OVERLAY.length];
-	}
-
-	/**
-	 * Returns the color used to label automatically found peaks.
-	 * 
-	 * @return peak label color
-	 */
-	synchronized public Color getPeakLabel() {
-		return peakLabel;
 	}
 }
