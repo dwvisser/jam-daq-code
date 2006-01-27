@@ -22,13 +22,16 @@ public final class GradientColorScale implements ColorScale, ColorPrefs {
 	static Color getRGB(final double level, final double x0R,
 			final double sigR, final double x0G, final double sigG,
 			final double x0B, final double sigB) {
-		final int red = (int) (255 * Math.exp(-(level - x0R) * (level - x0R)
-				/ sigR / sigR));
-		final int green = (int) (255 * Math.exp(-(level - x0G) * (level - x0G)
-				/ sigG / sigG));
-		final int blue = (int) (255 * Math.exp(-(level - x0B) * (level - x0B)
-				/ sigB / sigB));
+		final float red = gaussExp(level, x0R, sigR);
+		final float green = gaussExp(level, x0G, sigG);
+		final float blue = gaussExp(level, x0B, sigB);
 		return new Color(red, green, blue);
+	}
+
+	static private float gaussExp(final double level, final double center,
+			final double sig) {
+		final double offset = level - center;
+		return (float) Math.exp(-offset * offset / (sig * sig));
 	}
 
 	/**
