@@ -50,8 +50,6 @@ public final class SimulateFrontEnd extends GoodThread implements PacketTypes {
 
 	private boolean runState = false;
 	
-	private boolean runEnded=false;
-	
 	private ByteBuffer currentByteBuffer;
 
 	/**

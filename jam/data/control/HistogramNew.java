@@ -4,7 +4,6 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

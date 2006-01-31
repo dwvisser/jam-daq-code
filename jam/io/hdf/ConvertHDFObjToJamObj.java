@@ -517,7 +517,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	 * IllegalStateException if any histogram apparently has more than 2
 	 * dimensions @return number of histograms
 	 */
-	List findGroups(List existingGroupList) {
+	List findGroups(List<Group> existingGroupList) {
 		final List<VirtualGroup> groupList = new ArrayList<VirtualGroup>();
 		/* Get VirtualGroup that is root of all groups */
 		final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);

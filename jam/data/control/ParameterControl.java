@@ -1,7 +1,6 @@
 package jam.data.control;
 
 import jam.data.DataParameter;
-import jam.global.MessageHandler;
 import jam.io.ExtensionFileFilter;
 import jam.util.FileUtilities;
 

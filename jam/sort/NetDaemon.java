@@ -2,7 +2,6 @@ package jam.sort;
 
 import jam.global.GoodThread;
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -10,7 +9,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
 
 import javax.swing.Action;
 import javax.swing.JButton;

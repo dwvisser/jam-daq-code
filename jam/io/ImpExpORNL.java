@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -364,7 +363,7 @@ public class ImpExpORNL extends AbstractImpExp {
 			final FileOutputStream fosHis = new FileOutputStream(fileHis);
 			final BufferedOutputStream buffoutHis = new BufferedOutputStream(
 					fosHis);
-			final char ellipsis = '\u2026';
+
 			final File fileDRR = new File(parent, fileNameDRR);
 			final FileOutputStream fosDRR = new FileOutputStream(fileDRR);
 			final BufferedOutputStream buffoutDRR = new BufferedOutputStream(

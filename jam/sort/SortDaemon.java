@@ -13,7 +13,6 @@ import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
 
 import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The daemon (background thread) which sorts data. It takes an
