@@ -89,7 +89,7 @@ public final class MenuBar implements Observer, CommandNames {
 		final JMenuItem openSpecial = new JMenu("Open Special");
 		file.add(openSpecial);
 		openSpecial.add(getMenuItem(OPEN_MULTIPLE_HDF));
-		openSpecial.add(getMenuItem(OPEN_ADDITIONAL_HDF));
+		openSpecial.add(getMenuItem(OPEN_ADD_HDF));
 		openSpecial.add(getMenuItem(OPEN_SELECTED));
 
 		file.add(getMenuItem(RELOAD_HDF));
@@ -108,7 +108,7 @@ public final class MenuBar implements Observer, CommandNames {
 
 		final JMenuItem utilities = new JMenu("Scaler Utilities");
 		file.add(utilities);
-		utilities.add(getMenuItem(OPEN_SCALERS_YALE_CAEN));
+		utilities.add(getMenuItem(OPEN_SCALERS));
 		utilities.add(getMenuItem(SHOW_SCALER_SCAN));
 		file.addSeparator();
 
@@ -139,9 +139,9 @@ public final class MenuBar implements Observer, CommandNames {
 	private JMenu createSetupMenu() {
 		final JMenu setup = new JMenu("Setup");
 		setup.add(getMenuItem(SHOW_SETUP_ONLINE));
-		setup.add(getMenuItem(SHOW_SETUP_OFFLINE));
+		setup.add(getMenuItem(SHOW_SETUP_OFF));
 		setup.add(getMenuItem(SHOW_SETUP_REMOTE));
-		setup.add(getMenuItem(SHOW_CONFIGURATION));
+		setup.add(getMenuItem(SHOW_CONFIG));
 		return setup;
 	}
 
@@ -172,7 +172,7 @@ public final class MenuBar implements Observer, CommandNames {
 		histogram.add(getMenuItem(SHOW_HIST_FIT));
 		histogram.add(getMenuItem(SHOW_HIST_PROJECT));
 		histogram.add(getMenuItem(SHOW_HIST_COMBINE));
-		histogram.add(getMenuItem(SHOW_HIST_GAIN_SHIFT));
+		histogram.add(getMenuItem(SHOW_GAIN_SHIFT));
 
 		return histogram;
 	}
@@ -201,7 +201,7 @@ public final class MenuBar implements Observer, CommandNames {
 		scalers.add(getMenuItem(SHOW_ZERO_SCALERS));
 		scalers.addSeparator();
 		scalers.add(getMenuItem(DISPLAY_MONITORS));
-		scalers.add(getMenuItem(DISPLAY_MON_CONFIG));
+		scalers.add(getMenuItem(DISPLAY_MON_CFG));
 		return scalers;
 	}
 
@@ -229,7 +229,7 @@ public final class MenuBar implements Observer, CommandNames {
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
 		mPrefer.add(getMenuItem(ColorPrefs.SMOOTH_SCALE));
-		mPrefer.add(getMenuItem(SHOW_GRADIENT_SETTINGS));
+		mPrefer.add(getMenuItem(SHOW_GRADIENT));
 		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING_TILED));
 		mPrefer.add(getMenuItem(PlotPrefs.DISPLAY_AXIS_LABELS));
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));

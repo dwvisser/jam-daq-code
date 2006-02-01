@@ -21,7 +21,7 @@ public final class JamToolBar extends JToolBar implements CommandNames {
 	public JamToolBar() {
 		super();
 		add(createButton(OPEN_HDF));
-		add(createButton(OPEN_ADDITIONAL_HDF));
+		add(createButton(OPEN_ADD_HDF));
 		add(createButton(OPEN_MULTIPLE_HDF));
 		add(createButton(SAVE_HDF));
 		add(createButton(SAVE_AS_HDF));
