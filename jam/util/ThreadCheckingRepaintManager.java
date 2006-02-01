@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-public final class ThreadCheckingRepaintManager extends RepaintManager {
+public final class ThreadCheckingRepaintManager extends RepaintManager {//NOPMD
 
 	private static final Logger LOGGER = Logger
 			.getLogger(ThreadCheckingRepaintManager.class.getPackage()

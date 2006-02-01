@@ -34,7 +34,7 @@ public final class CollectionsUtil {
         /**
          * Gives whether to accept an object or not.
          * @param object to decide about
-         * @param <T> type of element in the collection
+         * @param <Te> type of element in the collection
          * @return <code>true</code> if acceptable
          */
         <Te> boolean accept(Te object);

@@ -177,7 +177,7 @@ public class FileUtilities {
 				rval = rval.getParentFile();
 			}
 		} else {
-			rval = null;
+			rval = null;//NOPMD
 		}
 		return rval;
 	}

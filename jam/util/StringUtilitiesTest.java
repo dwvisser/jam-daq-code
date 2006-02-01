@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 /**
  * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
  */
-public class StringUtilitiesTest extends TestCase {
+public class StringUtilitiesTest extends TestCase {//NOPMD
 
-    private final StringUtilities util = StringUtilities.getInstance();
+    private transient final StringUtilities util = StringUtilities.getInstance();
 
     /**
      * Tests whether makeLength() works properly.

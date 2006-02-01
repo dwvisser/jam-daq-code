@@ -35,7 +35,7 @@ public abstract class AbstractSwingWorker {
 
 		void clear() {
 			synchronized (this) {
-				thread = null;
+				thread = null;//NOPMD
 			}
 		}
 	}
@@ -101,18 +101,21 @@ public abstract class AbstractSwingWorker {
 	 * @return the value created by the <code>construct</code> method
 	 */
 	public Object get() {
+		Object rval = null;
 		while (true) {
 			final Thread tempThread = threadVar.get();
 			if (tempThread == null) {
-				return getValue();
+				rval = getValue();
+				break;
 			}
 			try {
 				tempThread.join();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt(); // propagate
-				return null;
+				break;
 			}
 		}
+		return rval;
 	}
 
 	/**
