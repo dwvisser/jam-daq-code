@@ -94,6 +94,10 @@ public class RTSI {
 		return temp;
 	}
 
+	/**
+	 * 
+	 * @return the unique singleton instance of this class
+	 */
 	static public RTSI getSingletonInstance() {
 		return instance;
 	}
@@ -411,10 +415,6 @@ public class RTSI {
 	 */
 	private SortedSet<String> getClassesRecursively(final Class tosubclass,
 			final String classpath, final File file, final ClassLoader loader) {
-		final StringBuffer errmessage = new StringBuffer(
-				"Searching in the classpath: ").append(classpath).append(
-				"\nYou've probably incorrectly specified a classpath,\n")
-				.append("or moved/renamed an existing .class file.\n");
 		final SortedSet<String> rval = new TreeSet<String>();
 		if (file.isDirectory()) {
 			final File[] list = file.listFiles();
@@ -430,18 +430,10 @@ public class RTSI {
 					if (canUseClassAs(tosubclass, clazz)) {
 						rval.add(temp);
 					}
-				} catch (ClassNotFoundException cnfex) {
-					// errmessage.append(cnfex.getMessage());
-					// JOptionPane.showMessageDialog(null,
-					// errmessage.toString(),
-					// rtsiName, JOptionPane.ERROR_MESSAGE);
-					return rval;
-				} catch (LinkageError le) {
-					// errmessage.append(le.getMessage());
-					// JOptionPane.showMessageDialog(null,
-					// errmessage.toString(),
-					// rtsiName, JOptionPane.ERROR_MESSAGE);
-					return rval;
+				} catch (ClassNotFoundException cnfex) {//NOPMD
+					//fall through and return what we have
+				} catch (LinkageError le) {//NOPMD
+					//fall through and return what we have
 				}
 			}
 		}
@@ -469,9 +461,7 @@ public class RTSI {
 			JOptionPane.showMessageDialog(null, e.getMessage(), rtsiName,
 					JOptionPane.ERROR_MESSAGE);
 		}
-		if (url == null) {
-			rval = null;
-		} else {
+		if (url != null) {
 			final ClassLoader loader = new URLClassLoader(new URL[] { url });
 			try {
 				rval = loader.loadClass(className);
@@ -509,7 +499,6 @@ public class RTSI {
 			JOptionPane.showMessageDialog(null,
 					"Class " + name + " not found!", rtsiName,
 					JOptionPane.ERROR_MESSAGE);
-			tosubclass = null;
 		}
 		return tosubclass;
 	}

@@ -8,65 +8,72 @@ package jam.global;
  * @since 1.5.1
  * @see jam.global.JamStatus#setSortMode(SortMode,String)
  */
-public final class SortMode {
+public final class SortMode {// NOPMD
+
+	static private final int I_FILE = 6; // we have read in a file
+
 	static private final int I_NOSORT = 0;
-	static private final int I_ON_DISK = 1;
-	static private final int I_ON_NODISK = 2;
+
 	static private final int I_OFFLINE = 3;
+
+	static private final int I_ON_DISK = 1;
+
+	static private final int I_ON_NODISK = 2;
+
 	static private final int I_REMOTE = 5;
-	static private final int I_FILE = 6; //we have read in a file
-	
-	private final transient int mode;
-	
-	private SortMode(int iMode){
-		mode=iMode;
-	}
+
+	/**
+	 * Looking at data that was read in from a file.
+	 */
+	static public final SortMode FILE = new SortMode(I_FILE);
 	
 	/**
-	 * Returns whether this mode represents online data acquisition.
-	 * 
-	 * @return whether this mode represents online data acquisition
+	 * Not sorting, and no file loaded.
 	 */
-	public boolean isOnline(){
-		return mode==I_ON_DISK || mode==I_ON_NODISK;
+	static public final SortMode NO_SORT = new SortMode(I_NOSORT);
+
+	/**
+	 * Sorting data from disk, that is, sorting offline.
+	 */
+	static public final SortMode OFFLINE = new SortMode(I_OFFLINE);
+
+	/**
+	 * Sort online data without storing events.
+	 */
+	static public final SortMode ON_NO_DISK = new SortMode(I_ON_NODISK);
+
+	/**
+	 * Sorting online data and storing events to disk.
+	 */
+	static public final SortMode ONLINE_DISK = new SortMode(I_ON_DISK);
+
+	/**
+	 * Acting as a client to a remote Jam process.
+	 */
+	static public final SortMode REMOTE = new SortMode(I_REMOTE);
+
+	private final transient int mode;
+
+	private SortMode(int iMode) {
+		super();
+		mode = iMode;
 	}
-	
+
 	/**
 	 * Returns whether this mode represents offline sorting.
 	 * 
 	 * @return whether this mode represents offline sorting
 	 */
-	public boolean isOffline(){
-		return mode==I_OFFLINE;
+	public boolean isOffline() {
+		return mode == I_OFFLINE;
 	}
 
 	/**
-	 * Not sorting, and no file loaded.
+	 * Returns whether this mode represents online data acquisition.
+	 * 
+	 * @return whether this mode represents online data acquisition
 	 */
-	static public final SortMode NO_SORT=new SortMode(I_NOSORT);
-	
-	/**
-	 * Sorting online data and storing events to disk.
-	 */
-	static public final SortMode ONLINE_DISK=new SortMode(I_ON_DISK);
-	
-	/**
-	 * Sort online data without storing events.
-	 */
-	static public final SortMode ON_NO_DISK=new SortMode(I_ON_NODISK);
-
-	/**
-	 * Sorting data from disk, that is, sorting offline.
-	 */
-	static public final SortMode OFFLINE=new SortMode(I_OFFLINE);
-	
-	/**
-	 * Acting as a client to a remote Jam process.
-	 */
-	static public final SortMode REMOTE=new SortMode(I_REMOTE);
-	
-	/**
-	 * Looking at data that was read in from a file.
-	 */
-	static public final SortMode FILE=new SortMode(I_FILE);
+	public boolean isOnline() {
+		return mode == I_ON_DISK || mode == I_ON_NODISK;
+	}
 }

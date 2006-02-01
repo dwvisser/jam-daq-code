@@ -35,8 +35,8 @@ public final class Broadcaster extends Observable {
      * @param param a parameter to be wrapped in the <CODE>BroadcastEvent</CODE>
      * object
      */
-    public void broadcast(BroadcastEvent.Command command, Object param) {
-        Object bEvent=new BroadcastEvent(command, param);
+    public void broadcast(final BroadcastEvent.Command command, final Object param) {
+        final Object bEvent=new BroadcastEvent(command, param);
         setChanged();//necessary for next line to work
         notifyObservers(bEvent);//automatically calls clearChanged()
     }
@@ -47,7 +47,7 @@ public final class Broadcaster extends Observable {
      * 
      * @param command code from <CODE>BroadcastEvent</CODE>, I presume
      */
-    public void broadcast(BroadcastEvent.Command command) {
+    public void broadcast(final BroadcastEvent.Command command) {
         broadcast(command,null);
     }    
 }

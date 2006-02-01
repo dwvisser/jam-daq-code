@@ -9,160 +9,150 @@ public final class BroadcastEvent {
 
 	/**
 	 * The possible commands for <code>BroadcastEvent</code>'s.
+	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public static class Command {
+	public enum Command {
 
 		/** Refresh the display. */
-		public static final Command REFRESH = new Command(1);
+		REFRESH,
 
 		/**
-		 * The root node has been selected 
+		 * The root node has been selected
 		 */
-		public static final Command ROOT_SELECT = new Command(3);		
-		
+		ROOT_SELECT,
+
 		/**
 		 * A Group has been selected.
 		 * 
 		 * @see jam.plot.View
 		 */
-		public static final Command GROUP_SELECT = new Command(5);		
-		
+		GROUP_SELECT,
+
 		/** A new set of histograms has been defined. */
-		public static final Command HISTOGRAM_NEW = new Command(10);
+		HISTOGRAM_NEW,
 
 		/** A histogram has been added. */
-		public static final Command HISTOGRAM_ADD = new Command(11);
+		HISTOGRAM_ADD,
 
 		/** A histogram has been selected. */
-		public static final Command HISTOGRAM_SELECT = new Command(12);
-		
+		HISTOGRAM_SELECT,
+
 		/**
 		 * For telling the gui that we want overlay mode off.
 		 */
-		public static final Command OVERLAY_OFF=new Command(13);
+		OVERLAY_OFF,
 
 		/** Scalers have been read. */
-		public static final Command SCALERS_READ = new Command(20);
+		SCALERS_READ,
 
 		/**
 		 * Clear all scaler registers.
 		 */
-		public static final Command SCALERS_CLEAR = new Command(21);
+		SCALERS_CLEAR,
 
 		/**
 		 * Update the scaler dialog with the current values in memory.
 		 */
-		public static final Command SCALERS_UPDATE = new Command(22);
+		SCALERS_UPDATE,
 
 		/**
 		 * The monitors have been enabled.
 		 */
-		public static final Command MONITORS_ENABLED = new Command(25); 
+		MONITORS_ENABLED,
 
 		/**
 		 * The monitors have been disabled.
 		 */
-		public static final Command MONITORS_DISABLED = new Command(26); 
+		MONITORS_DISABLED,
 
 		/** Please update the monitors. */
-		public static final Command MONITORS_UPDATE = new Command(27); 
+		MONITORS_UPDATE,
 
 		/** A gate has been selected for display. */
-		public static final Command GATE_SELECT = new Command(30); 
-
+		GATE_SELECT,
 		/** A gate has been added. */
-		public static final Command GATE_ADD = new Command(31); 
+		GATE_ADD,
 
 		/**
 		 * We are currently setting a gate.
 		 */
-		public static final Command GATE_SET_ON = new Command(32);
+		GATE_SET_ON,
 
 		/**
 		 * We are no longer setting a gate.
 		 */
-		public static final Command GATE_SET_OFF = new Command(33);
+		GATE_SET_OFF,
 
 		/**
 		 * Gate has been completely set and saved.
 		 */
-		public static final Command GATE_SET_SAVE = new Command(34);
+		GATE_SET_SAVE,
 
 		/**
 		 * A point has been added to the gate currently being set.
 		 */
-		public static final Command GATE_SET_POINT = new Command(35);
+		GATE_SET_POINT,
 
 		/**
-		 * A point has been added by typing channels to the gate
-		 * currently being set.
+		 * A point has been added by typing channels to the gate currently being
+		 * set.
 		 */
-		public static final Command GATE_SET_ADD = new Command(36);
+		GATE_SET_ADD,
 
 		/**
-		 * The last point has been removed from the gate currently
-		 * being set.
+		 * The last point has been removed from the gate currently being set.
 		 */
-		public static final Command GATE_SET_REMOVE = new Command(37);
+		GATE_SET_REMOVE,
 
 		/**
 		 * Counters have been received from the front end and should be updated.
-		 * Message always includes <code>int []</code> as the message parameter.
+		 * Message always includes <code>int []</code> as the message
+		 * parameter.
 		 */
-		public static final Command COUNTERS_UPDATE = new Command(40);
+		COUNTERS_UPDATE,
 
 		/**
 		 * Requests counters to be sent from front end.
 		 */
-		public static final Command COUNTERS_READ = new Command(41);
+		COUNTERS_READ,
 
 		/**
 		 * Requests counters to be zeroed.
 		 */
-		public static final Command COUNTERS_ZERO = new Command(42);
+		COUNTERS_ZERO,
 
 		/**
 		 * Announces that the sort mode has changed.
 		 * 
 		 * @see jam.global.SortMode
 		 */
-		public static final Command SORT_MODE_CHANGED = new Command(50);
+		SORT_MODE_CHANGED,
 
 		/**
 		 * Announces that the run state has changed.
 		 * 
 		 * @see jam.global.RunState
 		 */
-		public static final Command RUN_STATE_CHANGED = new Command(51);
+		RUN_STATE_CHANGED,
 
 		/**
-		 * Announces a new fit dialog has been opened. The action associated with
-		 * opening this dialog is passed as a parameter.
+		 * Announces a new fit dialog has been opened. The action associated
+		 * with opening this dialog is passed as a parameter.
 		 */
-		public static final Command FIT_NEW = new Command(60);
-		
+		FIT_NEW,
+
 		/**
 		 * A view has been added or deleted.
 		 * 
 		 * @see jam.plot.View
 		 */
-		public static final Command VIEW_NEW = new Command(70);
-		
-		private final int command;
+		VIEW_NEW
+	};
 
-		private Command(int i) {
-			command = i;
-		}
-		
-		public boolean equals(Object o){
-		    return o instanceof Command ? ((Command)o).command==command : false;
-		}
-	}
+	private transient final Object content;
 
-	private final Object content;
-
-	private final Command command;
+	private transient final Command command;
 
 	/**
 	 * Creates a message to broadcast
@@ -173,6 +163,7 @@ public final class BroadcastEvent {
 	 *            additional object along for the ride
 	 */
 	public BroadcastEvent(Command command, Object content) {
+		super();
 		this.command = command;
 		this.content = content;
 	}

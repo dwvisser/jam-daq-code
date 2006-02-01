@@ -28,7 +28,7 @@ import jam.sort.stream.AbstractEventOutputStream;
      * @exception Exception any exceptions caught by calls in this 
      * method should be thrown up to the controlling thread
      */
-    void initialize() throws Exception;
+    void initialize() throws Exception;//NOPMD
     
     /**
      * Called to process each event.  The sort method looks at gates 
@@ -39,7 +39,7 @@ import jam.sort.stream.AbstractEventOutputStream;
      * @exception Exception any exceptions caught by calls in this 
      * method should be thrown up to the controlling thread
      */
-    void sort(int [] dataWords) throws Exception;
+    void sort(int [] dataWords) throws Exception;//NOPMD
     
     /**
      * Updates any monitors.
