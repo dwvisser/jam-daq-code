@@ -51,25 +51,62 @@ import javax.swing.border.LineBorder;
  */
 public abstract class AbstractFit implements PlotMouseListener {
 
+	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	/**
+	 * Checkboxes for finding initial estimates.
+	 */
+	private transient Map<Parameter, JCheckBox> cEstimate;
+
+	/**
+	 * Checkboxes for parameter fixing.
+	 */
+	private transient Map<Parameter, JCheckBox> cFixValue;
+
+	/**
+	 * Checkboxes for miscellaneous options.
+	 */
+	private transient Map<Parameter, JCheckBox> cOption;
+
+	/**
+	 * The histogram to be fitted.
+	 */
+	protected transient double[] counts;
+
+	/**
+	 * Dialog box
+	 */
+	private transient JDialog dfit;
+
+	/**
+	 * Jam main display window.
+	 */
+	private transient PlotDisplay display;
+
+	/**
+	 * The errors associatied with <code>counts</code>.
+	 */
+	protected transient double[] errors;
+
+	/**
+	 * If these are set, they are used for display.
+	 */
+	protected transient int lowerLimit;
+
+	/**
+	 * Counter for mouse input.
+	 */
+	private transient int mouseClickCount;
+
 	/**
 	 * Displayed name of <code>Fit</code> routine.
 	 */
 	protected transient String name;
 
 	/**
-	 * Controlling frame for this dialog box.
+	 * <code>Enumeration</code> of parameters
 	 */
-	protected transient Frame frame;
-
-	/**
-	 * Jam main display window.
-	 */
-	protected transient PlotDisplay display;
-
-	/**
-	 * Class to send output messages to.
-	 */
-	protected transient MessageHandler msgHandler;
+	protected transient Iterator<Parameter> parameterIter;
 
 	/**
 	 * The ordered list of all <code>Parameter</code> objects..
@@ -87,59 +124,14 @@ public abstract class AbstractFit implements PlotMouseListener {
 			.synchronizedMap(new HashMap<String, Parameter>());
 
 	/**
-	 * <code>Enumeration</code> of parameters
-	 */
-	protected transient Iterator parameterIter;
-
-	/**
-	 * The histogram to be fitted.
-	 */
-	protected transient double[] counts;
-
-	/**
-	 * The errors associatied with <code>counts</code>.
-	 */
-	protected transient double[] errors;
-
-	/**
-	 * If these are set, they are used for display.
-	 */
-	protected transient int lowerLimit;
-
-	/**
-	 * 
-	 */
-	protected transient int upperLimit;
-
-	/**
-	 * Counter for mouse input.
-	 */
-	private transient int mouseClickCount;
-
-	/**
 	 * Whether to calculate residuals.
 	 */
 	protected transient boolean residualOption = true;
 
 	/**
-	 * Dialog box
+	 * Status message
 	 */
-	private transient JDialog dfit;
-
-	/**
-	 * Checkboxes for parameter fixing.
-	 */
-	private transient Map<Parameter, JCheckBox> cFixValue;
-
-	/**
-	 * Checkboxes for finding initial estimates.
-	 */
-	private transient Map<Parameter, JCheckBox> cEstimate;
-
-	/**
-	 * Checkboxes for miscellaneous options.
-	 */
-	private transient Map<Parameter,JCheckBox> cOption;
+	private transient JLabel status;
 
 	/**
 	 * Data field values.
@@ -152,11 +144,6 @@ public abstract class AbstractFit implements PlotMouseListener {
 	private transient Map<Parameter, JLabel> textError;
 
 	/**
-	 * Status message
-	 */
-	private transient JLabel status;
-
-	/**
 	 * Histogram name field
 	 */
 	private transient JLabel textHistName;
@@ -166,7 +153,10 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 */
 	protected transient FitConsole textInfo;
 
-	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
+	/**
+	 * 
+	 */
+	protected transient int upperLimit;
 
 	/**
 	 * Class constructor.
@@ -184,33 +174,130 @@ public abstract class AbstractFit implements PlotMouseListener {
 	// -------------------------
 
 	/**
-	 * Changes parameter values to calculated estimates. Useful for
-	 * <code>NonLinearFit</code>, which requires reasonably close guesses in
-	 * order to converge on a good chi-squared minimum.
+	 * Adds the given parameter to the list.
 	 * 
-	 * @exception FitException
-	 *                thrown if unrecoverable error occurs during estimation
-	 * @see AbstractNonLinearFit
-	 * @see GaussianFit#estimate
+	 * @param newParameter
+	 *            parameter to add
+	 * @see #parameterTable
+	 * @see #parameters
 	 */
-	public abstract void estimate() throws FitException;
+	protected final void addParameter(final Parameter newParameter) {
+		parameters.add(newParameter);
+		parameterTable.put(newParameter.getName(), newParameter);
+	}
+
+	private void addParameterGUI(final Parameter parameter, final JPanel west,
+			final JPanel center, final JPanel east) {
+		final JPanel middle = new JPanel(new GridLayout(1, 3));
+		center.add(middle);
+		addParamWestMiddle(parameter, west, middle);
+		/* Take care of options. */
+		final JPanel right = new JPanel(new GridLayout(1, 0));
+		east.add(right);
+		if (parameter.hasErrorBar()) {
+			final JLabel error = new JLabel(formatError(parameter));
+			textError.put(parameter, error);
+			error.setEnabled(true);
+			middle.add(error);
+		}
+		if (parameter.canBeFixed()) {
+			final JCheckBox fixed = new JCheckBox("Fixed", parameter.isFixed());
+			cFixValue.put(parameter, fixed);
+			fixed.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent event) {
+					setFixed(parameter);
+				}
+			});
+			right.add(fixed);
+		}
+		if (parameter.canBeEstimated()) {
+			final JCheckBox estimate = new JCheckBox("Estimate",
+					parameter.estimate);
+			cEstimate.put(parameter, estimate);
+			estimate.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent event) {
+					setEstimate(parameter);
+				}
+			});
+			right.add(estimate);
+		}
+		if (parameter.isOutputOnly()) {
+			textData.get(parameter).setEnabled(false);
+		}
+	}
+
+	private void addParamWestMiddle(final Parameter parameter,
+			final JPanel west, final JPanel middle) {
+		final String parName = parameter.getName();
+		if (parameter.isDouble() || parameter.isInteger()) {
+			final JTextField data = new JTextField(formatValue(parameter), 8);
+			textData.put(parameter, data);
+			data.setEnabled(true);
+			west.add(new JLabel(parName, RIGHT));
+			middle.add(data);
+		} else if (parameter.isText()) {
+			final JLabel text = new JLabel(formatValue(parameter));
+			west.add(new JLabel(parName, RIGHT));
+			middle.add(text);
+		} else if (parameter.isBoolean()) {
+			final JCheckBox option = new JCheckBox(parName, parameter
+					.getBooleanValue());
+			cOption.put(parameter, option);
+			option.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent event) {
+					parameter.setValue(option.isSelected());
+				}
+			});
+			middle.add(option);
+			west.add(new JPanel());
+		}
+	}
 
 	/**
-	 * Sets the contents of <code>counts</code>.
+	 * Calculates function value for a specific channel. Uses whatever the
+	 * current values are for the parameters in <code>parameters</code>.
 	 * 
-	 * @param counts
-	 *            the new array of channel values
-	 * @see #counts
+	 * @param channel
+	 *            channel to evaluate fit function at
+	 * @return double containing evaluation
 	 */
+	public abstract double calculate(int channel);
+
+	abstract double calculateBackground(int channel);
 
 	/**
-	 * Performs calulations neccessary to find a best fit to the data.
+	 * Returns the evaluation of a signal at one particular channel. Should
+	 * return zero if the given signal doesn't exist.
 	 * 
-	 * @return <code>String</code> containing information about the fit.
-	 * @exception FitException
-	 *                thrown if unrecoverable error occurs during fit
+	 * @param signal
+	 *            which signal
+	 * @param channel
+	 *            to calculate signal value for
+	 * @return signal value for the given channel
 	 */
-	public abstract String doFit() throws FitException;
+	abstract double calculateSignal(int signal, int channel);
+
+	private void clear() {
+		for (Parameter parameter : parameters) {
+			if (!parameter.isBoolean()) {
+				// text field backgrounds
+				if (parameter.isOutputOnly()) {
+					textData.get(parameter).setEditable(false);
+				} else {
+					if (!parameter.isText()) {
+						textData.get(parameter).setBackground(Color.white);
+					}
+				}
+				if (parameter.isFixed()) {
+					setFixed(parameter);
+				}
+				if (parameter.canBeEstimated()) {
+					setEstimate(parameter);
+				}
+			}
+			setMouseActive(false);
+		}
+	}
 
 	/**
 	 * Creates user interface dialog box.
@@ -222,11 +309,9 @@ public abstract class AbstractFit implements PlotMouseListener {
 	 */
 	public final void createDialog(final Frame parent,
 			final PlotDisplay plotDisplay) {
-		frame = parent;
 		display = plotDisplay;
-		msgHandler = JamStatus.getSingletonInstance().getMessageHandler();
 		final int parNumber = parameters.size();
-		dfit = new JDialog(frame, name, false);
+		dfit = new JDialog(parent, name, false);
 		final Container contents = dfit.getContentPane();
 		dfit.setResizable(false);
 		dfit.setLocation(20, 50);
@@ -326,344 +411,54 @@ public abstract class AbstractFit implements PlotMouseListener {
 		main.add(center, BorderLayout.CENTER);
 		cFixValue = new HashMap<Parameter, JCheckBox>();
 		cEstimate = new HashMap<Parameter, JCheckBox>();
-		cOption = new HashMap<Parameter,JCheckBox>();
+		cOption = new HashMap<Parameter, JCheckBox>();
 		textData = new HashMap<Parameter, JTextField>();
 		textError = new HashMap<Parameter, JLabel>();
 		for (final Parameter parameter : parameters) {
-			final JPanel middle = new JPanel(new GridLayout(1, 3));
-			center.add(middle);
-			final String parName = parameter.getName();
-			if (parameter.isDouble() || parameter.isInteger()) {
-				final JTextField data = new JTextField(formatValue(parameter),
-						8);
-				textData.put(parameter, data);
-				data.setEnabled(true);
-				west.add(new JLabel(parName, RIGHT));
-				middle.add(data);
-			} else if (parameter.isText()) {
-				final JLabel text = new JLabel(formatValue(parameter));
-				west.add(new JLabel(parName, RIGHT));
-				middle.add(text);
-			} else if (parameter.isBoolean()) {
-				final JCheckBox option = new JCheckBox(parName, parameter.getBooleanValue());
-				cOption.put(parameter,option);
-				option.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent event) {
-						parameter.setValue(option.isSelected());
-					}
-				});
-				middle.add(option);
-				west.add(new JPanel());
-			}
-			/* Take care of options. */
-			final JPanel right = new JPanel(new GridLayout(1, 0));
-			east.add(right);
-			if (parameter.hasErrorBar()) {
-				final JLabel error = new JLabel(formatError(parameter));
-				textError.put(parameter, error);
-				error.setEnabled(true);
-				middle.add(error);
-			}
-			if (parameter.canBeFixed()) {
-				final JCheckBox fixed = new JCheckBox("Fixed", parameter
-						.isFixed());
-				cFixValue.put(parameter, fixed);
-				fixed.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent event) {
-						setFixed(parameter);
-					}
-				});
-				right.add(fixed);
-			}
-			if (parameter.canBeEstimated()) {
-				final JCheckBox estimate = new JCheckBox("Estimate",
-						parameter.estimate);
-				cEstimate.put(parameter, estimate);
-				estimate.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent event) {
-						setEstimate(parameter);
-					}
-				});
-				right.add(estimate);
-			}
-			if (parameter.isOutputOnly()) {
-				textData.get(parameter).setEnabled(false);
-			}
+			addParameterGUI(parameter, west, center, east);
 		} // loop for all parameters
 		dfit.addWindowListener(new WindowAdapter() {
+			public void windowActivated(WindowEvent event) {
+				updateHist();
+			}
+
 			public void windowClosing(WindowEvent event) {
 				setMouseActive(false);
 				dfit.dispose();
-			}
-
-			public void windowActivated(WindowEvent event) {
-				updateHist();
 			}
 		});
 		dfit.pack();
 	}
 
-	/**
-	 * Show fit dialog box.
-	 */
-	final void show() {
-		setMouseActive(false);
-		dfit.setVisible(true);
-	}
-
-	final MessageHandler getTextInfo() {
-		return textInfo;
-	}
-
 	/*
-	 * non-javadoc: Sets whether to receive mouse clicks from display or not.
+	 * non-javadoc: Given a double between zero and 1, and number of significant
+	 * figures desired, return number of decimal fraction digits to display.
 	 */
-	private void setMouseActive(final boolean state) {
-		if (state) {
-			display.addPlotMouseListener(this);
-		} else {
-			display.removePlotMouseListener(this);
-		}
-	}
+	private int decimalPlaces(final double value, final int sigfig) {
+		int out;
+		int pos; // position of firstSigFig
 
-	public void plotMousePressed(final Bin bin, final Point pPixel) {
-		while (parameterIter.hasNext()) {
-			final Parameter parameter = (Parameter) parameterIter.next();
-			mouseClickCount++;
-			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
-				final JTextField data = textData.get(parameter);
-				data.setForeground(Color.BLACK);
-				data.setText("" + bin.getX());
-				break;
-			}
+		if (value <= 0.0 || value >= 1.0) {
+			throw new IllegalArgumentException(
+					"Must call decimalPlaces() with value in (0,1).");
 		}
-		if (!parameterIter.hasNext()) {
-			setMouseActive(false);
+		if (sigfig < 1) {
+			throw new IllegalArgumentException(
+					"Can't have zero significant figures.");
 		}
+		pos = (int) Math.abs(Math.floor(log10(value)));
+		out = pos + sigfig - 1;
+		return out;
 	}
 
 	/**
-	 * Set the state to enter values using mouse
-	 */
-	private void initializeMouse() {
-		mouseClickCount = 0;
-		final List<Parameter> tempList = new ArrayList<Parameter>();
-		for (int i = 0; i < parameters.size(); i++) {
-			final Parameter parameter = parameters.get(i);
-			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
-				textData.get(parameter).setForeground(Color.RED);
-				tempList.add(parameter);
-			}
-		}
-		if (tempList.size() > 0) {
-			final StringBuilder temp = new StringBuilder(
-					"Click spectrum to set: ");
-			temp.append(tempList.get(0).getName());
-			if (tempList.size() > 1) {
-				final int len = tempList.size();
-				for (int i = 1; i < len; i++) {
-					final String pname = tempList.get(i).getName();
-					if (i == (len - 1)) {
-						temp.append(" and ");
-					} else {
-						temp.append(", ");
-					}
-					temp.append(pname);
-				}
-			}
-			status.setText(temp.toString());
-		}
-		parameterIter = parameters.iterator();
-	}
-
-	/*
-	 * non-javadoc: Set the parameter values using input in the text fields just
-	 * before a fit.
-	 */
-	private void updateParametersFromDialog() throws FitException {
-		for (Parameter parameter : parameters) {
-			try {
-				if (parameter.isDouble()) {
-					parameter.setValue(Double.valueOf(
-							textData.get(parameter).getText().trim())
-							.doubleValue());
-					if (parameter.hasErrorBar()) {
-						parameter.setError(Double.valueOf(
-								textError.get(parameter).getText().substring(1).trim())
-								.doubleValue());
-					}
-				} else if (parameter.isInteger()) {
-					parameter.setValue(Integer.valueOf(
-							textData.get(parameter).getText().trim())
-							.intValue());
-				} else if (parameter.isBoolean()) {
-					parameter.setValue(cOption.get(parameter).isSelected());
-				}
-			} catch (NumberFormatException nfe) {
-				clear();
-				throw new FitException("Invalid input, parameter: "
-						+ parameter.getName(), nfe);
-			}
-		}
-	}
-
-	/*
-	 * non-javadoc: Update all fields in the dialog after performing a fit.
-	 */
-	private void updateDisplay() {
-		updateHist();
-		for (int i = 0; i < parameters.size(); i++) {
-			final Parameter parameter = parameters.get(i);
-			if (parameter.isDouble() || parameter.isInteger()) {
-				textData.get(parameter).setText(formatValue(parameter));
-				if (parameter.canBeFixed()) {
-					cFixValue.get(parameter).setSelected(parameter.isFixed());
-					setFixed(parameter);
-				}
-				if (parameter.hasErrorBar()) {
-					textError.get(parameter).setText(formatError(parameter));
-					if (!parameter.isFixed()) {
-						textData.get(parameter).setBackground(Color.YELLOW);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Resets all the parameter to default values, which are zero for now.
-	 */
-	private void reset() {
-		for (Parameter parameter : parameters) {
-			if (parameter.isDouble()) {
-				parameter.setValue(0.0);
-				textData.get(parameter).setText(formatValue(parameter));
-			} else if (parameter.isInteger()) {
-				parameter.setValue(0);
-				textData.get(parameter).setText(formatValue(parameter));
-			}
-			if (parameter.hasErrorBar()) {
-				parameter.setError(0.0);
-				textError.get(parameter).setText(formatError(parameter));
-			}
-		}
-		clear();
-	}
-
-	private void clear() {
-		for (Parameter parameter : parameters) {
-			if (!parameter.isBoolean()) {
-				// text field backgrounds
-				if (parameter.isOutputOnly()) {
-					textData.get(parameter).setEditable(false);
-				} else {
-					if (!parameter.isText()) {
-						textData.get(parameter).setBackground(Color.white);
-					}
-				}
-				if (parameter.isFixed()) {
-					setFixed(parameter);
-				}
-				if (parameter.canBeEstimated()) {
-					setEstimate(parameter);
-				}
-			}
-			setMouseActive(false);
-		}
-	}
-
-	/*
-	 * non-javadoc: Called when a fix checkbox is toggled.
-	 */
-	private void setFixed(final Parameter param) {
-		final boolean fixed = cFixValue.get(param).isSelected();
-		param.setFixed(fixed);
-		if (fixed) {
-			if (param.canBeEstimated()) {
-				final JCheckBox estimate = cEstimate.get(param);
-				estimate.setSelected(false);
-				param.setEstimate(false);
-				estimate.setEnabled(false);
-			}
-			if (param.hasErrorBar()) {
-				param.setError(0.0);
-				textError.get(param).setText(formatError(param));
-				textData.get(param).setEditable(!fixed);
-			}
-			// not a fixed value
-		} else {
-			if (param.canBeEstimated()) {
-				cEstimate.get(param).setEnabled(true);
-			}
-			if (param.hasErrorBar()) {
-				textData.get(param).setEditable(!fixed);
-			}
-		}
-	}
-
-	/*
-	 * non-javadoc: a estimate checkbox was toggled
-	 */
-	private void setEstimate(final Parameter param) {
-		final boolean state = cEstimate.get(param).isSelected();
-		param.setEstimate(state);
-	}
-
-	/**
-	 * Adds the given parameter to the list.
+	 * Performs calulations neccessary to find a best fit to the data.
 	 * 
-	 * @param newParameter
-	 *            parameter to add
-	 * @see #parameterTable
-	 * @see #parameters
+	 * @return <code>String</code> containing information about the fit.
+	 * @exception FitException
+	 *                thrown if unrecoverable error occurs during fit
 	 */
-	protected final void addParameter(final Parameter newParameter) {
-		parameters.add(newParameter);
-		parameterTable.put(newParameter.getName(), newParameter);
-	}
-
-	/**
-	 * Accesses a parameter in <code>parameterTable</code> by name.
-	 * 
-	 * @param which
-	 *            contains the name of the parameter (same name displayed in
-	 *            dialog box)
-	 * @return the <code>Parameter</code> object going by that name
-	 */
-	protected final Parameter getParameter(final String which) {
-		return parameterTable.get(which);
-	}
-
-	/**
-	 * Gets the contents of <code>parameters</code>.
-	 * 
-	 * @return the contents of <code>parameters</code>
-	 * @see #parameters
-	 */
-	final List<Parameter> getParameters() {
-		return parameters;
-	}
-
-	/**
-	 * Update the name of the displayed histogram in the dialog box.
-	 */
-	private void updateHist() {
-		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
-		if (histogram != null && histogram.getDimensionality() == 1) {
-			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
-				final int[] temp = (int[]) histogram.getCounts();
-				counts = new double[temp.length];
-				for (int j = 0; j < temp.length; j++) {
-					counts[j] = temp[j];
-				}
-			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				counts = (double[]) histogram.getCounts();
-			}
-			textHistName.setText(histogram.getFullName());
-		} else { // 2d
-			textHistName.setText("Need 1D Hist!");
-		}
-	}
+	public abstract String doFit() throws FitException;
 
 	/*
 	 * non-javadoc: Draw the fit with the values in the fields.
@@ -699,63 +494,28 @@ public abstract class AbstractFit implements PlotMouseListener {
 	}
 
 	/**
-	 * Gets counts from currently displayed <code>Histogram</code>
+	 * Changes parameter values to calculated estimates. Useful for
+	 * <code>NonLinearFit</code>, which requires reasonably close guesses in
+	 * order to converge on a good chi-squared minimum.
+	 * 
+	 * @exception FitException
+	 *                thrown if unrecoverable error occurs during estimation
+	 * @see AbstractNonLinearFit
+	 * @see GaussianFit#estimate
 	 */
-	private void getCounts() {
-		final AbstractHist1D hist1d = (AbstractHist1D) STATUS
-				.getCurrentHistogram();
-		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
-			final int[] temp = (int[]) hist1d.getCounts();
-			counts = new double[temp.length];
-			for (int j = 0; j < temp.length; j++) {
-				counts[j] = temp[j];
-			}
-		} else {
-			counts = (double[]) hist1d.getCounts();
-		}
-		errors = hist1d.getErrors();
-	}
+	public abstract void estimate() throws FitException;
 
 	/*
-	 * non-javadoc: Formats values in number text fields.
+	 * non-javadoc: Given a double, returns the value of the first significant
+	 * decimal digit.
 	 */
-	private String formatValue(final Parameter param) {
-		String temp = "Invalid Type"; // default return value
-		if (param.isDouble()) {
-			final double value = param.getDoubleValue();
-			if (param.hasErrorBar()) {
-				final double error = param.getDoubleError();
-				temp = format(value, error)[0];
-			} else {
-				int integer = (int) log10(Math.abs(value));
-				integer = Math.max(integer, 1);
-				final int fraction = Math.max(4 - integer, 0);
-				temp = format(value, fraction);
-			}
-		} else if (param.isInteger()) {
-			temp = (new Integer(param.getIntValue())).toString().trim();
-		} else if (param.isText()) {
-			temp = param.getText();
-		}
-		return temp;
-	}
-
-	private String formatError(final Parameter param) {
-		if (!param.hasErrorBar()) {
+	private int firstSigFig(final double value) {
+		if (value <= 0.0) {
 			throw new IllegalArgumentException(
-					"No error term for this parameter.  Can't formatError().");
+					"Can't call firstSigFig with non-positive number.");
 		}
-		return "\u00b1 "
-				+ format(param.getDoubleValue(), param.getDoubleError())[1];
-	}
-
-	private String format(final double value, final int fraction) {
-		NumberFormat fval;
-		fval = NumberFormat.getInstance();
-		fval.setGroupingUsed(false);
-		fval.setMinimumFractionDigits(fraction);
-		fval.setMinimumFractionDigits(fraction);
-		return fval.format(value);
+		return (int) Math.floor(value
+				/ Math.pow(10.0, Math.floor(log10(value))));
 	}
 
 	private String[] format(final double value, final double err) {
@@ -794,8 +554,46 @@ public abstract class AbstractFit implements PlotMouseListener {
 		return out;
 	}
 
-	private double log10(final double value) {
-		return Math.log(value) / Math.log(10.0);
+	private String format(final double value, final int fraction) {
+		NumberFormat fval;
+		fval = NumberFormat.getInstance();
+		fval.setGroupingUsed(false);
+		fval.setMinimumFractionDigits(fraction);
+		fval.setMinimumFractionDigits(fraction);
+		return fval.format(value);
+	}
+
+	private String formatError(final Parameter param) {
+		if (!param.hasErrorBar()) {
+			throw new IllegalArgumentException(
+					"No error term for this parameter.  Can't formatError().");
+		}
+		return "\u00b1 "
+				+ format(param.getDoubleValue(), param.getDoubleError())[1];
+	}
+
+	/*
+	 * non-javadoc: Formats values in number text fields.
+	 */
+	private String formatValue(final Parameter param) {
+		String temp = "Invalid Type"; // default return value
+		if (param.isDouble()) {
+			final double value = param.getDoubleValue();
+			if (param.hasErrorBar()) {
+				final double error = param.getDoubleError();
+				temp = format(value, error)[0];
+			} else {
+				int integer = (int) log10(Math.abs(value));
+				integer = Math.max(integer, 1);
+				final int fraction = Math.max(4 - integer, 0);
+				temp = format(value, fraction);
+			}
+		} else if (param.isInteger()) {
+			temp = (new Integer(param.getIntValue())).toString().trim();
+		} else if (param.isText()) {
+			temp = param.getText();
+		}
+		return temp;
 	}
 
 	/*
@@ -820,6 +618,97 @@ public abstract class AbstractFit implements PlotMouseListener {
 		return out;
 	}
 
+	/**
+	 * Gets counts from currently displayed <code>Histogram</code>
+	 */
+	private void getCounts() {
+		final AbstractHist1D hist1d = (AbstractHist1D) STATUS
+				.getCurrentHistogram();
+		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
+			final int[] temp = (int[]) hist1d.getCounts();
+			counts = new double[temp.length];
+			for (int j = 0; j < temp.length; j++) {
+				counts[j] = temp[j];
+			}
+		} else {
+			counts = (double[]) hist1d.getCounts();
+		}
+		errors = hist1d.getErrors();
+	}
+
+	/**
+	 * Returns the number of signals modelled by the fit.
+	 * 
+	 * @return the number of signals modelled by the fit
+	 */
+	abstract int getNumberOfSignals();
+
+	/**
+	 * Accesses a parameter in <code>parameterTable</code> by name.
+	 * 
+	 * @param which
+	 *            contains the name of the parameter (same name displayed in
+	 *            dialog box)
+	 * @return the <code>Parameter</code> object going by that name
+	 */
+	protected final Parameter getParameter(final String which) {
+		return parameterTable.get(which);
+	}
+
+	/**
+	 * Gets the contents of <code>parameters</code>.
+	 * 
+	 * @return the contents of <code>parameters</code>
+	 * @see #parameters
+	 */
+	final List<Parameter> getParameters() {
+		return parameters;
+	}
+
+	final MessageHandler getTextInfo() {
+		return textInfo;
+	}
+
+	/**
+	 * 
+	 * @return whether fit function has a background component
+	 */
+	abstract boolean hasBackground();
+
+	/**
+	 * Set the state to enter values using mouse
+	 */
+	private void initializeMouse() {
+		mouseClickCount = 0;
+		final List<Parameter> tempList = new ArrayList<Parameter>();
+		for (int i = 0; i < parameters.size(); i++) {
+			final Parameter parameter = parameters.get(i);
+			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
+				textData.get(parameter).setForeground(Color.RED);
+				tempList.add(parameter);
+			}
+		}
+		if (tempList.size() > 0) {
+			final StringBuilder temp = new StringBuilder(
+					"Click spectrum to set: ");
+			temp.append(tempList.get(0).getName());
+			if (tempList.size() > 1) {
+				final int len = tempList.size();
+				for (int i = 1; i < len; i++) {
+					final String pname = tempList.get(i).getName();
+					if (i == (len - 1)) {
+						temp.append(" and ");
+					} else {
+						temp.append(", ");
+					}
+					temp.append(pname);
+				}
+			}
+			status.setText(temp.toString());
+		}
+		parameterIter = parameters.iterator();
+	}
+
 	/*
 	 * non-javadoc: Given an error term determine the appropriate number of
 	 * integer digits to display.
@@ -838,75 +727,175 @@ public abstract class AbstractFit implements PlotMouseListener {
 		return out;
 	}
 
-	/*
-	 * non-javadoc: Given a double, returns the value of the first significant
-	 * decimal digit.
-	 */
-	private int firstSigFig(final double value) {
-		if (value <= 0.0) {
-			throw new IllegalArgumentException(
-					"Can't call firstSigFig with non-positive number.");
-		}
-		return (int) Math.floor(value
-				/ Math.pow(10.0, Math.floor(log10(value))));
+	private double log10(final double value) {
+		return Math.log(value) / Math.log(10.0);
 	}
 
-	/*
-	 * non-javadoc: Given a double between zero and 1, and number of significant
-	 * figures desired, return number of decimal fraction digits to display.
-	 */
-	private int decimalPlaces(final double value, final int sigfig) {
-		int out;
-		int pos; // position of firstSigFig
-
-		if (value <= 0.0 || value >= 1.0) {
-			throw new IllegalArgumentException(
-					"Must call decimalPlaces() with value in (0,1).");
+	public void plotMousePressed(final Bin bin, final Point pPixel) {
+		while (parameterIter.hasNext()) {
+			final Parameter parameter = parameterIter.next();
+			mouseClickCount++;
+			if (parameter.isMouseClickable() && (!parameter.isFixed())) {
+				final JTextField data = textData.get(parameter);
+				data.setForeground(Color.BLACK);
+				data.setText("" + bin.getX());
+				break;
+			}
 		}
-		if (sigfig < 1) {
-			throw new IllegalArgumentException(
-					"Can't have zero significant figures.");
+		if (!parameterIter.hasNext()) {
+			setMouseActive(false);
 		}
-		pos = (int) Math.abs(Math.floor(log10(value)));
-		out = pos + sigfig - 1;
-		return out;
 	}
 
 	/**
-	 * Returns the number of signals modelled by the fit.
-	 * 
-	 * @return the number of signals modelled by the fit
+	 * Resets all the parameter to default values, which are zero for now.
 	 */
-	abstract int getNumberOfSignals();
+	private void reset() {
+		for (Parameter parameter : parameters) {
+			if (parameter.isDouble()) {
+				parameter.setValue(0.0);
+				textData.get(parameter).setText(formatValue(parameter));
+			} else if (parameter.isInteger()) {
+				parameter.setValue(0);
+				textData.get(parameter).setText(formatValue(parameter));
+			}
+			if (parameter.hasErrorBar()) {
+				parameter.setError(0.0);
+				textError.get(parameter).setText(formatError(parameter));
+			}
+		}
+		clear();
+	}
+
+	/*
+	 * non-javadoc: a estimate checkbox was toggled
+	 */
+	private void setEstimate(final Parameter param) {
+		final boolean state = cEstimate.get(param).isSelected();
+		param.setEstimate(state);
+	}
+
+	/*
+	 * non-javadoc: Called when a fix checkbox is toggled.
+	 */
+	private void setFixed(final Parameter param) {
+		final boolean fixed = cFixValue.get(param).isSelected();
+		param.setFixed(fixed);
+		if (fixed) {
+			if (param.canBeEstimated()) {
+				final JCheckBox estimate = cEstimate.get(param);
+				estimate.setSelected(false);
+				param.setEstimate(false);
+				estimate.setEnabled(false);
+			}
+			if (param.hasErrorBar()) {
+				param.setError(0.0);
+				textError.get(param).setText(formatError(param));
+				textData.get(param).setEditable(!fixed);
+			}
+			// not a fixed value
+		} else {
+			if (param.canBeEstimated()) {
+				cEstimate.get(param).setEnabled(true);
+			}
+			if (param.hasErrorBar()) {
+				textData.get(param).setEditable(!fixed);
+			}
+		}
+	}
+
+	/*
+	 * non-javadoc: Sets whether to receive mouse clicks from display or not.
+	 */
+	private void setMouseActive(final boolean state) {
+		if (state) {
+			display.addPlotMouseListener(this);
+		} else {
+			display.removePlotMouseListener(this);
+		}
+	}
 
 	/**
-	 * Returns the evaluation of a signal at one particular channel. Should
-	 * return zero if the given signal doesn't exist.
-	 * 
-	 * @param signal
-	 *            which signal
-	 * @param channel
-	 *            to calculate signal value for
-	 * @return signal value for the given channel
+	 * Show fit dialog box.
 	 */
-	abstract double calculateSignal(int signal, int channel);
+	final void show() {
+		setMouseActive(false);
+		dfit.setVisible(true);
+	}
+
+	/*
+	 * non-javadoc: Update all fields in the dialog after performing a fit.
+	 */
+	private void updateDisplay() {
+		updateHist();
+		for (int i = 0; i < parameters.size(); i++) {
+			final Parameter parameter = parameters.get(i);
+			if (parameter.isDouble() || parameter.isInteger()) {
+				textData.get(parameter).setText(formatValue(parameter));
+				if (parameter.canBeFixed()) {
+					cFixValue.get(parameter).setSelected(parameter.isFixed());
+					setFixed(parameter);
+				}
+				if (parameter.hasErrorBar()) {
+					textError.get(parameter).setText(formatError(parameter));
+					if (!parameter.isFixed()) {
+						textData.get(parameter).setBackground(Color.YELLOW);
+					}
+				}
+			}
+		}
+	}
 
 	/**
-	 * 
-	 * @return whether fit function has a background component
+	 * Update the name of the displayed histogram in the dialog box.
 	 */
-	abstract boolean hasBackground();
+	private void updateHist() {
+		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
+		if (histogram != null && histogram.getDimensionality() == 1) {
+			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
+				final int[] temp = (int[]) histogram.getCounts();
+				counts = new double[temp.length];
+				for (int j = 0; j < temp.length; j++) {
+					counts[j] = temp[j];
+				}
+			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
+				counts = (double[]) histogram.getCounts();
+			}
+			textHistName.setText(histogram.getFullName());
+		} else { // 2d
+			textHistName.setText("Need 1D Hist!");
+		}
+	}
 
-	abstract double calculateBackground(int channel);
-
-	/**
-	 * Calculates function value for a specific channel. Uses whatever the
-	 * current values are for the parameters in <code>parameters</code>.
-	 * 
-	 * @param channel
-	 *            channel to evaluate fit function at
-	 * @return double containing evaluation
+	/*
+	 * non-javadoc: Set the parameter values using input in the text fields just
+	 * before a fit.
 	 */
-	public abstract double calculate(int channel);
+	private void updateParametersFromDialog() throws FitException {
+		for (Parameter parameter : parameters) {
+			try {
+				if (parameter.isDouble()) {
+					parameter.setValue(Double.valueOf(
+							textData.get(parameter).getText().trim())
+							.doubleValue());
+					if (parameter.hasErrorBar()) {
+						parameter.setError(Double.valueOf(
+								textError.get(parameter).getText().substring(1)
+										.trim()).doubleValue());
+					}
+				} else if (parameter.isInteger()) {
+					parameter.setValue(Integer.valueOf(
+							textData.get(parameter).getText().trim())
+							.intValue());
+				} else if (parameter.isBoolean()) {
+					parameter.setValue(cOption.get(parameter).isSelected());
+				}
+			} catch (NumberFormatException nfe) {
+				clear();
+				throw new FitException("Invalid input, parameter: "
+						+ parameter.getName(), nfe);
+			}
+		}
+	}
 
 }
