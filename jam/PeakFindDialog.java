@@ -1,13 +1,13 @@
 package jam;
 
 import jam.global.JamStatus;
-import jam.global.MessageHandler;
 import jam.plot.PlotDisplay;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.util.logging.Logger;
 
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -23,10 +23,11 @@ import javax.swing.border.EmptyBorder;
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
 public class PeakFindDialog extends JDialog {
+	
+	private static final Logger LOGGER = Logger.getLogger(PeakFindDialog.class
+			.getPackage().getName());
 
 	private transient final PlotDisplay display;
-
-	private transient final MessageHandler console;
 
 	/**
 	 * Constructs a new peak find dialog.
@@ -36,7 +37,6 @@ public class PeakFindDialog extends JDialog {
 		super();
 		final JamStatus status = JamStatus.getSingletonInstance();
 		display = status.getDisplay();
-		console = status.getMessageHandler();
 		createDialog();
 	}
 
@@ -90,5 +90,5 @@ private void setPeakFindProperties() {
 		msg.append(dWidth).append(", Sensitivity=").append(dSense);
 		msg.append(cal ? ", calibrated value displayed if available, centroid channel if not."
 				: ", centroid channel displayed.");
-		console.messageOutln(msg.toString());
+		LOGGER.info(msg.toString());
 	}}
