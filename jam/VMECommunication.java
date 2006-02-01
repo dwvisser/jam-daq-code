@@ -5,6 +5,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
 import jam.sort.VME_Map;
@@ -36,7 +37,7 @@ import java.util.prefs.Preferences;
  * @author Ken Swartz and Dale Visser
  * @since JDK1.1
  */
-public class VMECommunication extends GoodThread implements
+public final class VMECommunication extends GoodThread implements
 		FrontEndCommunication {
 
 	private static final int MAX_PACKET_SIZE = 1024;
@@ -56,22 +57,32 @@ public class VMECommunication extends GoodThread implements
 
 	private transient DatagramSocket socketSend, socketReceive;
 
-	private transient boolean active; //
+	private transient boolean active; 
 
 	// scaler values, loaded when a scaler packet is received.
 	private transient final List<Integer> scalerValues = new ArrayList<Integer>();
 
 	// counter values, loaded when a counter packet is received.
 	private transient final List<Integer> counterValues = new ArrayList<Integer>();
+	
+	private static final VMECommunication INSTANCE = new VMECommunication();
 
 	/**
 	 * Creates the instance of this class for handling IP communications with
 	 * the VME front end computer.
 	 */
-	public VMECommunication() {
+	private VMECommunication() {
 		super();
 		active = false;
 		setName("Network Messenger");
+	}
+	
+	/**
+	 * 
+	 * @return the one unique instance of this class
+	 */
+	public static VMECommunication getSingletonInstance() {
+		return INSTANCE;
 	}
 
 	/**
@@ -86,15 +97,15 @@ public class VMECommunication extends GoodThread implements
 
 		synchronized (this) {
 			final String LOCAL_IP = JamProperties
-					.getPropString(JamProperties.HOST_IP);
+					.getPropString(PropertyKeys.HOST_IP);
 			final int portSend = JamProperties
-					.getPropInt(JamProperties.HOST_PORT_SEND);
+					.getPropInt(PropertyKeys.HOST_PORT_SEND);
 			final int portRecv = JamProperties
-					.getPropInt(JamProperties.HOST_PORT_RECV);
+					.getPropInt(PropertyKeys.HOST_PORT_RECV);
 			final String VME_IP = JamProperties
-					.getPropString(JamProperties.TARGET_IP);
+					.getPropString(PropertyKeys.TARGET_IP);
 			final int PORT_VME_SEND = JamProperties
-					.getPropInt(JamProperties.TARGET_PORT);
+					.getPropInt(PropertyKeys.TARGET_PORT);
 			vmePort = PORT_VME_SEND;
 			if (!active) {
 				try {// ceate a ports to send and receive

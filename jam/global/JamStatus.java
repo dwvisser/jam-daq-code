@@ -1,8 +1,5 @@
 package jam.global;
 
-import jam.FrontEndCommunication;
-import jam.JamPrefs;
-import jam.VMECommunication;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.plot.PlotDisplay;
@@ -25,25 +22,21 @@ import javax.swing.JFrame;
  */
 public final class JamStatus {
 
-	private static AcquisitionStatus acqStatus;
+	private transient AcquisitionStatus acqStatus;
 
-	private static Nameable currentGroup;
+	private Nameable currentGroup;
 
-	private static Nameable currentHistogram;
+	private Nameable currentHistogram;
 
-	private static Nameable currentGate;
+	private Nameable currentGate;
 
-	private static Set<String> overlayNames = new HashSet<String>();
+	private transient final Set<String> overlayNames = new HashSet<String>();
 
-	private static JFrame frame;
+	private JFrame frame;
 
-	private static PlotDisplay display;
+	private PlotDisplay display;
 
-	private static SummaryTable summaryTable;
-
-	private static MessageHandler console;
-
-	private static FrontEndCommunication frontEnd;
+	private transient SummaryTable summaryTable;
 
 	private boolean showGUI = true;
 
@@ -115,6 +108,10 @@ public final class JamStatus {
 		}
 	}
 
+	/**
+	 * Set the object which validates data objects.
+	 * @param valid validates whether data objects are active
+	 */
 	public void setValidator(final Validator valid) {
 		synchronized (this) {
 			validator = valid;
@@ -374,11 +371,6 @@ public final class JamStatus {
 	 * @return the histograms being overlaid
 	 */
 	public List<String> getOverlayHistograms() {
-		/*
-		 * final Set<Histogram> rval = new HashSet<Histogram>(); for (String
-		 * name : overlayNames) { final Histogram hist =
-		 * Histogram.getHistogram(name); if (hist != null) { rval.add(hist); } }
-		 */
 		synchronized (this) {
 			return Collections.unmodifiableList(new ArrayList<String>(
 					overlayNames));
@@ -422,49 +414,6 @@ public final class JamStatus {
 				currentGate = UnNamed.getSingletonInstance();
 			}
 			return currentGate;
-		}
-	}
-
-	/**
-	 * Sets the global message handler.
-	 * 
-	 * @param msgHandler
-	 *            the message handler
-	 * @throws IllegalStateException
-	 *             if called a second time
-	 */
-	public void setMessageHandler(final MessageHandler msgHandler) {
-		synchronized (this) {
-			if (console != null) {
-				throw new IllegalStateException(
-						"Can't set message handler twice!");
-			}
-			console = msgHandler;
-			frontEnd = new VMECommunication();
-			JamPrefs.PREFS.addPreferenceChangeListener(frontEnd);
-			BROADCASTER.addObserver(frontEnd);
-		}
-	}
-
-	/**
-	 * Gets the global message handler.
-	 * 
-	 * @return the message handler
-	 */
-	public MessageHandler getMessageHandler() {
-		synchronized (this) {
-			return console;
-		}
-	}
-
-	/**
-	 * Gets the front end communicator
-	 * 
-	 * @return the front end communicator
-	 */
-	public FrontEndCommunication getFrontEndCommunication() {
-		synchronized (this) {
-			return frontEnd;
 		}
 	}
 
