@@ -42,50 +42,12 @@ import java.util.logging.Logger;
  * @version 1.4
  * @since 0.5 17 January 1999
  */
-public final class JamProperties {
-	private static final String classname = "jam.global.JamProperties";
-
+public final class JamProperties implements PropertyKeys {
 	/**
 	 * Set <code>true</code> to default to the classpath used to launch Jam
 	 * instead of a given sort classpath.
 	 */
-	public final static String DEFAULT_SORT_CLASSPATH = "default";
-
-	/**
-	 * Default path to look in for event files to sort offline.
-	 */
-	public final static String EVENT_INPATH = "event.inpath";
-
-	/**
-	 * Fully qualified name of the default <code>EventInputStream</code>.
-	 * 
-	 * @see jam.sort.stream.AbstractEventInputStream
-	 */
-	public final static String EVENT_INSTREAM = "event.instream";
-
-	/**
-	 * Filename to use when writing a pre-sorted event file.
-	 */
-	public final static String EVENT_OUTFILE = "event.outfile";
-
-	/**
-	 * Default path to use for writing event files.
-	 */
-	public final static String EVENT_OUTPATH = "event.outpath";
-
-	/**
-	 * Fully qualified name of the default <code>EventOutputStream</code>.
-	 * 
-	 * @see jam.sort.stream.AbstractEventOutputStream
-	 */
-	public final static String EVENT_OUTSTREAM = "event.outstream";
-
-	/**
-	 * Default experiment name to use when naming data files.
-	 */
-	public final static String EXP_NAME = "exp.name";
-
-	private static final String FALSE = Boolean.toString(false);
+	public final static String DEFAULT_SORTPATH = "default";
 
 	/**
 	 * Machine configuration file name
@@ -97,89 +59,17 @@ public final class JamProperties {
 	 */
 	static final String FILE_USER = "JamUser.ini";
 
-	/**
-	 * Default path for saving HDF files.
-	 * 
-	 * @see jam.io.hdf.HDFIO
-	 */
-	public final static String HIST_PATH = "hist.path";
-
-	/**
-	 * IP address of the socket used to receive data from the front end.
-	 */
-	public final static String HOST_DATA_IP = "host-data.IP";
-
-	/**
-	 * Port number of the socket used to receive data from the front end.
-	 */
-	public final static String HOST_DATA_PORT_RECV = "host-data.portRecv";
-
-	/**
-	 * IP address of the socket used to communicate with the front end.
-	 * 
-	 * @see jam.FrontEndCommunication
-	 */
-	public final static String HOST_IP = "host.IP";
-
-	/**
-	 * Port number for recieving messages from the front end.
-	 */
-	public final static String HOST_PORT_RECV = "host.portRecv";
-
-	/**
-	 * Port number for sending messages to the front end.
-	 */
-	public final static String HOST_PORT_SEND = "host.portSend";
-
-	/**
-	 * Path to search for <code>JamConfig.ini</code>
-	 */
-	public final static String JAM_HOME = "jam.home";
-
-	/**
-	 * Default path to the folder for writing out the console log.
-	 */
-	public final static String LOG_PATH = "log.path";
-
 	private static final Logger LOGGER = Logger.getLogger(JamProperties.class
 			.getPackage().getName());
-
-	private static boolean macosx = false;
 
 	private final static String NO_ERRORS = "No error messages.";
 
 	private final static String NO_WARNINGS = "No warning messages.";
 
-	private static String operatingSystem = null;
-
 	/**
 	 * Jam properties
 	 */
-	private static Properties properties = new Properties();
-
-	/**
-	 * Path to search for and load sort routines.
-	 */
-	public final static String SORT_CLASSPATH = "sort.classpath";
-
-	/**
-	 * Fully qualified name of the default sort routine.
-	 * 
-	 * @see jam.sort.SortRoutine
-	 */
-	public final static String SORT_ROUTINE = "sort.routine";
-
-	/**
-	 * Front end's IP address for communicating with Jam.
-	 */
-	public final static String TARGET_IP = "target.IP";
-
-	/**
-	 * Front end's port number for communciating with Jam.
-	 */
-	public final static String TARGET_PORT = "target.port";
-
-	private static final String TRUE = Boolean.toString(true);
+	private static final Properties PROPERTIES = new Properties();
 
 	private static final String userHomeDir = System.getProperty("user.home");
 
@@ -192,14 +82,14 @@ public final class JamProperties {
 	 *         <code>Boolean.toString(true)</code>
 	 */
 	static public boolean getBooleanProperty(final String key) {
-		return properties.getProperty(key).equals(TRUE);
+		return PROPERTIES.getProperty(key).equals(Boolean.TRUE.toString());
 	}
 
 	/**
 	 * @return the properties for this Jam process
 	 */
 	public static Properties getProperties() {
-		return properties;
+		return PROPERTIES;
 	}
 
 	/**
@@ -209,12 +99,13 @@ public final class JamProperties {
 	 */
 	public static int getPropInt(final String key) {
 		int rval = 0;// default return value
+		final String classname = JamProperties.class.getName();
 		try {
-			if (properties.getProperty(key) == null) {
+			if (PROPERTIES.getProperty(key) == null) {
 				LOGGER.warning(classname + ".getPropInt(): property for " + key
 						+ " is not defined.");
 			} else {
-				rval = Integer.parseInt(properties.getProperty(key).trim());
+				rval = Integer.parseInt(PROPERTIES.getProperty(key).trim());
 			}
 		} catch (NumberFormatException nfe) {
 			LOGGER.throwing(classname, "getPropInt", nfe);
@@ -231,9 +122,9 @@ public final class JamProperties {
 	 */
 	public static String getPropString(final String key) {
 		String rval = "undefined";// default return value
-		final String property = properties.getProperty(key);
+		final String property = PROPERTIES.getProperty(key);
 		if (property == null) {
-			LOGGER.warning(classname + ".getPropString(): property for " + key
+			LOGGER.warning(JamProperties.class.getName() + ".getPropString(): property for " + key
 					+ " is not defined.");
 		} else {
 			rval = property.trim();
@@ -247,11 +138,8 @@ public final class JamProperties {
 	 * @return <code>true</code> if the operating system is MacOS X
 	 */
 	public static boolean isMacOSX() {
-		if (operatingSystem == null) {
-			operatingSystem = System.getProperty("os.name");
-			macosx = operatingSystem.equals("Mac OS X");
-		}
-		return macosx;
+		final String operatingSystem = System.getProperty("os.name");
+		return operatingSystem.equals("Mac OS X");
 	}
 
 	/**
@@ -263,7 +151,7 @@ public final class JamProperties {
 	 *            the new value
 	 */
 	static public void setProperty(final String key, final boolean val) {
-		properties.setProperty(key, val ? TRUE : FALSE);
+		PROPERTIES.setProperty(key, val ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
 	}
 
 	/** message for loading config */
@@ -299,13 +187,11 @@ public final class JamProperties {
 	 */
 
 	private void loadConfig() {
-
 		configLoadWarning = NO_WARNINGS;
 		loadError = NO_ERRORS;
 		String fileName = "";
 		FileInputStream fis;
 		boolean fileRead = false;
-
 		try {
 
 			// if jam.home is property given we must use it.
@@ -315,7 +201,7 @@ public final class JamProperties {
 				fileName = file.getPath();
 				if (file.exists()) {
 					fis = new FileInputStream(file);
-					properties.load(fis);
+					PROPERTIES.load(fis);
 					configLoadMessage = "Read configuration properties from file: "
 							+ file.getPath();
 					fileRead = true;
@@ -332,7 +218,7 @@ public final class JamProperties {
 				fileName = configFile.getPath();
 				if (configFile.exists()) {
 					fis = new FileInputStream(configFile);
-					properties.load(fis);
+					PROPERTIES.load(fis);
 					configLoadMessage = "Read configuration properties from file: "
 							+ configFile.getPath();
 					fileRead = true;
@@ -351,42 +237,41 @@ public final class JamProperties {
 			loadError = "Could not read configuration file, " + fileName + ".";
 			showErrorMessage(ioe, loadError);
 		}
-
 	}
 
 	/**
 	 * Load default configuration properties.
 	 */
 	private void loadDefaultConfig() {
-		properties.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
-		properties.setProperty(HOST_IP, "localhost");
-		properties.setProperty(HOST_PORT_SEND, "5003");
-		properties.setProperty(HOST_PORT_SEND, "5002");
-		properties.setProperty(HOST_PORT_RECV, "5005");
-		properties.setProperty(TARGET_IP, "frontend");
-		properties.setProperty(TARGET_PORT, "5002");
-		properties.setProperty(HOST_DATA_IP, "localhost-data");
-		properties.setProperty(HOST_DATA_PORT_RECV, "10205");
+		PROPERTIES.setProperty(JAM_HOME, (new File(userCurrentDir)).getPath());
+		PROPERTIES.setProperty(HOST_IP, "localhost");
+		PROPERTIES.setProperty(HOST_PORT_SEND, "5003");
+		PROPERTIES.setProperty(HOST_PORT_SEND, "5002");
+		PROPERTIES.setProperty(HOST_PORT_RECV, "5005");
+		PROPERTIES.setProperty(TARGET_IP, "frontend");
+		PROPERTIES.setProperty(TARGET_PORT, "5002");
+		PROPERTIES.setProperty(HOST_DATA_IP, "localhost-data");
+		PROPERTIES.setProperty(HOST_DATA_P_RECV, "10205");
 	}
 
 	/**
 	 * Load default user properties.
 	 */
 	private void loadDefaultUser() {
-		properties.setProperty(EXP_NAME, "default_");
-		properties.setProperty(SORT_ROUTINE, "jam.sort.Example");
-		properties.setProperty(SORT_CLASSPATH, DEFAULT_SORT_CLASSPATH);
-		properties.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
+		PROPERTIES.setProperty(EXP_NAME, "default_");
+		PROPERTIES.setProperty(SORT_ROUTINE, "jam.sort.Example");
+		PROPERTIES.setProperty(SORT_CLASSPATH, DEFAULT_SORTPATH);
+		PROPERTIES.setProperty(HIST_PATH, (new File(userHomeDir, "spectra"))
 				.getPath());
-		properties.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
+		PROPERTIES.setProperty(EVENT_INPATH, (new File(userHomeDir, "events"))
 				.getPath());
-		properties.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
+		PROPERTIES.setProperty(EVENT_OUTPATH, (new File(userHomeDir, "events"))
 				.getPath());
-		properties.setProperty(EVENT_OUTFILE, "sortout.evn");
-		properties.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
-		properties.setProperty(EVENT_INSTREAM,
+		PROPERTIES.setProperty(EVENT_OUTFILE, "sortout.evn");
+		PROPERTIES.setProperty(LOG_PATH, (new File(userHomeDir)).getPath());
+		PROPERTIES.setProperty(EVENT_INSTREAM,
 				"jam.sort.stream.YaleCAEN_InputStream");
-		properties.setProperty(EVENT_OUTSTREAM,
+		PROPERTIES.setProperty(EVENT_OUTSTREAM,
 				"jam.sort.stream.YaleOutputStream");
 	}
 
@@ -419,7 +304,7 @@ public final class JamProperties {
 			fileName = userFile.getPath();
 			if (userFile.exists()) {
 				fis = new FileInputStream(userFile);
-				properties.load(fis);
+				PROPERTIES.load(fis);
 				userLoadMessage = "Read user configuration file: "
 						+ userFile.getPath();
 				fileRead = true;
@@ -431,7 +316,7 @@ public final class JamProperties {
 				fileName = userFile.getPath();
 				if (userFile.exists()) {
 					fis = new FileInputStream(userFile);
-					properties.load(fis);
+					PROPERTIES.load(fis);
 					userLoadWarning = "Cannot find user configuration file "
 							+ FILE_USER + " in user home directory "
 							+ userHomeDir;
@@ -453,7 +338,7 @@ public final class JamProperties {
 				fileName = userFile.getPath();
 				if (userFile.exists()) {
 					fis = new FileInputStream(userFile);
-					properties.load(fis);
+					PROPERTIES.load(fis);
 					userLoadMessage = "Read user configuration file: "
 							+ userFile.getPath();
 					fileRead = true;
@@ -493,6 +378,6 @@ public final class JamProperties {
 
 	private void showErrorMessage(final Exception exception, final String extra) {
 		final String message = exception.getMessage() + "; " + extra;
-		LOGGER.severe(classname + "--" + message);
+		LOGGER.severe(JamProperties.class.getName() + "--" + message);
 	}
 }

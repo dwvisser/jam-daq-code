@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.io.ExtensionFileFilter;
 import jam.util.YaleCAENgetScalers;
 
@@ -17,14 +18,14 @@ import javax.swing.JFileChooser;
  */
 final class OpenScalersYaleCAEN extends AbstractCommand {
 
-	private YaleCAENgetScalers ycs;
+	private transient YaleCAENgetScalers ycs;
 	
 	public void initCommand(){
 		putValue(NAME,"Display scalers from YaleCAEN event file\u2026");
 		ycs= new YaleCAENgetScalers();						
 	}
 
-	protected void execute(Object[] cmdParams) {		
+	protected void execute(final Object[] cmdParams) {		
 		final File file;
 		if (cmdParams==null) {
 			file = getFile();					
@@ -37,7 +38,7 @@ final class OpenScalersYaleCAEN extends AbstractCommand {
 		}	
 	}
 
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 		throws CommandListenerException {
 		execute(null);
 	}
@@ -49,12 +50,10 @@ final class OpenScalersYaleCAEN extends AbstractCommand {
 	 * dialog cancelled
 	 */
 	private File getFile() {
-		
-		File lastFile =new File(JamProperties.getPropString(JamProperties.EVENT_INPATH));
-		
+		File lastFile =new File(JamProperties.getPropString(PropertyKeys.EVENT_INPATH));
 		File file = null;
 		int option;
-		JFileChooser jfile = new JFileChooser(lastFile);
+		final JFileChooser jfile = new JFileChooser(lastFile);
 		jfile.setDialogTitle("Select an Event File");
 		jfile.setFileFilter(new ExtensionFileFilter("evn"));
 		option = jfile.showOpenDialog(null);

@@ -40,7 +40,7 @@ public class CommandManager implements CommandListener, CommandNames {
 	static {
 		/* File Menu */
 		CMD_MAP.put(OPEN_HDF, OpenHDFCmd.class);
-		CMD_MAP.put(OPEN_ADDITIONAL_HDF, OpenAdditionalHDF.class);
+		CMD_MAP.put(OPEN_ADD_HDF, OpenAdditionalHDF.class);
 		CMD_MAP.put(OPEN_MULTIPLE_HDF, OpenMultipleHDFCmd.class);
 
 		CMD_MAP.put(SAVE_HDF, SaveHDFCmd.class);
@@ -63,9 +63,9 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
 		CMD_MAP.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
 		CMD_MAP.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
-		CMD_MAP.put(SHOW_HIST_DISPLAY_FIT,
+		CMD_MAP.put(SHOW_DISPLAY_FIT,
 				ShowDialogCalibrationDisplayCmd.class);
-		CMD_MAP.put(SHOW_HIST_GAIN_SHIFT, ShowDialogGainShiftCmd.class);
+		CMD_MAP.put(SHOW_GAIN_SHIFT, ShowDialogGainShiftCmd.class);
 		/* Gate Menu */
 		CMD_MAP.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
 		CMD_MAP.put(SHOW_SET_GATE, ShowDialogSetGate.class);
@@ -92,7 +92,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(IMPORT_SPE, ImportRadware.class);
 		CMD_MAP.put(IMPORT_XSYS, ImportXSYS.class);
 		CMD_MAP.put(IMPORT_BAN, ImportORNLban.class);
-		CMD_MAP.put(OPEN_SCALERS_YALE_CAEN, OpenScalersYaleCAEN.class);
+		CMD_MAP.put(OPEN_SCALERS, OpenScalersYaleCAEN.class);
 		CMD_MAP.put(SHOW_SCALER_SCAN, ShowDialogScalerScan.class);
 		CMD_MAP.put(DELETE_HISTOGRAM, DeleteHistogram.class);
 		CMD_MAP.put(HELP_ABOUT, ShowDialogAbout.class);
@@ -100,12 +100,12 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(USER_GUIDE, ShowUserGuide.class);
 		CMD_MAP.put(OPEN_SELECTED, OpenSelectedHistogram.class);
 		CMD_MAP.put(DISPLAY_MONITORS, ShowMonitorDisplay.class);
-		CMD_MAP.put(DISPLAY_MON_CONFIG, ShowMonitorConfig.class);
+		CMD_MAP.put(DISPLAY_MON_CFG, ShowMonitorConfig.class);
 		CMD_MAP.put(SHOW_BATCH_EXPORT, ShowBatchExport.class);
 		CMD_MAP.put(SHOW_SETUP_ONLINE, ShowSetupOnline.class);
-		CMD_MAP.put(SHOW_SETUP_OFFLINE, ShowSetupOffline.class);
+		CMD_MAP.put(SHOW_SETUP_OFF, ShowSetupOffline.class);
 		CMD_MAP.put(SHOW_BUFFER_COUNT, ShowDialogCounters.class);
-		CMD_MAP.put(SHOW_CONFIGURATION, ShowDialogConfiguration.class);
+		CMD_MAP.put(SHOW_CONFIG, ShowDialogConfiguration.class);
 		/* View menu */
 		CMD_MAP.put(SHOW_VIEW_NEW, ShowDialogAddView.class);
 		CMD_MAP.put(SHOW_VIEW_DELETE, ShowDialogDeleteView.class);
@@ -117,7 +117,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(PlotPrefs.BLACK_BACKGROUND, SetBlackBackground.class);
 		CMD_MAP.put(PlotPrefs.AUTO_PEAK_FIND, SetAutoPeakFind.class);
 		CMD_MAP.put(ColorPrefs.SMOOTH_SCALE, SetSmoothColorScale.class);
-		CMD_MAP.put(SHOW_GRADIENT_SETTINGS, ShowGradientSettings.class);
+		CMD_MAP.put(SHOW_GRADIENT, ShowGradientSettings.class);
 		CMD_MAP.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
 		CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE_CHANNELS,
 				SetGatedChannelsHighlight.class);

@@ -28,6 +28,7 @@ import static jam.io.hdf.Constants.DFTAG_VS;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
+import jam.global.PropertyKeys;
 import jam.io.hdf.AbstractData;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
@@ -78,7 +79,7 @@ public final class ScalerScan implements JamFileFields {
 	private final JDialog dialog;
 
 	private File pathToRuns = new File(JamProperties
-			.getPropString(JamProperties.HIST_PATH));
+			.getPropString(PropertyKeys.HIST_PATH));
 
 	private final JTextField txtPath;
 
@@ -118,7 +119,7 @@ public final class ScalerScan implements JamFileFields {
 				new FlowLayout(FlowLayout.LEFT, 5, 0));
 		pEntries.add(pRunName);
 		txtRunName = new JTextField(10);
-		txtRunName.setText(JamProperties.getPropString(JamProperties.EXP_NAME));
+		txtRunName.setText(JamProperties.getPropString(PropertyKeys.EXP_NAME));
 		pRunName.add(txtRunName);
 
 		final JPanel pPath = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
