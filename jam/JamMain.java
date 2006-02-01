@@ -104,14 +104,11 @@ public final class JamMain extends JFrame implements Observer {
 		loadIcon();
 		final Container contents = getContentPane();
 		contents.setLayout(new BorderLayout());
-
 		/* Ouput/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
-		JamStatus.getSingletonInstance().setMessageHandler(console);
 		SetupSortOn.createInstance(console);
 		final JamToolBar jamToolBar = new JamToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
-
 		/* histogram displayer */
 		final PlotDisplay plotDisplay = new PlotDisplay(console);
 		JamStatus.getSingletonInstance().setDisplay(plotDisplay);
