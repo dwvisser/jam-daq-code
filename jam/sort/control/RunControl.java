@@ -2,6 +2,7 @@ package jam.sort.control;
 
 import jam.FrontEndCommunication;
 import jam.JamException;
+import jam.VMECommunication;
 import jam.global.JamStatus;
 import jam.global.RunInfo;
 import jam.global.RunState;
@@ -188,7 +189,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 */
 	private RunControl(Frame frame) {
 		super(frame, "Run", false);
-		vmeComm = STATUS.getFrontEndCommunication();
+		vmeComm = VMECommunication.getSingletonInstance();
 		final Frame jamMain = STATUS.getFrame();
 		this.dataio = new jam.io.hdf.HDFIO(jamMain);
 		runNumber = 100;

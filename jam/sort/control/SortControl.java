@@ -3,6 +3,7 @@ package jam.sort.control;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
+import jam.global.PropertyKeys;
 import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.io.ExtensionFileFilter;
@@ -127,9 +128,9 @@ public final class SortControl extends JDialog implements Controller {
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);
 		final String eventDefault = JamProperties
-				.getPropString(JamProperties.EVENT_OUTPATH);
+				.getPropString(PropertyKeys.EVENT_OUTPATH);
 		final String outDefault = JamProperties
-				.getPropString(JamProperties.EVENT_OUTFILE);
+				.getPropString(PropertyKeys.EVENT_OUTFILE);
 		setResizable(true);// sometimes there are long paths to files
 		setLocation(20, 50);
 		/* GUI layout */

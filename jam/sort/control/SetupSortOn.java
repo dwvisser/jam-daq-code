@@ -2,10 +2,12 @@ package jam.sort.control;
 
 import jam.FrontEndCommunication;
 import jam.JamException;
+import jam.VMECommunication;
 import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.global.RTSI;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
@@ -177,26 +179,26 @@ public final class SetupSortOn extends AbstractSetup {
 		super("Setup Online");
 		final int fileTextCols = 25;
 		final String defaultName = JamProperties
-				.getPropString(JamProperties.EXP_NAME);
+				.getPropString(PropertyKeys.EXP_NAME);
 		final String defaultRoutine = JamProperties
-				.getPropString(JamProperties.SORT_ROUTINE);
+				.getPropString(PropertyKeys.SORT_ROUTINE);
 		final String defaultSortPath = JamProperties
-				.getPropString(JamProperties.SORT_CLASSPATH);
+				.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final String defaultInStream = JamProperties
-				.getPropString(JamProperties.EVENT_INSTREAM);
+				.getPropString(PropertyKeys.EVENT_INSTREAM);
 		final String defaultOutStream = JamProperties
-				.getPropString(JamProperties.EVENT_OUTSTREAM);
+				.getPropString(PropertyKeys.EVENT_OUTSTREAM);
 		dataFolder = new File(JamProperties
-				.getPropString(JamProperties.EVENT_OUTPATH));
+				.getPropString(PropertyKeys.EVENT_OUTPATH));
 		histFolder = new File(JamProperties
-				.getPropString(JamProperties.HIST_PATH));
+				.getPropString(PropertyKeys.HIST_PATH));
 		logDirectory = new File(JamProperties
-				.getPropString(JamProperties.LOG_PATH));
-		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORT_CLASSPATH);
+				.getPropString(PropertyKeys.LOG_PATH));
+		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORTPATH);
 		runControl = RunControl.getSingletonInstance();
 		counters = DisplayCounters.getSingletonInstance();
 		jamConsole = console;
-		frontEnd = STATUS.getFrontEndCommunication();
+		frontEnd = VMECommunication.getSingletonInstance();
 		dialog.setResizable(false);
 		dialog.setLocation(20, 50);
 		final Container dcp = dialog.getContentPane();
@@ -452,13 +454,14 @@ public final class SetupSortOn extends AbstractSetup {
 	 * @param path of directory
 	 * @return true if directory exist
 	 */
-	private boolean checkDir(File path) {
+	private boolean checkDir(final File path) {
 		boolean exists;
 		if (path.exists() && path.isDirectory() ) {
 			exists=true;
- 
 		} else {
-			if (!path.isDirectory()) {
+			if (path.isDirectory()) {
+				exists = false;
+			} else {
 				final boolean confirm = (JOptionPane.showConfirmDialog(
 						dialog, "Create Directory :\n" + path.getAbsolutePath(),
 						"Directory does not Exist", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
@@ -468,13 +471,9 @@ public final class SetupSortOn extends AbstractSetup {
 				} else {
 					exists=false;
 				}
-			} else {
-				exists=false;
 			}
-			
 		}
-		return exists;
-		
+		return exists;	
 	}
 
 	protected void lockMode(final boolean lock) {
@@ -601,8 +600,8 @@ public final class SetupSortOn extends AbstractSetup {
 		}
 		/* Create the net daemon. */
 		netDaemon = new NetDaemon(sortingRing, storageRing, JamProperties
-				.getPropString(JamProperties.HOST_DATA_IP), JamProperties
-				.getPropInt(JamProperties.HOST_DATA_PORT_RECV));
+				.getPropString(PropertyKeys.HOST_DATA_IP), JamProperties
+				.getPropInt(PropertyKeys.HOST_DATA_P_RECV));
 		/* Tell control about everything. */
 		runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
 				netDaemon, diskDaemon);

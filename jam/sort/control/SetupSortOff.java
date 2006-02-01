@@ -5,6 +5,7 @@ import jam.data.DataBase;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.global.RTSI;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
@@ -113,15 +114,15 @@ public final class SetupSortOff extends AbstractSetup {
 	private SetupSortOff() {
 		super("Setup Offline");
 		final String defSortRout = JamProperties
-				.getPropString(JamProperties.SORT_ROUTINE);
+				.getPropString(PropertyKeys.SORT_ROUTINE);
 		final String defSortPath = JamProperties
-				.getPropString(JamProperties.SORT_CLASSPATH);
+				.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final String defInStream = JamProperties
-				.getPropString(JamProperties.EVENT_INSTREAM);
+				.getPropString(PropertyKeys.EVENT_INSTREAM);
 		final String defOutStream = JamProperties
-				.getPropString(JamProperties.EVENT_OUTSTREAM);
+				.getPropString(PropertyKeys.EVENT_OUTSTREAM);
 		final boolean useDefault = (defSortPath
-				.equals(JamProperties.DEFAULT_SORT_CLASSPATH));
+				.equals(JamProperties.DEFAULT_SORTPATH));
 		sortControl = SortControl.getInstance();
 		dispCount = DisplayCounters.getSingletonInstance();
 		final Container contents = dialog.getContentPane();

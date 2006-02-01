@@ -9,6 +9,7 @@ import jam.data.control.AbstractControl;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
+import jam.global.PropertyKeys;
 import jam.global.RTSI;
 import jam.global.Sorter;
 import jam.sort.SortException;
@@ -154,9 +155,9 @@ abstract class AbstractSetup {
 			}
 		});
 		final String defSortPath = JamProperties
-				.getPropString(JamProperties.SORT_CLASSPATH);
+				.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final boolean useDefault = (defSortPath
-				.equals(JamProperties.DEFAULT_SORT_CLASSPATH));
+				.equals(JamProperties.DEFAULT_SORTPATH));
 		specify = new JRadioButton("Specify a classpath", !useDefault);
 		specify
 				.setToolTipText("Specify a path to load your sort routine from.");
