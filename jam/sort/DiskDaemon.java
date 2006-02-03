@@ -32,7 +32,7 @@ public final class DiskDaemon extends AbstractStorageDaemon {
 	private transient final Object rreLock = new Object();
 
 	/**
-	 * @see AbstractStorageDaemon#StorageDaemon(Controller, MessageHandler)
+	 * @see AbstractStorageDaemon#AbstractStorageDaemon(Controller)
 	 */
 	public DiskDaemon(Controller controller) {
 		super(controller);

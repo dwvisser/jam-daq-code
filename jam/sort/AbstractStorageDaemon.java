@@ -121,6 +121,14 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 		inputFileOpen = false;
 		outputFileOpen = false;
 	}
+	
+	/**
+	 * 
+	 * @return the file currently being used for event output
+	 */
+	public File getEventOutputFile() {
+		return outputFile;
+	}
 
 	/**
 	 * Closes file that was written to during online sorting.
