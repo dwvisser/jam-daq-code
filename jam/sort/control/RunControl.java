@@ -12,26 +12,21 @@ import jam.sort.DiskDaemon;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.ui.Icons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -79,8 +74,6 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		FRONT_END
 	}
 
-	final static String EVENT_EXT = ".evn";
-
 	private static RunControl instance = null;
 
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
@@ -95,83 +88,26 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		return instance;
 	}
 
-	private transient final Action beginAction = new AbstractAction() {
-		{
-			putValue(Action.NAME, "Begin Run");
-			putValue(Action.SHORT_DESCRIPTION, "Begins the next run.");
-			putValue(Action.SMALL_ICON, Icons.getInstance().BEGIN);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent event) {
-			runTitle = textRunTitle.getText().trim();
-			final boolean confirm = (JOptionPane.showConfirmDialog(
-					RunControl.this, "Is this title OK? :\n" + runTitle,
-					"Run Title Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-			if (confirm) {
-				try {
-					beginRun();
-				} catch (SortException se) {
-					LOGGER.log(Level.SEVERE, se.getMessage(), se);
-				} catch (JamException je) {
-					LOGGER.log(Level.SEVERE, je.getMessage(), je);
-				}
-
-			}
-		}
-	};
-
 	private transient final JCheckBox cHistZero = new JCheckBox("Histograms",
 			true);
 
-	private transient File dataFile, dataPath;
-
-	private transient final DataIO dataio;
+	private transient File dataPath, histPath;;
 
 	private transient Device device;
 
 	private transient DiskDaemon diskDaemon;
 
-	private transient final Action endAction = new AbstractAction() {
-		{
-			putValue(Action.NAME, "End Run");
-			putValue(Action.SHORT_DESCRIPTION, "Ends the current run.");
-			putValue(Action.SMALL_ICON, Icons.getInstance().END);
-			setEnabled(false);
-		}
-
-		public void actionPerformed(final ActionEvent event) {
-			endRun();
-		}
-	};
-
-	/**
-	 * event file information
-	 */
-	private transient String exptName;
-
-	/**
-	 * histogram file information
-	 */
-	private transient File histFilePath;
-
 	/* daemon threads */
 	private transient NetDaemon netDaemon;
-
-	/**
-	 * run Number, is append to experiment name to create event file
-	 */
-	private transient int runNumber;
 
 	/**
 	 * Are we currently in a run, saving event data
 	 */
 	private boolean runOn = false;
 
-	/**
-	 * run Title
-	 */
-	private transient String runTitle;
+	private transient final Begin begin;
+
+	private transient final End end;
 
 	private transient SortDaemon sortDaemon;
 
@@ -190,9 +126,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	private RunControl(Frame frame) {
 		super(frame, "Run", false);
 		vmeComm = VMECommunication.getSingletonInstance();
-		final Frame jamMain = STATUS.getFrame();
-		this.dataio = new jam.io.hdf.HDFIO(jamMain);
-		runNumber = 100;
+		RunInfo.runNumber = 100;
 		setResizable(false);
 		setLocation(20, 50);
 		setSize(400, 250);
@@ -226,7 +160,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		pCenter.add(pRunNumber);
 		tRunNumber = new JTextField("");
 		tRunNumber.setColumns(3);
-		tRunNumber.setText(Integer.toString(runNumber));
+		tRunNumber.setText(Integer.toString(RunInfo.runNumber));
 		pRunNumber.add(tRunNumber);
 		final JPanel pRunTitle = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 				0));
@@ -245,9 +179,11 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		contents.add(pButtons, BorderLayout.SOUTH);
 		final JPanel pGrid = new JPanel(new GridLayout(1, 0, 50, 5));
 		pButtons.add(pGrid);
-		final JButton bbegin = new JButton(beginAction);
+		begin = new Begin(this, textRunTitle);
+		final JButton bbegin = new JButton(begin);
 		pGrid.add(bbegin);
-		final JButton bend = new JButton(endAction);
+		end = new End(this);
+		final JButton bend = new JButton(end);
 		pGrid.add(bend);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
@@ -282,6 +218,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		}
 		try {
 			if (device == Device.DISK) {
+				final File dataFile = diskDaemon.getEventOutputFile();
 				diskDaemon.closeEventOutputFile();
 				LOGGER.info("Event file closed " + dataFile.getPath());
 			} else if (device == Device.FRONT_END) {
@@ -315,19 +252,19 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 * @throws SortException
 	 *             if there's a problem while sorting
 	 */
-	private void beginRun() throws JamException, SortException {
+	void beginRun() throws JamException, SortException {
 		try {// get run number and title
-			runNumber = Integer.parseInt(tRunNumber.getText().trim());
-			runTitle = textRunTitle.getText().trim();
-			RunInfo.runNumber = runNumber;
-			RunInfo.runTitle = runTitle;
+			RunInfo.runNumber = Integer.parseInt(tRunNumber.getText().trim());
+			RunInfo.runTitle = textRunTitle.getText().trim();
 			RunInfo.runStartTime = new Date();
 		} catch (NumberFormatException nfe) {
 			throw new JamException("Run number not an integer [RunControl]");
 		}
 		if (device == Device.DISK) {// saving to disk
-			final String dataFileName = exptName + runNumber + EVENT_EXT;
-			dataFile = new File(dataPath, dataFileName);
+			final String EVENT_EXT = ".evn";
+			final String dataFileName = RunInfo.experimentName
+					+ RunInfo.runNumber + EVENT_EXT;
+			final File dataFile = new File(dataPath, dataFileName);
 			if (dataFile.exists()) {// Do not allow file overwrite
 				throw new JamException("Event file already exits, File: "
 						+ dataFile.getPath()
@@ -348,13 +285,14 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			netDaemon.setWriter(true);
 		}
 		// enable end button, display run number
-		endAction.setEnabled(true);
-		beginAction.setEnabled(false);
+		end.setEnabled(true);
+		begin.setEnabled(false);
 		setLockControls(true);
-		STATUS.setRunState(RunState.runOnline(runNumber));
+		STATUS.setRunState(RunState.runOnline(RunInfo.runNumber));
 		if (device == Device.DISK) {
-			LOGGER.info("Began run " + runNumber
-					+ ", events being written to file: " + dataFile.getPath());
+			LOGGER.info("Began run " + RunInfo.runNumber
+					+ ", events being written to file: "
+					+ diskDaemon.getEventOutputFile().getPath());
 		} else {
 			LOGGER.info("Began run, events being written out be front end.");
 		}
@@ -374,13 +312,13 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 * sort calls back isEndRun when it sees the end of run marker and write out
 	 * histogram, gates and scalers if requested
 	 */
-	private void endRun() {
+	void endRun() {
 		RunInfo.runEndTime = new Date();
 		vmeComm.end(); // stop Acq. flush buffer
 		vmeComm.readScalers(); // read scalers
 
 		STATUS.setRunState(RunState.ACQ_OFF);
-		LOGGER.info("Ending run " + runNumber
+		LOGGER.info("Ending run " + RunInfo.runNumber
 				+ ", waiting for sorting to finish.");
 		int numSeconds = 0;
 		do {// wait for sort to catch up
@@ -407,17 +345,20 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		netDaemon.setState(State.SUSPEND);
 		sortDaemon.userEnd();
 		// histogram file name constructed using run name and number
-		final String histFileName = exptName + runNumber + ".hdf";
+		final String histFileName = RunInfo.experimentName + RunInfo.runNumber
+				+ ".hdf";
 		// only write a histogram file
-		final File histFile = new File(histFilePath, histFileName);
+		final File histFile = new File(histPath, histFileName);
 		LOGGER.info("Sorting finished writing out histogram file: "
 				+ histFile.getPath());
+		final Frame jamMain = STATUS.getFrame();
+		final DataIO dataio = new jam.io.hdf.HDFIO(jamMain);
 		dataio.writeFile(histFile, jam.data.Group.getSortGroup());
-		runNumber++;// increment run number
-		tRunNumber.setText(Integer.toString(runNumber));
+		RunInfo.runNumber++;// increment run number
+		tRunNumber.setText(Integer.toString(RunInfo.runNumber));
 		setRunOn(false);
-		endAction.setEnabled(false); // toggle button states
-		beginAction.setEnabled(true);// set begin button state for next run
+		end.setEnabled(false); // toggle button states
+		begin.setEnabled(true);// set begin button state for next run
 		setLockControls(false);
 	}
 
@@ -460,12 +401,12 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	public void setupOn(final String name, final File datapath,
 			final File histpath, final SortDaemon sortD, final NetDaemon netD,
 			final DiskDaemon diskD) {
-		exptName = name;
+		RunInfo.experimentName = name;
 		dataPath = datapath;
-		histFilePath = histpath;
+		histPath = histpath;
 		sortDaemon = sortD;
 		netDaemon = netD;
-		netD.setEndRunAction(endAction);
+		netD.setEndRunAction(end);
 		textExptName.setText(name);
 		if (diskD == null) {// case if front end is taking care of storing
 			// events
@@ -474,7 +415,7 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 			diskDaemon = diskD;
 			device = Device.DISK;
 		}
-		beginAction.setEnabled(true);
+		begin.setEnabled(true);
 	}
 
 	/**
@@ -487,13 +428,14 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		vmeComm.startAcquisition();
 		// if we are in a run, display run number
 		if (isRunOn()) {// runOn is true if the current state is a run
-			STATUS.setRunState(RunState.runOnline(runNumber));
+			STATUS.setRunState(RunState.runOnline(RunInfo.runNumber));
 			// see stopAcq() for reason for this next line.
-			endAction.setEnabled(true);
-			LOGGER.info("Started Acquisition, continuing Run #" + runNumber);
+			end.setEnabled(true);
+			LOGGER.info("Started Acquisition, continuing Run #"
+					+ RunInfo.runNumber);
 		} else {// just viewing events, not running to disk
 			STATUS.setRunState(RunState.ACQ_ON);
-			beginAction.setEnabled(false);// don't want to try to begin run
+			begin.setEnabled(false);// don't want to try to begin run
 			// while going
 			LOGGER
 					.info("Started Acquisition...to begin a run, first stop acquisition.");
@@ -514,9 +456,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		 * done to avoid "last buffer in this run becomes first and last buffer
 		 * in next run" problem
 		 */
-		endAction.setEnabled(false);
+		end.setEnabled(false);
 		if (!isRunOn()) {// not running to disk
-			beginAction.setEnabled(true);// since it was disabled during
+			begin.setEnabled(true);// since it was disabled during
 			// start
 		}
 
@@ -524,11 +466,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 				+ "you will need to start again before clicking \"End Run\".");
 	}
 
-	private void setLockControls(boolean state) {
-		boolean enable = !state;
-		// tRunNumber.setEnabled(enable);
+	private void setLockControls(final boolean state) {
+		final boolean enable = !state;
 		tRunNumber.setEditable(enable);
-		// textRunTitle.setEnabled(enable);
 		textRunTitle.setEditable(enable);
 		cHistZero.setEnabled(enable);
 		zeroScalers.setEnabled(enable);
