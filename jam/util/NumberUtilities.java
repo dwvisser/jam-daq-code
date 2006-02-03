@@ -3,6 +3,13 @@ package jam.util;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+/**
+ * Utility class for turning sequences of bytes into java ints and shorts depending
+ * on the byte order conventions specified.
+ * 
+ * @author Dale Visser
+ *
+ */
 public final class NumberUtilities {
 
 	private static final NumberUtilities instance = new NumberUtilities();
@@ -11,6 +18,10 @@ public final class NumberUtilities {
 		super();
 	}
 
+	/**
+	 * 
+	 * @return the unique singleton instance of this class
+	 */
 	public static NumberUtilities getInstance() {
 		return instance;
 	}
