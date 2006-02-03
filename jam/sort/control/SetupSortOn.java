@@ -263,7 +263,7 @@ public final class SetupSortOn extends AbstractSetup {
 		/* Class path text */
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
-		Iterator<Class<?>> iterator = setChooserDefault(useDefaultPath)
+		Iterator<Class<?>> iterator = sortChooser.setChooserDefault(useDefaultPath)
 				.iterator();
 		boolean done = false;
 		while (!done && iterator.hasNext()) {
@@ -271,10 +271,10 @@ public final class SetupSortOn extends AbstractSetup {
 			final String name = clazz.getName();
 			done = name.equals(defaultRoutine);
 			if (done) {
-				sortChoice.setSelectedItem(clazz);
+				sortChooser.setSelectedItem(clazz);
 			}
 		}
-		pEntries.add(sortChoice);
+		pEntries.add(sortChooser);
 		/* Input stream classes */
 		final RTSI rtsi = RTSI.getSingletonInstance();
 		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(rtsi.find(
@@ -361,7 +361,7 @@ public final class SetupSortOn extends AbstractSetup {
 			}
 		});
 		pBottom.add(checkLock);
-		setChooserDefault(true);
+		sortChooser.setChooserDefault(true);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
 	}
@@ -391,7 +391,8 @@ public final class SetupSortOn extends AbstractSetup {
 								+ exptName);
 				/* Kill all existing Daemons and clear data areas */
 				resetAcq(false);
-				loadSorter(); // load sorting routine
+				sortChooser.loadSorter(specify.isSelected()); // load sorting routine
+				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 				if (sortRoutine != null) {
 					lockMode(true);
 					setupSort(); // create daemons
@@ -482,7 +483,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 		inChooser.setEnabled(notlock);
 		outChooser.setEnabled(notlock);
-		sortChoice.setEnabled(notlock);
+		sortChooser.setEnabled(notlock);
 		textExpName.setEditable(notlock);
 
 		textPathHist.setEditable(notlock);
@@ -503,6 +504,7 @@ public final class SetupSortOn extends AbstractSetup {
 		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine == null) {
 			// instead of conditional assign to avoid PMD warning
 			name = "No Data";
@@ -534,7 +536,7 @@ public final class SetupSortOn extends AbstractSetup {
 			netDaemon.closeNet();
 		}
 		if (killSort) {
-			sortRoutine = null;
+			sortChooser.forgetSortRoutine();
 		}
 		DataBase.getInstance().clearAllLists();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
@@ -542,7 +544,7 @@ public final class SetupSortOn extends AbstractSetup {
 
 	private void setupCamac() throws JamException {
 		frontEnd.setupAcquisition();
-		frontEnd.setupCamac(sortRoutine.getCamacCommands());
+		frontEnd.setupCamac(sortChooser.getSortRoutine().getCamacCommands());
 	}
 
 	protected void setupSort() throws SortException, JamException {
@@ -568,6 +570,7 @@ public final class SetupSortOn extends AbstractSetup {
 					+ ": illegal access to EventInputStream: "
 					+ inChooser.getSelectedItem());
 		}
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class
 			outStream = (AbstractEventOutputStream) ((Class) outChooser
 					.getSelectedItem()).newInstance();
@@ -615,7 +618,7 @@ public final class SetupSortOn extends AbstractSetup {
 	}
 	private void setupVMEmap() throws JamException {
 		frontEnd.setupAcquisition();
-		final VME_Map map = sortRoutine.getVMEmap();
+		final VME_Map map = sortChooser.getSortRoutine().getVMEmap();
 		frontEnd.setupVMEmap(map);
 		frontEnd.sendScalerInterval(map.getScalerInterval());
 	}

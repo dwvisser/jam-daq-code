@@ -11,6 +11,7 @@ import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
+import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -164,7 +165,7 @@ public final class SetupSortOff extends AbstractSetup {
 		pEntry.add(textSortPath);
 		/* Sort class */
 		selectSortRoutine(defSortRout, useDefault);
-		pEntry.add(sortChoice);
+		pEntry.add(sortChooser);
 		/* Input stream */
 		final RTSI rtsi = RTSI.getSingletonInstance();
 		Set<Class<?>> lhs = new LinkedHashSet<Class<?>>(rtsi.find(
@@ -227,9 +228,10 @@ public final class SetupSortOff extends AbstractSetup {
 		try {
 			if (STATUS.canSetup()) {
 				resetSort();// clear current data areas and kill daemons
-				loadSorter();
+				sortChooser.loadSorter(specify.isSelected());
 				loadEventInput();
 				loadEventOutput();
+				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 				LOGGER.info("Loaded sort class '"
 						+ sortRoutine.getClass().getName()
 						+ "', event instream class '"
@@ -263,13 +265,12 @@ public final class SetupSortOff extends AbstractSetup {
 			}
 			eventInput.setConsoleExists(true);
 		} catch (InstantiationException ie) {
-			final String msg = classname
-					+ "Cannot instantize event input stream: "
+			final String msg = "Cannot instantize event input stream: "
 					+ inChooser.getSelectedItem();
 			LOGGER.log(Level.SEVERE, msg, ie);
 			throw new JamException(msg, ie);
 		} catch (IllegalAccessException iae) {
-			final String msg = classname + "Cannot access event input stream: "
+			final String msg = "Cannot access event input stream: "
 					+ inChooser.getSelectedItem();
 			LOGGER.log(Level.SEVERE, msg, iae);
 			throw new JamException(msg, iae);
@@ -283,15 +284,12 @@ public final class SetupSortOff extends AbstractSetup {
 						.getSelectedItem()).newInstance();
 			}
 		} catch (InstantiationException ie) {
-			throw new JamException(classname
-					+ "Cannot instantize event output stream: "
+			throw new JamException("Cannot instantize event output stream: "
 					+ eventOutput.getClass().getName());
 		} catch (IllegalAccessException iae) {
-			throw new JamException(classname
-					+ "Cannot access event output stream: "
+			throw new JamException("Cannot access event output stream: "
 					+ eventOutput.getClass().getName());
 		}
-
 	}
 
 	protected void lockMode(final boolean lock) {
@@ -305,9 +303,9 @@ public final class SetupSortOff extends AbstractSetup {
 		bapply.setEnabled(notLock);
 		specify.setEnabled(notLock);
 		defaultPath.setEnabled(notLock);
-		sortChoice.setEnabled(notLock);
+		sortChooser.setEnabled(notLock);
 		if (lock) {
-			STATUS.setSortMode(SortMode.OFFLINE, sortRoutine.getClass()
+			STATUS.setSortMode(SortMode.OFFLINE, sortChooser.getSortRoutine().getClass()
 					.getName());
 			bbrowsef.setEnabled(false);
 		} else {
@@ -325,20 +323,20 @@ public final class SetupSortOff extends AbstractSetup {
 			sortDaemon.setState(GoodThread.State.STOP);
 			sortDaemon.setSorter(null);
 		}
-		sortRoutine = null;
+		sortChooser.forgetSortRoutine();
 		DataBase.getInstance().clearAllLists();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_NEW);
 		lockMode(false);
 	}
 
 	private void selectSortRoutine(final String srName, final boolean useDefault) {
-		final java.util.List sortList = setChooserDefault(useDefault);
+		final java.util.List sortList = sortChooser.setChooserDefault(useDefault);
 		final Iterator iter = sortList.iterator();
 		while (iter.hasNext()) {
 			final Class clazz = (Class) iter.next();
 			final String name = clazz.getName();
 			if (name.equals(srName)) {
-				sortChoice.setSelectedItem(clazz);
+				sortChooser.setSelectedItem(clazz);
 				break;
 			}
 		}
@@ -350,6 +348,7 @@ public final class SetupSortOff extends AbstractSetup {
 		synchronized (this) {
 			sortDaemon = new SortDaemon(sortControl);
 		}
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		sortDaemon.setup(eventInput, sortRoutine.getEventSize());
 		sortDaemon.setSorter(sortRoutine);
 		/* eventInputStream to use get event size from sorting routine */
@@ -378,14 +377,18 @@ public final class SetupSortOff extends AbstractSetup {
 	/**
 	 * Provided so setup offline sort can be scriptable.
 	 * 
-	 * @param classPath path to sort routine classpath base
-	 * @param sortName name of sort routine class
-	 * @param inStream event input stream class
-	 * @param outStream event output stream class
+	 * @param classPath
+	 *            path to sort routine classpath base
+	 * @param sortName
+	 *            name of sort routine class
+	 * @param inStream
+	 *            event input stream class
+	 * @param outStream
+	 *            event output stream class
 	 */
 	public void setupSort(final File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
-		setSortClassPath(classPath);
+		sortChooser.setSortClassPath(classPath);
 		selectSortRoutine(sortName, false);
 		inChooser.setSelectedItem(inStream);
 		outChooser.setSelectedItem(outStream);

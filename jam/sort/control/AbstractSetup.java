@@ -4,7 +4,6 @@
 package jam.sort.control;
 
 import jam.JamException;
-import jam.data.Group;
 import jam.data.control.AbstractControl;
 import jam.global.Broadcaster;
 import jam.global.JamProperties;
@@ -20,15 +19,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -48,16 +43,16 @@ import javax.swing.JToggleButton;
 abstract class AbstractSetup {
 
 	/**
-	 * All text message output goes to this object.
-	 */
-	protected static final Logger LOGGER = Logger.getLogger(AbstractSetup.class
-			.getPackage().getName());
-
-	/**
 	 * Handle to event broadcaster.
 	 */
 	protected static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
+
+	/**
+	 * All text message output goes to this object.
+	 */
+	protected static final Logger LOGGER = Logger.getLogger(AbstractSetup.class
+			.getPackage().getName());
 
 	/**
 	 * JamStatus instance.
@@ -79,7 +74,6 @@ abstract class AbstractSetup {
 	 */
 	protected static void selectName(final JComboBox jcb,
 			final Collection<Class<?>> collection, final String defInStream) {
-		// final Iterator iter = collection.iterator();
 		for (Class clazz : collection) {
 			final String name = clazz.getName();
 			final boolean match = name.equals(defInStream);
@@ -94,11 +88,6 @@ abstract class AbstractSetup {
 	 * Press to browse for a classpath.
 	 */
 	protected transient final AbstractButton bbrowsef = new JButton("Browse...");
-
-	/**
-	 * Name of class. Ultimately used to create messages.
-	 */
-	protected transient final String classname;
 
 	/**
 	 * path to base of sort routines' classpath
@@ -116,18 +105,9 @@ abstract class AbstractSetup {
 	protected transient final JDialog dialog;
 
 	/**
-	 * Combo box for selecting a sort routine.
-	 * 
-	 * @see jam.sort.SortRoutine
+	 * Last select path
 	 */
-	protected transient final JComboBox sortChoice = new JComboBox();
-
-	private transient Class sortClass;
-
-	/**
-	 * User sort routine must extend this abstract class
-	 */
-	protected transient SortRoutine sortRoutine;// the actual sort routine
+	protected transient String lastSortPath = "";
 
 	/**
 	 * When toggled, means that a user-supplied path should be used for
@@ -139,25 +119,21 @@ abstract class AbstractSetup {
 	 * Text field showing the sort class path.
 	 */
 	protected transient final JTextField textSortPath;
-
+	
 	/**
-	 * Last select path
+	 * sort routine chooser
 	 */
-	protected transient String lastSortPath = "";
+	protected transient final SortChooser sortChooser;
 
 	AbstractSetup(String dialogName) {
 		super();
 		dialog = new JDialog(STATUS.getFrame(), dialogName, false);
-		sortChoice.setToolTipText("Select sort routine class");
-		sortChoice.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				sortClass = (Class) sortChoice.getSelectedItem();
-			}
-		});
 		final String defSortPath = JamProperties
 				.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final boolean useDefault = (defSortPath
 				.equals(JamProperties.DEFAULT_SORTPATH));
+		textSortPath = new JTextField(defSortPath);
+		sortChooser = new SortChooser(textSortPath);
 		specify = new JRadioButton("Specify a classpath", !useDefault);
 		specify
 				.setToolTipText("Specify a path to load your sort routine from.");
@@ -165,24 +141,22 @@ abstract class AbstractSetup {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (specify.isSelected()) {
 					bbrowsef.setEnabled(true);
-					setChooserDefault(false);
+					sortChooser.setChooserDefault(false);
 					textSortPath.setEnabled(true);
 					textSortPath.setText(lastSortPath);
 
 				}
 			}
 		});
-		classname = getClass().getName() + "--";
 		if (!useDefault) {
 			classPath = new File(defSortPath);
 		}
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				setSortClassPath(getSortPath());
+				sortChooser.setSortClassPath(getSortPath());
 			}
 		});
 		bbrowsef.setEnabled(false);
-		textSortPath = new JTextField(defSortPath);
 		textSortPath.setToolTipText("Use Browse button to change. \n"
 				+ "May fail if classes have unresolvable references."
 				+ "\n* use the sort.classpath property in your JamUser.ini "
@@ -200,7 +174,7 @@ abstract class AbstractSetup {
 			public void itemStateChanged(final ItemEvent event) {
 				if (defaultPath.isSelected()) {
 					bbrowsef.setEnabled(false);
-					setChooserDefault(true);
+					sortChooser.setChooserDefault(true);
 					textSortPath.setEnabled(false);
 					lastSortPath = textSortPath.getText();
 					textSortPath.setText("default");
@@ -234,7 +208,7 @@ abstract class AbstractSetup {
 	 *            class path
 	 * @return set of available sort routines
 	 */
-	protected final Set<Class<?>> getSortClasses(final File path) {
+	static final Set<Class<?>> getSortClasses(final File path) {
 		return RTSI.getSingletonInstance().find(path, Sorter.class);
 	}
 
@@ -266,17 +240,18 @@ abstract class AbstractSetup {
 	 */
 	protected final void initializeSorter() throws JamException {
 		final StringBuffer message = new StringBuffer();
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {
 			sortRoutine.initialize();
 		} catch (Exception thrown) {
-			message.append(classname).append("Exception in SortRoutine: ")
+			message.append("Exception in SortRoutine: ")
 					.append(sortName).append(".initialize(); Message= '")
 					.append(thrown.getClass().getName()).append(": ").append(
 							thrown.getMessage()).append('\'');
 			throw new JamException(message.toString(), thrown);
 		} catch (OutOfMemoryError thrown) {
-			message.append(classname).append(
+			message.append(sortName).append(
 					" attempts to allocate too much memory. ");
 			message
 					.append("Reduce its requirments or start Jam with more available heap space. ");
@@ -299,46 +274,6 @@ abstract class AbstractSetup {
 		AbstractControl.setupAll();
 	}
 
-	/**
-	 * Resolves the String objects into class names and loads the sorting class
-	 * and event streams.
-	 * 
-	 * @throws JamException
-	 *             if there's a problem
-	 */
-	protected final void loadSorter() throws JamException {
-		if (sortClass == null) {
-			sortClass = (Class) sortChoice.getSelectedItem();
-		}
-		if (sortClass == null) {
-			throw new JamException("No sort routine has been selected.");
-		}
-		// FIXME maybe we should do DataBase.clearAll(); here
-		Group.clearList();
-		final String sortName = Group.parseSortClassName(sortClass.getName());
-		Group.createGroup(sortName, Group.Type.SORT);
-		try {
-			if (specify.isSelected()) {
-				/* we call loadClass() in order to guarantee latest version */
-				synchronized (this) {
-					sortRoutine = (SortRoutine) RTSI.getSingletonInstance()
-							.loadClass(classPath, sortClass.getName())
-							.newInstance();// create sort
-					// class
-				}
-			} else {// use default loader
-				synchronized (this) {
-					sortRoutine = (SortRoutine) sortClass.newInstance();
-				}
-			}
-		} catch (InstantiationException ie) {
-			throw new JamException(classname
-					+ "Cannot instantiate sort routine: " + sortClass.getName());
-		} catch (IllegalAccessException iae) {
-			throw new JamException(classname + "Cannot access sort routine: "
-					+ sortClass.getName());
-		}
-	}
 
 	/**
 	 * Locks up the setup so the fields cannot be edited.
@@ -348,45 +283,6 @@ abstract class AbstractSetup {
 	 */
 	protected abstract void lockMode(boolean lock);
 
-	/**
-	 * Sets whether to use the default classpath or a user-specified one.
-	 * 
-	 * @param isDefault
-	 *            <code>true</code> to use the default classpath
-	 * @return a list of the available sort routines
-	 */
-	protected final List<Class<?>> setChooserDefault(final boolean isDefault) {
-		final List<Class<?>> list = new ArrayList<Class<?>>();
-		if (isDefault) {
-			final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-			final RTSI rtsi = RTSI.getSingletonInstance();
-			set.addAll(rtsi.find("help", Sorter.class, true));
-			set.addAll(rtsi.find("sort", Sorter.class, true));
-			list.addAll(set);
-		} else {
-			list.addAll(getSortClasses(classPath));
-		}
-		sortChoice.setModel(new DefaultComboBoxModel(list.toArray()));
-		return list;
-	}
-
-	/**
-	 * Sets the class path for loading sort routines.
-	 * 
-	 * @param file
-	 *            path to classes
-	 */
-	protected final void setSortClassPath(final File file) {
-		if (file.exists()) {
-			classPath = file;
-			sortChoice.setModel(new DefaultComboBoxModel(getSortClasses(
-					classPath).toArray()));
-			if (sortChoice.getModel().getSize() > 0) {
-				sortChoice.setSelectedIndex(0);
-			}
-			textSortPath.setText(classPath.getAbsolutePath());
-		}
-	}
 
 	/**
 	 * Sets up the sort.
