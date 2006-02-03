@@ -1,4 +1,4 @@
-package jam.ui;
+package jam.sort.control;
 
 import java.awt.FlowLayout;
 
@@ -7,11 +7,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public final class CounterPanel extends JPanel {
+final class CounterPanel extends JPanel {
 	
 	private transient final JTextField textField=new JTextField();
 
-	public CounterPanel(final String description) {
+	CounterPanel(final String description) {
 		super();
 		final String emptyString = "";
 		final int cols = 8;
@@ -26,7 +26,7 @@ public final class CounterPanel extends JPanel {
 		add(textField);
 	}
 	
-	public void setText(final String text){
+	void setText(final String text){
 		textField.setText(text);
 	}
 }

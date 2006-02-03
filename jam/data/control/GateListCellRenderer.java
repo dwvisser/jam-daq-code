@@ -1,6 +1,7 @@
-package jam.ui;
+package jam.data.control;
 
 import jam.data.Gate;
+import jam.ui.Icons;
 
 import java.awt.Component;
 
@@ -15,7 +16,11 @@ import javax.swing.UIManager;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 17 Dec 2003
  */
-public final class GateListCellRenderer extends DefaultListCellRenderer {
+final class GateListCellRenderer extends DefaultListCellRenderer {
+	
+	GateListCellRenderer() {
+		super();
+	}
 
 	/**
 	 * Returns a <code>JLabel</code> for the gate, with name and number, and a

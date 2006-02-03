@@ -1,6 +1,5 @@
-package jam.ui;
+package jam;
 
-import jam.JamPrefs;
 import jam.commands.CommandManager;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -31,7 +30,7 @@ import javax.swing.JMenuItem;
  * @version 1.4
  * @since 30 Dec 2003
  */
-public final class MenuBar implements Observer, CommandNames {
+final class MenuBar implements Observer, CommandNames {
 
 	final transient private JamStatus status = JamStatus.getSingletonInstance();
 
@@ -284,20 +283,24 @@ public final class MenuBar implements Observer, CommandNames {
 		view.add(getMenuItem(SHOW_VIEW_DELETE));
 		view.addSeparator();
 		for (final String name : View.getNameList()) {
-			final JMenuItem viewItem = new JMenuItem(name);
-			view.add(viewItem);
-			viewItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					status.getDisplay().setView(View.getView(name));
-				}
-			});
+			view.add(namedMenuItem(name));
 		}
+	}
+	
+	private JMenuItem namedMenuItem(final String name) {
+		final JMenuItem rval = new JMenuItem(name);
+		rval.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				status.getDisplay().setView(View.getView(name));
+			}
+		});
+		return rval;
 	}
 
 	/**
 	 * @return the only menubar created by this class
 	 */
-	static public JMenuBar getMenuBar() {
+	static JMenuBar getMenuBar() {
 		return INSTANCE.menus;
 	}
 }

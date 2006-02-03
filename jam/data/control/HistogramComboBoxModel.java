@@ -1,4 +1,4 @@
-package jam.ui;
+package jam.data.control;
 
 import jam.data.Histogram;
 
@@ -15,11 +15,11 @@ import javax.swing.JOptionPane;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC3
  */
-public class HistogramComboBoxModel extends DefaultComboBoxModel {
+class HistogramComboBoxModel extends DefaultComboBoxModel {
 
 	private transient Object selection = null;
 
-	private transient int lastSize = 0;
+	private transient int lastSize = 0;//NOPMD
 
 	/**
 	 * The possible modes for a histogram combo box.
@@ -52,7 +52,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * Create a data model for any JComboBox wishing to display the available
 	 * histograms.
 	 */
-	public HistogramComboBoxModel() {
+	HistogramComboBoxModel() {
 		this(Mode.ALL);
 	}
 
@@ -62,7 +62,7 @@ public class HistogramComboBoxModel extends DefaultComboBoxModel {
 	 * @param mode
 	 *            which histograms to display
 	 */
-	public HistogramComboBoxModel(Mode mode) {
+	HistogramComboBoxModel(Mode mode) {
 		super();
 		if (Mode.ALL.equals(mode)) {
 			histograms = Histogram.getListSortedByNumber();

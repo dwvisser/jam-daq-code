@@ -1,4 +1,4 @@
-package jam.ui;
+package jam.sort.control;
 
 import jam.global.JamStatus;
 
@@ -10,13 +10,13 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.text.JTextComponent;
 
-public final class PathBrowseButton extends JButton {
+final class PathBrowseButton extends JButton {
 	
 	private transient File path;
 	private transient final JTextComponent text;
 	private static final JamStatus STATUS=JamStatus.getSingletonInstance();
 
-	public PathBrowseButton(File file, JTextComponent textComponent){
+	PathBrowseButton(File file, JTextComponent textComponent){
 		super("Browse...");
 		assert(file != null);
 		assert(textComponent != null);

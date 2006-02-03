@@ -1,10 +1,8 @@
-package jam.ui;
+package jam;
 
 import jam.commands.CommandManager;
-import jam.global.CommandNames;
 
 import javax.swing.JButton;
-import javax.swing.JToolBar;
 
 /**
  * Main Toolbar for Jam.
@@ -12,13 +10,14 @@ import javax.swing.JToolBar;
  * @author Ken Swartz
  * 
  */
-public final class JamToolBar extends JToolBar implements CommandNames {
+final class ToolBar extends javax.swing.JToolBar implements
+		jam.global.CommandNames {
 
 	/**
 	 * Constructor.
 	 * 
 	 */
-	public JamToolBar() {
+	ToolBar() {
 		super();
 		add(createButton(OPEN_HDF));
 		add(createButton(OPEN_ADD_HDF));

@@ -1,4 +1,4 @@
-package jam.ui;
+package jam.data.control;
 
 import jam.data.Gate;
 import jam.data.Histogram;
@@ -17,7 +17,7 @@ import javax.swing.DefaultComboBoxModel;
  * @author <a href="mailto:dale@visser.name">Dale Visser</a>
  * @version 1.4.2 RC 3
  */
-public class GateComboBoxModel extends DefaultComboBoxModel {
+final class GateComboBoxModel extends DefaultComboBoxModel {
 
 	/**
 	 * Class representing the possible modes of GateComboBoxModel's. Only two
@@ -53,7 +53,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 * Create the default model that shows gates for the currently displayed
 	 * histogram.
 	 */
-	public GateComboBoxModel() {
+	GateComboBoxModel() {
 		this(Mode.DISPLAYED_HIST);
 	}
 
@@ -64,7 +64,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	 *            whether just gates for the current histogram or all histograms
 	 *            of the same dimensionality should be shown
 	 */
-	public GateComboBoxModel(Mode listmode) {
+	GateComboBoxModel(Mode listmode) {
 		super();
 		mode = listmode;
 	}
@@ -147,7 +147,7 @@ public class GateComboBoxModel extends DefaultComboBoxModel {
 	private int numGates() {
 		int numG = 0;
 		final Nameable named = status.getCurrentHistogram();
-		if (named != null && named instanceof Histogram) {
+		if (named instanceof Histogram) {
 			final Histogram hist = (Histogram)named;
 			if (Mode.DISPLAYED_HIST.equals(mode)) {
 				numG = hist.getGates().size();
