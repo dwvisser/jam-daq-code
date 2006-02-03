@@ -8,12 +8,24 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Abstract superclass of all event output streams that write ORNL L002 headers.
+ * @author dvk
+ *
+ */
 public abstract class AbstractL002HeaderWriter extends AbstractEventOutputStream implements L002Parameters {
     
+	/**
+	 * Default constructor.
+	 *
+	 */
 	protected AbstractL002HeaderWriter(){
 		super();
 	}
 
+	/**
+	 * @param eventSize number of parmas per event
+	 */
 	protected AbstractL002HeaderWriter(int eventSize){
 		super(eventSize);
 	}

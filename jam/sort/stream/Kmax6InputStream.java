@@ -2,6 +2,8 @@ package jam.sort.stream;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -18,18 +20,16 @@ import java.util.logging.Level;
  */
 public final class Kmax6InputStream extends AbstractEventInputStream {
 
-	private int blockEventType;
+	private transient int blockEventType;
 
-	private int blockNumEvnt;
+	private transient int blockNumEvnt;
 
-	private int countEvent = 0;
+	private transient int countEvent = 0;// NOPMD
 
-	private short[] eventsze = new short[32]; // event size array
+	// event sizes
+	private transient final List<Short> eventsze = new ArrayList<Short>(5);
 
-	// private int countWord=0;
-	private boolean newBlock = true;
-
-	private int parameter;
+	private transient boolean newBlock = true;// NOPMD
 
 	/**
 	 * Default constructor.
@@ -69,8 +69,10 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *            most recently read word
 	 * @return whether end-of-file
 	 */
-	public synchronized boolean isEndRun(short dataWord) {
-		return false;
+	public boolean isEndRun(final short dataWord) {
+		synchronized (this) {
+			return false;
+		}
 	}
 
 	/**
@@ -106,46 +108,49 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 	 *                thrown for errors in the event stream
 	 * @return status resulting after read attempt
 	 */
-	public synchronized EventInputStatus readEvent(int[] input)
-			throws EventException {
-		try {
-			if (newBlock) {// if a new block read in block header
-				if (!readBlockHeader()) {
-					return EventInputStatus.END_FILE;
+	public EventInputStatus readEvent(int[] input) throws EventException {
+		EventInputStatus rval = null;
+		synchronized (this) {
+			try {
+				if (newBlock) {// if a new block read in block header
+					if (!readBlockHeader()) {
+						rval = EventInputStatus.END_FILE;
+					}
+					newBlock = false;
+					countEvent = 0;
+					// check if we are done with this block
+				} else if (countEvent > blockNumEvnt) {
+					// are we done with this block
+					newBlock = true;
+					rval = EventInputStatus.END_BUFFER;
+				} else if (blockEventType == 5) {
+					final short size = eventsze.get(4);
+					for (int parameter = 0; parameter < size; parameter++) {
+						// read parameter word
+						input[parameter] = dataInput.readInt();
+					}
+					rval = EventInputStatus.EVENT;
+				} else if (blockEventType < 5) {
+					final short size = eventsze.get(blockEventType - 1);
+					for (int parameter = 0; parameter < size; parameter++) {
+						dataInput.readInt();// header padding
+					}
+					rval = EventInputStatus.ERROR;
+				} else {
+					throw new IllegalStateException(getClass().getName()
+							+ ": Block Event Type >5: " + blockEventType);
 				}
-				newBlock = false;
-				countEvent = 0;
-				// countWord=0;
-				// check if we are done with this block
-			} else if (countEvent > blockNumEvnt) {
-				// are we done with this block
-				newBlock = true;
-				return EventInputStatus.END_BUFFER;
+				// we got to the end of a file or stream
+			} catch (EOFException e) {
+				rval = EventInputStatus.END_FILE;
+			} catch (IOException ioe) {
+				LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
+				rval = EventInputStatus.ERROR;
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				rval = EventInputStatus.ERROR;
 			}
-			if (blockEventType == 5) {
-				for (parameter = 0; parameter < eventsze[4]; parameter++) {
-					// read parameter word
-					input[parameter] = dataInput.readInt();
-				}
-				return EventInputStatus.EVENT;
-			} else if (blockEventType < 5) {
-				for (parameter = 0; parameter < eventsze[blockEventType - 1]; parameter++) {
-					dataInput.readInt();// header padding
-				}
-				return EventInputStatus.ERROR;
-			} else {
-				throw new IllegalStateException(getClass().getName()
-						+ ": Block Event Type >5: " + blockEventType);
-			}
-			// we got to the end of a file or stream
-		} catch (EOFException e) {
-			return EventInputStatus.END_FILE;
-		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE, ioe.getMessage(), ioe);
-			return EventInputStatus.ERROR;
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
-			return EventInputStatus.ERROR;
+			return rval;
 		}
 	}
 
@@ -161,14 +166,15 @@ public final class Kmax6InputStream extends AbstractEventInputStream {
 		try {
 			final byte[] headerStart = new byte[354]; // KMax Header
 			dataInput.readFully(headerStart); // Header to be ignored
-			eventsze[0] = dataInput.readShort(); // array of event sizes
-			eventsze[1] = dataInput.readShort(); // array of event sizes
-			eventsze[2] = dataInput.readShort(); // array of event sizes
-			eventsze[3] = dataInput.readShort(); // array of event sizes
-			eventsze[4] = dataInput.readShort(); // array of event sizes
+			eventsze.add(0, dataInput.readShort());
+			eventsze.add(1, dataInput.readShort());
+			eventsze.add(2, dataInput.readShort());
+			eventsze.add(3, dataInput.readShort());
+			eventsze.add(4, dataInput.readShort());
 			final byte[] junk = new byte[54];
 			dataInput.readFully(junk);
-			final int paramsPerEvent = eventsze[4]; // SRQ event size is wanted
+			final int paramsPerEvent = eventsze.get(4); // SRQ event size is
+			// wanted
 			final byte[] headerEnd = new byte[316]; // header padding
 			dataInput.readFully(headerEnd);
 			// save reads to header variables

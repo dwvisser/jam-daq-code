@@ -95,10 +95,6 @@ public abstract class AbstractEventInputStream {
 	protected int bufferSize;
 
 	/**
-	 * The place to print messages.
-	 */
-	// protected transient MessageHandler console;
-	/**
 	 * Stream events are read from
 	 */
 	protected transient DataInputStream dataInput;

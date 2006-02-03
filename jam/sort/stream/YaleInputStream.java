@@ -34,8 +34,7 @@ public class YaleInputStream extends AbstractL002HeaderReader implements
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean,
-	 *      int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
 	public YaleInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
@@ -48,39 +47,44 @@ public class YaleInputStream extends AbstractL002HeaderReader implements
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
-	public synchronized EventInputStatus readEvent(int[] input)
-			throws EventException {
-		try {
-			while (isParameter(dataInput.readShort())) {// could be event or
-				// scaler parameter
-				if (status == EventInputStatus.PARTIAL_EVENT) {
-					final int tempval = dataInput.readShort();
-					if (parameter < eventSize) {
-						/* only try to store if we won't go outside the array */
-						input[parameter] = tempval; // read event word
+	public EventInputStatus readEvent(int[] input) throws EventException {
+		synchronized (this) {
+			try {
+				while (isParameter(dataInput.readShort())) {// could be event or
+					// scaler parameter
+					if (status == EventInputStatus.PARTIAL_EVENT) {
+						final int tempval = dataInput.readShort();
+						if (parameter < eventSize) {
+							/*
+							 * only try to store if we won't go outside the
+							 * array
+							 */
+							input[parameter] = tempval; // read event word
+						}
+					} else if (status == EventInputStatus.SCALER_VALUE) {
+						dataInput.readInt();// throw away scaler value
 					}
-				} else if (status == EventInputStatus.SCALER_VALUE) {
-					dataInput.readInt();// throw away scaler value
 				}
+			} catch (EOFException eofe) {// we got to the end of a file or
+				// stream
+				status = EventInputStatus.END_FILE;
+				LOGGER
+						.warning(getClass().getName()
+								+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
+			} catch (Exception e) {
+				status = EventInputStatus.UNKNOWN_WORD;
+				throw new EventException(getClass().getName()
+						+ ".readEvent() parameter = " + parameter
+						+ " Exception: " + e.toString());
 			}
-		} catch (EOFException eofe) {// we got to the end of a file or stream
-			status = EventInputStatus.END_FILE;
-			LOGGER
-					.warning(getClass().getName()
-							+ ".readEvent(): End of File reached...file may be corrupted, or run not ended properly.");
-		} catch (Exception e) {
-			status = EventInputStatus.UNKNOWN_WORD;
-			throw new EventException(getClass().getName()
-					+ ".readEvent() parameter = " + parameter + " Exception: "
-					+ e.toString());
+			return status;
 		}
-		return status;
 	}
 
 	/*
 	 * non-javadoc: Read an event parameter.
 	 */
-	private boolean isParameter(short paramWord) {
+	private boolean isParameter(final short paramWord) {
 		boolean rval;
 		if (paramWord == EVENT_END_MARKER) {
 			rval = false;
@@ -113,7 +117,9 @@ public class YaleInputStream extends AbstractL002HeaderReader implements
 	/**
 	 * Check for end of run word
 	 */
-	public synchronized boolean isEndRun(short dataWord) {
-		return (dataWord == RUN_END_MARKER);
+	public boolean isEndRun(final short dataWord) {
+		synchronized (this) {
+			return (dataWord == RUN_END_MARKER);
+		}
 	}
 }

@@ -23,7 +23,7 @@ public final class L003InputStream extends AbstractEventInputStream implements
 
 	private transient EventInputStatus status;
 
-	private transient int byteCounter = 0;
+	private transient int byteCounter = 0;//NOPMD
 
 	/**
 	 * Needed to create an instance with newInstance().

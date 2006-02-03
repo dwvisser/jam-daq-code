@@ -113,7 +113,7 @@ public class L00XInputStream extends AbstractL002HeaderReader implements
 			parameterSuccess = false;
 			status = EventInputStatus.END_RUN;
 			// get parameter value if not special type
-		} else if ((paramWord & EVENT_PARAMETER) != 0) {
+		} else if ((paramWord & EVENT_PARAMETER) != 0) {//NOPMD
 			final int paramNumber = paramWord & EVENT_MASK;
 			if (paramNumber < 2048) {
 				parameter = paramNumber - 1;// parameter number used in array

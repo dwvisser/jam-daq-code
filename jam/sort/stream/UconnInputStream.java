@@ -17,39 +17,8 @@ import java.util.List;
  * @see AbstractEventInputStream
  * @since JDK1.1
  */
-public final class UconnInputStream extends AbstractEventInputStream {
-
-	static final private int ADC_CHAN_MASK = 0x07;
-
-	static final private int ADC_CHAN_SHFT = 12;
-
-	static final private int ADC_DATA_MASK = 0xFFF;
-
-	static final private int ADC_OFFSET = 8; // how much to offset data for
-
-	static private final int HEAD_SIZE = 5; // size of header in 2 byte words
-
-	static final private int NUMBER_SCALERS = 12;
-
-	static final private int SCALER_MASK = 0x00ffffff;
-
-	static final private int TDC_CHAN_MASK = 0x1F;
-
-	// each vsn
-
-	static final private int TDC_CHAN_SHFT = 10;
-
-	static final private int TDC_DATA_MASK = 0x3FF;
-
-	static final private int TDC_OFFSET = 32; // how much to offset data for
-
-	static final private int VSN_MARKER = 0x8000;
-
-	// each vsn
-
-	static final private int VSN_MASK = 0xFF;
-
-	static final private int VSN_TDC = 0x4;
+public final class UconnInputStream extends AbstractEventInputStream implements
+		UconnStreamConstants {
 
 	private transient int blockCurrSize;
 
@@ -57,13 +26,13 @@ public final class UconnInputStream extends AbstractEventInputStream {
 
 	private transient int blockNumEvnt;
 
-	private transient int countEvent = 0;
+	private transient int countEvent = 0;// NOPMD
 
 	private transient short eventNumWord;
 
 	private transient short eventState;
 
-	private transient boolean newBlock = true;
+	private transient boolean newBlock = true;// NOPMD
 
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
@@ -73,8 +42,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	}
 
 	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean,
-	 *      int)
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
 	 */
 	public UconnInputStream(boolean console, int eventSize) {
 		super(console, eventSize);
@@ -84,9 +52,11 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * Is the word a end-of-run word
 	 * 
 	 */
-	public synchronized boolean isEndRun(final short dataWord) {
-		/* no end run marker */
-		return false;
+	public boolean isEndRun(final short dataWord) {
+		synchronized (this) {
+			/* no end run marker */
+			return false;
+		}
 	}
 
 	/**
@@ -98,6 +68,7 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 *                thrown for errors in event stream
 	 */
 	private boolean readBlockHeader() throws EventException {
+		boolean rval = false;
 		try {
 			blockFullSize = dataInput.readInt();
 			blockCurrSize = dataInput.readInt();
@@ -113,16 +84,14 @@ public final class UconnInputStream extends AbstractEventInputStream {
 				scalerValues.add(dataInput.readInt() & SCALER_MASK);
 			}
 			Scaler.update(scalerValues);
-			return true;
-
+			rval = true;
 		} catch (EOFException eof) {
 			showMessage("end of file readBlockHeader");
-			return false;
-
 		} catch (IOException ioe) {
 			throw new EventException("Reading Block header," + ioe.getMessage()
 					+ " [UconnInputStream]");
 		}
+		return rval;
 	}
 
 	/**
@@ -132,50 +101,52 @@ public final class UconnInputStream extends AbstractEventInputStream {
 	 * @exception EventException
 	 *                thrown for errors in the event stream
 	 */
-	public synchronized EventInputStatus readEvent(int[] input)
-			throws EventException {
+	public EventInputStatus readEvent(int[] input) throws EventException {
 		EventInputStatus status;
 		long numSkip;
 
-		try {
-			status = EventInputStatus.ERROR;
-			// if a new block read in block header
-			if (newBlock) {
-				if (!readBlockHeader()) {
-					return EventInputStatus.END_FILE;
+		synchronized (this) {
+			try {
+				status = EventInputStatus.ERROR;
+				// if a new block read in block header
+				if (newBlock) {
+					if (readBlockHeader()) {
+						newBlock = false;
+						countEvent = 0;
+					} else {
+						status = EventInputStatus.END_FILE;
+					}
+					// check if we are done with this buffer
+				} else if (countEvent == blockNumEvnt) {
+					// are we done with this block
+					numSkip = blockFullSize - blockCurrSize;
+					dataInput.skip(numSkip);
+					newBlock = true;
+					status = EventInputStatus.END_BUFFER;
+				} else {
+					// read in the event header
+					readEventHeader();
+					unpackData(input);
+					// flush out rest of event
+					numSkip = eventSize - 2 * HEAD_SIZE - 2 * eventNumWord;
+					dataInput.skip(numSkip);
+					// event state
+					input[64] = eventState;
+					countEvent++;
+					status = EventInputStatus.EVENT;
+					// we got to the end of a file or stream
 				}
-				newBlock = false;
-				countEvent = 0;
-				// check if we are done with this buffer
-			} else if (countEvent == blockNumEvnt) {
-				// are we done with this block
-				numSkip = blockFullSize - blockCurrSize;
-				dataInput.skip(numSkip);
-				newBlock = true;
-				return EventInputStatus.END_BUFFER;
+			} catch (EOFException eof) {
+				status = EventInputStatus.END_FILE;
+				throw new EventException("Reading event EOFException "
+						+ eof.getMessage() + " [UconnInputStream]");
+			} catch (IOException io) {
+				status = EventInputStatus.END_FILE;
+				throw new EventException("Reading event IOException "
+						+ io.getMessage() + " [ConnInputStream]");
 			}
-			// read in the event header
-			readEventHeader();
-			unpackData(input);
-			// flush out rest of event
-			numSkip = eventSize - 2 * HEAD_SIZE - 2 * eventNumWord;
-			dataInput.skip(numSkip);
-			// event state
-			input[64] = eventState;
-			countEvent++;
-			status = EventInputStatus.EVENT;
-			// we got to the end of a file or stream
-		} catch (EOFException eof) {
-
-			status = EventInputStatus.END_FILE;
-			throw new EventException("Reading event EOFException "
-					+ eof.getMessage() + " [UconnInputStream]");
-		} catch (IOException io) {
-			status = EventInputStatus.END_FILE;
-			throw new EventException("Reading event IOException "
-					+ io.getMessage() + " [ConnInputStream]");
+			return status;
 		}
-		return status;
 	}
 
 	/*

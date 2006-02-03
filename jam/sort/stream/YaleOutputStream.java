@@ -90,7 +90,7 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	/**
 	 * Check for end of run word
 	 */
-	public boolean isEndRun(short dataWord) {
+	public boolean isEndRun(final short dataWord) {
 		return (dataWord == RUN_END_MARKER);
 	}
 
@@ -109,14 +109,14 @@ public final class YaleOutputStream extends AbstractL002HeaderWriter {
 	 * non-javadoc: Checks whether a valid parameter number (should be 1 to 512
 	 * according to ORNL documentation).
 	 */
-	private boolean isValidParameterNumber(short number) {
+	private boolean isValidParameterNumber(final short number) {
 		return ((number >= 0) && (number < 2048));
 	}
 
 	/*
 	 * non-javadoc: Converts a short to a valid parameter marker for the stream.
 	 */
-	private short parameterMarker(short number) {
+	private short parameterMarker(final short number) {
 		return (short) ((EVENT_PARAMETER | number) & 0xFFFF);
 	}
 }
