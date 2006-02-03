@@ -22,7 +22,7 @@ import javax.swing.table.TableModel;
  * @author ken
  * 
  */
-public final class SummaryTableModel implements TableModel {
+final class SummaryTableModel implements TableModel {
 
 	/**
 	 * Class with data for a row
@@ -100,18 +100,19 @@ public final class SummaryTableModel implements TableModel {
 	 */
 	private void createGroupDataList(final Group group) {
 		if (group != null) {
+			final String gname = group.getName();
 			if (showScalers) {
 				for (Scaler scaler : group.getScalerList()) {
-					dataList.add(new RowDataElement(group.getName(), scaler));
+					dataList.add(new RowDataElement(gname, scaler));//NOPMD
 				}
 			}
 			for (Histogram hist : group.getHistogramList()) {
 				if (showHistograms) {
-					dataList.add(new RowDataElement(group.getName(), hist));
+					dataList.add(new RowDataElement(gname, hist));//NOPMD
 				}
 				if (showGates) {
 					for (Gate gate : hist.getGates()) {
-						dataList.add(new RowDataElement(group.getName(), gate));
+						dataList.add(new RowDataElement(gname, gate));//NOPMD
 					}
 				}
 			}

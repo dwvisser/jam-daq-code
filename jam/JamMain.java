@@ -15,8 +15,6 @@ import jam.global.SortMode;
 import jam.plot.PlotDisplay;
 import jam.sort.control.SetupSortOn;
 import jam.ui.Console;
-import jam.ui.JamToolBar;
-import jam.ui.MenuBar;
 import jam.ui.SelectionTree;
 import jam.ui.SummaryTable;
 
@@ -45,17 +43,23 @@ import javax.swing.UIManager;
  */
 public final class JamMain extends JFrame implements Observer {
 
+	static {
+		//need this block first in order for console to have correct L&F
+		setLookAndFeel();
+	}
+
 	/**
 	 * Message output and text input.
 	 */
 	private static final Console console = new Console();
+	
+	private static final Logger LOGGER;
 
 	private static final String packageName = JamMain.class.getPackage()
 			.getName();
 
-	private static final Logger LOGGER;
 	static {
-		new LoggerConfig(packageName, console);
+		new LoggerConfig(packageName, console.getLog());
 		LOGGER = Logger.getLogger(packageName);
 	}
 
@@ -67,6 +71,25 @@ public final class JamMain extends JFrame implements Observer {
 	 */
 	public static void main(final String args[]) {
 		new JamMain(true);
+	}
+
+	private static void setLookAndFeel() {
+		try {
+			String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+			// Override system look and feel for gtk
+			if (lookAndFeel
+					.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
+				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+			}
+			UIManager.setLookAndFeel(lookAndFeel);
+		} catch (Exception e) {
+			warning(e, "Jam--error setting GUI appearance");
+		}
+	}
+
+	static void warning(final Exception exception, final String title) {
+		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
+				JOptionPane.WARNING_MESSAGE);
 	}
 
 	/**
@@ -106,8 +129,8 @@ public final class JamMain extends JFrame implements Observer {
 		contents.setLayout(new BorderLayout());
 		/* Ouput/Input text console */
 		LOGGER.info("Welcome to Jam v" + Version.getInstance().getName());
-		SetupSortOn.createInstance(console);
-		final JamToolBar jamToolBar = new JamToolBar();
+		SetupSortOn.createInstance(console.getLog());
+		final ToolBar jamToolBar = new ToolBar();
 		contents.add(jamToolBar, BorderLayout.NORTH);
 		/* histogram displayer */
 		final PlotDisplay plotDisplay = new PlotDisplay(console);
@@ -173,20 +196,6 @@ public final class JamMain extends JFrame implements Observer {
 		setIconImage((new ImageIcon(loader.getResource("jam/nukeicon.png"))
 				.getImage()));
 
-	}
-
-	private void setLookAndFeel() {
-		try {
-			String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
-			// Override system look and feel for gtk
-			if (lookAndFeel
-					.equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
-				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-			}
-			UIManager.setLookAndFeel(lookAndFeel);
-		} catch (Exception e) {
-			warning(e, "Jam--error setting GUI appearance");
-		}
 	}
 
 	/**
@@ -299,10 +308,5 @@ public final class JamMain extends JFrame implements Observer {
 		} else if (command == BroadcastEvent.Command.RUN_STATE_CHANGED) {
 			setRunState((RunState) beParam.getContent());
 		}
-	}
-
-	void warning(final Exception exception, final String title) {
-		JOptionPane.showMessageDialog(null, exception.getMessage(), title,
-				JOptionPane.WARNING_MESSAGE);
 	}
 }

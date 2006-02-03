@@ -151,7 +151,7 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 	Action(PlotDisplay disp, Console console) {
 		super();
 		plotDisplay = disp;
-		textOut = console;
+		textOut = console.getLog();
 		ParseCommand parseCommand = new ParseCommand(this);
 		console.addCommandListener(parseCommand);
 		cursorBin = Bin.create();

@@ -7,8 +7,6 @@ import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
-import jam.ui.GateComboBoxModel;
-import jam.ui.GateListCellRenderer;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

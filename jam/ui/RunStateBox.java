@@ -21,12 +21,19 @@ import javax.swing.SwingConstants;
  * @version 2004-12-09
  * @see jam.global.RunState
  */
-public final class RunStateBox implements Observer {
+final class RunStateBox implements Observer {
+	private static final RunStateBox INSTANCE=new RunStateBox();
+	/**
+	 * @return the only instance of this class.
+	 */
+	static RunStateBox getInstance(){
+	    return INSTANCE;
+	}
+	
 	private transient final JLabel lrunState = new JLabel("   Welcome   ",
 			SwingConstants.CENTER);
-	private transient final JPanel pRunState = new JPanel();
 	
-	private static final RunStateBox INSTANCE=new RunStateBox();
+	private transient final JPanel pRunState = new JPanel();
 	
 	private RunStateBox(){
 		super();
@@ -36,19 +43,12 @@ public final class RunStateBox implements Observer {
 		lrunState.setOpaque(true);
 		pRunState.add(lrunState);	    	
 	}
-	
-	/**
-	 * @return the only instance of this class.
-	 */
-	static public RunStateBox getInstance(){
-	    return INSTANCE;
-	}
 
 	/**
 	 * Returns the displayable component.
 	 * @return the displayable component
 	 */
-	public Component getComponent(){
+	Component getComponent(){
 		return pRunState;
 	}
 	

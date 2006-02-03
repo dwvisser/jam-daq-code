@@ -100,7 +100,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		groupNode.add(histNode);
 		// Loop through gates and load them
 		for (Gate gate : hist.getGates()) {
-			histNode.add(new DefaultMutableTreeNode(gate));
+			histNode.add(new DefaultMutableTreeNode(gate));// NOPMD
 		}
 	}
 
@@ -108,6 +108,11 @@ public final class SelectionTree extends JPanel implements Observer {
 		if (tree.getTreeSelectionListeners().length < 1) {
 			tree.addTreeSelectionListener(listener);
 		}
+	}
+
+	private void addSelectionPath(final DefaultMutableTreeNode currentNode) {
+		final TreePath gateTreePath = new TreePath(currentNode.getPath());
+		tree.addSelectionPath(gateTreePath);
 	}
 
 	private Histogram getAssociatedHist(final TreePath path) {
@@ -166,8 +171,8 @@ public final class SelectionTree extends JPanel implements Observer {
 			final DefaultMutableTreeNode loopNode = (DefaultMutableTreeNode) nodeEnum
 					.nextElement();
 			final Object obj = loopNode.getUserObject();
-			if (dataObject == obj) {
-				treePath = new TreePath(loopNode.getPath());
+			if (dataObject == obj) {// NOPMD
+				treePath = new TreePath(loopNode.getPath());// NOPMD
 				break;
 			}
 		}
@@ -187,9 +192,7 @@ public final class SelectionTree extends JPanel implements Observer {
 					.nextElement();
 			final Object currentObj = currentNode.getUserObject();
 			if (currentObj instanceof Gate && currentObj.equals(gate)) {
-				final TreePath gateTreePath = new TreePath(currentNode
-						.getPath());
-				tree.addSelectionPath(gateTreePath);
+				addSelectionPath(currentNode);
 				break;
 			}
 		} // End loop for all nodes
@@ -208,9 +211,7 @@ public final class SelectionTree extends JPanel implements Observer {
 				// Loop over histograms
 				for (Histogram hist : overlayHists) {
 					if (currentObj == hist) {
-						final TreePath gateTreePath = new TreePath(currentNode
-								.getPath());
-						tree.addSelectionPath(gateTreePath);
+						addSelectionPath(currentNode);
 					}
 				}// End loop histograms
 			}

@@ -4,8 +4,6 @@ import jam.data.DataException;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
-import jam.ui.GateComboBoxModel;
-import jam.ui.GateListCellRenderer;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

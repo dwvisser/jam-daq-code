@@ -19,8 +19,7 @@ import jam.sort.SortRoutine;
 import jam.sort.VME_Map;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
-import jam.ui.Console;
-import jam.ui.PathBrowseButton;
+import jam.ui.ConsoleLog;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -75,7 +74,7 @@ public final class SetupSortOn extends AbstractSetup {
 	 * @param console
 	 *            the console to use
 	 */
-	public static void createInstance(final Console console) {
+	public static void createInstance(final ConsoleLog console) {
 		if (instance == null) {
 			instance = new SetupSortOn(console);
 		} else {
@@ -161,7 +160,7 @@ public final class SetupSortOn extends AbstractSetup {
 	/* streams to read and write events */
 	private transient AbstractEventInputStream inStream;
 
-	private transient final Console jamConsole;
+	private transient final ConsoleLog jamConsole;
 
 	private transient NetDaemon netDaemon;
 
@@ -175,7 +174,7 @@ public final class SetupSortOn extends AbstractSetup {
 	private transient final JTextField textExpName, textPathHist, textPathData,
 			textPathLog;
 
-	private SetupSortOn(Console console) {
+	private SetupSortOn(ConsoleLog console) {
 		super("Setup Online");
 		final int fileTextCols = 25;
 		final String defaultName = JamProperties

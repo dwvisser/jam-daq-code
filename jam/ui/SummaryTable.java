@@ -22,6 +22,9 @@ import javax.swing.JTable;
  */
 public class SummaryTable extends JPanel implements Observer {
 
+	/**
+	 * whether one group or all groups is selected
+	 */
 	public static enum Selection {
 		/**
 		 * All groups are selected?

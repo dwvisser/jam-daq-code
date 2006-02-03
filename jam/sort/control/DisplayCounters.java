@@ -6,7 +6,6 @@ import jam.global.JamStatus;
 import jam.sort.NetDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.AbstractStorageDaemon;
-import jam.ui.CounterPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

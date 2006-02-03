@@ -76,7 +76,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	private static final String packageName = HistApplet.class.getPackage().getName();
 	
 	static {
-		new LoggerConfig(packageName, console);
+		new LoggerConfig(packageName, console.getLog());
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(packageName);

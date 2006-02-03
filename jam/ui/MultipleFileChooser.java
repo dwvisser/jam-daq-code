@@ -262,7 +262,7 @@ public final class MultipleFileChooser extends JPanel {
 			do {
 				listItem = reader.readLine();
 				if (listItem != null) {
-					final File fEvn = new File(listItem);
+					final File fEvn = new File(listItem);//NOPMD
 					listFilesModel.addElement(fEvn);
 					numFiles++;
 				}
