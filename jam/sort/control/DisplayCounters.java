@@ -28,7 +28,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @version 05 newest done 9-98
  */
-public final class DisplayCounters extends JDialog implements Observer {
+public final class DisplayCounters extends JDialog implements Observer {//NOPMD
 
 	private transient final JPanel pCenter;
 
