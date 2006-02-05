@@ -23,7 +23,7 @@ import java.util.List;
  * <li>clear</li>
  * </ul>
  * 
- * @see jam.sort.SortRoutine#cnafCommands
+ * @see jam.sort.AbstractSortRoutine#cnafCommands
  */
 public class CamacCommands {
 	private transient final List<CNAF> eventCmds = new ArrayList<CNAF>();
@@ -34,10 +34,14 @@ public class CamacCommands {
 
 	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
 
-	private transient final SortRoutine sortRoutine;
+	private transient final AbstractSortRoutine sortRoutine;
 
 	private transient int eventSize = 0;
 
+	/**
+	 * Container for CNAF data structure.
+	 * @author Dale Visser
+	 */
 	public class CNAF {
 
 		private final transient byte paramID, crate, number, address, function;
@@ -55,26 +59,50 @@ public class CamacCommands {
 			this.data = data;
 		}
 
+		/**
+		 * 
+		 * @return memory address for command
+		 */
 		public byte getAddress() {
 			return address;
 		}
 
+		/**
+		 * 
+		 * @return number of addressed crate
+		 */
 		public byte getCrate() {
 			return crate;
 		}
 
+		/**
+		 * 
+		 * @return data to send with command
+		 */
 		public int getData() {
 			return data;
 		}
 
+		/**
+		 * 
+		 * @return number of function to execute
+		 */
 		public byte getFunction() {
 			return function;
 		}
 
+		/**
+		 * 
+		 * @return slot number to address
+		 */
 		public byte getNumber() {
 			return number;
 		}
 
+		/**
+		 * 
+		 * @return parameter id this command is associated with
+		 */
 		public byte getParamID() {
 			return paramID;
 		}
@@ -88,10 +116,10 @@ public class CamacCommands {
 	 * </p>
 	 * 
 	 * @param sorter
-	 *            <code>SortRoutine</code> to which this object belongs
-	 * @see jam.sort.SortRoutine#cnafCommands
+	 *            <code>AbstractSortRoutine</code> to which this object belongs
+	 * @see jam.sort.AbstractSortRoutine#cnafCommands
 	 */
-	public CamacCommands(SortRoutine sorter) {
+	public CamacCommands(AbstractSortRoutine sorter) {
 		super();
 		sortRoutine = sorter;
 	}
@@ -112,7 +140,7 @@ public class CamacCommands {
 	 *            any data to be passed to the module
 	 * @throws SortException
 	 *             if invalid CNAF
-	 * @return index in eventData array that the <CODE>SortRoutine</CODE>
+	 * @return index in eventData array that the <CODE>AbstractSortRoutine</CODE>
 	 *         processes
 	 */
 	public int eventRead(final int crate, final int number, final int address,
@@ -122,7 +150,7 @@ public class CamacCommands {
 		eventSize++;
 		eventCmds
 				.add(new CNAF(paramId, crate, number, address, function, data));
-		sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.CNAF);
+		sortRoutine.setEventSizeMode(EventSizeMode.CNAF);
 		return (paramId - 1);
 	}
 
@@ -140,7 +168,7 @@ public class CamacCommands {
 	 *            code indicating the action to be taken
 	 * @throws SortException
 	 *             if invalid CNAF
-	 * @return index in event data array proccesed by the <CODE>SortRoutine</CODE>
+	 * @return index in event data array proccesed by the <CODE>AbstractSortRoutine</CODE>
 	 */
 	public int eventRead(final int crate, final int number, final int address,
 			final int function) throws SortException {
