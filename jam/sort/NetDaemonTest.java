@@ -11,6 +11,13 @@ import junit.framework.TestCase;
  */
 public class NetDaemonTest extends TestCase {
 
+	/**
+	 * Default constructor.
+	 */
+	public NetDaemonTest() {
+		super(NetDaemon.class.getName() + " tests");
+	}
+
 	private transient NetDaemon netDaemon;
 
 	/*
@@ -36,5 +43,7 @@ public class NetDaemonTest extends TestCase {
 	 */
 	public void testSetEmptyBefore() {
 		netDaemon.setEmptyBefore(true);
+		assertTrue("isAssertTrue() should have returned true.", netDaemon
+				.isEmptyBefore());
 	}
 }
