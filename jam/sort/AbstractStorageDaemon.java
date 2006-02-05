@@ -79,12 +79,15 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	 */
 	protected transient boolean inputFileOpen;
 
+	/**
+	 * whether online or offline
+	 */
 	protected transient Mode mode;
 
 	/**
 	 * File to save data to.
 	 */
-	protected File outputFile;
+	protected transient File outputFile;
 
 	/**
 	 * Whether we have an output file open.
@@ -109,10 +112,6 @@ public abstract class AbstractStorageDaemon extends GoodThread {
 	 * 
 	 * @param controller
 	 *            the object controlling the sort process
-	 * @param eventOutputStream
-	 *            the stream to send events out to
-	 * @param msgHandler
-	 *            handle to the console for writing messages to the user
 	 */
 	AbstractStorageDaemon(Controller controller) {
 		super();
