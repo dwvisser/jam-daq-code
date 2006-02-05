@@ -5,7 +5,6 @@ package jam.sort.control;
 
 import jam.JamException;
 import jam.data.control.AbstractControl;
-import jam.global.Broadcaster;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
 import jam.global.PropertyKeys;
@@ -13,6 +12,8 @@ import jam.global.RTSI;
 import jam.global.Sorter;
 import jam.sort.SortException;
 import jam.sort.SortRoutine;
+import jam.sort.stream.AbstractEventInputStream;
+import jam.sort.stream.AbstractEventOutputStream;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,9 +21,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -43,10 +46,30 @@ import javax.swing.JToggleButton;
 abstract class AbstractSetup {
 
 	/**
-	 * Handle to event broadcaster.
+	 * Calls doApply if bok is the holder
+	 * @author dvk
+	 *
 	 */
-	protected static final Broadcaster BROADCASTER = Broadcaster
-			.getSingletonInstance();
+	protected final class ApplyAction extends AbstractAction {
+		private final static String APPLY = "Apply";
+		private final static String OK_TEXT = "OK";
+		private final transient boolean m_ok;
+
+		ApplyAction(boolean isOK) {
+			super(isOK ? OK_TEXT : APPLY);
+			m_ok=isOK;
+		}
+
+		/**
+		 * Perform setup tasks when OK or APPLY is clicked.
+		 * 
+		 * @param event
+		 *            the event created by clicking OK or APPLY
+		 */
+		public void actionPerformed(final ActionEvent event) {
+			doApply(m_ok);
+		}
+	}
 
 	/**
 	 * All text message output goes to this object.
@@ -60,6 +83,17 @@ abstract class AbstractSetup {
 	 * @see jam.global.JamStatus
 	 */
 	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
+
+	/**
+	 * Get the sort classes using the given file as the class path.
+	 * 
+	 * @param path
+	 *            class path
+	 * @return set of available sort routines
+	 */
+	static final Set<Class<?>> getSortClasses(final File path) {
+		return RTSI.getSingletonInstance().find(path, Sorter.class);
+	}
 
 	/**
 	 * Finds a class matching the given string in the collection, and attempts
@@ -85,6 +119,16 @@ abstract class AbstractSetup {
 	}
 
 	/**
+	 * Apply button.
+	 */ 
+	protected final transient AbstractButton bapply;
+	
+	/**
+	 * OK button
+	 */
+	protected final transient AbstractButton bok;
+
+	/**
 	 * Press to browse for a classpath.
 	 */
 	protected transient final AbstractButton bbrowsef = new JButton("Browse...");
@@ -98,16 +142,32 @@ abstract class AbstractSetup {
 	 * Toggle button for the default class path.
 	 */
 	protected transient final JToggleButton defaultPath;
-
+	
 	/**
 	 * The dialog.
 	 */
 	protected transient final JDialog dialog;
 
 	/**
-	 * Last select path
+	 * Chooser for event input stream.
 	 */
-	protected transient String lastSortPath = "";
+	protected final transient JComboBox inChooser;
+
+	/** Input stream, how tells how to read an event */
+	protected transient AbstractEventInputStream inStream;
+
+	/**
+	 * Chooser for event output stream.
+	 */
+	protected final transient JComboBox outChooser;
+
+	/** Output stream, tells how to write an event */
+	protected transient AbstractEventOutputStream outStream;
+
+	/**
+	 * sort routine chooser
+	 */
+	protected transient final SortChooser sortChooser;
 
 	/**
 	 * When toggled, means that a user-supplied path should be used for
@@ -119,14 +179,11 @@ abstract class AbstractSetup {
 	 * Text field showing the sort class path.
 	 */
 	protected transient final JTextField textSortPath;
-	
-	/**
-	 * sort routine chooser
-	 */
-	protected transient final SortChooser sortChooser;
 
 	AbstractSetup(String dialogName) {
 		super();
+		bok = new JButton(new ApplyAction(true));
+		bapply = new JButton(new ApplyAction(false));
 		dialog = new JDialog(STATUS.getFrame(), dialogName, false);
 		final String defSortPath = JamProperties
 				.getPropString(PropertyKeys.SORT_CLASSPATH);
@@ -143,7 +200,7 @@ abstract class AbstractSetup {
 					bbrowsef.setEnabled(true);
 					sortChooser.setChooserDefault(false);
 					textSortPath.setEnabled(true);
-					textSortPath.setText(lastSortPath);
+					textSortPath.setText(textSortPath.getText());
 
 				}
 			}
@@ -176,12 +233,29 @@ abstract class AbstractSetup {
 					bbrowsef.setEnabled(false);
 					sortChooser.setChooserDefault(true);
 					textSortPath.setEnabled(false);
-					lastSortPath = textSortPath.getText();
 					textSortPath.setText("default");
 
 				}
 			}
 		});
+		final String defInStream = JamProperties
+		.getPropString(PropertyKeys.EVENT_INSTREAM);
+		final String defOutStream = JamProperties
+		.getPropString(PropertyKeys.EVENT_OUTSTREAM);
+		final RTSI rtsi = RTSI.getSingletonInstance();
+		java.util.Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi.find(
+				"jam.sort.stream", AbstractEventInputStream.class, false));
+		lhs.remove(AbstractEventInputStream.class);
+		inChooser = new JComboBox(lhs.toArray());
+		inChooser.setToolTipText("Select input event data format.");
+		selectName(inChooser, lhs, defInStream);
+		// Output stream
+		lhs = new LinkedHashSet<Class<?>>(rtsi.find("jam.sort.stream",
+				AbstractEventOutputStream.class, false));
+		lhs.remove(AbstractEventOutputStream.class);
+		outChooser = new JComboBox(lhs.toArray());
+		outChooser.setToolTipText("Select output event format.");
+		selectName(outChooser, lhs, defOutStream);
 	}
 
 	/**
@@ -199,17 +273,6 @@ abstract class AbstractSetup {
 	 */
 	public final JDialog getDialog() {
 		return dialog;
-	}
-
-	/**
-	 * Get the sort classes using the given file as the class path.
-	 * 
-	 * @param path
-	 *            class path
-	 * @return set of available sort routines
-	 */
-	static final Set<Class<?>> getSortClasses(final File path) {
-		return RTSI.getSingletonInstance().find(path, Sorter.class);
 	}
 
 	/**
@@ -231,6 +294,7 @@ abstract class AbstractSetup {
 		}
 		return rval;
 	}
+
 
 	/**
 	 * Initializes the sort routine.
@@ -283,7 +347,6 @@ abstract class AbstractSetup {
 	 */
 	protected abstract void lockMode(boolean lock);
 
-
 	/**
 	 * Sets up the sort.
 	 * 
@@ -294,3 +357,5 @@ abstract class AbstractSetup {
 	 */
 	protected abstract void setupSort() throws SortException, JamException;
 }
+
+
