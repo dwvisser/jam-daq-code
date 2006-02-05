@@ -1,46 +1,34 @@
 package jam.sort.control;
 
+import static java.util.logging.Level.SEVERE;
 import jam.global.GoodThread;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
-import jam.global.PropertyKeys;
 import jam.global.RunInfo;
 import jam.global.RunState;
 import jam.io.ExtensionFileFilter;
 import jam.sort.AbstractStorageDaemon;
-import jam.sort.Controller;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
 import jam.ui.Icons;
 import jam.ui.MultipleFileChooser;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.FlowLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -51,15 +39,14 @@ import javax.swing.filechooser.FileFilter;
  * @author Dale Visser and Ken Swartz
  * @version 1.0
  */
-public final class SortControl extends JDialog implements Controller {
+public final class SortControl extends javax.swing.JDialog implements
+		Controller, jam.global.PropertyKeys {
+
+	private static SortControl instance = null;
 
 	private static final Logger LOGGER = Logger.getLogger("jam");
 
 	private final static JamStatus STATUS = JamStatus.getSingletonInstance();
-
-	private static final Frame frame = STATUS.getFrame();
-
-	private static SortControl instance = null;
 
 	/**
 	 * 
@@ -78,7 +65,7 @@ public final class SortControl extends JDialog implements Controller {
 	private transient final JButton bbrowse;
 
 	private transient final Action beginAction = new AbstractAction() {
-		{
+		{// NOPMD
 			putValue(Action.NAME, "Begin");
 			putValue(Action.SHORT_DESCRIPTION, "Begin sort of all files."
 					+ " If a sort was halted, we start over.");
@@ -97,7 +84,7 @@ public final class SortControl extends JDialog implements Controller {
 	private transient File fileOut, lastFile, outDirectory;
 
 	private transient final Action haltAction = new AbstractAction() {
-		{
+		{// NOPMD
 			putValue(Action.NAME, "Halt");
 			putValue(Action.SHORT_DESCRIPTION, "Halt sort in process.");
 			putValue(Action.SMALL_ICON, Icons.getInstance().END);
@@ -127,20 +114,19 @@ public final class SortControl extends JDialog implements Controller {
 
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);
-		final String eventDefault = JamProperties
-				.getPropString(PropertyKeys.EVENT_OUTPATH);
-		final String outDefault = JamProperties
-				.getPropString(PropertyKeys.EVENT_OUTFILE);
+		final String eventDefault = JamProperties.getPropString(EVENT_OUTPATH);
+		final String outDefault = JamProperties.getPropString(EVENT_OUTFILE);
 		setResizable(true);// sometimes there are long paths to files
 		setLocation(20, 50);
 		/* GUI layout */
-		final Container contents = getContentPane();
+		final java.awt.Container contents = getContentPane();
 		contents.setLayout(new BorderLayout(10, 10));
 		/* Top Panel */
 		final JPanel ptop = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		ptop.setBorder(new EmptyBorder(10, 0, 0, 0));
 		contents.add(ptop, BorderLayout.NORTH);
-		ptop.add(new JLabel("Event Files to Sort", SwingConstants.RIGHT));
+		ptop.add(new javax.swing.JLabel("Event Files to Sort",
+				javax.swing.SwingConstants.RIGHT));
 		/* List Panel */
 		multiFile = new MultipleFileChooser(STATUS.getFrame());
 		multiFile.showListSaveLoadButtons(true);
@@ -154,8 +140,9 @@ public final class SortControl extends JDialog implements Controller {
 		final JPanel pout = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		pbottom.add(pout);
 		cout = new JCheckBox("Output Events to File:", false);
-		cout.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent itemEvent) {
+		cout.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(
+					final java.awt.event.ItemEvent itemEvent) {
 				setWriteEvents(cout.isSelected());
 			}
 		});
@@ -258,7 +245,7 @@ public final class SortControl extends JDialog implements Controller {
 			/* let other thread (i.e., jam.Script) know we are finished */
 			haltAction.setEnabled(false);
 		} catch (SortException se) {
-			LOGGER.log(Level.SEVERE, "Unable to close event output file.", se);
+			LOGGER.log(SEVERE, "Unable to close event output file.", se);
 		}
 	}
 
@@ -295,7 +282,7 @@ public final class SortControl extends JDialog implements Controller {
 			try {
 				outputDaemon.openEventOutputFile(fileOut);
 			} catch (SortException e) {
-				LOGGER.log(Level.SEVERE,
+				LOGGER.log(SEVERE,
 						"Sort|Control.Begin: couldn't open event output file.",
 						e);
 				sortDaemon.setWriteEnabled(false);
@@ -307,7 +294,7 @@ public final class SortControl extends JDialog implements Controller {
 				} catch (Exception e) {
 					LOGGER
 							.log(
-									Level.SEVERE,
+									SEVERE,
 									"Sort|Control.Begin: couldn't write header to event output file.",
 									e);
 				}
@@ -338,7 +325,7 @@ public final class SortControl extends JDialog implements Controller {
 			} catch (SortException e) {
 				LOGGER
 						.log(
-								Level.SEVERE,
+								SEVERE,
 								"Sort|Control...: couldn't close event output file.",
 								e);
 			}
@@ -361,7 +348,7 @@ public final class SortControl extends JDialog implements Controller {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setFileFilter(new ExtensionFileFilter(
 				new String[] { "evn" }, "Event Files (*.evn)"));
-		final int option = fileChooser.showOpenDialog(frame);
+		final int option = fileChooser.showOpenDialog(STATUS.getFrame());
 		/* save current values */
 		if (option == JFileChooser.APPROVE_OPTION
 				&& fileChooser.getSelectedFile() != null) {
@@ -377,7 +364,7 @@ public final class SortControl extends JDialog implements Controller {
 	 * deamon
 	 */
 	private void loadNames() {
-		final List<File> fileList = multiFile.getFileList();
+		final java.util.List<File> fileList = multiFile.getFileList();
 		/* tell storage daemon list of files */
 		inputDaemon.setEventInputList(fileList);
 		/* save output file */
@@ -440,17 +427,17 @@ public final class SortControl extends JDialog implements Controller {
 		int numFiles = 0;
 		lastFile = file;
 		try {
-			final BufferedReader reader = new BufferedReader(new FileReader(
-					lastFile));
+			final BufferedReader reader = new BufferedReader(
+					new java.io.FileReader(lastFile));
 			String listItem;
 			do {
 				listItem = reader.readLine();
 				numFiles += addFile(listItem);
 			} while (listItem != null);
 			reader.close();
-		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE,
-					"Jam|Sort...: Unable to load list from file " + file, ioe);
+		} catch (java.io.IOException ioe) {
+			LOGGER.log(SEVERE, "Jam|Sort...: Unable to load list from file "
+					+ file, ioe);
 		}
 		return numFiles;
 	}
