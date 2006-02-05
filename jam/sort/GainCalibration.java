@@ -26,7 +26,7 @@ public final class GainCalibration {
 
 	private transient final Map<Integer, Double> offsets = new HashMap<Integer, Double>();
 
-	private transient boolean suppress = false;
+	private transient boolean suppress = false;//NOPMD
 
 	GainCalibration(Object maker) {
 		super();
