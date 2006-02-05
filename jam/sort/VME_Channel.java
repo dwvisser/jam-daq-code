@@ -15,10 +15,18 @@ public final class VME_Channel {
 	private static final String S_INVALID = ".VMEChannel(): Invalid";
 
 	/**
-	 * Encapsulates whether a parameter is an event paramter or a scaler
+	 * Encapsulates whether a parameter is an event parameter or a scaler
 	 * parameter.
 	 */
-	enum Type{EVENT, SCALER};
+	enum Type{
+		/**
+		 * event parameter type
+		 */
+		EVENT, 
+		/**
+		 * scaler parameter type 
+		 */
+		SCALER};
 
 	/**
 	 * Creates an event parameter. V775/V785 TDC's/ADC's can have base addresses
@@ -28,9 +36,6 @@ public final class VME_Channel {
 	 *            the map this channel belongs to
 	 * @param slot
 	 *            the slot the module occupies in the VME crate
-	 * @param parameterNumber
-	 *            integer from 0 to 2047 indicating the event stream parameter
-	 *            number to be assigned by the VME
 	 * @param baseAddress
 	 *            24-bit base address of ADC or TDC module ()
 	 * @param channel
