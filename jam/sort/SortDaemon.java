@@ -32,10 +32,6 @@ public class SortDaemon extends GoodThread {
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
 
-	/**
-	 * Number of events to occur before updating counters.
-	 */
-	private final static int COUNT_UPDATE = 1000;
 
 	private transient boolean atBuffer = false; // are we at a buffer word
 
@@ -74,8 +70,6 @@ public class SortDaemon extends GoodThread {
 	 * 
 	 * @param con
 	 *            the sort control process
-	 * @param messageHandler
-	 *            the console for writing out messages to the user
 	 */
 	public SortDaemon(Controller con) {
 		super();
@@ -394,7 +388,7 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOffline() throws Exception {
+	public void sortOffline() throws Exception {//NOPMD
 		final SortControl sortControl = (SortControl) controller;
 		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
@@ -430,6 +424,8 @@ public class SortDaemon extends GoodThread {
 								 */
 								Arrays.fill(eventData, 0);
 								atBuffer = false;
+								//Number of events to occur before updating counters.
+								final int COUNT_UPDATE = 1000;
 								if (getEventCount() % COUNT_UPDATE == 0) {
 									updateCounters();
 									yield();
@@ -461,7 +457,7 @@ public class SortDaemon extends GoodThread {
 	 * @exception Exception
 	 *                thrown if an unrecoverable error occurs during sorting
 	 */
-	public void sortOnline() throws Exception {
+	public void sortOnline() throws Exception {//NOPMD
 		final RingInputStream ringInputStream = new RingInputStream();
 		final int[] eventData = new int[eventSize];
 		final byte[] buffer = RingBuffer.freshBuffer();
