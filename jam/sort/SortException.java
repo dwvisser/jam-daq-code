@@ -19,4 +19,8 @@ public class SortException extends Exception {
     SortException(String msg, Throwable thrown){
         super(msg, thrown);
     }
+
+    SortException(Throwable thrown){
+        super(thrown);
+    }
 }
