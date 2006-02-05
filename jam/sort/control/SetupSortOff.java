@@ -10,7 +10,7 @@ import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -155,7 +155,7 @@ public final class SetupSortOff extends AbstractSetup {
 				sortChooser.loadSorter(specify.isSelected());
 				loadEventInput();
 				loadEventOutput();
-				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+				final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 				LOGGER.info("Loaded sort class '"
 						+ sortRoutine.getClass().getName()
 						+ "', event instream class '"
@@ -271,7 +271,7 @@ public final class SetupSortOff extends AbstractSetup {
 		synchronized (this) {
 			sortDaemon = new SortDaemon(sortControl);
 		}
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		sortDaemon.setSorter(sortRoutine);
 		/* eventInputStream to use get event size from sorting routine */

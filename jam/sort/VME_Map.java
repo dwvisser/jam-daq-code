@@ -17,7 +17,7 @@ public final class VME_Map {
 	/* contains all event parameters */
 	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
 
-	private transient final SortRoutine sortRoutine;
+	private transient final AbstractSortRoutine sortRoutine;
 
 	private transient int interval = 1;// interval in milliseconds for the VME
 										// to
@@ -31,12 +31,12 @@ public final class VME_Map {
 	private transient final StringBuffer messages = new StringBuffer();
 
 	/**
-	 * Constructs a new VME map for the given <code>SortRoutine</code>.
+	 * Constructs a new VME map for the given <code>AbstractSortRoutine</code>.
 	 * 
 	 * @param sorter
 	 *            the owner of this map
 	 */
-	VME_Map(SortRoutine sorter) {
+	VME_Map(AbstractSortRoutine sorter) {
 		super();
 		sortRoutine = sorter;
 		messages.append(sortRoutine.getClass().getName());
@@ -67,7 +67,7 @@ public final class VME_Map {
 		final VME_Channel vmec = new VME_Channel(this, slot, baseAddress,
 				channel, threshold);
 		eventParams.add(vmec);
-		sortRoutine.setEventSizeMode(SortRoutine.EventSizeMode.VME_MAP);
+		sortRoutine.setEventSizeMode(EventSizeMode.VME_MAP);
 		final int paramNumber = vmec.getParameterNumber();// ADC's and TDC's
 		// in
 		// slots 2-7

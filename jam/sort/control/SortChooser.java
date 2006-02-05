@@ -4,7 +4,7 @@ import jam.JamException;
 import jam.data.Group;
 import jam.global.RTSI;
 import jam.global.Sorter;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,7 @@ final class SortChooser extends JComboBox {
 
 	private transient Class sortClass;
 	
-	private transient SortRoutine sortRoutine;
+	private transient AbstractSortRoutine sortRoutine;
 
 	private transient final JTextComponent textSortPath;
 
@@ -39,7 +39,7 @@ final class SortChooser extends JComboBox {
 		});
 	}
 	
-	SortRoutine getSortRoutine() {
+	AbstractSortRoutine getSortRoutine() {
 		return sortRoutine;
 	}
 	
@@ -70,14 +70,14 @@ final class SortChooser extends JComboBox {
 		try {
 			if (userSpecifiedPath) {
 				synchronized (this) {
-					sortRoutine = (SortRoutine) RTSI.getSingletonInstance()
+					sortRoutine = (AbstractSortRoutine) RTSI.getSingletonInstance()
 							.loadClass(classPath, sortClass.getName())
 							.newInstance();
 				}
 			} else {// use default loader
 				/* we call loadClass() in order to guarantee latest version */
 				synchronized (this) {
-					sortRoutine = (SortRoutine) sortClass.newInstance();
+					sortRoutine = (AbstractSortRoutine) sortClass.newInstance();
 				}
 			}
 		} catch (InstantiationException ie) {

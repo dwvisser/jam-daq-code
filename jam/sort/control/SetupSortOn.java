@@ -2,16 +2,17 @@ package jam.sort.control;
 
 import static jam.global.GoodThread.State.STOP;
 import static java.util.logging.Level.SEVERE;
+import static javax.swing.SwingConstants.RIGHT;
 import jam.JamException;
 import jam.global.JamProperties;
 import jam.global.SortMode;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.DiskDaemon;
+import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
 import jam.sort.RingBuffer;
 import jam.sort.SortDaemon;
-import jam.sort.SortRoutine;
 import jam.ui.ConsoleLog;
-import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -29,7 +30,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -139,33 +139,27 @@ public final class SetupSortOn extends AbstractSetup implements
 				.setBorder(new EmptyBorder(topInset, leftInset, noSpace,
 						noSpace));
 		dcp.add(pLabels, BorderLayout.WEST);
-		final JLabel expName = new JLabel("Experiment Name",
-				SwingConstants.RIGHT);
+		final JLabel expName = new JLabel("Experiment Name", RIGHT);
 		pLabels.add(expName);
-		final JLabel lsc = new JLabel("Sort classpath", SwingConstants.RIGHT);
+		final JLabel lsc = new JLabel("Sort classpath", RIGHT);
 		pLabels.add(lsc);
-		final JLabel lscs = new JLabel("Selected sort classpath",
-				SwingConstants.RIGHT);
+		final JLabel lscs = new JLabel("Selected sort classpath", RIGHT);
 		pLabels.add(lscs);
-		final JLabel lSortRoutine = new JLabel("Sort Routine",
-				SwingConstants.RIGHT);
+		final JLabel lSortRoutine = new JLabel("Sort Routine", RIGHT);
 		pLabels.add(lSortRoutine);
-		final JLabel leis = new JLabel("Event input stream",
-				SwingConstants.RIGHT);
+		final JLabel leis = new JLabel("Event input stream", RIGHT);
 		pLabels.add(leis);
-		final JLabel leos = new JLabel("Event output stream",
-				SwingConstants.RIGHT);
+		final JLabel leos = new JLabel("Event output stream", RIGHT);
 		pLabels.add(leos);
-		final JLabel lhdfp = new JLabel("HDF path", SwingConstants.RIGHT);
+		final JLabel lhdfp = new JLabel("HDF path", RIGHT);
 		pLabels.add(lhdfp);
-		final JLabel lep = new JLabel("Event path", SwingConstants.RIGHT);
+		final JLabel lep = new JLabel("Event path", RIGHT);
 		pLabels.add(lep);
-		final JLabel llfp = new JLabel("Log file path", SwingConstants.RIGHT);
+		final JLabel llfp = new JLabel("Log file path", RIGHT);
 		pLabels.add(llfp);
 		/* blank label balances out the grid */
 		final JLabel lssf = new JLabel(/*
-										 * "Sort sample fraction",
-										 * SwingConstants.RIGHT
+										 * "Sort sample fraction", RIGHT
 										 */);
 		pLabels.add(lssf);
 		/* Entries Panel */
@@ -247,12 +241,12 @@ public final class SetupSortOn extends AbstractSetup implements
 		pbutton.add(pBottom);
 		pBottom.add(bok);
 		pBottom.add(bapply);
-		final AbstractButton bcancel = new javax.swing.JButton(
-				new WindowCancelAction(dialog));
-		pBottom.add(bcancel);
+		pBottom.add(new javax.swing.JButton(new jam.ui.WindowCancelAction(
+				dialog)));
 		pBottom.add(checkLock);
 		sortChooser.setChooserDefault(true);
-		dialog.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		dialog
+				.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
 	}
 
@@ -322,7 +316,8 @@ public final class SetupSortOn extends AbstractSetup implements
 				resetAcq(false);
 				sortChooser.loadSorter(specify.isSelected()); // load sorting
 				// routine
-				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+				final AbstractSortRoutine sortRoutine = sortChooser
+						.getSortRoutine();
 				if (sortRoutine != null) {
 					lockMode(true);
 					setupSort(); // create daemons
@@ -332,10 +327,10 @@ public final class SetupSortOn extends AbstractSetup implements
 							+ outStream.getClass().getName());
 					consoleLog
 							.messageOutln("Communications and processing daemons successfully initiated.");
-					if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.CNAF) {
+					if (sortRoutine.getEventSizeMode() == EventSizeMode.CNAF) {
 						setupCamac(); // set the camac crate
 						consoleLog.messageOutln("CAMAC command lists sent.");
-					} else if (sortRoutine.getEventSizeMode() == SortRoutine.EventSizeMode.VME_MAP) {
+					} else if (sortRoutine.getEventSizeMode() == EventSizeMode.VME_MAP) {
 						setupVMEmap();
 						consoleLog.messageOutln("VME map sent.");
 					}
@@ -437,7 +432,7 @@ public final class SetupSortOn extends AbstractSetup implements
 		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine == null) {
 			// instead of conditional assign to avoid PMD warning
 			name = "No Data";
@@ -503,7 +498,7 @@ public final class SetupSortOn extends AbstractSetup implements
 					+ ": illegal access to EventInputStream: "
 					+ inChooser.getSelectedItem());
 		}
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class
 			outStream = (jam.sort.stream.AbstractEventOutputStream) ((Class) outChooser
 					.getSelectedItem()).newInstance();

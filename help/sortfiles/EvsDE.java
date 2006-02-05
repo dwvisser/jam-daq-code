@@ -6,7 +6,7 @@ import jam.data.HistInt2D;
 import jam.data.Monitor;
 import jam.data.Scaler;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 /**
  * This is an example sort routine for Jam. It sorts for a delta-E vs. E
@@ -19,7 +19,7 @@ import jam.sort.SortRoutine;
  * @version 0.5
  * @since JDK 1.1
  */
-public class EvsDE extends SortRoutine {
+public class EvsDE extends AbstractSortRoutine {
 
 	/* histograms */
 	transient final HistInt1D hEnergy, hDE, hSum, hSumGate;
@@ -79,7 +79,7 @@ public class EvsDE extends SortRoutine {
 	}
 
 	/**
-	 * @see SortRoutine#initialize()
+	 * @see AbstractSortRoutine#initialize()
 	 */
 	public void initialize() throws SortException {
 		cnafCommands.init(1, 28, 8, 26); //crate dataway Z
@@ -102,7 +102,7 @@ public class EvsDE extends SortRoutine {
 	}
 
 	/**
-	 * @see SortRoutine#sort(int[])
+	 * @see AbstractSortRoutine#sort(int[])
 	 */
 	public void sort(final int[] dataEvent) {
 		/* Variables for the raw signal values. */

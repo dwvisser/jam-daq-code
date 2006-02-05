@@ -294,7 +294,7 @@ public abstract class AbstractEventInputStream {
 	 *            the size in bytes of the input buffer
 	 */
 	public void setBufferSize(final int size) {
-		this.bufferSize = size;
+		bufferSize = size;
 	}
 
 	/**

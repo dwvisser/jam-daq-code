@@ -43,72 +43,7 @@ import jam.sort.stream.AbstractEventOutputStream;
  * @see jam.data.Monitor
  * @see jam.data.Gate
  */
-public abstract class SortRoutine implements Sorter, Beginner, Ender {
-
-	/**
-	 * Encapsulates the different ways the event size can be specified.
-	 * 
-	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
-	 */
-	public static class EventSizeMode {
-		private static final int SET_BY_CNAF = 0;
-
-		private static final int SET_EXPLICIT = 2;
-
-		private static final int INIT_NO_MODE = 3;
-
-		/**
-		 * Indicates the parameter count has been set implicitly by using CNAF
-		 * commands.
-		 */
-		public static final EventSizeMode CNAF = new EventSizeMode(SET_BY_CNAF);
-
-		/**
-		 * Indicates that the parameter count has been set explicitly.
-		 */
-		public static final EventSizeMode EXPLICIT = new EventSizeMode(
-				SET_EXPLICIT);
-
-		/**
-		 * No method of defining the event size exists yet.
-		 */
-		public static final EventSizeMode INIT = new EventSizeMode(INIT_NO_MODE);
-
-		/**
-		 * Indicates that the parameter count hasn't been set by any means.
-		 */
-
-		private static final boolean[] IS_SET = { true, true, true, false };
-
-		private static final int SET_VME_MAP = 1;
-
-		/**
-		 * Indicates the parameter count has been set implicitly by specifying a
-		 * VME map.
-		 */
-		public static final EventSizeMode VME_MAP = new EventSizeMode(
-				SET_VME_MAP);
-
-		final transient int mode;
-
-		private EventSizeMode(int value) {
-			super();
-			mode = value;
-		}
-
-		/**
-		 * Returns whether this event size mode represents a properly set event
-		 * size.
-		 * 
-		 * @return whether this event size mode represents a properly set event
-		 *         size
-		 */
-		public boolean isSet() {
-			return IS_SET[mode];
-		}
-	}
-
-	private final static String COLON = ": ";
+public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender {
 
 	/**
 	 * constant to define a 1d histogram type int
@@ -139,8 +74,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 * constant to define a 2d histogram type int
 	 */
 	protected final static Histogram.Type HIST_2D_INT = Histogram.Type.TWO_DIM_INT;
-
-	private final static String ILLEGAL_MODE = "Illegal value for event size mode: ";
 
 	/**
 	 * Creates a one-dimensional, integer-valued, histogram.
@@ -345,8 +278,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	private int bufferSize;
 
-	private transient final String classname = getClass().getName();
-
 	/**
 	 * class which is given list of cnafs init(c,n,a,f); event(c,n,a,f);
 	 */
@@ -383,7 +314,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Creates a new sort routine object.
 	 */
-	public SortRoutine() {
+	public AbstractSortRoutine() {
 		super();
 		setWriteEnabled(false);
 		cnafCommands = new CamacCommands(this);
@@ -432,7 +363,6 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 */
 	public int getEventSize() throws SortException {
 		final int rval;
-		final StringBuffer mess = new StringBuffer(classname).append(COLON);
 		if (evtSizeMode.isSet()) {
 			if (evtSizeMode == EventSizeMode.CNAF) {
 				rval = cnafCommands.getEventSize();
@@ -442,8 +372,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 				rval = eventSize;
 			}
 		} else {
-			final String sizeUnknown = "Event Size Unkown";
-			throw new SortException(mess.append(sizeUnknown).toString());
+			throw new SortException("Event Size Unkown");
 		}
 		return rval;
 	}
@@ -476,7 +405,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * @see jam.global.Sorter#initialize()
 	 */
-	public abstract void initialize() throws Exception;
+	public abstract void initialize() throws Exception;//NOPMD
 
 	/**
 	 * Required by the <code>Sorter</code> interface. As written always
@@ -541,7 +470,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	 *             if called inappropriately
 	 */
 	void setEventSizeMode(final EventSizeMode mode) throws SortException {
-		final StringBuffer mess = new StringBuffer(classname).append(COLON);
+		final StringBuffer mess = new StringBuffer();
 		if ((!evtSizeMode.equals(mode))
 				&& (!evtSizeMode.equals(EventSizeMode.INIT))) {
 			final String part1 = "Illegal attempt to set event size a second time. ";
@@ -557,7 +486,8 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 				evtSizeMode = mode;
 			}
 		} else {
-			throw new SortException(mess.append(ILLEGAL_MODE).append(mode)
+			throw new SortException(mess.append(
+					"Illegal value for event size mode: ").append(mode)
 					.toString());
 		}
 	}
@@ -577,7 +507,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * @see jam.global.Sorter#sort(int[])
 	 */
-	public abstract void sort(int[] dataWords) throws Exception;
+	public abstract void sort(int[] dataWords) throws Exception;//NOPMD
 
 	/**
 	 * Writes an event to the event output stream. Used by the
@@ -594,7 +524,7 @@ public abstract class SortRoutine implements Sorter, Beginner, Ender {
 			try {
 				eventOutput.writeEvent(event);
 			} catch (EventException e) {
-				throw new SortException(e.toString());
+				throw new SortException(e);
 			}
 		}
 	}

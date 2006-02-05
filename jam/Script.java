@@ -96,7 +96,7 @@ public final class Script implements Observer {
 	 * Completes the task equivalent of specifying the settings in Jam's dialog
 	 * for setting up offline sorting. That is, calling this defines the
 	 * classpath to sort routines, the fully qualified name of the
-	 * <code>SortRoutine</code> to use for sorting, and references to the
+	 * <code>AbstractSortRoutine</code> to use for sorting, and references to the
 	 * <code>EventInputStream</code> and <code>EventOutputStream</code> to
 	 * use.
 	 * 
@@ -111,7 +111,7 @@ public final class Script implements Observer {
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
 	 * @param outStream
 	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.AbstractSortRoutine
 	 * @see jam.sort.stream.AbstractEventInputStream
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
@@ -190,7 +190,7 @@ public final class Script implements Observer {
 	 * 
 	 * @param eventsOut
 	 *            where to write "pre-sort" events
-	 * @see jam.sort.SortRoutine#writeEvent(int [])
+	 * @see jam.sort.AbstractSortRoutine#writeEvent(int [])
 	 * @throws IllegalStateException
 	 *             if <code>setupOffline()</code> hasn't been called yet
 	 */

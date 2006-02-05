@@ -9,7 +9,7 @@
 <h2>Writing a Sort Routine</h2>
 <p>A sort routine for Jam is written as a Java class. The sort 
 routine must extend the <span class=jam>Jam</span> class, 
-<code>jam.sort.SortRoutine</code>. This allows the full flexibility of the Java
+<code>jam.sort.AbstractSortRoutine</code>. This allows the full flexibility of the Java
 language, but also requires you follow a certain syntax so that your class is a
 valid extension.</p>
 <p>A basic sort routine has several sections:
@@ -45,16 +45,16 @@ after Jam has had a chance to sort all events from the run.</li>
 <h3>Syntax</h3>
 
 <p>You must follow a certain format to create
-a sort routine that is a valid subclass of the <code>jam.sort.SortRoutine</code> class.</p>
+a sort routine that is a valid subclass of the <code>jam.sort.AbstractSortRoutine</code> class.</p>
 
 <ul>
     <li>
 Your sort routine file name must have the same name as the class name. For
 example, the class <tt>MySort</tt> must reside in a file name MySort.java</li>
 <li>
-Your sort class must extend the Jam class <code>jam.sort.SortRoutine</code>, as
+Your sort class must extend the Jam class <code>jam.sort.AbstractSortRoutine</code>, as
 follows:
-<br> <code>import jam.sort.SortRoutine;</code>
+<br> <code>import jam.sort.AbstractSortRoutine;</code>
 <br> <code>public class MySort extends SortRoutine {...}</code></li>
 <li>
 You must have an initialize() method, as follows:
@@ -69,7 +69,7 @@ you may define your event size with <code>setEventSize(size of eventData array)<
 <p>Here is the skeleton of a minimal sort class:</p>
 
 <pre><code>
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 
 public void MySort extends SortRoutine {
 
@@ -166,7 +166,7 @@ at the <code>jam.data</code> package.</p>
 
 <h4>Utility Classes</h4>
 
-<p>Sort routines you write that extend <code>jam.sort.SortRoutine</code> are provided
+<p>Sort routines you write that extend <code>jam.sort.AbstractSortRoutine</code> are provided
 with pre-existing instances of several useful utility classes.</p>
 <h5>Electronics Configuration</h5>
 <dl>

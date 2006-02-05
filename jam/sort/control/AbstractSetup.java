@@ -11,7 +11,7 @@ import jam.global.PropertyKeys;
 import jam.global.RTSI;
 import jam.global.Sorter;
 import jam.sort.SortException;
-import jam.sort.SortRoutine;
+import jam.sort.AbstractSortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -304,12 +304,12 @@ abstract class AbstractSetup {
 	 */
 	protected final void initializeSorter() throws JamException {
 		final StringBuffer message = new StringBuffer();
-		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {
 			sortRoutine.initialize();
 		} catch (Exception thrown) {
-			message.append("Exception in SortRoutine: ")
+			message.append("Exception in AbstractSortRoutine: ")
 					.append(sortName).append(".initialize(); Message= '")
 					.append(thrown.getClass().getName()).append(": ").append(
 							thrown.getMessage()).append('\'');

@@ -90,7 +90,7 @@ public interface PropertyKeys {
 	/**
 	 * Fully qualified name of the default sort routine.
 	 * 
-	 * @see jam.sort.SortRoutine
+	 * @see jam.sort.AbstractSortRoutine
 	 */
 	String SORT_ROUTINE = "sort.routine";
 
