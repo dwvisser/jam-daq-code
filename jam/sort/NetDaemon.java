@@ -60,8 +60,6 @@ public final class NetDaemon extends GoodThread {
 	 *            buffer the events are sent to for sorting
 	 * @param storeRing
 	 *            buffer the events are sent to for storage
-	 * @param msgHandle
-	 *            where messages can be sent to the console
 	 * @param host
 	 *            front end IP address
 	 * @param port
