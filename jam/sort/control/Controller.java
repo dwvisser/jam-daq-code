@@ -1,4 +1,4 @@
-package jam.sort;
+package jam.sort.control;
 
 /**
  * Interface that a class for data taking must implement. Contains methods that

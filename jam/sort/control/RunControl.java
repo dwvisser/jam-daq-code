@@ -57,10 +57,7 @@ import javax.swing.border.EmptyBorder;
  * @author Ken Swartz
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
-public class RunControl extends JDialog implements jam.sort.Controller {
-
-	private static final Logger LOGGER = Logger.getLogger(RunControl.class
-			.getPackage().getName());
+public class RunControl extends JDialog implements Controller {
 
 	private static enum Device {
 		/**
@@ -76,6 +73,9 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 
 	private static RunControl instance = null;
 
+	private static final Logger LOGGER = Logger.getLogger(RunControl.class
+			.getPackage().getName());
+
 	private static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
 	/**
@@ -88,14 +88,18 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		return instance;
 	}
 
-	private transient final JCheckBox cHistZero = new JCheckBox("Histograms",
-			true);
+	private transient final Begin begin;
 
-	private transient File dataPath, histPath;;
+	private transient final JCheckBox cHistZero = new JCheckBox("Histograms",
+			true);;
+
+	private transient File dataPath, histPath;
 
 	private transient Device device;
 
 	private transient DiskDaemon diskDaemon;
+
+	private transient final End end;
 
 	/* daemon threads */
 	private transient NetDaemon netDaemon;
@@ -104,10 +108,6 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 	 * Are we currently in a run, saving event data
 	 */
 	private boolean runOn = false;
-
-	private transient final Begin begin;
-
-	private transient final End end;
 
 	private transient SortDaemon sortDaemon;
 
@@ -375,6 +375,14 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 		}
 	}
 
+	private void setLockControls(final boolean state) {
+		final boolean enable = !state;
+		tRunNumber.setEditable(enable);
+		textRunTitle.setEditable(enable);
+		cHistZero.setEnabled(enable);
+		zeroScalers.setEnabled(enable);
+	}
+
 	private void setRunOn(final boolean val) {
 		synchronized (this) {
 			runOn = val;
@@ -464,14 +472,6 @@ public class RunControl extends JDialog implements jam.sort.Controller {
 
 		LOGGER.warning("Stopped Acquisition...if you are doing a run, "
 				+ "you will need to start again before clicking \"End Run\".");
-	}
-
-	private void setLockControls(final boolean state) {
-		final boolean enable = !state;
-		tRunNumber.setEditable(enable);
-		textRunTitle.setEditable(enable);
-		cHistZero.setEnabled(enable);
-		zeroScalers.setEnabled(enable);
 	}
 
 	private boolean storageCaughtUp() {

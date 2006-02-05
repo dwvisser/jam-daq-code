@@ -1,6 +1,7 @@
 package jam.sort;
 
 import jam.global.GoodThread;
+import jam.sort.control.Controller;
 import jam.sort.stream.EventException;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;

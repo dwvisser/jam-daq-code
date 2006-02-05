@@ -7,6 +7,7 @@ import jam.global.Ender;
 import jam.global.GoodThread;
 import jam.global.JamStatus;
 import jam.global.Sorter;
+import jam.sort.control.Controller;
 import jam.sort.control.SortControl;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventInputStream.EventInputStatus;
