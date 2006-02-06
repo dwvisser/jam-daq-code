@@ -14,7 +14,7 @@ import java.util.List;
  */
 final class DataIDLabel extends AbstractData {
 
-	static DataIDLabel withTagRef(int tag, int ref) {
+	static DataIDLabel withTagRef(final int tag, final int ref) {
 		DataIDLabel dil = null;
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
@@ -31,7 +31,7 @@ final class DataIDLabel extends AbstractData {
 		return dil;
 	}
 
-	static DataIDLabel withTagRef(List labels, int tag, int ref) {
+	static DataIDLabel withTagRef(final List<DataIDLabel> labels, final int tag, final int ref) {
 		DataIDLabel output = null;
 		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
 			final DataIDLabel dil = (DataIDLabel) (temp.next());
@@ -46,9 +46,9 @@ final class DataIDLabel extends AbstractData {
 	/**
 	 * Object being labelled.
 	 */
-	private AbstractData object;
+	private transient AbstractData object;
 
-	private String label;
+	private transient String label;
 
 	DataIDLabel(AbstractData obj, String label) {
 		super(DFTAG_DIL); // sets tag

@@ -18,7 +18,7 @@ final class NumericalDataGroup extends AbstractData {
     /**
      * List of data elements this NDG ties together.
      */
-    private List<AbstractData> elements;
+    private transient List<AbstractData> elements;
 
     NumericalDataGroup() {
         super(DFTAG_NDG); //sets tag
@@ -61,7 +61,7 @@ final class NumericalDataGroup extends AbstractData {
      * @param data
      *            data element to be added
      */
-    void addDataObject(AbstractData data) {
+    void addDataObject(final AbstractData data) {
         elements.add(data);
     }
 

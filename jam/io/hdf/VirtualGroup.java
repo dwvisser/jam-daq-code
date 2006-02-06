@@ -17,19 +17,19 @@ final class VirtualGroup extends AbstractData {
 	/**
 	 * List of data elements this vGroup ties together.
 	 */
-	private final List<AbstractData> elements = Collections
+	private transient final List<AbstractData> elements = Collections
 			.synchronizedList(new ArrayList<AbstractData>());
 
 	/**
 	 * All Vgroup objects can have a name stored in them.
 	 */
-	private String name;
+	private transient String name;
 
 	/**
 	 * All Vgroup objects can have a class name stored in them, which is
 	 * arbitrary.
 	 */
-	private String type;
+	private transient String type;
 
 	private final static short EXTAG = 0; // purpose?
 
@@ -113,7 +113,7 @@ final class VirtualGroup extends AbstractData {
 	 * @throws IllegalArgumentException
 	 *             if <code>data==null</code>
 	 */
-	void add(AbstractData data) {
+	void add(final AbstractData data) {
 		if (data == null) {
 			throw new IllegalArgumentException("Can't add null to vGroup.");
 		}
@@ -143,7 +143,7 @@ final class VirtualGroup extends AbstractData {
 	 *            type string showing what kind of info is contained
 	 * @return list of groups with the given type
 	 */
-	static List<VirtualGroup> ofType(List<VirtualGroup> list, String groupType) {
+	static List<VirtualGroup> ofType(final List<VirtualGroup> list, final String groupType) {
 		final List<VirtualGroup> output = new ArrayList<VirtualGroup>();
 		for (VirtualGroup group : list) {
 			if (group.getType() == groupType) {
@@ -160,13 +160,11 @@ final class VirtualGroup extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if there is more than one VGroup with the type
 	 */
-	static VirtualGroup ofClass(String groupType) {
+	static VirtualGroup ofClass(final String groupType) {
 		VirtualGroup rval = null;
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
+		final List<AbstractData> objectList = getDataObjectList();
 		boolean error = false;
-		loop: while (iter.hasNext()) {
-			final Object dataObject = iter.next();
+		loop: for(AbstractData dataObject : objectList) {
 			if (dataObject instanceof VirtualGroup) {
 				final VirtualGroup virtualGroup = (VirtualGroup) dataObject;
 				final String type = virtualGroup.getType();
@@ -192,21 +190,17 @@ final class VirtualGroup extends AbstractData {
 	 * Returns a VirtualGroup of <code>VirtualGroup</code>'s with the name
 	 * specified. Should only be called when the name is expected to be unique.
 	 * 
-	 * @param list
-	 *            should contain only VirtualGroup objects
 	 * @param groupName
 	 *            name of the desired group
 	 * @return the group with the given name
 	 * @throws IllegalStateException
 	 *             if there is more than one VGroup with the name
 	 */
-	static VirtualGroup ofName(String groupName) {
+	static VirtualGroup ofName(final String groupName) {
 		VirtualGroup output = null;
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
+		final List<AbstractData> objectList = getDataObjectList();
 		boolean error = false;
-		loop: while (iter.hasNext()) {
-			final Object dataObject = iter.next();
+		loop: for (AbstractData dataObject : objectList) {
 			if (dataObject instanceof VirtualGroup) {
 				final VirtualGroup virtualGroup = (VirtualGroup) dataObject;
 				final String name = virtualGroup.getName();
@@ -238,10 +232,10 @@ final class VirtualGroup extends AbstractData {
 	 *            name of the desired group
 	 * @return the group with the given name
 	 */
-	static VirtualGroup ofName(List list, String groupName) {
+	static VirtualGroup ofName(final List<AbstractData> list, final String groupName) {
 		VirtualGroup output = null;
-		for (final Iterator temp = list.iterator(); temp.hasNext();) {
-			final VirtualGroup group = (VirtualGroup) (temp.next());
+		for (AbstractData data : list) {
+			final VirtualGroup group = (VirtualGroup) data;
 			if (group.getName().equals(groupName)) {
 				output = group;
 			}

@@ -192,10 +192,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		int numGates = 0;
 		// Gate gate = null;
 		/* get list of all VG's in file */
-		final List groups = AbstractData.ofType(DFTAG_VG);
+		final List<AbstractData> groups = AbstractData.ofType(DFTAG_VG);
 		/* get only the "gates" VG (only one element) */
 		final VirtualGroup gates = VirtualGroup.ofName(groups, GATE_SECTION);
-		final List annotations = AbstractData.ofType(DFTAG_DIA);
+		final List<AbstractData> annotations = AbstractData.ofType(DFTAG_DIA);
 		if (gates != null) {
 			// numGates = gates.getObjects().size();
 			final Iterator temp = gates.getObjects().iterator();

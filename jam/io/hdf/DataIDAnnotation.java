@@ -18,8 +18,6 @@ final class DataIDAnnotation extends AbstractData {
 
 	/**
 	 * 
-	 * @param labels
-	 *            list of <code>DataIDAnnotation</code>'s
 	 * @param tag
 	 *            to look for
 	 * @param ref
@@ -27,7 +25,7 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static DataIDAnnotation withTagRef(int tag, int ref) {
+	static DataIDAnnotation withTagRef(final int tag, final int ref) {
 		DataIDAnnotation dia = null;
 		final List objectList = getDataObjectList();
 		final Iterator iter = objectList.iterator();
@@ -55,13 +53,14 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static DataIDAnnotation withTagRef(List labels, int tag, int ref) {
+	static DataIDAnnotation withTagRef(final List<AbstractData> labels, final int tag, final int ref) {
 		DataIDAnnotation output = null;
-		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
-			final DataIDAnnotation dia = (DataIDAnnotation) (temp.next());
+		for (AbstractData data : labels) {
+			final DataIDAnnotation dia = (DataIDAnnotation) (data);
 			if ((dia.getObject().getTag() == tag)
 					&& (dia.getObject().getRef() == ref)) {
 				output = dia;
+				break;
 			}
 		}
 		return output;
@@ -70,12 +69,12 @@ final class DataIDAnnotation extends AbstractData {
 	/**
 	 * Object being annotated.
 	 */
-	private AbstractData object;
+	private transient AbstractData object;
 
 	/**
 	 * Text of annotation.
 	 */
-	private String note;
+	private transient String note;
 
 	/**
 	 * Annotate an existing <code>DataObject</code> with specified annotation
@@ -85,8 +84,6 @@ final class DataIDAnnotation extends AbstractData {
 	 *            item to be annotated
 	 * @param note
 	 *            text of annotation
-	 * @exception HDFException
-	 *                thrown on unrecoverable error
 	 */
 	DataIDAnnotation(AbstractData obj, String note) {
 		super(DFTAG_DIA); // sets tag
