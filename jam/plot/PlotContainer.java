@@ -26,47 +26,31 @@ import javax.swing.border.Border;
  */
 public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 
-	/* Layout with axis labels without border */
-	static final int LAYOUT_TYPE_LABELS = 0;
-	/* Layout with axis labels and border */ 
-	static final int LAYOUT_TYPE_LABELS_BORDER = 1;
-	/* Layout not axis labels without border */
-	static final int LAYOUT_TYPE_NO_LABELS = 2;
-	/* Layout not axis labels but with border */
-	static final int LAYOUT_TYPE_NO_LABELS_BORDER = 3;
+	enum LayoutType {
+	/** Layout with axis labels without border */
+	LABELS,
+	/** Layout with axis labels and border */ 
+	LABELS_BORDER,
+	/** Layout not axis labels without border */
+	NO_LABELS,
+	/** Layout not axis labels but with border */
+	NO_LABELS_BORDER};
 	
 	/**
 	 * Zoom direction.
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser </a>
 	 */
-	static final class Zoom {
-		private static final int INT_IN = 1;
-
-		private static final int INT_OUT = 2;
-
+	enum Zoom {
 		/**
 		 * Zoom in.
 		 */
-		public static final Zoom IN = new Zoom(INT_IN);
+		IN,
 
 		/**
 		 * Zoom out.
 		 */
-		public static final Zoom OUT = new Zoom(INT_OUT);
-
-		private final int direction;
-
-		private Zoom(int i) {
-			direction = i;
-		}
-		
-		/**
-		 * @see Object#equals(java.lang.Object)
-		 */
-		public boolean equals(Object other){
-		    return other instanceof Zoom ? ((Zoom)other).direction==direction : false;
-		}
+		OUT
 	}
 
 	private static final String KEY1 = "1D Plot";
@@ -90,7 +74,8 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 
 	private final PlotSelectListener plotSelectListener;
 
-	private int layoutType, plotNumber;
+	private LayoutType layoutType;
+	private int plotNumber;
 
 	private AbstractPlot currentSubPlot;
 	
@@ -110,12 +95,12 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		plot1d = new Plot1d();
 		scroller1d = new Scroller(plot1d);
 		panel.add(KEY1, scroller1d);
-		plot1d.setPlotSelectListener(this);
+		plot1d.plotMouse.setPlotSelectListener(this);
 		/* panel 2d plot and its scroll bars */
 		plot2d = new Plot2d();
 		scroller2d = new Scroller(plot2d);
 		panel.add(KEY2, scroller2d);
-		plot2d.setPlotSelectListener(this);
+		plot2d.plotMouse.setPlotSelectListener(this);
 		/* Initial show plot1d */
 		plotSwapPanelLayout.show(panel, KEY1);
 		currentSubPlot = plot1d;
@@ -132,8 +117,8 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 */
 	void select(boolean selectedState) {
 	    Border border = null;
-        if ((layoutType == LAYOUT_TYPE_LABELS_BORDER)
-                || (layoutType == LAYOUT_TYPE_NO_LABELS_BORDER)) {
+        if ((layoutType == LayoutType.LABELS_BORDER)
+                || (layoutType == LayoutType.NO_LABELS_BORDER)) {
             border = selectedState ? BorderFactory.createLineBorder(
                     Color.BLACK, 2) : BorderFactory.createEmptyBorder(2, 2, 2,
                     2);
@@ -146,21 +131,21 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * 
 	 * @param type
 	 */
-	void setLayoutType(int type) {
+	void setLayoutType(LayoutType type) {
         layoutType = type;
         //Plot labels
-        if ((type == LAYOUT_TYPE_LABELS_BORDER) || (type == LAYOUT_TYPE_LABELS)) {
-            plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
-            plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_LABELS);
-        } else if ((type == LAYOUT_TYPE_NO_LABELS_BORDER)
-                || (type == LAYOUT_TYPE_NO_LABELS)) {
-            plot1d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_NO_LABELS);
-            plot2d.setLayout(PlotGraphicsLayout.LAYOUT_TYPE_NO_LABELS);
+        if ((type == LayoutType.LABELS_BORDER) || (type == LayoutType.LABELS)) {
+            plot1d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
+            plot2d.setLayout(PlotGraphicsLayout.Type.WITH_LABELS);
+        } else if ((type == LayoutType.NO_LABELS_BORDER)
+                || (type == LayoutType.NO_LABELS)) {
+            plot1d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
+            plot2d.setLayout(PlotGraphicsLayout.Type.WO_LABELS);
 
         }
         //Plot border
-        final Border border = type == LAYOUT_TYPE_LABELS_BORDER
-                || type == LAYOUT_TYPE_NO_LABELS_BORDER ? BorderFactory
+        final Border border = type == LayoutType.LABELS_BORDER
+                || type == LayoutType.NO_LABELS_BORDER ? BorderFactory
                 .createEmptyBorder(2, 2, 2, 2) : null;
         panel.setBorder(border);
     }
@@ -398,16 +383,16 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 		getPlot().setRenderForPrinting(rfp, pf);
 	}
 
-	ComponentPrintable getComponentPrintable(int run, String d) {
-		return getPlot().getComponentPrintable(run, d);
+	ComponentPrintable getComponentPrintable() {
+		return getPlot().getComponentPrintable();
 	}
 
 	int getSizeX() {
-		return getPlot().getSizeX();
+		return getPlot().size.getSizeX();
 	}
 
 	int getSizeY() {
-		return getPlot().getSizeY();
+		return getPlot().size.getSizeY();
 	}
 
 	/**
@@ -416,8 +401,8 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param listener the listener to add
 	 */
 	void addPlotMouseListener(PlotMouseListener listener) {
-		plot1d.addPlotMouseListener(listener);
-		plot2d.addPlotMouseListener(listener);
+		plot1d.plotMouse.addListener(listener);
+		plot2d.plotMouse.addListener(listener);
 	}
 
 	/* Mouse methods */
@@ -425,14 +410,14 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	/* non-javadoc:
 	 * Remove a mouse listener.
 	 */
-	void removePlotMouseListener(PlotMouseListener listener) {
-		plot1d.removePlotMouseListener(listener);
-		plot2d.removePlotMouseListener(listener);
+	void removePlotMouseListener(final PlotMouseListener listener) {
+		plot1d.plotMouse.removeListener(listener);
+		plot2d.plotMouse.removeListener(listener);
 	}
 
 	void removeAllPlotMouseListeners() {
-		plot1d.removeAllPlotMouseListeners();
-		plot2d.removeAllPlotMouseListeners();
+		plot1d.plotMouse.removeAllListeners();
+		plot2d.plotMouse.removeAllListeners();
 	}
 
 	/**
