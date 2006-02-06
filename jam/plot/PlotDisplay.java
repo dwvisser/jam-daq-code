@@ -7,23 +7,20 @@ import jam.global.Broadcaster;
 import jam.global.ComponentPrintable;
 import jam.global.JamStatus;
 import jam.global.Nameable;
-import jam.global.RunInfo;
 import jam.global.BroadcastEvent.Command;
+import jam.plot.PlotContainer.LayoutType;
 import jam.ui.Console;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.print.PageFormat;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.TimeZone;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 
@@ -175,19 +172,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @return a printable component
 	 */
 	public ComponentPrintable getComponentPrintable() {
-		return getPlotContainer().getComponentPrintable(RunInfo.runNumber,
-				getDate());
-	}
-
-	/*
-	 * non-javadoc: Gets the current date and time as a String.
-	 */
-	private String getDate() {
-		final Date date = new Date(); // getDate and time
-		final DateFormat datef = DateFormat.getDateTimeInstance(); // default
-		// format
-		datef.setTimeZone(TimeZone.getDefault()); // set time zone
-		return datef.format(date); // format date
+		return getPlotContainer().getComponentPrintable();
 	}
 
 	/**
@@ -498,18 +483,18 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 */
 	private void updateLayout() {
 		final int numberPlots = currentView.getNumberHists();
-		final int plotLayout;
+		final LayoutType plotLayout;
 		final boolean scrollTemp;
 		if (numberPlots == 1) {
 			/* Single plot aways has axis showing */
 			if (isAxisLabels) {
-				plotLayout = PlotContainer.LAYOUT_TYPE_LABELS;
+				plotLayout = PlotContainer.LayoutType.LABELS;
 			} else {
-				plotLayout = PlotContainer.LAYOUT_TYPE_NO_LABELS;
+				plotLayout = PlotContainer.LayoutType.NO_LABELS;
 			}
 			scrollTemp = true;
 		} else {
-			plotLayout = PlotContainer.LAYOUT_TYPE_NO_LABELS_BORDER;
+			plotLayout = PlotContainer.LayoutType.NO_LABELS_BORDER;
 			scrollTemp = isScrolling;
 		}
 		for (PlotContainer plot : plotList) {
