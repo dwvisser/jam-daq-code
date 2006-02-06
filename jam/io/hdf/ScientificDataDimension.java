@@ -14,20 +14,20 @@ final class ScientificDataDimension extends AbstractData {
 	/**
 	 * The number of dimensions
 	 */
-	private int rank;
+	private transient int rank;
 
 	/**
 	 * The size of the dimensions. I have assumed identical x- and y- dimensions
 	 * for 2-d spectra.
 	 */
-	private int sizeX;
+	private transient int sizeX;
 
-	private int sizeY;
+	private transient int sizeY;
 
-	private byte numberType;
+	private transient byte numberType;
 
-	static ScientificDataDimension create(short rank, int sizeX, int sizeY,
-			byte numberType) {
+	static ScientificDataDimension create(final short rank, final int sizeX,
+			final int sizeY, final byte numberType) {
 		ScientificDataDimension rval = null;// return value
 		for (AbstractData data : AbstractData.ofType(Constants.DFTAG_SDD)) {
 			final ScientificDataDimension sdd = (ScientificDataDimension) data;
