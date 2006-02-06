@@ -396,7 +396,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		}
 		updateLayout();
 		// Default set to first plot
-		currentPlot = null;
+		currentPlot = null;//NOPMD
 		plotContainer = plotList.get(0);
 		plotSelected(plotContainer);
 	}
