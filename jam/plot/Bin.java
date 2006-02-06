@@ -38,10 +38,7 @@ public final class Bin implements Cloneable {
 	/**
 	 * Constructs a bin at the coordinate (x,y)
 	 * 
-	 * @param xCoord
-	 *            x-coordinate
-	 * @param yCoord
-	 *            y-coordinate
+	 * @param coords any missing default to 0
 	 * @return bin at (x,y)
 	 */
 	public static Bin create(final int... coords) {
