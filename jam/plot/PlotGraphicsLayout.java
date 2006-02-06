@@ -8,188 +8,189 @@ package jam.plot;
  */
 final class PlotGraphicsLayout {
 
-	//LayoutType full plot
-	static final int LAYOUT_TYPE_LABELS = 0;
+	enum Type {
+		/**
+		 * plot with labels
+		 */
+		WITH_LABELS,
 
-	//LayoutType tiled plots
-	static final int LAYOUT_TYPE_NO_LABELS = 1;
+		/**
+		 * plot w/o labels
+		 */
+		WO_LABELS
+	};
 
-	//border outside of plot
-	final int BORDER_TOP;
+	class Border {
+		final transient int top;
 
-	final int BORDER_LEFT;
+		final transient int left;
 
-	final int BORDER_BOTTOM;
+		final transient int bottom;
 
-	final int BORDER_RIGHT;
+		final transient int right;
 
-	//tickmark stuff
-	final int TICK_SIZE;
+		Border(int top, int left, int bottom, int right) {
+			super();
+			this.top = top;
+			this.left = left;
+			this.bottom = bottom;
+			this.right = right;
+		}
+	}
 
-	final int TICK_MINOR;
+	// border outside of plot
+	final transient Border border;
 
-	final int TICK_MAJOR;
+	// tickmark stuff
+	class Tick {
+		final transient int size;
 
-	//title stuff
-	final int TITLE_OFFSET;
+		final transient int minor;
 
-	final int TITLE_OFFSET_TOP;
+		final transient int major;
 
-	final int TITLE_OFFSET_BOTTOM;
-
-	final int TITLE_OFFSET_LEFT;
-
-	final int TITLE_OFFSET_DATE;
-
-	//tickmarks
-	final int LABEL_OFFSET;
-
-	final int LABEL_OFFSET_TOP;
-
-	final int LABEL_OFFSET_BOTTOM;
-
-	final int LABEL_OFFSET_LEFT;
-
-	//axis labels
-	final int AXIS_LABEL_OFFSET_TOP;
-
-	final int AXIS_LABEL_OFFSET_BOTTOM;
-
-	final int AXIS_LABEL_OFFSET_LEFT;
-
-	final int AXIS_LABEL_OFFSET_RIGHT;
-
-	//stuff for channel marker
-	final int MARK_MIN_LENGTH;
-
-	final int MARK_OFFSET;
-
-	//fonts
-	final float SCREEN_FONT_SIZE;
-
-	final float TITLE_SCREEN_SIZE;
-
-	//stuff for two d color scale
-	final int COLOR_SCALE_OFFSET; // distance from right side of plot
-
-	final int COLOR_SCALE_LABEL_OFFSET;
-
-	final int COLOR_SCALE_SIZE; // size of a color swatch
-
-	final int PRINT_FONT_SIZE;
-
-	final int TILE_PRINT_SIZE;
-
-	final String FONT_CLASS = "Serif";
-
-	private PlotGraphicsLayout(int type) {
-		if (type == LAYOUT_TYPE_LABELS) {
-			//border outside of plot
-			BORDER_TOP = 40;
-			BORDER_LEFT = 60;
-			BORDER_BOTTOM = 40;
-			BORDER_RIGHT = 60;
-
-			//tickmark stuff
-			TICK_SIZE = 10;
-			TICK_MINOR = 5;
-			TICK_MAJOR = 10;
-
-			//title stuff
-			TITLE_OFFSET = 10;
-			TITLE_OFFSET_TOP = 10;
-			TITLE_OFFSET_BOTTOM = 25;
-			TITLE_OFFSET_LEFT = 0;
-			TITLE_OFFSET_DATE = 25;
-
-			//tickmarks
-			LABEL_OFFSET = 5;
-			LABEL_OFFSET_TOP = 5;
-			LABEL_OFFSET_BOTTOM = 3;
-			LABEL_OFFSET_LEFT = 3;
-
-			//axis labels
-			AXIS_LABEL_OFFSET_TOP = 20;
-			AXIS_LABEL_OFFSET_BOTTOM = 20;
-			AXIS_LABEL_OFFSET_LEFT = 35;
-			AXIS_LABEL_OFFSET_RIGHT = 20;
-
-			//stuff for channel marker
-			MARK_MIN_LENGTH = 20;
-			MARK_OFFSET = 3;
-			//fonts
-			SCREEN_FONT_SIZE = 12;
-			TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
-
-			//stuff for two d color scale
-			COLOR_SCALE_OFFSET = 10; // distance from right side of plot
-			COLOR_SCALE_LABEL_OFFSET = 5;
-			COLOR_SCALE_SIZE = 15; // size of a color swatch
-
-			PRINT_FONT_SIZE = 12;
-			TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
-		} else {
-
-			//border outside of plot
-			BORDER_TOP = 0;
-			BORDER_LEFT = 0;
-			BORDER_BOTTOM = 0;
-			BORDER_RIGHT = 0;
-
-			//tickmark stuff
-			TICK_SIZE = 10;
-			TICK_MINOR = 5;
-			TICK_MAJOR = 10;
-
-			//title stuff
-			TITLE_OFFSET = 10;
-			TITLE_OFFSET_TOP = -13;
-			TITLE_OFFSET_BOTTOM = 25;
-			TITLE_OFFSET_LEFT = 20;
-			TITLE_OFFSET_DATE = 25;
-
-			//tickmarks
-			LABEL_OFFSET = 5;
-			LABEL_OFFSET_TOP = 5;
-			LABEL_OFFSET_BOTTOM = 3;
-			LABEL_OFFSET_LEFT = 3;
-
-			//axis labels
-			AXIS_LABEL_OFFSET_TOP = 20;
-			AXIS_LABEL_OFFSET_BOTTOM = 20;
-			AXIS_LABEL_OFFSET_LEFT = 35;
-			AXIS_LABEL_OFFSET_RIGHT = 20;
-
-			//stuff for channel marker
-			MARK_MIN_LENGTH = 20;
-			MARK_OFFSET = 3;
-			//fonts
-			SCREEN_FONT_SIZE = 12;
-			TITLE_SCREEN_SIZE = SCREEN_FONT_SIZE + 2;
-
-			//stuff for two d color scale
-			COLOR_SCALE_OFFSET = 10; // distance from right side of plot
-			COLOR_SCALE_LABEL_OFFSET = 5;
-			COLOR_SCALE_SIZE = 15; // size of a color swatch
-
-			PRINT_FONT_SIZE = 12;
-			TILE_PRINT_SIZE = PRINT_FONT_SIZE + 2;
+		Tick(int size, int minor, int major) {
+			super();
+			this.size = size;
+			this.minor = minor;
+			this.major = major;
 		}
 	}
 	
-	static PlotGraphicsLayout getLayout(int type){
-		return type==LAYOUT_TYPE_LABELS ? LABELS : NO_LABELS;
+	final Tick tick = new Tick(10,5,10);
+
+	// title stuff
+	class TitleOffsets {
+
+		final transient int main;
+
+		final transient int top;
+
+		final transient int bottom;
+
+		final transient int left;
+
+		final transient int date;
+
+		TitleOffsets(int main, int top, int bottom, int left, int date) {
+			super();
+			this.main = main;
+			this.top = top;
+			this.bottom = bottom;
+			this.left = left;
+			this.date = date;
+		}
+
+	}
+
+	final transient TitleOffsets titleOffsets;
+
+	// tickmarks
+	class LabelOffsets {
+		final transient int main;
+
+		final transient int top;
+
+		final transient int botttom;
+
+		final transient int left;
+
+		LabelOffsets(int main, int top, int bottom, int left) {
+			super();
+			this.main = main;
+			this.top = top;
+			this.botttom = bottom;
+			this.left = left;
+		}
+	}
+
+	final LabelOffsets labelOffsets = new LabelOffsets(5, 5, 3, 3);
+
+	// axis labels
+	class AxisLabelOffsets {
+		final transient int top;
+
+		final transient int bottom;
+
+		final transient int left;
+
+		final transient int right;
+
+		AxisLabelOffsets(int top, int bottom, int left, int right) {
+			super();
+			this.top = top;
+			this.bottom = bottom;
+			this.left = left;
+			this.right = right;
+		}
+	}
+
+	final AxisLabelOffsets axisLabelOffsets = new AxisLabelOffsets(20, 20, 35,
+			20);
+
+	// stuff for channel marker
+	final static transient int MARK_MIN_LENGTH=20;
+
+	final static transient int MARK_OFFSET=3;
+
+	// fonts
+	final static transient float SCREEN_FONT_SIZE=12;
+
+	final transient float TITLE_SCREEN_SIZE=SCREEN_FONT_SIZE + 2;
+
+	class ColorScale {
+		// stuff for two d color scale
+		final transient int offset; // distance from right side of plot
+
+		final transient int labelOffset;
+
+		final transient int size; // size of a color swatch
+
+		ColorScale(int offset, int labelOffset, int size) {
+			super();
+			this.offset = offset;
+			this.labelOffset = labelOffset;
+			this.size = size;
+		}
+	}
+
+	final ColorScale colorScale = new ColorScale(
+			10, 5, 15);
+
+	final static transient int PRINT_FONT_SIZE=12;
+
+	final transient int TILE_PRINT_SIZE=PRINT_FONT_SIZE + 2;
+
+	final static String FONT_CLASS = "Serif";
+
+	private PlotGraphicsLayout(Type type) {
+		super();
+		if (type == Type.WITH_LABELS) {
+			// border outside of plot
+			border = new Border(40, 60, 40, 60);
+			// title stuff
+			titleOffsets = new TitleOffsets(10, 10, 25, 0, 25);
+		} else {
+			// border outside of plot
+			border = new Border(0, 0, 0, 0);
+			// title stuff
+			titleOffsets = new TitleOffsets(10, -13, 35, 20, 25);
+		}
+	}
+
+	static PlotGraphicsLayout getLayout(final Type type) {
+		return type == Type.WITH_LABELS ? LABELS : NO_LABELS;
 	}
 
 	/**
 	 * Layout with axis labels.
 	 */
 	static final PlotGraphicsLayout LABELS = new PlotGraphicsLayout(
-			LAYOUT_TYPE_LABELS);
+			Type.WITH_LABELS);
 
 	/**
 	 * Layout without axis labels.
 	 */
 	private static final PlotGraphicsLayout NO_LABELS = new PlotGraphicsLayout(
-			LAYOUT_TYPE_NO_LABELS);
+			Type.WO_LABELS);
 }
