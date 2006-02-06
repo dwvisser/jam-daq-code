@@ -195,8 +195,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 
 	private void initPrefs() {
 		PREFS.addPreferenceChangeListener(this);
-		isScrolling = PREFS.getBoolean(ENABLE_SCROLLING_TILED, false);
-		isAxisLabels = PREFS.getBoolean(DISPLAY_AXIS_LABELS, true);
+		isScrolling = PREFS.getBoolean(ENABLE_SCROLLING, false);
+		isAxisLabels = PREFS.getBoolean(DISPLAY_LABELS, true);
 	}
 
 	/**
@@ -260,9 +260,9 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 		final String key = pce.getKey();
 		final String newValue = pce.getNewValue();
 
-		if (key.equals(PlotPrefs.ENABLE_SCROLLING_TILED)) {
+		if (key.equals(PlotPrefs.ENABLE_SCROLLING)) {
 			isScrolling = Boolean.valueOf(newValue).booleanValue();
-		} else if (key.equals(PlotPrefs.DISPLAY_AXIS_LABELS)) {
+		} else if (key.equals(PlotPrefs.DISPLAY_LABELS)) {
 			isAxisLabels = Boolean.valueOf(newValue).booleanValue();
 		}
 		updateLayout();

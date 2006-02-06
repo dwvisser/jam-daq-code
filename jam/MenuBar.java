@@ -226,11 +226,11 @@ final class MenuBar implements Observer, CommandNames {
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_IGNORE_FULL));
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_ON_EXPAND));
 		mPrefer.addSeparator();
-		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE_CHANNELS));
+		mPrefer.add(getMenuItem(PlotPrefs.HIGHLIGHT_GATE));
 		mPrefer.add(getMenuItem(ColorPrefs.SMOOTH_SCALE));
 		mPrefer.add(getMenuItem(SHOW_GRADIENT));
-		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING_TILED));
-		mPrefer.add(getMenuItem(PlotPrefs.DISPLAY_AXIS_LABELS));
+		mPrefer.add(getMenuItem(PlotPrefs.ENABLE_SCROLLING));
+		mPrefer.add(getMenuItem(PlotPrefs.DISPLAY_LABELS));
 		mPrefer.add(getMenuItem(PlotPrefs.BLACK_BACKGROUND));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));

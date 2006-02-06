@@ -18,7 +18,7 @@ final class SetGatedChannelsHighlight extends AbstractSetBooleanPreference {
 		putValue(SHORT_DESCRIPTION,
 		"When showing gates, highlight all channels in the gate.");
 		prefsNode=PlotPrefs.PREFS;
-		key=PlotPrefs.HIGHLIGHT_GATE_CHANNELS;
+		key=PlotPrefs.HIGHLIGHT_GATE;
 		defaultState=true;
 	}
 }

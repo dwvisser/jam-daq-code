@@ -50,15 +50,15 @@ public interface PlotPrefs {
 	 * Preference for whether to highlight gated channels, or simply
 	 * draw the gate shape around them.
 	 */
-	String HIGHLIGHT_GATE_CHANNELS="HighlightGatedChannels";
+	String HIGHLIGHT_GATE="HighlightGatedChannels";
 	
 	/**
-	 * Preference for whether to show scroll bars.
+	 * Preference for whether to show scroll bars for tiled views.
 	 */
-	String ENABLE_SCROLLING_TILED="EnableScrollingTiled";
+	String ENABLE_SCROLLING="EnableScrollingTiled";
 	
 	/**
 	 * Preference for whether to draw axis labels.
 	 */
-	String DISPLAY_AXIS_LABELS="DisplayAxisLabels";
+	String DISPLAY_LABELS="DisplayAxisLabels";
 }

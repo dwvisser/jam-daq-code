@@ -467,7 +467,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		setIgnoreChFull(PREFS.getBoolean(AUTO_IGNORE_FULL, true));
 		setIgnoreChZero(PREFS.getBoolean(AUTO_IGNORE_ZERO, true));
 		panel.setColorMode(PREFS.getBoolean(BLACK_BACKGROUND, false));
-		setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE_CHANNELS, true));
+		setNoFillMode(!PREFS.getBoolean(HIGHLIGHT_GATE, true));
 	}
 
 	/**
@@ -644,7 +644,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 			}
 		} else if (key.equals(PlotPrefs.BLACK_BACKGROUND)) {
 			panel.setColorMode(Boolean.valueOf(newValue).booleanValue());
-		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE_CHANNELS)) {
+		} else if (key.equals(PlotPrefs.HIGHLIGHT_GATE)) {
 			setNoFillMode(!Boolean.valueOf(newValue).booleanValue());
 		}
 	}
