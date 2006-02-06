@@ -8,11 +8,11 @@ import java.awt.Color;
  * @author Ken Swartz
  * @author Dale Visser
  */
-public class PlotColorMap implements GraphicsModes {
+public class PlotColorMap {
 
 	private static final Color DARK_RED = new Color(192, 0, 0);
 
-	static final private PlotColorMap MAP = new PlotColorMap(modes.B_ON_W);
+	static final private PlotColorMap MAP = new PlotColorMap(Mode.B_ON_W);
 
 	private static final Color[] OVERLAY = { Color.RED, Color.GREEN,
 			Color.BLUE, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.ORANGE,
@@ -51,7 +51,7 @@ public class PlotColorMap implements GraphicsModes {
 
 	private transient Color peakLabel;
 
-	private PlotColorMap(modes mode) {
+	private PlotColorMap(Mode mode) {
 		super();
 		setColorMap(mode);
 	}
@@ -208,9 +208,9 @@ public class PlotColorMap implements GraphicsModes {
 	 * @param mode
 	 *            what type of graphics context
 	 */
-	public void setColorMap(final modes mode) {
+	public void setColorMap(final Mode mode) {
 		synchronized (this) {
-			if (mode == modes.B_ON_W) {
+			if (mode == Mode.B_ON_W) {
 				background = Color.WHITE;
 				foreground = Color.DARK_GRAY;
 				hist = Color.BLACK;
@@ -223,7 +223,7 @@ public class PlotColorMap implements GraphicsModes {
 				fitBkgd = Color.GREEN;
 				fitResidual = Color.RED;
 				peakLabel = Color.BLUE;
-			} else if (mode == modes.W_ON_B) {
+			} else if (mode == Mode.W_ON_B) {
 				background = Color.BLACK;
 				foreground = Color.LIGHT_GRAY;
 				hist = Color.WHITE;
@@ -236,7 +236,7 @@ public class PlotColorMap implements GraphicsModes {
 				fitBkgd = Color.GREEN;
 				fitResidual = Color.RED;
 				peakLabel = Color.CYAN;
-			} else if (mode == modes.PRINT) {
+			} else if (mode == Mode.PRINT) {
 				background = Color.WHITE;
 				foreground = Color.BLACK;
 				hist = Color.BLACK;

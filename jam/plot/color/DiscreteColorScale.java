@@ -13,7 +13,7 @@ import java.awt.Color;
  * @version 2004-11-09
  * @since 1.6.0
  */
-public class DiscreteColorScale implements ColorScale, GraphicsModes {
+public class DiscreteColorScale implements ColorScale {
 	private static final Color[] B_ON_W = { new Color(0, 0, 127), // 0
 			new Color(0, 0, 255), // 1
 			new Color(128, 0, 255), // 2
@@ -88,7 +88,7 @@ public class DiscreteColorScale implements ColorScale, GraphicsModes {
 	private DiscreteColorScale(Scale newScale) {
 		super();
 		scale = newScale;
-		setColors(modes.B_ON_W);
+		setColors(Mode.B_ON_W);
 	}
 
 	private static final DiscreteColorScale LOG = new DiscreteColorScale(
@@ -140,13 +140,13 @@ public class DiscreteColorScale implements ColorScale, GraphicsModes {
 		}
 	}
 
-	static void setColors(final modes mode) {
+	static void setColors(final Mode mode) {
 		synchronized (DiscreteColorScale.class) {
-			if (mode == modes.B_ON_W) {
+			if (mode == Mode.B_ON_W) {
 				colors = B_ON_W;
-			} else if (mode == modes.W_ON_B) {
+			} else if (mode == Mode.W_ON_B) {
 				colors = W_ON_B;
-			} else if (mode == modes.PRINT) {
+			} else if (mode == Mode.PRINT) {
 				colors = GRAY;
 			}
 		}
