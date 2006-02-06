@@ -50,7 +50,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 
 	private transient Gate currentGate;
 
-	private transient Nameable currentHistogram;
+	private transient Nameable currentHistogram = UnNamed.getSingletonInstance();
 
 	private transient final List<Bin> gatePoints = new ArrayList<Bin>();
 
@@ -225,7 +225,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	/**
 	 * Cancel the setting of the gate and disable editting of all fields.
 	 */
-	private Canceller canceller = new Canceller() {
+	private transient final Canceller canceller = new Canceller() {
 		public void cancel() {
 			checkHistogram();
 			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
@@ -255,9 +255,7 @@ public final class GateSet extends AbstractControl implements Observer {// NOPMD
 	private void checkHistogram() {
 		/* has histogram changed? */
 		final Nameable named = STATUS.getCurrentHistogram();
-		final boolean doIt = (named == UnNamed.getSingletonInstance()) ? currentHistogram != null
-				: currentHistogram != named;
-		if (doIt) {
+		if (currentHistogram != named) {
 			doSetup(); // setup chooser list
 			canceller.cancel(); // cancel current gate if was setting
 		}
