@@ -50,7 +50,7 @@ final class NumberType extends AbstractData {
      */
     private final static byte DFNT_MBO = 1;
 
-    private transient byte numberType;
+    private transient byte nType;
 
     /** Code for <code>int</code> number type. */
     static final byte INT = 0;
@@ -94,8 +94,6 @@ final class NumberType extends AbstractData {
     }
 
     /**
-     * @param hdfile
-     *            HDF file we belong to
      * @param type
      *            one of <code>INT</code> or <code>DOUBLE</code>,
      * @throws IllegalArgumentException
@@ -110,7 +108,7 @@ final class NumberType extends AbstractData {
         super(DFTAG_NT);
     }
 
-    private void createBytes(byte type) {
+    private void createBytes(final byte type) {
         bytes = ByteBuffer.allocate(4);
         bytes.put(NT_VERSION);
         if (type == INT) {
@@ -133,13 +131,13 @@ final class NumberType extends AbstractData {
         final byte type = bytes.get(1);
         switch (type) {
         case DFNT_UINT32:
-            numberType = INT;
+            nType = INT;
             break;
         case DFNT_INT32:
-            numberType = INT;
+            nType = INT;
             break;
         case DFNT_FLOAT64:
-            numberType = DOUBLE;
+            nType = DOUBLE;
             break;
         default:
             throw new IllegalStateException(
@@ -148,6 +146,6 @@ final class NumberType extends AbstractData {
     }
 
     byte getType() {
-        return numberType;
+        return nType;
     }
 }
