@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 import jam.io.ImpExpSPE;
 
 import java.util.Observable;
@@ -15,23 +16,26 @@ import java.util.Observer;
  */
 final class ExportRadware extends AbstractExportFile implements Observer{
 		
+	ExportRadware() {
+		super("Radware gf3");
+	}
+	
 	public void initCommand(){
-		putValue(NAME,"Radware gf3");
 		importExport=new ImpExpSPE();		
 	}
 	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.HISTOGRAM_SELECT){
 			enable();
 		}
 	}
 
 	private void enable(){
-		final Histogram histogram=(Histogram)STATUS.getCurrentHistogram();
-		if (histogram!=null){
-			setEnabled(histogram.getDimensionality()==1);	
+		final Nameable histogram=STATUS.getCurrentHistogram();
+		if (histogram instanceof Histogram){
+			setEnabled(((Histogram)histogram).getDimensionality()==1);	
 		}
 	}
 }

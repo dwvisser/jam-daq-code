@@ -3,8 +3,8 @@ package jam.commands;
 import jam.data.Histogram;
 import jam.data.control.GateNew;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 /**
@@ -12,25 +12,26 @@ import java.util.Observer;
  */
 final class ShowDialogNewGateCmd extends AbstractShowDialog implements
 Observer {
-
-	private final List histogramList=Histogram.getHistogramList();
+	
+	ShowDialogNewGateCmd() {
+		super("New\u2026");
+	}
 
 	public void initCommand(){
-		putValue(NAME, "New\u2026");
 		/* Super class member next line */
 		dialog= new GateNew();		
 	}
 	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
 			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
 			setEnabled(false);			
 		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
 				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			final Histogram hist =(Histogram)STATUS.getCurrentHistogram();
-			setEnabled(!histogramList.isEmpty() && hist!=null);
+			final Nameable hist =STATUS.getCurrentHistogram();
+			setEnabled(!Histogram.getHistogramList().isEmpty() && hist instanceof Histogram);
 		} 
 	}		
 }

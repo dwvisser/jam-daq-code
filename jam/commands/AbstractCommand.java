@@ -45,6 +45,14 @@ public abstract class AbstractCommand extends AbstractAction implements
 	AbstractCommand() {
 		super();
 	}
+	
+	/**
+	 * Provided so subclasses can override default constructor with a name.
+	 * @param name of command
+	 */
+	protected AbstractCommand(String name) {
+		super(name);
+	}
 
 	/**
 	 * Default implementation that does nothing.

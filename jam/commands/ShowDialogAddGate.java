@@ -4,8 +4,8 @@ import jam.data.Gate;
 import jam.data.Histogram;
 import jam.data.control.GateAdd;
 import jam.global.BroadcastEvent;
+import jam.global.Nameable;
 
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -13,28 +13,29 @@ import java.util.Observer;
  * Show the scalers dialog box
  * 
  * @author Ken Swartz
- *
+ * 
  */
-final class ShowDialogAddGate extends AbstractShowDialog implements
-Observer {
+final class ShowDialogAddGate extends AbstractShowDialog implements Observer {
 
-	private final List gateList=Gate.getGateList();
-	
-	public void initCommand(){
-		putValue(NAME,"Add\u2026");
-		dialog=new GateAdd();
+	ShowDialogAddGate() {
+		super("Add\u2026");
 	}
 
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
-		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
-			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
+	public void initCommand() {
+		dialog = new GateAdd();
+	}
+
+	public void update(final Observable observe, final Object obj) {
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
+		if ((command == BroadcastEvent.Command.GROUP_SELECT)
+				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(false);
-		} else if ( (command==BroadcastEvent.Command.HISTOGRAM_SELECT) || 
-				    (command==BroadcastEvent.Command.GATE_SELECT) ) {
-			Histogram hist =(Histogram)STATUS.getCurrentHistogram();
-			setEnabled(!gateList.isEmpty() && hist!=null);
-		} 
-	}	
+		} else if ((command == BroadcastEvent.Command.HISTOGRAM_SELECT)
+				|| (command == BroadcastEvent.Command.GATE_SELECT)) {
+			final Nameable hist = STATUS.getCurrentHistogram();
+			setEnabled(!Gate.getGateList().isEmpty()
+					&& hist instanceof Histogram);
+		}
+	}
 }

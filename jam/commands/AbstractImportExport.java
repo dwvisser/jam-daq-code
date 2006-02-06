@@ -17,4 +17,12 @@ abstract class AbstractImportExport extends AbstractCommand {
 	AbstractImportExport() {
 		super();
 	}
+	
+	/**
+	 * 
+	 * @see AbstractCommand#AbstractCommand(String)
+	 */
+	protected AbstractImportExport(String name) {
+		super(name);
+	}
 }

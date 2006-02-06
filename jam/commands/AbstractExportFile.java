@@ -17,6 +17,14 @@ class AbstractExportFile extends AbstractImportExport {
 	AbstractExportFile() {
 		super();
 	}
+	
+	/**
+	 * 
+	 * @see AbstractCommand#AbstractCommand(String)
+	 */
+	protected AbstractExportFile(String name) {
+		super(name);
+	}
 
     /**
      * Saves the given file, or opens a save dialog if given <code>null</code>.
