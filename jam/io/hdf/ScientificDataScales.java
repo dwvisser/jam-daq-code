@@ -10,23 +10,11 @@ import java.nio.ByteBuffer;
  */
 final class ScientificDataScales extends AbstractData {
 
-    /**
-     * The number of dimensions
-     */
-    private final int rank;
-
-    /**
-     * The size of the dimensions.
-     */
-    private final int sizeX, sizeY;
-
-    private static final byte TRUE = 1;//FALSE=0
-
     ScientificDataScales(ScientificDataDimension sdd) {
         super(DFTAG_SDS); //sets tag
-        rank = sdd.getRank();
-        sizeX = sdd.getSizeX();
-        sizeY = sdd.getSizeY();
+        final int rank = sdd.getRank();
+        final int sizeX = sdd.getSizeX();
+        final int sizeY = sdd.getSizeY();
         final byte NTsize = NumberType.INT_SIZE;
         /* see p. 6-33 HDF 4.1r2 specs */
         int byteLength = rank + NTsize * sizeX;
@@ -34,6 +22,7 @@ final class ScientificDataScales extends AbstractData {
             byteLength += NTsize * sizeY;
         }
         bytes = ByteBuffer.allocate(byteLength);
+        final byte TRUE = 1;//FALSE=0
         for (int i = 0; i < rank; i++) {
             bytes.put(TRUE);
         }
