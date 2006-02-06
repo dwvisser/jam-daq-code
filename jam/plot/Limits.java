@@ -43,11 +43,11 @@ final class Limits {
 
 	private static final int DEFAULTMAXCOUNTS = 5;
 
-	private final String histName;
+	private transient final String histName;
 
-	private final BoundedRangeModel rangeModelX = new DefaultBoundedRangeModel();
+	private transient final BoundedRangeModel rangeModelX = new DefaultBoundedRangeModel();
 
-	private final BoundedRangeModel rangeModelY = new DefaultBoundedRangeModel();
+	private transient final BoundedRangeModel rangeModelY = new DefaultBoundedRangeModel();
 
 	private int minimumX, maximumX;
 
@@ -55,13 +55,9 @@ final class Limits {
 
 	private int minimumCounts, maximumCounts;
 
-	private int zeroX = INITLO;
+	private transient final int sizeX; // translate to rangemodel min, max
 
-	private int sizeX; // translate to rangemodel min, max
-
-	private int zeroY = INITLO;
-
-	private int sizeY; // translate to rangemodel min, max
+	private transient final int sizeY; // translate to rangemodel min, max
 
 	private Scale scale = Scale.LINEAR; // is it in log or linear
 
@@ -77,6 +73,7 @@ final class Limits {
 	 *            ignores the last channel for auto scaling histogram
 	 */
 	private Limits(Histogram hist, boolean ignoreZero, boolean ignoreFull) {
+		super();
 		if (hist == null) {
 			throw new IllegalArgumentException(
 					"Can't have null histogram reference in Limits constructor.");
@@ -92,7 +89,8 @@ final class Limits {
 	}
 
 	private Limits() {
-		histName = null;
+		super();
+		histName = "";
 		sizeX = 0;
 		sizeY = 0;
 		updateModelX();
@@ -110,7 +108,7 @@ final class Limits {
 	 * @param ignoreFull
 	 *            true if the last channel is ignored for auto-scaling
 	 */
-	private void init(boolean ignoreZero, boolean ignoreFull) {
+	private void init(final boolean ignoreZero, final boolean ignoreFull) {
 		final Histogram histogram = Histogram.getHistogram(histName);
 		final int dim = histogram.getDimensionality();
 		final int sizex = histogram.getSizeX();
@@ -142,7 +140,8 @@ final class Limits {
 		setLimitsCounts(INITLO, maxCounts);
 	}
 
-	private int getMaxCounts(int chminX, int chmaxX, int chminY, int chmaxY) {
+	private int getMaxCounts(final int chminX, final int chmaxX,
+			final int chminY, final int chmaxY) {
 		int maxCounts;
 
 		final int scaleUp = 110;
@@ -150,16 +149,17 @@ final class Limits {
 		final Histogram histogram = Histogram.getHistogram(histName);
 		final Object counts = histogram.getCounts();
 		if (histogram.getDimensionality() == 1) {
-			maxCounts = getMaxCounts(counts, chminX, chmaxX);
+			maxCounts = getMaxCounts1D(counts, chminX, chmaxX);
 		} else {// dim==2
-			maxCounts = getMaxCounts(counts, chminX, chmaxX, chminY, chmaxY);
+			maxCounts = getMaxCounts2D(counts, chminX, chmaxX, chminY, chmaxY);
 		}
 		maxCounts *= scaleUp;
 		maxCounts /= scaleBackDown;
 		return maxCounts;
 	}
 
-	private int getMaxCounts(Object counts, int chminX, int chmaxX) {
+	private int getMaxCounts1D(final Object counts, final int chminX,
+			final int chmaxX) {
 		int maxCounts = DEFAULTMAXCOUNTS;
 		if (counts instanceof double[]) {
 			final double[] countsD = (double[]) counts;
@@ -175,8 +175,8 @@ final class Limits {
 		return maxCounts;
 	}
 
-	private int getMaxCounts(Object counts, int chminX, int chmaxX, int chminY,
-			int chmaxY) {
+	private int getMaxCounts2D(final Object counts, final int chminX,
+			final int chmaxX, final int chminY, final int chmaxY) {
 		int maxCounts = DEFAULTMAXCOUNTS;
 		if (counts instanceof double[][]) {
 			final double[][] counts2d = (double[][]) counts;
@@ -203,13 +203,13 @@ final class Limits {
 	 *            Histogram to retrieve the limits for
 	 * @return display limits for the specified histogram
 	 */
-	static Limits getLimits(Histogram hist) {
+	static Limits getLimits(final Histogram hist) {
 		final Limits rval;
 		if (hist == null) {
 			rval = LIMITS_NULL;
 		} else {
-			final Object o = TABLE.get(hist.getFullName());
-			if (o == null) {
+			final Object object = TABLE.get(hist.getFullName());
+			if (object == null) {
 				final Preferences prefs = PlotPrefs.PREFS;
 				final boolean ignoreZero = prefs.getBoolean(
 						PlotPrefs.AUTO_IGNORE_ZERO, true);
@@ -217,7 +217,7 @@ final class Limits {
 						PlotPrefs.AUTO_IGNORE_FULL, true);
 				rval = new Limits(hist, ignoreZero, ignoreFull);
 			} else {
-				rval = (Limits) o;
+				rval = (Limits) object;
 			}
 		}
 		return rval;
@@ -245,10 +245,12 @@ final class Limits {
 	 * @param maxX
 	 *            new maximum x value
 	 */
-	synchronized void setLimitsX(int minX, int maxX) {
-		minimumX = minX;
-		maximumX = maxX;
-		updateModelX();
+	void setLimitsX(final int minX, final int maxX) {
+		synchronized (this) {
+			minimumX = minX;
+			maximumX = maxX;
+			updateModelX();
+		}
 	}
 
 	/**
@@ -257,9 +259,11 @@ final class Limits {
 	 * @param minX
 	 *            new minimum x value
 	 */
-	synchronized void setMinimumX(int minX) {
-		minimumX = minX;
-		updateModelX();
+	void setMinimumX(final int minX) {
+		synchronized (this) {
+			minimumX = minX;
+			updateModelX();
+		}
 	}
 
 	/**
@@ -268,9 +272,11 @@ final class Limits {
 	 * @param maxX
 	 *            the new maximum x value
 	 */
-	synchronized void setMaximumX(int maxX) {
-		maximumX = maxX;
-		updateModelX();
+	void setMaximumX(final int maxX) {
+		synchronized (this) {
+			maximumX = maxX;
+			updateModelX();
+		}
 	}
 
 	/**
@@ -281,10 +287,12 @@ final class Limits {
 	 * @param maxY
 	 *            maximum Y to display
 	 */
-	synchronized void setLimitsY(int minY, int maxY) {
-		minimumY = minY;
-		maximumY = maxY;
-		updateModelY();
+	void setLimitsY(final int minY, final int maxY) {
+		synchronized (this) {
+			minimumY = minY;
+			maximumY = maxY;
+			updateModelY();
+		}
 	}
 
 	/**
@@ -293,9 +301,11 @@ final class Limits {
 	 * @param minY
 	 *            minumum Y to display
 	 */
-	synchronized void setMinimumY(int minY) {
-		minimumY = minY;
-		updateModelY();
+	void setMinimumY(final int minY) {
+		synchronized (this) {
+			minimumY = minY;
+			updateModelY();
+		}
 	}
 
 	/**
@@ -304,9 +314,11 @@ final class Limits {
 	 * @param maxY
 	 *            maximum Y to display
 	 */
-	synchronized void setMaximumY(int maxY) {
-		maximumY = maxY;
-		updateModelY();
+	void setMaximumY(final int maxY) {
+		synchronized (this) {
+			maximumY = maxY;
+			updateModelY();
+		}
 	}
 
 	/**
@@ -317,9 +329,9 @@ final class Limits {
 	 * @param maxCounts
 	 *            the highest count value to display
 	 */
-	private synchronized void setLimitsCounts(int minCounts, int maxCounts) {
-		minimumCounts = minCounts;
-		maximumCounts = maxCounts;
+	private void setLimitsCounts(final int minCounts, final int maxCounts) {
+		setMinimumCounts(minCounts);
+		setMaximumCounts(maxCounts);
 	}
 
 	/**
@@ -328,7 +340,7 @@ final class Limits {
 	 * @param minCounts
 	 *            the lowest count value to display
 	 */
-	void setMinimumCounts(int minCounts) {
+	void setMinimumCounts(final int minCounts) {
 		synchronized (this) {
 			minimumCounts = minCounts;
 		}
@@ -340,7 +352,7 @@ final class Limits {
 	 * @param maxCounts
 	 *            the highest count value to display
 	 */
-	void setMaximumCounts(int maxCounts) {
+	void setMaximumCounts(final int maxCounts) {
 		synchronized (this) {
 			maximumCounts = maxCounts;
 		}
@@ -349,24 +361,26 @@ final class Limits {
 	/**
 	 * Set the scale to log or linear.
 	 * 
-	 * @param s
+	 * @param newScale
 	 *            one of <code>Limits.LINEAR</code> or <code>
 	 * Limits.LOG</code>
 	 */
-	void setScale(Scale s) {
+	void setScale(final Scale newScale) {
 		synchronized (scale) {
-			scale = s;
+			scale = newScale;
 		}
 	}
 
 	/**
 	 * update the values from the model
 	 */
-	synchronized void update() {
-		minimumX = rangeModelX.getValue();
-		maximumX = minimumX + rangeModelX.getExtent();
-		minimumY = sizeY - rangeModelY.getValue() - rangeModelY.getExtent();
-		maximumY = sizeY - rangeModelY.getValue();
+	void update() {
+		synchronized (this) {
+			minimumX = rangeModelX.getValue();
+			maximumX = minimumX + rangeModelX.getExtent();
+			minimumY = sizeY - rangeModelY.getValue() - rangeModelY.getExtent();
+			maximumY = sizeY - rangeModelY.getValue();
+		}
 	}
 
 	/**
@@ -375,7 +389,7 @@ final class Limits {
 	private void updateModelX() {
 		final int value = minimumX;
 		final int extent = maximumX - minimumX;
-		rangeModelX.setRangeProperties(value, extent, zeroX, sizeX, false);
+		rangeModelX.setRangeProperties(value, extent, INITLO, sizeX, false);
 	}
 
 	/**
@@ -384,49 +398,61 @@ final class Limits {
 	private void updateModelY() {
 		final int value = sizeY - maximumY;
 		final int extent = maximumY - minimumY;
-		rangeModelY.setRangeProperties(value, extent, zeroY, sizeY, false);
+		rangeModelY.setRangeProperties(value, extent, INITLO, sizeY, false);
 	}
 
 	/**
 	 * @return the lowest x-channel to display
 	 */
-	synchronized int getMinimumX() {
-		return minimumX;
+	int getMinimumX() {
+		synchronized (this) {
+			return minimumX;
+		}
 	}
 
 	/**
 	 * @return the highest x-channel to display
 	 */
-	synchronized int getMaximumX() {
-		return maximumX;
+	int getMaximumX() {
+		synchronized (this) {
+			return maximumX;
+		}
 	}
 
 	/**
 	 * @return the lowest y-channel to display
 	 */
-	synchronized int getMinimumY() {
-		return minimumY;
+	int getMinimumY() {
+		synchronized (this) {
+			return minimumY;
+		}
 	}
 
 	/**
 	 * @return the highest y-channel to display
 	 */
-	synchronized int getMaximumY() {
-		return maximumY;
+	int getMaximumY() {
+		synchronized (this) {
+			return maximumY;
+		}
 	}
 
 	/**
 	 * @return the minimum count level to be displayed
 	 */
-	synchronized int getMinimumCounts() {
-		return minimumCounts;
+	int getMinimumCounts() {
+		synchronized (this) {
+			return minimumCounts;
+		}
 	}
 
 	/**
 	 * @return the maximum count level to be displayed
 	 */
-	synchronized int getMaximumCounts() {
-		return maximumCounts;
+	int getMaximumCounts() {
+		synchronized (this) {
+			return maximumCounts;
+		}
 	}
 
 	/**
@@ -435,8 +461,10 @@ final class Limits {
 	 * @return <code>PlotGraphics.LINEAR</code> or <code>
 	 * PlotGraphics.LOG</code>
 	 */
-	synchronized Scale getScale() {
-		return scale;
+	Scale getScale() {
+		synchronized (scale) {
+			return scale;
+		}
 	}
 
 	/**
