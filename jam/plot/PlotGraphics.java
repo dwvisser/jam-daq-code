@@ -391,7 +391,7 @@ final class PlotGraphics {
 	private void ticksBottom(int lowerLimit, int upperLimit) {
 		final Scale scale = Scale.LINEAR;
 		final int[] ticks = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MINOR);
+				Tickmarks.Type.MINOR);
 		for (int i = 0; i < ticks.length; i++) {
 			final int x = toViewHorzLin(ticks[i]);
 			int y = viewBottom;
@@ -400,7 +400,7 @@ final class PlotGraphics {
 			g.drawLine(x, y, x, y + graphLayout.tick.minor);
 		}
 		final int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MAJOR);
+				Tickmarks.Type.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			final int x = toViewHorzLin(ticksMajor[i]);
 			int y = viewBottom;
@@ -423,7 +423,7 @@ final class PlotGraphics {
 		int y;
 
 		int[] ticks = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MINOR);
+				Tickmarks.Type.MINOR);
 		for (int i = 0; i < ticks.length; i++) {
 			if (scale == Scale.LINEAR) {
 				y = toViewVertLin(ticks[i]);
@@ -437,7 +437,7 @@ final class PlotGraphics {
 		}
 
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MAJOR);
+				Tickmarks.Type.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			if (scale == Scale.LINEAR) {
 				y = toViewVertLin(ticksMajor[i]);
@@ -480,7 +480,7 @@ final class PlotGraphics {
 	private void labelsBottom(int lowerLimit, int upperLimit) {
 		final Scale scale = Scale.LINEAR;
 		final int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MAJOR);
+				Tickmarks.Type.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			final String label = Integer.toString(ticksMajor[i]);
 			final int offset = fm.stringWidth(label); // length of string
@@ -500,7 +500,7 @@ final class PlotGraphics {
 	 */
 	private void labelsLeft(int lowerLimit, int upperLimit, Scale scale) {
 		int[] ticksMajor = tm.getTicks(lowerLimit, upperLimit, scale,
-				Tickmarks.MAJOR);
+				Tickmarks.Type.MAJOR);
 		for (int i = 0; i < ticksMajor.length; i++) {
 			final String label = Integer.toString(ticksMajor[i]);
 			final int offset = fm.stringWidth(label);
