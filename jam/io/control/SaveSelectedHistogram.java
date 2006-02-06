@@ -3,6 +3,7 @@ package jam.io.control;
 import jam.data.Histogram;
 import jam.io.hdf.HDFIO;
 import jam.io.hdf.HDFileFilter;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -77,12 +78,8 @@ public final class SaveSelectedHistogram {
 			}
 		});
 		pButtons.add(bSave);
-		final AbstractButton bCancel = new JButton("Cancel");
-		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				doCancel();
-			}
-		});
+		final AbstractButton bCancel = new JButton(new WindowCancelAction(
+				dialog));
 		pButtons.add(bCancel);
 		dialog.setResizable(false);
 		dialog.pack();
@@ -110,11 +107,10 @@ public final class SaveSelectedHistogram {
 	 * Cancel Button
 	 * 
 	 */
-	private void doCancel() {
-		/* clear memory */
-		dialog.dispose();
-	}
-
+	// private void doCancel() {
+	// /* clear memory */
+	// dialog.dispose();
+	// }
 	private void loadHistogramList() {
 		final List histList = Histogram.getHistogramList();
 		final String[] histNames = new String[histList.size()];

@@ -1,9 +1,11 @@
 package jam.data.control;
 
+import static javax.swing.SwingConstants.RIGHT;
 import jam.data.Group;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.global.JamStatus;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -25,7 +27,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import static javax.swing.SwingConstants.RIGHT;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -38,11 +39,11 @@ import javax.swing.border.EmptyBorder;
 public class HistogramNew extends AbstractControl {
 
 	final int CHOOSER_SIZE = 200;
-	
-	private final JComboBox comboGroup;	
-	
-	private DefaultComboBoxModel comboGroupModel;	
-	
+
+	private final JComboBox comboGroup;
+
+	private DefaultComboBoxModel comboGroupModel;
+
 	private final JTextField textName;
 
 	private final JTextField textTitle;
@@ -57,7 +58,8 @@ public class HistogramNew extends AbstractControl {
 	/**
 	 * Construct a new "new histogram" dialog.
 	 * 
-	 * @param msghdlr where to print messages
+	 * @param msghdlr
+	 *            where to print messages
 	 */
 	public HistogramNew() {
 		super("New Histogram ", false);
@@ -71,7 +73,7 @@ public class HistogramNew extends AbstractControl {
 		pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 		cdialogNew.add(pLabels, BorderLayout.WEST);
 		final JLabel lg = new JLabel("Group", RIGHT);
-		pLabels.add(lg);		
+		pLabels.add(lg);
 		final JLabel ln = new JLabel("Name", RIGHT);
 		pLabels.add(ln);
 		final JLabel lti = new JLabel("Title", RIGHT);
@@ -92,15 +94,12 @@ public class HistogramNew extends AbstractControl {
 		dim.width = CHOOSER_SIZE;
 		comboGroup.setPreferredSize(dim);
 		/*
-		comboGroup.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent ie) {
-			}
-		});
-		*/
-		
+		 * comboGroup.addItemListener(new ItemListener() { public void
+		 * itemStateChanged(ItemEvent ie) { } });
+		 */
 
 		pGroup.add(comboGroup);
-		
+
 		final JPanel pName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		pEntires.add(pName);
 		textName = new JTextField("");
@@ -152,12 +151,7 @@ public class HistogramNew extends AbstractControl {
 			}
 		});
 		pb.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		final JButton bcancel = new JButton(new WindowCancelAction(this));
 		pb.add(bcancel);
 		pack();
 		addWindowListener(new WindowAdapter() {
@@ -166,7 +160,7 @@ public class HistogramNew extends AbstractControl {
 			}
 		});
 	}
-	
+
 	/**
 	 * Show the dialog.
 	 */
@@ -182,16 +176,16 @@ public class HistogramNew extends AbstractControl {
 	 */
 	public void doSetup() {
 		comboGroupModel.removeAllElements();
-		final Iterator iter = Group.getGroupList().iterator();		
+		final Iterator iter = Group.getGroupList().iterator();
 		/* Add working group first */
-		comboGroupModel.addElement( Group.WORKING_NAME);
-		while(iter.hasNext()) {
-			final Group group =(Group)iter.next();
+		comboGroupModel.addElement(Group.WORKING_NAME);
+		while (iter.hasNext()) {
+			final Group group = (Group) iter.next();
 			/* Don't add sort group or working group that was already added */
-			if (group.getType()!=Group.Type.SORT && 
-				!Group.WORKING_NAME.equals(group.getName()) ){
-				comboGroupModel.addElement( group.getName() );
-			}			
+			if (group.getType() != Group.Type.SORT
+					&& !Group.WORKING_NAME.equals(group.getName())) {
+				comboGroupModel.addElement(group.getName());
+			}
 		}
 	}
 
@@ -200,34 +194,35 @@ public class HistogramNew extends AbstractControl {
 	 */
 	private void makeHistogram() {
 		Group histGroup;
-		final String groupName = (String)comboGroupModel.getSelectedItem();		
+		final String groupName = (String) comboGroupModel.getSelectedItem();
 		final String name = textName.getText().trim();
 		final String title = textTitle.getText().trim();
 		final int size = Integer
-		.parseInt(((String) comboSize.getSelectedItem()).trim());
+				.parseInt(((String) comboSize.getSelectedItem()).trim());
 		final Object array;
 		if (coneInt.isSelected()) {
 			array = new int[size];
 		} else if (coneDbl.isSelected()) {
-			array=new double[size];
+			array = new double[size];
 		} else if (ctwoInt.isSelected()) {
-			array=new int[size][size];
+			array = new int[size][size];
 		} else {
 			array = new double[size][size];
 		}
-		if (null==Group.getGroup(groupName)) {
-			histGroup =Group.createGroup(groupName, Group.Type.TEMP);
+		if (null == Group.getGroup(groupName)) {
+			histGroup = Group.createGroup(groupName, Group.Type.TEMP);
 		} else {
-			histGroup =Group.getGroup(groupName);
-			STATUS.setCurrentGroup(histGroup);			
+			histGroup = Group.getGroup(groupName);
+			STATUS.setCurrentGroup(histGroup);
 		}
-		final Histogram hist= Histogram.createHistogram(histGroup, array, name, title);
+		final Histogram hist = Histogram.createHistogram(histGroup, array,
+				name, title);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		final JamStatus status = JamStatus.getSingletonInstance();
 		status.setCurrentHistogram(hist);
 		status.setCurrentGroup(histGroup);
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hist);
-		final StringBuffer msg=new StringBuffer("New histogram created, ");
+		final StringBuffer msg = new StringBuffer("New histogram created, ");
 		msg.append(name).append(", type: ");
 		if (coneInt.isSelected()) {
 			LOGGER.info(msg.append(coneInt.getText()).toString());
@@ -235,7 +230,7 @@ public class HistogramNew extends AbstractControl {
 			LOGGER.info(msg.append(coneDbl.getText()).toString());
 		} else if (ctwoInt.isSelected()) {
 			LOGGER.info(msg.append(ctwoInt.getText()).toString());
-		} else  {
+		} else {
 			LOGGER.info(msg.append(ctwoDbl.getText()).toString());
 		}
 	}

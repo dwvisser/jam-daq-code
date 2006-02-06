@@ -2,6 +2,7 @@ package jam.data.control;
 
 import jam.data.DataParameter;
 import jam.io.ExtensionFileFilter;
+import jam.ui.WindowCancelAction;
 import jam.util.FileUtilities;
 
 import java.awt.BorderLayout;
@@ -134,12 +135,7 @@ public final class ParameterControl extends AbstractControl {
 			}
 		});
 		pOKApplyCancel.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				dispose();
-			}
-		});
+		final JButton bcancel = new JButton(new WindowCancelAction(this));
 		pOKApplyCancel.add(bcancel);
 
 		addWindowListener(new WindowAdapter() {

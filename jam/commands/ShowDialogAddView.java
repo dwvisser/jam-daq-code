@@ -2,6 +2,7 @@ package jam.commands;
 
 import jam.global.BroadcastEvent;
 import jam.plot.View;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -38,8 +39,8 @@ public class ShowDialogAddView extends AbstractShowDialog {
 	 */
 	private class ViewNew extends JDialog {
 
-		private final String[] DEFAULT_NUMBERS = { "1", "2", "3", "4",
-				"5", "7", "8" };
+		private final String[] DEFAULT_NUMBERS = { "1", "2", "3", "4", "5",
+				"7", "8" };
 
 		private final JTextField textName;
 
@@ -110,12 +111,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 				}
 			});
 			pbnew.add(bapply);
-			final JButton bcancel = new JButton("Cancel");
-			bcancel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					dispose();
-				}
-			});
+			final JButton bcancel = new JButton(new WindowCancelAction(this));
 			pbnew.add(bcancel);
 			pack();
 		}

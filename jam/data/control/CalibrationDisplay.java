@@ -5,6 +5,8 @@ import jam.data.Histogram;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationComboBoxModel;
 import jam.data.func.CalibrationListCellRenderer;
+import jam.ui.Canceller;
+import jam.ui.WindowCancelAction;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -33,7 +35,7 @@ import javax.swing.SwingConstants;
  */
 public class CalibrationDisplay extends AbstractControl implements
 		ActionListener, ItemListener, WindowListener {
-	
+
 	private final static int MAX_NUMBER_TERMS = 5;
 
 	private final static String BLANK_TITLE = " Histogram not calibrated ";
@@ -53,7 +55,7 @@ public class CalibrationDisplay extends AbstractControl implements
 
 	private AbstractHist1D currentHistogram;
 
-	//calibrate histogram
+	// calibrate histogram
 	int numberTerms;
 
 	private final NumberFormat numFormat;
@@ -62,14 +64,29 @@ public class CalibrationDisplay extends AbstractControl implements
 
 	JButton bapplyCal = new JButton("Apply");
 
-	JButton bcancelCal = new JButton("Cancel");
+	/**
+	 * cancel the histogram calibration
+	 * 
+	 */
+	private Canceller canceller = new Canceller() {
+		public void cancel() {
+			setCurrentHistogram();
+			currentHistogram.setCalibration(null);
+			LOGGER.info("Uncalibrated histogram "
+					+ currentHistogram.getFullName());
+			dispose();
+		}
+	};
+
+	JButton bcancelCal = new JButton(new WindowCancelAction(canceller));
 
 	JButton bRecal = new JButton("Recall");
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param mh where to put messages
+	 * @param mh
+	 *            where to put messages
 	 */
 	public CalibrationDisplay() {
 		super("Histogram Calibration", false);
@@ -79,7 +96,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		cdialogCalib.setLayout(new GridLayout(0, 1, 10, 10));
 		addWindowListener(this);
 
-		//function choose dialog panel
+		// function choose dialog panel
 		JPanel pChoose = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		pChoose.add(new JLabel("Function: "));
 		cFunc.setRenderer(new CalibrationListCellRenderer());
@@ -88,7 +105,7 @@ public class CalibrationDisplay extends AbstractControl implements
 		cFunc.addItemListener(this);
 		cdialogCalib.add(pChoose);
 
-		//calibFunction=new LinearFunction();
+		// calibFunction=new LinearFunction();
 		lcalibEq = new JLabel(BLANK_TITLE, SwingConstants.CENTER);
 		cdialogCalib.add(lcalibEq);
 
@@ -123,13 +140,13 @@ public class CalibrationDisplay extends AbstractControl implements
 		bapplyCal.addActionListener(this);
 		pbCal.add(bapplyCal);
 
-		bcancelCal.setActionCommand("cancelcalib");
-		bcancelCal.addActionListener(this);
+		// bcancelCal.setActionCommand("cancelcalib");
+		// bcancelCal.addActionListener(this);
 		pbCal.add(bcancelCal);
 
 		pack();
 
-		//formating output
+		// formating output
 		numFormat = NumberFormat.getInstance();
 		numFormat.setGroupingUsed(false);
 		numFormat.setMinimumFractionDigits(2);
@@ -181,7 +198,7 @@ public class CalibrationDisplay extends AbstractControl implements
 	}
 
 	private void setCurrentHistogram() {
-		final Histogram hist = (Histogram)STATUS.getCurrentHistogram();
+		final Histogram hist = (Histogram) STATUS.getCurrentHistogram();
 		if (hist != currentHistogram && hist instanceof AbstractHist1D) {
 			currentHistogram = (AbstractHist1D) hist;
 		}
@@ -189,12 +206,12 @@ public class CalibrationDisplay extends AbstractControl implements
 
 	/**
 	 * Receive actions from Dialog Boxes
-	 *  
+	 * 
 	 */
 	public void actionPerformed(ActionEvent ae) {
 		String command = ae.getActionCommand();
 		setCurrentHistogram();
-		//commands for calibration
+		// commands for calibration
 		if ((command == "okcalib") || (command == "applycalib")) {
 			setCoefficients();
 			LOGGER.info("Calibrated histogram "
@@ -205,13 +222,10 @@ public class CalibrationDisplay extends AbstractControl implements
 			}
 		} else if (command == "recalcalib") {
 			doSetup();
-		} else if (command == "cancelcalib") {
-			cancelCalib();
-			LOGGER.info("Uncalibrated histogram "
-					+ currentHistogram.getFullName());
-			dispose();
+			// } else if (command == "cancelcalib") {
+			// cancel();
 		} else {
-			//just so at least a exception is thrown for now
+			// just so at least a exception is thrown for now
 			throw new UnsupportedOperationException("Unregonized command: "
 					+ command);
 		}
@@ -219,7 +233,7 @@ public class CalibrationDisplay extends AbstractControl implements
 
 	/**
 	 * A item state change indicates that a gate has been choicen
-	 *  
+	 * 
 	 */
 	public void itemStateChanged(ItemEvent ie) {
 		AbstractCalibrationFunction calibFunction = null;
@@ -227,7 +241,8 @@ public class CalibrationDisplay extends AbstractControl implements
 			try {
 				final Class calClass = Class.forName((String) cFunc
 						.getSelectedItem());
-				calibFunction = (AbstractCalibrationFunction) calClass.newInstance();
+				calibFunction = (AbstractCalibrationFunction) calClass
+						.newInstance();
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, getClass().getName()
 						+ ".itemStateChanged(): " + ie.toString(), ie);
@@ -245,7 +260,8 @@ public class CalibrationDisplay extends AbstractControl implements
 	private void setCoefficients() {
 		double coeff[] = new double[numberTerms];
 		int i = 0;
-		AbstractCalibrationFunction calibFunction = currentHistogram.getCalibration();
+		AbstractCalibrationFunction calibFunction = currentHistogram
+				.getCalibration();
 		/* silently ignore if histogram null */
 		if (calibFunction != null) {
 			try {
@@ -259,17 +275,9 @@ public class CalibrationDisplay extends AbstractControl implements
 			}
 			doSetup();
 		} else {
-			LOGGER.severe("Calibration function not defined [CalibrationDisplay]");
+			LOGGER
+					.severe("Calibration function not defined [CalibrationDisplay]");
 		}
-	}
-
-	/**
-	 * cancel the histogram calibration
-	 *  
-	 */
-	private void cancelCalib() {
-		setCurrentHistogram();
-		currentHistogram.setCalibration(null);
 	}
 
 	/**

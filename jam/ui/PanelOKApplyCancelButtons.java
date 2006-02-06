@@ -22,7 +22,7 @@ public final class PanelOKApplyCancelButtons {
 	private transient final JPanel panel=new JPanel(new FlowLayout(FlowLayout.CENTER));
 	private transient final JButton bok = new JButton("OK");
 	private transient final JButton bapply = new JButton("Apply");
-	private transient final JButton bcancel = new JButton("Cancel");
+	private transient final JButton bcancel;// = new JButton("Cancel");
 	
 	/**
 	 * Constructs a Swing component which has OK, Apply, and Cancel buttons.
@@ -46,11 +46,7 @@ public final class PanelOKApplyCancelButtons {
 			}
 		});
 		grid.add(bapply);
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				callback.cancel();
-			}
-		});
+		bcancel = new JButton(new WindowCancelAction(callback));
 		grid.add(bcancel);
 	}
 	
@@ -81,7 +77,7 @@ public final class PanelOKApplyCancelButtons {
 	 * 
 	 * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
 	 */
-	public interface Listener {
+	public interface Listener extends Canceller {
 	    
 	    /**
 	     * To be called when the user clicks the OK button.
@@ -92,11 +88,6 @@ public final class PanelOKApplyCancelButtons {
 	     * To be called when the user clicks the Apply button.
 	     */
 		void apply();
-
-	    /**
-	     * To be called when the user clicks the Cancel button.
-	     */
-		void cancel();
 	}
 	
 	/**

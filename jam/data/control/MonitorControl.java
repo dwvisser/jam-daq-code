@@ -8,6 +8,8 @@ import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
 import jam.sort.ThreadPriorities;
+import jam.ui.Canceller;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -144,16 +146,16 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 			}
 		});
 		pb.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
+		final Canceller canceller = new Canceller() {
+			public void cancel() {
 				configured = false;
 				/* stop monitor thread if running */
 				if (loopThread != null) {
 					loopThread.setState(GoodThread.State.STOP);
 				}
 			}
-		});
+		};
+		final JButton bcancel = new JButton(new WindowCancelAction(canceller));
 		pb.add(bcancel);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		/* setup monitors */

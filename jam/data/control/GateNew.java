@@ -3,6 +3,7 @@ package jam.data.control;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -66,13 +67,7 @@ public class GateNew extends AbstractControl {
 			}
 		});
 		pbnew.add(bapply);
-		final JButton bcancel = new JButton("Cancel");
-		bcancel.setActionCommand("cancelnew");
-		bcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				dispose();
-			}
-		});
+		final JButton bcancel = new JButton(new WindowCancelAction(this));
 		pbnew.add(bcancel);
 		pack();
 	}

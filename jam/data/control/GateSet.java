@@ -7,6 +7,8 @@ import jam.global.BroadcastEvent;
 import jam.global.Nameable;
 import jam.global.UnNamed;
 import jam.plot.Bin;
+import jam.ui.Canceller;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -40,7 +42,7 @@ import javax.swing.border.EmptyBorder;
  * @version 0.5 April 1998
  * @author Ken Swartz
  */
-public final class GateSet extends AbstractControl implements Observer {//NOPMD
+public final class GateSet extends AbstractControl implements Observer {// NOPMD
 
 	private transient final JButton addP, removeP, unset, save, cancel;
 
@@ -61,7 +63,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 	/**
 	 * Creates an instance of the GateControl class.
 	 */
-	public GateSet() {//NOPMD
+	public GateSet() {// NOPMD
 		super("Gate setting <none>", false);
 		setResizable(false);
 		final Container contents = getContentPane();
@@ -141,12 +143,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 		});
 		save.setEnabled(false);
 		pButtons.add(save);
-		cancel = new JButton("Cancel");
-		cancel.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent actionEvent) {
-				cancel();
-			}
-		});
+		cancel = new JButton(new WindowCancelAction(canceller));
 		cancel.setEnabled(false);
 		pButtons.add(cancel);
 		contents.add(pChooser, BorderLayout.NORTH);
@@ -159,7 +156,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 			}
 
 			public void windowClosing(final WindowEvent windowEvent) {
-				cancel();
+				canceller.cancel();
 				dispose();
 			}
 
@@ -184,7 +181,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
 	}
-	
+
 	/**
 	 * Add a point to the gate when we are setting a new gate.
 	 * 
@@ -228,24 +225,26 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 	/**
 	 * Cancel the setting of the gate and disable editting of all fields.
 	 */
-	private void cancel() {
-		checkHistogram();
-		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
-		setTitle("Gate setting <none>");
-		synchronized (this) {
-			newGate = false;
-			gatePoints.clear();
+	private Canceller canceller = new Canceller() {
+		public void cancel() {
+			checkHistogram();
+			BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
+			setTitle("Gate setting <none>");
+			synchronized (this) {
+				newGate = false;
+				gatePoints.clear();
+			}
+			textLower.setText(" ");
+			textLower.setEditable(false);
+			textUpper.setText(" ");
+			textUpper.setEditable(false);
+			addP.setEnabled(false);
+			removeP.setEnabled(false);
+			save.setEnabled(false);
+			cancel.setEnabled(false);
+			unset.setEnabled(false);
 		}
-		textLower.setText(" ");
-		textLower.setEditable(false);
-		textUpper.setText(" ");
-		textUpper.setEditable(false);
-		addP.setEnabled(false);
-		removeP.setEnabled(false);
-		save.setEnabled(false);
-		cancel.setEnabled(false);
-		unset.setEnabled(false);
-	}
+	};
 
 	/**
 	 * Check that plot's current histogram has not changed. If so, cancel and
@@ -260,7 +259,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 				: currentHistogram != named;
 		if (doIt) {
 			doSetup(); // setup chooser list
-			cancel(); // cancel current gate if was setting
+			canceller.cancel(); // cancel current gate if was setting
 		}
 	}
 
@@ -347,11 +346,11 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 		} catch (NumberFormatException ne) {
 			LOGGER.log(Level.SEVERE, "Invalid input: not a number.", ne);
 		}
-		cancel();
+		canceller.cancel();
 	}
 
 	void selectGate(final Gate gate) {
-		cancel(); // cancel current state
+		canceller.cancel(); // cancel current state
 		synchronized (this) {
 			currentGate = gate;
 		}
@@ -411,7 +410,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 		currentGate.unsetLimits();
 		cgate.repaint();
 		LOGGER.info("Gate UnSet: " + currentGate.getName());
-		cancel();
+		canceller.cancel();
 		BROADCASTER.broadcast(BroadcastEvent.Command.GATE_SET_OFF);
 	}
 
@@ -427,7 +426,7 @@ public final class GateSet extends AbstractControl implements Observer {//NOPMD
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com = event.getCommand();
 		if (com == BroadcastEvent.Command.HISTOGRAM_SELECT) {
-			cancel();
+			canceller.cancel();
 		} else if (com == BroadcastEvent.Command.HISTOGRAM_NEW
 				|| com == BroadcastEvent.Command.HISTOGRAM_ADD
 				|| com == BroadcastEvent.Command.GATE_ADD) {

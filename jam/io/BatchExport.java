@@ -6,6 +6,7 @@ import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
 import jam.global.RTSI;
+import jam.ui.WindowCancelAction;
 import jam.util.CollectionsUtil;
 import jam.util.FileUtilities;
 
@@ -287,14 +288,7 @@ public class BatchExport extends JDialog implements Observer {
 			}
 		});
 		pButton.add(bExport);
-		final JButton bCancel = new JButton("Cancel");
-		bCancel.setToolTipText("Close this dialog.");
-		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				dispose();
-			}
-		});
-
+		final JButton bCancel = new JButton(new WindowCancelAction(this));
 		pButton.add(bCancel);
 		pBottom.add(pButton);
 		addWindowListener(new WindowAdapter() {

@@ -8,6 +8,8 @@ import jam.global.MessageHandler;
 import jam.plot.Bin;
 import jam.plot.PlotDisplay;
 import jam.plot.PlotMouseListener;
+import jam.ui.Canceller;
+import jam.ui.WindowCancelAction;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -391,13 +393,13 @@ public abstract class AbstractFit implements PlotMouseListener {
 			}
 		});
 		pbut.add(bReset);
-		final JButton bCancel = new JButton("Cancel");
-		bCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+		final Canceller canceller = new Canceller() {
+			public void cancel() {
 				setMouseActive(false);
 				dfit.dispose();
 			}
-		});
+		};
+		final JButton bCancel = new JButton(new WindowCancelAction(canceller));
 		pbut.add(bCancel);
 
 		/* Layout of parameter widgets */
