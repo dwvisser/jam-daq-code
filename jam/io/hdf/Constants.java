@@ -6,126 +6,126 @@ package jam.io.hdf;
  * @author <a href=mailto:dale@visser.name>Dale Visser</a>
  * @version 1.0
  */
-public interface Constants{
-
-    /**
-     * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
-     */
-    int HDF_HEADER = 0x0e031301; 
-    
-    /**
-     * Number of bytes in hdf header word.
-     */
-    int HEADER_BYTES=4;
+public interface Constants {
 
 	/**
-	 * Tag for No Data.  
-	 *
-	 * @see JavaMachineType
+	 * Byte pattern for bytes 0-3 of any standard v4.1r2 HDF file.
 	 */
-	public final static short DFTAG_NULL = 1;
-    
+	int HDF_HEADER = 0x0e031301;
+
 	/**
-	 * Tag for machine type.  
-	 *
+	 * Number of bytes in hdf header word.
+	 */
+	int HEADER_BYTES = 4;
+
+	/**
+	 * Tag for No Data.
+	 * 
 	 * @see JavaMachineType
 	 */
-	public final static short DFTAG_MT = 107;
+	short DFTAG_NULL = 1;
+
+	/**
+	 * Tag for machine type.
+	 * 
+	 * @see JavaMachineType
+	 */
+	short DFTAG_MT = 107;
 
 	/**
 	 * HDF tag for Data identifier annotation
-	 *
+	 * 
 	 * @see DataIDAnnotation
 	 */
-	public final static short DFTAG_DIA = 105;
+	short DFTAG_DIA = 105;
 
 	/**
 	 * HDF tag for Data identifier label.
-	 *
+	 * 
 	 * @see DataIDLabel
 	 */
-	public final static short DFTAG_DIL = 104;
+	short DFTAG_DIL = 104;
 
 	/**
 	 * HDF tag for File Identifier.
-	 *
+	 * 
 	 * @see FileIdentifier
 	 */
-	public final static short DFTAG_FID = 100;
+	short DFTAG_FID = 100;
 
 	/**
 	 * HDF tag for File Description.
-	 *
+	 * 
 	 * @see FileDescription
 	 */
-	public final static short DFTAG_FD = 101;
+	short DFTAG_FD = 101;
 
 	/**
-	 * HDF tag for number type.
-	 *     (106)
+	 * HDF tag for number type. (106)
+	 * 
 	 * @see NumberType
 	 */
-	public final static short DFTAG_NT = 0x006a;
+	short DFTAG_NT = 0x006a;
 
 	/**
 	 * HDF tag for Library version number
-	 *
+	 * 
 	 * @see LibVersion
 	 */
-	public final static short DFTAG_VER = 30;
+	short DFTAG_VER = 30;
 
 	/**
 	 * HDF tag for Numerical Data Group
-	 *
+	 * 
 	 * @see NumericalDataGroup
 	 */
-	public final static short DFTAG_NDG = 720;
+	short DFTAG_NDG = 720;
 
 	/**
 	 * HDF tag for Scientific Data
-	 *
+	 * 
 	 * @see ScientificData
 	 */
-	public final static short DFTAG_SD = 702;
+	short DFTAG_SD = 702;
 
 	/**
 	 * HDF tag for Scientific data dimension records
-	 *
+	 * 
 	 * @see ScientificDataDimension
 	 */
-	public final static short DFTAG_SDD = 701;
+	short DFTAG_SDD = 701;
 
 	/**
 	 * HDF tag for Scientific data labels
-	 *
+	 * 
 	 * @see ScientificDataLabel
 	 */
-	public final static short DFTAG_SDL = 704;
+	short DFTAG_SDL = 704;
 
 	/**
 	 * HDF tag for Scientific data scales
 	 */
-	public final static short DFTAG_SDS = 703;
+	short DFTAG_SDS = 703;
 
 	/**
 	 * HDF tag for Vgroup
-	 *
+	 * 
 	 * @see VirtualGroup
 	 */
-	public final static short DFTAG_VG = 1965;
+	short DFTAG_VG = 1965;
 
 	/**
 	 * HDF tag for Vdata description
-	 *
+	 * 
 	 * @see VDataDescription
 	 */
-	public final static short DFTAG_VH = 1962;
+	short DFTAG_VH = 1962;
 
 	/**
 	 * HDF tag for Vdata
-	 *
+	 * 
 	 * @see VData
 	 */
-	public final static short DFTAG_VS = 1963;
-    
+	short DFTAG_VS = 1963;
+
 }
