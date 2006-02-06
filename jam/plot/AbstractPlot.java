@@ -191,7 +191,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 			plotLimits.setMaximumCounts(5);
 		}
 		/* scroll bars do not always reset on their own */
-		scrollbars.update(Scroller.COUNT);
+		scrollbars.update();
 		panel.repaint();
 	}
 
@@ -654,9 +654,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 */
 	void refresh() {
 		if (scrollbars != null) {
-			scrollbars.update(Scroller.COUNT);
-			/* scroll bars do not always reset on their own */
-			scrollbars.update(Scroller.ALL);
+			scrollbars.update();
 		}
 		final Histogram plotHist = getHistogram();
 		copyCounts(plotHist);

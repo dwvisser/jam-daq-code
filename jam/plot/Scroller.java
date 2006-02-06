@@ -1,4 +1,5 @@
 package jam.plot;
+
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.event.AdjustmentEvent;
@@ -11,63 +12,43 @@ import javax.swing.JScrollBar;
 
 /**
  * This Class does the scroll bars for one and two Dimensional Plots.
- *
+ * 
  * @version 1.0
  * @author Ken Swartz
  * @author Dale Visser
  */
-class Scroller
-	extends JPanel
-	implements AdjustmentListener {
+class Scroller extends JPanel implements AdjustmentListener {
 
-	//which scrollbars to update
-	final static int ALL = 0;
-	final static int POSITION = 1;
-	final static int COUNT = 2;
+	// constants for count scroll bar
 
-	// constants for horizontal and vertical scrollbar
-	static final int SCROLL_MIN = 0;
-	static final int SCROLL_MAX = 200;
-	static final int SCROLL_SIZE = (SCROLL_MAX - SCROLL_MIN);
+	private static final int COUNT_SCROLL_MID = 100;
 
-	//constants for count scroll bar
-	static final int COUNT_SCROLL_MIN = 0;
-	static final int COUNT_SCROLL_MAX = 210;
-	static final int COUNT_SCROLL_VIEW = 10;
-	static final int COUNT_SCROLL_MID = 100;
-	//1/2 point taking to account view size
-	static final double CHANGE_LIN = 0.01; //change  1% for 1
-	static final double CHANGE_QUAD = 0.000; //change  x10 for 100 units
+	private transient final AbstractPlot plot;
 
-	private final AbstractPlot plot;
-	private final boolean isPlot2d;
+	private transient final boolean isPlot2d;
 
-	private final JScrollBar scrollHorz, scrollVert, scrollCount;
+	private transient final JScrollBar scrollHorz, scrollVert, scrollCount;
 
-	//keep track of last counts update
-	private int lastScrollValC, lastScrollVisC;
+	// keep track of last counts update
+	private transient int lastScrollValC, lastScrollVisC;// NOPMD
 
-	private int lastCountMax; //not used
-	private boolean countChange; //are we changing the count scale
+	private transient int lastCountMax; // not used
+
+	private transient boolean countChanging; // are we changing the count
+
+	// scale
 
 	/** plot limits that have the bounded range models */
-	private Limits plotLimits;
+	private transient Limits plotLimits;
 
-	private MouseAdapter mouseAdapter=new MouseAdapter(){
-		/**
-		 * Returns the count scrollbar to the middle.
-		 */
-		public void mouseReleased(MouseEvent me) {			
-				update(COUNT);
-		}
-	};
-	
 	/**
 	 * Create the scroller that belongs to the given plot.
 	 * 
-	 * @param plot the plot that uses this scroller
+	 * @param plot
+	 *            the plot that uses this scroller
 	 */
 	Scroller(AbstractPlot plot) {
+		super();
 		this.plot = plot;
 		if (plot instanceof Plot1d) {
 			isPlot2d = false;
@@ -75,162 +56,166 @@ class Scroller
 			isPlot2d = true;
 		}
 		this.setLayout(new BorderLayout());
-		//add scroll bars to plot
+		// add scroll bars to plot
 		plot.addScrollBars(this);
-		//plot in middle panel
+		// plot in middle panel
 		add(plot.getComponent(), BorderLayout.CENTER);
-		//scroll bar to move along the x axis
+		// scroll bar to move along the x axis
 		scrollHorz = new JScrollBar(Adjustable.HORIZONTAL, 0, 255, 0, 255);
 		this.add(scrollHorz, BorderLayout.SOUTH);
 		scrollHorz.addAdjustmentListener(this);
-		//if 2d plot add y scrollers
+		// if 2d plot add y scrollers
 		if (isPlot2d) {
-			//scroll bar to move along the y axis
+			// scroll bar to move along the y axis
 			scrollVert = new JScrollBar(Adjustable.VERTICAL, 0, 255, 0, 255);
 			this.add(scrollVert, BorderLayout.WEST);
 			scrollVert.addAdjustmentListener(this);
 		} else {
-			scrollVert = null;
+			scrollVert = null;//NOPMD
 		}
-		//scrollbar to change scale
-		scrollCount =
-			new JScrollBar(
-				Adjustable.VERTICAL,
-				COUNT_SCROLL_MID,
-				COUNT_SCROLL_VIEW,
-				COUNT_SCROLL_MIN,
-				COUNT_SCROLL_MAX);
+		// scrollbar to change scale
+		final int COUNT_SCROLL_MIN = 0;
+		final int COUNT_SCROLL_MAX = 210;
+		final int COUNT_SCROLL_VIEW = 10;
+		scrollCount = new JScrollBar(Adjustable.VERTICAL, COUNT_SCROLL_MID,
+				COUNT_SCROLL_VIEW, COUNT_SCROLL_MIN, COUNT_SCROLL_MAX);
 		this.add(scrollCount, BorderLayout.EAST);
 		scrollCount.addAdjustmentListener(this);
-		scrollCount.addMouseListener(mouseAdapter);
-		//starting not updating count scale
-		countChange = false;
+		scrollCount.addMouseListener(new MouseAdapter() {
+			/**
+			 * Returns the count scrollbar to the middle.
+			 */
+			public void mouseReleased(final MouseEvent event) {
+				update();
+			}
+		});
+		// starting not updating count scale
+		countChanging = false;
 	}
 
 	/**
-	 * Set the Limits that the scroll bars are connected
-	 * to the models in Limits.
+	 * Set the Limits that the scroll bars are connected to the models in
+	 * Limits.
 	 * 
-	 * @param limits new limits
+	 * @param limits
+	 *            new limits
 	 */
-	synchronized void setLimits(Limits limits) {
-		plotLimits = limits;
-		scrollHorz.setModel(plotLimits.getModelX());
-		if (isPlot2d) {
-			scrollVert.setModel(plotLimits.getModelY());
+	void setLimits(final Limits limits) {
+		synchronized (this) {
+			plotLimits = limits;
+			scrollHorz.setModel(plotLimits.getModelX());
+			if (isPlot2d) {
+				scrollVert.setModel(plotLimits.getModelY());
+			}
 		}
 	}
 
 	/**
 	 * Called when any scrollbar has been changed.
 	 * 
-	 * @param ae adjustment event message
+	 * @param event
+	 *            adjustment event message
 	 */
-	public synchronized void adjustmentValueChanged(AdjustmentEvent ae) {
-		if (plot.hasHistogram()) {
-			JScrollBar source = (JScrollBar) ae.getSource();
-			Adjustable adj = ae.getAdjustable();
-			int scrollValue = ae.getValue();
-			int scrollVisible = adj.getVisibleAmount();
-			boolean updatePlot = false;
-			//scale scroll bar
-			if (source.equals(scrollCount)) {
-				if ((scrollValue != lastScrollValC)
-					|| (scrollVisible != lastScrollVisC)) {
-					countChange(scrollValue);
-					lastScrollValC = scrollValue;
-					lastScrollVisC = scrollVisible;
+	public void adjustmentValueChanged(final AdjustmentEvent event) {
+		synchronized (this) {
+			if (plot.hasHistogram()) {
+				final JScrollBar source = (JScrollBar) event.getSource();
+				final Adjustable adj = event.getAdjustable();
+				final int scrollValue = event.getValue();
+				final int scrollVisible = adj.getVisibleAmount();
+				boolean updatePlot = false;
+				// scale scroll bar
+				if (source.equals(scrollCount)) {
+					if ((scrollValue != lastScrollValC)
+							|| (scrollVisible != lastScrollVisC)) {
+						countChange(scrollValue);
+						lastScrollValC = scrollValue;
+						lastScrollVisC = scrollVisible;
+						updatePlot = true;
+					}
+					// horizontal scroll bar
+				} else if (source.equals(scrollHorz)) {
+					plotLimits.update();
+					updatePlot = true;
+					// vertical scroll bar
+				} else if (source.equals(scrollVert)) {
+					plotLimits.update();
 					updatePlot = true;
 				}
-				//horizontal scroll bar
-			} else if (source.equals(scrollHorz)) {
-				plotLimits.update();
-				updatePlot = true;
-				//vertical scroll bar
-			} else if (source.equals(scrollVert)) {
-				plotLimits.update();
-				updatePlot = true;
+				/* update the plot can't use refresh as it resets count scroller */
+				if (updatePlot) {
+					plot.getComponent().repaint();
+				}
 			}
-			/* update the plot can't use refresh as it resets count scroller */
-			if (updatePlot) {
-				plot.getComponent().repaint();
-			}
-		}
-	}
-	
-	/* non-javadoc:
-	 * update automatically by limits.
-	 *  Update the scroll bars for this plot
-	 *  this routine calls updateHorz, updateVert and updateCounts
-	 *  as is required for plot
-	 */
-	void update(int type) {
-		if (type == COUNT || type == ALL) {
-			updateCount();
 		}
 	}
 
 	/**
-	 * called to reset the counts scroll bar
-	 * used because mouse release is not alwayed call
+	 * called to reset the counts scroll bar used because mouse release is not
+	 * alwayed call
 	 */
-	private void updateCount() {
-		if (plot.hasHistogram())
+	void update() {
+		if (plot.hasHistogram()) {
 			lastCountMax = plot.getLimits().getMaximumCounts();
-		//reset scrollbar to middle
+		}
+		// reset scrollbar to middle
 		scrollCount.setValue(COUNT_SCROLL_MID);
-		countChange = false;
+		countChanging = false;
 	}
 
-	/* non-javadoc:
-	 * Count scrollBar Change of scale using a quadratic function.
-	 * This scrollBar is not quiet smooth and could be improved
-	 * vertical scrollBar change scale use to be a quadratic function
-	 * we will make it linear.
+	/*
+	 * non-javadoc: Count scrollBar Change of scale using a quadratic function.
+	 * This scrollBar is not quiet smooth and could be improved vertical
+	 * scrollBar change scale use to be a quadratic function we will make it
+	 * linear.
 	 */
-	private synchronized void countChange(int scrollValue) {
-		int newMax;
+	private void countChange(final int scrollValue) {
+		synchronized (this) {
+			int newMax;
 
-		//get current maximum Counts if we have not done a countChange
-		if (!countChange) {
-			lastCountMax = plot.getLimits().getMaximumCounts();
-		}
-		final int oldMax = lastCountMax;
-		//reduce plot count maximum make plot appear bigger
-		if (scrollValue < COUNT_SCROLL_MID) {
-			final double scrolldiff = (COUNT_SCROLL_MID - scrollValue);
-			//implicit cast to double
-			double scaleChange =
-				(CHANGE_LIN * scrolldiff
-					+ CHANGE_QUAD * (scrolldiff * scrolldiff));
-			newMax = (int) (oldMax / (1.0F + scaleChange));
-			scaleChange = 1.0 / (1.0 + scaleChange);
-			//make a change of at least 1
-			if (newMax == oldMax) {
-				newMax = oldMax - 1;
+			// get current maximum Counts if we have not done a countChange
+			if (!countChanging) {
+				lastCountMax = plot.getLimits().getMaximumCounts();
 			}
-			//increase plot count maximum which make plot appear smaller
-		} else {
-			final double scrolldiff = scrollValue - COUNT_SCROLL_MID;
-			double scaleChange =
-				(CHANGE_LIN * scrolldiff
-					+ CHANGE_QUAD * (scrolldiff * scrolldiff));
-			newMax = (int) (oldMax * (1.0F + scaleChange));
-			scaleChange = 1.0 + scaleChange;
-			//make a change of at least 1
-			if (newMax == oldMax) {
-				newMax = oldMax + 1;
+			final int oldMax = lastCountMax;
+			// reduce plot count maximum make plot appear bigger
+			// 1/2 point taking to account view size
+			final double CHANGE_LIN = 0.01; // change 1% for 1
+			final double CHANGE_QUAD = 0.000; // change x10 for 100 units
+			if (scrollValue < COUNT_SCROLL_MID) {
+				final double scrolldiff = (COUNT_SCROLL_MID - scrollValue);
+				// implicit cast to double
+				double scaleChange = (CHANGE_LIN * scrolldiff + CHANGE_QUAD
+						* (scrolldiff * scrolldiff));
+				newMax = (int) (oldMax / (1.0F + scaleChange));
+				scaleChange = 1.0 / (1.0 + scaleChange);
+				// make a change of at least 1
+				if (newMax == oldMax) {
+					newMax = oldMax - 1;
+				}
+				// increase plot count maximum which make plot appear smaller
+			} else {
+				final double scrolldiff = scrollValue - COUNT_SCROLL_MID;
+				double scaleChange = (CHANGE_LIN * scrolldiff + CHANGE_QUAD
+						* (scrolldiff * scrolldiff));
+				newMax = (int) (oldMax * (1.0F + scaleChange));
+				scaleChange = 1.0 + scaleChange;
+				// make a change of at least 1
+				if (newMax == oldMax) {
+					newMax = oldMax + 1;
+				}
 			}
+			// plot.scaleMaximumCounts(scaleChange);
+			countChanging = true;
+			plot.setMaximumCountsConstrained(newMax);
 		}
-		//  plot.scaleMaximumCounts(scaleChange);
-		countChange = true;
-		plot.setMaximumCountsConstrained(newMax);
 	}
-	
-	void enableScrolling(boolean enableIn){
+
+	void enableScrolling(final boolean enableIn) {
 		scrollCount.setVisible(enableIn);
 		scrollHorz.setVisible(enableIn);
-		if (isPlot2d)
-			scrollVert.setVisible(enableIn);			
+		if (isPlot2d) {
+			scrollVert.setVisible(enableIn);
+		}
 	}
 }
