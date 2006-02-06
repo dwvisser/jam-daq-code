@@ -71,7 +71,7 @@ class PlotMouse extends MouseAdapter {
 	 *            the mouse-pressed event
 	 */
 	public void mousePressed(MouseEvent e) {
-		final AbstractPlot selectedPlot = ((AbstractPlot.PlotPanel) e
+		final AbstractPlot selectedPlot = ((PlotPanel) e
 				.getSource()).getPlot();
 		/* First listeners about selected plot firsts */
 		plotSelectListener.plotSelected(selectedPlot);

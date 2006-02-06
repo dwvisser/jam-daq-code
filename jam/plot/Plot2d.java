@@ -95,7 +95,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			graph.markArea2dOutline(selectStart, Bin
 					.create(lastMovePoint));
 		}
-		setMouseMoved(false);
+		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
 
@@ -109,9 +109,9 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 */
 	void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
-			areaMarked = (p1 != null) && (p2 != null);
+			panel.setAreaMarked((p1 != null) && (p2 != null));
 		}
-		if (areaMarked) {
+		if (panel.isAreaMarked()) {
 			synchronized (areaMark) {
 				areaMark.setSize(0, 0);
 				areaMark.setLocation(p1.getPoint());
@@ -144,10 +144,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 */
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
-			setSettingGate(true);
+			panel.setSettingGate(true);
 			pointsGate.reset();
-			panel.addMouseListener(mouseInputAdapter);
-			panel.addMouseMotionListener(mouseInputAdapter);
+			panel.setListenToMouse(true);
+			panel.setListenToMouseMotion(true);
 		} else if (mode == GateSetMode.GATE_CONTINUE) {
 			pointsGate.addPoint(pChannel.getX(), pChannel.getY());
 			/* update variables */
@@ -179,10 +179,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 				|| mode == GateSetMode.GATE_CANCEL) { // draw a saved gate
 			/* decide clip before clearing pointsGate */
 			final Rectangle clip = getClipBounds(pointsGate, true);
-			setSettingGate(false);
+			panel.setSettingGate(false);
 			pointsGate.reset();
-			panel.removeMouseListener(mouseInputAdapter);
-			panel.removeMouseMotionListener(mouseInputAdapter);
+			panel.setListenToMouse(false);
+			panel.setListenToMouseMotion(false);
 			panel.repaint(clip);
 		}
 	}
@@ -207,7 +207,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			g.drawLine(lastGatePoint.x, lastGatePoint.y, lastMovePoint.x,
 					lastMovePoint.y);
 		}
-		setMouseMoved(false);
+		panel.setMouseMoved(false);
 		mouseMoveClip.reset();
 	}
 
@@ -258,8 +258,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		int maxCounts = 0;
 		chminX = getChannelMin(chminX);
 		chminY = getChannelMin(chminY);
-		chmaxX = getChannelMax(chmaxX, sizeX);
-		chmaxY = getChannelMax(chmaxY, sizeY);
+		chmaxX = getChannelMax(chmaxX, size.getSizeX());
+		chmaxY = getChannelMax(chmaxY, size.getSizeY());
 		for (int i = chminX; i <= chmaxX; i++) {
 			for (int j = chminY; j <= chmaxY; j++) {
 				if (counts2d[i][j] > maxCounts) {
@@ -300,8 +300,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		int minCounts = 0;
 		chminX = getChannelMin(chminX);
 		chminY = getChannelMin(chminY);
-		chmaxX = getChannelMax(chmaxX, sizeX);
-		chmaxY = getChannelMax(chmaxY, sizeY);
+		chmaxX = getChannelMax(chmaxX, size.getSizeX());
+		chmaxY = getChannelMax(chmaxY, size.getSizeY());
 		for (int i = chminX; i <= chmaxX; i++) {
 			for (int j = chminY; j <= chmaxY; j++) {
 				if (counts2d[i][j] < minCounts) {
@@ -311,7 +311,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		}
 		return minCounts;
 	}
-
+	
 	private final Rectangle clipBounds = new Rectangle();
 
 	/**
@@ -445,7 +445,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	 *            created when the mouse pointer moves while in the plot
 	 */
 	protected void mouseMoved(MouseEvent me) {
-		if (settingGate) {
+		if (panel.isSettingGate()) {
 			/* only if we have 1 or more */
 			if (pointsGate.npoints > 0) {
 				/* draw new line */
@@ -459,10 +459,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 					lastMovePoint.setLocation(me.getPoint());
 					mouseMoveClip.addPoint(lastMovePoint.x, lastMovePoint.y);
 				}
-				setMouseMoved(true);
+				panel.setMouseMoved(true);
 				panel.repaint(getClipBounds(mouseMoveClip, false));
 			}
-		} else if (selectingArea) {
+		} else if (panel.isSelectingArea()) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
 					addToSelectClip(selectStart, Bin
@@ -473,7 +473,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 				addToSelectClip(selectStart, Bin
 						.create(lastMovePoint));
 			}
-			setMouseMoved(true);
+			panel.setMouseMoved(true);
 			synchronized (selectingAreaClip) {
 				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}

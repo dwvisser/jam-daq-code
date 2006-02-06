@@ -65,7 +65,7 @@ final class Plot1d extends AbstractPlot {
 	 * Overlay histograms.
 	 */
 	void overlayHistograms(List<Histogram> overlayHists) {
-		displayingOverlay = true;
+		panel.setDisplayingOverlay(true);
 		/* retain any items in list in the map Performance improvement */
 		overlayCounts.clear();
 		overlayNumber.clear();
@@ -95,22 +95,22 @@ final class Plot1d extends AbstractPlot {
 	void displaySetGate(GateSetMode mode, Bin pChannel, Point pPixel) {
 		if (mode == GateSetMode.GATE_NEW) {
 			pointsGate.reset();
-			panel.addMouseListener(mouseInputAdapter);
-			panel.addMouseMotionListener(mouseInputAdapter);
-			setSettingGate(true);
+			panel.setListenToMouse(true);
+			panel.setListenToMouseMotion(true);
+			panel.setSettingGate(true);
 		} else {
 			if (mode == GateSetMode.GATE_CONTINUE) {
 				pointsGate.addPoint(pChannel.getX(), pChannel.getY());
 				setLastMovePoint(pPixel);
 			} else if (mode == GateSetMode.GATE_SAVE) {
 				pointsGate.reset();
-				panel.removeMouseListener(mouseInputAdapter);
-				panel.removeMouseMotionListener(mouseInputAdapter);
+				panel.setListenToMouse(false);
+				panel.setListenToMouseMotion(false);
 			} else if (mode == GateSetMode.GATE_CANCEL) {
 				pointsGate.reset();
-				setSettingGate(false);
-				panel.removeMouseListener(mouseInputAdapter);
-				panel.removeMouseMotionListener(mouseInputAdapter);
+				panel.setSettingGate(false);
+				panel.setListenToMouse(false);
+				panel.setListenToMouseMotion(false);
 			}
 			panel.repaint();
 		}
@@ -126,7 +126,7 @@ final class Plot1d extends AbstractPlot {
 		final int x1 = pointsGate.xpoints[pointsGate.npoints - 1];
 		final int x2 = graph.toDataHorz(lastMovePoint.x);
 		graph.markAreaOutline1d(x1, x2);
-		setMouseMoved(false);
+		panel.setMouseMoved(false);
 		clearMouseMoveClip();
 	}
 
@@ -145,7 +145,7 @@ final class Plot1d extends AbstractPlot {
 		this.fitChannels = null;
 		this.fitResiduals = null;
 		this.fitTotal = null;
-		this.displayingFit = true;
+		panel.setDisplayingFit(true);
 		int length = 0;
 		if (signals != null) {
 			length = signals[0].length;
@@ -199,7 +199,7 @@ final class Plot1d extends AbstractPlot {
 		Graphics2D g = (Graphics2D) gc;
 		g.setColor(colorMap.getArea());
 		graph.markAreaOutline1d(selectStart.getX(), lastMovePoint.x);
-		setMouseMoved(false);
+		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
 	}
 
@@ -213,8 +213,8 @@ final class Plot1d extends AbstractPlot {
 	 */
 	public void markArea(Bin p1, Bin p2) {
 		synchronized (this) {
-			areaMarked = (p1 != null) && (p2 != null);
-			if (areaMarked) {
+			panel.setAreaMarked((p1 != null) && (p2 != null));
+			if (panel.isAreaMarked()) {
 				final int x1 = p1.getX();
 				final int x2 = p2.getX();
 				areaMark1 = Math.min(x1, x2);
@@ -234,7 +234,7 @@ final class Plot1d extends AbstractPlot {
 		graph.markArea1d(areaMark1, areaMark2, counts);
 		g2.setComposite(prev);
 	}
-
+	
 	/**
 	 * Draw the current histogram including title, border, tickmarks, tickmark
 	 * labels and last but not least update the scrollbars
@@ -288,7 +288,7 @@ final class Plot1d extends AbstractPlot {
 		 * I had compositing set here, but apparently, it's too many small draws
 		 * using compositing, causing a slight performance issue.
 		 */
-		final int len = displayingOverlay ? overlayNumber.size() : 0;
+		final int len = panel.isDisplayingOverlay() ? overlayNumber.size() : 0;
 		if (len > 0) {
 			final int[] overlayInts = new int[len];
 			final Iterator iter = overlayNumber.iterator();
@@ -373,6 +373,7 @@ final class Plot1d extends AbstractPlot {
 		if ((chmin == 0) && (ignoreChZero)) {
 			chmin = 1;
 		}
+		final int sizeX = size.getSizeX();
 		if ((chmax == (sizeX - 1)) && (ignoreChFull)) {
 			chmax = sizeX - 2;
 		}
@@ -394,6 +395,7 @@ final class Plot1d extends AbstractPlot {
 		if ((chmin == 0) && (ignoreChZero)) {
 			chmin = 1;
 		}
+		final int sizeX = size.getSizeX();
 		if ((chmax == (sizeX - 1)) && (ignoreChFull)) {
 			chmax = sizeX - 2;
 		}
@@ -404,7 +406,11 @@ final class Plot1d extends AbstractPlot {
 		}
 		return minCounts;
 	}
-
+	
+	void copy2dCounts(Histogram hist){
+		throw new IllegalStateException("Should never be called.");
+	}
+	
 	/*
 	 * non-javadoc: Caller should have checked 'isCalibrated' first.
 	 */
@@ -425,8 +431,8 @@ final class Plot1d extends AbstractPlot {
 	 * Called when the mouse has moved
 	 */
 	protected void mouseMoved(MouseEvent me) {
-		setMouseMoved(true);
-		if (selectingArea) {
+		panel.setMouseMoved(true);
+		if (panel.isSelectingArea()) {
 			if (isSelectingAreaClipClear()) {
 				synchronized (selectingAreaClip) {
 					selectingAreaClip.setBounds(graph.getRectangleOutline1d(
@@ -438,7 +444,7 @@ final class Plot1d extends AbstractPlot {
 			synchronized (selectingAreaClip) {
 				panel.repaint(getClipBounds(selectingAreaClip, false));
 			}
-		} else if (settingGate) {
+		} else if (panel.isSettingGate()) {
 			/* only if we have 1 or more */
 			if (pointsGate.npoints > 0) {
 				/* draw new line */
