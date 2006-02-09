@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,21 +24,9 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static DataIDAnnotation withTagRef(final int tag, final int ref) {
-		DataIDAnnotation dia = null;
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
-		while (iter.hasNext()) {
-			final AbstractData dataObject = (AbstractData) iter.next();
-			if (dataObject.getTag() == Constants.DFTAG_DIA) {
-				dia = (DataIDAnnotation) dataObject;
-				if ((dia.getObject().getTag() == tag)
-						&& (dia.getObject().getRef() == ref)) {
-					break;
-				}
-			}
-		}
-		return dia;
+	static <T extends AbstractData> DataIDAnnotation withTagRef(
+			final Class<T> tag, final int ref) {
+		return withTagRef(ofType(DataIDAnnotation.class), tag, ref);
 	}
 
 	/**
@@ -53,17 +40,18 @@ final class DataIDAnnotation extends AbstractData {
 	 * @return annotation object that refers to the object witht the given tag
 	 *         and ref
 	 */
-	static DataIDAnnotation withTagRef(final List<AbstractData> labels, final int tag, final int ref) {
-		DataIDAnnotation output = null;
-		for (AbstractData data : labels) {
-			final DataIDAnnotation dia = (DataIDAnnotation) (data);
-			if ((dia.getObject().getTag() == tag)
-					&& (dia.getObject().getRef() == ref)) {
-				output = dia;
+	static <T extends AbstractData> DataIDAnnotation withTagRef(
+			final List<DataIDAnnotation> labels, final Class<T> tag,
+			final int ref) {
+		DataIDAnnotation rval = null;
+		for (DataIDAnnotation dia : labels) {
+			final AbstractData data = dia.getObject();
+			if (tag.isInstance(data) && (data.getRef() == ref)) {
+				rval = dia;
 				break;
 			}
 		}
-		return output;
+		return rval;
 	}
 
 	/**
@@ -109,7 +97,7 @@ final class DataIDAnnotation extends AbstractData {
 		final short tagType = bytes.getShort();
 		final short reference = bytes.getShort();
 		note = getString(bytes.remaining());
-		object = getObject(tagType, reference);
+		object = getObject(TYPES.get(tagType), reference);
 	}
 
 	String getNote() {
