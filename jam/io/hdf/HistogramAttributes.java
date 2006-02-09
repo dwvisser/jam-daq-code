@@ -30,25 +30,26 @@ public final class HistogramAttributes {
 	 *            full name for histogram, including group
 	 * @return attributes for the given name
 	 */
-	public static HistogramAttributes getHistogramAttribute(String fullName) {
+	public static HistogramAttributes getHistogramAttribute(
+			final String fullName) {
 		return FULL_NAMES.get(fullName);
 	}
 
-	private String groupName;
+	private transient String groupName;
 
-	private String name;
+	private transient String name;
 
-	private String fullName;
+	private transient String fullName;
 
-	private String title;
+	private transient String title;
 
-	private int number;
+	private transient int number;
 
-	private int sizeX;
+	private transient int sizeX;
 
-	private int sizeY;
+	private transient int sizeY;
 
-	private int histDim;
+	private transient int histDim;
 
 	HistogramAttributes(String groupName, String name, String title, int number) {
 		super();
@@ -56,7 +57,7 @@ public final class HistogramAttributes {
 		this.name = name;
 		this.title = title;
 		this.number = number;
-		fullName = createFullName(groupName, name);
+		fullName = createFullName(name);
 		FULL_NAMES.put(fullName, this);
 	}
 
@@ -89,17 +90,13 @@ public final class HistogramAttributes {
 	 * Full name is <groupName>/<histName.
 	 * 
 	 * @return the full name of the histogram
-	 * @param groupNameIn
-	 *            name of group the hist is in
 	 * @param nameIn
 	 *            the basic name of the histogram
 	 */
-	private String createFullName(String groupNameIn, String nameIn) {
+	private String createFullName(final String nameIn) {
 		final StringBuffer rval = new StringBuffer();
 		if (groupName != null) {
-			if (!groupName.equals("")) {
-				rval.append(groupNameIn).append('/');
-			}
+			rval.append(groupName).append('/');
 		}
 		rval.append(nameIn);
 		return rval.toString();

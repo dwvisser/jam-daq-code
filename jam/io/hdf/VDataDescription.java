@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,7 +18,7 @@ public final class VDataDescription extends AbstractData {
      * @see #INTERLACE
      * @see #NO_INTERLACE
      */
-    private short interlace;
+    private transient short interlace;
 
     /**
      * Default, records are written with fields adjacent.
@@ -60,52 +59,52 @@ public final class VDataDescription extends AbstractData {
     /**
      * Number of entries in Vdata.
      */
-    private int nvert;
+    private transient int nvert;
 
     /**
      * Size in bytes of one Vdata entry.
      */
-    private short ivsize;
+    private transient short ivsize;
 
     /**
      * Number of fields to a Vdata entry.
      */
-    private short nfields;
+    private transient short nfields;
 
     /**
      * Array of types of data.
      */
-    private short[] datatypes;
+    private transient short[] datatypes;
 
     /**
      * Size in bytes of field.
      */
-    private short[] isize;
+    private transient short[] isize;
 
     /**
      * Offset in bytes of field.
      */
-    private short[] fieldOffsets;
+    private transient short[] fieldOffsets;
 
     /**
      * Order (number of separate items of _type) of field.
      */
-    private short[] order;
+    private transient short[] order;
 
     /**
      * Name of field.
      */
-    private String[] fldnm;
+    private transient String[] fldnm;
 
     /**
      * Name of Vdata.
      */
-    private String name;
+    private transient String name;
 
     /**
      * Name of Vdata type.
      */
-    private String dataTypeName;
+    private transient String dataTypeName;
 
     /**
      * Version of VFTAG_VH format used.
@@ -181,7 +180,7 @@ public final class VDataDescription extends AbstractData {
     /* given a data type and column length, return the
      * number of bytes needed for storage
      */
-    static short getColumnByteLength(short type, short order) {
+    static short getColumnByteLength(final short type, final short order) {
         final short rval;
         switch (type) {
         case DFNT_INT16:
@@ -261,7 +260,7 @@ public final class VDataDescription extends AbstractData {
         return nvert;
     }
 
-    short getType(int field) {
+    short getType(final int field) {
         return datatypes[field];
     }
 
@@ -299,12 +298,12 @@ public final class VDataDescription extends AbstractData {
      *            type string showing what kind of info is contained
      * @return the data description with the given name
      */
-    static public VDataDescription ofName(List list, String which) {
+    static public VDataDescription ofName(final List<VDataDescription> list, final String which) {
         VDataDescription output = null;
-        for (final Iterator temp = list.iterator(); temp.hasNext();) {
-            final VDataDescription vdd = (VDataDescription) (temp.next());
+        for (VDataDescription vdd : list) {
             if (vdd.getName().equals(which)) {
                 output = vdd;
+                break;
             }
         }
         return output;
