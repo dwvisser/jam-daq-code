@@ -10,9 +10,13 @@ import java.nio.ByteBuffer;
  * @since       JDK1.1
  */
 final class FileIdentifier extends AbstractData {
+	
+	FileIdentifier() {
+		super(DFTAG_FID); //sets tag
+	}
 
 	FileIdentifier(String label) {
-		super(DFTAG_FID); //sets tag
+		this();
 		final int byteLength = label.length();
 		bytes = ByteBuffer.allocate(byteLength);
 		putString(label);

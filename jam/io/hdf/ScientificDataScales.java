@@ -9,9 +9,13 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  */
 final class ScientificDataScales extends AbstractData {
+	
+	ScientificDataScales() {
+        super(DFTAG_SDS); //sets tag
+	}
 
     ScientificDataScales(ScientificDataDimension sdd) {
-        super(DFTAG_SDS); //sets tag
+        this();
         final int rank = sdd.getRank();
         final int sizeX = sdd.getSizeX();
         final int sizeY = sdd.getSizeY();

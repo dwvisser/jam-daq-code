@@ -11,8 +11,12 @@ import java.nio.ByteBuffer;
  */
 final class FileDescription extends AbstractData {
 
+	FileDescription() {
+		super(DFTAG_FD);
+	}
+	
 	FileDescription(String label) {
-		super(DFTAG_FD); //sets tag
+		this();
 		final int byteLength = label.length();
 		bytes = ByteBuffer.allocate(byteLength);
 	    putString(label);
