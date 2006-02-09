@@ -1,4 +1,5 @@
 package jam.data;
+import jam.global.Nameable;
 import jam.util.StringUtilities;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Map;
  * @since JDK1.1
  */
 
-public class DataParameter {
+public class DataParameter implements Nameable {
 
 	private static final Map<String, DataParameter> TABLE = Collections.synchronizedMap(new HashMap<String,DataParameter>());
 	private static final List<DataParameter> LIST = Collections.synchronizedList(new ArrayList<DataParameter>());
