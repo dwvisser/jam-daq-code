@@ -108,7 +108,7 @@ final class DataIDAnnotation extends AbstractData {
 		return note;
 	}
 
-	private AbstractData getObject() {
+	private AbstractData getObject() {//NOPMD
 		return object;
 	}
 
