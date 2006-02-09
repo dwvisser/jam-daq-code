@@ -16,13 +16,19 @@ import java.util.logging.Logger;
  * @since JDK1.1
  */
 public final class HDFile extends RandomAccessFile implements Constants {
-	private static final float FRACTION_TIME_READ_ALL = 1.0f;
+	private static class FractionTime {
+		private FractionTime() {
+			super();
+		}
 
-	private static final float FRACTION_TIME_READ_LAZY_HISTOGRAMS = 0.7f;
+		static final float READ_ALL = 1.0f;
 
-	private static final float FRACTION_TIME_READ_NOT_HISTOGRAM = 0.3f;
+		static final float READ_LAZY_HISTS = 0.7f;
 
-	private static final float FRACTION_WRITE_ALL = 1.0f;
+		static final float READ_NOT_HIST = 0.3f;
+
+		static final float WRITE_ALL = 1.0f;
+	}
 
 	private static final Logger LOGGER = Logger.getLogger(HDFile.class
 			.getPackage().getName());
@@ -199,7 +205,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 */
 	byte[] lazyReadData(final AbstractData dataObject) throws HDFException {
 		final int numObjSteps = getNumberObjctProgressStep(lazyLoadNum,
-				FRACTION_TIME_READ_LAZY_HISTOGRAMS);
+				FractionTime.READ_LAZY_HISTS);
 		final byte[] localBytes = new byte[dataObject.getLength()];
 		try {
 			seek(dataObject.getOffset());
@@ -220,8 +226,10 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @exception IOException
 	 *                unrecoverable error
 	 */
-	private synchronized void mark() throws IOException {
-		markPosition = getFilePointer();
+	private void mark() throws IOException {
+		synchronized (this) {
+			markPosition = getFilePointer();
+		}
 	}
 
 	private byte[] readBytes(final int offset, final int length)
@@ -247,14 +255,14 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		lazyCount = 0;
 		try {
 			if (!checkMagicWord()) {
-				throw new HDFException("Not an hdf file");
+				throw new HDFException("Not an hdf file.");
 			}
 			if (lazyLoadData) {
 				numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
-						FRACTION_TIME_READ_NOT_HISTOGRAM);
+						FractionTime.READ_NOT_HIST);
 			} else {
 				numObjSteps = getNumberObjctProgressStep(countHDFOjects(),
-						FRACTION_TIME_READ_ALL);
+						FractionTime.READ_ALL);
 			}
 			seek(HEADER_BYTES);
 			boolean hasNextBlock = true;
@@ -266,19 +274,16 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					final short ref = readShort();
 					final int offset = readInt();
 					final int length = readInt();
-
-					// DEBUG KBS helpper method for debugging
-					// debugDumpDD(tag, ref, offset, length);
-
-					// Not an empty tag
-					if (tag != DFTAG_NULL) {
+					if (tag != DFTAG_NULL) {// Not an empty tag
 						// Load scientific data as last moment needed
 						if (lazyLoadData && tag == Constants.DFTAG_SD) {
-							AbstractData.create(tag, ref, offset, length);
+							AbstractData.create(ScientificData.class, ref,
+									offset, length);
 							lazyLoadNum++;
 						} else {
 							final byte[] bytes = readBytes(offset, length);
-							AbstractData.create(bytes, tag, ref);
+							AbstractData.create(bytes, AbstractData.TYPES
+									.get(tag), ref);
 						}
 					}
 					countObjct++;
@@ -286,7 +291,6 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					if (countObjct % numObjSteps == 0 && monitor != null) {
 						monitor.increment();
 					}
-
 				}
 				if (nextBlock == 0) {
 					hasNextBlock = false;
@@ -305,8 +309,10 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @exception IOException
 	 *                unrecoverable error
 	 */
-	private synchronized void reset() throws IOException {
-		seek(markPosition);
+	private void reset() throws IOException {
+		synchronized (this) {
+			seek(markPosition);
+		}
 	}
 
 	void setLazyLoadData(final boolean lazy) {
@@ -328,17 +334,16 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * of the <code>DataObject</code>'s. To be run when all data elements
 	 * have been defined.
 	 */
-	private synchronized void updateBytesOffsets() {
-		// final int DDblockSize = 2 + 4 + 12 * objectList.size();
-		final int initOffset = sizeDataDescriptorBlock() + 4; // add in HDF
-		// file header
-		int counter = initOffset;
-		final Iterator temp = AbstractData.getDataObjectList().iterator();
-		while (temp.hasNext()) {
-			final AbstractData dataObject = (AbstractData) (temp.next());
-			dataObject.refreshBytes();
-			dataObject.setOffset(counter);
-			counter += dataObject.getBytes().capacity();
+	private void updateBytesOffsets() {
+		synchronized (this) {
+			final int initOffset = sizeDataDescriptorBlock() + 4;
+			// file header
+			int counter = initOffset;
+			for (AbstractData dataObject : AbstractData.getDataObjectList()) {
+				dataObject.refreshBytes();
+				dataObject.setOffset(counter);
+				counter += dataObject.getBytes().capacity();
+			}
 		}
 	}
 
@@ -352,7 +357,7 @@ public final class HDFile extends RandomAccessFile implements Constants {
 		final List objectList = AbstractData.getDataObjectList();
 		int countObjct = 0;
 		final int numObjSteps = getNumberObjctProgressStep(objectList.size(),
-				FRACTION_WRITE_ALL);
+				FractionTime.WRITE_ALL);
 		final Iterator temp = objectList.iterator();
 		writeLoop: while (temp.hasNext()) {
 			if (countObjct % numObjSteps == 0 && monitor != null) {
@@ -372,22 +377,23 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @exception HDFException
 	 *                unrecoverable errror
 	 */
-	private synchronized void writeDataDescriptorBlock() throws HDFException {
-		final List objectList = AbstractData.getDataObjectList();
-		try {
-			seek(HEADER_BYTES); // skip header
-			writeShort(objectList.size()); // number of DD's
-			writeInt(0); // no additional descriptor block
-			final Iterator temp = objectList.iterator();
-			while (temp.hasNext()) {
-				final AbstractData dataObject = (AbstractData) (temp.next());
-				writeShort(dataObject.getTag());
-				writeShort(dataObject.getRef());
-				writeInt(dataObject.getOffset());
-				writeInt(dataObject.getBytes().capacity());
+	private void writeDataDescriptorBlock() throws HDFException {
+		synchronized (this) {
+			final List<AbstractData> objectList = AbstractData
+					.getDataObjectList();
+			try {
+				seek(HEADER_BYTES); // skip header
+				writeShort(objectList.size()); // number of DD's
+				writeInt(0); // no additional descriptor block
+				for (AbstractData dataObject : objectList) {
+					writeShort(dataObject.getTag());
+					writeShort(dataObject.getRef());
+					writeInt(dataObject.getOffset());
+					writeInt(dataObject.getBytes().capacity());
+				}
+			} catch (IOException e) {
+				throw new HDFException("Problem writing DD block.", e);
 			}
-		} catch (IOException e) {
-			throw new HDFException("Problem writing DD block.", e);
 		}
 	}
 
