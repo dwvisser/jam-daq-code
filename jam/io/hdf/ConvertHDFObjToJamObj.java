@@ -390,8 +390,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	 * @param mode whether to open or reload @throws HDFException if an error
 	 * occurs reading the parameters
 	 */
-	int convertParameters(final VDataDescription vdd, final FileOpenMode mode)
-			throws HDFException {
+	int convertParameters(final VDataDescription vdd, final FileOpenMode mode) {
 		int numParams = 0;
 		/* Get corresponding VS for this VH */
 		final VData data = AbstractData.getObject(VData.class, vdd.getRef());
@@ -407,8 +406,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		return numParams;
 	}
 
-	int convertParameters(final VirtualGroup currVG, final FileOpenMode mode)
-			throws HDFException {
+	int convertParameters(final VirtualGroup currVG, final FileOpenMode mode) {
 		int numParameters = 0;
 		final List list = AbstractData.ofType(currVG.getObjects(),
 				VDataDescription.class);
@@ -718,9 +716,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		final DataIDLabel dataIDLabel = DataIDLabel.withTagRef(
 				VirtualGroup.class, group.getRef());
 		final String rval;
-		if (dataIDLabel==null) {//somehow label doesn't exist
-			rval=group.getName();
-		} else  {
+		if (dataIDLabel == null) {// somehow label doesn't exist
+			rval = group.getName();
+		} else {
 			rval = dataIDLabel.getLabel();
 		}
 		return rval;
