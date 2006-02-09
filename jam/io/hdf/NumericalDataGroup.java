@@ -51,7 +51,7 @@ final class NumericalDataGroup extends AbstractData {
             final short tagType = bytes.getShort();
             final short reference = bytes.getShort();
             /* look up tag/ref in file and add object */
-            addDataObject(getObject(tagType, reference));
+            addDataObject(getObject(TYPES.get(tagType), reference));
         }
     }
 
@@ -69,7 +69,7 @@ final class NumericalDataGroup extends AbstractData {
      * non-javadoc: Passes the internal vector back.
      */
     List<AbstractData> getObjects() {
-        return elements;
+        return Collections.unmodifiableList(elements);
     }
     
     public String toString(){
