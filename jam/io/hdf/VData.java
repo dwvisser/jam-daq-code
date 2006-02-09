@@ -22,21 +22,21 @@ public final class VData extends AbstractData {
 	 * The vector of fields. Contains the useful java representations of the
 	 * objects.
 	 */
-	private Object[][] cells;
+	private transient Object[][] cells;
 
-	private VDataDescription description;
+	private transient VDataDescription description;
 
-	private short ivsize;
+	private transient short ivsize;
 
-	private short nfields;
+	private transient short nfields;
 
-	private int nvert;
+	private transient int nvert;
 
-	private short[] offsets;
+	private transient short[] offsets;
 
-	private short[] order;
+	private transient short[] order;
 
-	private short[] types;
+	private transient short[] types;
 
 	VData() {
 		super(DFTAG_VS);
@@ -56,48 +56,54 @@ public final class VData extends AbstractData {
 		setRef(description.getRef());
 	}
 
-	void addChars(int column, int row, String indata) {
+	private static final String WDFC = "Wrong data type for column ";
+
+	void addChars(final int column, final int row, final String indata) {
 		if (description.getType(column) == VDataDescription.DFNT_CHAR8) {
 			setCell(column, row, indata);
 		} else { // uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column "
-					+ column + "!");
+			throw new IllegalStateException(WDFC + column + "!");
 		}
 	}
 
-	void addDouble(int column, int row, double indata) {
-		Double temp;
-
+	void addDouble(final int column, final int row, final double indata) {
 		if (description.getType(column) == VDataDescription.DFNT_DBL64) {
-			temp = new Double(indata);
+			final Object temp = new Double(indata);
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column "
-					+ column + "!");
+			throw new IllegalStateException(WDFC + column + "!");
 		}
 	}
 
-	void addFloat(int column, int row, float indata) {
-		Float temp;
-
+	void addFloat(final int column, final int row, final float indata) {
 		if (description.getType(column) == VDataDescription.DFNT_FLT32) {
-			temp = new Float(indata);
+			final Object temp = new Float(indata);
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
-			throw new IllegalStateException("Wrong data type for column "
-					+ column + "!");
+			throw new IllegalStateException(WDFC + column + "!");
 		}
 	}
 
-	void addInteger(int column, int row, int indata) {
-		Integer temp;
-
+	void addInteger(final int column, final int row, final int indata) {
 		if (description.getType(column) == VDataDescription.DFNT_INT32) {
-			temp = new Integer(indata);
+			final Object temp = new Integer(indata);
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
-			throw new UnsupportedOperationException(
-					"Wrong data type for column " + column + "!");
+			throw new UnsupportedOperationException(WDFC + column + "!");
+		}
+	}
+
+	private void putShortLoop(final ByteBuffer out, final int row, final int col) {
+		for (int i = 0; i < order[col]; i++) {
+			final short shortValue = ((Short) (cells[col][row])).shortValue();
+			out.putShort(shortValue);
+		}
+	}
+
+	private void putIntLoop(final ByteBuffer out, final int row, final int col) {
+		for (int i = 0; i < order[col]; i++) {
+			final int intValue = ((Integer) (cells[col][row])).intValue();
+			out.putInt(intValue);
 		}
 	}
 
@@ -108,22 +114,15 @@ public final class VData extends AbstractData {
 	 * @param row record to retrieve from @param col column in record to
 	 * retreive from
 	 */
-	private byte[] getBytes(int row, int col) {
+	private byte[] getBytes(final int row, final int col) {
 		final ByteBuffer out = ByteBuffer.allocate(VDataDescription
 				.getColumnByteLength(types[col], order[col]));
 		switch (types[col]) {
 		case VDataDescription.DFNT_INT16:
-			for (int i = 0; i < order[col]; i++) {
-				final short shortValue = ((Short) (cells[col][row]))
-						.shortValue();
-				out.putShort(shortValue);
-			}
+			putShortLoop(out, row, col);
 			break;
 		case VDataDescription.DFNT_INT32:
-			for (int i = 0; i < order[col]; i++) {
-				final int intValue = ((Integer) (cells[col][row])).intValue();
-				out.putInt(intValue);
-			}
+			putIntLoop(out, row, col);
 			break;
 		case VDataDescription.DFNT_FLT32:
 			for (int i = 0; i < order[col]; i++) {
@@ -154,21 +153,22 @@ public final class VData extends AbstractData {
 	 * non-javadoc: Get the double in the specified cell. Of course, there'd
 	 * better actually be a float there!
 	 */
-	Double getDouble(int row, int col) throws HDFException {
+	Double getDouble(final int row, final int col) {
 		Double out = null;
 		if (types[col] == VDataDescription.DFNT_DBL64) {
 			final int location = row * ivsize + offsets[col];
-			final int len = 8;
-			final byte[] temp = new byte[len];
-			System.arraycopy(bytes.array(), location, temp, 0, len);
-			final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
-			final DataInputStream dis = new DataInputStream(bis);
-			double tempDouble = 0.0;
-			try {
-				tempDouble = dis.readDouble();
-			} catch (IOException ioe) {
-				throw new HDFException("VData", ioe);
-			}
+			//final int len = 8;
+			// final byte[] temp = new byte[len];
+			// System.arraycopy(bytes.array(), location, temp, 0, len);
+			//ByteBuffer temp = ByteBuffer.wrap(bytes.array(), location, len);
+			// final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
+			// final DataInputStream dis = new DataInputStream(bis);
+			//double tempDouble = 0.0;
+			// try {
+			final double tempDouble = bytes.getDouble(location);// dis.readDouble();
+			// } catch (IOException ioe) {
+			// throw new HDFException("VData", ioe);
+			// }
 			out = new Double(tempDouble);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
@@ -182,7 +182,7 @@ public final class VData extends AbstractData {
 	 * non-javadoc: Get the float in the specified cell. Of course, there'd
 	 * better actually be a float there!
 	 */
-	Float getFloat(int row, int col) throws HDFException {
+	Float getFloat(final int row, final int col) throws HDFException {
 		Float out = null;
 		if (types[col] == VDataDescription.DFNT_FLT32) {
 			final int len = 4;
@@ -217,24 +217,22 @@ public final class VData extends AbstractData {
 	 * @return <code>Integer</code> residing at cell
 	 * @throws IllegalStateException
 	 *             if cell doesn't contain an <code>Integer</code>
-	 * @throws HDFException
-	 *             for probelm reading data
 	 */
-	public Integer getInteger(int row, int col) throws HDFException {
+	public Integer getInteger(final int row, final int col) {
 		Integer out = null;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
-			final int len = 4;
-			final byte[] temp = new byte[len];
-			System.arraycopy(bytes.array(), location, temp, 0, len);
-			final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
-			final DataInputStream dis = new DataInputStream(bis);
-			int tempN = 0;
-			try {
-				tempN = dis.readInt();
-			} catch (IOException ioe) {
-				throw new HDFException("VData Read Int ", ioe);
-			}
+			//final int len = 4;
+			//final byte[] temp = new byte[len];
+			//System.arraycopy(bytes.array(), location, temp, 0, len);
+			//final ByteArrayInputStream bis = new ByteArrayInputStream(temp);
+			//final DataInputStream dis = new DataInputStream(bis);
+			//int tempN = 0;
+			//try {
+				final int tempN = bytes.getInt(location);
+//			} catch (IOException ioe) {
+//				throw new HDFException("VData Read Int ", ioe);
+//			}
 			out = new Integer(tempN);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
@@ -244,7 +242,7 @@ public final class VData extends AbstractData {
 		return out;
 	}
 
-	private Short getShort(int row, int col) throws HDFException {
+	private Short getShort(final int row, final int col) throws HDFException {
 		Short rval = null;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
@@ -281,7 +279,7 @@ public final class VData extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if cell doesn't contain an <code>String</code>
 	 */
-	public String getString(int row, int col) {
+	public String getString(final int row, final int col) {
 		String out = null;
 		if (types[col] == VDataDescription.DFNT_CHAR8) {
 			final int location = row * ivsize + offsets[col];
@@ -297,9 +295,9 @@ public final class VData extends AbstractData {
 		return out;
 	}
 
-	void init(byte[] data, short tagType, short reference) {
-		super.init(data, tagType, reference);
-		description = (VDataDescription) (getObject(DFTAG_VH, reference));
+	void init(final byte[] data, final short reference) {
+		super.init(data, reference);
+		description = getObject(VDataDescription.class, reference);
 		description.interpretBytes();
 		nfields = description.getNumFields();
 		nvert = description.getNumRows();
@@ -316,7 +314,7 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	private void interpretColumnBytes(int col) throws HDFException {
+	private void interpretColumnBytes(final int col) throws HDFException {
 		final boolean order1 = order[col] == 1;
 		switch (types[col]) {
 		case VDataDescription.DFNT_INT32:
@@ -356,35 +354,39 @@ public final class VData extends AbstractData {
 		}
 	}
 
-	void setCell(int column, int row, Object indata) {
+	void setCell(final int column, final int row, final Object indata) {
 		cells[column][row] = indata;
 	}
 
-	private void setDoubleColumn(int col, boolean order1) throws HDFException {
+	private void setDoubleColumn(final int col, final boolean order1)
+			throws HDFException {
 		for (int row = 0; row < nvert; row++) {
 			setCell(col, row, order1 ? (Object) getDouble(row, col)
-					: new Double[1]);
+					: new Double[1]);// NOPMD
 		}
 	}
 
-	private void setFloatColumn(int col, boolean order1) throws HDFException {
+	private void setFloatColumn(final int col, final boolean order1)
+			throws HDFException {
 		for (int row = 0; row < nvert; row++) {
 			setCell(col, row, order1 ? (Object) getFloat(row, col)
-					: new Float[1]);
+					: new Float[1]);// NOPMD
 		}
 	}
 
-	private void setIntColumn(int col, boolean order1) throws HDFException {
+	private void setIntColumn(final int col, final boolean order1)
+			throws HDFException {
 		for (int row = 0; row < nvert; row++) {
 			setCell(col, row, order1 ? (Object) getInteger(row, col)
-					: new Integer[1]);
+					: new Integer[1]);// NOPMD
 		}
 	}
 
-	private void setShortColumn(int col, boolean order1) throws HDFException {
+	private void setShortColumn(final int col, final boolean order1)
+			throws HDFException {
 		for (int row = 0; row < nvert; row++) {
 			setCell(col, row, order1 ? (Object) getShort(row, col)
-					: new Short[1]);
+					: new Short[1]);// NOPMD
 		}
 	}
 
