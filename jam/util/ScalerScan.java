@@ -23,7 +23,6 @@
  **************************************************************/
 package jam.util;
 
-import static jam.io.hdf.Constants.DFTAG_VH;
 import static jam.io.hdf.Constants.DFTAG_VS;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
@@ -78,7 +77,7 @@ public final class ScalerScan implements JamFileFields {
 
 	private transient final JDialog dialog;
 
-	private transient File pathToRuns = new File(JamProperties//NOPMD
+	private transient File pathToRuns = new File(JamProperties// NOPMD
 			.getPropString(PropertyKeys.HIST_PATH));
 
 	private transient final JTextField txtPath;
@@ -190,7 +189,7 @@ public final class ScalerScan implements JamFileFields {
 		chooser.setFileSelectionMode(dir ? JFileChooser.DIRECTORIES_ONLY
 				: JFileChooser.FILES_ONLY);
 		final boolean approved = chooser.showOpenDialog(dialog) == JFileChooser.APPROVE_OPTION;
-		File rval=null;
+		File rval = null;
 		if (approved) {
 			rval = chooser.getSelectedFile();
 		}
@@ -210,10 +209,10 @@ public final class ScalerScan implements JamFileFields {
 				for (int i = firstRun; i <= lastRun && !pBstatus.isCanceled(); i++) {
 					final String runText = txtRunName.getText().trim();
 					final String filename = runText + i + ".hdf";
-					final File infile = new File(pathToRuns, filename);//NOPMD
+					final File infile = new File(pathToRuns, filename);// NOPMD
 					if (infile.exists()) {
 						updateProgressBar("Processing " + infile.getName(), i);
-						final HDFile inHDF = new HDFile(infile, "r");//NOPMD
+						final HDFile inHDF = new HDFile(infile, "r");// NOPMD
 						inHDF.seek(0);
 						inHDF.readFile();
 						if (i == firstRun) {
@@ -253,13 +252,13 @@ public final class ScalerScan implements JamFileFields {
 	private String[] getScalerNames() {
 		String[] sname = null;
 		final VDataDescription dataDesc = VDataDescription.ofName(AbstractData
-				.ofType(DFTAG_VH), SCALER_SECT);
+				.ofType(VDataDescription.class), SCALER_SECT);
 		// only the "scalers" VH (only one element) in the file
 		if (dataDesc == null) {
 			LOGGER.warning("No Scalers section in HDF file.");
 		} else {
-			final VData data = (VData) (AbstractData.getObject(DFTAG_VS, dataDesc
-					.getRef()));
+			final VData data = AbstractData.getObject(VData.class, dataDesc
+					.getRef());
 			final int numScalers = dataDesc.getNumRows();
 			sname = new String[numScalers];
 			for (int i = 0; i < numScalers; i++) {
@@ -273,27 +272,27 @@ public final class ScalerScan implements JamFileFields {
 					sname[i] = temp1 + temp2;
 				}
 			}
-		} 
+		}
 		return sname;
 	}
 
 	private int[] getScalerValues() throws HDFException {
 		int[] values = null;
 		final VDataDescription dataDesc = VDataDescription.ofName(AbstractData
-				.ofType(DFTAG_VH), SCALER_SECT);
+				.ofType(VDataDescription.class), SCALER_SECT);
 		// only the "scalers" VH (only one element) in the file
 		if (dataDesc == null) {
 			LOGGER.warning("No Scalers section in HDF file.");
 		} else {
-			final VData data = (VData) (AbstractData.getObject(DFTAG_VS, dataDesc
-					.getRef()));
+			final VData data = AbstractData.getObject(VData.class, dataDesc
+					.getRef());
 			// corresponding VS
 			final int numScalers = dataDesc.getNumRows();
 			values = new int[numScalers];
 			for (int i = 0; i < numScalers; i++) {
 				values[i] = data.getInteger(i, 2).intValue();
 			}
-		} 
+		}
 		return values;
 	}
 
@@ -311,4 +310,4 @@ public final class ScalerScan implements JamFileFields {
 		return dialog;
 	}
 
-}//NOPMD
+}// NOPMD
