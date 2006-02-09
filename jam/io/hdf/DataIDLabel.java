@@ -1,7 +1,6 @@
 package jam.io.hdf;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,33 +13,26 @@ import java.util.List;
  */
 final class DataIDLabel extends AbstractData {
 
-	static DataIDLabel withTagRef(final int tag, final int ref) {
-		DataIDLabel dil = null;
-		final List objectList = getDataObjectList();
-		final Iterator iter = objectList.iterator();
-		while (iter.hasNext()) {
-			final AbstractData dataObject = (AbstractData) iter.next();
-			if (dataObject.getTag() == Constants.DFTAG_DIL) {
-				dil = (DataIDLabel) dataObject;
-				if ((dil.getObject().getTag() == tag)
-						&& (dil.getObject().getRef() == ref)) {
-					break;
-				}
-			}
-		}
-		return dil;
+	static <T extends AbstractData> DataIDLabel withTagRef(final Class<T> tag,
+			final int ref) {
+		return withTagRef(ofType(DataIDLabel.class), tag, ref);
 	}
 
-	static DataIDLabel withTagRef(final List<DataIDLabel> labels, final int tag, final int ref) {
-		DataIDLabel output = null;
-		for (final Iterator temp = labels.iterator(); temp.hasNext();) {
-			final DataIDLabel dil = (DataIDLabel) (temp.next());
-			if ((dil.getObject().getTag() == tag)
-					&& (dil.getObject().getRef() == ref)) {
-				output = dil;
+	static <T extends AbstractData> DataIDLabel withTagRef(
+			final List<DataIDLabel> labels, final Class<T> tag, final int ref) {
+		DataIDLabel rval = null;
+		for (DataIDLabel dil : labels) {
+			final AbstractData data = dil.getObject();
+			if (tag.isInstance(data) && (data.getRef() == ref)) {
+				rval = dil;
+				break;
 			}
 		}
-		return output;
+//		if (rval==null) {
+//			throw new IllegalStateException("We should always have a result here. In a list of "+
+//					labels.size()+" labels, none pointed to tag="+tag.getName()+", ref="+ref+".");
+//		}
+		return rval;
 	}
 
 	/**
@@ -76,7 +68,8 @@ final class DataIDLabel extends AbstractData {
 		final short tagType = bytes.getShort();
 		final short reference = bytes.getShort();
 		label = getString(bytes.remaining());
-		object = getObject(tagType, reference);
+		object = getObject(TYPES.get(tagType), reference);
+		LOGGER.fine("Initialized "+toString());
 	}
 
 	/**
@@ -87,14 +80,14 @@ final class DataIDLabel extends AbstractData {
 	}
 
 	public String toString() {
-		return label;
+		return "(Label \"" +label+"\": "+object.toString()+')';
 	}
 
 	/**
 	 * 
 	 * @return the object referred to
 	 */
-	private AbstractData getObject() {
+	private AbstractData getObject() {//NOPMD
 		return object;
 	}
 
