@@ -26,6 +26,7 @@ public class LoggerConfig {
 	public LoggerConfig(String name){
 		super();
 		logger = Logger.getLogger(name);
+		logger.setLevel(Level.FINE);
 		List<Handler> handlers = Arrays.asList(logger.getHandlers());
 		for (Handler handler : handlers) {
 			logger.removeHandler(handler);
