@@ -100,9 +100,10 @@ final class VirtualGroup extends AbstractData {
 		final short typeLen = bytes.getShort();
 		type = getString(typeLen);
 		for (int i = 0; i < numItems; i++) {
-			add(getObject(tags[i], refs[i]));
+			add(getObject(TYPES.get(tags[i]), refs[i]));
 		}
 		/* rest of element has no useful information */
+		LOGGER.fine("Initialized "+toString());
 	}
 
 	/**
@@ -143,7 +144,8 @@ final class VirtualGroup extends AbstractData {
 	 *            type string showing what kind of info is contained
 	 * @return list of groups with the given type
 	 */
-	static List<VirtualGroup> ofType(final List<VirtualGroup> list, final String groupType) {
+	static List<VirtualGroup> ofType(final List<VirtualGroup> list,
+			final String groupType) {
 		final List<VirtualGroup> output = new ArrayList<VirtualGroup>();
 		for (VirtualGroup group : list) {
 			if (group.getType() == groupType) {
@@ -164,7 +166,7 @@ final class VirtualGroup extends AbstractData {
 		VirtualGroup rval = null;
 		final List<AbstractData> objectList = getDataObjectList();
 		boolean error = false;
-		loop: for(AbstractData dataObject : objectList) {
+		loop: for (AbstractData dataObject : objectList) {
 			if (dataObject instanceof VirtualGroup) {
 				final VirtualGroup virtualGroup = (VirtualGroup) dataObject;
 				final String type = virtualGroup.getType();
@@ -232,12 +234,13 @@ final class VirtualGroup extends AbstractData {
 	 *            name of the desired group
 	 * @return the group with the given name
 	 */
-	static VirtualGroup ofName(final List<AbstractData> list, final String groupName) {
+	static VirtualGroup ofName(final List<VirtualGroup> list,
+			final String groupName) {
 		VirtualGroup output = null;
-		for (AbstractData data : list) {
-			final VirtualGroup group = (VirtualGroup) data;
+		for (VirtualGroup group : list) {
 			if (group.getName().equals(groupName)) {
 				output = group;
+				break;
 			}
 		}
 		return output;
@@ -253,6 +256,7 @@ final class VirtualGroup extends AbstractData {
 	}
 
 	public String toString() {
-		return type + ":" + name;
+		return "(VG: type=\"" + type + "\", name=\"" + name + "\", ref="
+				+ getRef() + ")";
 	}
 }
