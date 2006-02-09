@@ -128,7 +128,7 @@ public class BatchExport extends JDialog implements Observer {
 
 		void show() {
 			final Set<Histogram> histSet = new HashSet<Histogram>();
-			CollectionsUtil.instance().addConditional(
+			CollectionsUtil.getSingletonInstance().addConditional(
 					Histogram.getHistogramList(), histSet, HIST_COND_1D);
 			histList.setListData(histSet.toArray());
 			dialog.setVisible(true);
@@ -136,8 +136,7 @@ public class BatchExport extends JDialog implements Observer {
 	}
 
 	private static final CollectionsUtil.Condition<Histogram> HIST_COND_1D = new CollectionsUtil.Condition<Histogram>() {
-		public boolean accept(Object object) {
-			final Histogram hist = (Histogram) object;
+		public boolean accept(final Histogram hist) {
 			return hist.getDimensionality() == 1;
 		}
 	};
@@ -188,7 +187,7 @@ public class BatchExport extends JDialog implements Observer {
 	 */
 	private void addAllHists() {
 		final Set<Histogram> histSet = new HashSet<Histogram>();
-		CollectionsUtil.instance().addConditional(Histogram.getHistogramList(),
+		CollectionsUtil.getSingletonInstance().addConditional(Histogram.getHistogramList(),
 				histSet, HIST_COND_1D);
 		lstHists.setListData(histSet.toArray());
 	}
