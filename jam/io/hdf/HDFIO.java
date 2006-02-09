@@ -247,7 +247,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 					rval = false;
 				}
 				/* destroys reference to HDFile (and its AbstractHData's) */
-				inHDF = null;
+				inHDF = null;//NOPMD
 			}
 			AbstractData.clearAll();
 			setLastValidFile(infile);
@@ -283,9 +283,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 					MonitorSteps.READ_WRITE + MonitorSteps.OVERHEAD_WRITE);
 			final Preferences prefs = HDFPrefs.PREFS;
 			final boolean suppressEmpty = prefs.getBoolean(
-					HDFPrefs.SUPPRESS_WRITE_EMPTY, true);
+					HDFPrefs.SUPPRES_EMPTY, true);
 			asyncMonitor.increment();
-
 			HDFile out = null;
 			try {
 				convertJamToHDF(groups, histograms, writeData, writeSettings,
@@ -296,7 +295,6 @@ public final class HDFIO implements DataIO, JamFileFields {
 				asyncMonitor.setNote("Writing Data Objects");
 				out.writeFile();
 				asyncMonitor.setNote("Closing File");
-
 				message.append("Saved ").append(file.getName()).append(" (");
 				message.append(groupCount).append(" groups");
 				message.append(", ").append(histCount).append(" histograms");
@@ -320,7 +318,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			}
 
 			AbstractData.clearAll();
-			out = null; // allows Garbage collector to free up memory
+			out = null; //NOPMD
 			setLastValidFile(file);
 			uiMessage = message.toString();
 		}
@@ -782,7 +780,6 @@ public final class HDFIO implements DataIO, JamFileFields {
 			inHDF.setLazyLoadData(true);
 			inHDF.readFile();
 			AbstractData.interpretBytesAll();
-
 			HistogramAttributes.clear();
 			if (hdfToJam.hasVGroupRootGroup()) {
 				rval.addAll(loadHistogramAttributesGroup());
@@ -801,7 +798,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			} catch (IOException except) {
 				LOGGER.warning(except.getMessage());
 			}
-			inHDF = null;
+			inHDF = null;//NOPMD
 		}
 		AbstractData.clearAll();
 		return rval;
@@ -901,8 +898,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 	/*
 	 * non-javadoc: Asyncronized write
 	 */
-	private void spawnAsyncWriteFile(final File file, final List groups,
-			final List histograms, final boolean writeData,
+	private void spawnAsyncWriteFile(final File file, final List<Group> groups,
+			final List<Histogram> histograms, final boolean writeData,
 			final boolean wrtSettings) {
 		uiMessage = "";
 		uiErrorMsg = "";
@@ -930,7 +927,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 	private static final List<Group> EMPTY_GROUP_LIST = Collections
 			.unmodifiableList(new ArrayList<Group>());
 
-	public void writeFile(File file) {
+	public void writeFile(final File file) {
 		writeFile(file, EMPTY_GROUP_LIST, EMPTY_HIST_LIST, true, true);
 	}
 
