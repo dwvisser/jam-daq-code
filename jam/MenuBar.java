@@ -236,7 +236,7 @@ final class MenuBar implements Observer, CommandNames {
 		mPrefer.add(getMenuItem(PlotPrefs.AUTO_PEAK_FIND));
 		mPrefer.add(getMenuItem(SHOW_PEAK_FIND));
 		mPrefer.addSeparator();
-		mPrefer.add(getMenuItem(HDFPrefs.SUPPRESS_WRITE_EMPTY));
+		mPrefer.add(getMenuItem(HDFPrefs.SUPPRES_EMPTY));
 		mPrefer.addSeparator();
 		mPrefer.add(getMenuItem(JamPrefs.VERBOSE));
 		mPrefer.add(getMenuItem(JamPrefs.DEBUG));

@@ -18,6 +18,6 @@ public interface HDFPrefs {
 		/**
 		 * Name for the empty write preference.
 		 */
-		String SUPPRESS_WRITE_EMPTY="Write Empty Hisograms/Gates";
+		String SUPPRES_EMPTY="Write Empty Histograms/Gates";
 		
 }

@@ -16,7 +16,7 @@ public class SetHDFSuppressSaveEmpty extends AbstractSetBooleanPreference {
 		putValue(SHORT_DESCRIPTION,
 		"Don't save empty Histograms");
 		prefsNode=HDFPrefs.PREFS;
-		key=HDFPrefs.SUPPRESS_WRITE_EMPTY;
+		key=HDFPrefs.SUPPRES_EMPTY;
 		defaultState=true;
 	}
 
