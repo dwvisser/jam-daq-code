@@ -96,7 +96,7 @@ public final class SetupSortOn extends AbstractSetup implements
 	/* strings of data entered */
 	private transient String exptName;
 
-	private transient final jam.FrontEndCommunication frontEnd = jam.VMECommunication
+	private transient final jam.comm.FrontEndCommunication frontEnd = jam.comm.VMECommunication
 			.getSingletonInstance();
 
 	private transient final ConsoleLog consoleLog;

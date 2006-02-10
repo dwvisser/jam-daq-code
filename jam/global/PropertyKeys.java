@@ -58,7 +58,7 @@ public interface PropertyKeys {
 	/**
 	 * IP address of the socket used to communicate with the front end.
 	 * 
-	 * @see jam.FrontEndCommunication
+	 * @see jam.comm.FrontEndCommunication
 	 */
 	String HOST_IP = "host.IP";
 
