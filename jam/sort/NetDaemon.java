@@ -76,15 +76,14 @@ public final class NetDaemon extends GoodThread {
 			final InetAddress dataAddress = InetAddress.getByName(host);
 			dataSocket = new DatagramSocket(port, dataAddress);
 		} catch (UnknownHostException e) {
-			throw new SortException(getClass().getName() + ": The host, "
-					+ host + ", is unknown.");
+			throw new SortException("The host, " + host + ", is unknown.", e);
 		} catch (BindException be) {
-			throw new SortException(
-					getClass().getName()
-							+ ": Could not bind to data socket. Are other copies of Jam running?");
-		} catch (IOException e) {
 			throw new SortException(getClass().getName()
-					+ ": Could not create data socket.");
+					+ "Data socket couldn't bind to address = " + host
+					+ ", port = " + port
+					+ ". (Other copies of Jam running online?)", be);
+		} catch (IOException e) {
+			throw new SortException("Could not create data socket.", e);
 		}
 		setPriority(ThreadPriorities.NET);
 		setDaemon(true);// the user doesn't interact with this thread
@@ -185,8 +184,7 @@ public final class NetDaemon extends GoodThread {
 						storageRing.putBuffer(bufferOut);
 					} catch (RingFullException rfe) {
 						notStorCount++;
-						LOGGER.severe("Storage Buffer "
-								+ rfe.getMessage());
+						LOGGER.severe("Storage Buffer " + rfe.getMessage());
 					}
 				}
 			} else {// received a packet while thread state not RUN
