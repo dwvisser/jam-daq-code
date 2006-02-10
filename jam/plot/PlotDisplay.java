@@ -17,7 +17,6 @@ import java.awt.GridLayout;
 import java.awt.print.PageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -406,9 +405,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * 
 	 */
 	void update() {
-		final Iterator iter = plotList.iterator();
-		while (iter.hasNext()) {
-			final PlotContainer container = (PlotContainer) iter.next();
+		for (PlotContainer container : plotList) {
 			container.update();
 		}
 	}

@@ -15,7 +15,6 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
@@ -186,12 +185,11 @@ final class Plot1d extends AbstractPlot {
 		panel.repaint();
 	}
 
-	protected void paintMarkedChannels(Graphics g) {
-		g.setColor(colorMap.getMark());
-		final Iterator it = markedChannels.iterator();
-		while (it.hasNext()) {
-			final int px = ((Bin) it.next()).getX();
-			graph.markChannel1d(px, counts[px]);
+	protected void paintMarkedChannels(final Graphics graphics) {
+		graphics.setColor(colorMap.getMark());
+		for (Bin bin : markedChannels) {
+			final int xChannel = bin.getX();
+			graph.markChannel1d(xChannel, counts[xChannel]);
 		}
 	}
 
@@ -281,9 +279,9 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Draw a overlay of another data set
 	 */
-	protected void paintOverlay(Graphics g) {
-		final Graphics2D g2 = (Graphics2D) g;
-		int i = 0;
+	protected void paintOverlay(final Graphics graphics) {
+		final Graphics2D graphics2d = (Graphics2D) graphics;
+		int index = 0;
 		/*
 		 * I had compositing set here, but apparently, it's too many small draws
 		 * using compositing, causing a slight performance issue.
@@ -291,15 +289,13 @@ final class Plot1d extends AbstractPlot {
 		final int len = panel.isDisplayingOverlay() ? overlayNumber.size() : 0;
 		if (len > 0) {
 			final int[] overlayInts = new int[len];
-			final Iterator iter = overlayNumber.iterator();
-
-			while (iter.hasNext()) {
-				overlayInts[i] = ((Integer) iter.next()).intValue();
-				g2.setColor(colorMap.getOverlay(i));
-				graph.drawHist(overlayCounts.get(i), binWidth);
-				i++;
+			for (int num : overlayNumber) {
+				overlayInts[index] = num;
+				graphics2d.setColor(colorMap.getOverlay(index));
+				graph.drawHist(overlayCounts.get(index), binWidth);
+				index++;
 			}
-			Histogram plotHist = getHistogram();
+			final Histogram plotHist = getHistogram();
 			graph.drawNumber(plotHist.getNumber(), overlayInts);
 		}
 

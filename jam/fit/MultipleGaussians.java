@@ -214,16 +214,16 @@ public class MultipleGaussians extends AbstractNonLinearFit implements GaussianC
 		/* must use Double so Comparator interface works */
 		list.add((double)lo.getIntValue());
 		list.add((double)hi.getIntValue());
-		final int n=numPeaks.getIntValue();
-		for (int i = 0; i < n; i++) {
+		final int npeaks=numPeaks.getIntValue();
+		for (int i = 0; i < npeaks; i++) {
 			list.add(centroid[i].getDoubleValue());
 		}
-		final Iterator<Double> it = list.iterator();
-		lo.setValue(it.next());
-		for (int i = 0; i < n; i++) {
-			centroid[i].setValue(it.next());
+		final Iterator<Double> iter = list.iterator();
+		lo.setValue(iter.next());
+		for (int i = 0; i < npeaks; i++) {
+			centroid[i].setValue(iter.next());
 		}
-		hi.setValue(it.next());
+		hi.setValue(iter.next());
 	}
 
 	/**

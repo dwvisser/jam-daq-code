@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -248,14 +247,10 @@ public class OpenMultipleFiles implements HDFIO.AsyncListener {
 		try {
 
 			/* Read in histogram names attributes */
-			final List attrList = hdfio.readHistogramAttributes(fileSelect);
-			final Iterator iter = attrList.iterator();
-			while (iter.hasNext()) {
-				final HistogramAttributes histAtt = (HistogramAttributes) iter
-						.next();
+			final List<HistogramAttributes> attrList = hdfio.readHistogramAttributes(fileSelect);
+			for (HistogramAttributes histAtt : attrList) {
 				hListModel.addElement(histAtt.getFullName());
 			}
-
 			loadState = true;
 		} catch (HDFException hdfe) {
 			LOGGER.severe(hdfe.getMessage());

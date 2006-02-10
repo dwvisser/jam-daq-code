@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -252,10 +251,8 @@ public class BatchExport extends JDialog implements Observer {
 		final JPanel pBtnOpn = new JPanel(new GridLayout(1, 0, 10, 0));
 		pOptions.add(pBtnOpn);
 		final ButtonGroup options = new ButtonGroup();
-		List exportClassList = createExportClassesList();
-		final Iterator iter = exportClassList.iterator();
-		while (iter.hasNext()) {
-			final AbstractImpExp impExp = (AbstractImpExp) iter.next();
+		final List<AbstractImpExp> exportClassList = createExportList();
+		for (AbstractImpExp impExp : exportClassList) {
 			final AbstractButton exportChoice = getButton(impExp);
 			options.add(exportChoice);
 			pBtnOpn.add(exportChoice);
@@ -299,14 +296,13 @@ public class BatchExport extends JDialog implements Observer {
 		setResizable(false);
 	}
 
-	private List createExportClassesList() {
+	private List<AbstractImpExp> createExportList() {
 		final List<AbstractImpExp> rval = new ArrayList<AbstractImpExp>();
 		final String here = getClass().getName() + ".getClasses(): ";
-		final Set set = RTSI.getSingletonInstance().find("jam.io",
+		final Set<Class<?>> set = RTSI.getSingletonInstance().find("jam.io",
 				AbstractImpExp.class, false);
 		set.remove(AbstractImpExp.class);
-		for (final Iterator it = set.iterator(); it.hasNext();) {
-			final Class temp = (Class) it.next();
+		for (Class<?> temp : set) {
 			try {
 				final AbstractImpExp impExp = (AbstractImpExp) temp
 						.newInstance();
@@ -580,9 +576,7 @@ public class BatchExport extends JDialog implements Observer {
 
 	private AbstractImpExp selectedExportFormat() {
 		AbstractImpExp out = null;
-		final Iterator iter = exportMap.keySet().iterator();
-		while (iter.hasNext()) {
-			final AbstractButton button = (AbstractButton) iter.next();
+		for (AbstractButton button : exportMap.keySet()) {
 			if (button.isSelected()) {
 				out = exportMap.get(button);
 			}
@@ -596,9 +590,8 @@ public class BatchExport extends JDialog implements Observer {
 	 */
 	private void setExportEnable() {
 		boolean selected = false;
-		final Iterator iter = exportMap.keySet().iterator();
-		while (iter.hasNext()) {
-			selected |= ((AbstractButton) iter.next()).isSelected();
+		for (AbstractButton button : exportMap.keySet()) {
+			selected |= button.isSelected();
 		}
 		selected &= lstHists.getModel().getSize() > 0;
 		bExport.setEnabled(selected);
@@ -610,9 +603,7 @@ public class BatchExport extends JDialog implements Observer {
 	private void setupHistChooser() {
 		cbHist.removeActionListener(cbHistListen);
 		cbHist.removeAllItems();
-		final Iterator iterator = Histogram.getHistogramList().iterator();
-		while (iterator.hasNext()) {
-			final Histogram hist = (Histogram) iterator.next();
+		for (Histogram hist : Histogram.getHistogramList()) {
 			if (hist.getDimensionality() == 1) {
 				cbHist.addItem(hist.getFullName());
 			}

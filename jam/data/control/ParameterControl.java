@@ -19,8 +19,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -65,9 +66,6 @@ public final class ParameterControl extends AbstractControl {
 
 	/**
 	 * Constructs a new parameter dialog.
-	 * 
-	 * @param messageHandler
-	 *            where to print messages
 	 */
 	public ParameterControl() {
 		super("Sort Parameters", true);
@@ -180,11 +178,9 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 */
 	public void doSetup() {
-		DataParameter currentParameter;
-		Iterator parameterIter;
-		int numberParameters;
 		int count;
-		numberParameters = DataParameter.getParameterList().size();
+		final List<DataParameter> plist = DataParameter.getParameterList();
+		final int numberParameters = plist.size();
 		pCenter.removeAll();
 		// we have some elements in the parameter list
 		if (numberParameters != 0) {
@@ -192,10 +188,8 @@ public final class ParameterControl extends AbstractControl {
 			pParam = new JPanel[numberParameters];
 			labelParam = new JLabel[numberParameters];
 			textParam = new JTextField[numberParameters];
-			parameterIter = DataParameter.getParameterList().iterator();
 			count = 0;
-			while (parameterIter.hasNext()) {
-				currentParameter = (DataParameter) parameterIter.next();
+			for (DataParameter currentParameter : plist) {
 				pParam[count] = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10,
 						0));
 				pCenter.add(pParam[count]);
@@ -238,11 +232,7 @@ public final class ParameterControl extends AbstractControl {
 				FileInputStream fos = new FileInputStream(inputFile);
 				saveProperties.load(fos);
 				// copy from properties to parameters
-				final Iterator iterParameter = DataParameter.getParameterList()
-						.iterator();
-				while (iterParameter.hasNext()) {
-					DataParameter parameter = (DataParameter) iterParameter
-							.next();
+				for (DataParameter parameter : DataParameter.getParameterList()) {
 					name = parameter.getName().trim();
 					if (saveProperties.containsKey(name)) {
 						String valueString = (String) saveProperties.get(name);
@@ -259,14 +249,15 @@ public final class ParameterControl extends AbstractControl {
 				read();
 				LOGGER.info("Load Parameters from file " + inputFile.getName());
 				if (!listNotLoaded.equals("")) {
-					LOGGER.warning("Did not load parameter(s) "
-							+ listNotLoaded + ".");
+					LOGGER.warning("Did not load parameter(s) " + listNotLoaded
+							+ ".");
 				}
 			} catch (IOException ioe) {
 				LOGGER.severe("Loading Parameters. Cannot write to file "
-								+ inputFile.getName());
+						+ inputFile.getName());
 			} catch (NumberFormatException nfe) {
-				LOGGER.severe("Loading Parameters. Cannot convert value for Parameter: "
+				LOGGER
+						.severe("Loading Parameters. Cannot convert value for Parameter: "
 								+ name);
 			}
 
@@ -279,12 +270,9 @@ public final class ParameterControl extends AbstractControl {
 	public void read() {
 		if (DataParameter.getParameterList().size() != 0) {
 			DataParameter.getParameterList().size();// number of parameters
-			final Iterator enumParameter = DataParameter.getParameterList()
-					.iterator();
 			int count = 0;
-			while (enumParameter.hasNext()) {
-				final DataParameter currentParameter = (DataParameter) enumParameter
-						.next();
+			for (DataParameter currentParameter : DataParameter
+					.getParameterList()) {
 				textParam[count].setText(String.valueOf(currentParameter
 						.getValue()));
 				count++;
@@ -297,11 +285,8 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 */
 	private void save() {
-
 		JFrame frame = null;
-
 		set();
-
 		JFileChooser fd = new JFileChooser(lastFile);
 		fd.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fd.setFileFilter(new ExtensionFileFilter(
@@ -317,13 +302,9 @@ public final class ParameterControl extends AbstractControl {
 					FILE_EXTENSION, FileUtilities.APPEND_ONLY);
 			if (FILE_UTIL.overWriteExistsConfirm(outputFile)) {
 				Properties saveProperties = new Properties();
-				final Iterator iterParameter = DataParameter.getParameterList()
-						.iterator();
-				while (iterParameter.hasNext()) {
-					DataParameter parameter = (DataParameter) iterParameter
-							.next();
-					String valueString = (new Double(parameter.getValue()))
-							.toString();
+				for (DataParameter parameter : DataParameter.getParameterList()) {
+					final String valueString = String.valueOf(parameter
+							.getValue());
 					saveProperties.put(parameter.getName().trim(), valueString);
 				}
 				try {
@@ -336,7 +317,7 @@ public final class ParameterControl extends AbstractControl {
 							+ outputFile.getName());
 				} catch (IOException ioe) {
 					LOGGER.severe("Saving Parameters. Cannot write to file "
-									+ outputFile.getName());
+							+ outputFile.getName());
 				}
 			}
 		}
@@ -347,36 +328,28 @@ public final class ParameterControl extends AbstractControl {
 	 * 
 	 */
 	public void set() {
-		DataParameter currentParameter = null;
 		int count;
 		String textValue;
 		if (checkTextAreNumbers()) {
-			Iterator parameterIter = DataParameter.getParameterList()
-					.iterator();
 			try {
 				count = 0;
-				while (parameterIter.hasNext()) {
-					currentParameter = (DataParameter) parameterIter.next();
+				for (DataParameter currentParameter : DataParameter
+						.getParameterList()) {
 					textValue = textParam[count].getText().trim();
 					currentParameter.setValue(Double.parseDouble(textValue));
 					count++;
 				}
 				read();
 			} catch (NumberFormatException nfe) {
-				if (currentParameter != null) {
-					LOGGER.severe("Not a valid number for parameter "
-									+ currentParameter.getName());
-				} else {
-					LOGGER.severe("Not a valid number, null parameter");
-				}
+				LOGGER.log(Level.SEVERE, "Not a valid number for a parameter.",
+						nfe);
 			}
 		} else {
-
 			if (!invalidNames.equals("")) {
-				LOGGER.severe("Parameters not set, not a number for parameter(s) "
+				LOGGER
+						.severe("Parameters not set, not a number for parameter(s) "
 								+ invalidNames + ".");
 			}
-
 		}
 	}
 

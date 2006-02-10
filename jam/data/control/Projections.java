@@ -18,7 +18,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -235,9 +234,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* add gates to chooser */
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
-			final Iterator iterator = hfrom.getGates().iterator();
-			while (iterator.hasNext()) {
-				final Gate gate = (Gate) iterator.next();
+			for (Gate gate : hfrom.getGates()) {
 				if (gate.isDefined()){
 					cchan.addItem(gate.getName());
 				}

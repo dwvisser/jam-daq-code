@@ -10,7 +10,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -72,13 +72,13 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 
 	private void displayMonitors() {
 		// loop for each monitor check if we should sound alarm
-		for (Iterator it = Monitor.getMonitorList().iterator(); it.hasNext();) {
-			final Monitor monitor = (Monitor) it.next();
+		for (Monitor monitor : Monitor.getMonitorList()) {
 			// If the audio on and are we taking data
 			if (checkAudio.isSelected()
 					&& JamStatus.getSingletonInstance().isAcqOn()
 					&& monitor.getAlarm() && (!monitor.isAcceptable())) {
 				Toolkit.getDefaultToolkit().beep();
+				break;
 			}
 		}
 		// display monitors
@@ -90,12 +90,10 @@ public class MonitorDisplay extends AbstractControl implements Observer {
 	 */
 	public void doSetup() {
 		JPanel pm = null;
-		int numberMonitors;
-		numberMonitors = Monitor.getMonitorList().size();
-		Iterator monitorsIter = Monitor.getMonitorList().iterator();
+		final List<Monitor> mlist = Monitor.getMonitorList();
+		final int numberMonitors = mlist.size();
 		pBars.removeAll();
-		while (monitorsIter.hasNext()) {
-			Monitor monitor = (Monitor) monitorsIter.next();
+		for (Monitor monitor : mlist) {
 			pm = new JPanel();
 			pm.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 			pBars.add(pm);

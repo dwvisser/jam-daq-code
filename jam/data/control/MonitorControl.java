@@ -18,7 +18,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import javax.swing.JButton;
@@ -212,11 +211,9 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	void recall() {
 		/* update interval */
 		spinnerUpdate.setValue(new Integer(interval));
-		final Iterator mList = Monitor.getMonitorList().iterator();
 		/* get the Monitor parameters */
 		int base = 0;
-		while (mList.hasNext()) {
-			final Monitor monitor = (Monitor) mList.next();
+		for (Monitor monitor : Monitor.getMonitorList()) {
 			base += 4;
 			final JTextField textThreshold = (JTextField) pMonitors
 					.getComponent(base + 1);
@@ -246,13 +243,10 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 						"Update interval must be greater than 1");
 			}
 			Monitor.setInterval(interval);
-			// set Monitor parameters
-			final Iterator it = Monitor.getMonitorList().iterator();
 			/* get the Monitor parameters */
 			int base = 0;
-			while (it.hasNext()) {
+			for (Monitor monitor : Monitor.getMonitorList()) {
 				base += 4;
-				final Monitor monitor = (Monitor) it.next();
 				final JTextField textThreshold = (JTextField) pMonitors
 						.getComponent(base + 1);
 				final JTextField textMaximum = (JTextField) pMonitors
@@ -300,8 +294,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 */
 	private void loopThreadStopped() {
 		loopThread = null;
-		for (Iterator it = Monitor.getMonitorList().iterator(); it.hasNext();) {
-			((Monitor) it.next()).reset();
+		for (Monitor monitor : Monitor.getMonitorList()) {
+			monitor.reset();
 		}
 		BROADCASTER.broadcast(BroadcastEvent.Command.MONITORS_DISABLED);
 	}
@@ -319,9 +313,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 				BROADCASTER.broadcast(BroadcastEvent.Command.SCALERS_READ);
 				Thread.sleep(waitForResults);
 				// loop for each monitor
-				for (Iterator it = Monitor.getMonitorList().iterator(); it
-						.hasNext();) {
-					final Monitor monitor = (Monitor) it.next();
+				for (Monitor monitor : Monitor.getMonitorList()) {
 					monitor.update();// update the monitor
 				} // end loop monitors
 				/* Broadcast event on UI thread */

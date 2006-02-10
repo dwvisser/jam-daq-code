@@ -1,6 +1,5 @@
 package jam.plot;
 
-import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -14,7 +13,6 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
-import java.util.Iterator;
 import java.util.List;
 import java.util.prefs.PreferenceChangeEvent;
 
@@ -76,11 +74,9 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		return smoothScale;
 	}
 
-	protected void paintMarkedChannels(Graphics graphics) {
+	protected void paintMarkedChannels(final Graphics graphics) {
 		graphics.setColor(plotColorMap.getMark());
-		final Iterator iterator = markedChannels.iterator();
-		while (iterator.hasNext()) {
-			final Bin bin = (Bin) iterator.next();
+		for (Bin bin : markedChannels) {
 			graph.markChannel2d(bin);
 		}
 	}

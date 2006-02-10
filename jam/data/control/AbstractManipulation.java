@@ -5,7 +5,6 @@ import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 
 import java.awt.FontMetrics;
-import java.util.Iterator;
 
 import javax.swing.JComboBox;
 
@@ -53,8 +52,7 @@ abstract class AbstractManipulation extends AbstractControl {
 			//Add working group new
 			comboBox.addItem(NEW_HIST+Group.WORKING_NAME+WILD_CARD);
 			//Add new histograms
-			for (final Iterator iter = Group.getGroupList().iterator();iter.hasNext();) {
-				final Group group = (Group)iter.next();
+			for (Group group : Group.getGroupList()) {
 				if (group.getType() != Group.Type.SORT &&
 					!Group.WORKING_NAME.equals(group.getName())) {
 					comboBox.addItem(NEW_HIST+group.getName()+WILD_CARD);
@@ -62,20 +60,18 @@ abstract class AbstractManipulation extends AbstractControl {
 			}
 		}
 		/* Add Existing hisograms */
-		for (final Iterator grpiter = Group.getGroupList().iterator(); grpiter.hasNext();) {
-			final Group group = (Group)grpiter.next();
-			for  (final Iterator histiter = group.getHistogramList().iterator(); histiter.hasNext();) {
-				final Histogram hist =(Histogram)histiter.next();
+		for (Group group : Group.getGroupList()) {
+			for  (Histogram hist : group.getHistogramList()) {
 				if (hist.getType().getDimensionality() == histDim) {
 					comboBox.addItem(hist.getFullName());
 				}
 			}
-		}
-		
+		}		
 		if (0<comboBox.getItemCount()) {			
 			comboBox.setSelectedIndex(0);
 		}
 	}
+	
 	/*
 	 * Is the histogram name one of a new histogram
 	 */

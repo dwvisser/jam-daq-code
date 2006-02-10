@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -176,11 +175,9 @@ public class HistogramNew extends AbstractControl {
 	 */
 	public void doSetup() {
 		comboGroupModel.removeAllElements();
-		final Iterator iter = Group.getGroupList().iterator();
 		/* Add working group first */
 		comboGroupModel.addElement(Group.WORKING_NAME);
-		while (iter.hasNext()) {
-			final Group group = (Group) iter.next();
+		for (Group group : Group.getGroupList()) {
 			/* Don't add sort group or working group that was already added */
 			if (group.getType() != Group.Type.SORT
 					&& !Group.WORKING_NAME.equals(group.getName())) {

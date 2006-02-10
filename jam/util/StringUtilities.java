@@ -3,7 +3,6 @@ package jam.util;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -111,9 +110,7 @@ public final class StringUtilities {
 		/* find a name that does not conflict with existing names */
 		while (!isUnique) {
 			copyFound = false;
-			final Iterator<String> nameIter = nameSet.iterator();
-			while (nameIter.hasNext()) {
-				final String nameNext = nameIter.next();
+			for (String nameNext : nameSet) {
 				if (nameTemp.compareTo(nameNext) == 0) {
 					copyFound = true;
 					break;

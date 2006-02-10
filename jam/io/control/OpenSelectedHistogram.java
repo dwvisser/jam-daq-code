@@ -19,7 +19,6 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -159,15 +158,13 @@ public final class OpenSelectedHistogram implements HDFIO.AsyncListener {
 	/*
 	 * non-javadoc: Load name of histograms from the selected file.
 	 */
-	private boolean loadHistNames(File fileSelect) {
+	private boolean loadHistNames(final File fileSelect) {
 		boolean loadState;
 		/* Read in histogram names attributes */
 		try {
-			final List histAttr = hdfio.readHistogramAttributes(fileSelect);
-			final Iterator iter = histAttr.iterator();
-			while (iter.hasNext()) {
-				final HistogramAttributes histAtt = (HistogramAttributes) iter
-						.next();
+			final List<HistogramAttributes> attrList = hdfio
+					.readHistogramAttributes(fileSelect);
+			for (HistogramAttributes histAtt : attrList) {
 				histListData.addElement(histAtt.getFullName());
 			}
 			loadState = true;

@@ -6,7 +6,6 @@ import jam.util.StringUtilities;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -332,9 +331,7 @@ public final class Group implements Nameable {
 		NAME_MAP.remove(this.getName());
 		NAME_MAP.put(name, this);
 		fullName = name;
-		final Iterator iterator = getHistogramList().iterator();
-		while (iterator.hasNext()) {
-			final Histogram hist = (Histogram) iterator.next();
+		for (Histogram hist : getHistogramList()) {
 			hist.updateNames(this);
 		}
 	}

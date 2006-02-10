@@ -6,7 +6,6 @@ import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,8 +47,7 @@ public final class Gate implements DataElement {
 	 * Clears the list of gates.
 	 */
 	public static void clearList() {
-		for (final Iterator it = LIST.iterator(); it.hasNext();) {
-			final Gate gate = (Gate) it.next();
+		for (Gate gate : LIST) {
 			gate.insideGate = NO_AREA;
 			gate.bananaGate.reset();
 		}
@@ -172,9 +170,7 @@ public final class Gate implements DataElement {
 		histUniqueName = hist.getFullName();
 		// Set of names of gates for histogram this gate belongs to
 		Set<String> gateNames = new TreeSet<String>();
-		Iterator histGatesIter = hist.getGates().iterator();
-		while (histGatesIter.hasNext()) {
-			Gate gate = (Gate) histGatesIter.next();
+		for (Gate gate : hist.getGates()) {
 			gateNames.add(gate.getName());
 		}
 		this.name = stringUtil.makeUniqueName(nameIn, gateNames, NAME_LENGTH);

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -209,9 +208,7 @@ public abstract class Histogram implements DataElement {
 	 * Clears the list of histograms.
 	 */
 	public static void clearList() {
-		final Iterator iterator = LIST.iterator();
-		while (iterator.hasNext()) {
-			final Histogram his = (Histogram) iterator.next();
+		for (Histogram his : LIST) {
 			his.clearInfo();
 		}
 		LIST.clear();

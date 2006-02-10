@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -486,9 +485,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	 */
 	private void writeHis(final OutputStream outputStream) throws IOException {
 		final DataOutputStream dosHis = new DataOutputStream(outputStream);
-		final Iterator histIterator = Histogram.getHistogramList().iterator();
-		while (histIterator.hasNext()) {
-			final Histogram hist = ((Histogram) histIterator.next());
+		for (Histogram hist : Histogram.getHistogramList()) {
 			final Histogram.Type type = hist.getType();
 			/* write as determined by type */
 			if (type == Histogram.Type.ONE_DIM_INT) {

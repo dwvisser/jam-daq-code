@@ -18,7 +18,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -217,11 +216,8 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	public void displayScalers() {
 		final Group currentGroup = (Group) status.getCurrentGroup();
 		if (Group.isValid(currentGroup)) {
-			final List scalerList = currentGroup.getScalerList();
-			final Iterator iter = scalerList.iterator();
 			int count = 0;
-			while (iter.hasNext()) {
-				final Scaler currentScaler = (Scaler) iter.next();
+			for (Scaler currentScaler : currentGroup.getScalerList()) {
 				textScaler[count].setText(String.valueOf(currentScaler
 						.getValue()));
 				count++;

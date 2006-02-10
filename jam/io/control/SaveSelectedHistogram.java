@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.AbstractButton;
@@ -46,10 +45,9 @@ public final class SaveSelectedHistogram {
 	 * 
 	 * @param frame
 	 *            parent frame
-	 * @param msgHandler
-	 *            where to print messages
 	 */
 	public SaveSelectedHistogram(Frame frame) {
+		super();
 		this.frame = frame;
 		dialog = new JDialog(frame, "Save Selected Histograms", false);
 		dialog.setLocation(frame.getLocation().x + 50,
@@ -112,12 +110,11 @@ public final class SaveSelectedHistogram {
 	// dialog.dispose();
 	// }
 	private void loadHistogramList() {
-		final List histList = Histogram.getHistogramList();
+		final List<Histogram> histList = Histogram.getHistogramList();
 		final String[] histNames = new String[histList.size()];
-		final Iterator histIter = histList.iterator();
 		int index = 0;
-		while (histIter.hasNext()) {
-			histNames[index] = ((Histogram) histIter.next()).getFullName();
+		for (Histogram hist : histList) {
+			histNames[index] = hist.getFullName();
 			index++;
 		}
 		listHist.setListData(histNames);

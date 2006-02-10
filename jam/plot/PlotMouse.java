@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -80,9 +79,8 @@ class PlotMouse extends MouseAdapter {
 		if (selectedPlot.getCounts() != null) {
 			final Point pin = event.getPoint();
 			final Bin pout = plotGraphics.toData(pin);
-			final Iterator iter = listenersList.iterator();
-			while (iter.hasNext()) {
-				((PlotMouseListener) iter.next()).plotMousePressed(pout, pin);
+			for (PlotMouseListener listener : listenersList) {
+				listener.plotMousePressed(pout, pin);
 			}
 		}
 	}
