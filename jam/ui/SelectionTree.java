@@ -259,7 +259,7 @@ public final class SelectionTree extends JPanel implements Observer {
 						.getLastPathComponent());
 				final Object firstNodeObject = firstNode.getUserObject();
 
-				if (firstNode == rootNode) {
+				if (firstNode == rootNode) {//NOPMD
 					BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
 				} else if (firstNodeObject instanceof Group) {
 					final Group group = (Group) firstNodeObject;

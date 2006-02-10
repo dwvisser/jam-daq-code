@@ -47,7 +47,8 @@ public class CI extends AbstractSortRoutine {
 
 	private transient int idGe, idNaI, idTAC;//  id numbers for the signals
 
-	private transient int lastGe, lastAccept;//for calculating dead time
+	/* for calculating dead time */
+	private transient int lastGe, lastAccept;//NOPMD
 
 	private transient final Scaler sGe, sAccept, sNaI;//  scalers
 
