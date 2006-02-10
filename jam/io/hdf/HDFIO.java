@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -247,7 +246,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 					rval = false;
 				}
 				/* destroys reference to HDFile (and its AbstractHData's) */
-				inHDF = null;//NOPMD
+				inHDF = null;// NOPMD
 			}
 			AbstractData.clearAll();
 			setLastValidFile(infile);
@@ -318,7 +317,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			}
 
 			AbstractData.clearAll();
-			out = null; //NOPMD
+			out = null; // NOPMD
 			setLastValidFile(file);
 			uiMessage = message.toString();
 		}
@@ -339,12 +338,9 @@ public final class HDFIO implements DataIO, JamFileFields {
 			throws HDFException {
 		hdfToJam.setInFile(inHDF);
 		// Find groups
-		final List virtualGroups = hdfToJam.findGroups(existingGroupList);
-
-		// Loop over groups
-		final Iterator groupIter = virtualGroups.iterator();
-		GROUPLIST: while (groupIter.hasNext()) {
-			final VirtualGroup currentVGroup = (VirtualGroup) groupIter.next();
+		final List<VirtualGroup> virtualGroups = hdfToJam
+				.findGroups(existingGroupList);
+		GROUPLIST: for (VirtualGroup currentVGroup : virtualGroups) {
 			Group currentGroup = null;
 			final List<VirtualGroup> histList;
 			// Get the current group for the rest of the operation
@@ -376,9 +372,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			histList = hdfToJam.findHistograms(currentVGroup, empty);
 
 			// Loop over histograms
-			final Iterator histIter = histList.iterator();
-			while (histIter.hasNext()) {
-				final VirtualGroup histVGroup = (VirtualGroup) histIter.next();
+			for (VirtualGroup histVGroup : histList) {
 				final Histogram hist = hdfToJam.convertHistogram(currentGroup,
 						histVGroup, histAttributeList, mode);
 				if (hist != null) {
@@ -653,11 +647,8 @@ public final class HDFIO implements DataIO, JamFileFields {
 		final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
 		/* only the "histograms" VG (only one element) */
 		if (hists != null) {
-			/* Histogram iterator */
-			final Iterator iter = hists.getObjects().iterator();
-			// loop begin
-			while (iter.hasNext()) {
-				final VirtualGroup currHistGrp = (VirtualGroup) (iter.next());
+			for (AbstractData data : hists.getObjects()) {
+				final VirtualGroup currHistGrp = (VirtualGroup) data;
 				final HistogramAttributes histAttributes = hdfToJam
 						.convertHistogamAttributes(Group.DEFAULT_NAME,
 								currHistGrp, FileOpenMode.ATTRIBUTES);
@@ -798,7 +789,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			} catch (IOException except) {
 				LOGGER.warning(except.getMessage());
 			}
-			inHDF = null;//NOPMD
+			inHDF = null;// NOPMD
 		}
 		AbstractData.clearAll();
 		return rval;
@@ -984,18 +975,14 @@ public final class HDFIO implements DataIO, JamFileFields {
 		if (haveGroups) {
 			groupsToUse = groups;
 			histsToUse = new ArrayList<Histogram>();
-			final Iterator iterGroup = groups.iterator();
-			while (iterGroup.hasNext()) {
-				final Group currGroup = (Group) iterGroup.next();
+			for (Group currGroup : groups) {
 				histsToUse.addAll(currGroup.getHistogramList());
 			}
 		} else if (haveHists) {
 			/* Histograms specified determines groups. */
 			groupsToUse = new ArrayList<Group>();
 			histsToUse = histograms;
-			final Iterator iterHist = histsToUse.iterator();
-			while (iterHist.hasNext()) {
-				final Histogram hist = (Histogram) iterHist.next();
+			for (Histogram hist : histsToUse) {
 				if (!groupsToUse.contains(hist.getGroup())) {
 					groupsToUse.add(hist.getGroup());
 				}
@@ -1004,9 +991,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			/* Neither groups nor histograms specified */
 			groupsToUse = Group.getGroupList();
 			histsToUse = new ArrayList<Histogram>();
-			final Iterator iterGroup = groupsToUse.iterator();
-			while (iterGroup.hasNext()) {
-				final Group currGroup = (Group) iterGroup.next();
+			for (Group currGroup : groupsToUse) {
 				histsToUse.addAll(currGroup.getHistogramList());
 			}
 		}

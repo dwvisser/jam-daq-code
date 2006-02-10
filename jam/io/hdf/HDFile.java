@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -354,16 +353,14 @@ public final class HDFile extends RandomAccessFile implements Constants {
 	 * @exception HDFException thrown if err occurs during file write
 	 */
 	private void writeAllObjects() throws HDFException {
-		final List objectList = AbstractData.getDataObjectList();
+		final List<AbstractData> objectList = AbstractData.getDataObjectList();
 		int countObjct = 0;
 		final int numObjSteps = getNumberObjctProgressStep(objectList.size(),
 				FractionTime.WRITE_ALL);
-		final Iterator temp = objectList.iterator();
-		writeLoop: while (temp.hasNext()) {
+		writeLoop: for (AbstractData dataObject : objectList) {
 			if (countObjct % numObjSteps == 0 && monitor != null) {
 				monitor.increment();
 			}
-			final AbstractData dataObject = (AbstractData) (temp.next());
 			if (dataObject.getBytes().capacity() == 0) {
 				break writeLoop;
 			}

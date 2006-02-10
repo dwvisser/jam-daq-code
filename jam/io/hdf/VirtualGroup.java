@@ -3,7 +3,6 @@ package jam.io.hdf;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,12 +60,10 @@ final class VirtualGroup extends AbstractData {
 		bytes = ByteBuffer.allocate(numBytes);
 		// see DFTAG_VG specification for HDF 4.1r2
 		bytes.putShort(numItems);
-		for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-			final AbstractData dataObject = (AbstractData) (temp.next());
+		for (AbstractData dataObject : elements) {
 			bytes.putShort(dataObject.getTag());
 		}
-		for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-			final AbstractData dataObject = (AbstractData) (temp.next());
+		for (AbstractData dataObject : elements) {
 			bytes.putShort(dataObject.getRef());
 		}
 		bytes.putShort((short) name.length());

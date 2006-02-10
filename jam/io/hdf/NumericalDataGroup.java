@@ -3,7 +3,6 @@ package jam.io.hdf;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -32,8 +31,7 @@ final class NumericalDataGroup extends AbstractData {
         final int numBytes = 4 * elements.size();
         /* see DFTAG_NDG specification for HDF 4.1r2 */
         bytes = ByteBuffer.allocate(numBytes);
-        for (final Iterator temp = elements.iterator(); temp.hasNext();) {
-            final AbstractData dataObject = (AbstractData) (temp.next());
+        for (AbstractData dataObject : elements) {
             bytes.putShort(dataObject.getTag());
             bytes.putShort(dataObject.getRef());
         }
@@ -74,15 +72,13 @@ final class NumericalDataGroup extends AbstractData {
     
     public String toString(){
         final StringBuffer rval=new StringBuffer();
-        rval.append("NDG(");
-        final Iterator iterator = elements.iterator();
-        while (iterator.hasNext()){
-            rval.append(iterator.next().toString());
-            if (iterator.hasNext()){
-                rval.append(", ");
-            }
+        rval.append("NDG[");
+        final String separator = ", ";
+        for (Object data : elements) {
+            rval.append(data.toString()).append(separator);
         }
-        rval.append(")");
+        final int len = rval.length();
+        rval.replace(len - 2, len, "]");
         return rval.toString();
     }
 }
