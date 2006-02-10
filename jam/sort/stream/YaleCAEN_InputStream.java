@@ -23,18 +23,17 @@ import java.util.Map;
 public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		CAEN_StreamFields {
 
-	private enum BufferStatus {
+	private static enum BufferStatus {
+	    /**
+	     * Indicates the state where flushing of the remaining contents of the
+	     * buffer is occuring.
+	     */
+	    FIFO_ENDRUN_FLUSH,
+	    
 	    /**
 	     * State for when buffer is still filling and no output is available yet.
 	     */
 	    FIFO_FILLING,
-	    
-	    /**
-	     * In this state every new read from the stream requires that the oldest 
-	     * event in the the "FIFO" buffer be pulled to be returned so as to make room
-	     * for a new event counter.
-	     */
-	    FIFO_FULL,
 	    
 	    /**
 	     * This is the state when the EventStream has characters in it indicating that
@@ -45,49 +44,77 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 	    FIFO_FLUSH,
 	    
 	    /**
-	     * Indicates the state where flushing of the remaining contents of the
-	     * buffer is occuring.
+	     * In this state every new read from the stream requires that the oldest 
+	     * event in the the "FIFO" buffer be pulled to be returned so as to make room
+	     * for a new event counter.
 	     */
-	    FIFO_ENDRUN_FLUSH,
-	    
-	    /**
-	     * Indicates the state where a scaler block is being read.
-	     */
-	    SCALER,
+	    FIFO_FULL,
 	    
 	    /**
 	     * Indicates the state where we're reading through end-of-buffer
 	     * padding characters.
 	     */
-	    PADDING
+	    PADDING,
+	    
+	    /**
+	     * Indicates the state where a scaler block is being read.
+	     */
+	    SCALER
 	}
 	
-	private transient BufferStatus internalStat = BufferStatus.FIFO_FILLING;
+	/**
+	 * Type of pointer in FIFO buffer.
+	 * 
+	 * @author Dale Visser
+	 * 
+	 */
+	private static enum FifoPointer {
+		/**
+		 * where next get operation will be
+		 */
+		GET,
 
-	private transient int nScalrBlocks = 0; // for counting number of scaler
+		/**
+		 * where next put operation will be
+		 */
+		PUT
+	}
 
-	// blocks in the file
+	static private final int END_COMPARE = 0x4000000;
 
-	private transient final int[][] fifo = new int[BUFFER_DEPTH][NUM_CHANNELS];
+	private static final short ENDRUN = (short) (END_PAD & 0xffff);
 
-	private transient int[] eventNumbers = new int[BUFFER_DEPTH];
+	static private final int HEAD_COMPARE = 0x2000000;
 
-	private transient int posPut;// array index where next event counter is
+	static private final int PARM_COMPARE = 0x0000000;
 
-	// to be written to FIFO
-
-	private transient int posGet;// array index where next (i.e. oldest)
+	static private final int TYPE_MASK = 0x7000000;
 
 	// event counter/event should be retrieved
 	// from
-
-	private transient FifoPointer lastIncr;// last incremented
+	private transient int[] eventNumbers = new int[BUFFER_DEPTH];;
 
 	/**
 	 * Hashtable keys are the event numbers, objects are the array indices.
 	 */
 	private transient final Map<Integer, Integer> eventNumMap = Collections
 			.synchronizedMap(new HashMap<Integer, Integer>(BUFFER_DEPTH));
+
+	private transient final int[][] fifo = new int[BUFFER_DEPTH][NUM_CHANNELS];
+
+	private transient BufferStatus internalStat = BufferStatus.FIFO_FILLING;
+
+	private transient FifoPointer lastIncr;// last incremented
+
+	private transient int nScalrBlocks = 0; // for counting number of scaler
+
+	private transient int posGet;// array index where next (i.e. oldest)
+
+	private transient int posPut;// array index where next event counter is
+
+	private transient final int[] tempData = new int[32];
+
+	private transient final int[] tempParams = new int[32];
 
 	/**
 	 * Make sure to issue a setConsole() after using this constructor. It is
@@ -101,22 +128,6 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 									// to be GET
 	}
 
-	private void incrementPut() {
-		posPut++;
-		if (posPut == eventNumbers.length) {
-			posPut = 0;
-		}
-		lastIncr = FifoPointer.PUT;
-	}
-
-	private void incrementGet() {
-		posGet++;
-		if (posGet == eventNumbers.length) {
-			posGet = 0;
-		}
-		lastIncr = FifoPointer.GET;
-	}
-
 	/**
 	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean)
 	 */
@@ -124,12 +135,11 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		super(console);
 	}
 
-	private boolean eventInFIFO(final int eventNumber) {
-		return eventNumMap.containsKey(eventNumber);
-	}
-
-	private int getEventIndex(final int eventNumber) {
-		return eventNumMap.get(eventNumber);
+	/**
+	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+	 */
+	public YaleCAEN_InputStream(boolean console, int eventSize) {
+		super(console, eventSize);
 	}
 
 	private void addEventIndex(final int eventNumber) {
@@ -144,12 +154,20 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		}
 	}
 
-	private boolean fifoFull() {
-		return posPut == posGet && lastIncr == FifoPointer.PUT;
+	private boolean eventInFIFO(final int eventNumber) {
+		return eventNumMap.containsKey(eventNumber);
 	}
 
 	private boolean fifoEmpty() {
 		return posPut == posGet && lastIncr == FifoPointer.GET;
+	}
+
+	private boolean fifoFull() {
+		return posPut == posGet && lastIncr == FifoPointer.PUT;
+	}
+
+	private int getEventIndex(final int eventNumber) {
+		return eventNumMap.get(eventNumber);
 	}
 
 	private void getFirstEvent(final int[] data) {
@@ -163,21 +181,105 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 		}
 	}
 
+	/*
+	 * If we really have end-of-block like we should, stick event data in the
+	 * appropriate space in our FIFO.
+	 */
+	private void handleEndBlock(final int endblock, final int numParams)
+			throws EventException {
+		if (isEndBlock(endblock)) {
+			final int eventNumber = endblock & 0xffffff;
+			if (!eventInFIFO(eventNumber)) {// Event # not in
+				// FIFO,
+				// so need to add it.
+				addEventIndex(eventNumber);// can change
+				// internal
+				// state to FIFO_FULL
+			}
+			final int arrayIndex = getEventIndex(eventNumber);
+			/* copy data in, item by item */
+			for (int i = 0; i < numParams; i++) {
+				fifo[arrayIndex][tempParams[i]] = tempData[i];
+			}
+		} else {
+			throw new EventException(
+					getClass().getName()
+							+ ".readEvent(): didn't get a end of block when expected, int datum = 0x"
+							+ Integer.toHexString(endblock));
+		}
+	}
+
+	private EventInputStatus handleSpecialHeaders(final int header,
+			final EventInputStatus init) {
+		EventInputStatus rval = init;
+		if (header == BUFFER_END) {// return end of buffer
+			// to
+			// SortDaemon
+			/* no need to flush here */
+			rval = EventInputStatus.END_BUFFER;
+			internalStat = BufferStatus.PADDING;
+		} else if (header == BUFFER_PAD) {
+			rval = EventInputStatus.IGNORE;
+			internalStat = BufferStatus.PADDING;
+		} else if (header == STOP_PAD) {
+			internalStat = BufferStatus.FIFO_FLUSH;
+		} else if (header == END_PAD) {
+			internalStat = BufferStatus.FIFO_ENDRUN_FLUSH;
+			showMessage("Scaler blocks in file =" + nScalrBlocks);
+			nScalrBlocks = 0;
+		} else {
+			/* using IGNORE since UNKNOWN WORD causes annoying beeps */
+			rval = EventInputStatus.IGNORE;
+			internalStat = BufferStatus.PADDING;
+		}
+		return rval;
+	}
+
+	private void incrementGet() {
+		posGet++;
+		if (posGet == eventNumbers.length) {
+			posGet = 0;
+		}
+		lastIncr = FifoPointer.GET;
+	}
+
+	private void incrementPut() {
+		posPut++;
+		if (posPut == eventNumbers.length) {
+			posPut = 0;
+		}
+		lastIncr = FifoPointer.PUT;
+	}
+
 	private boolean inFlushState() {
 		return internalStat == BufferStatus.FIFO_FLUSH
 				|| internalStat == BufferStatus.FIFO_ENDRUN_FLUSH;
 	}
 
-	/**
-	 * @see AbstractEventInputStream#AbstractEventInputStream(boolean, int)
+	/*
+	 * non-javadoc Checks whether the word type is for an event end-of-block
 	 */
-	public YaleCAEN_InputStream(boolean console, int eventSize) {
-		super(console, eventSize);
+	private boolean isEndBlock(final int data) {
+		return (data & TYPE_MASK) == END_COMPARE;
 	}
 
-	private transient final int[] tempParams = new int[32];
+	public boolean isEndRun(final short dataWord) {
+		return (ENDRUN == dataWord);
+	}
 
-	private transient final int[] tempData = new int[32];
+	/*
+	 * non-javadoc Checks whether the word type is for an event header.
+	 */
+	private boolean isHeader(final int data) {
+		return (data & TYPE_MASK) == HEAD_COMPARE;
+	}
+
+	/*
+	 * non-javadoc Checks whether the word type is for an event data word
+	 */
+	private boolean isParameter(final int data) {
+		return (data & TYPE_MASK) == PARM_COMPARE;
+	}
 
 	/**
 	 * Reads an event from the input stream Expects the stream position to be
@@ -301,94 +403,5 @@ public class YaleCAEN_InputStream extends AbstractL002HeaderReader implements
 			internalStat = BufferStatus.FIFO_FILLING;
 		}
 		return rval;
-	}
-
-	/*
-	 * If we really have end-of-block like we should, stick event data in the
-	 * appropriate space in our FIFO.
-	 */
-	private void handleEndBlock(final int endblock, final int numParams)
-			throws EventException {
-		if (isEndBlock(endblock)) {
-			final int eventNumber = endblock & 0xffffff;
-			if (!eventInFIFO(eventNumber)) {// Event # not in
-				// FIFO,
-				// so need to add it.
-				addEventIndex(eventNumber);// can change
-				// internal
-				// state to FIFO_FULL
-			}
-			final int arrayIndex = getEventIndex(eventNumber);
-			/* copy data in, item by item */
-			for (int i = 0; i < numParams; i++) {
-				fifo[arrayIndex][tempParams[i]] = tempData[i];
-			}
-		} else {
-			throw new EventException(
-					getClass().getName()
-							+ ".readEvent(): didn't get a end of block when expected, int datum = 0x"
-							+ Integer.toHexString(endblock));
-		}
-	}
-
-	private EventInputStatus handleSpecialHeaders(final int header,
-			final EventInputStatus init) {
-		EventInputStatus rval = init;
-		if (header == BUFFER_END) {// return end of buffer
-			// to
-			// SortDaemon
-			/* no need to flush here */
-			rval = EventInputStatus.END_BUFFER;
-			internalStat = BufferStatus.PADDING;
-		} else if (header == BUFFER_PAD) {
-			rval = EventInputStatus.IGNORE;
-			internalStat = BufferStatus.PADDING;
-		} else if (header == STOP_PAD) {
-			internalStat = BufferStatus.FIFO_FLUSH;
-		} else if (header == END_PAD) {
-			internalStat = BufferStatus.FIFO_ENDRUN_FLUSH;
-			showMessage("Scaler blocks in file =" + nScalrBlocks);
-			nScalrBlocks = 0;
-		} else {
-			/* using IGNORE since UNKNOWN WORD causes annoying beeps */
-			rval = EventInputStatus.IGNORE;
-			internalStat = BufferStatus.PADDING;
-		}
-		return rval;
-	}
-
-	static private final int TYPE_MASK = 0x7000000;
-
-	static private final int PARM_COMPARE = 0x0000000;
-
-	/*
-	 * non-javadoc Checks whether the word type is for an event data word
-	 */
-	private boolean isParameter(final int data) {
-		return (data & TYPE_MASK) == PARM_COMPARE;
-	}
-
-	static private final int HEAD_COMPARE = 0x2000000;
-
-	/*
-	 * non-javadoc Checks whether the word type is for an event header.
-	 */
-	private boolean isHeader(final int data) {
-		return (data & TYPE_MASK) == HEAD_COMPARE;
-	}
-
-	static private final int END_COMPARE = 0x4000000;
-
-	/*
-	 * non-javadoc Checks whether the word type is for an event end-of-block
-	 */
-	private boolean isEndBlock(final int data) {
-		return (data & TYPE_MASK) == END_COMPARE;
-	}
-
-	private static final short ENDRUN = (short) (END_PAD & 0xffff);
-
-	public boolean isEndRun(final short dataWord) {
-		return (ENDRUN == dataWord);
 	}
 }
