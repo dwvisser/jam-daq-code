@@ -1,5 +1,6 @@
- package jam;
- import jam.sort.CamacCommands;
+ package jam.comm;
+ import jam.JamException;
+import jam.sort.CamacCommands;
 import jam.sort.VME_Map;
 
 import java.util.Observer;
@@ -18,7 +19,7 @@ import java.util.prefs.PreferenceChangeListener;
  * @author   Ken Swartz
  * @since       JDK1.1
  */
-public interface FrontEndCommunication extends Observer, PreferenceChangeListener, PacketTypes {
+public interface FrontEndCommunication extends Observer, PreferenceChangeListener {
 
 	/** 
      * Setup up the networking to the Front End.

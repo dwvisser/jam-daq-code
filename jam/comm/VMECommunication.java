@@ -1,5 +1,7 @@
-package jam;
+package jam.comm;
 
+import jam.JamException;
+import jam.JamPrefs;
 import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
@@ -10,6 +12,7 @@ import jam.sort.CamacCommands;
 import jam.sort.VME_Channel;
 import jam.sort.VME_Map;
 import jam.sort.CamacCommands.CNAF;
+import jam.util.StringUtilities;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -40,16 +43,8 @@ import java.util.prefs.Preferences;
 public final class VMECommunication extends GoodThread implements
 		FrontEndCommunication {
 
-	private static final int MAX_PACKET_SIZE = 1024;
-
-	private static final int MAX_MESSAGE_SIZE = 80;
-
-	private static final byte STRING_NULL = (byte) 0x0;
-
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
-
-	// private transient final MessageHandler console;
 
 	private transient InetAddress addressVME;
 
@@ -57,14 +52,14 @@ public final class VMECommunication extends GoodThread implements
 
 	private transient DatagramSocket socketSend, socketReceive;
 
-	private transient boolean active; 
+	private transient boolean active;
 
 	// scaler values, loaded when a scaler packet is received.
 	private transient final List<Integer> scalerValues = new ArrayList<Integer>();
 
 	// counter values, loaded when a counter packet is received.
 	private transient final List<Integer> counterValues = new ArrayList<Integer>();
-	
+
 	private static final VMECommunication INSTANCE = new VMECommunication();
 
 	/**
@@ -76,7 +71,7 @@ public final class VMECommunication extends GoodThread implements
 		active = false;
 		setName("Network Messenger");
 	}
-	
+
 	/**
 	 * 
 	 * @return the one unique instance of this class
@@ -124,21 +119,19 @@ public final class VMECommunication extends GoodThread implements
 					socketSend = new DatagramSocket(portSend, addressLocal);
 				} catch (BindException be) {
 					throw new JamException(
-							getClass().getName()
-									+ ": Problem binding send socket (another Jam online running)");
+							"Problem binding send socket. (Is another Jam running online?)",
+							be);
 				} catch (SocketException se) {
-					throw new JamException(getClass().getName()
-							+ ": problem creating send socket");
+					throw new JamException("Problem creating send socket.", se);
 				}
 				try {
 					socketReceive = new DatagramSocket(portRecv, addressLocal);
 				} catch (BindException be) {
 					throw new JamException(
 							getClass().getName()
-									+ ": Problem binding receive socket (another Jam online running)");
+									+ "Problem binding receive socket. (Is another Jam running online?)", be);
 				} catch (SocketException se) {
-					throw new JamException(getClass().getName()
-							+ ": Problem creating receive socket");
+					throw new JamException("Problem creating receive socket.", se);
 				}
 				// setup and start receiving deamon
 				setDaemon(true);
@@ -360,8 +353,8 @@ public final class VMECommunication extends GoodThread implements
 	 *            the interval between scaler blocks
 	 */
 	public void sendScalerInterval(final int seconds) {
-		final String message = seconds + "\n\0";
-		sendToVME(INTERVAL, message);
+		final String message = seconds + "\n";
+		sendToVME(PacketTypes.INTERVAL, message);
 	}
 
 	/**
@@ -374,6 +367,9 @@ public final class VMECommunication extends GoodThread implements
 	private void sendToVME(final String message) {
 		sendToVME(PacketTypes.OK_MESSAGE, message);
 	}
+
+	private static final StringUtilities STR_UTIL = StringUtilities
+			.getInstance();
 
 	/**
 	 * Method which is used to send all packets containing a string to the VME
@@ -389,31 +385,21 @@ public final class VMECommunication extends GoodThread implements
 	 * @throws IllegalStateException
 	 *             if we haven't established a connection yet
 	 */
-	private void sendToVME(final int status, final String message) {
-		final DatagramPacket packetMessage;
-		/* byte arrays initialized with zeros by definition */
-		final byte[] byteMessage = new byte[message.length() + 5];
-		if (!validStatus(status)) {
-			throw new IllegalArgumentException(getClass().getName()
-					+ ".vmeSend() with invalid status: " + status);
-		}
-		byteMessage[3] = (byte) status;// first four bytes interpreted together
-		// as this number
-		System.arraycopy(message.getBytes(), 0, byteMessage, 4, message
-				.length());
-		byteMessage[byteMessage.length - 1] = STRING_NULL;
-		packetMessage = new DatagramPacket(byteMessage, byteMessage.length,
-				addressVME, vmePort);
+	private void sendToVME(final PacketTypes status, final String message) {
 		if (socketSend == null) {
 			throw new IllegalStateException(
 					"Attempted to send a message without a connection.");
 		}
+		final DatagramPacket packetMessage = PacketBuilder.getInstance()
+				.message(status, message, addressVME, vmePort);
 		try {// create and send packet
 			socketSend.send(packetMessage);
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE,
-					"Jam encountered a network communication error attempting to send a packet: "
-							+ e.getMessage(), e);
+			LOGGER
+					.log(
+							Level.SEVERE,
+							"Jam encountered a network communication error attempting to send a packet.",
+							e);
 		}
 	}
 
@@ -434,46 +420,31 @@ public final class VMECommunication extends GoodThread implements
 			throws JamException {
 		final int COMMAND_SIZE = 16;
 		final int CNAF_SIZE = 9;
-		byte[] byteName = new byte[COMMAND_SIZE];
 		if (listName.length() > (COMMAND_SIZE - 1)) {
 			throw new JamException(
 					"Command string length too long [VMECommunication]");
 		}
 		final byte[] byteMessage = new byte[4 + COMMAND_SIZE + 4
 				+ cnafList.size() * CNAF_SIZE + 1];
-		/* set first int to 3, first three bytes are zero already */
-		byteMessage[3] = CNAF;
+		final ByteBuffer byteBuff = ByteBuffer.wrap(byteMessage);
+		byteBuff.putInt(PacketTypes.CNAF.intValue());
 		// put command string into packet
-		byteName = listName.getBytes();
-		for (int i = 0; i < listName.length(); i++) {
-			byteMessage[i + 4] = byteName[i];
-		}
+		byteBuff.put(STR_UTIL.getASCIIarray(listName));
 		// put length of cnaf list in packet
-		for (int i = 20; i <= 23; i++) {
-			byteMessage[i] = 0;
-		}
-		byteMessage[23] = (byte) cnafList.size();
+		byteBuff.putInt(cnafList.size());
 		// put list of cnaf commands into packet
 		for (int i = 0; i < cnafList.size(); i++) {
-			final int offset = 4 + COMMAND_SIZE + 4 + CNAF_SIZE * i;
 			final CNAF cnaf = cnafList.get(i);
-			byteMessage[offset + 0] = cnaf.getParamID();
-			byteMessage[offset + 1] = cnaf.getCrate();
-			byteMessage[offset + 2] = cnaf.getNumber();
-			byteMessage[offset + 3] = cnaf.getAddress();
-			byteMessage[offset + 4] = cnaf.getFunction();
+			byteBuff.put(cnaf.getParamID());
+			byteBuff.put(cnaf.getCrate());
+			byteBuff.put(cnaf.getNumber());
+			byteBuff.put(cnaf.getAddress());
+			byteBuff.put(cnaf.getFunction());
 			final int data = cnaf.getData();
-			// data byte msb
-			byteMessage[offset + 5] = (byte) ((data >>> 24) & 0xFF);
-			// data byte 1
-			byteMessage[offset + 6] = (byte) ((data >>> 16) & 0xFF);
-			// data byte 2
-			byteMessage[offset + 7] = (byte) ((data >>> 8) & 0xFF);
-			// data byte lsb
-			byteMessage[offset + 8] = (byte) ((data >>> 0) & 0xFF);
+			byteBuff.putInt(data);
 		}
 		// add a null character
-		byteMessage[byteMessage.length - 1] = STRING_NULL;
+		byteBuff.put(Constants.STRING_NULL);
 		sendPacket(byteMessage);// send it
 	}
 
@@ -506,7 +477,7 @@ public final class VMECommunication extends GoodThread implements
 	 * is to be handled.
 	 */
 	public void run() {
-		final byte[] bufferIn = new byte[MAX_PACKET_SIZE];
+		final byte[] bufferIn = new byte[Constants.MAX_PACKET_SIZE];
 		try {
 			final DatagramPacket packetIn = new DatagramPacket(bufferIn,
 					bufferIn.length);
@@ -515,18 +486,18 @@ public final class VMECommunication extends GoodThread implements
 				final ByteBuffer byteBuffer = ByteBuffer.wrap(packetIn
 						.getData());
 				final int status = byteBuffer.getInt();// .readInt();
-				if (status == OK_MESSAGE) {
+				if (status == PacketTypes.OK_MESSAGE.intValue()) {
 					LOGGER.info(getClass().getName() + ": "
 							+ unPackMessage(byteBuffer));
-				} else if (status == SCALER) {
+				} else if (status == PacketTypes.SCALER.intValue()) {
 					unPackScalers(byteBuffer);
 					Scaler.update(scalerValues);
-				} else if (status == COUNTER) {
+				} else if (status == PacketTypes.COUNTER.intValue()) {
 					unPackCounters(byteBuffer);
 					BROADCASTER.broadcast(
 							BroadcastEvent.Command.COUNTERS_UPDATE,
 							counterValues);
-				} else if (status == ERROR) {
+				} else if (status == PacketTypes.ERROR.intValue()) {
 					LOGGER.severe(getClass().getName() + ": "
 							+ unPackMessage(byteBuffer));
 				} else {
@@ -535,12 +506,11 @@ public final class VMECommunication extends GoodThread implements
 				}
 			}// end of receive message forever loop
 		} catch (IOException ioe) {
-			LOGGER.log(Level.SEVERE,
-					"Unable to read datagram status word [VMECommnunication]",
+			LOGGER.log(Level.SEVERE, "Unable to read datagram status word.",
 					ioe);
 			LOGGER
-					.warning("Network receive daemon stopped, need to restart Online [VMECommunication]");
-		} 
+					.warning("Network receive daemon stopped, need to restart Online.");
+		}
 	}
 
 	/**
@@ -551,22 +521,24 @@ public final class VMECommunication extends GoodThread implements
 	 *            packet contents passed in readable form
 	 * @return the string contained in the message
 	 */
-private String unPackMessage(final ByteBuffer buffer) {
+	private String unPackMessage(final ByteBuffer buffer) {
 		final StringBuilder rval = new StringBuilder();
 		char next;
 		do {
-			next = (char)buffer.get();
+			next = (char) buffer.get();
 			rval.append(next);
 		} while (next != '\0');
-		final int len = rval.length()-1;
-		if (len > MAX_MESSAGE_SIZE) {// exclude null
+		final int len = rval.length() - 1;
+		if (len > Constants.MAX_MESSAGE_SIZE) {// exclude null
 			final IllegalArgumentException exception = new IllegalArgumentException(
-					"Message length, "+len+", greater than max allowed, "+MAX_MESSAGE_SIZE+".");
+					"Message length, " + len + ", greater than max allowed, "
+							+ Constants.MAX_MESSAGE_SIZE + ".");
 			LOGGER.throwing("VMECommunication", "unPackMessage", exception);
 			throw exception;
 		}
 		return rval.substring(0, len);
 	}
+
 	/**
 	 * Unpack scalers from udp packet. Packet format:
 	 * <ul>
@@ -620,18 +592,6 @@ private String unPackMessage(final ByteBuffer buffer) {
 	 */
 	public List<Integer> getScalers() {
 		return Collections.unmodifiableList(scalerValues);
-	}
-
-	/**
-	 * Checks whether the parameter is a valid value of a message status.
-	 * 
-	 * @param status
-	 *            to be checked
-	 * @return true if valid, false if not
-	 */
-	private boolean validStatus(final int status) {
-		return (status == OK_MESSAGE || status == ERROR || status == SCALER
-				|| status == CNAF || status == COUNTER || status == VME_ADDRESS || status == INTERVAL);
 	}
 
 	/**
