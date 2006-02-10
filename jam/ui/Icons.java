@@ -15,13 +15,87 @@ public final class Icons {
 
 	private static final Icons instance = new Icons();
 
+	/**
+	 * @return the singleton instance of this class
+	 */
 	static public Icons getInstance() {
 		return instance;
 	}
 
-	public final transient ImageIcon STOP, GO_GREEN, CAUTION, CLEAR, GROUP_SORT,
-			GROUP_FILE, GROUP_TEMP, HIST1D, HIST2D, GATE1D, GATE2D, GATE_DEF1D,
-			GATE_DEF2D, BEGIN, END;
+	/**
+	 * represents stopping
+	 */
+	public final transient ImageIcon STOP;
+
+	/**
+	 * represents going
+	 */
+	public final transient ImageIcon GO_GREEN;
+
+	/**
+	 * represents pausing
+	 */
+	public final transient ImageIcon CAUTION;
+
+	/**
+	 * transparent
+	 */
+	public final transient ImageIcon CLEAR;
+
+	/**
+	 * for sort groups
+	 */
+	public final transient ImageIcon GROUP_SORT;
+
+	/**
+	 * for file groups
+	 */
+	public final transient ImageIcon GROUP_FILE;
+
+	/**
+	 * for temporary groups?
+	 */
+	public final transient ImageIcon GROUP_TEMP;
+
+	/**
+	 * for 1-d histograms
+	 */
+	public final transient ImageIcon HIST1D;
+
+	/**
+	 * for 2-d histograms
+	 */
+	public final transient ImageIcon HIST2D;
+
+	/**
+	 * for 1-d gates
+	 */
+	public final transient ImageIcon GATE1D;
+
+	/**
+	 * for 2-d gates
+	 */
+	public final transient ImageIcon GATE2D;
+
+	/**
+	 * for defined 1-d gates
+	 */
+	public final transient ImageIcon GATE_DEF1D;
+
+	/**
+	 * for defined 2-d gates
+	 */
+	public final transient ImageIcon GATE_DEF2D;
+
+	/**
+	 * for begin button
+	 */
+	public final transient ImageIcon BEGIN;
+
+	/**
+	 * for end button
+	 */
+	public final transient ImageIcon END;
 
 	private Icons() {
 		super();

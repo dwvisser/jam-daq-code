@@ -51,11 +51,19 @@ public final class RingBuffer {
 		this(false);
 	}
 
+	/**
+	 * Constructor.
+	 * @param empty whether to create a zero-capacity buffer or not.
+	 */
 	public RingBuffer(boolean empty) {
 		super();
 		buffer = empty ? new byte[0][0] : new byte[NUMBER_BUFFERS][BUFFER_SIZE];
 	}
 
+	/**
+	 * 
+	 * @return whether this buffer was created with no capacity
+	 */
 	public boolean isNull() {
 		return buffer.length == 0;
 	}

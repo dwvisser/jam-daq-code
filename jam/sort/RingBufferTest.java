@@ -16,9 +16,9 @@ import junit.framework.TestCase;
  */
 public class RingBufferTest extends TestCase {
 
-	private static final String packageName = RingBufferTest.class
-	.getPackage().getName();
-	
+	private static final String packageName = RingBufferTest.class.getPackage()
+			.getName();
+
 	static {
 		new LoggerConfig(packageName);
 	}
@@ -79,14 +79,16 @@ public class RingBufferTest extends TestCase {
 				LOGGER.log(Level.SEVERE, re.getMessage(), re);
 			}
 		}
-		assertFalse(ring.isEmpty());
+		assertFalse("Buffer empty when it should not have been.", ring
+				.isEmpty());
 		assertTrue(
 				"After filling buffer, expected it to to indicate it was full.",
 				ring.isFull());
 		ring.getBuffer(out);
 		/* Next expression is false because buffer if FIFO. */
-		assertFalse(Arrays.equals(buffer, out));
-		assertFalse(ring.isFull());
+		assertFalse("Buffers equal when they shouldn't have been.", Arrays
+				.equals(buffer, out));
+		assertFalse("Ring shows full when it shouldn't be.", ring.isFull());
 		ring.clear();
 		assertTrue("After clearing ring buffer, expected it to be empty.", ring
 				.isEmpty());
@@ -114,7 +116,7 @@ public class RingBufferTest extends TestCase {
 
 	/**
 	 * Test the properties of 'null' rings.
-	 *
+	 * 
 	 */
 	public void testIsNull() {
 		assertTrue("emptyRing explicitly 'null'", emptyRing.isNull());
