@@ -1,7 +1,5 @@
 package jam.io.hdf;
 
-import static jam.io.hdf.Constants.DFTAG_VG;
-import static jam.io.hdf.Constants.DFTAG_VH;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.DataParameter;
@@ -16,7 +14,6 @@ import jam.util.StringUtilities;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -268,10 +265,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	Histogram convertHistogram(final Group group, final VirtualGroup histGroup,
 			final List<HistogramAttributes> histAttributes,
 			final FileOpenMode mode) throws HDFException {
-		Histogram hist = null;
-		NumericalDataGroup ndg;
-		/* check ndgErr==null to determine if error bars exist */
-		NumericalDataGroup ndgErr = null;
+		Histogram rval = null;
 		final DataIDLabel dataLabel = DataIDLabel.withTagRef(
 				VirtualGroup.class, histGroup.getRef());
 		final String name = dataLabel.getLabel();
@@ -279,76 +273,101 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 				VirtualGroup.class, histGroup.getRef());
 		final String title = dataNote.getNote();
 		/* only the "histograms" VG (only one element) */
-		final List<NumericalDataGroup> tempVec = AbstractData.ofType(histGroup
+		final List<NumericalDataGroup> ndgList = AbstractData.ofType(histGroup
 				.getObjects(), NumericalDataGroup.class);
-		final NumericalDataGroup[] dataGroups = tempVec
-				.toArray(new NumericalDataGroup[tempVec.size()]);
-		if (dataGroups.length == 1) {
-			ndg = dataGroups[0]; // only one NDG -- the data
-		} else if (dataGroups.length == 2) {
-			if (DataIDLabel.withTagRef(NumericalDataGroup.class,
-					dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
-				ndg = dataGroups[1];
-				ndgErr = dataGroups[0];
-			} else {
-				ndg = dataGroups[0];
-				ndgErr = dataGroups[1];
+		final int len = ndgList.size();
+		if (len > 0 && len < 3) {
+			NumericalDataGroup ndg = null;
+			/* check ndgErr==null to determine if error bars exist */
+			NumericalDataGroup ndgErr = null;
+			if (len == 1) {
+				ndg = ndgList.get(0); // only one NDG -- the data
+			} else if (len == 2) {
+				final NumericalDataGroup element0 = ndgList.get(0);
+				if (DataIDLabel.withTagRef(NumericalDataGroup.class,
+						element0.getRef()).getLabel().equals(ERROR_LABEL)) {
+					ndg = ndgList.get(1);
+					ndgErr = element0;
+				} else {
+					ndg = element0;
+					ndgErr = ndgList.get(1);
+				}
 			}
+			rval = extractHistData(group, mode, histAttributes, ndg, ndgErr,
+					name, title);
 		} else {
 			// Can reload without this histogram
 			if (mode == FileOpenMode.RELOAD) {
-				hist = group.getHistogram(STRING_UTIL.makeLength(name,
+				rval = group.getHistogram(STRING_UTIL.makeLength(name,
 						Histogram.NAME_LENGTH));
-			} else {
-				hist = null; // no histogram data
 			}
-			return hist;
 		}
+		return rval;
+	}
+
+	private Histogram extractHistData(final Group group,
+			final FileOpenMode mode,
+			final List<HistogramAttributes> histAttributes,
+			final NumericalDataGroup ndg, final NumericalDataGroup ndgErr,
+			final String name, final String title) throws HDFException {
+		Histogram rval = null;
 		final DataIDLabel numLabel = DataIDLabel.withTagRef(
 				NumericalDataGroup.class, ndg.getRef());
 		final int number = Integer.parseInt(numLabel.getLabel());
-
 		final ScientificDataDimension sdd = AbstractData.ofType(
 				ndg.getObjects(), ScientificDataDimension.class).get(0);
 		final byte histNumType = sdd.getType();
 		final int histDim = sdd.getRank();
 		final int sizeX = sdd.getSizeX();
 		final int sizeY = histDim == 2 ? sdd.getSizeY() : 0;
-
 		final ScientificData sciData = AbstractData.ofType(ndg.getObjects(),
 				ScientificData.class).get(0);
 		sciData.setNumberType(histNumType);
 		sciData.setRank(histDim);
-
 		final ScientificData sdErr = produceErrorData(ndgErr, histDim);
-
 		/* Given name list check that that the name is in the list. */
 		if (histAttributes == null
 				|| containsHistogramAttribute(group.getGroupName(), name,
 						histAttributes)) {
-			if (mode.isOpenMode()) {
-				final Object histData = sciData.getData(inHDF, histDim,
-						histNumType, sizeX, sizeY);
-				Object histErrData = null;
-				if (sdErr != null) {
-					histErrData = sdErr.getData1dD(inHDF, sizeX);
-				}
-				hist = openHistogram(group, name, title, number, histData,
-						histErrData);
-			} else if (mode == FileOpenMode.RELOAD) {
-				final Object histData = sciData.getData(inHDF, histDim,
-						histNumType, sizeX, sizeY);
-				hist = reloadHistogram(group, name, histData);
-			} else if (mode == FileOpenMode.ADD) {
-				final Object histData = sciData.getData(inHDF, histDim,
-						histNumType, sizeX, sizeY);
-				hist = addHistogram(group, name, histData);
-			} else {
-				hist = null;
-			}
-
+			final HistogramAttributes attr = new HistogramAttributes(group
+					.getGroupName(), name, title, number);
+			rval = generateHistogram(attr, mode, sciData, sdErr, histDim,
+					histNumType, sizeX, sizeY);
 		}
-		return hist;
+		return rval;
+	}
+
+	private Histogram generateHistogram(final HistogramAttributes attr,
+			final FileOpenMode mode, final ScientificData sciData,
+			final ScientificData sdErr, final int histDim,
+			final byte histNumType, final int sizeX, final int sizeY)
+			throws HDFException {
+		final Histogram rval;
+		final Group group = Group.getGroup(attr.getGroupName());
+		final String name = attr.getName();
+		final String title = attr.getTitle();
+		final int number = attr.getNumber();
+		if (mode.isOpenMode()) {
+			final Object histData = sciData.getData(inHDF, histDim,
+					histNumType, sizeX, sizeY);
+			Object histErrData = null;
+			if (sdErr != null) {
+				histErrData = sdErr.getData1dD(inHDF, sizeX);
+			}
+			rval = openHistogram(group, name, title, number, histData,
+					histErrData);
+		} else if (mode == FileOpenMode.RELOAD) {
+			final Object histData = sciData.getData(inHDF, histDim,
+					histNumType, sizeX, sizeY);
+			rval = reloadHistogram(group, name, histData);
+		} else if (mode == FileOpenMode.ADD) {
+			final Object histData = sciData.getData(inHDF, histDim,
+					histNumType, sizeX, sizeY);
+			rval = addHistogram(group, name, histData);
+		} else {
+			rval = null;
+		}
+		return rval;
 	}
 
 	/*
@@ -367,12 +386,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
 		/* only the "histograms" VG (only one element) */
 		if (hists != null) {
-			/* Histogram iterator */
-			final Iterator histIter = hists.getObjects().iterator();
-			// loop begin
-			while (histIter.hasNext()) {
-				final VirtualGroup currHistGrp = (VirtualGroup) (histIter
-						.next());
+			for (AbstractData data : hists.getObjects()) {
+				final VirtualGroup currHistGrp = (VirtualGroup) data;
 				final Histogram hist = convertHistogram(group, currHistGrp,
 						histAttributes, mode);
 				if (hist != null) {
@@ -501,13 +516,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		final VirtualGroup groupsInRoot = VirtualGroup.ofName(GRP_SECTION);
 		// Found root node
 		if (groupsInRoot != null) {
-			// Group iterator
-			final Iterator groupIter = groupsInRoot.getObjects().iterator();
-			// loop begin
-			while (groupIter.hasNext()) {
-				final AbstractData hData = (AbstractData) groupIter.next();
+			for (AbstractData hData : groupsInRoot.getObjects()) {
 				// Is a virtual group
-				if (hData.getTag() == DFTAG_VG) {
+				if (hData instanceof VirtualGroup) {
 					// Cast to VirtualGroup and add to list
 					final VirtualGroup currentVGrp = (VirtualGroup) hData;
 					final String groupName = readVirtualGroupName(currentVGrp);
@@ -578,11 +589,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	private List<VirtualGroup> findSubGroupsName(
 			final VirtualGroup virtualGroupGroup, final String groupName) {
 		final List<VirtualGroup> groupSubList = new ArrayList<VirtualGroup>();
-		final Iterator iter = virtualGroupGroup.getObjects().iterator();
-		while (iter.hasNext()) {
-			final AbstractData hData = (AbstractData) iter.next();
+		for (AbstractData hData : virtualGroupGroup.getObjects()) {
 			// Is a virtual group
-			if (hData.getTag() == DFTAG_VG) {
+			if (hData instanceof VirtualGroup) {
 				// add to list if is a scaler goup
 				final VirtualGroup currentVGroup = (VirtualGroup) hData;
 				if (currentVGroup.getName().equals(groupName)) {
@@ -596,11 +605,9 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	VDataDescription findVData(final VirtualGroup virtualGroupGroup,
 			final String dataType) {
 		VDataDescription vdd = null;
-		final Iterator iter = virtualGroupGroup.getObjects().iterator();
-		while (iter.hasNext()) {
-			final AbstractData hData = (AbstractData) iter.next();
+		for (AbstractData hData : virtualGroupGroup.getObjects()) {
 			// Is a virtual data descriptor
-			if (hData.getTag() == DFTAG_VH) {
+			if (hData instanceof VDataDescription) {
 				// add to list if is a scaler goup
 				final VDataDescription currentVDD = (VDataDescription) hData;
 				if (currentVDD.getDataTypeName().equals(dataType)) {
@@ -687,9 +694,10 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 	private ScientificData produceErrorData(final NumericalDataGroup ndgErr,
 			final int histDim) {
 		final boolean exists = ndgErr != null;
-		final ScientificData rval = exists ? AbstractData.ofType(
-				ndgErr.getObjects(), ScientificData.class).get(0) : null;
+		ScientificData rval = null;
 		if (exists) {
+			rval = AbstractData.ofType(ndgErr.getObjects(),
+					ScientificData.class).get(0);
 			rval.setRank(histDim);
 			rval.setNumberType(NumberType.DOUBLE);
 		}
