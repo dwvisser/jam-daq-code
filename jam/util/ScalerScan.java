@@ -23,7 +23,6 @@
  **************************************************************/
 package jam.util;
 
-import static jam.io.hdf.Constants.DFTAG_VS;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -276,7 +275,7 @@ public final class ScalerScan implements JamFileFields {
 		return sname;
 	}
 
-	private int[] getScalerValues() throws HDFException {
+	private int[] getScalerValues() {
 		int[] values = null;
 		final VDataDescription dataDesc = VDataDescription.ofName(AbstractData
 				.ofType(VDataDescription.class), SCALER_SECT);
