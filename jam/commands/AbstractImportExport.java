@@ -7,7 +7,7 @@ import jam.io.AbstractImpExp;
  * 
  * @author Ken Swartz
  */
-abstract class AbstractImportExport extends AbstractCommand {
+abstract class AbstractImportExport extends AbstractCommand {//NOPMD
 
 	/**
 	 * Must be assigned a real value by full implementations.

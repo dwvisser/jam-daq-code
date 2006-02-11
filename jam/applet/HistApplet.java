@@ -46,7 +46,7 @@ import javax.swing.SwingConstants;
  * @version 0.5
  * 
  */
-public class HistApplet extends JApplet implements ActionListener, ItemListener {
+public class HistApplet extends JApplet implements ActionListener, ItemListener {// NOPMD
 
 	private transient PlotDisplay display;
 
@@ -73,8 +73,9 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 
 	private transient JComboBox gateChooser; // reference needed by command
 
-	private static final String packageName = HistApplet.class.getPackage().getName();
-	
+	private static final String packageName = HistApplet.class.getPackage()
+			.getName();
+
 	static {
 		new LoggerConfig(packageName, console.getLog());
 	}
@@ -275,7 +276,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 	public void setHistogramList(final List<Histogram> histogramList) {
 		histogramChooser.removeAll();
 		histogramChooser.setModel(new DefaultComboBoxModel(
-				new Vector<Histogram>(histogramList)));
+				new Vector<Histogram>(histogramList)));// NOPMD
 		Histogram firstHist = null;
 		if (!histogramList.isEmpty()) {
 			firstHist = histogramList.get(0);
@@ -308,7 +309,7 @@ public class HistApplet extends JApplet implements ActionListener, ItemListener 
 		if (gateChooser != null) {
 			gateChooser.removeAll();
 			/* set proper model */
-			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(
+			gateChooser.setModel(new DefaultComboBoxModel(new Vector<Gate>(// NOPMD
 					gates)));
 		}
 	}

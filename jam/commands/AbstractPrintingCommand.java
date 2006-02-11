@@ -9,7 +9,7 @@ import java.awt.print.PrinterJob;
  *  
  * @author Ken Swartz
  */
-abstract class AbstractPrintingCommand extends AbstractCommand {
+abstract class AbstractPrintingCommand extends AbstractCommand {//NOPMD
 	
 	AbstractPrintingCommand() {
 		super();
