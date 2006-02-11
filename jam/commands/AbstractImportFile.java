@@ -40,7 +40,7 @@ class AbstractImportFile extends AbstractImportExport {
                 importExport.openFile(file);
             }
         } catch (ImpExpException iee) {
-            throw new CommandException(iee.getMessage());
+            throw new CommandException(iee);
         }
     }
 

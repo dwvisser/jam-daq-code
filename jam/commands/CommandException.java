@@ -6,13 +6,6 @@ package jam.commands;
  * @author Ken Swartz
  */ 
 public class CommandException extends Exception {
-
-    /**
-     * @see Exception#Exception(java.lang.String)
-     */
-    public CommandException(String message) {
-		super(message);
-    }
     
     /**
      * @see Exception#Exception(java.lang.Throwable)
