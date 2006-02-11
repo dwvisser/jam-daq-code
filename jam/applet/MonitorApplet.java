@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
  * @author Ken Swartz
  * @version 0.5
  */
-public class MonitorApplet extends JApplet implements ActionListener,
+public class MonitorApplet extends JApplet implements ActionListener,// NOPMD
 		ItemListener, Runnable {
 
 	static private final boolean DEBUG = false;
@@ -63,10 +63,11 @@ public class MonitorApplet extends JApplet implements ActionListener,
 
 	private transient boolean audioOn = false;
 
-	private Thread loopThread;
+	private transient Thread loopThread;// NOPMD
 
-	private static final String packageName = MonitorApplet.class.getPackage().getName();
-	
+	private static final String packageName = MonitorApplet.class.getPackage()
+			.getName();
+
 	static {
 		new LoggerConfig(packageName);
 	}
@@ -211,46 +212,42 @@ public class MonitorApplet extends JApplet implements ActionListener,
 	 * 
 	 */
 	private void setupDisplay() {
-
 		pMonitors.removeAll();
-
 		// widgets for dislay page
 		final int numberMonitors = monitorList.size();
-		JPanel[] pmon = new JPanel[numberMonitors];
-		JLabel[] labelDisp = new JLabel[numberMonitors];
-		JTextField[] textValue = new JTextField[numberMonitors];
-		PlotBar[] plotBar = new PlotBar[numberMonitors];
-
+		final JPanel[] pmon = new JPanel[numberMonitors];
+		final JLabel[] labelDisp = new JLabel[numberMonitors];
+		final JTextField[] textValue = new JTextField[numberMonitors];
+		final PlotBar[] plotBar = new PlotBar[numberMonitors];
 		for (int i = 0; i < numberMonitors; i++) {
-			pmon[i] = new JPanel();
-			pmon[i].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-			pMonitors.add(pmon[i]);
-
-			labelDisp[i] = new JLabel("          ", SwingConstants.RIGHT);
-			Monitor monitor = monitorList.get(i);
-			labelDisp[i].setText(monitor.getName());
-			pmon[i].add(labelDisp[i]);
-
-			textValue[i] = new JTextField("           ");
-			textValue[i].setColumns(6);
-			textValue[i].setEditable(false);
-			textValue[i].setBackground(Color.white);
-			textValue[i].setText(String.valueOf(0));
-			pmon[i].add(textValue[i]);
-
-			plotBar[i] = new PlotBar(monitor);
-			pMonitors.add(plotBar[i]);
-
+			makeGUI(pmon, labelDisp, textValue, plotBar, i);
 		}
-
 		pMonitors.add(pal);
+	}
 
+	private void makeGUI(JPanel[] pmon, JLabel[] labelDisp,
+			JTextField[] textValue, PlotBar[] plotBar, final int index) {
+		pmon[index] = new JPanel();
+		pmon[index].setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		pMonitors.add(pmon[index]);
+		labelDisp[index] = new JLabel("          ", SwingConstants.RIGHT);
+		final Monitor monitor = monitorList.get(index);
+		labelDisp[index].setText(monitor.getName());
+		pmon[index].add(labelDisp[index]);
+		textValue[index] = new JTextField("           ");
+		textValue[index].setColumns(6);
+		textValue[index].setEditable(false);
+		textValue[index].setBackground(Color.white);
+		textValue[index].setText(String.valueOf(0));
+		pmon[index].add(textValue[index]);
+		plotBar[index] = new PlotBar(monitor);
+		pMonitors.add(plotBar[index]);
 	}
 
 	/*
 	 * non-javadco: link to host with rmi
 	 */
-	private void link(String stringURL) {
+	private void link(final String stringURL) {
 		LOGGER.info("open a link to " + stringURL);
 		try {
 			remoteData = (RemoteData) Naming.lookup(stringURL);
