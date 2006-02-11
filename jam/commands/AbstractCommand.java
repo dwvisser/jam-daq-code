@@ -23,6 +23,9 @@ import javax.swing.JOptionPane;
 public abstract class AbstractCommand extends AbstractAction implements
 		Commandable {
 
+	/**
+	 * logger instance for all commands
+	 */
 	protected static final Logger LOGGER = Logger
 			.getLogger(AbstractCommand.class.getPackage().getName());
 

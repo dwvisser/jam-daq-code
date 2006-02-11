@@ -44,7 +44,20 @@ public class SetupRemote extends JDialog implements ActionListener,
 		ItemListener {
 
 	private static enum Mode {
-		LINK, SERVER, SNAP
+		/**
+		 * linked to a remote server process
+		 */
+		LINK, 
+		
+		/**
+		 * acting as a server
+		 */
+		SERVER, 
+		
+		/**
+		 * getting a snapshot of data on a remote server 
+		 */
+		SNAP
 	}
 
 	static final String DEFAULT_NAME = "jam";
@@ -185,20 +198,20 @@ public class SetupRemote extends JDialog implements ActionListener,
 	 */
 	public void itemStateChanged(final ItemEvent event) {
 		final ItemSelectable item = event.getItemSelectable();
-		if (item == cserver) {
+		if (cserver.equals(item)) {
 			mode = Mode.SERVER;
 			lname.setText("Name:");
 			textName.setText(DEFAULT_NAME);
-		} else if (item == csnap) {
+		} else if (csnap.equals(item)) {
 			mode = Mode.SNAP;
 			lname.setText("URL:");
 			textName.setText(DEFAULT_URL);
-		} else if (item == clink) {
+		} else if (clink.equals(item)) {
 			mode = Mode.LINK;
 			lname.setText("URL:");
 			textName.setText(DEFAULT_URL);
 			// lock up state
-		} else if (item == checkLock) {
+		} else if (checkLock.equals(item)) {
 			setActive((checkLock.isSelected()));
 			lockFields((checkLock.isSelected()));
 

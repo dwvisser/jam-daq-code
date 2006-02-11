@@ -8,7 +8,17 @@ import jam.sort.RingBufferTest;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class AllTests {
+/**
+ * JUnit test suit for all of jam.
+ * @author Dale Visser
+ *
+ */
+public class AllTests {//NOPMD
+	
+	/**
+	 * 
+	 * @return the test suite to run
+	 */
 	public static Test suite() {
 		final TestSuite suite = new TestSuite("Test for jam and sub-packages.");
 		//$JUnit-BEGIN$
