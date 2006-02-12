@@ -21,8 +21,7 @@ import javax.swing.KeyStroke;
 final class FileNewClearCmd extends AbstractCommand implements Observer {
 	
 	FileNewClearCmd(){
-		super();
-		putValue(NAME,"Clear data\u2026");
+		super("Clear data\u2026");
 		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_N, 
 		CTRL_MASK));
 		enable();
@@ -33,7 +32,7 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
 		final JFrame frame =STATUS.getFrame();
 		if (JOptionPane.YES_OPTION==JOptionPane.showConfirmDialog(frame,
 		"Erase all current data?","New",JOptionPane.YES_NO_OPTION)){
@@ -45,19 +44,19 @@ final class FileNewClearCmd extends AbstractCommand implements Observer {
 		
 	}
 	
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);		
 	}
 	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}
 	}
 	
-	private final void enable() {
+	private void enable() {
 		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode==SortMode.FILE || mode==SortMode.NO_SORT);
 	}

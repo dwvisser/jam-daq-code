@@ -19,10 +19,10 @@ import java.util.Observer;
  */
 final class FlushAcquisition extends AbstractCommand implements Observer {
 
-	private RunControl control;
+	private transient final RunControl control;
 
-	public void initCommand(){
-		putValue(NAME, "Flush");
+	FlushAcquisition(){
+		super("Flush");
 		putValue(SHORT_DESCRIPTION, "Flush the current data acquisition buffer.");
 		control=RunControl.getSingletonInstance();
 		setEnabled(false);
@@ -31,32 +31,32 @@ final class FlushAcquisition extends AbstractCommand implements Observer {
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
 		control.flushAcq();
 	}
 
 	/**
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
 
 	/**
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
-	public void update(Observable o, Object arg) {
-		final BroadcastEvent be=(BroadcastEvent)arg;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observable, final Object arg) {
+		final BroadcastEvent event=(BroadcastEvent)arg;
+		final BroadcastEvent.Command command=event.getCommand();
 		boolean enable = online();
 		if (command==BroadcastEvent.Command.RUN_STATE_CHANGED){
-			final RunState rs=(RunState)be.getContent();
-			enable &= rs.isAcqOn();
+			final RunState state=(RunState)event.getContent();
+			enable &= state.isAcqOn();
 		}
 		setEnabled(enable);
 	}
 
-	private final boolean online() {
+	private boolean online() {
 		final SortMode mode=STATUS.getSortMode();
 		return mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK;
