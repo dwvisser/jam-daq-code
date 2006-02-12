@@ -63,8 +63,7 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
 		CMD_MAP.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
 		CMD_MAP.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
-		CMD_MAP.put(SHOW_DISPLAY_FIT,
-				ShowDialogCalibrationDisplayCmd.class);
+		CMD_MAP.put(SHOW_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
 		CMD_MAP.put(SHOW_GAIN_SHIFT, ShowDialogGainShiftCmd.class);
 		/* Gate Menu */
 		CMD_MAP.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
@@ -119,12 +118,10 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(ColorPrefs.SMOOTH_SCALE, SetSmoothColorScale.class);
 		CMD_MAP.put(SHOW_GRADIENT, ShowGradientSettings.class);
 		CMD_MAP.put(PlotPrefs.AUTO_ON_EXPAND, SetAutoScaleOnExpand.class);
-		CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE,
-				SetGatedChannelsHighlight.class);
+		CMD_MAP.put(PlotPrefs.HIGHLIGHT_GATE, SetGatedChannelsHighlight.class);
 		CMD_MAP.put(PlotPrefs.ENABLE_SCROLLING, SetEnableScrolling.class);
 		CMD_MAP.put(PlotPrefs.DISPLAY_LABELS, SetAxisLabels.class);
-		CMD_MAP.put(HDFPrefs.SUPPRES_EMPTY,
-				SetHDFSuppressSaveEmpty.class);
+		CMD_MAP.put(HDFPrefs.SUPPRES_EMPTY, SetHDFSuppressSaveEmpty.class);
 		CMD_MAP.put(JamPrefs.VERBOSE, SetVerbose.class);
 		CMD_MAP.put(JamPrefs.DEBUG, SetDebug.class);
 		CMD_MAP.put(SHOW_PEAK_FIND, ShowDialogPeakFind.class);
@@ -199,7 +196,11 @@ public class CommandManager implements CommandListener, CommandNames {
 	 * @return the action
 	 */
 	public Action getAction(final String strCmd) {
-		return createCmd(strCmd) ? currentCom : null;
+		Action rval = null;
+		if (createCmd(strCmd)) {
+			rval = currentCom;
+		}
+		return rval;
 	}
 
 	/**
