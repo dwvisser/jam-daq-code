@@ -8,9 +8,9 @@ import jam.io.ImpExpORNL;
  * @author Dale Visser
  */
 final class ExportDamm extends AbstractExportFile {
-		
-	public void initCommand(){
-		putValue(NAME,"Oak Ridge DAMM");
+	
+	ExportDamm() {
+		super("Oak Ridge DAMM");
 		importExport=new ImpExpORNL();		
 	}
 }

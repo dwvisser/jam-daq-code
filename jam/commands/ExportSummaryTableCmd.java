@@ -46,12 +46,10 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		return file;
 	}
 
-	protected void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(final Object[] cmdParams) throws CommandException {
 		File file = null;
-		if (cmdParams != null) {
-			if (cmdParams.length > 0) {
-				file = (File) cmdParams[0];
-			}
+		if (cmdParams != null && cmdParams.length > 0) {
+			file = (File) cmdParams[0];
 		}
 		// No file given
 		if (file == null) {
@@ -63,19 +61,17 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 		}
 	}
 
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
 		// TODO Auto-generated method stub
 	}
 
-	public void initCommand() {
-		putValue(NAME, "Table");
+	ExportSummaryTableCmd() {
+		super("Table");
 	}
 
-	private void saveTable(File file) {
-
+	private void saveTable(final File file) {
 		final SummaryTable summaryTable = STATUS.getTable();
-
 		try {
 			LOGGER.info("Starting to write out table to " + file);
 			// Create writer stream
@@ -96,9 +92,9 @@ public class ExportSummaryTableCmd extends AbstractCommand implements Observer {
 
 	}
 
-	public void update(Observable observe, Object obj) {
-		final BroadcastEvent be = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observe, final Object obj) {
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(true);
