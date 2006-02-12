@@ -9,6 +9,7 @@ import jam.io.hdf.HDFPrefs;
 import jam.plot.PlotPrefs;
 import jam.plot.color.ColorPrefs;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +29,8 @@ import javax.swing.Action;
  */
 public class CommandManager implements CommandListener, CommandNames {
 
-	private static final Map<String, Class<?>> CMD_MAP = Collections
-			.synchronizedMap(new HashMap<String, Class<?>>());
+	private static final Map<String, Class<? extends Commandable>> CMD_MAP = Collections
+			.synchronizedMap(new HashMap<String, Class<? extends Commandable>>());
 
 	private static CommandManager instance = null;
 
@@ -149,6 +150,8 @@ public class CommandManager implements CommandListener, CommandNames {
 	private CommandManager() {
 		super();
 	}
+	
+	private static final Commandable NO_COMMAND = new NoCommand();
 
 	/**
 	 * See if we have the instance created, create it if necessary, and return
@@ -162,26 +165,28 @@ public class CommandManager implements CommandListener, CommandNames {
 	private boolean createCmd(final String strCmd) {
 		final boolean exists = CMD_MAP.containsKey(strCmd);
 		if (exists) {
-			final Class cmdClass = CMD_MAP.get(strCmd);
-			currentCom = null;
+			final Class<? extends Commandable> cmdClass = CMD_MAP.get(strCmd);
+			currentCom = NO_COMMAND;
 			final boolean created = INSTANCES.containsKey(strCmd);
 			if (created) {
 				currentCom = INSTANCES.get(strCmd);
 			} else {
 				try {
-					currentCom = (Commandable) (cmdClass.newInstance());
+					currentCom = cmdClass.newInstance();
 					currentCom.initCommand();
 					if (currentCom instanceof Observer) {
 						Broadcaster.getSingletonInstance().addObserver(
 								(Observer) currentCom);
 					}
-				} catch (Exception e) {
-					/*
+				} catch (InstantiationException ie) {
+				/*
 					 * There was a problem resolving the command class or with
 					 * creating an instance. This should never happen if
 					 * exists==true.
 					 */
-					throw new IllegalArgumentException(e.getMessage(), e);
+					LOGGER.log(Level.SEVERE, ie.getMessage(), ie);
+				} catch (IllegalAccessException iae) {
+					LOGGER.log(Level.SEVERE, iae.getMessage(), iae);
 				}
 				INSTANCES.put(strCmd, currentCom);
 			}
@@ -206,11 +211,8 @@ public class CommandManager implements CommandListener, CommandNames {
 	/**
 	 * @return all commands in the map in alphabetical order
 	 */
-	public String[] getAllCommands() {
-		final SortedSet<String> sorted = new TreeSet<String>(CMD_MAP.keySet());
-		final String[] rval = new String[sorted.size()];
-		sorted.toArray(rval);
-		return rval;
+	public Collection<String> getAllCommands() {
+		return new TreeSet<String>(CMD_MAP.keySet());
 	}
 
 	/**
@@ -222,9 +224,9 @@ public class CommandManager implements CommandListener, CommandNames {
 	 *            <code>true</code> means only return enabled commands
 	 * @return list of similar commands
 	 */
-	public String[] getSimilarCommnands(final String string,
+	public Collection<String> getSimilarCommnands(final String string,
 			final boolean onlyEnabled) {
-		final SortedSet<String> sim = new TreeSet<String>();
+		final SortedSet<String> rval = new TreeSet<String>();
 		final Set<String> keys = CMD_MAP.keySet();
 		for (int i = string.length(); i >= 1; i--) {
 			final String com = string.substring(0, i);
@@ -234,17 +236,15 @@ public class CommandManager implements CommandListener, CommandNames {
 					final boolean addIt = (!onlyEnabled)
 							|| getAction(key).isEnabled();
 					if (addIt) {
-						sim.add(key);
+						rval.add(key);
 					}
 				}
 			}
-			if (!sim.isEmpty()) {
+			if (!rval.isEmpty()) {
 				break;
 			}
 		}
-		final String[] rval = new String[sim.size()];
-		sim.toArray(rval);
-		return rval;
+		return Collections.unmodifiableCollection(rval);
 	}
 
 	private static final Logger LOGGER = Logger.getLogger(CommandManager.class
