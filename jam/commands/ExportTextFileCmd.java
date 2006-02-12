@@ -10,8 +10,8 @@ import jam.io.ImpExpASCII;
  */
 final class ExportTextFileCmd extends AbstractExportFile {
 	
-	public void initCommand(){
-		putValue(NAME,"Text File");
+	ExportTextFileCmd(){
+		super("Text File");
 		importExport=new ImpExpASCII();		
 	}
 }
