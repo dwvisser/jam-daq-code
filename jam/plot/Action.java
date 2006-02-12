@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -555,9 +556,9 @@ class Action implements PlotMouseListener, PreferenceChangeListener,
 				.append("ex - Expand\tf  - Full view\t zi - Zoom In\tzo - Zoom Out\t");
 		buffer.append("d  - Display\to  - Overlay\tu  - Update\tg  - GoTo\t");
 		buffer.append("ar - Area\tn  - Net Area\tre - Rebin\tc  - Bin\t");
-		final String[] commands = CommandManager.getInstance().getAllCommands();
-		for (int i = 0; i < commands.length; i++) {
-			buffer.append(commands[i]).append('\t');
+		final Collection<String> commands = CommandManager.getInstance().getAllCommands();
+		for (String command : commands) {
+			buffer.append(command).append('\t');
 		}
 		textOut.messageOutln(buffer.toString());
 	}

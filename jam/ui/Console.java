@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -164,17 +165,17 @@ public class Console extends JPanel {
 			final StringBuffer buffer = new StringBuffer();
 			buffer.append("\"").append(cmd)
 					.append("\" is an invalid command. ");
-			final String[] offer = CommandManager.getInstance()
+			final Collection<String> offer = CommandManager.getInstance()
 					.getSimilarCommnands(cmd, true);
-			if (offer.length > 0) {
+			if (!offer.isEmpty()) {
 				buffer.append("Maybe you meant ");
-				if (offer.length > 1) {
+				if (offer.size() > 1) {
 					buffer.append("one of the following:\t");
 				} else {
 					buffer.append(":\t");
 				}
-				for (int i = 0; i < offer.length; i++) {
-					buffer.append(offer[i]).append("\t");
+				for (String command : offer) {
+					buffer.append(command).append("\t");
 				}
 			}
 			consoleLog.errorOutln(buffer.toString());
