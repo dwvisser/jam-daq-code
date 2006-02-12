@@ -18,6 +18,10 @@ class AbstractImportFile extends AbstractImportExport {
 	AbstractImportFile(){
 		super();
 	}
+	
+	AbstractImportFile(String name){
+		super(name);
+	}
 
     /**
      * Loads the given file, or opens a load dialog if given <code>null</code>.
