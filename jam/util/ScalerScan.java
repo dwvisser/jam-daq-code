@@ -23,6 +23,7 @@
  **************************************************************/
 package jam.util;
 
+import static jam.io.hdf.JamFileFields.SCALER_SECT;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.global.JamProperties;
 import jam.global.JamStatus;
@@ -30,7 +31,6 @@ import jam.global.PropertyKeys;
 import jam.io.hdf.AbstractData;
 import jam.io.hdf.HDFException;
 import jam.io.hdf.HDFile;
-import jam.io.hdf.JamFileFields;
 import jam.io.hdf.VData;
 import jam.io.hdf.VDataDescription;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -61,7 +61,7 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author <a href="mailto:dale@visser.name">Dale W Visser</a>
  */
-public final class ScalerScan implements JamFileFields {
+public final class ScalerScan {
 
 	private static final Logger LOGGER = Logger.getLogger(ScalerScan.class
 			.getPackage().getName());

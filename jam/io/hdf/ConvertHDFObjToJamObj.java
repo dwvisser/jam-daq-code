@@ -1,5 +1,15 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.JamFileFields.ERROR_LABEL;
+import static jam.io.hdf.JamFileFields.GATE_1D_TYPE;
+import static jam.io.hdf.JamFileFields.GATE_2D_TYPE;
+import static jam.io.hdf.JamFileFields.GRP_SECTION;
+import static jam.io.hdf.JamFileFields.HIST_SECTION;
+import static jam.io.hdf.JamFileFields.HIST_TYPE;
+import static jam.io.hdf.JamFileFields.PARAMETERS;
+import static jam.io.hdf.JamFileFields.SCALER_SECT;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.DataParameter;
@@ -21,7 +31,7 @@ import java.util.Map;
  * @author Ken Swartz
  * @version 15 Feb 2005
  */
-final class ConvertHDFObjToJamObj implements JamFileFields {
+final class ConvertHDFObjToJamObj {
 
 	private static final StringUtilities STRING_UTIL = StringUtilities
 			.getInstance();
@@ -88,7 +98,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		if (calFunc != null) {
 			final int numPts = vdd.getNumRows();
 
-			if (dataTypeName.equals(CALIBRATION_TYPE_POINTS)) {
+			if (dataTypeName.equals(TYPE_POINTS)) {
 
 				double[] ptsChannel = new double[numbPts];
 				double[] ptsEnergy = new double[numbPts];
@@ -105,7 +115,7 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 							"Cannot create fit for calibration function "
 									+ funcName);
 				}
-			} else if (dataTypeName.equals(CALIBRATION_TYPE_COEFF)) {
+			} else if (dataTypeName.equals(TYPE_COEFF)) {
 				double[] coeff = new double[numbPts];
 				for (int i = 0; i < numPts; i++) {
 					coeff[i] = data.getDouble(i, 0).doubleValue();
@@ -181,7 +191,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 		final List<VirtualGroup> groups = AbstractData
 				.ofType(VirtualGroup.class);
 		/* get only the "gates" VG (only one element) */
-		final VirtualGroup gates = VirtualGroup.ofName(groups, GATE_SECTION);
+		final VirtualGroup gates = VirtualGroup.ofName(groups,
+				JamFileFields.GATE_SECTION);
 		final List<DataIDAnnotation> annotations = AbstractData
 				.ofType(DataIDAnnotation.class);
 		if (gates != null) {
@@ -242,7 +253,8 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 			ndg = dataGroups[0]; // only one NDG -- the data
 		} else if (dataGroups.length == 2) {
 			if (DataIDLabel.withTagRef(NumericalDataGroup.class,
-					dataGroups[0].getRef()).getLabel().equals(ERROR_LABEL)) {
+					dataGroups[0].getRef()).getLabel().equals(
+					JamFileFields.ERROR_LABEL)) {
 				ndg = dataGroups[1];
 			} else {
 				ndg = dataGroups[0];
@@ -473,13 +485,11 @@ final class ConvertHDFObjToJamObj implements JamFileFields {
 
 	VDataDescription findCalibration(final VirtualGroup virtualGroup) {
 		VDataDescription vddCalibration = null;
-		final VDataDescription vddpts = findVData(virtualGroup,
-				CALIBRATION_TYPE_POINTS);
+		final VDataDescription vddpts = findVData(virtualGroup, TYPE_POINTS);
 		if (vddpts != null) {
 			vddCalibration = vddpts;
 		}
-		final VDataDescription vddcoef = findVData(virtualGroup,
-				CALIBRATION_TYPE_COEFF);
+		final VDataDescription vddcoef = findVData(virtualGroup, TYPE_COEFF);
 		if (vddcoef != null) {
 			vddCalibration = vddcoef;
 		}

@@ -6,98 +6,117 @@ package jam.io.hdf;
  * 
  * @author <a href=mailto:dale@visser.name>Dale Visser </a>
  */
-public interface JamFileFields {
-    
-    /**
-     * The section name for the whole file.
-     */
-    String FILE_SECTION = "Jam File Section";
+public final class JamFileFields {
 
-    /**
-     * The section name for the histograms.
-     */
-    String GRP_SECTION = "Groups";
+	private JamFileFields() {
+		super();
+	}
 
-    /**
-     * The type name for the groups?
-     */
-    String GROUP_TYPE = "GROUP";
-    
-    /**
-     * The section name for the histograms.
-     */
-    String HIST_SECTION = "Histograms";
+	/**
+	 * The section name for the whole file.
+	 */
+	public static final String FILE_SECTION = "Jam File Section";
 
-    /**
-     * The type name for the histograms?
-     */
-    String HIST_TYPE = "Histogram";
+	/**
+	 * The section name for the histograms.
+	 */
+	public static final String GRP_SECTION = "Groups";
 
-    /**
-     * The type name for the calibration with points
-     */
-    String CALIBRATION_TYPE_POINTS = "CalibrationPoints";
-    /**
-     * The type name for the calibration with coefficients
-     */
-    String CALIBRATION_TYPE_COEFF = "CalibrationCoefficients";
+	/**
+	 * The type name for the groups?
+	 */
+	public static final String GROUP_TYPE = "GROUP";
 
-    /**
-     * Column names for calibration with points
-     */
-    String[] CALIBRATION_COLUMNS_POINTS = { "Channel", "Energy" };
-    /**
-     * Column names for calibration with coefficients
-     */    
-    String[] CALIBRATION_COLUMNS_COEFF = { "Coefficients"};
-    /**
-     * The section name for the gates.
-     */
-    String GATE_SECTION = "Gates";
+	/**
+	 * The section name for the histograms.
+	 */
+	public static final String HIST_SECTION = "Histograms";
 
-    /**
-     * The type name for the 1d gates?
-     */
-    String GATE_1D_TYPE = "1-d Gate";
+	/**
+	 * The type name for the histograms?
+	 */
+	public static final String HIST_TYPE = "Histogram";
 
-    /**
-     * The type name for the 2d gates?
-     */
-    String GATE_2D_TYPE = "2-d Banana Gate";
+	/**
+	 * labels to do with calibrations
+	 * @author Dale Visser
+	 *
+	 */
+	public static final class Calibration {
+		
+		private Calibration(){
+			super();
+		}
 
-    /**
-     * Names for lower and upper limits of 1d gates.
-     */
-    String[] GATE_1D = { "Lower Limit", "Upper Limit" };
+		/**
+		 * The type name for the calibration with points
+		 */
+		public static final String TYPE_POINTS = "CalibrationPoints";
 
-    /**
-     * Names for x- and y- coordinates lists for 2d gates.
-     */
-    String[] GATE_2D = { "X Coordinate", "Y Coordinate" };
+		/**
+		 * The type name for the calibration with coefficients
+		 */
+		public static final String TYPE_COEFF = "CalibrationCoefficients";
 
-    /**
-     * The section name for the scaler values.
-     */
-    String SCALER_SECT = "Scalers";
+		/**
+		 * Column names for calibration with points
+		 */
+		public static final String[] COLUMNS_POINTS = { "Channel", "Energy" };
 
-    /**
-     * The type name for the scaler values?
-     */
-    String SCALER_TYPE = "Scaler Value";
+		/**
+		 * Column names for calibration with coefficients
+		 */
+		public static final String[] COLUMNS_COEFF = { "Coefficients" };
+	}
 
-    /** Column names for scaler table. */
-    String[] SCALER_COLS = { "Number", "Name", "Value" };
+	/**
+	 * The section name for the gates.
+	 */
+	public static final String GATE_SECTION = "Gates";
 
-    /** The section names for the parameter values. */
-    String PARAMETERS = "Parameters";
+	/**
+	 * The type name for the 1d gates?
+	 */
+	public static final String GATE_1D_TYPE = "1-d Gate";
 
-    /** The type name for the parameter values? */
-    String PAR_TYPE = "Parameter Value";
+	/**
+	 * The type name for the 2d gates?
+	 */
+	public static final String GATE_2D_TYPE = "2-d Banana Gate";
 
-    /** The column names for the parameter table. */
-    String[] PARAM_COLS = { "Name", "Value" };
+	/**
+	 * Names for lower and upper limits of 1d gates.
+	 */
+	public static final String[] GATE_1D = { "Lower Limit", "Upper Limit" };
 
-    /** The label for the error bar numerical data groups. */
-    String ERROR_LABEL = "Errors";
+	/**
+	 * Names for x- and y- coordinates lists for 2d gates.
+	 */
+	public static final String[] GATE_2D = { "X Coordinate", "Y Coordinate" };
+
+	/**
+	 * The section name for the scaler values.
+	 */
+	public static final String SCALER_SECT = "Scalers";
+
+	/**
+	 * The type name for the scaler values?
+	 */
+	public static final String SCALER_TYPE = "Scaler Value";
+
+	/** Column names for scaler table. */
+	public static final String[] SCALER_COLS = { "Number", "Name", "Value" };
+
+	/** The section names for the parameter values. */
+	public static final String PARAMETERS = "Parameters";
+
+	/** The type name for the parameter values? */
+	public static final String PAR_TYPE = "Parameter Value";
+
+	/** The column names for the parameter table. */
+	public static final String[] PARAM_COLS = { "Name", "Value" };
+
+	/** The label for the error bar numerical data groups. */
+	public static final String ERROR_LABEL = "Errors";
 
 }

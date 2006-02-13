@@ -1,5 +1,26 @@
 package jam.io.hdf;
 
+import static jam.io.hdf.JamFileFields.ERROR_LABEL;
+import static jam.io.hdf.JamFileFields.FILE_SECTION;
+import static jam.io.hdf.JamFileFields.GATE_1D;
+import static jam.io.hdf.JamFileFields.GATE_1D_TYPE;
+import static jam.io.hdf.JamFileFields.GATE_2D;
+import static jam.io.hdf.JamFileFields.GATE_2D_TYPE;
+import static jam.io.hdf.JamFileFields.GATE_SECTION;
+import static jam.io.hdf.JamFileFields.GROUP_TYPE;
+import static jam.io.hdf.JamFileFields.GRP_SECTION;
+import static jam.io.hdf.JamFileFields.HIST_SECTION;
+import static jam.io.hdf.JamFileFields.HIST_TYPE;
+import static jam.io.hdf.JamFileFields.PARAMETERS;
+import static jam.io.hdf.JamFileFields.PARAM_COLS;
+import static jam.io.hdf.JamFileFields.PAR_TYPE;
+import static jam.io.hdf.JamFileFields.SCALER_COLS;
+import static jam.io.hdf.JamFileFields.SCALER_SECT;
+import static jam.io.hdf.JamFileFields.SCALER_TYPE;
+import static jam.io.hdf.JamFileFields.Calibration.COLUMNS_COEFF;
+import static jam.io.hdf.JamFileFields.Calibration.COLUMNS_POINTS;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_COEFF;
+import static jam.io.hdf.JamFileFields.Calibration.TYPE_POINTS;
 import jam.data.AbstractHist1D;
 import jam.data.DataParameter;
 import jam.data.Gate;
@@ -21,7 +42,7 @@ import java.util.List;
  * 
  * @author Ken Swartz
  */
-final class ConvertJamObjToHDFObj implements JamFileFields {
+final class ConvertJamObjToHDFObj {
 
 	private static final StringUtilities STRING_UTIL = StringUtilities
 			.getInstance();
@@ -229,8 +250,8 @@ final class ConvertJamObjToHDFObj implements JamFileFields {
 		final short[] types;
 		final String calibName = calibration.getName();
 		if (calibration.isFitPoints()) {
-			calibType = CALIBRATION_TYPE_POINTS;
-			columnNames = CALIBRATION_COLUMNS_POINTS;
+			calibType = TYPE_POINTS;
+			columnNames = COLUMNS_POINTS;
 			size = calibration.getPtsEnergy().length;
 			types = new short[2];
 			types[0] = VDataDescription.DFNT_DBL64;
@@ -239,8 +260,8 @@ final class ConvertJamObjToHDFObj implements JamFileFields {
 			orders[0] = 1;
 			orders[1] = 1;
 		} else { // 2d
-			calibType = CALIBRATION_TYPE_COEFF;
-			columnNames = CALIBRATION_COLUMNS_COEFF;
+			calibType = TYPE_COEFF;
+			columnNames = COLUMNS_COEFF;
 			size = calibration.getNumberTerms();
 			types = new short[1];
 			types[0] = VDataDescription.DFNT_DBL64;

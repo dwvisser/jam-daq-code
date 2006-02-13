@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
  * @author Dale Visser, Ken Swartz
  * @since JDK1.1
  */
-public final class HDFIO implements DataIO, JamFileFields {
+public final class HDFIO implements DataIO {
 	private static final Logger LOGGER = Logger.getLogger(HDFIO.class
 			.getPackage().getName());
 
@@ -644,7 +644,7 @@ public final class HDFIO implements DataIO, JamFileFields {
 			throws HDFException {
 		final List<HistogramAttributes> lstHistAtt = new ArrayList<HistogramAttributes>();
 		hdfToJam.setInFile(inHDF);
-		final VirtualGroup hists = VirtualGroup.ofName(HIST_SECTION);
+		final VirtualGroup hists = VirtualGroup.ofName(JamFileFields.HIST_SECTION);
 		/* only the "histograms" VG (only one element) */
 		if (hists != null) {
 			for (AbstractData data : hists.getObjects()) {
