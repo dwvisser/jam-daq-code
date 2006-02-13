@@ -17,50 +17,51 @@ import javax.swing.KeyStroke;
 
 /**
  * Save to a hdf file
- *  
+ * 
  * @author Ken Swartz
- *
+ * 
  */
 final class SaveHDFCmd extends AbstractCommand implements Observer {
 
-	public void initCommand() {
-		putValue(NAME, "Save");
-		putValue(
-			ACCELERATOR_KEY,
-			KeyStroke.getKeyStroke(
-				KeyEvent.VK_S,
+	SaveHDFCmd() {
+		super("Save");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				CTRL_MASK | InputEvent.SHIFT_MASK));
-	    final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
-	    putValue(Action.SMALL_ICON, iSave);
-		putValue(Action.SHORT_DESCRIPTION, "Save histograms to a hdf data file.");	    
-		
-		enable(); //depending on sort mode
+		final Icon iSave = loadToolbarIcon("jam/ui/SaveHDF.png");
+		putValue(Action.SMALL_ICON, iSave);
+		putValue(Action.SHORT_DESCRIPTION,
+				"Save histograms to a hdf data file.");
+
+		enable(); // depending on sort mode
 	}
 
 	/**
 	 * Save to the last file opened.
 	 * 
-	 * @param cmdParams not used
+	 * @param cmdParams
+	 *            not used
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
-		//No command options used
+	protected void execute(final Object[] cmdParams) {
+		// No command options used
 		final JFrame frame = STATUS.getFrame();
 		final HDFIO hdfio = new HDFIO(frame);
 		final File file = STATUS.getOpenFile();
-		if (file != null) {			
-			hdfio.writeFile(file, true, true);
-		} else { //File null, shouldn't be.	
-			throw new IllegalStateException("Expected a reference for the previously accessed file.");
+		if (file == null) { // File null, shouldn't be.
+			throw new IllegalStateException(
+					"Expected a reference for the previously accessed file.");
 		}
+		hdfio.writeFile(file, true, true);
 	}
+
 	/**
 	 * Save to the last file opened.
 	 * 
-	 * @param cmdTokens not used
+	 * @param cmdTokens
+	 *            not used
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
 
@@ -69,9 +70,9 @@ final class SaveHDFCmd extends AbstractCommand implements Observer {
 	 * 
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
-	public void update(Observable observe, Object obj) {
-		final BroadcastEvent be = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observe, final Object obj) {
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.SORT_MODE_CHANGED) {
 			enable();
 		}

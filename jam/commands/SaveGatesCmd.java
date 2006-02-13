@@ -9,67 +9,64 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-/** 
- * Save gates and scalers 
+/**
+ * Save gates and scalers
  * 
  * @author Ken Swartz
- *
+ * 
  */
 final class SaveGatesCmd extends AbstractCommand {
 
-	public void initCommand() {
-		putValue(NAME, "Save gates & parameters as\u2026");
+	SaveGatesCmd() {
+		super("Save gates & parameters as\u2026");
 	}
 
 	/**
 	 * Save to an hdf file.
 	 * 
-	 * @param cmdParams empty array or <code>null</code> to use a 
-	 * file dialog, or an array with a <code>File</code> as the first
-	 * element
+	 * @param cmdParams
+	 *            empty array or <code>null</code> to use a file dialog, or an
+	 *            array with a <code>File</code> as the first element
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 * @see java.io.File
 	 */
-	protected void execute(Object[] cmdParams) {
-		File file=null;
-		if (cmdParams!=null) {
-			if (cmdParams.length>0){
-				file =(File)cmdParams[0];
-			}
-		}		
+	protected void execute(final Object[] cmdParams) {
+		File file = null;
+		if (cmdParams != null && cmdParams.length > 0) {
+			file = (File) cmdParams[0];
+		}
 		saveGates(file);
-		
 	}
-	
+
 	private void saveGates(final File file) {
-        final Frame frame = STATUS.getFrame();
-        final HDFIO hdfio = new HDFIO(frame);
-        if (file == null) { //No file given
-            final JFileChooser jfile = new JFileChooser(HDFIO
-                    .getLastValidFile());
-            jfile.setFileFilter(new HDFileFilter(true));
-            final int option = jfile.showSaveDialog(frame);
-            /* don't do anything if it was cancel */
-            if (option == JFileChooser.APPROVE_OPTION
-                    && jfile.getSelectedFile() != null) {
-                hdfio.writeFile(jfile.getSelectedFile(), false, true);
-            }
-        } else { //File name given
-            hdfio.writeFile(file, false, true);
-        }
-    }
-	
+		final Frame frame = STATUS.getFrame();
+		final HDFIO hdfio = new HDFIO(frame);
+		if (file == null) { // No file given
+			final JFileChooser jfile = new JFileChooser(HDFIO
+					.getLastValidFile());
+			jfile.setFileFilter(new HDFileFilter(true));
+			final int option = jfile.showSaveDialog(frame);
+			/* don't do anything if it was cancel */
+			if (option == JFileChooser.APPROVE_OPTION
+					&& jfile.getSelectedFile() != null) {
+				hdfio.writeFile(jfile.getSelectedFile(), false, true);
+			}
+		} else { // File name given
+			hdfio.writeFile(file, false, true);
+		}
+	}
+
 	/**
 	 * Save to an hdf file.
 	 * 
-	 * @param cmdTokens empty array or <code>null</code> to use a 
-	 * file dialog, or the name of a <code>File</code> as the first
-	 * element
+	 * @param cmdTokens
+	 *            empty array or <code>null</code> to use a file dialog, or
+	 *            the name of a <code>File</code> as the first element
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 * @see java.io.File
 	 */
-	protected void executeParse(String[] cmdTokens)
-		throws CommandListenerException {
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
 		if (cmdTokens == null || cmdTokens.length == 0) {
 			execute(null);
 		} else {

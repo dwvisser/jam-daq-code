@@ -17,12 +17,11 @@ import javax.swing.Icon;
  */
 final class ShowSortControl extends AbstractShowDialog implements Observer {
 	
-	public void initCommand(){
-		putValue(NAME, "Sort\u2026");
+	ShowSortControl(){
+		super("Sort\u2026");
 	    final Icon iPlayBack = loadToolbarIcon("jam/ui/PlayBack.png");
 	    putValue(Action.SMALL_ICON, iPlayBack);
-		putValue(Action.SHORT_DESCRIPTION, "Sort Control.");	    
-		
+		putValue(Action.SHORT_DESCRIPTION, "Sort Control.");
 		dialog=SortControl.getInstance();
 		enable();
 	}
@@ -32,7 +31,7 @@ final class ShowSortControl extends AbstractShowDialog implements Observer {
 		setEnabled(mode == SortMode.OFFLINE);
 	}
 
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		enable();
 	}
 	

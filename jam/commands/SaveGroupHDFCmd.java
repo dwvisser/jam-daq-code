@@ -16,11 +16,11 @@ import javax.swing.JFileChooser;
  */
 public class SaveGroupHDFCmd extends AbstractCommand {
 
-	public void initCommand() {
-		putValue(NAME, "Save select group as\u2026");
+	SaveGroupHDFCmd() {
+		super("Save select group as\u2026");
 	}
 	
-	protected void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(final Object[] cmdParams) throws CommandException {
 		File file=null;
 		Group group=(Group)STATUS.getCurrentGroup();
 		if (cmdParams!=null) {
@@ -34,7 +34,7 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 		saveGroup(file, group);		
 	}
 
-	private void saveGroup (final File file, Group group) {
+	private void saveGroup (final File file, final Group group) {
 		final HDFIO hdfio = new HDFIO(STATUS.getFrame());
 		if (group==null) {
 			LOGGER.severe("Need to select a group.");
@@ -54,10 +54,9 @@ public class SaveGroupHDFCmd extends AbstractCommand {
 		} 
 	}
 	
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
-		// TODO Auto-generated method stub
-
+		// do nothing
 	}
 
 }

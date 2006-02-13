@@ -16,8 +16,8 @@ import java.util.Observer;
  */
 final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 	
-	public void initCommand(){
-		putValue(NAME, "Online sorting\u2026");
+	ShowSetupOnline(){
+		super("Online sorting\u2026");
 		dialog=SetupSortOn.getInstance().getDialog();
 		enable();
 	}
@@ -28,9 +28,7 @@ final class ShowSetupOnline extends AbstractShowDialog implements Observer {
 		mode == SortMode.REMOTE));
 	}
 
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		enable();
 	}
-	
-
 }

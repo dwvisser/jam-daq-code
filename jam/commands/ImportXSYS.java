@@ -9,8 +9,8 @@ import jam.io.ImpExpXSYS;
  */
 final class ImportXSYS extends AbstractImportFile {
 	
-	public void initCommand(){
-		putValue(NAME,"TUNL's XSYS");
+	ImportXSYS(){
+		super("TUNL's XSYS");
 		importExport=new ImpExpXSYS();		
 	}
 }

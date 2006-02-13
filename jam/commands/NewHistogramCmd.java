@@ -18,7 +18,7 @@ final class NewHistogramCmd extends AbstractCommand {
 	/**
 	 * Execute the command
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
 		final String name = (String) cmdParams[0];
 		final String title = (String) cmdParams[1];
 		final int type = ((Integer)cmdParams[2]).intValue();
@@ -26,14 +26,14 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = ((Integer) cmdParams[3]).intValue();
 		final int sizeY = ((Integer) cmdParams[4]).intValue();
-		Group currentGroup= (Group)STATUS.getCurrentGroup();
+		final Group currentGroup= (Group)STATUS.getCurrentGroup();
 		Histogram.createHistogram(currentGroup, hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 
 	/**
 	 * Execute the command
 	 */
-	protected void executeParse(String[] cmdParams) {
+	protected void executeParse(final String[] cmdParams) {
 		final String name = cmdParams[0];
 		final String title = cmdParams[1];
 		final int type = Integer.parseInt(cmdParams[2]);
@@ -41,7 +41,7 @@ final class NewHistogramCmd extends AbstractCommand {
 				: Histogram.Type.TWO_D_DOUBLE;
 		final int sizeX = Integer.parseInt(cmdParams[3]);
 		final int sizeY = Integer.parseInt(cmdParams[4]);
-		Group workingGroup =Group.createGroup("Working", Group.Type.FILE);
+		final Group workingGroup =Group.createGroup("Working", Group.Type.FILE);
 		Histogram.createHistogram(workingGroup, hType.getSampleArray(sizeX,sizeY), name, title);
 	}
 

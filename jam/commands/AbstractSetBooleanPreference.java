@@ -22,6 +22,10 @@ public abstract class AbstractSetBooleanPreference extends AbstractCommand {// N
 		super();
 	}
 
+	AbstractSetBooleanPreference(String name) {
+		super(name);
+	}
+
 	/**
 	 * Preference node which must be defined in full implementations.
 	 */

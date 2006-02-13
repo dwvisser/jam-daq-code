@@ -9,8 +9,8 @@ import jam.io.ImportBanGates;
  */
 final class ImportORNLban extends AbstractImportFile {
 		
-	public void initCommand(){
-		putValue(NAME,"ORNL Banana Gates");
+	ImportORNLban(){
+		super("ORNL Banana Gates");
 		importExport=new ImportBanGates();		
 	}
 }

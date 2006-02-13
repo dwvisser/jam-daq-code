@@ -9,8 +9,8 @@ import jam.data.control.Combine;
  */
 final class ShowDialogHistManipulationsCmd extends AbstractShowDialog {
 
-	public void initCommand() {
-		putValue(NAME, "Combine\u2026");
+	ShowDialogHistManipulationsCmd() {
+		super("Combine\u2026");
 		dialog = new Combine();
 	}
 }

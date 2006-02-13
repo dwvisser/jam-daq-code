@@ -9,32 +9,36 @@ import java.awt.print.PrinterJob;
 import javax.swing.KeyStroke;
 
 /**
- * Command for Page Setup 
+ * Command for Page Setup
+ * 
  * @author Ken Swartz
- *
+ * 
  */
 final class PageSetupCmd extends AbstractPrintingCommand {
-	
-	PageSetupCmd(){
-		super();
-		putValue(NAME,"Page Setup\u2026");
-		putValue(ACCELERATOR_KEY,KeyStroke.getKeyStroke(
-			KeyEvent.VK_P,
-			CTRL_MASK | Event.SHIFT_MASK));
+
+	PageSetupCmd() {
+		super("Page Setup\u2026");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P,
+				CTRL_MASK | Event.SHIFT_MASK));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
-		final PrinterJob pj=PrinterJob.getPrinterJob();
-		mPageFormat = pj.pageDialog(mPageFormat);
+	protected void execute(final Object[] cmdParams) {
+		final PrinterJob job = PrinterJob.getPrinterJob();
+		mPageFormat = job.pageDialog(mPageFormat);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
 		execute(null);
 	}
 }

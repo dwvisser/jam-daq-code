@@ -15,18 +15,17 @@ import jam.global.CommandListenerException;
  * @version Jun 3, 2004
  */
 final class OpenSelectedHistogram extends AbstractCommand {
-	
-	private jam.io.control.OpenSelectedHistogram osh;
-	
-	public void initCommand(){
-		putValue(NAME, "Open Additional Select Histograms\u2026");
-		osh=new jam.io.control.OpenSelectedHistogram(STATUS.getFrame());
+
+	OpenSelectedHistogram() {
+		super("Open Additional Select Histograms\u2026");
 	}
 
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
+		final jam.io.control.OpenSelectedHistogram osh = new jam.io.control.OpenSelectedHistogram(
+				STATUS.getFrame());
 		osh.open();
 		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_ADD);
 		STATUS.getFrame().repaint();
@@ -35,8 +34,8 @@ final class OpenSelectedHistogram extends AbstractCommand {
 	/**
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens)
-		throws CommandListenerException {
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
 		execute(null);
 	}
 }

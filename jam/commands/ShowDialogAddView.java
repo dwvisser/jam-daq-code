@@ -7,6 +7,7 @@ import jam.ui.WindowCancelAction;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,8 +28,8 @@ import javax.swing.border.EmptyBorder;
  */
 public class ShowDialogAddView extends AbstractShowDialog {
 
-	public void initCommand() {
-		putValue(NAME, "New\u2026");
+	ShowDialogAddView() {
+		super("New\u2026");
 		dialog = new ViewNew();
 	}
 
@@ -37,20 +38,18 @@ public class ShowDialogAddView extends AbstractShowDialog {
 	 * 
 	 * @author Ken Swartz
 	 */
-	private class ViewNew extends JDialog {
+	private static class ViewNew extends JDialog {
 
-		private final String[] DEFAULT_NUMBERS = { "1", "2", "3", "4", "5",
-				"7", "8" };
+		private transient final JTextField textName;
 
-		private final JTextField textName;
+		private transient final JComboBox comboRows;
 
-		private final JComboBox comboRows;
+		private transient final JComboBox comboCols;
 
-		private final JComboBox comboCols;
+		private static final Frame parent = null;
 
-		private ViewNew() {
-			setTitle("New View");
-			setModal(false);
+		ViewNew() {
+			super(parent, "New View", false);
 			final Container cdnew = getContentPane();
 			setResizable(false);
 			cdnew.setLayout(new BorderLayout(5, 5));
@@ -59,8 +58,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			final JPanel pLabels = new JPanel(new GridLayout(0, 1, 5, 5));
 			pLabels.setBorder(new EmptyBorder(10, 10, 0, 0));
 			cdnew.add(pLabels, BorderLayout.WEST);
-			final JLabel ln = new JLabel("Name", SwingConstants.RIGHT);
-			pLabels.add(ln);
+			pLabels.add(new JLabel("Name", SwingConstants.RIGHT));
 			final JLabel lrw = new JLabel("Rows", SwingConstants.RIGHT);
 			pLabels.add(lrw);
 			final JLabel lcl = new JLabel("Columns", SwingConstants.RIGHT);
@@ -80,6 +78,8 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			final JPanel pRows = new JPanel(new FlowLayout(FlowLayout.LEFT, 0,
 					0));
 			pEntires.add(pRows);
+			final String[] DEFAULT_NUMBERS = { "1", "2", "3", "4", "5", "7",
+					"8" };
 			comboRows = new JComboBox(DEFAULT_NUMBERS);
 			pRows.add(comboRows);
 			/* Cols Combo */
@@ -97,7 +97,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			pbutton.add(pbnew, BorderLayout.SOUTH);
 			final JButton bok = new JButton("OK");
 			bok.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+				public void actionPerformed(final ActionEvent event) {
 					makeView();
 					dispose();
 
@@ -106,7 +106,7 @@ public class ShowDialogAddView extends AbstractShowDialog {
 			pbnew.add(bok);
 			final JButton bapply = new JButton("Apply");
 			bapply.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
+				public void actionPerformed(final ActionEvent event) {
 					makeView();
 				}
 			});
@@ -122,10 +122,10 @@ public class ShowDialogAddView extends AbstractShowDialog {
 		private void makeView() {
 			String name = textName.getText();
 			View viewNew;
-			int nRows = Integer.parseInt(((String) comboRows.getSelectedItem())
-					.trim());
-			int nCols = Integer.parseInt(((String) comboCols.getSelectedItem())
-					.trim());
+			final int nRows = Integer.parseInt(((String) comboRows
+					.getSelectedItem()).trim());
+			final int nCols = Integer.parseInt(((String) comboCols
+					.getSelectedItem()).trim());
 			/* Check for blank name */
 			if (name.trim().equals("")) {
 				name = "View " + nRows + "x" + nCols;

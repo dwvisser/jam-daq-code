@@ -13,8 +13,8 @@ package jam.commands;
  */
 final class ShowBatchExport extends AbstractShowDialog {
 	
-	public void initCommand(){
-		putValue(NAME, "Batch Export\u2026");
+	ShowBatchExport(){
+		super("Batch Export\u2026");
 		dialog=new jam.io.BatchExport();
 	}
 }

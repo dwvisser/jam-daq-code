@@ -7,31 +7,32 @@ import jam.io.control.SaveSelectedHistogram;
  * Save selected histograms to a file
  * 
  * @author Ken Swartz
- *
+ * 
  */
 final class SaveSelectHistogramsHDFCmd extends AbstractCommand {
-	
-	private  SaveSelectedHistogram saveSelectedDialog;
-	
-	public void initCommand() {
-		putValue(NAME, "Save select histograms\u2026");
-		saveSelectedDialog = new SaveSelectedHistogram(STATUS.getFrame());
+
+	SaveSelectHistogramsHDFCmd() {
+		super("Save select histograms\u2026");
 	}
-	
+
 	/**
 	 * Show dialog to select histogram
 	 */
-	protected void execute(Object[] cmdParams){
-		saveSelectedDialog.show();
+	protected void execute(final Object[] cmdParams) {
+		final SaveSelectedHistogram saveDlg = new SaveSelectedHistogram(STATUS
+				.getFrame());
+		saveDlg.show();
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
-	    execute(null);
+		execute(null);
 	}
 
 }

@@ -2,53 +2,44 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 
-import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.logging.Level;
 
 import javax.help.CSH;
 import javax.help.HelpSet;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 /**
  * @author Ken Swartz
  */
 final class ShowUserGuide extends AbstractCommand {
-	
-	JButton proxy;
 
-	public void initCommand(){
-		putValue(NAME,"User Guide\u2026");
+	private transient final JButton proxy = new JButton();
+
+	ShowUserGuide() {
+		super("User Guide\u2026");
 		final String helpsetName = "help/jam.hs";
 		try {
-			final URL hsURL =
-				getClass().getClassLoader().getResource(helpsetName);
-			final HelpSet hs = new HelpSet(null, hsURL);
-			ActionListener ac= new CSH.DisplayHelpFromSource(hs.createHelpBroker());	
-			proxy=new JButton();
-			proxy.addActionListener(ac);
+			final URL hsURL = getClass().getClassLoader().getResource(
+					helpsetName);
+			final HelpSet help = new HelpSet(null, hsURL);
+			proxy.addActionListener(new CSH.DisplayHelpFromSource(help
+					.createHelpBroker()));
 		} catch (Exception ee) {
 			final String message = "HelpSet " + helpsetName + " not found";
-			final JFrame frame =STATUS.getFrame();
-			JOptionPane.showMessageDialog(
-				frame,
-				ee.getMessage(),
-				message,
-				JOptionPane.ERROR_MESSAGE);
+			LOGGER.log(Level.WARNING, message, ee);
 		}
 	}
-		
-		
+
 	/**
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams)  {
-		proxy.doClick();		
+	protected void execute(final Object[] cmdParams) {
+		proxy.doClick();
 	}
 
-	protected void executeParse(String[] cmdTokens)
-		throws CommandListenerException {
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
 		execute(null);
-	}	
+	}
 }

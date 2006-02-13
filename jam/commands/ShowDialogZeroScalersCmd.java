@@ -3,7 +3,6 @@ package jam.commands;
 import jam.data.Scaler;
 import jam.data.control.ScalerZero;
 
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -16,15 +15,13 @@ import java.util.Observer;
 final class ShowDialogZeroScalersCmd extends AbstractShowDialog 
 implements Observer {
 	
-	private final List scalerList=Scaler.getScalerList();
-	
-	public void initCommand(){
-		putValue(NAME,"Zero Scalers\u2026");
+	ShowDialogZeroScalersCmd(){
+		super("Zero Scalers\u2026");
 		dialog=new ScalerZero();
 	}
 	
-	public void update(Observable observe, Object obj){
-		setEnabled(!scalerList.isEmpty());
+	public void update(final Observable observe, final Object obj){
+		setEnabled(!Scaler.getScalerList().isEmpty());
 	}	
 
 }

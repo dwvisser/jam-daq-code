@@ -25,13 +25,13 @@ Observer {
 		enable();
 	}
 
-	private final void enable() {
+	private void enable() {
 		final SortMode mode=STATUS.getSortMode();
 		setEnabled(mode == SortMode.ONLINE_DISK || 
 		mode == SortMode.ON_NO_DISK);
 	}
 
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		enable();
 	}
 }

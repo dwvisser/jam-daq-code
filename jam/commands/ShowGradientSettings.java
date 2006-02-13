@@ -12,8 +12,8 @@ final class ShowGradientSettings extends AbstractShowDialog {
 	/**
 	 * Initialize command
 	 */
-	public void initCommand(){
-		putValue(NAME, "Adjust color gradient\u2026");
+	ShowGradientSettings(){
+		super("Adjust color gradient\u2026");
 		dialog=ColorSettingsFrame.getInstance();
 	}
 }

@@ -10,18 +10,17 @@ import jam.global.CommandListenerException;
  */
 final class ShowDialogAddFit extends AbstractCommand {
 	
-	private LoadFit loadfit;
 
-	public void initCommand(){
-		putValue(NAME, "Load Fit\u2026");
-		loadfit = new LoadFit();		
+	ShowDialogAddFit(){
+		super("Load Fit\u2026");
 	}
 	
-	protected void execute(Object[] cmdParams) {				
+	protected void execute(final Object[] cmdParams) {				
+		final LoadFit loadfit=new LoadFit();
 		loadfit.showLoad();
 	}
 
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 		throws CommandListenerException {
 		execute(null);
 	}

@@ -20,32 +20,28 @@ import javax.swing.Icon;
  */
 final class StartAcquisition extends AbstractCommand implements Observer {
 
-	private RunControl control;
+	StartAcquisition() {
+		super("start");
+		final Icon iStart = loadToolbarIcon("jam/ui/Start.png");
+		putValue(Action.SMALL_ICON, iStart);
+		putValue(SHORT_DESCRIPTION, "Start data acquisition.");
 
-	public void initCommand(){
-		putValue(NAME, "start");
-		control=RunControl.getSingletonInstance();
-	    final Icon iStart = loadToolbarIcon("jam/ui/Start.png");
-	    putValue(Action.SMALL_ICON, iStart);
-		putValue(SHORT_DESCRIPTION, "Start data acquisition.");	    
-				
-	}
-	
-	protected void execute(Object[] cmdParams) {
-		control.startAcq();
 	}
 
-	protected void executeParse(String[] cmdTokens) {
+	protected void execute(final Object[] cmdParams) {
+		RunControl.getSingletonInstance().startAcq();
+	}
+
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
 
-	public void update(Observable o, Object arg) {
+	public void update(final Observable obs, final Object arg) {
 		enable();
 	}
 
 	private void enable() {
-		final SortMode mode=STATUS.getSortMode();
-		setEnabled(mode == SortMode.ONLINE_DISK || 
-		mode == SortMode.ON_NO_DISK);
+		final SortMode mode = STATUS.getSortMode();
+		setEnabled(mode == SortMode.ONLINE_DISK || mode == SortMode.ON_NO_DISK);
 	}
 }

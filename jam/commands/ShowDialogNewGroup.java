@@ -13,8 +13,8 @@ public class ShowDialogNewGroup extends AbstractShowDialog {
 	/**
 	 * Initialize command
 	 */
-	public void initCommand(){
-		putValue(NAME, "New Group\u2026");
+	ShowDialogNewGroup(){
+		super("New Group\u2026");
 		dialog= new GroupNew(); 
 	}
 }

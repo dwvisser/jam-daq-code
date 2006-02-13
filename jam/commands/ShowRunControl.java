@@ -22,8 +22,8 @@ import javax.swing.Icon;
  */
 final class ShowRunControl extends AbstractShowDialog implements Observer {
 	
-	public void initCommand(){
-		putValue(NAME, "Run\u2026");
+	ShowRunControl(){
+		super("Run\u2026");
 	    final Icon iRun = loadToolbarIcon("jam/ui/Run.png");
 	    putValue(Action.SMALL_ICON, iRun);
 		putValue(Action.SHORT_DESCRIPTION, "Run Control.");	    
@@ -38,7 +38,7 @@ final class ShowRunControl extends AbstractShowDialog implements Observer {
 		mode == SortMode.ON_NO_DISK);
 	}
 
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		enable();
 	}
 	

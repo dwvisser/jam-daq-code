@@ -16,21 +16,19 @@ import jam.io.control.OpenMultipleFiles;
  * 
  * @author Ken Swartz
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 
-	private OpenMultipleFiles openMultiple;
+	private transient final OpenMultipleFiles openMultiple;
 	
 	OpenMultipleHDFCmd(){
-		putValue(NAME,"Open Multiple\u2026");
+		super("Open Multiple\u2026");
 		openMultiple=new OpenMultipleFiles(STATUS.getFrame());
 		final Icon iOpen = loadToolbarIcon("jam/ui/OpenMultiHDF.png");
 		putValue(Action.SMALL_ICON, iOpen);
 	}
 	
-	protected void execute(Object[] cmdParams) throws CommandException {
+	protected void execute(final Object[] cmdParams) throws CommandException {
 		openMultiple.show();
 
 	}
@@ -38,15 +36,14 @@ public class OpenMultipleHDFCmd extends AbstractCommand  implements Observer{
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens)
+	protected void executeParse(final String[] cmdTokens)
 			throws CommandListenerException {
-		// TODO Auto-generated method stub
-
+		// do nothing
 	}
 	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if (command==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			enable();
 		}

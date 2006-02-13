@@ -20,12 +20,12 @@ implements Observer {
 	/**
 	 * Initialize command
 	 */
-	public void initCommand(){
-		putValue(NAME, "Buffer Counters\u2026");
+	ShowDialogCounters(){
+		super("Buffer Counters\u2026");
 		dialog=DisplayCounters.getSingletonInstance();
 	}
 		
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		final BroadcastEvent event=(BroadcastEvent)obj;
 		if (event.getCommand()==BroadcastEvent.Command.SORT_MODE_CHANGED){
 			final SortMode mode=STATUS.getSortMode();

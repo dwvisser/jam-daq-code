@@ -3,23 +3,19 @@ package jam.commands;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.plot.View;
-import jam.ui.WindowCancelAction;
+import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -34,18 +30,22 @@ import javax.swing.border.EmptyBorder;
  */
 class ShowDialogDeleteView extends AbstractShowDialog {
 
-	private class ViewDelete extends JDialog {
+	private static class ViewDelete extends JDialog {
 
 		private static final String CHOOSE_NAME = "Choose Name";
 
-		private final AbstractButton bapply = new JButton("Apply");
+		private transient final JComboBox comboNames;
 
-		private final AbstractButton bok = new JButton("OK");
+		private transient final PanelOKApplyCancelButtons pbutton = new PanelOKApplyCancelButtons(
+				new PanelOKApplyCancelButtons.AbstractListener(this) {
+					public void apply() {
+						deleteView();
+					}
+				});
 
-		private final JComboBox comboNames;
-
-		private ViewDelete() {
-			setTitle("Delete View");
+		private static final Frame frame=null;
+		ViewDelete() {
+			super(frame, "Delete View", false);
 			setModal(false);
 			final Container cdnew = getContentPane();
 			setResizable(false);
@@ -55,8 +55,7 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 					20, 20));
 			pNames.setBorder(new EmptyBorder(0, 10, 0, 10));
 			cdnew.add(pNames, BorderLayout.CENTER);
-			final JLabel ln = new JLabel("Name", SwingConstants.RIGHT);
-			pNames.add(ln);
+			pNames.add(new JLabel("Name", SwingConstants.RIGHT));
 			/* Name combo box */
 			comboNames = new JComboBox();
 			Dimension dim = comboNames.getPreferredSize();
@@ -64,32 +63,13 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			comboNames.setPreferredSize(dim);
 			pNames.add(comboNames);
 			/* panel for buttons */
-			final JPanel pbutton = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			cdnew.add(pbutton, BorderLayout.SOUTH);
-			final JPanel pbnew = new JPanel();
-			pbnew.setLayout(new GridLayout(1, 0, 5, 5));
-			pbutton.add(pbnew, BorderLayout.SOUTH);
-			bok.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					deleteView();
-					dispose();
-				}
-			});
-			pbnew.add(bok);
-			bapply.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {
-					deleteView();
-				}
-			});
-			pbnew.add(bapply);
-			final JButton bcancel = new JButton(new WindowCancelAction(this));
-			pbnew.add(bcancel);
+			cdnew.add(pbutton.getComponent(), BorderLayout.SOUTH);
 			addWindowListener(new WindowAdapter() {
-				public void windowActivated(WindowEvent e) {
+				public void windowActivated(final WindowEvent event) {
 					updateViewNames();
 				}
 
-				public void windowOpened(WindowEvent e) {
+				public void windowOpened(final WindowEvent event) {
 					updateViewNames();
 				}
 			});
@@ -125,13 +105,12 @@ class ShowDialogDeleteView extends AbstractShowDialog {
 			}
 			final boolean enable = comboNames.getModel().getSize() > 1;
 			comboNames.setEnabled(enable);
-			bok.setEnabled(enable);
-			bapply.setEnabled(enable);
+			pbutton.setButtonsEnabled(enable, enable, true);
 		}
 	}
 
-	public void initCommand() {
-		putValue(NAME, "Delete\u2026");
+	ShowDialogDeleteView() {
+		super("Delete\u2026");
 		dialog = new ViewDelete();
 	}
 

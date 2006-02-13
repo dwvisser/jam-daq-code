@@ -2,19 +2,26 @@ package jam.commands;
 
 import jam.global.CommandListenerException;
 
+/**
+ * Command that does nothing.
+ * @author Dale Visser
+ *
+ */
 public final class NoCommand extends AbstractCommand {
-
-	@Override
-	protected void execute(Object[] cmdParams) throws CommandException {
-		// TODO Auto-generated method stub
-
+	
+	NoCommand(){
+		super();
 	}
 
 	@Override
-	protected void executeParse(String[] cmdTokens)
-			throws CommandListenerException {
-		// TODO Auto-generated method stub
+	protected void execute(final Object[] cmdParams) throws CommandException {
+		// do nothing
+	}
 
+	@Override
+	protected void executeParse(final String[] cmdTokens)
+			throws CommandListenerException {
+		// do nothing
 	}
 
 }

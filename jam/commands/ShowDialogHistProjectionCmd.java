@@ -8,8 +8,8 @@ import jam.data.control.Projections;
  */
 final class ShowDialogHistProjectionCmd extends AbstractShowDialog {
 	
-	public void initCommand(){
-		putValue(NAME,"Projections\u2026");
+	ShowDialogHistProjectionCmd(){
+		super("Projections\u2026");
 		dialog=new Projections();
 	}
 

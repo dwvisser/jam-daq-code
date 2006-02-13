@@ -24,8 +24,7 @@ import javax.swing.KeyStroke;
  */
 final class Print extends AbstractPrintingCommand implements Observer {
 	
-	private boolean firstTime=true;
-	private PlotDisplay display=null;
+	private boolean firstTime=true;//NOPMD
 	
 	Print(){
 		super();
@@ -41,23 +40,23 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#execute(java.lang.Object[])
 	 */
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
+		final PlotDisplay display=STATUS.getDisplay();
 		if (firstTime){
 			LOGGER.warning("On some systems, it will be necessary to first "+
 			"use 'Page Setup\u2026' for your hardcopy to have correct size and margins.");
-			display=STATUS.getDisplay();
 			firstTime=false;
 		}
-		final PrinterJob pj = PrinterJob.getPrinterJob();
-		final ComponentPrintable cp = display.getComponentPrintable();
-		pj.setPrintable(cp, mPageFormat);
-		if (pj.printDialog()) {
-			String name =((Histogram)STATUS.getCurrentHistogram()).getFullName();
+		final PrinterJob job = PrinterJob.getPrinterJob();
+		final ComponentPrintable printable = display.getComponentPrintable();
+		job.setPrintable(printable, mPageFormat);
+		if (job.printDialog()) {
+			final String name =((Histogram)STATUS.getCurrentHistogram()).getFullName();
 			LOGGER.info("Preparing to send histogram '" + 
 					name+"' to printer\u2026");
 			try {
 				display.setRenderForPrinting(true, mPageFormat);
-				pj.print();
+				job.print();
 				LOGGER.info("Page sent.");
 				display.setRenderForPrinting(false, null);
 			} catch (PrinterException e) {
@@ -73,13 +72,13 @@ final class Print extends AbstractPrintingCommand implements Observer {
 	/* (non-Javadoc)
 	 * @see jam.commands.AbstractCommand#executeParse(java.lang.String[])
 	 */
-	protected void executeParse(String[] cmdTokens) throws CommandListenerException {
+	protected void executeParse(final String[] cmdTokens) throws CommandListenerException {
 		execute(null);
 	}
 	
-	public void update(Observable observe, Object obj){
-		final BroadcastEvent be=(BroadcastEvent)obj;
-		final BroadcastEvent.Command command=be.getCommand();
+	public void update(final Observable observe, final Object obj){
+		final BroadcastEvent event=(BroadcastEvent)obj;
+		final BroadcastEvent.Command command=event.getCommand();
 		if ( (command==BroadcastEvent.Command.GROUP_SELECT) || 
 			 (command==BroadcastEvent.Command.ROOT_SELECT) ) {
 			setEnabled(false);			

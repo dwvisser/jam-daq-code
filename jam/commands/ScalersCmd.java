@@ -8,11 +8,21 @@ import jam.global.BroadcastEvent;
  * @author Ken Swartz
  */
 public final class ScalersCmd extends AbstractCommand {
+	
+	/**
+	 * Default constructor.
+	 *
+	 */
+	public ScalersCmd(){
+		super();
+		putValue(SHORT_DESCRIPTION,
+		"Read or zero scalers, depending on parameter.");
+	}
 
 	private static final int READ =1;
 	private static final int ZERO =2;
 
-	protected void execute(Object[] cmdParams) {
+	protected void execute(final Object[] cmdParams) {
 		final int param =((Integer)cmdParams[0]).intValue();
 		if (param==READ) {
 			readScalers();
@@ -24,7 +34,7 @@ public final class ScalersCmd extends AbstractCommand {
 		}
 	}
 
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		final Object [] params = new Object[1];		
 		if (cmdTokens[0].equals("read")) {			
 			params[0]= new Integer(READ);			

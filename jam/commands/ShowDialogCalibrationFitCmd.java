@@ -16,8 +16,8 @@ import java.util.Observer;
 final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		Observer {
 
-	public void initCommand() {
-		putValue(NAME, "Calibration\u2026");
+	ShowDialogCalibrationFitCmd() {
+		super("Calibration\u2026");
 		dialog = new CalibrationFit();
 		enable();
 	}
@@ -33,9 +33,9 @@ final class ShowDialogCalibrationFitCmd extends AbstractShowDialog implements
 		setEnabled(enable);
 	}
 
-	public void update(Observable observe, Object obj) {
-		final BroadcastEvent be = (BroadcastEvent) obj;
-		final BroadcastEvent.Command command = be.getCommand();
+	public void update(final Observable observe, final Object obj) {
+		final BroadcastEvent event = (BroadcastEvent) obj;
+		final BroadcastEvent.Command command = event.getCommand();
 		if ((command == BroadcastEvent.Command.GROUP_SELECT)
 				|| (command == BroadcastEvent.Command.ROOT_SELECT)) {
 			setEnabled(false);

@@ -20,26 +20,23 @@ import javax.swing.Icon;
  */
 final class StopAcquisition extends AbstractCommand implements Observer {
 
-	private RunControl control;
-
-	public void initCommand(){
-		putValue(NAME, "stop");
+	StopAcquisition(){
+		super("stop");
 	    final Icon iPause = loadToolbarIcon("jam/ui/Pause.png");
 	    putValue(Action.SMALL_ICON, iPause);
 		putValue(Action.SHORT_DESCRIPTION, "Pause data acquisition.");	    
-		control=RunControl.getSingletonInstance();
 		enable();
 	}
 	
-	protected void execute(Object[] cmdParams) {
-		control.stopAcq();
+	protected void execute(final Object[] cmdParams) {
+		RunControl.getSingletonInstance().stopAcq();
 	}
 
-	protected void executeParse(String[] cmdTokens) {
+	protected void executeParse(final String[] cmdTokens) {
 		execute(null);
 	}
 
-	public void update(Observable o, Object arg) {
+	public void update(final Observable obs, final Object arg) {
 		enable();
 	}
 

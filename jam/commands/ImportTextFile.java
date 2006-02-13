@@ -9,9 +9,9 @@ import jam.io.ImpExpASCII;
  * @author Dale Visser
  */
 final class ImportTextFile extends AbstractImportFile {
-		
-	public void initCommand(){
-		putValue(NAME,"Text File");		
-		importExport=new ImpExpASCII();		
+
+	ImportTextFile() {
+		super("Text File");
+		importExport = new ImpExpASCII();
 	}
 }

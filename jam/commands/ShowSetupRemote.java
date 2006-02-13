@@ -15,8 +15,8 @@ import java.util.Observer;
  */
 final class ShowSetupRemote extends AbstractShowDialog implements Observer {
 	
-	public void initCommand(){
-		putValue(NAME, "Observe Remote\u2026");
+	ShowSetupRemote(){
+		super("Observe Remote\u2026");
 		dialog=new SetupRemote();
 		enable();
 	}
@@ -25,7 +25,7 @@ final class ShowSetupRemote extends AbstractShowDialog implements Observer {
 		setEnabled(false);
 	}
 
-	public void update(Observable observe, Object obj){
+	public void update(final Observable observe, final Object obj){
 		enable();
 	}
 	
