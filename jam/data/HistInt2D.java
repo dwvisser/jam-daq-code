@@ -13,13 +13,15 @@ import java.util.Arrays;
 public final class HistInt2D extends AbstractHist2D {
 
 	private transient int counts2d[][]; // array to hold counts for 2d inc
-	private static final int [][] EMPTY=new int[0][0];
+
+	private static final int[][] EMPTY = new int[0][0];
 
 	/**
 	 * Create a new 2-d histogram with counts known and automatically give it a
 	 * number
 	 * 
-	 * @param group for this histogram to belong to
+	 * @param group
+	 *            for this histogram to belong to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -31,8 +33,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 *            array of counts to initialize with, must be square
 	 */
 	HistInt2D(Group group, String name, String title, int[][] countsIn) {
-		super(group, name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
-				title);
+		super(group, name, Type.TWO_DIM_INT, countsIn.length,
+				countsIn[0].length, title);
 		initCounts(countsIn);
 	}
 
@@ -40,7 +42,8 @@ public final class HistInt2D extends AbstractHist2D {
 	 * Create a new 2-d histogram with counts known (must be square histogram)
 	 * and with the axis label given.
 	 * 
-	 * @param group for this histogram to belong to
+	 * @param group
+	 *            for this histogram to belong to
 	 * @param name
 	 *            unique name of histogram, should be limited to
 	 *            <code>NAME_LENGTH</code> characters, used in both .jhf and
@@ -55,16 +58,16 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @param countsIn
 	 *            array of counts to initialize with
 	 */
-	HistInt2D(Group group, String name, String title, String axisLabelX, String axisLabelY,
-			int[][] countsIn) {
-		super(group, name, Type.TWO_DIM_INT, countsIn.length, countsIn[0].length,
-				title, axisLabelX, axisLabelY);
+	HistInt2D(Group group, String name, String title, String axisLabelX,
+			String axisLabelY, int[][] countsIn) {
+		super(group, name, Type.TWO_DIM_INT, countsIn.length,
+				countsIn[0].length, title, axisLabelX, axisLabelY);
 		initCounts(countsIn);
 	}
-	
-	private void initCounts(final int [][] countsIn){
-		counts2d=new int[getSizeX()][getSizeY()];
-		for (int i = 0; i < countsIn.length; i++) { //copy arrays
+
+	private void initCounts(final int[][] countsIn) {
+		counts2d = new int[getSizeX()][getSizeY()];
+		for (int i = 0; i < countsIn.length; i++) { // copy arrays
 			System
 					.arraycopy(countsIn[i], 0, counts2d[i], 0,
 							countsIn[0].length);
@@ -74,8 +77,10 @@ public final class HistInt2D extends AbstractHist2D {
 	/**
 	 * Returns the number of counts in the given channel.
 	 * 
-	 * @param chX x-channel that we are interested in
-	 * @param chY y-channel that we are interested in
+	 * @param chX
+	 *            x-channel that we are interested in
+	 * @param chY
+	 *            y-channel that we are interested in
 	 * @return number of counts
 	 */
 	public double getCounts(final int chX, final int chY) {
@@ -83,15 +88,17 @@ public final class HistInt2D extends AbstractHist2D {
 	}
 
 	/**
-	 * Sets the counts in the given channel to the specified
-	 * number of counts.
+	 * Sets the counts in the given channel to the specified number of counts.
 	 * 
-	 * @param chX x-coordinate of the bin
-	 * @param chY y-coordinate of the bin
-	 * @param counts to be in the channel, rounded to <code>int</code>, if
-	 * necessary
+	 * @param chX
+	 *            x-coordinate of the bin
+	 * @param chY
+	 *            y-coordinate of the bin
+	 * @param counts
+	 *            to be in the channel, rounded to <code>int</code>, if
+	 *            necessary
 	 */
-	public void setCounts(int chX, int chY, double counts) {
+	public void setCounts(final int chX, final int chY, final double counts) {
 		counts2d[chX][chY] = (int) Math.round(counts);
 	}
 
@@ -101,7 +108,10 @@ public final class HistInt2D extends AbstractHist2D {
 	 * @see jam.data.Histogram#clearCounts()
 	 */
 	void clearCounts() {
-		counts2d = EMPTY;
+		synchronized (this) {
+			counts2d = EMPTY;
+			clear = true;
+		}
 	}
 
 	/**
@@ -110,21 +120,28 @@ public final class HistInt2D extends AbstractHist2D {
 	 * 
 	 * @return <code>int [][]</code>
 	 */
-	public Object getCounts() {
-		return counts2d;
+	public int[][] getCounts() {
+		synchronized (this) {
+			final int len = counts2d.length;
+			int[][] rval = new int[len][];
+			for (int i = 0; i < len; i++) {
+				rval[i] = counts2d[i].clone();
+			}
+			return rval;
+		}
 	}
 
 	public double getCount() {
 		return getArea();
 	}
-	
+
 	/**
 	 * Zeroes all the counts in this histogram.
 	 */
 	public void setZero() {
-		final int size=getSizeX();
+		final int size = getSizeX();
 		for (int i = 0; i < size; i++) {
-			Arrays.fill(counts2d[i],0);
+			Arrays.fill(counts2d[i], 0);
 		}
 	}
 
@@ -137,12 +154,12 @@ public final class HistInt2D extends AbstractHist2D {
 	 *             if countsIn is the wrong type.
 	 */
 	public void setCounts(final Object countsIn) {
-	    final Type givenType = Type.getArrayType(countsIn);
-	    final Type expectedType = getType();
-		if (givenType != expectedType) {
-			throw new IllegalArgumentException(getName()+": setCounts()"
-			        +" expected array for type "
-					+ expectedType+". Got array for type "+givenType+".");
+		final Type givenType = Type.getArrayType(countsIn);
+		final Type expectedType = getType();
+		if (!givenType.equals(expectedType)) {
+			throw new IllegalArgumentException(getName() + ": setCounts()"
+					+ " expected array for type " + expectedType
+					+ ". Got array for type " + givenType + ".");
 		}
 		setCountsArray((int[][]) countsIn);
 	}
@@ -168,11 +185,11 @@ public final class HistInt2D extends AbstractHist2D {
 	 * 
 	 * @return area under the counts in the histogram
 	 */
-	public double getArea(){
-		final int size=getSizeX();
-		double sum=0.0;
+	public double getArea() {
+		final int size = getSizeX();
+		double sum = 0.0;
 		for (int i = 0; i < size; i++) {
-			final int sizeY=getSizeY();
+			final int sizeY = getSizeY();
 			for (int j = 0; j < sizeY; j++) {
 				sum += counts2d[i][j];
 			}
@@ -180,20 +197,29 @@ public final class HistInt2D extends AbstractHist2D {
 		return sum;
 	}
 
-	private synchronized void setCountsArray(final int[][] countsIn) {
-		final int loopLen = Math.min(counts2d.length, countsIn.length);
-		for (int i = 0; i < loopLen; i++) {
-			System.arraycopy(countsIn[i], 0, counts2d[i], 0, Math.min(
-					countsIn[i].length, counts2d[i].length));
+	private void setCountsArray(final int[][] countsIn) {
+		synchronized (this) {
+			final int loopLen = Math.min(counts2d.length, countsIn.length);
+			for (int i = 0; i < loopLen; i++) {
+				System.arraycopy(countsIn[i], 0, counts2d[i], 0, Math.min(
+						countsIn[i].length, counts2d[i].length));
+			}
 		}
 	}
 
-	private synchronized void addCountsArray(final int[][] countsIn) {
-		final int maxX = Math.min(getSizeX(), countsIn.length) - 1;
-		final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
-		for (int x = maxX; x >= 0; x--) {
-			for (int y = maxY; y >= 0; y--) {
-				counts2d[x][y] += countsIn[x][y];
+	private void addCountsArray(final int[][] countsIn) {
+		final int len = countsIn.length;
+		synchronized (this) {
+			final int maxX = Math.min(getSizeX(), len) - 1;
+			final int[][] temp = new int[countsIn.length][];
+			for (int i = 0; i <= maxX; i++) {
+				temp[i] = countsIn[i].clone();
+			}
+			final int maxY = Math.min(getSizeY(), countsIn[0].length) - 1;
+			for (int x = maxX; x >= 0; x--) {
+				for (int y = maxY; y >= 0; y--) {
+					counts2d[x][y] += temp[x][y];
+				}
 			}
 		}
 	}
@@ -210,17 +236,17 @@ public final class HistInt2D extends AbstractHist2D {
 	 *                thrown if method called for inappropriate type of
 	 *                histogram
 	 */
-	public void inc(int dataWordX, int dataWordY) {
-		final int size=getSizeX();
+	public void inc(final int dataWordX, final int dataWordY) {
+		final int size = getSizeX();
 		int incX = dataWordX;
 		int incY = dataWordY;
-		//check for overflow and underflow
+		// check for overflow and underflow
 		if (incX >= size) {
 			incX = size - 1;
 		} else if (incX < 0) {
 			incX = 0;
 		}
-		final int sizeY=getSizeY();
+		final int sizeY = getSizeY();
 		if (incY >= sizeY) {
 			incY = sizeY - 1;
 		} else if (dataWordY < 0) {
