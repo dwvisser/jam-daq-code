@@ -3,6 +3,8 @@ package jam.data.control;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.data.DataException;
 import jam.data.Gate;
+import jam.data.HistDouble2D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -283,9 +285,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		final double[][] counts2d;
 		final String state = (String) cchan.getSelectedItem();
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
-		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? (double[][]) hfrom
+		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D)hfrom)
                 .getCounts()
-                : intToDouble2DArray((int[][]) hfrom.getCounts());
+                : intToDouble2DArray(((HistInt2D) hfrom).getCounts());
         final String name = (String) cto.getSelectedItem();
 		final boolean between = state.equals(BETWEEN);
 		final int[] limits = between ? getLimits() : new int[2];

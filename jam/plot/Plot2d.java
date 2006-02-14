@@ -1,5 +1,7 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
+import jam.data.DataException;
 import jam.data.Histogram;
 import jam.plot.color.ColorPrefs;
 import jam.plot.color.DiscreteColorScale;
@@ -538,7 +540,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		// NOP
 	}
 
-	void overlayHistograms(List<Histogram> overlayHists) {
+	void overlayHistograms(List<AbstractHist1D> overlayHists) {
 		// NOP
 	}
 

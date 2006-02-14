@@ -1,6 +1,11 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
 import jam.data.Gate;
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
 import jam.global.RunInfo;
@@ -214,9 +219,9 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 		if (type.getDimensionality() == 2) {
 			counts2d = new double[size.getSizeX()][size.getSizeY()];
 			if (type == Histogram.Type.TWO_DIM_INT) {
-				copyCounts2dInt(hist);
+				copyCounts2dInt((HistInt2D)hist);
 			} else {// must be floating point
-				final double[][] counts2dDble = (double[][]) hist.getCounts();
+				final double[][] counts2dDble = ((HistDouble2D)hist).getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					System.arraycopy(counts2dDble[i], 0, counts2d[i], 0, hist
 							.getSizeY());
@@ -224,7 +229,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 			}
 		} else {// dim==1
 			if (type == Histogram.Type.ONE_DIM_INT) {
-				final int[] temp = (int[]) hist.getCounts();
+				final int[] temp = ((HistInt1D)hist).getCounts();
 				counts = new double[size.getSizeX()];
 				/*
 				 * NOT System.arraycopy() because of array type difference
@@ -233,13 +238,13 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 					counts[i] = temp[i];
 				}
 			} else {// must be floating point
-				counts = ((double[]) hist.getCounts()).clone();
+				counts = ((HistDouble1D) hist).getCounts();
 			}
 		}
 	}
 	
-	private final void copyCounts2dInt(final Histogram hist) {
-		final int[][] counts2dInt = (int[][]) hist.getCounts();
+	private final void copyCounts2dInt(final HistInt2D hist) {
+		final int[][] counts2dInt = hist.getCounts();
 		for (int i = 0; i < hist.getSizeX(); i++) {
 			for (int j = 0; j < hist.getSizeY(); j++) {
 				counts2d[i][j] = counts2dInt[i][j];
@@ -518,7 +523,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	 */
 	abstract protected void mouseMoved(MouseEvent mouseEvent);
 
-	abstract void overlayHistograms(List<Histogram> overlayHists);
+	abstract void overlayHistograms(List<AbstractHist1D> overlayHists);
 
 	/**
 	 * Method overriden for 1 and 2 d for painting fits.
@@ -622,7 +627,7 @@ abstract class AbstractPlot implements PlotPrefs, PreferenceChangeListener {
 	private final boolean plotDataExists() {
 		synchronized (this) {
 			final Histogram plotHist = getHistogram();
-			return plotHist != null && plotHist.getCounts() != null;
+			return plotHist != null && !plotHist.isClear();
 		}
 	}
 

@@ -2,6 +2,8 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
+import jam.data.HistDouble1D;
+import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -57,7 +59,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	private final JLabel lname;
 
 	private final JTextField text1, text2, text3, text4, ttextto;
-	
+
 	/**
 	 * Constructs a gain shift dialog.
 	 * 
@@ -227,9 +229,9 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			getCoefficients();
 		}
 		/* Get input histogram. */
-		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? intToDoubleArray((int[]) hfrom
+		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? intToDoubleArray(((HistInt1D) hfrom)
 				.getCounts())
-				: (double[]) hfrom.getCounts();
+				: ((HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
 		/* Get or create output histogram. */
 		String name = (String) cto.getSelectedItem();
@@ -239,17 +241,17 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			String groupName = parseGroupName(name);
 			hto = (AbstractHist1D) createNewHistogram(groupName, histName,
 					hfrom.getSizeX());
-			LOGGER.info("New Histogram created: '" + groupName
-					+ "/" + histName + "'");
+			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
+					+ "'");
 
 		} else {
 			hto = (AbstractHist1D) Histogram.getHistogram(name);
 
 		}
 		hto.setZero();
-		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((int[]) hto
-				.getCounts()).length
-				: ((double[]) hto.getCounts()).length;
+		final int countLen = hto.getType() == Histogram.Type.ONE_DIM_INT ? ((HistInt1D) hto)
+				.getCounts().length
+				: ((HistDouble1D) hto).getCounts().length;
 		final double[] out = gainShift(in, a1, b1, a2, b2, countLen);
 		final double[] errOut = errorGainShift(errIn, a1, b1, a2, b2, hto
 				.getErrors().length);
@@ -260,10 +262,10 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		}
 		hto.setErrors(errOut);
 
-		LOGGER.info("Gain shift " + hfrom.getFullName().trim()
-				+ " with gain: " + format(a1) + " + " + format(b1)
-				+ " x ch; to " + hto.getFullName() + " with gain: "
-				+ format(a2) + " + " + format(b2) + " x ch");
+		LOGGER.info("Gain shift " + hfrom.getFullName().trim() + " with gain: "
+				+ format(a1) + " + " + format(b1) + " x ch; to "
+				+ hto.getFullName() + " with gain: " + format(a2) + " + "
+				+ format(b2) + " x ch");
 	}
 
 	/**
@@ -299,23 +301,29 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 *            desired size of output array
 	 * @return new array of size <code>npts</code> re-binned for new gain
 	 *         coefficients
-     * @throws DataException if there's a problem
+	 * @throws DataException
+	 *             if there's a problem
 	 */
-	private double[] errorGainShift(double[] y1, double constIn, double slopeIn,
-			double constOut, double slopeOut, int npts2) throws DataException {
+	private double[] errorGainShift(double[] y1, double constIn,
+			double slopeIn, double constOut, double slopeOut, int npts2)
+			throws DataException {
 		int i, n;
 		double[] y2;
 		double e1lo, e1hi, x2lo, x2hi;
 		int mlo, mhi;
-		y2 = new double[npts2];//lang spec says elements init to zero
+		y2 = new double[npts2];// lang spec says elements init to zero
 		for (n = 0; n < y1.length; n++) {
-			e1lo = constIn + slopeIn * (n - 0.5); // energy at lower edge of spec#1
+			e1lo = constIn + slopeIn * (n - 0.5); // energy at lower edge of
+			// spec#1
 			// channel
-			e1hi = constIn + slopeIn * (n + 0.5); // energy at upper edge of spec#1
+			e1hi = constIn + slopeIn * (n + 0.5); // energy at upper edge of
+			// spec#1
 			// channel
-			x2lo = (e1lo - constOut) / slopeOut; // fractional chan#2 corresponding to
+			x2lo = (e1lo - constOut) / slopeOut; // fractional chan#2
+			// corresponding to
 			// e1lo
-			x2hi = (e1hi - constOut) / slopeOut; // fractional chan#2 corresponding to
+			x2hi = (e1hi - constOut) / slopeOut; // fractional chan#2
+			// corresponding to
 			// e1hi
 			mlo = (int) (x2lo + 0.5);
 			mhi = (int) (x2hi + 0.5);
@@ -392,7 +400,8 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 	 *            desired size of output array
 	 * @return new array of size <code>npts</code> re-binned for new gain
 	 *         coefficients
-     * @throws DataException if there's a problem
+	 * @throws DataException
+	 *             if there's a problem
 	 */
 	private double[] gainShift(double[] y1, double constIn, double slopeIn,
 			double constOut, double slopeOut, int npts2) throws DataException {
@@ -409,10 +418,10 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 			e1hi = constIn + slopeIn * (n + 0.5); // energy at upper edge of
 			// spec#1 channel
 			x2lo = (e1lo - constOut) / slopeOut; // fractional chan#2
-												// corresponding to
+			// corresponding to
 			// e1lo
 			x2hi = (e1hi - constOut) / slopeOut; // fractional chan#2
-												// corresponding to
+			// corresponding to
 			// e1hi
 			mlo = (int) (x2lo + 0.5); // channel corresponding to x2low
 			mhi = (int) (x2hi + 0.5); // channel corresponding to x2hi

@@ -1,5 +1,6 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
@@ -204,7 +205,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 	 * @param hists
 	 *            histogram to overlay
 	 */
-	private void overlayHistogram(final List<Histogram> hists) {
+	private void overlayHistogram(final List<AbstractHist1D> hists) {
 		if (hists.isEmpty()) {
 			removeOverlays();
 		} else {
@@ -229,7 +230,7 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			throw new IllegalArgumentException(
 					"You may only overlay 1D histograms.");
 		}
-		overlayHistogram(Collections.singletonList(hist));
+		overlayHistogram(Collections.singletonList((AbstractHist1D)hist));
 	}
 
 	/**
@@ -441,8 +442,8 @@ public final class PlotDisplay extends JPanel implements PlotSelectListener,
 			if (named instanceof Histogram) {
 				final Histogram hist = (Histogram) named;
 				displayHistogram(hist);
-				final List<Histogram> overHists = Histogram
-						.getHistogramList(status.getOverlayHistograms());
+				final List<AbstractHist1D> overHists = Histogram
+						.getHistogramList(status.getOverlayHistograms(), AbstractHist1D.class);
 				overlayHistogram(overHists);
 			}
 		} else if (command == Command.GATE_SET_ON) {

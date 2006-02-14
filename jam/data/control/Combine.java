@@ -2,6 +2,8 @@ package jam.data.control;
 
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
+import jam.data.HistDouble1D;
+import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
@@ -346,12 +348,12 @@ public class Combine extends AbstractManipulation implements Observer {
 		enableInputWith(!cnorm.isSelected());
 	}
 
-	private double[] doubleCountsArray(Histogram hist) {
+	private double[] doubleCountsArray(AbstractHist1D hist) {
 		double[] dCounts;
 		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-			dCounts = intToDoubleArray((int[]) hist.getCounts());
+			dCounts = intToDoubleArray(((HistInt1D)hist).getCounts());
 		} else {
-			dCounts = (double[]) hist.getCounts();
+			dCounts = ((HistDouble1D)hist).getCounts();
 		}
 		return dCounts;
 	}

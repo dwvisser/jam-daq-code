@@ -2,6 +2,8 @@ package jam.fit;
 
 import static javax.swing.SwingConstants.RIGHT;
 import jam.data.AbstractHist1D;
+import jam.data.HistDouble1D;
+import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.JamStatus;
 import jam.global.MessageHandler;
@@ -627,13 +629,13 @@ public abstract class AbstractFit implements PlotMouseListener {
 		final AbstractHist1D hist1d = (AbstractHist1D) STATUS
 				.getCurrentHistogram();
 		if (hist1d.getType() == Histogram.Type.ONE_DIM_INT) {
-			final int[] temp = (int[]) hist1d.getCounts();
+			final int[] temp = ((HistInt1D)hist1d).getCounts();
 			counts = new double[temp.length];
 			for (int j = 0; j < temp.length; j++) {
 				counts[j] = temp[j];
 			}
 		} else {
-			counts = (double[]) hist1d.getCounts();
+			counts = ((HistDouble1D)hist1d).getCounts();
 		}
 		errors = hist1d.getErrors();
 	}
@@ -855,13 +857,13 @@ public abstract class AbstractFit implements PlotMouseListener {
 		final Histogram histogram = (Histogram) STATUS.getCurrentHistogram();
 		if (histogram != null && histogram.getDimensionality() == 1) {
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
-				final int[] temp = (int[]) histogram.getCounts();
+				final int[] temp = ((HistInt1D)histogram).getCounts();
 				counts = new double[temp.length];
 				for (int j = 0; j < temp.length; j++) {
 					counts[j] = temp[j];
 				}
 			} else if (histogram.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				counts = (double[]) histogram.getCounts();
+				counts = ((HistDouble1D)histogram).getCounts();
 			}
 			textHistName.setText(histogram.getFullName());
 		} else { // 2d

@@ -38,7 +38,7 @@ public final class Gate implements DataElement {
 	private static final Map<String, Gate> TABLE = Collections
 			.synchronizedMap(new HashMap<String, Gate>());
 
-	static {//1- and 2-dimensional gate lists
+	static {// 1- and 2-dimensional gate lists
 		DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
 		DIM_LIST.add(Collections.synchronizedList(new ArrayList<Gate>()));
 	}
@@ -204,12 +204,12 @@ public final class Gate implements DataElement {
 		final Histogram.Type htype = histogram.getType();
 		double rval = 0.0;
 		if (htype == Histogram.Type.ONE_D_DOUBLE) {
-			final double[] counts = (double[]) histogram.getCounts();
+			final double[] counts = ((HistDouble1D) histogram).getCounts();
 			for (int i = lowerLimit; i <= upperLimit; i++) {
 				rval += counts[i];
 			}
 		} else { // 1d int
-			final int[] counts = (int[]) histogram.getCounts();
+			final int[] counts = ((HistInt1D) histogram).getCounts();
 			for (int i = lowerLimit; i <= upperLimit; i++) {
 				rval += counts[i];
 			}
@@ -222,7 +222,7 @@ public final class Gate implements DataElement {
 		final Histogram.Type htype = histogram.getType();
 		double rval = 0.0;
 		if (htype == Histogram.Type.TWO_DIM_INT) {
-			final int[][] counts2d = (int[][]) histogram.getCounts();
+			final int[][] counts2d = ((HistInt2D) histogram).getCounts();
 			for (int i = 0; i < sizeX; i++) {
 				for (int j = 0; j < sizeY; j++) {
 					if (insideGate[i][j]) {
@@ -231,7 +231,7 @@ public final class Gate implements DataElement {
 				}
 			}
 		} else { // 2d double
-			final double[][] counts2d = (double[][]) histogram.getCounts();
+			final double[][] counts2d = ((HistDouble2D) histogram).getCounts();
 			for (int i = 0; i < sizeX; i++) {
 				for (int j = 0; j < sizeY; j++) {
 					if (insideGate[i][j]) {
@@ -271,7 +271,7 @@ public final class Gate implements DataElement {
 		if (dimensions == 1) {
 			final Histogram histogram = Histogram.getHistogram(histUniqueName);
 			if (histogram.getType() == Histogram.Type.ONE_DIM_INT) {
-				final int[] counts = (int[]) histogram.getCounts();
+				final int[] counts = ((HistInt1D) histogram).getCounts();
 				// sum up counts and weight
 				for (int i = lowerLimit; i <= upperLimit; i++) {
 					area += counts[i];
@@ -284,7 +284,7 @@ public final class Gate implements DataElement {
 					centroid = 0.0;
 				}
 			} else {// 1d double
-				final double[] counts = (double[]) histogram.getCounts();
+				final double[] counts = ((HistDouble1D) histogram).getCounts();
 				// sum up counts and weight
 				for (int i = lowerLimit; i <= upperLimit; i++) {
 					area += counts[i];

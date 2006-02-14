@@ -1,4 +1,8 @@
 package jam.io;
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 
 import java.io.File;
@@ -307,10 +311,10 @@ public class ImpExpASCII extends AbstractImpExp {
 		try {
 			final PrintWriter writer = new PrintWriter(buffout);
 			if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-				final int[] counts = (int[]) hist.getCounts();
+				final int[] counts = ((HistInt1D)hist).getCounts();
 				writeHist(writer,counts,hist.getSizeX());
 			} else if (hist.getType() == Histogram.Type.ONE_D_DOUBLE) {
-				final double[] countsD = (double[]) hist.getCounts();
+				final double[] countsD = ((HistDouble1D)hist).getCounts();
 				for (int i = 0; i < hist.getSizeX(); i++) {
 					//output a row of data  channel counts
 					writer.print(i);
@@ -318,10 +322,10 @@ public class ImpExpASCII extends AbstractImpExp {
 					writer.println(countsD[i]);
 				}
 			} else if (hist.getType() == Histogram.Type.TWO_DIM_INT) {
-				final int[][] counts = (int[][]) hist.getCounts();
+				final int[][] counts = ((HistInt2D)hist).getCounts();
 				writeHist(writer,counts,hist.getSizeX(), hist.getSizeY());
 			} else if (hist.getType() == Histogram.Type.TWO_D_DOUBLE) {
-				final double[][] counts = (double[][]) hist.getCounts();
+				final double[][] counts = ((HistDouble2D)hist).getCounts();
 				for (int x = 0; x < hist.getSizeX(); x++) {
 					for (int y = 0; y < hist.getSizeY(); y++) {
 						writer.print(counts[x][y]);

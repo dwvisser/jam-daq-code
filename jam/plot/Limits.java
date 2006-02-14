@@ -1,5 +1,11 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
+import jam.data.AbstractHist2D;
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 
 import java.util.Collections;
@@ -147,27 +153,27 @@ final class Limits {
 		final int scaleUp = 110;
 		final int scaleBackDown = 100;
 		final Histogram histogram = Histogram.getHistogram(histName);
-		final Object counts = histogram.getCounts();
 		if (histogram.getDimensionality() == 1) {
-			maxCounts = getMaxCounts1D(counts, chminX, chmaxX);
+			maxCounts = getMaxCounts1D((AbstractHist1D) histogram, chminX,
+					chmaxX);
 		} else {// dim==2
-			maxCounts = getMaxCounts2D(counts, chminX, chmaxX, chminY, chmaxY);
+			maxCounts = getMaxCounts2D((AbstractHist2D)histogram, chminX, chmaxX, chminY, chmaxY);
 		}
 		maxCounts *= scaleUp;
 		maxCounts /= scaleBackDown;
 		return maxCounts;
 	}
 
-	private int getMaxCounts1D(final Object counts, final int chminX,
+	private int getMaxCounts1D(final AbstractHist1D hist, final int chminX,
 			final int chmaxX) {
 		int maxCounts = DEFAULTMAXCOUNTS;
-		if (counts instanceof double[]) {
-			final double[] countsD = (double[]) counts;
+		if (hist instanceof HistDouble1D) {
+			final double[] countsD = ((HistDouble1D) hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				maxCounts = Math.max(maxCounts, (int) countsD[i]);
 			}
 		} else {// int[]
-			final int[] countsInt = (int[]) counts;
+			final int[] countsInt = ((HistInt1D) hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				maxCounts = Math.max(maxCounts, countsInt[i]);
 			}
@@ -175,18 +181,18 @@ final class Limits {
 		return maxCounts;
 	}
 
-	private int getMaxCounts2D(final Object counts, final int chminX,
+	private int getMaxCounts2D(final AbstractHist2D hist, final int chminX,
 			final int chmaxX, final int chminY, final int chmaxY) {
 		int maxCounts = DEFAULTMAXCOUNTS;
-		if (counts instanceof double[][]) {
-			final double[][] counts2d = (double[][]) counts;
+		if (hist instanceof HistDouble2D) {
+			final double[][] counts2d = ((HistDouble2D)hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				for (int j = chminY; j <= chmaxY; j++) {
 					maxCounts = Math.max(maxCounts, (int) counts2d[i][j]);
 				}
 			}
 		} else {// instanceof int [][]
-			final int[][] counts2d = (int[][]) counts;
+			final int[][] counts2d = ((HistInt2D)hist).getCounts();
 			for (int i = chminX; i <= chmaxX; i++) {
 				for (int j = chminY; j <= chmaxY; j++) {
 					maxCounts = Math.max(maxCounts, counts2d[i][j]);

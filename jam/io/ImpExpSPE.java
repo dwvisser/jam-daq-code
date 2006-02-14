@@ -1,4 +1,7 @@
 package jam.io;
+
+import jam.data.HistDouble1D;
+import jam.data.HistInt1D;
 import jam.data.Histogram;
 
 import java.io.DataInputStream;
@@ -11,25 +14,28 @@ import java.io.OutputStream;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Imports and Exports Spectra (Histograms) using the
- * SPE format, this is used by RADWARE gf2.
- *
+ * Imports and Exports Spectra (Histograms) using the SPE format, this is used
+ * by RADWARE gf2.
+ * 
  * @version 0.5
  * @author Ken Swartz
  */
 public final class ImpExpSPE extends AbstractImpExp {
 
 	private static final int NAME_LENGTH = 8;
+
 	private static final int MAX_SIZE = 8192;
+
 	private static final int MAGIC_WORD = 24;
 
-	private static final ExtensionFileFilter FILTER=new ExtensionFileFilter("spe", 
-	"Radware gf3");
+	private static final ExtensionFileFilter FILTER = new ExtensionFileFilter(
+			"spe", "Radware gf3");
+
 	protected FileFilter getFileFilter() {
 		return FILTER;
 	}
 
-	protected String getDefaultExtension(){
+	protected String getDefaultExtension() {
 		return FILTER.getExtension(0);
 	}
 
@@ -37,69 +43,70 @@ public final class ImpExpSPE extends AbstractImpExp {
 		return FILTER.getDescription();
 	}
 
-
 	/**
 	 * Prompts for and opens a file.
-	 *
-	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
+	 * 
+	 * @exception ImpExpException
+	 *                all exceptions given to <code>ImpExpException</code>
+	 *                display on the MessageHandler
 	 */
 	public boolean openFile(File file) throws ImpExpException {
 		return openFile(file, "Import RadWare .spe file ");
 	}
 
 	/**
-     * Prompts for file name and saves.
-     * 
-     * @exception ImpExpException
-     *                all exceptions given to <code>ImpExpException</code>
-     *                display on the MessageHandler
-     */
-    public void saveFile(final Histogram hist) throws ImpExpException {
-        if (hist.getDimensionality() == 2) {
-            if (!silent) {
-                LOGGER.severe("Cannot write out 2 dimensional spe files");
-            }
-        } else {
-            saveFile("Export RadWare .spe file ", hist);
-        }
-    }
+	 * Prompts for file name and saves.
+	 * 
+	 * @exception ImpExpException
+	 *                all exceptions given to <code>ImpExpException</code>
+	 *                display on the MessageHandler
+	 */
+	public void saveFile(final Histogram hist) throws ImpExpException {
+		if (hist.getDimensionality() == 2) {
+			if (!silent) {
+				LOGGER.severe("Cannot write out 2 dimensional spe files");
+			}
+		} else {
+			saveFile("Export RadWare .spe file ", hist);
+		}
+	}
 
 	/**
-	 * Reads in SPE file. We read in size channels but histogram gets defined with
-	 * size channels as jam has 0 to size channels.
-	 *
-	 * @exception   ImpExpException    all exceptions given to <code>ImpExpException</code> display on the MessageHandler
+	 * Reads in SPE file. We read in size channels but histogram gets defined
+	 * with size channels as jam has 0 to size channels.
+	 * 
+	 * @exception ImpExpException
+	 *                all exceptions given to <code>ImpExpException</code>
+	 *                display on the MessageHandler
 	 */
 	public void readData(InputStream buffin) throws ImpExpException {
 		try {
 			final DataInputStream dis = new DataInputStream(buffin);
 			final char[] cName = new char[NAME_LENGTH];
 			final int magicInt = dis.readInt();
-			if (magicInt != MAGIC_WORD) { //magic word, int 24, hex 18, or ^X
+			if (magicInt != MAGIC_WORD) { // magic word, int 24, hex 18, or ^X
 				throw new ImpExpException(
-					"Not a Spe File, incorrect magic word, word = "
-						+ magicInt
-						+ " [ImpExpSPE]");
+						"Not a Spe File, incorrect magic word, word = "
+								+ magicInt + " [ImpExpSPE]");
 			}
 			/* read in name */
 			for (int i = 0; i < NAME_LENGTH; i++) {
 				cName[i] = (char) dis.readByte();
 			}
-			final int size = dis.readInt(); //IDIM1
-			dis.readInt(); //should read in a 1, IDIM2
-			dis.readInt(); //should read in a 1, IRED1
-			dis.readInt(); //should read in a 1, IRED2
-			dis.readInt(); //should read a hex  0018  dec 24 
-			dis.readInt(); //should read a hex  2000  dec 8192	
-			final double [] counts = new double[size];
-			final float [] countsFloat = new float[size];
-			for (int i = 0;
-				i < size;
-				i++) { //does not read last channel as Jam size
+			final int size = dis.readInt(); // IDIM1
+			dis.readInt(); // should read in a 1, IDIM2
+			dis.readInt(); // should read in a 1, IRED1
+			dis.readInt(); // should read in a 1, IRED2
+			dis.readInt(); // should read a hex 0018 dec 24
+			dis.readInt(); // should read a hex 2000 dec 8192
+			final double[] counts = new double[size];
+			final float[] countsFloat = new float[size];
+			for (int i = 0; i < size; i++) { // does not read last channel as
+												// Jam size
 				countsFloat[i] = dis.readFloat();
 				counts[i] = countsFloat[i];
 			}
-			dis.readInt(); //should read a hex  2000  dec 8192	
+			dis.readInt(); // should read a hex 2000 dec 8192
 			/* parameters of histogram */
 			final String nameHist = String.valueOf(cName);
 			Histogram.createHistogram(importGroup, counts, nameHist);
@@ -110,12 +117,12 @@ public final class ImpExpSPE extends AbstractImpExp {
 	}
 
 	public void writeHist(OutputStream outStream, Histogram hist)
-		throws ImpExpException {
+			throws ImpExpException {
 		try {
 			final DataOutputStream dos = new DataOutputStream(outStream);
 			/* get data from histogram */
 			final StringBuffer name = new StringBuffer(hist.getFullName());
-			while (name.length() < NAME_LENGTH){
+			while (name.length() < NAME_LENGTH) {
 				name.append(' ');
 			}
 			final int size = hist.getSizeX();
@@ -123,57 +130,61 @@ public final class ImpExpSPE extends AbstractImpExp {
 			/* put data into a float array */
 			final float[] countsFlt;
 			if (type == Histogram.Type.ONE_DIM_INT) {
-				final int[] countsInt = (int[]) hist.getCounts();
+				final int[] countsInt = ((HistInt1D) hist).getCounts();
 				countsFlt = copyIntToFloat(countsInt, size);
 			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
-				final double[] countsDbl = (double[]) hist.getCounts();
+				final double[] countsDbl = ((HistDouble1D) hist).getCounts();
 				countsFlt = new float[size];
 				for (int i = 0; i < size; i++) {
 					countsFlt[i] = (float) countsDbl[i];
 				}
 			} else {
-				throw new ImpExpException("Error unrecognized histogram type [ImpExpSPE]");
+				throw new ImpExpException(
+						"Error unrecognized histogram type [ImpExpSPE]");
 			}
 			if (size > MAX_SIZE) {
-				throw new ImpExpException("Writing out SPE file, size too large [ImpExpSPE]");
+				throw new ImpExpException(
+						"Writing out SPE file, size too large [ImpExpSPE]");
 			}
-			dos.writeInt(MAGIC_WORD); //write out key word
+			dos.writeInt(MAGIC_WORD); // write out key word
 			/* write out histogram name */
 			for (int i = 0; i < NAME_LENGTH; i++) {
 				dos.writeByte((byte) name.charAt(i));
 			}
 			/* write out histogram size only does 1 d so far */
-			dos.writeInt(size); //IDIM1
-			dos.writeInt(1); //IDIM2 in gf3, numch=IDIM1*IDIM2
-			dos.writeInt(1);//IRED1, purpose?
-			dos.writeInt(1);//IRED2, purpose?
-			dos.writeInt(MAGIC_WORD); //hex 0018, dec 24   which is a S0 ^X
-			dos.writeInt(4*size);//number of bytes in spectrum
-			for (int i = 0; i < size; i++) { //write out histogram data
+			dos.writeInt(size); // IDIM1
+			dos.writeInt(1); // IDIM2 in gf3, numch=IDIM1*IDIM2
+			dos.writeInt(1);// IRED1, purpose?
+			dos.writeInt(1);// IRED2, purpose?
+			dos.writeInt(MAGIC_WORD); // hex 0018, dec 24 which is a S0 ^X
+			dos.writeInt(4 * size);// number of bytes in spectrum
+			for (int i = 0; i < size; i++) { // write out histogram data
 				dos.writeFloat(countsFlt[i]);
 			}
-			/* next character found experimentally end of record?
-			 * seems to be necessary */
-			dos.writeInt(4*size); 
+			/*
+			 * next character found experimentally end of record? seems to be
+			 * necessary
+			 */
+			dos.writeInt(4 * size);
 			dos.flush();
 		} catch (IOException ioe) {
 			throw new ImpExpException(ioe.toString());
 		}
 	}
-	
-	private float [] copyIntToFloat(int [] countsInt, int size){
-	    final float [] countsFlt=new float[size];
+
+	private float[] copyIntToFloat(int[] countsInt, int size) {
+		final float[] countsFlt = new float[size];
 		for (int i = 0; i < size; i++) {
 			countsFlt[i] = countsInt[i];
 		}
 		return countsFlt;
 	}
-	
-	public boolean canExport(){
+
+	public boolean canExport() {
 		return true;
 	}
-	
-	boolean batchExportAllowed(){
+
+	boolean batchExportAllowed() {
 		return true;
 	}
 }

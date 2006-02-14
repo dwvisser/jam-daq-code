@@ -1,6 +1,8 @@
 package jam.plot;
 
 import jam.data.AbstractHist1D;
+import jam.data.HistDouble1D;
+import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.plot.color.PlotColorMap;
 
@@ -63,25 +65,25 @@ final class Plot1d extends AbstractPlot {
 	/**
 	 * Overlay histograms.
 	 */
-	void overlayHistograms(List<Histogram> overlayHists) {
+	void overlayHistograms(final List<AbstractHist1D> overlayHists) {
 		panel.setDisplayingOverlay(true);
 		/* retain any items in list in the map Performance improvement */
 		overlayCounts.clear();
 		overlayNumber.clear();
-		for (Histogram hOver : overlayHists) {
+		for (AbstractHist1D hOver : overlayHists) {
 			final int sizex = hOver.getSizeX();
 			double[] ctOver = new double[sizex];
 			final Histogram.Type hoType = hOver.getType();
 			if (hoType == Histogram.Type.ONE_DIM_INT) {
-				final int[] countsInt = (int[]) hOver.getCounts();
+				final int[] countsInt = ((HistInt1D)hOver).getCounts();
 				for (int j = 0; j < sizex; j++) {
 					ctOver[j] = countsInt[j];
 				}
 			} else if (hoType == Histogram.Type.ONE_D_DOUBLE) {
-				System.arraycopy(hOver.getCounts(), 0, ctOver, 0, sizex);
+				System.arraycopy(((HistDouble1D)hOver).getCounts(), 0, ctOver, 0, sizex);
 			}
 			overlayCounts.add(ctOver);
-			overlayNumber.add(new Integer(hOver.getNumber()));
+			overlayNumber.add(hOver.getNumber());
 		}
 		panel.repaint();
 	}

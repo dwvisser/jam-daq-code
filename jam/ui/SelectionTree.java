@@ -1,5 +1,6 @@
 package jam.ui;
 
+import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Group;
 import jam.data.Histogram;
@@ -198,7 +199,7 @@ public final class SelectionTree extends JPanel implements Observer {
 		} // End loop for all nodes
 	}
 
-	private void refreshOverlaySelection(final List<Histogram> overlayHists) {
+	private void refreshOverlaySelection(final List<AbstractHist1D> overlayHists) {
 		final DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree
 				.getModel().getRoot();
 		/* Iterate over all nodes below root node. */
@@ -224,8 +225,8 @@ public final class SelectionTree extends JPanel implements Observer {
 	private void refreshSelection() {
 		final Nameable hist = STATUS.getCurrentHistogram();
 		final Nameable gate = STATUS.getCurrentGate();
-		final List<Histogram> overlayHists = Histogram.getHistogramList(STATUS
-				.getOverlayHistograms());
+		final List<AbstractHist1D> overlayHists = Histogram.getHistogramList(
+				STATUS.getOverlayHistograms(), AbstractHist1D.class);
 		final TreePath histTreePath = pathForDataObject(hist);
 		tree.setSelectionPath(histTreePath);
 		if (gate instanceof Gate) {
@@ -259,7 +260,7 @@ public final class SelectionTree extends JPanel implements Observer {
 						.getLastPathComponent());
 				final Object firstNodeObject = firstNode.getUserObject();
 
-				if (firstNode == rootNode) {//NOPMD
+				if (firstNode == rootNode) {// NOPMD
 					BROADCASTER.broadcast(BroadcastEvent.Command.ROOT_SELECT);
 				} else if (firstNodeObject instanceof Group) {
 					final Group group = (Group) firstNodeObject;

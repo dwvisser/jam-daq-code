@@ -1,5 +1,9 @@
 package jam.io;
 
+import jam.data.HistDouble1D;
+import jam.data.HistDouble2D;
+import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.util.FileUtilities;
 import jam.util.NumberUtilities;
@@ -489,13 +493,13 @@ public class ImpExpORNL extends AbstractImpExp {
 			final Histogram.Type type = hist.getType();
 			/* write as determined by type */
 			if (type == Histogram.Type.ONE_DIM_INT) {
-				writeHist1dInt(dosHis, hist);
+				writeHist1dInt(dosHis, (HistInt1D)hist);
 			} else if (type == Histogram.Type.ONE_D_DOUBLE) {
-				writeHist1dDouble(dosHis, hist);
+				writeHist1dDouble(dosHis, (HistDouble1D)hist);
 			} else if (type == Histogram.Type.TWO_DIM_INT) {
-				writeHist2dInt(dosHis, hist);
+				writeHist2dInt(dosHis, (HistInt2D)hist);
 			} else if (type == Histogram.Type.TWO_D_DOUBLE) {
-				writeHist2dDouble(dosHis, hist);
+				writeHist2dDouble(dosHis, (HistDouble2D)hist);
 			} else {
 				LOGGER.severe("Unrecognized histogram type [ImpExpORNL]");
 			}
@@ -506,8 +510,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	}
 
 	private void writeHist1dInt(final DataOutputStream dosHis,
-			final Histogram hist) throws IOException {
-		final int[] countsInt = (int[]) hist.getCounts();
+			final HistInt1D hist) throws IOException {
+		final int[] countsInt = hist.getCounts();
 		final int len = countsInt.length;
 		for (int i = 0; i < len; i++) {
 			dosHis.writeInt(countsInt[i]);
@@ -515,8 +519,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	}
 
 	private void writeHist1dDouble(final DataOutputStream dosHis,
-			final Histogram hist) throws IOException {
-		final double[] countsDbl = (double[]) hist.getCounts();
+			final HistDouble1D hist) throws IOException {
+		final double[] countsDbl = hist.getCounts();
 		final int len = countsDbl.length;
 		for (int i = 0; i < len; i++) {
 			dosHis.writeInt((int) (countsDbl[i] + 0.5));
@@ -524,8 +528,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	}
 
 	private void writeHist2dInt(final DataOutputStream dosHis,
-			final Histogram hist) throws IOException {
-		final int[][] counts2dInt = (int[][]) hist.getCounts();
+			final HistInt2D hist) throws IOException {
+		final int[][] counts2dInt = hist.getCounts();
 		final int sizeX = hist.getSizeX();
 		final int sizeY = hist.getSizeY();
 		for (int i = 0; i < sizeX; i++) {
@@ -540,8 +544,8 @@ public class ImpExpORNL extends AbstractImpExp {
 	}
 
 	private void writeHist2dDouble(final DataOutputStream dosHis,
-			final Histogram hist) throws IOException {
-		final double[][] counts2dDbl = (double[][]) hist.getCounts();
+			final HistDouble2D hist) throws IOException {
+		final double[][] counts2dDbl = hist.getCounts();
 		final int sizeX = hist.getSizeX();
 		final int sizeY = hist.getSizeY();
 		for (int i = 0; i < sizeX; i++) {

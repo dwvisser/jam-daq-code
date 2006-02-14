@@ -1,5 +1,6 @@
 package jam.plot;
 
+import jam.data.AbstractHist1D;
 import jam.data.Gate;
 import jam.data.Histogram;
 import jam.global.ComponentPrintable;
@@ -187,7 +188,7 @@ public final class PlotContainer implements PlotPrefs, PlotSelectListener {
 	 * @param hists
 	 *            to overlay
 	 */
-	void overlayHistograms(List<Histogram> hists) {
+	void overlayHistograms(List<AbstractHist1D> hists) {
 		currentSubPlot.overlayHistograms(hists);
 	}
 	
