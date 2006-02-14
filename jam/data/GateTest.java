@@ -9,21 +9,13 @@ import junit.framework.TestCase;
  * 
  * @author <a href="mailto:dale@visser.name">Dale Visser </a>
  * @see Gate
- * @see AllTests
  */
 public class GateTest extends TestCase {
 
-    Gate gate1, gate2; //1d and 2d, respectively
+    private transient Gate gate1, gate2; //1d and 2d, respectively
 
-    Histogram hist1; //1d
 
-    Histogram hist2; //2d
 
-    Polygon box; //box for 2d gate
-
-    int[] xpoints = { 10, 50, 50, 10 };
-
-    int[] ypoints = { 10, 10, 50, 50 };
 
     int npoints = 4;
 
@@ -44,12 +36,14 @@ public class GateTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         final Group group = Group.createGroup("TestGateGroup", Group.Type.FILE);
-        hist1 = Histogram.createHistogram(group, new int[100], "h1");
-        hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
+        final Histogram hist1 = Histogram.createHistogram(group, new int[100], "h1");
+        final Histogram hist2 = Histogram.createHistogram(group, new int[100][100], "h2");
         gate1 = new Gate("g1", hist1);
         gate1.setLimits(10, 50);
         gate2 = new Gate("g2", hist2);
-        box = new Polygon(xpoints, ypoints, 4);
+        final int[] xpoints = { 10, 50, 50, 10 };
+        final int[] ypoints = { 10, 10, 50, 50 };
+        final Polygon box = new Polygon(xpoints, ypoints, 4);
         gate2.setLimits(box);
     }
 
