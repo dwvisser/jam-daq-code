@@ -51,8 +51,10 @@ public final class Monitor {
 	 * 
 	 * @return interval in seconds
 	 */
-	public synchronized static int getInterval() {
-		return interval;
+	public static int getInterval() {
+		synchronized (Monitor.class) {
+			return interval;
+		}
 	}
 
 	/**
@@ -70,8 +72,10 @@ public final class Monitor {
 	 * @param intervalIn
 	 *            interval in seconds
 	 */
-	public synchronized static void setInterval(final int intervalIn) {
-		interval = intervalIn;
+	public static void setInterval(final int intervalIn) {
+		synchronized (Monitor.class) {
+			interval = intervalIn;
+		}
 	}
 
 	/**
@@ -105,7 +109,8 @@ public final class Monitor {
 
 	private transient double valueNew; // the newest value set
 
-	private transient double valueOld; // the previous value set
+	// the previous value set
+	private transient double valueOld; // NOPMD
 
 	/**
 	 * Constructs an object which monitors the rate of counts in a particular
@@ -178,8 +183,10 @@ public final class Monitor {
 	 * @return <code>true</code> if an audible alarm is desired,
 	 *         <code>false</code> if not
 	 */
-	public synchronized boolean getAlarm() {
-		return alarm;
+	public boolean getAlarm() {
+		synchronized (this) {
+			return alarm;
+		}
 	}
 
 	/**
@@ -191,8 +198,10 @@ public final class Monitor {
 	 * @return the sound clip for this monitor's alarm, <code>null</code>
 	 *         indicates that a default system beep is desired
 	 */
-	public synchronized AudioClip getAudioClip() {
-		return audioClip;
+	public AudioClip getAudioClip() {
+		synchronized (this) {
+			return audioClip;
+		}
 	}
 
 	/**
@@ -200,8 +209,10 @@ public final class Monitor {
 	 * 
 	 * @return the maximum value for this monitor
 	 */
-	public synchronized double getMaximum() {
-		return maximum;
+	public double getMaximum() {
+		synchronized (this) {
+			return maximum;
+		}
 	}
 
 	/**
@@ -219,8 +230,10 @@ public final class Monitor {
 	 * 
 	 * @return the threshold value
 	 */
-	public synchronized double getThreshold() {
-		return threshold;
+	public double getThreshold() {
+		synchronized (this) {
+			return threshold;
+		}
 	}
 
 	/**
@@ -228,8 +241,10 @@ public final class Monitor {
 	 * 
 	 * @return this monitor's current value
 	 */
-	public synchronized double getValue() {
-		return value;
+	public double getValue() {
+		synchronized (this) {
+			return value;
+		}
 	}
 
 	/**
@@ -238,15 +253,19 @@ public final class Monitor {
 	 * 
 	 * @return <code>true</code> if acceptable
 	 */
-	public synchronized boolean isAcceptable() {
-		return value > maximum || value < threshold;
+	public boolean isAcceptable() {
+		synchronized (this) {
+			return value > maximum || value < threshold;
+		}
 	}
 
 	/**
 	 * Sets this monitor's value to zero.
 	 */
-	public synchronized void reset() {
-		value = 0;
+	public void reset() {
+		synchronized (this) {
+			value = 0;
+		}
 	}
 
 	/**
@@ -259,8 +278,10 @@ public final class Monitor {
 	 *            <code>true</code> if an audible alarm is desired,
 	 *            <code>false</code> if not
 	 */
-	public synchronized void setAlarm(final boolean inAlarm) {
-		alarm = inAlarm;
+	public void setAlarm(final boolean inAlarm) {
+		synchronized (this) {
+			alarm = inAlarm;
+		}
 	}
 
 	/**
@@ -272,8 +293,10 @@ public final class Monitor {
 	 * @param clip
 	 *            sound to play for alarm
 	 */
-	public synchronized void setAudioClip(final AudioClip clip) {
-		audioClip = clip;
+	public void setAudioClip(final AudioClip clip) {
+		synchronized (this) {
+			audioClip = clip;
+		}
 	}
 
 	/**
@@ -284,8 +307,10 @@ public final class Monitor {
 	 *            the new maximum
 	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized void setMaximum(final double inMaximum) {
-		maximum = inMaximum;
+	public void setMaximum(final double inMaximum) {
+		synchronized (this) {
+			maximum = inMaximum;
+		}
 	}
 
 	/**
@@ -296,8 +321,10 @@ public final class Monitor {
 	 *            the new minimum
 	 * @see jam.data.control.MonitorControl
 	 */
-	public synchronized void setThreshold(final double inThreshold) {
-		threshold = inThreshold;
+	public void setThreshold(final double inThreshold) {
+		synchronized (this) {
+			threshold = inThreshold;
+		}
 	}
 
 	/**
@@ -306,8 +333,10 @@ public final class Monitor {
 	 * @param valueIn
 	 *            the new value
 	 */
-	public synchronized void setValue(final int valueIn) {
-		valueNew = valueIn;
+	public void setValue(final int valueIn) {
+		synchronized (this) {
+			valueNew = valueIn;
+		}
 	}
 
 	/**

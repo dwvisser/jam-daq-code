@@ -20,7 +20,7 @@ import java.util.TreeSet;
  * @since JDK 1.1
  */
 
-public class Scaler implements DataElement {
+public final class Scaler implements DataElement {
 
 	private static final Broadcaster BROADCASTER = Broadcaster
 			.getSingletonInstance();
@@ -107,20 +107,23 @@ public class Scaler implements DataElement {
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		// Set of names of gates for histogram this gate belongs to
 		Set<String> scalerNames = new TreeSet<String>();
-		for (Scaler scaler : group.getScalerList()){
+		for (Scaler scaler : group.getScalerList()) {
 			scalerNames.add(scaler.getName());
 		}
 		name = stringUtil.makeUniqueName(nameIn, scalerNames, NAME_LENGTH);
 		group.addScaler(this);
 		number = idNum;
 		/* Add to list of scalers */
-		final String uniqueName = stringUtil.makeFullName(group.getName(), name );
+		final String uniqueName = stringUtil
+				.makeFullName(group.getName(), name);
 		TABLE.put(uniqueName, this);
 		LIST.add(this);
 	}
 
-	public synchronized double getCount() {
-		return value;
+	public double getCount() {
+		synchronized (this) {
+			return value;
+		}
 	}
 
 	public Type getElementType() {
@@ -151,8 +154,10 @@ public class Scaler implements DataElement {
 	 * 
 	 * @return the value of this scaler
 	 */
-	public synchronized int getValue() {
-		return value;
+	public int getValue() {
+		synchronized (this) {
+			return value;
+		}
 	}
 
 	/**
@@ -161,8 +166,10 @@ public class Scaler implements DataElement {
 	 * @param valueIn
 	 *            the new value for this scaler
 	 */
-	public synchronized void setValue(int valueIn) {
-		value = valueIn;
+	public void setValue(final int valueIn) {
+		synchronized (this) {
+			value = valueIn;
+		}
 	}
 
 }

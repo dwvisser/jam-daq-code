@@ -19,19 +19,20 @@ public final class Group implements Nameable {
 	 * Enumeration of types of groups.
 	 */
 	public static enum Type {
-        /**
-         * Group comes from a file.
-         */
-        FILE,
-        /**
-         * Group comes from a sort routine.
-         */
-        SORT, 
-        /**
-         * Temporary group until save.
-         */
-        TEMP}
-	
+		/**
+		 * Group comes from a file.
+		 */
+		FILE,
+		/**
+		 * Group comes from a sort routine.
+		 */
+		SORT,
+		/**
+		 * Temporary group until save.
+		 */
+		TEMP
+	}
+
 	/** Default group name */
 	public final static String DEFAULT_NAME = "Default";
 
@@ -60,10 +61,12 @@ public final class Group implements Nameable {
 	/**
 	 * Clear all groups
 	 */
-	public static synchronized void clearList() {
-		NAME_MAP.clear();
-		LIST.clear();
-		sortGroup = null;
+	public static void clearList() {
+		synchronized (Group.class) {
+			NAME_MAP.clear();
+			LIST.clear();
+			sortGroup = null;
+		}
 	}
 
 	/**
@@ -78,14 +81,16 @@ public final class Group implements Nameable {
 	 *            name of the file that this group belongs to
 	 * @return the created <code>Group</code> object
 	 */
-	public synchronized static Group createGroup(final String groupName,
+	public static Group createGroup(final String groupName,
 			final String fileName, final Type type) {
-		final Group group = new Group(groupName, type, fileName);
-		/* Only one sort group */
-		if (type == Type.SORT) {
-			sortGroup = group;
+		synchronized (Group.class) {
+			final Group group = new Group(groupName, type, fileName);
+			/* Only one sort group */
+			if (type == Type.SORT) {
+				sortGroup = group;
+			}
+			return group;
 		}
-		return group;
 	}
 
 	/**
@@ -98,7 +103,7 @@ public final class Group implements Nameable {
 	 *            of group
 	 * @return the created <code>Group</code> object
 	 */
-	public synchronized static Group createGroup(final String groupName, final Type type) {
+	public static Group createGroup(final String groupName, final Type type) {
 		return Group.createGroup(groupName, null, type);
 	}
 
@@ -136,8 +141,10 @@ public final class Group implements Nameable {
 	 * 
 	 * @return the sort group
 	 */
-	public synchronized static Group getSortGroup() {
-		return sortGroup;
+	public static Group getSortGroup() {
+		synchronized (Group.class) {
+			return sortGroup;
+		}
 	}
 
 	/**
@@ -198,11 +205,13 @@ public final class Group implements Nameable {
 		super();
 		final StringUtilities stringUtil = StringUtilities.getInstance();
 		String tempFullName = "GROUP";
-		if (fileName != null && groupName != null) {
+		final boolean noFile = fileName != null;
+		final boolean noGroup = groupName != null;
+		if (noFile && noGroup) {
 			tempFullName = stringUtil.makeFullName(fileName, groupName);
-		} else if (fileName != null) {
+		} else if (noFile) {
 			tempFullName = fileName;
-		} else if (groupName != null) {
+		} else if (noGroup) {
 			tempFullName = groupName;
 		}
 		String uniqueName = stringUtil.makeUniqueName(tempFullName, NAME_MAP

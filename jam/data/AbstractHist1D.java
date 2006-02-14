@@ -105,9 +105,9 @@ public abstract class AbstractHist1D extends Histogram {
 		synchronized (this) {
 			double[] histArray;
 			if (getType() == Type.ONE_D_DOUBLE) {
-				histArray = (double[]) getCounts();
+				histArray = ((HistDouble1D)this).getCounts();
 			} else if (getType() == Type.ONE_DIM_INT) { // INT type
-				final int[] temp = (int[]) getCounts();
+				final int[] temp = ((HistInt1D)this).getCounts();
 				histArray = new double[temp.length];
 				for (int i = 0; i < temp.length; i++) {
 					histArray[i] = temp[i];
@@ -116,8 +116,8 @@ public abstract class AbstractHist1D extends Histogram {
 				throw new UnsupportedOperationException(
 						"findPeaks() called on 2D hist");
 			}
-			final List<Double> posn = PeakFinder.getInstance().getCentroids(histArray,
-					sensitivity, width);
+			final List<Double> posn = PeakFinder.getInstance().getCentroids(
+					histArray, sensitivity, width);
 			double[][] rval = new double[3][posn.size()];
 			if (cal && this.isCalibrated()) {
 				for (int i = 0; i < posn.size(); i++) {
@@ -147,14 +147,16 @@ public abstract class AbstractHist1D extends Histogram {
 	 *            array representing the 1-sigma erro bars for the channel
 	 *            counts
 	 */
-	public synchronized final void setErrors(final double[] errs) {
-		final int size = getSizeX();
-		if (!hasErrorsSet()) {
-			errors = new double[size];
+	public final void setErrors(final double[] errs) {
+		synchronized (this) {
+			final int size = getSizeX();
+			if (!hasErrorsSet()) {
+				errors = new double[size];
+			}
+			final int max = Math.min(size, errs.length);
+			System.arraycopy(errs, 0, errors, 0, max);
+			errorsSet = true;
 		}
-		final int max = Math.min(size, errs.length);
-		System.arraycopy(errs, 0, errors, 0, max);
-		errorsSet = true;
 	}
 
 	/**
@@ -163,8 +165,10 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @return <code>true</code> if errors have been explicitly set,
 	 *         <code>false</code> if not
 	 */
-	public synchronized boolean hasErrorsSet() {
-		return errorsSet;
+	public boolean hasErrorsSet() {
+		synchronized (this) {
+			return errorsSet;
+		}
 	}
 
 	/**
@@ -174,9 +178,10 @@ public abstract class AbstractHist1D extends Histogram {
 	 *            new energy calibration for this histogram
 	 */
 
-	public synchronized void setCalibration(
-			AbstractCalibrationFunction calibFunc) {
-		this.calibFunc = calibFunc;
+	public void setCalibration(final AbstractCalibrationFunction calibFunc) {
+		synchronized (this) {
+			this.calibFunc = calibFunc;
+		}
 	}
 
 	/**
@@ -185,8 +190,10 @@ public abstract class AbstractHist1D extends Histogram {
 	 * 
 	 * @return the calibration function for this histogram
 	 */
-	public synchronized AbstractCalibrationFunction getCalibration() {
-		return calibFunc;
+	public AbstractCalibrationFunction getCalibration() {
+		synchronized (this) {
+			return calibFunc;
+		}
 	}
 
 	/**
@@ -196,7 +203,9 @@ public abstract class AbstractHist1D extends Histogram {
 	 *         <code>false</code> if not
 	 * @see #setCalibration(AbstractCalibrationFunction)
 	 */
-	public synchronized boolean isCalibrated() {
-		return (calibFunc != null);
+	public boolean isCalibrated() {
+		synchronized (this) {
+			return (calibFunc != null);
+		}
 	}
 }
