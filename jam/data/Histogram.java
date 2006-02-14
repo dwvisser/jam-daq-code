@@ -365,13 +365,24 @@ public abstract class Histogram implements DataElement {
 	/**
 	 * @param names
 	 *            of histograms we want
+	 * @param <T>
+	 *            most general type of histogram to include in the list
+	 * @param type
+	 *            how the type gets specified
 	 * @return all histograms that have names matching the given list
 	 */
-	public static List<Histogram> getHistogramList(final List<String> names) {
-		final List<Histogram> rval = new ArrayList<Histogram>();
+	public static <T extends Histogram> List<T> getHistogramList(
+			final List<String> names, final Class<T> type) {
+		final List<T> rval = new ArrayList<T>();
 		for (String name : names) {
 			if (NAME_MAP.containsKey(name)) {
-				rval.add(getHistogram(name));
+				final Histogram hist = getHistogram(name);
+				if (type.isInstance(hist)) {
+					rval.add(type.cast(hist));
+				}
+			} else {
+				throw new IllegalArgumentException('\"' + name
+						+ "\" is not of type " + type.getName());
 			}
 		}
 		return Collections.unmodifiableList(rval);
@@ -414,11 +425,18 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @see #setZero()
 	 */
-	public synchronized static void setZeroAll() {
-		for (Histogram histogram : getHistogramList()) {
-			histogram.setZero();
+	public static void setZeroAll() {
+		synchronized (Histogram.class) {
+			for (Histogram histogram : getHistogramList()) {
+				histogram.setZero();
+			}
 		}
 	}
+
+	/**
+	 * whether this histogram has been cleared to an unusable state
+	 */
+	protected transient boolean clear = false;
 
 	/**
 	 * gates that belong to this histogram
@@ -428,11 +446,11 @@ public abstract class Histogram implements DataElement {
 	/** Name of group histogram belongs to */
 	private transient String groupName;
 
-	private String labelX=""; // x axis label
-
-	private String labelY=""; // y axis label
+	private String labelX = ""; // x axis label
 
 	// end of constructors
+
+	private String labelY = ""; // y axis label
 
 	/** abbreviation to refer to histogram */
 	private transient String name;
@@ -591,6 +609,8 @@ public abstract class Histogram implements DataElement {
 		setLabelY(axisLabelY);
 	}
 
+	/* instantized methods */
+
 	/**
 	 * Adds the given counts to this histogram.
 	 * 
@@ -602,8 +622,6 @@ public abstract class Histogram implements DataElement {
 	 */
 	public abstract void addCounts(Object countsIn);
 
-	/* instantized methods */
-
 	/**
 	 * Add a <code>Gate</code> to this histogram.
 	 * 
@@ -612,10 +630,12 @@ public abstract class Histogram implements DataElement {
 	 * @throws UnsupportedOperationException
 	 *             if a gate of a different type is given
 	 */
-	public synchronized void addGate(final Gate gate) {
+	public void addGate(final Gate gate) {
 		if (gate.getDimensionality() == getDimensionality()) {
-			if (!gates.contains(gate)) {
-				gates.add(gate);
+			synchronized (this) {
+				if (!gates.contains(gate)) {
+					gates.add(gate);
+				}
 			}
 		} else {
 			throw new UnsupportedOperationException("Can't add "
@@ -664,8 +684,7 @@ public abstract class Histogram implements DataElement {
 	 * 
 	 * @return <code>Object</code> which must be cast as indicated above
 	 */
-	public abstract Object getCounts();
-
+	// public abstract Object getCounts();
 	/**
 	 * Returns the number of dimensions in this histogram.
 	 * 
@@ -734,8 +753,6 @@ public abstract class Histogram implements DataElement {
 		return name;
 	}
 
-	/* -- set methods */
-
 	/**
 	 * Returns the number of the histogram, mostly used for export to ORNL
 	 * files. Histograms should always be assigned unique numbers.
@@ -745,6 +762,8 @@ public abstract class Histogram implements DataElement {
 	public final int getNumber() {
 		return number;
 	}
+
+	/* -- set methods */
 
 	/**
 	 * Get size of x-dimension, or the only dimension for 1-d histograms.
@@ -792,15 +811,26 @@ public abstract class Histogram implements DataElement {
 	 *            that we're wondering about
 	 * @return whether this histogram has the given gate
 	 */
-	public synchronized boolean hasGate(final Gate gate) {
+	public boolean hasGate(final Gate gate) {
 		boolean rval = false;// default return value
-		for (int i = 0; i < gates.size(); i++) {
-			if (gates.get(i) == gate) {
-				rval = true;
-				break;// drop out of loop
+		synchronized (this) {
+			for (int i = 0; i < gates.size(); i++) {
+				if (gates.get(i) == gate) {
+					rval = true;
+					break;// drop out of loop
+				}
 			}
 		}
 		return rval;
+	}
+
+	/**
+	 * @return whether clearCounts() has been called on this histogram
+	 */
+	public boolean isClear() {
+		synchronized (this) {
+			return clear;
+		}
 	}
 
 	/**
@@ -824,7 +854,7 @@ public abstract class Histogram implements DataElement {
 	 *             if x-axis label has already been explicitly set
 	 */
 	public final void setLabelX(final String label) {
-		if (labelX.length()>0) {
+		if (labelX.length() > 0) {
 			throw new IllegalStateException(
 					"Please call setLabelX() only once per histogram.");
 		}
@@ -840,7 +870,7 @@ public abstract class Histogram implements DataElement {
 	 *             if y-axis label has already been explicitly set
 	 */
 	public final void setLabelY(final String label) {
-		if (labelY.length()>0) {
+		if (labelY.length() > 0) {
 			throw new IllegalStateException(
 					"Please call setLabelY() only once per histogram.");
 		}
