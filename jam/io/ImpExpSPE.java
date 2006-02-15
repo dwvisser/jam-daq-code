@@ -50,7 +50,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
-	public boolean openFile(File file) throws ImpExpException {
+	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import RadWare .spe file ");
 	}
 
@@ -79,7 +79,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
-	public void readData(InputStream buffin) throws ImpExpException {
+	public void readData(final InputStream buffin) throws ImpExpException {
 		try {
 			final DataInputStream dis = new DataInputStream(buffin);
 			final char[] cName = new char[NAME_LENGTH];
@@ -102,7 +102,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 			final double[] counts = new double[size];
 			final float[] countsFloat = new float[size];
 			for (int i = 0; i < size; i++) { // does not read last channel as
-												// Jam size
+				// Jam size
 				countsFloat[i] = dis.readFloat();
 				counts[i] = countsFloat[i];
 			}
@@ -172,7 +172,7 @@ public final class ImpExpSPE extends AbstractImpExp {
 		}
 	}
 
-	private float[] copyIntToFloat(int[] countsInt, int size) {
+	private float[] copyIntToFloat(final int[] countsInt, final int size) {
 		final float[] countsFlt = new float[size];
 		for (int i = 0; i < size; i++) {
 			countsFlt[i] = countsInt[i];

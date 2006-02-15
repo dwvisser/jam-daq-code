@@ -49,39 +49,29 @@ public class ImpExpORNL extends AbstractImpExp {
 	 */
 	static final String SIGNATURE = "HHIRFDIR0001";
 
-	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+	private transient ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
 	private static final NumberUtilities NUM_UTIL = NumberUtilities
 			.getInstance();
 
-	/**
-	 * input steam for drr file
-	 */
-	private DataInputStream disDrr;
+	private transient int totalHist; // number of histograms
 
-	/**
-	 * Stuff read in for every drr file
-	 */
-	private String signature;
-
-	private int totalHist; // number of histograms
-
-	private int numHalfWords;
+	private transient int numHalfWords;
 
 	/* Histogram info in Drr file for each histogram */
-	private int[] dim; // Histogram dimensionality
+	private transient int[] dim; // Histogram dimensionality
 
-	private int[] chSize; // half words per channel
+	private transient int[] chSize; // half words per channel
 
-	private int[] lenParScal1; // Length scaled parameters
+	private transient int[] lenParScal1; // Length scaled parameters
 
-	private int[] lenParScal2;
+	private transient int[] lenParScal2;
 
-	private int[] offSet;
+	private transient int[] offSet;
 
-	private String[] titleDrr; // title 40 bytes
+	private transient String[] titleDrr; // title 40 bytes
 
-	private int[] iDnumber; // ID list
+	private transient int[] iDnumber; // ID list
 
 	private static final String[] EXTS = { "his", "drr" };
 
@@ -108,7 +98,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
-	public boolean openFile(File file) throws ImpExpException {
+	public boolean openFile(final File file) throws ImpExpException {
 		return openFile(file, "Import ORNL file ");
 	}
 
@@ -119,7 +109,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the MessageHandler
 	 */
-	public void saveFile(Histogram hist) throws ImpExpException {
+	public void saveFile(final Histogram hist) throws ImpExpException {
 		saveFile("Export ORNL", hist);
 	}
 
@@ -152,17 +142,17 @@ public class ImpExpORNL extends AbstractImpExp {
 	/*
 	 * non-javadoc: Read in ORNL drr file, which is the index to the his file.
 	 */
-	private void readDrr(InputStream buffin) throws IOException,
+	private void readDrr(final InputStream buffin) throws IOException,
 			ImpExpException {
 		final byte[] bsignature = new byte[SIGNATURE.length()];
 		final byte bChilText[] = new byte[80]; // chill file text;
 		final byte[] parLabelb = new byte[12]; // paramater label
 		final byte[] titleb = new byte[40]; // title
 		final byte[] numHistByte = new byte[4];
-		disDrr = new DataInputStream(buffin);
+		final DataInputStream disDrr = new DataInputStream(buffin);
 		// read in header
 		disDrr.read(bsignature); // HHRIF signature
-		signature = String.valueOf(bsignature);
+		final String signature = String.valueOf(bsignature);
 		if (!(signature.equals(SIGNATURE))) {
 			throw new ImpExpException("Incorrect header, expected '"
 					+ SIGNATURE + "', but got '" + signature + "'.");
@@ -269,14 +259,14 @@ public class ImpExpORNL extends AbstractImpExp {
 		disDrr.close();
 	}
 
-	private boolean isCorrectByteOrder(int numHists) {
+	private boolean isCorrectByteOrder(final int numHists) {
 		return numHists >= 0 && numHists <= 8000;
 	}
 
 	/*
 	 * non-javadoc: Read in a histogram.
 	 */
-	private void readHist(RandomAccessFile fileHis, int index)
+	private void readHist(final RandomAccessFile fileHis, final int index)
 			throws IOException {
 		/* copy to histogram variables */
 		final String name = titleDrr[index].trim();
@@ -384,7 +374,7 @@ public class ImpExpORNL extends AbstractImpExp {
 	/*
 	 * non-javadoc: write out a ORNL drr file
 	 */
-	private void writeDrr(OutputStream buffout) throws IOException {
+	private void writeDrr(final OutputStream buffout) throws IOException {
 		final StringUtilities util = StringUtilities.getInstance();
 		int diskOffSet = 0;
 		final DataOutputStream dosDrr = new DataOutputStream(buffout);
@@ -559,13 +549,13 @@ public class ImpExpORNL extends AbstractImpExp {
 		}
 	}
 
-	private int readInt(DataInput dataInput) throws IOException {
+	private int readInt(final DataInput dataInput) throws IOException {
 		final byte[] rval = new byte[4];
 		dataInput.readFully(rval);
 		return NUM_UTIL.bytesToInt(rval, 0, byteOrder);
 	}
 
-	private short readShort(DataInput dataInput) throws IOException {
+	private short readShort(final DataInput dataInput) throws IOException {
 		final byte[] rval = new byte[2];
 		dataInput.readFully(rval);
 		return NUM_UTIL.bytesToShort(rval, 0, byteOrder);
