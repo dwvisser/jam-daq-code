@@ -61,7 +61,7 @@ public interface  DataIO {
      * 			  group to read in
      * @return <code>true</code> if successful
      */
-    public boolean readFile(FileOpenMode mode, File infile, Group group);
+    boolean readFile(FileOpenMode mode, File infile, Group group);
     
     
 }    
