@@ -7,6 +7,7 @@ import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -243,10 +244,10 @@ public class Combine extends AbstractManipulation implements Observer {
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewHistogram(groupName, histName,
-					hfrom1.getSizeX());
-			LOGGER.info("New Histogram created: '" + groupName
-					+ "/" + histName + "'");
+			hto = (AbstractHist1D) createNewDoubleHistogram(groupName,
+					histName, hfrom1.getSizeX());
+			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
+					+ "'");
 		} else {
 			hto = (AbstractHist1D) Histogram.getHistogram(name);
 		}
@@ -305,18 +306,17 @@ public class Combine extends AbstractManipulation implements Observer {
 
 		/* cast to int array if needed */
 		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
-			hto.setCounts(doubleToIntArray(out));
+			hto.setCounts(NumberUtilities.getInstance().doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}
 
 		if (hfrom2 != null) {
-			LOGGER.info("Combine "
-					+ hfrom1.getFullName().trim() + operation
+			LOGGER.info("Combine " + hfrom1.getFullName().trim() + operation
 					+ hfrom2.getFullName().trim() + " to " + hto.getFullName());
 		} else {
-			LOGGER.info("Normalize "
-					+ hfrom1.getFullName().trim() + " to " + hto.getFullName());
+			LOGGER.info("Normalize " + hfrom1.getFullName().trim() + " to "
+					+ hto.getFullName());
 		}
 	}
 
@@ -351,9 +351,10 @@ public class Combine extends AbstractManipulation implements Observer {
 	private double[] doubleCountsArray(AbstractHist1D hist) {
 		double[] dCounts;
 		if (hist.getType() == Histogram.Type.ONE_DIM_INT) {
-			dCounts = intToDoubleArray(((HistInt1D)hist).getCounts());
+			dCounts = NumberUtilities.getInstance().intToDoubleArray(
+					((HistInt1D) hist).getCounts());
 		} else {
-			dCounts = ((HistDouble1D)hist).getCounts();
+			dCounts = ((HistDouble1D) hist).getCounts();
 		}
 		return dCounts;
 	}

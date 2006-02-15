@@ -7,6 +7,7 @@ import jam.data.HistInt1D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -228,8 +229,9 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		} else {
 			getCoefficients();
 		}
+		final NumberUtilities numbers = NumberUtilities.getInstance();
 		/* Get input histogram. */
-		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? intToDoubleArray(((HistInt1D) hfrom)
+		final double[] in = (hfrom.getType() == Histogram.Type.ONE_DIM_INT) ? numbers.intToDoubleArray(((HistInt1D) hfrom)
 				.getCounts())
 				: ((HistDouble1D) hfrom).getCounts();
 		final double[] errIn = hfrom.getErrors();
@@ -239,7 +241,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		if (isNewHistogram(name)) {
 			String histName = ttextto.getText().trim();
 			String groupName = parseGroupName(name);
-			hto = (AbstractHist1D) createNewHistogram(groupName, histName,
+			hto = (AbstractHist1D) createNewDoubleHistogram(groupName, histName,
 					hfrom.getSizeX());
 			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
 					+ "'");
@@ -256,7 +258,7 @@ public class GainShift extends AbstractManipulation implements ItemListener,
 		final double[] errOut = errorGainShift(errIn, a1, b1, a2, b2, hto
 				.getErrors().length);
 		if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
-			hto.setCounts(doubleToIntArray(out));
+			hto.setCounts(numbers.doubleToIntArray(out));
 		} else {
 			hto.setCounts(out);
 		}

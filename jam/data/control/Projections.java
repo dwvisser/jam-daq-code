@@ -8,6 +8,7 @@ import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.global.BroadcastEvent;
 import jam.ui.PanelOKApplyCancelButtons;
+import jam.util.NumberUtilities;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -285,9 +286,10 @@ public class Projections extends AbstractManipulation implements Observer {
 		final double[][] counts2d;
 		final String state = (String) cchan.getSelectedItem();
 		final Histogram hfrom=Histogram.getHistogram(hfromname);
+		final NumberUtilities numbers = NumberUtilities.getInstance();
 		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D)hfrom)
                 .getCounts()
-                : intToDouble2DArray(((HistInt2D) hfrom).getCounts());
+                : numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
         final String name = (String) cto.getSelectedItem();
 		final boolean between = state.equals(BETWEEN);
 		final int[] limits = between ? getLimits() : new int[2];
@@ -303,7 +305,7 @@ public class Projections extends AbstractManipulation implements Observer {
 			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();        	
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
-			hto = createNewHistogram(groupName, histName, size);
+			hto = createNewDoubleHistogram(groupName, histName, size);
 			LOGGER.info("New Histogram created: '" + groupName+"/"+histName + "'");
 		} else {
 			hto = Histogram.getHistogram(name);
@@ -335,7 +337,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		if(hto.getType() ==Histogram.Type.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
 		} else if (hto.getType() ==Histogram.Type.ONE_DIM_INT) {
-			hto.setCounts(doubleToIntArray(countsDouble));
+			hto.setCounts(numbers.doubleToIntArray(countsDouble));
 		} else {
 			throw new DataException(
 			"Need to project to 1 dimension histogram");
