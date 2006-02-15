@@ -9,8 +9,8 @@ import javax.swing.filechooser.FileFilter;
  */
 public class ExtensionFileFilter extends FileFilter {
     
-	private final String [] extensions;
-	private final String description;
+	private transient final String description;
+	private transient final String [] extensions;
 	
 	/**
 	 * Creates and file filter for a certain extension. The description
@@ -33,21 +33,13 @@ public class ExtensionFileFilter extends FileFilter {
     }
     
     /**
-     * Get the i'th extension.
-     * @param index index of extension
-     * @return three character file extension
-     */
-    public String getExtension(int index){
-    	return extensions[index];
-    }
-    
-	/**
 	 * Creates and file filter for a list of extensions and using a specific description. 
 	 *
 	 * @param exts The extensions without the period
 	 * @param descr A short description of the file type
 	 */    
-    public ExtensionFileFilter(String [] exts, String descr){
+    public ExtensionFileFilter(final String [] exts, String descr){
+    	super();
     	//clone and lowercase the extensions
     	final int len=exts.length;
     	extensions = new String[len];
@@ -68,7 +60,7 @@ public class ExtensionFileFilter extends FileFilter {
 		description=buffer.toString();
     }
     
-    public boolean accept(File file){
+	public boolean accept(final File file){
     	boolean rval=false; //default return value
     	/* we always allow directories, regardless 
     	 * of their extension */
@@ -88,6 +80,15 @@ public class ExtensionFileFilter extends FileFilter {
     
     public String getDescription() {
 		return description;
+    }
+    
+    /**
+     * Get the i'th extension.
+     * @param index index of extension
+     * @return three character file extension
+     */
+    public String getExtension(final int index){
+    	return extensions[index];
     }
     
 }

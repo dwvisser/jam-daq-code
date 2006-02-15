@@ -19,13 +19,14 @@ public final class FileOpenMode {
 	        "Reload", "Add","Add Open One", "Attributes"
 	};
 
-	private final int value;
+	private transient final int value;
 
 	private FileOpenMode(int mode){
+		super();
 		value=mode;
 	}
 	
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
         return object instanceof FileOpenMode ? value == ((FileOpenMode) object).value
                 : false;
     }

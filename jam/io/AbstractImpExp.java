@@ -57,11 +57,11 @@ public abstract class AbstractImpExp {
 	/**
 	 * so the programmer may set display options
 	 */
-	protected final Frame frame;
+	protected transient final Frame frame;
 
 	private static final Object LASTFILE_MON = new Object();
 
-	private final String lastFileKey;
+	private transient final String lastFileKey;
 
 	private static final Preferences PREFS = Preferences
 			.userNodeForPackage(AbstractImpExp.class);
@@ -74,7 +74,7 @@ public abstract class AbstractImpExp {
 	/**
 	 * Group to import data into
 	 */
-	protected Group importGroup;
+	protected transient Group importGroup;
 
 	/**
 	 * Default constructor so that it may be launched dynamically for batch
@@ -88,7 +88,10 @@ public abstract class AbstractImpExp {
 		frame = STATUS.getFrame();
 	}
 
-	protected boolean silent = false;
+	/**
+	 * if true, don't output messages to console
+	 */
+	protected transient boolean silent = false;
 
 	/**
 	 * Don't output messages to msgHandler
@@ -171,7 +174,7 @@ public abstract class AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @return whether file was successfully read
 	 */
-	protected boolean openFile(File file, String msg) {
+	protected boolean openFile(final File file, final String msg) {
 		boolean rval = false; // default return value
 		try {
 			final File inFile = (file == null) ? getFileOpen(msg) : file;
@@ -221,7 +224,7 @@ public abstract class AbstractImpExp {
 	 *                all exceptions given to <code>ImpExpException</code>
 	 *                display on the msgHandler
 	 */
-	protected void saveFile(String msg, Histogram hist) throws ImpExpException {
+	protected void saveFile(final String msg, final Histogram hist) throws ImpExpException {
 		final File outFile = getFileSave(msg);
 		try {// open file dialog
 			if (outFile != null) { // if Save file dialog was not canceled
@@ -252,7 +255,7 @@ public abstract class AbstractImpExp {
 	 * @param hist
 	 * @throws ImpExpException
 	 */
-	public void saveFile(File outFile, Histogram hist) throws ImpExpException {
+	public void saveFile(final File outFile, final Histogram hist) throws ImpExpException {
 		try {
 			final FileOutputStream outStream = new FileOutputStream(outFile);
 			final BufferedOutputStream buffStream = new BufferedOutputStream(
@@ -275,7 +278,7 @@ public abstract class AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @return a <code>File</code> to read from
 	 */
-	protected File getFileOpen(String msg) {
+	protected File getFileOpen(final String msg) {
 		return getFile(msg, AbstractImpExp.LOAD);
 	}
 
@@ -286,7 +289,7 @@ public abstract class AbstractImpExp {
 	 *            text to go on title bar of dialog box
 	 * @return a <code>File</code> to save to
 	 */
-	protected File getFileSave(String msg) {
+	protected File getFileSave(final String msg) {
 		return getFile(msg, AbstractImpExp.SAVE);
 	}
 
@@ -301,7 +304,7 @@ public abstract class AbstractImpExp {
 	 * @return a <code>File</code> chosen by the user, null if dialog
 	 *         cancelled
 	 */
-	protected File getFile(String msg, int state) {
+	protected File getFile(final String msg, final int state) {
 		File file = null;
 		int option;
 		final JFileChooser jfile = new JFileChooser(getLastFile());
@@ -345,7 +348,7 @@ public abstract class AbstractImpExp {
 	 * @return name of file or <code>null</code> if it doesn't exist
 	 * @see #getFile
 	 */
-	protected String getFileName(File file) {
+	protected String getFileName(final File file) {
 		String rval = null;// default return value
 		if (file != null) {
 			rval = file.getName();
@@ -370,7 +373,7 @@ public abstract class AbstractImpExp {
 	 * @param file
 	 *            last file accessed
 	 */
-	protected void setLastFile(File file) {
+	protected void setLastFile(final File file) {
 		synchronized (LASTFILE_MON) {
 			lastFile = file;
 			PREFS.put(lastFileKey, file.getAbsolutePath());

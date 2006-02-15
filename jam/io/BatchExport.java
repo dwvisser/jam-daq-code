@@ -70,22 +70,20 @@ public class BatchExport extends JDialog implements Observer {
 
 	private class SelectHistogramDialog {
 
-		private final JDialog dialog;
+		private transient final JDialog dialog;
 
-		private final Frame frame = JamStatus.getSingletonInstance().getFrame();
-
-		private final JList histList;
-
-		private final DefaultListModel histListData;
+		private transient final JList histList;
 
 		SelectHistogramDialog() {
+			super();
+			final Frame frame = JamStatus.getSingletonInstance().getFrame();
 			dialog = new JDialog(frame, "Selected Histograms", false);
 			dialog.setLocation(frame.getLocation().x + 50,
 					frame.getLocation().y + 50);
 			final Container container = dialog.getContentPane();
 			container.setLayout(new BorderLayout(10, 10));
 			/* Selection list */
-			histListData = new DefaultListModel();
+			final DefaultListModel histListData = new DefaultListModel();
 			histList = new JList(histListData);
 			histList
 					.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -100,7 +98,7 @@ public class BatchExport extends JDialog implements Observer {
 			JButton bButton = new JButton("OK");
 			pLower.add(bButton);
 			bButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent actionEvent) {
+				public void actionPerformed(final ActionEvent actionEvent) {
 					addToSelection();
 					dialog.dispose();
 				}
@@ -140,34 +138,31 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	};
 
-	private final JButton bExport = new JButton("Export");
+	private transient final JButton bExport = new JButton("Export");
 
-	private final JComboBox cbHist = new JComboBox();
+	private transient final JComboBox cbHist = new JComboBox();
 
-	private final ActionListener cbHistListen = new ActionListener() {
-		public void actionPerformed(ActionEvent actionEvent) {
+	private transient final ActionListener cbHistListen = new ActionListener() {// NOPMD
+		public void actionPerformed(final ActionEvent actionEvent) {
 			addSelectedHist();
 			setExportEnable();
 		}
 	};
 
-	private final Map<AbstractButton, AbstractImpExp> exportMap = Collections
+	private transient final Map<AbstractButton, AbstractImpExp> exportMap = Collections
 			.synchronizedMap(new HashMap<AbstractButton, AbstractImpExp>());
 
-	private File lastListFile = null;
+	private transient File lastListFile = null;
 
-	private final JList lstHists = new JList(new DefaultListModel());
+	private transient final JList lstHists = new JList(new DefaultListModel());
 
-	private final SelectHistogramDialog selectHistogramDialog;
+	private transient final SelectHistogramDialog selectHistDlg;
 
-	private final JTextField txtDirectory = new JTextField(System
+	private transient final JTextField txtDirectory = new JTextField(System
 			.getProperty("user.home"), 40);
 
 	/**
 	 * Constructs a new batch histogram exporter.
-	 * 
-	 * @param msgHandler
-	 *            console to print messages to
 	 */
 	public BatchExport() {
 
@@ -177,7 +172,7 @@ public class BatchExport extends JDialog implements Observer {
 		broadcaster.addObserver(this);
 		buildGUI();
 		setupHistChooser();
-		selectHistogramDialog = new SelectHistogramDialog();
+		selectHistDlg = new SelectHistogramDialog();
 	}
 
 	/**
@@ -186,8 +181,8 @@ public class BatchExport extends JDialog implements Observer {
 	 */
 	private void addAllHists() {
 		final Set<Histogram> histSet = new HashSet<Histogram>();
-		CollectionsUtil.getSingletonInstance().addConditional(Histogram.getHistogramList(),
-				histSet, HIST_COND_1D);
+		CollectionsUtil.getSingletonInstance().addConditional(
+				Histogram.getHistogramList(), histSet, HIST_COND_1D);
 		lstHists.setListData(histSet.toArray());
 	}
 
@@ -320,11 +315,11 @@ public class BatchExport extends JDialog implements Observer {
 		return rval;
 	}
 
-	private boolean createExportDir(String exportDir) {
+	private boolean createExportDir(final String exportDir) {
 		boolean status = true;
 		final File exportDirFile = new File(exportDir);
 		// Create export dir if it does not exits
-		if (!exportDirFile.exists()) {
+		if (!exportDirFile.exists()) {// NOPMD
 			// Cannot create export dir
 			if (!exportDirFile.mkdirs()) {
 				LOGGER.severe("Could not create the directory "
@@ -354,11 +349,11 @@ public class BatchExport extends JDialog implements Observer {
 	private void export() {
 		boolean status;
 		boolean already = false;
-		List<String> exportGroupDirList = new ArrayList<String>();
+		final List<String> exportDirList = new ArrayList<String>();
 		/* select the format */
-		AbstractImpExp exportFormat = selectedExportFormat();
+		final AbstractImpExp exportFormat = selectedExportFormat();
 		// Check or create export dir
-		String exportDir = txtDirectory.getText().trim();
+		final String exportDir = txtDirectory.getText().trim();
 		// final File exportDirFile = new File(exportDir);
 		// Create list of export histograms and files
 		final ListModel model = lstHists.getModel();
@@ -366,15 +361,17 @@ public class BatchExport extends JDialog implements Observer {
 		File[] exportFiles = new File[model.getSize()];
 		// Create array of histograms and files
 		for (int i = 0; i < exportHistograms.length; i++) {
-			AbstractHist1D hist1D = (AbstractHist1D) model.getElementAt(i);
+			final AbstractHist1D hist1D = (AbstractHist1D) model
+					.getElementAt(i);
 			exportHistograms[i] = hist1D;
-			String groupName = hist1D.getGroup().getName();
-			String histName = hist1D.getName().trim();
+			final String groupName = hist1D.getGroup().getName();
+			final String histName = hist1D.getName().trim();
 			exportFiles[i] = createExportFile(exportDir, groupName, histName,
 					exportFormat.getDefaultExtension());
-			String exportGroupDir = exportDir + File.separator + groupName;
-			if (!exportGroupDirList.contains(exportGroupDir)) {
-				exportGroupDirList.add(exportGroupDir);
+			final String exportGroupDir = exportDir + File.separator
+					+ groupName;
+			if (!exportDirList.contains(exportGroupDir)) {
+				exportDirList.add(exportGroupDir);
 			}
 			already |= exportFiles[i].exists();
 		}
@@ -383,7 +380,7 @@ public class BatchExport extends JDialog implements Observer {
 		status = createExportDir(exportDir);
 		// Check for overwrite
 		if (status && already) {
-			int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
+			final int optionPaneRely = JOptionPane.showConfirmDialog(JamStatus
 					.getSingletonInstance().getFrame(),
 					"Overwrite existing files? \n", "File Exists",
 					JOptionPane.YES_NO_OPTION);
@@ -393,8 +390,8 @@ public class BatchExport extends JDialog implements Observer {
 		}
 		// create group directoris
 		if (status) {
-			for (int i = 0; i < exportGroupDirList.size(); i++) {
-				boolean statusTemp = createExportDir(exportGroupDirList.get(i));
+			for (int i = 0; i < exportDirList.size(); i++) {
+				final boolean statusTemp = createExportDir(exportDirList.get(i));
 				status = status && statusTemp;
 			}
 		}
@@ -415,7 +412,7 @@ public class BatchExport extends JDialog implements Observer {
 		}
 	}
 
-	private AbstractButton getButton(AbstractImpExp impExp) {
+	private AbstractButton getButton(final AbstractImpExp impExp) {
 		final String desc = impExp.getFormatDescription();
 		final AbstractButton rval = new JRadioButton(desc);
 		rval.setToolTipText("Select to export in " + desc + " format.");
@@ -436,7 +433,7 @@ public class BatchExport extends JDialog implements Observer {
 		bAddHist.setToolTipText("Adds selected 1 dimension histograms.");
 		bAddHist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				selectHistogramDialog.show();
+				selectHistDlg.show();
 			}
 		});
 		pButtons.add(bAddHist);
@@ -528,7 +525,7 @@ public class BatchExport extends JDialog implements Observer {
 	 * 
 	 */
 	private void removeAllHists() {
-		lstHists.setListData(new Vector());
+		lstHists.setListData(new Vector());//NOPMD
 	}
 
 	/**
@@ -615,7 +612,7 @@ public class BatchExport extends JDialog implements Observer {
 	 * Implementation of Observable interface listeners for broadcast events.
 	 * broadcast events where there are new histograms or histograms added.
 	 */
-	public void update(Observable observable, Object object) {
+	public void update(final Observable observable, final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command command = event.getCommand();
 		if (command == BroadcastEvent.Command.HISTOGRAM_NEW
