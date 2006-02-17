@@ -18,7 +18,7 @@ public abstract class AbstractHist1D extends Histogram {
 	/**
 	 * The calibration function. Set to <code>null</code> if there is none.
 	 */
-	protected transient AbstractCalibrationFunction calibFunc;
+	protected transient AbstractCalibrationFunction calibFunc=AbstractCalibrationFunction.getNoCalibration();
 
 	/**
 	 * Array which contains the errors in the channel counts.
@@ -205,7 +205,7 @@ public abstract class AbstractHist1D extends Histogram {
 	 */
 	public boolean isCalibrated() {
 		synchronized (this) {
-			return (calibFunc != null);
+			return calibFunc.isCalibrated();
 		}
 	}
 }
