@@ -309,7 +309,9 @@ public final class HDFIO implements DataIO {
 						+ "': " + e.toString();
 			} finally {
 				try {
-					out.close();
+					if (out!=null) {
+						out.close();
+					}
 				} catch (IOException e) {
 					uiErrorMsg = "Closing file " + file.getName();
 				}

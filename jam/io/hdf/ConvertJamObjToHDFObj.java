@@ -28,6 +28,7 @@ import jam.data.Group;
 import jam.data.HistDouble1D;
 import jam.data.HistDouble2D;
 import jam.data.HistInt1D;
+import jam.data.HistInt2D;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
@@ -214,7 +215,7 @@ final class ConvertJamObjToHDFObj {
 			hist1d = (AbstractHist1D) hist;
 			hasErrors = hist1d.hasErrorsSet();
 		} else if (type == Histogram.Type.TWO_DIM_INT) {
-			sciData = new ScientificData(((HistInt1D) hist).getCounts());
+			sciData = new ScientificData(((HistInt2D) hist).getCounts());
 		} else if (type == Histogram.Type.TWO_D_DOUBLE) {
 			sciData = new ScientificData(((HistDouble2D) hist).getCounts());
 		} else {
