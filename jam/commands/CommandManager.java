@@ -64,7 +64,6 @@ public class CommandManager implements CommandListener, CommandNames {
 		CMD_MAP.put(SHOW_HIST_COMBINE, ShowDialogHistManipulationsCmd.class);
 		CMD_MAP.put(SHOW_HIST_PROJECT, ShowDialogHistProjectionCmd.class);
 		CMD_MAP.put(SHOW_HIST_FIT, ShowDialogCalibrationFitCmd.class);
-		CMD_MAP.put(SHOW_DISPLAY_FIT, ShowDialogCalibrationDisplayCmd.class);
 		CMD_MAP.put(SHOW_GAIN_SHIFT, ShowDialogGainShiftCmd.class);
 		/* Gate Menu */
 		CMD_MAP.put(SHOW_NEW_GATE, ShowDialogNewGateCmd.class);
@@ -288,4 +287,4 @@ public class CommandManager implements CommandListener, CommandNames {
 	public void setEnabled(final String cmd, final boolean enable) {
 		getAction(cmd).setEnabled(enable);
 	}
-}
+}//NOPMD
