@@ -1,4 +1,10 @@
-package jam.data.func;
+package jam.data.control;
+
+import jam.data.func.AbstractCalibrationFunction;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataEvent;
@@ -12,23 +18,27 @@ import javax.swing.event.ListDataListener;
  * @author Ken Swartz
  * @version 1.4.2 RC 3
  */
-public final class CalibrationComboBoxModel implements ComboBoxModel {
+final class CalibrationComboBoxModel implements ComboBoxModel {
 
 	private transient Object selection;
 
 	private transient final Object selectSync = new Object();
 
-	private ListDataListener listener;
+	private transient final List<ListDataListener> listeners = Collections
+			.synchronizedList(new ArrayList<ListDataListener>());
+
+	CalibrationComboBoxModel() {
+		super();
+	}
 
 	/**
 	 * @return list element at the specified index
 	 * @param index
 	 *            the index of the desired element
 	 */
-	public Object getElementAt(int index) {
+	public Object getElementAt(final int index) {
 		synchronized (selectSync) {
-			Object obj = AbstractCalibrationFunction.getListNames().get(index);
-			return obj;
+			return AbstractCalibrationFunction.getListNames().get(index);
 		}
 	}
 
@@ -36,8 +46,9 @@ public final class CalibrationComboBoxModel implements ComboBoxModel {
 	 * @return number of list elements in chooser.
 	 */
 	public int getSize() {
-		int size = AbstractCalibrationFunction.getListNames().size();
-		return size;
+		synchronized (selectSync) {
+			return AbstractCalibrationFunction.getListNames().size();
+		}
 	}
 
 	/**
@@ -49,7 +60,7 @@ public final class CalibrationComboBoxModel implements ComboBoxModel {
 	 * @throws IllegalArgumentException
 	 *             if not a String or null
 	 */
-	public void setSelectedItem(Object anItem) {
+	public void setSelectedItem(final Object anItem) {
 		synchronized (selectSync) {
 			String selectionNew;
 			if (anItem == null) {
@@ -66,9 +77,11 @@ public final class CalibrationComboBoxModel implements ComboBoxModel {
 
 			if (!selectionNew.equals(selection)) {
 				selection = selectionNew;
-				ListDataEvent lde = new ListDataEvent(this,
+				final ListDataEvent lde = new ListDataEvent(this,
 						ListDataEvent.CONTENTS_CHANGED, 0, getSize());
-				listener.contentsChanged(lde);
+				for (ListDataListener listener : listeners) {
+					listener.contentsChanged(lde);
+				}
 			}
 		}
 	}
@@ -82,12 +95,12 @@ public final class CalibrationComboBoxModel implements ComboBoxModel {
 		}
 	}
 
-	public void addListDataListener(ListDataListener l) {
-		listener = l;
+	public void addListDataListener(final ListDataListener ldl) {
+		listeners.add(ldl);
 	}
 
-	public void removeListDataListener(ListDataListener l) {
-		listener = null;
+	public void removeListDataListener(final ListDataListener ldl) {
+		listeners.remove(ldl);
 	}
 
 }
