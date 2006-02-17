@@ -21,8 +21,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
@@ -38,30 +36,28 @@ import javax.swing.border.EmptyBorder;
  * 
  * @author Dale Visser, Ken Swartz
  */
-public class Projections extends AbstractManipulation implements Observer {
+public class Projections extends AbstractManipulation implements java.util.Observer {
 
 	private static final int CHOOSER_SIZE = 200;
-	
+
 	private static final String FULL = "Full Histogram";
 
 	private static final String BETWEEN = "Between Channels";
 
-	private final JComboBox cfrom, cto, cchan;
+	private transient final JComboBox cfrom, cto, cchan;
 
-	private final JCheckBox cacross, cdown;
+	private transient final JCheckBox cdown;
 
-	private final JTextField tlim1, tlim2, ttextto;
+	private transient final JTextField tlim1, tlim2, ttextto;
 
-	private final JLabel lname, lChannels, lAnd;
-	
-	private String hfromname;
-	
-	private Histogram hto;
+	private transient final JLabel lname, lChannels, lAnd;
+
+	private transient String hfromname;
+
+	private transient Histogram hto;
 
 	/**
 	 * Constructs a new projections dialog.
-	 * 
-	 * @param msgHandler where to print messages
 	 */
 	public Projections() {
 		super("Project 2D Histogram", false);
@@ -73,7 +69,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		setLocation(20, 50);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowOpened(WindowEvent windowEvent) {
+			public void windowOpened(final WindowEvent windowEvent) {
 				doSetup();
 			}
 		});
@@ -92,9 +88,9 @@ public class Projections extends AbstractManipulation implements Observer {
 		final JPanel phist = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cfrom = new JComboBox(new HistogramComboBoxModel(
 				HistogramComboBoxModel.Mode.TWO_D));
-		int meanWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
+		int meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		Dimension dim = cfrom.getPreferredSize();
-		dim.width = CHAR_LENGTH*meanWidth;				
+		dim.width = CHAR_LENGTH * meanWidth;
 		cfrom.setPreferredSize(dim);
 		cfrom.setEditable(false);
 		phist.add(cfrom);
@@ -102,7 +98,7 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* Direction panel */
 		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		final ButtonGroup cbg = new ButtonGroup();
-		cacross = new JCheckBox("Across", true);
+		final JCheckBox cacross = new JCheckBox("Across", true);
 		cdown = new JCheckBox("Down", false);
 		cbg.add(cacross);
 		cbg.add(cdown);
@@ -115,14 +111,14 @@ public class Projections extends AbstractManipulation implements Observer {
 		tlim1 = new JTextField(5);
 		tlim2 = new JTextField(5);
 		cchan = new JComboBox();
-		
+
 		dim = cchan.getPreferredSize();
 		dim.width = CHOOSER_SIZE;
 		cchan.setPreferredSize(dim);
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
-		cchan.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent itemEvent){
+		cchan.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (cchan.getSelectedItem() != null) {
 					setUseLimits(cchan.getSelectedItem().equals(BETWEEN));
 				}
@@ -140,15 +136,15 @@ public class Projections extends AbstractManipulation implements Observer {
 		/* To histogram */
 		final JPanel ptextto = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		cto = new JComboBox();
-		meanWidth= getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
+		meanWidth = getMeanCharWidth(cfrom.getFontMetrics(cfrom.getFont()));
 		dim = cto.getPreferredSize();
-		dim.width = CHAR_LENGTH*meanWidth;				
+		dim.width = CHAR_LENGTH * meanWidth;
 		cto.setPreferredSize(dim);
 		cto.addItem("1DHISTOGRAM");
-		cto.addItemListener(new ItemListener(){
-			public void itemStateChanged(ItemEvent itemEvent){
+		cto.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (cto.getSelectedItem() != null) {
-					setUseHist((String)cto.getSelectedItem());
+					setUseHist((String) cto.getSelectedItem());
 				}
 			}
 		});
@@ -159,31 +155,33 @@ public class Projections extends AbstractManipulation implements Observer {
 		setUseHist(NEW_HIST);
 		ptextto.add(ttextto);
 		pEntries.add(ptextto);
-		final PanelOKApplyCancelButtons.Listener listener = 
-		    new PanelOKApplyCancelButtons.AbstractListener(this){
-			public void apply(){
+		final PanelOKApplyCancelButtons.Listener listener = new PanelOKApplyCancelButtons.AbstractListener(
+				this) {
+			public void apply() {
 				try {
 					project();
 					BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 					STATUS.setCurrentHistogram(hto);
 					STATUS.setCurrentGroup(hto.getGroup());
-					BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT, hto );
+					BROADCASTER.broadcast(
+							BroadcastEvent.Command.HISTOGRAM_SELECT, hto);
 				} catch (DataException de) {
 					LOGGER.log(Level.SEVERE, de.getMessage(), de);
 				}
 			}
 		};
-		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(listener);
-		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);		
+		final PanelOKApplyCancelButtons buttons = new PanelOKApplyCancelButtons(
+				listener);
+		cdproject.add(buttons.getComponent(), BorderLayout.SOUTH);
 		cfrom.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent actionEvent) {
 				final Object selected = cfrom.getSelectedItem();
 				if (selected == null || selected instanceof String) {
 					hfromname = "";
-					buttons.setButtonsEnabled(false,false,true);
+					buttons.setButtonsEnabled(false, false, true);
 				} else {
 					hfromname = ((Histogram) selected).getFullName();
-					buttons.setButtonsEnabled(true,true,true);
+					buttons.setButtonsEnabled(true, true, true);
 					setupCuts(FULL);
 				}
 			}
@@ -191,55 +189,54 @@ public class Projections extends AbstractManipulation implements Observer {
 		cfrom.setSelectedIndex(0);
 		pack();
 	}
-	
 
 	/**
 	 * Implementation of Observable interface Listners for broadcast events.
 	 * Broadcast events: histograms new and histogram added
 	 */
-	public void update(Observable observable, Object object) {
+	public void update(final java.util.Observable observable,
+			final Object object) {
 		final BroadcastEvent event = (BroadcastEvent) object;
 		final BroadcastEvent.Command com = event.getCommand();
-		if (com == BroadcastEvent.Command.HISTOGRAM_NEW ||
-		    com == BroadcastEvent.Command.HISTOGRAM_ADD) {
+		if (com == BroadcastEvent.Command.HISTOGRAM_NEW
+				|| com == BroadcastEvent.Command.HISTOGRAM_ADD) {
 			doSetup();
-		} else if ( com == BroadcastEvent.Command.GATE_ADD ||
-				    com == BroadcastEvent.Command.GATE_SET_OFF ||
-				   com == BroadcastEvent.Command.GATE_SET_SAVE) {
+		} else if (com == BroadcastEvent.Command.GATE_ADD
+				|| com == BroadcastEvent.Command.GATE_SET_OFF
+				|| com == BroadcastEvent.Command.GATE_SET_SAVE) {
 			doSetup();
-		} 
+		}
 	}
 
 	/**
 	 * Loads the name of the current histogram and the list of gates for that
 	 * histogram. For a 1d histogram set co-ordinates as x y if 2d or lower and
 	 * upper if 1 d
-	 *  
+	 * 
 	 */
 	public void doSetup() {
 		cfrom.setSelectedIndex(0);
-		setUseHist(NEW_HIST); //default use new histogram
-		loadAllHists(cto, true, Histogram.Type.ONE_D);//setup "to" histogram
+		setUseHist(NEW_HIST); // default use new histogram
+		loadAllHists(cto, true, Histogram.Type.ONE_D);// setup "to" histogram
 		final String lastCut = (String) cchan.getSelectedItem();
-		setupCuts(lastCut);//default setup channels
+		setupCuts(lastCut);// default setup channels
 	}
-	
 
-	/* non-javadoc:
-	 * Setups up the channel and gate selector.
-	 *  
+	/*
+	 * non-javadoc: Setups up the channel and gate selector.
+	 * 
 	 */
-	private void setupCuts(String newSelect) {
+	private void setupCuts(final String newSelect) {
 		cchan.removeAllItems();
 		/* add default options */
 		cchan.addItem(FULL);
 		cchan.addItem(BETWEEN);
 		/* add gates to chooser */
-		final Histogram hfrom=Histogram.getHistogram(hfromname);
+		final Histogram hfrom = Histogram.getHistogram(hfromname);
 		if (hfrom != null) {
 			for (Gate gate : hfrom.getGates()) {
-				if (gate.isDefined()){
-					cchan.addItem(gate.getName());
+				if (gate.isDefined()) {
+					cchan.addItem(gate);
 				}
 			}
 		}
@@ -251,11 +248,11 @@ public class Projections extends AbstractManipulation implements Observer {
 		}
 	}
 
-	/* non-javadoc:
-	 * setup if using a new histogram
+	/*
+	 * non-javadoc: setup if using a new histogram
 	 */
-	private void setUseHist(String name) {
-		if (isNewHistogram(name)){
+	private void setUseHist(final String name) {
+		if (isNewHistogram(name)) {
 			lname.setEnabled(true);
 			ttextto.setEnabled(true);
 			ttextto.setEditable(true);
@@ -263,91 +260,96 @@ public class Projections extends AbstractManipulation implements Observer {
 			lname.setEnabled(false);
 			ttextto.setEnabled(true);
 			ttextto.setEditable(false);
-			
+
 		}
 	}
 
-	/* non-javadoc:
-	 * setup if using limits
+	/*
+	 * non-javadoc: setup if using limits
 	 */
-	private void setUseLimits(boolean state) {
+	private void setUseLimits(final boolean state) {
 		tlim1.setEnabled(state);
 		tlim2.setEnabled(state);
 		tlim1.setEditable(state);
 		tlim2.setEditable(state);
 	}
 
-	/* non-javadoc:
-	 * Does the work of projecting a histogram
+	/*
+	 * non-javadoc: Does the work of projecting a histogram
 	 */
 	private void project() throws DataException {
 		final String typeProj;
-		double [] countsDouble=null;
+		double[] countsDouble = null;
 		final double[][] counts2d;
-		final String state = (String) cchan.getSelectedItem();
-		final Histogram hfrom=Histogram.getHistogram(hfromname);
+		final Object selected = cchan.getSelectedItem();
+		final boolean gateSelected = selected instanceof Gate;
+		// String state = "";
+		// if (!gateSelected) {
+		// state = (String) selected;
+		// }
+		final Histogram hfrom = Histogram.getHistogram(hfromname);
 		final NumberUtilities numbers = NumberUtilities.getInstance();
-		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D)hfrom)
-                .getCounts()
-                : numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
-        final String name = (String) cto.getSelectedItem();
-		final boolean between = state.equals(BETWEEN);
+		counts2d = (hfrom.getType() == Histogram.Type.TWO_D_DOUBLE) ? ((HistDouble2D) hfrom)
+				.getCounts()
+				: numbers.intToDouble2DArray(((HistInt2D) hfrom).getCounts());
+		final String name = (String) cto.getSelectedItem();
+		final boolean between = selected.equals(BETWEEN);
 		final int[] limits = between ? getLimits() : new int[2];
-        if (state.equals(FULL)) {
-            limits[0] = 0;
-            if (cdown.isSelected()) {
-                limits[1] = counts2d[0].length - 1;
-            } else {
-                limits[1] = counts2d.length - 1;
-            }
-        }
-        if (isNewHistogram(name)) {
-			final int size=cdown.isSelected() ? hfrom.getSizeX() : hfrom.getSizeY();        	
+		if (selected.equals(FULL)) {
+			limits[0] = 0;
+			if (cdown.isSelected()) {
+				limits[1] = counts2d[0].length - 1;
+			} else {
+				limits[1] = counts2d.length - 1;
+			}
+		}
+		if (isNewHistogram(name)) {
+			final int size = cdown.isSelected() ? hfrom.getSizeX() : hfrom
+					.getSizeY();
 			final String histName = ttextto.getText().trim();
 			final String groupName = parseGroupName(name);
 			hto = createNewDoubleHistogram(groupName, histName, size);
-			LOGGER.info("New Histogram created: '" + groupName+"/"+histName + "'");
+			LOGGER.info("New Histogram created: '" + groupName + "/" + histName
+					+ "'");
 		} else {
 			hto = Histogram.getHistogram(name);
 		}
 		if (cdown.isSelected()) {
-			if (state.equals(FULL) || state.equals(BETWEEN)) {
+			if (gateSelected) {
+				final Gate gate = (Gate) selected;
+				typeProj = "using gate " + gate.getName();
+				countsDouble = projectX(counts2d, hto.getSizeX(), gate);
+			} else {
 				typeProj = "counts between Y channels " + limits[0] + " and "
 						+ limits[1];
-				countsDouble= projectX(counts2d, hto.getSizeX(), limits[0],
+				countsDouble = projectX(counts2d, hto.getSizeX(), limits[0],
 						limits[1]);
-			} else {
-				typeProj = "using gate " + state;
-				countsDouble= projectX(counts2d, hto.getSizeX(), Gate
-						.getGate(state));
 			}
 		} else { // cacross is true
-			if (state.equals(FULL) || state.equals(BETWEEN)) {
+			if (gateSelected) {
+				final Gate gate = (Gate) selected;
+				typeProj = "using gate " + gate.getName();
+				countsDouble = projectY(counts2d, hto.getSizeX(), gate);
+			} else {
 				typeProj = "counts between X channels " + limits[0] + " and "
 						+ limits[1];
 				countsDouble = projectY(counts2d, hto.getSizeX(), limits[0],
 						limits[1]);
-				
-			} else {
-				typeProj = "using gate " + state.trim();
-				countsDouble= projectY(counts2d, hto.getSizeX(), Gate
-						.getGate(state));
 			}
 		}
-		if(hto.getType() ==Histogram.Type.ONE_D_DOUBLE) {
+		if (hto.getType() == Histogram.Type.ONE_D_DOUBLE) {
 			hto.setCounts(countsDouble);
-		} else if (hto.getType() ==Histogram.Type.ONE_DIM_INT) {
+		} else if (hto.getType() == Histogram.Type.ONE_DIM_INT) {
 			hto.setCounts(numbers.doubleToIntArray(countsDouble));
 		} else {
-			throw new DataException(
-			"Need to project to 1 dimension histogram");
+			throw new DataException("Need to project to 1 dimension histogram");
 		}
-		LOGGER.info("Project " + hfrom.getFullName().trim()
-				+ " to " + hto.getFullName() + " " + typeProj);
+		LOGGER.info("Project " + hfrom.getFullName().trim() + " to "
+				+ hto.getFullName() + " " + typeProj);
 	}
 
-
-	double[] projectX(double[][] inArray, int outLength, int _ll, int _ul) {
+	double[] projectX(final double[][] inArray, final int outLength,
+			final int _ll, final int _ul) {
 		final double[] out = new double[outLength];
 		final int lower = Math.max(0, _ll);
 		final int upper = Math.min(inArray[0].length - 1, _ul);
@@ -360,7 +362,8 @@ public class Projections extends AbstractManipulation implements Observer {
 		return out;
 	}
 
-	double[] projectY(double[][] inArray, int outLength, int _ll, int _ul) {
+	double[] projectY(final double[][] inArray, final int outLength,
+			final int _ll, final int _ul) {
 		double[] out = new double[outLength];
 		final int lower = Math.max(0, _ll);
 		final int upper = Math.min(inArray.length - 1, _ul);
@@ -373,34 +376,32 @@ public class Projections extends AbstractManipulation implements Observer {
 		return out;
 	}
 
-	double[] projectX(double[][] inArray, int outLength, Gate gate) {
+	private double[] projectX(final double[][] inArray, final int outLength,
+			final Gate gate) {
 		double[] out = new double[outLength];
 		for (int k = 0; k < outLength; k++) {
 			out[k] = 0;
 		}
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
-				if (gate.inGate(i, j)) {
-					if (i < out.length){
-						out[i] += inArray[i][j];
-					}
+				if (gate.inGate(i, j) && i < out.length) {
+					out[i] += inArray[i][j];
 				}
 			}
 		}
 		return out;
 	}
 
-	double[] projectY(double[][] inArray, int outLength, Gate gate) {
+	private double[] projectY(final double[][] inArray, final int outLength,
+			final Gate gate) {
 		double[] out = new double[outLength];
 		for (int k = 0; k < outLength; k++) {
 			out[k] = 0;
 		}
 		for (int i = 0; i < inArray.length; i++) {
 			for (int j = 0; j < inArray[0].length; j++) {
-				if (gate.inGate(i, j)) {
-					if (j < out.length){
-						out[j] += inArray[i][j];
-					}
+				if (gate.inGate(i, j) && j < out.length) {
+					out[j] += inArray[i][j];
 				}
 			}
 		}
@@ -418,10 +419,8 @@ public class Projections extends AbstractManipulation implements Observer {
 				out[1] = temp;
 			}
 		} catch (NumberFormatException ne) {
-			throw new DataException(
-					"Invalid channel not a valid numbers");
+			throw new DataException("Invalid channel not a valid numbers");
 		}
 		return out;
-	}	
+	}
 }
-
