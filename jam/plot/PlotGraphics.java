@@ -168,8 +168,8 @@ final class PlotGraphics {
 		/* some initial layout stuff */
 		border = new Insets(graphLayout.border.top, graphLayout.border.left,
 				graphLayout.border.bottom, graphLayout.border.right);
-		screenFont = new Font(graphLayout.FONT_CLASS, Font.BOLD,
-				(int) graphLayout.SCREEN_FONT_SIZE);
+		screenFont = new Font(PlotGraphicsLayout.FONT_CLASS, Font.BOLD,
+				(int) PlotGraphicsLayout.SCREEN_FONT_SIZE);
 		setGraphicsFont(screenFont);
 	}
 
@@ -300,9 +300,9 @@ final class PlotGraphics {
 		}
 		yPos = viewTop - graphLayout.titleOffsets.top;
 		if (side == PlotGraphics.TOP) {
-			setGraphicsFont(font.deriveFont(graphLayout.TITLE_SCREEN_SIZE));
+			setGraphicsFont(font.deriveFont(PlotGraphicsLayout.TITLE_SCREEN_SIZE));
 			g.drawString(title, xPos, yPos);
-			setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
+			setGraphicsFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
 		}
 	}
 
@@ -1172,21 +1172,21 @@ final class PlotGraphics {
 			y2 = toViewVertLog(count);
 		}
 		// draw the line at least a mark min length
-		if ((y1 - y2) < graphLayout.MARK_MIN_LENGTH) {
-			y2 = viewBottom - graphLayout.MARK_MIN_LENGTH;
+		if ((y1 - y2) < PlotGraphicsLayout.MARK_MIN_LENGTH) {
+			y2 = viewBottom - PlotGraphicsLayout.MARK_MIN_LENGTH;
 		}
 		// are we inside the plot area
 		if (x1 >= viewLeft && x1 <= viewRight) {
 			g.drawLine(x1, y1, x2, y2);
 			String label = "" + channel;
-			g.drawString(label, x2, y2 - graphLayout.MARK_OFFSET);
+			g.drawString(label, x2, y2 - PlotGraphicsLayout.MARK_OFFSET);
 		}
 	}
 
 	void drawPeakLabels(double[][] peaks) {
 		int y1; // bottom of line
 		Color initColor = g.getColor();
-		setGraphicsFont(font.deriveFont(graphLayout.SCREEN_FONT_SIZE));
+		setGraphicsFont(font.deriveFont(PlotGraphicsLayout.SCREEN_FONT_SIZE));
 		g.setColor(COLOR_MAP.getPeakLabel());
 		for (int i = 0; i < peaks[0].length; i++) {
 			int x1 = toViewHorzLin(peaks[0][i] + 0.5);
@@ -1214,8 +1214,8 @@ final class PlotGraphics {
 		final Rectangle r = getRectangleOutline2d(p, p);
 		final String label = "" + p.getX() + "," + p.getY();
 		g.draw(r);
-		g.drawString(label, (int) r.getMaxX() + graphLayout.MARK_OFFSET, r.y
-				- graphLayout.MARK_OFFSET);
+		g.drawString(label, (int) r.getMaxX() + PlotGraphicsLayout.MARK_OFFSET, r.y
+				- PlotGraphicsLayout.MARK_OFFSET);
 	}
 
 	/*

@@ -136,7 +136,7 @@ final class PlotGraphicsLayout {
 	// fonts
 	final static transient float SCREEN_FONT_SIZE=12;
 
-	final transient float TITLE_SCREEN_SIZE=SCREEN_FONT_SIZE + 2;
+	final static float TITLE_SCREEN_SIZE=SCREEN_FONT_SIZE + 2;
 
 	class ColorScale {
 		// stuff for two d color scale

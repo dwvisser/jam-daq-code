@@ -404,8 +404,11 @@ final class Plot1d extends AbstractPlot {
 		}
 		return minCounts;
 	}
-	
-	void copy2dCounts(Histogram hist){
+	/**
+	 * 
+	 * @param hist
+	 */
+	void copy2dCounts(@SuppressWarnings("unused") Histogram hist){
 		throw new IllegalStateException("Should never be called.");
 	}
 	

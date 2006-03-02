@@ -276,10 +276,10 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		return rval;
 	}
 
-	private int getChannelMax(final int ch, final int size) {
+	private int getChannelMax(final int ch, final int sizeIn) {
 		int rval = ch;
-		if (((ch == size - 1)) && (ignoreChFull)) {
-			rval = size - 2;
+		if (((ch == sizeIn - 1)) && (ignoreChFull)) {
+			rval = sizeIn - 2;
 		}
 		return rval;
 	}
