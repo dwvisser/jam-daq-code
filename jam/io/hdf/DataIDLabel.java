@@ -51,6 +51,8 @@ final class DataIDLabel extends AbstractData {
 		bytes.putShort(object.getTag());
 		bytes.putShort(object.getRef());
 		putString(label);
+		
+		LOGGER.fine("DataIDLabel for Tag: "+object.getTag()+" Ref: "+object.getRef()+" Label: "+label);		
 	}
 
 	DataIDLabel() {
@@ -64,12 +66,12 @@ final class DataIDLabel extends AbstractData {
 	 *                thrown if there is a problem interpreting the bytes
 	 */
 	protected void interpretBytes() throws HDFException {
-		bytes.position(0);
+		bytes.position(0);		
 		final short tagType = bytes.getShort();
 		final short reference = bytes.getShort();
 		label = getString(bytes.remaining());
+		LOGGER.fine("DataIDLabel for Tag: "+tagType+" Ref: "+reference+" Label: "+label);		
 		object = getObject(TYPES.get(tagType), reference);
-		LOGGER.fine("Initialized "+toString());
 	}
 
 	/**
@@ -80,7 +82,12 @@ final class DataIDLabel extends AbstractData {
 	}
 
 	public String toString() {
-		return "(Label \"" +label+"\": "+object.toString()+')';
+		String rtnString;
+		if (object!=null)
+			rtnString= "(Label \"" +label+"\": "+object.toString()+')';
+		else 
+			rtnString= "(Label \"" +label+"\": "+"null)";
+		return rtnString;
 	}
 
 	/**

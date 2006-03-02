@@ -109,7 +109,7 @@ public abstract class AbstractData implements Constants {
 		final int refInt = ref;
 		final int key = (tagInt << 16) + refInt;
 		// Debug
-		// System.out.println(" Key tag "+tagInt+" ref "+refInt+" key "+key);
+		LOGGER.finer(" Key tag "+tagInt+" ref "+refInt+" key "+key);
 		return new Integer(key);
 	}
 

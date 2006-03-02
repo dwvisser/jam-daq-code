@@ -272,7 +272,9 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					final short tag = readShort();
 					final short ref = readShort();
 					final int offset = readInt();
-					final int length = readInt();
+					final int length = readInt();					
+					//Debug
+					LOGGER.fine("Read Tag "+tag+" ref "+ref+" offset "+offset+" length "+length );						
 					if (tag != DFTAG_NULL) {// Not an empty tag
 						// Load scientific data as last moment needed
 						if (lazyLoadData && tag == Constants.DFTAG_SD) {
@@ -387,6 +389,9 @@ public final class HDFile extends RandomAccessFile implements Constants {
 					writeShort(dataObject.getRef());
 					writeInt(dataObject.getOffset());
 					writeInt(dataObject.getBytes().capacity());
+					//Debug 
+					LOGGER.fine("Write Tag "+dataObject.getTag()+" ref "+dataObject.getRef()+" offset "+dataObject.getOffset()+" length "+dataObject.getBytes().capacity() );
+					
 				}
 			} catch (IOException e) {
 				throw new HDFException("Problem writing DD block.", e);

@@ -7,6 +7,7 @@ import jam.data.Group;
 import jam.data.Histogram;
 import jam.data.Scaler;
 import jam.data.func.AbstractCalibrationFunction;
+import jam.data.func.NoFunction;
 import jam.global.JamStatus;
 import jam.io.DataIO;
 import jam.io.FileOpenMode;
@@ -513,10 +514,10 @@ public final class HDFIO implements DataIO {
 					}
 					// Add calibrations
 					if ((writeData || wrtSettings)
-							&& hist.getDimensionality() == 1) {
+							&& hist.getDimensionality() == 1 ) {
 						final AbstractCalibrationFunction calFunc = ((AbstractHist1D) hist)
 								.getCalibration();
-						if (calFunc != null) {
+						if (!(calFunc instanceof NoFunction)) {
 							final VDataDescription calibDD = jamToHDF
 									.convertCalibration(calFunc);
 							histVGroup.add(calibDD);
