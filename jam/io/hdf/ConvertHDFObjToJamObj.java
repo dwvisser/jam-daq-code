@@ -339,7 +339,7 @@ final class ConvertHDFObjToJamObj {
 		final ScientificData sdErr = produceErrorData(ndgErr, histDim);
 		/* Given name list check that that the name is in the list. */
 		if (histAttributes == null
-				|| containsHistogramAttribute(group.getName(), name,
+				|| containsHistogramAttribute(group.getGroupName(), name,
 						histAttributes)) {
 			final HistogramAttributes attr = new HistogramAttributes(group
 					.getName(), name, title, number);
