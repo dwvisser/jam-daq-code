@@ -228,8 +228,8 @@ public final class SimulateFrontEnd extends GoodThread {
 	private void writeSimpleLOO2Events(final ShortBuffer buffer,
 			final boolean lastBuffer) {
 		// Write a LOO2 event with 2 data values
-		final short param1 = L002Parameters.EVENT_PARAMETER & 1;
-		final short param2 = L002Parameters.EVENT_PARAMETER & 2;
+		final short param1 = L002Parameters.EVENT_PARAMETER + 1;
+		final short param2 = L002Parameters.EVENT_PARAMETER + 2;
 		for (int i = 0; i < 400; i++) {
 			buffer.put(param1);
 			buffer.put((short) (500 + i));
