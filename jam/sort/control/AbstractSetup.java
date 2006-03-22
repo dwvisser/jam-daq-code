@@ -174,13 +174,20 @@ abstract class AbstractSetup {
 	
 	AbstractSetup(String dialogName) {
 		super();
+		//Jam properties needed
+		final String defInStream = JamProperties
+		.getPropString(PropertyKeys.EVENT_INSTREAM);
+		final String defOutStream = JamProperties
+		.getPropString(PropertyKeys.EVENT_OUTSTREAM);
+		final String defSortPath = JamProperties
+		.getPropString(PropertyKeys.SORT_CLASSPATH);
+		final boolean useDefault = (defSortPath
+				.equals(JamProperties.DEFAULT_SORTPATH));
+		
+		//Create GUI widgets	
 		bok = new JButton(new ApplyAction(true));
 		bapply = new JButton(new ApplyAction(false));
 		dialog = new JDialog(STATUS.getFrame(), dialogName, false);
-		final String defSortPath = JamProperties
-				.getPropString(PropertyKeys.SORT_CLASSPATH);
-		final boolean useDefault = (defSortPath
-				.equals(JamProperties.DEFAULT_SORTPATH));
 		textSortPath = new JTextField(defSortPath);
 		textSortPath.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {				
@@ -194,12 +201,7 @@ abstract class AbstractSetup {
 		specify.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (specify.isSelected()) {
-					sortChooser.setChooserDefault(false);					
-					bbrowsef.setEnabled(true);
-					textSortPath.setEnabled(true);
-					textSortPath.setEditable(true);
-					textSortPath.setText(selectedClassPath);
-
+					selectPath(specify.isSelected());
 				}
 			}
 		});
@@ -212,13 +214,7 @@ abstract class AbstractSetup {
 		defaultPath.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent event) {
 				if (defaultPath.isSelected()) {
-					sortChooser.setChooserDefault(true);					
-					bbrowsef.setEnabled(false);
-					textSortPath.setEnabled(false);
-					textSortPath.setEditable(false);					
-					selectedClassPath=textSortPath.getText();
-					textSortPath.setText("default");
-
+					selectPath(!defaultPath.isSelected());
 				}
 			}
 		});
@@ -243,10 +239,7 @@ abstract class AbstractSetup {
 		textSortPath.setColumns(35);
 		textSortPath.setEditable(false);
 		textSortPath.setEnabled(false);
-		final String defInStream = JamProperties
-		.getPropString(PropertyKeys.EVENT_INSTREAM);
-		final String defOutStream = JamProperties
-		.getPropString(PropertyKeys.EVENT_OUTSTREAM);
+		
 		final RTSI rtsi = RTSI.getSingletonInstance();
 		java.util.Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi.find(
 				"jam.sort.stream", AbstractEventInputStream.class, false));
@@ -261,8 +254,27 @@ abstract class AbstractSetup {
 		outChooser = new JComboBox(lhs.toArray());
 		outChooser.setToolTipText("Select output event format.");
 		selectName(outChooser, lhs, defOutStream);
+		selectPath(!useDefault);
 	}
 
+	protected void selectPath(boolean isSpecify)
+	{
+		if (isSpecify) {
+			sortChooser.setChooserDefault(false);					
+			bbrowsef.setEnabled(true);
+			textSortPath.setEnabled(true);
+			textSortPath.setEditable(true);
+			textSortPath.setText(selectedClassPath);
+		} else {
+			sortChooser.setChooserDefault(true);					
+			bbrowsef.setEnabled(false);
+			textSortPath.setEnabled(false);
+			textSortPath.setEditable(false);					
+			selectedClassPath=textSortPath.getText();
+			textSortPath.setText("default");
+		}
+	
+	}
 	/**
 	 * Should be called when OK or Apply is actuated.
 	 * 
