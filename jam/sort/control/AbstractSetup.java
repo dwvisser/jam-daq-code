@@ -84,16 +84,6 @@ abstract class AbstractSetup {
 	 */
 	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-	/**
-	 * Get the sort classes using the given file as the class path.
-	 * 
-	 * @param path
-	 *            class path
-	 * @return set of available sort routines
-	 */
-	static final Set<Class<?>> getSortClasses(final File path) {
-		return RTSI.getSingletonInstance().find(path, Sorter.class);
-	}
 
 	/**
 	 * Finds a class matching the given string in the collection, and attempts
@@ -180,6 +170,8 @@ abstract class AbstractSetup {
 	 */
 	protected transient final JTextField textSortPath;
 
+	protected String selectedClassPath="";
+	
 	AbstractSetup(String dialogName) {
 		super();
 		bok = new JButton(new ApplyAction(true));
@@ -190,27 +182,57 @@ abstract class AbstractSetup {
 		final boolean useDefault = (defSortPath
 				.equals(JamProperties.DEFAULT_SORTPATH));
 		textSortPath = new JTextField(defSortPath);
-		sortChooser = new SortChooser(textSortPath);
+		textSortPath.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {				
+				File sortPath=new File(textSortPath.getText());
+				sortChooser.setSortClassPath(sortPath);
+			}
+		});
+		//Radio buttons
 		specify = new JRadioButton("Specify a classpath", !useDefault);
-		specify
-				.setToolTipText("Specify a path to load your sort routine from.");
+		specify.setToolTipText("Specify a path to load your sort routine from.");
 		specify.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent itemEvent) {
 				if (specify.isSelected()) {
+					sortChooser.setChooserDefault(false);					
 					bbrowsef.setEnabled(true);
-					sortChooser.setChooserDefault(false);
 					textSortPath.setEnabled(true);
-					textSortPath.setText(textSortPath.getText());
+					textSortPath.setEditable(true);
+					textSortPath.setText(selectedClassPath);
 
 				}
 			}
 		});
+		defaultPath = new JRadioButton(
+				"Use help.* and sort.* in default classpath", useDefault);
+		defaultPath
+				.setToolTipText("Don't include your sort routines in the default"
+						+ " classpath\n if you want to be able to edit, recompile and reload "
+						+ " without first quitting Jam.");
+		defaultPath.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent event) {
+				if (defaultPath.isSelected()) {
+					sortChooser.setChooserDefault(true);					
+					bbrowsef.setEnabled(false);
+					textSortPath.setEnabled(false);
+					textSortPath.setEditable(false);					
+					selectedClassPath=textSortPath.getText();
+					textSortPath.setText("default");
+
+				}
+			}
+		});
+		
+		sortChooser = new SortChooser();
+		
 		if (!useDefault) {
 			classPath = new File(defSortPath);
 		}
 		bbrowsef.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				sortChooser.setSortClassPath(getSortPath());
+				File sortPath = getSortPath();
+				textSortPath.setText(sortPath.getPath());
+				sortChooser.setSortClassPath(sortPath);
 			}
 		});
 		bbrowsef.setEnabled(false);
@@ -221,23 +243,6 @@ abstract class AbstractSetup {
 		textSortPath.setColumns(35);
 		textSortPath.setEditable(false);
 		textSortPath.setEnabled(false);
-		defaultPath = new JRadioButton(
-				"Use help.* and sort.* in default classpath", useDefault);
-		defaultPath
-				.setToolTipText("Don't include your sort routines in the default"
-						+ " classpath if you want to be able to edit, recompile and reload them"
-						+ " without first quitting Jam.");
-		defaultPath.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent event) {
-				if (defaultPath.isSelected()) {
-					bbrowsef.setEnabled(false);
-					sortChooser.setChooserDefault(true);
-					textSortPath.setEnabled(false);
-					textSortPath.setText("default");
-
-				}
-			}
-		});
 		final String defInStream = JamProperties
 		.getPropString(PropertyKeys.EVENT_INSTREAM);
 		final String defOutStream = JamProperties

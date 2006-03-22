@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.text.JTextComponent;
 
 final class SortChooser extends JComboBox {
 
@@ -26,11 +25,8 @@ final class SortChooser extends JComboBox {
 	
 	private transient AbstractSortRoutine sortRoutine;
 
-	private transient final JTextComponent textSortPath;
-
-	SortChooser(JTextComponent textSortPath) {
+	SortChooser() {
 		super();
-		this.textSortPath = textSortPath;
 		setToolTipText("Select sort routine class");
 		addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
@@ -105,7 +101,7 @@ final class SortChooser extends JComboBox {
 			set.addAll(rtsi.find("sort", Sorter.class, true));
 			list.addAll(set);
 		} else {
-			list.addAll(AbstractSetup.getSortClasses(classPath));
+			list.addAll(getSortClasses(classPath));
 		}
 		setModel(new DefaultComboBoxModel(list.toArray()));
 		return list;
@@ -119,14 +115,23 @@ final class SortChooser extends JComboBox {
 	 */
 	protected void setSortClassPath(final File file) {
 		if (file.exists()) {
-			classPath = file;
-			setModel(new DefaultComboBoxModel(AbstractSetup.getSortClasses(
+			classPath = file;			
+			setModel(new DefaultComboBoxModel(getSortClasses(
 					classPath).toArray()));
 			if (getModel().getSize() > 0) {
 				setSelectedIndex(0);
 			}
-			textSortPath.setText(classPath.getAbsolutePath());
 		}
+	}
+	/**
+	 * Get the sort classes using the given file as the class path.
+	 * 
+	 * @param path
+	 *            class path
+	 * @return set of available sort routines
+	 */
+	private Set<Class<?>> getSortClasses(final File path) {
+		return RTSI.getSingletonInstance().find(path, Sorter.class);
 	}
 
 }
