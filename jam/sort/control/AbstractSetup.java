@@ -254,6 +254,7 @@ abstract class AbstractSetup {
 		outChooser = new JComboBox(lhs.toArray());
 		outChooser.setToolTipText("Select output event format.");
 		selectName(outChooser, lhs, defOutStream);
+		selectedClassPath=defSortPath;
 		selectPath(!useDefault);
 	}
 
