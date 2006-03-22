@@ -157,7 +157,7 @@ public final class Group implements Nameable {
 	public static boolean isValid(final Group group) {
 		boolean valid;
 		if (group !=null)
-			valid=NAME_MAP.containsValue(group.getGroupName());
+			valid=NAME_MAP.containsKey(group.getGroupName());
 		else
 			valid=false;
 		return valid;

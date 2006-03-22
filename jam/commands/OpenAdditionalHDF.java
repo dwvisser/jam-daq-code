@@ -104,14 +104,15 @@ public class OpenAdditionalHDF extends AbstractCommand implements
 		firstGroup = hdfio.getFirstLoadGroup();
 		if (firstGroup != null) {
 			STATUS.setCurrentGroup(firstGroup);
+		
+			/* Set the current histogram to the first opened histogram. */
+			if (firstGroup.getHistogramList().size() > 0) {
+				firstHist = firstGroup.getHistogramList().get(0);
+			}
+			STATUS.setCurrentHistogram(firstHist);
+			BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
+					firstHist);
 		}
-		/* Set the current histogram to the first opened histogram. */
-		if (firstGroup.getHistogramList().size() > 0) {
-			firstHist = firstGroup.getHistogramList().get(0);
-		}
-		STATUS.setCurrentHistogram(firstHist);
-		BROADCASTER.broadcast(BroadcastEvent.Command.HISTOGRAM_SELECT,
-				firstHist);
 	}
 
 	/**
