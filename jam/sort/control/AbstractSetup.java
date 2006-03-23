@@ -180,10 +180,10 @@ abstract class AbstractSetup {
 		.getPropString(PropertyKeys.SORT_CLASSPATH);
 		final boolean useDefault = (defSortPath
 				.equals(JamProperties.DEFAULT_SORTPATH));
+		final String defSortRoutine = JamProperties
+		.getPropString(PropertyKeys.SORT_ROUTINE);
 
-		if (!useDefault) {
-			specifiedClassPath = new File(defSortPath);
-		}
+		specifiedClassPath = new File(defSortPath);			
 		
 		//Create GUI widgets	
 		bok = new JButton(new ApplyAction(true));
@@ -254,6 +254,7 @@ abstract class AbstractSetup {
 		selectName(outChooser, lhs, defOutStream);
 
 		selectPath(useDefault);		
+		sortChooser.selectSortClass(defSortRoutine);
 	}
 
 	protected void selectPath(boolean useDefault)

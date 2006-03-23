@@ -99,7 +99,9 @@ final class SortChooser extends JComboBox {
 		if (isDefaultPath) {
 			listClasses.addAll(findSortClassesDefault());
 		} else {
-			listClasses.addAll(findSortClasses(classPath));
+			if (classPath.exists()) {
+				listClasses.addAll(findSortClasses(classPath));
+			}
 		}
 		
 		setModel(new DefaultComboBoxModel(listClasses.toArray()));
@@ -119,16 +121,31 @@ final class SortChooser extends JComboBox {
 	 * @param file
 	 *            path to classes
 	 */
-	protected void loadChooserClassPath(final File file) {
-		if (file.exists()) {
-			classPath = file;			
-			loadChooser(false);
-		}
+	protected void loadChooserClassPath(final File inPath) {
+		classPath = inPath;
+		loadChooser(false);
 	}
+	/**
+	 * Get a list of the classes
+	 * @return List of classes
+	 */
 	protected List<Class<?>> getClassList() {	
 		return listClasses;
 	}
 	
+	/**
+	 *  Select a sort class
+	 * @param className name of class to select 
+	 */ 
+	public void selectSortClass(String className) {
+		for (Class clazz : getClassList()) {
+			final String name = clazz.getName();
+			if (name.equals(className)) {
+				setSelectedItem(clazz);
+				break;
+			}
+		}
+	}
 	/**
 	 * Get the sort classes using the given file as the class path.
 	 * 

@@ -117,13 +117,10 @@ public final class SetupSortOn extends AbstractSetup implements
 		initDiskCheckbox();
 		final int fileTextCols = 25;
 		final String defaultName = JamProperties.getPropString(EXP_NAME);
-		final String defaultRoutine = JamProperties.getPropString(SORT_ROUTINE);
-		final String defaultSortPath = JamProperties
-				.getPropString(SORT_CLASSPATH);
 		dataFolder = new File(JamProperties.getPropString(EVENT_OUTPATH));
 		histFolder = new File(JamProperties.getPropString(HIST_PATH));
 		logDirectory = new File(JamProperties.getPropString(LOG_PATH));
-		boolean useDefaultPath = (defaultSortPath == JamProperties.DEFAULT_SORTPATH);
+
 		runControl = RunControl.getSingletonInstance();
 		consoleLog = console;
 		dialog.setResizable(false);
@@ -184,14 +181,7 @@ public final class SetupSortOn extends AbstractSetup implements
 
 		/* Class path text */
 		pEntries.add(textSortPath);
-		/* Sort classes chooser */
-		for (Class clazz : sortChooser.getClassList()) {
-			final String name = clazz.getName();
-			if (name.equals(defaultRoutine)) {
-				sortChooser.setSelectedItem(clazz);
-				break;
-			}
-		}
+
 		pEntries.add(sortChooser);
 		pEntries.add(inChooser);
 		/* Output stream classes */

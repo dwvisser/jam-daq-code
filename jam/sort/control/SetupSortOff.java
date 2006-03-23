@@ -4,8 +4,6 @@ import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
-import jam.global.JamProperties;
-import jam.global.PropertyKeys;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
@@ -66,12 +64,6 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private SetupSortOff() {
 		super("Setup Offline");
-		final String defSortRout = JamProperties
-				.getPropString(PropertyKeys.SORT_ROUTINE);
-		final String defSortPath = JamProperties
-				.getPropString(PropertyKeys.SORT_CLASSPATH);
-		final boolean useDefault = (defSortPath
-				.equals(JamProperties.DEFAULT_SORTPATH));
 		sortControl = SortControl.getInstance();
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
@@ -251,7 +243,7 @@ public final class SetupSortOff extends AbstractSetup {
 		lockMode(false);
 	}
 
-	private void selectSortRoutine(final String srName, final boolean useDefault) {
+	private void selectSortRoutine(final String srName) {
 		final java.util.List<Class<?>> sortList = sortChooser.getClassList();
 		for (Class clazz : sortList) {
 			final String name = clazz.getName();
@@ -309,7 +301,7 @@ public final class SetupSortOff extends AbstractSetup {
 	public void setupSort(final java.io.File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
 		sortChooser.loadChooserClassPath(classPath);
-		selectSortRoutine(sortName, false);
+		selectSortRoutine(sortName);
 		inChooser.setSelectedItem(inStream);
 		outChooser.setSelectedItem(outStream);
 		doApply(false);
