@@ -243,17 +243,6 @@ public final class SetupSortOff extends AbstractSetup {
 		lockMode(false);
 	}
 
-	private void selectSortRoutine(final String srName) {
-		final java.util.List<Class<?>> sortList = sortChooser.getClassList();
-		for (Class clazz : sortList) {
-			final String name = clazz.getName();
-			if (name.equals(srName)) {
-				sortChooser.setSelectedItem(clazz);
-				break;
-			}
-		}
-	}
-
 	protected void setupSort() throws SortException, JamException {
 		initializeSorter();
 		/* setup sorting */
@@ -301,7 +290,7 @@ public final class SetupSortOff extends AbstractSetup {
 	public void setupSort(final java.io.File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
 		sortChooser.loadChooserClassPath(classPath);
-		selectSortRoutine(sortName);
+		sortChooser.selectSortClass(sortName);
 		inChooser.setSelectedItem(inStream);
 		outChooser.setSelectedItem(outStream);
 		doApply(false);
