@@ -177,15 +177,15 @@ public final class SetupSortOn extends AbstractSetup implements
 				noSpace));
 		pEntries.add(pradio);
 		ButtonGroup pathType = new ButtonGroup();
-		pathType.add(defaultPath);
-		pradio.add(defaultPath);
-		pathType.add(specify);
-		pradio.add(specify);
+		pathType.add(btnDefaultPath);
+		pradio.add(btnDefaultPath);
+		pathType.add(btnSpecifyPath);
+		pradio.add(btnSpecifyPath);
 
 		/* Class path text */
 		pEntries.add(textSortPath);
 		/* Sort classes chooser */
-		for (Class clazz : sortChooser.setChooserDefault(useDefaultPath)) {
+		for (Class clazz : sortChooser.getClassList()) {
 			final String name = clazz.getName();
 			if (name.equals(defaultRoutine)) {
 				sortChooser.setSelectedItem(clazz);
@@ -244,7 +244,7 @@ public final class SetupSortOn extends AbstractSetup implements
 		pBottom.add(new javax.swing.JButton(new jam.ui.WindowCancelAction(
 				dialog)));
 		pBottom.add(checkLock);
-		sortChooser.setChooserDefault(true);
+		
 		dialog
 				.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.pack();
@@ -314,7 +314,7 @@ public final class SetupSortOn extends AbstractSetup implements
 								+ exptName);
 				/* Kill all existing Daemons and clear data areas */
 				resetAcq(false);
-				sortChooser.loadSorter(specify.isSelected()); // load sorting
+				sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load sorting
 				// routine
 				final AbstractSortRoutine sortRoutine = sortChooser
 						.getSortRoutine();
@@ -427,8 +427,8 @@ public final class SetupSortOn extends AbstractSetup implements
 		bbrowseh.setEnabled(notlock);
 		bbrowsel.setEnabled(notlock);
 		bbrowsed.setEnabled(notlock);
-		specify.setEnabled(notlock);
-		defaultPath.setEnabled(notlock);
+		btnSpecifyPath.setEnabled(notlock);
+		btnDefaultPath.setEnabled(notlock);
 		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
@@ -440,7 +440,7 @@ public final class SetupSortOn extends AbstractSetup implements
 			name = sortRoutine.getClass().getName();
 		}
 		STATUS.setSortMode(sortMode, name);
-		bbrowsef.setEnabled(notlock && specify.isSelected());
+		bbrowsef.setEnabled(notlock && btnSpecifyPath.isSelected());
 		checkLock.setSelected(lock);
 	}
 

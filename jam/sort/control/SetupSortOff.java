@@ -85,10 +85,10 @@ public final class SetupSortOff extends AbstractSetup {
 		final JPanel pradio = new JPanel(new FlowLayout(FlowLayout.CENTER,
 				space, space));
 		final ButtonGroup pathType = new ButtonGroup();
-		pathType.add(defaultPath);
-		pathType.add(specify);
-		pradio.add(defaultPath);
-		pradio.add(specify);
+		pathType.add(btnDefaultPath);
+		pathType.add(btnSpecifyPath);
+		pradio.add(btnDefaultPath);
+		pradio.add(btnSpecifyPath);
 		pNorth.add(pradio);
 		/* Labels */
 		final JPanel pLabels = new JPanel(new GridLayout(0, 1, space, space));
@@ -110,8 +110,6 @@ public final class SetupSortOff extends AbstractSetup {
 		contents.add(pEntry, BorderLayout.CENTER);
 		/* Path */
 		pEntry.add(textSortPath);
-		/* Sort class */
-		selectSortRoutine(defSortRout, useDefault);
 		pEntry.add(sortChooser);
 		pEntry.add(inChooser);
 		pEntry.add(outChooser);
@@ -152,7 +150,7 @@ public final class SetupSortOff extends AbstractSetup {
 		try {
 			if (STATUS.canSetup()) {
 				resetSort();// clear current data areas and kill daemons
-				sortChooser.loadSorter(specify.isSelected());
+				sortChooser.loadSorter(btnSpecifyPath.isSelected());
 				loadEventInput();
 				loadEventOutput();
 				final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
@@ -225,8 +223,8 @@ public final class SetupSortOff extends AbstractSetup {
 		outChooser.setEnabled(notLock);
 		bok.setEnabled(notLock);
 		bapply.setEnabled(notLock);
-		specify.setEnabled(notLock);
-		defaultPath.setEnabled(notLock);
+		btnSpecifyPath.setEnabled(notLock);
+		btnDefaultPath.setEnabled(notLock);
 		sortChooser.setEnabled(notLock);
 		if (lock) {
 			STATUS.setSortMode(SortMode.OFFLINE, sortChooser.getSortRoutine()
@@ -234,7 +232,7 @@ public final class SetupSortOff extends AbstractSetup {
 			bbrowsef.setEnabled(false);
 		} else {
 			STATUS.setSortMode(SortMode.NO_SORT, "No Sort");
-			bbrowsef.setEnabled(specify.isSelected());
+			bbrowsef.setEnabled(btnSpecifyPath.isSelected());
 		}
 	}
 
@@ -254,8 +252,7 @@ public final class SetupSortOff extends AbstractSetup {
 	}
 
 	private void selectSortRoutine(final String srName, final boolean useDefault) {
-		final java.util.List<Class<?>> sortList = sortChooser
-				.setChooserDefault(useDefault);
+		final java.util.List<Class<?>> sortList = sortChooser.getClassList();
 		for (Class clazz : sortList) {
 			final String name = clazz.getName();
 			if (name.equals(srName)) {
@@ -311,7 +308,7 @@ public final class SetupSortOff extends AbstractSetup {
 	 */
 	public void setupSort(final java.io.File classPath, final String sortName,
 			final Class inStream, final Class outStream) {
-		sortChooser.setSortClassPath(classPath);
+		sortChooser.loadChooserClassPath(classPath);
 		selectSortRoutine(sortName, false);
 		inChooser.setSelectedItem(inStream);
 		outChooser.setSelectedItem(outStream);

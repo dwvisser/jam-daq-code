@@ -418,9 +418,11 @@ public class RTSI {
 		final SortedSet<String> rval = new TreeSet<String>();
 		if (file.isDirectory()) {
 			final File[] list = file.listFiles();
-			for (int i = 0; i < list.length; i++) {
-				rval.addAll(getClassesRecursively(tosubclass, classpath,
-						list[i], loader));
+			if (list!=null) {	//In case we don't have permission
+				for (int i = 0; i < list.length; i++) {
+					rval.addAll(getClassesRecursively(tosubclass, classpath,
+							list[i], loader));
+				}
 			}
 		} else { // we are only interested in .class files
 			if (file.getName().endsWith(CLASS_EXT)) {

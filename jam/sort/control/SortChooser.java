@@ -25,6 +25,8 @@ final class SortChooser extends JComboBox {
 	
 	private transient AbstractSortRoutine sortRoutine;
 
+	final List<Class<?>> listClasses = new ArrayList<Class<?>>();	
+	
 	SortChooser() {
 		super();
 		setToolTipText("Select sort routine class");
@@ -92,37 +94,41 @@ final class SortChooser extends JComboBox {
 	 *            <code>true</code> to use the default classpath
 	 * @return a list of the available sort routines
 	 */
-	protected List<Class<?>> setChooserDefault(final boolean isDefault) {
-		final List<Class<?>> list = new ArrayList<Class<?>>();
-		if (isDefault) {
-			final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
-			final RTSI rtsi = RTSI.getSingletonInstance();
-			set.addAll(rtsi.find("help", Sorter.class, true));
-			set.addAll(rtsi.find("sort", Sorter.class, true));
-			list.addAll(set);
+	private void loadChooser(final boolean isDefaultPath) {
+		listClasses.clear();
+		if (isDefaultPath) {
+			listClasses.addAll(findSortClassesDefault());
 		} else {
-			list.addAll(getSortClasses(classPath));
+			listClasses.addAll(findSortClasses(classPath));
 		}
-		setModel(new DefaultComboBoxModel(list.toArray()));
-		return list;
+		
+		setModel(new DefaultComboBoxModel(listClasses.toArray()));
+		
+		if (getModel().getSize() > 0) {
+			setSelectedIndex(0);
+		}
+
 	}
 
+	protected void loadChooserDefault() {
+		loadChooser(true);
+	}
 	/**
 	 * Sets the class path for loading sort routines.
 	 * 
 	 * @param file
 	 *            path to classes
 	 */
-	protected void setSortClassPath(final File file) {
+	protected void loadChooserClassPath(final File file) {
 		if (file.exists()) {
 			classPath = file;			
-			setModel(new DefaultComboBoxModel(getSortClasses(
-					classPath).toArray()));
-			if (getModel().getSize() > 0) {
-				setSelectedIndex(0);
-			}
+			loadChooser(false);
 		}
 	}
+	protected List<Class<?>> getClassList() {	
+		return listClasses;
+	}
+	
 	/**
 	 * Get the sort classes using the given file as the class path.
 	 * 
@@ -130,8 +136,21 @@ final class SortChooser extends JComboBox {
 	 *            class path
 	 * @return set of available sort routines
 	 */
-	private Set<Class<?>> getSortClasses(final File path) {
-		return RTSI.getSingletonInstance().find(path, Sorter.class);
+	private Set<Class<?>> findSortClasses(final File path) {
+		final RTSI rtsi = RTSI.getSingletonInstance();
+		return rtsi.find(path, Sorter.class);
+	}
+	/**
+	 * Get the sort classes using the default class path.
+	 * 
+	 * @return set of available sort routines
+	 */
+	private Set<Class<?>> findSortClassesDefault() {
+		final Set<Class<?>> set = new LinkedHashSet<Class<?>>();
+		final RTSI rtsi = RTSI.getSingletonInstance();
+		set.addAll(rtsi.find("help", Sorter.class, true));
+		set.addAll(rtsi.find("sort", Sorter.class, true));
+		return set;
 	}
 
 }
