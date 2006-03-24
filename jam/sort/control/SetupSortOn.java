@@ -5,6 +5,7 @@ import static java.util.logging.Level.SEVERE;
 import static javax.swing.SwingConstants.RIGHT;
 import jam.JamException;
 import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.global.SortMode;
 import jam.sort.AbstractSortRoutine;
 import jam.sort.DiskDaemon;
@@ -46,8 +47,7 @@ import javax.swing.border.EmptyBorder;
  * @see jam.sort.NetDaemon
  * @see jam.sort.AbstractStorageDaemon
  */
-public final class SetupSortOn extends AbstractSetup implements
-		jam.global.PropertyKeys {
+public final class SetupSortOn extends AbstractSetup {
 
 	private static SetupSortOn instance = null;
 
@@ -111,16 +111,22 @@ public final class SetupSortOn extends AbstractSetup implements
 	private transient final JTextField textExpName, textPathHist, textPathData,
 			textPathLog;
 
+	private String hostDataIP;
+	
+	private int hostDataPort;
+	
 	private SetupSortOn(ConsoleLog console) {
 		super("Setup Online");
 		initCheckLock();
 		initDiskCheckbox();
 		final int fileTextCols = 25;
-		final String defaultName = JamProperties.getPropString(EXP_NAME);
-		dataFolder = new File(JamProperties.getPropString(EVENT_OUTPATH));
-		histFolder = new File(JamProperties.getPropString(HIST_PATH));
-		logDirectory = new File(JamProperties.getPropString(LOG_PATH));
-
+		final String defaultName = JamProperties.getPropString(PropertyKeys.EXP_NAME);
+		dataFolder = new File(JamProperties.getPropString(PropertyKeys.EVENT_OUTPATH));
+		histFolder = new File(JamProperties.getPropString(PropertyKeys.HIST_PATH));
+		logDirectory = new File(JamProperties.getPropString(PropertyKeys.LOG_PATH));
+		hostDataIP=JamProperties.getPropString(PropertyKeys.HOST_DATA_IP); 
+		hostDataPort=JamProperties.getPropInt(PropertyKeys.HOST_DATA_P_RECV);
+		
 		runControl = RunControl.getSingletonInstance();
 		consoleLog = console;
 		dialog.setResizable(false);
@@ -519,9 +525,8 @@ public final class SetupSortOn extends AbstractSetup implements
 			diskDaemon.setRingBuffer(storageRing);
 		}
 		/* Create the net daemon. */
-		netDaemon = new NetDaemon(sortingRing, storageRing, JamProperties
-				.getPropString(HOST_DATA_IP), JamProperties
-				.getPropInt(HOST_DATA_P_RECV));
+		netDaemon = new NetDaemon(sortingRing, storageRing, hostDataIP, hostDataPort);
+		
 		/* Tell control about everything. */
 		runControl.setupOn(exptName, dataFolder, histFolder, sortDaemon,
 				netDaemon, diskDaemon);

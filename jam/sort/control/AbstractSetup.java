@@ -21,6 +21,7 @@ import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -82,29 +83,6 @@ abstract class AbstractSetup {
 	 */
 	protected static final JamStatus STATUS = JamStatus.getSingletonInstance();
 
-
-	/**
-	 * Finds a class matching the given string in the collection, and attempts
-	 * to select it from the chooser.
-	 * 
-	 * @param jcb
-	 *            chooser
-	 * @param collection
-	 *            of <code>Class</code> objects
-	 * @param defInStream
-	 *            name of class to try to select
-	 */
-	protected static void selectName(final JComboBox jcb,
-			final Collection<Class<?>> collection, final String defInStream) {
-		for (Class clazz : collection) {
-			final String name = clazz.getName();
-			final boolean match = name.equals(defInStream);
-			if (match) {
-				jcb.setSelectedItem(clazz);
-				break;
-			}
-		}
-	}
 
 	/**
 	 * Apply button.
@@ -237,21 +215,18 @@ abstract class AbstractSetup {
 		textSortPath.setColumns(35);
 		textSortPath.setEditable(false);
 		textSortPath.setEnabled(false);
-		
-		final RTSI rtsi = RTSI.getSingletonInstance();
-		java.util.Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi.find(
-				"jam.sort.stream", AbstractEventInputStream.class, false));
-		lhs.remove(AbstractEventInputStream.class);
-		inChooser = new JComboBox(lhs.toArray());
+
+		//Input streams
+		Set<Class<?>> inStreams=getClasses("jam.sort.stream", AbstractEventInputStream.class);		
+		inChooser = new JComboBox(inStreams.toArray());
 		inChooser.setToolTipText("Select input event data format.");
-		selectName(inChooser, lhs, defInStream);
-		// Output stream
-		lhs = new LinkedHashSet<Class<?>>(rtsi.find("jam.sort.stream",
-				AbstractEventOutputStream.class, false));
-		lhs.remove(AbstractEventOutputStream.class);
-		outChooser = new JComboBox(lhs.toArray());
+		selectName(inChooser, inStreams, defInStream);
+		
+		// Output streams
+		Set<Class<?>> outStreams=getClasses("jam.sort.stream", AbstractEventOutputStream.class);		
+		outChooser = new JComboBox(outStreams.toArray());
 		outChooser.setToolTipText("Select output event format.");
-		selectName(outChooser, lhs, defOutStream);
+		selectName(outChooser, outStreams, defOutStream);
 
 		selectPath(useDefault);		
 		sortChooser.selectSortClass(defSortRoutine);
@@ -352,8 +327,39 @@ abstract class AbstractSetup {
 		/* setup scaler, parameter, monitors, gate, dialog boxes */
 		AbstractControl.setupAll();
 	}
-
-
+	
+	/**
+	 * Get list of classes implemented a interface
+	 */
+	private Set<Class<?>> getClasses(String inPackage, Class inClass) {
+		final RTSI rtsi = RTSI.getSingletonInstance();
+		Set<Class<?>> lhs = new java.util.LinkedHashSet<Class<?>>(rtsi.find(
+				inPackage, inClass, false));
+		lhs.remove(inClass);		
+		return lhs;
+	}
+	/**
+	 * Finds a class matching the given string in the collection, and attempts
+	 * to select it from the chooser.
+	 * 
+	 * @param jcb
+	 *            chooser
+	 * @param collection
+	 *            of <code>Class</code> objects
+	 * @param defInStream
+	 *            name of class to try to select
+	 */
+	protected  void selectName(final JComboBox jcb,
+			final Collection<Class<?>> collection, final String defInStream) {
+		for (Class clazz : collection) {
+			final String name = clazz.getName(); 
+			if (name.equals(defInStream)) {
+				jcb.setSelectedItem(clazz);
+				break;
+			}
+		}
+	}
+	
 	/**
 	 * Locks up the setup so the fields cannot be edited.
 	 * 

@@ -4,6 +4,8 @@ import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
+import jam.global.JamProperties;
+import jam.global.PropertyKeys;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
@@ -62,8 +64,11 @@ public final class SetupSortOff extends AbstractSetup {
 
 	private transient SortDaemon sortDaemon;
 
+
 	private SetupSortOff() {
 		super("Setup Offline");
+		
+		//Build GUI
 		sortControl = SortControl.getInstance();
 		final java.awt.Container contents = dialog.getContentPane();
 		dialog.setResizable(false);
