@@ -111,7 +111,7 @@ public final class Script implements Observer {
 	 *            e.g., <code>jam.sort.stream.YaleInputStream.class</code>
 	 * @param outStream
 	 *            e.g., <code>jam.sort.stream.YaleOutputStream.class</code>
-	 * @see jam.sort.AbstractSortRoutine
+	 * @see jam.sort.SortRoutine
 	 * @see jam.sort.stream.AbstractEventInputStream
 	 * @see jam.sort.stream.AbstractEventOutputStream
 	 */
@@ -190,7 +190,7 @@ public final class Script implements Observer {
 	 * 
 	 * @param eventsOut
 	 *            where to write "pre-sort" events
-	 * @see jam.sort.AbstractSortRoutine#writeEvent(int [])
+	 * @see jam.sort.SortRoutine#writeEvent(int [])
 	 * @throws IllegalStateException
 	 *             if <code>setupOffline()</code> hasn't been called yet
 	 */

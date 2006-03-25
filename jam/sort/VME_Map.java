@@ -17,7 +17,7 @@ public final class VME_Map {
 	/* contains all event parameters */
 	private transient final List<VME_Channel> eventParams = new ArrayList<VME_Channel>();
 
-	private transient final AbstractSortRoutine sortRoutine;
+	private transient final SortRoutine sortRoutine;
 
 	private transient int interval = 1;// interval in milliseconds for the VME
 										// to
@@ -36,7 +36,7 @@ public final class VME_Map {
 	 * @param sorter
 	 *            the owner of this map
 	 */
-	VME_Map(AbstractSortRoutine sorter) {
+	VME_Map(SortRoutine sorter) {
 		super();
 		sortRoutine = sorter;
 		messages.append(sortRoutine.getClass().getName());

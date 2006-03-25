@@ -23,7 +23,7 @@ import java.util.List;
  * <li>clear</li>
  * </ul>
  * 
- * @see jam.sort.AbstractSortRoutine#cnafCommands
+ * @see jam.sort.SortRoutine#cnafCommands
  */
 public class CamacCommands {
 	private transient final List<CNAF> eventCmds = new ArrayList<CNAF>();
@@ -34,7 +34,7 @@ public class CamacCommands {
 
 	private transient final List<CNAF> clearCmds = new ArrayList<CNAF>();
 
-	private transient final AbstractSortRoutine sortRoutine;
+	private transient final SortRoutine sortRoutine;
 
 	private transient int eventSize = 0;
 
@@ -117,9 +117,9 @@ public class CamacCommands {
 	 * 
 	 * @param sorter
 	 *            <code>AbstractSortRoutine</code> to which this object belongs
-	 * @see jam.sort.AbstractSortRoutine#cnafCommands
+	 * @see jam.sort.SortRoutine#cnafCommands
 	 */
-	public CamacCommands(AbstractSortRoutine sorter) {
+	public CamacCommands(SortRoutine sorter) {
 		super();
 		sortRoutine = sorter;
 	}

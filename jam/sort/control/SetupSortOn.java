@@ -7,7 +7,7 @@ import jam.JamException;
 import jam.global.JamProperties;
 import jam.global.PropertyKeys;
 import jam.global.SortMode;
-import jam.sort.AbstractSortRoutine;
+import jam.sort.SortRoutine;
 import jam.sort.DiskDaemon;
 import jam.sort.EventSizeMode;
 import jam.sort.NetDaemon;
@@ -312,7 +312,7 @@ public final class SetupSortOn extends AbstractSetup {
 				resetAcq(false);
 				sortChooser.loadSorter(btnSpecifyPath.isSelected()); // load sorting
 				// routine
-				final AbstractSortRoutine sortRoutine = sortChooser
+				final SortRoutine sortRoutine = sortChooser
 						.getSortRoutine();
 				if (sortRoutine != null) {
 					lockMode(true);
@@ -428,7 +428,7 @@ public final class SetupSortOn extends AbstractSetup {
 		final SortMode sortMode = notlock ? SortMode.NO_SORT : (cdisk
 				.isSelected() ? SortMode.ONLINE_DISK : SortMode.ON_NO_DISK);
 		final String name;
-		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		if (sortRoutine == null) {
 			// instead of conditional assign to avoid PMD warning
 			name = "No Data";
@@ -494,7 +494,7 @@ public final class SetupSortOn extends AbstractSetup {
 					+ ": illegal access to EventInputStream: "
 					+ inChooser.getSelectedItem());
 		}
-		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		try { // create new event input stream class
 			outStream = (jam.sort.stream.AbstractEventOutputStream) ((Class) outChooser
 					.getSelectedItem()).newInstance();

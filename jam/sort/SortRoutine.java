@@ -43,7 +43,7 @@ import jam.sort.stream.AbstractEventOutputStream;
  * @see jam.data.Monitor
  * @see jam.data.Gate
  */
-public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender {
+public abstract class SortRoutine implements Sorter, Beginner, Ender {
 
 	/**
 	 * constant to define a 1d histogram type int
@@ -314,7 +314,7 @@ public abstract class AbstractSortRoutine implements Sorter, Beginner, Ender {
 	/**
 	 * Creates a new sort routine object.
 	 */
-	public AbstractSortRoutine() {
+	public SortRoutine() {
 		super();
 		setWriteEnabled(false);
 		cnafCommands = new CamacCommands(this);
