@@ -4,13 +4,11 @@ import jam.JamException;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.GoodThread;
-import jam.global.JamProperties;
-import jam.global.PropertyKeys;
 import jam.global.SortMode;
 import jam.sort.DiskDaemon;
 import jam.sort.SortDaemon;
 import jam.sort.SortException;
-import jam.sort.AbstractSortRoutine;
+import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -39,7 +37,7 @@ import javax.swing.border.EmptyBorder;
  */
 public final class SetupSortOff extends AbstractSetup {
 
-	private static SetupSortOff instance = null;
+	private static SetupSortOff instance = new SetupSortOff();
 
 	private final static String SETUP_LOCKED = "Setup Locked";
 
@@ -49,9 +47,9 @@ public final class SetupSortOff extends AbstractSetup {
 	 * @return the only instance of this class
 	 */
 	public static SetupSortOff getInstance() {
-		if (instance == null) {
-			instance = new SetupSortOff();
-		}
+//		if (instance == null) {
+//			instance = new SetupSortOff();
+//		}
 		return instance;
 	}
 
@@ -150,7 +148,7 @@ public final class SetupSortOff extends AbstractSetup {
 				sortChooser.loadSorter(btnSpecifyPath.isSelected());
 				loadEventInput();
 				loadEventOutput();
-				final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
+				final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 				LOGGER.info("Loaded sort class '"
 						+ sortRoutine.getClass().getName()
 						+ "', event instream class '"
@@ -254,7 +252,7 @@ public final class SetupSortOff extends AbstractSetup {
 		synchronized (this) {
 			sortDaemon = new SortDaemon(sortControl);
 		}
-		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		sortDaemon.setup(inStream, sortRoutine.getEventSize());
 		sortDaemon.setSorter(sortRoutine);
 		/* eventInputStream to use get event size from sorting routine */
