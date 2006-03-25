@@ -10,7 +10,7 @@ import jam.global.JamStatus;
 import jam.global.PropertyKeys;
 import jam.global.RTSI;
 import jam.sort.SortException;
-import jam.sort.AbstractSortRoutine;
+import jam.sort.SortRoutine;
 import jam.sort.stream.AbstractEventInputStream;
 import jam.sort.stream.AbstractEventOutputStream;
 
@@ -20,7 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -232,7 +231,7 @@ abstract class AbstractSetup {
 		sortChooser.selectSortClass(defSortRoutine);
 	}
 
-	protected void selectPath(boolean useDefault)
+	protected final void selectPath(boolean useDefault)
 	{
 		if (useDefault) {
 			bbrowsef.setEnabled(false);
@@ -294,7 +293,7 @@ abstract class AbstractSetup {
 	 */
 	protected final void initializeSorter() throws JamException {
 		final StringBuffer message = new StringBuffer();
-		final AbstractSortRoutine sortRoutine = sortChooser.getSortRoutine();
+		final SortRoutine sortRoutine = sortChooser.getSortRoutine();
 		final String sortName = sortRoutine.getClass().getName();
 		try {
 			sortRoutine.initialize();
@@ -349,7 +348,7 @@ abstract class AbstractSetup {
 	 * @param defInStream
 	 *            name of class to try to select
 	 */
-	protected  void selectName(final JComboBox jcb,
+	protected final void selectName(final JComboBox jcb,
 			final Collection<Class<?>> collection, final String defInStream) {
 		for (Class clazz : collection) {
 			final String name = clazz.getName(); 
