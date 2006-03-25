@@ -48,11 +48,10 @@ public final class GainCalibration {
 	 * @see #adjustExact(int, int)
 	 */
 	public int adjust(final int param, final int value) {
-		final Integer key = new Integer(param);
 		int rval = suppress ? 0 : value;
-		if (gains.containsKey(key) && offsets.containsKey(key)) {
-			final double gain = ((Number) gains.get(key)).doubleValue();
-			final double offset = ((Number) gains.get(key)).doubleValue();
+		if (gains.containsKey(param) && offsets.containsKey(param)) {
+			final double gain = ((Number) gains.get(param)).doubleValue();
+			final double offset = ((Number) gains.get(param)).doubleValue();
 			final double randomOffset = (Math.random() - 0.5) * gain;
 			final double dval = gain * value + offset + randomOffset;
 			rval = (int) Math.round(dval);
@@ -72,11 +71,10 @@ public final class GainCalibration {
 	 * @return exact gain-adjusted value
 	 */
 	public double adjustExact(final int param, final int value) {
-		final Integer key = new Integer(param);
 		double rval = suppress ? 0 : value;
-		if (gains.containsKey(key) && offsets.containsKey(key)) {
-			final double gain = gains.get(key);
-			final double offset = offsets.get(key);
+		if (gains.containsKey(param) && offsets.containsKey(param)) {
+			final double gain = gains.get(param);
+			final double offset = offsets.get(param);
 			rval = gain * value + offset;
 		}
 		return rval;
