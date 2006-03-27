@@ -199,14 +199,19 @@ public final class SimulateFrontEnd extends GoodThread {
 				try {
 					while (waitRunState()) {
 						while (isRunState()) {
-							LOGGER.info("Data Send");
 							createDataPacket(buffer, false);
 							packetIn
 									.setData(bufferArray, 0, bufferArray.length);
 							socketData.send(packetIn);
+							LOGGER.info("Data Buffer Sent");							
 							sleep(1000); // sleep for a second
-						}
+						}						
+						//Create end of run packet
 						createDataPacket(buffer, true);
+						packetIn.setData(bufferArray, 0, bufferArray.length);
+						socketData.send(packetIn);
+						LOGGER.info("End Run Buffer Sent");						
+						
 					}
 
 				} catch (InterruptedException ie) {
@@ -226,7 +231,7 @@ public final class SimulateFrontEnd extends GoodThread {
 	}
 
 	private void writeSimpleLOO2Events(final ShortBuffer buffer,
-			final boolean lastBuffer) {
+			final boolean endRunBuffer) {
 		// Write a LOO2 event with 2 data values
 		final short param1 = L002Parameters.EVENT_PARAMETER + 1;
 		final short param2 = L002Parameters.EVENT_PARAMETER + 2;
@@ -237,10 +242,8 @@ public final class SimulateFrontEnd extends GoodThread {
 			buffer.put((short) (500 + i + 4));
 			buffer.put(L002Parameters.EVENT_END_MARKER);
 		}
-		buffer.put((short) 0xFFF0);
-		buffer.put((short) 0xFFF0);
 		// Pad buffer
-		final short packWord = lastBuffer ? L002Parameters.RUN_END_MARKER
+		final short packWord = endRunBuffer ? L002Parameters.RUN_END_MARKER
 				: L002Parameters.BUFFER_END_MARKER;
 		while (buffer.remaining() > 0) {
 			buffer.put(packWord);
