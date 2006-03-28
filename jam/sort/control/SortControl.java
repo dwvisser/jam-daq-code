@@ -59,10 +59,30 @@ public final class SortControl extends javax.swing.JDialog implements
 		return instance;
 	}
 
+	/** check box for writing out events */
+	private transient final JCheckBox cout;
+	
+	/** Text field for output file */
+	private transient final JTextField textOutFile;	
 	/**
 	 * button to get file brower
 	 */
 	private transient final JButton bbrowse;
+
+	private transient File fileOut, lastFile, outDirectory;
+	
+	/* daemon threads */
+	private transient AbstractStorageDaemon inputDaemon;
+
+	private transient final MultipleFileChooser multiFile;
+
+	private transient AbstractStorageDaemon outputDaemon;
+
+	private transient SortDaemon sortDaemon;
+
+
+	private transient boolean writeEvents;
+	
 
 	private transient final Action beginAction = new AbstractAction() {
 		{// NOPMD
@@ -78,10 +98,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		}
 	};
 
-	/** check box for writing out events */
-	private transient final JCheckBox cout;
-
-	private transient File fileOut, lastFile, outDirectory;
 
 	private transient final Action haltAction = new AbstractAction() {
 		{// NOPMD
@@ -96,21 +112,6 @@ public final class SortControl extends javax.swing.JDialog implements
 		}
 	};
 
-	/* daemon threads */
-	private transient AbstractStorageDaemon inputDaemon;
-
-	private transient final MultipleFileChooser multiFile;
-
-	private transient AbstractStorageDaemon outputDaemon;
-
-	private transient SortDaemon sortDaemon;
-
-	/**
-	 * Text field for output file
-	 */
-	private transient final JTextField textOutFile;
-
-	private transient boolean writeEvents;
 
 	private SortControl() {
 		super(STATUS.getFrame(), "Sorting", false);
