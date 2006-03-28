@@ -41,7 +41,7 @@ public class SortDaemon extends GoodThread {
 
 	private transient final Controller controller;
 
-	private transient boolean endSort = false;
+	private transient boolean endSort;
 
 	private int eventCount;
 
@@ -86,6 +86,19 @@ public class SortDaemon extends GoodThread {
 			osc = true;
 		}
 	}
+	
+	private void resumeOfflineSorting() {
+		synchronized (offlineSortLock) {
+			osc = false;
+		}
+	}
+	
+	private boolean offlineSortingCanceled() {
+		synchronized (offlineSortLock) {
+			return osc;
+		}
+	}
+
 
 	/**
 	 * Returns whether we are caught up in the ring buffer.
@@ -238,17 +251,6 @@ public class SortDaemon extends GoodThread {
 		}
 	}
 
-	private boolean offlineSortingCanceled() {
-		synchronized (offlineSortLock) {
-			return osc;
-		}
-	}
-
-	private void resumeOfflineSorting() {
-		synchronized (offlineSortLock) {
-			osc = false;
-		}
-	}
 
 	/**
 	 * Reads events from the event stream.
@@ -392,14 +394,16 @@ public class SortDaemon extends GoodThread {
 		final SortControl sortControl = (SortControl) controller;
 		final int[] eventData = new int[eventSize];
 		EventInputStatus status = EventInputStatus.IGNORE;
+
 		/*
 		 * Next statement causes checkState() to immediately suspend this
 		 * thread.
 		 */
-		sortControl.atSortStart();
+		setState(GoodThread.State.SUSPEND);
 		while (checkState()) {// checkstate loop
+			endSort = false;			
 			/* suspends this thread when we're done sorting all files */
-			sortControl.atSortStart();
+			setState(GoodThread.State.SUSPEND);
 			resumeOfflineSorting();// after we come out of suspend
 			/* Loop for each new sort file. */
 			while (!offlineSortingCanceled() && sortControl.openNextFile()) {
