@@ -86,13 +86,18 @@ public class SortDaemon extends GoodThread {
 			osc = true;
 		}
 	}
-	
+	/**
+	 * Called to resume sort
+	 */
 	private void resumeOfflineSorting() {
 		synchronized (offlineSortLock) {
 			osc = false;
 		}
 	}
-	
+	/**
+	 * Called to check if sort was canceled.
+	 * @return
+	 */
 	private boolean offlineSortingCanceled() {
 		synchronized (offlineSortLock) {
 			return osc;
