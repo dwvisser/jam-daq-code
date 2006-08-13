@@ -196,7 +196,7 @@ final class ConvertHDFObjToJamObj {
 		final List<DataIDAnnotation> annotations = AbstractData
 				.ofType(DataIDAnnotation.class);
 		if (gates != null) {
-			gateLoop: for (AbstractData data : gates.getObjects()) {
+			for (AbstractData data : gates.getObjects()) {
 				final VirtualGroup currVG = (VirtualGroup) data;
 				final String hname = DataIDAnnotation.withTagRef(annotations,
 						VirtualGroup.class, currVG.getRef()).getNote();
