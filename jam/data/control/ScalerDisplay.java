@@ -32,6 +32,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 
 /**
  * Reads and displays the scaler values.
@@ -202,9 +203,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 				|| (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)
 				|| (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT)) {
 			doSetup();
-
 		}
-
 		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
 			displayScalers();
 		}
@@ -218,7 +217,12 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		if (Group.isValid(currentGroup)) {
 			int count = 0;
 			for (Scaler currentScaler : currentGroup.getScalerList()) {
-				textScaler[count].setText(String.valueOf(currentScaler
+				final JTextComponent text = textScaler[count];
+				if (text==null){
+					throw new IllegalStateException(
+							"Text fields don't exist for scalers when they should.");
+				}
+				text.setText(String.valueOf(currentScaler
 						.getValue()));
 				count++;
 			}
