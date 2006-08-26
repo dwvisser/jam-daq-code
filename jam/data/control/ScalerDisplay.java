@@ -48,7 +48,7 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 
 	private final JPanel pScalers;
 
-	private JTextField[] textScaler;
+	private JTextField[] textScaler = new JTextField[0];
 
 	private final int borderHeight = 5;
 
@@ -57,6 +57,8 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
 
 	private final JamStatus status = JamStatus.getSingletonInstance();
+
+	private final Object monitor = new Object();
 
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
@@ -126,58 +128,49 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * initializing a sort routine.
 	 */
 	public void doSetup() {
-		final Group currentGroup = (Group) status.getCurrentGroup();
-		if (Group.isValid(currentGroup)) {
-			JPanel panelS = null;
-			final List<Scaler> scalerList = currentGroup.getScalerList();
-			final int numberScalers = scalerList.size();
-			pScalers.removeAll();
-			if (numberScalers != 0) { // we have some elements in the scaler
-										// list
+		synchronized (monitor) {
+			final Group currentGroup = (Group) status.getCurrentGroup();
+			if (Group.isValid(currentGroup)) {
+				JPanel panelS = null;
+				final List<Scaler> scalerList = currentGroup.getScalerList();
+				final int numberScalers = scalerList.size();
+				pScalers.removeAll();
 				textScaler = new JTextField[numberScalers];
-				int count = 0;
-				for (Scaler currentScaler : scalerList) {
-					/* right justified, hgap, vgap */
-					panelS = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-					final JLabel labelScaler = new JLabel(currentScaler
-							.getName().trim(), SwingConstants.RIGHT);
-					textScaler[count] = new JTextField("  ");
-					textScaler[count].setColumns(12);
-					textScaler[count].setEditable(false);
-					textScaler[count].setText(String.valueOf(currentScaler
-							.getValue()));
-					panelS.add(labelScaler);
-					panelS.add(textScaler[count]);
-					pScalers.add(panelS);
-					count++;
+				if (numberScalers != 0) { // we have some elements in the
+											// scaler
+					// list
+					int count = 0;
+					for (Scaler currentScaler : scalerList) {
+						/* right justified, hgap, vgap */
+						panelS = new JPanel(new FlowLayout(FlowLayout.RIGHT,
+								10, 0));
+						final JLabel labelScaler = new JLabel(currentScaler
+								.getName().trim(), SwingConstants.RIGHT);
+						textScaler[count] = new JTextField("  ");
+						textScaler[count].setColumns(12);
+						textScaler[count].setEditable(false);
+						textScaler[count].setText(String.valueOf(currentScaler
+								.getValue()));
+						panelS.add(labelScaler);
+						panelS.add(textScaler[count]);
+						pScalers.add(panelS);
+						count++;
+					}
 				}
+				pack();
+				if (numberScalers > 0) {
+					final Dimension dialogDim = calculateScrollDialogSize(this,
+							panelS, borderHeight, numberScalers);
+					setSize(dialogDim);
+				}
+				displayScalers();
 			}
-			pack();
-			if (numberScalers > 0) {
-				final Dimension dialogDim = calculateScrollDialogSize(this,
-						panelS, borderHeight, numberScalers);
-				setSize(dialogDim);
-			}
-			displayScalers();
-		}
-	}
-
-	/**
-	 * Sets the text fields in the scaler display dialog box.
-	 * 
-	 * @param scalValue
-	 *            array of scaler values, which <b>must </b> map to the array of
-	 *            text fields in the dialog box
-	 */
-	public void setScalers(int[] scalValue) {
-		for (int i = 0; i < scalValue.length; i++) {
-			textScaler[i].setText(String.valueOf(scalValue[i]));
 		}
 	}
 
 	/**
 	 * Read the scaler values send out command to read scalers which sould be
-	 * recieved by VMECommunication VME should then send a command to CAMAC to
+	 * received by VMECommunication VME should then send a command to CAMAC to
 	 * read the scalers, when VME recieves back the scaler values it calls
 	 * Distribute event which will call our update method.
 	 */
@@ -213,18 +206,23 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * Get the values from the Scalers and display them
 	 */
 	public void displayScalers() {
-		final Group currentGroup = (Group) status.getCurrentGroup();
-		if (Group.isValid(currentGroup)) {
-			int count = 0;
-			for (Scaler currentScaler : currentGroup.getScalerList()) {
-				final JTextComponent text = textScaler[count];
-				if (text==null){
-					throw new IllegalStateException(
-							"Text fields don't exist for scalers when they should.");
+		synchronized (monitor) {
+			final Group currentGroup = (Group) status.getCurrentGroup();
+			if (Group.isValid(currentGroup)) {
+				List<Scaler> scalerList = currentGroup.getScalerList();
+				if (textScaler.length != scalerList.size()) {
+					doSetup();
 				}
-				text.setText(String.valueOf(currentScaler
-						.getValue()));
-				count++;
+				int count = 0;
+				for (Scaler currentScaler : currentGroup.getScalerList()) {
+					final JTextComponent text = textScaler[count];
+					if (text == null) {
+						throw new IllegalStateException(
+								"Text fields don't exist for scalers when they should.");
+					}
+					text.setText(String.valueOf(currentScaler.getValue()));
+					count++;
+				}
 			}
 		}
 	}
