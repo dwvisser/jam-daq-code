@@ -13,7 +13,7 @@
 	<property name = "winlib" value="${windows}/lib" />
 	<property name = "MAJOR" value="2" />
 	<property name = "MINOR" value="4" />
-	<property name = "RELEASE" value="4" />
+	<property name = "RELEASE" value="5" />
 	<property name = "SOURCE_GUID" value="858b9da7-5471-4c5e-bc12-15ad987aebdc" />
 	<property name = "LIB_GUID" value="e7c01541-daf8-4198-b56f-6d0cdccc7bd7" />
 	<property name = "BIN_GUID" value="f9ed19ba-bc1c-4dda-9855-7d30176f118f" />
