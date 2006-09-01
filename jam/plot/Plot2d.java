@@ -42,15 +42,14 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 	private static final String X_LABEL_2D = "Channels";
 
 	private static final String Y_LABEL_2D = "Channels";
-	
+
 	/**
 	 * Creates a Plot object for displaying 2D histograms.
 	 */
 	Plot2d() {
 		super();
 		COLOR_PREFS.addPreferenceChangeListener(this);
-		setSmoothColorScale(PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE,
-				true));
+		setSmoothColorScale(PREFS.getBoolean(ColorPrefs.SMOOTH_SCALE, true));
 	}
 
 	public void preferenceChange(PreferenceChangeEvent pce) {
@@ -90,8 +89,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		final Graphics2D g = (Graphics2D) gc;
 		g.setColor(plotColorMap.getArea());
 		synchronized (lastMovePoint) {
-			graph.markArea2dOutline(selectStart, Bin
-					.create(lastMovePoint));
+			graph.markArea2dOutline(selectStart, Bin.create(lastMovePoint));
 		}
 		panel.setMouseMoved(false);
 		clearSelectingAreaClip();
@@ -164,8 +162,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 				pointsGate.npoints--;// effectively removes last point
 				if ((pointsGate.npoints > 0)) {// go back a point
 					final int last = pointsGate.npoints - 1;
-					final Bin lpoint = Bin.create(
-							pointsGate.xpoints[last], pointsGate.ypoints[last]);
+					final Bin lpoint = Bin.create(pointsGate.xpoints[last],
+							pointsGate.ypoints[last]);
 					/* update variables */
 					final Point tempP = graph.toViewLin(lpoint);
 					setLastGatePoint(tempP);
@@ -309,7 +307,7 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		}
 		return minCounts;
 	}
-	
+
 	private final Rectangle clipBounds = new Rectangle();
 
 	/**
@@ -396,21 +394,23 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		final Polygon gatePoints = currentGate.getBananaGate();
 		if (gatePoints != null) {
 			final int numberPoints = gatePoints.npoints;
-			graph.clipPlot();
-			final int lastI = numberPoints - 1;
-			for (int i = 0; i < lastI; i++) {
-				final int x1 = gatePoints.xpoints[i];
-				final int y1 = gatePoints.ypoints[i];
-				final int x2 = gatePoints.xpoints[i + 1];
-				final int y2 = gatePoints.ypoints[i + 1];
-				graph.drawDataLine(x1, y1, x2, y2);
-			}
-			if (gatePoints.xpoints[0] != gatePoints.xpoints[lastI]) {
-				final int x1 = gatePoints.xpoints[0];
-				final int y1 = gatePoints.ypoints[0];
-				final int x2 = gatePoints.xpoints[lastI];
-				final int y2 = gatePoints.ypoints[lastI];
-				graph.drawDataLine(x1, y1, x2, y2);
+			if (numberPoints > 0) {//avoids negative array indices
+				graph.clipPlot();
+				final int lastI = numberPoints - 1;
+				for (int i = 0; i < lastI; i++) {
+					final int x1 = gatePoints.xpoints[i];
+					final int y1 = gatePoints.ypoints[i];
+					final int x2 = gatePoints.xpoints[i + 1];
+					final int y2 = gatePoints.ypoints[i + 1];
+					graph.drawDataLine(x1, y1, x2, y2);
+				}
+				if (gatePoints.xpoints[0] != gatePoints.xpoints[lastI]) {
+					final int x1 = gatePoints.xpoints[0];
+					final int y1 = gatePoints.ypoints[0];
+					final int x2 = gatePoints.xpoints[lastI];
+					final int y2 = gatePoints.ypoints[lastI];
+					graph.drawDataLine(x1, y1, x2, y2);
+				}
 			}
 		}
 	}
@@ -463,13 +463,11 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 		} else if (panel.isSelectingArea()) {
 			synchronized (lastMovePoint) {
 				if (isSelectingAreaClipClear()) {
-					addToSelectClip(selectStart, Bin
-							.create(lastMovePoint));
+					addToSelectClip(selectStart, Bin.create(lastMovePoint));
 				}
 				lastMovePoint.setLocation(graph.toData(me.getPoint())
 						.getPoint());
-				addToSelectClip(selectStart, Bin
-						.create(lastMovePoint));
+				addToSelectClip(selectStart, Bin.create(lastMovePoint));
 			}
 			panel.setMouseMoved(true);
 			synchronized (selectingAreaClip) {
@@ -515,8 +513,8 @@ final class Plot2d extends AbstractPlot implements ColorPrefs {
 			r.add(r.x + r.width + 1, r.y + r.height + 1);
 			r.add(r.x - 1, r.y - 1);
 			final Bin p1 = Bin.create(r.getLocation());
-			final Bin p2 = Bin.create(p1.getX() + r.width, p1.getY()
-					+ r.height);
+			final Bin p2 = Bin
+					.create(p1.getX() + r.width, p1.getY() + r.height);
 			/* now do conversion */
 			r.setBounds(graph.getRectangleOutline2d(p1, p2));
 			r.width += 1;
