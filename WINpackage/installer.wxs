@@ -14,16 +14,14 @@
                     <Component Id="SourceCode"
                             Guid="@SOURCE_GUID@">
                         <File Id="src" Name="JamSrc.zip"
-                                DiskId="1" src="JamSrc.zip"/>
+                                DiskId="1" src="jam-@MAJOR@.@MINOR@.@RELEASE@-src.zip"/>
                     </Component>
                     <Directory Id="lib" Name="lib">
                         <Component Id="Libraries"
                                 Guid="@LIB_GUID@">
-                            <File Id="jamjar" Name="Jam.jar" DiskId="1" src="lib/Jam.jar" />
-                            <File Id="helpjar" Name="JamHelp.jar" DiskId="1"
-                                    src="lib/JamHelp.jar" />
-                            <File Id="jh" Name="jh.jar" DiskId="1"
-                                    src="lib/jh.jar" />
+                            <File Id="jamjar" Name="Jam.jar" DiskId="1" src="lib/jam-@MAJOR@.@MINOR@.@RELEASE@-lib.jar" />
+                            <File Id="helpjar" Name="JamHelp.jar" DiskId="1" src="lib/jam-@MAJOR@.@MINOR@.@RELEASE@-help.jar" />
+                            <File Id="jh" Name="jh.jar" DiskId="1" src="lib/jh.jar" />
                         </Component>
                     </Directory>
                     <Directory Id="bin" Name="bin">

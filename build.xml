@@ -148,10 +148,11 @@
     <target name="windows" depends="x-platform"
     description="Make Windows executables to go with that release">
     	<copy todir="${winlib}">
-    	 	<fileset dir="${build.dir}" includes="Jam.jar, JamHelp.jar" />
+    	 	<fileset dir="${build.dir}" includes="jam-${MAJOR}.${MINOR}.${RELEASE}-lib.jar, jam-${MAJOR}.${MINOR}.${RELEASE}-help.jar" />
     	 	<fileset dir="${copy.dir}" includes="jh.jar" />
     	</copy>
-    	<copy todir="${windows}" file="${build.dir}/JamSrc.zip" />
+    	<copy todir="${windows}" file="${build.dir}/jam-${MAJOR}.${MINOR}.${RELEASE}-src.zip" />
+    	
     	<copy todir="${windows}" flatten="true">
     		<fileset dir="${copy.dir}/WINpackage" includes="*.*" />
     	</copy>
