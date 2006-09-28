@@ -122,27 +122,8 @@
     	</javac>
     </target> 	
     
-    <target name="ndoclet" depends="copy">
-        <javadoc
-            destdir="${ndoc.dir}"
-            access="protected" notree="false"
-            nonavbar="false" noindex="false"
-            author="true" version="true" nodeprecatedlist="false"
-            nodeprecated="false"
-            packagenames="jam.*"
-            sourcepath="${copy.dir}"
-            classpath="${copy.dir};${copy.dir}\junit.jar;${copy.dir}\jh.jar" 
-            	doctitle="Jam ${MAJOR}.${MINOR}.${RELEASE}: Java-based Data Acquisition Management for Nuclear Physics"
-        	docletpath="${base.dir}/NDoclet.jar"
-        	doclet="ndoclet.NDoclet"
-        />
-      	<zip 
-      		zipfile="${build.dir}/Jam-${MAJOR}.${MINOR}.${RELEASE}-api.zip" 
-      		basedir="${ndoc.dir}"
-      	includes="**/*" />
-    </target>
 
-            	<target name="x-platform" depends="jar,srczip,helpjar"
+   	<target name="x-platform" depends="jar,srczip,helpjar"
     description="Compile source into class jar, help jar and source zip" />
 
     <target name="windows" depends="x-platform"
@@ -162,6 +143,6 @@
       		skeletonroot="C:\\Program Files\\JSmooth 0.9.7\\skeletons"/>
     </target>
     
-    <target name="all" depends="windows,ndoclet" />
+    <target name="all" depends="windows" />
         
 </project>
