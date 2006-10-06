@@ -55,5 +55,34 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 		formula.setLength(0);
 		formula.append("Polynomial fit not yet implemented");		
 	}
+	/**
+	 * Test of polynomial fit
+	 * @param args
+	 */
+	public static void main(final String args[]) {
+		
+		PolynomialFunction pf= new PolynomialFunction(1);
+		double []x=new double [3];
+		double []y= new double [3];
+		double [] coeff;
+		
+		x[0]=1; y[0]=2;
+		x[1]=2; y[1]=5;
+		x[2]=3; y[2]=10;
+		
+		try {
+			coeff= pf.polynomialFit(x, y, 2);
+			System.out.println("Coeff ");
+			for (int i=0; i< 3;i++)
+			{
+				System.out.println(""+coeff[i]);
+			}
+		}
+		catch(DataException de) {
+			System.out.println(de);
+		}
+
+
+	}
 
 }

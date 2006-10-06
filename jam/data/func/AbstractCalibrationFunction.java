@@ -1,5 +1,6 @@
 package jam.data.func;
 
+import jam.JamMain;
 import jam.data.DataException;
 
 import java.util.ArrayList;
@@ -400,4 +401,243 @@ public abstract class AbstractCalibrationFunction implements Function {
 		rval[1] = bEst;
 		return rval;
 	}
+	/**
+	 * do a least squares fit of data points y=a+bx returns to fit a, and b
+	 * values in an array
+	 * 
+	 * @param xVal
+	 *            array of x values
+	 * @param yVal
+	 *            array of y values
+	 * @throws DataException
+	 *             if regression fails
+	 * @return with polynomial coefficents
+	 */	
+	protected double[] polynomialFit(final double[] xVal, final double[] yVal, int order) throws DataException
+	{
+		
+		double [] xNorm= new double [xVal.length];
+		double matrixA[][]=null;
+		double vectorB[]=null;
+		double gaussMatrixB[][];
+		double gaussCoeffs[][];
+		double polyCoeffs[];
+		int numTerms;
+		double sum;
+		double xMean;
+
+		numTerms=order+1;
+		
+		//Chec data
+		if (xVal.length<numTerms)
+			throw new DataException("Need more positions than order for polynomial fit");
+		if (xVal.length!=yVal.length)
+			throw new DataException("Need same number of x and y points for polynomial fit");			
+		
+		//Find mean x to shift fit around mean
+		sum=0.0;
+		for (int k=0; k<xVal.length; k++)
+		{
+			sum+=xVal[k];
+		}
+		xMean=sum/xVal.length;
+		
+		//Shift x data around mean
+		for (int k=0; k<xVal.length; k++)
+		{
+			xNorm[k]=xVal[k]-xMean;
+		}
+		
+		matrixA  = new double[numTerms][numTerms];
+		vectorB = new double [numTerms];
+		
+		buildPolyMatrix( xVal,  yVal,  numTerms, matrixA, vectorB);
+		
+		//Copy vector b into a column matrix
+		gaussMatrixB= new double [vectorB.length][1];
+		for (int i=0; i<vectorB.length; i++)
+		{
+			gaussMatrixB[i][0]=vectorB[i];
+		}
+		
+		//Do gaussian elimination
+		gaussCoeffs=gaussj(matrixA,  gaussMatrixB);
+
+		//Copy vector b into a column matrix
+		polyCoeffs= new double [vectorB.length];
+		for (int i=0; i<polyCoeffs.length; i++)
+		{
+			polyCoeffs[i]=gaussCoeffs[i][0];
+		}
+		
+		return polyCoeffs;
+	}
+	/**
+	 * Build a matrix for a polynomial fit
+	 * @param xVal x values
+	 * @param yVal y values
+	 * @param order order of polynomial
+	 * @return matrixA the matrix to do gaussj on.
+	 */
+	protected void buildPolyMatrix(double xVal[], double yVal[], int order, double [][] matrixA, double [] vectorB)
+	{
+		double sum;
+		
+		//Alpha matrix part
+		for(int row=0; row<order; row++)
+		{
+			for(int col=0; col<order; col++)
+			{
+				//Sum of x^n 
+				sum=0.0;				
+				for (int k=0; k<order;k++)
+				{
+					sum+=Math.pow(xVal[k],  row+col);
+				}				
+				matrixA[row][col]=sum;				
+			}		
+		}
+		
+		//Alpha matrix part
+		for(int row=0; row<order; row++)
+		{
+			//Beta vector			
+			sum =0.0;
+			for (int k=0; k<order;k++)
+			{
+				sum+=Math.pow(xVal[k],  row)*yVal[k];
+			}							
+			vectorB[row]=sum;			
+		}
+		
+	}
+	/**
+	 * gauss jordon reduction from numerical recipes
+	 * @param a alpha matrix
+	 * @param b beta matrix
+	 * @return fit coeffients
+	 */
+	protected double [][] gaussj(double [][] a, double [][] b ) throws DataException {
+		
+		int n, m;
+		int i,j,k,l,ll;
+		int icol, irow;
+		int[] indxc,indxr,ipiv;		
+		double big,dum,pivinv,temp;		
+		
+		n= a.length; 
+		m=b[1].length;
+		icol = 0; irow=0;
+		indxc = new int[n]; 
+		indxr = new int[n];
+		ipiv = new int[n];
+		
+		for (j=0;j<n;j++) ipiv[j]=0;
+		
+		//loop over cols
+		for (i=0;i<n;i++) 
+		{
+			//search for pivot
+			big=0.0;            
+			for (j=0;j<n;j++)    
+               if (ipiv[j] != 1)   
+				   for (k=0;k<n;k++) 
+				   {
+					   if (ipiv[k] == 0) 
+					   {
+						   if (Math.abs(a[j][k]) >= big) 
+						   {
+							   big=Math.abs(a[j][k]);
+							   irow=j;
+							   icol=k;
+						   }
+					   }
+				   }
+			++(ipiv[icol]);
+			if (irow != icol) 
+			{
+                 for (l=0;l<n;l++)
+    			 {
+			       	temp=a[irow][l];
+		        	a[irow][l]=a[icol][l];
+	         		a[icol][l]=temp;
+	        	 }
+                 for (l=0;l<m;l++) 
+				 {
+					 temp=b[irow][l];
+					 b[irow][l]=b[icol][l];
+					 b[icol][l]=temp;
+				 }
+		    }
+			indxr[i]=irow;  
+			indxc[i]=icol;
+			
+			if (a[icol][icol] == 0.0) 
+				throw new DataException("gaussj: Singular Matrix");
+			
+            pivinv=1.0/a[icol][icol];
+            a[icol][icol]=1.0;
+            for (l=0;l<n;l++) a[icol][l] *= pivinv;
+            for (l=0;l<m;l++) b[icol][l] *= pivinv;
+            for (ll=0;ll<n;ll++) 
+                 if (ll != icol) 
+				 {                        
+                      dum=a[ll][icol];
+                      a[ll][icol]=0.0;
+                      for (l=0;l<n;l++) a[ll][l] -= a[icol][l]*dum;
+                      for (l=0;l<m;l++) b[ll][l] -= b[icol][l]*dum;
+                 }
+        }
+		
+    	for (l=n-1;l>=0;l--) 
+		{
+			if (indxr[l] != indxc[l])
+				for (k=0;k<n;k++)  
+		        {
+		            temp=a[k][indxr[l]];
+		         	a[k][indxr[l]]=a[k][indxc[l]];
+	        		a[k][indxc[l]]=temp;
+	         	}
+		}
+
+    	return b; 
+	}
 }
+/*	
+//Classic Gaussian Elimination to solve n equations with n unknowns
+//The answers will be in the last valid position on the matrix[] array.
+void GaussianElimination( float **matrix, int PolyOrder )
+{
+	float fFactor;
+
+	int iNumEqns; // number of equations
+	int iNumVars; // number of variables
+	
+	iNumEqns = PolyOrder + 1;
+	iNumVars = iNumEqns + 1;	
+
+	for (int i = 0; i < iNumVars-1; i++)
+	{
+		// Normalize the value
+			fFactor = matrix[i][i];
+			if (fFactor!=0.0)	//Should atually move pivot
+			{
+				for (int k = 0; k < iNumVars; k++)
+					matrix[i][k] = matrix[i][k]/fFactor;
+			}
+		// Move through and zero out variable
+		for (int j = 0; j < iNumEqns; j++)
+		{
+			if ((i != j) && (matrix[j][i] != 0))
+			{
+				fFactor = matrix[j][i];
+				for (int k = 0; k < iNumVars; k++)
+				{
+					matrix[j][k] = matrix[j][k] - fFactor*matrix[i][k];
+				}
+			}
+		}
+	}
+}
+*/
+ 

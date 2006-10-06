@@ -250,7 +250,7 @@ public final class JamProperties implements PropertyKeys {
 		PROPERTIES.setProperty(HOST_PORT_RECV, "5005");
 		PROPERTIES.setProperty(TARGET_IP, "frontend");
 		PROPERTIES.setProperty(TARGET_PORT, "5002");
-		PROPERTIES.setProperty(HOST_DATA_IP, "localhost-data");
+		PROPERTIES.setProperty(HOST_DATA_IP, "localhost");
 		PROPERTIES.setProperty(HOST_DATA_P_RECV, "10205");
 	}
 
