@@ -3,6 +3,7 @@ package jam.data.func;
 import jam.JamMain;
 import jam.data.DataException;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  * A function that can be use to calibrate a histogram. Most often used to
@@ -34,6 +36,10 @@ public abstract class AbstractCalibrationFunction implements Function {
 		addFunction(noFunc.getName(), noFunc.getClass());
 		AbstractCalibrationFunction linearFunc = new LinearFunction();
 		addFunction(linearFunc.getName(), linearFunc.getClass());
+		AbstractCalibrationFunction quadFunc = new QuadraticFunction();
+		addFunction(quadFunc.getName(), quadFunc.getClass());
+		AbstractCalibrationFunction cubicFunc = new CubicFunction();
+		addFunction(cubicFunc.getName(), cubicFunc.getClass());
 		AbstractCalibrationFunction sqrtEFunc = new SqrtEnergyFunction();
 		addFunction(sqrtEFunc.getName(), sqrtEFunc.getClass());
 	}
@@ -157,6 +163,21 @@ public abstract class AbstractCalibrationFunction implements Function {
 		return ICONS.get(name);
 	}
 
+	static void loadIcon(AbstractCalibrationFunction calFunc, String iconFile)
+	{
+		final ClassLoader loader = ClassLoader.getSystemClassLoader();		
+	
+		URL urlIcon = loader.getResource(iconFile);
+		if (urlIcon == null) {
+			JOptionPane.showMessageDialog(null,
+					"Can't load resource for calibration function icon "+iconFile);
+		} else {
+			AbstractCalibrationFunction.setIcon(calFunc.getName(),
+					new ImageIcon(urlIcon));
+		}
+
+	}
+	
 	/**
 	 * Creates a new <code>CalibrationFunction</code> object.
 	 * 

@@ -16,8 +16,9 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 	public SqrtEnergyFunction() {
 		super(SqrtEnergyFunction.class, "Linear in Square Root" ,NUMBER_TERMS);
 		title = "\u221aE = a0 + a1\u2219ch";
-		labels[0] = "a(0)";
-		labels[1] = "a(1)";
+		labels[0] = "a0";
+		labels[1] = "a1";
+		loadIcon(this, "jam/data/func/sqrt.png");				
 	}
 	
 	/**

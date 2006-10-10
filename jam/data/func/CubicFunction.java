@@ -2,21 +2,24 @@ package jam.data.func;
 import jam.data.DataException;
 
 /**
- * A linear histogram calibration function, that is, E = a0 + a1 * channel.
+ * A Cubic histogram calibration function, that is, E = a0 + a1 * channel+ 
+ * a2*channel^2+a3*channel^3
  */
-public class LinearFunction extends AbstractCalibrationFunction {
+public class CubicFunction extends AbstractCalibrationFunction {
 
-	private static final int NUMBER_TERMS = 2;
+	private static final int NUMBER_TERMS = 4;
 	
 	/**
 	 * Creates a new <code>LinearFunction</code> object of the specified type.  
 	 */
-	public LinearFunction() {
-		super(LinearFunction.class, "Linear", NUMBER_TERMS);
-		title = "E = a0 + a1\u2219ch";
+	public CubicFunction() {
+		super(CubicFunction.class, "Cubic", NUMBER_TERMS);
+		title = "E = a0 + a1\u2219ch+a2\u2219ch^2+a3\u2219ch^3";
 		labels[0] = "a0";
 		labels[1] = "a1";
-		loadIcon(this, "jam/data/func/line.png");		
+		labels[2] = "a2";
+		labels[3] = "a3";
+		loadIcon(this, "jam/data/func/cubic.png");		
 	}
 	
 	/**
@@ -43,13 +46,15 @@ public class LinearFunction extends AbstractCalibrationFunction {
 	 * do a fit of x y values
 	 */
 	public void fit() throws DataException {
-		double [] coeffLinRegress =linearRegression(ptsChannel, ptsEnergy);		
-		System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length); 
+		double [] coeffCubic =polynomialFit(ptsChannel, ptsEnergy, 2);			
+		System.arraycopy(coeffCubic, 0, coeff, 0, coeffCubic.length); 
 	}
 	
 	public void updateFormula(){
 		formula.setLength(0);
-		formula.append("E = ").append(coeff[0]).append(" + ").append(coeff[1])
-				.append("\u2219ch");		
+		formula.append("E = ").append(coeff[0])
+			.append(" + ").append(coeff[1]).append("\u2219ch")
+			.append(" + ").append(coeff[2]).append("\u2219ch^2")
+			.append(" + ").append(coeff[2]).append("\u2219ch^3");		
 	}
 }

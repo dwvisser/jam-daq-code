@@ -5,6 +5,8 @@ import jam.data.DataException;
 import jam.data.func.AbstractCalibrationFunction;
 import jam.data.func.CalibrationListCellRenderer;
 import jam.data.func.LinearFunction;
+import jam.data.func.QuadraticFunction;
+import jam.data.func.CubicFunction;
 import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
@@ -21,11 +23,9 @@ import java.util.Observable;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -50,25 +50,7 @@ public class CalibrationFit extends AbstractControl {
 
 	private final static String BLANK_LABEL = "    --     ";
 
-	// Avaliable functions load icons
-	static {
-		final ClassLoader loader = ClassLoader.getSystemClassLoader();
-		AbstractCalibrationFunction linearFunc = new LinearFunction();
-		AbstractCalibrationFunction sqrtEFunc = new SqrtEnergyFunction();
-		/* Load icons. */
-		URL urlLine = loader.getResource("jam/data/func/line.png");
-		URL urlSqrtE = loader.getResource("jam/data/func/sqrt.png");
-		if (urlLine == null || urlSqrtE == null) {
-			JOptionPane.showMessageDialog(null,
-					"Can't load resource function icons");
-		} else {
-			AbstractCalibrationFunction.setIcon(linearFunc.getName(),
-					new ImageIcon(urlLine));
-			AbstractCalibrationFunction.setIcon(sqrtEFunc.getName(),
-					new ImageIcon(urlSqrtE));
-		}
-	}
-
+	
 	private transient AbstractCalibrationFunction calibFunc = AbstractCalibrationFunction
 			.getNoCalibration();
 
