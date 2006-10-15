@@ -401,6 +401,8 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 *             if the fit fails
 	 */
 	public abstract void fit() throws DataException;
+	
+	//TODO the rest of the methods should be moved to jam.fit
 
 	/**
 	 * do a linear regression of data points y=a+bx returns to fit a, and b
@@ -650,41 +652,3 @@ public abstract class AbstractCalibrationFunction implements Function {
     	return b; 
 	}
 }
-/*	
-//Classic Gaussian Elimination to solve n equations with n unknowns
-//The answers will be in the last valid position on the matrix[] array.
-void GaussianElimination( float **matrix, int PolyOrder )
-{
-	float fFactor;
-
-	int iNumEqns; // number of equations
-	int iNumVars; // number of variables
-	
-	iNumEqns = PolyOrder + 1;
-	iNumVars = iNumEqns + 1;	
-
-	for (int i = 0; i < iNumVars-1; i++)
-	{
-		// Normalize the value
-			fFactor = matrix[i][i];
-			if (fFactor!=0.0)	//Should atually move pivot
-			{
-				for (int k = 0; k < iNumVars; k++)
-					matrix[i][k] = matrix[i][k]/fFactor;
-			}
-		// Move through and zero out variable
-		for (int j = 0; j < iNumEqns; j++)
-		{
-			if ((i != j) && (matrix[j][i] != 0))
-			{
-				fFactor = matrix[j][i];
-				for (int k = 0; k < iNumVars; k++)
-				{
-					matrix[j][k] = matrix[j][k] - fFactor*matrix[i][k];
-				}
-			}
-		}
-	}
-}
-*/
- 

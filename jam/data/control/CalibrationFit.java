@@ -18,6 +18,8 @@ import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -38,7 +40,7 @@ import javax.swing.border.EmptyBorder;
  */
 public class CalibrationFit extends AbstractControl {
 
-	private static final int NUM_POINTS = 5;
+	private static final int NUM_POINTS = 10;
 
 	private final static int MAX_TERMS = 5;
 
@@ -213,6 +215,9 @@ public class CalibrationFit extends AbstractControl {
 		for (int i = 0; i < MAX_TERMS; i++) {
 			generateCoeffPanel(i);
 			pCoeff.add(pcoeff[i]);
+		}
+		for (int i = 0; i < NUM_POINTS-MAX_TERMS-1; i++) {		
+			pCoeff.add(Box.createVerticalGlue());
 		}
 		return pCoeff;
 	}
