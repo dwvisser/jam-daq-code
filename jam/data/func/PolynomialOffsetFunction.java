@@ -1,5 +1,7 @@
 package jam.data.func;
 
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -65,7 +67,7 @@ public class PolynomialOffsetFunction extends AbstractCalibrationFunction {
 		//does nothing so far
 	}
 
-	protected void updateFormula() {
+	protected void updateFormula(NumberFormat numFormat) {
 		formula.setLength(0);
 		formula.append("Polynomial Offset fit not yet implemented");
 	}

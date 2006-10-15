@@ -1,4 +1,6 @@
 package jam.data.func;
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -47,9 +49,9 @@ public class LinearFunction extends AbstractCalibrationFunction {
 		System.arraycopy(coeffLinRegress, 0, coeff, 0, coeffLinRegress.length); 
 	}
 	
-	public void updateFormula(){
+	public void updateFormula(NumberFormat numFormat){
 		formula.setLength(0);
-		formula.append("E = ").append(coeff[0]).append(" + ").append(coeff[1])
-				.append("\u2219ch");		
+		formula.append("E = ").append(numFormat.format(coeff[0]))
+		       .append(" + ").append(numFormat.format(coeff[1])).append("\u2219ch");		
 	}
 }

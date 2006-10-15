@@ -1,5 +1,7 @@
 package jam.data.func;
 
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -22,7 +24,7 @@ public final class NoFunction extends AbstractCalibrationFunction {
 	}
 
 	@Override
-	protected void updateFormula() {
+	protected void updateFormula(NumberFormat numFormatCoeff) {
 		// do nothing
 
 	}

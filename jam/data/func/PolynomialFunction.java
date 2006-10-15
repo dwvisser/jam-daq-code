@@ -1,4 +1,6 @@
 package jam.data.func;
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -51,7 +53,7 @@ public class PolynomialFunction extends AbstractCalibrationFunction {
 		//does nothing so far
 	}
 	
-	public void updateFormula(){
+	public void updateFormula(NumberFormat numFormat){
 		formula.setLength(0);
 		formula.append("Polynomial fit not yet implemented");		
 	}

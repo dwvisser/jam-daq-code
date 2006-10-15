@@ -3,6 +3,8 @@
  */
 package jam.data;
 
+import jam.data.func.AbstractCalibrationFunction;
+
 import java.util.Arrays;
 
 /**
@@ -101,7 +103,8 @@ public final class HistDouble1D extends AbstractHist1D {
 		synchronized (this) {
 			countsDouble = EMPTY;
 			unsetErrors();
-			setCalibration(null);
+			setCalibration(AbstractCalibrationFunction
+					.getNoCalibration());
 			clear = true;
 		}
 	}

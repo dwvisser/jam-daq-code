@@ -1,4 +1,6 @@
-package jam.data.func;
+package jam.ui;
+
+import jam.data.func.AbstractCalibrationFunction;
 
 import java.awt.Component;
 

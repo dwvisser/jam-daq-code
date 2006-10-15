@@ -1,4 +1,6 @@
 package jam.data.func;
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -27,32 +29,22 @@ public class QuadraticFunction extends AbstractCalibrationFunction {
 	 * @return	calibration value of the channel
 	 */
 	public double getValue(double channel) {
-		return coeff[0] + coeff[1] * channel;
-	}
-
-	/**
-	 * Get the calibration value at a specified channel.
-	 * 
-	 * @param energy physical value
-	 * @return channel corresponding to <code>energy</code>
-	 */
-	public double getChannel(double energy) {
-		return ((energy - coeff[0]) / coeff[1]);
+		return coeff[0] + coeff[1] * channel+coeff[2] * channel* channel;
 	}
 
 	/** 
 	 * do a fit of x y values
 	 */
 	public void fit() throws DataException {
-		double [] coeffQuad =polynomialFit(ptsChannel, ptsEnergy, 2);		
+		double [] coeffQuad =polynomialFit(ptsEnergy, ptsChannel, 2);		
 		System.arraycopy(coeffQuad, 0, coeff, 0, coeffQuad.length); 
 	}
 
-	public void updateFormula(){
+	public void updateFormula(NumberFormat numFormat){
 		formula.setLength(0);
-		formula.append("E = ").append(coeff[0])
-		.append(" + ").append(coeff[1]).append("\u2219ch")
-		.append(" + ").append(coeff[2]).append("\u2219ch^2");
+		formula.append("E = ").append(numFormat.format(coeff[0]))
+		.append(" + ").append(numFormat.format(coeff[1])).append("\u2219ch")
+		.append(" + ").append(numFormat.format(coeff[2])).append("\u2219ch^2");
 		
 	}
 }

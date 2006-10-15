@@ -1,9 +1,9 @@
 package jam.data.func;
 
-import jam.JamMain;
 import jam.data.DataException;
 
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -97,6 +97,11 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * Coeffiecient values.
 	 */
 	protected double[] coeff;
+	
+	/**
+	 * Length histogram
+	 */
+	protected int sizeHistogram;
 
 	/**
 	 * The formula for the function.
@@ -159,7 +164,7 @@ public abstract class AbstractCalibrationFunction implements Function {
 		ICONS.put(name, icon);
 	}
 
-	static ImageIcon getIcon(final String name) {
+	public static ImageIcon getIcon(final String name) {
 		return ICONS.get(name);
 	}
 
@@ -277,16 +282,22 @@ public abstract class AbstractCalibrationFunction implements Function {
 	 * 
 	 * @return the function formula
 	 */
-	public String getFormula() {
-		updateFormula();
+	public String getFormula(NumberFormat numFormat) {
+		updateFormula(numFormat);
 		return formula.toString();
 	}
-
+	/**
+	 * Set histogram size, used to convert from energy to channel
+	 */
+	public void setSizeHistogram(int size)
+	{
+		sizeHistogram=size;
+	}
 	/**
 	 * Called by setCoeff() to update the formula.
 	 * 
 	 */
-	protected abstract void updateFormula();
+	protected abstract void updateFormula(NumberFormat numFormat);
 
 	/**
 	 * Set the calibration points used for fitting.
@@ -343,7 +354,6 @@ public abstract class AbstractCalibrationFunction implements Function {
 		if (aIn.length <= coeff.length) {
 			Arrays.fill(coeff, 0.0);
 			System.arraycopy(aIn, 0, coeff, 0, aIn.length);
-			updateFormula();
 		} else {
 			throw new IndexOutOfBoundsException(getClass().getName()
 					+ ".setCoeff(double [" + aIn.length + "]): too many terms.");
@@ -361,12 +371,28 @@ public abstract class AbstractCalibrationFunction implements Function {
 
 	/**
 	 * Gets the channel for the given energy.
-	 * 
+	 *  Don't always have a inverse function so by default search
+	 *  for the best channel.
 	 * @param energy
 	 *            to get channel for
 	 * @return channel for the given energy
 	 */
-	public abstract double getChannel(double energy);
+	public double getChannel(double energy) {
+		
+		double ch=0;		
+		double bestDiff=Math.abs(getValue(ch)-energy);
+		double diff;
+		
+		for(int i=0; i<sizeHistogram; i++){
+			diff=Math.abs(getValue(i)-energy);
+			if (diff<bestDiff) {
+				ch=i;
+			}
+			
+		}
+					
+		return ch;
+	}
 
 	/**
 	 * Do a calibration fit.

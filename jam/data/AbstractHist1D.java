@@ -204,8 +204,14 @@ public abstract class AbstractHist1D extends Histogram {
 	 * @see #setCalibration(AbstractCalibrationFunction)
 	 */
 	public boolean isCalibrated() {
+		boolean calibrated;
 		synchronized (this) {
-			return calibFunc.isCalibrated();
+			if (calibFunc!=null) {
+				calibrated= calibFunc.isCalibrated();
+			}else{
+				calibrated=false;
+			}
 		}
+		return calibrated;
 	}
 }

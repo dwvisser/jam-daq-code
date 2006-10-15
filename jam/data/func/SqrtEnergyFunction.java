@@ -1,4 +1,6 @@
 package jam.data.func;
+import java.text.NumberFormat;
+
 import jam.data.DataException;
 
 /**
@@ -47,9 +49,9 @@ public class SqrtEnergyFunction extends AbstractCalibrationFunction {
 		setCoeff(linearRegression(ptsChannel, sqrtE));
 	}
 	
-	protected void updateFormula(){
+	protected void updateFormula(NumberFormat numFormat){
 		formula.setLength(0);
-		formula.append("\u221aE = ").append(coeff[0]).append(" + ").append(
-				coeff[1]).append("\u2219ch");
+		formula.append("\u221aE = ").append(numFormat.format(coeff[0]))
+		       .append(" + ").append(numFormat.format(coeff[1])).append("\u2219ch");
 	}
 }

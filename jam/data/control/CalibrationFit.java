@@ -3,13 +3,9 @@ package jam.data.control;
 import jam.data.AbstractHist1D;
 import jam.data.DataException;
 import jam.data.func.AbstractCalibrationFunction;
-import jam.data.func.CalibrationListCellRenderer;
-import jam.data.func.LinearFunction;
-import jam.data.func.QuadraticFunction;
-import jam.data.func.CubicFunction;
-import jam.data.func.SqrtEnergyFunction;
 import jam.global.BroadcastEvent;
 import jam.global.Nameable;
+import jam.ui.CalibrationListCellRenderer;
 import jam.ui.PanelOKApplyCancelButtons;
 
 import java.awt.BorderLayout;
@@ -18,7 +14,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.net.URL;
+import java.text.NumberFormat;
 import java.util.Observable;
 import java.util.logging.Level;
 
@@ -81,7 +77,8 @@ public class CalibrationFit extends AbstractControl {
 	private transient int numberTerms;
 
 	private transient boolean isUpdate;
-
+	
+	private NumberFormat numFormatCoeff;
 	/**
 	 * Constructs a calibration fitting dialog.
 	 */
@@ -164,7 +161,12 @@ public class CalibrationFit extends AbstractControl {
 		isUpdate = false;
 		// comboBoxFunction.setSelectedIndex(0);
 		rbFitPoints.setSelected(true);
-
+		// numFormat for formatting coeff output
+		numFormatCoeff = NumberFormat.getInstance();
+		numFormatCoeff.setGroupingUsed(false);
+		numFormatCoeff.setMinimumFractionDigits(2);
+		numFormatCoeff.setMaximumFractionDigits(10);
+		
 	}
 
 	// Create panel with the points to fit
@@ -240,9 +242,11 @@ public class CalibrationFit extends AbstractControl {
 			final Class calClass = AbstractCalibrationFunction
 					.getMapFunctions().get(funcName);
 			final boolean change = calClass.isInstance(calibFunc);
+			final AbstractHist1D currentHistogram = getCurrentHistogram();			
 			if (calibFunc == null || !change) {
 				calibFunc = (AbstractCalibrationFunction) calClass
 						.newInstance();
+				calibFunc.setSizeHistogram(currentHistogram.getSizeX());
 			}
 			updateFields(calibFunc, rbFitPoints.isSelected());
 		} catch (InstantiationException e) {
@@ -301,6 +305,9 @@ public class CalibrationFit extends AbstractControl {
 		} else {
 			if (calibFunc.isCalibrated()) {
 				doFitCalibration();
+				final boolean isCalPts = calibFunc == null ? true : calibFunc
+						.isFitPoints();				
+				updateFields(calibFunc, isCalPts);
 			} else {
 				currentHistogram.setCalibration(calibFunc);
 				LOGGER.info("Uncalibrated histogram "
@@ -362,7 +369,7 @@ public class CalibrationFit extends AbstractControl {
 				}
 				calibFunc.setPoints(xval, yval);
 				calibFunc.fit();
-				fitText = calibFunc.getFormula();
+				fitText = calibFunc.getFormula(numFormatCoeff);
 				currentHist.setCalibration(calibFunc);
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 				LOGGER
@@ -373,11 +380,13 @@ public class CalibrationFit extends AbstractControl {
 				LOGGER.severe("Need at least 2 points");
 			}
 		} catch (NumberFormatException nfe) {
-			currentHist.setCalibration(null); // Make sure hisogram no longer
+			currentHist.setCalibration(AbstractCalibrationFunction
+					.getNoCalibration()); // Make sure hisogram no longer
 			// has calibration
 			LOGGER.severe("Invalid input, not a number");
 		} catch (DataException de) {
-			currentHist.setCalibration(null); // Make sure hisogram no longer
+			currentHist.setCalibration(AbstractCalibrationFunction
+					.getNoCalibration()); // Make sure hisogram no longer
 			// has calibration
 			LOGGER.severe(de.getMessage());
 		}
@@ -403,7 +412,7 @@ public class CalibrationFit extends AbstractControl {
 				BROADCASTER.broadcast(BroadcastEvent.Command.REFRESH);
 				LOGGER.info("Calibrated histogram "
 						+ currentHist.getFullName().trim() + " with "
-						+ calibFunc.getFormula());
+						+ calibFunc.getFormula(numFormatCoeff));
 
 			} catch (NumberFormatException nfe) {
 				LOGGER.severe("Invalid input, coefficient "
@@ -425,7 +434,8 @@ public class CalibrationFit extends AbstractControl {
 			final boolean isCalPts) {
 		final boolean calNotNull = hcf.isCalibrated();
 		final String title = hcf.getTitle();
-		lcalibEq.setText(title);
+		lcalibEq.setText(title);		
+		
 		/* Points fields */
 		if (calNotNull) {
 			final double[] ptsChannel = hcf.getPtsChannel();
@@ -451,7 +461,7 @@ public class CalibrationFit extends AbstractControl {
 				for (int i = 0; i < MAX_TERMS; i++) {
 					if (i < numberTerms) {
 						lcoeff[i].setText(labels[i]);
-						tcoeff[i].setText(String.valueOf(coeff[i]));
+						tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
 						tcoeff[i].setEnabled(false);
 						tcoeff[i].setEditable(true);
 					} else {
@@ -474,7 +484,7 @@ public class CalibrationFit extends AbstractControl {
 				for (int i = 0; i < MAX_TERMS; i++) {
 					if (i < numberTerms) {
 						lcoeff[i].setText(labels[i]);
-						tcoeff[i].setText(String.valueOf(coeff[i]));
+						tcoeff[i].setText(numFormatCoeff.format(coeff[i]));
 						tcoeff[i].setEnabled(true);
 						tcoeff[i].setEditable(true);
 					} else {
@@ -522,6 +532,7 @@ public class CalibrationFit extends AbstractControl {
 		final AbstractCalibrationFunction rval = currentHist == null ? AbstractCalibrationFunction
 				.getNoCalibration()
 				: currentHist.getCalibration();
+				
 		return rval;
 	}
 
