@@ -1,8 +1,8 @@
 package jam.data.control;
 
 import jam.commands.ScalersCmd;
+import jam.data.DataElement;
 import jam.data.Group;
-import jam.data.Scaler;
 import jam.global.BroadcastEvent;
 import jam.global.Broadcaster;
 import jam.global.JamStatus;
@@ -12,12 +12,9 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -44,21 +41,24 @@ import javax.swing.text.JTextComponent;
 
 public final class ScalerDisplay extends AbstractControl implements Observer {
 
-	private final JScrollPane scrollPane;
+	private static final int BORDER_HEIGHT = 5;
 
-	private final JPanel pScalers;
+	private transient final Broadcaster broadcaster = Broadcaster
+			.getSingletonInstance();
 
-	private JTextField[] textScaler = new JTextField[0];
+	private transient final JButton bupdate = new JButton("Read");
 
-	private final int borderHeight = 5;
+	private transient final JButton bzero = new JButton("Zero");
 
-	private final ScalersCmd scalersCmd;
+	private transient final Object monitor = new Object();
 
-	private final Broadcaster broadcaster = Broadcaster.getSingletonInstance();
+	private transient final JPanel pScalers;
 
-	private final JamStatus status = JamStatus.getSingletonInstance();
+	private transient final ScalersCmd scalersCmd;
 
-	private final Object monitor = new Object();
+	private transient final JamStatus status = JamStatus.getSingletonInstance();
+
+	private transient final List<JTextField> textScaler = new ArrayList<JTextField>();
 
 	/**
 	 * Creates the dialog box for reading and zeroing scalers.
@@ -71,55 +71,120 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 		final Container cddisp = getContentPane();
 		setLocation(20, 50);
 		cddisp.setLayout(new BorderLayout());
-		pScalers = new JPanel(new GridLayout(0, 1, borderHeight, 5));
-		Border borderScalers = new EmptyBorder(borderHeight, 10, borderHeight,
-				10);
+		pScalers = new JPanel(new GridLayout(0, 1, BORDER_HEIGHT, 5));
+		Border borderScalers = new EmptyBorder(BORDER_HEIGHT, 10,
+				BORDER_HEIGHT, 10);
 		pScalers.setBorder(borderScalers);
-		scrollPane = new JScrollPane(pScalers);
+		final JScrollPane scrollPane = new JScrollPane(pScalers);
 		scrollPane
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
 		cddisp.add(scrollPane, BorderLayout.CENTER);
+		addScalerControlPanel(cddisp);
+		addWindowListener(new WindowAdapter() {
+			public void windowActivated(final WindowEvent event) {
+				displayScalers();
+			}
+
+			public void windowClosing(final WindowEvent event) {
+				dispose();
+			}
+		});
+		doSetup();
+	}
+	
+	private transient final JCheckBox checkDisabled = new JCheckBox("Disable Zero", true);
+
+	/**
+	 * @param cddisp
+	 */
+	private void addScalerControlPanel(final Container cddisp) {
 		final JPanel plower = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,
 				10));
-		final JPanel pb = new JPanel(); // buttons for display dialog
-		pb.setLayout(new GridLayout(1, 0, 10, 10));
+		final JPanel buttonPanel = new JPanel(); // buttons for display
+													// dialog
+		buttonPanel.setLayout(new GridLayout(1, 0, 10, 10));
 		cddisp.add(plower, BorderLayout.SOUTH);
-		final JButton bupdate = new JButton("Read");
 		bupdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent event) {
 				read();
 			}
 		});
-		pb.add(bupdate);
-		final JButton bzero = new JButton("Zero");
-		final JCheckBox checkDisabled = new JCheckBox("Disable Zero", true);
+		buttonPanel.add(bupdate);
 		bzero.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
 				checkDisabled.setSelected(true);
 				bzero.setEnabled(false);
 				scalersCmd.zeroScalers();
 			}
 		});
 		bzero.setEnabled(false);
-		pb.add(bzero);
-		plower.add(pb);
+		buttonPanel.add(bzero);
+		plower.add(buttonPanel);
 		checkDisabled.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+			public void itemStateChanged(ItemEvent event) {
 				bzero.setEnabled(!checkDisabled.isSelected());
 			}
 		});
 		plower.add(checkDisabled);
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				dispose();
-			}
+	}
 
-			public void windowActivated(WindowEvent e) {
-				displayScalers();
+	/**
+	 * @param currentScaler
+	 *            to creat label for
+	 * @return label for scaler panel
+	 */
+	private JLabel createScalerLabel(final DataElement currentScaler) {
+		return new JLabel(currentScaler.getName().trim(), SwingConstants.RIGHT);
+	}
+
+	/**
+	 * @return new panel for scaler value
+	 */
+	private JPanel createScalerPanel() {
+		return new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+	}
+
+	/**
+	 * @param count
+	 *            index of scaler
+	 * @param currentScaler
+	 *            scaler to use value of
+	 */
+	private JTextField createScalerTextField(final DataElement currentScaler) {
+		final JTextField rval = new JTextField("  ");
+		textScaler.add(rval);
+		rval.setColumns(12);
+		rval.setEditable(false);
+		rval.setText(String.valueOf((int) currentScaler.getCount()));
+		return rval;
+	}
+
+	/**
+	 * Get the values from the Scalers and display them
+	 */
+	public void displayScalers() {
+		synchronized (monitor) {
+			final Group currentGroup = (Group) status.getCurrentGroup();
+			if (Group.isValid(currentGroup)) {
+				final List<? extends DataElement> scalerList = currentGroup
+						.getScalerList();
+				if (textScaler.size() != scalerList.size()) {
+					doSetup();
+				}
+				final Iterator<JTextField> txtIterator = textScaler.iterator();
+				for (DataElement currentScaler : currentGroup.getScalerList()) {
+					final JTextComponent text = txtIterator.next();
+					if (text == null) {
+						throw new IllegalStateException(
+								"Text fields don't exist for scalers when they should.");
+					}
+					text
+							.setText(String.valueOf((int) currentScaler
+									.getCount()));
+				}
 			}
-		});
-		doSetup();
+		}
 	}
 
 	/**
@@ -132,35 +197,32 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 			final Group currentGroup = (Group) status.getCurrentGroup();
 			if (Group.isValid(currentGroup)) {
 				JPanel panelS = null;
-				final List<Scaler> scalerList = currentGroup.getScalerList();
+				final List<? extends DataElement> scalerList = currentGroup
+						.getScalerList();
 				final int numberScalers = scalerList.size();
 				pScalers.removeAll();
-				textScaler = new JTextField[numberScalers];
+				textScaler.clear();
 				if (numberScalers != 0) { // we have some elements in the
-											// scaler
+					// scaler
 					// list
-					int count = 0;
-					for (Scaler currentScaler : scalerList) {
+					for (DataElement currentScaler : scalerList) {
 						/* right justified, hgap, vgap */
-						panelS = new JPanel(new FlowLayout(FlowLayout.RIGHT,
-								10, 0));
-						final JLabel labelScaler = new JLabel(currentScaler
-								.getName().trim(), SwingConstants.RIGHT);
-						textScaler[count] = new JTextField("  ");
-						textScaler[count].setColumns(12);
-						textScaler[count].setEditable(false);
-						textScaler[count].setText(String.valueOf(currentScaler
-								.getValue()));
+						panelS = createScalerPanel();
+						final JLabel labelScaler = createScalerLabel(currentScaler);
+						final JTextField text = createScalerTextField(currentScaler);
 						panelS.add(labelScaler);
-						panelS.add(textScaler[count]);
+						panelS.add(text);
 						pScalers.add(panelS);
-						count++;
 					}
 				}
+				final boolean online = status.isOnline();
+				bupdate.setEnabled(online);
+				bzero.setEnabled(online && bzero.isEnabled());
+				checkDisabled.setEnabled(online);
 				pack();
 				if (numberScalers > 0) {
 					final Dimension dialogDim = calculateScrollDialogSize(this,
-							panelS, borderHeight, numberScalers);
+							panelS, BORDER_HEIGHT, numberScalers);
 					setSize(dialogDim);
 				}
 				displayScalers();
@@ -187,43 +249,18 @@ public final class ScalerDisplay extends AbstractControl implements Observer {
 	 * 
 	 * @param observable
 	 *            not sure
-	 * @param o
+	 * @param event
 	 *            not sure
 	 */
-	public void update(Observable observable, Object o) {
-		BroadcastEvent be = (BroadcastEvent) o;
-		if ((be.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW)
-				|| (be.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)
-				|| (be.getCommand() == BroadcastEvent.Command.GROUP_SELECT)) {
+	public void update(final Observable observable, final Object event) {
+		final BroadcastEvent jamEvent = (BroadcastEvent) event;
+		if ((jamEvent.getCommand() == BroadcastEvent.Command.HISTOGRAM_NEW)
+				|| (jamEvent.getCommand() == BroadcastEvent.Command.HISTOGRAM_SELECT)
+				|| (jamEvent.getCommand() == BroadcastEvent.Command.GROUP_SELECT)) {
 			doSetup();
 		}
-		if (be.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
+		if (jamEvent.getCommand() == BroadcastEvent.Command.SCALERS_UPDATE) {
 			displayScalers();
-		}
-	}
-
-	/**
-	 * Get the values from the Scalers and display them
-	 */
-	public void displayScalers() {
-		synchronized (monitor) {
-			final Group currentGroup = (Group) status.getCurrentGroup();
-			if (Group.isValid(currentGroup)) {
-				List<Scaler> scalerList = currentGroup.getScalerList();
-				if (textScaler.length != scalerList.size()) {
-					doSetup();
-				}
-				int count = 0;
-				for (Scaler currentScaler : currentGroup.getScalerList()) {
-					final JTextComponent text = textScaler[count];
-					if (text == null) {
-						throw new IllegalStateException(
-								"Text fields don't exist for scalers when they should.");
-					}
-					text.setText(String.valueOf(currentScaler.getValue()));
-					count++;
-				}
-			}
 		}
 	}
 }
