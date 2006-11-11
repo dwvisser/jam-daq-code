@@ -150,13 +150,13 @@ final class ConvertHDFObjToJamObj {
 		}
 		if (gate != null) {
 			if (gate.getDimensionality() == 1) { // 1-d gate
-				gate.setLimits(data.getInteger(0, 0).intValue(), data
-						.getInteger(0, 1).intValue());
+				gate.setLimits(data.getInteger(0, 0), data
+						.getInteger(0, 1));
 			} else { // 2-d gate
 				shape.reset();
 				for (int i = 0; i < numRows; i++) {
-					shape.addPoint(data.getInteger(i, 0).intValue(), data
-							.getInteger(i, 1).intValue());
+					shape.addPoint(data.getInteger(i, 0), data
+							.getInteger(i, 1));
 				}
 				gate.setLimits(shape);
 			}
@@ -462,10 +462,10 @@ final class ConvertHDFObjToJamObj {
 		numScalers = vdd.getNumRows();
 		for (int i = 0; i < numScalers; i++) {
 			final String sname = data.getString(i, 1);
-			final int sNumber = data.getInteger(i, 0).intValue();
+			final int sNumber = data.getInteger(i, 0);
 			final Scaler scaler = produceScaler(group, mode, sNumber, sname);
 			if (scaler != null) {
-				final int fileValue = data.getInteger(i, 2).intValue();
+				final int fileValue = data.getInteger(i, 2);
 				if (mode == FileOpenMode.ADD) {
 					scaler.setValue(scaler.getValue() + fileValue);
 				} else {

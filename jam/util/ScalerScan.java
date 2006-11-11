@@ -289,7 +289,7 @@ public final class ScalerScan {
 			final int numScalers = dataDesc.getNumRows();
 			values = new int[numScalers];
 			for (int i = 0; i < numScalers; i++) {
-				values[i] = data.getInteger(i, 2).intValue();
+				values[i] = data.getInteger(i, 2);
 			}
 		}
 		return values;

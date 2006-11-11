@@ -83,7 +83,7 @@ public final class VData extends AbstractData {
 
 	void addInteger(final int column, final int row, final int indata) {
 		if (description.getType(column) == VDataDescription.DFNT_INT32) {
-			final Object temp = new Integer(indata);
+			final Object temp = Integer.valueOf(indata);
 			setCell(column, row, temp);
 		} else { // uh oh... not right type
 			throw new UnsupportedOperationException(WDFC + column + "!");
@@ -194,18 +194,17 @@ public final class VData extends AbstractData {
 	 * @throws IllegalStateException
 	 *             if cell doesn't contain an <code>Integer</code>
 	 */
-	public Integer getInteger(final int row, final int col) {
-		Integer out = null;
+	public int getInteger(final int row, final int col) {
+		int rval = 0;
 		if (types[col] == VDataDescription.DFNT_INT32) {
 			final int location = row * ivsize + offsets[col];
-			final int tempN = bytes.getInt(location);
-			out = new Integer(tempN);
+			rval = bytes.getInt(location);
 		} else {
 			throw new IllegalStateException(VS_STRING + getTag() + "/"
 					+ getRef() + ".getInt(" + row + "," + col
 					+ "): cell not integer!");
 		}
-		return out;
+		return rval;
 	}
 
 	private Short getShort(final int row, final int col) {

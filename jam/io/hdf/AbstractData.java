@@ -38,7 +38,7 @@ public abstract class AbstractData implements Constants {
 	 * Count for references, to make sure references are unique Reference count,
 	 * starts at 1
 	 */
-	static short refCount = 1;
+	private static short refCount = 1;
 
 	/**
 	 * Map of Data Objects in file with tag/ref as key
@@ -103,14 +103,13 @@ public abstract class AbstractData implements Constants {
 	/*
 	 * non-javadoc: Create a unique key given then tag an ref numbers.
 	 */
-	static <T extends AbstractData> Integer calculateKey(final Class<T> tag,
+	private static <T extends AbstractData> int calculateKey(final Class<T> tag,
 			final short ref) {
 		final int tagInt = TAGS.get(tag);
 		final int refInt = ref;
 		final int key = (tagInt << 16) + refInt;
-		// Debug
 		LOGGER.finer(" Key tag "+tagInt+" ref "+refInt+" key "+key);
-		return new Integer(key);
+		return key;
 	}
 
 	/**

@@ -593,7 +593,7 @@ public abstract class AbstractFit implements PlotMouseListener {
 				temp = format(value, fraction);
 			}
 		} else if (param.isInteger()) {
-			temp = (new Integer(param.getIntValue())).toString().trim();
+			temp = (Integer.valueOf(param.getIntValue())).toString().trim();
 		} else if (param.isText()) {
 			temp = param.getText();
 		}

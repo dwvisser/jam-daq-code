@@ -37,9 +37,9 @@ public final class ScalersCmd extends AbstractCommand {
 	protected void executeParse(final String[] cmdTokens) {
 		final Object [] params = new Object[1];		
 		if (cmdTokens[0].equals("read")) {			
-			params[0]= new Integer(READ);			
+			params[0]= Integer.valueOf(READ);			
 		}else if (cmdTokens[0].equals("zero")) {
-			params[0]= new Integer(ZERO);
+			params[0]= Integer.valueOf(ZERO);
 		}		 	
 		execute(params);	
 	}

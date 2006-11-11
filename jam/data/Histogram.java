@@ -305,7 +305,7 @@ public abstract class Histogram implements DataElement {
 				histogram.clearInfo();
 				LIST.remove(histogram);
 				NAME_MAP.remove(histogram.getFullName());
-				NUMBER_MAP.remove(new Integer(histogram.getNumber()));
+				NUMBER_MAP.remove(histogram.getNumber());
 				for (List<Histogram> list : DIM_LIST) {
 					list.clear();
 				}
@@ -648,7 +648,7 @@ public abstract class Histogram implements DataElement {
 		final int last = NUMBER_MAP.isEmpty() ? 0 : (NUMBER_MAP.lastKey())
 				.intValue();
 		number = last + 1;
-		NUMBER_MAP.put(new Integer(number), this);
+		NUMBER_MAP.put(number, this);
 	}
 
 	abstract void clearCounts();
@@ -885,16 +885,15 @@ public abstract class Histogram implements DataElement {
 	 *            the desired number for the histogram
 	 */
 	public void setNumber(final int num) {
-		final Integer newKey = new Integer(num);
-		if (NUMBER_MAP.containsKey(newKey)) {
-			final Histogram collider = NUMBER_MAP.get(newKey);
+		if (NUMBER_MAP.containsKey(num)) {
+			final Histogram collider = NUMBER_MAP.get(num);
 			if (!collider.equals(this)) {
 				collider.assignNewNumber();
 			}
 		}
-		NUMBER_MAP.remove(new Integer(number));
+		NUMBER_MAP.remove(number);
 		number = num;
-		NUMBER_MAP.put(new Integer(num), this);
+		NUMBER_MAP.put(num, this);
 	}
 
 	/**
