@@ -19,7 +19,6 @@ import java.util.Observable;
 import java.util.logging.Level;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;

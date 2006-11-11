@@ -3,7 +3,6 @@ package jam.data.control;
 import static javax.swing.SwingConstants.CENTER;
 import static javax.swing.SwingConstants.LEFT;
 import static javax.swing.SwingConstants.RIGHT;
-import jam.data.DataException;
 import jam.data.Monitor;
 import jam.global.BroadcastEvent;
 import jam.global.GoodThread;
@@ -43,35 +42,30 @@ import javax.swing.border.EmptyBorder;
  */
 public final class MonitorControl extends AbstractControl implements Runnable {
 
-	private final int DEFAULT_MAX = 100;
-
-	private final int DEFAULT_THRESHOLD = 10;
-
 	// widgets for configuration
-	private final JPanel pUpper;
 
-	private final JPanel pMonitors;
+	private transient final JPanel pMonitors;
 
-	private final JSpinner spinnerUpdate;
+	private transient final JSpinner spinnerUpdate;
 
-	private final int borderHeight = 5;
+	private static final int BORDER_HEIGHT = 5;
 
-	private int interval; // update interval
+	private transient int interval; // update interval
 
-	private GoodThread loopThread; // loop to update monitors
+	private transient GoodThread loopThread; // loop to update monitors
 
-	private boolean configured = false; // monitors have been configured
+	private transient boolean configured = false; // monitors have been configured
 
-	private static MonitorControl mc = null;
+	private static MonitorControl singletonInstance = null;
 
 	/**
 	 * @return the only instance of this class
 	 */
 	static public MonitorControl getSingletonInstance() {
-		if (mc == null) {
-			mc = new MonitorControl();
+		if (singletonInstance == null) {
+			singletonInstance = new MonitorControl();
 		}
-		return mc;
+		return singletonInstance;
 	}
 
 	MonitorControl() {
@@ -81,7 +75,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		final Container cddisp = getContentPane();
 		cddisp.setLayout(new BorderLayout());
 		/* Panel with column titles */
-		pUpper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
+		final JPanel pUpper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 5));
 		Border border = new EmptyBorder(10, 0, 5, 5);
 		pUpper.setBorder(border);
 		cddisp.add(pUpper, BorderLayout.NORTH);
@@ -91,8 +85,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		pUpper.add(new JLabel("Maximum", CENTER));
 		pUpper.add(new JLabel("Alarm", LEFT));
 		/* Panel to fill in with monitors */
-		pMonitors = new JPanel(new GridLayout(0, 1, 5, borderHeight));
-		border = new EmptyBorder(borderHeight, 0, borderHeight, 0);
+		pMonitors = new JPanel(new GridLayout(0, 1, 5, BORDER_HEIGHT));
+		border = new EmptyBorder(BORDER_HEIGHT, 0, BORDER_HEIGHT, 0);
 		pMonitors.setBorder(border);
 		// Scroll Panel
 		JScrollPane scrollPane = new JScrollPane(pMonitors);
@@ -107,8 +101,8 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		pupdate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		pLower.add(pupdate);
 		pupdate.add(new JLabel("Update every", RIGHT));
-		final Integer one = new Integer(1);
-		final Integer init = new Integer(1);
+		final Integer one = Integer.valueOf(1);
+		final Integer init = Integer.valueOf(1);
 		spinnerUpdate = new JSpinner(new SpinnerNumberModel(init, one, null,
 				one));
 		spinnerUpdate.setPreferredSize(new Dimension(50, spinnerUpdate
@@ -185,11 +179,13 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 			final JTextField textThreshold = new JTextField();
 			textThreshold.setColumns(cols);
 			textThreshold.setEditable(true);
+			final int DEFAULT_THRESHOLD = 10;
 			textThreshold.setText("" + DEFAULT_THRESHOLD);
 			pRow.add(textThreshold);
 			final JTextField textMaximum = new JTextField();
 			textMaximum.setColumns(cols);
 			textMaximum.setEditable(true);
+			final int DEFAULT_MAX = 100;
 			textMaximum.setText("" + DEFAULT_MAX);
 			pRow.add(textMaximum);
 			final JCheckBox checkAlarm = new JCheckBox();
@@ -199,7 +195,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 		pack();
 		if (numberMonitors > 0) {
 			Dimension dialogDim = calculateScrollDialogSize(this, pRow,
-					borderHeight, numberMonitors);
+					BORDER_HEIGHT, numberMonitors);
 			setSize(dialogDim);
 		}
 
@@ -210,7 +206,7 @@ public final class MonitorControl extends AbstractControl implements Runnable {
 	 */
 	void recall() {
 		/* update interval */
-		spinnerUpdate.setValue(new Integer(interval));
+		spinnerUpdate.setValue(Integer.valueOf(interval));
 		/* get the Monitor parameters */
 		int base = 0;
 		for (Monitor monitor : Monitor.getMonitorList()) {
